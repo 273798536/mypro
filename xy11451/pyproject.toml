@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "equipment-lease-audit"
+version = "1.0.0"
+description = "设备租赁归还多源导入巡检 CLI 工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.0.0",
+    "pandas>=1.5.0",
+    "openpyxl>=3.1.0",
+    "Pillow>=10.0.0",
+    "SQLAlchemy>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+lease-audit = "lease_audit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

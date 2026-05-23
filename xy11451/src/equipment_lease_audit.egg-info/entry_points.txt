@@ -1,0 +1,2 @@
+[console_scripts]
+lease-audit = lease_audit.cli:main
