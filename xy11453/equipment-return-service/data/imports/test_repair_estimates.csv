@@ -1,0 +1,4 @@
+﻿estimate_no,equipment_code,damage_type,damage_description,estimate_amount,parts_cost,labor_cost,is_customer_liable,reviewer,status,remark
+RE20260524001,EQ-542,电路故障,轻微损坏需要维修,1730,831,899,False,技术员1,approved,测试估价单1
+RE20260524002,EQ-809,液压系统故障,重度损坏需要维修,2857,2093,764,False,技术员1,approved,测试估价单2
+RE20260524003,EQ-996,电路故障,中度损坏需要维修,2265,1463,802,True,技术员2,approved,测试估价单3

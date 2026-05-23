@@ -1,0 +1,2 @@
+﻿order_no,customer_id,customer_name,total_quantity,total_returned,remaining_quantity,is_fully_returned,batches_count,total_deducted,deposit_amount,remaining_deposit,evidence_summary
+WH-TEST-001,C001,测试客户,3,2,1,False,2,5800.0,15000.0,9200.0,"2批次归还, 1次扣款记录"

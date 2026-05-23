@@ -1,0 +1,9 @@
+﻿return_no,customer_id,return_quantity,returned_equipment_codes,condition_status,damage_description,is_partial,batch_number,operator,remark
+RT20260524001,C004,1,EQ-475,minor_damage,轻微划痕,False,3,仓管员3,测试归还记录1
+RT20260524002,C002,3,EQ-585,minor_damage,轻微划痕,True,2,仓管员2,测试归还记录2
+RT20260524003,C002,2,EQ-752,good,轻微划痕,False,1,仓管员3,测试归还记录3
+RT20260524004,C004,3,EQ-700,minor_damage,轻微划痕,False,3,仓管员3,测试归还记录4
+RT20260524005,C003,3,EQ-294,good,,True,1,仓管员5,测试归还记录5
+RT20260524006,C003,1,EQ-219,major_damage,轻微划痕,False,1,仓管员1,测试归还记录6
+RT20260524007,C001,1,EQ-332,major_damage,轻微划痕,True,2,仓管员1,测试归还记录7
+RT20260524008,C003,2,EQ-976,minor_damage,轻微划痕,False,1,仓管员3,测试归还记录8
