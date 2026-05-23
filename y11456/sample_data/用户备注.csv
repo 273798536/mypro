@@ -1,0 +1,5 @@
+订单号,商品编码,用户备注,外部回执
+ORD20240524002,SKU002,箱子破了个洞，牛奶漏了一半,http://example.com/photo1.jpg
+ORD20240524003,SKU003,10个鸡蛋碎了2个,http://example.com/photo2.jpg
+ORD20240524005,SKU005,生产日期是5月20日，今天24日就酸了,
+ORD20240524007,SKU007,5根香蕉有3根发黑软烂,http://example.com/photo3.jpg

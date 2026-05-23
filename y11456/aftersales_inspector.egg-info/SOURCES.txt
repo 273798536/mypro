@@ -1,0 +1,14 @@
+setup.py
+aftersales/__init__.py
+aftersales/checker.py
+aftersales/cli.py
+aftersales/database.py
+aftersales/importer.py
+aftersales/models.py
+aftersales/reporter.py
+aftersales_inspector.egg-info/PKG-INFO
+aftersales_inspector.egg-info/SOURCES.txt
+aftersales_inspector.egg-info/dependency_links.txt
+aftersales_inspector.egg-info/entry_points.txt
+aftersales_inspector.egg-info/requires.txt
+aftersales_inspector.egg-info/top_level.txt
