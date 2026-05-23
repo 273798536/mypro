@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      String
+  clinicId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdReceipts   MaterialReceipt[] @relation("creator")
+  reviewedReceipts  MaterialReceipt[] @relation("reviewer")
+  changeLogs        ChangeLog[]
+}
+
+model Clinic {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  receipts MaterialReceipt[]
+}
+
+model MaterialReceipt {
+  id                  String  @id @default(uuid())
+  batchNo             String  @unique
+  status              String  @default("DRAFT")
+  clinicId            String
+  implantBatchNumber  String?
+  appointmentRecordNo String?
+  supplierInvoiceNo   String?
+  patientName         String?
+  implantModel        String?
+  originalModel       String?
+  implantQuantity     Int?
+  unitPrice           Decimal?
+  totalAmount         Decimal?
+  receiptDate         DateTime?
+  supplier            String?
+  remark              String?
+  freezeReason        String?
+  freezeBeforeStatus  String?
+  manualReason        String?
+
+  creatorId  String
+  reviewerId String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  settledAt  DateTime?
+  archivedAt DateTime?
+
+  clinic       Clinic?       @relation(fields: [clinicId], references: [id])
+  creator      User          @relation("creator", fields: [creatorId], references: [id])
+  reviewer     User?         @relation("reviewer", fields: [reviewerId], references: [id])
+  attachments  Attachment[]
+  changeLogs   ChangeLog[]
+  dirtyRecords DirtyRecord[]
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  receiptId   String
+  type        String
+  fileName    String
+  fileSize    Int
+  fileType    String
+  fileUrl     String
+  uploadedBy  String
+  uploadedAt  DateTime @default(now())
+  description String?
+
+  receipt MaterialReceipt @relation(fields: [receiptId], references: [id])
+}
+
+model ChangeLog {
+  id           String   @id @default(uuid())
+  receiptId    String
+  action       String
+  operatorId   String
+  beforeStatus String?
+  afterStatus  String?
+  beforeData   String?
+  afterData    String?
+  diffData     String?
+  reason       String?
+  createdAt    DateTime @default(now())
+
+  receipt  MaterialReceipt @relation(fields: [receiptId], references: [id])
+  operator User            @relation(fields: [operatorId], references: [id])
+}
+
+model DirtyRecord {
+  id             String   @id @default(uuid())
+  receiptId      String
+  type           String
+  fieldName      String?
+  originalValue  String?
+  correctedValue String?
+  handleOpinion  String?
+  handled        Boolean  @default(false)
+  handledBy      String?
+  handledAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  receipt MaterialReceipt @relation(fields: [receiptId], references: [id])
+}
