@@ -1,0 +1,6 @@
+review_no,order_no,sku_code,sku_name,city,shortage_qty,damaged_qty,unit_price,compensation_amount,issue_type,reviewer_id,reviewed_at,is_verified
+WR2024001,ORD20240102001,SKU001,新鲜苹果,北京,1,0,12.5,12.5,少发,R001,2024-01-15 08:30:00,True
+WR2024002,ORD20240102002,SKU002,进口牛奶,北京,0,2,25.0,50.0,坏品,R001,2024-01-15 09:15:00,True
+WR2024003,ORD20240102003,SKU003,有机蔬菜,上海,1,1,30.0,60.0,少发,R002,2024-01-15 10:00:00,False
+WR2024004,ORD20240102004,SKU004,精选鸡蛋,北京,3,0,1.5,4.5,少发,R001,2024-01-16 07:45:00,True
+WR2024005,ORD20240102005,SKU005,冷冻水饺,上海,0,5,18.0,90.0,坏品,R002,2024-01-16 11:30:00,True
