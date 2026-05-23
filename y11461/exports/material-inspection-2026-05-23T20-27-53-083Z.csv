@@ -1,0 +1,21 @@
+数据来源,原始行号,源文件,批号,材料名称,类型,数量,单价,总金额,供应商,患者姓名,预约日期,发票号,状态,导入人,有问题,问题类型
+种植体批号,2,implant_batch.csv,IMP-2024-001,Straumann种植体,种植体,10,2500,25000,Straumann中国,,,,imported,entry,否,
+种植体批号,3,implant_batch.csv,IMP-2024-002,Nobel种植体,种植体,5,3200,16000,Nobel Biocare,,,,imported,entry,否,
+种植体批号,4,implant_batch.csv,IMP-2024-003,Osstem种植体,种植体,8,1800,14400,奥齿泰上海,,,,imported,entry,否,
+种植体批号,5,implant_batch.csv,IMP-2024-004,Dentsply种植体,种植体,0,2200,0,登士柏西诺德,,,,dirty,entry,是,缺字段
+种植体批号,6,implant_batch.csv,IMP-2024-005,Straumann种植体,种植体,15,2500,37500,Straumann中国,,,,dirty,entry,是,改名
+种植体批号,7,implant_batch.csv,IMP-2024-006,ITI种植体,种植体,3,2500,7500,Straumann中国,,,,dirty,entry,是,改名
+预约记录,2,appointment.csv,IMP-2024-001,Straumann种植体,种植体,1,2500,2500,,张三,2024-01-15,,dirty,entry,是,缺字段
+预约记录,3,appointment.csv,IMP-2024-002,Nobel种植体,种植体,1,3200,3200,,李四,2024-01-16,,dirty,entry,是,缺字段
+预约记录,4,appointment.csv,IMP-2024-003,Osstem种植体,种植体,1,1800,1800,,王五,2024-01-20,,dirty,entry,是,缺字段
+预约记录,5,appointment.csv,IMP-2024-001,Straumann种植体,种植体,1,2500,2500,,赵六,2024-02-01,,dirty,entry,是,缺字段
+预约记录,6,appointment.csv,IMP-2024-001,Straumann种植体,种植体,1,2500,2500,,钱七,2024-01-18,,dirty,entry,是,缺字段
+预约记录,7,appointment.csv,IMP-2024-005,Straumann种植体,种植体,1,2500,2500,,孙八,2024-01-22,,dirty,entry,是,缺字段
+供应商发票,2,supplier_invoice.csv,IMP-2024-001,Straumann种植体,种植体,10,2500,25000,Straumann中国,,,INV-2024-001,imported,entry,否,
+供应商发票,3,supplier_invoice.csv,IMP-2024-002,Nobel种植体,种植体,5,3200,15000,Nobel Biocare,,,INV-2024-002,dirty,entry,是,金额冲突
+供应商发票,4,supplier_invoice.csv,IMP-2024-003,Osstem种植体,种植体,8,1800,14400,奥齿泰上海,,,INV-2024-003,imported,entry,否,
+供应商发票,5,supplier_invoice.csv,IMP-2024-007,临时基台,基台,20,300,6000,Straumann中国,,,INV-2024-004,imported,entry,否,
+临时补录单,2,manual_entry.csv,IMP-2024-005,愈合基台,基台,2,350,700,Straumann中国,张三,2024-01-15,,dirty,entry,是,跨日; 改名
+临时补录单,3,manual_entry.csv,IMP-2024-006,转移杆,配件,5,150,750,Nobel Biocare,李四,2024-01-16,,dirty,entry,是,改名
+临时补录单,4,manual_entry.csv,,临时补录材料,种植体,1,2000,2000,未知供应商,王五,2024-01-17,,dirty,entry,是,缺字段
+临时补录单,5,manual_entry.csv,IMP-2024-008,修复螺丝,配件,10,50,500,Osstem,赵六,2024-01-18,,imported,entry,否,

@@ -1,0 +1,14 @@
+import { Database, MaterialRecord, DirtyRecord, StateChange, User, RecordStatus } from '../types';
+export declare function loadDatabase(): Database;
+export declare function saveDatabase(db: Database): void;
+export declare function generateId(): string;
+export declare function getCurrentTime(): string;
+export declare function addRecord(db: Database, record: MaterialRecord): void;
+export declare function addDirtyRecord(db: Database, dirty: DirtyRecord): void;
+export declare function addStateChange(db: Database, recordId: string, fromStatus: RecordStatus, toStatus: RecordStatus, changedBy: string, reason: string): StateChange;
+export declare function addUser(db: Database, user: Omit<User, 'id' | 'createdAt'>): User;
+export declare function findUserByUsername(db: Database, username: string): User | undefined;
+export declare function getRecordById(db: Database, id: string): MaterialRecord | undefined;
+export declare function updateRecordStatus(db: Database, recordId: string, newStatus: RecordStatus, changedBy: string, reason: string): void;
+export declare function getDirtyRecordsByRecordId(db: Database, recordId: string): DirtyRecord[];
+export declare function getStateChangesByRecordId(db: Database, recordId: string): StateChange[];

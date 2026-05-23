@@ -1,0 +1,14 @@
+记录ID,数据来源,原始行号,源文件,批号,材料名称,问题描述
+fba9ae76-0c23-47c5-b866-0e0142cc9759,种植体批号,5,implant_batch.csv,IMP-2024-004,Dentsply种植体,缺字段: 数量必须大于0
+2f8863cd-b609-410d-9614-269aab91dbe0,种植体批号,6,implant_batch.csv,IMP-2024-005,Straumann种植体,改名: 同一批号(IMP-2024-005)材料名称不一致
+4acf9a61-2aba-4555-a10a-75588c2886bb,种植体批号,7,implant_batch.csv,IMP-2024-006,ITI种植体,改名: 同一批号(IMP-2024-006)材料名称不一致
+0dd83a0b-0be5-4621-bda1-ee356a852623,预约记录,2,appointment.csv,IMP-2024-001,Straumann种植体,缺字段: 缺少必填字段: supplier
+f09ef90a-d1af-4e2c-a9b4-9ce738fd6726,预约记录,3,appointment.csv,IMP-2024-002,Nobel种植体,缺字段: 缺少必填字段: supplier
+93f506bb-be37-4f65-8645-6916bf7ebf29,预约记录,4,appointment.csv,IMP-2024-003,Osstem种植体,缺字段: 缺少必填字段: supplier
+c439c6a0-cce7-4dca-a4e8-788b26010a34,预约记录,5,appointment.csv,IMP-2024-001,Straumann种植体,缺字段: 缺少必填字段: supplier
+23c7c652-9b96-474c-a2f1-f248cbaec085,预约记录,6,appointment.csv,IMP-2024-001,Straumann种植体,缺字段: 缺少必填字段: supplier
+95fb4c04-8d58-4698-94d4-19c7c8a51c41,预约记录,7,appointment.csv,IMP-2024-005,Straumann种植体,缺字段: 缺少必填字段: supplier
+fd884b05-7a8f-42b6-aa26-47cb63c8283e,供应商发票,3,supplier_invoice.csv,IMP-2024-002,Nobel种植体,金额冲突: 金额计算冲突：数量(5) × 单价(3200) = 16000.00，但记录为 15000.00
+7a18863d-e8c1-47ba-a2eb-fc02016d63e9,临时补录单,2,manual_entry.csv,IMP-2024-005,愈合基台,跨日: 同一批号(IMP-2024-005)跨日期使用，相差7天; 改名: 同一批号(IMP-2024-005)材料名称不一致
+17b4bb82-b287-4da7-81a1-c03e8d275bcd,临时补录单,3,manual_entry.csv,IMP-2024-006,转移杆,改名: 同一批号(IMP-2024-006)材料名称不一致
+22b78c13-0080-47d6-8a23-f348d37d6376,临时补录单,4,manual_entry.csv,,临时补录材料,缺字段: 缺少必填字段: batchNumber

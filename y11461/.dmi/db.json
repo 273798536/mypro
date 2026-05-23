@@ -1,0 +1,182 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "role": "supervisor",
+      "name": "系统管理员",
+      "id": "4c23d94e-15c6-41d4-b09c-091a71d7828e",
+      "createdAt": "2026-05-23T20:33:06.305Z"
+    },
+    {
+      "username": "entry",
+      "role": "data_entry",
+      "name": "录入员",
+      "id": "803216df-40f7-4fc1-9f6e-4ec26820fe69",
+      "createdAt": "2026-05-23T20:33:06.306Z"
+    },
+    {
+      "username": "reviewer",
+      "role": "reviewer",
+      "name": "复核员",
+      "id": "22c9e8fc-021c-4e8c-97d3-74225d8d586b",
+      "createdAt": "2026-05-23T20:33:06.306Z"
+    },
+    {
+      "username": "viewer",
+      "role": "read_only",
+      "name": "查看员",
+      "id": "e3680858-f42a-4116-9c87-eee92aabd456",
+      "createdAt": "2026-05-23T20:33:06.306Z"
+    }
+  ],
+  "records": [
+    {
+      "id": "0737a5d2-7382-4a40-a33b-d0fdecb1d35d",
+      "source": "supplier_invoice",
+      "sourceLine": 2,
+      "sourceFile": "supplier_invoice.csv",
+      "batchNumber": "IMP-2024-001",
+      "materialName": "Straumann种植体",
+      "materialType": "种植体",
+      "quantity": 10,
+      "unitPrice": 2500,
+      "totalAmount": 25000,
+      "supplier": "Straumann中国",
+      "invoiceNumber": "INV-2024-001",
+      "importDate": "2026-05-23T20:33:07.125Z",
+      "importedBy": "entry",
+      "status": "imported",
+      "createdAt": "2026-05-23T20:33:07.126Z",
+      "updatedAt": "2026-05-23T20:33:07.126Z",
+      "rawData": {
+        "发票号": "INV-2024-001",
+        "批号": "IMP-2024-001",
+        "货品名称": "Straumann种植体",
+        "类型": "种植体",
+        "数量": "10",
+        "单价": "2500",
+        "总价": "25000",
+        "供货方": "Straumann中国"
+      }
+    },
+    {
+      "id": "13618359-8748-499b-8f4d-ee8cf6671c6a",
+      "source": "supplier_invoice",
+      "sourceLine": 3,
+      "sourceFile": "supplier_invoice.csv",
+      "batchNumber": "IMP-2024-002",
+      "materialName": "Nobel种植体",
+      "materialType": "种植体",
+      "quantity": 5,
+      "unitPrice": 3200,
+      "totalAmount": 16000,
+      "supplier": "Nobel Biocare",
+      "invoiceNumber": "INV-2024-002",
+      "importDate": "2026-05-23T20:33:07.126Z",
+      "importedBy": "entry",
+      "status": "fixed",
+      "createdAt": "2026-05-23T20:33:07.126Z",
+      "updatedAt": "2026-05-23T20:33:38.377Z",
+      "rawData": {
+        "发票号": "INV-2024-002",
+        "批号": "IMP-2024-002",
+        "货品名称": "Nobel种植体",
+        "类型": "种植体",
+        "数量": "5",
+        "单价": "3200",
+        "总价": "15000",
+        "供货方": "Nobel Biocare"
+      }
+    },
+    {
+      "id": "dff50383-7e4b-4973-92c0-9cedb84f61d0",
+      "source": "supplier_invoice",
+      "sourceLine": 4,
+      "sourceFile": "supplier_invoice.csv",
+      "batchNumber": "IMP-2024-003",
+      "materialName": "Osstem种植体",
+      "materialType": "种植体",
+      "quantity": 8,
+      "unitPrice": 1800,
+      "totalAmount": 14400,
+      "supplier": "奥齿泰上海",
+      "invoiceNumber": "INV-2024-003",
+      "importDate": "2026-05-23T20:33:07.126Z",
+      "importedBy": "entry",
+      "status": "imported",
+      "createdAt": "2026-05-23T20:33:07.126Z",
+      "updatedAt": "2026-05-23T20:33:07.126Z",
+      "rawData": {
+        "发票号": "INV-2024-003",
+        "批号": "IMP-2024-003",
+        "货品名称": "Osstem种植体",
+        "类型": "种植体",
+        "数量": "8",
+        "单价": "1800",
+        "总价": "14400",
+        "供货方": "奥齿泰上海"
+      }
+    },
+    {
+      "id": "3f82fc5f-49fd-4141-887a-d8e3630cd274",
+      "source": "supplier_invoice",
+      "sourceLine": 5,
+      "sourceFile": "supplier_invoice.csv",
+      "batchNumber": "IMP-2024-007",
+      "materialName": "临时基台",
+      "materialType": "基台",
+      "quantity": 20,
+      "unitPrice": 300,
+      "totalAmount": 6000,
+      "supplier": "Straumann中国",
+      "invoiceNumber": "INV-2024-004",
+      "importDate": "2026-05-23T20:33:07.126Z",
+      "importedBy": "entry",
+      "status": "imported",
+      "createdAt": "2026-05-23T20:33:07.126Z",
+      "updatedAt": "2026-05-23T20:33:07.126Z",
+      "rawData": {
+        "发票号": "INV-2024-004",
+        "批号": "IMP-2024-007",
+        "货品名称": "临时基台",
+        "类型": "基台",
+        "数量": "20",
+        "单价": "300",
+        "总价": "6000",
+        "供货方": "Straumann中国"
+      }
+    }
+  ],
+  "dirtyRecords": [
+    {
+      "id": "5c9e05ec-a34e-4372-a3bd-c69c6272e0b9",
+      "recordId": "13618359-8748-499b-8f4d-ee8cf6671c6a",
+      "dirtyType": "amount_conflict",
+      "fieldName": "totalAmount",
+      "expectedValue": "16000.00",
+      "actualValue": "15000.00",
+      "description": "金额计算冲突：数量(5) × 单价(3200) = 16000.00，但记录为 15000.00",
+      "suggestion": "请核对数量、单价或总金额，建议自动修正总金额",
+      "createdAt": "2026-05-23T20:33:07.126Z",
+      "resolved": true,
+      "resolvedAt": "2026-05-23T20:33:38.376Z",
+      "resolvedBy": "entry"
+    }
+  ],
+  "stateChanges": [
+    {
+      "id": "e9cfbcd3-fdba-401e-9fcb-35b793efb1ed",
+      "recordId": "13618359-8748-499b-8f4d-ee8cf6671c6a",
+      "fromStatus": "dirty",
+      "toStatus": "fixed",
+      "changedBy": "entry",
+      "changedAt": "2026-05-23T20:33:38.377Z",
+      "reason": "自动修正问题"
+    }
+  ],
+  "settings": {
+    "initialized": true,
+    "initializedAt": "2026-05-23T20:33:06.306Z",
+    "initializedBy": "admin"
+  }
+}
