@@ -21,7 +21,7 @@ class QueueService:
 
     @staticmethod
     def generate_batch_no() -> str:
-        return f"BATCH{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        return f"BATCH{datetime.now().strftime('%Y%m%d%H%M%S')}{uuid.uuid4().hex[:4].upper()}"
 
     @staticmethod
     def determine_retry_category(issue_type: IssueType, error_message: Optional[str] = None) -> RetryCategory:
