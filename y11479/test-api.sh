@@ -30,6 +30,9 @@ GUEST_HEADER=(
   -H "Content-Type: application/json"
 )
 
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+RANDOM_SUFFIX=$(head -c 4 /dev/urandom | xxd -p -c 8)
+
 extract_ledger_id() {
   echo "$1" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('data', {}).get('id', '') if d.get('success') else '')"
 }
@@ -51,8 +54,10 @@ echo ""
 echo "=========================================="
 echo "2. 创建台账草稿 (运营员)"
 echo "=========================================="
+MEETING_ID_1="MTG-${TIMESTAMP}-${RANDOM_SUFFIX}-001"
+echo "使用动态会议ID: $MEETING_ID_1"
 CREATE_RESPONSE=$(curl -s -X POST "${OPERATOR_HEADER[@]}" "$BASE_URL/api/ledgers" -d '{
-  "meetingId": "MTG-TEST-001",
+  "meetingId": "'"$MEETING_ID_1"'",
   "meetingTitle": "Q1季度总结会议",
   "roomName": "301会议室",
   "startTime": "2024-01-15T09:00:00Z",
@@ -142,12 +147,13 @@ echo ""
 echo "=========================================="
 echo "10. 批量导入 - 测试三种策略"
 echo "=========================================="
-echo "策略1: ignore (忽略已存在的)"
+MEETING_ID_2="MTG-${TIMESTAMP}-${RANDOM_SUFFIX}-002"
+echo "策略1: ignore (忽略已存在的)，使用动态会议ID: $MEETING_ID_1, $MEETING_ID_2"
 curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/ledgers/batch" -d '{
   "strategy": "ignore",
   "ledgersData": [
     {
-      "meetingId": "MTG-TEST-001",
+      "meetingId": "'"$MEETING_ID_1"'",
       "meetingTitle": "Q1季度总结会议(已更新)",
       "roomName": "301会议室",
       "startTime": "2024-01-15T09:00:00Z",
@@ -156,7 +162,7 @@ curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/ledgers/batch" -d '{
       "participants": ["张三"]
     },
     {
-      "meetingId": "MTG-TEST-002",
+      "meetingId": "'"$MEETING_ID_2"'",
       "meetingTitle": "产品需求评审",
       "roomName": "201会议室",
       "startTime": "2024-01-16T14:00:00Z",
@@ -171,11 +177,13 @@ echo ""
 echo "=========================================="
 echo "11. 异步任务 - 创建批量导入任务"
 echo "=========================================="
+MEETING_ID_3="MTG-${TIMESTAMP}-${RANDOM_SUFFIX}-003"
+echo "使用动态会议ID: $MEETING_ID_3"
 TASK_RESPONSE=$(curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/tasks/batch-import" -d '{
   "strategy": "append",
   "ledgersData": [
     {
-      "meetingId": "MTG-TEST-003",
+      "meetingId": "'"$MEETING_ID_3"'",
       "meetingTitle": "技术架构讨论",
       "roomName": "101会议室",
       "startTime": "2024-01-17T10:00:00Z",
