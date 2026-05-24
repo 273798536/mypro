@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  role      String
+  storeId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs AuditLog[]
+}
+
+model Batch {
+  id             String   @id @default(uuid())
+  idempotencyKey String   @unique
+  batchNo        String   @unique
+  title          String
+  recordType     String
+  storeId        String
+  status         String   @default("draft")
+  totalAmount    Decimal  @default(0)
+  totalCount     Int      @default(0)
+  validCount     Int      @default(0)
+  dirtyCount     Int      @default(0)
+  
+  frozenRemark   String?
+  frozenAt       DateTime?
+  frozenBy       String?
+  settleRemark   String?
+  settledAt      DateTime?
+  settledBy      String?
+  
+  createdBy      String
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  records        Record[]
+  attachments    Attachment[]
+  statusHistories StatusHistory[]
+}
+
+model Record {
+  id             String   @id @default(uuid())
+  idempotencyKey String   @unique
+  batchId        String
+  recordType     String
+  storeId        String
+  memberId       String?
+  memberName     String?
+  phone          String?
+  amount         Decimal
+  quantity       Int?
+  transactionDate DateTime?
+  operator       String?
+  
+  originalContent String
+  rawData        String
+  source         String
+  
+  status         String   @default("pending")
+  dirtyType      String?
+  dirtyRemark    String?
+  resolveRemark  String?
+  resolvedAt     DateTime?
+  resolvedBy     String?
+  
+  createdBy      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  batch          Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  statusHistories StatusHistory[]
+}
+
+model StatusHistory {
+  id            String   @id @default(uuid())
+  batchId       String?
+  recordId      String?
+  fromStatus    String?
+  toStatus      String
+  reason        String?
+  operatorRole  String
+  operatedBy    String
+  operatedAt    DateTime @default(now())
+
+  batch         Batch?   @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  record        Record?  @relation(fields: [recordId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id            String   @id @default(uuid())
+  batchId       String
+  fileName      String
+  fileType      String
+  fileSize      Int
+  storagePath   String
+  uploadedBy    String
+  createdAt     DateTime @default(now())
+
+  batch         Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String
+  action        String
+  resourceType  String
+  resourceId    String?
+  oldValue      String?
+  newValue      String?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
