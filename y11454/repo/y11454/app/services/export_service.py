@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 import pandas as pd
 from io import BytesIO
-from app.models.ledger import EquipmentLedger, LedgerStatus, RecordType
+from app.models.ledger import EquipmentLedger, LedgerStatus, RecordType, DuplicateHandling
 from app.models.user import UserRole
 from app.core.security import apply_field_masking
 
@@ -119,9 +119,9 @@ def export_summary(
     summary_data = []
     for status in LedgerStatus:
         status_records = [r for r in records if r.status == status]
-        total_quantity = sum(r.quantity or 0 for r in status_records if not (r.is_duplicate and r.duplicate_handling == 'ignore'))
-        total_amount = sum(r.total_amount or Decimal('0') for r in status_records if not (r.is_duplicate and r.duplicate_handling == 'ignore'))
-        total_deposit = sum(r.deposit_amount or Decimal('0') for r in status_records if not (r.is_duplicate and r.duplicate_handling == 'ignore'))
+        total_quantity = sum(r.quantity or 0 for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE))
+        total_amount = sum(r.total_amount or Decimal('0') for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE))
+        total_deposit = sum(r.deposit_amount or Decimal('0') for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE))
         
         summary_data.append({
             '状态': status.value,

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime
 from app.database import get_db
 from app.models.user import User, UserRole
@@ -10,7 +10,7 @@ from app.models.ledger import (
     DirtyRecordType, DuplicateHandling
 )
 from app.schemas.ledger import (
-    LedgerCreate, LedgerUpdate, LedgerResponse, LedgerListResponse,
+    LedgerCreate, LedgerUpdate, LedgerResponse, LedgerMaskedResponse, LedgerListResponse,
     SubmitRequest, RejectRequest, DirtyRecordHandleRequest, DuplicateHandleRequest,
     OutboundOrderCreate, OutboundOrderResponse,
     ReturnPhotoCreate, ReturnPhotoResponse,
@@ -67,13 +67,13 @@ def list_ledgers(
         for record in records:
             record_dict = LedgerResponse.from_orm(record).dict()
             masked_dict = apply_field_masking(record_dict, current_user.role)
-            masked_records.append(masked_dict)
+            masked_records.append(LedgerMaskedResponse(**masked_dict))
         return {"total": total, "items": masked_records}
     
     return {"total": total, "items": records}
 
 
-@router.get("/{ledger_id}", response_model=LedgerResponse)
+@router.get("/{ledger_id}", response_model=Union[LedgerResponse, LedgerMaskedResponse])
 def get_ledger(
     ledger_id: int,
     db: Session = Depends(get_db),
@@ -85,7 +85,8 @@ def get_ledger(
     
     if current_user.role == UserRole.READ_ONLY:
         record_dict = LedgerResponse.from_orm(ledger).dict()
-        return apply_field_masking(record_dict, current_user.role)
+        masked_dict = apply_field_masking(record_dict, current_user.role)
+        return LedgerMaskedResponse(**masked_dict)
     
     return ledger
 
@@ -395,7 +396,9 @@ def handle_duplicate_record(
     ledger.duplicate_note = handle_data.duplicate_note
     if handle_data.original_batch_number:
         ledger.original_batch_number = handle_data.original_batch_number
-    ledger.is_duplicate = False
+    
+    if handle_data.handling != DuplicateHandling.IGNORE:
+        ledger.is_duplicate = False
     
     create_audit_log(
         db, ledger.id, current_user, AuditAction.HANDLE_DUPLICATE,

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Union
 from datetime import datetime
 from decimal import Decimal
 from app.models.ledger import LedgerStatus, RecordType, DirtyRecordType, DuplicateHandling
@@ -67,9 +67,45 @@ class LedgerResponse(LedgerBase):
         from_attributes = True
 
 
+class LedgerMaskedResponse(BaseModel):
+    id: int
+    batch_number: str
+    record_type: RecordType
+    customer_name: Optional[str] = None
+    equipment_name: Optional[str] = None
+    equipment_model: Optional[str] = None
+    quantity: Optional[int] = None
+    unit_price: Optional[str] = None
+    total_amount: Optional[str] = None
+    deposit_amount: Optional[str] = None
+    deposit_deducted: Optional[str] = None
+    rental_start_date: Optional[datetime] = None
+    rental_end_date: Optional[datetime] = None
+    actual_return_date: Optional[datetime] = None
+    status: LedgerStatus
+    is_dirty: bool = False
+    dirty_type: Optional[DirtyRecordType] = None
+    dirty_note: Optional[str] = None
+    original_content: Optional[dict] = None
+    correction_note: Optional[str] = None
+    is_duplicate: bool = False
+    duplicate_handling: Optional[DuplicateHandling] = None
+    duplicate_note: Optional[str] = None
+    original_batch_number: Optional[str] = None
+    created_by: Optional[int] = None
+    reviewed_by: Optional[int] = None
+    second_confirmed_by: Optional[int] = None
+    rejection_reason: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    submitted_at: Optional[datetime] = None
+    reviewed_at: Optional[datetime] = None
+    second_confirmed_at: Optional[datetime] = None
+
+
 class LedgerListResponse(BaseModel):
     total: int
-    items: List[LedgerResponse]
+    items: List[Union[LedgerResponse, LedgerMaskedResponse]]
 
 
 class SubmitRequest(BaseModel):
