@@ -22,6 +22,10 @@ router.post(
     try {
       if (!req.user) return res.status(401).json({ error: '未认证' })
 
+      if (req.user.role === UserRole.READ_ONLY || req.user.role === UserRole.REVIEWER) {
+        return res.status(403).json({ error: '权限不足，仅录入员和主管可创建回执' })
+      }
+
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
@@ -40,6 +44,28 @@ router.post(
     }
   }
 )
+
+router.patch('/:id', async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: '未认证' })
+
+    if (req.user.role === UserRole.READ_ONLY || req.user.role === UserRole.REVIEWER) {
+      return res.status(403).json({ error: '权限不足，仅录入员和主管可修改回执' })
+    }
+
+    const receipt = await receiptService.updateBatch(
+      req.params.id,
+      req.body,
+      req.user.id,
+      req.user.role
+    )
+
+    const filtered = filterFieldsByRole(receipt, req.user.role)
+    res.json(filtered)
+  } catch (error: any) {
+    res.status(400).json({ error: error.message })
+  }
+})
 
 router.get('/', async (req: AuthRequest, res: Response) => {
   try {

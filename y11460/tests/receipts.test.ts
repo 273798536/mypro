@@ -136,6 +136,97 @@ describe('口腔门诊材料异常回执状态机 - 验收测试', () => {
 
       expect(receipt?.dirtyRecords.some(d => d.type === 'AMOUNT_CONFLICT')).toBe(true)
     })
+
+    it('数量为负数应该创建数量冲突脏记录', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'QUANTITY-NEG-001',
+        implantQuantity: -1
+      }
+
+      const res = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      expect(res.status).toBe(201)
+
+      const receipt = await prisma.materialReceipt.findUnique({
+        where: { id: res.body.id },
+        include: { dirtyRecords: true }
+      })
+
+      expect(receipt?.dirtyRecords.some(d => d.type === 'QUANTITY_CONFLICT')).toBe(true)
+    })
+
+    it('数量异常偏大应该创建数量冲突脏记录', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'QUANTITY-LARGE-001',
+        implantQuantity: 99
+      }
+
+      const res = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      expect(res.status).toBe(201)
+
+      const receipt = await prisma.materialReceipt.findUnique({
+        where: { id: res.body.id },
+        include: { dirtyRecords: true }
+      })
+
+      expect(receipt?.dirtyRecords.some(d => d.type === 'QUANTITY_CONFLICT')).toBe(true)
+    })
+
+    it('跨日记录应该创建CROSS_DAY脏记录', async () => {
+      const oldDateData = {
+        ...testReceiptData,
+        batchNo: 'CROSS-DAY-001',
+        receiptDate: '2020-01-01'
+      }
+
+      const res = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(oldDateData)
+
+      expect(res.status).toBe(201)
+
+      const receipt = await prisma.materialReceipt.findUnique({
+        where: { id: res.body.id },
+        include: { dirtyRecords: true }
+      })
+
+      expect(receipt?.dirtyRecords.some(d => d.type === 'CROSS_DAY')).toBe(true)
+    })
+
+    it('患者改名应该创建NAME_CHANGED脏记录', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'NAME-CHANGE-001', patientName: '张三' })
+
+      expect(createRes.status).toBe(201)
+
+      const updateRes = await request(app)
+        .patch(`/api/receipts/${createRes.body.id}`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ patientName: '李四' })
+
+      expect(updateRes.status).toBe(200)
+
+      const receipt = await prisma.materialReceipt.findUnique({
+        where: { id: createRes.body.id },
+        include: { dirtyRecords: true }
+      })
+
+      expect(receipt?.dirtyRecords.some(d => d.type === 'NAME_CHANGED')).toBe(true)
+      expect(receipt?.dirtyRecords.find(d => d.type === 'NAME_CHANGED')?.originalValue).toBe('张三')
+      expect(receipt?.dirtyRecords.find(d => d.type === 'NAME_CHANGED')?.correctedValue).toBe('李四')
+    })
   })
 
   describe('3. 权限控制测试', () => {
@@ -155,7 +246,16 @@ describe('口腔门诊材料异常回执状态机 - 验收测试', () => {
         .set('Authorization', `Bearer ${tokens.viewer}`)
         .send({ ...testReceiptData, batchNo: 'VIEWER-TEST' })
 
-      expect(res.status).toBe(201)
+      expect(res.status).toBe(403)
+    })
+
+    it('复核员不能创建回执', async () => {
+      const res = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.reviewer}`)
+        .send({ ...testReceiptData, batchNo: 'REVIEWER-TEST' })
+
+      expect(res.status).toBe(403)
     })
 
     it('录入员不能执行冻结操作', async () => {

@@ -67,6 +67,74 @@ export class ReceiptService {
     return receipt
   }
 
+  async updateBatch(receiptId: string, data: any, operatorId: string, userRole: string) {
+    const receipt = await prisma.materialReceipt.findUnique({
+      where: { id: receiptId }
+    })
+    if (!receipt) {
+      throw new Error('回执不存在')
+    }
+
+    if (receipt.status !== ReceiptStatus.DRAFT) {
+      throw new Error('仅草稿状态可修改')
+    }
+
+    const validation = validateReceiptData(data, receipt)
+
+    const beforeData = { ...receipt }
+
+    const updated = await prisma.materialReceipt.update({
+      where: { id: receiptId },
+      data: {
+        implantBatchNumber: data.implantBatchNumber !== undefined ? data.implantBatchNumber : receipt.implantBatchNumber,
+        appointmentRecordNo: data.appointmentRecordNo !== undefined ? data.appointmentRecordNo : receipt.appointmentRecordNo,
+        supplierInvoiceNo: data.supplierInvoiceNo !== undefined ? data.supplierInvoiceNo : receipt.supplierInvoiceNo,
+        patientName: data.patientName !== undefined ? data.patientName : receipt.patientName,
+        implantModel: data.implantModel !== undefined ? data.implantModel : receipt.implantModel,
+        originalModel: data.originalModel !== undefined ? data.originalModel : receipt.originalModel,
+        implantQuantity: data.implantQuantity !== undefined ? data.implantQuantity : receipt.implantQuantity,
+        unitPrice: data.unitPrice !== undefined ? data.unitPrice : receipt.unitPrice,
+        totalAmount: data.totalAmount !== undefined ? data.totalAmount : receipt.totalAmount,
+        receiptDate: data.receiptDate !== undefined ? new Date(data.receiptDate) : receipt.receiptDate,
+        supplier: data.supplier !== undefined ? data.supplier : receipt.supplier,
+        remark: data.remark !== undefined ? data.remark : receipt.remark
+      },
+      include: {
+        attachments: true,
+        dirtyRecords: true,
+        changeLogs: {
+          orderBy: { createdAt: 'desc' },
+          take: 5
+        }
+      }
+    })
+
+    if (validation.dirtyRecords.length > 0) {
+      for (const dirty of validation.dirtyRecords) {
+        await prisma.dirtyRecord.create({
+          data: {
+            receiptId: receipt.id,
+            type: dirty.type,
+            fieldName: dirty.fieldName,
+            originalValue: dirty.originalValue,
+            correctedValue: dirty.correctedValue
+          }
+        })
+      }
+    }
+
+    await recordChangeLog(
+      receiptId,
+      StateAction.CREATE_BATCH,
+      operatorId,
+      beforeData,
+      updated,
+      '更新批次信息'
+    )
+
+    return updated
+  }
+
   async submitForReview(receiptId: string, operatorId: string, userRole: string) {
     const receipt = await prisma.materialReceipt.findUnique({
       where: { id: receiptId }

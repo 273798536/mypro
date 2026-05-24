@@ -125,7 +125,7 @@ export const recordChangeLog = async (
   })
 }
 
-export const validateReceiptData = (data: any): { valid: boolean; errors: string[]; dirtyRecords: any[] } => {
+export const validateReceiptData = (data: any, existingData?: any): { valid: boolean; errors: string[]; dirtyRecords: any[] } => {
   const errors: string[] = []
   const dirtyRecords: any[] = []
 
@@ -152,6 +152,55 @@ export const validateReceiptData = (data: any): { valid: boolean; errors: string
         correctedValue: String(calculatedTotal)
       })
     }
+  }
+
+  if (data.implantQuantity !== undefined && data.implantQuantity !== null) {
+    if (data.implantQuantity <= 0) {
+      errors.push('数量冲突：种植体数量必须大于0')
+      dirtyRecords.push({
+        type: 'QUANTITY_CONFLICT',
+        fieldName: 'implantQuantity',
+        originalValue: String(data.implantQuantity),
+        correctedValue: null
+      })
+    } else if (data.implantQuantity > 10) {
+      errors.push('数量异常：种植体数量异常偏大，请确认')
+      dirtyRecords.push({
+        type: 'QUANTITY_CONFLICT',
+        fieldName: 'implantQuantity',
+        originalValue: String(data.implantQuantity),
+        correctedValue: null
+      })
+    }
+  }
+
+  if (data.receiptDate) {
+    try {
+      const receiptDate = new Date(data.receiptDate)
+      const today = new Date()
+      const diffDays = Math.ceil(Math.abs(today.getTime() - receiptDate.getTime()) / (1000 * 60 * 60 * 24))
+      
+      if (diffDays > 90) {
+        errors.push('跨日记录：回执日期距离今天超过90天，请确认')
+        dirtyRecords.push({
+          type: 'CROSS_DAY',
+          fieldName: 'receiptDate',
+          originalValue: data.receiptDate,
+          correctedValue: null
+        })
+      }
+    } catch (e) {
+    }
+  }
+
+  if (existingData && existingData.patientName && data.patientName && existingData.patientName !== data.patientName) {
+    errors.push(`患者改名：从"${existingData.patientName}"改为"${data.patientName}"`)
+    dirtyRecords.push({
+      type: 'NAME_CHANGED',
+      fieldName: 'patientName',
+      originalValue: existingData.patientName,
+      correctedValue: data.patientName
+    })
   }
 
   return { valid: errors.length === 0, errors, dirtyRecords }
