@@ -1,0 +1,31 @@
+{
+  "name": "bank-branch-scheduling-ledger",
+  "version": "1.0.0",
+  "description": "银行网点排班权限追责台账 API 服务",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "init-db": "node src/database/init.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "joi": "^17.11.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "moment": "^2.29.4",
+    "exceljs": "^4.4.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["bank", "scheduling", "ledger", "audit"],
+  "author": "",
+  "license": "ISC"
+}

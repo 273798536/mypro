@@ -1,0 +1,32 @@
+{
+  "records": [
+    {
+      "teller_id": "T001",
+      "teller_name": "张三",
+      "branch": "朝阳支行",
+      "schedule_date": "2026-05-25",
+      "shift_type": "早班",
+      "start_time": "08:00",
+      "end_time": "16:00",
+      "window_no": "W1",
+      "is_training": 0,
+      "lunch_start": "12:00",
+      "lunch_end": "13:00"
+    },
+    {
+      "teller_id": "T002",
+      "teller_name": "李四",
+      "branch": "朝阳支行",
+      "schedule_date": "2026-05-25",
+      "shift_type": "中班",
+      "start_time": "10:00",
+      "end_time": "18:00",
+      "window_no": "W2",
+      "is_training": 1,
+      "training_note": "新系统培训",
+      "lunch_start": "12:30",
+      "lunch_end": "13:30"
+    }
+  ],
+  "duplicateStrategy": "ignore"
+}
