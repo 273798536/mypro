@@ -53,11 +53,6 @@ class RetryQueueService {
         }
       }
 
-      await retryQueueDAO.update(queueId, {
-        status: 'processing',
-        updated_at: new Date().toISOString()
-      });
-
       await db.commit();
       return queueId;
     } catch (err) {
@@ -90,6 +85,11 @@ class RetryQueueService {
     const classification = this.classifyRetry(queueItem);
     
     try {
+      await retryQueueDAO.update(queueItem.id, {
+        status: 'processing',
+        updated_at: new Date().toISOString()
+      });
+
       await this.validateAndConsolidate(queueItem.id);
       
       await this.applyCompensation(queueItem.id);

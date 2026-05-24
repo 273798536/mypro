@@ -3,7 +3,7 @@ const router = express.Router();
 const retryQueueService = require('../services/retryQueueService');
 const dirtyRecordService = require('../services/dirtyRecordService');
 const dataConsistencyService = require('../services/dataConsistencyService');
-const { retryQueueDAO, deadLetterDAO } = require('../dao');
+const { retryQueueDAO, deadLetterDAO, versionHistoryDAO } = require('../dao');
 
 router.post('/receipt', async (req, res) => {
   try {
@@ -104,7 +104,7 @@ router.get('/queue/:id/history', async (req, res) => {
     if (recordType && recordId) {
       history = await dataConsistencyService.getRecordHistory(recordType, recordId);
     } else {
-      history = await dataConsistencyService.versionHistoryDAO.getQueueHistory(req.params.id);
+      history = await versionHistoryDAO.getQueueHistory(req.params.id);
     }
     
     res.json({ success: true, data: history });
