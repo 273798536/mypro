@@ -1,0 +1,6 @@
+﻿email_id,subject,sender,receiver,sent_at,approval_type,approval_status,related_batch_id,related_tracking_numbers,content
+EMAIL000001,审批：清关批次 1,经理1@company.com,操作员1@company.com,2024-05-11 10:00:00,清关审批,rejected,BATCH20240500001,"TRK202405000001, TRK202405000002",审批内容1：同意清关
+EMAIL000002,审批：清关批次 2,经理2@company.com,操作员2@company.com,2024-05-12 10:00:00,清关审批,approved,BATCH20240500002,"TRK202405000002, TRK202405000003",审批内容2：同意清关
+EMAIL000003,审批：清关批次 3,经理3@company.com,操作员3@company.com,2024-05-13 10:00:00,清关审批,rejected,BATCH20240500003,"TRK202405000003, TRK202405000004",审批内容3：同意清关
+EMAIL000004,审批：清关批次 4,经理4@company.com,操作员4@company.com,2024-05-14 10:00:00,清关审批,approved,BATCH20240500004,"TRK202405000004, TRK202405000005",审批内容4：同意清关
+EMAIL000005,审批：清关批次 5,经理5@company.com,操作员5@company.com,2024-05-15 10:00:00,清关审批,rejected,BATCH20240500005,"TRK202405000005, TRK202405000006",审批内容5：同意清关
