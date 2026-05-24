@@ -1,0 +1,6 @@
+脏记录ID,脏数据类型,来源表,来源记录ID,字段问题,状态,是否已对账,创建时间
+58dcf352-4495-4efb-ad0d-fde083812df5,MISSING_FIELDS,Contract,,"[""contractName""]",IDENTIFIED,否,2026-05-24T16:47:34.000Z
+f3fa8fb1-f189-4353-be12-8254ba86d1cc,AMOUNT_CONFLICT,PaymentNode,temp-id-001,"[""amount""]",IDENTIFIED,否,2026-05-24T16:47:34.000Z
+85cee85e-9ca9-4758-8795-3dc12d8131d2,CROSS_DAY,PaymentRecord,temp-id-002,"[""paymentDate""]",IDENTIFIED,否,2026-05-24T16:47:34.000Z
+8ef9f78b-c402-4b54-af77-5d26c761b069,NAME_CHANGED,Contract,temp-id-003,"[""name""]",IDENTIFIED,否,2026-05-24T16:47:34.000Z
+2d42e2e9-560b-4312-a929-34764b81d8ea,AMOUNT_CONFLICT,PaymentNode,temp-id-004,"[""amount""]",IDENTIFIED,否,2026-05-24T16:47:34.000Z
