@@ -255,7 +255,10 @@ def import_file_to_batch(
     if not batch:
         raise ImportError(f"批次 {batch_id} 不存在")
 
-    if batch.state not in (BatchState.CREATED, BatchState.IMPORTING, BatchState.PARTIAL_FAILED):
+    if batch.state not in (
+        BatchState.CREATED, BatchState.IMPORTING,
+        BatchState.PARTIAL_FAILED, BatchState.PENDING_REVIEW
+    ):
         raise ImportError(f"批次状态 {batch.state.value} 不允许导入数据")
 
     file_hash = compute_file_hash(file_content)
@@ -272,10 +275,10 @@ def import_file_to_batch(
     except Exception as e:
         raise ImportError(f"Excel文件解析失败: {str(e)}")
 
-    if batch.state == BatchState.CREATED:
+    if batch.state in (BatchState.CREATED, BatchState.PARTIAL_FAILED, BatchState.PENDING_REVIEW):
         transition_batch_state(
             db, batch, BatchState.IMPORTING, uploaded_by,
-            "开始导入数据", {"file": file_name}
+            "开始导入数据", log_data={"file": file_name}
         )
 
     original_file = OriginalFile(

@@ -83,11 +83,13 @@ chmod +x demo_curls.sh
 
 ### 记录管理
 - `GET /api/batches/{id}/records` - 记录列表
+- `GET /api/batches/{id}/records-by-appointment` - 按预约ID分组的多源关联视图
 - `GET /api/records/{id}` - 记录详情(含原始证据)
 - `PATCH /api/records/{id}` - 更新记录
 
 ### 复核管理
-- `POST /api/records/review` - 批量复核
+- `POST /api/records/submit-review` - 提交审核 (draft -> pending_review)
+- `POST /api/records/review` - 批量复核 (pending_review -> approved/rejected)
 - `POST /api/records/{id}/override` - 人工改判(强制状态转换)
 
 ### 附件管理
@@ -110,10 +112,11 @@ chmod +x demo_curls.sh
 ## 边界情况处理
 
 1. **重复提交**: 通过文件哈希检测重复文件
-2. **撤回后再提交**: 支持 recalled -> created 状态转换
-3. **部分失败**: 批次状态为 partial_failed，可单独处理失败记录
-4. **人工改判**: 支持强制状态转换，记录改判人、改判原因
-5. **导出前冻结**: 导出接口要求批次必须处于 frozen 状态
+2. **多源数据连续导入**: pending_review/partial_failed 状态下可继续导入其他来源数据
+3. **撤回后再提交**: 支持 recalled -> created 状态转换
+4. **部分失败**: 批次状态为 partial_failed，可继续导入或处理失败记录
+5. **人工改判**: 支持强制状态转换，标记 manual_override 并记录改判人、改判原因
+6. **导出前冻结**: 导出接口要求批次必须处于 frozen 状态，防止数据不一致
 
 ## 审计特性
 

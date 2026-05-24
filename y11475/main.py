@@ -142,6 +142,43 @@ def get_record(record_id: str, db: Session = Depends(get_db)):
     return record
 
 
+@app.get("/api/batches/{batch_id}/records-by-appointment", tags=["记录管理"])
+def get_records_by_appointment(batch_id: str, db: Session = Depends(get_db)):
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="批次不存在")
+
+    records = db.query(AbnormalRecord).filter(AbnormalRecord.batch_id == batch_id).all()
+
+    grouped = {}
+    for record in records:
+        appt_id = record.appointment_id or f"unknown_{record.id}"
+        if appt_id not in grouped:
+            grouped[appt_id] = {
+                "appointment_id": record.appointment_id,
+                "room_code": record.room_code,
+                "appointment_date": record.appointment_date.isoformat() if record.appointment_date else None,
+                "sources": {},
+                "record_ids": []
+            }
+        grouped[appt_id]["sources"][record.source.value] = {
+            "record_id": record.id,
+            "state": record.state.value,
+            "has_access": record.has_access_record,
+            "has_cancel": record.has_cancel_message,
+            "booker": record.booker,
+            "cost": record.actual_cost or record.estimated_cost
+        }
+        grouped[appt_id]["record_ids"].append(record.id)
+
+    return {
+        "batch_id": batch_id,
+        "total_groups": len(grouped),
+        "total_records": len(records),
+        "groups": list(grouped.values())
+    }
+
+
 @app.patch("/api/records/{record_id}", response_model=AbnormalRecordResponse, tags=["记录管理"])
 def update_record(
     record_id: str,
@@ -159,6 +196,27 @@ def update_record(
     db.commit()
     db.refresh(record)
     return record
+
+
+@app.post("/api/records/submit-review", tags=["复核管理"])
+def submit_for_review(request: ReviewRequest, db: Session = Depends(get_db)):
+    results = []
+    for record_id in request.record_ids:
+        record = db.query(AbnormalRecord).filter(AbnormalRecord.id == record_id).first()
+        if not record:
+            results.append({"id": record_id, "success": False, "error": "记录不存在"})
+            continue
+
+        try:
+            transition_record_state(
+                db, record, RecordState.PENDING_REVIEW, request.operator, request.reason
+            )
+            db.commit()
+            results.append({"id": record_id, "success": True, "new_state": RecordState.PENDING_REVIEW.value})
+        except InvalidStateTransitionError as e:
+            results.append({"id": record_id, "success": False, "error": str(e)})
+
+    return {"results": results}
 
 
 @app.post("/api/records/review", tags=["复核管理"])
@@ -383,14 +441,17 @@ def export_batch_excel(
     db: Session = Depends(get_db)
 ):
     try:
+        import urllib.parse
         summary = generate_export_summary(db, batch_id, exported_by)
         excel_content = export_to_excel(summary)
+        filename = f"异常回执报告_{batch_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx"
+        encoded_filename = urllib.parse.quote(filename)
 
         return StreamingResponse(
             BytesIO(excel_content),
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={
-                "Content-Disposition": f"attachment; filename=异常回执报告_{batch_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx"
+                "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
             }
         )
     except ValueError as e:

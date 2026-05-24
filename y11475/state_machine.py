@@ -9,14 +9,17 @@ from models import (
 
 
 RECORD_TRANSITIONS = {
-    RecordState.DRAFT: {RecordState.PENDING_REVIEW, RecordState.RECALLED},
+    RecordState.DRAFT: {
+        RecordState.PENDING_REVIEW, RecordState.APPROVED, RecordState.REJECTED,
+        RecordState.RECALLED
+    },
     RecordState.PENDING_REVIEW: {
         RecordState.APPROVED, RecordState.REJECTED,
         RecordState.DRAFT, RecordState.RECALLED, RecordState.FROZEN
     },
     RecordState.APPROVED: {RecordState.SETTLED, RecordState.DRAFT, RecordState.FROZEN},
-    RecordState.REJECTED: {RecordState.DRAFT, RecordState.FROZEN},
-    RecordState.FROZEN: {RecordState.DRAFT, RecordState.SETTLED},
+    RecordState.REJECTED: {RecordState.DRAFT, RecordState.FROZEN, RecordState.APPROVED},
+    RecordState.FROZEN: {RecordState.DRAFT, RecordState.SETTLED, RecordState.APPROVED, RecordState.REJECTED},
     RecordState.SETTLED: {RecordState.ARCHIVED, RecordState.DRAFT},
     RecordState.RECALLED: {RecordState.DRAFT},
     RecordState.ARCHIVED: set(),
@@ -25,10 +28,16 @@ RECORD_TRANSITIONS = {
 
 BATCH_TRANSITIONS = {
     BatchState.CREATED: {BatchState.IMPORTING, BatchState.RECALLED},
-    BatchState.IMPORTING: {BatchState.PENDING_REVIEW, BatchState.PARTIAL_FAILED, BatchState.RECALLED},
-    BatchState.PARTIAL_FAILED: {BatchState.PENDING_REVIEW, BatchState.FROZEN, BatchState.RECALLED},
+    BatchState.IMPORTING: {
+        BatchState.PENDING_REVIEW, BatchState.PARTIAL_FAILED, BatchState.RECALLED
+    },
+    BatchState.PARTIAL_FAILED: {
+        BatchState.IMPORTING, BatchState.PENDING_REVIEW,
+        BatchState.FROZEN, BatchState.RECALLED
+    },
     BatchState.PENDING_REVIEW: {
-        BatchState.FROZEN, BatchState.SETTLED, BatchState.RECALLED
+        BatchState.IMPORTING, BatchState.FROZEN,
+        BatchState.SETTLED, BatchState.RECALLED
     },
     BatchState.FROZEN: {BatchState.PENDING_REVIEW, BatchState.SETTLED},
     BatchState.SETTLED: {BatchState.ARCHIVED, BatchState.PENDING_REVIEW},
