@@ -18,6 +18,7 @@ import reviewRoutes from './routes/review.js'
 import taskRoutes from './routes/tasks.js'
 import reportRoutes from './routes/reports.js'
 import auditRoutes from './routes/audit.js'
+import taskQueueService from './services/TaskQueueService.js'
 
 // for esm mode
 const __filename = fileURLToPath(import.meta.url)
@@ -28,6 +29,51 @@ dotenv.config()
 
 // 初始化数据库
 initDb()
+
+// 注册任务处理器
+function registerTaskHandlers() {
+  taskQueueService.registerHandler('DOCUMENT_VALIDATION', async (payload) => {
+    console.log('[Task] 执行单据验证:', payload.documentNo || payload.batchId)
+    await new Promise(resolve => setTimeout(resolve, 500))
+    if (payload.simulateError) {
+      throw new Error('模拟网络错误: connection timeout')
+    }
+    console.log('[Task] 单据验证完成')
+  })
+
+  taskQueueService.registerHandler('DATA_SYNC', async (payload) => {
+    console.log('[Task] 执行数据同步:', payload.target || 'ERP')
+    await new Promise(resolve => setTimeout(resolve, 800))
+    if (payload.simulateError) {
+      throw new Error('模拟验证错误: invalid data format')
+    }
+    console.log('[Task] 数据同步完成')
+  })
+
+  taskQueueService.registerHandler('BATCH_PROCESS', async (payload) => {
+    console.log('[Task] 执行批次处理:', payload.batchId)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    console.log('[Task] 批次处理完成')
+  })
+
+  taskQueueService.registerHandler('REPORT_GENERATE', async (payload) => {
+    console.log('[Task] 生成报告:', payload.type)
+    await new Promise(resolve => setTimeout(resolve, 600))
+    console.log('[Task] 报告生成完成')
+  })
+
+  console.log('[TaskQueue] 任务处理器注册完成')
+}
+
+// 启动任务队列
+registerTaskHandlers()
+if (process.env.NODE_ENV !== 'test') {
+  taskQueueService.start().then(() => {
+    console.log('[TaskQueue] 任务队列已启动，后台处理中...')
+  }).catch(err => {
+    console.error('[TaskQueue] 启动失败:', err)
+  })
+}
 
 const app: express.Application = express()
 

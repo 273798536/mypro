@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import documentRepository from '../repositories/DocumentRepository';
 import auditLogRepository from '../repositories/AuditLogRepository';
 import fabricTrackRepository from '../repositories/FabricTrackRepository';
+import attachmentRepository from '../repositories/AttachmentRepository';
 import type { CreateDocumentRequest, DocumentType } from '../../shared/types';
 
 const router = Router();
@@ -88,6 +89,55 @@ router.post('/fabric-track', (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
+});
+
+router.get('/:id/attachments', (req: Request, res: Response) => {
+  const { id } = req.params;
+  
+  const doc = documentRepository.findById(id);
+  if (!doc) {
+    return res.status(404).json({ error: 'Document not found' });
+  }
+  
+  const attachments = attachmentRepository.findByDocumentId(id);
+  res.json({ data: attachments, total: attachments.length });
+});
+
+router.post('/:id/attachments', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { fileName, fileType, fileSize, filePath, uploadedBy } = req.body;
+  
+  const doc = documentRepository.findById(id);
+  if (!doc) {
+    return res.status(404).json({ error: 'Document not found' });
+  }
+  
+  try {
+    const attachment = attachmentRepository.create({
+      documentId: id,
+      fileName,
+      fileType,
+      fileSize,
+      filePath,
+      uploadedBy
+    });
+    res.status(201).json(attachment);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.delete('/:id/attachments/:attachmentId', (req: Request, res: Response) => {
+  const { id, attachmentId } = req.params;
+  const { operatedBy } = req.body;
+  
+  const doc = documentRepository.findById(id);
+  if (!doc) {
+    return res.status(404).json({ error: 'Document not found' });
+  }
+  
+  attachmentRepository.delete(attachmentId, operatedBy || 'system');
+  res.json({ success: true });
 });
 
 export default router;

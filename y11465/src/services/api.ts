@@ -27,6 +27,11 @@ export const api = {
     unfreeze: (id: string, data: any) => request(`/batches/${id}/unfreeze`, { method: 'POST', body: JSON.stringify(data) }),
     settle: (id: string, data: any) => request(`/batches/${id}/settle`, { method: 'POST', body: JSON.stringify(data) }),
     submit: (id: string, data: any) => request(`/batches/${id}/submit`, { method: 'POST', body: JSON.stringify(data) }),
+    getAttachments: (id: string) => request(`/batches/${id}/attachments`),
+    uploadAttachment: (id: string, data: any) => 
+      request(`/batches/${id}/attachments`, { method: 'POST', body: JSON.stringify(data) }),
+    deleteAttachment: (id: string, attachmentId: string, operatedBy: string) =>
+      request(`/batches/${id}/attachments/${attachmentId}`, { method: 'DELETE', body: JSON.stringify({ operatedBy }) }),
   },
   documents: {
     list: (params?: Record<string, string>) =>
@@ -37,6 +42,11 @@ export const api = {
     getDiff: (id: string, fromVersion: number, toVersion: number) =>
       request(`/documents/${id}/diff?fromVersion=${fromVersion}&toVersion=${toVersion}`),
     create: (data: any) => request('/documents', { method: 'POST', body: JSON.stringify(data) }),
+    getAttachments: (id: string) => request(`/documents/${id}/attachments`),
+    uploadAttachment: (id: string, data: any) =>
+      request(`/documents/${id}/attachments`, { method: 'POST', body: JSON.stringify(data) }),
+    deleteAttachment: (id: string, attachmentId: string, operatedBy: string) =>
+      request(`/documents/${id}/attachments/${attachmentId}`, { method: 'DELETE', body: JSON.stringify({ operatedBy }) }),
   },
   review: {
     pending: () => request('/review/pending'),

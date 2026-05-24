@@ -1,10 +1,12 @@
 {
   "watch": ["api"],
   "ext": "ts,mts,js,json",
-  "ignore": ["api/dist/*"],
+  "ignore": ["api/dist/*", "data/*", "node_modules/*"],
   "exec": "tsx api/server.ts",
   "env": {
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "CHOKIDAR_USEPOLLING": "1"
   },
-  "delay": 1000
+  "delay": 1500,
+  "verbose": false
 }

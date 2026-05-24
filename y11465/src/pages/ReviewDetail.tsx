@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { ArrowLeft, FileText, Clock, User, Tag, CheckCircle, XCircle, Edit3, Send } from 'lucide-react';
+import { ArrowLeft, FileText, Clock, User, Tag, CheckCircle, XCircle, Edit3, Send, Save } from 'lucide-react';
 import { Document, DOCUMENT_TYPE_LABELS, ReviewDecision } from '../../shared/types';
 
 export default function ReviewDetail() {
@@ -12,12 +12,20 @@ export default function ReviewDetail() {
   const [decision, setDecision] = useState<ReviewDecision | ''>('');
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [modifiedData, setModifiedData] = useState<string>('');
+  const [dataJsonError, setDataJsonError] = useState('');
 
   useEffect(() => {
     if (id) {
       loadDocument();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (document && decision === 'MODIFY' && !modifiedData) {
+      setModifiedData(JSON.stringify(document.data, null, 2));
+    }
+  }, [document, decision]);
 
   const loadDocument = async () => {
     try {
@@ -31,24 +39,51 @@ export default function ReviewDetail() {
     }
   };
 
+  const validateModifiedData = (): Record<string, any> | null => {
+    if (decision !== 'MODIFY') return null;
+    try {
+      const parsed = JSON.parse(modifiedData);
+      setDataJsonError('');
+      return parsed;
+    } catch (e) {
+      setDataJsonError('JSON格式错误，请检查');
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
     if (!decision || !reason) {
       alert('请选择审核决策并填写原因');
       return;
     }
 
+    if (decision === 'MODIFY') {
+      const modified = validateModifiedData();
+      if (!modified) {
+        alert('请输入有效的修改数据');
+        return;
+      }
+    }
+
     try {
       setSubmitting(true);
-      await api.review.decide(id!, {
+
+      const payload: any = {
         decision,
         reason,
         decidedBy: '审核员',
-      });
+      };
+
+      if (decision === 'MODIFY') {
+        payload.modifiedData = JSON.parse(modifiedData);
+      }
+
+      await api.review.decide(id!, payload);
       alert('审核成功');
       navigate('/review');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to submit decision:', error);
-      alert('审核失败，请重试');
+      alert(`审核失败: ${error.message || '请重试'}`);
     } finally {
       setSubmitting(false);
     }
@@ -222,13 +257,48 @@ export default function ReviewDetail() {
               </div>
             </div>
 
+            {decision === 'MODIFY' && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Edit3 size={16} className="text-amber-600" />
+                  <span className="text-sm font-medium text-amber-800">修改单据数据</span>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-xs font-medium text-amber-700">
+                    编辑单据数据 (JSON格式)
+                  </label>
+                  <textarea
+                    className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-xs resize-none ${
+                      dataJsonError ? 'border-red-400' : 'border-amber-300'
+                    }`}
+                    rows={8}
+                    placeholder="编辑单据数据..."
+                    value={modifiedData}
+                    onChange={(e) => {
+                      setModifiedData(e.target.value);
+                      validateModifiedData();
+                    }}
+                  />
+                  {dataJsonError && (
+                    <p className="text-xs text-red-600">{dataJsonError}</p>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Save size={14} className="text-amber-600" />
+                    <span className="text-xs text-amber-600">
+                      修改后的数据将保存为新版本 v{document ? document.version + 1 : 2}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">
                 审核原因 <span className="text-red-500">*</span>
               </label>
               <textarea
                 className="w-full px-3 py-2 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={4}
+                rows={3}
                 placeholder="请输入审核原因..."
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
@@ -237,7 +307,7 @@ export default function ReviewDetail() {
 
             <button
               onClick={handleSubmit}
-              disabled={!decision || !reason || submitting}
+              disabled={!decision || !reason || submitting || (decision === 'MODIFY' && !!dataJsonError)}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed font-medium"
             >
               <Send size={18} />

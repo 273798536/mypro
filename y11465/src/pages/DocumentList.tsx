@@ -1,16 +1,76 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../store/appStore';
-import { Link } from 'react-router-dom';
-import { Search, Filter, Eye, FileText, Plus } from 'lucide-react';
-import { DOCUMENT_TYPE_LABELS } from '../../shared/types';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Filter, Eye, FileText, Plus, X, Upload, AlertCircle } from 'lucide-react';
+import { DOCUMENT_TYPE_LABELS, DocumentType } from '../../shared/types';
+import api from '../services/api';
 
 export default function DocumentList() {
   const { documents, fetchDocuments, loading } = useAppStore();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({ documentType: '', status: '' });
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    batchId: '',
+    documentType: '' as DocumentType | '',
+    documentNo: '',
+    styleCode: '',
+    createdBy: '当前用户',
+    data: '{}'
+  });
 
   useEffect(() => {
     fetchDocuments(filter as any);
   }, [fetchDocuments, filter]);
+
+  const handleUpload = async () => {
+    if (!uploadForm.batchId || !uploadForm.documentType || !uploadForm.documentNo || !uploadForm.styleCode) {
+      alert('请填写所有必填字段');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      
+      let parsedData;
+      try {
+        parsedData = JSON.parse(uploadForm.data);
+      } catch {
+        parsedData = {};
+      }
+
+      const doc = await api.documents.create({
+        batchId: uploadForm.batchId,
+        documentType: uploadForm.documentType,
+        documentNo: uploadForm.documentNo,
+        styleCode: uploadForm.styleCode,
+        version: 1,
+        data: parsedData,
+        createdBy: uploadForm.createdBy
+      });
+
+      alert('单据上传成功！');
+      setShowUploadModal(false);
+      setUploadForm({
+        batchId: '',
+        documentType: '',
+        documentNo: '',
+        styleCode: '',
+        createdBy: '当前用户',
+        data: '{}'
+      });
+      fetchDocuments(filter as any);
+      
+      setTimeout(() => {
+        navigate(`/documents/${(doc as any).id}`);
+      }, 500);
+    } catch (error: any) {
+      alert(`上传失败: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -58,11 +118,134 @@ export default function DocumentList() {
           <h1 className="text-2xl font-bold text-slate-800">单据管理</h1>
           <p className="text-slate-500 mt-1">管理样衣流转单、尺码修改意见等所有单据</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors shadow-md">
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors shadow-md"
+        >
           <Plus size={18} />
           上传单据
         </button>
       </div>
+
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-slate-800">上传新单据</h3>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="p-1 hover:bg-slate-100 rounded"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex items-start gap-2">
+                  <AlertCircle size={18} className="text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-blue-800">提示</p>
+                    <p className="text-xs text-blue-600">司机只拍了半张单也可以上传，后续可补充完整信息</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  批次ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="输入批次ID"
+                  className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={uploadForm.batchId}
+                  onChange={(e) => setUploadForm({ ...uploadForm, batchId: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  单据类型 <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={uploadForm.documentType}
+                  onChange={(e) => setUploadForm({ ...uploadForm, documentType: e.target.value as DocumentType })}
+                >
+                  <option value="">选择单据类型</option>
+                  <option value="SAMPLE_FLOW">样衣流转单</option>
+                  <option value="SIZE_MODIFY">尺码修改意见</option>
+                  <option value="FABRIC_STOCK">面料出入库</option>
+                  <option value="SUPPLEMENT">临时补录单</option>
+                  <option value="SHIFT_RECORD">班次记录</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  单据号 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="例如: FLOW-2024-001"
+                  className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={uploadForm.documentNo}
+                  onChange={(e) => setUploadForm({ ...uploadForm, documentNo: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  款式编码 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="例如: STYLE-A001"
+                  className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={uploadForm.styleCode}
+                  onChange={(e) => setUploadForm({ ...uploadForm, styleCode: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  创建人
+                </label>
+                <input
+                  type="text"
+                  placeholder="输入创建人"
+                  className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={uploadForm.createdBy}
+                  onChange={(e) => setUploadForm({ ...uploadForm, createdBy: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  单据数据 (JSON格式)
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder='{"sampleName": "春季新款连衣裙", "remark": "司机只拍了半张单"}'
+                  className="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  value={uploadForm.data}
+                  onChange={(e) => setUploadForm({ ...uploadForm, data: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 p-4 border-t bg-slate-50">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded hover:bg-slate-100 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleUpload}
+                disabled={uploading}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed"
+              >
+                <Upload size={16} />
+                {uploading ? '上传中...' : '确认上传'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-md p-4 mb-6">
         <div className="flex gap-4 items-center">

@@ -4,6 +4,7 @@ import documentRepository from '../repositories/DocumentRepository';
 import auditLogRepository from '../repositories/AuditLogRepository';
 import stateMachineService from '../services/StateMachineService';
 import fabricTrackRepository from '../repositories/FabricTrackRepository';
+import attachmentRepository from '../repositories/AttachmentRepository';
 import type { CreateBatchRequest, FreezeRequest } from '../../shared/types';
 
 const router = Router();
@@ -136,6 +137,55 @@ router.post('/:id/archive', (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
+});
+
+router.get('/:id/attachments', (req: Request, res: Response) => {
+  const { id } = req.params;
+  
+  const batch = batchRepository.findById(id);
+  if (!batch) {
+    return res.status(404).json({ error: 'Batch not found' });
+  }
+  
+  const attachments = attachmentRepository.findByBatchId(id);
+  res.json({ data: attachments, total: attachments.length });
+});
+
+router.post('/:id/attachments', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { fileName, fileType, fileSize, filePath, uploadedBy } = req.body;
+  
+  const batch = batchRepository.findById(id);
+  if (!batch) {
+    return res.status(404).json({ error: 'Batch not found' });
+  }
+  
+  try {
+    const attachment = attachmentRepository.create({
+      batchId: id,
+      fileName,
+      fileType,
+      fileSize,
+      filePath,
+      uploadedBy
+    });
+    res.status(201).json(attachment);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.delete('/:id/attachments/:attachmentId', (req: Request, res: Response) => {
+  const { id, attachmentId } = req.params;
+  const { operatedBy } = req.body;
+  
+  const batch = batchRepository.findById(id);
+  if (!batch) {
+    return res.status(404).json({ error: 'Batch not found' });
+  }
+  
+  attachmentRepository.delete(attachmentId, operatedBy || 'system');
+  res.json({ success: true });
 });
 
 export default router;
