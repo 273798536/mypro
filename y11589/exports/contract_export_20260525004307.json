@@ -1,0 +1,77 @@
+[
+  {
+    "id": 4,
+    "contract_no": "HT-TEST-001",
+    "contract_name": "重复提交测试合同",
+    "party_a": "测试甲方",
+    "party_b": "测试乙方",
+    "total_amount": "***",
+    "status": "已冻结",
+    "is_frozen": true,
+    "created_at": "2026-05-24T16:43:07",
+    "payment_nodes": [
+      {
+        "node_name": "正常节点1",
+        "node_no": "N001",
+        "planned_amount": "***",
+        "actual_amount": null,
+        "planned_date": null,
+        "actual_date": null,
+        "is_completed": false,
+        "is_disputed": false,
+        "version": 1,
+        "original_line_no": 1
+      },
+      {
+        "node_name": "正常节点2",
+        "node_no": "N002",
+        "planned_amount": "***",
+        "actual_amount": null,
+        "planned_date": null,
+        "actual_date": null,
+        "is_completed": false,
+        "is_disputed": false,
+        "version": 1,
+        "original_line_no": 2
+      },
+      {
+        "node_name": "正常节点3",
+        "node_no": "N003",
+        "planned_amount": "***",
+        "actual_amount": null,
+        "planned_date": null,
+        "actual_date": null,
+        "is_completed": false,
+        "is_disputed": false,
+        "version": 1,
+        "original_line_no": 4
+      }
+    ],
+    "change_records": [
+      {
+        "change_type": "人工改判",
+        "change_reason": "根据补充协议BC-2024-002-001，付款时间延后25天",
+        "field_name": null,
+        "old_value": null,
+        "new_value": null,
+        "changed_by": "法务主管",
+        "changed_by_role": "法务人员",
+        "changed_at": "2026-05-24T16:43:07",
+        "is_manual_revision": true
+      }
+    ],
+    "manual_judgments": [
+      {
+        "judgment_type": "付款时间调整",
+        "judgment_reason": "根据补充协议BC-2024-002-001，付款时间延后25天",
+        "judgment_result": {
+          "new_date": "2024-07-15",
+          "old_date": "2024-06-20",
+          "delay_days": 25
+        },
+        "judged_by": "法务主管",
+        "judged_at": "2026-05-24T16:43:07"
+      }
+    ]
+  }
+]
