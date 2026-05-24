@@ -1,0 +1,211 @@
+### 水务抢修材料验收回放链路 API 示例
+
+@baseUrl = http://localhost:3000/api
+
+### 1. 健康检查
+GET {{baseUrl}}/health
+
+### 2. 查看API根路径
+GET {{baseUrl}}
+
+### 3. 工单列表
+GET {{baseUrl}}/workorders?page=1&pageSize=10
+
+### 4. 创建工单（含材料使用）
+POST {{baseUrl}}/workorders
+Content-Type: application/json
+X-Operator: 张站长
+
+{
+  "orderNo": "WO202605240001",
+  "siteName": "东城花园A区",
+  "siteAddress": "东大街100号",
+  "reporter": "李先生",
+  "reporterPhone": "13800138000",
+  "reportTime": "2026-05-24T23:30:00",
+  "dispatchTime": "2026-05-24T23:45:00",
+  "repairTeam": "夜间抢修1队",
+  "teamLeader": "李队",
+  "faultDescription": "夜间管道爆裂漏水",
+  "status": "completed",
+  "repairContent": "更换DN80管道",
+  "completeTime": "2026-05-25T02:00:00",
+  "laborCost": 800,
+  "materialUsages": [
+    {
+      "materialCode": "PIPE-002",
+      "materialName": "PE管DN80",
+      "specification": "DN80,1.0MPa",
+      "unit": "米",
+      "quantity": 6,
+      "unitPrice": 120
+    },
+    {
+      "materialCode": "FIT-001",
+      "materialName": "弯头DN50",
+      "specification": "90度",
+      "unit": "个",
+      "quantity": 4,
+      "unitPrice": 25
+    }
+  ]
+}
+
+### 5. 查询单个工单
+GET {{baseUrl}}/workorders/no/WO202605240001
+
+### 6. 工单变更历史
+GET {{baseUrl}}/workorders/{{workOrderId}}/history
+
+### 7. 库存记录列表
+GET {{baseUrl}}/inventory?page=1&pageSize=20
+
+### 8. 创建库存记录（出库）
+POST {{baseUrl}}/inventory
+Content-Type: application/json
+X-Operator: 仓管员
+
+{
+  "materialCode": "VLV-001",
+  "materialName": "DN50闸阀",
+  "specification": "DN50,1.6MPa",
+  "unit": "个",
+  "unitPrice": 280,
+  "quantity": 2,
+  "operation": "out",
+  "operationTime": "2026-05-25T08:00:00",
+  "warehouse": "中心仓库",
+  "operator": "补录员",
+  "workOrderNo": "WO202605240001",
+  "remark": "夜间抢修次日补录",
+  "isBackfilled": true,
+  "backfillTime": "2026-05-25T08:00:00"
+}
+
+### 9. 批量补录库存
+POST {{baseUrl}}/inventory/batch
+Content-Type: application/json
+X-Operator: 补录员
+
+{
+  "isBackfill": true,
+  "records": [
+    {
+      "materialCode": "PIPE-002",
+      "materialName": "PE管DN80",
+      "specification": "DN80,1.0MPa",
+      "unit": "米",
+      "unitPrice": 120,
+      "quantity": 6,
+      "operation": "out",
+      "operationTime": "2026-05-25T08:00:00",
+      "warehouse": "中心仓库",
+      "workOrderNo": "WO202605240001",
+      "remark": "夜间抢修补录"
+    },
+    {
+      "materialCode": "FIT-001",
+      "materialName": "弯头DN50",
+      "specification": "90度",
+      "unit": "个",
+      "unitPrice": 25,
+      "quantity": 4,
+      "operation": "out",
+      "operationTime": "2026-05-25T08:00:00",
+      "warehouse": "中心仓库",
+      "workOrderNo": "WO202605240001",
+      "remark": "夜间抢修补录"
+    }
+  ]
+}
+
+### 10. 对账（单个工单）
+POST {{baseUrl}}/reconciliation/workorder/WO202605240001
+Content-Type: application/json
+X-Operator: 对账员
+
+### 11. 对账历史
+GET {{baseUrl}}/reconciliation
+
+### 12. 对账统计
+GET {{baseUrl}}/reconciliation/stats/summary
+
+### 13. 异常记录列表
+GET {{baseUrl}}/dirty-records?status=pending
+
+### 14. 异常统计
+GET {{baseUrl}}/dirty-records/stats
+
+### 15. 回放异常（分析哪些可以自动修复）
+POST {{baseUrl}}/dirty-records/replay
+Content-Type: application/json
+
+{
+  "dirtyType": "quantity_conflict"
+}
+
+### 16. 解决异常记录
+POST {{baseUrl}}/dirty-records/{{dirtyRecordId}}/resolve
+Content-Type: application/json
+X-Operator: 张站长
+
+{
+  "resolutionNote": "经核实，现场确实使用5个，补录时少录1个，已修正",
+  "correctedData": {
+    "quantity": 5,
+    "balanceAfter": 15
+  }
+}
+
+### 17. 审计快照
+GET {{baseUrl}}/audit/snapshots?targetType=work_order&targetId={{workOrderId}}
+
+### 18. 按操作ID查快照
+GET {{baseUrl}}/audit/snapshots?operationId={{operationId}}
+
+### 19. 比较两个对象差异
+POST {{baseUrl}}/audit/diff
+Content-Type: application/json
+
+{
+  "obj1": {
+    "materialCode": "VLV-001",
+    "quantity": 2,
+    "unitPrice": 280
+  },
+  "obj2": {
+    "materialCode": "VLV-001",
+    "quantity": 3,
+    "unitPrice": 280,
+    "remark": "新增备注"
+  }
+}
+
+### 20. 导出工单报表
+POST {{baseUrl}}/export/workorders
+Content-Type: application/json
+
+{
+  "workOrderNos": ["WO202605240001"]
+}
+
+### 21. 导出库存报表
+POST {{baseUrl}}/export/inventory
+Content-Type: application/json
+
+{
+  "startDate": "2026-05-01",
+  "endDate": "2026-05-31"
+}
+
+### 22. 导出对账报表
+POST {{baseUrl}}/reconciliation/export
+Content-Type: application/json
+
+{
+  "workOrderNo": "WO202605240001"
+}
+
+### 23. 导出异常记录
+POST {{baseUrl}}/dirty-records/export
+Content-Type: application/json
