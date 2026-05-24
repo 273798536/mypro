@@ -10,6 +10,7 @@ echo ""
 echo "1. 清理旧数据..."
 rm -f qc-data.json
 rm -rf .qc-backups
+rm -f verdicts-export.json
 
 echo ""
 echo "2. 安装依赖..."
@@ -52,36 +53,63 @@ else
 fi
 
 echo ""
-echo "9. 列出所有缺陷..."
+echo "9. 列出所有缺陷（验证显示完整ID）..."
 node dist/index.js list-defects
 
 echo ""
-echo "10. 合并同类缺陷 '焊盘偏移'..."
-node dist/index.js merge-defects "焊盘偏移"
-
-echo ""
-echo "11. 获取第一个缺陷ID用于测试..."
+echo "10. 获取第一个缺陷ID（完整ID）..."
 DEFECT_ID=$(node -e "
 const db = require('./qc-data.json');
 const defects = db.inspections[0].defects[0];
 console.log(defects.id);
 ")
-echo "    缺陷ID: $DEFECT_ID"
+echo "    完整缺陷ID: $DEFECT_ID"
+SHORT_ID=${DEFECT_ID:0:8}
+echo "    短ID (前8位): $SHORT_ID"
 
 echo ""
-echo "12. 录入复判结论 (第一次)..."
-node dist/index.js record-verdict "$DEFECT_ID" rework -r "需要重新焊接" -j "质检主管"
+echo "11. 合并同类缺陷 '焊盘偏移'..."
+node dist/index.js merge-defects "焊盘偏移"
 
 echo ""
-echo "13. 修改复判结论 (第二次，改口径)..."
-node dist/index.js record-verdict "$DEFECT_ID" pass -r "客户确认可接受" -j "质检经理"
+echo "12. 验证合并后缺陷状态（主缺陷/已合并标记）..."
+MERGED_COUNT=$(node -e "
+const db = require('./qc-data.json');
+let merged = 0;
+for (const insp of db.inspections) {
+  for (const d of insp.defects) {
+    if (d.mergedInto) merged++;
+  }
+}
+for (const rw of db.reworkOrders) {
+  for (const d of rw.newDefects) {
+    if (d.mergedInto) merged++;
+  }
+}
+console.log(merged);
+")
+echo "    已合并的源缺陷数: $MERGED_COUNT"
+if [ "$MERGED_COUNT" -ge "2" ]; then
+    echo "    ✓ 源缺陷已正确标记为已合并"
+else
+    echo "    ✗ 源缺陷标记失败"
+    exit 1
+fi
 
 echo ""
-echo "14. 查看复判历史..."
-node dist/index.js verdict-history "$DEFECT_ID"
+echo "13. 测试使用短ID录入复判结论..."
+node dist/index.js record-verdict "$SHORT_ID" rework -r "需要重新焊接" -j "质检主管"
 
 echo ""
-echo "15. 验证历史记录数量:"
+echo "14. 测试使用短ID修改复判结论..."
+node dist/index.js record-verdict "$SHORT_ID" pass -r "客户确认可接受" -j "质检经理"
+
+echo ""
+echo "15. 测试使用短ID查看复判历史..."
+node dist/index.js verdict-history "$SHORT_ID"
+
+echo ""
+echo "16. 验证历史记录数量:"
 HISTORY_COUNT=$(node -e "
 const db = require('./qc-data.json');
 const history = db.verdictHistory.filter(v => v.defectId === '$DEFECT_ID');
@@ -96,7 +124,7 @@ else
 fi
 
 echo ""
-echo "16. 验证旧结论被标记为非当前..."
+echo "17. 验证旧结论被标记为非当前..."
 OLD_COUNT=$(node -e "
 const db = require('./qc-data.json');
 const oldVerdicts = db.verdictHistory.filter(v => v.defectId === '$DEFECT_ID' && !v.isCurrent);
@@ -111,24 +139,60 @@ else
 fi
 
 echo ""
-echo "17. 重算良率..."
+echo "18. 重算良率（验证去重逻辑）..."
 node dist/index.js recalculate-yield
 
 echo ""
-echo "18. 生产经理视图..."
+echo "19. 验证良率去重 - 已合并的源缺陷应排除..."
+YIELD_DEFECTS=$(node -e "
+const db = require('./qc-data.json');
+const allDedup = new Set();
+for (const y of db.yieldRecords) {
+  y.deduplicatedDefectIds.forEach(id => allDedup.add(id));
+}
+console.log(allDedup.size);
+")
+echo "    去重后缺陷数: $YIELD_DEFECTS"
+echo "    (应为: 3 个 - 1个主缺陷 + 虚焊 + 短路)"
+
+echo ""
+echo "20. 导出复判结论..."
+node dist/index.js export-verdicts verdicts-export.json
+
+echo ""
+echo "21. 验证导出文件..."
+if [ -f "verdicts-export.json" ]; then
+    EXPORT_COUNT=$(node -e "
+    const data = require('./verdicts-export.json');
+    console.log(data.totalRecords);
+    ")
+    echo "    导出记录数: $EXPORT_COUNT"
+    if [ "$EXPORT_COUNT" -ge "2" ]; then
+        echo "    ✓ 导出功能正常"
+    else
+        echo "    ✗ 导出记录数异常"
+        exit 1
+    fi
+else
+    echo "    ✗ 导出文件不存在"
+    exit 1
+fi
+
+echo ""
+echo "22. 生产经理视图..."
 node dist/index.js manager-view
 
 echo ""
-echo "19. 测试重启后数据一致性..."
+echo "23. 测试重启后数据一致性..."
 echo "    重新读取数据库..."
 RECORDS=$(node -e "
 const db = require('./qc-data.json');
-console.log(db.inspections.length + ' inspections, ' + db.reworkOrders.length + ' reworks');
+console.log(db.inspections.length + ' inspections, ' + db.reworkOrders.length + ' reworks, ' + db.verdictHistory.length + ' verdicts');
 ")
 echo "    数据记录: $RECORDS"
 
 echo ""
-echo "20. 验证缺陷合并后的良率去重..."
+echo "24. 验证良率记录数..."
 YIELD_RECORDS=$(node -e "
 const db = require('./qc-data.json');
 console.log(db.yieldRecords.length);
@@ -148,8 +212,10 @@ echo "========================================="
 echo ""
 echo "测试要点总结："
 echo "  ✓ 重复返工检测"
-echo "  ✓ 缺陷合并"
-echo "  ✓ 良率重算（去重）"
+echo "  ✓ 缺陷合并（源缺陷标记 mergedInto）"
+echo "  ✓ 良率重算（正确排除已合并的源缺陷）"
 echo "  ✓ 历史一致性（改判保留旧结论）"
 echo "  ✓ 照片来源追踪"
+echo "  ✓ 短ID支持（8位即可操作）"
+echo "  ✓ 复判结论导出"
 echo ""

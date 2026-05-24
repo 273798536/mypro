@@ -15,48 +15,48 @@
       },
       "defects": [
         {
-          "id": "20451875-69ef-4f89-a153-6b1780490e40",
+          "id": "5ef707e3-5e5d-493f-9e56-3e3156635280",
           "defectType": "焊盘偏移",
           "description": "芯片引脚焊盘偏移超过0.5mm",
           "severity": "major",
           "quantity": 2,
           "photos": [
             {
-              "id": "e97fb5dd-5634-4787-995c-d2a1bf765315",
+              "id": "ea081f9c-9bde-460c-92c2-0008f0ac1e78",
               "source": "/photos/batch001-offset-1.jpg",
-              "uploadedAt": "2026-05-24T06:22:57.543Z",
+              "uploadedAt": "2026-05-24T19:31:20.581Z",
               "uploadedBy": "质检员A",
               "description": "U1芯片偏移"
             }
           ],
-          "firstFoundAt": "2026-05-24T06:22:57.543Z",
-          "lastUpdatedAt": "2026-05-24T06:22:57.543Z",
+          "firstFoundAt": "2026-05-24T19:31:20.581Z",
+          "lastUpdatedAt": "2026-05-24T19:31:20.581Z",
           "reworkCount": 0,
           "mergedFrom": []
         },
         {
-          "id": "9d5401a6-be9a-48c4-8c40-245d3e73726b",
+          "id": "b50e3fd8-d4d5-44e4-a38a-bbe62b918581",
           "defectType": "虚焊",
           "description": "C5电容焊接不良",
           "severity": "minor",
           "quantity": 1,
           "photos": [],
-          "firstFoundAt": "2026-05-24T06:22:57.543Z",
-          "lastUpdatedAt": "2026-05-24T06:22:57.543Z",
+          "firstFoundAt": "2026-05-24T19:31:20.581Z",
+          "lastUpdatedAt": "2026-05-24T19:31:20.581Z",
           "reworkCount": 0,
           "mergedFrom": []
         }
       ],
       "passRate": 96,
       "isReworked": false,
-      "id": "b5f837cd-a26b-42ee-842d-8d0a33bc0472"
+      "id": "edb93a6e-52b3-4b16-bb73-e0390ee3517a"
     }
   ],
   "reworkOrders": [],
   "verdictHistory": [],
   "yieldRecords": [],
   "metadata": {
-    "lastUpdated": "2026-05-24T06:22:57.544Z",
+    "lastUpdated": "2026-05-24T19:31:20.582Z",
     "version": 3
   }
 }

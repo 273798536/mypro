@@ -216,11 +216,12 @@ export function recordVerdict(
     };
   }
 
-  const oldVerdict = getCurrentVerdict(db, defectId);
+  const fullDefectId = defect.id;
+  const oldVerdict = getCurrentVerdict(db, fullDefectId);
   const photoSources = defect.photos.map(p => p.source);
 
   addVerdict(db, {
-    defectId,
+    defectId: fullDefectId,
     verdict,
     reason,
     judgedBy,
@@ -271,7 +272,7 @@ export function recalculateYield(): CommandResult<{records: number, totalShiftCo
     shiftData.totalProduced += inspection.totalQuantity;
 
     inspection.defects.forEach(d => {
-      if (d.mergedFrom.length === 0) {
+      if (!d.mergedInto) {
         shiftData.defectIds.add(d.id);
       }
     });
@@ -295,7 +296,7 @@ export function recalculateYield(): CommandResult<{records: number, totalShiftCo
     shiftData.batches.add(rework.reworkBatchId);
 
     rework.newDefects.forEach(d => {
-      if (d.mergedFrom.length === 0) {
+      if (!d.mergedInto) {
         shiftData.defectIds.add(d.id);
       }
     });
@@ -460,7 +461,11 @@ export function listDefects(defectType?: string): CommandResult<Defect[]> {
 
 export function showVerdictHistory(defectId: string): CommandResult<VerdictHistory[]> {
   const db = loadDatabase();
-  const history = db.verdictHistory.filter(v => v.defectId === defectId);
+  
+  const defect = findDefectById(db, defectId);
+  const fullDefectId = defect ? defect.id : defectId;
+  
+  const history = db.verdictHistory.filter(v => v.defectId === fullDefectId);
   
   if (history.length === 0) {
     return {
@@ -473,5 +478,106 @@ export function showVerdictHistory(defectId: string): CommandResult<VerdictHisto
     success: true,
     message: `缺陷 ${defectId} 共有 ${history.length} 条复判记录`,
     data: history
+  };
+}
+
+export interface ExportVerdict {
+  defectId: string;
+  defectType: string;
+  defectDescription: string;
+  batchId: string;
+  productCode: string;
+  machineId: string;
+  shift: string;
+  shiftDate: string;
+  verdict: string;
+  reason: string;
+  judgedBy: string;
+  judgedAt: string;
+  photoSources: string[];
+  isCurrent: boolean;
+}
+
+export function exportVerdicts(outputPath: string): CommandResult<{count: number, path: string}> {
+  const db = loadDatabase();
+  
+  if (db.verdictHistory.length === 0) {
+    return {
+      success: false,
+      message: '暂无复判记录可导出'
+    };
+  }
+
+  const exported: ExportVerdict[] = [];
+
+  db.verdictHistory.forEach(verdict => {
+    const defect = findDefectById(db, verdict.defectId);
+    if (!defect) return;
+
+    let batchId = '';
+    let productCode = '';
+    let machineId = '';
+    let shift = '';
+    let shiftDate = '';
+
+    for (const inspection of db.inspections) {
+      if (inspection.defects.some(d => d.id === verdict.defectId)) {
+        batchId = inspection.batchId;
+        productCode = inspection.productCode;
+        machineId = inspection.machineShift.machineId;
+        shift = inspection.machineShift.shift;
+        shiftDate = inspection.machineShift.shiftDate;
+        break;
+      }
+    }
+
+    if (!batchId) {
+      for (const rework of db.reworkOrders) {
+        if (rework.newDefects.some(d => d.id === verdict.defectId)) {
+          batchId = rework.reworkBatchId;
+          productCode = rework.productCode;
+          machineId = rework.machineShift.machineId;
+          shift = rework.machineShift.shift;
+          shiftDate = rework.machineShift.shiftDate;
+          break;
+        }
+      }
+    }
+
+    exported.push({
+      defectId: verdict.defectId,
+      defectType: defect.defectType,
+      defectDescription: defect.description,
+      batchId,
+      productCode,
+      machineId,
+      shift,
+      shiftDate,
+      verdict: verdict.verdict,
+      reason: verdict.reason,
+      judgedBy: verdict.judgedBy,
+      judgedAt: verdict.judgedAt,
+      photoSources: verdict.photoSources,
+      isCurrent: verdict.isCurrent
+    });
+  });
+
+  exported.sort((a, b) => {
+    if (a.defectId !== b.defectId) return a.defectId.localeCompare(b.defectId);
+    return new Date(a.judgedAt).getTime() - new Date(b.judgedAt).getTime();
+  });
+
+  const output = {
+    exportedAt: new Date().toISOString(),
+    totalRecords: exported.length,
+    records: exported
+  };
+
+  fs.writeFileSync(outputPath, JSON.stringify(output, null, 2), 'utf-8');
+
+  return {
+    success: true,
+    message: `已导出 ${exported.length} 条复判记录到 ${outputPath}`,
+    data: { count: exported.length, path: outputPath }
   };
 }

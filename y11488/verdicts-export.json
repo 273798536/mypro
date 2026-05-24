@@ -1,0 +1,46 @@
+{
+  "exportedAt": "2026-05-24T19:31:23.221Z",
+  "totalRecords": 2,
+  "records": [
+    {
+      "defectId": "5ef707e3-5e5d-493f-9e56-3e3156635280",
+      "defectType": "焊盘偏移",
+      "defectDescription": "芯片引脚焊盘偏移超过0.5mm",
+      "batchId": "BATCH-001",
+      "productCode": "PCB-A001",
+      "machineId": "MACHINE-01",
+      "shift": "morning",
+      "shiftDate": "2024-01-15",
+      "verdict": "rework",
+      "reason": "需要重新焊接",
+      "judgedBy": "质检主管",
+      "judgedAt": "2026-05-24T19:31:22.456Z",
+      "photoSources": [
+        "/photos/batch001-offset-1.jpg",
+        "/photos/batch002-offset-1.jpg",
+        "/photos/rework001-offset-1.jpg"
+      ],
+      "isCurrent": false
+    },
+    {
+      "defectId": "5ef707e3-5e5d-493f-9e56-3e3156635280",
+      "defectType": "焊盘偏移",
+      "defectDescription": "芯片引脚焊盘偏移超过0.5mm",
+      "batchId": "BATCH-001",
+      "productCode": "PCB-A001",
+      "machineId": "MACHINE-01",
+      "shift": "morning",
+      "shiftDate": "2024-01-15",
+      "verdict": "pass",
+      "reason": "客户确认可接受",
+      "judgedBy": "质检经理",
+      "judgedAt": "2026-05-24T19:31:22.564Z",
+      "photoSources": [
+        "/photos/batch001-offset-1.jpg",
+        "/photos/batch002-offset-1.jpg",
+        "/photos/rework001-offset-1.jpg"
+      ],
+      "isCurrent": true
+    }
+  ]
+}

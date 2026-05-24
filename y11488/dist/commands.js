@@ -41,6 +41,7 @@ exports.recalculateYield = recalculateYield;
 exports.getManagerView = getManagerView;
 exports.listDefects = listDefects;
 exports.showVerdictHistory = showVerdictHistory;
+exports.exportVerdicts = exportVerdicts;
 const fs = __importStar(require("fs"));
 const uuid_1 = require("uuid");
 const store_1 = require("./store");
@@ -209,10 +210,11 @@ function recordVerdict(defectId, verdict, reason, judgedBy) {
             message: `未找到缺陷 ${defectId}`
         };
     }
-    const oldVerdict = (0, store_1.getCurrentVerdict)(db, defectId);
+    const fullDefectId = defect.id;
+    const oldVerdict = (0, store_1.getCurrentVerdict)(db, fullDefectId);
     const photoSources = defect.photos.map(p => p.source);
     (0, store_1.addVerdict)(db, {
-        defectId,
+        defectId: fullDefectId,
         verdict,
         reason,
         judgedBy,
@@ -247,7 +249,7 @@ function recalculateYield() {
         shiftData.batches.add(inspection.batchId);
         shiftData.totalProduced += inspection.totalQuantity;
         inspection.defects.forEach(d => {
-            if (d.mergedFrom.length === 0) {
+            if (!d.mergedInto) {
                 shiftData.defectIds.add(d.id);
             }
         });
@@ -267,7 +269,7 @@ function recalculateYield() {
         const shiftData = shiftMap.get(key);
         shiftData.batches.add(rework.reworkBatchId);
         rework.newDefects.forEach(d => {
-            if (d.mergedFrom.length === 0) {
+            if (!d.mergedInto) {
                 shiftData.defectIds.add(d.id);
             }
         });
@@ -386,7 +388,9 @@ function listDefects(defectType) {
 }
 function showVerdictHistory(defectId) {
     const db = (0, store_1.loadDatabase)();
-    const history = db.verdictHistory.filter(v => v.defectId === defectId);
+    const defect = (0, store_1.findDefectById)(db, defectId);
+    const fullDefectId = defect ? defect.id : defectId;
+    const history = db.verdictHistory.filter(v => v.defectId === fullDefectId);
     if (history.length === 0) {
         return {
             success: false,
@@ -397,5 +401,79 @@ function showVerdictHistory(defectId) {
         success: true,
         message: `缺陷 ${defectId} 共有 ${history.length} 条复判记录`,
         data: history
+    };
+}
+function exportVerdicts(outputPath) {
+    const db = (0, store_1.loadDatabase)();
+    if (db.verdictHistory.length === 0) {
+        return {
+            success: false,
+            message: '暂无复判记录可导出'
+        };
+    }
+    const exported = [];
+    db.verdictHistory.forEach(verdict => {
+        const defect = (0, store_1.findDefectById)(db, verdict.defectId);
+        if (!defect)
+            return;
+        let batchId = '';
+        let productCode = '';
+        let machineId = '';
+        let shift = '';
+        let shiftDate = '';
+        for (const inspection of db.inspections) {
+            if (inspection.defects.some(d => d.id === verdict.defectId)) {
+                batchId = inspection.batchId;
+                productCode = inspection.productCode;
+                machineId = inspection.machineShift.machineId;
+                shift = inspection.machineShift.shift;
+                shiftDate = inspection.machineShift.shiftDate;
+                break;
+            }
+        }
+        if (!batchId) {
+            for (const rework of db.reworkOrders) {
+                if (rework.newDefects.some(d => d.id === verdict.defectId)) {
+                    batchId = rework.reworkBatchId;
+                    productCode = rework.productCode;
+                    machineId = rework.machineShift.machineId;
+                    shift = rework.machineShift.shift;
+                    shiftDate = rework.machineShift.shiftDate;
+                    break;
+                }
+            }
+        }
+        exported.push({
+            defectId: verdict.defectId,
+            defectType: defect.defectType,
+            defectDescription: defect.description,
+            batchId,
+            productCode,
+            machineId,
+            shift,
+            shiftDate,
+            verdict: verdict.verdict,
+            reason: verdict.reason,
+            judgedBy: verdict.judgedBy,
+            judgedAt: verdict.judgedAt,
+            photoSources: verdict.photoSources,
+            isCurrent: verdict.isCurrent
+        });
+    });
+    exported.sort((a, b) => {
+        if (a.defectId !== b.defectId)
+            return a.defectId.localeCompare(b.defectId);
+        return new Date(a.judgedAt).getTime() - new Date(b.judgedAt).getTime();
+    });
+    const output = {
+        exportedAt: new Date().toISOString(),
+        totalRecords: exported.length,
+        records: exported
+    };
+    fs.writeFileSync(outputPath, JSON.stringify(output, null, 2), 'utf-8');
+    return {
+        success: true,
+        message: `已导出 ${exported.length} 条复判记录到 ${outputPath}`,
+        data: { count: exported.length, path: outputPath }
     };
 }

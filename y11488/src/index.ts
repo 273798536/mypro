@@ -11,7 +11,8 @@ import {
   recalculateYield,
   getManagerView,
   listDefects,
-  showVerdictHistory
+  showVerdictHistory,
+  exportVerdicts
 } from './commands';
 
 const program = new Command();
@@ -148,21 +149,36 @@ program
     
     if (result.success && result.data) {
       const table = new Table({
-        head: ['缺陷ID', '类型', '描述', '数量', '严重性', '返工次数', '照片数']
+        head: ['缺陷ID', '类型', '描述', '数量', '严重性', '返工次数', '照片数', '状态']
       });
       result.data.forEach(d => {
+        let status = '正常';
+        if (d.mergedInto) {
+          status = chalk.gray('已合并');
+        } else if (d.mergedFrom.length > 0) {
+          status = chalk.blue('主缺陷');
+        }
         table.push([
-          d.id.slice(0, 8),
+          d.id,
           d.defectType,
           d.description.slice(0, 20),
           d.quantity,
           d.severity,
           d.reworkCount,
-          d.photos.length
+          d.photos.length,
+          status
         ]);
       });
       console.log(table.toString());
     }
+  });
+
+program
+  .command('export-verdicts <outputFile>')
+  .description('导出所有复判结论到 JSON 文件')
+  .action((outputFile) => {
+    const result = exportVerdicts(outputFile);
+    printResult(result);
   });
 
 program

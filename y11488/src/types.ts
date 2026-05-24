@@ -26,6 +26,7 @@ export interface Defect {
   lastUpdatedAt: string;
   reworkCount: number;
   mergedFrom: string[];
+  mergedInto?: string;
 }
 
 export interface InspectionRecord {

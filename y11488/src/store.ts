@@ -59,18 +59,31 @@ export function findReworkByBatchId(db: Database, reworkBatchId: string): Rework
 }
 
 export function findDefectById(db: Database, defectId: string): Defect | undefined {
+  const isShortId = defectId.length === 8;
+  
   for (const inspection of db.inspections) {
-    const defect = inspection.defects.find(d => d.id === defectId);
+    const defect = inspection.defects.find(d => 
+      isShortId ? d.id.startsWith(defectId) : d.id === defectId
+    );
     if (defect) return defect;
   }
   for (const rework of db.reworkOrders) {
-    const defect = rework.newDefects.find(d => d.id === defectId);
+    const defect = rework.newDefects.find(d => 
+      isShortId ? d.id.startsWith(defectId) : d.id === defectId
+    );
     if (defect) return defect;
   }
   return undefined;
 }
 
 export function getCurrentVerdict(db: Database, defectId: string): VerdictHistory | undefined {
+  const isShortId = defectId.length === 8;
+  if (isShortId) {
+    const defect = findDefectById(db, defectId);
+    if (defect) {
+      defectId = defect.id;
+    }
+  }
   return db.verdictHistory.find(v => v.defectId === defectId && v.isCurrent);
 }
 
@@ -175,6 +188,10 @@ export function updateDefectMerge(db: Database, targetDefectId: string, sourceDe
   for (const sourceId of sourceDefectIds) {
     if (!target.mergedFrom.includes(sourceId)) {
       target.mergedFrom.push(sourceId);
+    }
+    const sourceDefect = findDefectById(db, sourceId);
+    if (sourceDefect) {
+      sourceDefect.mergedInto = targetDefectId;
     }
   }
   
