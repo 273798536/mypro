@@ -93,9 +93,7 @@ class TraceabilityLedger {
     const id = uuidv4();
     const now = moment().toISOString();
     const ledgerNo = this.generateLedgerNo();
-    const stockAfter = implant.current_stock - data.usage_quantity;
-    
-    await Implant.updateStock(implant.id, -data.usage_quantity);
+    const stockAfter = implant.current_stock;
     
     await db.run(`
       INSERT INTO traceability_ledgers (
@@ -142,7 +140,7 @@ class TraceabilityLedger {
       operator_id: operator.id || data.created_by,
       operator_name: operator.name || 'system',
       operator_role: operator.role || 'replenisher',
-      remark: '创建台账记录，库存已扣减'
+      remark: '创建台账记录（草稿状态，库存待确认后扣减）'
     });
     
     return this.findById(id);
@@ -223,6 +221,12 @@ class TraceabilityLedger {
     if (targetStatus === LEDGER_STATUS.CONFIRMED) {
       updateData.confirmed_at = now;
       updateData.confirmed_by = operator.name;
+      
+      const implant = await Implant.findById(ledger.implant_id);
+      if (implant && ledger.stock_after === implant.current_stock) {
+        await Implant.updateStock(ledger.implant_id, -ledger.usage_quantity);
+        updateData.stock_after = implant.current_stock - ledger.usage_quantity;
+      }
     }
     
     if (options.change_reason) {
@@ -238,16 +242,21 @@ class TraceabilityLedger {
     
     await db.run(`UPDATE traceability_ledgers SET ${updates} WHERE id = ?`, ...values);
     
+    let auditRemark = options.remark || '状态变更';
+    if (targetStatus === LEDGER_STATUS.CONFIRMED) {
+      auditRemark += '，库存已扣减';
+    }
+    
     await AuditLog.create({
       ledger_id: id,
       action: `status_change_${oldStatus}_to_${targetStatus}`,
       old_value: { status: oldStatus, version: ledger.version },
-      new_value: { status: targetStatus, version: newVersion },
-      changed_fields: ['status', 'version'],
+      new_value: { status: targetStatus, version: newVersion, ...updateData },
+      changed_fields: Object.keys(updateData),
       operator_id: operator.id,
       operator_name: operator.name,
       operator_role: operator.role,
-      remark: options.remark || '状态变更'
+      remark: auditRemark
     });
     
     return this.findById(id);
