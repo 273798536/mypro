@@ -227,9 +227,17 @@ class ImportService {
                 results.details.push({ row: i + 1, success: true, isDuplicate: result.isDuplicate });
               }
             } catch (e) {
-              results.failed++;
-              results.details.push({ row: i + 1, success: false, error: e.message });
-              logger.error(`导入第${i + 1}行失败:`, e);
+              if (e.name === 'SequelizeUniqueConstraintError' && 
+                  e.fields && e.fields.includes('source_file_hash') &&
+                  e.fields.includes('source_type') && 
+                  e.fields.includes('raw_row_number')) {
+                results.duplicates++;
+                results.details.push({ row: i + 1, success: true, isDuplicate: true, duplicateType: 'import_record' });
+              } else {
+                results.failed++;
+                results.details.push({ row: i + 1, success: false, error: e.message });
+                logger.error(`导入第${i + 1}行失败:`, e);
+              }
             }
           }
         }

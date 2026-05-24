@@ -118,8 +118,8 @@ async function processTaskLoop() {
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: true });
-    logger.info('数据库同步完成');
+    await sequelize.authenticate();
+    logger.info('数据库连接成功');
     
     const interruptedCount = await AsyncTaskService.resumeInterruptedTasks();
     if (interruptedCount > 0) {

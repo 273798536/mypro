@@ -38,9 +38,9 @@ const ImportRecord = sequelize.define('ImportRecord', {
     comment: '解析后的标准值JSON'
   },
   parse_status: {
-    type: DataTypes.ENUM('pending', 'success', 'failed'),
+    type: DataTypes.STRING,
     defaultValue: 'pending',
-    comment: '解析状态'
+    comment: '解析状态: pending, success, failed'
   },
   parse_error: {
     type: DataTypes.TEXT,
@@ -80,10 +80,11 @@ const ImportRecord = sequelize.define('ImportRecord', {
 }, {
   tableName: 'import_records',
   indexes: [
-    { fields: ['source_file_hash', 'source_type', 'raw_row_number'], unique: true },
+    { name: 'import_records_hash_type_row_unique', fields: ['source_file_hash', 'source_type', 'raw_row_number'], unique: true },
     { fields: ['batch_no'] },
     { fields: ['supplier_code'] },
-    { fields: ['is_duplicate'] }
+    { fields: ['is_duplicate'] },
+    { fields: ['parse_status'] }
   ]
 });
 

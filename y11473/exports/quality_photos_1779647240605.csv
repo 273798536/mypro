@@ -1,0 +1,101 @@
+"photo_no","batch_no","supplier_code","sku_code","photo_url","inspection_result","inspector","inspection_date","importRecord.source_file","importRecord.raw_row_number"
+"QP000100","BATCH006","SUP003","SKU006","http://example.com/photos/qp100.jpg","unqualified","质检员3","2024-09-09 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",100
+"QP000099","BATCH005","SUP002","SKU006","http://example.com/photos/qp99.jpg","pending","质检员2","2024-11-08 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",99
+"QP000098","BATCH005","SUP001","SKU002","http://example.com/photos/qp98.jpg","unqualified","质检员1","2024-03-19 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",98
+"QP000097","BATCH005","SUP003","SKU001","http://example.com/photos/qp97.jpg","qualified","质检员4","2024-05-09 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",97
+"QP000096","BATCH005","SUP002","SKU005","http://example.com/photos/qp96.jpg","unqualified","质检员3","2024-05-07 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",96
+"QP000095","BATCH005","SUP004","SKU002","http://example.com/photos/qp95.jpg","qualified","质检员1","2024-06-14 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",95
+"QP000094","BATCH005","SUP002","SKU001","http://example.com/photos/qp94.jpg","qualified","质检员3","2024-06-07 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",94
+"QP000093","BATCH005","SUP005","SKU003","http://example.com/photos/qp93.jpg","qualified","质检员3","2024-05-24 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",93
+"QP000092","BATCH005","SUP001","SKU002","http://example.com/photos/qp92.jpg","qualified","质检员2","2024-04-18 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",92
+"QP000091","BATCH005","SUP004","SKU005","http://example.com/photos/qp91.jpg","pending","质检员1","2024-03-05 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",91
+"QP000090","BATCH005","SUP001","SKU006","http://example.com/photos/qp90.jpg","qualified","质检员4","2024-03-18 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",90
+"QP000089","BATCH005","SUP003","SKU002","http://example.com/photos/qp89.jpg","qualified","质检员3","2024-01-21 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",89
+"QP000088","BATCH005","SUP001","SKU005","http://example.com/photos/qp88.jpg","qualified","质检员3","2024-09-06 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",88
+"QP000087","BATCH005","SUP004","SKU001","http://example.com/photos/qp87.jpg","qualified","质检员3","2024-05-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",87
+"QP000086","BATCH005","SUP004","SKU001","http://example.com/photos/qp86.jpg","pending","质检员2","2024-09-20 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",86
+"QP000085","BATCH005","SUP004","SKU003","http://example.com/photos/qp85.jpg","pending","质检员5","2024-10-22 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",85
+"QP000084","BATCH005","SUP003","SKU006","http://example.com/photos/qp84.jpg","unqualified","质检员1","2024-07-23 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",84
+"QP000083","BATCH005","SUP004","SKU005","http://example.com/photos/qp83.jpg","unqualified","质检员2","2024-06-24 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",83
+"QP000082","BATCH005","SUP002","SKU004","http://example.com/photos/qp82.jpg","unqualified","质检员3","2024-01-06 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",82
+"QP000081","BATCH005","SUP004","SKU006","http://example.com/photos/qp81.jpg","pending","质检员5","2024-07-22 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",81
+"QP000080","BATCH005","SUP004","SKU004","http://example.com/photos/qp80.jpg","qualified","质检员5","2024-02-06 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",80
+"QP000079","BATCH004","SUP003","SKU001","http://example.com/photos/qp79.jpg","pending","质检员3","2024-01-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",79
+"QP000078","BATCH004","SUP001","SKU005","http://example.com/photos/qp78.jpg","pending","质检员2","2024-07-01 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",78
+"QP000077","BATCH004","SUP005","SKU002","http://example.com/photos/qp77.jpg","pending","质检员4","2024-11-19 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",77
+"QP000076","BATCH004","SUP005","SKU004","http://example.com/photos/qp76.jpg","qualified","质检员1","2024-08-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",76
+"QP000075","BATCH004","SUP002","SKU003","http://example.com/photos/qp75.jpg","qualified","质检员5","2024-04-06 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",75
+"QP000074","BATCH004","SUP001","SKU004","http://example.com/photos/qp74.jpg","qualified","质检员5","2024-02-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",74
+"QP000073","BATCH004","SUP001","SKU002","http://example.com/photos/qp73.jpg","unqualified","质检员1","2024-10-22 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",73
+"QP000072","BATCH004","SUP004","SKU002","http://example.com/photos/qp72.jpg","unqualified","质检员1","2024-08-31 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",72
+"QP000071","BATCH004","SUP001","SKU005","http://example.com/photos/qp71.jpg","pending","质检员5","2024-10-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",71
+"QP000070","BATCH004","SUP002","SKU003","http://example.com/photos/qp70.jpg","unqualified","质检员2","2024-02-29 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",70
+"QP000069","BATCH004","SUP002","SKU003","http://example.com/photos/qp69.jpg","qualified","质检员3","2024-05-25 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",69
+"QP000068","BATCH004","SUP001","SKU001","http://example.com/photos/qp68.jpg","pending","质检员5","2024-05-13 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",68
+"QP000067","BATCH004","SUP004","SKU003","http://example.com/photos/qp67.jpg","unqualified","质检员5","2024-06-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",67
+"QP000066","BATCH004","SUP005","SKU001","http://example.com/photos/qp66.jpg","qualified","质检员2","2024-10-24 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",66
+"QP000065","BATCH004","SUP003","SKU006","http://example.com/photos/qp65.jpg","pending","质检员4","2024-09-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",65
+"QP000064","BATCH004","SUP004","SKU006","http://example.com/photos/qp64.jpg","unqualified","质检员2","2024-02-07 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",64
+"QP000063","BATCH004","SUP002","SKU005","http://example.com/photos/qp63.jpg","pending","质检员3","2024-10-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",63
+"QP000062","BATCH004","SUP002","SKU002","http://example.com/photos/qp62.jpg","unqualified","质检员5","2024-01-16 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",62
+"QP000061","BATCH004","SUP001","SKU005","http://example.com/photos/qp61.jpg","pending","质检员2","2024-09-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",61
+"QP000060","BATCH004","SUP005","SKU004","http://example.com/photos/qp60.jpg","qualified","质检员5","2024-11-23 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",60
+"QP000059","BATCH003","SUP002","SKU005","http://example.com/photos/qp59.jpg","qualified","质检员3","2024-02-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",59
+"QP000058","BATCH003","SUP002","SKU006","http://example.com/photos/qp58.jpg","qualified","质检员1","2024-03-03 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",58
+"QP000057","BATCH003","SUP005","SKU002","http://example.com/photos/qp57.jpg","qualified","质检员5","2024-08-05 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",57
+"QP000056","BATCH003","SUP001","SKU004","http://example.com/photos/qp56.jpg","qualified","质检员5","2024-09-18 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",56
+"QP000055","BATCH003","SUP002","SKU005","http://example.com/photos/qp55.jpg","unqualified","质检员2","2024-02-29 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",55
+"QP000054","BATCH003","SUP002","SKU003","http://example.com/photos/qp54.jpg","unqualified","质检员5","2024-06-23 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",54
+"QP000053","BATCH003","SUP001","SKU001","http://example.com/photos/qp53.jpg","unqualified","质检员2","2024-11-07 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",53
+"QP000052","BATCH003","SUP003","SKU004","http://example.com/photos/qp52.jpg","pending","质检员5","2024-04-21 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",52
+"QP000051","BATCH003","SUP002","SKU003","http://example.com/photos/qp51.jpg","pending","质检员3","2024-04-13 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",51
+"QP000050","BATCH003","SUP001","SKU001","http://example.com/photos/qp50.jpg","qualified","质检员4","2024-01-15 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",50
+"QP000049","BATCH003","SUP003","SKU004","http://example.com/photos/qp49.jpg","pending","质检员4","2024-01-03 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",49
+"QP000048","BATCH003","SUP005","SKU001","http://example.com/photos/qp48.jpg","qualified","质检员4","2024-02-01 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",48
+"QP000047","BATCH003","SUP003","SKU003","http://example.com/photos/qp47.jpg","unqualified","质检员1","2024-09-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",47
+"QP000046","BATCH003","SUP004","SKU002","http://example.com/photos/qp46.jpg","unqualified","质检员5","2024-10-18 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",46
+"QP000045","BATCH003","SUP001","SKU006","http://example.com/photos/qp45.jpg","unqualified","质检员5","2024-11-13 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",45
+"QP000044","BATCH003","SUP005","SKU003","http://example.com/photos/qp44.jpg","qualified","质检员1","2024-02-10 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",44
+"QP000043","BATCH003","SUP004","SKU006","http://example.com/photos/qp43.jpg","pending","质检员4","2024-08-25 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",43
+"QP000042","BATCH003","SUP001","SKU003","http://example.com/photos/qp42.jpg","unqualified","质检员1","2024-10-03 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",42
+"QP000041","BATCH003","SUP004","SKU001","http://example.com/photos/qp41.jpg","pending","质检员1","2024-01-04 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",41
+"QP000040","BATCH003","SUP003","SKU004","http://example.com/photos/qp40.jpg","qualified","质检员3","2024-01-10 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",40
+"QP000039","BATCH002","SUP005","SKU002","http://example.com/photos/qp39.jpg","qualified","质检员2","2024-08-26 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",39
+"QP000038","BATCH002","SUP001","SKU001","http://example.com/photos/qp38.jpg","pending","质检员5","2024-12-15 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",38
+"QP000037","BATCH002","SUP004","SKU003","http://example.com/photos/qp37.jpg","pending","质检员1","2024-06-03 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",37
+"QP000036","BATCH002","SUP003","SKU006","http://example.com/photos/qp36.jpg","qualified","质检员3","2024-12-13 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",36
+"QP000035","BATCH002","SUP004","SKU001","http://example.com/photos/qp35.jpg","unqualified","质检员2","2024-04-04 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",35
+"QP000034","BATCH002","SUP003","SKU001","http://example.com/photos/qp34.jpg","qualified","质检员1","2024-09-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",34
+"QP000033","BATCH002","SUP002","SKU006","http://example.com/photos/qp33.jpg","unqualified","质检员4","2024-02-02 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",33
+"QP000032","BATCH002","SUP005","SKU006","http://example.com/photos/qp32.jpg","unqualified","质检员4","2024-04-01 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",32
+"QP000031","BATCH002","SUP004","SKU003","http://example.com/photos/qp31.jpg","unqualified","质检员4","2024-06-30 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",31
+"QP000030","BATCH002","SUP001","SKU006","http://example.com/photos/qp30.jpg","pending","质检员3","2024-12-09 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",30
+"QP000029","BATCH002","SUP004","SKU001","http://example.com/photos/qp29.jpg","pending","质检员5","2024-07-18 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",29
+"QP000028","BATCH002","SUP005","SKU001","http://example.com/photos/qp28.jpg","qualified","质检员1","2024-04-24 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",28
+"QP000027","BATCH002","SUP003","SKU002","http://example.com/photos/qp27.jpg","qualified","质检员2","2024-07-16 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",27
+"QP000026","BATCH002","SUP003","SKU005","http://example.com/photos/qp26.jpg","unqualified","质检员5","2024-04-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",26
+"QP000025","BATCH002","SUP005","SKU006","http://example.com/photos/qp25.jpg","pending","质检员5","2024-01-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",25
+"QP000024","BATCH002","SUP004","SKU001","http://example.com/photos/qp24.jpg","pending","质检员3","2024-07-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",24
+"QP000023","BATCH002","SUP002","SKU005","http://example.com/photos/qp23.jpg","qualified","质检员5","2024-02-09 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",23
+"QP000022","BATCH002","SUP001","SKU004","http://example.com/photos/qp22.jpg","unqualified","质检员5","2024-01-20 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",22
+"QP000021","BATCH002","SUP004","SKU004","http://example.com/photos/qp21.jpg","unqualified","质检员3","2024-12-09 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",21
+"QP000020","BATCH002","SUP004","SKU005","http://example.com/photos/qp20.jpg","pending","质检员1","2024-07-01 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",20
+"QP000019","BATCH001","SUP002","SKU002","http://example.com/photos/qp19.jpg","unqualified","质检员3","2024-09-07 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",19
+"QP000018","BATCH001","SUP001","SKU004","http://example.com/photos/qp18.jpg","qualified","质检员3","2024-12-10 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",18
+"QP000017","BATCH001","SUP001","SKU002","http://example.com/photos/qp17.jpg","qualified","质检员1","2024-02-14 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",17
+"QP000016","BATCH001","SUP004","SKU005","http://example.com/photos/qp16.jpg","pending","质检员5","2024-12-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",16
+"QP000015","BATCH001","SUP005","SKU004","http://example.com/photos/qp15.jpg","unqualified","质检员2","2024-05-11 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",15
+"QP000014","BATCH001","SUP004","SKU003","http://example.com/photos/qp14.jpg","unqualified","质检员5","2024-10-25 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",14
+"QP000013","BATCH001","SUP002","SKU003","http://example.com/photos/qp13.jpg","unqualified","质检员4","2024-07-01 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",13
+"QP000012","BATCH001","SUP002","SKU002","http://example.com/photos/qp12.jpg","qualified","质检员3","2024-07-31 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",12
+"QP000011","BATCH001","SUP003","SKU005","http://example.com/photos/qp11.jpg","pending","质检员1","2024-03-26 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",11
+"QP000010","BATCH001","SUP001","SKU006","http://example.com/photos/qp10.jpg","qualified","质检员1","2024-03-14 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",10
+"QP000009","BATCH001","SUP003","SKU001","http://example.com/photos/qp9.jpg","qualified","质检员2","2024-01-09 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",9
+"QP000008","BATCH001","SUP005","SKU004","http://example.com/photos/qp8.jpg","qualified","质检员2","2024-03-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",8
+"QP000007","BATCH001","SUP003","SKU006","http://example.com/photos/qp7.jpg","qualified","质检员3","2024-10-12 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",7
+"QP000006","BATCH001","SUP004","SKU001","http://example.com/photos/qp6.jpg","pending","质检员4","2024-01-23 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",6
+"QP000005","BATCH001","SUP005","SKU005","http://example.com/photos/qp5.jpg","qualified","质检员5","2024-07-07 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",5
+"QP000004","BATCH001","SUP004","SKU004","http://example.com/photos/qp4.jpg","pending","质检员2","2024-02-27 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",4
+"QP000003","BATCH001","SUP001","SKU001","http://example.com/photos/qp3.jpg","pending","质检员5","2024-10-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",3
+"QP000002","BATCH001","SUP005","SKU006","http://example.com/photos/qp2.jpg","unqualified","质检员5","2024-12-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",2
+"QP000001","BATCH001","SUP005","SKU005","http://example.com/photos/qp1.jpg","qualified","质检员4","2024-05-17 00:00:00.000 +00:00","1779647166053_è´¨æ£ç§ç.xlsx",1
