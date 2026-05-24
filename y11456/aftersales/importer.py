@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple, Any
 from .models import (
     create_source_file, check_duplicate_file, insert_raw_record,
     get_batch, upsert_aftersales_order, get_raw_records_by_batch,
-    get_source_files, delete_source_file_records
+    get_source_files, delete_source_file_records, insert_failed_record
 )
 
 
@@ -421,10 +421,24 @@ def import_file(batch_no: str, file_path: str, file_type: str,
         
         row_errors = parse_error_map.get(original_row_no, [])
         
+        raw_data_json = json.dumps(record, ensure_ascii=False)
+        
         if not order_no or not sku_code:
             error_msg = '缺少订单号或商品编码，无法关联订单'
             if row_errors:
                 error_msg += f" ({', '.join(row_errors)})"
+            insert_failed_record(
+                batch_id=batch_id,
+                source_file_id=source_file_id,
+                source_type=source_type,
+                original_row_no=original_row_no,
+                order_no=order_no,
+                sku_code=sku_code,
+                sku_name=record.get('sku_name', ''),
+                failure_type='missing_key',
+                error_message=error_msg,
+                raw_data=raw_data_json
+            )
             failed_records.append({
                 'row_no': original_row_no,
                 'data': record,
@@ -433,14 +447,25 @@ def import_file(batch_no: str, file_path: str, file_type: str,
             continue
         
         if has_parse_error and row_errors:
+            error_msg = f"解析错误: {', '.join(row_errors)}"
+            insert_failed_record(
+                batch_id=batch_id,
+                source_file_id=source_file_id,
+                source_type=source_type,
+                original_row_no=original_row_no,
+                order_no=order_no,
+                sku_code=sku_code,
+                sku_name=record.get('sku_name', ''),
+                failure_type='parse_error',
+                error_message=error_msg,
+                raw_data=raw_data_json
+            )
             failed_records.append({
                 'row_no': original_row_no,
                 'data': record,
-                'error': f"解析错误: {', '.join(row_errors)}"
+                'error': error_msg
             })
             continue
-        
-        raw_data = json.dumps(record, ensure_ascii=False)
         
         try:
             insert_raw_record(
@@ -449,14 +474,27 @@ def import_file(batch_no: str, file_path: str, file_type: str,
                 source_type=source_type,
                 original_row_no=original_row_no,
                 parsed_data=record,
-                raw_data=raw_data
+                raw_data=raw_data_json
             )
             success_count += 1
         except Exception as e:
+            error_msg = str(e)
+            insert_failed_record(
+                batch_id=batch_id,
+                source_file_id=source_file_id,
+                source_type=source_type,
+                original_row_no=original_row_no,
+                order_no=order_no,
+                sku_code=sku_code,
+                sku_name=record.get('sku_name', ''),
+                failure_type='database_error',
+                error_message=error_msg,
+                raw_data=raw_data_json
+            )
             failed_records.append({
                 'row_no': original_row_no,
                 'data': record,
-                'error': str(e)
+                'error': error_msg
             })
     
     return {

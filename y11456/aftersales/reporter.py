@@ -7,7 +7,7 @@ from .models import (
     get_batch, get_aftersales_orders, get_batch_stats,
     get_source_files, get_check_results, get_adjustments,
     get_export_records, get_raw_records_by_batch, freeze_order,
-    mark_exported, get_order_by_id
+    mark_exported, get_order_by_id, get_failed_records_by_batch, get_failed_stats
 )
 from .checker import split_by_problem_type, get_failed_details
 
@@ -27,6 +27,8 @@ def generate_report(batch_no: str) -> Dict:
     source_files = get_source_files(batch_id)
     split_orders = split_by_problem_type(batch_no)
     failed_details = get_failed_details(batch_no)
+    import_failed_records = get_failed_records_by_batch(batch_id)
+    import_failed_stats = get_failed_stats(batch_id)
     
     total_amount = 0
     passed_orders = get_aftersales_orders(batch_id, status='passed')
@@ -45,6 +47,7 @@ def generate_report(batch_no: str) -> Dict:
             'frozen_orders': stats.get('frozen', 0),
             'exported_orders': stats.get('exported', 0),
             'raw_records': stats.get('raw_records', 0),
+            'import_failed': import_failed_stats.get('total', 0),
             'total_refund_amount': round(total_amount, 2)
         },
         'source_files': [
@@ -62,7 +65,9 @@ def generate_report(batch_no: str) -> Dict:
             '错发': len(split_orders['错发']),
             '其他': len(split_orders['其他'])
         },
-        'failed_orders': failed_details
+        'failed_orders': failed_details,
+        'import_failed_stats': import_failed_stats,
+        'import_failed_records': import_failed_records
     }
     
     return report
@@ -90,6 +95,7 @@ def format_report_text(report: Dict) -> str:
     lines.append(f"  已冻结: {stats['frozen_orders']}")
     lines.append(f"  已导出: {stats['exported_orders']}")
     lines.append(f"  原始记录数: {stats['raw_records']}")
+    lines.append(f"  导入失败: {stats['import_failed']}")
     lines.append(f"  总退款金额: ¥{stats['total_refund_amount']:.2f}")
     lines.append("")
     
@@ -110,7 +116,7 @@ def format_report_text(report: Dict) -> str:
     
     if report['failed_orders']:
         lines.append("-" * 40)
-        lines.append(f"【失败清单】({len(report['failed_orders'])} 单)")
+        lines.append(f"【核验失败清单】({len(report['failed_orders'])} 单)")
         lines.append("-" * 40)
         for idx, order in enumerate(report['failed_orders'], 1):
             lines.append(f"{idx}. 订单号: {order['order_no']}")
@@ -123,6 +129,18 @@ def format_report_text(report: Dict) -> str:
                     for s in order['source_rows']
                 ])
                 lines.append(f"   原始行号: {src_info}")
+            lines.append("")
+    
+    if report.get('import_failed_records'):
+        lines.append("-" * 40)
+        lines.append(f"【导入失败清单】({len(report['import_failed_records'])} 条)")
+        lines.append("-" * 40)
+        for idx, record in enumerate(report['import_failed_records'], 1):
+            lines.append(f"{idx}. 来源: {record.get('file_name', '未知')} 第{record['original_row_no']}行")
+            lines.append(f"   类型: {record['source_type']}")
+            lines.append(f"   订单号: {record.get('order_no', '(空)') or '(空)'}")
+            lines.append(f"   商品编码: {record.get('sku_code', '(空)') or '(空)'}")
+            lines.append(f"   失败原因: {record['error_message']}")
             lines.append("")
     
     return "\n".join(lines)

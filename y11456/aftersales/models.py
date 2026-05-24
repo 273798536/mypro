@@ -1,5 +1,6 @@
 import json
 import hashlib
+import sqlite3
 import pandas as pd
 from datetime import datetime
 from typing import List, Dict, Optional, Any
@@ -254,6 +255,70 @@ def get_check_results(order_id: int) -> List[Dict]:
             (order_id,)
         )
         return [dict(row) for row in cursor.fetchall()]
+
+
+def insert_failed_record(batch_id: int, source_file_id: int, source_type: str,
+                         original_row_no: int, order_no: str, sku_code: str,
+                         sku_name: str, failure_type: str, error_message: str,
+                         raw_data: str = None) -> int:
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """INSERT INTO failed_records 
+               (batch_id, source_file_id, source_type, original_row_no,
+                order_no, sku_code, sku_name, failure_type, error_message, 
+                raw_data, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                batch_id, source_file_id, source_type, original_row_no,
+                safe_str(order_no), safe_str(sku_code), safe_str(sku_name),
+                failure_type, error_message, raw_data, get_current_timestamp()
+            )
+        )
+        conn.commit()
+        return cursor.lastrowid
+
+
+def get_failed_records_by_batch(batch_id: int) -> List[Dict]:
+    with get_connection() as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT fr.*, sf.file_name 
+            FROM failed_records fr
+            LEFT JOIN source_files sf ON fr.source_file_id = sf.id
+            WHERE fr.batch_id = ? 
+            ORDER BY fr.original_row_no
+        """, (batch_id,))
+        return [dict(row) for row in cursor.fetchall()]
+
+
+def get_failed_records_by_source(source_file_id: int) -> List[Dict]:
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM failed_records WHERE source_file_id = ? ORDER BY original_row_no",
+            (source_file_id,)
+        )
+        return [dict(row) for row in cursor.fetchall()]
+
+
+def get_failed_stats(batch_id: int) -> Dict:
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT failure_type, COUNT(*) as count
+            FROM failed_records 
+            WHERE batch_id = ? 
+            GROUP BY failure_type
+        """, (batch_id,))
+        stats = {}
+        for row in cursor.fetchall():
+            stats[row['failure_type']] = row['count']
+        return {
+            'total': sum(stats.values()),
+            'by_type': stats
+        }
 
 
 def add_adjustment(order_id: int, adjust_type: str, old_value: str, 

@@ -64,6 +64,29 @@ def init_db():
         ''')
         
         cursor.execute('''
+            CREATE TABLE IF NOT EXISTS failed_records (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                batch_id INTEGER NOT NULL,
+                source_file_id INTEGER,
+                source_type TEXT NOT NULL,
+                original_row_no INTEGER NOT NULL,
+                order_no TEXT,
+                sku_code TEXT,
+                sku_name TEXT,
+                failure_type TEXT NOT NULL,
+                error_message TEXT NOT NULL,
+                raw_data TEXT,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (batch_id) REFERENCES batches(id),
+                FOREIGN KEY (source_file_id) REFERENCES source_files(id)
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_failed_batch ON failed_records(batch_id)
+        ''')
+        
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS aftersales_orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 batch_id INTEGER NOT NULL,
