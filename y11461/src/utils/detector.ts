@@ -4,22 +4,31 @@ import {
   DirtyRecord, 
   DirtyType, 
   Database,
-  RecordStatus 
+  RecordStatus,
+  DataSource
 } from '../types';
 import { generateId, getCurrentTime } from './database';
 
-const REQUIRED_FIELDS = [
+const BASE_REQUIRED_FIELDS = [
   'batchNumber',
   'materialName',
   'materialType',
   'quantity',
   'unitPrice',
-  'totalAmount',
-  'supplier'
+  'totalAmount'
 ];
 
+const REQUIRED_FIELDS_BY_SOURCE: Record<DataSource, string[]> = {
+  [DataSource.IMPLANT_BATCH]: [...BASE_REQUIRED_FIELDS, 'supplier'],
+  [DataSource.APPOINTMENT]: [...BASE_REQUIRED_FIELDS, 'appointmentDate', 'patientName'],
+  [DataSource.SUPPLIER_INVOICE]: [...BASE_REQUIRED_FIELDS, 'supplier', 'invoiceNumber'],
+  [DataSource.MANUAL_ENTRY]: [...BASE_REQUIRED_FIELDS, 'supplier']
+};
+
 export function detectMissingFields(record: MaterialRecord): DirtyRecord | null {
-  for (const field of REQUIRED_FIELDS) {
+  const requiredFields = REQUIRED_FIELDS_BY_SOURCE[record.source] || BASE_REQUIRED_FIELDS;
+  
+  for (const field of requiredFields) {
     const value = (record as any)[field];
     if (value === undefined || value === null || value === '') {
       return {
@@ -202,19 +211,17 @@ export function detectAllDirty(
   const missingField = detectMissingFields(record);
   if (missingField) dirtyRecords.push(missingField);
   
-  if (!missingField) {
-    const crossDate = detectCrossDate(record, existingRecords);
-    if (crossDate) dirtyRecords.push(crossDate);
-    
-    const nameChanged = detectNameChanged(record, existingRecords);
-    if (nameChanged) dirtyRecords.push(nameChanged);
-    
-    const amountConflict = detectAmountConflict(record);
-    if (amountConflict) dirtyRecords.push(amountConflict);
-    
-    const quantityConflict = detectQuantityConflict(record, existingRecords);
-    if (quantityConflict) dirtyRecords.push(quantityConflict);
-  }
+  const crossDate = detectCrossDate(record, existingRecords);
+  if (crossDate) dirtyRecords.push(crossDate);
+  
+  const nameChanged = detectNameChanged(record, existingRecords);
+  if (nameChanged) dirtyRecords.push(nameChanged);
+  
+  const amountConflict = detectAmountConflict(record);
+  if (amountConflict) dirtyRecords.push(amountConflict);
+  
+  const quantityConflict = detectQuantityConflict(record, existingRecords);
+  if (quantityConflict) dirtyRecords.push(quantityConflict);
   
   return dirtyRecords;
 }

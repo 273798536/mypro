@@ -4,34 +4,34 @@
       "username": "admin",
       "role": "supervisor",
       "name": "系统管理员",
-      "id": "67d5b4e1-d139-44c4-b5df-695763795f47",
-      "createdAt": "2026-05-24T18:03:57.545Z"
+      "id": "3825f007-45ba-4540-a7db-a3e042fa66f8",
+      "createdAt": "2026-05-24T18:29:48.412Z"
     },
     {
       "username": "entry",
       "role": "data_entry",
       "name": "录入员",
-      "id": "a55859f8-247e-4e96-b16e-18e6ed144501",
-      "createdAt": "2026-05-24T18:03:57.551Z"
+      "id": "809eb53b-c348-412b-9221-ae9357b02185",
+      "createdAt": "2026-05-24T18:29:48.420Z"
     },
     {
       "username": "reviewer",
       "role": "reviewer",
       "name": "复核员",
-      "id": "6a870a83-c9ce-4a19-b0ed-af98ac0aa280",
-      "createdAt": "2026-05-24T18:03:57.551Z"
+      "id": "2417b4aa-22e0-4d3a-b3d2-649ec8aea6ce",
+      "createdAt": "2026-05-24T18:29:48.420Z"
     },
     {
       "username": "viewer",
       "role": "read_only",
       "name": "查看员",
-      "id": "a8a0f2a9-2596-45ef-bfbf-2627672d5018",
-      "createdAt": "2026-05-24T18:03:57.551Z"
+      "id": "176d9021-7720-4e5b-a0ee-7a9259974e12",
+      "createdAt": "2026-05-24T18:29:48.420Z"
     }
   ],
   "records": [
     {
-      "id": "9cde7859-0238-4bf9-954b-7133bb82b880",
+      "id": "d0fbe2e9-7400-454c-9ff1-bddb14ae260d",
       "source": "manual_entry",
       "sourceLine": 2,
       "sourceFile": "manual_entry_dirty.csv",
@@ -45,11 +45,11 @@
       "patientId": "",
       "patientName": "历史患者4",
       "appointmentDate": "2023-12-10",
-      "importDate": "2026-05-24T18:04:10.116Z",
+      "importDate": "2026-05-24T18:29:53.715Z",
       "importedBy": "entry",
       "status": "imported",
-      "createdAt": "2026-05-24T18:04:10.116Z",
-      "updatedAt": "2026-05-24T18:04:10.119Z",
+      "createdAt": "2026-05-24T18:29:53.717Z",
+      "updatedAt": "2026-05-24T18:29:53.719Z",
       "rawData": {
         "批号": "IMP-HIST-004",
         "材料名称": "历史愈合基台",
@@ -63,7 +63,7 @@
       }
     },
     {
-      "id": "322f045e-c36f-40b4-a2bc-154556568ec2",
+      "id": "467bd3b9-2c52-4406-b69b-8759d474c421",
       "source": "manual_entry",
       "sourceLine": 3,
       "sourceFile": "manual_entry_dirty.csv",
@@ -77,11 +77,11 @@
       "patientId": "",
       "patientName": "历史患者5",
       "appointmentDate": "2023-12-11",
-      "importDate": "2026-05-24T18:04:10.116Z",
+      "importDate": "2026-05-24T18:29:53.717Z",
       "importedBy": "entry",
       "status": "dirty",
-      "createdAt": "2026-05-24T18:04:10.116Z",
-      "updatedAt": "2026-05-24T18:04:10.119Z",
+      "createdAt": "2026-05-24T18:29:53.717Z",
+      "updatedAt": "2026-05-24T18:29:53.719Z",
       "rawData": {
         "批号": "",
         "材料名称": "历史缺失批号材料",
@@ -95,7 +95,7 @@
       }
     },
     {
-      "id": "6496556f-1a51-498d-bfc1-8bfc08ac0c09",
+      "id": "aaca7e2f-383a-4779-9c65-57a86eff7ad2",
       "source": "supplier_invoice",
       "sourceLine": 2,
       "sourceFile": "supplier_invoice_old.csv",
@@ -107,11 +107,11 @@
       "totalAmount": 12500,
       "supplier": "Straumann中国",
       "invoiceNumber": "HINV-001",
-      "importDate": "2026-05-24T18:04:10.121Z",
+      "importDate": "2026-05-24T18:29:53.721Z",
       "importedBy": "entry",
       "status": "imported",
-      "createdAt": "2026-05-24T18:04:10.121Z",
-      "updatedAt": "2026-05-24T18:04:10.122Z",
+      "createdAt": "2026-05-24T18:29:53.721Z",
+      "updatedAt": "2026-05-24T18:29:53.722Z",
       "rawData": {
         "发票号": "HINV-001",
         "批号": "IMP-HIST-001",
@@ -124,7 +124,7 @@
       }
     },
     {
-      "id": "612b959d-1f3e-4150-8e34-5643b7a73fa3",
+      "id": "5bf84d4b-4912-44ec-8ec8-6e41e3a6c64f",
       "source": "supplier_invoice",
       "sourceLine": 3,
       "sourceFile": "supplier_invoice_old.csv",
@@ -136,11 +136,11 @@
       "totalAmount": 9600,
       "supplier": "Nobel Biocare",
       "invoiceNumber": "HINV-002",
-      "importDate": "2026-05-24T18:04:10.121Z",
+      "importDate": "2026-05-24T18:29:53.721Z",
       "importedBy": "entry",
       "status": "imported",
-      "createdAt": "2026-05-24T18:04:10.121Z",
-      "updatedAt": "2026-05-24T18:04:10.122Z",
+      "createdAt": "2026-05-24T18:29:53.721Z",
+      "updatedAt": "2026-05-24T18:29:53.722Z",
       "rawData": {
         "发票号": "HINV-002",
         "批号": "IMP-HIST-002",
@@ -153,7 +153,7 @@
       }
     },
     {
-      "id": "fc28679b-b684-4204-91a4-812aae4e8aa0",
+      "id": "10ac67f4-5623-4af5-8e0d-a98e6be0502b",
       "source": "appointment",
       "sourceLine": 2,
       "sourceFile": "appointment_history.csv",
@@ -167,11 +167,11 @@
       "patientId": "HP001",
       "patientName": "历史患者1",
       "appointmentDate": "2023-12-01",
-      "importDate": "2026-05-24T18:04:10.123Z",
+      "importDate": "2026-05-24T18:29:53.728Z",
       "importedBy": "entry",
       "status": "dirty",
-      "createdAt": "2026-05-24T18:04:10.123Z",
-      "updatedAt": "2026-05-24T18:04:10.127Z",
+      "createdAt": "2026-05-24T18:29:53.728Z",
+      "updatedAt": "2026-05-24T18:29:58.902Z",
       "rawData": {
         "患者ID": "HP001",
         "患者姓名": "历史患者1",
@@ -184,7 +184,7 @@
       }
     },
     {
-      "id": "9371f2e7-ecdb-4646-814b-bfdd843db749",
+      "id": "8dcd5589-267a-4198-bf97-0f5af41c1359",
       "source": "appointment",
       "sourceLine": 3,
       "sourceFile": "appointment_history.csv",
@@ -198,11 +198,11 @@
       "patientId": "HP002",
       "patientName": "历史患者2",
       "appointmentDate": "2023-12-05",
-      "importDate": "2026-05-24T18:04:10.123Z",
+      "importDate": "2026-05-24T18:29:53.728Z",
       "importedBy": "entry",
-      "status": "dirty",
-      "createdAt": "2026-05-24T18:04:10.123Z",
-      "updatedAt": "2026-05-24T18:04:10.128Z",
+      "status": "imported",
+      "createdAt": "2026-05-24T18:29:53.728Z",
+      "updatedAt": "2026-05-24T18:29:53.729Z",
       "rawData": {
         "患者ID": "HP002",
         "患者姓名": "历史患者2",
@@ -215,7 +215,7 @@
       }
     },
     {
-      "id": "325f056b-c802-4e3e-9291-24688aa7a4b2",
+      "id": "754e83cb-7bae-4b9e-8aac-bd6461837a18",
       "source": "appointment",
       "sourceLine": 4,
       "sourceFile": "appointment_history.csv",
@@ -229,11 +229,11 @@
       "patientId": "HP003",
       "patientName": "历史患者3",
       "appointmentDate": "2023-12-15",
-      "importDate": "2026-05-24T18:04:10.123Z",
+      "importDate": "2026-05-24T18:29:53.728Z",
       "importedBy": "entry",
       "status": "dirty",
-      "createdAt": "2026-05-24T18:04:10.123Z",
-      "updatedAt": "2026-05-24T18:04:10.128Z",
+      "createdAt": "2026-05-24T18:29:53.728Z",
+      "updatedAt": "2026-05-24T18:29:53.732Z",
       "rawData": {
         "患者ID": "HP003",
         "患者姓名": "历史患者3",
@@ -246,7 +246,7 @@
       }
     },
     {
-      "id": "e5ecdbef-14d7-4845-9639-a222a955663b",
+      "id": "0cfed255-3c51-4f99-8573-4a80b66d9b29",
       "source": "implant_batch",
       "sourceLine": 2,
       "sourceFile": "implant_batch_history.csv",
@@ -257,11 +257,11 @@
       "unitPrice": 2500,
       "totalAmount": 12500,
       "supplier": "Straumann中国",
-      "importDate": "2026-05-24T18:04:10.132Z",
+      "importDate": "2026-05-24T18:29:53.735Z",
       "importedBy": "entry",
       "status": "imported",
-      "createdAt": "2026-05-24T18:04:10.132Z",
-      "updatedAt": "2026-05-24T18:04:10.134Z",
+      "createdAt": "2026-05-24T18:29:53.735Z",
+      "updatedAt": "2026-05-24T18:29:53.737Z",
       "rawData": {
         "批号": "IMP-HIST-001",
         "材料名称": "Straumann历史种植体",
@@ -273,7 +273,7 @@
       }
     },
     {
-      "id": "b119e34f-7fb4-4e26-ab04-39e88e94264c",
+      "id": "05d0d8ad-814c-4a5c-9f78-c77cc9b70450",
       "source": "implant_batch",
       "sourceLine": 3,
       "sourceFile": "implant_batch_history.csv",
@@ -284,11 +284,11 @@
       "unitPrice": 3200,
       "totalAmount": 9600,
       "supplier": "Nobel Biocare",
-      "importDate": "2026-05-24T18:04:10.132Z",
+      "importDate": "2026-05-24T18:29:53.735Z",
       "importedBy": "entry",
       "status": "imported",
-      "createdAt": "2026-05-24T18:04:10.132Z",
-      "updatedAt": "2026-05-24T18:04:10.134Z",
+      "createdAt": "2026-05-24T18:29:53.735Z",
+      "updatedAt": "2026-05-24T18:29:53.737Z",
       "rawData": {
         "批号": "IMP-HIST-002",
         "材料名称": "Nobel历史种植体",
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": "4c266265-0d80-42e6-8bf3-d3b2734133a8",
+      "id": "ad3ae9d0-79c0-4ecd-92f3-a1a24bb75fb5",
       "source": "implant_batch",
       "sourceLine": 4,
       "sourceFile": "implant_batch_history.csv",
@@ -311,11 +311,11 @@
       "unitPrice": 1800,
       "totalAmount": 14400,
       "supplier": "奥齿泰上海",
-      "importDate": "2026-05-24T18:04:10.132Z",
+      "importDate": "2026-05-24T18:29:53.735Z",
       "importedBy": "entry",
       "status": "imported",
-      "createdAt": "2026-05-24T18:04:10.132Z",
-      "updatedAt": "2026-05-24T18:04:10.134Z",
+      "createdAt": "2026-05-24T18:29:53.735Z",
+      "updatedAt": "2026-05-24T18:29:53.737Z",
       "rawData": {
         "批号": "IMP-HIST-003",
         "材料名称": "Osstem历史种植体",
@@ -329,141 +329,144 @@
   ],
   "dirtyRecords": [
     {
-      "id": "3e7d02ec-a288-40f2-bde8-d1f026f7160a",
-      "recordId": "322f045e-c36f-40b4-a2bc-154556568ec2",
+      "id": "5e990932-3385-4003-973a-a811f96a3331",
+      "recordId": "467bd3b9-2c52-4406-b69b-8759d474c421",
       "dirtyType": "missing_field",
       "fieldName": "batchNumber",
       "description": "缺少必填字段: batchNumber",
       "suggestion": "请补充字段 \"batchNumber\" 的值",
-      "createdAt": "2026-05-24T18:04:10.119Z",
+      "createdAt": "2026-05-24T18:29:53.719Z",
       "resolved": false
     },
     {
-      "id": "d1915850-7720-4d59-8be1-2575636edf06",
-      "recordId": "fc28679b-b684-4204-91a4-812aae4e8aa0",
-      "dirtyType": "missing_field",
-      "fieldName": "supplier",
-      "description": "缺少必填字段: supplier",
-      "suggestion": "请补充字段 \"supplier\" 的值",
-      "createdAt": "2026-05-24T18:04:10.127Z",
+      "id": "192a3f6c-66fb-4b18-8020-33f0197b608f",
+      "recordId": "754e83cb-7bae-4b9e-8aac-bd6461837a18",
+      "dirtyType": "cross_date",
+      "fieldName": "appointmentDate",
+      "expectedValue": "2023-12-01",
+      "actualValue": "2023-12-15",
+      "description": "同一批号(IMP-HIST-001)跨日期使用，相差14天",
+      "suggestion": "请确认预约日期是否正确，或核对批号是否录入错误",
+      "createdAt": "2026-05-24T18:29:53.732Z",
       "resolved": false
     },
     {
-      "id": "9b565d92-8ede-4982-a0e3-b6cbd69e12fd",
-      "recordId": "9371f2e7-ecdb-4646-814b-bfdd843db749",
-      "dirtyType": "missing_field",
-      "fieldName": "supplier",
-      "description": "缺少必填字段: supplier",
-      "suggestion": "请补充字段 \"supplier\" 的值",
-      "createdAt": "2026-05-24T18:04:10.127Z",
-      "resolved": false
-    },
-    {
-      "id": "d2d643bd-b426-4aa3-b258-270b024c1e4d",
-      "recordId": "325f056b-c802-4e3e-9291-24688aa7a4b2",
-      "dirtyType": "missing_field",
-      "fieldName": "supplier",
-      "description": "缺少必填字段: supplier",
-      "suggestion": "请补充字段 \"supplier\" 的值",
-      "createdAt": "2026-05-24T18:04:10.128Z",
+      "id": "78e5fa15-f226-4534-afb7-8c8f1182ee34",
+      "recordId": "10ac67f4-5623-4af5-8e0d-a98e6be0502b",
+      "dirtyType": "cross_date",
+      "fieldName": "appointmentDate",
+      "expectedValue": "2023-12-15",
+      "actualValue": "2023-12-01",
+      "description": "同一批号(IMP-HIST-001)跨日期使用，相差14天",
+      "suggestion": "请确认预约日期是否正确，或核对批号是否录入错误",
+      "createdAt": "2026-05-24T18:29:58.902Z",
       "resolved": false
     }
   ],
   "stateChanges": [
     {
-      "id": "a159e2eb-6077-4c03-9834-1285f8405c14",
-      "recordId": "9cde7859-0238-4bf9-954b-7133bb82b880",
+      "id": "5b172b29-d7f7-4504-b519-21fa14a49e7f",
+      "recordId": "d0fbe2e9-7400-454c-9ff1-bddb14ae260d",
       "fromStatus": "pending",
       "toStatus": "imported",
       "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.119Z",
+      "changedAt": "2026-05-24T18:29:53.719Z",
       "reason": "数据校验通过"
     },
     {
-      "id": "9dc6243c-e668-4449-b985-ccde4cfb7048",
-      "recordId": "322f045e-c36f-40b4-a2bc-154556568ec2",
+      "id": "15db4f0b-f57d-4808-8fe0-6ffced6695fe",
+      "recordId": "467bd3b9-2c52-4406-b69b-8759d474c421",
       "fromStatus": "pending",
       "toStatus": "dirty",
       "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.119Z",
+      "changedAt": "2026-05-24T18:29:53.719Z",
       "reason": "检测到1个问题"
     },
     {
-      "id": "4be39c0d-a3b4-4141-96cf-09223f90e543",
-      "recordId": "6496556f-1a51-498d-bfc1-8bfc08ac0c09",
+      "id": "41bf17e0-edbd-4b56-9be4-9bf11649f124",
+      "recordId": "aaca7e2f-383a-4779-9c65-57a86eff7ad2",
       "fromStatus": "pending",
       "toStatus": "imported",
       "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.122Z",
+      "changedAt": "2026-05-24T18:29:53.722Z",
       "reason": "数据校验通过"
     },
     {
-      "id": "25be4269-902e-4a15-a53b-97442a408103",
-      "recordId": "612b959d-1f3e-4150-8e34-5643b7a73fa3",
+      "id": "60c85cd6-ec69-4b43-a976-0affa8ee97bb",
+      "recordId": "5bf84d4b-4912-44ec-8ec8-6e41e3a6c64f",
       "fromStatus": "pending",
       "toStatus": "imported",
       "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.122Z",
+      "changedAt": "2026-05-24T18:29:53.722Z",
       "reason": "数据校验通过"
     },
     {
-      "id": "ebd771e2-31e8-4bd3-ba0a-48e067c0760f",
-      "recordId": "fc28679b-b684-4204-91a4-812aae4e8aa0",
+      "id": "70044872-e582-4ac3-be38-1adbe42e860d",
+      "recordId": "10ac67f4-5623-4af5-8e0d-a98e6be0502b",
+      "fromStatus": "pending",
+      "toStatus": "imported",
+      "changedBy": "entry",
+      "changedAt": "2026-05-24T18:29:53.729Z",
+      "reason": "数据校验通过"
+    },
+    {
+      "id": "c7db8f9b-c9b3-46a3-84a3-4faad454cc8b",
+      "recordId": "8dcd5589-267a-4198-bf97-0f5af41c1359",
+      "fromStatus": "pending",
+      "toStatus": "imported",
+      "changedBy": "entry",
+      "changedAt": "2026-05-24T18:29:53.729Z",
+      "reason": "数据校验通过"
+    },
+    {
+      "id": "ae817a8f-4f46-44bc-b856-02e269be3a66",
+      "recordId": "754e83cb-7bae-4b9e-8aac-bd6461837a18",
       "fromStatus": "pending",
       "toStatus": "dirty",
       "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.127Z",
+      "changedAt": "2026-05-24T18:29:53.732Z",
       "reason": "检测到1个问题"
     },
     {
-      "id": "3ed129ee-83b3-41f8-a3ab-51926aa7660a",
-      "recordId": "9371f2e7-ecdb-4646-814b-bfdd843db749",
+      "id": "e3beeb35-23bc-4da8-9715-96ea2bfa0690",
+      "recordId": "0cfed255-3c51-4f99-8573-4a80b66d9b29",
       "fromStatus": "pending",
+      "toStatus": "imported",
+      "changedBy": "entry",
+      "changedAt": "2026-05-24T18:29:53.737Z",
+      "reason": "数据校验通过"
+    },
+    {
+      "id": "1434eec3-af9e-4829-86e7-2cbe497a858f",
+      "recordId": "05d0d8ad-814c-4a5c-9f78-c77cc9b70450",
+      "fromStatus": "pending",
+      "toStatus": "imported",
+      "changedBy": "entry",
+      "changedAt": "2026-05-24T18:29:53.737Z",
+      "reason": "数据校验通过"
+    },
+    {
+      "id": "f160d7da-c2a5-46ae-9e2d-1e916dc20e2d",
+      "recordId": "ad3ae9d0-79c0-4ecd-92f3-a1a24bb75fb5",
+      "fromStatus": "pending",
+      "toStatus": "imported",
+      "changedBy": "entry",
+      "changedAt": "2026-05-24T18:29:53.737Z",
+      "reason": "数据校验通过"
+    },
+    {
+      "id": "2a5569d5-3014-4768-8c99-ddcb48210076",
+      "recordId": "10ac67f4-5623-4af5-8e0d-a98e6be0502b",
+      "fromStatus": "imported",
       "toStatus": "dirty",
-      "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.128Z",
-      "reason": "检测到1个问题"
-    },
-    {
-      "id": "fe96f416-583d-49ca-9e39-c8a630e79f45",
-      "recordId": "325f056b-c802-4e3e-9291-24688aa7a4b2",
-      "fromStatus": "pending",
-      "toStatus": "dirty",
-      "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.128Z",
-      "reason": "检测到1个问题"
-    },
-    {
-      "id": "2e050b08-fae8-4d58-9da4-d622d017d344",
-      "recordId": "e5ecdbef-14d7-4845-9639-a222a955663b",
-      "fromStatus": "pending",
-      "toStatus": "imported",
-      "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.134Z",
-      "reason": "数据校验通过"
-    },
-    {
-      "id": "6e29cfab-1116-4ca1-9bb0-21eb5ab0a004",
-      "recordId": "b119e34f-7fb4-4e26-ab04-39e88e94264c",
-      "fromStatus": "pending",
-      "toStatus": "imported",
-      "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.134Z",
-      "reason": "数据校验通过"
-    },
-    {
-      "id": "724e99e3-49e3-4359-aa40-a883e38f186d",
-      "recordId": "4c266265-0d80-42e6-8bf3-d3b2734133a8",
-      "fromStatus": "pending",
-      "toStatus": "imported",
-      "changedBy": "entry",
-      "changedAt": "2026-05-24T18:04:10.134Z",
-      "reason": "数据校验通过"
+      "changedBy": "system",
+      "changedAt": "2026-05-24T18:29:58.902Z",
+      "reason": "重新检测发现1个问题"
     }
   ],
   "settings": {
     "initialized": true,
-    "initializedAt": "2026-05-24T18:03:57.551Z",
+    "initializedAt": "2026-05-24T18:29:48.420Z",
     "initializedBy": "admin"
   }
 }

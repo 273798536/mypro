@@ -10,17 +10,23 @@ exports.getDirtyTypeName = getDirtyTypeName;
 const date_fns_1 = require("date-fns");
 const types_1 = require("../types");
 const database_1 = require("./database");
-const REQUIRED_FIELDS = [
+const BASE_REQUIRED_FIELDS = [
     'batchNumber',
     'materialName',
     'materialType',
     'quantity',
     'unitPrice',
-    'totalAmount',
-    'supplier'
+    'totalAmount'
 ];
+const REQUIRED_FIELDS_BY_SOURCE = {
+    [types_1.DataSource.IMPLANT_BATCH]: [...BASE_REQUIRED_FIELDS, 'supplier'],
+    [types_1.DataSource.APPOINTMENT]: [...BASE_REQUIRED_FIELDS, 'appointmentDate', 'patientName'],
+    [types_1.DataSource.SUPPLIER_INVOICE]: [...BASE_REQUIRED_FIELDS, 'supplier', 'invoiceNumber'],
+    [types_1.DataSource.MANUAL_ENTRY]: [...BASE_REQUIRED_FIELDS, 'supplier']
+};
 function detectMissingFields(record) {
-    for (const field of REQUIRED_FIELDS) {
+    const requiredFields = REQUIRED_FIELDS_BY_SOURCE[record.source] || BASE_REQUIRED_FIELDS;
+    for (const field of requiredFields) {
         const value = record[field];
         if (value === undefined || value === null || value === '') {
             return {
@@ -165,20 +171,18 @@ function detectAllDirty(record, db) {
     const missingField = detectMissingFields(record);
     if (missingField)
         dirtyRecords.push(missingField);
-    if (!missingField) {
-        const crossDate = detectCrossDate(record, existingRecords);
-        if (crossDate)
-            dirtyRecords.push(crossDate);
-        const nameChanged = detectNameChanged(record, existingRecords);
-        if (nameChanged)
-            dirtyRecords.push(nameChanged);
-        const amountConflict = detectAmountConflict(record);
-        if (amountConflict)
-            dirtyRecords.push(amountConflict);
-        const quantityConflict = detectQuantityConflict(record, existingRecords);
-        if (quantityConflict)
-            dirtyRecords.push(quantityConflict);
-    }
+    const crossDate = detectCrossDate(record, existingRecords);
+    if (crossDate)
+        dirtyRecords.push(crossDate);
+    const nameChanged = detectNameChanged(record, existingRecords);
+    if (nameChanged)
+        dirtyRecords.push(nameChanged);
+    const amountConflict = detectAmountConflict(record);
+    if (amountConflict)
+        dirtyRecords.push(amountConflict);
+    const quantityConflict = detectQuantityConflict(record, existingRecords);
+    if (quantityConflict)
+        dirtyRecords.push(quantityConflict);
     return dirtyRecords;
 }
 function getDirtyTypeName(type) {
