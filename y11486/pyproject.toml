@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "qc-inspector-cli"
+version = "0.1.0"
+description = "小厂质检返工多源导入巡检 CLI"
+authors = ["QC Team"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+click = "^8.1.0"
+rich = "^13.7.0"
+pandas = "^2.0.0"
+openpyxl = "^3.1.0"
+sqlalchemy = "^2.0.0"
+python-dateutil = "^2.8.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+qc-inspector = "qc_inspector.cli:cli"
