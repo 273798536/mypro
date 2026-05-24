@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: bid-inspect
+Version: 0.1.0
+Summary: 投标资料封版多源导入巡检 CLI 工具
+Requires-Python: >=3.9
+Requires-Dist: click>=8.0
+Requires-Dist: SQLAlchemy>=2.0
+Requires-Dist: pandas>=2.0
+Requires-Dist: openpyxl>=3.1
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: rich>=13.0

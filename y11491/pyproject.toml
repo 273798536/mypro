@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bid-inspect"
+version = "0.1.0"
+description = "投标资料封版多源导入巡检 CLI 工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.0",
+    "SQLAlchemy>=2.0",
+    "pandas>=2.0",
+    "openpyxl>=3.1",
+    "python-dotenv>=1.0",
+    "rich>=13.0",
+]
+
+[project.scripts]
+bid-inspect = "bid_inspect.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]

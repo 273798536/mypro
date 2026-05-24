@@ -1,0 +1,2 @@
+[console_scripts]
+bid-inspect = bid_inspect.cli:cli
