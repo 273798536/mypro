@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "customs-clearance-statemachine"
+version = "1.0.0"
+description = "跨境小包清关异常回执状态机服务"
+authors = ["Your Team <team@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+fastapi = ">=0.100.0"
+uvicorn = ">=0.23.0"
+sqlalchemy = ">=2.0.0"
+pydantic = ">=2.0.0"
+pydantic-settings = ">=2.0.0"
+click = ">=8.1.0"
+python-multipart = ">=0.0.6"
+pandas = ">=2.0.0"
+openpyxl = ">=3.1.0"
+python-json-logger = ">=2.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0.0"
+httpx = ">=0.24.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,27 @@
+[
+  {
+    "package_no": "PKG202405240001",
+    "waybill_no": "WB1234567890",
+    "declared_value": 150.50,
+    "tax_amount": 15.05,
+    "is_abnormal": false,
+    "source": "declaration_form"
+  },
+  {
+    "package_no": "PKG202405240002",
+    "waybill_no": "WB1234567891",
+    "declared_value": 280.00,
+    "tax_amount": 28.00,
+    "is_abnormal": true,
+    "abnormal_reason": "申报价值与实际不符",
+    "source": "tracking_node"
+  },
+  {
+    "package_no": "PKG202405240003",
+    "waybill_no": "WB1234567892",
+    "declared_value": 95.00,
+    "tax_amount": 0.00,
+    "is_abnormal": false,
+    "source": "declaration_form"
+  }
+]
