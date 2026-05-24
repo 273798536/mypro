@@ -3,33 +3,27 @@ import json
 import random
 from datetime import datetime, timedelta
 
-def generate_batch_data(batch_no="BATCH-001", clinic_code="CLINIC-A", num_implants=3, num_appointments=2):
+def generate_batch_data(batch_no="BATCH-001", clinic_code="CLINIC-A", num_implants=3):
     implant_models = ["Straumann-SLA-10mm", "Nobel-Active-13mm", "Dentsply-Sirona-11.5mm"]
     patient_names = ["张三", "李四", "王五", "赵六", "钱七", "孙八", "周九", "吴十"]
     doctor_names = ["王医生", "李医生", "张医生", "陈医生"]
     
     implants = []
-    for i in range(num_implants):
-        implants.append({
-            "implant_id": f"IMP-{batch_no}-{i+1:03d}",
-            "batch_no": f"LOT-2024-{random.randint(1000, 9999)}",
-            "implant_model": random.choice(implant_models),
-            "quantity": 1,
-            "unit": "pcs",
-            "is_model_changed": False
-        })
-    
     appointments = []
-    for i in range(num_appointments):
-        apt_date = datetime.now() + timedelta(days=random.randint(-7, 7))
+    
+    for i in range(num_implants):
+        implant_id = f"IMP-{batch_no}-{i+1:03d}"
         implants.append({
-            "implant_id": f"IMP-{batch_no}-{num_implants+i+1:03d}",
+            "implant_id": implant_id,
             "batch_no": f"LOT-2024-{random.randint(1000, 9999)}",
             "implant_model": random.choice(implant_models),
             "quantity": 1,
             "unit": "pcs",
-            "is_model_changed": False
+            "is_model_changed": False,
+            "inventory_deducted": True
         })
+        
+        apt_date = datetime.now() + timedelta(days=random.randint(-7, 7))
         appointments.append({
             "appointment_no": f"APT-{batch_no}-{i+1:03d}",
             "patient_name": random.choice(patient_names),
@@ -37,7 +31,8 @@ def generate_batch_data(batch_no="BATCH-001", clinic_code="CLINIC-A", num_implan
             "doctor_name": random.choice(doctor_names),
             "appointment_date": apt_date.isoformat(),
             "surgery_type": "种植手术",
-            "implant_used": f"IMP-{batch_no}-{num_implants+i+1:03d}"
+            "implant_used": implant_id,
+            "medical_record_updated": True
         })
     
     invoices = [{
@@ -55,7 +50,7 @@ def generate_batch_data(batch_no="BATCH-001", clinic_code="CLINIC-A", num_implan
         "handover_date": (datetime.now() - timedelta(days=1)).isoformat(),
         "handover_person": "仓管员A",
         "receiver": "护士B",
-        "item_list": f"种植体{num_implants + num_appointments}套，手术工具1套"
+        "item_list": f"种植体{num_implants}套，手术工具1套"
     }]
     
     return {
@@ -84,9 +79,17 @@ def generate_model_change_data(base_batch):
     return modified
 
 def generate_abnormal_data():
-    abnormal = generate_batch_data("BATCH-ERR-001", "CLINIC-B", 2, 1)
+    abnormal = generate_batch_data("BATCH-ERR-001", "CLINIC-B", 3)
+    abnormal["remark"] = "术中临时换型号，病历和库存未同步"
+    
     abnormal["implants"][0]["is_model_changed"] = True
-    abnormal["implants"][0]["model_change_reason"] = "术中临时换型号"
+    abnormal["implants"][0]["original_model"] = abnormal["implants"][0]["implant_model"]
+    abnormal["implants"][0]["implant_model"] = "Straumann-SLA-13mm"
+    abnormal["implants"][0]["model_change_reason"] = "术中发现骨量不足，临时换长型号"
+    abnormal["implants"][0]["inventory_deducted"] = False
+    
+    abnormal["appointments"][0]["medical_record_updated"] = False
+    
     return abnormal
 
 if __name__ == "__main__":
@@ -107,6 +110,6 @@ if __name__ == "__main__":
     else:
         print("用法: python generate_data.py [normal|model_change|abnormal]")
         print()
-        print("normal:      生成正常批次数据")
+        print("normal:      生成正常批次数据（对账全部通过）")
         print("model_change: 生成型号变更数据")
-        print("abnormal:    生成异常数据（模拟病历和库存脱节）")
+        print("abnormal:    生成异常数据（换型号后病历/库存未同步）")

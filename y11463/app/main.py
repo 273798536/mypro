@@ -284,17 +284,33 @@ def export_batch(batch_id: str, db: Session = Depends(get_db), operator: str = D
     )
 
 
-@app.post("/implants/{implant_id}/deduct", response_model=schemas.ApiResponse)
-def deduct_inventory(implant_id: str, db: Session = Depends(get_db), operator: str = Depends(get_operator)):
-    implant = crud.deducted_inventory(db, implant_id, operator)
+@app.post("/implants/{implant_db_id}/deduct", response_model=schemas.ApiResponse)
+def deduct_inventory_by_db_id(implant_db_id: str, db: Session = Depends(get_db), operator: str = Depends(get_operator)):
+    implant = crud.deducted_inventory(db, implant_db_id, operator)
     if not implant:
         raise HTTPException(status_code=404, detail="种植体不存在")
-    return schemas.ApiResponse(success=True, message="库存扣减完成")
+    return schemas.ApiResponse(success=True, message="库存扣减完成", data={"implant_db_id": implant_db_id})
 
 
-@app.post("/appointments/{appointment_id}/update-record", response_model=schemas.ApiResponse)
-def update_medical_record(appointment_id: str, db: Session = Depends(get_db), operator: str = Depends(get_operator)):
-    apt = crud.update_medical_record(db, appointment_id, operator)
+@app.post("/batches/{batch_id}/implants/{implant_id}/deduct", response_model=schemas.ApiResponse)
+def deduct_inventory_by_business_id(batch_id: str, implant_id: str, db: Session = Depends(get_db), operator: str = Depends(get_operator)):
+    implant = crud.deducted_inventory_by_implant_id(db, implant_id, batch_id, operator)
+    if not implant:
+        raise HTTPException(status_code=404, detail="种植体不存在")
+    return schemas.ApiResponse(success=True, message="库存扣减完成", data={"implant_id": implant_id})
+
+
+@app.post("/appointments/{appointment_db_id}/update-record", response_model=schemas.ApiResponse)
+def update_medical_record_by_db_id(appointment_db_id: str, db: Session = Depends(get_db), operator: str = Depends(get_operator)):
+    apt = crud.update_medical_record(db, appointment_db_id, operator)
     if not apt:
         raise HTTPException(status_code=404, detail="预约不存在")
-    return schemas.ApiResponse(success=True, message="病历更新完成")
+    return schemas.ApiResponse(success=True, message="病历更新完成", data={"appointment_db_id": appointment_db_id})
+
+
+@app.post("/batches/{batch_id}/appointments/{appointment_no}/update-record", response_model=schemas.ApiResponse)
+def update_medical_record_by_business_id(batch_id: str, appointment_no: str, db: Session = Depends(get_db), operator: str = Depends(get_operator)):
+    apt = crud.update_medical_record_by_appointment_no(db, appointment_no, batch_id, operator)
+    if not apt:
+        raise HTTPException(status_code=404, detail="预约不存在")
+    return schemas.ApiResponse(success=True, message="病历更新完成", data={"appointment_no": appointment_no})

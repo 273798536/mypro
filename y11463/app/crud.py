@@ -62,11 +62,13 @@ def create_batch(db: Session, batch_data: schemas.BatchCreate, operator: str = "
             db.query(models.HandoverPaper).filter(models.HandoverPaper.batch_id == existing_batch.id).delete()
             
             for implant_data in batch_data.implants:
+                implant_dict = implant_data.model_dump()
+                if not implant_dict.get("original_model"):
+                    implant_dict["original_model"] = implant_dict["implant_model"]
                 implant = models.Implant(
                     id=generate_id(),
                     batch_id=existing_batch.id,
-                    **implant_data.model_dump(),
-                    original_model=implant_data.implant_model
+                    **implant_dict
                 )
                 db.add(implant)
             
@@ -110,11 +112,13 @@ def create_batch(db: Session, batch_data: schemas.BatchCreate, operator: str = "
                     models.Implant.implant_id == implant_data.implant_id
                 ).first()
                 if not existing_implant:
+                    implant_dict = implant_data.model_dump()
+                    if not implant_dict.get("original_model"):
+                        implant_dict["original_model"] = implant_dict["implant_model"]
                     implant = models.Implant(
                         id=generate_id(),
                         batch_id=existing_batch.id,
-                        **implant_data.model_dump(),
-                        original_model=implant_data.implant_model
+                        **implant_dict
                     )
                     db.add(implant)
             
@@ -153,11 +157,13 @@ def create_batch(db: Session, batch_data: schemas.BatchCreate, operator: str = "
     db.flush()
 
     for implant_data in batch_data.implants:
+        implant_dict = implant_data.model_dump()
+        if not implant_dict.get("original_model"):
+            implant_dict["original_model"] = implant_dict["implant_model"]
         implant = models.Implant(
             id=generate_id(),
             batch_id=batch.id,
-            **implant_data.model_dump(),
-            original_model=implant_data.implant_model
+            **implant_dict
         )
         db.add(implant)
 
@@ -441,14 +447,20 @@ def reconcile_batch(db: Session, batch_id: str, operator: str):
             if related_apt and not related_apt.medical_record_updated:
                 unmatched.append({
                     "type": "consistency",
-                    "id": implant.implant_id,
-                    "issue": "型号变更后病历未更新"
+                    "implant_id": implant.implant_id,
+                    "appointment_no": related_apt.appointment_no if related_apt else None,
+                    "batch_id": batch.id,
+                    "issue": "型号变更后病历未更新",
+                    "fix_api": f"POST /batches/{batch.id}/appointments/{related_apt.appointment_no if related_apt else ''}/update-record"
                 })
             if not implant.inventory_deducted:
                 unmatched.append({
                     "type": "consistency",
-                    "id": implant.implant_id,
-                    "issue": "型号变更后库存未扣减"
+                    "implant_id": implant.implant_id,
+                    "appointment_no": related_apt.appointment_no if related_apt else None,
+                    "batch_id": batch.id,
+                    "issue": "型号变更后库存未扣减",
+                    "fix_api": f"POST /batches/{batch.id}/implants/{implant.implant_id}/deduct"
                 })
 
     old_status = batch.status.value
@@ -488,8 +500,8 @@ def get_operation_history(db: Session, batch_id: str):
     ).order_by(models.OperationHistory.operation_time.desc()).all()
 
 
-def deducted_inventory(db: Session, implant_id: str, operator: str):
-    implant = db.query(models.Implant).filter(models.Implant.id == implant_id).first()
+def deducted_inventory(db: Session, implant_db_id: str, operator: str):
+    implant = db.query(models.Implant).filter(models.Implant.id == implant_db_id).first()
     if not implant:
         return None
     
@@ -502,8 +514,41 @@ def deducted_inventory(db: Session, implant_id: str, operator: str):
     return implant
 
 
-def update_medical_record(db: Session, appointment_id: str, operator: str):
-    apt = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
+def deducted_inventory_by_implant_id(db: Session, implant_id: str, batch_id: str, operator: str):
+    implant = db.query(models.Implant).filter(
+        models.Implant.batch_id == batch_id,
+        models.Implant.implant_id == implant_id
+    ).first()
+    if not implant:
+        return None
+    
+    implant.inventory_deducted = True
+    implant.deduction_time = datetime.now()
+    implant.deduction_operator = operator
+    
+    db.commit()
+    db.refresh(implant)
+    return implant
+
+
+def update_medical_record(db: Session, appointment_db_id: str, operator: str):
+    apt = db.query(models.Appointment).filter(models.Appointment.id == appointment_db_id).first()
+    if not apt:
+        return None
+    
+    apt.medical_record_updated = True
+    apt.record_update_time = datetime.now()
+    
+    db.commit()
+    db.refresh(apt)
+    return apt
+
+
+def update_medical_record_by_appointment_no(db: Session, appointment_no: str, batch_id: str, operator: str):
+    apt = db.query(models.Appointment).filter(
+        models.Appointment.batch_id == batch_id,
+        models.Appointment.appointment_no == appointment_no
+    ).first()
     if not apt:
         return None
     

@@ -97,11 +97,12 @@ python3 scripts/generate_data.py normal > sample_batch.json
 
 修复异常后重新对账：
 ```bash
-# 标记库存已扣减
-curl -X POST "http://localhost:8000/implants/<implant_id>/deduct" -H "X-Operator: admin"
+# 对账结果会给出修复用的API端点，直接调用即可
+# 标记库存已扣减（用对账返回的 implant_id 和 batch_id）
+curl -X POST "http://localhost:8000/batches/<batch_id>/implants/<implant_id>/deduct" -H "X-Operator: admin"
 
-# 标记病历已更新
-curl -X POST "http://localhost:8000/appointments/<apt_id>/update-record" -H "X-Operator: admin"
+# 标记病历已更新（用对账返回的 appointment_no 和 batch_id）
+curl -X POST "http://localhost:8000/batches/<batch_id>/appointments/<appointment_no>/update-record" -H "X-Operator: admin"
 
 # 重新对账
 ./cli.sh reconcile <batch_id>
@@ -138,6 +139,8 @@ curl -X POST "http://localhost:8000/appointments/<apt_id>/update-record" -H "X-O
 | POST | `/batches/{id}/reconcile` | 对账 |
 | GET | `/batches/{id}/history` | 操作历史 |
 | GET | `/batches/{id}/export` | 导出 Excel |
+| POST | `/batches/{id}/implants/{implant_id}/deduct` | 按业务ID扣减库存 |
+| POST | `/batches/{id}/appointments/{apt_no}/update-record` | 按预约号更新病历 |
 
 ## 状态机
 
