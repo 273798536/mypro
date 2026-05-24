@@ -149,63 +149,58 @@ echo "------------------------"
 curl -s -X POST "${BASE_URL}/api/batches/${BATCH_ID}/recall" \
   -H "Content-Type: application/json" \
   -d '{
-    "reason": "发现数据不全，需要补充说明",
-    "operator": "行政助理-小王"
+    "reason": "发现遗漏门禁记录，需要补充完整数据",
+    "operator": "行政经理-张总"
   }' | python3 -m json.tool
 echo ""
 read -p "按回车继续..."
 
 echo ""
-echo "步骤 13: 撤回后状态流转说明"
+echo "步骤 13: 撤回后补充门禁数据"
 echo "------------------------"
 BATCH_STATUS=$(curl -s "${BASE_URL}/api/batches/${BATCH_ID}" | python3 -c "import sys,json; print(json.load(sys.stdin)['state'])")
 echo "批次当前状态: ${BATCH_STATUS}"
 echo ""
-echo "状态机设计原则："
-echo "  - recalled 状态表示批次已撤回，需要重新处理"
-echo "  - 正确流程：recalled -> (重新导入/修改) -> importing -> pending_review -> frozen"
-echo "  - 出于演示目的，我们直接从当前状态冻结（如果状态机允许）"
-echo ""
-echo "尝试直接从 recalled 状态冻结..."
-FREEZE_RESULT=$(curl -s -X POST "${BASE_URL}/api/batches/${BATCH_ID}/freeze" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "reason": "数据复核完成，准备导出汇总报告",
-    "operator": "行政经理-张总"
-  }')
-echo "$FREEZE_RESULT" | python3 -m json.tool
-echo ""
-
-echo "检查冻结是否成功..."
-BATCH_NEW_STATUS=$(curl -s "${BASE_URL}/api/batches/${BATCH_ID}" | python3 -c "import sys,json; print(json.load(sys.stdin)['state'])")
-echo "批次当前状态: ${BATCH_NEW_STATUS}"
-
-if [ "$BATCH_NEW_STATUS" != "frozen" ]; then
-    echo ""
-    echo "由于状态机限制，recalled 状态不能直接冻结"
-    echo "需要先补充数据或修改后才能继续"
-    echo ""
-    echo "演示：为了完成导出流程，我们使用人工改判接口强行改变批次状态..."
-    echo ""
-    echo "重新提交一条数据让批次回到可冻结状态..."
-    curl -s -X POST "${BASE_URL}/api/batches/${BATCH_ID}/import" \
-      -F "file=@test_calendar.xlsx" \
-      -F "source_type=calendar" \
-      -F "uploaded_by=行政助理-小王" > /dev/null 2>&1
-    echo "重新冻结批次..."
-    curl -s -X POST "${BASE_URL}/api/batches/${BATCH_ID}/freeze" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "reason": "数据复核完成，准备导出汇总报告",
-        "operator": "行政经理-张总"
-      }' | python3 -m json.tool
-fi
-
+echo "撤回后状态可以导入新数据（recalled -> importing）"
+echo "补充第二批门禁记录..."
+curl -s -X POST "${BASE_URL}/api/batches/${BATCH_ID}/import" \
+  -F "file=@test_access_card.xlsx" \
+  -F "source_type=access_card" \
+  -F "uploaded_by=行政助理-小王" | python3 -m json.tool
 echo ""
 read -p "按回车继续..."
 
 echo ""
-echo "步骤 14: 确认批次已冻结"
+echo "步骤 14: 撤回后重新提交审核"
+echo "------------------------"
+RECORDS_RESPONSE2=$(curl -s "${BASE_URL}/api/batches/${BATCH_ID}/records")
+ALL_RECORD_IDS2=$(echo "$RECORDS_RESPONSE2" | python3 -c "import sys,json; print(','.join(['\"'+r['id']+'\"' for r in json.load(sys.stdin)]))")
+echo "补充材料后再次提交审核..."
+curl -s -X POST "${BASE_URL}/api/records/submit-review" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"record_ids\": [${ALL_RECORD_IDS2}],
+    \"approved\": true,
+    \"reason\": \"已补充完整门禁数据，重新提请复核\",
+    \"operator\": \"行政助理-小王\"
+  }" | python3 -m json.tool
+echo ""
+read -p "按回车继续..."
+
+echo ""
+echo "步骤 15: 冻结批次（准备导出）"
+echo "------------------------"
+curl -s -X POST "${BASE_URL}/api/batches/${BATCH_ID}/freeze" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reason": "全部数据复核完成，准备导出汇总报告",
+    "operator": "行政经理-张总"
+  }' | python3 -m json.tool
+echo ""
+read -p "按回车继续..."
+
+echo ""
+echo "步骤 16: 确认批次已冻结"
 echo "------------------------"
 curl -s "${BASE_URL}/api/batches/${BATCH_ID}" | python3 -c "
 import sys,json
@@ -220,14 +215,14 @@ echo ""
 read -p "按回车继续..."
 
 echo ""
-echo "步骤 15: 查看导出摘要（冻结前后状态对比）"
+echo "步骤 17: 查看导出摘要（冻结前后状态对比）"
 echo "------------------------"
 curl -s "${BASE_URL}/api/batches/${BATCH_ID}/export/summary?exported_by=行政经理-张总" | python3 -m json.tool
 echo ""
 read -p "按回车继续..."
 
 echo ""
-echo "步骤 16: 导出Excel报告"
+echo "步骤 18: 导出Excel报告"
 echo "------------------------"
 curl -s -o "异常回执报告_${BATCH_ID}.xlsx" "${BASE_URL}/api/batches/${BATCH_ID}/export/excel?exported_by=行政经理-张总"
 echo "报告已导出至: 异常回执报告_${BATCH_ID}.xlsx"
@@ -235,7 +230,7 @@ echo ""
 read -p "按回车继续..."
 
 echo ""
-echo "步骤 17: 查看总体统计"
+echo "步骤 19: 查看总体统计"
 echo "------------------------"
 curl -s "${BASE_URL}/api/stats/overview" | python3 -m json.tool
 echo ""
