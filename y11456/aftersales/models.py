@@ -1,5 +1,6 @@
 import json
 import hashlib
+import pandas as pd
 from datetime import datetime
 from typing import List, Dict, Optional, Any
 from .database import get_connection
@@ -78,6 +79,48 @@ def check_duplicate_file(batch_id: int, file_type: str, file_path: str) -> bool:
         return cursor.fetchone() is not None
 
 
+def safe_str(value: Any) -> str:
+    if value is None:
+        return ''
+    try:
+        if pd.isna(value):
+            return ''
+    except:
+        pass
+    s = str(value).strip()
+    if s.lower() == 'nan':
+        return ''
+    return s
+
+
+def safe_float(value: Any) -> float:
+    if value is None:
+        return 0.0
+    try:
+        if pd.isna(value):
+            return 0.0
+    except:
+        pass
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def safe_int(value: Any) -> int:
+    if value is None:
+        return 0
+    try:
+        if pd.isna(value):
+            return 0
+    except:
+        pass
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return 0
+
+
 def insert_raw_record(batch_id: int, source_file_id: int, source_type: str,
                       original_row_no: int, parsed_data: Dict, raw_data: str) -> int:
     with get_connection() as conn:
@@ -85,23 +128,26 @@ def insert_raw_record(batch_id: int, source_file_id: int, source_type: str,
         cursor.execute(
             """INSERT INTO raw_records 
                (batch_id, source_file_id, source_type, original_row_no, 
-                order_no, sku_code, sku_name, refund_amount, refund_reason,
-                problem_type, quantity, user_remark, warehouse_remark, 
-                leader_remark, external_receipt, parsed_data, raw_data, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                order_no, sku_code, sku_name, refund_amount, warehouse_refund_amount,
+                refund_reason, problem_type, quantity, user_remark, warehouse_remark, 
+                leader_remark, external_receipt, receipt_description, 
+                parsed_data, raw_data, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 batch_id, source_file_id, source_type, original_row_no,
-                parsed_data.get('order_no'),
-                parsed_data.get('sku_code'),
-                parsed_data.get('sku_name'),
-                parsed_data.get('refund_amount', 0),
-                parsed_data.get('refund_reason'),
-                parsed_data.get('problem_type'),
-                parsed_data.get('quantity', 1),
-                parsed_data.get('user_remark'),
-                parsed_data.get('warehouse_remark'),
-                parsed_data.get('leader_remark'),
-                parsed_data.get('external_receipt'),
+                safe_str(parsed_data.get('order_no')),
+                safe_str(parsed_data.get('sku_code')),
+                safe_str(parsed_data.get('sku_name')),
+                safe_float(parsed_data.get('refund_amount')),
+                safe_float(parsed_data.get('warehouse_refund_amount')),
+                safe_str(parsed_data.get('refund_reason')),
+                safe_str(parsed_data.get('problem_type')),
+                safe_int(parsed_data.get('quantity')),
+                safe_str(parsed_data.get('user_remark')),
+                safe_str(parsed_data.get('warehouse_remark')),
+                safe_str(parsed_data.get('leader_remark')),
+                safe_str(parsed_data.get('external_receipt')),
+                safe_str(parsed_data.get('receipt_description')),
                 json.dumps(parsed_data, ensure_ascii=False),
                 raw_data,
                 get_current_timestamp()
