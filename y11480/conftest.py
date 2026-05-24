@@ -50,6 +50,15 @@ def db():
     )
     db.add(data_entry)
 
+    read_only = models.User(
+        username="readonly_test",
+        hashed_password=get_password_hash("test123"),
+        role=models.UserRole.READ_ONLY,
+        full_name="测试只读用户",
+        is_active=True
+    )
+    db.add(read_only)
+
     db.commit()
 
     try:
@@ -94,3 +103,8 @@ def reviewer_token(client):
 @pytest.fixture(scope="function")
 def data_entry_token(client):
     return get_token(client, "data_entry_test", "test123")
+
+
+@pytest.fixture(scope="function")
+def readonly_token(client):
+    return get_token(client, "readonly_test", "test123")

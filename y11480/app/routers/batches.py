@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -12,11 +12,150 @@ from app.idempotency import IdempotencyService
 from app.dirty_records import DirtyRecordDetector, validate_sample_label, validate_temperature_record, validate_store_complaint
 from app.export_service import ExportService
 from app.utils import to_json_serializable
+from app.field_permissions import FieldPermissionService
 
 router = APIRouter(prefix="/batches", tags=["批次管理"])
 
 
-@router.get("/", response_model=List[schemas.BatchList])
+def batch_to_dict(batch: models.Batch, include_nested: bool = True) -> dict:
+    result = {
+        "id": batch.id,
+        "batch_no": batch.batch_no,
+        "pot_no": batch.pot_no,
+        "product_name": batch.product_name,
+        "production_date": batch.production_date,
+        "status": batch.status,
+        "before_freeze_status": batch.before_freeze_status,
+        "freeze_reason": batch.freeze_reason,
+        "created_by": batch.created_by,
+        "created_at": batch.created_at,
+        "updated_at": batch.updated_at,
+        "reviewed_by": batch.reviewed_by,
+        "reviewed_at": batch.reviewed_at,
+        "review_result": batch.review_result,
+        "review_comment": batch.review_comment,
+        "settled_at": batch.settled_at,
+        "settled_by": batch.settled_by,
+        "withdrawn_at": batch.withdrawn_at,
+        "withdrawn_by": batch.withdrawn_by,
+        "withdraw_reason": batch.withdraw_reason,
+        "archived_at": batch.archived_at
+    }
+
+    if include_nested:
+        result["sample_labels"] = [
+            {
+                "id": sl.id,
+                "label_code": sl.label_code,
+                "sample_time": sl.sample_time,
+                "sampler": sl.sampler,
+                "sample_location": sl.sample_location,
+                "quantity": sl.quantity,
+                "unit": sl.unit,
+                "storage_condition": sl.storage_condition,
+                "created_at": sl.created_at
+            }
+            for sl in batch.sample_labels
+        ]
+        result["temperature_records"] = [
+            {
+                "id": tr.id,
+                "record_time": tr.record_time,
+                "temperature": tr.temperature,
+                "measure_point": tr.measure_point,
+                "recorder": tr.recorder,
+                "is_abnormal": tr.is_abnormal,
+                "remark": tr.remark,
+                "created_at": tr.created_at
+            }
+            for tr in batch.temperature_records
+        ]
+        result["store_complaints"] = [
+            {
+                "id": sc.id,
+                "store_name": sc.store_name,
+                "store_code": sc.store_code,
+                "complaint_time": sc.complaint_time,
+                "complaint_type": sc.complaint_type,
+                "complaint_content": sc.complaint_content,
+                "quantity": sc.quantity,
+                "amount": sc.amount,
+                "contact_person": sc.contact_person,
+                "contact_phone": sc.contact_phone,
+                "status": sc.status,
+                "created_at": sc.created_at
+            }
+            for sc in batch.store_complaints
+        ]
+        result["affected_stores"] = [
+            {
+                "id": as_.id,
+                "store_name": as_.store_name,
+                "store_code": as_.store_code,
+                "quantity_received": as_.quantity_received,
+                "quantity_used": as_.quantity_used,
+                "quantity_remaining": as_.quantity_remaining,
+                "distribution_time": as_.distribution_time,
+                "created_at": as_.created_at
+            }
+            for as_ in batch.affected_stores
+        ]
+        result["supervisor_comments"] = [
+            {
+                "id": sc.id,
+                "comment_type": sc.comment_type,
+                "content": sc.content,
+                "attachment_urls": sc.attachment_urls,
+                "created_at": sc.created_at
+            }
+            for sc in batch.supervisor_comments
+        ]
+        result["status_history"] = [
+            {
+                "id": sh.id,
+                "from_status": sh.from_status,
+                "to_status": sh.to_status,
+                "changed_by": sh.changed_by,
+                "change_reason": sh.change_reason,
+                "created_at": sh.created_at
+            }
+            for sh in batch.status_history
+        ]
+        result["dirty_records"] = [
+            {
+                "id": dr.id,
+                "source_type": dr.source_type,
+                "source_id": dr.source_id,
+                "dirty_type": dr.dirty_type,
+                "description": dr.description,
+                "raw_content": dr.raw_content,
+                "processing_opinion": dr.processing_opinion,
+                "is_resolved": dr.is_resolved,
+                "created_at": dr.created_at
+            }
+            for dr in batch.dirty_records
+        ]
+
+    return result
+
+
+def batch_list_to_dict(batch: models.Batch) -> dict:
+    return {
+        "id": batch.id,
+        "batch_no": batch.batch_no,
+        "pot_no": batch.pot_no,
+        "product_name": batch.product_name,
+        "production_date": batch.production_date,
+        "status": batch.status,
+        "created_at": batch.created_at,
+        "sample_label_count": len(batch.sample_labels),
+        "temperature_record_count": len(batch.temperature_records),
+        "store_complaint_count": len(batch.store_complaints),
+        "affected_store_count": len(batch.affected_stores)
+    }
+
+
+@router.get("/")
 def list_batches(
     skip: int = 0,
     limit: int = 100,
@@ -24,7 +163,7 @@ def list_batches(
     pot_no: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
-):
+) -> List[dict]:
     query = db.query(models.Batch)
     if status:
         query = query.filter(models.Batch.status == status)
@@ -35,30 +174,19 @@ def list_batches(
 
     result = []
     for batch in batches:
-        batch_dict = {
-            "id": batch.id,
-            "batch_no": batch.batch_no,
-            "pot_no": batch.pot_no,
-            "product_name": batch.product_name,
-            "production_date": batch.production_date,
-            "status": batch.status,
-            "created_at": batch.created_at,
-            "sample_label_count": len(batch.sample_labels),
-            "temperature_record_count": len(batch.temperature_records),
-            "store_complaint_count": len(batch.store_complaints),
-            "affected_store_count": len(batch.affected_stores)
-        }
-        result.append(batch_dict)
+        batch_dict = batch_list_to_dict(batch)
+        filtered_dict = FieldPermissionService.filter_batch_list_fields(batch_dict, current_user.role)
+        result.append(filtered_dict)
 
     return result
 
 
-@router.post("/", response_model=schemas.Batch)
+@router.post("/")
 def create_batch(
     batch_in: schemas.BatchCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_roles(UserRole.DATA_ENTRY, UserRole.REVIEWER, UserRole.SUPERVISOR))
-):
+) -> dict:
     existing = db.query(models.Batch).filter(models.Batch.batch_no == batch_in.batch_no).first()
     if existing:
         raise HTTPException(
@@ -94,19 +222,25 @@ def create_batch(
     db.add(history)
     db.commit()
     db.refresh(batch)
-    return batch
+    
+    batch_dict = batch_to_dict(batch)
+    filtered_dict = FieldPermissionService.filter_batch_fields(batch_dict, current_user.role)
+    return filtered_dict
 
 
-@router.get("/{batch_id}", response_model=schemas.Batch)
+@router.get("/{batch_id}")
 def get_batch(
     batch_id: int,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_active_user)
-):
+) -> dict:
     batch = db.query(models.Batch).filter(models.Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
-    return batch
+    
+    batch_dict = batch_to_dict(batch)
+    filtered_dict = FieldPermissionService.filter_batch_fields(batch_dict, current_user.role)
+    return filtered_dict
 
 
 @router.get("/pot/{pot_no}/stores", response_model=List[schemas.AffectedStore])
@@ -384,13 +518,13 @@ def start_review(
     return {"message": "已进入复核状态", "status": batch.status}
 
 
-@router.post("/{batch_id}/review", response_model=schemas.Batch)
+@router.post("/{batch_id}/review")
 def review_batch(
     batch_id: int,
     review_data: schemas.BatchReview,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_roles(UserRole.REVIEWER, UserRole.SUPERVISOR))
-):
+) -> dict:
     batch = db.query(models.Batch).filter(models.Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
@@ -407,7 +541,10 @@ def review_batch(
 
     db.commit()
     db.refresh(batch)
-    return batch
+    
+    batch_dict = batch_to_dict(batch)
+    filtered_dict = FieldPermissionService.filter_batch_fields(batch_dict, current_user.role)
+    return filtered_dict
 
 
 @router.post("/{batch_id}/freeze")

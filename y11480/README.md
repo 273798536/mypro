@@ -355,7 +355,8 @@ pytest -v --tb=short
 | 状态机 | [state_machine.py](app/state_machine.py) | 状态流转规则和校验 |
 | 幂等性 | [idempotency.py](app/idempotency.py) | 重复请求处理 |
 | 脏记录 | [dirty_records.py](app/dirty_records.py) | 异常数据检测 |
-| 权限控制 | [security.py](app/security.py) | 用户认证和角色权限 |
+| 操作权限 | [security.py](app/security.py) | 用户认证和操作权限 |
+| **字段权限** | [field_permissions.py](app/field_permissions.py) | **按角色控制返回字段可见性** |
 | 导出服务 | [export_service.py](app/export_service.py) | Excel 汇总导出 |
 | 数据模型 | [models.py](app/models.py) | 数据库表结构 |
 | API 路由 | [routers/](app/routers/) | 接口定义 |
@@ -375,6 +376,8 @@ pytest -v --tb=short
 
 ## 权限矩阵
 
+### 操作权限
+
 | 操作 | 录入员 | 复核员 | 主管 | 只读 |
 |------|--------|--------|------|------|
 | 创建批次 | ✓ | ✓ | ✓ | ✗ |
@@ -389,3 +392,28 @@ pytest -v --tb=short
 | 主管批注 | ✗ | ✗ | ✓ | ✗ |
 | 查看数据 | ✓ | ✓ | ✓ | ✓ |
 | 导出数据 | ✗ | ✓ | ✓ | ✗ |
+
+### 字段可见性（批次详情）
+
+| 字段分类 | 字段 | 只读 | 录入员 | 复核员 | 主管 |
+|----------|------|------|--------|--------|------|
+| **基础信息** | id, batch_no, pot_no, product_name, production_date, status, created_at | ✓ | ✓ | ✓ | ✓ |
+| | created_by, updated_at | ✗ | ✓ | ✓ | ✓ |
+| **冻结信息** | before_freeze_status, freeze_reason | ✗ | ✗ | ✓ | ✓ |
+| **复核信息** | reviewed_by, reviewed_at, review_result | ✗ | ✗ | ✓ | ✓ |
+| | review_comment | ✗ | ✗ | ✗ | ✓ |
+| **结算信息** | settled_at, settled_by | ✗ | ✗ | ✗ | ✓ |
+| **撤回信息** | withdrawn_at, withdrawn_by, withdraw_reason | ✗ | ✗ | ✗ | ✓ |
+| **归档信息** | archived_at | ✗ | ✗ | ✗ | ✓ |
+| **嵌套数据** | sample_labels, temperature_records, store_complaints, affected_stores | ✓ | ✓ | ✓ | ✓ |
+| | status_history | ✗ | ✗ | ✓ | ✓ |
+| | supervisor_comments | ✗ | ✗ | ✗ | ✓ |
+| | dirty_records | ✗ | ✗ | ✗ | ✓ |
+
+### 字段可见性（批次列表）
+
+| 字段 | 只读 | 录入员 | 复核员 | 主管 |
+|------|------|--------|--------|------|
+| id, batch_no, pot_no, product_name, production_date, status, created_at | ✓ | ✓ | ✓ | ✓ |
+| sample_label_count, temperature_record_count, store_complaint_count | ✗ | ✓ | ✓ | ✓ |
+| affected_store_count | ✗ | ✗ | ✓ | ✓ |
