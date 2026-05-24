@@ -70,6 +70,61 @@ describe('口腔门诊材料异常回执状态机 - 验收测试', () => {
       expect(logsRes.status).toBe(200)
       expect(logsRes.body.length).toBeGreaterThanOrEqual(7)
     })
+
+    it('撤回功能：已提交的回执可以撤回至草稿状态', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'CANCEL-TEST-001' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const submitRes = await request(app)
+        .post(`/api/receipts/${receiptId}/submit`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      expect(submitRes.status).toBe(200)
+      expect(submitRes.body.status).toBe('SUBMITTED')
+
+      const cancelRes = await request(app)
+        .post(`/api/receipts/${receiptId}/cancel`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ reason: '需要补充信息' })
+
+      expect(cancelRes.status).toBe(200)
+      expect(cancelRes.body.status).toBe('DRAFT')
+    })
+
+    it('撤回功能：驳回的回执可以撤回至草稿状态', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'CANCEL-REJECTED-001' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      await request(app)
+        .post(`/api/receipts/${receiptId}/submit`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      const rejectRes = await request(app)
+        .post(`/api/receipts/${receiptId}/review`)
+        .set('Authorization', `Bearer ${tokens.reviewer}`)
+        .send({ approved: false, reason: '资料不完整' })
+
+      expect(rejectRes.status).toBe(200)
+      expect(rejectRes.body.status).toBe('REJECTED')
+
+      const cancelRes = await request(app)
+        .post(`/api/receipts/${receiptId}/cancel`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ reason: '重新准备资料' })
+
+      expect(cancelRes.status).toBe(200)
+      expect(cancelRes.body.status).toBe('DRAFT')
+    })
   })
 
   describe('2. 重复提交和坏数据测试', () => {
@@ -416,6 +471,112 @@ describe('口腔门诊材料异常回执状态机 - 验收测试', () => {
       const found = listRes.body.items.find((r: any) => r.batchNo === batchNo)
       expect(found).toBeDefined()
       expect(found.id).toBe(receiptId)
+    })
+  })
+
+  describe('8. 冲突锁机制测试', () => {
+    it('可以获取和释放锁', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'LOCK-TEST-001' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const acquireRes = await request(app)
+        .post(`/api/receipts/${receiptId}/acquire-lock`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      expect(acquireRes.status).toBe(200)
+      expect(acquireRes.body.success).toBe(true)
+
+      const statusRes = await request(app)
+        .get(`/api/receipts/${receiptId}/lock-status`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      expect(statusRes.status).toBe(200)
+      expect(statusRes.body.isLocked).toBe(true)
+
+      const releaseRes = await request(app)
+        .post(`/api/receipts/${receiptId}/release-lock`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      expect(releaseRes.status).toBe(200)
+      expect(releaseRes.body.success).toBe(true)
+    })
+
+    it('其他人不能获取已被锁定的回执', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'LOCK-TEST-002' })
+
+      const receiptId = createRes.body.id
+
+      await request(app)
+        .post(`/api/receipts/${receiptId}/acquire-lock`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      const acquireRes = await request(app)
+        .post(`/api/receipts/${receiptId}/acquire-lock`)
+        .set('Authorization', `Bearer ${tokens.reviewer}`)
+
+      expect(acquireRes.status).toBe(409)
+    })
+  })
+
+  describe('9. 脱敏导出测试', () => {
+    it('院区主任视图中患者姓名已脱敏', async () => {
+      await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'MASK-TEST-001', patientName: '王大锤' })
+
+      const viewRes = await request(app)
+        .get('/api/receipts/director-view')
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      expect(viewRes.status).toBe(200)
+      const receipt = viewRes.body.receipts.find((r: any) => r.batchNo === 'MASK-TEST-001')
+      expect(receipt).toBeDefined()
+      expect(receipt.patientName).toBe('王**')
+    })
+
+    it('院区主任视图中供应商发票号已脱敏', async () => {
+      await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'MASK-TEST-002', supplierInvoiceNo: 'INV-2024-ABCDE-0001' })
+
+      const viewRes = await request(app)
+        .get('/api/receipts/director-view')
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      expect(viewRes.status).toBe(200)
+      const receipt = viewRes.body.receipts.find((r: any) => r.batchNo === 'MASK-TEST-002')
+      expect(receipt).toBeDefined()
+      expect(receipt.supplierInvoiceNo).not.toContain('ABCDE')
+    })
+  })
+
+  describe('10. 重试队列机制测试', () => {
+    it('主管可以查看重试队列', async () => {
+      const res = await request(app)
+        .get('/api/receipts/retry-queue/list')
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      expect(res.status).toBe(200)
+      expect(res.body).toHaveProperty('total')
+      expect(res.body).toHaveProperty('tasks')
+    })
+
+    it('非主管不能查看重试队列', async () => {
+      const res = await request(app)
+        .get('/api/receipts/retry-queue/list')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+
+      expect(res.status).toBe(403)
     })
   })
 })

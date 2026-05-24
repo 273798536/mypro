@@ -393,7 +393,7 @@ export class ReceiptService {
     return updated
   }
 
-  async cancel(receiptId: string, operatorId: string, userRole: string) {
+  async cancel(receiptId: string, operatorId: string, userRole: string, reason?: string) {
     const receipt = await prisma.materialReceipt.findUnique({
       where: { id: receiptId }
     })
@@ -406,17 +406,34 @@ export class ReceiptService {
     }
 
     const beforeData = { ...receipt }
+    const nextStatus = getNextStatus(StateAction.CANCEL)!
+
+    const updated = await prisma.materialReceipt.update({
+      where: { id: receiptId },
+      data: { 
+        status: nextStatus,
+        reviewerId: null
+      },
+      include: {
+        attachments: true,
+        dirtyRecords: true,
+        changeLogs: {
+          orderBy: { createdAt: 'desc' },
+          take: 5
+        }
+      }
+    })
 
     await recordChangeLog(
       receiptId,
       StateAction.CANCEL,
       operatorId,
       beforeData,
-      beforeData,
-      '撤回单据'
+      updated,
+      reason || '撤回单据'
     )
 
-    return receipt
+    return updated
   }
 
   async archive(receiptId: string, supervisorId: string) {

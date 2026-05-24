@@ -280,7 +280,12 @@ router.post('/:id/cancel', async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ error: '未认证' })
 
-    const receipt = await receiptService.cancel(req.params.id, req.user.id, req.user.role)
+    if (req.user.role === UserRole.READ_ONLY || req.user.role === UserRole.REVIEWER) {
+      return res.status(403).json({ error: '权限不足，仅录入员和主管可撤回' })
+    }
+
+    const { reason } = req.body
+    const receipt = await receiptService.cancel(req.params.id, req.user.id, req.user.role, reason)
     const filtered = filterFieldsByRole(receipt, req.user.role)
     res.json(filtered)
   } catch (error: any) {
@@ -373,6 +378,90 @@ router.patch('/dirty-records/:dirtyRecordId', [
     res.json(dirtyRecord)
   } catch (error: any) {
     res.status(400).json({ error: error.message })
+  }
+})
+
+router.get('/:id/lock-status', async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: '未认证' })
+
+    const { lockService } = await import('../services/lockService')
+    const isLocked = lockService.isLocked(req.params.id)
+    const lockInfo = lockService.getLockInfo(req.params.id)
+
+    res.json({ isLocked, lockInfo })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+router.post('/:id/acquire-lock', async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: '未认证' })
+
+    const { lockService } = await import('../services/lockService')
+    const acquired = lockService.acquireLock(req.params.id, req.user.id)
+
+    if (!acquired) {
+      return res.status(409).json({ error: '该回执正在被他人操作，请稍后重试' })
+    }
+
+    res.json({ success: true, message: '获取锁成功' })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+router.post('/:id/release-lock', async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: '未认证' })
+
+    const { lockService } = await import('../services/lockService')
+    const released = lockService.releaseLock(req.params.id, req.user.id)
+
+    if (!released) {
+      return res.status(403).json({ error: '无权释放该锁' })
+    }
+
+    res.json({ success: true, message: '释放锁成功' })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+router.get('/retry-queue/list', async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: '未认证' })
+    if (req.user.role !== UserRole.SUPERVISOR) {
+      return res.status(403).json({ error: '权限不足，仅主管可查看重试队列' })
+    }
+
+    const { retryQueue } = await import('../services/retryQueue')
+    const tasks = retryQueue.getAllTasks()
+
+    res.json({ total: tasks.length, tasks })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+router.post('/retry-queue/:taskId/cancel', async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: '未认证' })
+    if (req.user.role !== UserRole.SUPERVISOR) {
+      return res.status(403).json({ error: '权限不足，仅主管可取消重试任务' })
+    }
+
+    const { retryQueue } = await import('../services/retryQueue')
+    const cancelled = retryQueue.cancelTask(req.params.taskId)
+
+    if (!cancelled) {
+      return res.status(404).json({ error: '任务不存在或已完成' })
+    }
+
+    res.json({ success: true, message: '已取消重试任务' })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
   }
 })
 

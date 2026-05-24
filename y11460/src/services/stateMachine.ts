@@ -59,7 +59,7 @@ export const stateTransitions: StateTransition[] = [
     allowedRoles: ['SUPERVISOR']
   },
   {
-    from: [ReceiptStatus.DRAFT],
+    from: [ReceiptStatus.SUBMITTED, ReceiptStatus.REJECTED],
     to: ReceiptStatus.DRAFT,
     action: StateAction.CANCEL,
     allowedRoles: ['DATA_ENTRY', 'SUPERVISOR']

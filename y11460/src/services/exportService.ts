@@ -1,6 +1,7 @@
 import { createObjectCsvWriter } from 'csv-writer'
 import { prisma } from '../lib/prisma'
 import { ReceiptStatus } from '../types/enums'
+import { maskName, maskInvoiceNo, maskAppointmentNo, MaskLevel, maskSensitiveData } from '../utils/mask'
 
 export interface DirectorSummaryReport {
   clinicId?: string
@@ -9,8 +10,8 @@ export interface DirectorSummaryReport {
 }
 
 export class ExportService {
-  async getDirectorView(params: { clinicId?: string; status?: ReceiptStatus }) {
-    const { clinicId, status } = params
+  async getDirectorView(params: { clinicId?: string; status?: ReceiptStatus; maskLevel?: MaskLevel }) {
+    const { clinicId, status, maskLevel = 'partial' } = params
 
     const where: any = {}
     if (clinicId) where.clinicId = clinicId
@@ -49,7 +50,7 @@ export class ExportService {
 
     return {
       summary,
-      receipts: receipts.map(r => ({
+      receipts: receipts.map(r => maskSensitiveData({
         id: r.id,
         batchNo: r.batchNo,
         status: r.status,
@@ -75,12 +76,17 @@ export class ExportService {
           operator: log.operator?.name,
           createdAt: log.createdAt
         }))
-      }))
+      }, maskLevel))
     }
   }
 
-  async exportToCSV(params: { clinicId?: string; startDate?: Date; endDate?: Date }) {
-    const { clinicId, startDate, endDate } = params
+  async exportToCSV(params: { 
+    clinicId?: string; 
+    startDate?: Date; 
+    endDate?: Date;
+    maskLevel?: MaskLevel 
+  }) {
+    const { clinicId, startDate, endDate, maskLevel = 'partial' } = params
 
     const where: any = {}
     if (clinicId) where.clinicId = clinicId
@@ -120,35 +126,43 @@ export class ExportService {
       ]
     })
 
-    const records = receipts.map(r => ({
-      batchNo: r.batchNo,
-      status: r.status,
-      clinic: r.clinic?.name || '',
-      implantBatchNumber: r.implantBatchNumber || '',
-      appointmentRecordNo: r.appointmentRecordNo || '',
-      supplierInvoiceNo: r.supplierInvoiceNo || '',
-      patientName: r.patientName || '',
-      implantModel: r.implantModel || '',
-      implantQuantity: r.implantQuantity || 0,
-      unitPrice: r.unitPrice?.toString() || '',
-      totalAmount: r.totalAmount?.toString() || '',
-      freezeReason: r.freezeReason || '',
-      manualReason: r.manualReason || '',
-      creator: r.creator?.name || '',
-      reviewer: r.reviewer?.name || '',
-      createdAt: r.createdAt.toISOString()
-    }))
+    const records = receipts.map(r => {
+      const masked = maskSensitiveData({
+        patientName: r.patientName || '',
+        supplierInvoiceNo: r.supplierInvoiceNo || '',
+        appointmentRecordNo: r.appointmentRecordNo || ''
+      }, maskLevel)
+
+      return {
+        batchNo: r.batchNo,
+        status: r.status,
+        clinic: r.clinic?.name || '',
+        implantBatchNumber: r.implantBatchNumber || '',
+        appointmentRecordNo: masked.appointmentRecordNo,
+        supplierInvoiceNo: masked.supplierInvoiceNo,
+        patientName: masked.patientName,
+        implantModel: r.implantModel || '',
+        implantQuantity: r.implantQuantity || 0,
+        unitPrice: r.unitPrice?.toString() || '',
+        totalAmount: r.totalAmount?.toString() || '',
+        freezeReason: r.freezeReason || '',
+        manualReason: r.manualReason || '',
+        creator: r.creator?.name || '',
+        reviewer: r.reviewer?.name || '',
+        createdAt: r.createdAt.toISOString()
+      }
+    })
 
     await csvWriter.writeRecords(records)
 
     return csvPath
   }
 
-  async getFrozenReceipts(clinicId?: string) {
+  async getFrozenReceipts(clinicId?: string, maskLevel: MaskLevel = 'partial') {
     const where: any = { status: ReceiptStatus.FROZEN }
     if (clinicId) where.clinicId = clinicId
 
-    return prisma.materialReceipt.findMany({
+    const receipts = await prisma.materialReceipt.findMany({
       where,
       orderBy: { updatedAt: 'desc' },
       include: {
@@ -160,6 +174,13 @@ export class ExportService {
         clinic: true
       }
     })
+
+    return receipts.map(r => maskSensitiveData({
+      ...r,
+      patientName: r.patientName,
+      supplierInvoiceNo: r.supplierInvoiceNo,
+      appointmentRecordNo: r.appointmentRecordNo
+    }, maskLevel))
   }
 }
 
