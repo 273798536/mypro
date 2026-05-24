@@ -1,0 +1,10 @@
+export declare function getWorkspacePath(cwd: string): string;
+export declare function isInitialized(workspacePath: string): boolean;
+export declare function ensureDir(dirPath: string): void;
+export declare function parseNumber(value: string | number | undefined): number;
+export declare function parseBoolean(value: string | boolean | undefined): boolean;
+export declare function formatDate(dateStr: string): string;
+export declare function logSuccess(message: string): void;
+export declare function logError(message: string): void;
+export declare function logWarning(message: string): void;
+export declare function logInfo(message: string): void;

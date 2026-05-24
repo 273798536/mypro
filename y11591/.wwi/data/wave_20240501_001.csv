@@ -1,0 +1,7 @@
+waveNo,orderNo,skuCode,skuName,planQty,storeCode,storeName,picker,area
+WAVE001,ORD001,SKU001,商品A,10,STORE01,门店一,张拣货,A区
+WAVE001,ORD001,SKU002,商品B,5,STORE01,门店一,张拣货,A区
+WAVE001,ORD002,SKU001,商品A,8,STORE02,门店二,李拣货,B区
+WAVE001,ORD002,SKU003,商品C,3,STORE02,门店二,李拣货,B区
+WAVE002,ORD003,SKU001,商品A,15,STORE03,门店三,王拣货,A区
+WAVE002,ORD003,SKU004,商品D,6,STORE03,门店三,王拣货,C区

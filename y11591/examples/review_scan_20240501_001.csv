@@ -1,0 +1,7 @@
+waveNo,orderNo,skuCode,reviewQty,reviewer,reviewTime,isException,exceptionReason
+WAVE001,ORD001,SKU001,10,陈复核,2024-05-01 14:00:00,false,
+WAVE001,ORD001,SKU002,5,陈复核,2024-05-01 14:02:00,false,
+WAVE001,ORD002,SKU001,6,陈复核,2024-05-01 14:30:00,true,缺货2件已登记
+WAVE001,ORD002,SKU003,3,陈复核,2024-05-01 14:32:00,false,
+WAVE002,ORD003,SKU001,15,刘复核,2024-05-01 15:00:00,false,
+WAVE002,ORD003,SKU004,5,刘复核,2024-05-01 15:05:00,true,差异待确认
