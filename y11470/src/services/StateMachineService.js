@@ -282,28 +282,19 @@ class StateMachineService {
 
   static async freeze(batchId, freezeReason, operator) {
     try {
-      const batch = await ReturnBatch.findById(batchId);
-      if (!batch) {
-        throw new Error('批次不存在');
-      }
+      const transitionResult = await this.transition(
+        batchId,
+        RETURN_STATUSES.FROZEN,
+        operator,
+        OPERATION_TYPES.FREEZE,
+        freezeReason
+      );
 
-      const result = await ReturnBatch.freeze(batchId, freezeReason, operator);
-
-      await StatusHistory.create({
-        batch_id: batchId,
-        application_id: batch.application_id,
-        from_status: batch.status,
-        to_status: RETURN_STATUSES.FROZEN,
-        operation_type: OPERATION_TYPES.FREEZE,
-        operator: operator,
-        reason: freezeReason
-      });
+      await ReturnBatch.update(batchId, { freeze_reason: freezeReason });
 
       return {
-        success: true,
-        batch_id: batchId,
-        from_status: batch.status,
-        to_status: RETURN_STATUSES.FROZEN
+        ...transitionResult,
+        freeze_reason: freezeReason
       };
     } catch (error) {
       await FailedRecord.create({
@@ -318,28 +309,13 @@ class StateMachineService {
 
   static async unfreeze(batchId, operator) {
     try {
-      const batch = await ReturnBatch.findById(batchId);
-      if (!batch) {
-        throw new Error('批次不存在');
-      }
-
-      const result = await ReturnBatch.unfreeze(batchId, operator);
-
-      await StatusHistory.create({
-        batch_id: batchId,
-        application_id: batch.application_id,
-        from_status: batch.status,
-        to_status: RETURN_STATUSES.REVIEWED,
-        operation_type: OPERATION_TYPES.UNFREEZE,
-        operator: operator
-      });
-
-      return {
-        success: true,
-        batch_id: batchId,
-        from_status: batch.status,
-        to_status: RETURN_STATUSES.REVIEWED
-      };
+      return await this.transition(
+        batchId,
+        RETURN_STATUSES.REVIEWED,
+        operator,
+        OPERATION_TYPES.UNFREEZE,
+        '解除冻结'
+      );
     } catch (error) {
       await FailedRecord.create({
         record_type: 'UNFREEZE',

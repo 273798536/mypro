@@ -37,6 +37,8 @@ async function runTests() {
   results.push(await testAutoCheck());
   results.push(await testBatchAttachmentExceptionReservation());
   results.push(await testApprovalEmailExceptionReservation());
+  results.push(await testFreezeStateValidation());
+  results.push(await testUnfreezeStateValidation());
   
   console.log('\n=== 测试结果汇总 ===');
   const passed = results.filter(r => r.passed).length;
@@ -535,6 +537,117 @@ async function testApprovalEmailExceptionReservation() {
     };
   } catch (e) {
     return { name: '审批邮件异常保留', passed: false, message: e.message };
+  }
+}
+
+async function testFreezeStateValidation() {
+  try {
+    const app = await ReturnApplication.create({
+      application_no: 'TEST-APP-FREEZE-VALID-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    const batchResult = await StateMachineService.createBatch(app.id, {
+      application_id: app.id,
+      batch_no: 'TEST-BATCH-FREEZE-VALID-' + Date.now(),
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 10,
+      unit_price: 99.99
+    }, TEST_USER);
+    
+    const batchId = batchResult.batch_id;
+    
+    let canFreezeAtCreated = false;
+    try {
+      await StateMachineService.freeze(batchId, '测试冻结', TEST_USER);
+      canFreezeAtCreated = true;
+    } catch (e) {
+      canFreezeAtCreated = false;
+    }
+    
+    await StateMachineService.uploadAttachment(batchId, TEST_USER);
+    await StateMachineService.qualityInspection(batchId, 'PASS', TEST_USER);
+    await StateMachineService.review(batchId, TEST_USER);
+    
+    let canFreezeAtReviewed = false;
+    try {
+      await StateMachineService.freeze(batchId, '测试冻结', TEST_USER);
+      canFreezeAtReviewed = true;
+    } catch (e) {
+      canFreezeAtReviewed = false;
+    }
+    
+    const finalBatch = await ReturnBatch.findById(batchId);
+    const statusCorrect = finalBatch.status === RETURN_STATUSES.FROZEN;
+    
+    return {
+      name: '冻结状态校验',
+      passed: !canFreezeAtCreated && canFreezeAtReviewed && statusCorrect,
+      message: !canFreezeAtCreated && canFreezeAtReviewed && statusCorrect
+        ? `CREATED状态冻结被拒绝: ${!canFreezeAtCreated}, REVIEWED状态冻结成功: ${canFreezeAtReviewed}, 最终状态: ${finalBatch.status}`
+        : `CREATED状态冻结: ${canFreezeAtCreated}(应被拒绝), REVIEWED状态冻结: ${canFreezeAtReviewed}(应成功), 最终状态: ${finalBatch?.status}`
+    };
+  } catch (e) {
+    return { name: '冻结状态校验', passed: false, message: e.message };
+  }
+}
+
+async function testUnfreezeStateValidation() {
+  try {
+    const app = await ReturnApplication.create({
+      application_no: 'TEST-APP-UNFREEZE-VALID-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    const batchResult = await StateMachineService.createBatch(app.id, {
+      application_id: app.id,
+      batch_no: 'TEST-BATCH-UNFREEZE-VALID-' + Date.now(),
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 10,
+      unit_price: 99.99
+    }, TEST_USER);
+    
+    const batchId = batchResult.batch_id;
+    
+    let canUnfreezeAtCreated = false;
+    try {
+      await StateMachineService.unfreeze(batchId, TEST_USER);
+      canUnfreezeAtCreated = true;
+    } catch (e) {
+      canUnfreezeAtCreated = false;
+    }
+    
+    await StateMachineService.uploadAttachment(batchId, TEST_USER);
+    await StateMachineService.qualityInspection(batchId, 'PASS', TEST_USER);
+    await StateMachineService.review(batchId, TEST_USER);
+    await StateMachineService.freeze(batchId, '测试冻结', TEST_USER);
+    
+    let canUnfreezeAtFrozen = false;
+    try {
+      await StateMachineService.unfreeze(batchId, TEST_USER);
+      canUnfreezeAtFrozen = true;
+    } catch (e) {
+      canUnfreezeAtFrozen = false;
+    }
+    
+    const finalBatch = await ReturnBatch.findById(batchId);
+    const statusCorrect = finalBatch.status === RETURN_STATUSES.REVIEWED;
+    
+    return {
+      name: '解冻状态校验',
+      passed: !canUnfreezeAtCreated && canUnfreezeAtFrozen && statusCorrect,
+      message: !canUnfreezeAtCreated && canUnfreezeAtFrozen && statusCorrect
+        ? `CREATED状态解冻被拒绝: ${!canUnfreezeAtCreated}, FROZEN状态解冻成功: ${canUnfreezeAtFrozen}, 最终状态: ${finalBatch.status}`
+        : `CREATED状态解冻: ${canUnfreezeAtCreated}(应被拒绝), FROZEN状态解冻: ${canUnfreezeAtFrozen}(应成功), 最终状态: ${finalBatch?.status}`
+    };
+  } catch (e) {
+    return { name: '解冻状态校验', passed: false, message: e.message };
   }
 }
 
