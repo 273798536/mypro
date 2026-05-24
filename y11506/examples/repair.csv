@@ -1,0 +1,6 @@
+device_id,device_name,department,fault_description,quote_amount,quote_date,vendor,status,approval_status
+DEV001,心电图机,内科,屏幕显示异常,500.00,2024-01-10,设备维修公司,pending,
+DEV003,血糖仪,检验科,测量值偏差大,200.00,2024-01-11,厂家售后,approved,
+DEV005,X光机,放射科,高压发生器故障,8000.00,2024-01-12,专业维修公司,pending,
+DEV009,注射泵,外科,电池续航不足,300.00,2024-01-13,配件供应商,approved,
+DEV007,监护仪,ICU,报警功能异常,1200.00,2024-01-14,设备维修公司,rejected,

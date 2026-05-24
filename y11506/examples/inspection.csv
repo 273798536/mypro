@@ -1,0 +1,11 @@
+device_id,device_name,department,inspection_date,inspector,inspection_result,issues,next_inspection_date,status
+DEV001,心电图机,内科,2024-01-15,张三,合格,无,2024-07-15,active
+DEV002,血压计,内科,2024-01-16,李四,合格,无,2024-07-16,active
+DEV003,血糖仪,检验科,2024-01-17,王五,待复检,需要校准,2024-04-17,active
+DEV004,B超机,超声科,2024-01-18,赵六,合格,无,2024-07-18,active
+DEV005,X光机,放射科,2024-01-19,钱七,不合格,需要维修,2024-07-19,maintenance
+DEV006,呼吸机,ICU,2024-01-20,孙八,合格,无,2024-07-20,active
+DEV007,监护仪,ICU,2024-01-21,周九,合格,无,2024-07-21,active
+DEV008,输液泵,内科,2024-01-22,吴十,合格,无,2024-07-22,active
+DEV009,注射泵,外科,2024-01-23,郑十一,待复检,电池老化,2024-04-23,active
+DEV010,除颤仪,急诊科,2024-01-24,王十二,合格,无,2024-07-24,active
