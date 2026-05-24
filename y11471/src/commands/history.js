@@ -1,4 +1,4 @@
-const { getRecord, getRecordHistory, getSystemLogs, getRecordId, getRecordSources } = require('../recordService');
+const { getRecord, getChangeHistory, getSystemLogs, getRecordId, getRecordSources } = require('../recordService');
 const { 
   printTable, printSuccess, printError, printInfo, printWarning, printDiff,
   truncateString
@@ -45,7 +45,7 @@ async function showRecordHistory(batchNo, skuCode, options) {
 
   printInfo(`变更历史: ${batchNo} / ${skuCode}`);
 
-  const history = await getRecordHistory(recordId, options.limit || 50);
+  const history = await getChangeHistory({ recordId, limit: options.limit || 50 });
 
   if (history.length === 0) {
     printWarning('没有变更记录');

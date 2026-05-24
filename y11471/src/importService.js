@@ -81,6 +81,40 @@ function normalizeField(value) {
   return String(value).trim();
 }
 
+async function recalculateRecordFields(batchNo, skuCode, importNote = '重新汇总') {
+  const recordId = `${batchNo}-${skuCode}`;
+  
+  const inspectionSum = await get(
+    'SELECT SUM(inspection_qty) as total FROM inspection_photos WHERE batch_no = ? AND sku_code = ?',
+    [batchNo, skuCode]
+  );
+  
+  const logisticsSum = await get(
+    'SELECT SUM(shipped_qty) as shipped, SUM(received_qty) as received FROM logistics_receipts WHERE batch_no = ? AND sku_code = ?',
+    [batchNo, skuCode]
+  );
+  
+  const smsSum = await get(
+    'SELECT SUM(confirmed_qty) as total FROM sms_snapshots WHERE batch_no = ? AND (sku_code = ? OR sku_code IS NULL)',
+    [batchNo, skuCode]
+  );
+  
+  const exceptionSum = await get(
+    'SELECT SUM(exception_qty) as total FROM exception_photos WHERE batch_no = ? AND sku_code = ?',
+    [batchNo, skuCode]
+  );
+  
+  const updates = {
+    inspection_qty: inspectionSum?.total || 0,
+    shipped_qty: logisticsSum?.shipped || 0,
+    received_qty: logisticsSum?.received || 0,
+    sms_confirmed_qty: smsSum?.total || 0,
+    exception_qty: exceptionSum?.total || 0
+  };
+  
+  return await updateRecord(recordId, updates, 'recalculate', importNote);
+}
+
 async function importApplications(filePath, options = {}) {
   const rows = await parseFile(filePath);
   const batchId = await createImportBatch(SOURCE_TYPES.APPLICATION, path.basename(filePath), options.operator, options.note);
@@ -188,17 +222,15 @@ async function importInspections(filePath, options = {}) {
     );
     
     await getOrCreateRecord(batchNo, skuCode);
-    const recordIdForUpdate = `${batchNo}-${skuCode}`;
-    
-    const existing = await get('SELECT inspection_qty FROM records WHERE id = ?', [recordIdForUpdate]);
-    const newQty = (existing?.inspection_qty || 0) + inspectionQty;
-    
-    await updateRecord(recordIdForUpdate, {
-      inspection_qty: newQty,
-      inspection_result: inspectionResult || existing?.inspection_result
-    }, 'import', `导入质检照片: ${path.basename(filePath)}`);
-    
     successCount++;
+  }
+  
+  const updatedRecords = await all(
+    'SELECT DISTINCT batch_no, sku_code FROM inspection_photos WHERE import_batch_id = ?',
+    [batchId]
+  );
+  for (const r of updatedRecords) {
+    await recalculateRecordFields(r.batch_no, r.sku_code, `导入质检照片: ${path.basename(filePath)}`);
   }
   
   await updateBatchStats(batchId, successCount, failCount);
@@ -252,18 +284,15 @@ async function importLogistics(filePath, options = {}) {
     );
     
     await getOrCreateRecord(batchNo, skuCode);
-    const recordIdForUpdate = `${batchNo}-${skuCode}`;
-    
-    const existing = await get('SELECT shipped_qty, received_qty FROM records WHERE id = ?', [recordIdForUpdate]);
-    const newShipped = (existing?.shipped_qty || 0) + shippedQty;
-    const newReceived = (existing?.received_qty || 0) + receivedQty;
-    
-    await updateRecord(recordIdForUpdate, {
-      shipped_qty: newShipped,
-      received_qty: newReceived
-    }, 'import', `导入物流回单: ${path.basename(filePath)}`);
-    
     successCount++;
+  }
+  
+  const updatedRecords = await all(
+    'SELECT DISTINCT batch_no, sku_code FROM logistics_receipts WHERE import_batch_id = ?',
+    [batchId]
+  );
+  for (const r of updatedRecords) {
+    await recalculateRecordFields(r.batch_no, r.sku_code, `导入物流回单: ${path.basename(filePath)}`);
   }
   
   await updateBatchStats(batchId, successCount, failCount);
@@ -315,17 +344,17 @@ async function importSms(filePath, options = {}) {
     
     if (skuCode) {
       await getOrCreateRecord(batchNo, skuCode);
-      const recordIdForUpdate = `${batchNo}-${skuCode}`;
-      
-      const existing = await get('SELECT sms_confirmed_qty FROM records WHERE id = ?', [recordIdForUpdate]);
-      const newConfirmed = (existing?.sms_confirmed_qty || 0) + confirmedQty;
-      
-      await updateRecord(recordIdForUpdate, {
-        sms_confirmed_qty: newConfirmed
-      }, 'import', `导入短信截图: ${path.basename(filePath)}`);
     }
     
     successCount++;
+  }
+  
+  const updatedRecords = await all(
+    'SELECT DISTINCT batch_no, sku_code FROM sms_snapshots WHERE import_batch_id = ? AND sku_code IS NOT NULL',
+    [batchId]
+  );
+  for (const r of updatedRecords) {
+    await recalculateRecordFields(r.batch_no, r.sku_code, `导入短信截图: ${path.basename(filePath)}`);
   }
   
   await updateBatchStats(batchId, successCount, failCount);
@@ -368,7 +397,7 @@ async function importExceptions(filePath, options = {}) {
     
     const recordId = generateId();
     await run(
-      `INSERT INTO exception_photos 
+      `INSERT OR REPLACE INTO exception_photos 
        (id, batch_no, sku_code, photo_url, photo_name, exception_type, exception_desc, 
         exception_qty, reporter, report_date, original_line_no, source_file, import_batch_id)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -379,16 +408,15 @@ async function importExceptions(filePath, options = {}) {
     );
     
     await getOrCreateRecord(batchNo, skuCode);
-    const recordIdForUpdate = `${batchNo}-${skuCode}`;
-    
-    const existing = await get('SELECT exception_qty FROM records WHERE id = ?', [recordIdForUpdate]);
-    const newQty = (existing?.exception_qty || 0) + exceptionQty;
-    
-    await updateRecord(recordIdForUpdate, {
-      exception_qty: newQty
-    }, 'import', `导入异常照片: ${path.basename(filePath)}`);
-    
     successCount++;
+  }
+  
+  const updatedRecords = await all(
+    'SELECT DISTINCT batch_no, sku_code FROM exception_photos WHERE import_batch_id = ?',
+    [batchId]
+  );
+  for (const r of updatedRecords) {
+    await recalculateRecordFields(r.batch_no, r.sku_code, `导入异常照片: ${path.basename(filePath)}`);
   }
   
   await updateBatchStats(batchId, successCount, failCount);
