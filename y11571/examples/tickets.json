@@ -1,0 +1,51 @@
+[
+  {
+    "ticketNo": "TK-2024-001",
+    "title": "用户投诉订单无法支付",
+    "status": "escalated",
+    "priority": "high",
+    "assignee": "张三",
+    "department": "客服一部",
+    "source": "电话",
+    "createdAt": "2024-01-15T09:00:00.000Z",
+    "updatedAt": "2024-01-15T14:30:00.000Z"
+  },
+  {
+    "ticketNo": "TK-2024-002",
+    "title": "账户余额显示错误",
+    "status": "in_progress",
+    "priority": "medium",
+    "assignee": "李四",
+    "department": "客服二部",
+    "source": "在线客服",
+    "createdAt": "2024-01-15T10:15:00.000Z",
+    "updatedAt": "2024-01-15T11:00:00.000Z"
+  },
+  {
+    "ticketNo": "TK-2024-003",
+    "title": "商品发货延迟",
+    "status": "escalated",
+    "priority": "critical",
+    "assignee": "王五",
+    "department": "客服一部",
+    "source": "邮件",
+    "createdAt": "2024-01-14T08:00:00.000Z",
+    "updatedAt": "2024-01-15T09:00:00.000Z"
+  },
+  {
+    "ticketNo": "TK-2024-004",
+    "title": "退款申请处理中",
+    "status": "pending",
+    "priority": "medium",
+    "assignee": "赵六",
+    "department": "客服二部",
+    "source": "APP",
+    "createdAt": "2024-01-15T08:30:00.000Z",
+    "updatedAt": "2024-01-15T08:30:00.000Z"
+  },
+  {
+    "ticketNo": "TK-2024-005",
+    "title": "登录异常，缺少字段测试",
+    "priority": "low"
+  }
+]

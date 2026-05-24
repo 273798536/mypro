@@ -1,0 +1,531 @@
+{
+  "exportMetadata": {
+    "exportedAt": "2026-05-24T15:06:30.727Z",
+    "version": "1.0"
+  },
+  "tickets": [
+    {
+      "id": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+      "importBatchId": "batch_1779635119823_3859694c",
+      "originalRowNumber": 1,
+      "ticketNo": "TK-2024-001",
+      "title": "用户投诉订单无法支付",
+      "status": "escalated",
+      "priority": "high",
+      "createdAt": "2024-01-15T09:00:00.000Z",
+      "updatedAt": "2024-01-15T14:30:00.000Z",
+      "assignee": "张三",
+      "department": "客服一部",
+      "source": "电话"
+    },
+    {
+      "id": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+      "importBatchId": "batch_1779635119823_3859694c",
+      "originalRowNumber": 2,
+      "ticketNo": "TK-2024-002",
+      "title": "账户余额显示错误",
+      "status": "in_progress",
+      "priority": "medium",
+      "createdAt": "2024-01-15T10:15:00.000Z",
+      "updatedAt": "2024-01-15T11:00:00.000Z",
+      "assignee": "李四",
+      "department": "客服二部",
+      "source": "在线客服"
+    },
+    {
+      "id": "063f6243-a452-40da-a7a3-0e965a7277a2",
+      "importBatchId": "batch_1779635119823_3859694c",
+      "originalRowNumber": 3,
+      "ticketNo": "TK-2024-003",
+      "title": "商品发货延迟",
+      "status": "escalated",
+      "priority": "critical",
+      "createdAt": "2024-01-14T08:00:00.000Z",
+      "updatedAt": "2024-01-15T09:00:00.000Z",
+      "assignee": "王五",
+      "department": "客服一部",
+      "source": "邮件"
+    },
+    {
+      "id": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+      "importBatchId": "batch_1779635119823_3859694c",
+      "originalRowNumber": 4,
+      "ticketNo": "TK-2024-004",
+      "title": "退款申请处理中",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2024-01-15T08:30:00.000Z",
+      "updatedAt": "2024-01-15T08:30:00.000Z",
+      "assignee": "赵六",
+      "department": "客服二部",
+      "source": "APP"
+    },
+    {
+      "id": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+      "importBatchId": "batch_1779635119823_3859694c",
+      "originalRowNumber": 5,
+      "ticketNo": "TK-2024-005",
+      "title": "登录异常，缺少字段测试",
+      "status": "open",
+      "priority": "low",
+      "createdAt": "2026-05-24T15:05:19.832Z",
+      "updatedAt": "2026-05-24T15:05:19.832Z",
+      "assignee": "",
+      "department": "",
+      "source": "import"
+    }
+  ],
+  "sessionSummaries": [],
+  "slaRules": [],
+  "compensationApprovals": [],
+  "customerServiceNotes": [],
+  "exceptionPhotos": [],
+  "assignmentHistories": [],
+  "importRecords": [
+    {
+      "id": "a7210797-d467-4515-abc5-ad04b783e65f",
+      "batchId": "batch_1779635119823_3859694c",
+      "sourceType": "ticket",
+      "sourceFile": "tickets.json",
+      "importedAt": "2026-05-24T15:05:19.834Z",
+      "importedBy": "测试用户",
+      "totalRecords": 5,
+      "successCount": 5,
+      "failedCount": 0,
+      "status": "completed"
+    }
+  ],
+  "importErrors": [],
+  "history": [
+    {
+      "entityType": "ticket",
+      "entityId": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+      "action": "import",
+      "before": null,
+      "after": {
+        "id": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+        "importBatchId": "batch_1779635119823_3859694c",
+        "originalRowNumber": 1,
+        "ticketNo": "TK-2024-001",
+        "title": "用户投诉订单无法支付",
+        "status": "escalated",
+        "priority": "high",
+        "createdAt": "2024-01-15T09:00:00.000Z",
+        "updatedAt": "2024-01-15T14:30:00.000Z",
+        "assignee": "张三",
+        "department": "客服一部",
+        "source": "电话"
+      },
+      "diff": [
+        {
+          "field": "id",
+          "newValue": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+          "changeType": "added"
+        },
+        {
+          "field": "importBatchId",
+          "newValue": "batch_1779635119823_3859694c",
+          "changeType": "added"
+        },
+        {
+          "field": "originalRowNumber",
+          "newValue": 1,
+          "changeType": "added"
+        },
+        {
+          "field": "ticketNo",
+          "newValue": "TK-2024-001",
+          "changeType": "added"
+        },
+        {
+          "field": "title",
+          "newValue": "用户投诉订单无法支付",
+          "changeType": "added"
+        },
+        {
+          "field": "status",
+          "newValue": "escalated",
+          "changeType": "added"
+        },
+        {
+          "field": "priority",
+          "newValue": "high",
+          "changeType": "added"
+        },
+        {
+          "field": "createdAt",
+          "newValue": "2024-01-15T09:00:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "updatedAt",
+          "newValue": "2024-01-15T14:30:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "assignee",
+          "newValue": "张三",
+          "changeType": "added"
+        },
+        {
+          "field": "department",
+          "newValue": "客服一部",
+          "changeType": "added"
+        },
+        {
+          "field": "source",
+          "newValue": "电话",
+          "changeType": "added"
+        }
+      ],
+      "performedBy": "测试用户",
+      "batchId": "batch_1779635119823_3859694c",
+      "id": "1cafdfac-724d-4811-a4b2-72f6a8c3f60e",
+      "performedAt": "2026-05-24T15:05:19.829Z"
+    },
+    {
+      "entityType": "ticket",
+      "entityId": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+      "action": "import",
+      "before": null,
+      "after": {
+        "id": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+        "importBatchId": "batch_1779635119823_3859694c",
+        "originalRowNumber": 2,
+        "ticketNo": "TK-2024-002",
+        "title": "账户余额显示错误",
+        "status": "in_progress",
+        "priority": "medium",
+        "createdAt": "2024-01-15T10:15:00.000Z",
+        "updatedAt": "2024-01-15T11:00:00.000Z",
+        "assignee": "李四",
+        "department": "客服二部",
+        "source": "在线客服"
+      },
+      "diff": [
+        {
+          "field": "id",
+          "newValue": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+          "changeType": "added"
+        },
+        {
+          "field": "importBatchId",
+          "newValue": "batch_1779635119823_3859694c",
+          "changeType": "added"
+        },
+        {
+          "field": "originalRowNumber",
+          "newValue": 2,
+          "changeType": "added"
+        },
+        {
+          "field": "ticketNo",
+          "newValue": "TK-2024-002",
+          "changeType": "added"
+        },
+        {
+          "field": "title",
+          "newValue": "账户余额显示错误",
+          "changeType": "added"
+        },
+        {
+          "field": "status",
+          "newValue": "in_progress",
+          "changeType": "added"
+        },
+        {
+          "field": "priority",
+          "newValue": "medium",
+          "changeType": "added"
+        },
+        {
+          "field": "createdAt",
+          "newValue": "2024-01-15T10:15:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "updatedAt",
+          "newValue": "2024-01-15T11:00:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "assignee",
+          "newValue": "李四",
+          "changeType": "added"
+        },
+        {
+          "field": "department",
+          "newValue": "客服二部",
+          "changeType": "added"
+        },
+        {
+          "field": "source",
+          "newValue": "在线客服",
+          "changeType": "added"
+        }
+      ],
+      "performedBy": "测试用户",
+      "batchId": "batch_1779635119823_3859694c",
+      "id": "cf95782c-2c94-4058-b7ed-c0ab346d4483",
+      "performedAt": "2026-05-24T15:05:19.830Z"
+    },
+    {
+      "entityType": "ticket",
+      "entityId": "063f6243-a452-40da-a7a3-0e965a7277a2",
+      "action": "import",
+      "before": null,
+      "after": {
+        "id": "063f6243-a452-40da-a7a3-0e965a7277a2",
+        "importBatchId": "batch_1779635119823_3859694c",
+        "originalRowNumber": 3,
+        "ticketNo": "TK-2024-003",
+        "title": "商品发货延迟",
+        "status": "escalated",
+        "priority": "critical",
+        "createdAt": "2024-01-14T08:00:00.000Z",
+        "updatedAt": "2024-01-15T09:00:00.000Z",
+        "assignee": "王五",
+        "department": "客服一部",
+        "source": "邮件"
+      },
+      "diff": [
+        {
+          "field": "id",
+          "newValue": "063f6243-a452-40da-a7a3-0e965a7277a2",
+          "changeType": "added"
+        },
+        {
+          "field": "importBatchId",
+          "newValue": "batch_1779635119823_3859694c",
+          "changeType": "added"
+        },
+        {
+          "field": "originalRowNumber",
+          "newValue": 3,
+          "changeType": "added"
+        },
+        {
+          "field": "ticketNo",
+          "newValue": "TK-2024-003",
+          "changeType": "added"
+        },
+        {
+          "field": "title",
+          "newValue": "商品发货延迟",
+          "changeType": "added"
+        },
+        {
+          "field": "status",
+          "newValue": "escalated",
+          "changeType": "added"
+        },
+        {
+          "field": "priority",
+          "newValue": "critical",
+          "changeType": "added"
+        },
+        {
+          "field": "createdAt",
+          "newValue": "2024-01-14T08:00:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "updatedAt",
+          "newValue": "2024-01-15T09:00:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "assignee",
+          "newValue": "王五",
+          "changeType": "added"
+        },
+        {
+          "field": "department",
+          "newValue": "客服一部",
+          "changeType": "added"
+        },
+        {
+          "field": "source",
+          "newValue": "邮件",
+          "changeType": "added"
+        }
+      ],
+      "performedBy": "测试用户",
+      "batchId": "batch_1779635119823_3859694c",
+      "id": "39f68759-56b8-4343-aeb4-9fbc7ef75dc1",
+      "performedAt": "2026-05-24T15:05:19.831Z"
+    },
+    {
+      "entityType": "ticket",
+      "entityId": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+      "action": "import",
+      "before": null,
+      "after": {
+        "id": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+        "importBatchId": "batch_1779635119823_3859694c",
+        "originalRowNumber": 4,
+        "ticketNo": "TK-2024-004",
+        "title": "退款申请处理中",
+        "status": "pending",
+        "priority": "medium",
+        "createdAt": "2024-01-15T08:30:00.000Z",
+        "updatedAt": "2024-01-15T08:30:00.000Z",
+        "assignee": "赵六",
+        "department": "客服二部",
+        "source": "APP"
+      },
+      "diff": [
+        {
+          "field": "id",
+          "newValue": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+          "changeType": "added"
+        },
+        {
+          "field": "importBatchId",
+          "newValue": "batch_1779635119823_3859694c",
+          "changeType": "added"
+        },
+        {
+          "field": "originalRowNumber",
+          "newValue": 4,
+          "changeType": "added"
+        },
+        {
+          "field": "ticketNo",
+          "newValue": "TK-2024-004",
+          "changeType": "added"
+        },
+        {
+          "field": "title",
+          "newValue": "退款申请处理中",
+          "changeType": "added"
+        },
+        {
+          "field": "status",
+          "newValue": "pending",
+          "changeType": "added"
+        },
+        {
+          "field": "priority",
+          "newValue": "medium",
+          "changeType": "added"
+        },
+        {
+          "field": "createdAt",
+          "newValue": "2024-01-15T08:30:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "updatedAt",
+          "newValue": "2024-01-15T08:30:00.000Z",
+          "changeType": "added"
+        },
+        {
+          "field": "assignee",
+          "newValue": "赵六",
+          "changeType": "added"
+        },
+        {
+          "field": "department",
+          "newValue": "客服二部",
+          "changeType": "added"
+        },
+        {
+          "field": "source",
+          "newValue": "APP",
+          "changeType": "added"
+        }
+      ],
+      "performedBy": "测试用户",
+      "batchId": "batch_1779635119823_3859694c",
+      "id": "da0d8157-4ef7-4405-b94c-b76e8d843f16",
+      "performedAt": "2026-05-24T15:05:19.832Z"
+    },
+    {
+      "entityType": "ticket",
+      "entityId": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+      "action": "import",
+      "before": null,
+      "after": {
+        "id": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+        "importBatchId": "batch_1779635119823_3859694c",
+        "originalRowNumber": 5,
+        "ticketNo": "TK-2024-005",
+        "title": "登录异常，缺少字段测试",
+        "status": "open",
+        "priority": "low",
+        "createdAt": "2026-05-24T15:05:19.832Z",
+        "updatedAt": "2026-05-24T15:05:19.832Z",
+        "assignee": "",
+        "department": "",
+        "source": "import"
+      },
+      "diff": [
+        {
+          "field": "id",
+          "newValue": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+          "changeType": "added"
+        },
+        {
+          "field": "importBatchId",
+          "newValue": "batch_1779635119823_3859694c",
+          "changeType": "added"
+        },
+        {
+          "field": "originalRowNumber",
+          "newValue": 5,
+          "changeType": "added"
+        },
+        {
+          "field": "ticketNo",
+          "newValue": "TK-2024-005",
+          "changeType": "added"
+        },
+        {
+          "field": "title",
+          "newValue": "登录异常，缺少字段测试",
+          "changeType": "added"
+        },
+        {
+          "field": "status",
+          "newValue": "open",
+          "changeType": "added"
+        },
+        {
+          "field": "priority",
+          "newValue": "low",
+          "changeType": "added"
+        },
+        {
+          "field": "createdAt",
+          "newValue": "2026-05-24T15:05:19.832Z",
+          "changeType": "added"
+        },
+        {
+          "field": "updatedAt",
+          "newValue": "2026-05-24T15:05:19.832Z",
+          "changeType": "added"
+        },
+        {
+          "field": "assignee",
+          "newValue": "",
+          "changeType": "added"
+        },
+        {
+          "field": "department",
+          "newValue": "",
+          "changeType": "added"
+        },
+        {
+          "field": "source",
+          "newValue": "import",
+          "changeType": "added"
+        }
+      ],
+      "performedBy": "测试用户",
+      "batchId": "batch_1779635119823_3859694c",
+      "id": "6633369c-ffbf-4531-8946-4950e2eab244",
+      "performedAt": "2026-05-24T15:05:19.833Z"
+    }
+  ]
+}

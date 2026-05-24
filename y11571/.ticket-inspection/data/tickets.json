@@ -1,0 +1,72 @@
+[
+  {
+    "id": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+    "importBatchId": "batch_1779635119823_3859694c",
+    "originalRowNumber": 1,
+    "ticketNo": "TK-2024-001",
+    "title": "用户投诉订单无法支付",
+    "status": "escalated",
+    "priority": "high",
+    "createdAt": "2024-01-15T09:00:00.000Z",
+    "updatedAt": "2024-01-15T14:30:00.000Z",
+    "assignee": "张三",
+    "department": "客服一部",
+    "source": "电话"
+  },
+  {
+    "id": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+    "importBatchId": "batch_1779635119823_3859694c",
+    "originalRowNumber": 2,
+    "ticketNo": "TK-2024-002",
+    "title": "账户余额显示错误",
+    "status": "in_progress",
+    "priority": "medium",
+    "createdAt": "2024-01-15T10:15:00.000Z",
+    "updatedAt": "2024-01-15T11:00:00.000Z",
+    "assignee": "李四",
+    "department": "客服二部",
+    "source": "在线客服"
+  },
+  {
+    "id": "063f6243-a452-40da-a7a3-0e965a7277a2",
+    "importBatchId": "batch_1779635119823_3859694c",
+    "originalRowNumber": 3,
+    "ticketNo": "TK-2024-003",
+    "title": "商品发货延迟",
+    "status": "escalated",
+    "priority": "critical",
+    "createdAt": "2024-01-14T08:00:00.000Z",
+    "updatedAt": "2024-01-15T09:00:00.000Z",
+    "assignee": "王五",
+    "department": "客服一部",
+    "source": "邮件"
+  },
+  {
+    "id": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+    "importBatchId": "batch_1779635119823_3859694c",
+    "originalRowNumber": 4,
+    "ticketNo": "TK-2024-004",
+    "title": "退款申请处理中",
+    "status": "pending",
+    "priority": "medium",
+    "createdAt": "2024-01-15T08:30:00.000Z",
+    "updatedAt": "2024-01-15T08:30:00.000Z",
+    "assignee": "赵六",
+    "department": "客服二部",
+    "source": "APP"
+  },
+  {
+    "id": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+    "importBatchId": "batch_1779635119823_3859694c",
+    "originalRowNumber": 5,
+    "ticketNo": "TK-2024-005",
+    "title": "登录异常，缺少字段测试",
+    "status": "open",
+    "priority": "low",
+    "createdAt": "2026-05-24T15:05:19.832Z",
+    "updatedAt": "2026-05-24T15:05:19.832Z",
+    "assignee": "",
+    "department": "",
+    "source": "import"
+  }
+]

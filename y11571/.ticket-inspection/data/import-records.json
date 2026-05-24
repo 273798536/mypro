@@ -1,0 +1,14 @@
+[
+  {
+    "id": "a7210797-d467-4515-abc5-ad04b783e65f",
+    "batchId": "batch_1779635119823_3859694c",
+    "sourceType": "ticket",
+    "sourceFile": "tickets.json",
+    "importedAt": "2026-05-24T15:05:19.834Z",
+    "importedBy": "测试用户",
+    "totalRecords": 5,
+    "successCount": 5,
+    "failedCount": 0,
+    "status": "completed"
+  }
+]

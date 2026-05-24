@@ -1,0 +1,16 @@
+[
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "amount": 500,
+    "reason": "发货延迟造成用户损失，按SLA需补偿",
+    "status": "pending",
+    "createdBy": "运营专员A"
+  },
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "amount": 100,
+    "reason": "支付问题导致用户体验差",
+    "status": "pending",
+    "createdBy": "运营专员B"
+  }
+]

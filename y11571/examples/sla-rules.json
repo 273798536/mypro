@@ -1,0 +1,24 @@
+[
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "ruleName": "标准SLA-24h",
+    "responseTime": 120,
+    "resolutionTime": 1440,
+    "warningTime": 720,
+    "startTime": "2024-01-15T09:00:00.000Z",
+    "deadline": "2024-01-16T09:00:00.000Z",
+    "isViolated": false
+  },
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "ruleName": "加急SLA-4h",
+    "responseTime": 30,
+    "resolutionTime": 240,
+    "warningTime": 120,
+    "startTime": "2024-01-14T08:00:00.000Z",
+    "deadline": "2024-01-14T12:00:00.000Z",
+    "isViolated": true,
+    "actualResponseTime": 45,
+    "actualResolutionTime": 1560
+  }
+]

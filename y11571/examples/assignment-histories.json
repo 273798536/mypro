@@ -1,0 +1,47 @@
+[
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "fromAssignee": "客服接待",
+    "toAssignee": "张三",
+    "fromDepartment": "前台",
+    "toDepartment": "客服一部",
+    "transferredAt": "2024-01-15T09:30:00.000Z",
+    "reason": "需要技术支持"
+  },
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "fromAssignee": "张三",
+    "toAssignee": "技术支持",
+    "fromDepartment": "客服一部",
+    "toDepartment": "技术部",
+    "transferredAt": "2024-01-15T11:00:00.000Z",
+    "reason": "支付系统问题，需要研发介入"
+  },
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "fromAssignee": "技术支持",
+    "toAssignee": "张三",
+    "fromDepartment": "技术部",
+    "toDepartment": "客服一部",
+    "transferredAt": "2024-01-15T13:00:00.000Z",
+    "reason": "问题已定位，返回客服跟进"
+  },
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "fromAssignee": "客服接待",
+    "toAssignee": "王五",
+    "fromDepartment": "前台",
+    "toDepartment": "客服一部",
+    "transferredAt": "2024-01-14T08:30:00.000Z",
+    "reason": "VIP用户，加急处理"
+  },
+  {
+    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "fromAssignee": "王五",
+    "toAssignee": "物流专员",
+    "fromDepartment": "客服一部",
+    "toDepartment": "物流部",
+    "transferredAt": "2024-01-14T10:00:00.000Z",
+    "reason": "需要核实物流情况"
+  }
+]
