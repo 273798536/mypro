@@ -1,0 +1,43 @@
+{
+  "name": "ad-material-inspector",
+  "version": "1.0.0",
+  "description": "广告素材投放多源导入巡检工具",
+  "main": "dist/index.js",
+  "bin": {
+    "ad-inspect": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "sqlite3": "^5.1.7",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "dayjs": "^1.11.10",
+    "uuid": "^9.0.1",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/sqlite3": "^3.1.11",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "@types/jest": "^29.5.11",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0"
+  },
+  "keywords": ["advertising", "material", "inspection", "cli"],
+  "author": "",
+  "license": "MIT"
+}
