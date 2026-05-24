@@ -37,7 +37,7 @@ async function runAllTests() {
   console.log(chalk.cyan('  2. 查询历史记录（验证数据持久化）:'));
   console.log(chalk.white('     curl -X GET http://localhost:3000/api/trace/'));
   console.log(chalk.cyan('  3. 查看具体链路:'));
-  console.log(chalk.white(`     curl -X GET http://localhost:3000/api/trace/<traceNo>/history'));
+  console.log(chalk.white('     curl -X GET http://localhost:3000/api/trace/[traceNo]/history'));
   console.log(chalk.cyan('  4. 查看API请求日志:'));
   console.log(chalk.white('     查看 data/kitchen_trace.db 中的 api_request_logs 表'));
   console.log(chalk.gray('  ───────────────────────────────────────────────\n'));
@@ -51,19 +51,19 @@ async function runAllTests() {
 
   results.forEach((result) => {
     const status = result.success ? chalk.green('✓ 通过') : chalk.red('✗ 失败');
-    console.log(`  ${status} ${result.name}`);
+    console.log('  ' + status + ' ' + result.name);
     if (!result.success && result.error) {
-      console.log(`     错误: ${result.error}`);
+      console.log('     错误: ' + result.error);
     }
     if (result.traceNo) {
-      console.log(`     链路编号: ${result.traceNo}`);
+      console.log('     链路编号: ' + result.traceNo);
     }
   });
 
   console.log(chalk.gray('\n  ─────────────────────────────────────────────────────────────'));
-  console.log(`  总计: ${results.length} 项测试`);
-  console.log(`  通过: ${passed} 项`);
-  console.log(`  失败: ${failed} 项`);
+  console.log('  总计: ' + results.length + ' 项测试');
+  console.log('  通过: ' + passed + ' 项');
+  console.log('  失败: ' + failed + ' 项');
 
   if (failed === 0) {
     console.log(chalk.green('\n╔═══════════════════════════════════════════════════════════════╗'));

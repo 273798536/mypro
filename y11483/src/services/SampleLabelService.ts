@@ -30,6 +30,16 @@ export interface UpdateSampleStatusInput {
   requestId?: string;
 }
 
+export interface BatchCreateResultItem {
+  sampleInput: CreateSampleInput;
+  error: string;
+}
+
+export interface BatchCreateResult {
+  success: SampleLabel[];
+  failed: BatchCreateResultItem[];
+}
+
 export class SampleLabelService {
   private repository: Repository<SampleLabel>;
   private auditService: AuditService;
@@ -63,19 +73,16 @@ export class SampleLabelService {
     return saved;
   }
 
-  async batchCreate(inputs: CreateSampleInput[]): Promise<{
-    success: SampleLabel[];
-    failed: { input: CreateSampleInput; error: string }[]>;
-  }> {
+  async batchCreate(inputs: CreateSampleInput[]): Promise<BatchCreateResult> {
     const success: SampleLabel[] = [];
-    const failed: { input: CreateSampleInput; error: string }[] = [];
+    const failed: BatchCreateResultItem[] = [];
 
     for (const input of inputs) {
       try {
         const sample = await this.create(input);
         success.push(sample);
       } catch (error: any) {
-        failed.push({ input, error: error.message });
+        failed.push({ sampleInput: input, error: error.message });
       }
     }
 

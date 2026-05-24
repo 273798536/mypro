@@ -173,7 +173,7 @@ export class DataGenerator {
       ];
       const status = statuses[i % statuses.length];
 
-      const handover = handoverRepo.create({
+      const handoverData = {
         handoverNo,
         batchNo,
         potNo,
@@ -196,9 +196,11 @@ export class DataGenerator {
         temperatureOnArrival: 5.2,
         createdBy: operator,
         updatedBy: operator,
-      });
+      };
 
-      handovers.push(await handoverRepo.save(handover));
+      const handover = handoverRepo.create(handoverData as any);
+      const savedHandover = await handoverRepo.save(handover) as unknown as StoreHandover;
+      handovers.push(savedHandover);
     }
 
     return handovers;

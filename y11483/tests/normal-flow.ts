@@ -2,8 +2,9 @@ import 'reflect-metadata';
 import chalk from 'chalk';
 import { initDatabase, closeDatabase } from '../src/config/database';
 import { DataGenerator } from '../src/services/DataGenerator';
-import { BatchTraceService, ConflictStrategy } from '../src/services/BatchTraceService';
-import { ExportService, ExportFormat, ExportType } from '../src/services/ExportService';
+import { BatchTraceService } from '../src/services/BatchTraceService';
+import { ExportService } from '../src/services/ExportService';
+import { ConflictStrategy, ExportFormat, ExportType } from '../src/entities';
 
 async function runNormalFlow() {
   console.log(chalk.blue('\n╔══════════════════════════════════════════════════════════════╗'));

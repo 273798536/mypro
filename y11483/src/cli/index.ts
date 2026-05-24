@@ -7,10 +7,16 @@ import fs from 'fs';
 import path from 'path';
 import { initDatabase, closeDatabase } from '../config/database';
 import { DataGenerator } from '../services/DataGenerator';
-import { BatchTraceService, ConflictStrategy } from '../services/BatchTraceService';
-import { ExportService, ExportFormat, ExportType } from '../services/ExportService';
+import { BatchTraceService } from '../services/BatchTraceService';
+import { ExportService } from '../services/ExportService';
 import { SampleLabelService } from '../services/SampleLabelService';
-import { AuditService, EntityType } from '../services/AuditService';
+import { AuditService } from '../services/AuditService';
+import {
+  ConflictStrategy,
+  ExportFormat,
+  ExportType,
+  EntityType,
+} from '../entities';
 
 const dataDir = path.join(process.cwd(), 'data');
 if (!fs.existsSync(dataDir)) {

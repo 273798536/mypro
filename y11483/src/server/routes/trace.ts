@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { BatchTraceService, ConflictStrategy } from '../../services/BatchTraceService';
-import { ExportService, ExportFormat, ExportType } from '../../services/ExportService';
+import { BatchTraceService } from '../../services/BatchTraceService';
+import { ExportService } from '../../services/ExportService';
+import { ConflictStrategy, ExportFormat, ExportType } from '../../entities';
 
 const router = Router();
 const traceService = new BatchTraceService();

@@ -2,9 +2,10 @@ import 'reflect-metadata';
 import chalk from 'chalk';
 import { initDatabase, closeDatabase } from '../src/config/database';
 import { DataGenerator } from '../src/services/DataGenerator';
-import { BatchTraceService, ConflictStrategy, TraceStatus } from '../src/services/BatchTraceService';
+import { BatchTraceService } from '../src/services/BatchTraceService';
 import { SampleLabelService } from '../src/services/SampleLabelService';
-import { AuditService, EntityType } from '../src/services/AuditService';
+import { AuditService } from '../src/services/AuditService';
+import { ConflictStrategy, TraceStatus, EntityType } from '../src/entities';
 
 async function runEdgeCases() {
   console.log(chalk.blue('\n╔══════════════════════════════════════════════════════════════╗'));
@@ -195,7 +196,7 @@ async function runEdgeCases() {
     
     for (const op of expectedOperations) {
       if (!foundOperations.has(op)) {
-        console.log(chalk.yellow(`⚠  注意: 未找到 ${op} 操作记录（可能在不同测试阶段）`);
+        console.log(chalk.yellow('Warning: ') + ` ${op} operation not found, may be in different test phase`);
       }
     }
 
