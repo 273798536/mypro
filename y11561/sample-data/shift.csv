@@ -1,0 +1,4 @@
+shiftNo,shiftDate,shiftType,operator,checkinCount,checkoutCount,totalDeposit,totalRefund,totalRevenue,handoverTime
+SHF001,2026-05-23,morning,李前台,5,3,5000,500,15000,2026-05-23 14:00:00
+SHF002,2026-05-23,afternoon,张前台,8,6,8000,300,22000,2026-05-23 22:00:00
+SHF003,2026-05-23,night,王夜班,3,1,2000,0,8000,2026-05-24 08:00:00
