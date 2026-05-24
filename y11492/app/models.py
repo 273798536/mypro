@@ -66,6 +66,8 @@ class TenderTask(Base):
     manual_handle_time = Column(DateTime(timezone=True))
     manual_remark = Column(Text)
     
+    process_result = Column(JSON)
+    
     conflict_strategy = Column(Enum(ConflictStrategy), default=ConflictStrategy.APPEND)
     parent_task_id = Column(Integer, ForeignKey("tender_tasks.id"))
     

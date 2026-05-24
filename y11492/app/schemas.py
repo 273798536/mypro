@@ -56,6 +56,7 @@ class TaskResponse(BaseModel):
     frozen_by: Optional[str] = None
     frozen_time: Optional[datetime] = None
     manual_handler: Optional[str] = None
+    process_result: Optional[Dict[str, Any]] = None
     conflict_strategy: ConflictStrategy
     parent_task_id: Optional[int] = None
 

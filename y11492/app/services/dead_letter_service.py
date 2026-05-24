@@ -152,19 +152,22 @@ class DeadLetterService:
 
     @staticmethod
     def get_classification_stats(db: Session) -> dict:
-        stats = db.query(
-            DeadLetterTask.retry_classification,
-            func.count(DeadLetterTask.id).label("count"),
-            func.sum(func.case((DeadLetterTask.is_recoverable == True, 1), else_=0)).label("recoverable"),
-            func.sum(func.case((DeadLetterTask.handled == False, 1), else_=0)).label("unhandled")
-        ).group_by(DeadLetterTask.retry_classification).all()
+        all_dead_letters = db.query(DeadLetterTask).all()
         
         result = {}
-        for row in stats:
-            result[row.retry_classification] = {
-                "total": row.count,
-                "recoverable": row.recoverable or 0,
-                "unhandled": row.unhandled or 0
-            }
+        for dl in all_dead_letters:
+            classification = dl.retry_classification or "UNKNOWN_ERROR"
+            if classification not in result:
+                result[classification] = {
+                    "total": 0,
+                    "recoverable": 0,
+                    "unhandled": 0
+                }
+            
+            result[classification]["total"] += 1
+            if dl.is_recoverable:
+                result[classification]["recoverable"] += 1
+            if not dl.handled:
+                result[classification]["unhandled"] += 1
         
         return result
