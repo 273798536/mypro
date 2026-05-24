@@ -1,0 +1,32 @@
+check:
+  auto_retry_errors:
+  - network_error
+  - timeout_error
+  manual_fix_errors:
+  - data_integrity_error
+  - business_rule_error
+  required_fields:
+  - location
+  - issue_type
+  severity_levels:
+  - low
+  - normal
+  - high
+  - critical
+database:
+  path: lighting_data.db
+export:
+  output_dir: exports
+import:
+  default_strategy: ignore
+  photo_exif_required: false
+  photo_extensions:
+  - .jpg
+  - .jpeg
+  - .png
+report:
+  formats:
+  - txt
+  - csv
+  - xlsx
+  output_dir: reports

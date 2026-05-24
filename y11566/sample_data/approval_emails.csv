@@ -1,0 +1,3 @@
+邮件主题,发件人,发送时间,审批状态,故障地点,路段,灯杆编号,故障类型
+紧急维修审批,manager@city.gov,2024-01-15 12:00:00,approved,建设大道_005,建设大道,005,lighting_failure
+常规维修审批,supervisor@city.gov,2024-01-15 13:00:00,pending,朝阳路_002,朝阳路,002,lighting_flicker
