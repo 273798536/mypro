@@ -1,0 +1,5 @@
+﻿store_id,store_name,handover_date,outgoing_manager,incoming_manager,member_count,total_balance,cash_on_hand
+S01,门店1,2024-01-01,经理李,经理赵,480,122976,5815
+S02,门店2,2024-01-11,经理张,经理钱,210,105754,14624
+S03,门店3,2024-01-21,经理李,经理赵,387,103813,7031
+,缺字段门店,2024-02-10,,经理周,200,100000,10000

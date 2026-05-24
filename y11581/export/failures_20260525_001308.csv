@@ -1,0 +1,4 @@
+﻿批次ID,原始行号,数据类型,脏类型,问题描述,修复建议,是否已修正,原始数据
+1,14,recharge,格式无效,充值金额无效: -100,充值金额必须为非负数字,是,"{""member_id"": ""M011"", ""member_name"": ""无效金额"", ""store_id"": ""S02"", ""store_name"": ""门店2"", ""recharge_amount"": -100, ""bonus_amount"": 0, ""payment_method"": ""现金"", ""transaction_time"": ""2024-01-17 09:15:00"", ""operator"": ""营业员C""}"
+1,15,recharge,格式无效,交易时间格式无效: invalid_date,请使用 YYYY-MM-DD HH:MM:SS 格式,否,"{""member_id"": ""M012"", ""member_name"": ""无效时间"", ""store_id"": ""S03"", ""store_name"": ""门店3"", ""recharge_amount"": 200, ""bonus_amount"": 20, ""payment_method"": ""微信"", ""transaction_time"": ""invalid_date"", ""operator"": ""营业员A""}"
+3,7,shift,金额冲突,交班金额不匹配: 期望2000.00，实际2500.00,请核对现金、充值、退款金额重新计算,否,"{""store_id"": ""S01"", ""shift_date"": ""2024-01-06"", ""shift_no"": ""SHIFT006"", ""cashier"": ""收银员甲"", ""start_balance"": 1000, ""end_balance"": 2500, ""cash_sales"": 500, ""card_sales"": 500, ""member_recharge"": 500, ""member_refund"": 0}"
