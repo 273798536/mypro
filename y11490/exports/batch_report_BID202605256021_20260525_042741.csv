@@ -1,0 +1,31 @@
+章节,分类,记录ID,项目,值,来源证据,备注
+一、批次基本信息,,,,,,
+一、批次基本信息,基础信息,1,批次号,BID202605256021,batches.batch_no,
+一、批次基本信息,基础信息,1,项目名称,测试项目 - 门店投诉追溯,batches.project_name,
+一、批次基本信息,基础信息,1,投标编号,BID-TEST-001,batches.bid_no,
+一、批次基本信息,状态信息,1,当前状态,DRAFT,batches.status,
+一、批次基本信息,状态信息,1,是否冻结,否,batches.is_frozen,
+一、批次基本信息,状态信息,1,冻结原因,-,batches.freeze_reason,
+一、批次基本信息,状态信息,1,人工备注,重点关注资质文件有效性,batches.manual_remark,
+一、批次基本信息,操作信息,1,创建人,test_operator,batches.operator,
+一、批次基本信息,操作信息,1,创建时间,2026-05-24 20:27:41,batches.created_at,
+二、异常统计汇总,,,,,,
+二、异常统计汇总,汇总,,异常记录总数,3,failed_records COUNT,
+二、异常统计汇总,汇总,,未处理记录,2,failed_records WHERE is_resolved=0,未解决的异常
+二、异常统计汇总,汇总,,已修正记录,1,failed_records WHERE is_resolved=1,已人工解决的异常
+二、异常统计汇总,汇总,,需人工确认,0,failed_records WHERE error_type IN (...),数据不一致或重复记录
+三、异常记录明细,,,,,,
+三、异常记录明细,记录ID,错误类型,记录类型,错误信息,来源,状态
+三、异常记录明细,,1,qualification,缺少必需的附件类型: qualification,consistency_check,未处理
+三、异常记录明细,,2,price_version,缺少必需的附件类型: price_version,consistency_check,未处理
+三、异常记录明细,,3,sealed_scan,缺少必需的附件类型: sealed_scan,consistency_check,未处理
+四、附件清单,,,,,,
+四、附件清单,附件ID,附件类型,文件名,版本,上传人,状态
+五、状态历史轨迹,,,,,,
+五、状态历史轨迹,历史ID,时间,状态变更,动作,操作人,原因
+五、状态历史轨迹,1,2026-05-24 20:27:41,- → DRAFT,CREATE,test_operator,Batch created
+六、冻结前后状态对比,,,,,,
+六、冻结前后状态对比,对比项,,冻结前状态,-,batches.previous_status,
+六、冻结前后状态对比,对比项,,冻结后状态,DRAFT,batches.status,
+六、冻结前后状态对比,对比项,,冻结理由,-,batches.freeze_reason,
+六、冻结前后状态对比,对比项,,人工备注,重点关注资质文件有效性,batches.manual_remark,

@@ -84,7 +84,10 @@ async function freezeBatch(batchId, operator, reason) {
       throw new Error(`Batch is already frozen`);
     }
 
-    const previousStatus = batch.status;
+    const currentStatus = batch.status;
+    stateMachine.validateTransition(currentStatus, ACTIONS.FREEZE);
+
+    const previousStatus = currentStatus;
     
     await run(`
       UPDATE batches 
@@ -130,6 +133,9 @@ async function unfreezeBatch(batchId, operator, reason) {
     if (!batch.is_frozen) {
       throw new Error(`Batch is not frozen`);
     }
+
+    const currentStatus = batch.status;
+    stateMachine.validateTransition(currentStatus, ACTIONS.UNFREEZE);
 
     const restoreStatus = batch.previous_status || 'DRAFT';
     
