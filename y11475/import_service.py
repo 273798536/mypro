@@ -316,7 +316,8 @@ def import_file_to_batch(
 
     if batch.state not in (
         BatchState.CREATED, BatchState.IMPORTING,
-        BatchState.PARTIAL_FAILED, BatchState.PENDING_REVIEW
+        BatchState.PARTIAL_FAILED, BatchState.PENDING_REVIEW,
+        BatchState.RECALLED
     ):
         raise ImportError(f"批次状态 {batch.state.value} 不允许导入数据")
 
@@ -334,7 +335,10 @@ def import_file_to_batch(
     except Exception as e:
         raise ImportError(f"Excel文件解析失败: {str(e)}")
 
-    if batch.state in (BatchState.CREATED, BatchState.PARTIAL_FAILED, BatchState.PENDING_REVIEW):
+    if batch.state in (
+        BatchState.CREATED, BatchState.PARTIAL_FAILED,
+        BatchState.PENDING_REVIEW, BatchState.RECALLED
+    ):
         transition_batch_state(
             db, batch, BatchState.IMPORTING, uploaded_by,
             "开始导入数据", log_data={"file": file_name}

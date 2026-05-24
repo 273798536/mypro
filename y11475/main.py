@@ -26,6 +26,7 @@ from state_machine import (
 from import_service import import_file_to_batch, ImportError
 from export_service import generate_export_summary, export_to_excel
 from models import Base
+from permissions import check_permission
 
 Base.metadata.create_all(bind=engine)
 
@@ -45,6 +46,11 @@ def generate_batch_id() -> str:
 
 @app.post("/api/batches", response_model=BatchResponse, tags=["批次管理"])
 def create_batch(batch_data: BatchCreate, db: Session = Depends(get_db)):
+    try:
+        check_permission(batch_data.created_by, "batch:create")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     batch_id = generate_batch_id()
     batch = Batch(
         id=batch_id,
@@ -106,6 +112,11 @@ def import_batch_data(
     uploaded_by: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(uploaded_by, "import:data")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     try:
         content = file.file.read()
         result = import_file_to_batch(
@@ -200,6 +211,11 @@ def update_record(
 
 @app.post("/api/records/submit-review", tags=["复核管理"])
 def submit_for_review(request: ReviewRequest, db: Session = Depends(get_db)):
+    try:
+        check_permission(request.operator, "record:submit")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     results = []
     for record_id in request.record_ids:
         record = db.query(AbnormalRecord).filter(AbnormalRecord.id == record_id).first()
@@ -221,6 +237,11 @@ def submit_for_review(request: ReviewRequest, db: Session = Depends(get_db)):
 
 @app.post("/api/records/review", tags=["复核管理"])
 def review_records(request: ReviewRequest, db: Session = Depends(get_db)):
+    try:
+        check_permission(request.operator, "record:review")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     results = []
     target_state = RecordState.APPROVED if request.approved else RecordState.REJECTED
 
@@ -251,6 +272,10 @@ def override_record(
     request: OverrideRequest,
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(request.operator, "record:override")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     record = db.query(AbnormalRecord).filter(AbnormalRecord.id == record_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="记录不存在")
@@ -281,6 +306,11 @@ def upload_attachment(
     description: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(uploaded_by, "attachment:upload")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     record = db.query(AbnormalRecord).filter(AbnormalRecord.id == record_id).first()
     if not record:
         raise HTTPException(status_code=404, detail="记录不存在")
@@ -315,6 +345,11 @@ def freeze_batch(
     request: StateChangeRequest,
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(request.operator, "batch:freeze")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
@@ -339,6 +374,11 @@ def settle_batch(
     request: StateChangeRequest,
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(request.operator, "batch:settle")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
@@ -362,6 +402,11 @@ def recall_batch(
     request: StateChangeRequest,
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(request.operator, "batch:recall")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
@@ -383,6 +428,11 @@ def archive_batch(
     request: StateChangeRequest,
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(request.operator, "batch:archive")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
@@ -404,6 +454,11 @@ def unfreeze_batch(
     request: StateChangeRequest,
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(request.operator, "batch:unfreeze")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
@@ -429,6 +484,11 @@ def get_export_summary(
     db: Session = Depends(get_db)
 ):
     try:
+        check_permission(exported_by, "export:data")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+    try:
         return generate_export_summary(db, batch_id, exported_by)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -440,6 +500,11 @@ def export_batch_excel(
     exported_by: str = Query(...),
     db: Session = Depends(get_db)
 ):
+    try:
+        check_permission(exported_by, "export:data")
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
     try:
         import urllib.parse
         summary = generate_export_summary(db, batch_id, exported_by)
