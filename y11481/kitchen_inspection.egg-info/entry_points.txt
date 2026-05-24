@@ -1,0 +1,2 @@
+[console_scripts]
+kitchen-inspect = kitchen_inspection.cli:cli

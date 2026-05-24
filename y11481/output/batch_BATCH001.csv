@@ -1,0 +1,8 @@
+﻿批次号,门店编号,数据来源,追踪类型,创建时间,文件名,导入人
+BATCH001,STORE01,sample_label,import,2026-05-24 05:45:55,samples_good.csv,admin
+BATCH001,STORE02,sample_label,import,2026-05-24 05:45:55,samples_good.csv,admin
+BATCH001,STORE01,temperature,import,2026-05-24 05:45:55,temperature.csv,admin
+BATCH001,STORE02,temperature,import,2026-05-24 05:45:55,temperature.csv,admin
+BATCH001,STORE01,complaint,import,2026-05-24 05:45:56,complaints.csv,admin
+BATCH001,STORE02,complaint,import,2026-05-24 05:45:56,complaints.csv,admin
+BATCH001,STORE01,sample_label,import,2026-05-24 05:45:56,samples_bad.csv,admin
