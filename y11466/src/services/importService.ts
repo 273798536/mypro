@@ -308,7 +308,7 @@ export class ImportService {
     const data: Omit<FabricTransaction, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'updatedBy' | 'version' | 'isLatest'> = {
       transactionNo,
       fabricCode,
-      type: this.getRequiredString(row, '类型', 'type') as FabricTransaction['type'],
+      type: (this.getRequiredString(row, '类型', 'type').toLowerCase()) as FabricTransaction['type'],
       quantity: this.getRequiredNumber(row, '数量', 'quantity'),
       unit: this.getRequiredString(row, '单位', 'unit'),
       unitPrice: this.getNumber(row, '单价', 'unit_price', 'unitPrice'),
