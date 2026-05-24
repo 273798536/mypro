@@ -122,6 +122,7 @@ class ExceptionReceiptDetail(ExceptionReceiptResponse):
     status_histories: List["StatusHistoryResponse"] = Field(default_factory=list)
     overrule_histories: List["OverruleHistoryResponse"] = Field(default_factory=list)
     freeze_records: List["FreezeRecordResponse"] = Field(default_factory=list)
+    user_remarks: List["UserRemarkResponse"] = Field(default_factory=list)
 
 
 class StatusHistoryResponse(BaseModel):
@@ -268,6 +269,7 @@ class ExportSummaryItem(BaseModel):
     amount_diff: float
     responsibility: Optional[str]
     latest_review_remark: Optional[str]
+    user_remarks: List[str] = Field(default_factory=list, description="用户备注列表")
     reviewed_at: Optional[datetime]
     created_at: datetime
 
@@ -278,8 +280,21 @@ class UserRemarkCreate(BaseModel):
     remarker: str
 
 
+class UserRemarkResponse(BaseModel):
+    id: int
+    order_no: str
+    remark_content: str
+    remarker: str
+    remark_time: datetime
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 ExceptionReceiptDetail.model_rebuild()
 AttachmentResponse.model_rebuild()
 StatusHistoryResponse.model_rebuild()
 OverruleHistoryResponse.model_rebuild()
 FreezeRecordResponse.model_rebuild()
+UserRemarkResponse.model_rebuild()

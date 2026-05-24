@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from collections import defaultdict
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.enums import ReceiptStatus
-from app.models import ExceptionReceipt
+from app.models import ExceptionReceipt, UserRemark
 from app.schemas import CitySummaryItem, ExportSummaryItem
 
 router = APIRouter(prefix="/reports", tags=["报表管理"])
@@ -82,6 +82,15 @@ async def get_export_summary(
     
     receipts = query.order_by(ExceptionReceipt.id.desc()).all()
 
+    order_nos = [r.order_no for r in receipts]
+    all_remarks = db.query(UserRemark).filter(
+        UserRemark.order_no.in_(order_nos)
+    ).order_by(UserRemark.id.asc()).all()
+
+    remarks_by_order: Dict[str, List[str]] = defaultdict(list)
+    for remark in all_remarks:
+        remarks_by_order[remark.order_no].append(remark.remark_content)
+
     export_items = []
     for receipt in receipts:
         export_items.append(ExportSummaryItem(
@@ -100,6 +109,7 @@ async def get_export_summary(
             amount_diff=receipt.amount_diff,
             responsibility=receipt.responsibility,
             latest_review_remark=receipt.latest_review_remark,
+            user_remarks=remarks_by_order.get(receipt.order_no, []),
             reviewed_at=receipt.reviewed_at,
             created_at=receipt.created_at
         ))

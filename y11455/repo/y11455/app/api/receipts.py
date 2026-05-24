@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.enums import ReceiptStatus
-from app.models import ExceptionReceipt
+from app.models import ExceptionReceipt, UserRemark
 from app.schemas import (
     ExceptionReceiptResponse,
     ExceptionReceiptDetail,
@@ -53,6 +53,12 @@ async def get_receipt_detail(
     receipt = db.query(ExceptionReceipt).filter(ExceptionReceipt.id == receipt_id).first()
     if not receipt:
         raise HTTPException(status_code=404, detail="回执不存在")
+    
+    user_remarks = db.query(UserRemark).filter(
+        UserRemark.order_no == receipt.order_no
+    ).order_by(UserRemark.id.desc()).all()
+    
+    receipt.user_remarks = user_remarks
     return receipt
 
 

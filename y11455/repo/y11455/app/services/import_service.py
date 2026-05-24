@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 
@@ -343,9 +343,32 @@ class ImportService:
         receipt.compensate_amount = raw_review.compensate_amount
         receipt.amount_diff = receipt.compensate_amount - receipt.refund_amount
         receipt.responsibility = raw_review.responsibility
-        receipt.review_channel = raw_review.review_channel
+        receipt.review_channel = raw_review.review_channel or ReviewChannel.WAREHOUSE_AUDIT
         receipt.latest_review_remark = raw_review.review_remark
         receipt.reviewed_at = raw_review.review_time
         receipt.operator = operator
 
+        target_status = self._parse_review_result(raw_review.review_result)
+        if target_status and not receipt.is_frozen:
+            state_machine = ReceiptStateMachine(self.db, receipt)
+            if state_machine.can_transition_to(target_status):
+                state_machine.transition(
+                    target_status=target_status,
+                    operator=operator,
+                    operation_type=OperationType.REVIEW,
+                    change_reason=raw_review.review_remark or f"仓库复核结果: {raw_review.review_result}"
+                )
+
         return receipt
+
+    def _parse_review_result(self, review_result: str) -> Optional[ReceiptStatus]:
+        if not review_result:
+            return None
+        review_result_lower = review_result.lower()
+        if "通过" in review_result or "pass" in review_result_lower or "approved" in review_result_lower:
+            return ReceiptStatus.APPROVED
+        elif "驳回" in review_result or "拒绝" in review_result or "reject" in review_result_lower:
+            return ReceiptStatus.REJECTED
+        elif "复核中" in review_result or "reviewing" in review_result_lower:
+            return ReceiptStatus.REVIEWING
+        return None
