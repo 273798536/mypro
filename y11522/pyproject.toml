@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "appliance-installation-compensation-queue"
+version = "0.1.0"
+description = "家电安装回访重试补偿队列服务 API"
+authors = ["Your Name <your@email.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+uvicorn = "^0.27.0"
+sqlalchemy = "^2.0.25"
+alembic = "^1.13.1"
+pydantic = "^2.5.3"
+pydantic-settings = "^2.1.0"
+python-dotenv = "^1.0.0"
+pandas = "^2.1.4"
+openpyxl = "^3.1.2"
+redis = "^5.0.1"
+celery = "^5.3.4"
+python-multipart = "^0.0.6"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.4"
+pytest-asyncio = "^0.23.3"
+httpx = "^0.26.0"
+faker = "^22.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
