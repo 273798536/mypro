@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-05-24T15:10:12.544Z",
+  "summary": {
+    "total_work_orders": 4,
+    "unresolved_bad_data": 5
+  },
+  "work_order_stats": {
+    "by_status": {
+      "approved": 1,
+      "pending": 2,
+      "reviewing": 1
+    },
+    "by_fault_type": {
+      "bulb_broken": 1,
+      "circuit_fault": 1,
+      "control_issue": 1,
+      "pole_damage": 1
+    }
+  },
+  "abnormal_data": {
+    "by_source_table": {
+      "external_receipts": 1,
+      "inspection_photos": 1,
+      "spare_parts": 1,
+      "work_orders": 2
+    },
+    "abnormal_photos": 2,
+    "unqualified_parts": 1,
+    "exception_receipts": 1
+  },
+  "road_section_analysis": [
+    {
+      "road_section": "建设路1-80号",
+      "order_count": 1,
+      "total_lights": 20,
+      "suggested_merge": false
+    },
+    {
+      "road_section": "人民路1-50号",
+      "order_count": 1,
+      "total_lights": 5,
+      "suggested_merge": false
+    },
+    {
+      "road_section": "中山路101-200号",
+      "order_count": 1,
+      "total_lights": 8,
+      "suggested_merge": false
+    },
+    {
+      "road_section": "中山路1-100号",
+      "order_count": 1,
+      "total_lights": 15,
+      "suggested_merge": false
+    }
+  ],
+  "user_activity": [
+    {
+      "name": "主管王五",
+      "role": "supervisor",
+      "created_orders": 4
+    },
+    {
+      "name": "录入员张三",
+      "role": "entry",
+      "created_orders": 0
+    },
+    {
+      "name": "复核员李四",
+      "role": "review",
+      "created_orders": 0
+    },
+    {
+      "name": "查看员赵六",
+      "role": "readonly",
+      "created_orders": 0
+    }
+  ],
+  "recent_operations": []
+}

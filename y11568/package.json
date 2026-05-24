@@ -1,0 +1,26 @@
+{
+  "name": "city-lighting-replay-service",
+  "version": "1.0.0",
+  "description": "城市照明抢修验收回放链路服务",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "init-db": "node scripts/init-db.js",
+    "import-sample": "node scripts/import-sample.js",
+    "trigger-bad": "node scripts/trigger-bad-data.js",
+    "generate-report": "node scripts/generate-report.js",
+    "cli": "node scripts/cli.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "multer": "^1.4.5-lts.1",
+    "csv-writer": "^1.6.0",
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2"
+  }
+}
