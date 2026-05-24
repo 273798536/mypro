@@ -332,7 +332,7 @@ async function importSms(filePath, options = {}) {
     
     const recordId = generateId();
     await run(
-      `INSERT INTO sms_snapshots 
+      `INSERT OR REPLACE INTO sms_snapshots 
        (id, batch_no, sku_code, sms_content, sender, receiver, send_time, confirmed_qty, 
         photo_ref, original_line_no, source_file, import_batch_id)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,

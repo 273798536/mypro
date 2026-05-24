@@ -132,7 +132,8 @@ function initWorkspace(name = 'default') {
             original_line_no INTEGER,
             source_file TEXT,
             import_batch_id TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(batch_no, sender, receiver, send_time)
           );
 
           CREATE TABLE IF NOT EXISTS exception_photos (
@@ -149,7 +150,8 @@ function initWorkspace(name = 'default') {
             original_line_no INTEGER,
             source_file TEXT,
             import_batch_id TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(batch_no, sku_code, photo_name)
           );
 
           CREATE TABLE IF NOT EXISTS records (
