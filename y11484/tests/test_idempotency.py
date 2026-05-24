@@ -195,10 +195,12 @@ class TestIdempotency:
         assert len(trace_data["audit_logs"]) >= 1
         assert len(trace_data["stores"]) >= 1
 
-    def test_failed_record_preserves_original_data(self, client):
+    def test_failed_record_preserves_original_data(self, client, create_sample_label):
         """测试: 失败记录保留原始数据"""
+        label = create_sample_label("FAIL_TEST_001")
+        
         bad_data = {
-            "sample_label_id": 99999,
+            "sample_label_id": label["id"],
             "record_time": "2026-05-24T10:00:00",
             "temperature": 999,
             "recorder": "测试员"

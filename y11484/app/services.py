@@ -147,8 +147,10 @@ class StatusMachine:
 
 
 class DataValidator:
-    @staticmethod
-    def validate_sample_label(data: dict) -> Tuple[bool, str]:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def validate_sample_label(self, data: dict) -> Tuple[bool, str]:
         if not data.get("batch_no"):
             return False, "批次号不能为空"
         if not data.get("product_name"):
@@ -158,10 +160,19 @@ class DataValidator:
                 return False, "留样时间不能早于生产时间"
         return True, ""
 
-    @staticmethod
-    def validate_temperature(data: dict) -> Tuple[bool, str]:
+    def validate_temperature(self, data: dict) -> Tuple[bool, str]:
         if not data.get("sample_label_id"):
             return False, "留样标签ID不能为空"
+        
+        sample_label = self.db.query(models.SampleLabel).filter(
+            and_(
+                models.SampleLabel.id == data["sample_label_id"],
+                models.SampleLabel.is_active == True
+            )
+        ).first()
+        if not sample_label:
+            return False, f"留样标签ID {data['sample_label_id']} 不存在"
+        
         temp = data.get("temperature")
         if temp is None:
             return False, "温度值不能为空"
@@ -169,21 +180,41 @@ class DataValidator:
             return False, f"温度值异常: {temp}°C (正常范围 -30°C ~ 50°C)"
         return True, ""
 
-    @staticmethod
-    def validate_complaint(data: dict) -> Tuple[bool, str]:
+    def validate_complaint(self, data: dict) -> Tuple[bool, str]:
         if not data.get("store_id"):
             return False, "门店ID不能为空"
         if not data.get("complaint_type"):
             return False, "投诉类型不能为空"
+        
+        if data.get("sample_label_id"):
+            sample_label = self.db.query(models.SampleLabel).filter(
+                and_(
+                    models.SampleLabel.id == data["sample_label_id"],
+                    models.SampleLabel.is_active == True
+                )
+            ).first()
+            if not sample_label:
+                return False, f"留样标签ID {data['sample_label_id']} 不存在"
+        
         return True, ""
 
-    @staticmethod
-    def validate_scan_record(data: dict) -> Tuple[bool, str]:
+    def validate_scan_record(self, data: dict) -> Tuple[bool, str]:
         if not data.get("store_id"):
             return False, "门店ID不能为空"
         qty = data.get("quantity")
         if qty is None or qty <= 0:
             return False, "数量必须大于0"
+        
+        if data.get("sample_label_id"):
+            sample_label = self.db.query(models.SampleLabel).filter(
+                and_(
+                    models.SampleLabel.id == data["sample_label_id"],
+                    models.SampleLabel.is_active == True
+                )
+            ).first()
+            if not sample_label:
+                return False, f"留样标签ID {data['sample_label_id']} 不存在"
+        
         return True, ""
 
 
@@ -333,7 +364,7 @@ class SampleLabelService:
     def __init__(self, db: Session):
         self.db = db
         self.status_machine = StatusMachine(db)
-        self.validator = DataValidator()
+        self.validator = DataValidator(db)
 
     def create_sample_label(self, data: schemas.SampleLabelCreate, operator: str) -> models.SampleLabel:
         data_dict = data.model_dump()
@@ -420,7 +451,7 @@ class SampleLabelService:
 class TemperatureRecordService:
     def __init__(self, db: Session):
         self.db = db
-        self.validator = DataValidator()
+        self.validator = DataValidator(db)
 
     def create_temperature_record(self, data: schemas.TemperatureRecordCreate, operator: str) -> models.TemperatureRecord:
         data_dict = data.model_dump()
@@ -451,7 +482,7 @@ class TemperatureRecordService:
 class StoreComplaintService:
     def __init__(self, db: Session):
         self.db = db
-        self.validator = DataValidator()
+        self.validator = DataValidator(db)
 
     def create_complaint(self, data: schemas.StoreComplaintCreate, operator: str) -> models.StoreComplaint:
         data_dict = data.model_dump()
@@ -482,7 +513,7 @@ class StoreComplaintService:
 class ScanRecordService:
     def __init__(self, db: Session):
         self.db = db
-        self.validator = DataValidator()
+        self.validator = DataValidator(db)
 
     def create_scan_record(self, data: schemas.ScanRecordCreate, operator: str) -> models.ScanRecord:
         data_dict = data.model_dump()
@@ -529,20 +560,36 @@ class ReportService:
             and_(models.SampleLabel.is_active == True, models.SampleLabel.status == "rejected")
         ).count()
         
-        abnormal_temp_count = self.db.query(models.TemperatureRecord).filter(
+        abnormal_temp_count = self.db.query(models.TemperatureRecord).join(
+            models.SampleLabel,
+            models.TemperatureRecord.sample_label_id == models.SampleLabel.id
+        ).filter(
             and_(
                 models.TemperatureRecord.is_active == True,
+                models.SampleLabel.is_active == True,
                 models.TemperatureRecord.status == "confirmed",
                 (models.TemperatureRecord.temperature < 0) | (models.TemperatureRecord.temperature > 10)
             )
         ).count()
         
-        complaint_count = self.db.query(models.StoreComplaint).filter(
-            and_(models.StoreComplaint.is_active == True)
+        complaint_count = self.db.query(models.StoreComplaint).outerjoin(
+            models.SampleLabel,
+            models.StoreComplaint.sample_label_id == models.SampleLabel.id
+        ).filter(
+            and_(
+                models.StoreComplaint.is_active == True,
+                (models.SampleLabel.id.is_(None) | (models.SampleLabel.is_active == True))
+            )
         ).count()
         
-        total_store_scans = self.db.query(models.ScanRecord).filter(
-            models.ScanRecord.is_active == True
+        total_store_scans = self.db.query(models.ScanRecord).outerjoin(
+            models.SampleLabel,
+            models.ScanRecord.sample_label_id == models.SampleLabel.id
+        ).filter(
+            and_(
+                models.ScanRecord.is_active == True,
+                (models.SampleLabel.id.is_(None) | (models.SampleLabel.is_active == True))
+            )
         ).count()
 
         return schemas.ReportSummary(
