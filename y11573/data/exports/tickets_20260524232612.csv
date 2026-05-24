@@ -1,0 +1,13 @@
+ticket_id,ticket_no,title,ticket_type,priority_level,status,customer_id,customer_name,current_handler,sla_rule_id,created_at,updated_at,resolved_at,import_source_id,import_raw_id
+12,EXC-TEST-51513,Exception Retention Test,complaint,high,open,,,,,2026-05-24 15:26:12,2026-05-24 15:26:12,,,
+11,DUP-TEST-001,Duplicate Test Ticket,complaint,high,open,,,,1,2026-05-24 15:26:12,2026-05-24 15:26:12,,1,1
+7,TK202605246ECC9E,重复问题投诉 - 孙七,complaint,normal,resolved,CUST8354,孙七,sunqi,2,2026-05-23T02:36:48.263541,2026-05-23T02:36:48.263541,2026-05-25T01:36:48.263541,,
+9,TK20260524BFA8F1,政策咨询 - 周八,consultation,low,resolved,CUST5547,周八,zhangsan,,2026-05-19T22:01:48.307317,2026-05-19T22:01:48.307317,2026-05-22T16:01:48.307317,,
+4,TK202605240651D5,处理时效投诉 - 张三,complaint,normal,resolved,CUST8462,张三,lisi,2,2026-05-19T15:28:48.224775,2026-05-19T15:28:48.224775,2026-05-21T20:28:48.224775,,
+8,TK2026052452D887,服务态度投诉 - 孙七,complaint,urgent,closed,CUST9689,孙七,zhangsan,,2026-05-13T03:42:48.299453,2026-05-13T03:42:48.299453,2026-05-15T12:42:48.299453,,
+2,TK20260524E46C5F,功能异常 - 吴九,technical,urgent,closed,CUST9159,吴九,zhaoliu,,2026-05-13T01:45:48.132494,2026-05-13T01:45:48.132494,2026-05-13T03:45:48.132494,,
+5,TK20260524153EC0,政策咨询 - 王五,consultation,low,resolved,CUST9647,王五,zhangsan,,2026-05-11T03:32:48.238012,2026-05-11T03:32:48.238012,2026-05-11T13:32:48.238012,,
+3,TK20260524CD5DF1,全额退款 - 王五,refund,high,closed,CUST1858,王五,zhangsan,,2026-05-09T05:02:48.216983,2026-05-09T05:02:48.216983,2026-05-10T05:02:48.216983,,
+10,TK20260524FB2D6B,账单疑问 - 李四,billing,urgent,open,CUST7495,李四,wangwu,,2026-05-05T00:35:48.315198,2026-05-05T00:35:48.315198,,,
+1,TK202605248FC6DC,扣费失败 - 郑十,billing,high,in_progress,CUST3586,郑十,lisi,,2026-05-04T01:03:48.090674,2026-05-04T01:03:48.090674,,,
+6,TK20260524E6C8A7,费用异常 - 周八,billing,low,open,CUST3135,周八,zhangsan,,2026-05-02T23:39:48.253329,2026-05-02T23:39:48.253329,,,
