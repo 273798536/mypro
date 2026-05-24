@@ -1,0 +1,29 @@
+{
+  "name": "smart-cabinet-inspection-cli",
+  "version": "1.0.0",
+  "description": "智能柜补货多源导入巡检CLI工具",
+  "main": "dist/index.js",
+  "bin": {
+    "sci": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7",
+    "commander": "^12.0.0",
+    "csv-parser": "^3.0.0",
+    "dayjs": "^1.11.10",
+    "exceljs": "^4.4.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.28",
+    "@types/sqlite3": "^3.1.11",
+    "@types/uuid": "^9.0.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
