@@ -9,6 +9,7 @@ from app.api.imports import router as import_router
 from app.api.export import router as export_router
 from app.api.audit import router as audit_router
 from app.api.status import router as status_router
+from app.api.traceability import router as traceability_router
 
 api_router = APIRouter(prefix="/api")
 
@@ -21,3 +22,4 @@ api_router.include_router(import_router, prefix="/import", tags=["数据导入"]
 api_router.include_router(export_router, prefix="/export", tags=["数据导出"])
 api_router.include_router(audit_router, prefix="/audit", tags=["审计日志"])
 api_router.include_router(status_router, prefix="/status", tags=["状态管理"])
+api_router.include_router(traceability_router, prefix="/traceability", tags=["追责台账"])
