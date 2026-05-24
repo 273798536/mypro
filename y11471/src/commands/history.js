@@ -140,16 +140,15 @@ async function showSystemLogs(options) {
 
   const tableData = logs.map(l => [
     l.id,
-    l.log_type,
-    truncateString(l.action, 15),
-    truncateString(l.related_record || '-', 20),
-    truncateString(l.message || '-', 30),
+    l.log_level,
+    truncateString(l.operation, 20),
+    truncateString(l.detail || '-', 40),
     l.operator || '-',
     l.created_at ? new Date(l.created_at).toLocaleString('zh-CN') : '-'
   ]);
 
   printTable(
-    ['ID', '类型', '动作', '关联记录', '消息', '操作人', '时间'],
+    ['ID', '级别', '操作', '详情', '操作人', '时间'],
     tableData
   );
 }

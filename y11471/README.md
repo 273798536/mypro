@@ -83,52 +83,58 @@ wra fix field BATCH001 SKU001 --field sku_name "新商品名称"
 ### 6. 查看报表
 
 ```bash
-# 记录列表
-wra report
+# 汇总报表（默认）
+wra report summary
 
-# 汇总统计
-wra report --summary
+# 按批次分组
+wra report by-batch
 
-# 按批次汇总
-wra report --by-batch
+# 按状态分组
+wra report by-status
 
-# 按状态汇总
-wra report --by-status
+# 按供应商分组
+wra report by-supplier
 
-# 只看有警告的记录
-wra report --warnings
+# 显示明细列表
+wra report summary --detail
 
 # 筛选特定批次
-wra report --batch BATCH001
+wra report summary --batch BATCH001
 ```
 
 ### 7. 查看历史
 
 ```bash
-# 所有变更历史
-wra history
+# 查看系统操作日志（默认）
+wra history logs
 
-# 特定记录的变更历史（带对比）
-wra history --batch BATCH001 --sku SKU001 --diff
+# 查看单条记录的变更历史
+wra history record BATCH001 SKU001
 
-# 系统日志
-wra history --logs
+# 查看单条记录的变更对比（按字段展示前后变化）
+wra history diff BATCH001 SKU001
+
+# 限制显示数量
+wra history logs --limit 50
 ```
 
 ### 8. 导出数据
 
 ```bash
-# 导出Excel（默认）
+# 导出Excel（默认格式）
 wra export xlsx 退供复核.xlsx
 
-# 导出包含失败清单和变更历史
-wra export xlsx 完整导出.xlsx --with-failures --with-history
+# 导出包含失败清单、变更历史、导入批次信息
+wra export xlsx 完整导出.xlsx --failures --history --batches
 
 # 导出CSV
 wra export csv 退供复核.csv
 
-# 导出JSON（包含来源数据）
-wra export json 导出.json --with-sources
+# 导出JSON
+wra export json 导出.json
+
+# 筛选特定批次导出
+wra export xlsx 批次BATCH001.xlsx --batch BATCH001
 ```
 
 ## 采购内勤关注点
