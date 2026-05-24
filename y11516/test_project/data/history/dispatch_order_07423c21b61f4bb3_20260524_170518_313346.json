@@ -1,0 +1,44 @@
+{
+  "record_id": "dispatch_order_07423c21b61f4bb3",
+  "source_type": "dispatch_order",
+  "business_key": "07423c21b61f4bb3",
+  "status": "pending",
+  "current_value": {
+    "order_no": "WQ20260524003",
+    "repair_date": "2026-05-23",
+    "site": "朝阳区三里屯水厂",
+    "material_list": "DN80球阀",
+    "quantity": 3.0,
+    "operator": "王五"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/dispatch_orders.csv",
+      "source_file_hash": "6fc15ca0d1100e1532f1b520cc2b5b36c2ce96982cdd48cf5b985c801361b05b",
+      "original_row_number": 4,
+      "original_content": {
+        "order_no": "WQ20260524003",
+        "repair_date": "2026-05-23",
+        "site": "朝阳区三里屯水厂",
+        "material_list": "DN80球阀",
+        "quantity": "3",
+        "operator": "王五"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524003",
+        "repair_date": "2026-05-23",
+        "site": "朝阳区三里屯水厂",
+        "material_list": "DN80球阀",
+        "quantity": 3.0,
+        "operator": "王五"
+      },
+      "import_timestamp": "2026-05-24T17:04:44.917578"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": false,
+  "created_at": "2026-05-24T17:04:44.917594",
+  "updated_at": "2026-05-24T17:04:44.917596"
+}

@@ -1,0 +1,2 @@
+[console_scripts]
+wri = water_repair_inspect.cli:main

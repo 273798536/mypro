@@ -1,0 +1,44 @@
+{
+  "record_id": "valve_inventory_fb0afee17006dfcc",
+  "source_type": "valve_inventory",
+  "business_key": "fb0afee17006dfcc",
+  "status": "valid",
+  "current_value": {
+    "valve_code": "V005",
+    "valve_name": "DN100蝶阀",
+    "inventory_date": "2026-05-24",
+    "quantity": 25.0,
+    "unit": "个",
+    "warehouse": "西郊库"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/valve_inventory.csv",
+      "source_file_hash": "bf85fdbe16a04a05b081e0fb40f66a4f08a0bd82d8765ba51d49d572d5cc31ad",
+      "original_row_number": 6,
+      "original_content": {
+        "valve_code": "V005",
+        "valve_name": "DN100蝶阀",
+        "inventory_date": "2026-05-24",
+        "quantity": "25",
+        "unit": "个",
+        "warehouse": "西郊库"
+      },
+      "parsed_standard_value": {
+        "valve_code": "V005",
+        "valve_name": "DN100蝶阀",
+        "inventory_date": "2026-05-24",
+        "quantity": 25.0,
+        "unit": "个",
+        "warehouse": "西郊库"
+      },
+      "import_timestamp": "2026-05-24T17:05:03.311827"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": false,
+  "created_at": "2026-05-24T17:05:03.311838",
+  "updated_at": "2026-05-24T17:05:18.312938"
+}

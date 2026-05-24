@@ -1,0 +1,44 @@
+{
+  "record_id": "scan_detail_7a5ad7510d77e70e",
+  "source_type": "scan_detail",
+  "business_key": "7a5ad7510d77e70e",
+  "status": "valid",
+  "current_value": {
+    "order_no": "WQ20260524001",
+    "material_code": "M001",
+    "material_name": "DN100闸阀",
+    "quantity": 2.0,
+    "scan_time": "2026-05-24 10:30:00",
+    "operator": "张三"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/scan_details.csv",
+      "source_file_hash": "a198a40c19697c1f73d5e68c9921c5bb8690f6a2c8eb293624282e82cd14de44",
+      "original_row_number": 2,
+      "original_content": {
+        "order_no": "WQ20260524001",
+        "material_code": "M001",
+        "material_name": "DN100闸阀",
+        "quantity": "2",
+        "scan_time": "2026-05-24 10:30:00",
+        "operator": "张三"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524001",
+        "material_code": "M001",
+        "material_name": "DN100闸阀",
+        "quantity": 2.0,
+        "scan_time": "2026-05-24 10:30:00",
+        "operator": "张三"
+      },
+      "import_timestamp": "2026-05-24T17:05:04.263006"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": true,
+  "created_at": "2026-05-24T17:05:04.263031",
+  "updated_at": "2026-05-24T17:07:04.603099"
+}

@@ -1,0 +1,44 @@
+{
+  "record_id": "scan_detail_c476075d12e3230e",
+  "source_type": "scan_detail",
+  "business_key": "c476075d12e3230e",
+  "status": "valid",
+  "current_value": {
+    "order_no": "WQ20260524003",
+    "material_code": "M003",
+    "material_name": "DN80球阀",
+    "quantity": 3.0,
+    "scan_time": "2026-05-23 11:20:00",
+    "operator": "王五"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/scan_details.csv",
+      "source_file_hash": "a198a40c19697c1f73d5e68c9921c5bb8690f6a2c8eb293624282e82cd14de44",
+      "original_row_number": 4,
+      "original_content": {
+        "order_no": "WQ20260524003",
+        "material_code": "M003",
+        "material_name": "DN80球阀",
+        "quantity": "3",
+        "scan_time": "2026-05-23 11:20:00",
+        "operator": "王五"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524003",
+        "material_code": "M003",
+        "material_name": "DN80球阀",
+        "quantity": 3.0,
+        "scan_time": "2026-05-23 11:20:00",
+        "operator": "王五"
+      },
+      "import_timestamp": "2026-05-24T17:05:04.263393"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": false,
+  "created_at": "2026-05-24T17:05:04.263403",
+  "updated_at": "2026-05-24T17:05:18.316541"
+}

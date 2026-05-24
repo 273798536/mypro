@@ -1,0 +1,53 @@
+{
+  "record_id": "valve_inventory_0afb58c944812273",
+  "source_type": "valve_inventory",
+  "business_key": "0afb58c944812273",
+  "status": "pending",
+  "current_value": {
+    "valve_code": "V002",
+    "valve_name": "DN150蝶阀",
+    "inventory_date": "2026-05-24",
+    "quantity": -3.0,
+    "unit": "个",
+    "warehouse": "中心库"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/valve_inventory.csv",
+      "source_file_hash": "bf85fdbe16a04a05b081e0fb40f66a4f08a0bd82d8765ba51d49d572d5cc31ad",
+      "original_row_number": 3,
+      "original_content": {
+        "valve_code": "V002",
+        "valve_name": "DN150蝶阀",
+        "inventory_date": "2026-05-24",
+        "quantity": "-3",
+        "unit": "个",
+        "warehouse": "中心库"
+      },
+      "parsed_standard_value": {
+        "valve_code": "V002",
+        "valve_name": "DN150蝶阀",
+        "inventory_date": "2026-05-24",
+        "quantity": -3.0,
+        "unit": "个",
+        "warehouse": "中心库"
+      },
+      "import_timestamp": "2026-05-24T17:05:03.311388"
+    }
+  ],
+  "check_results": [
+    {
+      "record_id": "valve_inventory_0afb58c944812273",
+      "type": "inventory_validation",
+      "severity": "warning",
+      "message": "库存为负，夜间抢修用料后补录导致",
+      "source_file": "../sample_data/valve_inventory.csv",
+      "original_row": 3
+    }
+  ],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": false,
+  "created_at": "2026-05-24T17:05:03.311402",
+  "updated_at": "2026-05-24T17:05:18.313143"
+}

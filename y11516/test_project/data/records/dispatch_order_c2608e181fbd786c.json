@@ -1,0 +1,88 @@
+{
+  "record_id": "dispatch_order_c2608e181fbd786c",
+  "source_type": "dispatch_order",
+  "business_key": "c2608e181fbd786c",
+  "status": "pending",
+  "current_value": {
+    "order_no": "WQ20260524004",
+    "repair_date": "2026-05-23",
+    "site": "海淀区中关村水厂",
+    "material_list": "DN200闸阀",
+    "quantity": -5.0,
+    "operator": "赵六"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/dispatch_orders.csv",
+      "source_file_hash": "6fc15ca0d1100e1532f1b520cc2b5b36c2ce96982cdd48cf5b985c801361b05b",
+      "original_row_number": 5,
+      "original_content": {
+        "order_no": "WQ20260524004",
+        "repair_date": "2026-05-23",
+        "site": "海淀区中关村水厂",
+        "material_list": "DN200闸阀",
+        "quantity": "-5",
+        "operator": "赵六"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524004",
+        "repair_date": "2026-05-23",
+        "site": "海淀区中关村水厂",
+        "material_list": "DN200闸阀",
+        "quantity": -5.0,
+        "operator": "赵六"
+      },
+      "import_timestamp": "2026-05-24T17:04:44.917750"
+    },
+    {
+      "source_file": "../sample_data/dispatch_orders.csv",
+      "source_file_hash": "6fc15ca0d1100e1532f1b520cc2b5b36c2ce96982cdd48cf5b985c801361b05b",
+      "original_row_number": 5,
+      "original_content": {
+        "order_no": "WQ20260524004",
+        "repair_date": "2026-05-23",
+        "site": "海淀区中关村水厂",
+        "material_list": "DN200闸阀",
+        "quantity": "-5",
+        "operator": "赵六"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524004",
+        "repair_date": "2026-05-23",
+        "site": "海淀区中关村水厂",
+        "material_list": "DN200闸阀",
+        "quantity": -5.0,
+        "operator": "赵六"
+      },
+      "import_timestamp": "2026-05-24T17:05:37.879616"
+    },
+    {
+      "source_file": "../sample_data/dispatch_orders.csv",
+      "source_file_hash": "6fc15ca0d1100e1532f1b520cc2b5b36c2ce96982cdd48cf5b985c801361b05b",
+      "original_row_number": 5,
+      "original_content": {
+        "order_no": "WQ20260524004",
+        "repair_date": "2026-05-23",
+        "site": "海淀区中关村水厂",
+        "material_list": "DN200闸阀",
+        "quantity": "-5",
+        "operator": "赵六"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524004",
+        "repair_date": "2026-05-23",
+        "site": "海淀区中关村水厂",
+        "material_list": "DN200闸阀",
+        "quantity": -5.0,
+        "operator": "赵六"
+      },
+      "import_timestamp": "2026-05-24T17:05:56.181671"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": true,
+  "created_at": "2026-05-24T17:04:44.917762",
+  "updated_at": "2026-05-24T17:07:04.604802"
+}

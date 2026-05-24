@@ -1,0 +1,41 @@
+{
+  "record_id": "site_photo_dd23d6ded9bd9482",
+  "source_type": "site_photo",
+  "business_key": "dd23d6ded9bd9482",
+  "status": "valid",
+  "current_value": {
+    "order_no": "WQ20260524001",
+    "photo_sequence": 2,
+    "photo_path": "/photos/WQ20260524001_2.jpg",
+    "shoot_time": "2026-05-24 09:45:00",
+    "description": "抢修中"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/site_photos.csv",
+      "source_file_hash": "0fa6dad554c2e6c34a559fad4640e3485536f89c59258b9a9d07fb1020583926",
+      "original_row_number": 3,
+      "original_content": {
+        "order_no": "WQ20260524001",
+        "photo_sequence": "2",
+        "photo_path": "/photos/WQ20260524001_2.jpg",
+        "shoot_time": "2026-05-24 09:45:00",
+        "description": "抢修中"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524001",
+        "photo_sequence": 2,
+        "photo_path": "/photos/WQ20260524001_2.jpg",
+        "shoot_time": "2026-05-24 09:45:00",
+        "description": "抢修中"
+      },
+      "import_timestamp": "2026-05-24T17:05:03.799376"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": false,
+  "created_at": "2026-05-24T17:05:03.799389",
+  "updated_at": "2026-05-24T17:05:18.315374"
+}

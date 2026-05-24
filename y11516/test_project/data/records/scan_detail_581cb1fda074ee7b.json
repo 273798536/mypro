@@ -1,0 +1,44 @@
+{
+  "record_id": "scan_detail_581cb1fda074ee7b",
+  "source_type": "scan_detail",
+  "business_key": "581cb1fda074ee7b",
+  "status": "valid",
+  "current_value": {
+    "order_no": "WQ20260524002",
+    "material_code": "M002",
+    "material_name": "DN150蝶阀",
+    "quantity": 1.0,
+    "scan_time": "2026-05-24 15:10:00",
+    "operator": "李四"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/scan_details.csv",
+      "source_file_hash": "a198a40c19697c1f73d5e68c9921c5bb8690f6a2c8eb293624282e82cd14de44",
+      "original_row_number": 3,
+      "original_content": {
+        "order_no": "WQ20260524002",
+        "material_code": "M002",
+        "material_name": "DN150蝶阀",
+        "quantity": "1",
+        "scan_time": "2026-05-24 15:10:00",
+        "operator": "李四"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524002",
+        "material_code": "M002",
+        "material_name": "DN150蝶阀",
+        "quantity": 1.0,
+        "scan_time": "2026-05-24 15:10:00",
+        "operator": "李四"
+      },
+      "import_timestamp": "2026-05-24T17:05:04.263243"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": true,
+  "created_at": "2026-05-24T17:05:04.263256",
+  "updated_at": "2026-05-24T17:07:04.603352"
+}
