@@ -413,14 +413,34 @@ function generateDirtyData(): {
   return result;
 }
 
+async function clearAllTables(db: any): Promise<void> {
+  console.log('清空现有数据以保证幂等性...');
+  const tables = [
+    'status_log',
+    'dirty_record',
+    'reconciliation_result',
+    'user_remark',
+    'refund_flow',
+    'warehouse_review',
+    'leader_refund',
+    'after_sales_order'
+  ];
+  for (const table of tables) {
+    await db.run(`DELETE FROM ${table}`);
+  }
+  console.log('数据清空完成\n');
+}
+
 async function insertData(data: SeedData, dirtyData: any): Promise<void> {
   const db = getDatabase(path.resolve(__dirname, '../../', DB_PATH));
+
+  await clearAllTables(db);
 
   console.log('开始插入基础数据...');
 
   for (const order of data.orders) {
     await db.run(
-      `INSERT INTO after_sales_order (order_no, city, leader_id, leader_name, sku_id, sku_name, status, current_handler, create_time, update_time)
+      `INSERT OR REPLACE INTO after_sales_order (order_no, city, leader_id, leader_name, sku_id, sku_name, status, current_handler, create_time, update_time)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [order.order_no, order.city, order.leader_id, order.leader_name, order.sku_id, order.sku_name, order.status, order.current_handler, order.create_time, order.update_time]
     );
@@ -429,7 +449,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const refund of data.leaderRefunds) {
     await db.run(
-      `INSERT INTO leader_refund (id, order_no, leader_id, leader_name, city, sku_id, sku_name, refund_quantity, refund_amount, reason, submit_time, images, raw_data)
+      `INSERT OR REPLACE INTO leader_refund (id, order_no, leader_id, leader_name, city, sku_id, sku_name, refund_quantity, refund_amount, reason, submit_time, images, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [refund.id, refund.order_no, refund.leader_id, refund.leader_name, refund.city, refund.sku_id, refund.sku_name, refund.refund_quantity, refund.refund_amount, refund.reason, refund.submit_time, refund.images, refund.raw_data]
     );
@@ -438,7 +458,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const review of data.warehouseReviews) {
     await db.run(
-      `INSERT INTO warehouse_review (id, order_no, reviewer_id, reviewer_name, sku_id, sku_name, actual_quantity, actual_amount, is_damaged, is_missing, review_result, review_remark, review_time, raw_data)
+      `INSERT OR REPLACE INTO warehouse_review (id, order_no, reviewer_id, reviewer_name, sku_id, sku_name, actual_quantity, actual_amount, is_damaged, is_missing, review_result, review_remark, review_time, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [review.id, review.order_no, review.reviewer_id, review.reviewer_name, review.sku_id, review.sku_name, review.actual_quantity, review.actual_amount, review.is_damaged, review.is_missing, review.review_result, review.review_remark, review.review_time, review.raw_data]
     );
@@ -447,7 +467,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const remark of data.userRemarks) {
     await db.run(
-      `INSERT INTO user_remark (id, order_no, user_id, user_name, content, images, create_time, raw_data)
+      `INSERT OR REPLACE INTO user_remark (id, order_no, user_id, user_name, content, images, create_time, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [remark.id, remark.order_no, remark.user_id, remark.user_name, remark.content, remark.images, remark.create_time, remark.raw_data]
     );
@@ -456,7 +476,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const flow of data.refundFlows) {
     await db.run(
-      `INSERT INTO refund_flow (id, order_no, flow_no, refund_amount, refund_method, refund_status, operator_id, operator_name, operate_time, raw_data)
+      `INSERT OR REPLACE INTO refund_flow (id, order_no, flow_no, refund_amount, refund_method, refund_status, operator_id, operator_name, operate_time, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [flow.id, flow.order_no, flow.flow_no, flow.refund_amount, flow.refund_method, flow.refund_status, flow.operator_id, flow.operator_name, flow.operate_time, flow.raw_data]
     );
@@ -465,7 +485,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const log of data.statusLogs) {
     await db.run(
-      `INSERT INTO status_log (id, order_no, from_status, to_status, operator_id, operator_name, operator_role, reason, operate_time, extra)
+      `INSERT OR REPLACE INTO status_log (id, order_no, from_status, to_status, operator_id, operator_name, operator_role, reason, operate_time, extra)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [log.id, log.order_no, log.from_status, log.to_status, log.operator_id, log.operator_name, log.operator_role, log.reason, log.operate_time, log.extra]
     );
@@ -476,7 +496,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
   
   for (const order of dirtyData.dirtyOrders) {
     await db.run(
-      `INSERT INTO after_sales_order (order_no, city, leader_id, leader_name, sku_id, sku_name, status, current_handler, create_time, update_time)
+      `INSERT OR REPLACE INTO after_sales_order (order_no, city, leader_id, leader_name, sku_id, sku_name, status, current_handler, create_time, update_time)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [order.order_no, order.city, order.leader_id, order.leader_name, order.sku_id, order.sku_name, order.status, order.current_handler, order.create_time, order.update_time]
     );
@@ -485,7 +505,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const refund of dirtyData.dirtyLeaderRefunds) {
     await db.run(
-      `INSERT INTO leader_refund (id, order_no, leader_id, leader_name, city, sku_id, sku_name, refund_quantity, refund_amount, reason, submit_time, images, raw_data)
+      `INSERT OR REPLACE INTO leader_refund (id, order_no, leader_id, leader_name, city, sku_id, sku_name, refund_quantity, refund_amount, reason, submit_time, images, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [refund.id, refund.order_no, refund.leader_id, refund.leader_name, refund.city, refund.sku_id, refund.sku_name, refund.refund_quantity, refund.refund_amount, refund.reason, refund.submit_time, refund.images, refund.raw_data]
     );
@@ -494,7 +514,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const review of dirtyData.dirtyWarehouseReviews) {
     await db.run(
-      `INSERT INTO warehouse_review (id, order_no, reviewer_id, reviewer_name, sku_id, sku_name, actual_quantity, actual_amount, is_damaged, is_missing, review_result, review_remark, review_time, raw_data)
+      `INSERT OR REPLACE INTO warehouse_review (id, order_no, reviewer_id, reviewer_name, sku_id, sku_name, actual_quantity, actual_amount, is_damaged, is_missing, review_result, review_remark, review_time, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [review.id, review.order_no, review.reviewer_id, review.reviewer_name, review.sku_id, review.sku_name, review.actual_quantity, review.actual_amount, review.is_damaged, review.is_missing, review.review_result, review.review_remark, review.review_time, review.raw_data]
     );
@@ -503,7 +523,7 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
 
   for (const flow of dirtyData.dirtyRefundFlows) {
     await db.run(
-      `INSERT INTO refund_flow (id, order_no, flow_no, refund_amount, refund_method, refund_status, operator_id, operator_name, operate_time, raw_data)
+      `INSERT OR REPLACE INTO refund_flow (id, order_no, flow_no, refund_amount, refund_method, refund_status, operator_id, operator_name, operate_time, raw_data)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [flow.id, flow.order_no, flow.flow_no, flow.refund_amount, flow.refund_method, flow.refund_status, flow.operator_id, flow.operator_name, flow.operate_time, flow.raw_data]
     );
