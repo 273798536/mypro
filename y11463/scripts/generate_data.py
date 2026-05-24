@@ -82,8 +82,9 @@ def generate_abnormal_data():
     abnormal = generate_batch_data("BATCH-ERR-001", "CLINIC-B", 3)
     abnormal["remark"] = "术中临时换型号，病历和库存未同步"
     
+    old_model = abnormal["implants"][0]["implant_model"]
     abnormal["implants"][0]["is_model_changed"] = True
-    abnormal["implants"][0]["original_model"] = abnormal["implants"][0]["implant_model"]
+    abnormal["implants"][0]["original_model"] = old_model
     abnormal["implants"][0]["implant_model"] = "Straumann-SLA-13mm"
     abnormal["implants"][0]["model_change_reason"] = "术中发现骨量不足，临时换长型号"
     abnormal["implants"][0]["inventory_deducted"] = False

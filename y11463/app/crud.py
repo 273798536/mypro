@@ -49,6 +49,14 @@ def create_batch(db: Session, batch_data: schemas.BatchCreate, operator: str = "
     existing_batch = get_batch_by_no(db, batch_data.batch_no)
     if existing_batch:
         if batch_data.replay_strategy == ReplayAction.IGNORE:
+            create_operation_history(
+                db, existing_batch.id, OperationType.REPLAY, operator,
+                from_status=existing_batch.status.value,
+                changed_fields={"action": "ignore", "batch_no": batch_data.batch_no},
+                remark="重复提交，已忽略"
+            )
+            db.commit()
+            db.refresh(existing_batch)
             return existing_batch, "ignore", None
         elif batch_data.replay_strategy == ReplayAction.OVERWRITE:
             old_data = {

@@ -8,10 +8,12 @@ class ImplantBase(BaseModel):
     implant_id: str
     batch_no: str
     implant_model: str
+    original_model: Optional[str] = None
     quantity: int = 1
     unit: str = "pcs"
     is_model_changed: bool = False
     model_change_reason: Optional[str] = None
+    inventory_deducted: bool = False
 
 
 class ImplantCreate(ImplantBase):
@@ -48,6 +50,8 @@ class AppointmentBase(BaseModel):
     appointment_date: datetime
     surgery_type: Optional[str] = None
     implant_used: Optional[str] = None
+    is_complete: bool = False
+    medical_record_updated: bool = False
 
 
 class AppointmentCreate(AppointmentBase):
