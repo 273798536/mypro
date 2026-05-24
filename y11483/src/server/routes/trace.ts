@@ -1,11 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { BatchTraceService } from '../../services/BatchTraceService';
 import { ExportService } from '../../services/ExportService';
+import { ReplayService } from '../../services/ReplayService';
 import { ConflictStrategy, ExportFormat, ExportType } from '../../entities';
 
 const router = Router();
 const traceService = new BatchTraceService();
 const exportService = new ExportService();
+const replayService = new ReplayService();
 
 router.post('/create', async (req: Request, res: Response, next) => {
   try {
@@ -252,6 +254,77 @@ router.post('/export/execute', async (req: Request, res: Response, next) => {
     res.json({
       success: true,
       data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/replay', async (req: Request, res: Response, next) => {
+  try {
+    const { traceNo } = req.body;
+
+    if (!traceNo) {
+      return res.status(400).json({ error: 'traceNo is required' });
+    }
+
+    const result = await replayService.replayTrace(
+      traceNo,
+      req.operator!,
+      req.requestId
+    );
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/reconcile', async (req: Request, res: Response, next) => {
+  try {
+    const { batchNo, potNo } = req.body;
+
+    if (!batchNo || !potNo) {
+      return res.status(400).json({
+        error: 'Missing required fields: batchNo, potNo',
+      });
+    }
+
+    const result = await replayService.reconcile(
+      batchNo,
+      potNo,
+      req.operator!,
+      req.requestId
+    );
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/:traceNo/failures', async (req: Request, res: Response, next) => {
+  try {
+    const { traceNo } = req.params;
+    const trace = await traceService.getTrace(traceNo);
+
+    if (!trace) {
+      return res.status(404).json({ error: 'Trace not found' });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        failedItems: trace.failedItems,
+        validationErrors: trace.metadata?.validationErrors || [],
+        errorMessage: trace.errorMessage,
+      },
     });
   } catch (error) {
     next(error);

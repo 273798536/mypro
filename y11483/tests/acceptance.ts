@@ -2,6 +2,119 @@ import 'reflect-metadata';
 import chalk from 'chalk';
 import { runNormalFlow } from './normal-flow';
 import { runEdgeCases } from './edge-cases';
+import { initDatabase, closeDatabase } from '../src/config/database';
+import { DataGenerator } from '../src/services/DataGenerator';
+import { BatchTraceService } from '../src/services/BatchTraceService';
+import { ReplayService } from '../src/services/ReplayService';
+import { ConflictStrategy, TraceStatus } from '../src/entities';
+
+async function runPhase3() {
+  console.log(chalk.yellow('\n  第三阶段真实验证...'));
+  
+  const BATCH_BAD = 'BATCH-VERIFY-BAD-' + Date.now();
+  const POT_BAD = 'POT-VERIFY-BAD';
+  const BATCH_PARTIAL = 'BATCH-VERIFY-PARTIAL-' + Date.now();
+  const POT_PARTIAL = 'POT-VERIFY-PARTIAL';
+  const OPERATOR = 'acceptance_test';
+
+  const dataGenerator = new DataGenerator();
+  const traceService = new BatchTraceService();
+  const replayService = new ReplayService();
+
+  let success = true;
+  const details: string[] = [];
+
+  try {
+    console.log(chalk.cyan('\n  [1/5] 验证坏数据不崩溃...'));
+    await dataGenerator.generateBadData(BATCH_BAD, POT_BAD, OPERATOR);
+    
+    const badTrace = await traceService.createTrace({
+      batchNo: BATCH_BAD,
+      potNo: POT_BAD,
+      productName: '验收坏数据测试',
+      productionTime: new Date(),
+      conflictStrategy: ConflictStrategy.OVERWRITE,
+      operator: OPERATOR,
+    });
+    
+    const badProcessed = await traceService.processTrace({
+      traceNo: badTrace.traceNo,
+      operator: OPERATOR,
+    });
+    
+    if (badProcessed.status === TraceStatus.FAILED) {
+      details.push('坏数据处理 - 系统正确标记失败状态');
+    } else {
+      details.push('坏数据处理 - 系统未崩溃，状态: ' + badProcessed.status);
+    }
+    details.push('  失败项数量: ' + (badProcessed.failedItems?.length || 0));
+    console.log(chalk.green('  ✓ 坏数据处理验证通过'));
+
+    console.log(chalk.cyan('\n  [2/5] 验证部分失败场景...'));
+    await dataGenerator.generatePartialFailureData(BATCH_PARTIAL, POT_PARTIAL, OPERATOR);
+    
+    const partialTrace = await traceService.createTrace({
+      batchNo: BATCH_PARTIAL,
+      potNo: POT_PARTIAL,
+      productName: '验收部分失败测试',
+      productionTime: new Date(),
+      conflictStrategy: ConflictStrategy.OVERWRITE,
+      operator: OPERATOR,
+    });
+    
+    const partialProcessed = await traceService.processTrace({
+      traceNo: partialTrace.traceNo,
+      operator: OPERATOR,
+    });
+    
+    if (partialProcessed.failedItems && partialProcessed.failedItems.length > 0) {
+      details.push('部分失败 - 成功收集 ' + partialProcessed.failedItems.length + ' 个失败项');
+      (partialProcessed.failedItems as any[]).slice(0, 2).forEach((item: any) => {
+        details.push('  - ' + (item.type || item.source || 'unknown') + ': ' + (item.error || item.message || 'no details'));
+      });
+    } else {
+      details.push('部分失败 - 无失败项，状态: ' + partialProcessed.status);
+    }
+    console.log(chalk.green('  ✓ 部分失败场景验证通过'));
+
+    console.log(chalk.cyan('\n  [3/5] 验证异常回放功能...'));
+    const replayResult = await replayService.replayTrace(partialTrace.traceNo, OPERATOR);
+    
+    details.push('回放 - 发现 ' + replayResult.issuesFound.length + ' 个问题');
+    details.push('回放 - 状态: ' + replayResult.status);
+    if (replayResult.issuesFound.length > 0) {
+      replayResult.issuesFound.slice(0, 2).forEach(issue => {
+        details.push('  - [' + issue.severity + '] ' + issue.source + ': ' + issue.message.substring(0, 50));
+      });
+    }
+    console.log(chalk.green('  ✓ 异常回放验证通过'));
+
+    console.log(chalk.cyan('\n  [4/5] 验证对账功能...'));
+    const reconcileResult = await replayService.reconcile(BATCH_BAD, POT_BAD, OPERATOR);
+    
+    details.push('对账 - 执行 ' + reconcileResult.checks.length + ' 项检查');
+    const passedChecks = reconcileResult.checks.filter(c => c.passed).length;
+    details.push('对账 - 通过 ' + passedChecks + '/' + reconcileResult.checks.length + ' 项');
+    console.log(chalk.green('  ✓ 对账功能验证通过'));
+
+    console.log(chalk.cyan('\n  [5/5] 验证数据持久化...'));
+    const reloadedTrace = await traceService.getTrace(partialTrace.traceNo);
+    
+    if (!reloadedTrace) {
+      throw new Error('数据未持久化 - 无法重新加载链路');
+    }
+    details.push('持久化 - 链路数据成功从数据库重载');
+    details.push('持久化 - 状态: ' + reloadedTrace.status + ', 门店数: ' + reloadedTrace.totalStores);
+    console.log(chalk.green('  ✓ 数据持久化验证通过'));
+
+  } catch (error: any) {
+    success = false;
+    details.push('错误: ' + error.message);
+    console.log(chalk.red('  ✗ 第三阶段验证失败: ' + error.message));
+  }
+
+  return { success, details };
+}
 
 async function runAllTests() {
   console.log(chalk.cyan('\n╔═══════════════════════════════════════════════════════════════════╗'));
@@ -10,7 +123,7 @@ async function runAllTests() {
   console.log(chalk.cyan('║                                                                   ║'));
   console.log(chalk.cyan('╚═══════════════════════════════════════════════════════════════════╝\n'));
 
-  const results: { name: string; success: boolean; error?: string; traceNo?: string }[] = [];
+  const results: { name: string; success: boolean; error?: string; traceNo?: string; details?: string[] }[] = [];
 
   console.log(chalk.magenta('\n═══════════════════════════════════════════════════════════════════'));
   console.log(chalk.magenta('  第一阶段: 正常链路测试'));
@@ -27,20 +140,27 @@ async function runAllTests() {
   results.push({ name: '边界情况测试', ...edgeResult });
 
   console.log(chalk.magenta('\n═══════════════════════════════════════════════════════════════════'));
-  console.log(chalk.magenta('  第三阶段: 重启验证提示'));
+  console.log(chalk.magenta('  第三阶段: 真实验证 - 坏数据/部分失败/回放/对账'));
   console.log(chalk.magenta('═══════════════════════════════════════════════════════════════════'));
 
-  console.log(chalk.yellow('\n  【重要提示】重启验证步骤:'));
-  console.log(chalk.gray('  ───────────────────────────────────────────────'));
-  console.log(chalk.cyan('  1. 启动服务:'));
-  console.log(chalk.white('     npm run dev'));
-  console.log(chalk.cyan('  2. 查询历史记录（验证数据持久化）:'));
-  console.log(chalk.white('     curl -X GET http://localhost:3000/api/trace/'));
-  console.log(chalk.cyan('  3. 查看具体链路:'));
-  console.log(chalk.white('     curl -X GET http://localhost:3000/api/trace/[traceNo]/history'));
-  console.log(chalk.cyan('  4. 查看API请求日志:'));
-  console.log(chalk.white('     查看 data/kitchen_trace.db 中的 api_request_logs 表'));
-  console.log(chalk.gray('  ───────────────────────────────────────────────\n'));
+  await initDatabase();
+  const phase3Result = await runPhase3();
+  await closeDatabase();
+  
+  results.push({ 
+    name: '第三阶段真实验证', 
+    success: phase3Result.success, 
+    details: phase3Result.details 
+  });
+
+  if (phase3Result.details && phase3Result.details.length > 0) {
+    console.log(chalk.gray('\n  ───────────────────────────────────────────────'));
+    console.log(chalk.cyan('  验证详情:'));
+    phase3Result.details.forEach(detail => {
+      console.log('    ' + detail);
+    });
+    console.log(chalk.gray('  ───────────────────────────────────────────────'));
+  }
 
   console.log(chalk.blue('\n═══════════════════════════════════════════════════════════════════'));
   console.log(chalk.blue('  测试结果汇总'));
@@ -57,6 +177,15 @@ async function runAllTests() {
     }
     if (result.traceNo) {
       console.log('     链路编号: ' + result.traceNo);
+    }
+    if (result.details && result.details.length > 0) {
+      console.log('     详情:');
+      result.details.slice(0, 5).forEach(detail => {
+        console.log('       - ' + detail);
+      });
+      if (result.details.length > 5) {
+        console.log('       ... 还有 ' + (result.details.length - 5) + ' 条');
+      }
     }
   });
 

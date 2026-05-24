@@ -1,5 +1,4 @@
-import { Repository, In } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import {
   BatchTrace,
@@ -7,7 +6,6 @@ import {
   ConflictStrategy,
   DataSource,
   SampleLabel,
-  SampleStatus,
   TemperatureRecord,
   StoreComplaint,
   StoreHandover,
@@ -30,6 +28,7 @@ export interface ProcessTraceInput {
   traceNo: string;
   operator: string;
   autoCollect?: boolean;
+  skipValidation?: boolean;
   requestId?: string;
 }
 
@@ -46,6 +45,20 @@ export interface FreezeTraceInput {
   operator: string;
   reason: string;
   requestId?: string;
+}
+
+export interface ValidationError {
+  type: string;
+  field: string;
+  value: any;
+  message: string;
+}
+
+export interface FailedItem {
+  id?: string;
+  type: string;
+  error: string;
+  data?: Record<string, any>;
 }
 
 export class BatchTraceService {
@@ -210,57 +223,134 @@ export class BatchTraceService {
       input.requestId
     );
 
-    const failedItems: string[] = [];
+    const failedItems: FailedItem[] = [];
     const dataSources: DataSource[] = [];
+    const validationErrors: ValidationError[] = [];
 
     try {
-      const samples = await this.sampleRepository.find({
-        where: { batchNo: trace.batchNo, potNo: trace.potNo, isDeleted: false },
-      });
-      trace.sampleLabelCount = samples.length;
-      if (samples.length > 0) dataSources.push(DataSource.SAMPLE_LABEL);
+      let samples: SampleLabel[] = [];
+      try {
+        samples = await this.sampleRepository.find({
+          where: { batchNo: trace.batchNo, potNo: trace.potNo, isDeleted: false },
+        });
+        const sampleErrors = this.validateSamples(samples);
+        validationErrors.push(...sampleErrors);
+        trace.sampleLabelCount = samples.length;
+        if (samples.length > 0) dataSources.push(DataSource.SAMPLE_LABEL);
+        if (samples.length === 0) {
+          failedItems.push({
+            type: 'sample_label',
+            error: '未找到留样标签数据',
+            data: { batchNo: trace.batchNo, potNo: trace.potNo },
+          });
+        }
+      } catch (error: any) {
+        failedItems.push({
+          type: 'sample_label',
+          error: `留样标签查询失败: ${error.message}`,
+          data: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+      }
 
-      const tempRecords = await this.tempRepository.find({
-        where: { batchNo: trace.batchNo, potNo: trace.potNo },
-      });
-      trace.temperatureRecordCount = tempRecords.length;
-      if (tempRecords.length > 0) dataSources.push(DataSource.TEMPERATURE);
-      trace.hasAbnormalTemperature = tempRecords.some(
-        (t) => t.status !== 'normal'
-      );
+      let tempRecords: TemperatureRecord[] = [];
+      try {
+        tempRecords = await this.tempRepository.find({
+          where: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+        const tempErrors = this.validateTemperatureRecords(tempRecords);
+        validationErrors.push(...tempErrors);
+        trace.temperatureRecordCount = tempRecords.length;
+        if (tempRecords.length > 0) dataSources.push(DataSource.TEMPERATURE);
+        trace.hasAbnormalTemperature = tempRecords.some(
+          (t) => t.status !== 'normal'
+        );
+        if (tempRecords.length === 0) {
+          failedItems.push({
+            type: 'temperature',
+            error: '未找到温度记录数据',
+            data: { batchNo: trace.batchNo, potNo: trace.potNo },
+          });
+        }
+      } catch (error: any) {
+        failedItems.push({
+          type: 'temperature',
+          error: `温度记录查询失败: ${error.message}`,
+          data: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+      }
 
-      const complaints = await this.complaintRepository.find({
-        where: { batchNo: trace.batchNo, potNo: trace.potNo },
-      });
-      trace.complaintCount = complaints.length;
-      if (complaints.length > 0) dataSources.push(DataSource.COMPLAINT);
-      trace.hasComplaint = complaints.length > 0;
+      let complaints: StoreComplaint[] = [];
+      try {
+        complaints = await this.complaintRepository.find({
+          where: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+        trace.complaintCount = complaints.length;
+        if (complaints.length > 0) dataSources.push(DataSource.COMPLAINT);
+        trace.hasComplaint = complaints.length > 0;
+      } catch (error: any) {
+        failedItems.push({
+          type: 'complaint',
+          error: `门店投诉查询失败: ${error.message}`,
+          data: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+      }
 
-      const handovers = await this.handoverRepository.find({
-        where: { batchNo: trace.batchNo, potNo: trace.potNo },
-      });
-      trace.handoverCount = handovers.length;
-      if (handovers.length > 0) dataSources.push(DataSource.HANDOVER);
+      let handovers: StoreHandover[] = [];
+      try {
+        handovers = await this.handoverRepository.find({
+          where: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+        const handoverErrors = this.validateHandovers(handovers);
+        validationErrors.push(...handoverErrors);
+        trace.handoverCount = handovers.length;
+        if (handovers.length > 0) dataSources.push(DataSource.HANDOVER);
+        if (handovers.length === 0) {
+          failedItems.push({
+            type: 'handover',
+            error: '未找到门店交接数据',
+            data: { batchNo: trace.batchNo, potNo: trace.potNo },
+          });
+        }
+      } catch (error: any) {
+        failedItems.push({
+          type: 'handover',
+          error: `门店交接查询失败: ${error.message}`,
+          data: { batchNo: trace.batchNo, potNo: trace.potNo },
+        });
+      }
 
-      trace.stores = handovers.map((h) => ({
-        storeCode: h.storeCode,
-        storeName: h.storeName,
-        handoverNo: h.handoverNo,
-        deliveredQuantity: h.deliveredQuantity,
-        receivedQuantity: h.receivedQuantity,
-        status: h.status,
-      }));
-      trace.totalStores = handovers.length;
-      trace.completedStores = handovers.filter(
-        (h) => h.status === 'received'
-      ).length;
+      try {
+        trace.stores = handovers.map((h) => ({
+          storeCode: h.storeCode,
+          storeName: h.storeName,
+          handoverNo: h.handoverNo,
+          deliveredQuantity: h.deliveredQuantity,
+          receivedQuantity: h.receivedQuantity,
+          status: h.status,
+        }));
+        trace.totalStores = handovers.length;
+        trace.completedStores = handovers.filter(
+          (h) => h.status === 'received'
+        ).length;
+      } catch (error: any) {
+        failedItems.push({
+          type: 'store_mapping',
+          error: `门店数据映射失败: ${error.message}`,
+        });
+      }
 
       trace.dataSources = [...new Set([...(trace.dataSources || []), ...dataSources])];
-      trace.failedItems = failedItems;
+      trace.failedItems = failedItems.length > 0 ? failedItems as any : [];
+      trace.metadata = {
+        ...(trace.metadata || {}),
+        validationErrors,
+        processedAt: new Date().toISOString(),
+      };
 
-      if (failedItems.length > 0) {
+      if (failedItems.length > 0 || validationErrors.length > 0) {
         trace.status = TraceStatus.PARTIAL_FAILED;
-        trace.errorMessage = `${failedItems.length} 项数据处理失败`;
+        const totalIssues = failedItems.length + validationErrors.length;
+        trace.errorMessage = `${totalIssues} 项数据异常（${failedItems.length} 项失败，${validationErrors.length} 项验证警告）`;
       } else {
         trace.status = TraceStatus.COMPLETED;
         trace.summary = this.generateSummary(trace);
@@ -277,31 +367,152 @@ export class BatchTraceService {
         input.operator,
         TraceStatus.PROCESSING,
         saved.status,
-        saved.status === TraceStatus.COMPLETED ? '批次链路处理完成' : '批次链路部分完成',
+        saved.status === TraceStatus.COMPLETED
+          ? '批次链路处理完成'
+          : `批次链路部分完成 - ${saved.errorMessage}`,
         input.requestId
       );
 
       return saved;
     } catch (error: any) {
       trace.status = TraceStatus.FAILED;
-      trace.errorMessage = error.message;
+      trace.errorMessage = `处理完全失败: ${error.message}`;
       trace.updatedBy = input.operator;
+      trace.failedItems = [{
+        type: 'fatal_error',
+        error: error.message,
+        data: { stack: error.stack },
+      }] as any;
       const saved = await this.traceRepository.save(trace);
 
       await this.auditService.logStatusChange(
         saved.id,
         EntityType.BATCH_TRACE,
         saved.traceNo,
-        OperationType.UPDATE,
+        OperationType.REPLAY,
         input.operator,
         TraceStatus.PROCESSING,
         TraceStatus.FAILED,
-        `处理失败: ${error.message}`,
+        `处理完全失败: ${error.message}`,
         input.requestId
       );
 
       throw error;
     }
+  }
+
+  private validateSamples(samples: SampleLabel[]): ValidationError[] {
+    const errors: ValidationError[] = [];
+
+    samples.forEach((sample, index) => {
+      if (!sample.batchNo || sample.batchNo.trim() === '') {
+        errors.push({
+          type: 'sample_label',
+          field: 'batchNo',
+          value: sample.batchNo,
+          message: `留样标签[${index}]: 批次号为空`,
+        });
+      }
+      if (!sample.potNo || sample.potNo.trim() === '') {
+        errors.push({
+          type: 'sample_label',
+          field: 'potNo',
+          value: sample.potNo,
+          message: `留样标签[${index}]: 锅次号为空`,
+        });
+      }
+      if (sample.quantity <= 0) {
+        errors.push({
+          type: 'sample_label',
+          field: 'quantity',
+          value: sample.quantity,
+          message: `留样标签[${index}]: 数量异常(${sample.quantity})`,
+        });
+      }
+      if (!sample.productionTime) {
+        errors.push({
+          type: 'sample_label',
+          field: 'productionTime',
+          value: sample.productionTime,
+          message: `留样标签[${index}]: 生产时间为空`,
+        });
+      }
+    });
+
+    return errors;
+  }
+
+  private validateTemperatureRecords(records: TemperatureRecord[]): ValidationError[] {
+    const errors: ValidationError[] = [];
+
+    records.forEach((record, index) => {
+      if (record.temperature === null || record.temperature === undefined) {
+        errors.push({
+          type: 'temperature',
+          field: 'temperature',
+          value: record.temperature,
+          message: `温度记录[${index}]: 温度值为空`,
+        });
+      } else if (record.temperature < -30 || record.temperature > 100) {
+        errors.push({
+          type: 'temperature',
+          field: 'temperature',
+          value: record.temperature,
+          message: `温度记录[${index}]: 温度值异常(${record.temperature}°C)`,
+        });
+      }
+      if (!record.recordTime) {
+        errors.push({
+          type: 'temperature',
+          field: 'recordTime',
+          value: record.recordTime,
+          message: `温度记录[${index}]: 记录时间为空`,
+        });
+      }
+    });
+
+    return errors;
+  }
+
+  private validateHandovers(handovers: StoreHandover[]): ValidationError[] {
+    const errors: ValidationError[] = [];
+
+    handovers.forEach((handover, index) => {
+      if (!handover.storeCode || handover.storeCode.trim() === '') {
+        errors.push({
+          type: 'handover',
+          field: 'storeCode',
+          value: handover.storeCode,
+          message: `交接单[${index}]: 门店编码为空`,
+        });
+      }
+      if (handover.deliveredQuantity < 0) {
+        errors.push({
+          type: 'handover',
+          field: 'deliveredQuantity',
+          value: handover.deliveredQuantity,
+          message: `交接单[${index}]: 配送数量为负`,
+        });
+      }
+      if (handover.receivedQuantity < 0) {
+        errors.push({
+          type: 'handover',
+          field: 'receivedQuantity',
+          value: handover.receivedQuantity,
+          message: `交接单[${index}]: 实收数量为负`,
+        });
+      }
+      if (handover.receivedQuantity > handover.deliveredQuantity) {
+        errors.push({
+          type: 'handover',
+          field: 'receivedQuantity',
+          value: handover.receivedQuantity,
+          message: `交接单[${index}]: 实收数量(${handover.receivedQuantity})大于配送数量(${handover.deliveredQuantity})`,
+        });
+      }
+    });
+
+    return errors;
   }
 
   private generateSummary(trace: BatchTrace): string {

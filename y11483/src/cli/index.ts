@@ -11,6 +11,7 @@ import { BatchTraceService } from '../services/BatchTraceService';
 import { ExportService } from '../services/ExportService';
 import { SampleLabelService } from '../services/SampleLabelService';
 import { AuditService } from '../services/AuditService';
+import { ReplayService } from '../services/ReplayService';
 import {
   ConflictStrategy,
   ExportFormat,
@@ -400,6 +401,109 @@ async function main() {
           });
         } catch (error: any) {
           console.error(chalk.red('\n✗ 查询失败:'), error.message, '\n');
+          process.exit(1);
+        }
+      }
+    )
+    .command(
+      'generate-bad-data',
+      '生成坏数据（用于测试部分失败场景）',
+      (y) =>
+        y
+          .option('batch', { alias: 'b', type: 'string', demandOption: true, describe: '批次号' })
+          .option('pot', { alias: 'p', type: 'string', demandOption: true, describe: '锅次号' })
+          .option('operator', { alias: 'o', type: 'string', default: 'cli_user', describe: '操作员' }),
+      async (argv) => {
+        console.log(chalk.blue('\n=== 生成坏数据 ===\n'));
+
+        try {
+          const result = await dataGenerator.generateBadData(argv.batch, argv.pot, argv.operator);
+          console.log(chalk.green('✓ 生成异常留样标签:'), result.invalidSamples.length, '条');
+          console.log(chalk.green('✓ 生成异常温度记录:'), result.invalidTemperatures.length, '条');
+          console.log(chalk.green('✓ 生成异常交接单:'), result.invalidHandovers.length, '条');
+          console.log(chalk.green('\n✓ 坏数据生成完成，可用于测试部分失败场景!\n'));
+        } catch (error: any) {
+          console.error(chalk.red('\n✗ 生成失败:'), error.message, '\n');
+          process.exit(1);
+        }
+      }
+    )
+    .command(
+      'replay',
+      '回放异常（验证数据一致性）',
+      (y) =>
+        y
+          .option('trace', { alias: 't', type: 'string', demandOption: true, describe: '链路编号' })
+          .option('operator', { alias: 'o', type: 'string', default: 'cli_user', describe: '操作员' }),
+      async (argv) => {
+        console.log(chalk.blue('\n=== 回放异常验证 ===\n'));
+
+        try {
+          const replayService = new ReplayService();
+          const result = await replayService.replayTrace(argv.trace, argv.operator);
+
+          console.log(chalk.cyan('回放状态:'), result.status);
+          console.log(chalk.cyan('发现问题:'), result.issuesFound.length, '个');
+          console.log();
+
+          if (result.issuesFound.length > 0) {
+            result.issuesFound.forEach((issue, index) => {
+              const severityColor =
+                issue.severity === 'high'
+                  ? chalk.red
+                  : issue.severity === 'medium'
+                  ? chalk.yellow
+                  : chalk.gray;
+              console.log(
+                `${index + 1}. [${severityColor(issue.severity.toUpperCase())}] ${issue.source} - ${issue.field}`
+              );
+              console.log(`   ${issue.message}`);
+              if (issue.expected !== undefined) {
+                console.log(`   预期: ${JSON.stringify(issue.expected)}, 实际: ${JSON.stringify(issue.actual)}`);
+              }
+              console.log();
+            });
+          }
+
+          console.log(chalk.green('✓ 回放完成:'), result.summary, '\n');
+        } catch (error: any) {
+          console.error(chalk.red('\n✗ 回放失败:'), error.message, '\n');
+          process.exit(1);
+        }
+      }
+    )
+    .command(
+      'reconcile',
+      '对账（跨源数据一致性检查）',
+      (y) =>
+        y
+          .option('batch', { alias: 'b', type: 'string', demandOption: true, describe: '批次号' })
+          .option('pot', { alias: 'p', type: 'string', demandOption: true, describe: '锅次号' })
+          .option('operator', { alias: 'o', type: 'string', default: 'cli_user', describe: '操作员' }),
+      async (argv) => {
+        console.log(chalk.blue('\n=== 对账 - 跨源数据一致性检查 ===\n'));
+
+        try {
+          const replayService = new ReplayService();
+          const result = await replayService.reconcile(argv.batch, argv.pot, argv.operator);
+
+          console.log(chalk.cyan('对账状态:'), result.status);
+          console.log(chalk.cyan('批次-锅次:'), `${result.batchNo}-${result.potNo}`);
+          console.log();
+
+          result.checks.forEach((check, index) => {
+            const status = check.passed ? chalk.green('✓ 通过') : chalk.red('✗ 失败');
+            console.log(`${index + 1}. ${status} ${check.name}`);
+            console.log(`   ${check.message}`);
+            if (check.details) {
+              console.log(`   详情:`, JSON.stringify(check.details));
+            }
+            console.log();
+          });
+
+          console.log(chalk.green('✓ 对账完成:'), result.summary, '\n');
+        } catch (error: any) {
+          console.error(chalk.red('\n✗ 对账失败:'), error.message, '\n');
           process.exit(1);
         }
       }

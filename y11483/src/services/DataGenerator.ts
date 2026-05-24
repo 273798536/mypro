@@ -1,6 +1,7 @@
 import { AppDataSource } from '../config/database';
 import {
   SampleLabel,
+  SampleStatus,
   TemperatureRecord,
   TemperatureStatus,
   StoreComplaint,
@@ -18,6 +19,7 @@ export interface GenerateDataOptions {
   storeCount?: number;
   hasAbnormalTemp?: boolean;
   hasComplaint?: boolean;
+  hasBadData?: boolean;
   operator: string;
 }
 
@@ -235,5 +237,125 @@ export class DataGenerator {
     });
 
     return await complaintRepo.save(complaint);
+  }
+
+  async generateBadData(batchNo: string, potNo: string, operator: string): Promise<{
+    invalidSamples: SampleLabel[];
+    invalidTemperatures: TemperatureRecord[];
+    invalidHandovers: StoreHandover[];
+  }> {
+    const sampleRepo = AppDataSource.getRepository(SampleLabel);
+    const tempRepo = AppDataSource.getRepository(TemperatureRecord);
+    const handoverRepo = AppDataSource.getRepository(StoreHandover);
+
+    const invalidSamples: SampleLabel[] = [];
+    const invalidTemperatures: TemperatureRecord[] = [];
+    const invalidHandovers: StoreHandover[] = [];
+
+    const badSample = sampleRepo.create({
+      batchNo,
+      potNo,
+      productName: '异常数据测试',
+      productionTime: new Date(),
+      producer: '测试',
+      quantity: -5,
+      unit: '份',
+      status: SampleStatus.CREATED,
+      version: 1,
+      isDeleted: false,
+      createdBy: operator,
+      updatedBy: operator,
+    });
+    const savedBadSample = await sampleRepo.save(badSample);
+    invalidSamples.push(savedBadSample as unknown as SampleLabel);
+
+    const badTemp = tempRepo.create({
+      batchNo,
+      potNo,
+      recordTime: new Date(),
+      temperature: 150,
+      deviceId: 'BAD-DEVICE',
+      status: TemperatureStatus.NORMAL,
+      recordedBy: operator,
+      createdBy: operator,
+      updatedBy: operator,
+    });
+    invalidTemperatures.push(await tempRepo.save(badTemp));
+
+    const badHandover = handoverRepo.create({
+      handoverNo: `BAD-HO-${Date.now()}`,
+      batchNo,
+      potNo,
+      storeName: '测试门店',
+      storeCode: '',
+      productName: '异常数据测试',
+      deliveredQuantity: 10,
+      receivedQuantity: 15,
+      returnedQuantity: 0,
+      unit: '份',
+      deliveryTime: new Date(),
+      status: HandoverStatus.RECEIVED,
+      createdBy: operator,
+      updatedBy: operator,
+    } as any);
+    invalidHandovers.push(await handoverRepo.save(badHandover) as unknown as StoreHandover);
+
+    return { invalidSamples, invalidTemperatures, invalidHandovers };
+  }
+
+  async generatePartialFailureData(
+    batchNo: string,
+    potNo: string,
+    operator: string
+  ): Promise<{
+    normalSamples: SampleLabel[];
+    missingTemperatures: boolean;
+    normalHandovers: StoreHandover[];
+  }> {
+    const sampleRepo = AppDataSource.getRepository(SampleLabel);
+    const handoverRepo = AppDataSource.getRepository(StoreHandover);
+
+    const normalSample = sampleRepo.create({
+      batchNo,
+      potNo,
+      productName: '部分失败测试',
+      productionTime: new Date(),
+      producer: '测试',
+      quantity: 50,
+      unit: '份',
+      status: SampleStatus.SUBMITTED,
+      version: 1,
+      isDeleted: false,
+      createdBy: operator,
+      updatedBy: operator,
+    });
+    const savedNormalSample = await sampleRepo.save(normalSample);
+    const normalSamples = [savedNormalSample as unknown as SampleLabel];
+
+    const normalHandover = handoverRepo.create({
+      handoverNo: `PARTIAL-HO-${Date.now()}`,
+      batchNo,
+      potNo,
+      storeName: '正常门店',
+      storeCode: 'ST-PARTIAL',
+      productName: '部分失败测试',
+      deliveredQuantity: 30,
+      receivedQuantity: 30,
+      returnedQuantity: 0,
+      unit: '份',
+      deliveryTime: new Date(),
+      receivedTime: new Date(),
+      status: HandoverStatus.RECEIVED,
+      receiver: '测试店长',
+      createdBy: operator,
+      updatedBy: operator,
+    } as any);
+    const normalHandovers = [await handoverRepo.save(normalHandover) as unknown as StoreHandover];
+
+    return {
+      normalSamples,
+      missingTemperatures: true,
+      normalHandovers,
+    };
   }
 }
