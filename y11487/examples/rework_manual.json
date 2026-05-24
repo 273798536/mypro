@@ -1,0 +1,15 @@
+{
+  "rework_no": "RW20240525_MANUAL",
+  "inspection_no": "IN20240524001",
+  "shift_code": "SH2024052401",
+  "rework_date": "2024-05-25",
+  "machine_no": "M-001",
+  "defect_type": "色差",
+  "defect_description": "左右色差严重，需要人工确认责任班次",
+  "rework_quantity": 10,
+  "rework_operator": "李返工",
+  "rework_team": "B组",
+  "compensation_amount": 100.0,
+  "rework_count": 1,
+  "responsible_shift_code": "SH2024052401"
+}

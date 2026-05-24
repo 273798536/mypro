@@ -286,6 +286,38 @@ class QueueService:
 
         return True, "已人工接管"
 
+    def transfer_to_manual(self, queue_id: int, reason: str = "") -> Tuple[bool, str]:
+        queue_item = self.db.query(CompensationQueue).filter(
+            CompensationQueue.id == queue_id
+        ).first()
+        if not queue_item:
+            return False, "队列项不存在"
+
+        if queue_item.status in [QueueStatus.MANUAL, QueueStatus.COMPENSATED, QueueStatus.CLOSED]:
+            return False, f"当前状态 {queue_item.status.value} 不能转入人工处理"
+
+        old_status = queue_item.status.value
+        queue_item.status = QueueStatus.MANUAL
+        queue_item.manual_handler = "system"
+        queue_item.manual_note = f"系统自动转入人工处理: {reason}" if reason else "系统自动转入人工处理"
+
+        self.db.flush()
+
+        self._audit_log(
+            "queue.transfer_to_manual",
+            "compensation_queue",
+            str(queue_id),
+            old_value={"status": old_status},
+            new_value={
+                "status": QueueStatus.MANUAL.value,
+                "handler": "system",
+                "reason": reason
+            },
+            queue_item_id=queue_item.id
+        )
+
+        return True, "已转入人工处理队列"
+
     def compensate(self, queue_id: int, amount: Optional[float] = None,
                    quantity: Optional[int] = None) -> Tuple[bool, str]:
         queue_item = self.db.query(CompensationQueue).filter(

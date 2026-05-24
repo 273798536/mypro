@@ -103,9 +103,22 @@ class QueueWorker:
                     else:
                         success, msg = self.queue_service.retry_queue(item.id, msg)
                         return False
+                elif item.retry_category == RetryCategory.MANUAL_REQUIRED:
+                    reason = f"缺陷类型: {item.defect_type or '未知'}, 需人工确认"
+                    success, msg = self.queue_service.transfer_to_manual(item.id, reason)
+                    if success:
+                        worker = self.db.query(WorkerState).filter(
+                            WorkerState.worker_id == self.worker_id
+                        ).first()
+                        if worker:
+                            worker.processed_count += 1
+                        return True
+                    return False
                 else:
-                    self.queue_service.take_manual(item.id, "需要人工处理")
-                    return True
+                    success, msg = self.queue_service.transfer_to_manual(
+                        item.id, "不可自动重试，需人工处理"
+                    )
+                    return success
 
             except Exception as e:
                 self.queue_service.retry_queue(item.id, str(e))

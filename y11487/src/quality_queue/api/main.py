@@ -340,6 +340,27 @@ def recover_dead_letter(
     return APIResponse(success=True, message=msg)
 
 
+class TransferManualRequest(BaseModel):
+    reason: Optional[str] = ""
+
+
+@app.post("/api/v1/queue/{queue_id}/transfer-manual", response_model=APIResponse)
+def transfer_to_manual(
+    queue_id: int,
+    req: TransferManualRequest,
+    current_user: Dict = Depends(get_current_operator),
+    db: Session = Depends(get_db)
+):
+    """系统转入人工处理（无需特殊权限，用于重缺陷自动流转"""
+    service = QueueService(db, current_user["operator"], current_user["role"])
+    success, msg = service.transfer_to_manual(queue_id, req.reason)
+    db.commit()
+
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return APIResponse(success=True, message=msg)
+
+
 @app.get("/api/v1/queue")
 def list_queue(
     status: Optional[str] = None,
