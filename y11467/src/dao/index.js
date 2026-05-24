@@ -358,6 +358,15 @@ class DirtyRecordDAO extends BaseDAO {
     `;
     return await db.all(sql);
   }
+
+  async getPendingByQueueId(queueId) {
+    const sql = `
+      SELECT * FROM dirty_record 
+      WHERE queue_id = ? AND status = 'pending'
+      ORDER BY created_at ASC
+    `;
+    return await db.all(sql, [queueId]);
+  }
 }
 
 class VersionHistoryDAO extends BaseDAO {

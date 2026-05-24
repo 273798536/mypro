@@ -195,10 +195,16 @@ class DirtyRecordService {
     }
 
     if (queue && queue.status === 'manual') {
-      await retryQueueDAO.update(dirty.queue_id, {
-        status: 'pending',
-        next_retry_at: new Date().toISOString()
-      });
+      const remainingDirty = await dirtyRecordDAO.getPendingByQueueId(dirty.queue_id);
+      if (remainingDirty.length === 0) {
+        await db.run(`
+          UPDATE retry_queue 
+          SET status = 'pending',
+              next_retry_at = datetime('now'),
+              updated_at = datetime('now')
+          WHERE id = ?
+        `, [dirty.queue_id]);
+      }
     }
 
     return true;

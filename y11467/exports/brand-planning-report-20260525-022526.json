@@ -1,0 +1,72 @@
+{
+  "reportTitle": "服装打版样衣重试补偿队列 - 品牌企划报告",
+  "generatedAt": "2026-05-25 02:25:26",
+  "summary": {
+    "totalQueues": 3,
+    "successRate": "33.3%",
+    "pendingRetry": 2,
+    "manualIntervention": 0,
+    "dirtyRecords": 7,
+    "deadLetters": 0,
+    "recoverableDeadLetters": 0
+  },
+  "retryClassification": {
+    "manual_correction_needed": 2
+  },
+  "deadLetterAnalysis": {
+    "total": 0,
+    "recoverable": 0,
+    "byErrorType": {},
+    "recoverySuggestions": []
+  },
+  "recoveryPipeline": {
+    "autoRecoverable": 0,
+    "pendingManual": 0,
+    "recoveredToday": 0
+  },
+  "dirtyRecordAnalysis": {
+    "byType": {
+      "name_change": 1,
+      "cross_day": 3,
+      "missing_field": 2,
+      "quantity_conflict": 1
+    },
+    "topIssues": [
+      {
+        "type": "cross_day",
+        "count": 3,
+        "description": "跨日记录"
+      },
+      {
+        "type": "missing_field",
+        "count": 2,
+        "description": "缺少必填字段"
+      },
+      {
+        "type": "name_change",
+        "count": 1,
+        "description": "款号/名称变更"
+      },
+      {
+        "type": "quantity_conflict",
+        "count": 1,
+        "description": "数量冲突"
+      }
+    ]
+  },
+  "compensationSummary": {
+    "total": 0,
+    "accounted": 0,
+    "pending": 0,
+    "byType": {},
+    "totalQuantity": 0
+  },
+  "recommendations": [
+    {
+      "priority": "中",
+      "type": "流程优化",
+      "content": "当前成功率为 33.3%，低于80%阈值，建议优化上游数据质量",
+      "action": "分析高频错误类型"
+    }
+  ]
+}

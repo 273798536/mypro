@@ -8,6 +8,7 @@ const {
   manualOpinionDAO,
   compensationRecordDAO,
   deadLetterDAO,
+  dirtyRecordDAO,
   db
 } = require('../dao');
 
@@ -85,10 +86,12 @@ class RetryQueueService {
     const classification = this.classifyRetry(queueItem);
     
     try {
-      await retryQueueDAO.update(queueItem.id, {
-        status: 'processing',
-        updated_at: new Date().toISOString()
-      });
+      await db.run(`
+        UPDATE retry_queue 
+        SET status = 'processing',
+            updated_at = datetime('now')
+        WHERE id = ?
+      `, [queueItem.id]);
 
       await this.validateAndConsolidate(queueItem.id);
       
@@ -102,7 +105,12 @@ class RetryQueueService {
         classification
       };
     } catch (error) {
-      if (queueItem.retry_count + 1 >= queueItem.max_retries) {
+      if (error.type === 'pending_dirty_records') {
+        await retryQueueDAO.markAsManual(queueItem.id, 'system');
+        await retryQueueDAO.update(queueItem.id, {
+          retry_classification: 'manual_correction_needed'
+        });
+      } else if (queueItem.retry_count + 1 >= queueItem.max_retries) {
         await deadLetterDAO.archive(
           queueItem.id,
           queueItem.style_code,
@@ -144,6 +152,15 @@ class RetryQueueService {
   }
 
   async validateAndConsolidate(queueId) {
+    const pendingDirtyRecords = await dirtyRecordDAO.getPendingByQueueId(queueId);
+    if (pendingDirtyRecords.length > 0) {
+      const errorTypes = [...new Set(pendingDirtyRecords.map(r => r.error_type))];
+      const error = new Error(`存在 ${pendingDirtyRecords.length} 条待处理脏记录，类型: ${errorTypes.join(', ')}`);
+      error.type = 'pending_dirty_records';
+      error.pendingDirtyRecords = pendingDirtyRecords;
+      throw error;
+    }
+
     const transferOrders = await sampleTransferOrderDAO.getByQueueId(queueId);
     const sizeOpinions = await sizeModificationOpinionDAO.getByQueueId(queueId);
     const fabricRecords = await fabricInventoryDAO.getByQueueId(queueId);
