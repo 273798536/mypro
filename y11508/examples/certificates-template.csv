@@ -1,0 +1,4 @@
+certificateNo,deviceCode,calibrationAgency,calibrationDate,expiryDate,conclusion,calibrationItems,fileUrl
+CERT-CSV-001,ECG-0001,市计量所,2024-01-01,2025-01-01,pass,示值误差|重复性|稳定性,/uploads/cert-001.pdf
+CERT-CSV-002,INF-0002,省计量院,2023-06-15,2024-06-15,pass,流量精度|报警功能,/uploads/cert-002.pdf
+CERT-CSV-003,VEN-0003,第三方校准机构A,2024-02-01,2025-02-01,conditional,潮气量|压力精度,/uploads/cert-003.pdf

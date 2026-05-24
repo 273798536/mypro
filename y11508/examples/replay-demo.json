@@ -1,0 +1,71 @@
+[
+  {
+    "type": "http",
+    "description": "获取设备列表",
+    "content": {
+      "method": "GET",
+      "url": "/devices"
+    },
+    "verbose": true,
+    "delay": 500
+  },
+  {
+    "type": "http",
+    "description": "创建巡检记录",
+    "content": {
+      "method": "POST",
+      "url": "/inspections",
+      "data": {
+        "recordNo": "INSP-REPLAY-001",
+        "deviceCode": "ECG-0001",
+        "inspector": "回放测试员",
+        "inspectionDate": "2024-01-20T00:00:00.000Z",
+        "inspectionItems": {
+          "外观": "正常",
+          "功能": "良好",
+          "清洁度": "达标"
+        },
+        "conclusion": "合格",
+        "remarks": "回放测试创建"
+      }
+    },
+    "delay": 1000
+  },
+  {
+    "type": "http",
+    "description": "获取仪表盘统计",
+    "content": {
+      "method": "GET",
+      "url": "/dashboard"
+    },
+    "verbose": true
+  },
+  {
+    "type": "http",
+    "description": "执行状态检查",
+    "content": {
+      "method": "POST",
+      "url": "/status-check"
+    },
+    "verbose": true
+  },
+  {
+    "type": "http",
+    "description": "执行对账",
+    "content": {
+      "method": "GET",
+      "url": "/reconciliation"
+    },
+    "verbose": false,
+    "delay": 500
+  },
+  {
+    "type": "http",
+    "description": "获取状态变更日志",
+    "content": {
+      "method": "GET",
+      "url": "/status-logs"
+    },
+    "verbose": false
+  }
+]

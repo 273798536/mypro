@@ -1,0 +1,4 @@
+recordNo,deviceCode,inspector,inspectionDate,conclusion,remarks,item_外观,item_功能,item_清洁度
+INSP-CSV-001,ECG-0001,张三,2024-01-15,合格,一切正常,正常,良好,达标
+INSP-CSV-002,INF-0002,李四,2024-01-16,基本合格,需注意,正常,一般,良好
+INSP-CSV-003,VEN-0003,王五,2024-01-17,待整改,需要校准,完好,需调试,一般
