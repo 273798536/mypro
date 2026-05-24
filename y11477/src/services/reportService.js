@@ -85,23 +85,36 @@ function getManagerDashboard() {
   const deadLetter = db.prepare(`
     SELECT 
       e.*,
-      COUNT(DISTINCT rl.id) as retry_attempts,
-      GROUP_CONCAT(DISTINCT rl.error_message, '; ') as errors
+      COALESCE(rl_stats.retry_attempts, 0) as retry_attempts,
+      COALESCE(rl_stats.errors, '') as errors
     FROM events e
-    LEFT JOIN retry_logs rl ON e.id = rl.event_id
+    LEFT JOIN (
+      SELECT 
+        event_id,
+        COUNT(id) as retry_attempts,
+        GROUP_CONCAT(error_message, '; ') as errors
+      FROM (
+        SELECT DISTINCT event_id, id, error_message 
+        FROM retry_logs 
+        WHERE error_message IS NOT NULL
+      )
+      GROUP BY event_id
+    ) rl_stats ON e.id = rl_stats.event_id
     WHERE e.status = 'dead_letter'
-    GROUP BY e.id
     ORDER BY e.updated_at DESC
   `).all();
   
   const recoverableEvents = db.prepare(`
     SELECT 
       e.*,
-      COUNT(rl.id) as retry_count
+      COALESCE(rl_counts.retry_count, 0) as retry_count
     FROM events e
-    LEFT JOIN retry_logs rl ON e.id = rl.event_id
+    LEFT JOIN (
+      SELECT event_id, COUNT(id) as retry_count
+      FROM retry_logs
+      GROUP BY event_id
+    ) rl_counts ON e.id = rl_counts.event_id
     WHERE e.status = 'retrying'
-    GROUP BY e.id
     ORDER BY e.next_retry_at ASC
   `).all();
   

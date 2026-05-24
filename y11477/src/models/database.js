@@ -87,7 +87,7 @@ function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       event_id INTEGER NOT NULL,
       retry_attempt INTEGER NOT NULL,
-      status TEXT NOT NULL CHECK(status IN ('success', 'failed')),
+      status TEXT NOT NULL CHECK(status IN ('scheduled', 'success', 'failed')),
       error_message TEXT,
       executed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       executed_by INTEGER,
