@@ -151,15 +151,18 @@ async function importCsvFile(filePath, source, importedBy, db) {
             for (const record of results) {
                 (0, database_1.addRecord)(db, record);
                 const dirtyRecords = (0, detector_1.detectAllDirty)(record, db);
+                const fromStatus = record.status;
                 if (dirtyRecords.length > 0) {
                     record.status = types_1.RecordStatus.DIRTY;
                     dirtyCount++;
                     for (const dirty of dirtyRecords) {
                         (0, database_1.addDirtyRecord)(db, dirty);
                     }
+                    (0, database_1.addStateChange)(db, record.id, fromStatus, types_1.RecordStatus.DIRTY, importedBy, `检测到${dirtyRecords.length}个问题`);
                 }
                 else {
                     record.status = types_1.RecordStatus.IMPORTED;
+                    (0, database_1.addStateChange)(db, record.id, fromStatus, types_1.RecordStatus.IMPORTED, importedBy, '数据校验通过');
                 }
                 record.updatedAt = (0, database_1.getCurrentTime)();
                 importedRecords.push(record);

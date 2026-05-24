@@ -12,6 +12,7 @@ const permissions_1 = require("./utils/permissions");
 const types_1 = require("./types");
 const init_1 = require("./commands/init");
 const importer_1 = require("./utils/importer");
+const zipImporter_1 = require("./utils/zipImporter");
 const check_1 = require("./commands/check");
 const fix_1 = require("./commands/fix");
 const report_1 = require("./commands/report");
@@ -56,9 +57,9 @@ program
 });
 program
     .command('import')
-    .description('导入数据文件')
-    .requiredOption('-f, --file <path>', 'CSV 文件路径')
-    .requiredOption('-s, --source <type>', '数据来源: implant|appointment|invoice|manual')
+    .description('导入数据文件（支持 CSV 和 ZIP 压缩包）')
+    .requiredOption('-f, --file <path>', '数据文件路径 (CSV 或 ZIP)')
+    .option('-s, --source <type>', '数据来源: implant|appointment|invoice|manual (ZIP 文件可选，默认自动识别)')
     .action(async (options) => {
     try {
         const { user, db } = await getCurrentUser();
@@ -69,21 +70,51 @@ program
             invoice: types_1.DataSource.SUPPLIER_INVOICE,
             manual: types_1.DataSource.MANUAL_ENTRY
         };
-        const source = sourceMap[options.source];
-        if (!source) {
-            throw new Error(`无效的数据来源: ${options.source}`);
+        const filePath = options.file;
+        const isZip = filePath.toLowerCase().endsWith('.zip');
+        if (isZip) {
+            const forceSource = options.source ? sourceMap[options.source] : undefined;
+            console.log(chalk_1.default.cyan(`正在导入历史压缩包数据...`));
+            const result = await (0, zipImporter_1.importZipFile)(filePath, user.username, db, forceSource);
+            (0, database_1.saveDatabase)(db);
+            console.log(chalk_1.default.green(`✓ 压缩包导入完成`));
+            console.log(`  文件总数: ${result.totalFiles} 个`);
+            console.log(`  处理成功: ${chalk_1.default.green(result.processedFiles - result.failedFiles)} 个`);
+            console.log(`  处理失败: ${chalk_1.default.red(result.failedFiles)} 个`);
+            console.log(`  总记录数: ${result.totalRecords} 条`);
+            console.log(`  导入成功: ${chalk_1.default.green(result.importedRecords)} 条`);
+            console.log(`  有问题: ${chalk_1.default.yellow(result.dirtyRecords)} 条`);
+            if (result.results.length > 0) {
+                console.log(chalk_1.default.cyan('\n文件处理详情:'));
+                result.results.forEach(r => {
+                    const status = r.result.errors.length > 0 ? chalk_1.default.red('✗') : chalk_1.default.green('✓');
+                    console.log(`  ${status} ${r.fileName} [${(0, importer_1.getDataSourceName)(r.source)}]: ${r.result.total} 条`);
+                    if (r.result.errors.length > 0) {
+                        r.result.errors.forEach(e => console.log(`      - ${e}`));
+                    }
+                });
+            }
         }
-        console.log(chalk_1.default.cyan(`正在导入 ${(0, importer_1.getDataSourceName)(source)} 数据...`));
-        const result = await (0, importer_1.importCsvFile)(options.file, source, user.username, db);
-        (0, database_1.saveDatabase)(db);
-        console.log(chalk_1.default.green(`✓ 导入完成`));
-        console.log(`  总计: ${result.total} 条`);
-        console.log(`  成功: ${chalk_1.default.green(result.success)} 条`);
-        console.log(`  失败: ${chalk_1.default.red(result.failed)} 条`);
-        console.log(`  有问题: ${chalk_1.default.yellow(result.dirty)} 条`);
-        if (result.errors.length > 0) {
-            console.log(chalk_1.default.red('\n错误详情:'));
-            result.errors.forEach(e => console.log(`  - ${e}`));
+        else {
+            if (!options.source) {
+                throw new Error('CSV 文件导入必须指定数据来源 (-s)');
+            }
+            const source = sourceMap[options.source];
+            if (!source) {
+                throw new Error(`无效的数据来源: ${options.source}`);
+            }
+            console.log(chalk_1.default.cyan(`正在导入 ${(0, importer_1.getDataSourceName)(source)} 数据...`));
+            const result = await (0, importer_1.importCsvFile)(options.file, source, user.username, db);
+            (0, database_1.saveDatabase)(db);
+            console.log(chalk_1.default.green(`✓ 导入完成`));
+            console.log(`  总计: ${result.total} 条`);
+            console.log(`  成功: ${chalk_1.default.green(result.success)} 条`);
+            console.log(`  失败: ${chalk_1.default.red(result.failed)} 条`);
+            console.log(`  有问题: ${chalk_1.default.yellow(result.dirty)} 条`);
+            if (result.errors.length > 0) {
+                console.log(chalk_1.default.red('\n错误详情:'));
+                result.errors.forEach(e => console.log(`  - ${e}`));
+            }
         }
     }
     catch (e) {

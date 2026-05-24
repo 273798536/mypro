@@ -46,9 +46,11 @@ npm run dev -- init --name "李主任"
 - `appointment.csv` - 预约记录（含跨日脏数据）
 - `supplier_invoice.csv` - 供应商发票（含金额冲突脏数据）
 - `manual_entry.csv` - 临时补录单（含改名脏数据）
+- `history-archive.zip` - 历史压缩包（内含4个CSV文件，自动识别数据源）
 
 ### 4. 走主流程
 
+#### 方式一：逐个导入 CSV 文件
 ```bash
 # 1. 导入种植体批号数据（用 entry 用户）
 npm run dev -- -u entry import -f samples/implant_batch.csv -s implant
@@ -67,6 +69,15 @@ npm run dev -- -u entry check
 
 # 6. 重新检查（强制重新检测）
 npm run dev -- -u entry check --recheck
+```
+
+#### 方式二：导入历史压缩包（推荐批量处理）
+```bash
+# 直接导入 ZIP 压缩包，自动识别数据源（根据文件名）
+npm run dev -- -u entry import -f samples/history-archive.zip
+
+# 或强制指定数据源（所有文件按同一来源处理）
+npm run dev -- -u entry import -f samples/history-archive.zip -s implant
 ```
 
 ### 5. 制造异常和修正

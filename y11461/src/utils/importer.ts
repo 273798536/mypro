@@ -12,7 +12,8 @@ import {
   generateId, 
   getCurrentTime, 
   addRecord, 
-  addDirtyRecord 
+  addDirtyRecord,
+  addStateChange
 } from './database';
 import { detectAllDirty } from './detector';
 
@@ -194,6 +195,7 @@ export async function importCsvFile(
           addRecord(db, record);
           
           const dirtyRecords = detectAllDirty(record, db);
+          const fromStatus = record.status;
           
           if (dirtyRecords.length > 0) {
             record.status = RecordStatus.DIRTY;
@@ -201,8 +203,24 @@ export async function importCsvFile(
             for (const dirty of dirtyRecords) {
               addDirtyRecord(db, dirty);
             }
+            addStateChange(
+              db, 
+              record.id, 
+              fromStatus, 
+              RecordStatus.DIRTY, 
+              importedBy, 
+              `检测到${dirtyRecords.length}个问题`
+            );
           } else {
             record.status = RecordStatus.IMPORTED;
+            addStateChange(
+              db, 
+              record.id, 
+              fromStatus, 
+              RecordStatus.IMPORTED, 
+              importedBy, 
+              '数据校验通过'
+            );
           }
           
           record.updatedAt = getCurrentTime();

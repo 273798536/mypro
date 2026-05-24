@@ -1,6 +1,6 @@
 import { Database, CheckResult, DirtyType, RecordStatus } from '../types';
 import { detectAllDirty } from '../utils/detector';
-import { addDirtyRecord, getCurrentTime, saveDatabase } from '../utils/database';
+import { addDirtyRecord, getCurrentTime, saveDatabase, addStateChange } from '../utils/database';
 
 export function checkRecords(db: Database, recheck: boolean = false): CheckResult {
   const dirtyByType: Record<DirtyType, number> = {
@@ -30,10 +30,21 @@ export function checkRecords(db: Database, recheck: boolean = false): CheckResul
     );
 
     const dirtyRecords = detectAllDirty(record, db);
+    const fromStatus = record.status;
 
     if (dirtyRecords.length > 0) {
-      record.status = RecordStatus.DIRTY;
-      record.updatedAt = getCurrentTime();
+      if (record.status !== RecordStatus.DIRTY) {
+        record.status = RecordStatus.DIRTY;
+        record.updatedAt = getCurrentTime();
+        addStateChange(
+          db,
+          record.id,
+          fromStatus,
+          RecordStatus.DIRTY,
+          'system',
+          `重新检测发现${dirtyRecords.length}个问题`
+        );
+      }
       
       for (const dirty of dirtyRecords) {
         addDirtyRecord(db, dirty);
@@ -43,6 +54,14 @@ export function checkRecords(db: Database, recheck: boolean = false): CheckResul
     } else if (record.status === RecordStatus.DIRTY) {
       record.status = RecordStatus.IMPORTED;
       record.updatedAt = getCurrentTime();
+      addStateChange(
+        db,
+        record.id,
+        fromStatus,
+        RecordStatus.IMPORTED,
+        'system',
+        '问题已解决，数据校验通过'
+      );
     }
   }
 

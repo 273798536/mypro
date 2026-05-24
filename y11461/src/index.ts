@@ -8,6 +8,7 @@ import { assertPermission, getRoleName, filterRecordsByRole } from './utils/perm
 import { DataSource } from './types';
 import { initDatabase } from './commands/init';
 import { importCsvFile, getDataSourceName } from './utils/importer';
+import { importZipFile } from './utils/zipImporter';
 import { checkRecords } from './commands/check';
 import { fixRecord, autoFixRecord, rejectRecord, approveRecord } from './commands/fix';
 import { generateReport, getStatusName } from './commands/report';
@@ -58,9 +59,9 @@ program
 
 program
   .command('import')
-  .description('导入数据文件')
-  .requiredOption('-f, --file <path>', 'CSV 文件路径')
-  .requiredOption('-s, --source <type>', '数据来源: implant|appointment|invoice|manual')
+  .description('导入数据文件（支持 CSV 和 ZIP 压缩包）')
+  .requiredOption('-f, --file <path>', '数据文件路径 (CSV 或 ZIP)')
+  .option('-s, --source <type>', '数据来源: implant|appointment|invoice|manual (ZIP 文件可选，默认自动识别)')
   .action(async (options) => {
     try {
       const { user, db } = await getCurrentUser();
@@ -73,24 +74,58 @@ program
         manual: DataSource.MANUAL_ENTRY
       };
 
-      const source = sourceMap[options.source];
-      if (!source) {
-        throw new Error(`无效的数据来源: ${options.source}`);
-      }
+      const filePath = options.file;
+      const isZip = filePath.toLowerCase().endsWith('.zip');
+      
+      if (isZip) {
+        const forceSource = options.source ? sourceMap[options.source] : undefined;
+        
+        console.log(chalk.cyan(`正在导入历史压缩包数据...`));
+        const result = await importZipFile(filePath, user.username, db, forceSource);
+        saveDatabase(db);
 
-      console.log(chalk.cyan(`正在导入 ${getDataSourceName(source)} 数据...`));
-      const result = await importCsvFile(options.file, source, user.username, db);
-      saveDatabase(db);
+        console.log(chalk.green(`✓ 压缩包导入完成`));
+        console.log(`  文件总数: ${result.totalFiles} 个`);
+        console.log(`  处理成功: ${chalk.green(result.processedFiles - result.failedFiles)} 个`);
+        console.log(`  处理失败: ${chalk.red(result.failedFiles)} 个`);
+        console.log(`  总记录数: ${result.totalRecords} 条`);
+        console.log(`  导入成功: ${chalk.green(result.importedRecords)} 条`);
+        console.log(`  有问题: ${chalk.yellow(result.dirtyRecords)} 条`);
 
-      console.log(chalk.green(`✓ 导入完成`));
-      console.log(`  总计: ${result.total} 条`);
-      console.log(`  成功: ${chalk.green(result.success)} 条`);
-      console.log(`  失败: ${chalk.red(result.failed)} 条`);
-      console.log(`  有问题: ${chalk.yellow(result.dirty)} 条`);
+        if (result.results.length > 0) {
+          console.log(chalk.cyan('\n文件处理详情:'));
+          result.results.forEach(r => {
+            const status = r.result.errors.length > 0 ? chalk.red('✗') : chalk.green('✓');
+            console.log(`  ${status} ${r.fileName} [${getDataSourceName(r.source)}]: ${r.result.total} 条`);
+            if (r.result.errors.length > 0) {
+              r.result.errors.forEach(e => console.log(`      - ${e}`));
+            }
+          });
+        }
+      } else {
+        if (!options.source) {
+          throw new Error('CSV 文件导入必须指定数据来源 (-s)');
+        }
 
-      if (result.errors.length > 0) {
-        console.log(chalk.red('\n错误详情:'));
-        result.errors.forEach(e => console.log(`  - ${e}`));
+        const source = sourceMap[options.source];
+        if (!source) {
+          throw new Error(`无效的数据来源: ${options.source}`);
+        }
+
+        console.log(chalk.cyan(`正在导入 ${getDataSourceName(source)} 数据...`));
+        const result = await importCsvFile(options.file, source, user.username, db);
+        saveDatabase(db);
+
+        console.log(chalk.green(`✓ 导入完成`));
+        console.log(`  总计: ${result.total} 条`);
+        console.log(`  成功: ${chalk.green(result.success)} 条`);
+        console.log(`  失败: ${chalk.red(result.failed)} 条`);
+        console.log(`  有问题: ${chalk.yellow(result.dirty)} 条`);
+
+        if (result.errors.length > 0) {
+          console.log(chalk.red('\n错误详情:'));
+          result.errors.forEach(e => console.log(`  - ${e}`));
+        }
       }
     } catch (e: any) {
       console.error(chalk.red(`错误: ${e.message}`));

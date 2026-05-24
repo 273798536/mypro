@@ -24,9 +24,13 @@ function checkRecords(db, recheck = false) {
         }
         db.dirtyRecords = db.dirtyRecords.filter(d => !(d.recordId === record.id && !d.resolved));
         const dirtyRecords = (0, detector_1.detectAllDirty)(record, db);
+        const fromStatus = record.status;
         if (dirtyRecords.length > 0) {
-            record.status = types_1.RecordStatus.DIRTY;
-            record.updatedAt = (0, database_1.getCurrentTime)();
+            if (record.status !== types_1.RecordStatus.DIRTY) {
+                record.status = types_1.RecordStatus.DIRTY;
+                record.updatedAt = (0, database_1.getCurrentTime)();
+                (0, database_1.addStateChange)(db, record.id, fromStatus, types_1.RecordStatus.DIRTY, 'system', `重新检测发现${dirtyRecords.length}个问题`);
+            }
             for (const dirty of dirtyRecords) {
                 (0, database_1.addDirtyRecord)(db, dirty);
                 allDirtyRecords.push(dirty);
@@ -36,6 +40,7 @@ function checkRecords(db, recheck = false) {
         else if (record.status === types_1.RecordStatus.DIRTY) {
             record.status = types_1.RecordStatus.IMPORTED;
             record.updatedAt = (0, database_1.getCurrentTime)();
+            (0, database_1.addStateChange)(db, record.id, fromStatus, types_1.RecordStatus.IMPORTED, 'system', '问题已解决，数据校验通过');
         }
     }
     (0, database_1.saveDatabase)(db);
