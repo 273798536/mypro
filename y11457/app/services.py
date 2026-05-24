@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
+from sqlalchemy import and_, or_, func, case
 from app.models import (
     CompensationQueue, CompensationStatus, RetryLog, OperationLog,
     RetryCategory, IssueType, DataSource,
@@ -481,13 +481,13 @@ class ReportService:
         query = db.query(
             CompensationQueue.city,
             func.count(CompensationQueue.id).label("total_count"),
-            func.sum(func.case((CompensationQueue.status == CompensationStatus.COMPLETED, 1), else_=0)).label("completed_count"),
-            func.sum(func.case((CompensationQueue.status.in_([CompensationStatus.QUEUED, CompensationStatus.RETRYING, CompensationStatus.PROCESSING]), 1), else_=0)).label("pending_count"),
-            func.sum(func.case((CompensationQueue.status == CompensationStatus.FAILED, 1), else_=0)).label("failed_count"),
-            func.sum(func.case((CompensationQueue.status == CompensationStatus.DEAD_LETTER, 1), else_=0)).label("dead_letter_count"),
+            func.sum(case((CompensationQueue.status == CompensationStatus.COMPLETED, 1), else_=0)).label("completed_count"),
+            func.sum(case((CompensationQueue.status.in_([CompensationStatus.QUEUED, CompensationStatus.RETRYING, CompensationStatus.PROCESSING]), 1), else_=0)).label("pending_count"),
+            func.sum(case((CompensationQueue.status == CompensationStatus.FAILED, 1), else_=0)).label("failed_count"),
+            func.sum(case((CompensationQueue.status == CompensationStatus.DEAD_LETTER, 1), else_=0)).label("dead_letter_count"),
             func.sum(CompensationQueue.compensation_amount).label("total_amount"),
-            func.sum(func.case((CompensationQueue.status == CompensationStatus.COMPLETED, CompensationQueue.actual_compensation), else_=0)).label("completed_amount"),
-            func.sum(func.case((CompensationQueue.status.in_([CompensationStatus.QUEUED, CompensationStatus.RETRYING, CompensationStatus.PROCESSING]), CompensationQueue.compensation_amount), else_=0)).label("pending_amount")
+            func.sum(case((CompensationQueue.status == CompensationStatus.COMPLETED, CompensationQueue.actual_compensation), else_=0)).label("completed_amount"),
+            func.sum(case((CompensationQueue.status.in_([CompensationStatus.QUEUED, CompensationStatus.RETRYING, CompensationStatus.PROCESSING]), CompensationQueue.compensation_amount), else_=0)).label("pending_amount")
         ).group_by(CompensationQueue.city)
 
         if city:
@@ -540,6 +540,7 @@ class ReportService:
         query = db.query(
             RetryLog.error_message,
             func.count(RetryLog.id).label("count"),
+            func.sum(CompensationQueue.compensation_amount).label("amount"),
             func.avg(RetryLog.retry_number).label("avg_retry_count")
         ).join(
             CompensationQueue, CompensationQueue.id == RetryLog.queue_id
@@ -556,6 +557,7 @@ class ReportService:
             {
                 "reason": r.error_message or "未知原因",
                 "count": r.count,
+                "amount": float(r.amount or 0),
                 "avg_retry_count": float(r.avg_retry_count or 0)
             }
             for r in results
