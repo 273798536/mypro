@@ -1,32 +1,29 @@
-const { getDb, runInTransaction } = require('../database');
+const { get, run, all, runInTransaction } = require('../database');
 const stateMachine = require('../state-machine');
 const { ACTIONS } = require('../database/schema');
 const logger = require('../utils/logger');
 
-function recordStatusHistory({ batchId, fromStatus, toStatus, action, operator, reason, remark }) {
-  const db = getDb();
-  const stmt = db.prepare(`
+async function recordStatusHistory({ batchId, fromStatus, toStatus, action, operator, reason, remark }) {
+  const sql = `
     INSERT INTO status_history 
     (batch_id, from_status, to_status, action, operator, reason, remark)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
-  return stmt.run(batchId, fromStatus, toStatus, action, operator, reason, remark);
+  `;
+  return run(sql, [batchId, fromStatus, toStatus, action, operator, reason, remark]);
 }
 
-function updateBatchStatus(batchId, newStatus, previousStatus, operator) {
-  const db = getDb();
-  const stmt = db.prepare(`
+async function updateBatchStatus(batchId, newStatus, previousStatus, operator) {
+  const sql = `
     UPDATE batches 
     SET status = ?, previous_status = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `);
-  return stmt.run(newStatus, previousStatus, batchId);
+  `;
+  return run(sql, [newStatus, previousStatus, batchId]);
 }
 
-function transitionState(batchId, action, operator, reason, remark) {
-  return runInTransaction(() => {
-    const db = getDb();
-    const batch = db.prepare('SELECT * FROM batches WHERE id = ?').get(batchId);
+async function transitionState(batchId, action, operator, reason, remark) {
+  return runInTransaction(async () => {
+    const batch = await get('SELECT * FROM batches WHERE id = ?', [batchId]);
     
     if (!batch) {
       throw new Error(`Batch not found: ${batchId}`);
@@ -43,8 +40,8 @@ function transitionState(batchId, action, operator, reason, remark) {
     const nextState = stateMachine.getNextState(currentStatus, action);
     
     if (nextState) {
-      updateBatchStatus(batchId, nextState, currentStatus, operator);
-      recordStatusHistory({
+      await updateBatchStatus(batchId, nextState, currentStatus, operator);
+      await recordStatusHistory({
         batchId,
         fromStatus: currentStatus,
         toStatus: nextState,
@@ -75,10 +72,9 @@ function transitionState(batchId, action, operator, reason, remark) {
   });
 }
 
-function freezeBatch(batchId, operator, reason) {
-  return runInTransaction(() => {
-    const db = getDb();
-    const batch = db.prepare('SELECT * FROM batches WHERE id = ?').get(batchId);
+async function freezeBatch(batchId, operator, reason) {
+  return runInTransaction(async () => {
+    const batch = await get('SELECT * FROM batches WHERE id = ?', [batchId]);
     
     if (!batch) {
       throw new Error(`Batch not found: ${batchId}`);
@@ -90,7 +86,7 @@ function freezeBatch(batchId, operator, reason) {
 
     const previousStatus = batch.status;
     
-    db.prepare(`
+    await run(`
       UPDATE batches 
       SET is_frozen = 1, 
           frozen_at = CURRENT_TIMESTAMP, 
@@ -100,9 +96,9 @@ function freezeBatch(batchId, operator, reason) {
           status = 'FROZEN',
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(operator, reason, previousStatus, batchId);
+    `, [operator, reason, previousStatus, batchId]);
 
-    recordStatusHistory({
+    await recordStatusHistory({
       batchId,
       fromStatus: previousStatus,
       toStatus: 'FROZEN',
@@ -123,10 +119,9 @@ function freezeBatch(batchId, operator, reason) {
   });
 }
 
-function unfreezeBatch(batchId, operator, reason) {
-  return runInTransaction(() => {
-    const db = getDb();
-    const batch = db.prepare('SELECT * FROM batches WHERE id = ?').get(batchId);
+async function unfreezeBatch(batchId, operator, reason) {
+  return runInTransaction(async () => {
+    const batch = await get('SELECT * FROM batches WHERE id = ?', [batchId]);
     
     if (!batch) {
       throw new Error(`Batch not found: ${batchId}`);
@@ -138,7 +133,7 @@ function unfreezeBatch(batchId, operator, reason) {
 
     const restoreStatus = batch.previous_status || 'DRAFT';
     
-    db.prepare(`
+    await run(`
       UPDATE batches 
       SET is_frozen = 0, 
           frozen_at = NULL, 
@@ -147,9 +142,9 @@ function unfreezeBatch(batchId, operator, reason) {
           status = ?,
           updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(restoreStatus, batchId);
+    `, [restoreStatus, batchId]);
 
-    recordStatusHistory({
+    await recordStatusHistory({
       batchId,
       fromStatus: 'FROZEN',
       toStatus: restoreStatus,
@@ -169,13 +164,13 @@ function unfreezeBatch(batchId, operator, reason) {
   });
 }
 
-function getStatusHistory(batchId) {
-  const db = getDb();
-  return db.prepare(`
+async function getStatusHistory(batchId) {
+  const sql = `
     SELECT * FROM status_history 
     WHERE batch_id = ? 
     ORDER BY created_at DESC
-  `).all(batchId);
+  `;
+  return all(sql, [batchId]);
 }
 
 module.exports = {

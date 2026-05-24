@@ -1,33 +1,30 @@
-const { getDb } = require('../database');
+const { run, all } = require('../database');
 
-function logAuditTrail({ batchId, attachmentId, action, fieldName, oldValue, newValue, operator, ipAddress, userAgent }) {
-  const db = getDb();
-  const stmt = db.prepare(`
+async function logAuditTrail({ batchId, attachmentId, action, fieldName, oldValue, newValue, operator, ipAddress, userAgent }) {
+  const sql = `
     INSERT INTO audit_trails 
     (batch_id, attachment_id, action, field_name, old_value, new_value, operator, ip_address, user_agent)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  return stmt.run(batchId, attachmentId, action, fieldName, oldValue, newValue, operator, ipAddress, userAgent);
+  `;
+  return run(sql, [batchId, attachmentId, action, fieldName, oldValue, newValue, operator, ipAddress, userAgent]);
 }
 
-function getAuditTrailsByBatchId(batchId) {
-  const db = getDb();
-  const stmt = db.prepare(`
+async function getAuditTrailsByBatchId(batchId) {
+  const sql = `
     SELECT * FROM audit_trails 
     WHERE batch_id = ? 
     ORDER BY created_at DESC
-  `);
-  return stmt.all(batchId);
+  `;
+  return all(sql, [batchId]);
 }
 
-function getAuditTrailsByAttachmentId(attachmentId) {
-  const db = getDb();
-  const stmt = db.prepare(`
+async function getAuditTrailsByAttachmentId(attachmentId) {
+  const sql = `
     SELECT * FROM audit_trails 
     WHERE attachment_id = ? 
     ORDER BY created_at DESC
-  `);
-  return stmt.all(attachmentId);
+  `;
+  return all(sql, [attachmentId]);
 }
 
 module.exports = {

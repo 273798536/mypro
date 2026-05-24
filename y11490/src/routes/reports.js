@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const reportService = require('../services/reportService');
 
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const { startDate, endDate, page, pageSize } = req.query;
     
-    const result = reportService.getReportSummaries({
+    const result = await reportService.getReportSummaries({
       startDate,
       endDate,
       page: page ? parseInt(page) : 1,

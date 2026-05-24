@@ -36,7 +36,7 @@ const upload = multer({
 
 const getOperator = (req) => req.headers['x-operator'] || 'system';
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     const { projectName, bidNo, manualRemark } = req.body;
     const operator = getOperator(req);
@@ -48,7 +48,7 @@ router.post('/', (req, res, next) => {
       });
     }
 
-    const batch = batchService.createBatch({
+    const batch = await batchService.createBatch({
       projectName,
       bidNo,
       operator,
@@ -64,11 +64,11 @@ router.post('/', (req, res, next) => {
   }
 });
 
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const { status, page, pageSize, operator, projectName } = req.query;
     
-    const result = batchService.listBatches({
+    const result = await batchService.listBatches({
       status,
       page: page ? parseInt(page) : 1,
       pageSize: pageSize ? parseInt(pageSize) : 20,
@@ -86,10 +86,10 @@ router.get('/', (req, res, next) => {
   }
 });
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
-    const batch = batchService.getBatchById(batchId);
+    const batch = await batchService.getBatchById(batchId);
     
     if (!batch) {
       return res.status(404).json({
@@ -98,8 +98,8 @@ router.get('/:id', (req, res, next) => {
       });
     }
 
-    const attachments = attachmentService.getLatestAttachmentsByBatchId(batchId);
-    const validation = validationService.getValidationSummary(batchId);
+    const attachments = await attachmentService.getLatestAttachmentsByBatchId(batchId);
+    const validation = await validationService.getValidationSummary(batchId);
 
     res.json({
       success: true,
@@ -114,12 +114,12 @@ router.get('/:id', (req, res, next) => {
   }
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const operator = getOperator(req);
     
-    const batch = batchService.updateBatch(batchId, req.body, operator);
+    const batch = await batchService.updateBatch(batchId, req.body, operator);
 
     res.json({
       success: true,
@@ -130,13 +130,13 @@ router.put('/:id', (req, res, next) => {
   }
 });
 
-router.put('/:id/manual-remark', (req, res, next) => {
+router.put('/:id/manual-remark', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { manualRemark } = req.body;
     const operator = getOperator(req);
     
-    const batch = batchService.updateManualRemark(batchId, manualRemark, operator);
+    const batch = await batchService.updateManualRemark(batchId, manualRemark, operator);
 
     res.json({
       success: true,
@@ -147,10 +147,10 @@ router.put('/:id/manual-remark', (req, res, next) => {
   }
 });
 
-router.get('/:id/detail', (req, res, next) => {
+router.get('/:id/detail', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
-    const reportData = reportService.getBatchReportData(batchId);
+    const reportData = await reportService.getBatchReportData(batchId);
 
     res.json({
       success: true,
@@ -161,11 +161,11 @@ router.get('/:id/detail', (req, res, next) => {
   }
 });
 
-router.get('/:id/history', (req, res, next) => {
+router.get('/:id/history', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
-    const statusHistory = stateService.getStatusHistory(batchId);
-    const auditTrails = auditService.getAuditTrailsByBatchId(batchId);
+    const statusHistory = await stateService.getStatusHistory(batchId);
+    const auditTrails = await auditService.getAuditTrailsByBatchId(batchId);
 
     res.json({
       success: true,
@@ -179,7 +179,7 @@ router.get('/:id/history', (req, res, next) => {
   }
 });
 
-router.post('/:id/attachments', upload.single('file'), (req, res, next) => {
+router.post('/:id/attachments', upload.single('file'), async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { attachmentType, pageCount, pageModified } = req.body;
@@ -199,7 +199,7 @@ router.post('/:id/attachments', upload.single('file'), (req, res, next) => {
       });
     }
 
-    const attachment = attachmentService.addAttachment({
+    const attachment = await attachmentService.addAttachment({
       batchId,
       attachmentType,
       fileName: req.file.originalname,
@@ -219,10 +219,10 @@ router.post('/:id/attachments', upload.single('file'), (req, res, next) => {
   }
 });
 
-router.get('/:id/attachments', (req, res, next) => {
+router.get('/:id/attachments', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
-    const attachments = attachmentService.getAttachmentsByBatchId(batchId);
+    const attachments = await attachmentService.getAttachmentsByBatchId(batchId);
 
     res.json({
       success: true,
@@ -233,12 +233,12 @@ router.get('/:id/attachments', (req, res, next) => {
   }
 });
 
-router.get('/:id/attachments/:type/history', (req, res, next) => {
+router.get('/:id/attachments/:type/history', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const attachmentType = req.params.type;
     
-    const history = attachmentService.getAttachmentHistory(batchId, attachmentType);
+    const history = await attachmentService.getAttachmentHistory(batchId, attachmentType);
 
     res.json({
       success: true,
@@ -249,13 +249,13 @@ router.get('/:id/attachments/:type/history', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/submit', (req, res, next) => {
+router.post('/:id/actions/submit', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { remark } = req.body;
     const operator = getOperator(req);
 
-    const result = stateService.transitionState(batchId, ACTIONS.SUBMIT, operator, null, remark);
+    const result = await stateService.transitionState(batchId, ACTIONS.SUBMIT, operator, null, remark);
 
     res.json({
       success: true,
@@ -266,14 +266,14 @@ router.post('/:id/actions/submit', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/review', (req, res, next) => {
+router.post('/:id/actions/review', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { passed, reason, remark } = req.body;
     const operator = getOperator(req);
 
     const action = passed ? ACTIONS.REVIEW : ACTIONS.OVERRULE;
-    const result = stateService.transitionState(batchId, action, operator, reason, remark);
+    const result = await stateService.transitionState(batchId, action, operator, reason, remark);
 
     res.json({
       success: true,
@@ -284,13 +284,13 @@ router.post('/:id/actions/review', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/freeze', (req, res, next) => {
+router.post('/:id/actions/freeze', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { reason } = req.body;
     const operator = getOperator(req);
 
-    const result = stateService.freezeBatch(batchId, operator, reason);
+    const result = await stateService.freezeBatch(batchId, operator, reason);
 
     res.json({
       success: true,
@@ -301,13 +301,13 @@ router.post('/:id/actions/freeze', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/unfreeze', (req, res, next) => {
+router.post('/:id/actions/unfreeze', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { reason } = req.body;
     const operator = getOperator(req);
 
-    const result = stateService.unfreezeBatch(batchId, operator, reason);
+    const result = await stateService.unfreezeBatch(batchId, operator, reason);
 
     res.json({
       success: true,
@@ -318,13 +318,13 @@ router.post('/:id/actions/unfreeze', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/settle', (req, res, next) => {
+router.post('/:id/actions/settle', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { remark } = req.body;
     const operator = getOperator(req);
 
-    const result = stateService.transitionState(batchId, ACTIONS.SETTLE, operator, null, remark);
+    const result = await stateService.transitionState(batchId, ACTIONS.SETTLE, operator, null, remark);
 
     res.json({
       success: true,
@@ -335,13 +335,13 @@ router.post('/:id/actions/settle', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/archive', (req, res, next) => {
+router.post('/:id/actions/archive', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { remark } = req.body;
     const operator = getOperator(req);
 
-    const result = stateService.transitionState(batchId, ACTIONS.ARCHIVE, operator, null, remark);
+    const result = await stateService.transitionState(batchId, ACTIONS.ARCHIVE, operator, null, remark);
 
     res.json({
       success: true,
@@ -352,13 +352,13 @@ router.post('/:id/actions/archive', (req, res, next) => {
   }
 });
 
-router.post('/:id/actions/cancel', (req, res, next) => {
+router.post('/:id/actions/cancel', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
     const { reason } = req.body;
     const operator = getOperator(req);
 
-    const result = stateService.transitionState(batchId, ACTIONS.CANCEL, operator, reason);
+    const result = await stateService.transitionState(batchId, ACTIONS.CANCEL, operator, reason);
 
     res.json({
       success: true,
@@ -369,13 +369,14 @@ router.post('/:id/actions/cancel', (req, res, next) => {
   }
 });
 
-router.get('/:id/failed-records', (req, res, next) => {
+router.get('/:id/failed-records', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
-    const { isResolved, page, pageSize } = req.query;
+    const { isResolved, errorType, page, pageSize } = req.query;
     
-    const result = validationService.getFailedRecords(batchId, {
+    const result = await validationService.getFailedRecords(batchId, {
       isResolved: isResolved ? isResolved === 'true' : undefined,
+      errorType,
       page: page ? parseInt(page) : 1,
       pageSize: pageSize ? parseInt(pageSize) : 50
     });
@@ -390,13 +391,13 @@ router.get('/:id/failed-records', (req, res, next) => {
   }
 });
 
-router.put('/:id/failed-records/:recordId/resolve', (req, res, next) => {
+router.put('/:id/failed-records/:recordId/resolve', async (req, res, next) => {
   try {
     const { recordId } = req.params;
     const { resolutionRemark } = req.body;
     const operator = getOperator(req);
 
-    const result = validationService.resolveFailedRecord(
+    const result = await validationService.resolveFailedRecord(
       parseInt(recordId),
       operator,
       resolutionRemark
@@ -411,10 +412,14 @@ router.put('/:id/failed-records/:recordId/resolve', (req, res, next) => {
   }
 });
 
-router.get('/:id/validation', (req, res, next) => {
+router.get('/:id/validation', async (req, res, next) => {
   try {
     const batchId = parseInt(req.params.id);
-    const result = validationService.validateBatchConsistency(batchId);
+    const { autoPersist } = req.query;
+    
+    const result = await validationService.validateBatchConsistency(batchId, {
+      autoPersist: autoPersist !== 'false'
+    });
 
     res.json({
       success: true,

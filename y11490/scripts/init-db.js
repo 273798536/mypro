@@ -17,5 +17,13 @@ dirs.forEach(dir => {
   }
 });
 
-initDatabase();
-console.log('Database initialization complete!');
+async function main() {
+  await initDatabase();
+  console.log('Database initialization complete!');
+  process.exit(0);
+}
+
+main().catch(err => {
+  console.error('Database initialization failed:', err);
+  process.exit(1);
+});

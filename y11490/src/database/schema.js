@@ -69,6 +69,8 @@ CREATE TABLE IF NOT EXISTS failed_records (
   error_type TEXT NOT NULL,
   error_message TEXT NOT NULL,
   error_details TEXT,
+  source_type TEXT,
+  source_reference TEXT,
   is_resolved INTEGER DEFAULT 0,
   resolved_by TEXT,
   resolved_at DATETIME,

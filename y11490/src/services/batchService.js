@@ -1,4 +1,4 @@
-const { getDb, runInTransaction } = require('../database');
+const { get, run, all, runInTransaction } = require('../database');
 const { ACTIONS } = require('../database/schema');
 const { recordStatusHistory } = require('./stateService');
 const { logAuditTrail } = require('./auditService');
@@ -11,21 +11,20 @@ function generateBatchNo() {
   return `${prefix}${random}`;
 }
 
-function createBatch({ projectName, bidNo, operator, manualRemark }) {
-  return runInTransaction(() => {
-    const db = getDb();
+async function createBatch({ projectName, bidNo, operator, manualRemark }) {
+  return runInTransaction(async () => {
     const batchNo = generateBatchNo();
     
-    const stmt = db.prepare(`
+    const sql = `
       INSERT INTO batches 
       (batch_no, project_name, bid_no, operator, manual_remark)
       VALUES (?, ?, ?, ?, ?)
-    `);
+    `;
     
-    const result = stmt.run(batchNo, projectName, bidNo, operator, manualRemark);
-    const batchId = result.lastInsertRowid;
+    const result = await run(sql, [batchNo, projectName, bidNo, operator, manualRemark]);
+    const batchId = result.lastID;
 
-    recordStatusHistory({
+    await recordStatusHistory({
       batchId,
       fromStatus: null,
       toStatus: 'DRAFT',
@@ -35,7 +34,7 @@ function createBatch({ projectName, bidNo, operator, manualRemark }) {
       remark: manualRemark
     });
 
-    logAuditTrail({
+    await logAuditTrail({
       batchId,
       action: ACTIONS.CREATE,
       fieldName: 'batch',
@@ -50,18 +49,15 @@ function createBatch({ projectName, bidNo, operator, manualRemark }) {
   });
 }
 
-function getBatchById(batchId) {
-  const db = getDb();
-  return db.prepare('SELECT * FROM batches WHERE id = ?').get(batchId);
+async function getBatchById(batchId) {
+  return get('SELECT * FROM batches WHERE id = ?', [batchId]);
 }
 
-function getBatchByNo(batchNo) {
-  const db = getDb();
-  return db.prepare('SELECT * FROM batches WHERE batch_no = ?').get(batchNo);
+async function getBatchByNo(batchNo) {
+  return get('SELECT * FROM batches WHERE batch_no = ?', [batchNo]);
 }
 
-function listBatches({ status, page = 1, pageSize = 20, operator, projectName }) {
-  const db = getDb();
+async function listBatches({ status, page = 1, pageSize = 20, operator, projectName }) {
   let whereClauses = [];
   let params = [];
 
@@ -80,16 +76,15 @@ function listBatches({ status, page = 1, pageSize = 20, operator, projectName })
 
   const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
   
-  const countStmt = db.prepare(`SELECT COUNT(*) as total FROM batches ${whereSql}`);
-  const { total } = countStmt.get(...params);
+  const countResult = await get(`SELECT COUNT(*) as total FROM batches ${whereSql}`, params);
+  const total = countResult.total;
 
   const offset = (page - 1) * pageSize;
-  const listStmt = db.prepare(`
+  const list = await all(`
     SELECT * FROM batches ${whereSql}
     ORDER BY created_at DESC
     LIMIT ? OFFSET ?
-  `);
-  const list = listStmt.all(...params, pageSize, offset);
+  `, [...params, pageSize, offset]);
 
   return {
     list,
@@ -102,10 +97,9 @@ function listBatches({ status, page = 1, pageSize = 20, operator, projectName })
   };
 }
 
-function updateBatch(batchId, updates, operator) {
-  return runInTransaction(() => {
-    const db = getDb();
-    const batch = getBatchById(batchId);
+async function updateBatch(batchId, updates, operator) {
+  return runInTransaction(async () => {
+    const batch = await getBatchById(batchId);
     
     if (!batch) {
       throw new Error(`Batch not found: ${batchId}`);
@@ -115,7 +109,7 @@ function updateBatch(batchId, updates, operator) {
     const setClauses = [];
     const values = [];
 
-    Object.keys(updates).forEach(key => {
+    for (const key of Object.keys(updates)) {
       const dbField = key.replace(/([A-Z])/g, '_$1').toLowerCase();
       if (allowedFields.includes(dbField)) {
         const oldValue = batch[dbField];
@@ -125,7 +119,7 @@ function updateBatch(batchId, updates, operator) {
           setClauses.push(`${dbField} = ?`);
           values.push(newValue);
           
-          logAuditTrail({
+          await logAuditTrail({
             batchId,
             action: 'UPDATE',
             fieldName: dbField,
@@ -135,15 +129,15 @@ function updateBatch(batchId, updates, operator) {
           });
         }
       }
-    });
+    }
 
     if (setClauses.length > 0) {
       values.push(batchId);
-      db.prepare(`
+      await run(`
         UPDATE batches 
         SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-      `).run(...values);
+      `, values);
 
       logger.info(`Batch ${batchId} updated by ${operator}`);
     }
@@ -152,22 +146,21 @@ function updateBatch(batchId, updates, operator) {
   });
 }
 
-function updateManualRemark(batchId, manualRemark, operator) {
-  return runInTransaction(() => {
-    const db = getDb();
-    const batch = getBatchById(batchId);
+async function updateManualRemark(batchId, manualRemark, operator) {
+  return runInTransaction(async () => {
+    const batch = await getBatchById(batchId);
     
     if (!batch) {
       throw new Error(`Batch not found: ${batchId}`);
     }
 
-    db.prepare(`
+    await run(`
       UPDATE batches 
       SET manual_remark = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(manualRemark, batchId);
+    `, [manualRemark, batchId]);
 
-    logAuditTrail({
+    await logAuditTrail({
       batchId,
       action: 'UPDATE_MANUAL_REMARK',
       fieldName: 'manual_remark',

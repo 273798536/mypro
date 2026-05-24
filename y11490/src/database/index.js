@@ -1,4 +1,4 @@
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 const config = require('../../config');
@@ -8,47 +8,113 @@ const logger = require('../utils/logger');
 let db;
 
 function initDatabase() {
-  const dbDir = path.dirname(config.database.path);
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-  }
+  return new Promise((resolve, reject) => {
+    const dbDir = path.dirname(config.database.path);
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
 
-  db = new Database(config.database.path, {
-    verbose: (msg) => logger.debug(msg)
+    db = new sqlite3.Database(config.database.path, (err) => {
+      if (err) {
+        logger.error('Failed to open database:', err);
+        reject(err);
+        return;
+      }
+
+      db.serialize(() => {
+        db.exec('PRAGMA foreign_keys = ON');
+        db.exec(createTables, (err) => {
+          if (err) {
+            logger.error('Failed to create tables:', err);
+            reject(err);
+            return;
+          }
+          logger.info('Database initialized successfully');
+          resolve(db);
+        });
+      });
+    });
   });
-
-  db.pragma('journal_mode = WAL');
-  db.pragma('foreign_keys = ON');
-
-  db.exec(createTables);
-  
-  logger.info('Database initialized successfully');
-  return db;
 }
 
 function getDb() {
   if (!db) {
-    return initDatabase();
+    throw new Error('Database not initialized. Call initDatabase() first.');
   }
   return db;
 }
 
 function closeDatabase() {
-  if (db) {
-    db.close();
-    logger.info('Database closed');
-  }
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.close((err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        logger.info('Database closed');
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
 }
 
-function runInTransaction(callback) {
-  const db = getDb();
-  const result = db.transaction(callback)();
-  return result;
+function run(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function(err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve({ lastID: this.lastID, changes: this.changes });
+    });
+  });
+}
+
+function get(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(row);
+    });
+  });
+}
+
+function all(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(rows);
+    });
+  });
+}
+
+async function runInTransaction(callback) {
+  await run('BEGIN TRANSACTION');
+  try {
+    const result = await callback();
+    await run('COMMIT');
+    return result;
+  } catch (err) {
+    await run('ROLLBACK');
+    throw err;
+  }
 }
 
 module.exports = {
   initDatabase,
   getDb,
   closeDatabase,
+  run,
+  get,
+  all,
   runInTransaction
 };
