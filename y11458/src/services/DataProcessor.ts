@@ -10,6 +10,15 @@ import {
   ReconciliationResult
 } from '../types';
 
+export interface ResolveDirtyRecordRequest {
+  dirtyId: string;
+  resolverId: string;
+  resolverName: string;
+  remark: string;
+  correctedValue?: string;
+  reReconcile?: boolean;
+}
+
 export class DataProcessor {
   private db: any;
 
@@ -23,6 +32,8 @@ export class DataProcessor {
     dirtyRecords.push(...await this.detectLeaderRefundDirtyRecords());
     dirtyRecords.push(...await this.detectWarehouseReviewDirtyRecords());
     dirtyRecords.push(...await this.detectRefundFlowDirtyRecords());
+    dirtyRecords.push(...await this.detectQuantityConflictRecords());
+    dirtyRecords.push(...await this.detectOrphanRecords());
 
     await this.saveDirtyRecords(dirtyRecords);
     return dirtyRecords;
@@ -33,39 +44,68 @@ export class DataProcessor {
     const leaderRefunds = await this.db.all('SELECT * FROM leader_refund');
 
     for (const refund of leaderRefunds) {
-      if (!refund.leader_id) {
-        records.push({
-          id: uuidv4(),
-          sourceType: 'LEADER_REFUND',
-          sourceId: refund.id,
-          orderNo: refund.order_no,
-          dirtyType: DirtyRecordType.MISSING_FIELD,
-          fieldName: 'leader_id',
-          expectedValue: '非空',
-          actualValue: 'null',
-          suggestion: '请补充团长ID',
-          rawData: refund,
-          isResolved: false,
-          createTime: moment().toISOString()
-        });
+      const requiredFields = ['leader_id', 'leader_name', 'city', 'sku_id', 'sku_name', 'refund_quantity', 'refund_amount', 'reason', 'submit_time'];
+      for (const field of requiredFields) {
+        if (!refund[field] && refund[field] !== 0) {
+          records.push({
+            id: uuidv4(),
+            sourceType: 'LEADER_REFUND',
+            sourceId: refund.id,
+            orderNo: refund.order_no,
+            dirtyType: DirtyRecordType.MISSING_FIELD,
+            fieldName: field,
+            expectedValue: '非空',
+            actualValue: refund[field] === null ? 'null' : String(refund[field] || ''),
+            suggestion: `请补充${field}字段`,
+            rawData: refund,
+            isResolved: false,
+            createTime: moment().toISOString()
+          });
+        }
       }
 
-      const submitTime = moment(refund.submit_time);
-      if (submitTime.hour() >= 23 || submitTime.hour() < 1) {
-        records.push({
-          id: uuidv4(),
-          sourceType: 'LEADER_REFUND',
-          sourceId: refund.id,
-          orderNo: refund.order_no,
-          dirtyType: DirtyRecordType.CROSS_DAY,
-          fieldName: 'submit_time',
-          expectedValue: '正常工作时间',
-          actualValue: refund.submit_time,
-          suggestion: '建议核实是否为跨日提交',
-          rawData: refund,
-          isResolved: false,
-          createTime: moment().toISOString()
-        });
+      if (refund.submit_time) {
+        const submitTime = moment(refund.submit_time);
+        const order = await this.db.get('SELECT create_time FROM after_sales_order WHERE order_no = ?', [refund.order_no]);
+        
+        if (order) {
+          const orderCreateTime = moment(order.create_time);
+          const daysDiff = Math.abs(submitTime.diff(orderCreateTime, 'days'));
+          
+          if (daysDiff > 1) {
+            records.push({
+              id: uuidv4(),
+              sourceType: 'LEADER_REFUND',
+              sourceId: refund.id,
+              orderNo: refund.order_no,
+              dirtyType: DirtyRecordType.CROSS_DAY,
+              fieldName: 'submit_time',
+              expectedValue: `订单创建后1天内（${orderCreateTime.format('YYYY-MM-DD')}）`,
+              actualValue: submitTime.format('YYYY-MM-DD HH:mm:ss'),
+              suggestion: `退款提交时间跨日${daysDiff}天，建议核实`,
+              rawData: refund,
+              isResolved: false,
+              createTime: moment().toISOString()
+            });
+          }
+        }
+
+        if (submitTime.hour() >= 23 || submitTime.hour() < 6) {
+          records.push({
+            id: uuidv4(),
+            sourceType: 'LEADER_REFUND',
+            sourceId: refund.id,
+            orderNo: refund.order_no,
+            dirtyType: DirtyRecordType.CROSS_DAY,
+            fieldName: 'submit_time',
+            expectedValue: '正常工作时间(06:00-23:00)',
+            actualValue: submitTime.format('HH:mm:ss'),
+            suggestion: '深夜提交，建议核实是否异常',
+            rawData: refund,
+            isResolved: false,
+            createTime: moment().toISOString()
+          });
+        }
       }
     }
 
@@ -77,7 +117,7 @@ export class DataProcessor {
     const reviews = await this.db.all('SELECT * FROM warehouse_review');
 
     for (const review of reviews) {
-      if (review.sku_name.includes('(新)') || review.sku_name.includes('旧')) {
+      if (review.sku_name && (review.sku_name.includes('(新)') || review.sku_name.includes('旧') || review.sku_name.includes('改名'))) {
         records.push({
           id: uuidv4(),
           sourceType: 'WAREHOUSE_REVIEW',
@@ -93,6 +133,33 @@ export class DataProcessor {
           createTime: moment().toISOString()
         });
       }
+
+      if (review.review_time) {
+        const reviewTime = moment(review.review_time);
+        const refund = await this.db.get('SELECT submit_time FROM leader_refund WHERE order_no = ?', [review.order_no]);
+        
+        if (refund && refund.submit_time) {
+          const refundSubmitTime = moment(refund.submit_time);
+          const hoursDiff = reviewTime.diff(refundSubmitTime, 'hours');
+          
+          if (hoursDiff > 48 || hoursDiff < 0) {
+            records.push({
+              id: uuidv4(),
+              sourceType: 'WAREHOUSE_REVIEW',
+              sourceId: review.id,
+              orderNo: review.order_no,
+              dirtyType: DirtyRecordType.CROSS_DAY,
+              fieldName: 'review_time',
+              expectedValue: '退款提交后48小时内',
+              actualValue: `${hoursDiff > 0 ? hoursDiff : '提前' + Math.abs(hoursDiff)}小时`,
+              suggestion: hoursDiff > 48 ? '复核超时，建议核实' : '复核时间早于退款提交时间，数据异常',
+              rawData: review,
+              isResolved: false,
+              createTime: moment().toISOString()
+            });
+          }
+        }
+      }
     }
 
     return records;
@@ -107,6 +174,7 @@ export class DataProcessor {
     for (const flow of flows) {
       const warehouseAmount = reviewMap.get(flow.order_no) as number | null | undefined;
       const refundAmount = flow.refund_amount as number | null;
+      
       if (warehouseAmount !== undefined && warehouseAmount !== null && refundAmount !== null && 
           Math.abs(refundAmount - warehouseAmount) > 0.01) {
         records.push({
@@ -117,8 +185,8 @@ export class DataProcessor {
           dirtyType: DirtyRecordType.AMOUNT_CONFLICT,
           fieldName: 'refund_amount',
           expectedValue: String(warehouseAmount),
-          actualValue: String(flow.refund_amount),
-          suggestion: `退款金额${flow.refund_amount}与仓库复核金额${warehouseAmount}不一致`,
+          actualValue: String(refundAmount),
+          suggestion: `退款金额${refundAmount}与仓库复核金额${warehouseAmount}不一致，差异${(refundAmount - warehouseAmount).toFixed(2)}元`,
           rawData: flow,
           isResolved: false,
           createTime: moment().toISOString()
@@ -129,40 +197,222 @@ export class DataProcessor {
     return records;
   }
 
+  private async detectQuantityConflictRecords(): Promise<DirtyRecord[]> {
+    const records: DirtyRecord[] = [];
+    
+    const leaderRefunds = await this.db.all('SELECT order_no, id, refund_quantity FROM leader_refund');
+    const reviews = await this.db.all('SELECT order_no, id, actual_quantity FROM warehouse_review');
+    
+    const reviewQuantityMap = new Map<string, { quantity: number | null; id: string }>();
+    for (const r of reviews as any[]) {
+      reviewQuantityMap.set(r.order_no, { quantity: r.actual_quantity, id: r.id });
+    }
+
+    for (const refund of leaderRefunds as any[]) {
+      const reviewInfo = reviewQuantityMap.get(refund.order_no);
+      
+      if (reviewInfo && reviewInfo.quantity !== null && refund.refund_quantity !== null) {
+        if (reviewInfo.quantity !== refund.refund_quantity) {
+          records.push({
+            id: uuidv4(),
+            sourceType: 'WAREHOUSE_REVIEW',
+            sourceId: reviewInfo.id,
+            orderNo: refund.order_no,
+            dirtyType: DirtyRecordType.QUANTITY_CONFLICT,
+            fieldName: 'actual_quantity',
+            expectedValue: String(refund.refund_quantity),
+            actualValue: String(reviewInfo.quantity),
+            suggestion: `团长申请${refund.refund_quantity}件，仓库复核${reviewInfo.quantity}件，数量不一致`,
+            rawData: { leaderRefund: refund, warehouseReview: reviewInfo },
+            isResolved: false,
+            createTime: moment().toISOString()
+          });
+        }
+      }
+    }
+
+    return records;
+  }
+
+  private async detectOrphanRecords(): Promise<DirtyRecord[]> {
+    const records: DirtyRecord[] = [];
+    
+    const allOrderNos = new Set(
+      (await this.db.all('SELECT order_no FROM after_sales_order')).map((o: any) => o.order_no)
+    );
+
+    const sourceTables = [
+      { name: 'leader_refund', type: 'LEADER_REFUND' as const },
+      { name: 'warehouse_review', type: 'WAREHOUSE_REVIEW' as const },
+      { name: 'user_remark', type: 'USER_REMARK' as const },
+      { name: 'refund_flow', type: 'REFUND_FLOW' as const }
+    ];
+
+    for (const table of sourceTables) {
+      const items = await this.db.all(`SELECT id, order_no FROM ${table.name}`);
+      for (const item of items) {
+        if (!allOrderNos.has(item.order_no)) {
+          records.push({
+            id: uuidv4(),
+            sourceType: table.type,
+            sourceId: item.id,
+            orderNo: item.order_no,
+            dirtyType: DirtyRecordType.MISSING_FIELD,
+            fieldName: 'order_no',
+            expectedValue: '存在对应的售后单',
+            actualValue: item.order_no,
+            suggestion: `${table.type}记录无对应售后单，建议关联或删除`,
+            rawData: item,
+            isResolved: false,
+            createTime: moment().toISOString()
+          });
+        }
+      }
+    }
+
+    return records;
+  }
+
   private async saveDirtyRecords(records: DirtyRecord[]): Promise<void> {
     for (const record of records) {
-      await this.db.run(
-        `INSERT OR REPLACE INTO dirty_record 
-         (id, source_type, source_id, order_no, dirty_type, field_name, expected_value, actual_value, 
-          suggestion, raw_data, is_resolved, resolved_by, resolved_time, resolve_remark, create_time)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          record.id,
-          record.sourceType,
-          record.sourceId,
-          record.orderNo,
-          record.dirtyType,
-          record.fieldName,
-          record.expectedValue,
-          record.actualValue,
-          record.suggestion,
-          JSON.stringify(record.rawData),
-          record.isResolved ? 1 : 0,
-          record.resolvedBy,
-          record.resolvedTime,
-          record.resolveRemark,
-          record.createTime
-        ]
+      const existing = await this.db.get(
+        `SELECT id FROM dirty_record WHERE source_id = ? AND dirty_type = ? AND is_resolved = 0`,
+        [record.sourceId, record.dirtyType]
       );
+      
+      if (!existing) {
+        await this.db.run(
+          `INSERT INTO dirty_record 
+           (id, source_type, source_id, order_no, dirty_type, field_name, expected_value, actual_value, 
+            suggestion, raw_data, is_resolved, resolved_by, resolved_time, resolve_remark, create_time)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            record.id,
+            record.sourceType,
+            record.sourceId,
+            record.orderNo,
+            record.dirtyType,
+            record.fieldName,
+            record.expectedValue,
+            record.actualValue,
+            record.suggestion,
+            JSON.stringify(record.rawData),
+            record.isResolved ? 1 : 0,
+            record.resolvedBy,
+            record.resolvedTime,
+            record.resolveRemark,
+            record.createTime
+          ]
+        );
+      }
     }
   }
 
-  async resolveDirtyRecord(dirtyId: string, resolverId: string, resolverName: string, remark: string): Promise<boolean> {
-    const result = await this.db.run(
+  async resolveDirtyRecord(request: ResolveDirtyRecordRequest): Promise<{
+    success: boolean;
+    message: string;
+    reReconciled?: boolean;
+    reconciliationResult?: ReconciliationResult | null;
+  }> {
+    const { dirtyId, resolverId, resolverName, remark, correctedValue, reReconcile = true } = request;
+
+    const dirtyRecord = await this.db.get(
+      `SELECT * FROM dirty_record WHERE id = ?`,
+      [dirtyId]
+    );
+
+    if (!dirtyRecord) {
+      return { success: false, message: '脏记录不存在' };
+    }
+
+    if (correctedValue && dirtyRecord.field_name) {
+      const updateSuccess = await this.updateSourceRecord(
+        dirtyRecord.source_type,
+        dirtyRecord.source_id,
+        dirtyRecord.field_name,
+        correctedValue
+      );
+      
+      if (!updateSuccess) {
+        return { success: false, message: '修正原始记录失败' };
+      }
+    }
+
+    await this.db.run(
       `UPDATE dirty_record SET is_resolved = 1, resolved_by = ?, resolved_time = ?, resolve_remark = ? WHERE id = ?`,
       [resolverName, moment().toISOString(), remark, dirtyId]
     );
-    return result.changes > 0;
+
+    await this.db.run(
+      `INSERT INTO status_log 
+       (id, order_no, from_status, to_status, operator_id, operator_name, operator_role, reason, operate_time, extra)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        uuidv4(),
+        dirtyRecord.order_no,
+        null,
+        null,
+        resolverId,
+        resolverName,
+        OperatorRole.CITY_MANAGER,
+        `解决脏记录: ${dirtyRecord.dirty_type} - ${remark}`,
+        moment().toISOString(),
+        JSON.stringify({ dirtyId, dirtyType: dirtyRecord.dirty_type, correctedValue })
+      ]
+    );
+
+    let reconciliationResult: ReconciliationResult | null = null;
+    if (reReconcile && dirtyRecord.order_no) {
+      reconciliationResult = await this.reconcileOrder(dirtyRecord.order_no);
+    }
+
+    return {
+      success: true,
+      message: '脏记录已解决',
+      reReconciled: reReconcile,
+      reconciliationResult
+    };
+  }
+
+  private async updateSourceRecord(
+    sourceType: string,
+    sourceId: string,
+    fieldName: string,
+    correctedValue: string
+  ): Promise<boolean> {
+    let tableName = '';
+    switch (sourceType) {
+      case 'LEADER_REFUND':
+        tableName = 'leader_refund';
+        break;
+      case 'WAREHOUSE_REVIEW':
+        tableName = 'warehouse_review';
+        break;
+      case 'USER_REMARK':
+        tableName = 'user_remark';
+        break;
+      case 'REFUND_FLOW':
+        tableName = 'refund_flow';
+        break;
+      default:
+        return false;
+    }
+
+    let finalValue: any = correctedValue;
+    if (fieldName.includes('quantity') || fieldName.includes('amount')) {
+      finalValue = parseFloat(correctedValue);
+    }
+
+    try {
+      const result = await this.db.run(
+        `UPDATE ${tableName} SET ${fieldName} = ? WHERE id = ?`,
+        [finalValue, sourceId]
+      );
+      return result.changes > 0;
+    } catch (error) {
+      console.error('更新原始记录失败:', error);
+      return false;
+    }
   }
 
   async reconcileAll(): Promise<ReconciliationResult[]> {
@@ -203,7 +453,7 @@ export class DataProcessor {
     const warehouseAmount = warehouseReview?.actual_amount || 0;
     const totalRefundAmount = refundFlows
       .filter((f: any) => f.refund_status === 'SUCCESS')
-      .reduce((sum: number, f: any) => sum + f.refund_amount, 0);
+      .reduce((sum: number, f: any) => sum + (f.refund_amount || 0), 0);
 
     const difference = totalRefundAmount - warehouseAmount;
     const isMatched = Math.abs(difference) < 0.01;
@@ -228,8 +478,15 @@ export class DataProcessor {
       remark = '对账一致';
     }
 
+    const existingResult = await this.db.get(
+      'SELECT id FROM reconciliation_result WHERE order_no = ?',
+      [orderNo]
+    );
+
+    const resultId = existingResult?.id || uuidv4();
+
     const result: ReconciliationResult = {
-      id: uuidv4(),
+      id: resultId,
       orderNo,
       issueType,
       leaderAmount,
@@ -257,7 +514,7 @@ export class DataProcessor {
         result.isMatched ? 1 : 0,
         result.reconciliationRemark,
         result.reconciledBy,
-        result.reconciledTime,
+        moment().toISOString(),
         result.createTime
       ]
     );
@@ -288,28 +545,30 @@ export class DataProcessor {
       return false;
     }
 
-    await this.db.run(
-      `UPDATE after_sales_order SET status = ?, update_time = ? WHERE order_no = ?`,
-      [newStatus, moment().toISOString(), orderNo]
-    );
+    if (order.status !== newStatus) {
+      await this.db.run(
+        `UPDATE after_sales_order SET status = ?, update_time = ? WHERE order_no = ?`,
+        [newStatus, moment().toISOString(), orderNo]
+      );
 
-    await this.db.run(
-      `INSERT INTO status_log 
-       (id, order_no, from_status, to_status, operator_id, operator_name, operator_role, reason, operate_time, extra)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        uuidv4(),
-        orderNo,
-        order.status,
-        newStatus,
-        operator.operatorId,
-        operator.operatorName,
-        operator.operatorRole,
-        operator.reason,
-        moment().toISOString(),
-        operator.extra ? JSON.stringify(operator.extra) : null
-      ]
-    );
+      await this.db.run(
+        `INSERT INTO status_log 
+         (id, order_no, from_status, to_status, operator_id, operator_name, operator_role, reason, operate_time, extra)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          uuidv4(),
+          orderNo,
+          order.status,
+          newStatus,
+          operator.operatorId,
+          operator.operatorName,
+          operator.operatorRole,
+          operator.reason,
+          moment().toISOString(),
+          operator.extra ? JSON.stringify(operator.extra) : null
+        ]
+      );
+    }
 
     return true;
   }

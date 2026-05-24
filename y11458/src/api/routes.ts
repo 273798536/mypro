@@ -144,9 +144,16 @@ export function createRoutes(dbPath: string, exportDir: string): Router {
   router.post('/dirty-records/:dirtyId/resolve', async (req: Request, res: Response) => {
     try {
       const { dirtyId } = req.params;
-      const { resolverId, resolverName, remark } = req.body;
-      const success = await dataProcessor.resolveDirtyRecord(dirtyId, resolverId, resolverName, remark);
-      res.json(createResponse(success, null, success ? '脏数据已解决' : '解决失败'));
+      const { resolverId, resolverName, remark, correctedValue, reReconcile } = req.body;
+      const result = await dataProcessor.resolveDirtyRecord({
+        dirtyId,
+        resolverId,
+        resolverName,
+        remark,
+        correctedValue,
+        reReconcile
+      });
+      res.json(createResponse(result.success, result, result.message));
     } catch (error: any) {
       res.status(500).json(createResponse(false, null, error.message));
     }

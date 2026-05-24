@@ -191,19 +191,36 @@ function generateSeedData(): SeedData {
 }
 
 function generateDirtyData(): {
+  dirtyOrders: any[];
   dirtyLeaderRefunds: any[];
   dirtyWarehouseReviews: any[];
   dirtyRefundFlows: any[];
 } {
   const result = {
+    dirtyOrders: [] as any[],
     dirtyLeaderRefunds: [] as any[],
     dirtyWarehouseReviews: [] as any[],
     dirtyRefundFlows: [] as any[]
   };
 
+  const baseTime = moment();
+
+  const order21 = generateOrderNo(21);
+  result.dirtyOrders.push({
+    order_no: order21,
+    city: '北京',
+    leader_id: 'L0021',
+    leader_name: '团长21',
+    sku_id: 'SKU001',
+    sku_name: '新鲜草莓',
+    status: AfterSalesStatus.LEADER_SUBMITTED,
+    current_handler: null,
+    create_time: baseTime.toISOString(),
+    update_time: baseTime.toISOString()
+  });
   result.dirtyLeaderRefunds.push({
     id: uuidv4(),
-    order_no: generateOrderNo(21),
+    order_no: order21,
     leader_id: null,
     leader_name: '团长21',
     city: '北京',
@@ -212,14 +229,27 @@ function generateDirtyData(): {
     refund_quantity: 2,
     refund_amount: 100,
     reason: '商品坏了',
-    submit_time: moment().toISOString(),
+    submit_time: baseTime.add(1, 'hour').toISOString(),
     images: null,
     raw_data: JSON.stringify({ missingField: 'leader_id' })
   });
 
+  const order22 = generateOrderNo(22);
+  result.dirtyOrders.push({
+    order_no: order22,
+    city: '上海',
+    leader_id: 'L0022',
+    leader_name: '团长22',
+    sku_id: 'SKU002',
+    sku_name: '有机牛奶',
+    status: AfterSalesStatus.LEADER_SUBMITTED,
+    current_handler: null,
+    create_time: baseTime.subtract(3, 'days').toISOString(),
+    update_time: baseTime.subtract(3, 'days').toISOString()
+  });
   result.dirtyLeaderRefunds.push({
     id: uuidv4(),
-    order_no: generateOrderNo(22),
+    order_no: order22,
     leader_id: 'L0099',
     leader_name: '团长22',
     city: '上海',
@@ -228,39 +258,156 @@ function generateDirtyData(): {
     refund_quantity: 1,
     refund_amount: 60,
     reason: '少发了',
-    submit_time: moment().subtract(2, 'days').add(25, 'hours').toISOString(),
+    submit_time: baseTime.subtract(3, 'days').add(26, 'hours').toISOString(),
     images: null,
     raw_data: JSON.stringify({ crossDay: true })
   });
 
+  const order23 = generateOrderNo(23);
+  result.dirtyOrders.push({
+    order_no: order23,
+    city: '广州',
+    leader_id: 'L0023',
+    leader_name: '团长23',
+    sku_id: 'SKU003',
+    sku_name: '进口牛肉',
+    status: AfterSalesStatus.WAREHOUSE_APPROVED,
+    current_handler: null,
+    create_time: baseTime.subtract(1, 'day').toISOString(),
+    update_time: baseTime.subtract(1, 'day').toISOString()
+  });
+  result.dirtyLeaderRefunds.push({
+    id: uuidv4(),
+    order_no: order23,
+    leader_id: 'L0023',
+    leader_name: '团长23',
+    city: '广州',
+    sku_id: 'SKU003',
+    sku_name: '进口牛肉',
+    refund_quantity: 3,
+    refund_amount: 200,
+    reason: '质量问题',
+    submit_time: baseTime.subtract(1, 'day').add(1, 'hour').toISOString(),
+    images: null,
+    raw_data: null
+  });
   result.dirtyWarehouseReviews.push({
     id: uuidv4(),
-    order_no: generateOrderNo(23),
+    order_no: order23,
     reviewer_id: 'W001',
     reviewer_name: '仓管员1',
     sku_id: 'SKU003',
     sku_name: '进口牛肉(新)',
     actual_quantity: 3,
     actual_amount: 200,
-    is_damaged: 0,
+    is_damaged: 1,
     is_missing: 0,
     review_result: 'APPROVED',
     review_remark: null,
-    review_time: moment().toISOString(),
+    review_time: baseTime.subtract(1, 'day').add(3, 'hours').toISOString(),
     raw_data: JSON.stringify({ nameChanged: '进口牛肉' })
   });
 
+  const order24 = generateOrderNo(24);
+  result.dirtyOrders.push({
+    order_no: order24,
+    city: '深圳',
+    leader_id: 'L0024',
+    leader_name: '团长24',
+    sku_id: 'SKU004',
+    sku_name: '精品水果礼盒',
+    status: AfterSalesStatus.REFUND_SUCCESS,
+    current_handler: null,
+    create_time: baseTime.subtract(2, 'days').toISOString(),
+    update_time: baseTime.subtract(2, 'days').toISOString()
+  });
+  result.dirtyLeaderRefunds.push({
+    id: uuidv4(),
+    order_no: order24,
+    leader_id: 'L0024',
+    leader_name: '团长24',
+    city: '深圳',
+    sku_id: 'SKU004',
+    sku_name: '精品水果礼盒',
+    refund_quantity: 5,
+    refund_amount: 150,
+    reason: '包装破损',
+    submit_time: baseTime.subtract(2, 'days').add(1, 'hour').toISOString(),
+    images: null,
+    raw_data: null
+  });
+  result.dirtyWarehouseReviews.push({
+    id: uuidv4(),
+    order_no: order24,
+    reviewer_id: 'W002',
+    reviewer_name: '仓管员2',
+    sku_id: 'SKU004',
+    sku_name: '精品水果礼盒',
+    actual_quantity: 5,
+    actual_amount: 120,
+    is_damaged: 1,
+    is_missing: 0,
+    review_result: 'APPROVED',
+    review_remark: '核实包装破损',
+    review_time: baseTime.subtract(2, 'days').add(3, 'hours').toISOString(),
+    raw_data: null
+  });
   result.dirtyRefundFlows.push({
     id: uuidv4(),
-    order_no: generateOrderNo(24),
+    order_no: order24,
     flow_no: `RF${moment().format('YYYYMMDDHHmmss')}99`,
     refund_amount: 150,
     refund_method: '微信支付',
     refund_status: 'SUCCESS',
     operator_id: 'F001',
     operator_name: '财务1',
-    operate_time: moment().toISOString(),
+    operate_time: baseTime.subtract(2, 'days').add(5, 'hours').toISOString(),
     raw_data: JSON.stringify({ expectedAmount: 120 })
+  });
+
+  const order25 = generateOrderNo(25);
+  result.dirtyOrders.push({
+    order_no: order25,
+    city: '杭州',
+    leader_id: 'L0025',
+    leader_name: '团长25',
+    sku_id: 'SKU005',
+    sku_name: '土鸡蛋',
+    status: AfterSalesStatus.WAREHOUSE_APPROVED,
+    current_handler: null,
+    create_time: baseTime.subtract(4, 'days').toISOString(),
+    update_time: baseTime.subtract(4, 'days').toISOString()
+  });
+  result.dirtyLeaderRefunds.push({
+    id: uuidv4(),
+    order_no: order25,
+    leader_id: 'L0025',
+    leader_name: '团长25',
+    city: '杭州',
+    sku_id: 'SKU005',
+    sku_name: '土鸡蛋',
+    refund_quantity: 10,
+    refund_amount: 50,
+    reason: '少发了',
+    submit_time: baseTime.subtract(4, 'days').add(1, 'hour').toISOString(),
+    images: null,
+    raw_data: null
+  });
+  result.dirtyWarehouseReviews.push({
+    id: uuidv4(),
+    order_no: order25,
+    reviewer_id: 'W003',
+    reviewer_name: '仓管员3',
+    sku_id: 'SKU005',
+    sku_name: '土鸡蛋',
+    actual_quantity: 8,
+    actual_amount: 40,
+    is_damaged: 0,
+    is_missing: 1,
+    review_result: 'APPROVED',
+    review_remark: '确实少发2盒',
+    review_time: baseTime.subtract(4, 'days').add(3, 'hours').toISOString(),
+    raw_data: JSON.stringify({ quantityConflict: true })
   });
 
   return result;
@@ -325,7 +472,17 @@ async function insertData(data: SeedData, dirtyData: any): Promise<void> {
   }
   console.log(`插入 ${data.statusLogs.length} 条状态日志`);
 
-  console.log('\n开始插入脏数据...');
+  console.log('\n开始插入脏数据（带对应售后单）...');
+  
+  for (const order of dirtyData.dirtyOrders) {
+    await db.run(
+      `INSERT INTO after_sales_order (order_no, city, leader_id, leader_name, sku_id, sku_name, status, current_handler, create_time, update_time)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [order.order_no, order.city, order.leader_id, order.leader_name, order.sku_id, order.sku_name, order.status, order.current_handler, order.create_time, order.update_time]
+    );
+  }
+  console.log(`插入 ${dirtyData.dirtyOrders.length} 条脏数据对应售后单`);
+
   for (const refund of dirtyData.dirtyLeaderRefunds) {
     await db.run(
       `INSERT INTO leader_refund (id, order_no, leader_id, leader_name, city, sku_id, sku_name, refund_quantity, refund_amount, reason, submit_time, images, raw_data)

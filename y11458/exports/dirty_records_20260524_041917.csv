@@ -1,4 +1,0 @@
-售后单号,来源,脏数据类型,字段名,期望值,实际值,处理建议,是否已解决,解决人,解决说明,创建时间
-AS20260524000008,REFUND_FLOW,AMOUNT_CONFLICT,refund_amount,118,108,退款金额108与仓库复核金额118不一致,否,,,2026-05-23T20:19:17.849Z
-AS20260524000023,WAREHOUSE_REVIEW,NAME_CHANGED,sku_name,标准商品名称,进口牛肉(新),商品名称可能已变更，建议核实,否,,,2026-05-23T20:19:17.848Z
-AS20260524000021,LEADER_REFUND,MISSING_FIELD,leader_id,非空,null,请补充团长ID,否,,,2026-05-23T20:19:17.846Z

@@ -154,7 +154,7 @@ curl -X GET http://localhost:3000/api/dirty-records
 curl -X GET "http://localhost:3000/api/dirty-records?isResolved=false"
 ```
 
-### 3. 解决脏记录
+### 3. 解决脏记录（仅标记）
 ```bash
 # 先用列表接口获取 dirtyId，替换下面的 {dirtyId}
 curl -X POST http://localhost:3000/api/dirty-records/{dirtyId}/resolve \
@@ -162,9 +162,31 @@ curl -X POST http://localhost:3000/api/dirty-records/{dirtyId}/resolve \
   -d '{
     "resolverId": "C001",
     "resolverName": "城市负责人-赵经理",
-    "remark": "已核实，补充团长ID"
+    "remark": "已核实",
+    "reReconcile": true
   }'
 ```
+
+### 4. 解决脏记录（修正原始记录 + 重新对账）
+```bash
+# 修正缺字段问题，同时触发重新对账
+curl -X POST http://localhost:3000/api/dirty-records/{dirtyId}/resolve \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resolverId": "C001",
+    "resolverName": "城市负责人-赵经理",
+    "remark": "已补充团长ID",
+    "correctedValue": "L0021",
+    "reReconcile": true
+  }'
+```
+
+### 5. 脏记录类型说明
+- **MISSING_FIELD**: 缺字段 - 用 correctedValue 补充缺失值
+- **CROSS_DAY**: 跨日 - 核实后标记解决
+- **NAME_CHANGED**: 改名 - 核实商品名称变更
+- **AMOUNT_CONFLICT**: 金额冲突 - 用 correctedValue 修正金额
+- **QUANTITY_CONFLICT**: 数量冲突 - 用 correctedValue 修正数量
 
 ## 五、对账功能
 

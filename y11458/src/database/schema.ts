@@ -71,16 +71,15 @@ CREATE TABLE IF NOT EXISTS refund_flow (
 
 CREATE TABLE IF NOT EXISTS status_log (
   id TEXT PRIMARY KEY,
-  order_no TEXT NOT NULL,
+  order_no TEXT,
   from_status TEXT,
-  to_status TEXT NOT NULL,
-  operator_id TEXT NOT NULL,
-  operator_name TEXT NOT NULL,
-  operator_role TEXT NOT NULL,
-  reason TEXT NOT NULL,
-  operate_time TEXT NOT NULL,
-  extra TEXT,
-  FOREIGN KEY (order_no) REFERENCES after_sales_order(order_no)
+  to_status TEXT,
+  operator_id TEXT,
+  operator_name TEXT,
+  operator_role TEXT,
+  reason TEXT,
+  operate_time TEXT,
+  extra TEXT
 );
 
 CREATE TABLE IF NOT EXISTS dirty_record (
