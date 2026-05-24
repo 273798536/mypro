@@ -1,0 +1,2 @@
+"apply_no","batch_no","supplier_code","supplier_name","sku_code","sku_name","apply_quantity","supplier_confirm_quantity","remaining_quantity","apply_amount","status","process_reason","importRecord.source_file","importRecord.raw_row_number","created_at"
+"RA000001","BATCH001","SUP003","供应商9","SKU002","商品20",70,70,0,6238.72,"fully_confirmed",,"1779599391664_éä¾ç³è¯·.xlsx",1,
