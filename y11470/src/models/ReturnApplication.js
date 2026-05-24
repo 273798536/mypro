@@ -54,6 +54,10 @@ class ReturnApplication {
         sql += ` AND status = ?`;
         params.push(options.status);
       }
+      if (options.exception_reserved !== undefined) {
+        sql += ` AND exception_reserved = ?`;
+        params.push(options.exception_reserved ? 1 : 0);
+      }
       
       sql += ` ORDER BY created_at DESC`;
       if (options.limit) {

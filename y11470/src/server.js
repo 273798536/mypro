@@ -21,6 +21,14 @@ app.use((req, res, next) => {
 
 app.use('/api', routes);
 
+app.use('/api', (req, res) => {
+  console.log('[404]', req.method, req.url);
+  res.status(404).json({
+    success: false,
+    error: '接口不存在'
+  });
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({

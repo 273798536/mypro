@@ -3,6 +3,7 @@ const ReturnBatch = require('../models/ReturnBatch');
 const StatusHistory = require('../models/StatusHistory');
 const StateMachineService = require('../services/StateMachineService');
 const DataConsistencyService = require('../services/DataConsistencyService');
+const FailedRecord = require('../models/FailedRecord');
 const { getUserId } = require('../middleware/auth');
 
 const batchSchema = Joi.object({
@@ -19,9 +20,18 @@ class BatchController {
     try {
       const { error, value } = batchSchema.validate(req.body);
       if (error) {
+        const errorMessage = error.details.map(d => d.message).join('; ');
+        
+        await FailedRecord.create({
+          record_type: 'CREATE_BATCH_VALIDATION',
+          record_data: req.body,
+          error_message: errorMessage,
+          source: 'BatchController.create'
+        });
+
         return res.status(400).json({
           success: false,
-          error: error.details.map(d => d.message).join('; ')
+          error: errorMessage
         });
       }
 

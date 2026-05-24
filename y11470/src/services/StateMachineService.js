@@ -102,16 +102,44 @@ class StateMachineService {
             batch_id: existingBatch.id,
             is_reentry: true,
             reentry_type: 'IGNORE',
-            message: '批次已存在，已忽略重复导入'
+            message: '批次已存在，已忽略重复导入',
+            previous_data: {
+              quantity: existingBatch.quantity,
+              unit_price: existingBatch.unit_price,
+              amount: existingBatch.amount
+            }
           };
         }
+
+        const newAmount = batchData.quantity * batchData.unit_price;
+        const previousData = {
+          quantity: existingBatch.quantity,
+          unit_price: existingBatch.unit_price,
+          amount: existingBatch.amount
+        };
+
+        await ReturnBatch.update(existingBatch.id, {
+          product_code: batchData.product_code,
+          product_name: batchData.product_name,
+          quantity: batchData.quantity,
+          unit_price: batchData.unit_price,
+          amount: newAmount
+        });
+
+        await this._updateApplicationTotals(existingBatch.application_id);
 
         return {
           success: true,
           batch_id: existingBatch.id,
           is_reentry: true,
           reentry_type: 'OVERWRITE',
-          message: '批次已存在，将覆盖原有数据'
+          message: '批次已存在，已覆盖原有数据',
+          previous_data: previousData,
+          new_data: {
+            quantity: batchData.quantity,
+            unit_price: batchData.unit_price,
+            amount: newAmount
+          }
         };
       }
 

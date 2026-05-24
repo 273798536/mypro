@@ -9,7 +9,7 @@ const ExportController = require('../controllers/ExportController');
 const FailedRecordController = require('../controllers/FailedRecordController');
 const AutoCheckService = require('../services/AutoCheckService');
 
-const { authMiddleware, PERMISSIONS } = require('../middleware/auth');
+const { authMiddleware } = require('../middleware/auth');
 
 router.get('/health', (req, res) => {
   res.json({
@@ -19,43 +19,43 @@ router.get('/health', (req, res) => {
   });
 });
 
-router.post('/applications', authMiddleware(PERMISSIONS.CREATE_APPLICATION), ApplicationController.create);
-router.get('/applications', authMiddleware(PERMISSIONS.VIEW_HISTORY), ApplicationController.getAll);
-router.get('/applications/:id', authMiddleware(PERMISSIONS.VIEW_HISTORY), ApplicationController.getById);
-router.get('/summary/applications', authMiddleware(PERMISSIONS.VIEW_HISTORY), ApplicationController.getSummary);
+router.post('/applications', authMiddleware('CREATE_APPLICATION'), ApplicationController.create);
+router.get('/applications', authMiddleware('VIEW_HISTORY'), ApplicationController.getAll);
+router.get('/applications/:id', authMiddleware('VIEW_HISTORY'), ApplicationController.getById);
+router.get('/summary/applications', authMiddleware('VIEW_HISTORY'), ApplicationController.getSummary);
 
-router.post('/batches', authMiddleware(PERMISSIONS.CREATE_BATCH), BatchController.create);
-router.get('/batches', authMiddleware(PERMISSIONS.VIEW_HISTORY), BatchController.getAll);
-router.get('/batches/:id', authMiddleware(PERMISSIONS.VIEW_HISTORY), BatchController.getById);
-router.get('/summary/batches', authMiddleware(PERMISSIONS.VIEW_HISTORY), BatchController.getSummary);
-router.get('/internal/batches', authMiddleware(PERMISSIONS.VIEW_HISTORY), BatchController.getInternalView);
+router.post('/batches', authMiddleware('CREATE_BATCH'), BatchController.create);
+router.get('/batches', authMiddleware('VIEW_HISTORY'), BatchController.getAll);
+router.get('/batches/:id', authMiddleware('VIEW_HISTORY'), BatchController.getById);
+router.get('/summary/batches', authMiddleware('VIEW_HISTORY'), BatchController.getSummary);
+router.get('/internal/batches', authMiddleware('VIEW_HISTORY'), BatchController.getInternalView);
 
-router.post('/batches/:id/quality-inspection', authMiddleware(PERMISSIONS.QUALITY_INSPECTION), BatchController.qualityInspection);
-router.post('/batches/:id/review', authMiddleware(PERMISSIONS.REVIEW), BatchController.review);
-router.post('/batches/:id/review-revise', authMiddleware(PERMISSIONS.REVIEW_REVISE), BatchController.reviewRevise);
-router.post('/batches/:id/freeze', authMiddleware(PERMISSIONS.FREEZE), BatchController.freeze);
-router.post('/batches/:id/unfreeze', authMiddleware(PERMISSIONS.UNFREEZE), BatchController.unfreeze);
-router.post('/batches/:id/settle', authMiddleware(PERMISSIONS.SETTLE), BatchController.settle);
-router.post('/batches/:id/archive', authMiddleware(PERMISSIONS.ARCHIVE), BatchController.archive);
+router.post('/batches/:id/quality-inspection', authMiddleware('QUALITY_INSPECTION'), BatchController.qualityInspection);
+router.post('/batches/:id/review', authMiddleware('REVIEW'), BatchController.review);
+router.post('/batches/:id/review-revise', authMiddleware('REVIEW_REVISE'), BatchController.reviewRevise);
+router.post('/batches/:id/freeze', authMiddleware('FREEZE'), BatchController.freeze);
+router.post('/batches/:id/unfreeze', authMiddleware('UNFREEZE'), BatchController.unfreeze);
+router.post('/batches/:id/settle', authMiddleware('SETTLE'), BatchController.settle);
+router.post('/batches/:id/archive', authMiddleware('ARCHIVE'), BatchController.archive);
 
-router.post('/attachments', authMiddleware(PERMISSIONS.UPLOAD_ATTACHMENT), AttachmentController.getUploadMiddleware(), AttachmentController.upload);
-router.get('/attachments/batch/:batchId', authMiddleware(PERMISSIONS.VIEW_HISTORY), AttachmentController.getByBatchId);
-router.get('/attachments/application/:applicationId', authMiddleware(PERMISSIONS.VIEW_HISTORY), AttachmentController.getByApplicationId);
+router.post('/attachments', authMiddleware('UPLOAD_ATTACHMENT'), AttachmentController.getUploadMiddleware(), AttachmentController.upload);
+router.get('/attachments/batch/:batchId', authMiddleware('VIEW_HISTORY'), AttachmentController.getByBatchId);
+router.get('/attachments/application/:applicationId', authMiddleware('VIEW_HISTORY'), AttachmentController.getByApplicationId);
 
-router.post('/member-cancel', authMiddleware(PERMISSIONS.MEMBER_CANCEL), ExceptionController.memberCancel);
-router.get('/exceptions', authMiddleware(PERMISSIONS.VIEW_EXCEPTIONS), ExceptionController.getAllReservedExceptions);
-router.get('/exceptions/:applicationId', authMiddleware(PERMISSIONS.VIEW_EXCEPTIONS), ExceptionController.getExceptionDetails);
-router.get('/exceptions/:applicationId/verify', authMiddleware(PERMISSIONS.VIEW_EXCEPTIONS), ExceptionController.verifyIntegrity);
+router.post('/member-cancel', authMiddleware('MEMBER_CANCEL'), ExceptionController.memberCancel);
+router.get('/exceptions', authMiddleware('VIEW_EXCEPTIONS'), ExceptionController.getAllReservedExceptions);
+router.get('/exceptions/:applicationId', authMiddleware('VIEW_EXCEPTIONS'), ExceptionController.getExceptionDetails);
+router.get('/exceptions/:applicationId/verify', authMiddleware('VIEW_EXCEPTIONS'), ExceptionController.verifyIntegrity);
 
-router.get('/export/batches', authMiddleware(PERMISSIONS.EXPORT), ExportController.exportBatches);
-router.get('/export/internal', authMiddleware(PERMISSIONS.EXPORT), ExportController.exportInternalView);
-router.get('/export/summary', authMiddleware(PERMISSIONS.EXPORT), ExportController.exportSummary);
+router.get('/export/batches', authMiddleware('EXPORT'), ExportController.exportBatches);
+router.get('/export/internal', authMiddleware('EXPORT'), ExportController.exportInternalView);
+router.get('/export/summary', authMiddleware('EXPORT'), ExportController.exportSummary);
 
-router.get('/failed-records', authMiddleware(PERMISSIONS.VIEW_FAILED_RECORDS), FailedRecordController.getAll);
-router.get('/failed-records/:id', authMiddleware(PERMISSIONS.VIEW_FAILED_RECORDS), FailedRecordController.getById);
-router.post('/failed-records/:id/resolve', authMiddleware(PERMISSIONS.VIEW_FAILED_RECORDS), FailedRecordController.markResolved);
+router.get('/failed-records', authMiddleware('VIEW_FAILED_RECORDS'), FailedRecordController.getAll);
+router.get('/failed-records/:id', authMiddleware('VIEW_FAILED_RECORDS'), FailedRecordController.getById);
+router.post('/failed-records/:id/resolve', authMiddleware('VIEW_FAILED_RECORDS'), FailedRecordController.markResolved);
 
-router.get('/auto-check', authMiddleware(PERMISSIONS.VIEW_EXCEPTIONS), async (req, res) => {
+router.get('/auto-check', authMiddleware('AUTO_CHECK'), async (req, res) => {
   try {
     const results = await AutoCheckService.runAllChecks();
     res.json({

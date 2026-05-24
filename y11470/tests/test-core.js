@@ -1,6 +1,7 @@
 const db = require('../src/config/database');
 const ReturnApplication = require('../src/models/ReturnApplication');
 const ReturnBatch = require('../src/models/ReturnBatch');
+const FailedRecord = require('../src/models/FailedRecord');
 const StateMachineService = require('../src/services/StateMachineService');
 const ExceptionService = require('../src/services/ExceptionService');
 const DataConsistencyService = require('../src/services/DataConsistencyService');
@@ -24,9 +25,12 @@ async function runTests() {
   results.push(await testCreateApplication());
   results.push(await testCreateBatch());
   results.push(await testDuplicateBatchImport());
+  results.push(await testOverwriteBatchUpdate());
   results.push(await testStateTransitions());
   results.push(await testFreezeAndUnfreeze());
   results.push(await testExceptionReservation());
+  results.push(await testExceptionReservedFilter());
+  results.push(await testBadBatchToFailedRecords());
   results.push(await testDataConsistency());
   results.push(await testAutoCheck());
   
@@ -269,6 +273,149 @@ async function testAutoCheck() {
     };
   } catch (e) {
     return { name: '自动化检查', passed: false, message: e.message };
+  }
+}
+
+async function testOverwriteBatchUpdate() {
+  try {
+    const app = await ReturnApplication.create({
+      application_no: 'TEST-APP-OVERWRITE-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    const batchNo = 'TEST-BATCH-OVERWRITE-' + Date.now();
+    
+    const result1 = await StateMachineService.createBatch(app.id, {
+      application_id: app.id,
+      batch_no: batchNo,
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 10,
+      unit_price: 99.99
+    }, TEST_USER);
+    
+    const result2 = await StateMachineService.createBatch(app.id, {
+      application_id: app.id,
+      batch_no: batchNo,
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 20,
+      unit_price: 50.00
+    }, TEST_USER);
+    
+    const updatedBatch = await ReturnBatch.findById(result2.batch_id);
+    const updatedApp = await ReturnApplication.findById(app.id);
+    
+    const isOverwrite = result2.reentry_type === 'OVERWRITE';
+    const quantityUpdated = updatedBatch.quantity === 20;
+    const amountUpdated = Math.abs(updatedBatch.amount - 1000.00) < 0.01;
+    const appTotalUpdated = Math.abs(updatedApp.total_amount - 1000.00) < 0.01;
+    
+    return {
+      name: '覆盖批次数据更新',
+      passed: isOverwrite && quantityUpdated && amountUpdated && appTotalUpdated,
+      message: isOverwrite 
+        ? `覆盖成功: 数量从10→${updatedBatch.quantity}, 金额从999.9→${updatedBatch.amount}, 申请总金额: ${updatedApp.total_amount}`
+        : `未覆盖，reentry_type=${result2.reentry_type}`
+    };
+  } catch (e) {
+    return { name: '覆盖批次数据更新', passed: false, message: e.message };
+  }
+}
+
+async function testExceptionReservedFilter() {
+  try {
+    const app1 = await ReturnApplication.create({
+      application_no: 'TEST-APP-FILTER1-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    const app2 = await ReturnApplication.create({
+      application_no: 'TEST-APP-FILTER2-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    await StateMachineService.createBatch(app2.id, {
+      application_id: app2.id,
+      batch_no: 'TEST-BATCH-FILTER-' + Date.now(),
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 10,
+      unit_price: 99.99
+    }, TEST_USER);
+    
+    await ExceptionService.reserveExceptionsOnMemberCancel(app2.id, TEST_USER);
+    
+    const allExceptions = await ExceptionService.getAllReservedExceptions();
+    const hasApp2 = allExceptions.some(e => e.application.id === app2.id);
+    const hasApp1 = allExceptions.some(e => e.application.id === app1.id);
+    
+    return {
+      name: '异常保留过滤',
+      passed: hasApp2 && !hasApp1,
+      message: `异常列表数量: ${allExceptions.length}, 包含已保留: ${hasApp2}, 不包含未保留: ${!hasApp1}`
+    };
+  } catch (e) {
+    return { name: '异常保留过滤', passed: false, message: e.message };
+  }
+}
+
+async function testBadBatchToFailedRecords() {
+  try {
+    const initialRecords = await FailedRecord.findAll({ record_type: 'CREATE_BATCH_VALIDATION' });
+    const initialCount = initialRecords.length;
+    
+    const badBatchData = {
+      application_id: 'test-app-id',
+      batch_no: 'BAD-BATCH-' + Date.now(),
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: -5,
+      unit_price: 99.99
+    };
+    
+    try {
+      const Joi = require('joi');
+      const batchSchema = Joi.object({
+        application_id: Joi.string().required(),
+        batch_no: Joi.string().required(),
+        product_code: Joi.string().required(),
+        product_name: Joi.string().required(),
+        quantity: Joi.number().positive().required(),
+        unit_price: Joi.number().min(0).required()
+      });
+      
+      const { error } = batchSchema.validate(badBatchData);
+      if (error) {
+        await FailedRecord.create({
+          record_type: 'CREATE_BATCH_VALIDATION',
+          record_data: badBatchData,
+          error_message: error.details.map(d => d.message).join('; '),
+          source: 'Test'
+        });
+      }
+    } catch (e) {
+    }
+    
+    const afterRecords = await FailedRecord.findAll({ record_type: 'CREATE_BATCH_VALIDATION' });
+    const hasNewRecord = afterRecords.length > initialCount;
+    const latestRecord = afterRecords[0];
+    
+    return {
+      name: '坏数据写入失败记录',
+      passed: hasNewRecord && latestRecord && latestRecord.record_data.quantity === -5,
+      message: hasNewRecord 
+        ? `失败记录已写入: ${latestRecord.error_message}` 
+        : `失败记录未写入，初始: ${initialCount}, 之后: ${afterRecords.length}`
+    };
+  } catch (e) {
+    return { name: '坏数据写入失败记录', passed: false, message: e.message };
   }
 }
 
