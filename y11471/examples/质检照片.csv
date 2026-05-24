@@ -1,0 +1,6 @@
+批次号,SKU编码,照片名称,照片链接,质检结果,质检数量,质检员,质检日期
+BATCH001,SKU001,质检001_1.jpg,http://example.com/photo1.jpg,不合格,50,张三,2024-01-16
+BATCH001,SKU001,质检001_2.jpg,http://example.com/photo2.jpg,不合格,50,张三,2024-01-16
+BATCH001,SKU002,质检002_1.jpg,http://example.com/photo3.jpg,合格,50,李四,2024-01-16
+BATCH001,SKU003,质检003_1.jpg,http://example.com/photo4.jpg,临期,80,王五,2024-01-17
+BATCH002,SKU004,质检004_1.jpg,http://example.com/photo5.jpg,破损,200,赵六,2024-01-17
