@@ -39,8 +39,34 @@ def read_file(file_path: str) -> pd.DataFrame:
         raise UnsupportedFileTypeError(f"不支持的文件格式: {ext}")
 
 
+def safe_str(value: Any) -> str:
+    if value is None:
+        return ''
+    try:
+        if pd.isna(value):
+            return ''
+    except:
+        pass
+    s = str(value).strip()
+    if s.lower() == 'nan':
+        return ''
+    return s
+
+
+def is_empty_or_nan(value: Any) -> bool:
+    if value is None:
+        return True
+    try:
+        if pd.isna(value):
+            return True
+    except:
+        pass
+    s = str(value).strip().lower()
+    return s == '' or s == 'nan'
+
+
 def parse_amount_safe(value: Any) -> Tuple[float, bool]:
-    if pd.isna(value) or value == '' or str(value).strip() == '':
+    if is_empty_or_nan(value):
         return 0.0, True
     
     try:
@@ -51,7 +77,7 @@ def parse_amount_safe(value: Any) -> Tuple[float, bool]:
 
 
 def parse_int_safe(value: Any) -> Tuple[int, bool]:
-    if pd.isna(value) or value == '' or str(value).strip() == '':
+    if is_empty_or_nan(value):
         return 1, True
     
     try:
@@ -99,17 +125,18 @@ def parse_leader_refund(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
         original_row_no = idx + 2
         row_errors = []
         
-        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
-        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        order_no = safe_str(row.get(actual_cols.get('订单号'), ''))
+        sku_code = safe_str(row.get(actual_cols.get('商品编码'), ''))
         
         if not order_no:
             row_errors.append('缺少订单号')
         if not sku_code:
             row_errors.append('缺少商品编码')
         
-        refund_amount, amount_error = parse_amount_safe(row.get(actual_cols.get('退款金额'), 0))
-        if amount_error:
-            row_errors.append(f'退款金额格式错误: {row.get(actual_cols.get("退款金额"), "")}')
+        raw_amount = row.get(actual_cols.get('退款金额'), '')
+        refund_amount, amount_error = parse_amount_safe(raw_amount)
+        if amount_error and not is_empty_or_nan(raw_amount):
+            row_errors.append(f'退款金额格式错误: {raw_amount}')
         
         quantity, qty_error = parse_int_safe(row.get(actual_cols.get('数量'), 1))
         
@@ -118,12 +145,13 @@ def parse_leader_refund(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
             'original_row_no': original_row_no,
             'order_no': order_no,
             'sku_code': sku_code,
-            'sku_name': str(row.get(actual_cols.get('商品名称'), '')).strip(),
+            'sku_name': safe_str(row.get(actual_cols.get('商品名称'), '')),
             'refund_amount': refund_amount,
-            'refund_reason': str(row.get(actual_cols.get('退款原因'), '')).strip(),
-            'problem_type': normalize_problem_type(str(row.get(actual_cols.get('问题类型'), '')).strip()),
+            'refund_reason': safe_str(row.get(actual_cols.get('退款原因'), '')),
+            'problem_type': normalize_problem_type(safe_str(row.get(actual_cols.get('问题类型'), ''))),
             'quantity': quantity,
-            'leader_remark': str(row.get(actual_cols.get('团长备注'), '')).strip()
+            'leader_remark': safe_str(row.get(actual_cols.get('团长备注'), '')),
+            'has_parse_error': len(row_errors) > 0
         }
         
         if row_errors:
@@ -162,17 +190,18 @@ def parse_warehouse_review(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
         original_row_no = idx + 2
         row_errors = []
         
-        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
-        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        order_no = safe_str(row.get(actual_cols.get('订单号'), ''))
+        sku_code = safe_str(row.get(actual_cols.get('商品编码'), ''))
         
         if not order_no:
             row_errors.append('缺少订单号')
         if not sku_code:
             row_errors.append('缺少商品编码')
         
-        warehouse_refund_amount, amount_error = parse_amount_safe(row.get(actual_cols.get('复核金额'), 0))
-        if amount_error:
-            row_errors.append(f'复核金额格式错误: {row.get(actual_cols.get("复核金额"), "")}')
+        raw_amount = row.get(actual_cols.get('复核金额'), '')
+        warehouse_refund_amount, amount_error = parse_amount_safe(raw_amount)
+        if amount_error and not is_empty_or_nan(raw_amount):
+            row_errors.append(f'复核金额格式错误: {raw_amount}')
         
         quantity, qty_error = parse_int_safe(row.get(actual_cols.get('数量'), 1))
         
@@ -181,11 +210,12 @@ def parse_warehouse_review(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
             'original_row_no': original_row_no,
             'order_no': order_no,
             'sku_code': sku_code,
-            'sku_name': str(row.get(actual_cols.get('商品名称'), '')).strip(),
+            'sku_name': safe_str(row.get(actual_cols.get('商品名称'), '')),
             'warehouse_refund_amount': warehouse_refund_amount,
-            'warehouse_remark': str(row.get(actual_cols.get('仓库备注'), '')).strip(),
-            'problem_type': normalize_problem_type(str(row.get(actual_cols.get('问题类型'), '')).strip()),
-            'quantity': quantity
+            'warehouse_remark': safe_str(row.get(actual_cols.get('仓库备注'), '')),
+            'problem_type': normalize_problem_type(safe_str(row.get(actual_cols.get('问题类型'), ''))),
+            'quantity': quantity,
+            'has_parse_error': len(row_errors) > 0
         }
         
         if row_errors:
@@ -221,8 +251,8 @@ def parse_user_remark(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
         original_row_no = idx + 2
         row_errors = []
         
-        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
-        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        order_no = safe_str(row.get(actual_cols.get('订单号'), ''))
+        sku_code = safe_str(row.get(actual_cols.get('商品编码'), ''))
         
         if not order_no:
             row_errors.append('缺少订单号')
@@ -234,8 +264,9 @@ def parse_user_remark(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
             'original_row_no': original_row_no,
             'order_no': order_no,
             'sku_code': sku_code,
-            'user_remark': str(row.get(actual_cols.get('用户备注'), '')).strip(),
-            'external_receipt': str(row.get(actual_cols.get('外部回执'), '')).strip()
+            'user_remark': safe_str(row.get(actual_cols.get('用户备注'), '')),
+            'external_receipt': safe_str(row.get(actual_cols.get('外部回执'), '')),
+            'has_parse_error': len(row_errors) > 0
         }
         
         if row_errors:
@@ -271,8 +302,8 @@ def parse_external_receipt(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
         original_row_no = idx + 2
         row_errors = []
         
-        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
-        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        order_no = safe_str(row.get(actual_cols.get('订单号'), ''))
+        sku_code = safe_str(row.get(actual_cols.get('商品编码'), ''))
         
         if not order_no:
             row_errors.append('缺少订单号')
@@ -284,8 +315,9 @@ def parse_external_receipt(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
             'original_row_no': original_row_no,
             'order_no': order_no,
             'sku_code': sku_code,
-            'external_receipt': str(row.get(actual_cols.get('回执链接'), '')).strip(),
-            'receipt_description': str(row.get(actual_cols.get('回执说明'), '')).strip()
+            'external_receipt': safe_str(row.get(actual_cols.get('回执链接'), '')),
+            'receipt_description': safe_str(row.get(actual_cols.get('回执说明'), '')),
+            'has_parse_error': len(row_errors) > 0
         }
         
         if row_errors:
@@ -377,18 +409,34 @@ def import_file(batch_no: str, file_path: str, file_type: str,
     failed_records = []
     success_count = 0
     
+    parse_error_map = {pe['row_no']: pe['errors'] for pe in parse_errors}
+    
     for record in parsed_records:
         original_row_no = record.pop('original_row_no')
         source_type = record.pop('source_type')
+        has_parse_error = record.pop('has_parse_error', False)
         
         order_no = record.get('order_no', '')
         sku_code = record.get('sku_code', '')
         
+        row_errors = parse_error_map.get(original_row_no, [])
+        
         if not order_no or not sku_code:
+            error_msg = '缺少订单号或商品编码，无法关联订单'
+            if row_errors:
+                error_msg += f" ({', '.join(row_errors)})"
             failed_records.append({
                 'row_no': original_row_no,
                 'data': record,
-                'error': '缺少订单号或商品编码，无法关联订单'
+                'error': error_msg
+            })
+            continue
+        
+        if has_parse_error and row_errors:
+            failed_records.append({
+                'row_no': original_row_no,
+                'data': record,
+                'error': f"解析错误: {', '.join(row_errors)}"
             })
             continue
         
