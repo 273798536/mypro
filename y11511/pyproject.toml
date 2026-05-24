@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "library-interloan-inspector"
+version = "1.0.0"
+description = "图书馆馆际借阅多源导入巡检 CLI 工具"
+authors = ["Library System"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.0"
+pandas = "^2.0.0"
+openpyxl = "^3.1.0"
+rich = "^13.0.0"
+
+[tool.poetry.scripts]
+lib-inspect = "lib_inspect.cli:cli"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
