@@ -1,0 +1,37 @@
+{
+  "batchId": "BATCH-001",
+  "productCode": "PCB-A001",
+  "sampleSize": 50,
+  "totalQuantity": 1000,
+  "inspector": "质检员A",
+  "inspectedAt": "2024-01-15T09:30:00Z",
+  "machineShift": {
+    "machineId": "MACHINE-01",
+    "shift": "morning",
+    "shiftDate": "2024-01-15",
+    "operator": "张三"
+  },
+  "passRate": 96,
+  "defects": [
+    {
+      "defectType": "焊盘偏移",
+      "description": "芯片引脚焊盘偏移超过0.5mm",
+      "severity": "major",
+      "quantity": 2,
+      "photos": [
+        {
+          "source": "/photos/batch001-offset-1.jpg",
+          "uploadedBy": "质检员A",
+          "description": "U1芯片偏移"
+        }
+      ]
+    },
+    {
+      "defectType": "虚焊",
+      "description": "C5电容焊接不良",
+      "severity": "minor",
+      "quantity": 1,
+      "photos": []
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "batchId": "BATCH-002",
+  "productCode": "PCB-A001",
+  "sampleSize": 50,
+  "totalQuantity": 1000,
+  "inspector": "质检员B",
+  "inspectedAt": "2024-01-15T14:30:00Z",
+  "machineShift": {
+    "machineId": "MACHINE-01",
+    "shift": "afternoon",
+    "shiftDate": "2024-01-15",
+    "operator": "李四"
+  },
+  "passRate": 94,
+  "defects": [
+    {
+      "defectType": "焊盘偏移",
+      "description": "U2芯片焊盘偏移",
+      "severity": "major",
+      "quantity": 3,
+      "photos": [
+        {
+          "source": "/photos/batch002-offset-1.jpg",
+          "uploadedBy": "质检员B",
+          "description": "U2芯片偏移特写"
+        }
+      ]
+    },
+    {
+      "defectType": "短路",
+      "description": "电源引脚之间短路",
+      "severity": "critical",
+      "quantity": 1,
+      "photos": [
+        {
+          "source": "/photos/batch002-short-1.jpg",
+          "uploadedBy": "质检员B",
+          "description": "短路位置放大图"
+        }
+      ]
+    }
+  ]
+}

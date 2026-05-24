@@ -1,0 +1,121 @@
+{
+  "inspections": [
+    {
+      "batchId": "BATCH-001",
+      "productCode": "PCB-A001",
+      "sampleSize": 50,
+      "totalQuantity": 1000,
+      "inspector": "质检员A",
+      "inspectedAt": "2024-01-15T09:30:00Z",
+      "machineShift": {
+        "machineId": "MACHINE-01",
+        "shift": "morning",
+        "shiftDate": "2024-01-15",
+        "operator": "张三"
+      },
+      "defects": [
+        {
+          "id": "20451875-69ef-4f89-a153-6b1780490e40",
+          "defectType": "焊盘偏移",
+          "description": "芯片引脚焊盘偏移超过0.5mm",
+          "severity": "major",
+          "quantity": 2,
+          "photos": [
+            {
+              "id": "e97fb5dd-5634-4787-995c-d2a1bf765315",
+              "source": "/photos/batch001-offset-1.jpg",
+              "uploadedAt": "2026-05-24T06:22:57.543Z",
+              "uploadedBy": "质检员A",
+              "description": "U1芯片偏移"
+            }
+          ],
+          "firstFoundAt": "2026-05-24T06:22:57.543Z",
+          "lastUpdatedAt": "2026-05-24T06:22:57.543Z",
+          "reworkCount": 0,
+          "mergedFrom": []
+        },
+        {
+          "id": "9d5401a6-be9a-48c4-8c40-245d3e73726b",
+          "defectType": "虚焊",
+          "description": "C5电容焊接不良",
+          "severity": "minor",
+          "quantity": 1,
+          "photos": [],
+          "firstFoundAt": "2026-05-24T06:22:57.543Z",
+          "lastUpdatedAt": "2026-05-24T06:22:57.543Z",
+          "reworkCount": 0,
+          "mergedFrom": []
+        }
+      ],
+      "passRate": 96,
+      "isReworked": false,
+      "id": "b5f837cd-a26b-42ee-842d-8d0a33bc0472"
+    },
+    {
+      "batchId": "BATCH-002",
+      "productCode": "PCB-A001",
+      "sampleSize": 50,
+      "totalQuantity": 1000,
+      "inspector": "质检员B",
+      "inspectedAt": "2024-01-15T14:30:00Z",
+      "machineShift": {
+        "machineId": "MACHINE-01",
+        "shift": "afternoon",
+        "shiftDate": "2024-01-15",
+        "operator": "李四"
+      },
+      "defects": [
+        {
+          "id": "c898b084-6ae2-443c-b542-69b2cfccd768",
+          "defectType": "焊盘偏移",
+          "description": "U2芯片焊盘偏移",
+          "severity": "major",
+          "quantity": 3,
+          "photos": [
+            {
+              "id": "0dc96f13-e65a-4754-adb2-ce6ee2749cef",
+              "source": "/photos/batch002-offset-1.jpg",
+              "uploadedAt": "2026-05-24T06:22:57.630Z",
+              "uploadedBy": "质检员B",
+              "description": "U2芯片偏移特写"
+            }
+          ],
+          "firstFoundAt": "2026-05-24T06:22:57.631Z",
+          "lastUpdatedAt": "2026-05-24T06:22:57.631Z",
+          "reworkCount": 0,
+          "mergedFrom": []
+        },
+        {
+          "id": "ff3d2c3d-12f3-4cf1-9b29-b594f5c652f6",
+          "defectType": "短路",
+          "description": "电源引脚之间短路",
+          "severity": "critical",
+          "quantity": 1,
+          "photos": [
+            {
+              "id": "9b42384f-4bb3-4386-b916-a3fd73ab2da7",
+              "source": "/photos/batch002-short-1.jpg",
+              "uploadedAt": "2026-05-24T06:22:57.631Z",
+              "uploadedBy": "质检员B",
+              "description": "短路位置放大图"
+            }
+          ],
+          "firstFoundAt": "2026-05-24T06:22:57.631Z",
+          "lastUpdatedAt": "2026-05-24T06:22:57.631Z",
+          "reworkCount": 0,
+          "mergedFrom": []
+        }
+      ],
+      "passRate": 94,
+      "isReworked": false,
+      "id": "f171f9a9-dd9f-4101-9726-e1c856ba1678"
+    }
+  ],
+  "reworkOrders": [],
+  "verdictHistory": [],
+  "yieldRecords": [],
+  "metadata": {
+    "lastUpdated": "2026-05-24T06:22:57.631Z",
+    "version": 4
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "reworkBatchId": "REWORK-001",
+  "originalBatchId": "BATCH-001",
+  "productCode": "PCB-A001",
+  "reworkType": "补焊校正",
+  "reworkQuantity": 2,
+  "reworker": "返工员王",
+  "machineShift": {
+    "machineId": "MACHINE-02",
+    "shift": "night",
+    "shiftDate": "2024-01-15",
+    "operator": "王五"
+  },
+  "startedAt": "2024-01-15T20:00:00Z",
+  "completedAt": "2024-01-15T21:30:00Z",
+  "status": "completed",
+  "resolvedDefectIds": [],
+  "newDefects": [
+    {
+      "defectType": "焊盘偏移",
+      "description": "返工后U3芯片仍有偏移",
+      "severity": "minor",
+      "quantity": 1,
+      "photos": [
+        {
+          "source": "/photos/rework001-offset-1.jpg",
+          "uploadedBy": "返工员王",
+          "description": "返工后偏移照片"
+        }
+      ]
+    }
+  ]
+}
