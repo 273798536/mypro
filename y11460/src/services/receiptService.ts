@@ -79,7 +79,7 @@ export class ReceiptService {
       throw new Error('仅草稿状态可修改')
     }
 
-    const validation = validateReceiptData(data, receipt)
+    const validation = validateReceiptData(data, receipt, { isPartialUpdate: true })
 
     const beforeData = { ...receipt }
 

@@ -125,23 +125,30 @@ export const recordChangeLog = async (
   })
 }
 
-export const validateReceiptData = (data: any, existingData?: any): { valid: boolean; errors: string[]; dirtyRecords: any[] } => {
+export const validateReceiptData = (
+  data: any, 
+  existingData?: any, 
+  options: { isPartialUpdate?: boolean } = {}
+): { valid: boolean; errors: string[]; dirtyRecords: any[] } => {
+  const { isPartialUpdate = false } = options
   const errors: string[] = []
   const dirtyRecords: any[] = []
 
-  const requiredFields = ['batchNo', 'clinicId', 'implantBatchNumber', 'appointmentRecordNo', 'supplierInvoiceNo']
-  for (const field of requiredFields) {
-    if (!data[field]) {
-      errors.push(`缺少必填字段: ${field}`)
-      dirtyRecords.push({
-        type: 'MISSING_FIELD',
-        fieldName: field,
-        originalValue: null
-      })
+  if (!isPartialUpdate) {
+    const requiredFields = ['batchNo', 'clinicId', 'implantBatchNumber', 'appointmentRecordNo', 'supplierInvoiceNo']
+    for (const field of requiredFields) {
+      if (!data[field]) {
+        errors.push(`缺少必填字段: ${field}`)
+        dirtyRecords.push({
+          type: 'MISSING_FIELD',
+          fieldName: field,
+          originalValue: null
+        })
+      }
     }
   }
 
-  if (data.unitPrice && data.implantQuantity && data.totalAmount) {
+  if (data.unitPrice !== undefined && data.implantQuantity !== undefined && data.totalAmount !== undefined) {
     const calculatedTotal = data.unitPrice * data.implantQuantity
     if (Math.abs(calculatedTotal - data.totalAmount) > 0.01) {
       errors.push('金额冲突：单价 * 数量 与总金额不匹配')
@@ -193,7 +200,7 @@ export const validateReceiptData = (data: any, existingData?: any): { valid: boo
     }
   }
 
-  if (existingData && existingData.patientName && data.patientName && existingData.patientName !== data.patientName) {
+  if (existingData && data.patientName !== undefined && existingData.patientName !== data.patientName) {
     errors.push(`患者改名：从"${existingData.patientName}"改为"${data.patientName}"`)
     dirtyRecords.push({
       type: 'NAME_CHANGED',

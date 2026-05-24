@@ -328,6 +328,10 @@ router.post('/:id/attachments', upload.single('file'), async (req: AuthRequest, 
       return res.status(400).json({ error: '未上传文件' })
     }
 
+    if (req.user.role === UserRole.READ_ONLY || req.user.role === UserRole.REVIEWER) {
+      return res.status(403).json({ error: '权限不足，仅录入员和主管可上传附件' })
+    }
+
     const { type, description } = req.body
     const attachment = await attachmentService.uploadAttachment(
       req.params.id,

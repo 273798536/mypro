@@ -775,4 +775,160 @@ describe('口腔门诊材料异常回执状态机 - 验收测试', () => {
       expect(fixLog.action).toBe('REVIEW_OVERRULE')
     })
   })
+
+  describe('12. 附件上传权限测试', () => {
+    it('只读用户不能上传附件', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'ATTACH-PERM-001' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const uploadRes = await request(app)
+        .post(`/api/receipts/${receiptId}/attachments`)
+        .set('Authorization', `Bearer ${tokens.viewer}`)
+        .attach('file', Buffer.from('test content'), {
+          filename: 'test.pdf',
+          contentType: 'application/pdf'
+        })
+        .field('type', 'SECONDARY_CONFIRMATION')
+
+      expect(uploadRes.status).toBe(403)
+    })
+
+    it('复核员不能上传附件', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'ATTACH-PERM-002' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const uploadRes = await request(app)
+        .post(`/api/receipts/${receiptId}/attachments`)
+        .set('Authorization', `Bearer ${tokens.reviewer}`)
+        .attach('file', Buffer.from('test content'), {
+          filename: 'test.pdf',
+          contentType: 'application/pdf'
+        })
+        .field('type', 'SECONDARY_CONFIRMATION')
+
+      expect(uploadRes.status).toBe(403)
+    })
+
+    it('录入员可以上传附件', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'ATTACH-PERM-003' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const uploadRes = await request(app)
+        .post(`/api/receipts/${receiptId}/attachments`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .attach('file', Buffer.from('test content'), {
+          filename: 'test.pdf',
+          contentType: 'application/pdf'
+        })
+        .field('type', 'SECONDARY_CONFIRMATION')
+
+      expect(uploadRes.status).toBe(201)
+    })
+  })
+
+  describe('13. 局部更新脏记录检测测试', () => {
+    it('草稿局部更新备注不会产生MISSING_FIELD脏记录', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'PARTIAL-UPDATE-001' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const dirtyBefore = await prisma.dirtyRecord.count({
+        where: { receiptId, type: 'MISSING_FIELD' }
+      })
+
+      const updateRes = await request(app)
+        .patch(`/api/receipts/${receiptId}`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ remark: '更新备注信息' })
+
+      expect(updateRes.status).toBe(200)
+
+      const dirtyAfter = await prisma.dirtyRecord.count({
+        where: { receiptId, type: 'MISSING_FIELD' }
+      })
+
+      expect(dirtyAfter).toBe(dirtyBefore)
+    })
+
+    it('草稿局部更新患者姓名只检测NAME_CHANGED', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'PARTIAL-UPDATE-002', patientName: '张三' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const dirtyBefore = await prisma.dirtyRecord.findMany({
+        where: { receiptId }
+      })
+
+      const updateRes = await request(app)
+        .patch(`/api/receipts/${receiptId}`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ patientName: '李四' })
+
+      expect(updateRes.status).toBe(200)
+
+      const dirtyAfter = await prisma.dirtyRecord.findMany({
+        where: { receiptId }
+      })
+
+      const newDirtyRecords = dirtyAfter.filter(
+        d => !dirtyBefore.some(b => b.id === d.id)
+      )
+
+      const hasMissingField = newDirtyRecords.some(d => d.type === 'MISSING_FIELD')
+      const hasNameChanged = newDirtyRecords.some(d => d.type === 'NAME_CHANGED')
+
+      expect(hasMissingField).toBe(false)
+      expect(hasNameChanged).toBe(true)
+    })
+
+    it('草稿局部更新数量只检测QUANTITY_CONFLICT', async () => {
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ ...testReceiptData, batchNo: 'PARTIAL-UPDATE-003' })
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const updateRes = await request(app)
+        .patch(`/api/receipts/${receiptId}`)
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send({ implantQuantity: 99 })
+
+      expect(updateRes.status).toBe(200)
+
+      const dirtyRecords = await prisma.dirtyRecord.findMany({
+        where: { receiptId }
+      })
+
+      const hasMissingField = dirtyRecords.some(d => d.type === 'MISSING_FIELD')
+      const hasQuantityConflict = dirtyRecords.some(d => d.type === 'QUANTITY_CONFLICT')
+
+      expect(hasMissingField).toBe(false)
+      expect(hasQuantityConflict).toBe(true)
+    })
+  })
 })
