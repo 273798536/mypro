@@ -16,11 +16,13 @@ def parse_csv_file(file_path):
 def detect_source_type(header_fields):
     header_lower = [h.lower() for h in header_fields]
     
-    if any('batch' in h and 'no' in h for h in header_lower) and any('sample' in h for h in header_lower):
+    if (any('batch' in h and 'no' in h for h in header_lower) and any('sample' in h for h in header_lower)) or \
+       (any('批次' in h for h in header_fields) and any('留样' in h for h in header_fields)):
         return 'sample_label'
-    elif any('temp' in h for h in header_lower) or any('temperature' in h for h in header_lower):
+    elif any('temp' in h for h in header_lower) or any('temperature' in h for h in header_lower) or \
+         any('温度' in h for h in header_fields):
         return 'temperature'
-    elif any('complaint' in h for h in header_lower):
+    elif any('complaint' in h for h in header_lower) or any('投诉' in h for h in header_fields):
         return 'complaint'
     elif any('supplement' in h for h in header_lower) or any('补录' in h for h in header_fields):
         return 'supplement'

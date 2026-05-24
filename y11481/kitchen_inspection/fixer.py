@@ -2,6 +2,36 @@ import json
 from datetime import datetime
 from .database import get_connection
 
+FIELD_KEY_MAPPING = {
+    'batch_no': ['批次号', 'batch_no', 'batch', '锅次'],
+    'store_id': ['门店编号', '门店', 'store_id', 'store'],
+    'record_date': ['日期', 'record_date', 'date'],
+    'product_name': ['产品名称', 'product_name', 'product', '品名'],
+    'sample_time': ['留样时间', 'sample_time', 'time'],
+    'sample_amount': ['留样量', 'sample_amount', 'amount'],
+    'keeper': ['留样人', 'keeper', '保存人'],
+    'measure_time': ['测量时间', 'measure_time', 'time'],
+    'temperature': ['温度', 'temperature', 'temp'],
+    'measure_point': ['测量点', 'measure_point', 'point'],
+    'operator': ['操作人员', 'operator', '操作员'],
+    'complaint_no': ['投诉单号', 'complaint_no', 'complaint'],
+    'complaint_type': ['投诉类型', 'complaint_type', 'type'],
+    'complaint_desc': ['投诉描述', 'complaint_desc', 'description', 'desc'],
+    'complaint_amount': ['投诉数量', 'complaint_amount', 'amount'],
+    'complaint_date': ['投诉日期', 'complaint_date', 'date'],
+    'handler': ['处理人', 'handler'],
+    'handle_result': ['处理结果', 'handle_result', 'result'],
+    'handle_date': ['处理日期', 'handle_date']
+}
+
+
+def get_actual_field_key(raw_data, field_name):
+    possible_keys = FIELD_KEY_MAPPING.get(field_name, [field_name])
+    for key in possible_keys:
+        if key in raw_data:
+            return key
+    return field_name if field_name in raw_data else possible_keys[0]
+
 
 def fix_issue(issue_id, fixed_value, fix_note, username):
     with get_connection() as conn:
@@ -31,7 +61,8 @@ def fix_issue(issue_id, fixed_value, fix_note, username):
         issue_field = issue['issue_field']
         if issue_field and fixed_value:
             raw_data = json.loads(issue['raw_data'])
-            raw_data[issue_field] = fixed_value
+            actual_key = get_actual_field_key(raw_data, issue_field)
+            raw_data[actual_key] = fixed_value
             new_raw_data = json.dumps(raw_data, ensure_ascii=False)
             
             cursor.execute("""
@@ -130,10 +161,11 @@ def reimport_after_fix(session_id):
             if source_type == 'sample_label':
                 cursor.execute("""
                     UPDATE sample_labels
-                    SET product_name = ?, sample_time = ?, sample_amount = ?,
+                    SET batch_no = ?, product_name = ?, sample_time = ?, sample_amount = ?,
                         keeper = ?, store_id = ?, record_date = ?, status = 'reimported'
                     WHERE record_id = ?
                 """, (
+                    raw_data.get('批次号') or raw_data.get('batch_no') or raw_data.get('锅次'),
                     raw_data.get('产品名称') or raw_data.get('product_name'),
                     raw_data.get('留样时间') or raw_data.get('sample_time'),
                     safe_float(raw_data.get('留样量') or raw_data.get('sample_amount')),
