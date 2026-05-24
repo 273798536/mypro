@@ -1,18 +1,35 @@
-INFO:     Started server process [34229]
+INFO:     Started server process [14588]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:59584 - "GET /api/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60327 - "GET /api/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60329 - "POST /api/import HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60345 - "POST /api/import HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60351 - "POST /api/import HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60358 - "GET /api/bookings?limit=10 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60360 - "GET /api/bookings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60362 - "GET /api/bookings/4 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60366 - "POST /api/relink-all HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60370 - "GET /api/reconciliation HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60378 - "GET /api/export/reconciliation?format=xlsx HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60390 - "GET /api/process-records?is_dirty=true HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60392 - "GET /api/import-history HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60394 - "GET /api/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61377 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61760 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61764 - "POST /api/import HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61770 - "GET /api/bookings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61772 - "GET /api/bookings/4 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61774 - "GET /api/bookings/3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61776 - "GET /api/bookings/2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61778 - "GET /api/bookings/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61780 - "GET /api/bookings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61782 - "GET /api/bookings/4 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61784 - "GET /api/reconciliation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61786 - "GET /api/bookings/3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61788 - "GET /api/reconciliation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61790 - "GET /api/bookings/2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61796 - "GET /api/reconciliation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61798 - "GET /api/bookings/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61800 - "GET /api/reconciliation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61802 - "POST /api/import HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61804 - "POST /api/import HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61813 - "GET /api/bookings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61815 - "GET /api/bookings/4 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61817 - "GET /api/reconciliation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61821 - "GET /api/bookings?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61823 - "GET /api/bookings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61825 - "GET /api/bookings/4 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61839 - "POST /api/relink-all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61851 - "GET /api/reconciliation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61859 - "GET /api/export/reconciliation?format=xlsx HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61899 - "GET /api/process-records?is_dirty=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61913 - "GET /api/import-history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61915 - "GET /api/audit-logs HTTP/1.1" 200 OK

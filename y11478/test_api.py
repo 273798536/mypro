@@ -31,8 +31,55 @@ def test_import_data():
     print(f"批次ID: {result['batch_id']}")
     print(f"总记录数: {result['total_records']}")
     print(f"成功: {result['success_count']}, 重复: {result['duplicate_count']}, 错误: {result['error_count']}")
+    if "auto_relinked" in result:
+        print(f"自动关联: {json.dumps(result['auto_relinked'], ensure_ascii=False)}")
     print(f"详情: {json.dumps(result['details'], ensure_ascii=False, indent=2)}")
     return result["batch_id"]
+
+
+def test_access_booking_id_after_import():
+    print("\n=== 测试1.5: 验证导入后门禁booking_id不为空 ===")
+    response = requests.get(f"{BASE_URL}/api/bookings")
+    bookings = response.json()
+
+    all_access_linked = True
+    for booking in bookings:
+        detail = requests.get(f"{BASE_URL}/api/bookings/{booking['id']}").json()
+        access_count = len(detail['access_records'])
+        if access_count > 0:
+            for access in detail['access_records']:
+                if access['booking_id'] is None:
+                    all_access_linked = False
+                    print(f"  ! 门禁 {access['source_id']} booking_id 为空")
+        print(f"  {booking['room_name']} - {booking['meeting_topic']}: 关联门禁 {access_count} 条")
+
+    status = "✓" if all_access_linked else "!"
+    print(f"  {status} 所有门禁记录均有 booking_id")
+
+
+def test_detail_reconciliation_consistency():
+    print("\n=== 测试1.8: 验证详情与对账状态一致 ===")
+    response = requests.get(f"{BASE_URL}/api/bookings")
+    bookings = response.json()
+
+    all_consistent = True
+    for booking in bookings:
+        detail = requests.get(f"{BASE_URL}/api/bookings/{booking['id']}").json()
+        detail_status = detail['booking']['status']
+
+        recon = requests.get(f"{BASE_URL}/api/reconciliation").json()
+        recon_item = next((r for r in recon if r['booking_id'] == booking['id']), None)
+
+        if recon_item:
+            recon_status = recon_item['booking_status']
+            match = detail_status == recon_status
+            if not match:
+                all_consistent = False
+            status_icon = "✓" if match else "!"
+            print(f"  {status_icon} {booking['meeting_topic']}: 详情={detail_status}, 对账={recon_status}")
+
+    final_icon = "✓" if all_consistent else "!"
+    print(f"  {final_icon} 详情与对账状态完全一致: {'是' if all_consistent else '否'}")
 
 
 def test_import_duplicate():
@@ -57,6 +104,33 @@ def test_import_overwrite():
     result = response.json()
     print(f"批次ID: {result['batch_id']}")
     print(f"覆盖记录数: {result['success_count']}")
+
+
+def test_overwrite_status_consistency():
+    print("\n=== 测试3.5: 验证overwrite后状态一致性 ===")
+    response = requests.get(f"{BASE_URL}/api/bookings")
+    bookings = response.json()
+
+    cancelled_booking = next((b for b in bookings if "预算" in b['meeting_topic']), None)
+    if cancelled_booking:
+        print(f"  目标预约: {cancelled_booking['meeting_topic']}")
+        print(f"  列表状态: {cancelled_booking['status']}")
+
+        detail = requests.get(f"{BASE_URL}/api/bookings/{cancelled_booking['id']}").json()
+        print(f"  详情状态: {detail['booking']['status']}")
+
+        recon = requests.get(f"{BASE_URL}/api/reconciliation").json()
+        recon_item = next((r for r in recon if r['booking_id'] == cancelled_booking['id']), None)
+        if recon_item:
+            print(f"  对账状态: {recon_item['booking_status']}")
+
+            is_consistent = (
+                cancelled_booking['status'] == detail['booking']['status'] == recon_item['booking_status'] == 'cancelled'
+            )
+            icon = "✓" if is_consistent else "!"
+            print(f"  {icon} 列表/详情/对账状态均为 cancelled: {'是' if is_consistent else '否'}")
+    else:
+        print("  未找到预算会议预约")
 
 
 def test_get_bookings():
@@ -158,8 +232,11 @@ if __name__ == "__main__":
         exit(1)
 
     batch_id = test_import_data()
+    test_access_booking_id_after_import()
+    test_detail_reconciliation_consistency()
     test_import_duplicate()
     test_import_overwrite()
+    test_overwrite_status_consistency()
     test_get_bookings()
     test_get_booking_detail()
     test_relink_all()

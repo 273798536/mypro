@@ -64,6 +64,16 @@ def update_booking(db: Session, booking_id: int, booking: schemas.BookingCreate,
     db.commit()
     db.refresh(db_booking)
 
+    has_cancel = db.query(models.CancelMessage).filter(
+        models.CancelMessage.booking_id == booking_id
+    ).count() > 0
+    if has_cancel and db_booking.status != "cancelled":
+        db_booking.status = "cancelled"
+        booking.status = "cancelled"
+
+    db.commit()
+    db.refresh(db_booking)
+
     audit_log = models.AuditLog(
         operation="update",
         table_name="booking_records",
@@ -82,7 +92,8 @@ def update_booking(db: Session, booking_id: int, booking: schemas.BookingCreate,
     db.commit()
 
     ProcessRecordService.create_process_log(
-        db, batch_id, db_booking.id, "overwrite", "success", "Booking record overwritten"
+        db, batch_id, db_booking.id, "overwrite", "success",
+        "Booking record overwritten, status synced with linked cancel messages" if has_cancel else "Booking record overwritten"
     )
 
     return db_booking
@@ -172,8 +183,29 @@ def create_supplier_bill(db: Session, bill: schemas.SupplierBillCreate, batch_id
     return db_bill
 
 
-def get_booking(db: Session, booking_id: int) -> Optional[models.BookingRecord]:
-    return db.query(models.BookingRecord).filter(models.BookingRecord.id == booking_id).first()
+def get_booking(db: Session, booking_id: int, auto_relink: bool = True) -> Optional[models.BookingRecord]:
+    booking = db.query(models.BookingRecord).filter(models.BookingRecord.id == booking_id).first()
+    if booking and auto_relink:
+        from .services import ReconciliationService
+        ReconciliationService.relink_all_for_booking(db, booking)
+        db.refresh(booking)
+
+        has_cancel = len(booking.cancel_messages) > 0
+        if has_cancel and booking.status != "cancelled":
+            booking.status = "cancelled"
+            audit_log = models.AuditLog(
+                operation="update",
+                table_name="booking_records",
+                record_id=booking_id,
+                old_values={"status": booking.status},
+                new_values={"status": "cancelled"},
+                change_reason="Auto-sync from cancel messages during detail query",
+                operator="system"
+            )
+            db.add(audit_log)
+            db.commit()
+            db.refresh(booking)
+    return booking
 
 
 def get_bookings(
@@ -466,10 +498,39 @@ def batch_import_data(
             if not db_bill.booking_id:
                 ProcessRecordService.create_process_log(
                     db, batch_id, 0, "linking", "warning",
-                    f"Supplier bill {bill.source_id} could not be linked to any booking"
+                    f"Supplier bill {bill.source_id} could not be linked to any booking during import"
                 )
             stats["success"] += 1
             stats["details"]["bills"]["success"] += 1
+
+    from .services import ReconciliationService
+
+    relink_stats = {"access": 0, "cancel": 0, "bill": 0}
+    bookings = db.query(models.BookingRecord).all()
+    for booking in bookings:
+        r = ReconciliationService.relink_all_for_booking(db, booking)
+        relink_stats["access"] += r["access"]
+        relink_stats["cancel"] += r["cancel"]
+        relink_stats["bill"] += r["bill"]
+
+    for booking in bookings:
+        db.refresh(booking)
+        has_cancel = len(booking.cancel_messages) > 0
+        if has_cancel and booking.status != "cancelled":
+            booking.status = "cancelled"
+            audit_log = models.AuditLog(
+                operation="update",
+                table_name="booking_records",
+                record_id=booking.id,
+                old_values={"status": booking.status},
+                new_values={"status": "cancelled"},
+                change_reason=f"Auto-sync from cancel messages after import: {batch_id}",
+                operator="system"
+            )
+            db.add(audit_log)
+    db.commit()
+
+    stats["relinked_after_import"] = relink_stats
 
     import_history = models.ImportHistory(
         batch_id=batch_id,
@@ -493,5 +554,6 @@ def batch_import_data(
         "error_count": stats["error"],
         "dirty_count": stats["dirty"],
         "duplicate_handling": duplicate_handling,
-        "details": stats["details"]
+        "details": stats["details"],
+        "auto_relinked": relink_stats
     }

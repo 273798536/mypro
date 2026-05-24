@@ -320,10 +320,6 @@ class ReconciliationService:
         )
         total_cost = sum(bill.total_amount for bill in related_bills)
 
-        booking_status = booking.status
-        if has_cancel and booking_status != "cancelled":
-            booking_status = "cancelled (detected)"
-
         is_exception = False
         exception_type = None
         exception_description = None
@@ -340,17 +336,13 @@ class ReconciliationService:
             is_exception = True
             exception_type = "cancelled_with_cost"
             exception_description = "预约状态为取消但仍有费用产生"
-        elif has_cancel and booking.status != "cancelled":
-            is_exception = True
-            exception_type = "cancel_message_mismatch"
-            exception_description = "有取消消息但预约状态未更新"
 
         return {
             "booking_id": booking.id,
             "room_name": booking.room_name,
             "meeting_topic": booking.meeting_topic,
             "start_time": booking.start_time,
-            "booking_status": booking_status,
+            "booking_status": booking.status,
             "has_access_record": has_access,
             "has_cancel_message": has_cancel,
             "has_supplier_bill": has_bill,
