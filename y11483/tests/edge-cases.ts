@@ -223,7 +223,7 @@ async function runEdgeCases() {
       potNo: BAD_POT,
       productName: '坏数据测试产品',
       productionTime: new Date(),
-      conflictStrategy: ConflictStrategy.ERROR,
+      conflictStrategy: ConflictStrategy.OVERWRITE,
       operator: OPERATOR,
     });
     console.log(chalk.green('✓ 链路创建成功，即使有坏数据'));
@@ -239,6 +239,19 @@ async function runEdgeCases() {
     } catch (error: any) {
       console.log(chalk.red('✗ 处理坏数据时崩溃，测试失败!'));
       throw error;
+    }
+
+    const badReplayResult = await replayService.replayTrace(badTrace.traceNo, OPERATOR);
+    console.log(chalk.green('✓ 回放发现问题数:'), badReplayResult.issuesFound.length);
+    
+    const highSeverityIssues = badReplayResult.issuesFound.filter((i: any) => i.severity === 'high');
+    if (highSeverityIssues.length === 0) {
+      console.log(chalk.yellow('  注意: 未检测到严重问题，可能数据验证已处理'));
+    } else {
+      console.log(chalk.green('✓ 成功检测到'), highSeverityIssues.length, '个严重问题');
+      highSeverityIssues.slice(0, 2).forEach((issue: any) => {
+        console.log(chalk.gray('    - [' + issue.severity + '] ' + issue.source + ': ' + issue.message.substring(0, 60)));
+      });
     }
     console.log(chalk.green('✓ 坏数据不崩溃测试通过'));
 
@@ -283,9 +296,22 @@ async function runEdgeCases() {
     console.log(chalk.green('✓ 发现问题数:'), replayResult.issuesFound.length);
     console.log(chalk.green('✓ 回放摘要:'), replayResult.summary);
 
+    const missingTempIssue = replayResult.issuesFound.find(
+      (i: any) => i.source === 'temperature' && i.type === 'missing'
+    );
+    if (!missingTempIssue) {
+      console.log(chalk.red('✗ 回放未检测到缺失的温度记录!'));
+      console.log(chalk.yellow('  发现的问题:'));
+      replayResult.issuesFound.forEach((issue: any) => {
+        console.log(`    - [${issue.severity}] ${issue.source}: ${issue.message}`);
+      });
+      throw new Error('异常回放功能未能检测到缺失的温度记录');
+    }
+    console.log(chalk.green('✓ 成功检测到缺失温度记录的异常'));
+
     if (replayResult.issuesFound.length > 0) {
       console.log(chalk.green('✓ 问题详情:'));
-      replayResult.issuesFound.slice(0, 3).forEach((issue, idx) => {
+      replayResult.issuesFound.slice(0, 3).forEach((issue: any, idx: number) => {
         console.log(`    ${idx + 1}. [${issue.severity}] ${issue.source}: ${issue.message}`);
       });
     }

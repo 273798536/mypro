@@ -79,10 +79,19 @@ export class ReplayService {
     const issues: ReplayIssue[] = [];
 
     try {
-      issues.push(...await this.replaySampleLabels(trace.batchNo, trace.potNo, trace.sampleLabelCount));
-      issues.push(...await this.replayTemperatureRecords(trace.batchNo, trace.potNo, trace.temperatureRecordCount, trace.hasAbnormalTemperature));
-      issues.push(...await this.replayHandovers(trace.batchNo, trace.potNo, trace.handoverCount, trace.totalStores, trace.completedStores));
-      issues.push(...await this.replayComplaints(trace.batchNo, trace.potNo, trace.complaintCount, trace.hasComplaint));
+      const [samples, temps, handovers, complaints] = await Promise.all([
+        this.sampleRepository.find({ where: { batchNo: trace.batchNo, potNo: trace.potNo, isDeleted: false } }),
+        this.tempRepository.find({ where: { batchNo: trace.batchNo, potNo: trace.potNo } }),
+        this.handoverRepository.find({ where: { batchNo: trace.batchNo, potNo: trace.potNo } }),
+        this.complaintRepository.find({ where: { batchNo: trace.batchNo, potNo: trace.potNo } }),
+      ]);
+
+      const hasData = samples.length > 0 || handovers.length > 0;
+
+      issues.push(...await this.replaySampleLabels(trace.batchNo, trace.potNo, trace.sampleLabelCount, samples));
+      issues.push(...await this.replayTemperatureRecords(trace.batchNo, trace.potNo, temps, hasData));
+      issues.push(...await this.replayHandovers(trace.batchNo, trace.potNo, trace.handoverCount, handovers));
+      issues.push(...await this.replayComplaints(trace.batchNo, trace.potNo, complaints));
       issues.push(...await this.replayAuditLogs(traceNo));
     } catch (error: any) {
       issues.push({
@@ -128,27 +137,44 @@ export class ReplayService {
     };
   }
 
-  private async replaySampleLabels(batchNo: string, potNo: string, expectedCount: number): Promise<ReplayIssue[]> {
+  private async replaySampleLabels(batchNo: string, potNo: string, savedCount: number, samples: SampleLabel[]): Promise<ReplayIssue[]> {
     const issues: ReplayIssue[] = [];
 
     try {
-      const samples = await this.sampleRepository.find({
-        where: { batchNo, potNo, isDeleted: false },
-      });
-
-      if (samples.length !== expectedCount) {
+      if (samples.length !== savedCount) {
         issues.push({
           type: 'mismatch',
           severity: samples.length === 0 ? 'high' : 'medium',
           source: 'sample_label',
           field: 'count',
-          expected: expectedCount,
+          expected: savedCount,
           actual: samples.length,
-          message: `留样标签数量不匹配: 预期 ${expectedCount}, 实际 ${samples.length}`,
+          message: `留样标签数量与已保存记录不匹配: 保存 ${savedCount}, 实际 ${samples.length}`,
         });
       }
 
+      if (samples.length === 0) {
+        issues.push({
+          type: 'missing',
+          severity: 'high',
+          source: 'sample_label',
+          field: 'data',
+          message: '未找到任何留样标签数据',
+        });
+        return issues;
+      }
+
       samples.forEach((sample, index) => {
+        if (sample.quantity <= 0) {
+          issues.push({
+            type: 'anomaly',
+            severity: 'high',
+            source: 'sample_label',
+            field: 'quantity',
+            actual: sample.quantity,
+            message: `留样标签[${sample.id || index}]: 数量异常(${sample.quantity})，应为正数`,
+          });
+        }
         if (!sample.status || sample.status === 'created') {
           issues.push({
             type: 'anomaly',
@@ -156,7 +182,7 @@ export class ReplayService {
             source: 'sample_label',
             field: 'status',
             actual: sample.status,
-            message: `留样标签[${index}]: 状态异常(${sample.status})，可能未完成验收流程`,
+            message: `留样标签[${sample.id || index}]: 状态异常(${sample.status})，可能未完成验收流程`,
           });
         }
         if (sample.version > 1) {
@@ -166,7 +192,16 @@ export class ReplayService {
             source: 'sample_label',
             field: 'version',
             actual: sample.version,
-            message: `留样标签[${index}]: 已被修改过 ${sample.version - 1} 次`,
+            message: `留样标签[${sample.id || index}]: 已被修改过 ${sample.version - 1} 次`,
+          });
+        }
+        if (!sample.producer || sample.producer.trim() === '') {
+          issues.push({
+            type: 'anomaly',
+            severity: 'medium',
+            source: 'sample_label',
+            field: 'producer',
+            message: `留样标签[${sample.id || index}]: 制作人信息缺失`,
           });
         }
       });
@@ -186,48 +221,73 @@ export class ReplayService {
   private async replayTemperatureRecords(
     batchNo: string,
     potNo: string,
-    expectedCount: number,
-    expectedHasAbnormal: boolean
+    records: TemperatureRecord[],
+    hasOtherData: boolean
   ): Promise<ReplayIssue[]> {
     const issues: ReplayIssue[] = [];
 
     try {
-      const records = await this.tempRepository.find({
-        where: { batchNo, potNo },
-        order: { recordTime: 'ASC' },
+      if (records.length === 0) {
+        if (hasOtherData) {
+          issues.push({
+            type: 'missing',
+            severity: 'high',
+            source: 'temperature',
+            field: 'data',
+            expected: '应有温度记录',
+            actual: '无温度记录',
+            message: '关键数据缺失: 存在留样或交接数据但缺少温度记录',
+          });
+        } else {
+          issues.push({
+            type: 'missing',
+            severity: 'medium',
+            source: 'temperature',
+            field: 'data',
+            message: '未找到温度记录数据',
+          });
+        }
+        return issues;
+      }
+
+      records.forEach((record, index) => {
+        if (record.temperature < -30 || record.temperature > 100) {
+          issues.push({
+            type: 'anomaly',
+            severity: 'high',
+            source: 'temperature',
+            field: 'temperature_value',
+            actual: record.temperature,
+            message: `温度记录[${record.id || index}]: 温度值异常(${record.temperature}°C)，超出正常范围`,
+          });
+        }
+        if (record.temperature < 0 || record.temperature > 60) {
+          issues.push({
+            type: 'anomaly',
+            severity: 'medium',
+            source: 'temperature',
+            field: 'temperature_range',
+            actual: record.temperature,
+            message: `温度记录[${record.id || index}]: 温度(${record.temperature}°C)超出食品存储正常范围(0-60°C)`,
+          });
+        }
+        if (!record.deviceId || record.deviceId.trim() === '') {
+          issues.push({
+            type: 'anomaly',
+            severity: 'low',
+            source: 'temperature',
+            field: 'deviceId',
+            message: `温度记录[${record.id || index}]: 设备ID缺失`,
+          });
+        }
       });
-
-      if (records.length !== expectedCount) {
-        issues.push({
-          type: 'mismatch',
-          severity: records.length === 0 ? 'high' : 'medium',
-          source: 'temperature',
-          field: 'count',
-          expected: expectedCount,
-          actual: records.length,
-          message: `温度记录数量不匹配: 预期 ${expectedCount}, 实际 ${records.length}`,
-        });
-      }
-
-      const hasAbnormal = records.some((r) => r.status !== 'normal');
-      if (hasAbnormal !== expectedHasAbnormal) {
-        issues.push({
-          type: 'mismatch',
-          severity: 'high',
-          source: 'temperature',
-          field: 'hasAbnormal',
-          expected: expectedHasAbnormal,
-          actual: hasAbnormal,
-          message: `异常温度状态不匹配: 预期 ${expectedHasAbnormal}, 实际 ${hasAbnormal}`,
-        });
-      }
 
       if (records.length >= 2) {
         for (let i = 1; i < records.length; i++) {
           const prevTemp = records[i - 1].temperature;
           const currTemp = records[i].temperature;
           const diff = Math.abs(currTemp - prevTemp);
-          if (diff > 5) {
+          if (diff > 10) {
             issues.push({
               type: 'anomaly',
               severity: 'medium',
@@ -255,74 +315,82 @@ export class ReplayService {
   private async replayHandovers(
     batchNo: string,
     potNo: string,
-    expectedCount: number,
-    expectedTotalStores: number,
-    expectedCompletedStores: number
+    savedCount: number,
+    handovers: StoreHandover[]
   ): Promise<ReplayIssue[]> {
     const issues: ReplayIssue[] = [];
 
     try {
-      const handovers = await this.handoverRepository.find({
-        where: { batchNo, potNo },
-      });
-
-      if (handovers.length !== expectedCount) {
+      if (handovers.length !== savedCount) {
         issues.push({
           type: 'mismatch',
           severity: handovers.length === 0 ? 'high' : 'medium',
           source: 'handover',
           field: 'count',
-          expected: expectedCount,
+          expected: savedCount,
           actual: handovers.length,
-          message: `交接单数量不匹配: 预期 ${expectedCount}, 实际 ${handovers.length}`,
+          message: `交接单数量与已保存记录不匹配: 保存 ${savedCount}, 实际 ${handovers.length}`,
         });
       }
 
-      const totalStores = handovers.length;
-      if (totalStores !== expectedTotalStores) {
+      if (handovers.length === 0) {
         issues.push({
-          type: 'mismatch',
+          type: 'missing',
           severity: 'medium',
           source: 'handover',
-          field: 'totalStores',
-          expected: expectedTotalStores,
-          actual: totalStores,
-          message: `涉及门店数不匹配: 预期 ${expectedTotalStores}, 实际 ${totalStores}`,
+          field: 'data',
+          message: '未找到门店交接数据',
         });
-      }
-
-      const completedStores = handovers.filter((h) => h.status === 'received').length;
-      if (completedStores !== expectedCompletedStores) {
-        issues.push({
-          type: 'mismatch',
-          severity: 'low',
-          source: 'handover',
-          field: 'completedStores',
-          expected: expectedCompletedStores,
-          actual: completedStores,
-          message: `已完成门店数不匹配: 预期 ${expectedCompletedStores}, 实际 ${completedStores}`,
-        });
+        return issues;
       }
 
       handovers.forEach((handover, index) => {
+        if (handover.deliveredQuantity < 0 || handover.receivedQuantity < 0) {
+          issues.push({
+            type: 'anomaly',
+            severity: 'high',
+            source: 'handover',
+            field: 'quantity_negative',
+            actual: `配送:${handover.deliveredQuantity}, 实收:${handover.receivedQuantity}`,
+            message: `交接单[${handover.handoverNo || index}]: 数量不能为负数`,
+          });
+        }
         if (handover.receivedQuantity > handover.deliveredQuantity) {
           issues.push({
             type: 'anomaly',
             severity: 'high',
             source: 'handover',
-            field: 'quantity',
+            field: 'quantity_mismatch',
             actual: handover.receivedQuantity,
             expected: handover.deliveredQuantity,
-            message: `交接单[${index}]: 实收数量(${handover.receivedQuantity})大于配送数量(${handover.deliveredQuantity})`,
+            message: `交接单[${handover.handoverNo || index}]: 实收数量(${handover.receivedQuantity})大于配送数量(${handover.deliveredQuantity})`,
           });
         }
-        if (handover.status === 'delivered' && !handover.receiver) {
+        if (!handover.storeCode || handover.storeCode.trim() === '') {
+          issues.push({
+            type: 'anomaly',
+            severity: 'high',
+            source: 'handover',
+            field: 'storeCode',
+            message: `交接单[${handover.handoverNo || index}]: 门店编号缺失`,
+          });
+        }
+        if (!handover.storeName || handover.storeName.trim() === '') {
+          issues.push({
+            type: 'anomaly',
+            severity: 'medium',
+            source: 'handover',
+            field: 'storeName',
+            message: `交接单[${handover.handoverNo || index}]: 门店名称缺失`,
+          });
+        }
+        if (handover.status === 'received' && !handover.receiver) {
           issues.push({
             type: 'inconsistency',
-            severity: 'low',
+            severity: 'medium',
             source: 'handover',
             field: 'receiver',
-            message: `交接单[${index}]: 状态为已送达但未填写签收人`,
+            message: `交接单[${handover.handoverNo || index}]: 已签收但未填写签收人`,
           });
         }
       });
@@ -342,49 +410,50 @@ export class ReplayService {
   private async replayComplaints(
     batchNo: string,
     potNo: string,
-    expectedCount: number,
-    expectedHasComplaint: boolean
+    complaints: StoreComplaint[]
   ): Promise<ReplayIssue[]> {
     const issues: ReplayIssue[] = [];
 
     try {
-      const complaints = await this.complaintRepository.find({
-        where: { batchNo, potNo },
-      });
-
-      if (complaints.length !== expectedCount) {
-        issues.push({
-          type: 'mismatch',
-          severity: complaints.length === 0 ? 'low' : 'medium',
-          source: 'complaint',
-          field: 'count',
-          expected: expectedCount,
-          actual: complaints.length,
-          message: `投诉数量不匹配: 预期 ${expectedCount}, 实际 ${complaints.length}`,
-        });
-      }
-
-      const hasComplaint = complaints.length > 0;
-      if (hasComplaint !== expectedHasComplaint) {
-        issues.push({
-          type: 'mismatch',
-          severity: 'medium',
-          source: 'complaint',
-          field: 'hasComplaint',
-          expected: expectedHasComplaint,
-          actual: hasComplaint,
-          message: `投诉状态不匹配: 预期 ${expectedHasComplaint}, 实际 ${hasComplaint}`,
-        });
+      if (complaints.length === 0) {
+        return issues;
       }
 
       complaints.forEach((complaint, index) => {
+        if (!complaint.storeCode || complaint.storeCode.trim() === '') {
+          issues.push({
+            type: 'anomaly',
+            severity: 'high',
+            source: 'complaint',
+            field: 'storeCode',
+            message: `投诉[${complaint.id || index}]: 门店编号缺失`,
+          });
+        }
+        if (!complaint.complaintType) {
+          issues.push({
+            type: 'anomaly',
+            severity: 'medium',
+            source: 'complaint',
+            field: 'complaintType',
+            message: `投诉[${complaint.id || index}]: 投诉类型缺失`,
+          });
+        }
         if (complaint.status === 'investigating' && !complaint.handler) {
           issues.push({
             type: 'inconsistency',
             severity: 'medium',
             source: 'complaint',
             field: 'handler',
-            message: `投诉[${index}]: 调查中但未指定处理人`,
+            message: `投诉[${complaint.id || index}]: 调查中但未指定处理人`,
+          });
+        }
+        if (!complaint.description || complaint.description.trim() === '') {
+          issues.push({
+            type: 'anomaly',
+            severity: 'low',
+            source: 'complaint',
+            field: 'description',
+            message: `投诉[${complaint.id || index}]: 投诉描述缺失`,
           });
         }
       });

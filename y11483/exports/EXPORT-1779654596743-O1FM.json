@@ -1,0 +1,109 @@
+[
+  {
+    "type": "BATCH_TRACE_HEADER",
+    "traceNo": "TRACE-1779654596660-PB3N",
+    "batchNo": "BATCH-20260524-001",
+    "potNo": "POT-001",
+    "productName": "招牌红烧肉",
+    "productionTime": "2026-05-24T20:29:56.659Z",
+    "status": "frozen",
+    "summary": "批次 BATCH-20260524-001-POT-001 | 产品: 招牌红烧肉 | 留样标签: 1 条 | 温度记录: 6 条 | 门店交接: 5 条 | 涉及门店: 5 家",
+    "sampleLabelCount": 1,
+    "temperatureRecordCount": 6,
+    "complaintCount": 0,
+    "handoverCount": 5,
+    "totalStores": 5,
+    "completedStores": 4,
+    "hasAbnormalTemperature": false,
+    "hasComplaint": false
+  },
+  {
+    "type": "STORES_SECTION",
+    "title": "=== 涉及门店列表"
+  },
+  {
+    "type": "STORE",
+    "storeCode": "ST001",
+    "storeName": "中心店",
+    "handoverNo": "HO-1779654596647-001",
+    "deliveredQuantity": 6,
+    "receivedQuantity": 6,
+    "status": "received"
+  },
+  {
+    "type": "STORE",
+    "storeCode": "ST002",
+    "storeName": "东区店",
+    "handoverNo": "HO-1779654596649-002",
+    "deliveredQuantity": 8,
+    "receivedQuantity": 8,
+    "status": "received"
+  },
+  {
+    "type": "STORE",
+    "storeCode": "ST003",
+    "storeName": "西区店",
+    "handoverNo": "HO-1779654596652-003",
+    "deliveredQuantity": 8,
+    "receivedQuantity": 0,
+    "status": "delivered"
+  },
+  {
+    "type": "STORE",
+    "storeCode": "ST004",
+    "storeName": "南区店",
+    "handoverNo": "HO-1779654596655-004",
+    "deliveredQuantity": 9,
+    "receivedQuantity": 9,
+    "status": "received"
+  },
+  {
+    "type": "STORE",
+    "storeCode": "ST005",
+    "storeName": "北区店",
+    "handoverNo": "HO-1779654596657-005",
+    "deliveredQuantity": 5,
+    "receivedQuantity": 5,
+    "status": "received"
+  },
+  {
+    "type": "HISTORY_SECTION",
+    "title": "=== 操作历史记录"
+  },
+  {
+    "type": "HISTORY",
+    "operationTime": "2026-05-24T20:29:56.740Z",
+    "operator": "test_user_001",
+    "operationType": "freeze",
+    "oldStatus": "completed",
+    "newStatus": "frozen",
+    "reason": "验收测试-导出前冻结"
+  },
+  {
+    "type": "HISTORY",
+    "operationTime": "2026-05-24T20:29:56.677Z",
+    "operator": "test_user_001",
+    "operationType": "update",
+    "oldStatus": "processing",
+    "newStatus": "completed",
+    "reason": "批次链路处理完成"
+  },
+  {
+    "type": "HISTORY",
+    "operationTime": "2026-05-24T20:29:56.667Z",
+    "operator": "test_user_001",
+    "operationType": "update",
+    "oldStatus": "created",
+    "newStatus": "processing",
+    "reason": "开始处理批次链路"
+  },
+  {
+    "type": "HISTORY",
+    "operationTime": "2026-05-24T20:29:56.662Z",
+    "operator": "test_user_001",
+    "operationType": "create",
+    "oldStatus": null,
+    "newStatus": null,
+    "reason": "创建新记录"
+  }
+]

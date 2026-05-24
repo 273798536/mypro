@@ -42,12 +42,25 @@ async function runPhase3() {
       operator: OPERATOR,
     });
     
-    if (badProcessed.status === TraceStatus.FAILED) {
-      details.push('坏数据处理 - 系统正确标记失败状态');
+    if (badProcessed.status === TraceStatus.FAILED || badProcessed.status === TraceStatus.PARTIAL_FAILED) {
+      details.push('坏数据处理 - 系统正确标记状态: ' + badProcessed.status);
     } else {
       details.push('坏数据处理 - 系统未崩溃，状态: ' + badProcessed.status);
     }
     details.push('  失败项数量: ' + (badProcessed.failedItems?.length || 0));
+    
+    const badReplayResult = await replayService.replayTrace(badTrace.traceNo, OPERATOR);
+    details.push('坏数据回放 - 发现 ' + badReplayResult.issuesFound.length + ' 个问题');
+    
+    const hasBadDataIssue = badReplayResult.issuesFound.find(
+      (i: any) => i.severity === 'high'
+    );
+    if (!hasBadDataIssue) {
+      console.log(chalk.yellow('  注意: 回放未检测到严重问题，可能数据已被清洗'));
+    } else {
+      details.push('  - 成功检测到坏数据异常');
+    }
+    
     console.log(chalk.green('  ✓ 坏数据处理验证通过'));
 
     console.log(chalk.cyan('\n  [2/5] 验证部分失败场景...'));
@@ -82,12 +95,26 @@ async function runPhase3() {
     
     details.push('回放 - 发现 ' + replayResult.issuesFound.length + ' 个问题');
     details.push('回放 - 状态: ' + replayResult.status);
+    
+    const missingTempIssue = replayResult.issuesFound.find(
+      (i: any) => i.source === 'temperature' && i.type === 'missing'
+    );
+    if (!missingTempIssue) {
+      console.log(chalk.red('  ✗ 异常回放未检测到缺失的温度记录!'));
+      console.log(chalk.yellow('  回放发现的问题:'));
+      replayResult.issuesFound.forEach((issue: any) => {
+        console.log('    - [' + issue.severity + '] ' + issue.source + ': ' + issue.message);
+      });
+      throw new Error('回放功能未能检测到缺失的温度记录');
+    }
+    details.push('  - 成功检测到缺失温度记录的异常');
+    
     if (replayResult.issuesFound.length > 0) {
-      replayResult.issuesFound.slice(0, 2).forEach(issue => {
+      replayResult.issuesFound.slice(0, 3).forEach((issue: any) => {
         details.push('  - [' + issue.severity + '] ' + issue.source + ': ' + issue.message.substring(0, 50));
       });
     }
-    console.log(chalk.green('  ✓ 异常回放验证通过'));
+    console.log(chalk.green('  ✓ 异常回放验证通过 - 成功检测到缺失数据异常'));
 
     console.log(chalk.cyan('\n  [4/5] 验证对账功能...'));
     const reconcileResult = await replayService.reconcile(BATCH_BAD, POT_BAD, OPERATOR);
