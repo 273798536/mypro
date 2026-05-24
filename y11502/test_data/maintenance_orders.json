@@ -1,0 +1,20 @@
+[
+  {
+    "order_no": "MO20240501001",
+    "customer_name": "张三",
+    "product_model": "iPhone 15 Pro",
+    "fault_description": "屏幕碎裂，需要更换"
+  },
+  {
+    "order_no": "MO20240501002",
+    "customer_name": "李四",
+    "product_model": "MacBook Pro 14",
+    "fault_description": "键盘按键失灵"
+  },
+  {
+    "order_no": "MO20240501003",
+    "customer_name": "王五",
+    "product_model": "iPad Air",
+    "fault_description": "电池鼓包"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "scan_no": "SC20240501001",
+    "part_code": "PAR-001-SCR",
+    "part_name": "iPhone 15 Pro 屏幕总成",
+    "quantity": 1,
+    "scan_time": "2024-05-01T10:30:00+08:00",
+    "operator": "张工程师"
+  },
+  {
+    "scan_no": "SC20240501002",
+    "part_code": "PAR-002-KEY",
+    "part_name": "MacBook Pro 键盘",
+    "quantity": 1,
+    "scan_time": "2024-05-01T11:15:00+08:00",
+    "operator": "李工程师"
+  },
+  {
+    "scan_no": "SC20240501003",
+    "part_code": "PAR-003-BAT",
+    "part_name": "iPad Air 电池",
+    "quantity": 1,
+    "scan_time": "2024-05-01T14:00:00+08:00",
+    "operator": "王工程师"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "receipt_no": "RC20240501001",
+    "order_no": "MO20240501001",
+    "customer_name": "张三",
+    "receipt_time": "2024-05-01T16:00:00+08:00",
+    "image_url": "https://example.com/receipts/RC20240501001.jpg",
+    "signed_by": "张三"
+  },
+  {
+    "receipt_no": "RC20240501002",
+    "order_no": "MO20240501002",
+    "customer_name": "李四",
+    "receipt_time": "2024-05-01T17:30:00+08:00",
+    "image_url": "https://example.com/receipts/RC20240501002.jpg",
+    "signed_by": "李四"
+  },
+  {
+    "receipt_no": "RC20240501003",
+    "order_no": "MO20240501003",
+    "customer_name": "王五",
+    "receipt_time": "2024-05-01T18:00:00+08:00",
+    "image_url": "https://example.com/receipts/RC20240501003.jpg",
+    "signed_by": "王五"
+  }
+]
