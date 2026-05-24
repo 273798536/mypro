@@ -334,11 +334,12 @@ class QueueService {
 
   static async getRetryableItems() {
     return new Promise((resolve, reject) => {
+      const now = new Date().toISOString();
       db.all(
         `SELECT * FROM material_queue 
-         WHERE status = ? AND next_retry_at <= CURRENT_TIMESTAMP
+         WHERE status = ? AND (next_retry_at IS NULL OR next_retry_at <= ?)
          ORDER BY next_retry_at ASC`,
-        [QUEUE_STATUS.WAITING_RETRY],
+        [QUEUE_STATUS.WAITING_RETRY, now],
         (err, rows) => {
           if (err) reject(err);
           else resolve(rows.map(row => ({

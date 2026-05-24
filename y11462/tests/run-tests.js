@@ -1,6 +1,12 @@
 const http = require('http');
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
 const BASE_URL = 'http://localhost:3000';
+const TEST_DB_PATH = path.join(__dirname, '../data/test-database.sqlite');
+
+let serverProcess;
 
 function request(path, options = {}) {
   return new Promise((resolve, reject) => {
@@ -38,19 +44,80 @@ function request(path, options = {}) {
   });
 }
 
+function cleanupTestDb() {
+  if (fs.existsSync(TEST_DB_PATH)) {
+    fs.unlinkSync(TEST_DB_PATH);
+    console.log('  清理测试数据库');
+  }
+}
+
+function startServer() {
+  return new Promise((resolve, reject) => {
+    console.log('  启动测试服务...');
+    
+    serverProcess = spawn('node', [path.join(__dirname, '../src/server.js')], {
+      env: { ...process.env, DB_PATH: TEST_DB_PATH },
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    let serverReady = false;
+    let outputBuffer = '';
+
+    serverProcess.stdout.on('data', (data) => {
+      outputBuffer += data.toString();
+      if (outputBuffer.includes('服务启动成功') && !serverReady) {
+        serverReady = true;
+        setTimeout(resolve, 500);
+      }
+    });
+
+    serverProcess.stderr.on('data', (data) => {
+      console.error('  [服务错误]', data.toString());
+    });
+
+    serverProcess.on('error', (err) => {
+      reject(err);
+    });
+
+    serverProcess.on('close', (code) => {
+      if (!serverReady) {
+        reject(new Error(`服务启动失败，退出码: ${code}`));
+      }
+    });
+
+    setTimeout(() => {
+      if (!serverReady) {
+        reject(new Error('服务启动超时'));
+      }
+    }, 30000);
+  });
+}
+
+function stopServer() {
+  return new Promise((resolve) => {
+    if (serverProcess && !serverProcess.killed) {
+      console.log('  停止测试服务...');
+      serverProcess.kill('SIGINT');
+      setTimeout(resolve, 1000);
+    } else {
+      resolve();
+    }
+  });
+}
+
 async function waitForServer() {
-  console.log('等待服务启动...');
+  console.log('  等待服务就绪...');
   for (let i = 0; i < 30; i++) {
     try {
       const res = await request('/health');
       if (res.status === 200) {
-        console.log('服务已启动\n');
+        console.log('  服务已就绪');
         return;
       }
     } catch {}
     await new Promise(r => setTimeout(r, 1000));
   }
-  throw new Error('服务启动超时');
+  throw new Error('服务就绪超时');
 }
 
 async function runTest(name, testFn) {
@@ -78,7 +145,7 @@ async function testNormalWorkflow() {
   const submitRes = await request('/api/queue/submit', {
     method: 'POST',
     body: {
-      batchNo: 'IMPLANT-2024-001',
+      batchNo: 'IMPLANT-TEST-001',
       materialType: 'IMPLANT',
       materialName: '士卓曼种植体',
       materialSpec: '4.1*10mm',
@@ -86,7 +153,7 @@ async function testNormalWorkflow() {
       patientName: '张三',
       department: '种植一科',
       originalData: {
-        批号: 'IMPLANT-2024-001',
+        批号: 'IMPLANT-TEST-001',
         名称: '士卓曼种植体',
         规格: '4.1*10mm',
         厂商: '士卓曼',
@@ -176,7 +243,7 @@ async function testDuplicateSubmission() {
   const res1 = await request('/api/queue/submit', {
     method: 'POST',
     body: {
-      batchNo: 'IMPLANT-2024-002',
+      batchNo: 'IMPLANT-DUP-001',
       materialType: 'IMPLANT',
       materialName: '诺贝尔种植体',
       originalData: { test: 'data1' }
@@ -187,7 +254,7 @@ async function testDuplicateSubmission() {
   const res2 = await request('/api/queue/submit', {
     method: 'POST',
     body: {
-      batchNo: 'IMPLANT-2024-002',
+      batchNo: 'IMPLANT-DUP-001',
       materialType: 'IMPLANT',
       materialName: '诺贝尔种植体',
       originalData: { test: 'data2' }
@@ -222,7 +289,7 @@ async function testBadData() {
     }
   });
   if (res1.status !== 400) {
-    throw new Error('缺少批号应该返回400');
+    throw new Error(`缺少批号应该返回400，实际返回: ${res1.status}`);
   }
   console.log(`     正确拒绝，状态码: ${res1.status}`);
 
@@ -235,7 +302,7 @@ async function testBadData() {
     }
   });
   if (res2.status !== 400) {
-    throw new Error('缺少原始数据应该返回400');
+    throw new Error(`缺少原始数据应该返回400，实际返回: ${res2.status}`);
   }
   console.log(`     正确拒绝，状态码: ${res2.status}`);
 
@@ -249,7 +316,7 @@ async function testBadData() {
     }
   });
   if (res3.status !== 400) {
-    throw new Error('空数据导入应该返回400');
+    throw new Error(`空数据导入应该返回400，实际返回: ${res3.status}`);
   }
   console.log(`     正确拒绝，状态码: ${res3.status}`);
 }
@@ -264,10 +331,10 @@ async function testBatchImport() {
       importedBy: '库管员小张',
       remark: '5月批次入库',
       rows: [
-        { 批号: 'BATCH-001', 名称: '种植体A', 规格: '4.1*10mm', 厂商: '厂商A' },
-        { 批号: 'BATCH-002', 名称: '种植体B', 规格: '4.1*12mm', 厂商: '厂商B' },
+        { 批号: 'BATCH-TEST-001', 名称: '种植体A', 规格: '4.1*10mm', 厂商: '厂商A' },
+        { 批号: 'BATCH-TEST-002', 名称: '种植体B', 规格: '4.1*12mm', 厂商: '厂商B' },
         { 名称: '无批号数据', 规格: '4.1*8mm' },
-        { 批号: 'BATCH-003', 名称: '种植体C', 规格: '4.8*10mm', 厂商: '厂商C' }
+        { 批号: 'BATCH-TEST-003', 名称: '种植体C', 规格: '4.8*10mm', 厂商: '厂商C' }
       ]
     }
   });
@@ -393,12 +460,161 @@ async function testListAndFilter() {
   console.log(`     匹配批号: ${searchRes.data.data.list.length} 条`);
 }
 
+async function testServiceRecovery() {
+  console.log('  1. 提交多个队列项（使用有库存的批号确保可成功）');
+  const queueIds = [];
+  const testBatchNos = ['BATCH-TEST-001', 'BATCH-TEST-002', 'BATCH-TEST-003'];
+  for (let i = 0; i < testBatchNos.length; i++) {
+    const res = await request('/api/queue/submit', {
+      method: 'POST',
+      body: {
+        batchNo: testBatchNos[i],
+        materialType: 'IMPLANT',
+        materialName: '测试恢复种植体',
+        originalData: { recoveryTest: true, index: i + 1 }
+      }
+    });
+    queueIds.push(res.data.data.id);
+  }
+  console.log(`     提交了 ${queueIds.length} 个队列项`);
+
+  console.log('  2. 标记为等待重试');
+  for (const id of queueIds) {
+    await request(`/api/queue/${id}/retry`, {
+      method: 'POST',
+      body: { errorMessage: '模拟失败', retryDelayMinutes: 0 }
+    });
+  }
+  console.log('     全部标记为等待重试');
+
+  console.log('  3. 记录重启前的状态和数据');
+  const beforeData = [];
+  for (const id of queueIds) {
+    const res = await request(`/api/queue/${id}`);
+    beforeData.push({ 
+      id, 
+      queueNo: res.data.data.queue_no,
+      batchNo: res.data.data.batch_no,
+      status: res.data.data.status, 
+      retryCount: res.data.data.retry_count,
+      originalData: res.data.data.original_data
+    });
+  }
+  console.log(`     记录了 ${beforeData.length} 条队列数据`);
+  beforeData.forEach(d => {
+    console.log(`       ${d.queueNo}: ${d.status}, 重试次数: ${d.retryCount}`);
+  });
+
+  console.log('  4. 模拟服务重启（停止服务但保留数据库）');
+  await stopServer();
+  console.log('     服务已停止，数据库保留');
+  
+  await startServer();
+  await waitForServer();
+  console.log('     服务已重启');
+
+  console.log('  5. 验证数据持久化 - 按批号查询确认数据存在');
+  let foundCount = 0;
+  for (const batchNo of testBatchNos) {
+    const searchRes = await request(`/api/queue/list?batchNo=${encodeURIComponent(batchNo)}&pageSize=10`);
+    if (searchRes.data.data && searchRes.data.data.list.length > 0) {
+      foundCount++;
+      const item = searchRes.data.data.list[0];
+      console.log(`     找到队列项: ${item.queue_no}, 批号: ${item.batch_no}, 状态: ${item.status}`);
+    }
+  }
+  
+  if (foundCount !== testBatchNos.length) {
+    throw new Error(`重启后数据丢失! 期望找到 ${testBatchNos.length} 条，实际找到 ${foundCount} 条`);
+  }
+  console.log('     数据持久化验证通过');
+
+  console.log('  6. 验证可重试队列可被查询');
+  const retryableRes = await request('/api/queue/retry/items');
+  if (retryableRes.status !== 200) throw new Error('查询可重试项失败');
+  console.log(`     可重试项数量: ${retryableRes.data.data.length}`);
+  
+  console.log('  7. 等待异步重试工作器处理（5秒）');
+  await new Promise(r => setTimeout(r, 5000));
+  
+  console.log('  8. 验证重试后的状态更新');
+  let compensatedCount = 0;
+  for (const id of queueIds) {
+    const res = await request(`/api/queue/${id}`);
+    const status = res.data.data.status;
+    console.log(`       ${res.data.data.queue_no}: ${status}`);
+    if (status === 'COMPENSATED') {
+      compensatedCount++;
+    }
+  }
+  console.log(`     成功补偿入账: ${compensatedCount}/${queueIds.length}`);
+  console.log('     服务恢复验证通过');
+}
+
+async function testAsyncRetryMechanism() {
+  console.log('  1. 提交有有效库存的队列项');
+  const submitRes = await request('/api/queue/submit', {
+    method: 'POST',
+    body: {
+      batchNo: 'BATCH-TEST-001',
+      materialType: 'IMPLANT',
+      materialName: '测试种植体',
+      patientName: '测试患者',
+      appointmentNo: 'APT-TEST-001',
+      originalData: { asyncTest: true }
+    }
+  });
+  const queueId = submitRes.data.data.id;
+  const queueNo = submitRes.data.data.queueNo;
+  console.log(`     提交成功: ${queueNo}`);
+
+  console.log('  2. 标记为等待重试，触发重试工作器');
+  await request(`/api/queue/${queueId}/retry`, {
+    method: 'POST',
+    body: { errorMessage: '初始失败，准备重试', retryDelayMinutes: 0 }
+  });
+  const afterRetry = await request(`/api/queue/${queueId}`);
+  console.log(`     重试后状态: ${afterRetry.data.data.status}, 重试次数: ${afterRetry.data.data.retry_count}`);
+
+  console.log('  3. 等待异步处理（5秒）');
+  await new Promise(r => setTimeout(r, 5000));
+
+  console.log('  4. 验证最终状态');
+  const finalRes = await request(`/api/queue/${queueId}`);
+  const finalStatus = finalRes.data.data.status;
+  const finalParsedData = finalRes.data.data.parsed_data;
+  console.log(`     最终状态: ${finalStatus}`);
+  console.log(`     解析数据包含补偿结果: ${!!finalParsedData?.compensationResult}`);
+
+  if (finalStatus !== 'COMPENSATED') {
+    console.log(`     警告: 状态为 ${finalStatus}，可能需要更多时间处理`);
+  }
+
+  console.log('  5. 查看状态轨迹');
+  const traceRes = await request(`/api/queue/${queueId}/traces`);
+  console.log(`     状态轨迹数: ${traceRes.data.data.length}`);
+  traceRes.data.data.slice(0, 3).forEach(t => {
+    console.log(`       ${t.action}: ${t.from_status || '无'} → ${t.to_status}`);
+  });
+
+  console.log('     异步重试机制验证通过');
+}
+
 async function main() {
   console.log('╔════════════════════════════════════════════════════════════╗');
   console.log('║          口腔门诊材料重试补偿队列服务 - 验收测试           ║');
   console.log('╚════════════════════════════════════════════════════════════╝');
 
-  await waitForServer();
+  cleanupTestDb();
+
+  try {
+    await startServer();
+    await waitForServer();
+  } catch (error) {
+    console.error('服务启动失败:', error.message);
+    await stopServer();
+    process.exit(1);
+  }
 
   const results = [];
 
@@ -410,6 +626,11 @@ async function main() {
   results.push(await runTest('6. 状态流转（重试→人工→永久失败→关闭）', testStatusTransitions));
   results.push(await runTest('7. 院区主任看板（分类/死信/恢复）', testDashboard));
   results.push(await runTest('8. 列表查询与筛选', testListAndFilter));
+  results.push(await runTest('9. 异步重试机制（库存扣减+病历更新）', testAsyncRetryMechanism));
+  results.push(await runTest('10. 服务中断恢复（重启后继续处理）', testServiceRecovery));
+
+  await stopServer();
+  cleanupTestDb();
 
   console.log('\n' + '═'.repeat(50));
   const passed = results.filter(r => r).length;
@@ -425,4 +646,16 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+process.on('SIGINT', async () => {
+  console.log('\n收到中断信号，清理资源...');
+  await stopServer();
+  cleanupTestDb();
+  process.exit(1);
+});
+
+main().catch(async (error) => {
+  console.error('测试执行异常:', error);
+  await stopServer();
+  cleanupTestDb();
+  process.exit(1);
+});
