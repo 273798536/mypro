@@ -1,0 +1,8 @@
+{
+  "snapshot_id": "SNAP-20260524-150632",
+  "created_at": "2026-05-24T15:06:32.329273",
+  "operator": "cli_user",
+  "description": "After import: sample_data/travel_requests.csv",
+  "record_count": 4,
+  "record_hash": "57cc9c45985ef5bd9d7215f88867c10b25bc5dc8b04776d0a9beb38496e25f6a"
+}

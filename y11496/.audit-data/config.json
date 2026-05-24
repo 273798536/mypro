@@ -1,0 +1,63 @@
+{
+  "initialized_at": "2026-05-24T15:03:54.628200",
+  "version": "1.0.0",
+  "current_snapshot": "SNAP-20260524-150910",
+  "record_count": 10,
+  "operators": [
+    "system"
+  ],
+  "record_ids": [
+    "REC-20260524-AAAD4A04",
+    "REC-20260524-61108436",
+    "REC-20260524-8D0244AF",
+    "REC-20260524-2DC4A805",
+    "REC-20260524-28F1B3D2",
+    "REC-20260524-5F51F047",
+    "REC-20260524-C3ACC395",
+    "REC-20260524-FB9C5EC4",
+    "REC-20260524-5E521939",
+    "REC-20260524-493D2B9C"
+  ],
+  "snapshots": [
+    {
+      "snapshot_id": "SNAP-20260524-150632",
+      "created_at": "2026-05-24T15:06:32.329273",
+      "operator": "cli_user",
+      "description": "After import: sample_data/travel_requests.csv",
+      "record_count": 4,
+      "record_hash": "57cc9c45985ef5bd9d7215f88867c10b25bc5dc8b04776d0a9beb38496e25f6a"
+    },
+    {
+      "snapshot_id": "SNAP-20260524-150647",
+      "created_at": "2026-05-24T15:06:47.129444",
+      "operator": "cli_user",
+      "description": "After import: sample_data/invoices.csv",
+      "record_count": 10,
+      "record_hash": "0d0d1f8c7ae5b227fb5f1738b3f6762f6155fe92b5311506b51488d11ad675f3"
+    },
+    {
+      "snapshot_id": "SNAP-20260524-150705",
+      "created_at": "2026-05-24T15:07:05.533056",
+      "operator": "cli_user",
+      "description": "After import: sample_data/payment_flows.csv",
+      "record_count": 10,
+      "record_hash": "35229d73797e8f32dbb80759a38ec588585c0afeb5bb743febbdb66d4fd8f835"
+    },
+    {
+      "snapshot_id": "SNAP-20260524-150842",
+      "created_at": "2026-05-24T15:08:42.596707",
+      "operator": "cli_user",
+      "description": "After audit check",
+      "record_count": 10,
+      "record_hash": "c8301b474a4b5a511206992f374d20d61694f7ef983af5dab167aa9af32d4d88"
+    },
+    {
+      "snapshot_id": "SNAP-20260524-150910",
+      "created_at": "2026-05-24T15:09:10.050304",
+      "operator": "manager",
+      "description": "After override: REC-20260524-AAAD4A04",
+      "record_count": 10,
+      "record_hash": "1cd6bb0f8b96073667eb8354a4a256e8721943ff7d10ff2f69c9a8a210b8b601"
+    }
+  ]
+}
