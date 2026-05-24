@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
 const AuditLog = require('./AuditLog');
 const Implant = require('./Implant');
+const Appointment = require('./Appointment');
+const SupplierInvoice = require('./SupplierInvoice');
 const FailedRecord = require('./FailedRecord');
 
 const LEDGER_STATUS = {
@@ -71,10 +73,29 @@ class TraceabilityLedger {
     }
 
     const implant = await Implant.findByBatchNumber(data.implant_batch_number);
+    
+    let appointmentId = data.appointment_id || null;
+    if (!appointmentId && data.appointment_no) {
+      const appointment = await Appointment.findByAppointmentNo(data.appointment_no);
+      if (appointment) {
+        appointmentId = appointment.id;
+      }
+    }
+    
+    let invoiceId = data.invoice_id || null;
+    if (!invoiceId && data.invoice_no) {
+      const invoice = await SupplierInvoice.findByInvoiceNo(data.invoice_no);
+      if (invoice) {
+        invoiceId = invoice.id;
+      }
+    }
+    
     const id = uuidv4();
     const now = moment().toISOString();
     const ledgerNo = this.generateLedgerNo();
     const stockAfter = implant.current_stock - data.usage_quantity;
+    
+    await Implant.updateStock(implant.id, -data.usage_quantity);
     
     await db.run(`
       INSERT INTO traceability_ledgers (
@@ -89,9 +110,9 @@ class TraceabilityLedger {
       ledgerNo,
       implant.id,
       data.implant_batch_number,
-      data.appointment_id || null,
+      appointmentId,
       data.appointment_no || null,
-      data.invoice_id || null,
+      invoiceId,
       data.invoice_no || null,
       data.patient_name || null,
       data.doctor_name || null,
@@ -111,11 +132,17 @@ class TraceabilityLedger {
     await AuditLog.create({
       ledger_id: id,
       action: 'create',
-      new_value: { status: LEDGER_STATUS.DRAFT, ...data },
+      new_value: { 
+        status: LEDGER_STATUS.DRAFT, 
+        appointment_id: appointmentId,
+        invoice_id: invoiceId,
+        stock_after: stockAfter,
+        ...data 
+      },
       operator_id: operator.id || data.created_by,
       operator_name: operator.name || 'system',
       operator_role: operator.role || 'replenisher',
-      remark: '创建台账记录'
+      remark: '创建台账记录，库存已扣减'
     });
     
     return this.findById(id);

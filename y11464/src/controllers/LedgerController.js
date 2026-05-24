@@ -212,7 +212,15 @@ class LedgerController {
 
   static async exportLedgers(req, res) {
     try {
-      const options = req.query;
+      const options = {
+        ...req.query,
+        ...req.body
+      };
+      
+      if (options.sensitive_masked === 'true' || options.sensitive_masked === 'false') {
+        options.sensitive_masked = options.sensitive_masked === 'true';
+      }
+      
       const result = await ExportService.exportToCSV(options);
       
       res.json({
