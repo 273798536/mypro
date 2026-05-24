@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0",
+  "status": "active",
+  "frozen": false,
+  "currentBatch": "mpk0xsevxeuachg02",
+  "batches": [
+    "mpk0xdert16kz29zp",
+    "mpk0xrzpjpntrilek",
+    "mpk0xs3k8ycx7dli0",
+    "mpk0xsevxeuachg02"
+  ],
+  "lastCheck": {
+    "checkId": "mpk0xvnsul5ioqalk",
+    "timestamp": "2026-05-24T17:01:12.712Z",
+    "summary": {
+      "totalRecords": 22,
+      "checkedRecords": 22,
+      "passed": 22,
+      "failed": 0,
+      "warnings": 0,
+      "issues": [
+        {
+          "type": "warning",
+          "category": "missing_review",
+          "recordId": "CO004",
+          "rowNumber": 5,
+          "sourceFile": "change_orders.csv",
+          "message": "变更单 CO004 缺少审核意见"
+        },
+        {
+          "type": "error",
+          "category": "offline_citation",
+          "recordId": "CIT003",
+          "rowNumber": 4,
+          "sourceFile": "citation_records.csv",
+          "answerId": "ANS003",
+          "message": "坐席复制了已下线答案 ANS003"
+        },
+        {
+          "type": "error",
+          "category": "offline_citation",
+          "recordId": "CIT004",
+          "rowNumber": 5,
+          "sourceFile": "citation_records.csv",
+          "answerId": "ANS003",
+          "message": "坐席复制了已下线答案 ANS003"
+        },
+        {
+          "type": "error",
+          "category": "offline_citation",
+          "recordId": "CIT005",
+          "rowNumber": 6,
+          "sourceFile": "citation_records.csv",
+          "answerId": "ANS003",
+          "message": "坐席复制了已下线答案 ANS003"
+        },
+        {
+          "type": "error",
+          "category": "offline_citation",
+          "recordId": "CIT007",
+          "rowNumber": 8,
+          "sourceFile": "citation_records.csv",
+          "answerId": "ANS003",
+          "message": "坐席复制了已下线答案 ANS003"
+        }
+      ]
+    }
+  },
+  "lastExport": {
+    "exportId": "mpk0y4r2drljxm7wm",
+    "timestamp": "2026-05-24T17:01:24.494Z",
+    "outputDir": "/Users/mac/pro/solo/workspaces/y11596/test-audit/exports/mpk0y4r2drljxm7wm"
+  },
+  "importStats": {
+    "change_order": {
+      "total": 5,
+      "valid": 5,
+      "invalid": 0
+    },
+    "review_opinion": {
+      "total": 4,
+      "valid": 4,
+      "invalid": 0
+    },
+    "citation_record": {
+      "total": 7,
+      "valid": 7,
+      "invalid": 0
+    },
+    "scan_detail": {
+      "total": 6,
+      "valid": 6,
+      "invalid": 0
+    }
+  }
+}

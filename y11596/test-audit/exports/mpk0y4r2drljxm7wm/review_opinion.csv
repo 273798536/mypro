@@ -1,0 +1,5 @@
+﻿"recordId","dataType","batchId","rowNumber","sourceFile","sourceRow","status","checkStatus","manualOverride","overrideStatus","overrideReason","data_review_id","data_change_id","data_reviewer","data_opinion","data_status","data_created_at"
+"REV001","review_opinion","mpk0xrzpjpntrilek",2,"review_opinions.csv",2,"imported","checked",false,,,"REV001","CO001","审核员A","内容准确，可以发布","approved","2024-01-15 11:00:00"
+"REV002","review_opinion","mpk0xrzpjpntrilek",3,"review_opinions.csv",3,"imported","checked",false,,,"REV002","CO002","审核员B","需要补充会员权益细节","rejected","2024-01-16 15:00:00"
+"REV003","review_opinion","mpk0xrzpjpntrilek",4,"review_opinions.csv",4,"imported","checked",false,,,"REV003","CO003","审核员A","确认下线，已通知相关团队","approved","2024-01-17 10:00:00"
+"REV004","review_opinion","mpk0xrzpjpntrilek",5,"review_opinions.csv",5,"imported","checked",false,,,"REV004","CO005","审核员C","活动规则表述清晰","approved","2024-01-19 12:00:00"

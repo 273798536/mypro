@@ -1,0 +1,24 @@
+{
+  "name": "kbase-audit-cli",
+  "version": "1.0.0",
+  "description": "客服知识库发布多源导入巡检 CLI 工具",
+  "main": "index.js",
+  "bin": {
+    "kbase-audit": "./bin/kbase-audit.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["knowledge-base", "audit", "cli", "customer-service"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "csv-parser": "^3.0.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "diff": "^5.1.0",
+    "uuid": "^9.0.1"
+  }
+}

@@ -1,0 +1,6 @@
+﻿"recordId","dataType","batchId","rowNumber","sourceFile","sourceRow","status","checkStatus","manualOverride","overrideStatus","overrideReason","data_change_id","data_title","data_status","data_creator","data_created_at","data_answer_id","data_content"
+"CO001","change_order","mpk0xdert16kz29zp",2,"change_orders.csv",2,"imported","checked",false,,,"CO001","关于退款政策的更新说明","online","张三","2024-01-15 10:30:00","ANS001","退款政策调整为7天无理由"
+"CO002","change_order","mpk0xdert16kz29zp",3,"change_orders.csv",3,"imported","checked",false,,,"CO002","会员权益升级公告","online","李四","2024-01-16 14:20:00","ANS002","会员新增专属客服通道"
+"CO003","change_order","mpk0xdert16kz29zp",4,"change_orders.csv",4,"imported","checked",false,,,"CO003","物流配送时效调整","offline","王五","2024-01-17 09:15:00","ANS003","因运力调整，配送时间延后24小时"
+"CO004","change_order","mpk0xdert16kz29zp",5,"change_orders.csv",5,"imported","checked",false,,,"CO004","常见问题补充说明","pending","赵六","2024-01-18 16:45:00","ANS004","关于发票开具的补充说明"
+"CO005","change_order","mpk0xdert16kz29zp",6,"change_orders.csv",6,"imported","checked",false,,,"CO005","活动规则澄清","online","张三","2024-01-19 11:00:00","ANS005","满减活动不叠加其他优惠"

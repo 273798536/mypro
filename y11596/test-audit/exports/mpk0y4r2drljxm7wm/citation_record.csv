@@ -1,0 +1,8 @@
+﻿"recordId","dataType","batchId","rowNumber","sourceFile","sourceRow","status","checkStatus","manualOverride","overrideStatus","overrideReason","data_citation_id","data_answer_id","data_agent_id","data_used_at","data_conversation_id","data_user_question"
+"CIT001","citation_record","mpk0xs3k8ycx7dli0",2,"citation_records.csv",2,"imported","checked",false,,,"CIT001","ANS001","AGENT001","2024-01-20 09:30:00","CONV001","退款需要多长时间"
+"CIT002","citation_record","mpk0xs3k8ycx7dli0",3,"citation_records.csv",3,"imported","checked",false,,,"CIT002","ANS001","AGENT002","2024-01-20 10:15:00","CONV002","怎么申请退款"
+"CIT003","citation_record","mpk0xs3k8ycx7dli0",4,"citation_records.csv",4,"imported","checked",false,,,"CIT003","ANS003","AGENT001","2024-01-20 11:00:00","CONV003","快递什么时候到"
+"CIT004","citation_record","mpk0xs3k8ycx7dli0",5,"citation_records.csv",5,"imported","checked",false,,,"CIT004","ANS003","AGENT003","2024-01-20 14:20:00","CONV004","配送时间是多久"
+"CIT005","citation_record","mpk0xs3k8ycx7dli0",6,"citation_records.csv",6,"imported","checked",false,,,"CIT005","ANS003","AGENT002","2024-01-20 15:45:00","CONV005","物流时效有变化吗"
+"CIT006","citation_record","mpk0xs3k8ycx7dli0",7,"citation_records.csv",7,"imported","checked",false,,,"CIT006","ANS002","AGENT004","2024-01-20 16:30:00","CONV006","会员有什么福利"
+"CIT007","citation_record","mpk0xs3k8ycx7dli0",8,"citation_records.csv",8,"imported","checked",false,,,"CIT007","ANS003","AGENT001","2024-01-21 08:50:00","CONV007","为什么还没发货"

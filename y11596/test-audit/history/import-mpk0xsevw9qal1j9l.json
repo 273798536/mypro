@@ -1,0 +1,225 @@
+{
+  "action": "import",
+  "importId": "mpk0xsevw9qal1j9l",
+  "batchId": "mpk0xsevxeuachg02",
+  "dataType": "scan_detail",
+  "timestamp": "2026-05-24T17:01:08.503Z",
+  "snapshotBefore": {
+    "timestamp": "2026-05-24T17:01:08.505Z",
+    "dataHash": "[]",
+    "data": [],
+    "metadata": {}
+  },
+  "snapshotAfter": {
+    "timestamp": "2026-05-24T17:01:08.505Z",
+    "dataHash": "[{\"importId\":\"mpk0xsevw9qal1j9l\",\"batchId\":\"mpk0xsevxeuachg02\",\"recordId\":\"SCAN001\",\"dataType\":\"scan_detail\",\"importTime\":\"2026-05-24T17:01:08.503Z\",\"rowNumber\":2,\"source\":{\"file\":\"scan_details.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv\",\"rowIndex\":1,\"rowNumber\":2},\"rawData\":{\"scan_id\":\"SCAN001\",\"answer_id\":\"ANS001\",\"user_id\":\"USER001\",\"scanned_at\":\"2024-01-20 09:25:00\",\"channel\":\"app\",\"location\":\"北京\"},\"parsedData\":{\"scan_id\":\"SCAN001\",\"answer_id\":\"ANS001\",\"user_id\":\"USER001\",\"scanned_at\":\"2024-01-20 09:25:00\",\"channel\":\"app\",\"location\":\"北京\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xsevw9qal1j9l\",\"batchId\":\"mpk0xsevxeuachg02\",\"recordId\":\"SCAN002\",\"dataType\":\"scan_detail\",\"importTime\":\"2026-05-24T17:01:08.503Z\",\"rowNumber\":3,\"source\":{\"file\":\"scan_details.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv\",\"rowIndex\":2,\"rowNumber\":3},\"rawData\":{\"scan_id\":\"SCAN002\",\"answer_id\":\"ANS001\",\"user_id\":\"USER002\",\"scanned_at\":\"2024-01-20 10:10:00\",\"channel\":\"web\",\"location\":\"上海\"},\"parsedData\":{\"scan_id\":\"SCAN002\",\"answer_id\":\"ANS001\",\"user_id\":\"USER002\",\"scanned_at\":\"2024-01-20 10:10:00\",\"channel\":\"web\",\"location\":\"上海\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xsevw9qal1j9l\",\"batchId\":\"mpk0xsevxeuachg02\",\"recordId\":\"SCAN003\",\"dataType\":\"scan_detail\",\"importTime\":\"2026-05-24T17:01:08.503Z\",\"rowNumber\":4,\"source\":{\"file\":\"scan_details.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv\",\"rowIndex\":3,\"rowNumber\":4},\"rawData\":{\"scan_id\":\"SCAN003\",\"answer_id\":\"ANS003\",\"user_id\":\"USER003\",\"scanned_at\":\"2024-01-20 10:55:00\",\"channel\":\"app\",\"location\":\"广州\"},\"parsedData\":{\"scan_id\":\"SCAN003\",\"answer_id\":\"ANS003\",\"user_id\":\"USER003\",\"scanned_at\":\"2024-01-20 10:55:00\",\"channel\":\"app\",\"location\":\"广州\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xsevw9qal1j9l\",\"batchId\":\"mpk0xsevxeuachg02\",\"recordId\":\"SCAN004\",\"dataType\":\"scan_detail\",\"importTime\":\"2026-05-24T17:01:08.503Z\",\"rowNumber\":5,\"source\":{\"file\":\"scan_details.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv\",\"rowIndex\":4,\"rowNumber\":5},\"rawData\":{\"scan_id\":\"SCAN004\",\"answer_id\":\"ANS003\",\"user_id\":\"USER004\",\"scanned_at\":\"2024-01-20 14:15:00\",\"channel\":\"app\",\"location\":\"深圳\"},\"parsedData\":{\"scan_id\":\"SCAN004\",\"answer_id\":\"ANS003\",\"user_id\":\"USER004\",\"scanned_at\":\"2024-01-20 14:15:00\",\"channel\":\"app\",\"location\":\"深圳\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xsevw9qal1j9l\",\"batchId\":\"mpk0xsevxeuachg02\",\"recordId\":\"SCAN005\",\"dataType\":\"scan_detail\",\"importTime\":\"2026-05-24T17:01:08.503Z\",\"rowNumber\":6,\"source\":{\"file\":\"scan_details.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv\",\"rowIndex\":5,\"rowNumber\":6},\"rawData\":{\"scan_id\":\"SCAN005\",\"answer_id\":\"ANS002\",\"user_id\":\"USER005\",\"scanned_at\":\"2024-01-20 16:25:00\",\"channel\":\"web\",\"location\":\"杭州\"},\"parsedData\":{\"scan_id\":\"SCAN005\",\"answer_id\":\"ANS002\",\"user_id\":\"USER005\",\"scanned_at\":\"2024-01-20 16:25:00\",\"channel\":\"web\",\"location\":\"杭州\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xsevw9qal1j9l\",\"batchId\":\"mpk0xsevxeuachg02\",\"recordId\":\"SCAN006\",\"dataType\":\"scan_detail\",\"importTime\":\"2026-05-24T17:01:08.503Z\",\"rowNumber\":7,\"source\":{\"file\":\"scan_details.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv\",\"rowIndex\":6,\"rowNumber\":7},\"rawData\":{\"scan_id\":\"SCAN006\",\"answer_id\":\"ANS003\",\"user_id\":\"USER006\",\"scanned_at\":\"2024-01-21 08:45:00\",\"channel\":\"app\",\"location\":\"成都\"},\"parsedData\":{\"scan_id\":\"SCAN006\",\"answer_id\":\"ANS003\",\"user_id\":\"USER006\",\"scanned_at\":\"2024-01-21 08:45:00\",\"channel\":\"app\",\"location\":\"成都\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"}]",
+    "data": [
+      {
+        "importId": "mpk0xsevw9qal1j9l",
+        "batchId": "mpk0xsevxeuachg02",
+        "recordId": "SCAN001",
+        "dataType": "scan_detail",
+        "importTime": "2026-05-24T17:01:08.503Z",
+        "rowNumber": 2,
+        "source": {
+          "file": "scan_details.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv",
+          "rowIndex": 1,
+          "rowNumber": 2
+        },
+        "rawData": {
+          "scan_id": "SCAN001",
+          "answer_id": "ANS001",
+          "user_id": "USER001",
+          "scanned_at": "2024-01-20 09:25:00",
+          "channel": "app",
+          "location": "北京"
+        },
+        "parsedData": {
+          "scan_id": "SCAN001",
+          "answer_id": "ANS001",
+          "user_id": "USER001",
+          "scanned_at": "2024-01-20 09:25:00",
+          "channel": "app",
+          "location": "北京"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xsevw9qal1j9l",
+        "batchId": "mpk0xsevxeuachg02",
+        "recordId": "SCAN002",
+        "dataType": "scan_detail",
+        "importTime": "2026-05-24T17:01:08.503Z",
+        "rowNumber": 3,
+        "source": {
+          "file": "scan_details.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv",
+          "rowIndex": 2,
+          "rowNumber": 3
+        },
+        "rawData": {
+          "scan_id": "SCAN002",
+          "answer_id": "ANS001",
+          "user_id": "USER002",
+          "scanned_at": "2024-01-20 10:10:00",
+          "channel": "web",
+          "location": "上海"
+        },
+        "parsedData": {
+          "scan_id": "SCAN002",
+          "answer_id": "ANS001",
+          "user_id": "USER002",
+          "scanned_at": "2024-01-20 10:10:00",
+          "channel": "web",
+          "location": "上海"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xsevw9qal1j9l",
+        "batchId": "mpk0xsevxeuachg02",
+        "recordId": "SCAN003",
+        "dataType": "scan_detail",
+        "importTime": "2026-05-24T17:01:08.503Z",
+        "rowNumber": 4,
+        "source": {
+          "file": "scan_details.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv",
+          "rowIndex": 3,
+          "rowNumber": 4
+        },
+        "rawData": {
+          "scan_id": "SCAN003",
+          "answer_id": "ANS003",
+          "user_id": "USER003",
+          "scanned_at": "2024-01-20 10:55:00",
+          "channel": "app",
+          "location": "广州"
+        },
+        "parsedData": {
+          "scan_id": "SCAN003",
+          "answer_id": "ANS003",
+          "user_id": "USER003",
+          "scanned_at": "2024-01-20 10:55:00",
+          "channel": "app",
+          "location": "广州"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xsevw9qal1j9l",
+        "batchId": "mpk0xsevxeuachg02",
+        "recordId": "SCAN004",
+        "dataType": "scan_detail",
+        "importTime": "2026-05-24T17:01:08.503Z",
+        "rowNumber": 5,
+        "source": {
+          "file": "scan_details.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv",
+          "rowIndex": 4,
+          "rowNumber": 5
+        },
+        "rawData": {
+          "scan_id": "SCAN004",
+          "answer_id": "ANS003",
+          "user_id": "USER004",
+          "scanned_at": "2024-01-20 14:15:00",
+          "channel": "app",
+          "location": "深圳"
+        },
+        "parsedData": {
+          "scan_id": "SCAN004",
+          "answer_id": "ANS003",
+          "user_id": "USER004",
+          "scanned_at": "2024-01-20 14:15:00",
+          "channel": "app",
+          "location": "深圳"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xsevw9qal1j9l",
+        "batchId": "mpk0xsevxeuachg02",
+        "recordId": "SCAN005",
+        "dataType": "scan_detail",
+        "importTime": "2026-05-24T17:01:08.503Z",
+        "rowNumber": 6,
+        "source": {
+          "file": "scan_details.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv",
+          "rowIndex": 5,
+          "rowNumber": 6
+        },
+        "rawData": {
+          "scan_id": "SCAN005",
+          "answer_id": "ANS002",
+          "user_id": "USER005",
+          "scanned_at": "2024-01-20 16:25:00",
+          "channel": "web",
+          "location": "杭州"
+        },
+        "parsedData": {
+          "scan_id": "SCAN005",
+          "answer_id": "ANS002",
+          "user_id": "USER005",
+          "scanned_at": "2024-01-20 16:25:00",
+          "channel": "web",
+          "location": "杭州"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xsevw9qal1j9l",
+        "batchId": "mpk0xsevxeuachg02",
+        "recordId": "SCAN006",
+        "dataType": "scan_detail",
+        "importTime": "2026-05-24T17:01:08.503Z",
+        "rowNumber": 7,
+        "source": {
+          "file": "scan_details.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/scan_details.csv",
+          "rowIndex": 6,
+          "rowNumber": 7
+        },
+        "rawData": {
+          "scan_id": "SCAN006",
+          "answer_id": "ANS003",
+          "user_id": "USER006",
+          "scanned_at": "2024-01-21 08:45:00",
+          "channel": "app",
+          "location": "成都"
+        },
+        "parsedData": {
+          "scan_id": "SCAN006",
+          "answer_id": "ANS003",
+          "user_id": "USER006",
+          "scanned_at": "2024-01-21 08:45:00",
+          "channel": "app",
+          "location": "成都"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      }
+    ],
+    "metadata": {}
+  },
+  "summary": {
+    "total": 6,
+    "success": 6,
+    "failed": 0,
+    "skipped": 0,
+    "duplicate": 0
+  }
+}

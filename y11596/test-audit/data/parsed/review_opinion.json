@@ -1,0 +1,142 @@
+[
+  {
+    "importId": "mpk0xrzprq0bnxe8d",
+    "batchId": "mpk0xrzpjpntrilek",
+    "recordId": "REV001",
+    "dataType": "review_opinion",
+    "importTime": "2026-05-24T17:01:07.957Z",
+    "rowNumber": 2,
+    "source": {
+      "file": "review_opinions.csv",
+      "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/review_opinions.csv",
+      "rowIndex": 1,
+      "rowNumber": 2
+    },
+    "rawData": {
+      "review_id": "REV001",
+      "change_id": "CO001",
+      "reviewer": "审核员A",
+      "opinion": "内容准确，可以发布",
+      "status": "approved",
+      "created_at": "2024-01-15 11:00:00"
+    },
+    "parsedData": {
+      "review_id": "REV001",
+      "change_id": "CO001",
+      "reviewer": "审核员A",
+      "opinion": "内容准确，可以发布",
+      "status": "approved",
+      "created_at": "2024-01-15 11:00:00"
+    },
+    "status": "imported",
+    "manualOverride": false,
+    "checkStatus": "checked",
+    "lastCheckId": "mpk0xvnsul5ioqalk",
+    "lastCheckTime": "2026-05-24T17:01:12.712Z"
+  },
+  {
+    "importId": "mpk0xrzprq0bnxe8d",
+    "batchId": "mpk0xrzpjpntrilek",
+    "recordId": "REV002",
+    "dataType": "review_opinion",
+    "importTime": "2026-05-24T17:01:07.957Z",
+    "rowNumber": 3,
+    "source": {
+      "file": "review_opinions.csv",
+      "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/review_opinions.csv",
+      "rowIndex": 2,
+      "rowNumber": 3
+    },
+    "rawData": {
+      "review_id": "REV002",
+      "change_id": "CO002",
+      "reviewer": "审核员B",
+      "opinion": "需要补充会员权益细节",
+      "status": "rejected",
+      "created_at": "2024-01-16 15:00:00"
+    },
+    "parsedData": {
+      "review_id": "REV002",
+      "change_id": "CO002",
+      "reviewer": "审核员B",
+      "opinion": "需要补充会员权益细节",
+      "status": "rejected",
+      "created_at": "2024-01-16 15:00:00"
+    },
+    "status": "imported",
+    "manualOverride": false,
+    "checkStatus": "checked",
+    "lastCheckId": "mpk0xvnsul5ioqalk",
+    "lastCheckTime": "2026-05-24T17:01:12.712Z"
+  },
+  {
+    "importId": "mpk0xrzprq0bnxe8d",
+    "batchId": "mpk0xrzpjpntrilek",
+    "recordId": "REV003",
+    "dataType": "review_opinion",
+    "importTime": "2026-05-24T17:01:07.957Z",
+    "rowNumber": 4,
+    "source": {
+      "file": "review_opinions.csv",
+      "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/review_opinions.csv",
+      "rowIndex": 3,
+      "rowNumber": 4
+    },
+    "rawData": {
+      "review_id": "REV003",
+      "change_id": "CO003",
+      "reviewer": "审核员A",
+      "opinion": "确认下线，已通知相关团队",
+      "status": "approved",
+      "created_at": "2024-01-17 10:00:00"
+    },
+    "parsedData": {
+      "review_id": "REV003",
+      "change_id": "CO003",
+      "reviewer": "审核员A",
+      "opinion": "确认下线，已通知相关团队",
+      "status": "approved",
+      "created_at": "2024-01-17 10:00:00"
+    },
+    "status": "imported",
+    "manualOverride": false,
+    "checkStatus": "checked",
+    "lastCheckId": "mpk0xvnsul5ioqalk",
+    "lastCheckTime": "2026-05-24T17:01:12.712Z"
+  },
+  {
+    "importId": "mpk0xrzprq0bnxe8d",
+    "batchId": "mpk0xrzpjpntrilek",
+    "recordId": "REV004",
+    "dataType": "review_opinion",
+    "importTime": "2026-05-24T17:01:07.957Z",
+    "rowNumber": 5,
+    "source": {
+      "file": "review_opinions.csv",
+      "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/review_opinions.csv",
+      "rowIndex": 4,
+      "rowNumber": 5
+    },
+    "rawData": {
+      "review_id": "REV004",
+      "change_id": "CO005",
+      "reviewer": "审核员C",
+      "opinion": "活动规则表述清晰",
+      "status": "approved",
+      "created_at": "2024-01-19 12:00:00"
+    },
+    "parsedData": {
+      "review_id": "REV004",
+      "change_id": "CO005",
+      "reviewer": "审核员C",
+      "opinion": "活动规则表述清晰",
+      "status": "approved",
+      "created_at": "2024-01-19 12:00:00"
+    },
+    "status": "imported",
+    "manualOverride": false,
+    "checkStatus": "checked",
+    "lastCheckId": "mpk0xvnsul5ioqalk",
+    "lastCheckTime": "2026-05-24T17:01:12.712Z"
+  }
+]

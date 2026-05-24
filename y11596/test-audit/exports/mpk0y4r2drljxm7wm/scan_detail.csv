@@ -1,0 +1,7 @@
+﻿"recordId","dataType","batchId","rowNumber","sourceFile","sourceRow","status","checkStatus","manualOverride","overrideStatus","overrideReason","data_scan_id","data_answer_id","data_user_id","data_scanned_at","data_channel","data_location"
+"SCAN001","scan_detail","mpk0xsevxeuachg02",2,"scan_details.csv",2,"imported","checked",false,,,"SCAN001","ANS001","USER001","2024-01-20 09:25:00","app","北京"
+"SCAN002","scan_detail","mpk0xsevxeuachg02",3,"scan_details.csv",3,"imported","checked",false,,,"SCAN002","ANS001","USER002","2024-01-20 10:10:00","web","上海"
+"SCAN003","scan_detail","mpk0xsevxeuachg02",4,"scan_details.csv",4,"imported","checked",false,,,"SCAN003","ANS003","USER003","2024-01-20 10:55:00","app","广州"
+"SCAN004","scan_detail","mpk0xsevxeuachg02",5,"scan_details.csv",5,"imported","checked",false,,,"SCAN004","ANS003","USER004","2024-01-20 14:15:00","app","深圳"
+"SCAN005","scan_detail","mpk0xsevxeuachg02",6,"scan_details.csv",6,"imported","checked",false,,,"SCAN005","ANS002","USER005","2024-01-20 16:25:00","web","杭州"
+"SCAN006","scan_detail","mpk0xsevxeuachg02",7,"scan_details.csv",7,"imported","checked",false,,,"SCAN006","ANS003","USER006","2024-01-21 08:45:00","app","成都"

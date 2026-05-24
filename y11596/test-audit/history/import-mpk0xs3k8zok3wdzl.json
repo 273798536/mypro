@@ -1,0 +1,258 @@
+{
+  "action": "import",
+  "importId": "mpk0xs3k8zok3wdzl",
+  "batchId": "mpk0xs3k8ycx7dli0",
+  "dataType": "citation_record",
+  "timestamp": "2026-05-24T17:01:08.096Z",
+  "snapshotBefore": {
+    "timestamp": "2026-05-24T17:01:08.100Z",
+    "dataHash": "[]",
+    "data": [],
+    "metadata": {}
+  },
+  "snapshotAfter": {
+    "timestamp": "2026-05-24T17:01:08.100Z",
+    "dataHash": "[{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT001\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":2,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":1,\"rowNumber\":2},\"rawData\":{\"citation_id\":\"CIT001\",\"answer_id\":\"ANS001\",\"agent_id\":\"AGENT001\",\"used_at\":\"2024-01-20 09:30:00\",\"conversation_id\":\"CONV001\",\"user_question\":\"退款需要多长时间\"},\"parsedData\":{\"citation_id\":\"CIT001\",\"answer_id\":\"ANS001\",\"agent_id\":\"AGENT001\",\"used_at\":\"2024-01-20 09:30:00\",\"conversation_id\":\"CONV001\",\"user_question\":\"退款需要多长时间\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT002\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":3,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":2,\"rowNumber\":3},\"rawData\":{\"citation_id\":\"CIT002\",\"answer_id\":\"ANS001\",\"agent_id\":\"AGENT002\",\"used_at\":\"2024-01-20 10:15:00\",\"conversation_id\":\"CONV002\",\"user_question\":\"怎么申请退款\"},\"parsedData\":{\"citation_id\":\"CIT002\",\"answer_id\":\"ANS001\",\"agent_id\":\"AGENT002\",\"used_at\":\"2024-01-20 10:15:00\",\"conversation_id\":\"CONV002\",\"user_question\":\"怎么申请退款\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT003\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":4,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":3,\"rowNumber\":4},\"rawData\":{\"citation_id\":\"CIT003\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT001\",\"used_at\":\"2024-01-20 11:00:00\",\"conversation_id\":\"CONV003\",\"user_question\":\"快递什么时候到\"},\"parsedData\":{\"citation_id\":\"CIT003\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT001\",\"used_at\":\"2024-01-20 11:00:00\",\"conversation_id\":\"CONV003\",\"user_question\":\"快递什么时候到\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT004\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":5,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":4,\"rowNumber\":5},\"rawData\":{\"citation_id\":\"CIT004\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT003\",\"used_at\":\"2024-01-20 14:20:00\",\"conversation_id\":\"CONV004\",\"user_question\":\"配送时间是多久\"},\"parsedData\":{\"citation_id\":\"CIT004\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT003\",\"used_at\":\"2024-01-20 14:20:00\",\"conversation_id\":\"CONV004\",\"user_question\":\"配送时间是多久\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT005\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":6,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":5,\"rowNumber\":6},\"rawData\":{\"citation_id\":\"CIT005\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT002\",\"used_at\":\"2024-01-20 15:45:00\",\"conversation_id\":\"CONV005\",\"user_question\":\"物流时效有变化吗\"},\"parsedData\":{\"citation_id\":\"CIT005\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT002\",\"used_at\":\"2024-01-20 15:45:00\",\"conversation_id\":\"CONV005\",\"user_question\":\"物流时效有变化吗\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT006\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":7,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":6,\"rowNumber\":7},\"rawData\":{\"citation_id\":\"CIT006\",\"answer_id\":\"ANS002\",\"agent_id\":\"AGENT004\",\"used_at\":\"2024-01-20 16:30:00\",\"conversation_id\":\"CONV006\",\"user_question\":\"会员有什么福利\"},\"parsedData\":{\"citation_id\":\"CIT006\",\"answer_id\":\"ANS002\",\"agent_id\":\"AGENT004\",\"used_at\":\"2024-01-20 16:30:00\",\"conversation_id\":\"CONV006\",\"user_question\":\"会员有什么福利\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"},{\"importId\":\"mpk0xs3k8zok3wdzl\",\"batchId\":\"mpk0xs3k8ycx7dli0\",\"recordId\":\"CIT007\",\"dataType\":\"citation_record\",\"importTime\":\"2026-05-24T17:01:08.096Z\",\"rowNumber\":8,\"source\":{\"file\":\"citation_records.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv\",\"rowIndex\":7,\"rowNumber\":8},\"rawData\":{\"citation_id\":\"CIT007\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT001\",\"used_at\":\"2024-01-21 08:50:00\",\"conversation_id\":\"CONV007\",\"user_question\":\"为什么还没发货\"},\"parsedData\":{\"citation_id\":\"CIT007\",\"answer_id\":\"ANS003\",\"agent_id\":\"AGENT001\",\"used_at\":\"2024-01-21 08:50:00\",\"conversation_id\":\"CONV007\",\"user_question\":\"为什么还没发货\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"pending\"}]",
+    "data": [
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT001",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 2,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 1,
+          "rowNumber": 2
+        },
+        "rawData": {
+          "citation_id": "CIT001",
+          "answer_id": "ANS001",
+          "agent_id": "AGENT001",
+          "used_at": "2024-01-20 09:30:00",
+          "conversation_id": "CONV001",
+          "user_question": "退款需要多长时间"
+        },
+        "parsedData": {
+          "citation_id": "CIT001",
+          "answer_id": "ANS001",
+          "agent_id": "AGENT001",
+          "used_at": "2024-01-20 09:30:00",
+          "conversation_id": "CONV001",
+          "user_question": "退款需要多长时间"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT002",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 3,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 2,
+          "rowNumber": 3
+        },
+        "rawData": {
+          "citation_id": "CIT002",
+          "answer_id": "ANS001",
+          "agent_id": "AGENT002",
+          "used_at": "2024-01-20 10:15:00",
+          "conversation_id": "CONV002",
+          "user_question": "怎么申请退款"
+        },
+        "parsedData": {
+          "citation_id": "CIT002",
+          "answer_id": "ANS001",
+          "agent_id": "AGENT002",
+          "used_at": "2024-01-20 10:15:00",
+          "conversation_id": "CONV002",
+          "user_question": "怎么申请退款"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT003",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 4,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 3,
+          "rowNumber": 4
+        },
+        "rawData": {
+          "citation_id": "CIT003",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT001",
+          "used_at": "2024-01-20 11:00:00",
+          "conversation_id": "CONV003",
+          "user_question": "快递什么时候到"
+        },
+        "parsedData": {
+          "citation_id": "CIT003",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT001",
+          "used_at": "2024-01-20 11:00:00",
+          "conversation_id": "CONV003",
+          "user_question": "快递什么时候到"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT004",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 5,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 4,
+          "rowNumber": 5
+        },
+        "rawData": {
+          "citation_id": "CIT004",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT003",
+          "used_at": "2024-01-20 14:20:00",
+          "conversation_id": "CONV004",
+          "user_question": "配送时间是多久"
+        },
+        "parsedData": {
+          "citation_id": "CIT004",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT003",
+          "used_at": "2024-01-20 14:20:00",
+          "conversation_id": "CONV004",
+          "user_question": "配送时间是多久"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT005",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 6,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 5,
+          "rowNumber": 6
+        },
+        "rawData": {
+          "citation_id": "CIT005",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT002",
+          "used_at": "2024-01-20 15:45:00",
+          "conversation_id": "CONV005",
+          "user_question": "物流时效有变化吗"
+        },
+        "parsedData": {
+          "citation_id": "CIT005",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT002",
+          "used_at": "2024-01-20 15:45:00",
+          "conversation_id": "CONV005",
+          "user_question": "物流时效有变化吗"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT006",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 7,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 6,
+          "rowNumber": 7
+        },
+        "rawData": {
+          "citation_id": "CIT006",
+          "answer_id": "ANS002",
+          "agent_id": "AGENT004",
+          "used_at": "2024-01-20 16:30:00",
+          "conversation_id": "CONV006",
+          "user_question": "会员有什么福利"
+        },
+        "parsedData": {
+          "citation_id": "CIT006",
+          "answer_id": "ANS002",
+          "agent_id": "AGENT004",
+          "used_at": "2024-01-20 16:30:00",
+          "conversation_id": "CONV006",
+          "user_question": "会员有什么福利"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      },
+      {
+        "importId": "mpk0xs3k8zok3wdzl",
+        "batchId": "mpk0xs3k8ycx7dli0",
+        "recordId": "CIT007",
+        "dataType": "citation_record",
+        "importTime": "2026-05-24T17:01:08.096Z",
+        "rowNumber": 8,
+        "source": {
+          "file": "citation_records.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/citation_records.csv",
+          "rowIndex": 7,
+          "rowNumber": 8
+        },
+        "rawData": {
+          "citation_id": "CIT007",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT001",
+          "used_at": "2024-01-21 08:50:00",
+          "conversation_id": "CONV007",
+          "user_question": "为什么还没发货"
+        },
+        "parsedData": {
+          "citation_id": "CIT007",
+          "answer_id": "ANS003",
+          "agent_id": "AGENT001",
+          "used_at": "2024-01-21 08:50:00",
+          "conversation_id": "CONV007",
+          "user_question": "为什么还没发货"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "pending"
+      }
+    ],
+    "metadata": {}
+  },
+  "summary": {
+    "total": 7,
+    "success": 7,
+    "failed": 0,
+    "skipped": 0,
+    "duplicate": 0
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "projectId": "mpk0x8xnlmum274ex",
+  "projectName": "测试巡检项目",
+  "description": "测试用",
+  "createdAt": "2026-05-24T17:00:43.259Z",
+  "version": "1.0.0",
+  "dataTypes": {
+    "change_order": {
+      "enabled": true,
+      "name": "变更单",
+      "idField": "change_id"
+    },
+    "review_opinion": {
+      "enabled": true,
+      "name": "审核意见",
+      "idField": "review_id"
+    },
+    "citation_record": {
+      "enabled": true,
+      "name": "客服引用记录",
+      "idField": "citation_id"
+    },
+    "scan_detail": {
+      "enabled": true,
+      "name": "扫码明细",
+      "idField": "scan_id"
+    }
+  },
+  "checkRules": {
+    "requireReview": true,
+    "checkCitationAfterOffline": true,
+    "trackScanDetails": true
+  }
+}
