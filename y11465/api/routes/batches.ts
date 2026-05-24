@@ -82,7 +82,7 @@ router.post('/:id/freeze', (req: Request, res: Response) => {
   res.json({
     success: true,
     snapshot: { before, after },
-    auditLog: auditLogRepository.findByEntity('batch', id)[0]
+    auditLog: auditLogRepository.findByEntity('BATCH', id)[0]
   });
 });
 

@@ -13,17 +13,36 @@ class ReportService {
     if (!batch) throw new Error('Batch not found');
 
     const documents = documentRepository.findByBatchId(batchId);
-    const auditLogs = auditLogRepository.findByEntity('batch', batchId);
+    const auditLogs = auditLogRepository.findByEntity('BATCH', batchId);
     const fabricTracks = fabricTrackRepository.findByStyleCode(batch.styleCode);
 
-    const documentSummary = documents.map(doc => ({
-      type: doc.documentType,
-      typeLabel: DOCUMENT_TYPE_LABELS[doc.documentType],
-      documentNo: doc.documentNo,
-      version: doc.version,
-      status: doc.status,
-      data: doc.data
-    }));
+    const documentSummary = documents.map(doc => {
+      const allVersions = documentRepository.getAllVersions(doc.id);
+      const latestDiff = doc.version > 1 
+        ? documentRepository.getDiff(doc.id, doc.version - 1, doc.version)
+        : null;
+      
+      return {
+        type: doc.documentType,
+        typeLabel: DOCUMENT_TYPE_LABELS[doc.documentType],
+        documentNo: doc.documentNo,
+        version: doc.version,
+        status: doc.status,
+        data: doc.data,
+        versions: allVersions.map(v => ({
+          version: v.version,
+          status: v.status,
+          updatedAt: v.updatedAt,
+          isHistory: v.isHistory
+        })),
+        latestDiff: latestDiff ? {
+          fields: latestDiff.fields,
+          modifiedBy: latestDiff.modifiedBy,
+          modifiedAt: latestDiff.modifiedAt,
+          reason: latestDiff.reason
+        } : null
+      };
+    });
 
     const freezeSnapshot = auditLogs.find(log => log.action === 'UPDATE' && log.afterData?.frozen === true);
     const beforeFreeze = freezeSnapshot?.beforeData;
@@ -145,6 +164,33 @@ class ReportService {
     });
     const reasonsWs = XLSX.utils.aoa_to_sheet(reasonsData);
     XLSX.utils.book_append_sheet(wb, reasonsWs, '人工操作记录');
+
+    const modifiedDocuments = documents.filter((doc: any) => doc.latestDiff && doc.latestDiff.fields.length > 0);
+    if (modifiedDocuments.length > 0) {
+      const diffData = [
+        ['异常修正差异对比'],
+        [],
+        ['单据类型', '单据号', '版本', '修改字段', '原值', '新值', '变更类型', '修改人', '修改时间', '原因']
+      ];
+      modifiedDocuments.forEach((doc: any) => {
+        doc.latestDiff.fields.forEach((field: any) => {
+          diffData.push([
+            doc.typeLabel,
+            doc.documentNo,
+            `v${doc.version}`,
+            field.field,
+            JSON.stringify(field.oldValue),
+            JSON.stringify(field.newValue),
+            field.changeType === 'ADD' ? '新增' : field.changeType === 'DELETE' ? '删除' : '修改',
+            doc.latestDiff.modifiedBy,
+            doc.latestDiff.modifiedAt,
+            doc.latestDiff.reason
+          ]);
+        });
+      });
+      const diffWs = XLSX.utils.aoa_to_sheet(diffData);
+      XLSX.utils.book_append_sheet(wb, diffWs, '差异对比');
+    }
 
     return XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
   }

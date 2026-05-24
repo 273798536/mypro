@@ -18,7 +18,7 @@ router.get('/', (req: Request, res: Response) => {
 
 router.get('/:entityType/:entityId', (req: Request, res: Response) => {
   const { entityType, entityId } = req.params;
-  const logs = auditLogRepository.findByEntity(entityType, entityId);
+  const logs = auditLogRepository.findByEntity(entityType.toUpperCase(), entityId);
   
   res.json(logs);
 });

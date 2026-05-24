@@ -40,9 +40,9 @@ router.get('/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Document not found' });
   }
   
-  const auditLogs = auditLogRepository.findByEntity('document', id);
+  const auditLogs = auditLogRepository.findByEntity('DOCUMENT', id);
   const fabricTracks = fabricTrackRepository.findByDocumentId(id);
-  const versions = documentRepository.getVersionsByStyleAndDocNo(doc.styleCode, doc.documentNo);
+  const versions = documentRepository.getAllVersions(id);
   
   res.json({
     ...doc,

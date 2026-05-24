@@ -62,7 +62,7 @@ export class AuditLogRepository {
 
     if (entityType) {
       whereClause += ' AND entity_type = ?';
-      queryParams.push(entityType);
+      queryParams.push(entityType.toUpperCase());
     }
     if (operatedBy) {
       whereClause += ' AND operated_by = ?';
