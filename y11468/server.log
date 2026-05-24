@@ -1,6 +1,18 @@
-INFO:     Started server process [76276]
+INFO:     Started server process [38233]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52223 - "GET /orders/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52271 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52347 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52417 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53006 - "GET /orders/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53034 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53054 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53056 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53789 - "GET /orders/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54661 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54685 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54697 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55298 - "GET /orders/7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55666 - "GET /orders/7 HTTP/1.1" 200 OK
