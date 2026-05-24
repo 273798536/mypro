@@ -70,14 +70,14 @@ interface FabricInventoryRow {
   updated_at: string;
 }
 
-export class FabricRepository extends BaseRepository<FabricRecord> {
+export class FabricRepository extends BaseRepository<FabricRecord, FabricRecordRow> {
   protected tableName = 'fabric_records';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: FabricRecordRow): FabricRecord {
+  protected rowToEntity(row: FabricRecordRow): FabricRecord {
     return {
       id: row.id,
       fabricCode: row.fabric_code,
@@ -184,14 +184,14 @@ export class FabricRepository extends BaseRepository<FabricRecord> {
   }
 }
 
-export class FabricTransactionRepository extends BaseRepository<FabricTransaction> {
+export class FabricTransactionRepository extends BaseRepository<FabricTransaction, FabricTransactionRow> {
   protected tableName = 'fabric_transactions';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: FabricTransactionRow): FabricTransaction {
+  protected rowToEntity(row: FabricTransactionRow): FabricTransaction {
     return {
       id: row.id,
       transactionNo: row.transaction_no,
@@ -391,14 +391,14 @@ export class FabricTransactionRepository extends BaseRepository<FabricTransactio
   }
 }
 
-export class FabricInventoryRepository extends BaseRepository<FabricInventory> {
+export class FabricInventoryRepository extends BaseRepository<FabricInventory, FabricInventoryRow> {
   protected tableName = 'fabric_inventory';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: FabricInventoryRow): FabricInventory {
+  protected rowToEntity(row: FabricInventoryRow): FabricInventory {
     return {
       id: row.id,
       fabricCode: row.fabric_code,

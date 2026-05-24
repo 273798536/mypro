@@ -28,14 +28,14 @@ interface SizeModificationRow {
   updated_at: string;
 }
 
-export class SizeModificationRepository extends BaseRepository<SizeModificationRecord> {
+export class SizeModificationRepository extends BaseRepository<SizeModificationRecord, SizeModificationRow> {
   protected tableName = 'size_modification_records';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: SizeModificationRow): SizeModificationRecord {
+  protected rowToEntity(row: SizeModificationRow): SizeModificationRecord {
     return {
       id: row.id,
       modificationNo: row.modification_no,

@@ -33,14 +33,14 @@ interface SampleFlowRow {
   updated_at: string;
 }
 
-export class SampleRepository extends BaseRepository<SampleFlowRecord> {
+export class SampleRepository extends BaseRepository<SampleFlowRecord, SampleFlowRow> {
   protected tableName = 'sample_flow_records';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: SampleFlowRow): SampleFlowRecord {
+  protected rowToEntity(row: SampleFlowRow): SampleFlowRecord {
     return {
       id: row.id,
       sampleNo: row.sample_no,

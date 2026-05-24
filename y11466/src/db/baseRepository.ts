@@ -11,13 +11,15 @@ export interface FindOptions {
   offset?: number;
 }
 
-export abstract class BaseRepository<T extends { id?: string }> {
+export abstract class BaseRepository<T extends { id?: string }, TRow = Record<string, unknown>> {
   protected db: Database.Database;
   protected abstract tableName: string;
 
   constructor(db: Database.Database) {
     this.db = db;
   }
+
+  protected abstract rowToEntity(row: TRow): T;
 
   protected generateId(): string {
     return uuidv4();
@@ -82,7 +84,8 @@ export abstract class BaseRepository<T extends { id?: string }> {
       }
     }
 
-    return this.db.prepare(sql).all(params) as T[];
+    const rows = this.db.prepare(sql).all(params) as TRow[];
+    return rows.map(row => this.rowToEntity(row));
   }
 
   findOne(options: FindOptions = {}): T | null {

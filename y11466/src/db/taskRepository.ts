@@ -37,14 +37,14 @@ interface TaskLogRow {
   details: string | null;
 }
 
-export class TaskRepository extends BaseRepository<Task> {
+export class TaskRepository extends BaseRepository<Task, TaskRow> {
   protected tableName = 'tasks';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: TaskRow): Task {
+  protected rowToEntity(row: TaskRow): Task {
     return {
       id: row.id,
       taskId: row.task_id,

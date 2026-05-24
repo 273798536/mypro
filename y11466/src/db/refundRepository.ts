@@ -34,14 +34,14 @@ interface RefundRecordRow {
   updated_at: string;
 }
 
-export class RefundRepository extends BaseRepository<RefundRecord> {
+export class RefundRepository extends BaseRepository<RefundRecord, RefundRecordRow> {
   protected tableName = 'refund_records';
 
   constructor(db: Database.Database) {
     super(db);
   }
 
-  private rowToEntity(row: RefundRecordRow): RefundRecord {
+  protected rowToEntity(row: RefundRecordRow): RefundRecord {
     return {
       id: row.id,
       refundNo: row.refund_no,
