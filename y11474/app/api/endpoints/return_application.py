@@ -37,22 +37,12 @@ async def list_applications(
     return [apply_role_permissions(app, current_user.role) for app in applications]
 
 
-@router.post("/", response_model=ReturnApplicationSchema)
+@router.post("/")
 async def create_application(
     application_data: ReturnApplicationCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_action("create"))
-):
-    if application_data.idempotency_key:
-        existing = db.query(ReturnApplication).filter(
-            ReturnApplication.idempotency_key == application_data.idempotency_key
-        ).first()
-        if existing:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"幂等键已存在: {application_data.idempotency_key}"
-            )
-    
+) -> Any:
     data_dict = safe_model_dump(application_data)
     result = ImportService.import_applications(db, [data_dict], current_user)
     
@@ -65,7 +55,7 @@ async def create_application(
     application = db.query(ReturnApplication).filter(
         ReturnApplication.application_no == application_data.application_no
     ).first()
-    return application
+    return apply_role_permissions(application, current_user.role)
 
 
 @router.get("/{application_id}")

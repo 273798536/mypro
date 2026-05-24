@@ -113,7 +113,7 @@ class RolePermission:
 
     ALLOWED_ACTIONS: Dict[UserRole, Set[str]] = {
         UserRole.DATA_ENTRY: {"create", "update_draft", "submit", "view"},
-        UserRole.REVIEWER: {"view", "review", "reject", "second_confirm"},
+        UserRole.REVIEWER: {"view", "review", "reject", "second_confirm", "export"},
         UserRole.SUPERVISOR: {"view", "review", "reject", "second_confirm", "approve", "close", "export", "audit"},
         UserRole.READ_ONLY: {"view"}
     }

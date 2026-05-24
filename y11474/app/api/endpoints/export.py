@@ -21,10 +21,17 @@ def mask_export_data(data: dict, role: UserRole) -> dict:
     if role == UserRole.SUPERVISOR:
         return data
     
+    cn_to_en_fields = {
+        "联系电话": "phone",
+        "联系人": "contact",
+        "申请人": "applicant"
+    }
+    
     masked = data.copy()
     for key, value in masked.items():
         if value:
-            masked[key] = mask_sensitive_value(value, key, role)
+            field_key = cn_to_en_fields.get(key, key)
+            masked[key] = mask_sensitive_value(str(value), field_key, role)
     return masked
 
 

@@ -25,6 +25,29 @@ class IdempotencyService:
             ReturnApplication.idempotency_key == key
         ).first()
 
+    @staticmethod
+    def find_by_application_no(db: Session, application_no: str) -> Optional[ReturnApplication]:
+        return db.query(ReturnApplication).filter(
+            ReturnApplication.application_no == application_no
+        ).first()
+
+    @staticmethod
+    def find_existing(db: Session, data: Dict[str, Any]) -> Optional[ReturnApplication]:
+        idempotency_key = data.get("idempotency_key")
+        application_no = data.get("application_no")
+        
+        if idempotency_key:
+            existing = IdempotencyService.find_by_key(db, idempotency_key)
+            if existing:
+                return existing
+        
+        if application_no:
+            existing = IdempotencyService.find_by_application_no(db, application_no)
+            if existing:
+                return existing
+        
+        return None
+
 
 class DirtyRecordDetector:
     REQUIRED_FIELDS = {
@@ -189,7 +212,7 @@ class ImportService:
         for idx, data in enumerate(applications_data):
             try:
                 idempotency_key = data.get("idempotency_key") or IdempotencyService.generate_key(data)
-                existing = IdempotencyService.find_by_key(db, idempotency_key)
+                existing = IdempotencyService.find_existing(db, data)
                 
                 if existing:
                     duplicate_keys.append(idempotency_key)
@@ -311,6 +334,18 @@ class ImportService:
                 setattr(application, field, new_value)
                 changed_fields[field] = {"old": old_value, "new": new_value}
 
+        if data.get("application_date"):
+            app_date = data["application_date"]
+            if isinstance(app_date, str):
+                app_date = datetime.fromisoformat(app_date.replace("Z", "+00:00"))
+            if application.application_date != app_date:
+                changed_fields["application_date"] = {"old": application.application_date, "new": app_date}
+                application.application_date = app_date
+
+        if data.get("idempotency_key") and application.idempotency_key != data["idempotency_key"]:
+            changed_fields["idempotency_key"] = {"old": application.idempotency_key, "new": data["idempotency_key"]}
+            application.idempotency_key = data["idempotency_key"]
+
         application.updated_by = current_user.id
         application.raw_data = raw_data_safe
 
@@ -322,6 +357,33 @@ class ImportService:
                 changed_fields=changed_fields
             )
             db.add(audit_log)
+        
+        for photo in application.inspection_photos:
+            db.delete(photo)
+        for receipt in application.logistics_receipts:
+            db.delete(receipt)
+        db.flush()
+
+        for photo_data in data.get("inspection_photos", []):
+            photo_safe = photo_data.copy()
+            if isinstance(photo_safe.get("upload_time"), str):
+                photo_safe["upload_time"] = datetime.fromisoformat(photo_safe["upload_time"].replace("Z", "+00:00"))
+            photo = InspectionPhoto(
+                application_id=application.id,
+                **photo_safe
+            )
+            db.add(photo)
+
+        for receipt_data in data.get("logistics_receipts", []):
+            receipt_safe = receipt_data.copy()
+            for date_field in ["ship_date", "receive_date"]:
+                if isinstance(receipt_safe.get(date_field), str):
+                    receipt_safe[date_field] = datetime.fromisoformat(receipt_safe[date_field].replace("Z", "+00:00"))
+            receipt = LogisticsReceipt(
+                application_id=application.id,
+                **receipt_safe
+            )
+            db.add(receipt)
         
         for dr in application.dirty_records:
             db.delete(dr)
