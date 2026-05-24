@@ -1,0 +1,129 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.permissionConfig = void 0;
+exports.hasPermission = hasPermission;
+exports.canViewField = canViewField;
+exports.canEditField = canEditField;
+exports.filterFieldsByRole = filterFieldsByRole;
+exports.permissionConfig = {
+    entry: {
+        fields: {
+            orderNo: { visible: true, editable: true },
+            customerName: { visible: true, editable: true },
+            phone: { visible: true, editable: true },
+            address: { visible: true, editable: true },
+            applianceType: { visible: true, editable: true },
+            appointmentDate: { visible: true, editable: true },
+            appointmentTime: { visible: true, editable: true },
+            technicianId: { visible: true, editable: true },
+            technicianName: { visible: true, editable: true },
+            status: { visible: true, editable: false },
+            rating: { visible: true, editable: false },
+            reviewContent: { visible: true, editable: false },
+            badReason: { visible: true, editable: false },
+            originalAmount: { visible: false, editable: false },
+            adjustedAmount: { visible: false, editable: false },
+            adjustmentReason: { visible: false, editable: false },
+            rawRow: { visible: true, editable: false },
+            sourceFile: { visible: true, editable: false },
+        },
+        actions: ['import', 'view', 'fix_dirty'],
+    },
+    review: {
+        fields: {
+            orderNo: { visible: true, editable: false },
+            customerName: { visible: true, editable: false },
+            phone: { visible: true, editable: false },
+            address: { visible: true, editable: false },
+            applianceType: { visible: true, editable: false },
+            appointmentDate: { visible: true, editable: false },
+            appointmentTime: { visible: true, editable: false },
+            technicianId: { visible: true, editable: false },
+            technicianName: { visible: true, editable: false },
+            status: { visible: true, editable: true },
+            rating: { visible: true, editable: false },
+            reviewContent: { visible: true, editable: false },
+            badReason: { visible: true, editable: true },
+            originalAmount: { visible: true, editable: false },
+            adjustedAmount: { visible: true, editable: false },
+            adjustmentReason: { visible: true, editable: false },
+            rawRow: { visible: true, editable: false },
+            sourceFile: { visible: true, editable: false },
+        },
+        actions: ['view', 'approve', 'reject', 'report'],
+    },
+    supervisor: {
+        fields: {
+            orderNo: { visible: true, editable: true },
+            customerName: { visible: true, editable: true },
+            phone: { visible: true, editable: true },
+            address: { visible: true, editable: true },
+            applianceType: { visible: true, editable: true },
+            appointmentDate: { visible: true, editable: true },
+            appointmentTime: { visible: true, editable: true },
+            technicianId: { visible: true, editable: true },
+            technicianName: { visible: true, editable: true },
+            status: { visible: true, editable: true },
+            rating: { visible: true, editable: true },
+            reviewContent: { visible: true, editable: true },
+            badReason: { visible: true, editable: true },
+            originalAmount: { visible: true, editable: true },
+            adjustedAmount: { visible: true, editable: true },
+            adjustmentReason: { visible: true, editable: true },
+            rawRow: { visible: true, editable: false },
+            sourceFile: { visible: true, editable: false },
+        },
+        actions: ['import', 'view', 'fix_dirty', 'approve', 'reject', 'report', 'export', 'history', 'manage_users'],
+    },
+    readonly: {
+        fields: {
+            orderNo: { visible: true, editable: false },
+            customerName: { visible: true, editable: false },
+            phone: { visible: false, editable: false },
+            address: { visible: true, editable: false },
+            applianceType: { visible: true, editable: false },
+            appointmentDate: { visible: true, editable: false },
+            appointmentTime: { visible: true, editable: false },
+            technicianId: { visible: true, editable: false },
+            technicianName: { visible: true, editable: false },
+            status: { visible: true, editable: false },
+            rating: { visible: true, editable: false },
+            reviewContent: { visible: true, editable: false },
+            badReason: { visible: true, editable: false },
+            originalAmount: { visible: false, editable: false },
+            adjustedAmount: { visible: false, editable: false },
+            adjustmentReason: { visible: false, editable: false },
+            rawRow: { visible: true, editable: false },
+            sourceFile: { visible: true, editable: false },
+        },
+        actions: ['view', 'report'],
+    },
+};
+function hasPermission(role, action) {
+    const config = exports.permissionConfig[role];
+    return config?.actions.includes(action) || false;
+}
+function canViewField(role, field) {
+    const config = exports.permissionConfig[role];
+    return config?.fields[field]?.visible ?? false;
+}
+function canEditField(role, field) {
+    const config = exports.permissionConfig[role];
+    return config?.fields[field]?.editable ?? false;
+}
+function filterFieldsByRole(role, data, mode = 'view') {
+    const result = {};
+    for (const [key, value] of Object.entries(data)) {
+        const fieldPerm = exports.permissionConfig[role]?.fields[key];
+        if (!fieldPerm)
+            continue;
+        if (mode === 'view' && fieldPerm.visible) {
+            result[key] = value;
+        }
+        else if (mode === 'edit' && fieldPerm.editable) {
+            result[key] = value;
+        }
+    }
+    return result;
+}
+//# sourceMappingURL=permissions.js.map

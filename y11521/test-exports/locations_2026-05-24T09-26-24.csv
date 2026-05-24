@@ -1,0 +1,4 @@
+﻿"orderNo","technicianId","technicianName","checkinTime","checkoutTime","location","latitude","longitude","rawRow","sourceFile","id","source"
+"ORD001","T001","李师傅","2024-01-15 09:15:00","2024-01-15 11:30:00","北京市朝阳区XX小区",39.9,116.4,2,"师傅定位.csv","950947af-39c0-4fba-80ac-127904701cf3","location"
+"ORD002","T002","王师傅","2024-01-15 14:20:00","2024-01-15 16:45:00","北京市海淀区XX小区",39.95,116.3,3,"师傅定位.csv","6272ff65-4c4e-411f-a8bb-2eebf5552f63","location"
+"ORD004","T003","张师傅","2024-01-16 14:30:00",,"北京市东城区XX小区",39.93,116.42,5,"师傅定位.csv","9816076c-4b12-4b8c-8f8f-60ea1fb2a637","location"
