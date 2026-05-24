@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import os
 from app.core.database import get_db
 from app.core.enums import DataSourceType
 from app.core.exceptions import (
@@ -18,6 +20,7 @@ from app.services.ledger_service import LedgerService
 from app.services.import_service import ImportService
 from app.services.chain_service import ChainService
 from app.services.view_service import ViewService
+from app.services.excel_service import ExcelService
 
 router = APIRouter(prefix="/api/ledger", tags=["ledger"])
 
@@ -368,3 +371,160 @@ def export_records(request: ExportRequest, db: Session = Depends(get_db)):
         "count": len(data),
         "data": data
     }
+
+
+@router.post("/import/excel/{source_type}")
+async def import_excel_file(
+    source_type: str,
+    imported_by: str,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        excel_service = ExcelService(db)
+        file_content = await file.read()
+        result = excel_service.parse_excel_file(
+            file_content,
+            source_type,
+            file.filename or "unknown.xlsx",
+            imported_by
+        )
+        return result
+    except PartialImportFailure as e:
+        raise HTTPException(
+            status_code=206,
+            detail={
+                "message": e.message,
+                "success_count": e.success_count,
+                "failed_count": e.failed_count
+            }
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/import/excel/template/{source_type}")
+def download_excel_template(
+    source_type: str,
+    db: Session = Depends(get_db)
+):
+    try:
+        excel_service = ExcelService(db)
+        excel_bytes = excel_service.generate_sample_excel(source_type)
+        
+        from fastapi.responses import Response
+        return Response(
+            content=excel_bytes,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": f"attachment; filename=template_{source_type}.xlsx"
+            }
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/export/excel/ledger")
+def export_ledger_excel(
+    request: ExportRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        excel_service = ExcelService(db)
+        filepath = excel_service.export_ledger_to_excel(
+            request.record_ids,
+            request.mask_sensitive,
+            request.operator_role
+        )
+        
+        if not os.path.exists(filepath):
+            raise HTTPException(status_code=404, detail="导出文件生成失败")
+        
+        ledger_service = LedgerService(db)
+        for record_id in request.record_ids:
+            try:
+                ledger_service.mark_exported(
+                    record_id,
+                    request.operator,
+                    request.operator_role
+                )
+            except Exception:
+                pass
+        
+        return FileResponse(
+            path=filepath,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            filename=os.path.basename(filepath)
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/export/excel/chain/{style_code}")
+def export_chain_report_excel(
+    style_code: str,
+    operator: str,
+    operator_role: str = "brand_planner",
+    db: Session = Depends(get_db)
+):
+    try:
+        chain_service = ChainService(db)
+        chain = chain_service.build_processing_chain(style_code)
+        
+        chain_dict = {
+            "chain_no": chain.chain_no,
+            "style_code": chain.style_code,
+            "version_path": chain.version_path,
+            "has_old_fabric_issue": chain.has_old_fabric_issue,
+            "chain_status": chain.chain_status,
+            "reviewed_by": chain.reviewed_by,
+            "reviewed_at": chain.reviewed_at.isoformat() if chain.reviewed_at else None,
+            "responsibility_analysis": chain.responsibility_analysis,
+            "chain_nodes": chain.chain_nodes,
+            "old_fabric_records": chain.old_fabric_records,
+        }
+        
+        excel_service = ExcelService(db)
+        filepath = excel_service.export_chain_report_to_excel(chain_dict, operator_role)
+        
+        if not os.path.exists(filepath):
+            raise HTTPException(status_code=404, detail="导出文件生成失败")
+        
+        return FileResponse(
+            path=filepath,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            filename=os.path.basename(filepath)
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/export/excel/brand-report")
+def export_brand_report_excel(
+    operator: str,
+    operator_role: str = "brand_planner",
+    db: Session = Depends(get_db)
+):
+    try:
+        view_service = ViewService(db)
+        dashboard_data = view_service.get_brand_planner_dashboard()
+        
+        excel_service = ExcelService(db)
+        filepath = excel_service.generate_brand_report(dashboard_data)
+        
+        if not os.path.exists(filepath):
+            raise HTTPException(status_code=404, detail="导出文件生成失败")
+        
+        return FileResponse(
+            path=filepath,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            filename=os.path.basename(filepath)
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/export/files")
+def list_exported_files(db: Session = Depends(get_db)):
+    excel_service = ExcelService(db)
+    return excel_service.list_exported_files()

@@ -230,6 +230,44 @@ class ImportService:
         except Exception as e:
             return False, str(e)
 
+    def import_shift_record(
+        self,
+        data: Dict[str, Any],
+        source_file: str,
+        source_row: int,
+        batch_id: str,
+        imported_by: str
+    ) -> Tuple[bool, str]:
+        try:
+            shift_no = data.get("shift_no")
+            if not shift_no:
+                return False, "缺少班次编号"
+
+            if self.check_duplicate(DataSourceType.SHIFT_RECORD, "shift_no", shift_no):
+                return False, f"班次编号 {shift_no} 已存在"
+
+            record = ShiftRecord(
+                shift_no=shift_no,
+                shift_date=datetime.fromisoformat(data["shift_date"]) if data.get("shift_date") else None,
+                shift_type=data.get("shift_type", ""),
+                worker=data.get("worker", ""),
+                worker_role=data.get("worker_role", ""),
+                style_code=data.get("style_code", ""),
+                work_content=data.get("work_content", ""),
+                work_hours=data.get("work_hours", 0),
+                output_quantity=data.get("output_quantity"),
+                remarks=data.get("remarks"),
+                source_file=source_file,
+                source_row_number=source_row,
+                original_raw_data=json.dumps(data, ensure_ascii=False),
+                import_batch_id=batch_id,
+                imported_by=imported_by
+            )
+            self.db.add(record)
+            return True, ""
+        except Exception as e:
+            return False, str(e)
+
     def batch_import(
         self,
         source_type: str,
@@ -245,6 +283,7 @@ class ImportService:
             DataSourceType.SIZE_MODIFICATION: self.import_size_modification,
             DataSourceType.FABRIC_INVENTORY: self.import_fabric_inventory,
             DataSourceType.MANUAL_PRICING: self.import_manual_pricing,
+            DataSourceType.SHIFT_RECORD: self.import_shift_record,
         }
 
         import_func = import_func_map.get(source_type)

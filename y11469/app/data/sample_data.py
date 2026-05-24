@@ -157,6 +157,45 @@ SAMPLE_MANUAL_PRICINGS = [
     }
 ]
 
+SAMPLE_SHIFT_RECORDS = [
+    {
+        "shift_no": "SHF-2024-001",
+        "shift_date": "2024-01-15T08:00:00",
+        "shift_type": "早班",
+        "worker": "李样衣",
+        "worker_role": "sample_maker",
+        "style_code": SAMPLE_STYLE_CODE,
+        "work_content": "初版样衣裁剪与缝制",
+        "work_hours": 8.0,
+        "output_quantity": 3,
+        "remarks": "完成初版3件样衣"
+    },
+    {
+        "shift_no": "SHF-2024-002",
+        "shift_date": "2024-01-18T08:00:00",
+        "shift_type": "早班",
+        "worker": "张打版",
+        "worker_role": "pattern_maker",
+        "style_code": SAMPLE_STYLE_CODE,
+        "work_content": "尺码修正版型调整",
+        "work_hours": 6.5,
+        "output_quantity": 1,
+        "remarks": "完成M码版型调整"
+    },
+    {
+        "shift_no": "SHF-2024-003",
+        "shift_date": "2024-01-23T13:00:00",
+        "shift_type": "晚班",
+        "worker": "李样衣",
+        "worker_role": "sample_maker",
+        "style_code": SAMPLE_STYLE_CODE,
+        "work_content": "改版后样衣重新制作",
+        "work_hours": 7.0,
+        "output_quantity": 2,
+        "remarks": "使用旧版面料返工（问题记录）"
+    }
+]
+
 SAMPLE_LEDGER_RECORDS = [
     {
         "style_code": SAMPLE_STYLE_CODE,
