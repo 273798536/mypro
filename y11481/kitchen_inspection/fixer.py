@@ -142,6 +142,15 @@ def reimport_after_fix(session_id):
         except (ValueError, TypeError):
             return None
     
+    def get_batch_no(data):
+        return data.get('批次号') or data.get('batch_no') or data.get('锅次')
+    
+    def get_store_id(data):
+        return data.get('门店编号') or data.get('门店') or data.get('store_id') or data.get('store')
+    
+    def get_record_date(data):
+        return data.get('日期') or data.get('record_date') or data.get('date')
+    
     with get_connection() as conn:
         cursor = conn.cursor()
         
@@ -158,6 +167,12 @@ def reimport_after_fix(session_id):
             raw_data = json.loads(record['raw_data'])
             source_type = record['source_type']
             
+            new_batch_no = get_batch_no(raw_data)
+            new_store_id = get_store_id(raw_data)
+            new_record_date = get_record_date(raw_data)
+            
+            old_batch_no = record['batch_no']
+            
             if source_type == 'sample_label':
                 cursor.execute("""
                     UPDATE sample_labels
@@ -165,13 +180,13 @@ def reimport_after_fix(session_id):
                         keeper = ?, store_id = ?, record_date = ?, status = 'reimported'
                     WHERE record_id = ?
                 """, (
-                    raw_data.get('批次号') or raw_data.get('batch_no') or raw_data.get('锅次'),
+                    new_batch_no,
                     raw_data.get('产品名称') or raw_data.get('product_name'),
                     raw_data.get('留样时间') or raw_data.get('sample_time'),
                     safe_float(raw_data.get('留样量') or raw_data.get('sample_amount')),
                     raw_data.get('留样人') or raw_data.get('keeper'),
-                    raw_data.get('门店编号') or raw_data.get('store_id'),
-                    raw_data.get('日期') or raw_data.get('record_date'),
+                    new_store_id,
+                    new_record_date,
                     record['id']
                 ))
             elif source_type == 'temperature':
@@ -182,13 +197,13 @@ def reimport_after_fix(session_id):
                         record_date = ?, status = 'reimported'
                     WHERE record_id = ?
                 """, (
-                    raw_data.get('批次号') or raw_data.get('batch_no'),
-                    raw_data.get('门店编号') or raw_data.get('store_id'),
+                    new_batch_no,
+                    new_store_id,
                     raw_data.get('测量时间') or raw_data.get('measure_time'),
                     safe_float(raw_data.get('温度') or raw_data.get('temperature')),
                     raw_data.get('测量点') or raw_data.get('measure_point'),
                     raw_data.get('操作人员') or raw_data.get('operator'),
-                    raw_data.get('日期') or raw_data.get('record_date'),
+                    new_record_date,
                     record['id']
                 ))
             elif source_type == 'complaint':
@@ -200,8 +215,8 @@ def reimport_after_fix(session_id):
                         handle_date = ?, status = 'reimported'
                     WHERE record_id = ?
                 """, (
-                    raw_data.get('门店编号') or raw_data.get('store_id'),
-                    raw_data.get('批次号') or raw_data.get('batch_no'),
+                    new_store_id,
+                    new_batch_no,
                     raw_data.get('产品名称') or raw_data.get('product_name'),
                     raw_data.get('投诉类型') or raw_data.get('complaint_type'),
                     raw_data.get('投诉描述') or raw_data.get('complaint_desc'),
@@ -215,9 +230,28 @@ def reimport_after_fix(session_id):
             
             cursor.execute("""
                 UPDATE raw_records
-                SET status = 'reimported'
+                SET batch_no = ?, store_id = ?, record_date = ?, status = 'reimported'
                 WHERE id = ?
-            """, (record['id'],))
+            """, (new_batch_no, new_store_id, new_record_date, record['id']))
+            
+            if new_batch_no and new_batch_no != old_batch_no:
+                if old_batch_no:
+                    cursor.execute("""
+                        DELETE FROM batch_tracking
+                        WHERE batch_no = ? AND record_id = ?
+                    """, (old_batch_no, record['id']))
+                
+                cursor.execute("""
+                    INSERT INTO batch_tracking (
+                        batch_no, source_type, store_id, record_id, tracking_type
+                    ) VALUES (?, ?, ?, ?, 'reimport')
+                """, (new_batch_no, source_type, new_store_id, record['id']))
+            elif new_batch_no and new_batch_no == old_batch_no:
+                cursor.execute("""
+                    UPDATE batch_tracking
+                    SET store_id = ?, tracking_type = 'reimport'
+                    WHERE batch_no = ? AND record_id = ?
+                """, (new_store_id, new_batch_no, record['id']))
             
             reimported += 1
         
