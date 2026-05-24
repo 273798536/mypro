@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Chain {
+  id           String   @id @default(uuid())
+  chainNo      String   @unique @map("chain_no")
+  storeId      String   @map("store_id")
+  storeName    String   @map("store_name")
+  businessDate DateTime @map("business_date")
+  status       String
+  totalAmount  Float    @map("total_amount")
+  summaryData  String   @map("summary_data")
+
+  materials        Material[]
+  statusHistory    StatusHistory[]
+  reconciliation   ReconciliationResult[]
+  exportTasks      ExportTask[]
+  httpLogs         HttpLog[]
+  sqlLogs          SqlLog[]
+
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("chains")
+}
+
+model Material {
+  id         String   @id @default(uuid())
+  chainId    String?  @map("chain_id")
+  chain      Chain?   @relation(fields: [chainId], references: [id])
+  type       String
+  sourceFile String?  @map("source_file")
+  rawContent String   @map("raw_content")
+  parsedData String   @map("parsed_data")
+  batchKey   String   @map("batch_key")
+  version    Int      @default(1)
+  isLatest   Boolean  @default(true) @map("is_latest")
+  handleMode String?  @map("handle_mode")
+
+  dirtyDataRecords DirtyDataRecord[]
+
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([batchKey, version])
+  @@map("materials")
+}
+
+model StatusHistory {
+  id           String   @id @default(uuid())
+  chainId      String   @map("chain_id")
+  chain        Chain    @relation(fields: [chainId], references: [id])
+  fromStatus   String?
+  toStatus     String
+  reason       String
+  operatorId   String   @map("operator_id")
+  operatorName String   @map("operator_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("status_history")
+}
+
+model DirtyDataRecord {
+  id             String   @id @default(uuid())
+  materialId     String   @map("material_id")
+  material       Material @relation(fields: [materialId], references: [id])
+  type           String
+  fieldName      String   @map("field_name")
+  originalValue  String   @map("original_value")
+  suggestedValue String?  @map("suggested_value")
+  finalValue     String?  @map("final_value")
+  status         String
+  fixNote        String?  @map("fix_note")
+
+  fixHistory FixHistory[]
+
+  fixedAt   DateTime? @map("fixed_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("dirty_data_records")
+}
+
+model FixHistory {
+  id           String           @id @default(uuid())
+  dirtyDataId  String           @map("dirty_data_id")
+  dirtyData    DirtyDataRecord  @relation(fields: [dirtyDataId], references: [id])
+  beforeValue  String
+  afterValue   String
+  reason       String
+  operatorId   String           @map("operator_id")
+  operatorName String           @map("operator_name")
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@map("fix_history")
+}
+
+model ReconciliationResult {
+  id           String  @id @default(uuid())
+  chainId      String  @map("chain_id")
+  chain        Chain   @relation(fields: [chainId], references: [id])
+  isPassed     Boolean @map("is_passed")
+  differences  String
+  confirmedData String? @map("confirmed_data")
+  status       String  @default("PENDING")
+
+  orderAmount     Float   @map("order_amount")
+  iouAmount       Float   @map("iou_amount")
+  statementAmount Float?  @map("statement_amount")
+  finalAmount     Float   @map("final_amount")
+
+  confirmedBy String?   @map("confirmed_by")
+  confirmedAt DateTime? @map("confirmed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("reconciliation_results")
+}
+
+model ExportTask {
+  id           String  @id @default(uuid())
+  chainId      String? @map("chain_id")
+  chain        Chain?  @relation(fields: [chainId], references: [id])
+  format       String
+  snapshotData String  @map("snapshot_data")
+  filePath     String? @map("file_path")
+  status       String
+
+  files ExportFile[]
+
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("export_tasks")
+}
+
+model ExportFile {
+  id           String     @id @default(uuid())
+  exportTaskId String     @map("export_task_id")
+  exportTask   ExportTask @relation(fields: [exportTaskId], references: [id])
+  fileName     String     @map("file_name")
+  fileUrl      String     @map("file_url")
+  fileSize     BigInt     @map("file_size")
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@map("export_files")
+}
+
+model HttpLog {
+  id            String   @id @default(uuid())
+  chainId       String?  @map("chain_id")
+  chain         Chain?   @relation(fields: [chainId], references: [id])
+  method        String
+  url           String
+  statusCode    Int      @map("status_code")
+  duration      Int
+  requestBody   String?  @map("request_body")
+  responseBody  String?  @map("response_body")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("http_logs")
+}
+
+model SqlLog {
+  id        String   @id @default(uuid())
+  chainId   String?  @map("chain_id")
+  chain     Chain?   @relation(fields: [chainId], references: [id])
+  sql       String
+  params    String
+  duration  Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sql_logs")
+}
+
+model CommandLog {
+  id        String   @id @default(uuid())
+  command   String
+  output    String
+  exitCode  Int      @map("exit_code")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("command_logs")
+}
