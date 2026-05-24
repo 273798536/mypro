@@ -1,0 +1,35 @@
+import { BatchStatus } from '../common/enums/batch-status.enum';
+import { RepairOrder } from './repair-order.entity';
+import { SparePartScan } from './spare-part-scan.entity';
+import { CustomerSignPhoto } from './customer-sign-photo.entity';
+import { ScanDetail } from './scan-detail.entity';
+import { StatusLog } from './status-log.entity';
+import { DirtyRecord } from './dirty-record.entity';
+import { User } from './user.entity';
+export declare class Batch {
+    id: string;
+    batchNo: string;
+    description: string;
+    status: BatchStatus;
+    statusBeforeFrozen: BatchStatus;
+    freezeReason: string;
+    totalRepairOrders: number;
+    totalSparePartScans: number;
+    totalCustomerSignPhotos: number;
+    totalScanDetails: number;
+    totalDirtyRecords: number;
+    totalAmount: number;
+    reviewOpinion: string;
+    manualReason: string;
+    createdBy: User;
+    createdById: string;
+    createdByName: string;
+    repairOrders: RepairOrder[];
+    sparePartScans: SparePartScan[];
+    customerSignPhotos: CustomerSignPhoto[];
+    scanDetails: ScanDetail[];
+    statusLogs: StatusLog[];
+    dirtyRecords: DirtyRecord[];
+    createdAt: Date;
+    updatedAt: Date;
+}

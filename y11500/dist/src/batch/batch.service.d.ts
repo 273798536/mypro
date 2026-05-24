@@ -1,0 +1,34 @@
+import { Repository, DataSource } from 'typeorm';
+import { Batch } from '../entities/batch.entity';
+import { RepairOrder } from '../entities/repair-order.entity';
+import { SparePartScan } from '../entities/spare-part-scan.entity';
+import { CustomerSignPhoto } from '../entities/customer-sign-photo.entity';
+import { ScanDetail } from '../entities/scan-detail.entity';
+import { StateMachineService } from '../state-machine/state-machine.service';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { CreateBatchDto } from './dto/create-batch.dto';
+import { DirtyRecordService } from '../dirty-record/dirty-record.service';
+export declare class BatchService {
+    private batchRepository;
+    private repairOrderRepository;
+    private sparePartScanRepository;
+    private customerSignPhotoRepository;
+    private scanDetailRepository;
+    private stateMachineService;
+    private dirtyRecordService;
+    private dataSource;
+    constructor(batchRepository: Repository<Batch>, repairOrderRepository: Repository<RepairOrder>, sparePartScanRepository: Repository<SparePartScan>, customerSignPhotoRepository: Repository<CustomerSignPhoto>, scanDetailRepository: Repository<ScanDetail>, stateMachineService: StateMachineService, dirtyRecordService: DirtyRecordService, dataSource: DataSource);
+    generateBatchNo(): string;
+    create(createBatchDto: CreateBatchDto, user: CurrentUser): Promise<Batch>;
+    findAll(user: CurrentUser): Promise<Batch[]>;
+    findOne(id: string): Promise<Batch>;
+    submitForReview(id: string, user: CurrentUser): Promise<Batch>;
+    approve(id: string, user: CurrentUser, opinion?: string): Promise<Batch>;
+    reject(id: string, user: CurrentUser, reason: string): Promise<Batch>;
+    freeze(id: string, user: CurrentUser, reason: string): Promise<Batch>;
+    unfreeze(id: string, user: CurrentUser, reason: string): Promise<Batch>;
+    settle(id: string, user: CurrentUser): Promise<Batch>;
+    cancel(id: string, user: CurrentUser, reason: string): Promise<Batch>;
+    archive(id: string, user: CurrentUser): Promise<Batch>;
+    updateTotals(batchId: string): Promise<void>;
+}
