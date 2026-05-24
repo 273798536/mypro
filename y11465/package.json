@@ -14,6 +14,7 @@
     "db:init": "tsx scripts/init-db.ts",
     "db:seed": "tsx scripts/seed-data.ts",
     "db:reset": "rm -f data/app.db && npm run db:init && npm run db:seed",
+    "db:test-statemachine": "tsx scripts/test-statemachine.ts",
     "demo:bad-data": "tsx scripts/demo-bad-data.ts",
     "demo:fix-data": "tsx scripts/demo-fix-data.ts",
     "demo:generate-report": "tsx scripts/demo-generate-report.ts"

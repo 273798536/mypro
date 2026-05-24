@@ -4,52 +4,75 @@ import documentRepository from '../repositories/DocumentRepository';
 import type { BatchStatus, DocumentStatus, ReviewDecision } from '../../shared/types';
 
 class StateMachineService {
+  private batchTransitions: Record<string, Record<string, BatchStatus>> = {
+    DRAFT: {
+      SUBMIT: 'PENDING_REVIEW'
+    },
+    PENDING_REVIEW: {
+      START_REVIEW: 'UNDER_REVIEW'
+    },
+    UNDER_REVIEW: {
+      APPROVE: 'APPROVED',
+      REJECT: 'REJECTED',
+      MODIFY: 'DRAFT'
+    },
+    APPROVED: {
+      FREEZE: 'FROZEN',
+      ARCHIVE: 'ARCHIVED'
+    },
+    REJECTED: {
+      RESUBMIT: 'PENDING_REVIEW'
+    },
+    FROZEN: {
+      UNFREEZE: 'APPROVED',
+      SETTLE: 'SETTLED'
+    },
+    SETTLED: {
+      ARCHIVE: 'ARCHIVED'
+    },
+    ARCHIVED: {}
+  };
+
+  private documentTransitions: Record<string, Record<string, DocumentStatus>> = {
+    DRAFT: {
+      SUBMIT: 'PENDING_REVIEW'
+    },
+    PENDING_REVIEW: {
+      START_REVIEW: 'UNDER_REVIEW'
+    },
+    UNDER_REVIEW: {
+      APPROVE: 'APPROVED',
+      REJECT: 'REJECTED',
+      MODIFY: 'MODIFIED'
+    },
+    APPROVED: {
+      FREEZE: 'FROZEN',
+      ARCHIVE: 'ARCHIVED'
+    },
+    REJECTED: {
+      RESUBMIT: 'PENDING_REVIEW'
+    },
+    MODIFIED: {
+      SUBMIT: 'PENDING_REVIEW'
+    },
+    FROZEN: {
+      UNFREEZE: 'APPROVED'
+    },
+    ARCHIVED: {}
+  };
+
   private batchMachine = createMachine({
     id: 'batch',
     initial: 'DRAFT',
     states: {
-      DRAFT: {
-        on: {
-          SUBMIT: 'PENDING_REVIEW'
-        }
-      },
-      PENDING_REVIEW: {
-        on: {
-          START_REVIEW: 'UNDER_REVIEW'
-        }
-      },
-      UNDER_REVIEW: {
-        on: {
-          APPROVE: 'APPROVED',
-          REJECT: 'REJECTED',
-          MODIFY: 'DRAFT'
-        }
-      },
-      APPROVED: {
-        on: {
-          FREEZE: 'FROZEN',
-          ARCHIVE: 'ARCHIVED'
-        }
-      },
-      REJECTED: {
-        on: {
-          RESUBMIT: 'PENDING_REVIEW'
-        }
-      },
-      FROZEN: {
-        on: {
-          UNFREEZE: 'APPROVED',
-          SETTLE: 'SETTLED'
-        }
-      },
-      SETTLED: {
-        on: {
-          ARCHIVE: 'ARCHIVED'
-        }
-      },
-      ARCHIVED: {
-        type: 'final'
-      }
+      DRAFT: { on: { SUBMIT: 'PENDING_REVIEW' } },
+      PENDING_REVIEW: { on: { START_REVIEW: 'UNDER_REVIEW' } },
+      UNDER_REVIEW: { on: { APPROVE: 'APPROVED', REJECT: 'REJECTED', MODIFY: 'DRAFT' } },
+      APPROVED: { on: { FREEZE: 'FROZEN', ARCHIVE: 'ARCHIVED' } },
+      REJECTED: { on: { RESUBMIT: 'PENDING_REVIEW' } },
+      FROZEN: { on: { UNFREEZE: 'APPROVED', SETTLE: 'SETTLED' } },
+      SETTLED: { on: { ARCHIVE: 'ARCHIVED' } },
+      ARCHIVED: { type: 'final' as const }
     }
   });
 
@@ -57,47 +80,14 @@ class StateMachineService {
     id: 'document',
     initial: 'PENDING_REVIEW',
     states: {
-      DRAFT: {
-        on: {
-          SUBMIT: 'PENDING_REVIEW'
-        }
-      },
-      PENDING_REVIEW: {
-        on: {
-          START_REVIEW: 'UNDER_REVIEW'
-        }
-      },
-      UNDER_REVIEW: {
-        on: {
-          APPROVE: 'APPROVED',
-          REJECT: 'REJECTED',
-          MODIFY: 'MODIFIED'
-        }
-      },
-      APPROVED: {
-        on: {
-          FREEZE: 'FROZEN',
-          ARCHIVE: 'ARCHIVED'
-        }
-      },
-      REJECTED: {
-        on: {
-          RESUBMIT: 'PENDING_REVIEW'
-        }
-      },
-      MODIFIED: {
-        on: {
-          SUBMIT: 'PENDING_REVIEW'
-        }
-      },
-      FROZEN: {
-        on: {
-          UNFREEZE: 'APPROVED'
-        }
-      },
-      ARCHIVED: {
-        type: 'final'
-      }
+      DRAFT: { on: { SUBMIT: 'PENDING_REVIEW' } },
+      PENDING_REVIEW: { on: { START_REVIEW: 'UNDER_REVIEW' } },
+      UNDER_REVIEW: { on: { APPROVE: 'APPROVED', REJECT: 'REJECTED', MODIFY: 'MODIFIED' } },
+      APPROVED: { on: { FREEZE: 'FROZEN', ARCHIVE: 'ARCHIVED' } },
+      REJECTED: { on: { RESUBMIT: 'PENDING_REVIEW' } },
+      MODIFIED: { on: { SUBMIT: 'PENDING_REVIEW' } },
+      FROZEN: { on: { UNFREEZE: 'APPROVED' } },
+      ARCHIVED: { type: 'final' as const }
     }
   });
 
@@ -105,42 +95,39 @@ class StateMachineService {
     const batch = batchRepository.findById(batchId);
     if (!batch) throw new Error('Batch not found');
 
-    const actor = createActor(this.batchMachine, {
-      snapshot: { value: batch.status } as any
-    });
-    actor.start();
-
-    try {
-      actor.send({ type: event });
-      const newState = actor.getSnapshot().value as BatchStatus;
-      
-      return batchRepository.update(batchId, { status: newState }, operatedBy, reason || `状态变更: ${event}`);
-    } catch (error) {
+    const currentStatus = batch.status as string;
+    const targetStatus = this.batchTransitions[currentStatus]?.[event];
+    
+    if (!targetStatus) {
       throw new Error(`Invalid state transition: ${batch.status} -> ${event}`);
-    } finally {
-      actor.stop();
     }
+
+    return batchRepository.update(
+      batchId,
+      { status: targetStatus },
+      operatedBy,
+      reason || `状态变更: ${batch.status} → ${targetStatus}`
+    );
   }
 
   transitionDocument(documentId: string, event: string, operatedBy: string, reason?: string) {
     const doc = documentRepository.findById(documentId);
     if (!doc) throw new Error('Document not found');
 
-    const actor = createActor(this.documentMachine, {
-      snapshot: { value: doc.status } as any
-    });
-    actor.start();
-
-    try {
-      actor.send({ type: event });
-      const newState = actor.getSnapshot().value as DocumentStatus;
-      
-      return documentRepository.updateStatus(documentId, newState, reason, operatedBy, reason);
-    } catch (error) {
+    const currentStatus = doc.status as string;
+    const targetStatus = this.documentTransitions[currentStatus]?.[event];
+    
+    if (!targetStatus) {
       throw new Error(`Invalid state transition: ${doc.status} -> ${event}`);
-    } finally {
-      actor.stop();
     }
+
+    return documentRepository.updateStatus(
+      documentId,
+      targetStatus,
+      reason,
+      operatedBy,
+      reason || `状态变更: ${doc.status} → ${targetStatus}`
+    );
   }
 
   reviewDocument(documentId: string, decision: ReviewDecision, reason: string, operatedBy: string, modifiedData?: Record<string, any>) {
@@ -157,21 +144,33 @@ class StateMachineService {
       MODIFY: 'MODIFY'
     };
 
+    if (doc.status !== 'UNDER_REVIEW') {
+      const currentStatus = doc.status as string;
+      const midStatus = this.documentTransitions[currentStatus]?.['START_REVIEW'];
+      if (midStatus) {
+        documentRepository.updateStatus(
+          documentId,
+          midStatus,
+          '自动进入复核中状态',
+          operatedBy,
+          '开始复核'
+        );
+      }
+    }
+
     return this.transitionDocument(documentId, eventMap[decision], operatedBy, reason);
   }
 
+  canTransitionBatch(state: string, event: string): boolean {
+    return !!this.batchTransitions[state]?.[event];
+  }
+
+  canTransitionDocument(state: string, event: string): boolean {
+    return !!this.documentTransitions[state]?.[event];
+  }
+
   canTransition(state: string, event: string): boolean {
-    try {
-      const actor = createActor(this.batchMachine, {
-        snapshot: { value: state } as any
-      });
-      actor.start();
-      actor.send({ type: event });
-      actor.stop();
-      return true;
-    } catch {
-      return false;
-    }
+    return this.canTransitionBatch(state, event) || this.canTransitionDocument(state, event);
   }
 }
 

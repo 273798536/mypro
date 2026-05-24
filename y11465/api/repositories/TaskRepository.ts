@@ -35,7 +35,7 @@ export class TaskRepository {
     const task = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'task',
+      entityType: 'TASK',
       entityId: id,
       action: 'CREATE',
       afterData: task,
@@ -126,7 +126,7 @@ export class TaskRepository {
     const after = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'task',
+      entityType: 'TASK',
       entityId: id,
       action: 'STATUS_CHANGE',
       beforeData: before,
@@ -170,7 +170,7 @@ export class TaskRepository {
     const after = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'task',
+      entityType: 'TASK',
       entityId: id,
       action: 'MANUAL_RETRY',
       beforeData: before,
@@ -199,7 +199,7 @@ export class TaskRepository {
     const after = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'task',
+      entityType: 'TASK',
       entityId: id,
       action: `MANUAL_${action}`,
       beforeData: before,

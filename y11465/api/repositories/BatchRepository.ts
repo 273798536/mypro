@@ -167,7 +167,7 @@ export class BatchRepository {
     const after = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'batch',
+      entityType: 'BATCH',
       entityId: id,
       action: 'UPDATE',
       beforeData: before,

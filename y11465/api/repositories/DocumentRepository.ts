@@ -39,7 +39,7 @@ export class DocumentRepository {
     const doc = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'document',
+      entityType: 'DOCUMENT',
       entityId: id,
       action: 'CREATE',
       afterData: doc,
@@ -131,7 +131,7 @@ export class DocumentRepository {
     const after = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'document',
+      entityType: 'DOCUMENT',
       entityId: id,
       action: 'STATUS_CHANGE',
       beforeData: before,
@@ -151,7 +151,7 @@ export class DocumentRepository {
 
     const stmt = this.db.prepare(`
       UPDATE documents 
-      SET data = ?, status = 'MODIFIED', updated_at = ?
+      SET data = ?, status = 'MODIFIED', version = version + 1, updated_at = ?
       WHERE id = ?
     `);
     stmt.run(JSON.stringify(data), now, id);
@@ -159,7 +159,7 @@ export class DocumentRepository {
     const after = this.findById(id)!;
 
     auditLogRepository.create({
-      entityType: 'document',
+      entityType: 'DOCUMENT',
       entityId: id,
       action: 'MODIFY',
       beforeData: before,
