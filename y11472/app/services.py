@@ -23,6 +23,14 @@ def generate_no(prefix: str) -> str:
     return f"{prefix}{timestamp}{random_suffix}"
 
 
+def enum_value(enum_obj) -> Optional[str]:
+    if enum_obj is None:
+        return None
+    if hasattr(enum_obj, 'value'):
+        return enum_obj.value
+    return str(enum_obj)
+
+
 class AuditService:
     @staticmethod
     def log_operation(
@@ -83,7 +91,7 @@ class CompensationQueueService:
                     "batch_no": item.batch_no,
                     "disputed_qty": item.disputed_qty,
                     "unit_price": item.unit_price,
-                    "dispute_category": item.dispute_category.value if item.dispute_category else None,
+                    "dispute_category": item.dispute_category.value if hasattr(item.dispute_category, 'value') else item.dispute_category,
                     "dispute_reason": item.dispute_reason,
                 })
                 total_compensation += item.disputed_qty * item.unit_price
@@ -107,7 +115,7 @@ class CompensationQueueService:
                 operator,
                 application_id=application_id,
                 queue_id=queue.id,
-                new_status=CompensationStatus.QUEUED.value,
+                new_status=enum_value(CompensationStatus.QUEUED),
                 change_reason="创建补偿队列",
                 field_changes={"queue_no": queue.queue_no},
             )
@@ -129,7 +137,7 @@ class CompensationQueueService:
         if queue.is_frozen:
             raise ValueError("Queue item is frozen")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.status = CompensationStatus.PROCESSING
         db.flush()
 
@@ -294,7 +302,7 @@ class CompensationQueueService:
         if not queue:
             raise ValueError("Queue item not found")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.status = CompensationStatus.MANUAL_REVIEW
         queue.assigned_to = operator.id
         db.flush()
@@ -306,7 +314,7 @@ class CompensationQueueService:
             application_id=queue.application_id,
             queue_id=queue.id,
             old_status=old_status,
-            new_status=CompensationStatus.MANUAL_REVIEW.value,
+            new_status=enum_value(CompensationStatus.MANUAL_REVIEW),
             change_reason=change_reason,
         )
 
@@ -325,7 +333,7 @@ class CompensationQueueService:
         if not queue:
             raise ValueError("Queue item not found")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.status = CompensationStatus.MANUAL_RESOLVED
         queue.total_compensation_amount = request.compensation_amount
         queue.processed_items = request.resolved_items
@@ -347,7 +355,7 @@ class CompensationQueueService:
             application_id=queue.application_id,
             queue_id=queue.id,
             old_status=old_status,
-            new_status=CompensationStatus.MANUAL_RESOLVED.value,
+            new_status=enum_value(CompensationStatus.MANUAL_RESOLVED),
             change_reason=request.change_reason,
             field_changes={
                 "compensation_amount": request.compensation_amount,
@@ -371,7 +379,7 @@ class CompensationQueueService:
         if not queue:
             raise ValueError("Queue item not found")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.is_frozen = True
         queue.frozen_until = datetime.now() + timedelta(hours=hours)
         queue.freeze_reason = reason
@@ -386,7 +394,7 @@ class CompensationQueueService:
             application_id=queue.application_id,
             queue_id=queue.id,
             old_status=old_status,
-            new_status=CompensationStatus.FROZEN.value,
+            new_status=enum_value(CompensationStatus.FROZEN),
             change_reason=reason,
             field_changes={"frozen_hours": hours},
         )
@@ -406,7 +414,7 @@ class CompensationQueueService:
         if not queue:
             raise ValueError("Queue item not found")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.is_frozen = False
         queue.frozen_until = None
         queue.freeze_reason = None
@@ -421,7 +429,7 @@ class CompensationQueueService:
             application_id=queue.application_id,
             queue_id=queue.id,
             old_status=old_status,
-            new_status=CompensationStatus.QUEUED.value,
+            new_status=enum_value(CompensationStatus.QUEUED),
             change_reason=change_reason,
         )
 
@@ -440,7 +448,7 @@ class CompensationQueueService:
         if not queue:
             raise ValueError("Queue item not found")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.status = CompensationStatus.CLOSED
         queue.completed_at = datetime.now()
         db.flush()
@@ -452,7 +460,7 @@ class CompensationQueueService:
             application_id=queue.application_id,
             queue_id=queue.id,
             old_status=old_status,
-            new_status=CompensationStatus.CLOSED.value,
+            new_status=enum_value(CompensationStatus.CLOSED),
             change_reason=change_reason,
         )
 
@@ -471,7 +479,7 @@ class CompensationQueueService:
         if not queue or queue.status != CompensationStatus.DEAD_LETTER:
             raise ValueError("Invalid queue item for recovery")
 
-        old_status = queue.status.value
+        old_status = enum_value(queue.status)
         queue.status = CompensationStatus.QUEUED
         queue.retry_count = 0
         queue.last_error = None
@@ -485,7 +493,7 @@ class CompensationQueueService:
             application_id=queue.application_id,
             queue_id=queue.id,
             old_status=old_status,
-            new_status=CompensationStatus.QUEUED.value,
+            new_status=enum_value(CompensationStatus.QUEUED),
             change_reason=change_reason,
         )
 
@@ -555,7 +563,7 @@ class ExternalReceiptService:
             OperationType.IMPORT,
             operator,
             application_id=receipt_data.application_id,
-            change_reason=f"导入外部回执 (策略: {receipt_data.retry_strategy.value})",
+            change_reason=f"导入外部回执 (策略: {enum_value(receipt_data.retry_strategy)})",
             field_changes={
                 "receipt_no": receipt.receipt_no,
                 "confirmed_qty": receipt_data.total_confirmed_qty,

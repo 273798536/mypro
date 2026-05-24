@@ -6,6 +6,7 @@ from app.database import get_db
 from app.auth import authenticate_user, create_access_token, get_current_active_user
 from app.config import get_settings
 from app import schemas, models
+from app.services import enum_value
 
 settings = get_settings()
 router = APIRouter(tags=["认证"])
@@ -28,7 +29,7 @@ async def login_for_access_token(
         data={
             "sub": user.username,
             "user_id": user.id,
-            "role": user.role.value,
+            "role": enum_value(user.role),
         },
         expires_delta=access_token_expires
     )

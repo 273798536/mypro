@@ -106,7 +106,7 @@ def update_application(
     if not application:
         raise HTTPException(status_code=404, detail="申请不存在")
 
-    old_status = application.status.value
+    old_status = enum_value(application.status)
     field_changes = {}
 
     for key, value in update_data.model_dump(exclude_unset=True).items():
@@ -125,7 +125,7 @@ def update_application(
         current_user,
         application_id=application.id,
         old_status=old_status,
-        new_status=application.status.value if update_data.status else old_status,
+        new_status=enum_value(application.status) if update_data.status else old_status,
         change_reason="更新退供申请",
         field_changes=field_changes,
     )
@@ -149,7 +149,7 @@ def submit_application(
     if application.status != ReturnApplicationStatus.DRAFT:
         raise HTTPException(status_code=400, detail="只能提交草稿状态的申请")
 
-    old_status = application.status.value
+    old_status = enum_value(application.status)
     application.status = ReturnApplicationStatus.SUBMITTED
     application.updated_by = current_user.id
     db.commit()
@@ -161,7 +161,7 @@ def submit_application(
         current_user,
         application_id=application.id,
         old_status=old_status,
-        new_status=ReturnApplicationStatus.SUBMITTED.value,
+        new_status=enum_value(ReturnApplicationStatus.SUBMITTED),
         change_reason="提交退供申请",
     )
     db.commit()
@@ -184,7 +184,7 @@ def withdraw_application(
     if application.status not in [ReturnApplicationStatus.SUBMITTED, ReturnApplicationStatus.QUALITY_CHECKING]:
         raise HTTPException(status_code=400, detail="当前状态无法撤回")
 
-    old_status = application.status.value
+    old_status = enum_value(application.status)
     application.status = ReturnApplicationStatus.DRAFT
     application.updated_by = current_user.id
     db.commit()
@@ -219,7 +219,7 @@ def resubmit_application(
     if application.status != ReturnApplicationStatus.DRAFT:
         raise HTTPException(status_code=400, detail="只能重新提交草稿状态的申请")
 
-    old_status = application.status.value
+    old_status = enum_value(application.status)
     application.status = ReturnApplicationStatus.SUBMITTED
     application.updated_by = current_user.id
     db.commit()
@@ -231,7 +231,7 @@ def resubmit_application(
         current_user,
         application_id=application.id,
         old_status=old_status,
-        new_status=ReturnApplicationStatus.SUBMITTED.value,
+        new_status=enum_value(ReturnApplicationStatus.SUBMITTED),
         change_reason="重新提交退供申请",
     )
     db.commit()
