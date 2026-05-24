@@ -9,9 +9,11 @@
 - 只读账号: readonly / readonly123
 """
 
-from app.database import SessionLocal
+from app.database import SessionLocal, engine, Base
 from app.models import User, UserRole
 from app.auth import get_password_hash
+
+Base.metadata.create_all(bind=engine)
 
 
 def init_users():

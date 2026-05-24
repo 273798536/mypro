@@ -13,6 +13,7 @@ from app.schemas import (
     VerifyRequest
 )
 from app.services import QueueService, OperationLogService
+from app.utils import model_to_dict_safe
 from app.models import (
     LeaderRefund, WarehouseReview, UserRemark, ManualPriceAdjust,
     DataSource, IssueType
@@ -45,7 +46,7 @@ async def create_leader_refund(
         action="create_leader_refund",
         table_name="leader_refunds",
         record_id=refund.id,
-        diff_data={"before": None, "after": data.model_dump()}
+        diff_data={"before": None, "after": model_to_dict_safe(data)}
     )
     
     if refund.is_verified:

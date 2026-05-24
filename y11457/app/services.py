@@ -9,6 +9,7 @@ from app.models import (
     FailedRecord, ImportBatch, User
 )
 from app.config import settings
+from app.utils import make_json_serializable
 import uuid
 import json
 
@@ -274,16 +275,16 @@ class RetryLogService:
             status_after=status_after,
             action=action,
             error_message=error_message,
-            response_data=response_data,
+            response_data=make_json_serializable(response_data),
             operator_id=operator.id if operator else None,
             operator_name=operator.full_name if operator else None,
-            diff_data={
+            diff_data=make_json_serializable({
                 "status": {
                     "before": status_before,
                     "after": status_after
                 },
                 "action": action
-            }
+            })
         )
         db.add(log)
         db.flush()
@@ -317,7 +318,7 @@ class OperationLogService:
             field_name=field_name,
             old_value=old_value,
             new_value=new_value,
-            diff_data=diff_data,
+            diff_data=make_json_serializable(diff_data),
             ip_address=ip_address
         )
         db.add(log)
@@ -436,7 +437,7 @@ class FailedRecordService:
         record = FailedRecord(
             source_type=source_type,
             source_table=source_table,
-            source_data=source_data,
+            source_data=make_json_serializable(source_data),
             batch_no=batch_no,
             error_type=error_type,
             error_message=error_message,
