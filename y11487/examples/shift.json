@@ -1,0 +1,11 @@
+{
+  "shift_code": "SH2024052401",
+  "machine_no": "M-001",
+  "shift_date": "2024-05-24",
+  "shift_type": "白班",
+  "operator": "张三",
+  "team_leader": "李主管",
+  "target_quantity": 1000,
+  "actual_quantity": 950,
+  "defect_quantity": 50
+}

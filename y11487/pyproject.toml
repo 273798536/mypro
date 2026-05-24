@@ -1,0 +1,21 @@
+[project]
+name = "quality-queue"
+version = "0.1.0"
+description = "小厂质检返工重试补偿队列服务"
+requires-python = ">=3.9"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "click>=8.0",
+    "fastapi>=0.100",
+    "uvicorn>=0.23",
+    "pydantic>=2.0",
+    "python-dateutil>=2.8",
+    "openpyxl>=3.1",
+]
+
+[project.scripts]
+qq = "quality_queue.cli.main:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,14 @@
+{
+  "inspection_no": "IN20240524001",
+  "shift_code": "SH2024052401",
+  "machine_no": "M-001",
+  "inspection_date": "2024-05-24",
+  "inspector": "王检验",
+  "batch_no": "B20240524001",
+  "style_no": "STYLE-001",
+  "fabric_type": "纯棉",
+  "sample_size": 100,
+  "defect_count": 5,
+  "defect_rate": 0.05,
+  "is_qualified": false
+}

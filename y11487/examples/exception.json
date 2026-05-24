@@ -1,0 +1,11 @@
+{
+  "source": "sms",
+  "shift_code": "SH2024052401",
+  "record_date": "2024-05-24",
+  "machine_no": "M-001",
+  "defect_type": "破洞",
+  "description": "发现大面积破洞，已拍摄照片留证",
+  "photo_path": "/photos/defect_001.jpg",
+  "sms_content": "【质检警报】M-001机台发现严重破洞缺陷，请立即处理。缺陷数量：3件",
+  "sender": "质检系统"
+}
