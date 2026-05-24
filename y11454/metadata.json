@@ -1,0 +1,47 @@
+{
+  "idea_id": "y11454",
+  "idea_short_title": "老师补签完以后，出库单、归还照片、维修估价和审批邮件每次补齐都晚一步，\"设备租赁归还权限追责台账服务\"要让客户分批归还配",
+  "folder_name": "y11454",
+  "idea_dir": "/Users/mac/pro/solo/workspaces/y11454",
+  "repo_url": "git@github-mypro:273798536/mypro.git",
+  "required_model": "Seed-Code-DogFooding",
+  "required_agent": "SOLO Coder",
+  "required_agent_id": "solo_coder",
+  "round_name": "第一轮",
+  "suggested_labels": {
+    "任务类型": "0-1代码生成",
+    "业务领域": "纯后端API服务",
+    "修改范围": "跨系统多模块"
+  },
+  "repo_plan": {
+    "base_branch": "idea/y11454/base",
+    "round_branch": "idea/y11454/r1",
+    "pr_title": "[y11454][第一轮] 老师补签完以后，出库单、归还照片、维修估价和审批邮件每次补齐都晚一步，\"设备租赁归还权限追责台账服务",
+    "remote_repo_state": {
+      "repo_url": "git@github-mypro:273798536/mypro.git",
+      "has_refs": true,
+      "default_branch": "main",
+      "repo_probe_inconclusive": false,
+      "ls_remote_returncode": 0,
+      "ls_remote_stderr": "",
+      "symref_returncode": 0,
+      "symref_stderr": ""
+    },
+    "parent_branch": "idea/y11454/base",
+    "compare_url": "https://github.com/273798536/mypro/compare/idea/y11454/base...idea/y11454/r1?expand=1",
+    "repo_dir": "/Users/mac/pro/solo/workspaces/y11454/repo"
+  },
+  "workbook_hint": {
+    "path": "/Users/mac/pro/solo/workspaces/y11454/y11454.xlsx",
+    "uid": "y11454",
+    "round_name": "第一轮"
+  },
+  "paths": {
+    "idea": "/Users/mac/pro/solo/workspaces/y11454/idea.md",
+    "prompt_raw": "/Users/mac/pro/solo/workspaces/y11454/prompts/第一轮-提示词.md",
+    "prompt_optimized": "/Users/mac/pro/solo/workspaces/y11454/prompts/第一轮-优化建议.md",
+    "pr": "/Users/mac/pro/solo/workspaces/y11454/pr/第一轮.md",
+    "round_json": "/Users/mac/pro/solo/workspaces/y11454/rounds/第一轮.json"
+  },
+  "created_at": "2026-05-24T03:33:33.875101+08:00"
+}

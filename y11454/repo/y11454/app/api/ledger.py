@@ -97,15 +97,17 @@ def create_ledger(
     db: Session = Depends(get_db),
     current_user: User = Depends(can_edit)
 ):
+    ledger = EquipmentLedger(**ledger_data.dict(exclude={'change_reason'}))
+    ledger.created_by = current_user.id
+    ledger.status = LedgerStatus.DRAFT
+    
     existing = db.query(EquipmentLedger).filter(
         EquipmentLedger.batch_number == ledger_data.batch_number
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="批次号已存在")
-    
-    ledger = EquipmentLedger(**ledger_data.dict(exclude={'change_reason'}))
-    ledger.created_by = current_user.id
-    ledger.status = LedgerStatus.DRAFT
+        ledger.is_duplicate = True
+        ledger.duplicate_note = f"检测到重复批次: {ledger_data.batch_number}"
+        ledger.original_batch_number = ledger_data.batch_number
     
     db.add(ledger)
     db.flush()

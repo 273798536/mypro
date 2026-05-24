@@ -37,7 +37,7 @@ class EquipmentLedger(Base):
     __tablename__ = "equipment_ledger"
 
     id = Column(Integer, primary_key=True, index=True)
-    batch_number = Column(String(50), unique=True, index=True, nullable=False)
+    batch_number = Column(String(50), index=True, nullable=False)
     record_type = Column(SQLEnum(RecordType), nullable=False)
     status = Column(SQLEnum(LedgerStatus), default=LedgerStatus.DRAFT)
     

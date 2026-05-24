@@ -1,9 +1,18 @@
 from sqlalchemy.orm import Session
 from typing import Dict, Any, Optional
 from datetime import datetime
+from decimal import Decimal
 from app.models.audit import AuditLog, AuditAction
 from app.models.user import User
 from app.models.ledger import EquipmentLedger
+
+
+def json_serialize_value(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, datetime):
+        return value.isoformat() if value else None
+    return value
 
 
 def compare_values(old_val: Any, new_val: Any) -> bool:
@@ -35,8 +44,8 @@ def calculate_field_diffs(
         new_val = new_values.get(field)
         if compare_values(old_val, new_val):
             diffs[field] = {
-                'old_value': old_val.isoformat() if isinstance(old_val, datetime) else old_val,
-                'new_value': new_val.isoformat() if isinstance(new_val, datetime) else new_val
+                'old_value': json_serialize_value(old_val),
+                'new_value': json_serialize_value(new_val)
             }
     return diffs
 
@@ -45,10 +54,7 @@ def ledger_to_dict(ledger: EquipmentLedger) -> Dict[str, Any]:
     result = {}
     for column in ledger.__table__.columns:
         value = getattr(ledger, column.name)
-        if isinstance(value, datetime):
-            result[column.name] = value.isoformat() if value else None
-        else:
-            result[column.name] = value
+        result[column.name] = json_serialize_value(value)
     return result
 
 
