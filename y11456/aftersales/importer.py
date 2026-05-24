@@ -4,7 +4,8 @@ import pandas as pd
 from typing import List, Dict, Tuple, Any
 from .models import (
     create_source_file, check_duplicate_file, insert_raw_record,
-    get_batch, upsert_aftersales_order, get_raw_records_by_batch
+    get_batch, upsert_aftersales_order, get_raw_records_by_batch,
+    get_source_files, delete_source_file_records
 )
 
 
@@ -23,6 +24,10 @@ class UnsupportedFileTypeError(ImportError):
     pass
 
 
+class ParseError(ImportError):
+    pass
+
+
 def read_file(file_path: str) -> pd.DataFrame:
     ext = os.path.splitext(file_path)[1].lower()
     
@@ -34,8 +39,44 @@ def read_file(file_path: str) -> pd.DataFrame:
         raise UnsupportedFileTypeError(f"不支持的文件格式: {ext}")
 
 
-def parse_leader_refund(df: pd.DataFrame) -> List[Dict]:
+def parse_amount_safe(value: Any) -> Tuple[float, bool]:
+    if pd.isna(value) or value == '' or str(value).strip() == '':
+        return 0.0, True
+    
+    try:
+        s = str(value).replace('¥', '').replace('￥', '').replace(',', '').strip()
+        return float(s), False
+    except (ValueError, TypeError):
+        return 0.0, True
+
+
+def parse_int_safe(value: Any) -> Tuple[int, bool]:
+    if pd.isna(value) or value == '' or str(value).strip() == '':
+        return 1, True
+    
+    try:
+        return int(float(value)), False
+    except (ValueError, TypeError):
+        return 1, True
+
+
+def normalize_problem_type(problem_type: str) -> str:
+    pt = str(problem_type).lower() if problem_type else ''
+    if any(k in pt for k in ['少发', '漏发', '缺少', '缺货', 'missing']):
+        return '少发'
+    elif any(k in pt for k in ['坏品', '破损', '变质', '损坏', '质量', 'damaged', 'bad']):
+        return '坏品'
+    elif any(k in pt for k in ['错发', '发错', 'wrong']):
+        return '错发'
+    elif any(k in pt for k in ['退款', '退单', '取消', 'refund']):
+        return '用户退款'
+    else:
+        return problem_type if problem_type else '未分类'
+
+
+def parse_leader_refund(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
     records = []
+    parse_errors = []
     column_mapping = {
         '订单号': ['订单号', 'order_no', '订单编号'],
         '商品编码': ['商品编码', 'sku_code', 'SKU编码', 'sku'],
@@ -55,25 +96,51 @@ def parse_leader_refund(df: pd.DataFrame) -> List[Dict]:
                 break
     
     for idx, row in df.iterrows():
+        original_row_no = idx + 2
+        row_errors = []
+        
+        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
+        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        
+        if not order_no:
+            row_errors.append('缺少订单号')
+        if not sku_code:
+            row_errors.append('缺少商品编码')
+        
+        refund_amount, amount_error = parse_amount_safe(row.get(actual_cols.get('退款金额'), 0))
+        if amount_error:
+            row_errors.append(f'退款金额格式错误: {row.get(actual_cols.get("退款金额"), "")}')
+        
+        quantity, qty_error = parse_int_safe(row.get(actual_cols.get('数量'), 1))
+        
         record = {
             'source_type': 'leader_refund',
-            'original_row_no': idx + 2,
-            'order_no': str(row.get(actual_cols.get('订单号'), '')).strip(),
-            'sku_code': str(row.get(actual_cols.get('商品编码'), '')).strip(),
+            'original_row_no': original_row_no,
+            'order_no': order_no,
+            'sku_code': sku_code,
             'sku_name': str(row.get(actual_cols.get('商品名称'), '')).strip(),
-            'refund_amount': parse_amount(row.get(actual_cols.get('退款金额'), 0)),
+            'refund_amount': refund_amount,
             'refund_reason': str(row.get(actual_cols.get('退款原因'), '')).strip(),
             'problem_type': normalize_problem_type(str(row.get(actual_cols.get('问题类型'), '')).strip()),
-            'quantity': parse_int(row.get(actual_cols.get('数量'), 1)),
+            'quantity': quantity,
             'leader_remark': str(row.get(actual_cols.get('团长备注'), '')).strip()
         }
+        
+        if row_errors:
+            parse_errors.append({
+                'row_no': original_row_no,
+                'record': record,
+                'errors': row_errors
+            })
+        
         records.append(record)
     
-    return records
+    return records, parse_errors
 
 
-def parse_warehouse_review(df: pd.DataFrame) -> List[Dict]:
+def parse_warehouse_review(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
     records = []
+    parse_errors = []
     column_mapping = {
         '订单号': ['订单号', 'order_no', '订单编号'],
         '商品编码': ['商品编码', 'sku_code', 'SKU编码', 'sku'],
@@ -92,24 +159,50 @@ def parse_warehouse_review(df: pd.DataFrame) -> List[Dict]:
                 break
     
     for idx, row in df.iterrows():
+        original_row_no = idx + 2
+        row_errors = []
+        
+        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
+        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        
+        if not order_no:
+            row_errors.append('缺少订单号')
+        if not sku_code:
+            row_errors.append('缺少商品编码')
+        
+        warehouse_refund_amount, amount_error = parse_amount_safe(row.get(actual_cols.get('复核金额'), 0))
+        if amount_error:
+            row_errors.append(f'复核金额格式错误: {row.get(actual_cols.get("复核金额"), "")}')
+        
+        quantity, qty_error = parse_int_safe(row.get(actual_cols.get('数量'), 1))
+        
         record = {
             'source_type': 'warehouse_review',
-            'original_row_no': idx + 2,
-            'order_no': str(row.get(actual_cols.get('订单号'), '')).strip(),
-            'sku_code': str(row.get(actual_cols.get('商品编码'), '')).strip(),
+            'original_row_no': original_row_no,
+            'order_no': order_no,
+            'sku_code': sku_code,
             'sku_name': str(row.get(actual_cols.get('商品名称'), '')).strip(),
-            'warehouse_refund_amount': parse_amount(row.get(actual_cols.get('复核金额'), 0)),
+            'warehouse_refund_amount': warehouse_refund_amount,
             'warehouse_remark': str(row.get(actual_cols.get('仓库备注'), '')).strip(),
             'problem_type': normalize_problem_type(str(row.get(actual_cols.get('问题类型'), '')).strip()),
-            'quantity': parse_int(row.get(actual_cols.get('数量'), 1))
+            'quantity': quantity
         }
+        
+        if row_errors:
+            parse_errors.append({
+                'row_no': original_row_no,
+                'record': record,
+                'errors': row_errors
+            })
+        
         records.append(record)
     
-    return records
+    return records, parse_errors
 
 
-def parse_user_remark(df: pd.DataFrame) -> List[Dict]:
+def parse_user_remark(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
     records = []
+    parse_errors = []
     column_mapping = {
         '订单号': ['订单号', 'order_no', '订单编号'],
         '商品编码': ['商品编码', 'sku_code', 'SKU编码', 'sku'],
@@ -125,56 +218,93 @@ def parse_user_remark(df: pd.DataFrame) -> List[Dict]:
                 break
     
     for idx, row in df.iterrows():
+        original_row_no = idx + 2
+        row_errors = []
+        
+        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
+        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        
+        if not order_no:
+            row_errors.append('缺少订单号')
+        if not sku_code:
+            row_errors.append('缺少商品编码')
+        
         record = {
             'source_type': 'user_remark',
-            'original_row_no': idx + 2,
-            'order_no': str(row.get(actual_cols.get('订单号'), '')).strip(),
-            'sku_code': str(row.get(actual_cols.get('商品编码'), '')).strip(),
+            'original_row_no': original_row_no,
+            'order_no': order_no,
+            'sku_code': sku_code,
             'user_remark': str(row.get(actual_cols.get('用户备注'), '')).strip(),
             'external_receipt': str(row.get(actual_cols.get('外部回执'), '')).strip()
         }
+        
+        if row_errors:
+            parse_errors.append({
+                'row_no': original_row_no,
+                'record': record,
+                'errors': row_errors
+            })
+        
         records.append(record)
     
-    return records
+    return records, parse_errors
 
 
-def parse_amount(value: Any) -> float:
-    if pd.isna(value) or value == '':
-        return 0.0
-    try:
-        s = str(value).replace('¥', '').replace('￥', '').replace(',', '').strip()
-        return float(s)
-    except (ValueError, TypeError):
-        return 0.0
-
-
-def parse_int(value: Any) -> int:
-    if pd.isna(value) or value == '':
-        return 1
-    try:
-        return int(float(value))
-    except (ValueError, TypeError):
-        return 1
-
-
-def normalize_problem_type(problem_type: str) -> str:
-    pt = problem_type.lower()
-    if any(k in pt for k in ['少发', '漏发', '缺少', '缺货', 'missing']):
-        return '少发'
-    elif any(k in pt for k in ['坏品', '破损', '变质', '损坏', '质量', 'damaged', 'bad']):
-        return '坏品'
-    elif any(k in pt for k in ['错发', '发错', 'wrong']):
-        return '错发'
-    elif any(k in pt for k in ['退款', '退单', '取消', 'refund']):
-        return '用户退款'
-    else:
-        return problem_type if problem_type else '未分类'
+def parse_external_receipt(df: pd.DataFrame) -> Tuple[List[Dict], List[Dict]]:
+    records = []
+    parse_errors = []
+    column_mapping = {
+        '订单号': ['订单号', 'order_no', '订单编号'],
+        '商品编码': ['商品编码', 'sku_code', 'SKU编码', 'sku'],
+        '回执链接': ['回执链接', 'receipt_url', '图片链接', '外部回执', '凭证'],
+        '回执说明': ['回执说明', 'description', '说明', '备注']
+    }
+    
+    actual_cols = {}
+    for target, candidates in column_mapping.items():
+        for cand in candidates:
+            if cand in df.columns:
+                actual_cols[target] = cand
+                break
+    
+    for idx, row in df.iterrows():
+        original_row_no = idx + 2
+        row_errors = []
+        
+        order_no = str(row.get(actual_cols.get('订单号'), '')).strip()
+        sku_code = str(row.get(actual_cols.get('商品编码'), '')).strip()
+        
+        if not order_no:
+            row_errors.append('缺少订单号')
+        if not sku_code:
+            row_errors.append('缺少商品编码')
+        
+        record = {
+            'source_type': 'external_receipt',
+            'original_row_no': original_row_no,
+            'order_no': order_no,
+            'sku_code': sku_code,
+            'external_receipt': str(row.get(actual_cols.get('回执链接'), '')).strip(),
+            'receipt_description': str(row.get(actual_cols.get('回执说明'), '')).strip()
+        }
+        
+        if row_errors:
+            parse_errors.append({
+                'row_no': original_row_no,
+                'record': record,
+                'errors': row_errors
+            })
+        
+        records.append(record)
+    
+    return records, parse_errors
 
 
 PARSERS = {
     'leader_refund': parse_leader_refund,
     'warehouse_review': parse_warehouse_review,
-    'user_remark': parse_user_remark
+    'user_remark': parse_user_remark,
+    'external_receipt': parse_external_receipt
 }
 
 FILE_TYPE_NAMES = {
@@ -185,7 +315,26 @@ FILE_TYPE_NAMES = {
 }
 
 
-def import_file(batch_no: str, file_path: str, file_type: str) -> Tuple[int, List[Dict]]:
+def revoke_file_import(batch_id: int, file_type: str, operator: str = None) -> int:
+    from .models import add_adjustment, get_aftersales_orders
+    
+    source_files = get_source_files(batch_id)
+    target_files = [sf for sf in source_files if sf['file_type'] == file_type]
+    
+    if not target_files:
+        return 0
+    
+    deleted_count = 0
+    for sf in target_files:
+        deleted_count += delete_source_file_records(sf['id'], operator)
+    
+    consolidate_orders_by_batch_id(batch_id)
+    
+    return deleted_count
+
+
+def import_file(batch_no: str, file_path: str, file_type: str, 
+                allow_revoke: bool = False, operator: str = None) -> Dict:
     batch = get_batch(batch_no)
     if not batch:
         raise ImportError(f"批次不存在: {batch_no}")
@@ -200,7 +349,10 @@ def import_file(batch_no: str, file_path: str, file_type: str) -> Tuple[int, Lis
         raise UnsupportedFileTypeError(f"不支持的文件格式，仅支持: {', '.join(SUPPORTED_EXTENSIONS)}")
     
     if check_duplicate_file(batch_id, file_type, file_path):
-        raise DuplicateFileError(f"该文件已在当前批次导入过，请勿重复提交")
+        if allow_revoke:
+            revoke_file_import(batch_id, file_type, operator)
+        else:
+            raise DuplicateFileError(f"该文件已在当前批次导入过，请勿重复提交")
     
     try:
         df = read_file(file_path)
@@ -210,7 +362,7 @@ def import_file(batch_no: str, file_path: str, file_type: str) -> Tuple[int, Lis
     parser = PARSERS[file_type]
     
     try:
-        parsed_records = parser(df)
+        parsed_records, parse_errors = parser(df)
     except Exception as e:
         raise ImportError(f"解析文件失败: {str(e)}")
     
@@ -223,10 +375,22 @@ def import_file(batch_no: str, file_path: str, file_type: str) -> Tuple[int, Lis
     )
     
     failed_records = []
+    success_count = 0
     
     for record in parsed_records:
         original_row_no = record.pop('original_row_no')
         source_type = record.pop('source_type')
+        
+        order_no = record.get('order_no', '')
+        sku_code = record.get('sku_code', '')
+        
+        if not order_no or not sku_code:
+            failed_records.append({
+                'row_no': original_row_no,
+                'data': record,
+                'error': '缺少订单号或商品编码，无法关联订单'
+            })
+            continue
         
         raw_data = json.dumps(record, ensure_ascii=False)
         
@@ -239,6 +403,7 @@ def import_file(batch_no: str, file_path: str, file_type: str) -> Tuple[int, Lis
                 parsed_data=record,
                 raw_data=raw_data
             )
+            success_count += 1
         except Exception as e:
             failed_records.append({
                 'row_no': original_row_no,
@@ -246,7 +411,12 @@ def import_file(batch_no: str, file_path: str, file_type: str) -> Tuple[int, Lis
                 'error': str(e)
             })
     
-    return len(parsed_records) - len(failed_records), failed_records
+    return {
+        'success_count': success_count,
+        'failed_records': failed_records,
+        'parse_errors': parse_errors,
+        'total_records': len(parsed_records)
+    }
 
 
 def consolidate_orders(batch_no: str) -> Tuple[int, List[Dict]]:
@@ -254,17 +424,26 @@ def consolidate_orders(batch_no: str) -> Tuple[int, List[Dict]]:
     if not batch:
         raise ImportError(f"批次不存在: {batch_no}")
     
-    batch_id = batch['id']
-    
+    return consolidate_orders_by_batch_id(batch['id'])
+
+
+def consolidate_orders_by_batch_id(batch_id: int) -> Tuple[int, List[Dict]]:
     raw_records = get_raw_records_by_batch(batch_id)
     
     order_map = {}
+    skipped_records = []
     
     for record in raw_records:
         order_no = record.get('order_no', '')
         sku_code = record.get('sku_code', '')
         
         if not order_no or not sku_code:
+            skipped_records.append({
+                'record_id': record.get('id'),
+                'source_type': record.get('source_type'),
+                'row_no': record.get('original_row_no'),
+                'reason': '缺少订单号或商品编码'
+            })
             continue
         
         key = (order_no, sku_code)
@@ -283,20 +462,26 @@ def consolidate_orders(batch_no: str) -> Tuple[int, List[Dict]]:
                 'leader_remark': '',
                 'external_receipt': '',
                 'quantity': 0,
-                'source_rows': []
+                'source_rows': [],
+                'source_versions': {}
             }
         
         order = order_map[key]
         source_type = record.get('source_type')
+        row_no = record.get('original_row_no')
+        file_name = record.get('file_name')
+        
+        version_key = f"{source_type}_{file_name}"
+        order['source_versions'][version_key] = row_no
         
         order['source_rows'].append({
             'source': FILE_TYPE_NAMES.get(source_type, source_type),
-            'row_no': record.get('original_row_no'),
-            'file': record.get('file_name')
+            'row_no': row_no,
+            'file': file_name
         })
         
         if source_type == 'leader_refund':
-            order['leader_refund_amount'] += record.get('refund_amount', 0)
+            order['leader_refund_amount'] = record.get('refund_amount', 0)
             if record.get('sku_name'):
                 order['sku_name'] = record.get('sku_name')
             if record.get('problem_type'):
@@ -305,7 +490,7 @@ def consolidate_orders(batch_no: str) -> Tuple[int, List[Dict]]:
             order['quantity'] = max(order['quantity'], record.get('quantity', 1))
         
         elif source_type == 'warehouse_review':
-            order['warehouse_refund_amount'] += record.get('warehouse_refund_amount', 0)
+            order['warehouse_refund_amount'] = record.get('warehouse_refund_amount', 0)
             if record.get('sku_name'):
                 order['sku_name'] = record.get('sku_name')
             if record.get('problem_type'):
@@ -315,7 +500,12 @@ def consolidate_orders(batch_no: str) -> Tuple[int, List[Dict]]:
         
         elif source_type == 'user_remark':
             order['user_remark'] = record.get('user_remark', '')
-            order['external_receipt'] = record.get('external_receipt', '')
+            if record.get('external_receipt'):
+                order['external_receipt'] = record.get('external_receipt', '')
+        
+        elif source_type == 'external_receipt':
+            if record.get('external_receipt'):
+                order['external_receipt'] = record.get('external_receipt', '')
     
     consolidated = 0
     issues = []
@@ -323,6 +513,7 @@ def consolidate_orders(batch_no: str) -> Tuple[int, List[Dict]]:
     for (order_no, sku_code), order_data in order_map.items():
         problem_types = order_data.pop('problem_types')
         source_rows = order_data.pop('source_rows')
+        source_versions = order_data.pop('source_versions')
         order_data.pop('order_no', None)
         order_data.pop('sku_code', None)
         

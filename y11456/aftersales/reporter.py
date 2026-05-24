@@ -128,7 +128,30 @@ def format_report_text(report: Dict) -> str:
     return "\n".join(lines)
 
 
-def export_to_excel(batch_no: str, output_dir: str, operator: str = None) -> Dict:
+def mask_sensitive_data(value: str, data_type: str = 'default') -> str:
+    if not value:
+        return value
+    
+    value_str = str(value)
+    
+    if data_type == 'order_no':
+        if len(value_str) > 6:
+            return value_str[:3] + '***' + value_str[-3:]
+        return '***'
+    elif data_type == 'remark':
+        if len(value_str) > 10:
+            return value_str[:5] + '...' + value_str[-5:]
+        return value_str
+    elif data_type == 'receipt':
+        if len(value_str) > 12:
+            return value_str[:6] + '***' + value_str[-6:]
+        return '***'
+    else:
+        return value_str
+
+
+def export_to_excel(batch_no: str, output_dir: str, operator: str = None, 
+                    mask_sensitive: bool = False) -> Dict:
     batch = get_batch(batch_no)
     if not batch:
         raise ReportError(f"批次不存在: {batch_no}")
@@ -138,7 +161,8 @@ def export_to_excel(batch_no: str, output_dir: str, operator: str = None) -> Dic
     os.makedirs(output_dir, exist_ok=True)
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    base_filename = f"aftersales_{batch_no}_{timestamp}"
+    mask_suffix = '_masked' if mask_sensitive else ''
+    base_filename = f"aftersales_{batch_no}_{timestamp}{mask_suffix}"
     
     split_orders = split_by_problem_type(batch_no)
     failed_orders = get_failed_details(batch_no)
@@ -158,18 +182,31 @@ def export_to_excel(batch_no: str, output_dir: str, operator: str = None) -> Dic
             check_results = get_check_results(order_id)
             adjustments = get_adjustments(order_id)
             
+            order_no = order['order_no']
+            leader_remark = order.get('leader_remark', '')
+            warehouse_remark = order.get('warehouse_remark', '')
+            user_remark = order.get('user_remark', '')
+            external_receipt = order.get('external_receipt', '')
+            
+            if mask_sensitive:
+                order_no = mask_sensitive_data(order_no, 'order_no')
+                leader_remark = mask_sensitive_data(leader_remark, 'remark')
+                warehouse_remark = mask_sensitive_data(warehouse_remark, 'remark')
+                user_remark = mask_sensitive_data(user_remark, 'remark')
+                external_receipt = mask_sensitive_data(external_receipt, 'receipt')
+            
             data.append({
-                '订单号': order['order_no'],
+                '订单号': order_no,
                 '商品编码': order['sku_code'],
                 '商品名称': order.get('sku_name', ''),
                 '问题类型': problem_type,
                 '退款金额': order.get('combined_refund_amount', 0),
                 '团长退款金额': order.get('leader_refund_amount', 0),
                 '仓库复核金额': order.get('warehouse_refund_amount', 0),
-                '团长备注': order.get('leader_remark', ''),
-                '仓库备注': order.get('warehouse_remark', ''),
-                '用户备注': order.get('user_remark', ''),
-                '外部回执': order.get('external_receipt', ''),
+                '团长备注': leader_remark,
+                '仓库备注': warehouse_remark,
+                '用户备注': user_remark,
+                '外部回执': external_receipt,
                 '核验状态': order.get('status', ''),
                 '核验结论': " | ".join([c['detail'] for c in check_results]),
                 '改判记录': " | ".join([
@@ -188,8 +225,12 @@ def export_to_excel(batch_no: str, output_dir: str, operator: str = None) -> Dic
     if failed_orders:
         data = []
         for order in failed_orders:
+            order_no = order['order_no']
+            if mask_sensitive:
+                order_no = mask_sensitive_data(order_no, 'order_no')
+            
             data.append({
-                '订单号': order['order_no'],
+                '订单号': order_no,
                 '商品编码': order['sku_code'],
                 '商品名称': order.get('sku_name', ''),
                 '问题类型': order['problem_type'],

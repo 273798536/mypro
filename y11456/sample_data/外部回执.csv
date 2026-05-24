@@ -1,0 +1,6 @@
+订单号,商品编码,回执链接,回执说明
+ORD20240524001,SKU001,http://example.com/receipt/001.jpg,称重照片显示少发
+ORD20240524002,SKU002,http://example.com/receipt/002.jpg,破损照片
+ORD20240524003,SKU003,http://example.com/receipt/003.jpg,碎蛋照片
+ORD20240524005,SKU005,http://example.com/receipt/005.jpg,变质对比照片
+ORD20240524007,SKU007,http://example.com/receipt/007.jpg,腐烂香蕉照片

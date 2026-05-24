@@ -299,6 +299,31 @@ def get_source_files(batch_id: int) -> List[Dict]:
         return [dict(row) for row in cursor.fetchall()]
 
 
+def delete_source_file_records(source_file_id: int, operator: str = None) -> int:
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        
+        cursor.execute(
+            "SELECT id, order_no, sku_code FROM raw_records WHERE source_file_id = ?",
+            (source_file_id,)
+        )
+        raw_records = cursor.fetchall()
+        
+        cursor.execute(
+            "DELETE FROM raw_records WHERE source_file_id = ?",
+            (source_file_id,)
+        )
+        deleted_count = cursor.rowcount
+        
+        cursor.execute(
+            "DELETE FROM source_files WHERE id = ?",
+            (source_file_id,)
+        )
+        
+        conn.commit()
+        return deleted_count
+
+
 def get_batch_stats(batch_id: int) -> Dict:
     with get_connection() as conn:
         cursor = conn.cursor()
