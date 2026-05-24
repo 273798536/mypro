@@ -628,6 +628,161 @@ def task_show(task_id):
         db.close()
 
 
+@task.command("start")
+@click.argument("task_id")
+def task_start(task_id):
+    """启动任务"""
+    db = SessionLocal()
+    try:
+        service = AsyncTaskService(db)
+        task = service.start_task(task_id)
+        if not task:
+            click.echo("任务状态不允许启动或任务不存在", err=True)
+            sys.exit(ExitCode.INVALID_STATE)
+        click.echo(f"任务 {task_id} 已启动，状态: {task.status.value}")
+        sys.exit(ExitCode.SUCCESS)
+    except Exception as e:
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(ExitCode.ERROR)
+    finally:
+        db.close()
+
+
+@task.command("complete")
+@click.argument("task_id")
+@click.option("--result", help="任务结果(JSON格式)")
+def task_complete(task_id, result):
+    """完成任务"""
+    db = SessionLocal()
+    try:
+        service = AsyncTaskService(db)
+        result_data = json.loads(result) if result else None
+        task = service.complete_task(task_id, result_data)
+        if not task:
+            click.echo("任务不存在", err=True)
+            sys.exit(ExitCode.NOT_FOUND)
+        click.echo(f"任务 {task_id} 已完成，状态: {task.status.value}")
+        sys.exit(ExitCode.SUCCESS)
+    except Exception as e:
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(ExitCode.ERROR)
+    finally:
+        db.close()
+
+
+@task.command("fail")
+@click.argument("task_id")
+@click.option("--error", required=True, help="错误信息")
+@click.option("--permanent", is_flag=True, help="是否永久失败（不再重试）")
+def task_fail(task_id, error, permanent):
+    """标记任务失败"""
+    db = SessionLocal()
+    try:
+        service = AsyncTaskService(db)
+        task = service.fail_task(task_id, error, permanent)
+        if not task:
+            click.echo("任务不存在", err=True)
+            sys.exit(ExitCode.NOT_FOUND)
+        fail_type = "永久失败" if permanent else "等待重试"
+        click.echo(f"任务 {task_id} 已标记为{fail_type}，状态: {task.status.value}")
+        sys.exit(ExitCode.SUCCESS)
+    except Exception as e:
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(ExitCode.ERROR)
+    finally:
+        db.close()
+
+
+@task.command("manual")
+@click.argument("task_id")
+@click.option("--reason", required=True, help="需要人工处理的原因")
+def task_manual(task_id, reason):
+    """标记任务需要人工处理"""
+    db = SessionLocal()
+    try:
+        service = AsyncTaskService(db)
+        task = service.mark_for_manual(task_id, reason)
+        if not task:
+            click.echo("任务不存在", err=True)
+            sys.exit(ExitCode.NOT_FOUND)
+        click.echo(f"任务 {task_id} 已标记为需人工处理，状态: {task.status.value}")
+        sys.exit(ExitCode.SUCCESS)
+    except Exception as e:
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(ExitCode.ERROR)
+    finally:
+        db.close()
+
+
+@task.command("retry")
+@click.argument("task_id")
+@click.option("--reset-count", is_flag=True, help="重置重试次数")
+def task_retry(task_id, reset_count):
+    """重试任务（从人工/永久失败/等待重试恢复）"""
+    db = SessionLocal()
+    try:
+        service = AsyncTaskService(db)
+        task = service.retry_task(task_id, reset_count)
+        if not task:
+            click.echo("任务状态不允许重试或任务不存在", err=True)
+            sys.exit(ExitCode.INVALID_STATE)
+        click.echo(f"任务 {task_id} 已恢复待处理，状态: {task.status.value}")
+        sys.exit(ExitCode.SUCCESS)
+    except Exception as e:
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(ExitCode.ERROR)
+    finally:
+        db.close()
+
+
+@task.command("process")
+def task_process():
+    """处理所有待处理任务（服务恢复后继续处理）"""
+    db = SessionLocal()
+    try:
+        service = AsyncTaskService(db)
+        tasks = service.process_pending_tasks()
+        click.echo(f"已处理 {len(tasks)} 个待处理任务")
+        for t in tasks:
+            click.echo(f"  - {t.task_id}: {t.status.value}")
+        sys.exit(ExitCode.SUCCESS)
+    except Exception as e:
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(ExitCode.ERROR)
+    finally:
+        db.close()
+
+
+@task.command("worker")
+@click.option("--daemon", is_flag=True, help="后台运行")
+@click.option("--interval", default=60, type=int, help="轮询间隔(秒)")
+def task_worker(daemon, interval):
+    """启动任务工作进程，持续处理待处理任务"""
+    import time
+
+    click.echo(f"启动任务工作进程，轮询间隔: {interval}秒")
+    click.echo("按 Ctrl+C 停止")
+
+    try:
+        while True:
+            db = SessionLocal()
+            try:
+                service = AsyncTaskService(db)
+                pending = service.get_pending_tasks()
+                if pending:
+                    click.echo(f"[{datetime.now().strftime('%H:%M:%S')}] 发现 {len(pending)} 个待处理任务")
+                    service.process_pending_tasks()
+            finally:
+                db.close()
+
+            if not daemon:
+                break
+            time.sleep(interval)
+    except KeyboardInterrupt:
+        click.echo("\n工作进程已停止")
+    sys.exit(ExitCode.SUCCESS)
+
+
 @cli.command("api")
 @click.option("--host", default="0.0.0.0", help="监听地址")
 @click.option("--port", default=8000, type=int, help="监听端口")

@@ -31,6 +31,11 @@ from .schemas import (
     BatchAttachmentCreate,
     ExportRequest,
     ExportResponse,
+    TaskFailRequest,
+    TaskManualRequest,
+    TaskCompleteRequest,
+    TaskRetryRequest,
+    ProcessTasksResponse,
 )
 from .services import BatchService, SourceDataService, AsyncTaskService, ExportService
 
@@ -274,6 +279,61 @@ def get_task(task_id: str, db: Session = Depends(get_db)):
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
     return task
+
+
+@app.post("/api/tasks/{task_id}/start", response_model=AsyncTask)
+def start_task(task_id: str, db: Session = Depends(get_db)):
+    service = AsyncTaskService(db)
+    task = service.start_task(task_id)
+    if not task:
+        raise HTTPException(status_code=400, detail="任务状态不允许启动")
+    return task
+
+
+@app.post("/api/tasks/{task_id}/complete", response_model=AsyncTask)
+def complete_task(task_id: str, request: TaskCompleteRequest, db: Session = Depends(get_db)):
+    service = AsyncTaskService(db)
+    task = service.complete_task(task_id, request.result)
+    if not task:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return task
+
+
+@app.post("/api/tasks/{task_id}/fail", response_model=AsyncTask)
+def fail_task(task_id: str, request: TaskFailRequest, db: Session = Depends(get_db)):
+    service = AsyncTaskService(db)
+    task = service.fail_task(task_id, request.error_message, request.is_permanent)
+    if not task:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return task
+
+
+@app.post("/api/tasks/{task_id}/mark-manual", response_model=AsyncTask)
+def mark_task_manual(task_id: str, request: TaskManualRequest, db: Session = Depends(get_db)):
+    service = AsyncTaskService(db)
+    task = service.mark_for_manual(task_id, request.reason)
+    if not task:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return task
+
+
+@app.post("/api/tasks/{task_id}/retry", response_model=AsyncTask)
+def retry_task(task_id: str, request: TaskRetryRequest, db: Session = Depends(get_db)):
+    service = AsyncTaskService(db)
+    task = service.retry_task(task_id, request.reset_retry_count)
+    if not task:
+        raise HTTPException(status_code=400, detail="任务状态不允许重试或任务不存在")
+    return task
+
+
+@app.post("/api/tasks/process-pending", response_model=ProcessTasksResponse)
+def process_pending_tasks(db: Session = Depends(get_db)):
+    service = AsyncTaskService(db)
+    tasks = service.process_pending_tasks()
+    return ProcessTasksResponse(
+        processed_count=len(tasks),
+        task_ids=[t.task_id for t in tasks],
+    )
 
 
 @app.post("/api/export", response_model=ExportResponse)

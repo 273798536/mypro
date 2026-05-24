@@ -105,7 +105,7 @@ class BatchService:
 
     def _calculate_batch_metrics(self, batch: QualityBatch):
         rework_count = 0
-        pass_rates = []
+        quality_records = []
         shifts = set()
         machines = set()
         total_defect = 0
@@ -114,7 +114,10 @@ class BatchService:
             if source.source_type == SourceType.INSPECTION and source.inspection:
                 insp = source.inspection
                 total_defect += insp.defective_quantity
-                pass_rates.append(insp.pass_rate)
+                record_date = insp.inspection_date or insp.created_at
+                quality_records.append(
+                    {"date": record_date, "pass_rate": insp.pass_rate, "type": "inspection"}
+                )
                 if insp.shift_id:
                     shifts.add(insp.shift_id)
                 if insp.machine_id:
@@ -122,14 +125,16 @@ class BatchService:
             elif source.source_type == SourceType.REWORK and source.rework:
                 rework = source.rework
                 rework_count += 1
-                pass_rates.append(rework.rework_pass_rate)
+                record_date = rework.rework_date or rework.created_at
+                quality_records.append(
+                    {"date": record_date, "pass_rate": rework.rework_pass_rate, "type": "rework"}
+                )
                 if rework.shift_id:
                     shifts.add(rework.shift_id)
                 if rework.machine_id:
                     machines.add(rework.machine_id)
             elif source.source_type == SourceType.MACHINE_SHIFT and source.machine_shift:
                 shift = source.machine_shift
-                pass_rates.append(shift.shift_pass_rate)
                 if shift.shift_code:
                     shifts.add(shift.shift_code)
                 if shift.machine_id:
@@ -138,7 +143,9 @@ class BatchService:
         batch.rework_count = rework_count
         batch.total_defect_count = total_defect
 
-        if pass_rates:
+        if quality_records:
+            quality_records.sort(key=lambda x: x["date"] or datetime.min)
+            pass_rates = [r["pass_rate"] for r in quality_records]
             batch.initial_pass_rate = pass_rates[0]
             batch.best_pass_rate = max(pass_rates)
             batch.worst_pass_rate = min(pass_rates)
@@ -796,6 +803,50 @@ class AsyncTaskService:
         if batch_id:
             query = query.filter(AsyncTask.batch_id == batch_id)
         return query.order_by(AsyncTask.created_at.desc()).offset(skip).limit(limit).all()
+
+    def retry_task(
+        self,
+        task_id: str,
+        reset_retry_count: bool = False,
+    ) -> Optional[AsyncTask]:
+        task = self.get_task(task_id)
+        if not task:
+            return None
+        if task.status not in [
+            TaskStatus.WAITING_MANUAL,
+            TaskStatus.PERMANENT_FAILED,
+            TaskStatus.WAITING_RETRY,
+        ]:
+            return None
+
+        task.status = TaskStatus.PENDING
+        task.next_retry_at = None
+        task.error_message = None
+        if reset_retry_count:
+            task.retry_count = 0
+
+        self.db.commit()
+        self.db.refresh(task)
+        return task
+
+    def process_pending_tasks(self, task_handler=None) -> List[AsyncTask]:
+        pending_tasks = self.get_pending_tasks()
+        processed = []
+
+        for task in pending_tasks:
+            self.start_task(task.task_id)
+
+            try:
+                if task_handler:
+                    result = task_handler(task)
+                    self.complete_task(task.task_id, result)
+                else:
+                    self.complete_task(task.task_id, {"processed": True})
+                processed.append(task)
+            except Exception as e:
+                self.fail_task(task.task_id, str(e))
+
+        return processed
 
 
 class ExportService:

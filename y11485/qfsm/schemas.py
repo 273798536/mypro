@@ -329,3 +329,26 @@ class ExportResponse(BaseModel):
     file_name: str
     file_size: int
     record_count: int
+
+
+class TaskFailRequest(BaseModel):
+    error_message: str
+    is_permanent: bool = False
+
+
+class TaskManualRequest(BaseModel):
+    reason: str
+
+
+class TaskCompleteRequest(BaseModel):
+    result: Optional[Dict[str, Any]] = None
+
+
+class TaskRetryRequest(BaseModel):
+    reset_retry_count: bool = False
+    operator: Optional[str] = None
+
+
+class ProcessTasksResponse(BaseModel):
+    processed_count: int
+    task_ids: List[str]
