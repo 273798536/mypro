@@ -6,7 +6,7 @@ from app.database import get_db
 from app.auth import get_current_active_user, require_roles
 from app import models, schemas
 from app.enums import UserRole, ReturnApplicationStatus, OperationType
-from app.services import generate_no, AuditService
+from app.services import generate_no, AuditService, enum_value
 
 router = APIRouter(prefix="/api/return-applications", tags=["退供申请"])
 

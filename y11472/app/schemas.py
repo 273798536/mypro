@@ -228,7 +228,7 @@ class CompensationQueue(CompensationQueueBase):
     retry_count: int = 0
     next_retry_at: Optional[datetime] = None
     last_error: Optional[str] = None
-    disputed_items_summary: Optional[Dict[str, Any]] = None
+    disputed_items_summary: Optional[List[Dict[str, Any]]] = None
     total_compensation_amount: float = 0.0
     processed_items: Optional[List[Dict[str, Any]]] = None
     failed_items: Optional[List[Dict[str, Any]]] = None
