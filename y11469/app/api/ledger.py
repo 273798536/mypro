@@ -355,6 +355,7 @@ def export_records(request: ExportRequest, db: Session = Depends(get_db)):
     )
 
     ledger_service = LedgerService(db)
+    export_errors = []
     for record_id in request.record_ids:
         try:
             ledger_service.mark_exported(
@@ -362,13 +363,18 @@ def export_records(request: ExportRequest, db: Session = Depends(get_db)):
                 request.operator,
                 request.operator_role
             )
-        except Exception:
-            pass
+        except Exception as e:
+            export_errors.append({
+                "record_id": record_id,
+                "error": str(e)
+            })
 
     return {
         "format": request.export_format,
         "mask_sensitive": request.mask_sensitive,
         "count": len(data),
+        "export_error_count": len(export_errors),
+        "export_errors": export_errors,
         "data": data
     }
 
@@ -441,6 +447,7 @@ def export_ledger_excel(
             raise HTTPException(status_code=404, detail="导出文件生成失败")
         
         ledger_service = LedgerService(db)
+        export_errors = []
         for record_id in request.record_ids:
             try:
                 ledger_service.mark_exported(
@@ -448,14 +455,22 @@ def export_ledger_excel(
                     request.operator,
                     request.operator_role
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                export_errors.append({
+                    "record_id": record_id,
+                    "error": str(e)
+                })
         
-        return FileResponse(
+        response = FileResponse(
             path=filepath,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             filename=os.path.basename(filepath)
         )
+        response.headers["X-Export-Error-Count"] = str(len(export_errors))
+        if export_errors:
+            import json
+            response.headers["X-Export-Errors"] = json.dumps(export_errors, ensure_ascii=False)
+        return response
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -185,6 +185,11 @@ class LedgerService:
         if record.status not in [RecordStatus.AUDIT_ONLY, RecordStatus.FROZEN]:
             raise ValueError("只有审计状态的记录可以冻结")
 
+        if record.status == RecordStatus.FROZEN:
+            raise ValueError("记录已处于冻结状态")
+
+        old_status = record.status
+
         record.is_frozen = True
         record.frozen_at = datetime.utcnow()
         record.frozen_by = operator
@@ -193,7 +198,7 @@ class LedgerService:
 
         self._add_status_history(
             record_id,
-            record.status,
+            old_status,
             RecordStatus.FROZEN,
             f"冻结记录: {freeze_reason}",
             operator,

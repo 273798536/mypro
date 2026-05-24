@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 import pandas as pd
 from sqlalchemy.orm import Session
 from app.core.enums import DataSourceType
+from app.core.exceptions import PartialImportFailure
 from app.services.import_service import ImportService
 from app.services.view_service import ViewService
 
@@ -100,15 +101,17 @@ class ExcelService:
         source_file: str,
         imported_by: str
     ) -> Dict[str, Any]:
-        try:
-            df = pd.read_excel(io.BytesIO(file_content))
-            
-            column_mapping = self.EXCEL_COLUMN_MAPPING.get(source_type)
-            if not column_mapping:
-                raise ValueError(f"不支持的数据源类型: {source_type}")
+        df = pd.read_excel(io.BytesIO(file_content))
+        
+        column_mapping = self.EXCEL_COLUMN_MAPPING.get(source_type)
+        if not column_mapping:
+            raise ValueError(f"不支持的数据源类型: {source_type}")
 
-            records = []
-            for _, row in df.iterrows():
+        records = []
+        parse_errors = []
+        
+        for idx, row in df.iterrows():
+            try:
                 record = {}
                 for excel_col, json_col in column_mapping.items():
                     if excel_col in df.columns:
@@ -121,7 +124,13 @@ class ExcelService:
                             value = bool(value)
                         record[json_col] = value
                 records.append(record)
+            except Exception as e:
+                parse_errors.append({
+                    "row_number": idx + 2,
+                    "error": f"解析失败: {str(e)}"
+                })
 
+        try:
             batch = self.import_service.batch_import(
                 source_type,
                 source_file,
@@ -135,12 +144,14 @@ class ExcelService:
                 "success_count": batch.success_count,
                 "failed_count": batch.failed_count,
                 "import_result": batch.import_result,
-                "error_details": batch.error_details,
-                "parsed_records_count": len(records)
+                "error_details": batch.error_details + parse_errors,
+                "parsed_records_count": len(records),
+                "parse_error_count": len(parse_errors)
             }
-
+        except PartialImportFailure:
+            raise
         except Exception as e:
-            raise ValueError(f"Excel解析失败: {str(e)}")
+            raise ValueError(f"Excel导入失败: {str(e)}")
 
     def generate_sample_excel(self, source_type: str) -> bytes:
         column_mapping = self.EXCEL_COLUMN_MAPPING.get(source_type)
