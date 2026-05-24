@@ -36,11 +36,13 @@ export class ExportService {
       }
     })
 
+    const unhandledDirtyRecords = (r: any) => r.dirtyRecords.filter((d: any) => !d.handled)
     const summary = {
       total: receipts.length,
       byStatus: {} as Record<string, number>,
       frozenCount: receipts.filter(r => r.status === ReceiptStatus.FROZEN).length,
-      withDirtyRecords: receipts.filter(r => r.dirtyRecords.length > 0).length,
+      withDirtyRecords: receipts.filter(r => unhandledDirtyRecords(r).length > 0).length,
+      handledDirtyRecords: receipts.filter(r => r.dirtyRecords.some((d: any) => d.handled)).length,
       totalAmount: receipts.reduce((sum, r) => sum + (r.totalAmount?.toNumber() || 0), 0)
     }
 
@@ -64,8 +66,9 @@ export class ExportService {
         implantModel: r.implantModel,
         implantQuantity: r.implantQuantity,
         totalAmount: r.totalAmount,
-        hasDirtyRecords: r.dirtyRecords.length > 0,
-        dirtyRecordCount: r.dirtyRecords.length,
+        hasDirtyRecords: unhandledDirtyRecords(r).length > 0,
+        dirtyRecordCount: unhandledDirtyRecords(r).length,
+        handledDirtyRecordCount: r.dirtyRecords.filter((d: any) => d.handled).length,
         creator: r.creator?.name,
         reviewer: r.reviewer?.name,
         clinic: r.clinic?.name,

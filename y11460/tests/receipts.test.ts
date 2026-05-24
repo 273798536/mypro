@@ -579,4 +579,200 @@ describe('口腔门诊材料异常回执状态机 - 验收测试', () => {
       expect(res.status).toBe(403)
     })
   })
+
+  describe('11. 脏记录修正数据同步测试', () => {
+    it('脏记录金额修正后回写主表', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'DIRTY-SYNC-001',
+        unitPrice: 5000,
+        implantQuantity: 2,
+        totalAmount: 15000
+      }
+
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const dirtyRecord = await prisma.dirtyRecord.findFirst({
+        where: { receiptId, type: 'AMOUNT_CONFLICT' }
+      })
+      expect(dirtyRecord).not.toBeNull()
+
+      const fixRes = await request(app)
+        .patch(`/api/receipts/dirty-records/${dirtyRecord!.id}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+        .send({ 
+          handleOpinion: '已核实，按修正值更新',
+          correctedValue: '10000'
+        })
+
+      expect(fixRes.status).toBe(200)
+      expect(fixRes.body.handled).toBe(true)
+
+      const receiptRes = await request(app)
+        .get(`/api/receipts/${receiptId}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      expect(receiptRes.body.totalAmount).toBe('10000')
+    })
+
+    it('脏记录数量修正后回写主表', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'DIRTY-SYNC-002',
+        implantQuantity: 99
+      }
+
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const dirtyRecord = await prisma.dirtyRecord.findFirst({
+        where: { receiptId, type: 'QUANTITY_CONFLICT' }
+      })
+      expect(dirtyRecord).not.toBeNull()
+
+      const fixRes = await request(app)
+        .patch(`/api/receipts/dirty-records/${dirtyRecord!.id}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+        .send({ 
+          handleOpinion: '已核实，特殊种植手术',
+          correctedValue: '3'
+        })
+
+      expect(fixRes.status).toBe(200)
+
+      const receiptRes = await request(app)
+        .get(`/api/receipts/${receiptId}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      expect(receiptRes.body.implantQuantity).toBe(3)
+    })
+
+    it('院区主任视图只统计未处理的脏记录', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'DIRTY-SYNC-003',
+        implantQuantity: 99
+      }
+
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const viewBefore = await request(app)
+        .get('/api/receipts/director-view')
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      const receiptBefore = viewBefore.body.receipts.find((r: any) => r.batchNo === 'DIRTY-SYNC-003')
+      const unhandledCountBefore = receiptBefore.dirtyRecordCount
+      const handledCountBefore = receiptBefore.handledDirtyRecordCount || 0
+      expect(unhandledCountBefore).toBeGreaterThan(0)
+
+      const dirtyRecord = await prisma.dirtyRecord.findFirst({
+        where: { receiptId, type: 'QUANTITY_CONFLICT' }
+      })
+
+      await request(app)
+        .patch(`/api/receipts/dirty-records/${dirtyRecord!.id}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+        .send({ 
+          handleOpinion: '已核实',
+          correctedValue: '2'
+        })
+
+      const viewAfter = await request(app)
+        .get('/api/receipts/director-view')
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      const receiptAfter = viewAfter.body.receipts.find((r: any) => r.batchNo === 'DIRTY-SYNC-003')
+      expect(receiptAfter.dirtyRecordCount).toBe(unhandledCountBefore - 1)
+      expect(receiptAfter.handledDirtyRecordCount).toBe(handledCountBefore + 1)
+      expect(viewAfter.body.summary.handledDirtyRecords).toBeGreaterThanOrEqual(1)
+    })
+
+    it('脏记录修正后汇总金额使用新值', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'DIRTY-SYNC-004',
+        unitPrice: 5000,
+        implantQuantity: 2,
+        totalAmount: 20000
+      }
+
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      expect(createRes.status).toBe(201)
+      const receiptId = createRes.body.id
+
+      const dirtyRecord = await prisma.dirtyRecord.findFirst({
+        where: { receiptId, type: 'AMOUNT_CONFLICT' }
+      })
+
+      await request(app)
+        .patch(`/api/receipts/dirty-records/${dirtyRecord!.id}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+        .send({ 
+          handleOpinion: '修正金额',
+          correctedValue: '10000'
+        })
+
+      const viewRes = await request(app)
+        .get('/api/receipts/director-view')
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      const receipt = viewRes.body.receipts.find((r: any) => r.batchNo === 'DIRTY-SYNC-004')
+      expect(parseFloat(receipt.totalAmount)).toBe(10000)
+    })
+
+    it('脏记录修正后记录变更日志', async () => {
+      const conflictData = {
+        ...testReceiptData,
+        batchNo: 'DIRTY-SYNC-005',
+        implantQuantity: 99
+      }
+
+      const createRes = await request(app)
+        .post('/api/receipts')
+        .set('Authorization', `Bearer ${tokens.entry}`)
+        .send(conflictData)
+
+      const receiptId = createRes.body.id
+      const dirtyRecord = await prisma.dirtyRecord.findFirst({
+        where: { receiptId, type: 'QUANTITY_CONFLICT' }
+      })
+
+      await request(app)
+        .patch(`/api/receipts/dirty-records/${dirtyRecord!.id}`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+        .send({ 
+          handleOpinion: '已核实修正',
+          correctedValue: '2'
+        })
+
+      const logsRes = await request(app)
+        .get(`/api/receipts/${receiptId}/change-logs`)
+        .set('Authorization', `Bearer ${tokens.supervisor}`)
+
+      const fixLog = logsRes.body.find((l: any) => l.reason?.includes('处理脏记录'))
+      expect(fixLog).toBeDefined()
+      expect(fixLog.action).toBe('REVIEW_OVERRULE')
+    })
+  })
 })

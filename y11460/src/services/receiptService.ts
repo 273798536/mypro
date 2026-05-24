@@ -591,7 +591,44 @@ export class ReceiptService {
       throw new Error('脏记录不存在')
     }
 
-    return prisma.dirtyRecord.update({
+    const receipt = await prisma.materialReceipt.findUnique({
+      where: { id: dirtyRecord.receiptId }
+    })
+    if (!receipt) {
+      throw new Error('关联回执不存在')
+    }
+
+    const beforeData = { ...receipt }
+    const updateData: any = {}
+
+    if (data.correctedValue && dirtyRecord.fieldName) {
+      const fieldName = dirtyRecord.fieldName
+      const fieldValue = data.correctedValue
+
+      switch (fieldName) {
+        case 'implantQuantity':
+          updateData[fieldName] = parseInt(fieldValue, 10)
+          break
+        case 'unitPrice':
+        case 'totalAmount':
+          updateData[fieldName] = parseFloat(fieldValue)
+          break
+        case 'receiptDate':
+          updateData[fieldName] = new Date(fieldValue)
+          break
+        default:
+          updateData[fieldName] = fieldValue
+      }
+    }
+
+    if (Object.keys(updateData).length > 0) {
+      await prisma.materialReceipt.update({
+        where: { id: dirtyRecord.receiptId },
+        data: updateData
+      })
+    }
+
+    const updatedDirtyRecord = await prisma.dirtyRecord.update({
       where: { id: dirtyRecordId },
       data: {
         correctedValue: data.correctedValue,
@@ -599,8 +636,20 @@ export class ReceiptService {
         handled: true,
         handledBy: supervisorId,
         handledAt: new Date()
-      }
+      },
+      include: { receipt: true }
     })
+
+    await recordChangeLog(
+      dirtyRecord.receiptId,
+      StateAction.REVIEW_OVERRULE,
+      supervisorId,
+      beforeData,
+      { ...beforeData, ...updateData },
+      `处理脏记录: ${dirtyRecord.type} - ${dirtyRecord.fieldName || ''} - ${data.handleOpinion}`
+    )
+
+    return updatedDirtyRecord
   }
 
   async getChangeLogs(receiptId: string) {
