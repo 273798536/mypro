@@ -1,0 +1,19 @@
+{
+  "name": "training-signin-compensation-system",
+  "version": "1.0.0",
+  "description": "企业培训签到重试补偿队列系统",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "start": "npm run start -w backend"
+  },
+  "keywords": ["training", "signin", "queue", "compensation"],
+  "author": "",
+  "license": "MIT"
+}
