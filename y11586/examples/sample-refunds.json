@@ -1,0 +1,12 @@
+[
+  {
+    "contractNo": "HT2024001",
+    "refundId": "RF2024001",
+    "refundDate": "2024-05-20",
+    "refundAmount": 10000,
+    "refundReason": "需求变更减少部分功能",
+    "refundMethod": "银行转账",
+    "transactionNo": "TXN20240520001",
+    "status": "processed"
+  }
+]

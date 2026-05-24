@@ -1,0 +1,65 @@
+[
+  {
+    "contractNo": "HT2024001",
+    "contractName": "软件开发服务合同",
+    "partyA": "甲方科技有限公司",
+    "partyB": "乙方软件股份有限公司",
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "totalAmount": 500000,
+    "currency": "CNY",
+    "paymentTerms": [
+      {
+        "termId": "P001",
+        "description": "预付款",
+        "dueDate": "2024-01-15",
+        "amount": 150000,
+        "milestone": "合同签订"
+      },
+      {
+        "termId": "P002",
+        "description": "中期款",
+        "dueDate": "2024-06-30",
+        "amount": 200000,
+        "milestone": "需求验收"
+      },
+      {
+        "termId": "P003",
+        "description": "尾款",
+        "dueDate": "2024-12-15",
+        "amount": 150000,
+        "milestone": "上线验收"
+      }
+    ],
+    "sourceFile": "sample-contracts.json",
+    "supplementaryAgreements": []
+  },
+  {
+    "contractNo": "HT2024002",
+    "contractName": "系统集成服务合同",
+    "partyA": "甲方科技有限公司",
+    "partyB": "丙方系统集成有限公司",
+    "startDate": "2024-03-01",
+    "endDate": "2024-09-30",
+    "totalAmount": 300000,
+    "currency": "CNY",
+    "paymentTerms": [
+      {
+        "termId": "P004",
+        "description": "预付款",
+        "dueDate": "2024-03-15",
+        "amount": 90000,
+        "milestone": "合同签订"
+      },
+      {
+        "termId": "P005",
+        "description": "验收款",
+        "dueDate": "2024-09-30",
+        "amount": 210000,
+        "milestone": "最终验收"
+      }
+    ],
+    "sourceFile": "sample-contracts.json",
+    "supplementaryAgreements": []
+  }
+]
