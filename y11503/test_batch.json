@@ -1,0 +1,145 @@
+{
+  "batch_no": "BATCH20260524001",
+  "operator": "服务经理",
+  "description": "测试批次-2026-05-24",
+  "idempotency_key": "IDEMP_BATCH20260524001_a67d065f",
+  "duplicate_strategy": "ignore",
+  "repair_orders": [
+    {
+      "order_no": "RO202605240001",
+      "customer_name": "客户1",
+      "customer_phone": "13833668871",
+      "product_model": "iPad Air",
+      "fault_description": "进水维修",
+      "engineer": "王工",
+      "is_late_submit": false,
+      "remark": ""
+    },
+    {
+      "order_no": "RO202605240002",
+      "customer_name": "客户2",
+      "customer_phone": "13856046008",
+      "product_model": "iPhone 15",
+      "fault_description": "主板故障",
+      "engineer": "李工",
+      "is_late_submit": false,
+      "remark": ""
+    },
+    {
+      "order_no": "RO202605240003",
+      "customer_name": "客户3",
+      "customer_phone": "13867927810",
+      "product_model": "iPad Air",
+      "fault_description": "电池不充电",
+      "engineer": "王工",
+      "is_late_submit": true,
+      "remark": "先领后补单"
+    },
+    {
+      "order_no": "RO202605240004",
+      "customer_name": "客户4",
+      "customer_phone": "13862595291",
+      "product_model": "Apple Watch",
+      "fault_description": "主板故障",
+      "engineer": "刘工",
+      "is_late_submit": true,
+      "remark": "先领后补单"
+    },
+    {
+      "order_no": "RO202605240005",
+      "customer_name": "客户5",
+      "customer_phone": "13859596289",
+      "product_model": "iPad Air",
+      "fault_description": "摄像头故障",
+      "engineer": "张工",
+      "is_late_submit": false,
+      "remark": ""
+    }
+  ],
+  "parts": [
+    {
+      "part_code": "SP004_001",
+      "part_name": "主板",
+      "barcode": "BC562814554289",
+      "quantity": 1,
+      "is_returned": false,
+      "is_scrapped": false,
+      "scan_time": "2026-05-24T05:50:45.156500",
+      "scan_operator": "仓管A",
+      "repair_order_no": "RO202605240002",
+      "remark": ""
+    },
+    {
+      "part_code": "SP002_002",
+      "part_name": "电池",
+      "barcode": "BC494861804842",
+      "quantity": 1,
+      "is_returned": false,
+      "is_scrapped": true,
+      "scan_time": "2026-05-23T09:50:45.156519",
+      "scan_operator": "仓管A",
+      "repair_order_no": null,
+      "remark": ""
+    },
+    {
+      "part_code": "SP008_003",
+      "part_name": "Home键",
+      "barcode": "BC241680202784",
+      "quantity": 5,
+      "is_returned": false,
+      "is_scrapped": false,
+      "scan_time": "2026-05-22T10:50:45.156528",
+      "scan_operator": "仓管C",
+      "repair_order_no": null,
+      "remark": ""
+    },
+    {
+      "part_code": "SP007_004",
+      "part_name": "振动马达",
+      "barcode": "BC629571501867",
+      "quantity": 3,
+      "is_returned": false,
+      "is_scrapped": false,
+      "scan_time": "2026-05-23T19:50:45.156537",
+      "scan_operator": "仓管C",
+      "repair_order_no": "RO202605240003",
+      "remark": ""
+    },
+    {
+      "part_code": "SP004_005",
+      "part_name": "主板",
+      "barcode": "BC346651221598",
+      "quantity": 1,
+      "is_returned": false,
+      "is_scrapped": false,
+      "scan_time": "2026-05-22T20:50:45.156546",
+      "scan_operator": "仓管C",
+      "repair_order_no": "RO202605240005",
+      "remark": ""
+    },
+    {
+      "part_code": "SP003_006",
+      "part_name": "摄像头模组",
+      "barcode": "BC586349096003",
+      "quantity": 1,
+      "is_returned": false,
+      "is_scrapped": false,
+      "scan_time": "2026-05-24T02:50:45.156554",
+      "scan_operator": "仓管A",
+      "repair_order_no": "RO202605240003",
+      "remark": ""
+    },
+    {
+      "part_code": "SP007_007",
+      "part_name": "振动马达",
+      "barcode": "BC939991718112",
+      "quantity": 3,
+      "is_returned": false,
+      "is_scrapped": false,
+      "scan_time": "2026-05-22T20:50:45.156562",
+      "scan_operator": "仓管B",
+      "repair_order_no": "RO202605240005",
+      "remark": ""
+    }
+  ]
+}
