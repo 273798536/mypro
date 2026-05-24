@@ -18,14 +18,8 @@ def check_missing_fields(record, source_type):
     issues = []
     raw_data = json.loads(record['raw_data'])
     
-    required_fields = {
-        'sample_label': ['批次号', '锅次', 'batch_no', 'batch'],
-        'temperature': ['批次号', '锅次', '温度', 'temperature'],
-        'complaint': ['投诉单号', 'complaint_no', '批次号', '锅次']
-    }
-    
-    fields = required_fields.get(source_type, [])
-    has_batch = any(raw_data.get(f) for f in fields)
+    batch_fields = ['批次号', '锅次', 'batch_no', 'batch']
+    has_batch = any(raw_data.get(f) for f in batch_fields)
     
     if not has_batch:
         issues.append({
@@ -34,6 +28,28 @@ def check_missing_fields(record, source_type):
             'issue_description': '缺少批次号/锅次字段',
             'severity': 'error'
         })
+    
+    if source_type == 'temperature':
+        temp_fields = ['温度', 'temperature', 'temp']
+        has_temp = any(raw_data.get(f) for f in temp_fields)
+        if not has_temp:
+            issues.append({
+                'issue_type': 'missing_field',
+                'issue_field': 'temperature',
+                'issue_description': '缺少温度字段',
+                'severity': 'error'
+            })
+    
+    if source_type == 'complaint':
+        complaint_fields = ['投诉单号', 'complaint_no', 'complaint']
+        has_complaint_no = any(raw_data.get(f) for f in complaint_fields)
+        if not has_complaint_no:
+            issues.append({
+                'issue_type': 'missing_field',
+                'issue_field': 'complaint_no',
+                'issue_description': '缺少投诉单号',
+                'severity': 'error'
+            })
     
     if not record.get('store_id'):
         issues.append({
@@ -54,32 +70,57 @@ def check_missing_fields(record, source_type):
     return issues
 
 
-def check_cross_day(record):
+def check_time_for_cross_day(time_str, field_name, field_desc):
     issues = []
     
-    if not record.get('record_date'):
+    if not time_str:
         return issues
     
     try:
-        record_date = None
-        date_str = record['record_date']
+        time_obj = None
+        has_time_component = False
         
-        for fmt in ['%Y-%m-%d', '%Y/%m/%d', '%m-%d', '%m/%d', '%Y%m%d']:
+        datetime_formats_with_time = [
+            '%Y-%m-%d %H:%M:%S',
+            '%Y-%m-%d %H:%M',
+            '%Y/%m/%d %H:%M:%S',
+            '%Y/%m/%d %H:%M'
+        ]
+        
+        for fmt in datetime_formats_with_time:
             try:
-                record_date = datetime.strptime(date_str, fmt)
+                time_obj = datetime.strptime(time_str, fmt)
+                has_time_component = True
                 break
             except ValueError:
                 continue
         
-        if record_date and record_date.hour >= 0 and record_date.hour < 6:
+        if has_time_component and time_obj.hour >= 0 and time_obj.hour < 6:
             issues.append({
                 'issue_type': 'cross_day',
-                'issue_field': 'record_date',
-                'issue_description': f'记录时间{date_str}可能属于跨日夜班',
+                'issue_field': field_name,
+                'issue_description': f'{field_desc}{time_str}可能属于跨日夜班',
                 'severity': 'warning'
             })
     except Exception:
         pass
+    
+    return issues
+
+
+def check_cross_day(record):
+    issues = []
+    raw_data = json.loads(record['raw_data'])
+    source_type = record.get('source_type')
+    
+    if source_type == 'sample_label':
+        time_str = raw_data.get('留样时间') or raw_data.get('sample_time')
+        if time_str:
+            issues.extend(check_time_for_cross_day(time_str, 'sample_time', '留样时间'))
+    elif source_type == 'temperature':
+        time_str = raw_data.get('测量时间') or raw_data.get('measure_time')
+        if time_str:
+            issues.extend(check_time_for_cross_day(time_str, 'measure_time', '测量时间'))
     
     return issues
 

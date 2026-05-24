@@ -234,24 +234,28 @@ def reimport_after_fix(session_id):
                 WHERE id = ?
             """, (new_batch_no, new_store_id, new_record_date, record['id']))
             
-            if new_batch_no and new_batch_no != old_batch_no:
-                if old_batch_no:
-                    cursor.execute("""
-                        DELETE FROM batch_tracking
-                        WHERE batch_no = ? AND record_id = ?
-                    """, (old_batch_no, record['id']))
+            if new_batch_no:
+                old_batch_str = old_batch_no if old_batch_no else ''
+                new_batch_str = new_batch_no if new_batch_no else ''
                 
-                cursor.execute("""
-                    INSERT INTO batch_tracking (
-                        batch_no, source_type, store_id, record_id, tracking_type
-                    ) VALUES (?, ?, ?, ?, 'reimport')
-                """, (new_batch_no, source_type, new_store_id, record['id']))
-            elif new_batch_no and new_batch_no == old_batch_no:
-                cursor.execute("""
-                    UPDATE batch_tracking
-                    SET store_id = ?, tracking_type = 'reimport'
-                    WHERE batch_no = ? AND record_id = ?
-                """, (new_store_id, new_batch_no, record['id']))
+                if old_batch_str != new_batch_str:
+                    if old_batch_str:
+                        cursor.execute("""
+                            DELETE FROM batch_tracking
+                            WHERE batch_no = ? AND record_id = ?
+                        """, (old_batch_no, record['id']))
+                    
+                    cursor.execute("""
+                        INSERT INTO batch_tracking (
+                            batch_no, source_type, store_id, record_id, tracking_type
+                        ) VALUES (?, ?, ?, ?, 'reimport')
+                    """, (new_batch_no, source_type, new_store_id, record['id']))
+                else:
+                    cursor.execute("""
+                        UPDATE batch_tracking
+                        SET store_id = ?, tracking_type = 'reimport'
+                        WHERE batch_no = ? AND record_id = ?
+                    """, (new_store_id, new_batch_no, record['id']))
             
             reimported += 1
         
