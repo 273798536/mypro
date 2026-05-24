@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "order_no": "WO20260524225750C91AE9BE7782",
+    "location": "测试路1号",
+    "status": "pending",
+    "retry_count": 0,
+    "compensated_amount": 0.0,
+    "created_at": "2026-05-24T14:57:50",
+    "closed_at": null
+  },
+  {
+    "id": 2,
+    "order_no": "WO20260524225750577BA36928FA",
+    "location": "测试路2号",
+    "status": "pending",
+    "retry_count": 0,
+    "compensated_amount": 0.0,
+    "created_at": "2026-05-24T14:57:50",
+    "closed_at": null
+  },
+  {
+    "id": 3,
+    "order_no": "WO20260524225750A0546F060E18",
+    "location": "测试路3号",
+    "status": "processing",
+    "retry_count": 1,
+    "compensated_amount": 0.0,
+    "created_at": "2026-05-24T14:57:50",
+    "closed_at": null
+  }
+]
