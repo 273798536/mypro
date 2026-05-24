@@ -13,7 +13,7 @@ from app.schemas import (
     VerifyRequest
 )
 from app.services import QueueService, OperationLogService
-from app.utils import model_to_dict_safe
+from app.utils import model_to_dict_safe, filter_response_by_role, filter_list_response_by_role, check_city_permission
 from app.models import (
     LeaderRefund, WarehouseReview, UserRemark, ManualPriceAdjust,
     DataSource, IssueType
@@ -22,7 +22,7 @@ from app.models import (
 router = APIRouter(prefix="/sources", tags=["数据源管理"])
 
 
-@router.post("/leader-refunds", response_model=LeaderRefundResponse)
+@router.post("/leader-refunds")
 async def create_leader_refund(
     data: LeaderRefundCreate,
     db: Session = Depends(get_db),
@@ -64,10 +64,10 @@ async def create_leader_refund(
     
     db.commit()
     db.refresh(refund)
-    return refund
+    return filter_response_by_role(refund, current_user, "leader_refunds")
 
 
-@router.get("/leader-refunds", response_model=List[LeaderRefundResponse])
+@router.get("/leader-refunds")
 async def list_leader_refunds(
     city: Optional[str] = None,
     is_verified: Optional[bool] = None,
@@ -87,7 +87,23 @@ async def list_leader_refunds(
         query = query.filter(LeaderRefund.is_verified == is_verified)
     
     refunds = query.offset(skip).limit(limit).all()
-    return refunds
+    return filter_list_response_by_role(refunds, current_user, "leader_refunds")
+
+
+@router.get("/leader-refunds/{record_id}")
+async def get_leader_refund(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    refund = db.query(LeaderRefund).filter(LeaderRefund.id == record_id).first()
+    if not refund:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, refund.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    return filter_response_by_role(refund, current_user, "leader_refunds")
 
 
 @router.post("/leader-refunds/{record_id}/verify")
@@ -103,6 +119,9 @@ async def verify_leader_refund(
     refund = db.query(LeaderRefund).filter(LeaderRefund.id == record_id).first()
     if not refund:
         raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, refund.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
     
     old_verified = refund.is_verified
     refund.is_verified = data.verified
@@ -140,7 +159,7 @@ async def verify_leader_refund(
     return {"message": "审核成功", "is_verified": data.verified}
 
 
-@router.post("/warehouse-reviews", response_model=WarehouseReviewResponse)
+@router.post("/warehouse-reviews")
 async def create_warehouse_review(
     data: WarehouseReviewCreate,
     db: Session = Depends(get_db),
@@ -173,10 +192,10 @@ async def create_warehouse_review(
     
     db.commit()
     db.refresh(review)
-    return review
+    return filter_response_by_role(review, current_user, "warehouse_reviews")
 
 
-@router.get("/warehouse-reviews", response_model=List[WarehouseReviewResponse])
+@router.get("/warehouse-reviews")
 async def list_warehouse_reviews(
     city: Optional[str] = None,
     is_verified: Optional[bool] = None,
@@ -199,7 +218,23 @@ async def list_warehouse_reviews(
         query = query.filter(WarehouseReview.issue_type == issue_type)
     
     reviews = query.offset(skip).limit(limit).all()
-    return reviews
+    return filter_list_response_by_role(reviews, current_user, "warehouse_reviews")
+
+
+@router.get("/warehouse-reviews/{record_id}")
+async def get_warehouse_review(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    review = db.query(WarehouseReview).filter(WarehouseReview.id == record_id).first()
+    if not review:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, review.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    return filter_response_by_role(review, current_user, "warehouse_reviews")
 
 
 @router.post("/warehouse-reviews/{record_id}/verify")
@@ -215,6 +250,9 @@ async def verify_warehouse_review(
     review = db.query(WarehouseReview).filter(WarehouseReview.id == record_id).first()
     if not review:
         raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, review.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
     
     old_verified = review.is_verified
     review.is_verified = data.verified
@@ -240,7 +278,7 @@ async def verify_warehouse_review(
     return {"message": "审核成功", "is_verified": data.verified}
 
 
-@router.post("/user-remarks", response_model=UserRemarkResponse)
+@router.post("/user-remarks")
 async def create_user_remark(
     data: UserRemarkCreate,
     db: Session = Depends(get_db),
@@ -273,10 +311,10 @@ async def create_user_remark(
     
     db.commit()
     db.refresh(remark)
-    return remark
+    return filter_response_by_role(remark, current_user, "user_remarks")
 
 
-@router.get("/user-remarks", response_model=List[UserRemarkResponse])
+@router.get("/user-remarks")
 async def list_user_remarks(
     city: Optional[str] = None,
     is_verified: Optional[bool] = None,
@@ -296,7 +334,23 @@ async def list_user_remarks(
         query = query.filter(UserRemark.is_verified == is_verified)
     
     remarks = query.offset(skip).limit(limit).all()
-    return remarks
+    return filter_list_response_by_role(remarks, current_user, "user_remarks")
+
+
+@router.get("/user-remarks/{record_id}")
+async def get_user_remark(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    remark = db.query(UserRemark).filter(UserRemark.id == record_id).first()
+    if not remark:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, remark.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    return filter_response_by_role(remark, current_user, "user_remarks")
 
 
 @router.post("/user-remarks/{record_id}/verify")
@@ -312,6 +366,9 @@ async def verify_user_remark(
     remark = db.query(UserRemark).filter(UserRemark.id == record_id).first()
     if not remark:
         raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, remark.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
     
     old_verified = remark.is_verified
     remark.is_verified = data.verified
@@ -337,7 +394,7 @@ async def verify_user_remark(
     return {"message": "审核成功", "is_verified": data.verified}
 
 
-@router.post("/manual-price-adjusts", response_model=ManualPriceAdjustResponse)
+@router.post("/manual-price-adjusts")
 async def create_manual_price_adjust(
     data: ManualPriceAdjustCreate,
     db: Session = Depends(get_db),
@@ -370,10 +427,10 @@ async def create_manual_price_adjust(
     
     db.commit()
     db.refresh(adjust)
-    return adjust
+    return filter_response_by_role(adjust, current_user, "manual_price_adjusts")
 
 
-@router.get("/manual-price-adjusts", response_model=List[ManualPriceAdjustResponse])
+@router.get("/manual-price-adjusts")
 async def list_manual_price_adjusts(
     city: Optional[str] = None,
     is_verified: Optional[bool] = None,
@@ -393,7 +450,23 @@ async def list_manual_price_adjusts(
         query = query.filter(ManualPriceAdjust.is_verified == is_verified)
     
     adjusts = query.offset(skip).limit(limit).all()
-    return adjusts
+    return filter_list_response_by_role(adjusts, current_user, "manual_price_adjusts")
+
+
+@router.get("/manual-price-adjusts/{record_id}")
+async def get_manual_price_adjust(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    adjust = db.query(ManualPriceAdjust).filter(ManualPriceAdjust.id == record_id).first()
+    if not adjust:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, adjust.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    return filter_response_by_role(adjust, current_user, "manual_price_adjusts")
 
 
 @router.post("/manual-price-adjusts/{record_id}/verify")
@@ -409,6 +482,9 @@ async def verify_manual_price_adjust(
     adjust = db.query(ManualPriceAdjust).filter(ManualPriceAdjust.id == record_id).first()
     if not adjust:
         raise HTTPException(status_code=404, detail="记录不存在")
+    
+    if not check_city_permission(current_user, adjust.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
     
     old_verified = adjust.is_verified
     adjust.is_verified = data.verified

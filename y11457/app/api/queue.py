@@ -11,12 +11,13 @@ from app.schemas import (
     CompensationCloseRequest, RetryRequest
 )
 from app.services import QueueService, RetryLogService, ExternalService
+from app.utils import filter_response_by_role, filter_list_response_by_role, check_city_permission, filter_by_role, model_to_dict_safe
 from app.models import CompensationQueue
 
 router = APIRouter(prefix="/queue", tags=["补偿队列"])
 
 
-@router.get("/", response_model=List[CompensationQueueResponse])
+@router.get("/")
 async def list_queue(
     status: Optional[CompensationStatus] = None,
     city: Optional[str] = None,
@@ -39,10 +40,10 @@ async def list_queue(
         query = query.filter(CompensationQueue.retry_category == retry_category)
     
     queues = query.order_by(CompensationQueue.created_at.desc()).offset(skip).limit(limit).all()
-    return queues
+    return filter_list_response_by_role(queues, current_user, "compensation_queues")
 
 
-@router.get("/{queue_id}", response_model=CompensationQueueResponse)
+@router.get("/{queue_id}")
 async def get_queue_item(
     queue_id: int,
     db: Session = Depends(get_db),
@@ -52,10 +53,10 @@ async def get_queue_item(
     if not queue:
         raise HTTPException(status_code=404, detail="队列记录不存在")
     
-    if current_user.role != UserRole.SUPERVISOR and current_user.city and queue.city != current_user.city:
-        raise HTTPException(status_code=403, detail="无权限查看此记录")
+    if not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
     
-    return queue
+    return filter_response_by_role(queue, current_user, "compensation_queues")
 
 
 @router.get("/{queue_id}/source")
@@ -68,19 +69,34 @@ async def get_queue_source(
     if not queue:
         raise HTTPException(status_code=404, detail="队列记录不存在")
     
+    if not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    if current_user.role == UserRole.DATA_ENTRY or current_user.role == UserRole.READ_ONLY:
+        return {
+            "source_type": queue.source_type.value,
+            "source_id": queue.source_id,
+            "source_table": queue.source_table,
+            "record": None,
+            "message": "无权限查看源数据详情"
+        }
+    
     source_record = QueueService.get_source_record(db, queue)
     if not source_record:
         return {"source_type": queue.source_type.value, "source_id": queue.source_id, "record": None}
+    
+    source_data = model_to_dict_safe(source_record)
+    filtered_source = filter_by_role(source_data, current_user.role, queue.source_table)
     
     return {
         "source_type": queue.source_type.value,
         "source_id": queue.source_id,
         "source_table": queue.source_table,
-        "record": {c.name: getattr(source_record, c.name) for c in source_record.__table__.columns}
+        "record": filtered_source
     }
 
 
-@router.get("/{queue_id}/logs", response_model=List[RetryLogResponse])
+@router.get("/{queue_id}/logs")
 async def get_queue_logs(
     queue_id: int,
     db: Session = Depends(get_db),
@@ -90,8 +106,14 @@ async def get_queue_logs(
     if not queue:
         raise HTTPException(status_code=404, detail="队列记录不存在")
     
+    if not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    if current_user.role == UserRole.DATA_ENTRY or current_user.role == UserRole.READ_ONLY:
+        return []
+    
     logs = RetryLogService.get_by_queue_id(db, queue_id)
-    return logs
+    return [model_to_dict_safe(log) for log in logs]
 
 
 @router.get("/{queue_id}/diff")
@@ -104,6 +126,18 @@ async def get_queue_diff(
     if not queue:
         raise HTTPException(status_code=404, detail="队列记录不存在")
     
+    if not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限查看此城市的记录")
+    
+    if current_user.role == UserRole.DATA_ENTRY or current_user.role == UserRole.READ_ONLY:
+        return {
+            "queue_no": queue.queue_no,
+            "current_status": queue.status.value,
+            "retry_count": queue.retry_count,
+            "diff_history": [],
+            "message": "无权限查看差异详情"
+        }
+    
     logs = RetryLogService.get_by_queue_id(db, queue_id)
     
     diff_history = []
@@ -111,7 +145,7 @@ async def get_queue_diff(
         diff_entry = {
             "retry_number": log.retry_number,
             "action": log.action,
-            "created_at": log.created_at,
+            "created_at": log.created_at.isoformat() if log.created_at else None,
             "operator": log.operator_name,
             "status_diff": {
                 "before": log.status_before,
@@ -143,8 +177,8 @@ async def process_queue_item(
     if not queue:
         raise HTTPException(status_code=404, detail="队列记录不存在")
     
-    if current_user.role != UserRole.SUPERVISOR and current_user.city and queue.city != current_user.city:
-        raise HTTPException(status_code=403, detail="无权限操作此记录")
+    if not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
     
     success, result = QueueService.process_queue(db, queue, current_user)
     db.commit()
@@ -208,6 +242,13 @@ async def submit_external_receipt(
     if not RolePermission.can_perform_action(current_user.role, "update"):
         raise HTTPException(status_code=403, detail="权限不足")
     
+    queue = db.query(CompensationQueue).filter(CompensationQueue.id == request.queue_id).first()
+    if not queue:
+        raise HTTPException(status_code=404, detail="队列记录不存在")
+    
+    if not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
+    
     try:
         queue = ExternalService.submit_external_receipt(
             db=db,
@@ -238,6 +279,10 @@ async def manual_takeover(
     if not RolePermission.can_perform_action(current_user.role, "manual_takeover"):
         raise HTTPException(status_code=403, detail="权限不足")
     
+    queue = db.query(CompensationQueue).filter(CompensationQueue.id == request.queue_id).first()
+    if queue and not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
+    
     try:
         queue = QueueService.manual_takeover(db, request.queue_id, request.reason, current_user)
         db.commit()
@@ -262,6 +307,10 @@ async def close_queue(
     if not RolePermission.can_perform_action(current_user.role, "close"):
         raise HTTPException(status_code=403, detail="权限不足")
     
+    queue = db.query(CompensationQueue).filter(CompensationQueue.id == request.queue_id).first()
+    if queue and not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
+    
     try:
         queue = QueueService.close_queue(db, request.queue_id, request.close_reason, current_user)
         db.commit()
@@ -285,6 +334,10 @@ async def force_retry(
 ):
     if not RolePermission.can_perform_action(current_user.role, "retry"):
         raise HTTPException(status_code=403, detail="权限不足")
+    
+    queue = db.query(CompensationQueue).filter(CompensationQueue.id == request.queue_id).first()
+    if queue and not check_city_permission(current_user, queue.city):
+        raise HTTPException(status_code=403, detail="无权限操作此城市的记录")
     
     try:
         success, result = QueueService.force_retry(db, request.queue_id, current_user)
