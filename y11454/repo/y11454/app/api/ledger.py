@@ -397,7 +397,38 @@ def handle_duplicate_record(
     if handle_data.original_batch_number:
         ledger.original_batch_number = handle_data.original_batch_number
     
-    if handle_data.handling != DuplicateHandling.IGNORE:
+    if handle_data.handling == DuplicateHandling.OVERWRITE:
+        original_ledger = db.query(EquipmentLedger).filter(
+            EquipmentLedger.batch_number == ledger.original_batch_number,
+            EquipmentLedger.id != ledger.id
+        ).first()
+        if original_ledger:
+            original_previous = ledger_to_dict(original_ledger)
+            fields_to_update = [
+                'customer_name', 'equipment_name', 'equipment_model', 'quantity',
+                'unit_price', 'total_amount', 'deposit_amount', 'deposit_deducted',
+                'rental_start_date', 'rental_end_date', 'actual_return_date'
+            ]
+            for field in fields_to_update:
+                new_value = getattr(ledger, field)
+                if new_value is not None:
+                    setattr(original_ledger, field, new_value)
+            
+            create_audit_log(
+                db, original_ledger.id, current_user, AuditAction.UPDATE,
+                previous_values=original_previous,
+                new_values=ledger_to_dict(original_ledger),
+                change_reason=f"被批次 {ledger.batch_number} 覆盖更新: {handle_data.duplicate_note}",
+                ip_address=request.client.host if request.client else None,
+                user_agent=request.headers.get("user-agent")
+            )
+        
+        ledger.is_duplicate = True
+    
+    elif handle_data.handling == DuplicateHandling.IGNORE:
+        ledger.is_duplicate = True
+    
+    else:
         ledger.is_duplicate = False
     
     create_audit_log(

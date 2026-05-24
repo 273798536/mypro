@@ -27,7 +27,7 @@ def ledger_to_export_dict(ledger: EquipmentLedger) -> Dict[str, Any]:
         '租赁结束': ledger.rental_end_date.strftime('%Y-%m-%d') if ledger.rental_end_date else '',
         '实际归还': ledger.actual_return_date.strftime('%Y-%m-%d') if ledger.actual_return_date else '',
         '是否脏数据': '是' if ledger.is_dirty else '否',
-        '脏数据类型': ledger.dirty_type.value if ledger.dirty_type else '',
+        '脏数据类型': ', '.join(ledger.dirty_type) if ledger.dirty_type and isinstance(ledger.dirty_type, list) else (ledger.dirty_type.value if ledger.dirty_type and hasattr(ledger.dirty_type, 'value') else ''),
         '脏数据说明': ledger.dirty_note or '',
         '修正意见': ledger.correction_note or '',
         '是否重复': '是' if ledger.is_duplicate else '否',
@@ -119,7 +119,7 @@ def export_summary(
     summary_data = []
     for status in LedgerStatus:
         status_records = [r for r in records if r.status == status]
-        filtered_records = [r for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE)]
+        filtered_records = [r for r in status_records if not (r.is_duplicate and r.duplicate_handling in [DuplicateHandling.IGNORE, DuplicateHandling.OVERWRITE])]
         total_quantity = sum(r.quantity or 0 for r in filtered_records)
         total_amount = sum(r.total_amount or Decimal('0') for r in filtered_records)
         total_deposit = sum(r.deposit_amount or Decimal('0') for r in filtered_records)
