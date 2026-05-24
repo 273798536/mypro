@@ -7,7 +7,7 @@ import pandas as pd
 
 from .models import (
     ImportBatch, ReworkRecord, InspectionRecord, ShiftRecord, SupplierRecord,
-    AsyncTask, TaskStatus, ImportStatus, ConflictStrategy, DataSource
+    ApprovalRecord, AsyncTask, TaskStatus, ImportStatus, ConflictStrategy, DataSource
 )
 from .database import log_audit
 
@@ -65,6 +65,15 @@ class DataValidator:
             errors.append("供应商名称不能为空")
         return len(errors) == 0, errors
 
+    @staticmethod
+    def validate_approval(row: Dict[str, Any]) -> Tuple[bool, List[str]]:
+        errors = []
+        if not row.get("email_subject"):
+            errors.append("邮件主题不能为空")
+        if not row.get("approver"):
+            errors.append("审批人不能为空")
+        return len(errors) == 0, errors
+
 
 class DataImporter:
     def __init__(self, db: Session, operator: str):
@@ -117,6 +126,16 @@ class DataImporter:
                     SupplierRecord.supplier_name == supplier,
                     SupplierRecord.product_model == model,
                     SupplierRecord.invoice_date == date
+                ).first()
+        elif source == DataSource.APPROVAL.value:
+            subject = row.get("email_subject")
+            approver = row.get("approver")
+            date = self._parse_date(row.get("approval_date"))
+            if subject and approver and date:
+                return self.db.query(ApprovalRecord).filter(
+                    ApprovalRecord.email_subject == subject,
+                    ApprovalRecord.approver == approver,
+                    ApprovalRecord.approval_date == date
                 ).first()
         return None
 
@@ -205,6 +224,22 @@ class DataImporter:
                 is_valid=is_valid,
                 validation_errors="; ".join(errors) if errors else None
             )
+        elif source == DataSource.APPROVAL.value:
+            is_valid, errors = DataValidator.validate_approval(data)
+            record = ApprovalRecord(
+                original_row=original_row,
+                email_subject=self._sanitize(data.get("email_subject")),
+                email_from=self._sanitize(data.get("email_from")),
+                email_to=self._sanitize(data.get("email_to")),
+                approval_type=self._sanitize(data.get("approval_type")),
+                related_serial=self._sanitize(data.get("related_serial")),
+                approval_result=self._sanitize(data.get("approval_result")),
+                approval_date=self._parse_date(data.get("approval_date")),
+                approver=self._sanitize(data.get("approver")),
+                comments=self._sanitize(data.get("comments")),
+                is_valid=is_valid,
+                validation_errors="; ".join(errors) if errors else None
+            )
         else:
             raise ValueError(f"Unknown source: {source}")
 
@@ -226,6 +261,9 @@ class DataImporter:
         elif source == DataSource.SUPPLIER.value:
             fields = ["supplier_name", "product_model", "quantity", "unit_price",
                       "total_amount", "invoice_date", "payment_status"]
+        elif source == DataSource.APPROVAL.value:
+            fields = ["email_subject", "email_from", "email_to", "approval_type",
+                      "related_serial", "approval_result", "approval_date", "approver", "comments"]
         else:
             return
 

@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from .models import Base, AuditLog, ReworkRecord, InspectionRecord, ShiftRecord, SupplierRecord
+from .models import Base, AuditLog, ReworkRecord, InspectionRecord, ShiftRecord, SupplierRecord, ApprovalRecord
 
 DB_PATH = os.environ.get("QC_INSPECTOR_DB", "qc_inspector.db")
 DB_URL = f"sqlite:///{DB_PATH}"
@@ -43,6 +43,7 @@ def log_audit(
     inspection_id: Optional[int] = None,
     shift_id: Optional[int] = None,
     supplier_id: Optional[int] = None,
+    approval_id: Optional[int] = None,
     change_source: str = "manual"
 ):
     audit = AuditLog(
@@ -50,6 +51,7 @@ def log_audit(
         inspection_record_id=inspection_id,
         shift_record_id=shift_id,
         supplier_record_id=supplier_id,
+        approval_record_id=approval_id,
         action=action,
         field_name=field_name,
         old_value=str(old_value) if old_value is not None else None,
@@ -77,28 +79,22 @@ def update_record_with_audit(
 
     setattr(record, field_name, new_value)
 
+    rework_id = None
+    inspection_id = None
+    shift_id = None
+    supplier_id = None
+    approval_id = None
+
     if isinstance(record, ReworkRecord):
         rework_id = record.id
-        inspection_id = None
-        shift_id = None
-        supplier_id = None
     elif isinstance(record, InspectionRecord):
-        rework_id = None
         inspection_id = record.id
-        shift_id = None
-        supplier_id = None
     elif isinstance(record, ShiftRecord):
-        rework_id = None
-        inspection_id = None
         shift_id = record.id
-        supplier_id = None
     elif isinstance(record, SupplierRecord):
-        rework_id = None
-        inspection_id = None
-        shift_id = None
         supplier_id = record.id
-    else:
-        rework_id = inspection_id = shift_id = supplier_id = None
+    elif isinstance(record, ApprovalRecord):
+        approval_id = record.id
 
     log_audit(
         db=db,
@@ -112,6 +108,7 @@ def update_record_with_audit(
         inspection_id=inspection_id,
         shift_id=shift_id,
         supplier_id=supplier_id,
+        approval_id=approval_id,
         change_source=change_source
     )
     return True

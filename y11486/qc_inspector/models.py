@@ -36,6 +36,7 @@ class DataSource(PyEnum):
     REWORK = "rework"
     SHIFT = "shift"
     SUPPLIER = "supplier"
+    APPROVAL = "approval"
 
 
 class ImportBatch(Base):
@@ -58,6 +59,7 @@ class ImportBatch(Base):
     inspection_records = relationship("InspectionRecord", back_populates="batch", cascade="all, delete-orphan")
     shift_records = relationship("ShiftRecord", back_populates="batch", cascade="all, delete-orphan")
     supplier_records = relationship("SupplierRecord", back_populates="batch", cascade="all, delete-orphan")
+    approval_records = relationship("ApprovalRecord", back_populates="batch", cascade="all, delete-orphan")
     tasks = relationship("AsyncTask", back_populates="batch", cascade="all, delete-orphan")
 
 
@@ -158,6 +160,30 @@ class SupplierRecord(Base):
     audit_logs = relationship("AuditLog", back_populates="supplier_record", foreign_keys="AuditLog.supplier_record_id")
 
 
+class ApprovalRecord(Base):
+    __tablename__ = "approval_records"
+
+    id = Column(Integer, primary_key=True)
+    batch_id = Column(Integer, ForeignKey("import_batches.id"))
+    original_row = Column(Integer)
+    email_subject = Column(String(255))
+    email_from = Column(String(200))
+    email_to = Column(String(200))
+    approval_type = Column(String(100))
+    related_serial = Column(String(100))
+    approval_result = Column(String(50))
+    approval_date = Column(DateTime)
+    approver = Column(String(100))
+    comments = Column(Text)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    is_valid = Column(Boolean, default=True)
+    validation_errors = Column(Text)
+
+    batch = relationship("ImportBatch", back_populates="approval_records")
+    audit_logs = relationship("AuditLog", back_populates="approval_record", foreign_keys="AuditLog.approval_record_id")
+
+
 class AsyncTask(Base):
     __tablename__ = "async_tasks"
 
@@ -188,6 +214,7 @@ class AuditLog(Base):
     inspection_record_id = Column(Integer, ForeignKey("inspection_records.id"))
     shift_record_id = Column(Integer, ForeignKey("shift_records.id"))
     supplier_record_id = Column(Integer, ForeignKey("supplier_records.id"))
+    approval_record_id = Column(Integer, ForeignKey("approval_records.id"))
     action = Column(String(50), nullable=False)
     field_name = Column(String(100))
     old_value = Column(Text)
@@ -201,6 +228,7 @@ class AuditLog(Base):
     inspection_record = relationship("InspectionRecord", back_populates="audit_logs", foreign_keys=[inspection_record_id])
     shift_record = relationship("ShiftRecord", back_populates="audit_logs", foreign_keys=[shift_record_id])
     supplier_record = relationship("SupplierRecord", back_populates="audit_logs", foreign_keys=[supplier_record_id])
+    approval_record = relationship("ApprovalRecord", back_populates="audit_logs", foreign_keys=[approval_record_id])
 
     __table_args__ = (
         Index("idx_audit_created", "created_at"),

@@ -12,7 +12,7 @@ import pandas as pd
 from .database import init_db, get_db, update_record_with_audit
 from .models import (
     ImportBatch, ReworkRecord, InspectionRecord, ShiftRecord, SupplierRecord,
-    AsyncTask, AuditLog, TaskStatus, ConflictStrategy, DataSource, ImportStatus
+    ApprovalRecord, AsyncTask, AuditLog, TaskStatus, ConflictStrategy, DataSource, ImportStatus
 )
 from .processor import DataImporter, TaskProcessor
 
@@ -115,11 +115,24 @@ def _create_sample_data(db, operator: str):
     }
     pd.DataFrame(bad_data).to_excel(os.path.join(samples_dir, "rework_bad_data.xlsx"), index=False)
 
+    approval_data = {
+        "email_subject": ["审批：SN001返工方案", "审批：SN002特采申请", "审批：SN004报废申请", "审批：Model-A批次放行"],
+        "email_from": ["质检员<qc@factory.com>", "车间主任<workshop@factory.com>", "质检员<qc@factory.com>", "生产经理<pm@factory.com>"],
+        "email_to": ["质检主管<qc-head@factory.com>", "质量经理<qa@factory.com>", "总经理<gm@factory.com>", "客户<client@company.com>"],
+        "approval_type": ["返工审批", "特采审批", "报废审批", "批次审批"],
+        "related_serial": ["SN001", "SN002", "SN004", "Model-A-001"],
+        "approval_result": ["同意", "同意", "驳回", "同意"],
+        "approval_date": ["2024-01-15", "2024-01-16", "2024-01-18", "2024-01-20"],
+        "approver": ["质检主管", "质量经理", "总经理", "生产经理"],
+        "comments": ["同意返工方案", "特采但需后续跟进", "不同意报废，需重新返工", "同意批次放行"]
+    }
+    pd.DataFrame(approval_data).to_excel(os.path.join(samples_dir, "approval_sample.xlsx"), index=False)
+
     console.print(f"  样例文件已生成至: [cyan]{samples_dir}[/cyan]")
 
 
 @cli.command("import")
-@click.argument("source", type=click.Choice(["rework", "inspection", "shift", "supplier"]))
+@click.argument("source", type=click.Choice(["rework", "inspection", "shift", "supplier", "approval"]))
 @click.argument("file_path", type=click.Path(exists=True))
 @click.option("--strategy", type=click.Choice(["ignore", "overwrite", "append"]), default="ignore",
               help="冲突处理策略: ignore(忽略重复)/overwrite(覆盖)/append(追加)")
@@ -321,6 +334,7 @@ def fix(task_id: int, field_name: str, new_value: str, reason: str, operator: st
             DataSource.INSPECTION.value: InspectionRecord,
             DataSource.SHIFT.value: ShiftRecord,
             DataSource.SUPPLIER.value: SupplierRecord,
+            DataSource.APPROVAL.value: ApprovalRecord,
         }
 
         model = model_map.get(source_type)
@@ -347,15 +361,28 @@ def fix(task_id: int, field_name: str, new_value: str, reason: str, operator: st
         )
 
         if updated:
-            task.status = TaskStatus.COMPLETED.value
-            task.completed_at = datetime.now()
+            from .processor import DataValidator
+            record_dict = {c.name: getattr(record, c.name) for c in model.__table__.columns}
+            is_valid, errors = getattr(DataValidator, f"validate_{source_type}")(record_dict)
+            record.is_valid = is_valid
+            record.validation_errors = "; ".join(errors) if errors else None
+
+            if is_valid:
+                task.status = TaskStatus.COMPLETED.value
+                task.completed_at = datetime.now()
+                status_msg = "[green]✓ 校验通过[/green]"
+            else:
+                task.status = TaskStatus.MANUAL.value
+                status_msg = f"[yellow]⚠ 仍有问题: {'; '.join(errors)}[/yellow]"
+
             console.print(Panel(
                 f"记录ID: {source_id}\n"
                 f"字段: {field_name}\n"
                 f"原值: {old_value}\n"
                 f"新值: {converted_value}\n"
                 f"原因: {reason}\n"
-                f"操作者: {operator}",
+                f"操作者: {operator}\n"
+                f"校验结果: {status_msg}",
                 title="[green]✓ 修改成功[/green]"
             ))
         else:
