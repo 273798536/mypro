@@ -62,6 +62,12 @@ class AbnormalRecordBase(BaseModel):
     actual_cost: Optional[int] = None
     estimated_cost: Optional[int] = None
     cost_recovery_status: Optional[str] = None
+    customer_service_note: Optional[str] = None
+    cs_operator: Optional[str] = None
+    cs_remark_time: Optional[datetime] = None
+    has_photo_evidence: Optional[bool] = None
+    photo_count: Optional[int] = None
+    photo_description: Optional[str] = None
 
 
 class AbnormalRecordCreate(AbnormalRecordBase):

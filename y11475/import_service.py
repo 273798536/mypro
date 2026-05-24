@@ -243,6 +243,65 @@ def parse_cancel_message_row(row_data: pd.Series, row_num: int) -> Tuple[Dict[st
     return record_data, evidences
 
 
+def parse_photo_row(row_data: pd.Series, row_num: int) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    evidences = []
+    record_data = {"source": DataSource.PHOTO}
+
+    def add_evidence(field: str, original: Any, parsed: Any, note: str = ""):
+        if pd.notna(original):
+            evidences.append({
+                "original_row_number": row_num,
+                "original_value": str(original),
+                "parsed_field": field,
+                "parsed_value": str(parsed) if parsed is not None else None,
+                "parse_note": note
+            })
+
+    room_code = row_data.get("会议室编码") or row_data.get("room_code")
+    if pd.isna(room_code):
+        raise ImportError("会议室编码不能为空", row=row_num)
+    record_data["room_code"] = str(room_code).strip()
+    add_evidence("room_code", room_code, record_data["room_code"])
+
+    appt_date = row_data.get("预约日期") or row_data.get("appointment_date")
+    parsed_date = parse_datetime(appt_date)
+    if not parsed_date:
+        raise ImportError("预约日期格式无效", row=row_num)
+    record_data["appointment_date"] = parsed_date
+    add_evidence("appointment_date", appt_date, parsed_date.isoformat())
+
+    has_photo = row_data.get("有照片证据") or row_data.get("has_photo_evidence")
+    record_data["has_photo_evidence"] = parse_bool(has_photo)
+    add_evidence("has_photo_evidence", has_photo, record_data["has_photo_evidence"])
+
+    photo_count = row_data.get("照片数量") or row_data.get("photo_count")
+    parsed_count = parse_int(photo_count)
+    if parsed_count is not None:
+        record_data["photo_count"] = parsed_count
+        add_evidence("photo_count", photo_count, parsed_count)
+
+    photo_desc = row_data.get("照片说明") or row_data.get("photo_description")
+    if pd.notna(photo_desc):
+        record_data["photo_description"] = str(photo_desc).strip()
+        add_evidence("photo_description", photo_desc, record_data["photo_description"])
+
+    cs_note = row_data.get("客服备注") or row_data.get("customer_service_note")
+    if pd.notna(cs_note):
+        record_data["customer_service_note"] = str(cs_note).strip()
+        add_evidence("customer_service_note", cs_note, record_data["customer_service_note"])
+
+    cs_op = row_data.get("备注人") or row_data.get("cs_operator")
+    if pd.notna(cs_op):
+        record_data["cs_operator"] = str(cs_op).strip()
+        add_evidence("cs_operator", cs_op, record_data["cs_operator"])
+
+    record_data["appointment_id"] = str(row_data.get("预约ID") or row_data.get("appointment_id") or "")
+    if record_data["appointment_id"]:
+        add_evidence("appointment_id", row_data.get("预约ID"), record_data["appointment_id"])
+
+    return record_data, evidences
+
+
 def import_file_to_batch(
     db: Session,
     batch_id: str,
@@ -299,6 +358,7 @@ def import_file_to_batch(
         DataSource.CALENDAR: parse_calendar_row,
         DataSource.ACCESS_CARD: parse_access_card_row,
         DataSource.CANCEL_MESSAGE: parse_cancel_message_row,
+        DataSource.PHOTO: parse_photo_row,
     }
     parser = parser_map.get(source_type)
     if not parser:

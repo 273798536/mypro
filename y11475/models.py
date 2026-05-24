@@ -91,6 +91,14 @@ class AbnormalRecord(Base):
     estimated_cost = Column(Integer)
     cost_recovery_status = Column(String)
 
+    customer_service_note = Column(Text)
+    cs_operator = Column(String)
+    cs_remark_time = Column(DateTime)
+
+    has_photo_evidence = Column(Boolean)
+    photo_count = Column(Integer)
+    photo_description = Column(Text)
+
     reviewer = Column(String)
     review_time = Column(DateTime)
     review_reason = Column(Text)

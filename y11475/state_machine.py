@@ -41,7 +41,7 @@ BATCH_TRANSITIONS = {
     },
     BatchState.FROZEN: {BatchState.PENDING_REVIEW, BatchState.SETTLED},
     BatchState.SETTLED: {BatchState.ARCHIVED, BatchState.PENDING_REVIEW},
-    BatchState.RECALLED: {BatchState.CREATED},
+    BatchState.RECALLED: {BatchState.CREATED, BatchState.IMPORTING, BatchState.FROZEN},
     BatchState.ARCHIVED: set(),
 }
 
