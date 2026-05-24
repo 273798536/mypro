@@ -1,12 +1,14 @@
 const db = require('../src/config/database');
 const ReturnApplication = require('../src/models/ReturnApplication');
 const ReturnBatch = require('../src/models/ReturnBatch');
+const Attachment = require('../src/models/Attachment');
+const ApprovalEmail = require('../src/models/ApprovalEmail');
 const FailedRecord = require('../src/models/FailedRecord');
 const StateMachineService = require('../src/services/StateMachineService');
 const ExceptionService = require('../src/services/ExceptionService');
 const DataConsistencyService = require('../src/services/DataConsistencyService');
 const AutoCheckService = require('../src/services/AutoCheckService');
-const { RETURN_STATUSES } = require('../src/utils/common');
+const { RETURN_STATUSES, ATTACHMENT_TYPES } = require('../src/utils/common');
 
 const TEST_USER = 'test_user_001';
 
@@ -33,6 +35,8 @@ async function runTests() {
   results.push(await testBadBatchToFailedRecords());
   results.push(await testDataConsistency());
   results.push(await testAutoCheck());
+  results.push(await testBatchAttachmentExceptionReservation());
+  results.push(await testApprovalEmailExceptionReservation());
   
   console.log('\n=== 测试结果汇总 ===');
   const passed = results.filter(r => r.passed).length;
@@ -416,6 +420,121 @@ async function testBadBatchToFailedRecords() {
     };
   } catch (e) {
     return { name: '坏数据写入失败记录', passed: false, message: e.message };
+  }
+}
+
+async function testBatchAttachmentExceptionReservation() {
+  try {
+    const app = await ReturnApplication.create({
+      application_no: 'TEST-APP-BATCH-ATTACH-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    const batchResult = await StateMachineService.createBatch(app.id, {
+      application_id: app.id,
+      batch_no: 'TEST-BATCH-ATTACH-' + Date.now(),
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 10,
+      unit_price: 99.99
+    }, TEST_USER);
+    
+    const batch = await ReturnBatch.findById(batchResult.batch_id);
+    
+    await Attachment.create({
+      batch_id: batch.id,
+      type: ATTACHMENT_TYPES.QUALITY_PHOTO,
+      file_name: '质检照片.jpg',
+      file_path: '/uploads/quality.jpg',
+      file_size: 102400,
+      uploaded_by: TEST_USER
+    });
+    
+    await Attachment.create({
+      batch_id: batch.id,
+      type: ATTACHMENT_TYPES.LOGISTICS_RECEIPT,
+      file_name: '物流回单.pdf',
+      file_path: '/uploads/logistics.pdf',
+      file_size: 51200,
+      uploaded_by: TEST_USER
+    });
+    
+    await ExceptionService.reserveExceptionsOnMemberCancel(app.id, TEST_USER);
+    
+    const details = await ExceptionService.getExceptionDetails(app.id);
+    const batchWithAttachments = details.batches.find(b => b.id === batch.id);
+    
+    const hasBatchAttachments = batchWithAttachments && batchWithAttachments.attachments && batchWithAttachments.attachments.length === 2;
+    const allAttachmentsMarked = batchWithAttachments && batchWithAttachments.attachments.every(a => a.is_exception === 1);
+    
+    return {
+      name: '批次级附件异常保留',
+      passed: hasBatchAttachments && allAttachmentsMarked,
+      message: hasBatchAttachments 
+        ? `批次附件已保留: ${batchWithAttachments.attachments.length}个，全部标记异常: ${allAttachmentsMarked}` 
+        : `批次附件未正确保留，找到: ${batchWithAttachments?.attachments?.length || 0}个`
+    };
+  } catch (e) {
+    return { name: '批次级附件异常保留', passed: false, message: e.message };
+  }
+}
+
+async function testApprovalEmailExceptionReservation() {
+  try {
+    const app = await ReturnApplication.create({
+      application_no: 'TEST-APP-EMAIL-' + Date.now(),
+      supplier_id: 'SUP001',
+      supplier_name: '测试供应商',
+      created_by: TEST_USER
+    });
+    
+    const batchResult = await StateMachineService.createBatch(app.id, {
+      application_id: app.id,
+      batch_no: 'TEST-BATCH-EMAIL-' + Date.now(),
+      product_code: 'PROD001',
+      product_name: '测试商品',
+      quantity: 10,
+      unit_price: 99.99
+    }, TEST_USER);
+    
+    const batch = await ReturnBatch.findById(batchResult.batch_id);
+    
+    await ApprovalEmail.create({
+      application_id: app.id,
+      email_subject: '申请级审批邮件',
+      email_content: '申请审批通过，请处理',
+      sender: 'manager@company.com'
+    });
+    
+    await ApprovalEmail.create({
+      application_id: app.id,
+      batch_id: batch.id,
+      email_subject: '批次级审批邮件',
+      email_content: '批次审批通过，请处理',
+      sender: 'manager@company.com'
+    });
+    
+    await ExceptionService.reserveExceptionsOnMemberCancel(app.id, TEST_USER);
+    
+    const details = await ExceptionService.getExceptionDetails(app.id);
+    const batchWithEmails = details.batches.find(b => b.id === batch.id);
+    
+    const hasApplicationEmails = details.application_emails && details.application_emails.length === 1;
+    const hasBatchEmails = batchWithEmails && batchWithEmails.approval_emails && batchWithEmails.approval_emails.length === 1;
+    const allEmailsMarked = details.application_emails.every(e => e.is_exception === 1) &&
+                           batchWithEmails.approval_emails.every(e => e.is_exception === 1);
+    
+    return {
+      name: '审批邮件异常保留',
+      passed: hasApplicationEmails && hasBatchEmails && allEmailsMarked,
+      message: hasApplicationEmails && hasBatchEmails
+        ? `申请邮件: ${details.application_emails.length}个，批次邮件: ${batchWithEmails.approval_emails.length}个，全部标记异常: ${allEmailsMarked}` 
+        : `审批邮件未正确保留，申请邮件: ${details.application_emails?.length || 0}，批次邮件: ${batchWithEmails?.approval_emails?.length || 0}`
+    };
+  } catch (e) {
+    return { name: '审批邮件异常保留', passed: false, message: e.message };
   }
 }
 

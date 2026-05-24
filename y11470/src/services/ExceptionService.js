@@ -1,6 +1,7 @@
 const ReturnApplication = require('../models/ReturnApplication');
 const ReturnBatch = require('../models/ReturnBatch');
 const Attachment = require('../models/Attachment');
+const ApprovalEmail = require('../models/ApprovalEmail');
 const StatusHistory = require('../models/StatusHistory');
 const FailedRecord = require('../models/FailedRecord');
 const { OPERATION_TYPES, RETURN_STATUSES } = require('../utils/common');
@@ -16,6 +17,7 @@ class ExceptionService {
       await ReturnApplication.memberCancel(applicationId);
 
       await Attachment.markApplicationAttachmentsAsException(applicationId);
+      await ApprovalEmail.markApplicationEmailsAsException(applicationId);
 
       const batches = await ReturnBatch.findByApplicationId(applicationId);
       for (const batch of batches) {
@@ -30,10 +32,15 @@ class ExceptionService {
         });
       }
 
+      const attachments = await Attachment.findAllByApplicationIdIncludingBatches(applicationId);
+      const emails = await ApprovalEmail.findAllByApplicationIdIncludingBatches(applicationId);
+
       return {
         success: true,
         application_id: applicationId,
         reserved_batches: batches.length,
+        reserved_attachments: attachments.length,
+        reserved_emails: emails.length,
         message: '会员撤销交易，所有异常数据已保留'
       };
     } catch (error) {
@@ -54,17 +61,20 @@ class ExceptionService {
     }
 
     const batches = await ReturnBatch.findByApplicationId(applicationId);
-    const attachments = await Attachment.findExceptionAttachments(applicationId);
+    const attachments = await Attachment.findAllByApplicationIdIncludingBatches(applicationId);
+    const approvalEmails = await ApprovalEmail.findAllByApplicationIdIncludingBatches(applicationId);
     const statusHistory = await StatusHistory.findByApplicationId(applicationId);
 
     const batchesWithDetails = [];
     for (const batch of batches) {
       const batchAttachments = attachments.filter(a => a.batch_id === batch.id);
+      const batchEmails = approvalEmails.filter(e => e.batch_id === batch.id);
       const batchHistory = statusHistory.filter(h => h.batch_id === batch.id);
       
       batchesWithDetails.push({
         ...batch,
         attachments: batchAttachments,
+        approval_emails: batchEmails,
         status_history: batchHistory
       });
     }
@@ -83,6 +93,7 @@ class ExceptionService {
       },
       batches: batchesWithDetails,
       application_attachments: attachments.filter(a => !a.batch_id),
+      application_emails: approvalEmails.filter(e => !e.batch_id),
       status_history: statusHistory
     };
   }
@@ -97,13 +108,16 @@ class ExceptionService {
     for (const app of applications) {
       const batches = await ReturnBatch.findByApplicationId(app.id);
       const exceptionAttachments = await Attachment.findExceptionAttachments(app.id);
+      const exceptionEmails = await ApprovalEmail.findExceptionEmails(app.id);
       
       result.push({
         application: app,
         batch_count: batches.length,
         exception_attachment_count: exceptionAttachments.length,
+        exception_email_count: exceptionEmails.length,
         batches: batches,
-        exception_attachments: exceptionAttachments
+        exception_attachments: exceptionAttachments,
+        exception_emails: exceptionEmails
       });
     }
 

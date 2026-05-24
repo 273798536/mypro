@@ -4,6 +4,7 @@ const router = express.Router();
 const ApplicationController = require('../controllers/ApplicationController');
 const BatchController = require('../controllers/BatchController');
 const AttachmentController = require('../controllers/AttachmentController');
+const ApprovalEmailController = require('../controllers/ApprovalEmailController');
 const ExceptionController = require('../controllers/ExceptionController');
 const ExportController = require('../controllers/ExportController');
 const FailedRecordController = require('../controllers/FailedRecordController');
@@ -41,6 +42,12 @@ router.post('/batches/:id/archive', authMiddleware('ARCHIVE'), BatchController.a
 router.post('/attachments', authMiddleware('UPLOAD_ATTACHMENT'), AttachmentController.getUploadMiddleware(), AttachmentController.upload);
 router.get('/attachments/batch/:batchId', authMiddleware('VIEW_HISTORY'), AttachmentController.getByBatchId);
 router.get('/attachments/application/:applicationId', authMiddleware('VIEW_HISTORY'), AttachmentController.getByApplicationId);
+
+router.post('/approval-emails', authMiddleware('UPLOAD_APPROVAL_EMAIL'), ApprovalEmailController.create);
+router.get('/approval-emails/:id', authMiddleware('VIEW_HISTORY'), ApprovalEmailController.getById);
+router.get('/approval-emails/application/:applicationId', authMiddleware('VIEW_HISTORY'), ApprovalEmailController.getByApplicationId);
+router.get('/approval-emails/batch/:batchId', authMiddleware('VIEW_HISTORY'), ApprovalEmailController.getByBatchId);
+router.post('/approval-emails/:id/exception', authMiddleware('VIEW_EXCEPTIONS'), ApprovalEmailController.markAsException);
 
 router.post('/member-cancel', authMiddleware('MEMBER_CANCEL'), ExceptionController.memberCancel);
 router.get('/exceptions', authMiddleware('VIEW_EXCEPTIONS'), ExceptionController.getAllReservedExceptions);
