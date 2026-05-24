@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  mode: debug
+
+database:
+  driver: sqlite3
+  dsn: ./data/prepaid-audit.db
+
+export:
+  directory: ./exports
+  format: xlsx
+
+log:
+  level: debug
+  file: ./logs/app.log
