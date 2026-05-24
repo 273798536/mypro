@@ -167,6 +167,12 @@ class ImportService:
                 else:
                     update_count += 1
 
+                self.failure_manager.resolve_failures_by_source(
+                    file_name,
+                    source_row,
+                    f"重新导入成功，记录ID: {record.id}"
+                )
+
             except Exception as e:
                 self.failure_manager.record_failure(
                     source_file=file_name,

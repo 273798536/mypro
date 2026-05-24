@@ -199,6 +199,23 @@ class FailureManager:
             failure.is_resolved = True
             failure.resolved_at = datetime.utcnow()
 
+    def resolve_failures_by_source(self, source_file: str, source_row: int, remark: str = None):
+        failures = (
+            self.db.query(ImportFailure)
+            .filter(
+                ImportFailure.source_file == source_file,
+                ImportFailure.source_row == source_row,
+                ImportFailure.is_resolved == False,
+            )
+            .all()
+        )
+        for failure in failures:
+            failure.is_resolved = True
+            failure.resolved_at = datetime.utcnow()
+            if remark:
+                failure.error_message = failure.error_message + f" (已解决: {remark})"
+        return len(failures)
+
 
 class RecordManager:
     def __init__(self, db: Session, operated_by: str):
@@ -275,6 +292,12 @@ class RecordManager:
 
         for failure in record.failures:
             self.failures.resolve_failure(failure.id)
+
+        self.failures.resolve_failures_by_source(
+            record.source_file,
+            record.source_row,
+            remark or "手动修复记录"
+        )
 
         return record
 
