@@ -11,24 +11,20 @@ from openpyxl.styles import Font, PatternFill
 
 from app.database import get_db
 from app.models import User, ReturnApplication, LedgerRecord, DirtyRecord
-from app.security import get_current_user, require_action, UserRole, RolePermission
+from app.security import get_current_user, require_action, UserRole, RolePermission, mask_sensitive_value
 from app.config import settings
 
 router = APIRouter()
 
 
-def mask_sensitive_data(data: dict, role: UserRole) -> dict:
+def mask_export_data(data: dict, role: UserRole) -> dict:
     if role == UserRole.SUPERVISOR:
         return data
     
     masked = data.copy()
-    for field in settings.SENSITIVE_FIELDS:
-        if field in masked and masked[field]:
-            value = str(masked[field])
-            if len(value) > 4:
-                masked[field] = value[:2] + "*" * (len(value) - 4) + value[-2:]
-            else:
-                masked[field] = "*" * len(value)
+    for key, value in masked.items():
+        if value:
+            masked[key] = mask_sensitive_value(value, key, role)
     return masked
 
 
@@ -84,7 +80,7 @@ async def export_applications_csv(
     
     for app in applications:
         row = application_to_dict(app)
-        row = mask_sensitive_data(row, current_user.role)
+        row = mask_export_data(row, current_user.role)
         writer.writerow(row)
     
     output.seek(0)
@@ -132,7 +128,7 @@ async def export_applications_excel(
         
         for row_idx, app in enumerate(applications, 2):
             row_data = application_to_dict(app)
-            row_data = mask_sensitive_data(row_data, current_user.role)
+            row_data = mask_export_data(row_data, current_user.role)
             for col_idx, (key, value) in enumerate(row_data.items(), 1):
                 ws1.cell(row=row_idx, column=col_idx, value=value)
     

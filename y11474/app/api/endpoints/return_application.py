@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
@@ -12,11 +12,12 @@ from app.schemas import (
 from app.security import get_current_user, RolePermission, require_action
 from app.workflow import WorkflowEngine
 from app.services import ImportService, LedgerService
+from app.utils import safe_model_dump, apply_role_permissions
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ReturnApplicationSchema])
+@router.get("/")
 async def list_applications(
     skip: int = 0,
     limit: int = 100,
@@ -24,7 +25,7 @@ async def list_applications(
     supplier_id: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
-):
+) -> List[Any]:
     query = db.query(ReturnApplication)
     
     if status:
@@ -33,7 +34,7 @@ async def list_applications(
         query = query.filter(ReturnApplication.supplier_id == supplier_id)
     
     applications = query.order_by(ReturnApplication.created_at.desc()).offset(skip).limit(limit).all()
-    return applications
+    return [apply_role_permissions(app, current_user.role) for app in applications]
 
 
 @router.post("/", response_model=ReturnApplicationSchema)
@@ -52,7 +53,7 @@ async def create_application(
                 detail=f"幂等键已存在: {application_data.idempotency_key}"
             )
     
-    data_dict = application_data.model_dump()
+    data_dict = safe_model_dump(application_data)
     result = ImportService.import_applications(db, [data_dict], current_user)
     
     if result.errors:
@@ -61,32 +62,31 @@ async def create_application(
             detail=result.errors[0]
         )
     
-    db.refresh(result)
     application = db.query(ReturnApplication).filter(
         ReturnApplication.application_no == application_data.application_no
     ).first()
     return application
 
 
-@router.get("/{application_id}", response_model=ReturnApplicationSchema)
+@router.get("/{application_id}")
 async def get_application(
     application_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
-):
+) -> Any:
     application = db.query(ReturnApplication).filter(ReturnApplication.id == application_id).first()
     if not application:
         raise HTTPException(status_code=404, detail="退供申请不存在")
-    return application
+    return apply_role_permissions(application, current_user.role)
 
 
-@router.put("/{application_id}", response_model=ReturnApplicationSchema)
+@router.put("/{application_id}")
 async def update_application(
     application_id: int,
     update_data: ReturnApplicationUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
-):
+) -> Any:
     application = db.query(ReturnApplication).filter(ReturnApplication.id == application_id).first()
     if not application:
         raise HTTPException(status_code=404, detail="退供申请不存在")
@@ -125,17 +125,18 @@ async def update_application(
     
     LedgerService.create_or_update_ledger(db, application)
     db.commit()
+    db.refresh(application)
     
-    return application
+    return apply_role_permissions(application, current_user.role)
 
 
-@router.post("/{application_id}/transition", response_model=ReturnApplicationSchema)
+@router.post("/{application_id}/transition")
 async def transition_status(
     application_id: int,
     transition_request: StatusTransitionRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
-):
+) -> Any:
     application = db.query(ReturnApplication).filter(ReturnApplication.id == application_id).first()
     if not application:
         raise HTTPException(status_code=404, detail="退供申请不存在")
@@ -147,7 +148,7 @@ async def transition_status(
         )
         db.commit()
         db.refresh(application)
-        return application
+        return apply_role_permissions(application, current_user.role)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

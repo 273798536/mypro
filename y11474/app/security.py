@@ -121,7 +121,25 @@ class RolePermission:
     @classmethod
     def filter_readable_fields(cls, data: Dict[str, Any], role: UserRole) -> Dict[str, Any]:
         readable = cls.READABLE_FIELDS.get(role, cls.READABLE_FIELDS[UserRole.READ_ONLY])
-        return {k: v for k, v in data.items() if k in readable}
+        return cls._recursive_filter(data, readable)
+
+    @classmethod
+    def _recursive_filter(cls, data: Any, readable_fields: Set[str]) -> Any:
+        if isinstance(data, dict):
+            return {
+                k: cls._recursive_filter(v, readable_fields)
+                for k, v in data.items()
+                if k in readable_fields
+            }
+        elif isinstance(data, list):
+            return [cls._recursive_filter(item, readable_fields) for item in data]
+        elif hasattr(data, "__dict__") and not isinstance(data, str):
+            return cls._recursive_filter(
+                {k: v for k, v in data.__dict__.items() if not k.startswith("_")},
+                readable_fields
+            )
+        else:
+            return data
 
     @classmethod
     def filter_writable_fields(cls, data: Dict[str, Any], role: UserRole) -> Dict[str, Any]:
@@ -135,6 +153,41 @@ class RolePermission:
     @classmethod
     def can_edit_field(cls, role: UserRole, field: str) -> bool:
         return field in cls.WRITABLE_FIELDS.get(role, set())
+
+
+def mask_sensitive_value(value: str, field_name: str, role: UserRole) -> str:
+    if role == UserRole.SUPERVISOR:
+        return value
+    
+    if not value:
+        return value
+    
+    value_str = str(value)
+    
+    if "phone" in field_name.lower() or "contact" in field_name.lower():
+        if len(value_str) > 4:
+            return value_str[:3] + "*" * (len(value_str) - 4) + value_str[-1:]
+        return "*" * len(value_str)
+    
+    if "amount" in field_name.lower() or "price" in field_name.lower():
+        return "***"
+    
+    return value_str
+
+
+def mask_sensitive_fields(data: Dict[str, Any], role: UserRole) -> Dict[str, Any]:
+    if role == UserRole.SUPERVISOR:
+        return data
+    
+    result = {}
+    for k, v in data.items():
+        if isinstance(v, dict):
+            result[k] = mask_sensitive_fields(v, role)
+        elif isinstance(v, list):
+            result[k] = [mask_sensitive_fields(item, role) if isinstance(item, dict) else item for item in v]
+        else:
+            result[k] = mask_sensitive_value(v, k, role)
+    return result
 
 
 def require_roles(*allowed_roles: UserRole):

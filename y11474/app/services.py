@@ -9,12 +9,14 @@ from app.models import (
     LedgerRecord, DirtyRecord, DirtyType, RecordStatus, User, AuditLog
 )
 from app.schemas import ReturnApplicationCreate, ImportResult
+from app.utils import json_serialize, safe_model_dump
 
 
 class IdempotencyService:
     @staticmethod
     def generate_key(data: Dict[str, Any]) -> str:
-        sorted_data = json.dumps(data, sort_keys=True)
+        normalized_data = json_serialize(data)
+        sorted_data = json.dumps(normalized_data, sort_keys=True)
         return hashlib.sha256(sorted_data.encode()).hexdigest()
 
     @staticmethod
@@ -223,6 +225,12 @@ class ImportService:
         idempotency_key: str,
         current_user: User
     ) -> ReturnApplication:
+        raw_data_safe = json_serialize(data)
+        
+        app_date = data["application_date"]
+        if isinstance(app_date, str):
+            app_date = datetime.fromisoformat(app_date.replace("Z", "+00:00"))
+        
         application = ReturnApplication(
             application_no=data["application_no"],
             batch_no=data["batch_no"],
@@ -234,29 +242,35 @@ class ImportService:
             supplier_phone=data.get("supplier_phone"),
             return_quantity=data["return_quantity"],
             return_reason=data.get("return_reason"),
-            application_date=datetime.fromisoformat(data["application_date"].replace("Z", "+00:00"))
-            if isinstance(data["application_date"], str) else data["application_date"],
+            application_date=app_date,
             applicant=data["applicant"],
             warehouse_id=data["warehouse_id"],
             warehouse_name=data["warehouse_name"],
             idempotency_key=idempotency_key,
             created_by=current_user.id,
-            raw_data=data
+            raw_data=raw_data_safe
         )
         db.add(application)
         db.flush()
 
         for photo_data in data.get("inspection_photos", []):
+            photo_safe = photo_data.copy()
+            if isinstance(photo_safe.get("upload_time"), str):
+                photo_safe["upload_time"] = datetime.fromisoformat(photo_safe["upload_time"].replace("Z", "+00:00"))
             photo = InspectionPhoto(
                 application_id=application.id,
-                **photo_data
+                **photo_safe
             )
             db.add(photo)
 
         for receipt_data in data.get("logistics_receipts", []):
+            receipt_safe = receipt_data.copy()
+            for date_field in ["ship_date", "receive_date"]:
+                if isinstance(receipt_safe.get(date_field), str):
+                    receipt_safe[date_field] = datetime.fromisoformat(receipt_safe[date_field].replace("Z", "+00:00"))
             receipt = LogisticsReceipt(
                 application_id=application.id,
-                **receipt_data
+                **receipt_safe
             )
             db.add(receipt)
 
@@ -286,6 +300,7 @@ class ImportService:
         current_user: User
     ):
         changed_fields = {}
+        raw_data_safe = json_serialize(data)
         
         for field in ["batch_no", "sku_code", "sku_name", "supplier_id", "supplier_name",
                       "supplier_contact", "supplier_phone", "return_quantity", "return_reason",
@@ -297,7 +312,7 @@ class ImportService:
                 changed_fields[field] = {"old": old_value, "new": new_value}
 
         application.updated_by = current_user.id
-        application.raw_data = data
+        application.raw_data = raw_data_safe
 
         if changed_fields:
             audit_log = AuditLog(

@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.models import (
     ReturnApplication, AuditLog, SystemCheckLog, DirtyRecord,
@@ -16,14 +17,14 @@ class SystemChecker:
     def check_duplicate_imports(db: Session) -> SystemCheckResult:
         start_time = time.time()
         
-        duplicates = db.query(
-            ReturnApplication.idempotency_key,
-            db.func.count(ReturnApplication.id)
-        ).group_by(
-            ReturnApplication.idempotency_key
-        ).having(
-            db.func.count(ReturnApplication.id) > 1
-        ).all()
+        all_apps = db.query(ReturnApplication.idempotency_key).all()
+        key_counts: Dict[str, int] = {}
+        for app in all_apps:
+            key = app[0]
+            if key:
+                key_counts[key] = key_counts.get(key, 0) + 1
+        
+        duplicates = [(key, count) for key, count in key_counts.items() if count > 1]
         
         execution_time = int((time.time() - start_time) * 1000)
         
@@ -141,10 +142,13 @@ class SystemChecker:
         earliest_log = db.query(AuditLog).order_by(AuditLog.created_at.asc()).first()
         latest_log = db.query(AuditLog).order_by(AuditLog.created_at.desc()).first()
         
-        status_distribution = db.query(
-            ReturnApplication.status,
-            db.func.count(ReturnApplication.id)
-        ).group_by(ReturnApplication.status).all()
+        all_apps = db.query(ReturnApplication.status).all()
+        status_distribution_dict: Dict[str, int] = {}
+        for app in all_apps:
+            status = app[0].value if app[0] else "unknown"
+            status_distribution_dict[status] = status_distribution_dict.get(status, 0) + 1
+        
+        status_distribution = [(k, v) for k, v in status_distribution_dict.items()]
         
         execution_time = int((time.time() - start_time) * 1000)
         
@@ -158,7 +162,7 @@ class SystemChecker:
                 "earliest_log": earliest_log.created_at.isoformat() if earliest_log else None,
                 "latest_log": latest_log.created_at.isoformat() if latest_log else None,
                 "status_distribution": {
-                    s[0].value: s[1] for s in status_distribution
+                    s[0]: s[1] for s in status_distribution
                 }
             },
             passed=passed,
@@ -175,7 +179,7 @@ class SystemChecker:
                 "earliest_log": earliest_log.created_at.isoformat() if earliest_log else None,
                 "latest_log": latest_log.created_at.isoformat() if latest_log else None,
                 "status_distribution": {
-                    s[0].value: s[1] for s in status_distribution
+                    s[0]: s[1] for s in status_distribution
                 }
             },
             execution_time_ms=execution_time
