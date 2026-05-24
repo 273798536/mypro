@@ -117,6 +117,13 @@ class ConflictDetectionService:
             return True, existing.total_amount
         return False, None
 
+    @staticmethod
+    def detect_quantity_conflict(db: Session, bill: schemas.SupplierBillCreate) -> Tuple[bool, Optional[float]]:
+        existing = DuplicateDetectionService.find_existing_bill(db, bill.source_id)
+        if existing and abs(existing.quantity - bill.quantity) > 0.001:
+            return True, existing.quantity
+        return False, None
+
 
 class RecordLinkingService:
     @staticmethod
@@ -178,7 +185,25 @@ class RecordLinkingService:
         elif len(bookings) > 1:
             target_date = bill.meeting_date.date() if bill.meeting_date else bill.bill_date.date()
             same_day_bookings = [b for b in bookings if b.start_time.date() == target_date]
+
             if same_day_bookings:
+                is_tea = "tea" in bill.service_type.lower() or "茶歇" in bill.service_type
+                is_equip = "equip" in bill.service_type.lower() or "设备" in bill.service_type
+
+                if is_tea:
+                    tea_bookings = [b for b in same_day_bookings if b.has_tea_break]
+                    if len(tea_bookings) == 1:
+                        return tea_bookings[0].id
+                    elif tea_bookings:
+                        return tea_bookings[0].id
+
+                if is_equip:
+                    equip_bookings = [b for b in same_day_bookings if b.has_equipment]
+                    if len(equip_bookings) == 1:
+                        return equip_bookings[0].id
+                    elif equip_bookings:
+                        return equip_bookings[0].id
+
                 return same_day_bookings[0].id
             return bookings[0].id
         return None
@@ -268,6 +293,14 @@ class ReconciliationService:
         ).all():
             bill_date = bill.meeting_date or bill.bill_date
             if bill_date.date() == booking.start_time.date():
+                is_tea = "tea" in bill.service_type.lower() or "茶歇" in bill.service_type
+                is_equip = "equip" in bill.service_type.lower() or "设备" in bill.service_type
+
+                if is_tea and not booking.has_tea_break:
+                    continue
+                if is_equip and not booking.has_equipment:
+                    continue
+
                 bill.booking_id = booking.id
                 bill_count += 1
 
@@ -282,32 +315,9 @@ class ReconciliationService:
             ReconciliationService.relink_all_for_booking(db, booking)
             db.refresh(booking)
 
-        booking_date = booking.start_time.date()
-
-        access_records = db.query(models.AccessRecord).filter(
-            models.AccessRecord.room_name == booking.room_name,
-            models.AccessRecord.access_time >= booking.start_time - timedelta(minutes=60),
-            models.AccessRecord.access_time <= booking.end_time + timedelta(minutes=30)
-        ).all()
-        has_access = len(access_records) > 0
-
-        cancel_messages = db.query(models.CancelMessage).filter(
-            models.CancelMessage.room_name == booking.room_name
-        ).all()
-        has_cancel = any(
-            cm.meeting_start_time and 
-            abs((cm.meeting_start_time - booking.start_time).total_seconds()) < 3600
-            for cm in cancel_messages
-        )
-
-        supplier_bills = db.query(models.SupplierBill).filter(
-            models.SupplierBill.room_name == booking.room_name
-        ).all()
-        related_bills = [
-            b for b in supplier_bills
-            if (b.meeting_date and b.meeting_date.date() == booking_date) or
-               (b.bill_date and b.bill_date.date() == booking_date)
-        ]
+        has_access = len(booking.access_records) > 0
+        has_cancel = len(booking.cancel_messages) > 0
+        related_bills = booking.supplier_bills
         has_bill = len(related_bills) > 0
 
         tea_break_cost = sum(
@@ -352,8 +362,8 @@ class ReconciliationService:
             "is_exception": is_exception,
             "exception_type": exception_type,
             "exception_description": exception_description,
-            "linked_access_count": len([a for a in access_records if a.booking_id == booking.id]),
-            "linked_bill_count": len([b for b in related_bills if b.booking_id == booking.id])
+            "linked_access_count": len(booking.access_records),
+            "linked_bill_count": len(booking.supplier_bills)
         }
 
 

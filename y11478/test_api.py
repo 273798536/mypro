@@ -133,6 +133,58 @@ def test_overwrite_status_consistency():
         print("  未找到预算会议预约")
 
 
+def test_detail_recon_bill_consistency():
+    print("\n=== 测试3.8: 验证详情与对账账单数一致 ===")
+    response = requests.get(f"{BASE_URL}/api/bookings")
+    bookings = response.json()
+
+    all_consistent = True
+    for booking in bookings:
+        detail = requests.get(f"{BASE_URL}/api/bookings/{booking['id']}").json()
+        detail_bill_count = len(detail['supplier_bills'])
+
+        recon = requests.get(f"{BASE_URL}/api/reconciliation").json()
+        recon_item = next((r for r in recon if r['booking_id'] == booking['id']), None)
+
+        if recon_item:
+            recon_bill_count = recon_item.get('linked_bill_count', 0)
+            recon_has_bill = recon_item['has_supplier_bill']
+
+            consistent = (detail_bill_count > 0) == recon_has_bill
+            if not consistent:
+                all_consistent = False
+
+            icon = "✓" if consistent else "!"
+            print(f"  {icon} {booking['meeting_topic'][:15]}: 详情账单={detail_bill_count}, 对账账单={recon_bill_count}, 对账has_bill={recon_has_bill}")
+
+    final_icon = "✓" if all_consistent else "!"
+    print(f"  {final_icon} 详情与对账账单标记完全一致: {'是' if all_consistent else '否'}")
+
+
+def test_quantity_conflict_detection():
+    print("\n=== 测试3.9: 验证数量冲突检测 ===")
+    with open("sample_data.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    if data.get('supplier_bills'):
+        data['supplier_bills'][0]['quantity'] = 999
+        data['duplicate_handling'] = "skip"
+
+        response = requests.post(f"{BASE_URL}/api/import", json=data)
+        result = response.json()
+
+        dirty_count = result.get('dirty_count', 0)
+        bill_dirty = result.get('details', {}).get('bills', {}).get('dirty', 0)
+
+        print(f"  脏记录总数: {dirty_count}")
+        print(f"  账单类脏记录: {bill_dirty}")
+
+        if bill_dirty > 0:
+            print("  ✓ 检测到数量冲突并生成脏记录")
+        else:
+            print("  ! 未检测到数量冲突")
+
+
 def test_get_bookings():
     print("\n=== 测试4: 查询预约列表 ===")
     response = requests.get(f"{BASE_URL}/api/bookings?limit=10")
@@ -237,6 +289,8 @@ if __name__ == "__main__":
     test_import_duplicate()
     test_import_overwrite()
     test_overwrite_status_consistency()
+    test_detail_recon_bill_consistency()
+    test_quantity_conflict_detection()
     test_get_bookings()
     test_get_booking_detail()
     test_relink_all()

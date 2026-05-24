@@ -482,14 +482,25 @@ def batch_import_data(
                 stats["duplicate"] += 1
                 stats["details"]["bills"]["duplicate"] += 1
 
-                has_conflict, old_amount = ConflictDetectionService.detect_amount_conflict(db, bill)
-                if has_conflict:
+                has_amount_conflict, old_amount = ConflictDetectionService.detect_amount_conflict(db, bill)
+                if has_amount_conflict:
                     record_dirty(
                         batch_id, existing.booking_id or 0,
                         "amount_conflict",
                         f"Amount conflict: old={old_amount}, new={bill.total_amount}",
                         {"old_amount": old_amount, "new_amount": bill.total_amount},
                         "Verify which amount is correct and update manually"
+                    )
+                    stats["details"]["bills"]["dirty"] += 1
+
+                has_quantity_conflict, old_quantity = ConflictDetectionService.detect_quantity_conflict(db, bill)
+                if has_quantity_conflict:
+                    record_dirty(
+                        batch_id, existing.booking_id or 0,
+                        "quantity_conflict",
+                        f"Quantity conflict: old={old_quantity}, new={bill.quantity}",
+                        {"old_quantity": old_quantity, "new_quantity": bill.quantity},
+                        "Verify which quantity is correct and update manually"
                     )
                     stats["details"]["bills"]["dirty"] += 1
                 continue
