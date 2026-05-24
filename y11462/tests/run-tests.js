@@ -56,7 +56,7 @@ function startServer() {
     console.log('  启动测试服务...');
     
     serverProcess = spawn('node', [path.join(__dirname, '../src/server.js')], {
-      env: { ...process.env, DB_PATH: TEST_DB_PATH },
+      env: { ...process.env, DB_PATH: TEST_DB_PATH, RETRY_INTERVAL: '2000' },
       stdio: ['ignore', 'pipe', 'pipe']
     });
 
@@ -463,7 +463,8 @@ async function testListAndFilter() {
 async function testServiceRecovery() {
   console.log('  1. 提交多个队列项（使用有库存的批号确保可成功）');
   const queueIds = [];
-  const testBatchNos = ['BATCH-TEST-001', 'BATCH-TEST-002', 'BATCH-TEST-003'];
+  const queueNos = [];
+  const testBatchNos = ['RECOVERY-BATCH-001', 'RECOVERY-BATCH-002', 'RECOVERY-BATCH-003'];
   for (let i = 0; i < testBatchNos.length; i++) {
     const res = await request('/api/queue/submit', {
       method: 'POST',
@@ -474,35 +475,44 @@ async function testServiceRecovery() {
         originalData: { recoveryTest: true, index: i + 1 }
       }
     });
+    if (res.status !== 200 || !res.data.success) {
+      throw new Error(`提交失败: ${JSON.stringify(res.data)}`);
+    }
     queueIds.push(res.data.data.id);
+    queueNos.push(res.data.data.queueNo);
   }
-  console.log(`     提交了 ${queueIds.length} 个队列项`);
+  console.log(`     提交成功，队列号: ${queueNos.join(', ')}`);
 
-  console.log('  2. 标记为等待重试');
-  for (const id of queueIds) {
-    await request(`/api/queue/${id}/retry`, {
+  console.log('  2. 标记为等待重试 - 验证每个重试API调用成功');
+  for (let i = 0; i < queueIds.length; i++) {
+    const retryRes = await request(`/api/queue/${queueIds[i]}/retry`, {
       method: 'POST',
       body: { errorMessage: '模拟失败', retryDelayMinutes: 0 }
     });
+    if (retryRes.status !== 200 || !retryRes.data.success) {
+      throw new Error(`标记重试失败 [${queueNos[i]}]: ${JSON.stringify(retryRes.data)}`);
+    }
+    
+    const afterRetry = await request(`/api/queue/${queueIds[i]}`);
+    if (afterRetry.data.data.status !== 'WAITING_RETRY') {
+      throw new Error(`重试状态不正确 [${queueNos[i]}], 期望: WAITING_RETRY, 实际: ${afterRetry.data.data.status}`);
+    }
   }
-  console.log('     全部标记为等待重试');
+  console.log('     全部标记为等待重试，状态验证通过');
 
-  console.log('  3. 记录重启前的状态和数据');
-  const beforeData = [];
+  console.log('  3. 记录重启前的状态');
+  const beforeStatus = [];
   for (const id of queueIds) {
     const res = await request(`/api/queue/${id}`);
-    beforeData.push({ 
+    beforeStatus.push({ 
       id, 
       queueNo: res.data.data.queue_no,
       batchNo: res.data.data.batch_no,
-      status: res.data.data.status, 
-      retryCount: res.data.data.retry_count,
-      originalData: res.data.data.original_data
+      status: res.data.data.status
     });
   }
-  console.log(`     记录了 ${beforeData.length} 条队列数据`);
-  beforeData.forEach(d => {
-    console.log(`       ${d.queueNo}: ${d.status}, 重试次数: ${d.retryCount}`);
+  beforeStatus.forEach(d => {
+    console.log(`       ${d.queueNo}: ${d.status}`);
   });
 
   console.log('  4. 模拟服务重启（停止服务但保留数据库）');
@@ -513,42 +523,52 @@ async function testServiceRecovery() {
   await waitForServer();
   console.log('     服务已重启');
 
-  console.log('  5. 验证数据持久化 - 按批号查询确认数据存在');
-  let foundCount = 0;
+  console.log('  5. 验证数据持久化 - 所有队列项必须存在');
+  const afterRestartIds = [];
   for (const batchNo of testBatchNos) {
     const searchRes = await request(`/api/queue/list?batchNo=${encodeURIComponent(batchNo)}&pageSize=10`);
-    if (searchRes.data.data && searchRes.data.data.list.length > 0) {
-      foundCount++;
-      const item = searchRes.data.data.list[0];
-      console.log(`     找到队列项: ${item.queue_no}, 批号: ${item.batch_no}, 状态: ${item.status}`);
+    if (searchRes.status !== 200 || !searchRes.data.success) {
+      throw new Error(`查询失败 [${batchNo}]: ${JSON.stringify(searchRes.data)}`);
     }
+    if (searchRes.data.data.list.length === 0) {
+      throw new Error(`重启后数据丢失! 未找到批号: ${batchNo}`);
+    }
+    const item = searchRes.data.data.list[0];
+    afterRestartIds.push(item.id);
+    console.log(`     ✓ 找到队列项: ${item.queue_no}, 批号: ${item.batch_no}, 状态: ${item.status}`);
   }
-  
-  if (foundCount !== testBatchNos.length) {
-    throw new Error(`重启后数据丢失! 期望找到 ${testBatchNos.length} 条，实际找到 ${foundCount} 条`);
-  }
-  console.log('     数据持久化验证通过');
+  console.log('     ✓ 数据持久化验证通过');
 
   console.log('  6. 验证可重试队列可被查询');
   const retryableRes = await request('/api/queue/retry/items');
-  if (retryableRes.status !== 200) throw new Error('查询可重试项失败');
+  if (retryableRes.status !== 200 || !retryableRes.data.success) {
+    throw new Error('查询可重试项失败');
+  }
   console.log(`     可重试项数量: ${retryableRes.data.data.length}`);
   
-  console.log('  7. 等待异步重试工作器处理（5秒）');
-  await new Promise(r => setTimeout(r, 5000));
+  console.log('  7. 等待异步重试工作器处理（10秒，确保全部完成）');
+  await new Promise(r => setTimeout(r, 10000));
   
-  console.log('  8. 验证重试后的状态更新');
+  console.log('  8. 验证服务恢复后继续处理 - 所有项必须为COMPENSATED');
   let compensatedCount = 0;
-  for (const id of queueIds) {
+  for (const id of afterRestartIds) {
     const res = await request(`/api/queue/${id}`);
     const status = res.data.data.status;
-    console.log(`       ${res.data.data.queue_no}: ${status}`);
-    if (status === 'COMPENSATED') {
-      compensatedCount++;
+    const queueNo = res.data.data.queue_no;
+    console.log(`       ${queueNo}: ${status}`);
+    
+    if (status !== 'COMPENSATED') {
+      throw new Error(`服务恢复后处理失败! [${queueNo}] 期望: COMPENSATED, 实际: ${status}`);
     }
+    compensatedCount++;
   }
-  console.log(`     成功补偿入账: ${compensatedCount}/${queueIds.length}`);
-  console.log('     服务恢复验证通过');
+  
+  if (compensatedCount !== afterRestartIds.length) {
+    throw new Error(`恢复后处理不完整! 期望: ${afterRestartIds.length}, 实际: ${compensatedCount}`);
+  }
+  
+  console.log(`     ✓ 成功补偿入账: ${compensatedCount}/${afterRestartIds.length}`);
+  console.log('     ✓ 服务恢复验证通过');
 }
 
 async function testAsyncRetryMechanism() {
@@ -564,22 +584,36 @@ async function testAsyncRetryMechanism() {
       originalData: { asyncTest: true }
     }
   });
+  
+  if (submitRes.status !== 200 || !submitRes.data.success) {
+    throw new Error(`提交失败: ${JSON.stringify(submitRes.data)}`);
+  }
+  
   const queueId = submitRes.data.data.id;
   const queueNo = submitRes.data.data.queueNo;
   console.log(`     提交成功: ${queueNo}`);
 
   console.log('  2. 标记为等待重试，触发重试工作器');
-  await request(`/api/queue/${queueId}/retry`, {
+  const retryRes = await request(`/api/queue/${queueId}/retry`, {
     method: 'POST',
     body: { errorMessage: '初始失败，准备重试', retryDelayMinutes: 0 }
   });
+  
+  if (retryRes.status !== 200 || !retryRes.data.success) {
+    throw new Error(`标记重试失败: ${JSON.stringify(retryRes.data)}`);
+  }
+  console.log(`     标记重试API调用成功，新状态: ${retryRes.data.data.newStatus}`);
+  
   const afterRetry = await request(`/api/queue/${queueId}`);
-  console.log(`     重试后状态: ${afterRetry.data.data.status}, 重试次数: ${afterRetry.data.data.retry_count}`);
+  if (afterRetry.data.data.status !== 'WAITING_RETRY') {
+    throw new Error(`重试后状态不正确，期望: WAITING_RETRY，实际: ${afterRetry.data.data.status}`);
+  }
+  console.log(`     重试后状态验证: ${afterRetry.data.data.status}, 重试次数: ${afterRetry.data.data.retry_count}`);
 
-  console.log('  3. 等待异步处理（5秒）');
-  await new Promise(r => setTimeout(r, 5000));
+  console.log('  3. 等待异步处理（8秒）');
+  await new Promise(r => setTimeout(r, 8000));
 
-  console.log('  4. 验证最终状态');
+  console.log('  4. 验证最终状态 - 必须为COMPENSATED');
   const finalRes = await request(`/api/queue/${queueId}`);
   const finalStatus = finalRes.data.data.status;
   const finalParsedData = finalRes.data.data.parsed_data;
@@ -587,17 +621,26 @@ async function testAsyncRetryMechanism() {
   console.log(`     解析数据包含补偿结果: ${!!finalParsedData?.compensationResult}`);
 
   if (finalStatus !== 'COMPENSATED') {
-    console.log(`     警告: 状态为 ${finalStatus}，可能需要更多时间处理`);
+    throw new Error(`异步重试失败！期望状态: COMPENSATED，实际状态: ${finalStatus}`);
+  }
+
+  if (!finalParsedData?.compensationResult) {
+    throw new Error('补偿结果未记录在解析数据中');
   }
 
   console.log('  5. 查看状态轨迹');
   const traceRes = await request(`/api/queue/${queueId}/traces`);
   console.log(`     状态轨迹数: ${traceRes.data.data.length}`);
-  traceRes.data.data.slice(0, 3).forEach(t => {
+  traceRes.data.data.slice(0, 4).forEach(t => {
     console.log(`       ${t.action}: ${t.from_status || '无'} → ${t.to_status}`);
   });
 
-  console.log('     异步重试机制验证通过');
+  const hasCompensateTrace = traceRes.data.data.some(t => t.action === 'COMPENSATE' && t.to_status === 'COMPENSATED');
+  if (!hasCompensateTrace) {
+    throw new Error('状态轨迹中缺少COMPENSATE记录');
+  }
+
+  console.log('     ✓ 异步重试机制验证通过');
 }
 
 async function main() {

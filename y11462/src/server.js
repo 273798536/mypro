@@ -52,7 +52,9 @@ async function startServer() {
     console.log(`========================================\n`);
   });
 
-  retryWorker = new RetryWorker({ interval: 30000 });
+  const retryInterval = process.env.RETRY_INTERVAL ? parseInt(process.env.RETRY_INTERVAL) : 30000;
+  console.log(`重试工作器间隔: ${retryInterval}ms`);
+  retryWorker = new RetryWorker({ interval: retryInterval });
   retryWorker.start();
 }
 

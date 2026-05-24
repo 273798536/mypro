@@ -47,7 +47,7 @@ const schemas = {
       'any.required': '错误信息是必填项'
     }),
     operator: Joi.string().optional(),
-    retryDelayMinutes: Joi.number().integer().min(1).max(1440).default(5)
+    retryDelayMinutes: Joi.number().integer().min(0).max(1440).default(5)
   }),
 
   markPermanentFailed: Joi.object({

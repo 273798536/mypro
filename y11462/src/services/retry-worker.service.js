@@ -8,7 +8,10 @@ class InventoryService {
       'IMPLANT-2024-002': 5,
       'BATCH-TEST-001': 20,
       'BATCH-TEST-002': 15,
-      'BATCH-TEST-003': 8
+      'BATCH-TEST-003': 8,
+      'RECOVERY-BATCH-001': 10,
+      'RECOVERY-BATCH-002': 10,
+      'RECOVERY-BATCH-003': 10
     };
   }
 
