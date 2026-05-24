@@ -1,8 +1,14 @@
 from typing import List, Optional
+from urllib.parse import quote
 from fastapi import FastAPI, Depends, HTTPException, Header, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
+
+
+def encode_filename(filename: str) -> str:
+    encoded = quote(filename, encoding="utf-8")
+    return f"attachment; filename*=UTF-8''{encoded}"
 
 from app.database import engine, get_db, Base
 from app import models, schemas
@@ -357,7 +363,7 @@ def export_sample_labels(
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": encode_filename(filename)}
     )
 
 
@@ -374,7 +380,7 @@ def export_temperature_records(
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": encode_filename(filename)}
     )
 
 
@@ -394,5 +400,5 @@ def export_batch_trace(
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": encode_filename(filename)}
     )
