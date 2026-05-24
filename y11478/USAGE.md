@@ -231,6 +231,17 @@ PATCH /api/process-records/{process_id}/resolve
 - 异常数: 1 (BK20240522001)
 - 异常类型: cancel_with_bill
 - 涉及金额: 210元（茶歇）
+- 自动关联: 对账时会动态重新关联所有未匹配记录
+
+### 动态关联机制
+系统在对账时会自动执行以下操作：
+1. 扫描所有未关联的门禁/取消/账单记录
+2. 按会议室+时间窗口进行智能匹配
+3. 优先匹配时间最接近的预约
+4. 更新数据库关联关系
+5. 基于最新关联结果计算对账
+
+可通过 `POST /api/relink-all` 手动触发全量重关联。
 
 ---
 
@@ -287,9 +298,10 @@ curl http://localhost:8000/api/import-history
 | 对账结果 | GET | /api/reconciliation |
 | 导出报表 | GET | /api/export/reconciliation |
 | 处理记录 | GET | /api/process-records |
+| 解决脏记录 | PATCH | /api/process-records/{id}/resolve |
+| **重新关联汇总** | **POST** | **/api/relink-all** |
 | 导入历史 | GET | /api/import-history |
 | 审计日志 | GET | /api/audit-logs |
-| 解决脏记录 | PATCH | /api/process-records/{id}/resolve |
 
 ### 数据一致性保证
 1. **单一事实来源**: 所有接口从同一数据库查询

@@ -83,17 +83,33 @@ def test_get_booking_detail():
         print(f"处理记录数: {len(detail['process_records'])}")
 
 
+def test_relink_all():
+    print("\n=== 测试5.5: 重新关联所有记录 ===")
+    response = requests.post(f"{BASE_URL}/api/relink-all")
+    result = response.json()
+    print(f"重新关联结果: {result['message']}")
+    print(f"  处理预约数: {result['stats']['total_bookings']}")
+    print(f"  关联门禁: {result['stats']['relinked_access']} 条")
+    print(f"  关联取消: {result['stats']['relinked_cancel']} 条")
+    print(f"  关联账单: {result['stats']['relinked_bill']} 条")
+
+
 def test_reconciliation():
     print("\n=== 测试6: 对账结果 ===")
     response = requests.get(f"{BASE_URL}/api/reconciliation")
     results = response.json()
     print(f"对账记录数: {len(results)}")
 
+    for r in results:
+        status = "✓" if not r["is_exception"] else "!"
+        link_info = f" [关联门禁:{r.get('linked_access_count',0)}, 账单:{r.get('linked_bill_count',0)}]"
+        print(f"  {status} {r['room_name']} - {r['meeting_topic']}{link_info}")
+        if r["is_exception"]:
+            print(f"    异常: {r['exception_description']}")
+            print(f"    总费用: {r['total_cost']}元")
+
     exceptions = [r for r in results if r["is_exception"]]
-    print(f"异常记录数: {len(exceptions)}")
-    for exc in exceptions:
-        print(f"  ! {exc['room_name']} - {exc['meeting_topic']}: {exc['exception_description']}")
-        print(f"    总费用: {exc['total_cost']}元")
+    print(f"\n异常记录数: {len(exceptions)} (预期: 1)")
 
 
 def test_export():
@@ -146,6 +162,7 @@ if __name__ == "__main__":
     test_import_overwrite()
     test_get_bookings()
     test_get_booking_detail()
+    test_relink_all()
     test_reconciliation()
     test_export()
     test_process_records()

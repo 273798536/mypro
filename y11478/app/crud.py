@@ -229,6 +229,12 @@ def resolve_dirty_record(db: Session, process_id: int, corrected_value: Dict[str
     if not process:
         return None
 
+    old_values = {
+        "is_resolved": process.is_resolved,
+        "corrected_value": process.corrected_value,
+        "handling_suggestion": process.handling_suggestion
+    }
+
     process.corrected_value = corrected_value
     process.is_resolved = True
     process.handling_suggestion = f"Resolved: {reason}"
@@ -237,14 +243,24 @@ def resolve_dirty_record(db: Session, process_id: int, corrected_value: Dict[str
         operation="resolve",
         table_name="process_records",
         record_id=process_id,
-        old_values={"is_resolved": False},
-        new_values={"is_resolved": True, "corrected_value": corrected_value},
+        old_values=old_values,
+        new_values={
+            "is_resolved": True,
+            "corrected_value": corrected_value,
+            "handling_suggestion": process.handling_suggestion
+        },
         change_reason=reason,
         operator="manual"
     )
     db.add(audit_log)
     db.commit()
     db.refresh(process)
+
+    if process.booking_id and process.booking_id > 0:
+        booking = db.query(models.BookingRecord).filter(models.BookingRecord.id == process.booking_id).first()
+        if booking:
+            from .services import ReconciliationService
+            ReconciliationService.relink_all_for_booking(db, booking)
 
     return process
 
@@ -261,13 +277,20 @@ def batch_import_data(
         "success": 0,
         "duplicate": 0,
         "error": 0,
+        "dirty": 0,
         "details": {
-            "bookings": {"total": 0, "success": 0, "duplicate": 0, "error": 0},
-            "access": {"total": 0, "success": 0, "duplicate": 0, "error": 0},
-            "cancel": {"total": 0, "success": 0, "duplicate": 0, "error": 0},
-            "bills": {"total": 0, "success": 0, "duplicate": 0, "error": 0}
+            "bookings": {"total": 0, "success": 0, "duplicate": 0, "error": 0, "dirty": 0},
+            "access": {"total": 0, "success": 0, "duplicate": 0, "error": 0, "dirty": 0},
+            "cancel": {"total": 0, "success": 0, "duplicate": 0, "error": 0, "dirty": 0},
+            "bills": {"total": 0, "success": 0, "duplicate": 0, "error": 0, "dirty": 0}
         }
     }
+
+    def record_dirty(batch_id, booking_id, error_type, error_msg, original, suggestion):
+        ProcessRecordService.create_dirty_record(
+            db, batch_id, booking_id or 0, error_type, error_msg, original, suggestion
+        )
+        stats["dirty"] += 1
 
     if import_request.bookings:
         for booking in import_request.bookings:
@@ -278,6 +301,15 @@ def batch_import_data(
             if not is_valid:
                 stats["error"] += 1
                 stats["details"]["bookings"]["error"] += 1
+                temp_booking = create_booking(db, booking, batch_id)
+                record_dirty(
+                    batch_id, temp_booking.id,
+                    "missing_field",
+                    f"Validation failed: {', '.join(errors)}",
+                    {"raw_data": booking.raw_data, "errors": errors},
+                    "Please fill in missing fields and re-import"
+                )
+                stats["details"]["bookings"]["dirty"] += 1
                 continue
 
             existing = DuplicateDetectionService.find_existing_booking(
@@ -288,6 +320,17 @@ def batch_import_data(
                 stats["duplicate"] += 1
                 stats["details"]["bookings"]["duplicate"] += 1
 
+                has_room_change, old_room = ConflictDetectionService.detect_room_name_change(db, booking)
+                if has_room_change:
+                    record_dirty(
+                        batch_id, existing.id,
+                        "room_name_change",
+                        f"Room name changed from '{old_room}' to '{booking.room_name}'",
+                        {"old_room": old_room, "new_room": booking.room_name},
+                        "Verify if room change is intentional or if this is a different booking"
+                    )
+                    stats["details"]["bookings"]["dirty"] += 1
+
                 if duplicate_handling == "overwrite":
                     update_booking(db, existing.id, booking, batch_id)
                     stats["success"] += 1
@@ -295,16 +338,17 @@ def batch_import_data(
                 continue
 
             if ConflictDetectionService.detect_cross_day_booking(booking):
-                stats["error"] += 1
-                stats["details"]["bookings"]["error"] += 1
                 temp_booking = create_booking(db, booking, batch_id)
-                ProcessRecordService.create_dirty_record(
-                    db, batch_id, temp_booking.id,
+                record_dirty(
+                    batch_id, temp_booking.id,
                     "cross_day_booking",
                     "Booking spans multiple days",
                     {"start_time": booking.start_time.isoformat(), "end_time": booking.end_time.isoformat()},
                     "Please verify if this is intentional or split the booking"
                 )
+                stats["error"] += 1
+                stats["details"]["bookings"]["error"] += 1
+                stats["details"]["bookings"]["dirty"] += 1
                 continue
 
             create_booking(db, booking, batch_id)
@@ -320,6 +364,15 @@ def batch_import_data(
             if not is_valid:
                 stats["error"] += 1
                 stats["details"]["access"]["error"] += 1
+                db_access = create_access_record(db, access, batch_id)
+                record_dirty(
+                    batch_id, db_access.booking_id or 0,
+                    "missing_field",
+                    f"Access validation failed: {', '.join(errors)}",
+                    {"source_id": access.source_id, "errors": errors},
+                    "Please fill in missing fields"
+                )
+                stats["details"]["access"]["dirty"] += 1
                 continue
 
             existing = DuplicateDetectionService.find_existing_access(db, access.source_id)
@@ -328,7 +381,12 @@ def batch_import_data(
                 stats["details"]["access"]["duplicate"] += 1
                 continue
 
-            create_access_record(db, access, batch_id)
+            db_access = create_access_record(db, access, batch_id)
+            if not db_access.booking_id:
+                ProcessRecordService.create_process_log(
+                    db, batch_id, 0, "linking", "warning",
+                    f"Access record {access.source_id} could not be linked to any booking"
+                )
             stats["success"] += 1
             stats["details"]["access"]["success"] += 1
 
@@ -341,6 +399,15 @@ def batch_import_data(
             if not is_valid:
                 stats["error"] += 1
                 stats["details"]["cancel"]["error"] += 1
+                db_cancel = create_cancel_message(db, msg, batch_id)
+                record_dirty(
+                    batch_id, db_cancel.booking_id or 0,
+                    "missing_field",
+                    f"Cancel message validation failed: {', '.join(errors)}",
+                    {"source_id": msg.source_id, "errors": errors},
+                    "Please fill in missing fields"
+                )
+                stats["details"]["cancel"]["dirty"] += 1
                 continue
 
             existing = DuplicateDetectionService.find_existing_cancel(db, msg.source_id)
@@ -349,7 +416,12 @@ def batch_import_data(
                 stats["details"]["cancel"]["duplicate"] += 1
                 continue
 
-            create_cancel_message(db, msg, batch_id)
+            db_cancel = create_cancel_message(db, msg, batch_id)
+            if not db_cancel.booking_id:
+                ProcessRecordService.create_process_log(
+                    db, batch_id, 0, "linking", "warning",
+                    f"Cancel message {msg.source_id} could not be linked to any booking"
+                )
             stats["success"] += 1
             stats["details"]["cancel"]["success"] += 1
 
@@ -362,6 +434,15 @@ def batch_import_data(
             if not is_valid:
                 stats["error"] += 1
                 stats["details"]["bills"]["error"] += 1
+                db_bill = create_supplier_bill(db, bill, batch_id)
+                record_dirty(
+                    batch_id, db_bill.booking_id or 0,
+                    "missing_field",
+                    f"Bill validation failed: {', '.join(errors)}",
+                    {"source_id": bill.source_id, "errors": errors},
+                    "Please fill in missing fields"
+                )
+                stats["details"]["bills"]["dirty"] += 1
                 continue
 
             existing = DuplicateDetectionService.find_existing_bill(db, bill.source_id)
@@ -371,16 +452,22 @@ def batch_import_data(
 
                 has_conflict, old_amount = ConflictDetectionService.detect_amount_conflict(db, bill)
                 if has_conflict:
-                    ProcessRecordService.create_dirty_record(
-                        db, batch_id, existing.booking_id or 0,
+                    record_dirty(
+                        batch_id, existing.booking_id or 0,
                         "amount_conflict",
                         f"Amount conflict: old={old_amount}, new={bill.total_amount}",
                         {"old_amount": old_amount, "new_amount": bill.total_amount},
                         "Verify which amount is correct and update manually"
                     )
+                    stats["details"]["bills"]["dirty"] += 1
                 continue
 
-            create_supplier_bill(db, bill, batch_id)
+            db_bill = create_supplier_bill(db, bill, batch_id)
+            if not db_bill.booking_id:
+                ProcessRecordService.create_process_log(
+                    db, batch_id, 0, "linking", "warning",
+                    f"Supplier bill {bill.source_id} could not be linked to any booking"
+                )
             stats["success"] += 1
             stats["details"]["bills"]["success"] += 1
 
@@ -404,6 +491,7 @@ def batch_import_data(
         "success_count": stats["success"],
         "duplicate_count": stats["duplicate"],
         "error_count": stats["error"],
+        "dirty_count": stats["dirty"],
         "duplicate_handling": duplicate_handling,
         "details": stats["details"]
     }

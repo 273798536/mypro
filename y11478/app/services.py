@@ -123,12 +123,15 @@ class RecordLinkingService:
     def link_access_to_booking(db: Session, access: models.AccessRecord) -> Optional[int]:
         bookings = db.query(models.BookingRecord).filter(
             models.BookingRecord.room_name == access.room_name,
-            models.BookingRecord.start_time <= access.access_time,
-            models.BookingRecord.end_time >= access.access_time
+            models.BookingRecord.start_time - timedelta(minutes=60) <= access.access_time,
+            models.BookingRecord.end_time + timedelta(minutes=30) >= access.access_time
         ).all()
 
         if len(bookings) == 1:
             return bookings[0].id
+        elif len(bookings) > 1:
+            best_match = min(bookings, key=lambda b: abs((b.start_time - access.access_time).total_seconds()))
+            return best_match.id
         return None
 
     @staticmethod
@@ -139,18 +142,22 @@ class RecordLinkingService:
 
         if cancel.meeting_start_time:
             query = query.filter(
-                models.BookingRecord.start_time >= cancel.meeting_start_time - timedelta(minutes=30),
-                models.BookingRecord.start_time <= cancel.meeting_start_time + timedelta(minutes=30)
+                models.BookingRecord.start_time >= cancel.meeting_start_time - timedelta(hours=2),
+                models.BookingRecord.start_time <= cancel.meeting_start_time + timedelta(hours=2)
             )
         else:
             query = query.filter(
-                models.BookingRecord.start_time >= cancel.cancel_time - timedelta(hours=24),
+                models.BookingRecord.start_time >= cancel.cancel_time - timedelta(hours=48),
                 models.BookingRecord.start_time <= cancel.cancel_time + timedelta(hours=24)
             )
 
         bookings = query.all()
         if len(bookings) == 1:
             return bookings[0].id
+        elif len(bookings) > 1:
+            target_time = cancel.meeting_start_time or cancel.cancel_time
+            best_match = min(bookings, key=lambda b: abs((b.start_time - target_time).total_seconds()))
+            return best_match.id
         return None
 
     @staticmethod
@@ -167,6 +174,12 @@ class RecordLinkingService:
 
         bookings = query.all()
         if len(bookings) == 1:
+            return bookings[0].id
+        elif len(bookings) > 1:
+            target_date = bill.meeting_date.date() if bill.meeting_date else bill.bill_date.date()
+            same_day_bookings = [b for b in bookings if b.start_time.date() == target_date]
+            if same_day_bookings:
+                return same_day_bookings[0].id
             return bookings[0].id
         return None
 
@@ -225,20 +238,91 @@ class ProcessRecordService:
 
 class ReconciliationService:
     @staticmethod
-    def reconcile_booking(db: Session, booking: models.BookingRecord) -> Dict[str, Any]:
-        has_access = len(booking.access_records) > 0
-        has_cancel = len(booking.cancel_messages) > 0
-        has_bill = len(booking.supplier_bills) > 0
+    def relink_all_for_booking(db: Session, booking: models.BookingRecord) -> Dict[str, int]:
+        access_count = 0
+        for access in db.query(models.AccessRecord).filter(
+            models.AccessRecord.booking_id.is_(None),
+            models.AccessRecord.room_name == booking.room_name,
+            models.AccessRecord.access_time >= booking.start_time - timedelta(minutes=60),
+            models.AccessRecord.access_time <= booking.end_time + timedelta(minutes=30)
+        ).all():
+            access.booking_id = booking.id
+            access_count += 1
+
+        cancel_count = 0
+        for cancel in db.query(models.CancelMessage).filter(
+            models.CancelMessage.booking_id.is_(None),
+            models.CancelMessage.room_name == booking.room_name,
+            models.CancelMessage.meeting_start_time.isnot(None)
+        ).all():
+            if abs((cancel.meeting_start_time - booking.start_time).total_seconds()) < 3600:
+                cancel.booking_id = booking.id
+                cancel_count += 1
+                if booking.status != "cancelled":
+                    booking.status = "cancelled"
+
+        bill_count = 0
+        for bill in db.query(models.SupplierBill).filter(
+            models.SupplierBill.booking_id.is_(None),
+            models.SupplierBill.room_name == booking.room_name
+        ).all():
+            bill_date = bill.meeting_date or bill.bill_date
+            if bill_date.date() == booking.start_time.date():
+                bill.booking_id = booking.id
+                bill_count += 1
+
+        if access_count or cancel_count or bill_count:
+            db.commit()
+
+        return {"access": access_count, "cancel": cancel_count, "bill": bill_count}
+
+    @staticmethod
+    def reconcile_booking(db: Session, booking: models.BookingRecord, auto_relink: bool = True) -> Dict[str, Any]:
+        if auto_relink:
+            ReconciliationService.relink_all_for_booking(db, booking)
+            db.refresh(booking)
+
+        booking_date = booking.start_time.date()
+
+        access_records = db.query(models.AccessRecord).filter(
+            models.AccessRecord.room_name == booking.room_name,
+            models.AccessRecord.access_time >= booking.start_time - timedelta(minutes=60),
+            models.AccessRecord.access_time <= booking.end_time + timedelta(minutes=30)
+        ).all()
+        has_access = len(access_records) > 0
+
+        cancel_messages = db.query(models.CancelMessage).filter(
+            models.CancelMessage.room_name == booking.room_name
+        ).all()
+        has_cancel = any(
+            cm.meeting_start_time and 
+            abs((cm.meeting_start_time - booking.start_time).total_seconds()) < 3600
+            for cm in cancel_messages
+        )
+
+        supplier_bills = db.query(models.SupplierBill).filter(
+            models.SupplierBill.room_name == booking.room_name
+        ).all()
+        related_bills = [
+            b for b in supplier_bills
+            if (b.meeting_date and b.meeting_date.date() == booking_date) or
+               (b.bill_date and b.bill_date.date() == booking_date)
+        ]
+        has_bill = len(related_bills) > 0
 
         tea_break_cost = sum(
-            bill.total_amount for bill in booking.supplier_bills
+            bill.total_amount for bill in related_bills
             if "tea" in bill.service_type.lower() or "茶歇" in bill.service_type
         )
         equipment_cost = sum(
-            bill.total_amount for bill in booking.supplier_bills
+            bill.total_amount for bill in related_bills
             if "equip" in bill.service_type.lower() or "设备" in bill.service_type
         )
-        total_cost = sum(bill.total_amount for bill in booking.supplier_bills)
+        total_cost = sum(bill.total_amount for bill in related_bills)
+
+        booking_status = booking.status
+        if has_cancel and booking_status != "cancelled":
+            booking_status = "cancelled (detected)"
 
         is_exception = False
         exception_type = None
@@ -266,7 +350,7 @@ class ReconciliationService:
             "room_name": booking.room_name,
             "meeting_topic": booking.meeting_topic,
             "start_time": booking.start_time,
-            "booking_status": booking.status,
+            "booking_status": booking_status,
             "has_access_record": has_access,
             "has_cancel_message": has_cancel,
             "has_supplier_bill": has_bill,
@@ -275,7 +359,9 @@ class ReconciliationService:
             "total_cost": total_cost,
             "is_exception": is_exception,
             "exception_type": exception_type,
-            "exception_description": exception_description
+            "exception_description": exception_description,
+            "linked_access_count": len([a for a in access_records if a.booking_id == booking.id]),
+            "linked_bill_count": len([b for b in related_bills if b.booking_id == booking.id])
         }
 
 

@@ -146,7 +146,21 @@ def resolve_dirty_record(
     record = crud.resolve_dirty_record(db, process_id, corrected_value, reason)
     if record is None:
         raise HTTPException(status_code=404, detail="Process record not found")
-    return {"status": "success", "message": "Record resolved", "record": schemas.ProcessRecord.model_validate(record)}
+    return {"status": "success", "message": "Record resolved and re-summarized", "record": schemas.ProcessRecord.model_validate(record)}
+
+
+@app.post("/api/relink-all", tags=["Reconciliation"])
+def relink_all_records(db: Session = Depends(get_db)):
+    bookings = crud.get_bookings(db, limit=1000)
+    relink_stats = {"total_bookings": len(bookings), "relinked_access": 0, "relinked_cancel": 0, "relinked_bill": 0}
+
+    for booking in bookings:
+        stats = ReconciliationService.relink_all_for_booking(db, booking)
+        relink_stats["relinked_access"] += stats["access"]
+        relink_stats["relinked_cancel"] += stats["cancel"]
+        relink_stats["relinked_bill"] += stats["bill"]
+
+    return {"status": "success", "message": "All records re-linked and re-summarized", "stats": relink_stats}
 
 
 @app.get("/api/import-history", tags=["History"])

@@ -145,6 +145,7 @@ class ImportResponse(BaseModel):
     success_count: int
     duplicate_count: int
     error_count: int
+    dirty_count: Optional[int] = 0
     duplicate_handling: str
     details: Dict[str, Any]
 
@@ -172,6 +173,8 @@ class ReconciliationResult(BaseModel):
     is_exception: bool
     exception_type: Optional[str]
     exception_description: Optional[str]
+    linked_access_count: Optional[int] = None
+    linked_bill_count: Optional[int] = None
 
 
 class ExportQuery(BaseModel):
