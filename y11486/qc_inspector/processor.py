@@ -248,6 +248,17 @@ class DataImporter:
 
     def _update_record(self, source: str, record, data: Dict[str, Any]):
         updates = {}
+        date_fields = {
+            DataSource.REWORK.value: {"rework_date"},
+            DataSource.INSPECTION.value: {"inspection_date"},
+            DataSource.SHIFT.value: {"shift_date"},
+            DataSource.SUPPLIER.value: {"invoice_date"},
+            DataSource.APPROVAL.value: {"approval_date"},
+        }
+
+        int_fields = {"rework_count", "sample_size", "defect_count", "output_count", "quantity"}
+        float_fields = {"yield_rate", "defect_rate", "unit_price", "total_amount"}
+
         if source == DataSource.REWORK.value:
             fields = ["product_model", "defect_type", "defect_description",
                       "rework_action", "rework_result", "responsible_shift",
@@ -267,13 +278,30 @@ class DataImporter:
         else:
             return
 
+        source_date_fields = date_fields.get(source, set())
+
         for field in fields:
             new_val = data.get(field)
-            if new_val is not None and new_val != "":
-                old_val = getattr(record, field)
-                if old_val != new_val:
-                    updates[field] = (str(old_val), str(new_val))
-                    setattr(record, field, new_val)
+            if pd.isna(new_val) or new_val is None or new_val == "":
+                continue
+
+            if field in source_date_fields:
+                new_val = self._parse_date(new_val)
+            elif field in int_fields:
+                try:
+                    new_val = int(new_val)
+                except (ValueError, TypeError):
+                    continue
+            elif field in float_fields:
+                try:
+                    new_val = float(new_val)
+                except (ValueError, TypeError):
+                    continue
+
+            old_val = getattr(record, field)
+            if old_val != new_val:
+                updates[field] = (str(old_val), str(new_val))
+                setattr(record, field, new_val)
 
         is_valid, errors = getattr(DataValidator, f"validate_{source}")(data)
         record.is_valid = is_valid
