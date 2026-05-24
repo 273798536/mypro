@@ -1,0 +1,27 @@
+{
+  "name": "exhibition-material-tracking-api",
+  "version": "1.0.0",
+  "description": "线下展会物料权限追责台账 API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "init-db": "node scripts/init-db.js",
+    "import-sample": "node scripts/import-sample.js",
+    "demo": "node scripts/demo-workflow.js",
+    "test": "node scripts/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7",
+    "multer": "^1.4.5-lts.1",
+    "csv-parser": "^3.0.0",
+    "xlsx": "^0.18.5",
+    "joi": "^17.11.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "winston": "^3.11.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

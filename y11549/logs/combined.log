@@ -1,0 +1,6 @@
+{"level":"info","message":"数据库初始化完成","timestamp":"2026-05-24T12:55:39.335Z"}
+{"error":"缺少必填字段: 物料编码或物料名称","level":"error","message":"物料清单导入失败 - 行 9","record":{"单位":"台","所属部门":"测试部","数量":"5","物料名称":"测试缺失编码","物料编码":"","类别":"测试","规格":"","预估价值":"100.00"},"timestamp":"2026-05-24T12:56:01.997Z"}
+{"level":"info","message":"服务器启动在端口 3000","timestamp":"2026-05-24T12:57:26.529Z"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2026-05-24T12:57:28.210Z"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2026-05-24T12:58:47.566Z"}
+{"ip":"::1","level":"info","message":"GET /api/investigation/lost-items","timestamp":"2026-05-24T12:58:47.576Z"}
