@@ -1,0 +1,42 @@
+{
+  "name": "finance-audit-state-machine",
+  "version": "1.0.0",
+  "description": "财务报销稽核异常回执状态机 API",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "test": "jest --runInBand",
+    "seed": "ts-node prisma/seed.ts",
+    "demo": "ts-node scripts/demo-flow.ts"
+  },
+  "keywords": ["finance", "audit", "state-machine", "reimbursement"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.11.0",
+    "@types/pdf-parse": "^1.1.4",
+    "jest": "^29.7.0",
+    "prisma": "^5.8.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.8.0",
+    "csv-parse": "^5.5.3",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "xlsx": "^0.18.5",
+    "zod": "^3.22.4"
+  }
+}

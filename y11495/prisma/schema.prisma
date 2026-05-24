@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  name      String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs AuditLog[]
+}
+
+model Batch {
+  id          String      @id @default(cuid())
+  batchNo     String      @unique
+  title       String
+  description String?
+  status      String      @default("DRAFT")
+  periodStart DateTime?
+  periodEnd   DateTime?
+
+  frozenBy    String?
+  frozenAt    DateTime?
+  frozenReason String?
+
+  approvedBy   String?
+  approvedAt   DateTime?
+  approvedNote String?
+
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  updatedBy String?
+
+  sourceFiles      SourceFile[]
+  invoices         Invoice[]
+  travelApps       TravelApplication[]
+  payments         PaymentRecord[]
+  exceptions       AuditException[]
+  statusHistories  StatusHistory[]
+  exportRecords    ExportRecord[]
+}
+
+model SourceFile {
+  id          String         @id @default(cuid())
+  batchId     String
+  fileType    String
+  fileName    String
+  fileSize    Int
+  fileHash    String
+  storagePath String
+  uploadedBy  String
+  createdAt   DateTime       @default(now())
+
+  batch    Batch     @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+  travelApps TravelApplication[]
+  payments PaymentRecord[]
+}
+
+model Invoice {
+  id           String   @id @default(cuid())
+  batchId      String
+  sourceFileId String
+  sourceRowNo  Int
+
+  invoiceNo       String
+  invoiceDate     DateTime
+  amount          Float
+  taxAmount       Float?
+  totalAmount     Float
+  sellerName      String?
+  sellerTaxNo     String?
+  buyerName       String?
+  buyerTaxNo      String?
+  invoiceType     String?
+
+  travelDateStart DateTime?
+  travelDateEnd   DateTime?
+  hotelName       String?
+  checkInDate     DateTime?
+  checkOutDate    DateTime?
+  guestNames      String?
+
+  rawData   String?
+  parsedBy  String?
+  parsedAt  DateTime?
+  createdAt DateTime @default(now())
+
+  batch      Batch      @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  sourceFile SourceFile @relation(fields: [sourceFileId], references: [id], onDelete: Cascade)
+
+  exceptions ExceptionInvoice[]
+}
+
+model TravelApplication {
+  id           String   @id @default(cuid())
+  batchId      String
+  sourceFileId String
+  sourceRowNo  Int
+
+  appNo       String
+  applicant   String
+  department  String
+  travelStart DateTime
+  travelEnd   DateTime
+  destination String
+  purpose     String?
+  travelers   String?
+
+  estimatedAccommodation Float?
+  estimatedTransport    Float?
+  estimatedOther        Float?
+  estimatedTotal        Float?
+
+  rawData   String?
+  createdAt DateTime @default(now())
+
+  batch      Batch      @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  sourceFile SourceFile @relation(fields: [sourceFileId], references: [id], onDelete: Cascade)
+}
+
+model PaymentRecord {
+  id           String   @id @default(cuid())
+  batchId      String
+  sourceFileId String
+  sourceRowNo  Int
+
+  paymentNo     String
+  paymentDate   DateTime
+  payee         String?
+  amount        Float
+  paymentMethod String?
+  remark        String?
+
+  relatedInvoiceNo String?
+  relatedAppNo     String?
+
+  rawData   String?
+  createdAt DateTime @default(now())
+
+  batch      Batch      @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  sourceFile SourceFile @relation(fields: [sourceFileId], references: [id], onDelete: Cascade)
+}
+
+model AuditException {
+  id              String          @id @default(cuid())
+  batchId         String
+  exceptionType   String
+  status          String          @default("DETECTED")
+  severity        Int             @default(2)
+  description     String
+
+  detectedAt DateTime @default(now())
+  detectedBy String?
+
+  confirmedAt DateTime?
+  confirmedBy String?
+  confirmedNote String?
+
+  overruledAt DateTime?
+  overruledBy String?
+  overruleReason String?
+
+  dismissedAt DateTime?
+  dismissedBy String?
+  dismissReason String?
+
+  disputedAt DateTime?
+  disputedBy String?
+  disputeReason String?
+
+  resolvedAt DateTime?
+  resolvedBy String?
+  resolutionNote String?
+
+  batch Batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  invoices   ExceptionInvoice[]
+}
+
+model ExceptionInvoice {
+  exceptionId String
+  invoiceId   String
+  reason      String?
+
+  exception AuditException @relation(fields: [exceptionId], references: [id], onDelete: Cascade)
+  invoice   Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@id([exceptionId, invoiceId])
+}
+
+model StatusHistory {
+  id        String      @id @default(cuid())
+  batchId   String
+  oldStatus String?
+  newStatus String
+  changedBy String
+  changedAt DateTime    @default(now())
+  reason    String?
+
+  batch Batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  action    String
+  batchId   String?
+  userId    String?
+  username  String?
+  userRole  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model ExportRecord {
+  id         String   @id @default(cuid())
+  batchId    String
+  exportedBy String
+  exportedAt DateTime @default(now())
+  fileName   String
+  fileType   String
+  statusBefore String
+  statusAfter  String?
+  note       String?
+
+  batch Batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+}

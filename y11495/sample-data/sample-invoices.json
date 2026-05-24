@@ -1,0 +1,112 @@
+[
+  {
+    "invoiceNo": "INV001",
+    "invoiceDate": "2024-01-18",
+    "amount": 2264.15,
+    "taxAmount": 135.85,
+    "totalAmount": 2400,
+    "sellerName": "北京XX酒店有限公司",
+    "sellerTaxNo": "91110105XXXXXXXXXX",
+    "buyerName": "本公司",
+    "buyerTaxNo": "91310000XXXXXXXXXX",
+    "invoiceType": "住宿费发票",
+    "hotelName": "北京XX酒店",
+    "checkInDate": "2024-01-15",
+    "checkOutDate": "2024-01-18",
+    "guestNames": "张三、李四、王五",
+    "rawData": {
+      "source": "模拟数据",
+      "description": "北京出差3人合住，可能存在重复报销风险"
+    }
+  },
+  {
+    "invoiceNo": "INV001",
+    "invoiceDate": "2024-01-18",
+    "amount": 2264.15,
+    "taxAmount": 135.85,
+    "totalAmount": 2400,
+    "sellerName": "北京XX酒店有限公司",
+    "sellerTaxNo": "91110105XXXXXXXXXX",
+    "buyerName": "本公司",
+    "buyerTaxNo": "91310000XXXXXXXXXX",
+    "invoiceType": "住宿费发票",
+    "hotelName": "北京XX酒店",
+    "checkInDate": "2024-01-15",
+    "checkOutDate": "2024-01-18",
+    "guestNames": "张三、李四、王五",
+    "rawData": {
+      "source": "模拟数据",
+      "description": "同一张发票重复上传，测试重复发票检测"
+    }
+  },
+  {
+    "invoiceNo": "INV002",
+    "invoiceDate": "2024-01-20",
+    "amount": 1698.11,
+    "taxAmount": 101.89,
+    "totalAmount": 1800,
+    "sellerName": "上海YY酒店",
+    "sellerTaxNo": "91310101XXXXXXXXXX",
+    "buyerName": "本公司",
+    "buyerTaxNo": "91310000XXXXXXXXXX",
+    "invoiceType": "住宿费发票",
+    "hotelName": "上海YY酒店",
+    "checkInDate": "2024-01-17",
+    "checkOutDate": "2024-01-20",
+    "guestNames": "张三",
+    "rawData": {
+      "source": "模拟数据"
+    }
+  },
+  {
+    "invoiceNo": "INV003",
+    "invoiceDate": "2024-02-05",
+    "amount": 1509.43,
+    "taxAmount": 90.57,
+    "totalAmount": 1600,
+    "sellerName": "广州ZZ宾馆",
+    "sellerTaxNo": "91440100XXXXXXXXXX",
+    "buyerName": "本公司",
+    "buyerTaxNo": "91310000XXXXXXXXXX",
+    "invoiceType": "住宿费发票",
+    "hotelName": "广州ZZ宾馆",
+    "checkInDate": "2024-02-01",
+    "checkOutDate": "2024-02-05",
+    "guestNames": "王五",
+    "rawData": {
+      "source": "模拟数据"
+    }
+  },
+  {
+    "invoiceNo": "INV004",
+    "invoiceDate": "2024-01-15",
+    "amount": 358.49,
+    "taxAmount": 21.51,
+    "totalAmount": 380,
+    "sellerName": "滴滴出行科技有限公司",
+    "sellerTaxNo": "91120116XXXXXXXXXX",
+    "buyerName": "本公司",
+    "buyerTaxNo": "91310000XXXXXXXXXX",
+    "invoiceType": "交通费发票",
+    "rawData": {
+      "source": "模拟数据",
+      "description": "北京打车费用"
+    }
+  },
+  {
+    "invoiceNo": "INV005",
+    "invoiceDate": "2024-01-15",
+    "amount": 358.49,
+    "taxAmount": 21.51,
+    "totalAmount": 380,
+    "sellerName": "滴滴出行科技有限公司",
+    "sellerTaxNo": "91120116XXXXXXXXXX",
+    "buyerName": "本公司",
+    "buyerTaxNo": "91310000XXXXXXXXXX",
+    "invoiceType": "交通费发票",
+    "rawData": {
+      "source": "模拟数据",
+      "description": "同日同金额打车票，测试重复交通费用检测"
+    }
+  }
+]
