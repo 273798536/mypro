@@ -42,6 +42,8 @@ export interface Document {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  isHistory?: boolean;
+  parentId?: string;
 }
 
 export interface FabricTrack {

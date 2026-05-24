@@ -49,6 +49,8 @@ export function initDb(): void {
       created_by TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      is_history BOOLEAN NOT NULL DEFAULT 0,
+      parent_id TEXT,
       FOREIGN KEY (batch_id) REFERENCES batches(id)
     );
 
@@ -131,6 +133,17 @@ export function initDb(): void {
       CREATE INDEX idx_audit_entity ON audit_logs(entity_type, entity_id);
       CREATE INDEX idx_audit_created ON audit_logs(created_at);
     `);
+  }
+
+  const pragma = database.prepare("PRAGMA table_info(documents)");
+  const columns = pragma.all() as { name: string }[];
+  const columnNames = columns.map(c => c.name);
+  
+  if (!columnNames.includes('is_history')) {
+    database.exec(`ALTER TABLE documents ADD COLUMN is_history BOOLEAN NOT NULL DEFAULT 0`);
+  }
+  if (!columnNames.includes('parent_id')) {
+    database.exec(`ALTER TABLE documents ADD COLUMN parent_id TEXT`);
   }
 }
 

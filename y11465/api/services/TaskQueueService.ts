@@ -77,6 +77,11 @@ class TaskQueueService {
     const errorMessage = error.message || 'Unknown error';
     const errorType = this.classifyError(error);
 
+    if (errorType === 'MANUAL_REQUIRED') {
+      taskRepository.updateStatus(task.id, 'WAITING_MANUAL', errorMessage, errorType);
+      return;
+    }
+
     if (task.retryCount >= task.maxRetries) {
       if (errorType === 'RECOVERABLE') {
         taskRepository.updateStatus(task.id, 'WAITING_MANUAL', errorMessage, errorType);

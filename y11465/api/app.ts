@@ -8,9 +8,7 @@ import express, {
   type NextFunction,
 } from 'express'
 import cors from 'cors'
-import path from 'path'
 import dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import { initDb } from './db/connection.js'
 import batchRoutes from './routes/batches.js'
 import documentRoutes from './routes/documents.js'
@@ -19,10 +17,6 @@ import taskRoutes from './routes/tasks.js'
 import reportRoutes from './routes/reports.js'
 import auditRoutes from './routes/audit.js'
 import taskQueueService from './services/TaskQueueService.js'
-
-// for esm mode
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 // load env
 dotenv.config()

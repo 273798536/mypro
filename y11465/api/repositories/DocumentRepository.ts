@@ -59,7 +59,7 @@ export class DocumentRepository {
   findByBatchId(batchId: string): Document[] {
     const stmt = this.db.prepare(`
       SELECT * FROM documents 
-      WHERE batch_id = ?
+      WHERE batch_id = ? AND is_history = 0
       ORDER BY document_type, version DESC
     `);
     const rows = stmt.all(batchId) as any[];
@@ -76,7 +76,7 @@ export class DocumentRepository {
     const { page = 1, pageSize = 20, documentType, status, styleCode } = params;
     const offset = (page - 1) * pageSize;
 
-    let whereClause = 'WHERE 1=1';
+    let whereClause = 'WHERE is_history = 0';
     const queryParams: any[] = [];
 
     if (documentType) {
@@ -148,13 +148,35 @@ export class DocumentRepository {
     if (!before) throw new Error('Document not found');
 
     const now = new Date().toISOString();
+    const newVersion = before.version + 1;
+    const historyId = uuidv4();
 
-    const stmt = this.db.prepare(`
+    const insertHistoryStmt = this.db.prepare(`
+      INSERT INTO documents (id, batch_id, document_type, document_no, style_code, version, data, status, review_reason, created_by, created_at, updated_at, is_history, parent_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+    `);
+    insertHistoryStmt.run(
+      historyId,
+      before.batchId,
+      before.documentType,
+      before.documentNo,
+      before.styleCode,
+      before.version,
+      JSON.stringify(before.data),
+      before.status,
+      before.reviewReason || null,
+      before.createdBy,
+      before.createdAt,
+      now,
+      id
+    );
+
+    const updateStmt = this.db.prepare(`
       UPDATE documents 
-      SET data = ?, status = 'MODIFIED', version = version + 1, updated_at = ?
+      SET data = ?, status = 'MODIFIED', version = ?, updated_at = ?
       WHERE id = ?
     `);
-    stmt.run(JSON.stringify(data), now, id);
+    updateStmt.run(JSON.stringify(data), newVersion, now, id);
 
     const after = this.findById(id)!;
 
@@ -174,9 +196,9 @@ export class DocumentRepository {
   getDiff(documentId: string, fromVersion: number, toVersion: number): DocumentDiff | null {
     const docs = this.db.prepare(`
       SELECT * FROM documents 
-      WHERE id = ? OR (style_code = (SELECT style_code FROM documents WHERE id = ?) AND document_no = (SELECT document_no FROM documents WHERE id = ?))
+      WHERE id = ? OR parent_id = ?
       ORDER BY version
-    `).all(documentId, documentId, documentId) as any[];
+    `).all(documentId, documentId) as any[];
 
     if (docs.length < 2) return null;
 
@@ -190,7 +212,7 @@ export class DocumentRepository {
 
     const fields = this.calculateDiff(fromData, toData);
 
-    const auditLogs = auditLogRepository.findByEntity('document', toDoc.id);
+    const auditLogs = auditLogRepository.findByEntity('DOCUMENT', documentId);
     const lastLog = auditLogs[0];
 
     return {
@@ -230,6 +252,15 @@ export class DocumentRepository {
     return rows.map(row => this.mapRow(row));
   }
 
+  getAllVersions(documentId: string): Document[] {
+    const rows = this.db.prepare(`
+      SELECT * FROM documents
+      WHERE id = ? OR parent_id = ?
+      ORDER BY version DESC
+    `).all(documentId, documentId) as any[];
+    return rows.map(row => this.mapRow(row));
+  }
+
   private mapRow(row: any): Document {
     return {
       id: row.id,
@@ -243,7 +274,9 @@ export class DocumentRepository {
       reviewReason: row.review_reason,
       createdBy: row.created_by,
       createdAt: row.created_at,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
+      isHistory: row.is_history === 1,
+      parentId: row.parent_id
     };
   }
 }
