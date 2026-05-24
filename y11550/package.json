@@ -1,0 +1,41 @@
+{
+  "name": "smart-cabinet-receipt-statemachine",
+  "version": "1.0.0",
+  "description": "智能柜补货异常回执状态机 API 服务",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev src/index.ts",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.17",
+    "uuid": "^9.0.0",
+    "joi": "^17.11.0",
+    "multer": "^1.4.5-lts.1",
+    "csv-writer": "^1.6.0",
+    "exceljs": "^4.4.0",
+    "dayjs": "^1.11.10",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "@types/multer": "^1.4.11",
+    "@types/lodash": "^4.14.202",
+    "@types/jest": "^29.5.10",
+    "typescript": "^5.3.2",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "eslint": "^8.54.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1"
+  }
+}
