@@ -1,0 +1,41 @@
+[project]
+name = "quality-inspection-fsm"
+version = "0.1.0"
+description = "小厂质检返工异常回执状态机服务"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "click>=8.0.0",
+    "python-dotenv>=1.0.0",
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+]
+
+[project.scripts]
+qfsm = "qfsm.cli:cli"
+
+[tool.poetry]
+name = "quality-inspection-fsm"
+version = "0.1.0"
+description = "小厂质检返工异常回执状态机服务"
+authors = ["Your Name <your@email.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.104.0"
+uvicorn = "^0.24.0"
+sqlalchemy = "^2.0.0"
+pydantic = "^2.0.0"
+pydantic-settings = "^2.0.0"
+click = "^8.0.0"
+python-dotenv = "^1.0.0"
+pandas = "^2.0.0"
+openpyxl = "^3.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
