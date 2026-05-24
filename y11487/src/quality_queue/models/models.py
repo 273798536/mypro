@@ -41,6 +41,22 @@ class RetryCategory(PyEnum):
     NOT_RETRYABLE = "not_retryable"
 
 
+class ReceiptStatus(PyEnum):
+    RECEIVED = "received"
+    VALIDATING = "validating"
+    QUEUED = "queued"
+    PROCESSING = "processing"
+    SUCCESS = "success"
+    FAILED = "failed"
+
+
+class WorkerStatus(PyEnum):
+    IDLE = "idle"
+    RUNNING = "running"
+    PAUSED = "paused"
+    STOPPED = "stopped"
+
+
 class MachineShift(Base):
     __tablename__ = "machine_shifts"
 
@@ -232,3 +248,79 @@ class AuditLog(Base):
     created_at = Column(DateTime, default=func.now())
 
     queue_item = relationship("CompensationQueue", back_populates="audit_logs")
+
+
+class ExternalReceipt(Base):
+    __tablename__ = "external_receipts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    receipt_no = Column(String, unique=True, index=True)
+    source_system = Column(String, index=True)
+    source_type = Column(Enum(RecordSource), index=True)
+    status = Column(Enum(ReceiptStatus), default=ReceiptStatus.RECEIVED, index=True)
+    queue_item_id = Column(Integer, ForeignKey("compensation_queue.id"), nullable=True)
+    inspection_id = Column(Integer, ForeignKey("inspections.id"), nullable=True)
+    rework_order_id = Column(Integer, ForeignKey("rework_orders.id"), nullable=True)
+    shift_id = Column(Integer, ForeignKey("machine_shifts.id"), nullable=True)
+    exception_id = Column(Integer, ForeignKey("exception_records.id"), nullable=True)
+    payload = Column(JSON)
+    error_message = Column(Text)
+    retry_count = Column(Integer, default=0)
+    max_retries = Column(Integer, default=5)
+    next_retry_at = Column(DateTime)
+    processed_at = Column(DateTime)
+    callback_url = Column(String)
+    callback_status = Column(String)
+    callback_response = Column(JSON)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    queue_item = relationship("CompensationQueue")
+    inspection = relationship("Inspection")
+    rework_order = relationship("ReworkOrder")
+    shift = relationship("MachineShift")
+    exception = relationship("ExceptionRecord")
+
+
+class ResourceLock(Base):
+    __tablename__ = "resource_locks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    resource_type = Column(String, index=True)
+    resource_id = Column(String, index=True)
+    lock_holder = Column(String, index=True)
+    locked_at = Column(DateTime, default=func.now())
+    expires_at = Column(DateTime)
+    is_active = Column(Boolean, default=True, index=True)
+
+    __table_args__ = (
+        {"sqlite_autoincrement": True},
+    )
+
+
+class DataHistory(Base):
+    __tablename__ = "data_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    resource_type = Column(String, index=True)
+    resource_id = Column(String, index=True)
+    version = Column(Integer, default=1)
+    data_snapshot = Column(JSON)
+    change_reason = Column(String)
+    changed_by = Column(String)
+    created_at = Column(DateTime, default=func.now())
+
+
+class WorkerState(Base):
+    __tablename__ = "worker_states"
+
+    id = Column(Integer, primary_key=True, index=True)
+    worker_id = Column(String, unique=True, index=True)
+    status = Column(Enum(WorkerStatus), default=WorkerStatus.IDLE, index=True)
+    current_queue_id = Column(Integer, nullable=True)
+    last_heartbeat = Column(DateTime, default=func.now())
+    processed_count = Column(Integer, default=0)
+    error_count = Column(Integer, default=0)
+    config = Column(JSON)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

@@ -5,8 +5,10 @@ from dateutil import parser as date_parser
 
 from ..models import (
     DirtyRecord, DirtyType, RecordSource,
-    Inspection, ReworkOrder, MachineShift, ExceptionRecord
+    Inspection, ReworkOrder, MachineShift, ExceptionRecord,
+    DataHistory, CompensationQueue
 )
+from ..utils.json_utils import to_json_serializable
 
 
 class DataValidator:
@@ -30,6 +32,120 @@ class DataValidator:
         self.db.add(dirty)
         self.db.flush()
         return dirty
+
+    def _save_data_history(self, resource_type: str, resource_id: str,
+                           data_snapshot: Dict[str, Any], change_reason: str,
+                           changed_by: str) -> DataHistory:
+        last_history = self.db.query(DataHistory).filter(
+            DataHistory.resource_type == resource_type,
+            DataHistory.resource_id == resource_id
+        ).order_by(DataHistory.version.desc()).first()
+
+        version = (last_history.version + 1) if last_history else 1
+
+        history = DataHistory(
+            resource_type=resource_type,
+            resource_id=resource_id,
+            version=version,
+            data_snapshot=to_json_serializable(data_snapshot),
+            change_reason=change_reason,
+            changed_by=changed_by
+        )
+        self.db.add(history)
+        self.db.flush()
+        return history
+
+    def _recalculate_related_queue_items(self, source_type: str, source_id: str):
+        if source_type == "inspection":
+            queue_items = self.db.query(CompensationQueue).filter(
+                CompensationQueue.inspection_id == source_id
+            ).all()
+            for item in queue_items:
+                inspection = self.db.query(Inspection).filter(
+                    Inspection.id == source_id
+                ).first()
+                if inspection:
+                    item.compensation_quantity = inspection.defect_count
+                    item.machine_no = inspection.machine_no
+                    if inspection.shift:
+                        item.responsible_shift_code = inspection.shift.shift_code
+                        item.original_shift_code = inspection.shift.shift_code
+
+        elif source_type == "rework":
+            queue_items = self.db.query(CompensationQueue).filter(
+                CompensationQueue.rework_order_id == source_id
+            ).all()
+            for item in queue_items:
+                rework = self.db.query(ReworkOrder).filter(
+                    ReworkOrder.id == source_id
+                ).first()
+                if rework:
+                    item.defect_type = rework.defect_type
+                    item.machine_no = rework.machine_no
+                    item.compensation_amount = rework.compensation_amount
+                    item.compensation_quantity = rework.rework_quantity
+                    item.responsible_shift_code = rework.responsible_shift_code
+
+        elif source_type == "shift":
+            shift = self.db.query(MachineShift).filter(
+                MachineShift.id == source_id
+            ).first()
+            if shift:
+                queue_items = self.db.query(CompensationQueue).filter(
+                    CompensationQueue.original_shift_code == shift.shift_code
+                ).all()
+                for item in queue_items:
+                    item.original_shift_code = shift.shift_code
+
+        self.db.flush()
+
+    def _parse_field_value(self, field_name: str, value: str) -> Any:
+        if "date" in field_name.lower() or "_at" in field_name.lower():
+            try:
+                return date_parser.parse(value).date()
+            except:
+                return value
+        if "quantity" in field_name.lower() or "count" in field_name.lower():
+            try:
+                return int(value)
+            except:
+                return value
+        if "amount" in field_name.lower() or "rate" in field_name.lower():
+            try:
+                return float(value)
+            except:
+                return value
+        if field_name.lower() in ["is_qualified", "is_verified", "is_reworked", "is_active"]:
+            return value.lower() in ["true", "1", "yes", "是"]
+        return value
+
+    def _get_source_record(self, source_type: RecordSource, source_id: str):
+        if source_type == RecordSource.INSPECTION:
+            return self.db.query(Inspection).filter(
+                Inspection.inspection_no == source_id
+            ).first()
+        elif source_type == RecordSource.REWORK:
+            return self.db.query(ReworkOrder).filter(
+                ReworkOrder.rework_no == source_id
+            ).first()
+        elif source_type == RecordSource.SHIFT:
+            return self.db.query(MachineShift).filter(
+                MachineShift.shift_code == source_id
+            ).first()
+        elif source_type == RecordSource.SMS:
+            return self.db.query(ExceptionRecord).filter(
+                ExceptionRecord.record_no == source_id
+            ).first()
+        return None
+
+    def _get_source_id_field(self, source_type: RecordSource) -> str:
+        id_fields = {
+            RecordSource.INSPECTION: "inspection_no",
+            RecordSource.REWORK: "rework_no",
+            RecordSource.SHIFT: "shift_code",
+            RecordSource.SMS: "record_no",
+        }
+        return id_fields.get(source_type, "id")
 
     def validate_inspection(self, data: Dict[str, Any]) -> Tuple[bool, List[DirtyRecord]]:
         dirty_records = []
@@ -218,13 +334,69 @@ class DataValidator:
         if not dirty:
             return False, "脏记录不存在"
 
+        if dirty.is_corrected:
+            return False, "该脏记录已修正，不能重复修正"
+
+        source_record = self._get_source_record(dirty.source_type, dirty.source_id)
+        if not source_record:
+            return False, "源记录不存在，无法回写"
+
+        old_snapshot = {}
+        for column in source_record.__table__.columns:
+            old_snapshot[column.name] = getattr(source_record, column.name)
+
+        self._save_data_history(
+            resource_type=dirty.source_type.value,
+            resource_id=dirty.source_id,
+            data_snapshot=old_snapshot,
+            change_reason=f"修正脏记录: {dirty.dirty_type.value} - {dirty.field_name}",
+            changed_by=operator
+        )
+
+        field_names = dirty.field_name.split(",")
+        parsed_values = {}
+
+        if len(field_names) == 1:
+            field_name = field_names[0].strip()
+            parsed_value = self._parse_field_value(field_name, corrected_value)
+            parsed_values[field_name] = parsed_value
+            if hasattr(source_record, field_name):
+                setattr(source_record, field_name, parsed_value)
+        else:
+            import ast
+            try:
+                kv_pairs = corrected_value.split(",")
+                for kv in kv_pairs:
+                    if "=" in kv:
+                        k, v = kv.split("=", 1)
+                        k = k.strip()
+                        v = v.strip()
+                        parsed_values[k] = self._parse_field_value(k, v)
+                        if hasattr(source_record, k):
+                            setattr(source_record, k, parsed_values[k])
+            except:
+                pass
+
+        if hasattr(source_record, "raw_data") and source_record.raw_data:
+            new_raw_data = dict(source_record.raw_data)
+            new_raw_data.update(parsed_values)
+            source_record.raw_data = to_json_serializable(new_raw_data)
+
         dirty.corrected_value = corrected_value
         dirty.is_corrected = True
         dirty.corrected_by = operator
         dirty.corrected_at = datetime.now()
 
         self.db.flush()
-        return True, "已修正"
+
+        self._recalculate_related_queue_items(
+            source_type=dirty.source_type.value,
+            source_id=source_record.id
+        )
+
+        self.db.commit()
+
+        return True, f"已修正并回写源记录，相关队列项已重新汇总"
 
     def get_dirty_records(self, source_type: Optional[RecordSource] = None,
                           dirty_type: Optional[DirtyType] = None,

@@ -475,5 +475,195 @@ def dirty_correct(dirty_id, corrected_value, operator):
         db.close()
 
 
+@cli.group()
+def worker():
+    """Worker 调度服务"""
+    pass
+
+
+@worker.command("run")
+@click.option("--worker-id", "-w", help="Worker ID")
+@click.option("--interval", "-i", type=int, default=5, help="轮询间隔(秒)")
+@click.option("--batch-size", "-b", type=int, default=10, help="批量处理大小")
+@click.pass_context
+def worker_run(ctx, worker_id, interval, batch_size):
+    """启动 Worker 处理队列"""
+    from ..services import QueueWorker
+
+    db = get_db()
+    try:
+        worker = QueueWorker(db, worker_id, interval, batch_size)
+        click.echo(f"Worker {worker.worker_id} 启动，按 Ctrl+C 停止")
+        worker.start()
+    except KeyboardInterrupt:
+        click.echo("Worker 停止")
+        sys.exit(0)
+    finally:
+        db.close()
+
+
+@worker.command("once")
+@click.option("--worker-id", "-w", help="Worker ID")
+@click.option("--batch-size", "-b", type=int, default=10, help="批量处理大小")
+@click.pass_context
+def worker_once(ctx, worker_id, batch_size):
+    """执行一次队列处理"""
+    from ..services import QueueWorker
+
+    db = get_db()
+    try:
+        worker = QueueWorker(db, worker_id, 5, batch_size)
+        processed = worker.process_once()
+        click.echo(f"处理完成，共处理 {processed} 条")
+        sys.exit(0)
+    finally:
+        db.close()
+
+
+@worker.command("list")
+def worker_list():
+    """列出所有 Worker 状态"""
+    from ..models import WorkerState
+
+    db = get_db()
+    try:
+        workers = db.query(WorkerState).all()
+
+        click.echo(f"{'Worker ID':<25} {'状态':<10} {'处理数':<8} {'错误数':<8} {'最后心跳':<25}")
+        click.echo("-" * 80)
+        for w in workers:
+            click.echo(
+                f"{w.worker_id:<25} "
+                f"{w.status.value if w.status else '':<10} "
+                f"{w.processed_count:<8} "
+                f"{w.error_count:<8} "
+                f"{w.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S') if w.last_heartbeat else '':<25}"
+            )
+
+        sys.exit(0)
+    finally:
+        db.close()
+
+
+@cli.group()
+def receipt():
+    """外部回执管理"""
+    pass
+
+
+@receipt.command("submit")
+@click.argument("source_type", type=click.Choice(["shift", "inspection", "rework", "sms"]))
+@click.argument("json_file", type=click.File("r"))
+@click.option("--source-system", "-s", default="external", help="来源系统")
+@click.option("--callback-url", "-c", help="回调 URL")
+def receipt_submit(source_type, json_file, source_system, callback_url):
+    """提交外部回执"""
+    from ..services import ReceiptProcessor
+
+    data = json.load(json_file)
+    db = get_db()
+    try:
+        processor = ReceiptProcessor(db)
+        receipt = processor.submit_receipt(
+            source_type=source_type,
+            payload=data,
+            source_system=source_system,
+            callback_url=callback_url
+        )
+        db.commit()
+
+        click.echo(f"回执已提交，编号: {receipt.receipt_no}")
+        sys.exit(0)
+    except Exception as e:
+        db.rollback()
+        click.echo(f"错误: {str(e)}", err=True)
+        sys.exit(1)
+    finally:
+        db.close()
+
+
+@receipt.command("process")
+@click.option("--limit", "-l", type=int, default=100, help="处理数量")
+def receipt_process(limit):
+    """处理待处理的回执"""
+    from ..services import ReceiptProcessor
+
+    db = get_db()
+    try:
+        processor = ReceiptProcessor(db)
+        processed = processor.process_pending_receipts(limit)
+        click.echo(f"处理完成，成功 {processed} 条")
+        sys.exit(0)
+    finally:
+        db.close()
+
+
+@receipt.command("list")
+@click.option("--status", "-s", type=click.Choice(["received", "validating", "queued", "processing", "success", "failed"]), help="按状态过滤")
+@click.option("--limit", "-l", type=int, default=50, help="显示数量")
+def receipt_list(status, limit):
+    """列出回执"""
+    from ..models import ExternalReceipt, ReceiptStatus
+
+    db = get_db()
+    try:
+        query = db.query(ExternalReceipt)
+        if status:
+            query = query.filter(ExternalReceipt.status == ReceiptStatus(status))
+
+        receipts = query.order_by(ExternalReceipt.created_at.desc()).limit(limit).all()
+
+        click.echo(f"{'回执编号':<20} {'来源':<15} {'状态':<12} {'重试':<5} {'创建时间':<25}")
+        click.echo("-" * 80)
+        for r in receipts:
+            click.echo(
+                f"{r.receipt_no:<20} "
+                f"{r.source_system:<15} "
+                f"{r.status.value if r.status else '':<12} "
+                f"{r.retry_count:<5} "
+                f"{r.created_at.strftime('%Y-%m-%d %H:%M:%S') if r.created_at else '':<25}"
+            )
+
+        sys.exit(0)
+    finally:
+        db.close()
+
+
+@cli.group()
+def history():
+    """数据历史查询"""
+    pass
+
+
+@history.command("list")
+@click.argument("resource_type", type=click.Choice(["shift", "inspection", "rework", "sms"]))
+@click.argument("resource_id")
+@click.option("--limit", "-l", type=int, default=20, help="显示数量")
+def history_list(resource_type, resource_id, limit):
+    """查看数据变更历史"""
+    from ..models import DataHistory
+
+    db = get_db()
+    try:
+        histories = db.query(DataHistory).filter(
+            DataHistory.resource_type == resource_type,
+            DataHistory.resource_id == resource_id
+        ).order_by(DataHistory.version.desc()).limit(limit).all()
+
+        click.echo(f"{'版本':<6} {'变更原因':<30} {'变更人':<12} {'创建时间':<25}")
+        click.echo("-" * 80)
+        for h in histories:
+            click.echo(
+                f"{h.version:<6} "
+                f"{(h.change_reason or '')[:28]:<30} "
+                f"{(h.changed_by or ''):<12} "
+                f"{h.created_at.strftime('%Y-%m-%d %H:%M:%S') if h.created_at else '':<25}"
+            )
+
+        sys.exit(0)
+    finally:
+        db.close()
+
+
 if __name__ == "__main__":
     cli()

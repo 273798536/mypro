@@ -4,6 +4,8 @@ from .models import (
     QueueStatus,
     DirtyType,
     RetryCategory,
+    ReceiptStatus,
+    WorkerStatus,
     MachineShift,
     Inspection,
     ReworkOrder,
@@ -11,6 +13,10 @@ from .models import (
     CompensationQueue,
     DirtyRecord,
     AuditLog,
+    ExternalReceipt,
+    ResourceLock,
+    DataHistory,
+    WorkerState,
 )
 
 __all__ = [
@@ -23,6 +29,8 @@ __all__ = [
     "QueueStatus",
     "DirtyType",
     "RetryCategory",
+    "ReceiptStatus",
+    "WorkerStatus",
     "MachineShift",
     "Inspection",
     "ReworkOrder",
@@ -30,4 +38,8 @@ __all__ = [
     "CompensationQueue",
     "DirtyRecord",
     "AuditLog",
+    "ExternalReceipt",
+    "ResourceLock",
+    "DataHistory",
+    "WorkerState",
 ]
