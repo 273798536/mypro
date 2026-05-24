@@ -1,0 +1,150 @@
+{
+  "bookings": [
+    {
+      "source_id": "BK20240520001",
+      "room_name": "3楼第一会议室",
+      "booker": "张三",
+      "department": "市场部",
+      "meeting_topic": "Q2产品发布会筹备",
+      "start_time": "2024-05-20T09:00:00",
+      "end_time": "2024-05-20T11:00:00",
+      "attendee_count": 15,
+      "has_tea_break": true,
+      "has_equipment": true,
+      "status": "scheduled",
+      "raw_data": {"source": "outlook_calendar", "imported_at": "2024-05-19T08:00:00"}
+    },
+    {
+      "source_id": "BK20240520002",
+      "room_name": "3楼第一会议室",
+      "booker": "李四",
+      "department": "技术部",
+      "meeting_topic": "系统架构评审会",
+      "start_time": "2024-05-20T14:00:00",
+      "end_time": "2024-05-20T16:00:00",
+      "attendee_count": 8,
+      "has_tea_break": false,
+      "has_equipment": true,
+      "status": "scheduled",
+      "raw_data": {"source": "outlook_calendar", "imported_at": "2024-05-19T08:00:00"}
+    },
+    {
+      "source_id": "BK20240521001",
+      "room_name": "2楼多功能厅",
+      "booker": "王五",
+      "department": "行政部",
+      "meeting_topic": "新员工入职培训",
+      "start_time": "2024-05-21T09:00:00",
+      "end_time": "2024-05-21T17:00:00",
+      "attendee_count": 50,
+      "has_tea_break": true,
+      "has_equipment": true,
+      "status": "scheduled",
+      "raw_data": {"source": "outlook_calendar", "imported_at": "2024-05-20T08:00:00"}
+    },
+    {
+      "source_id": "BK20240522001",
+      "room_name": "3楼第一会议室",
+      "booker": "赵六",
+      "department": "财务部",
+      "meeting_topic": "月度预算会议",
+      "start_time": "2024-05-22T10:00:00",
+      "end_time": "2024-05-22T12:00:00",
+      "attendee_count": 6,
+      "has_tea_break": false,
+      "has_equipment": false,
+      "status": "scheduled",
+      "raw_data": {"source": "outlook_calendar", "imported_at": "2024-05-21T08:00:00"}
+    }
+  ],
+  "access_records": [
+    {
+      "source_id": "ACC20240520001",
+      "room_name": "3楼第一会议室",
+      "card_number": "CARD001",
+      "person_name": "张三",
+      "access_time": "2024-05-20T08:55:00",
+      "access_type": "entry",
+      "raw_data": {"device_id": "ACCESS_3F_01"}
+    },
+    {
+      "source_id": "ACC20240520002",
+      "room_name": "3楼第一会议室",
+      "card_number": "CARD002",
+      "person_name": "李四",
+      "access_time": "2024-05-20T13:58:00",
+      "access_type": "entry",
+      "raw_data": {"device_id": "ACCESS_3F_01"}
+    },
+    {
+      "source_id": "ACC20240521001",
+      "room_name": "2楼多功能厅",
+      "card_number": "CARD003",
+      "person_name": "王五",
+      "access_time": "2024-05-21T08:50:00",
+      "access_type": "entry",
+      "raw_data": {"device_id": "ACCESS_2F_01"}
+    }
+  ],
+  "cancel_messages": [
+    {
+      "source_id": "CAN20240522001",
+      "room_name": "3楼第一会议室",
+      "cancel_time": "2024-05-22T09:15:00",
+      "canceler": "赵六",
+      "cancel_reason": "预算会议改期到下周",
+      "meeting_start_time": "2024-05-22T10:00:00",
+      "raw_data": {"channel": "wechat_work", "message_id": "MSG_123456"}
+    }
+  ],
+  "supplier_bills": [
+    {
+      "source_id": "BILL20240520001",
+      "room_name": "3楼第一会议室",
+      "supplier_name": "茶歇供应商A",
+      "service_type": "茶歇服务",
+      "quantity": 15,
+      "unit_price": 35,
+      "total_amount": 525,
+      "bill_date": "2024-05-20T00:00:00",
+      "meeting_date": "2024-05-20T00:00:00",
+      "raw_data": {"invoice_no": "INV-2024-0520-001"}
+    },
+    {
+      "source_id": "BILL20240520002",
+      "room_name": "3楼第一会议室",
+      "supplier_name": "设备租赁商B",
+      "service_type": "投影设备",
+      "quantity": 1,
+      "unit_price": 200,
+      "total_amount": 200,
+      "bill_date": "2024-05-20T00:00:00",
+      "meeting_date": "2024-05-20T00:00:00",
+      "raw_data": {"invoice_no": "INV-2024-0520-002"}
+    },
+    {
+      "source_id": "BILL20240521001",
+      "room_name": "2楼多功能厅",
+      "supplier_name": "茶歇供应商A",
+      "service_type": "茶歇服务",
+      "quantity": 50,
+      "unit_price": 35,
+      "total_amount": 1750,
+      "bill_date": "2024-05-21T00:00:00",
+      "meeting_date": "2024-05-21T00:00:00",
+      "raw_data": {"invoice_no": "INV-2024-0521-001"}
+    },
+    {
+      "source_id": "BILL20240522001",
+      "room_name": "3楼第一会议室",
+      "supplier_name": "茶歇供应商A",
+      "service_type": "茶歇服务",
+      "quantity": 6,
+      "unit_price": 35,
+      "total_amount": 210,
+      "bill_date": "2024-05-22T00:00:00",
+      "meeting_date": "2024-05-22T00:00:00",
+      "raw_data": {"invoice_no": "INV-2024-0522-001"}
+    }
+  ]
+}
