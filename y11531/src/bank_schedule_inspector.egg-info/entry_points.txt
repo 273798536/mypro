@@ -1,0 +1,2 @@
+[console_scripts]
+bsi = bank_schedule_inspector.cli:main

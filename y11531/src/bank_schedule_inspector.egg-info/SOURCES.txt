@@ -1,0 +1,13 @@
+pyproject.toml
+src/bank_schedule_inspector/__init__.py
+src/bank_schedule_inspector/cli.py
+src/bank_schedule_inspector/database.py
+src/bank_schedule_inspector/importer.py
+src/bank_schedule_inspector/inspector.py
+src/bank_schedule_inspector/reporting.py
+src/bank_schedule_inspector.egg-info/PKG-INFO
+src/bank_schedule_inspector.egg-info/SOURCES.txt
+src/bank_schedule_inspector.egg-info/dependency_links.txt
+src/bank_schedule_inspector.egg-info/entry_points.txt
+src/bank_schedule_inspector.egg-info/requires.txt
+src/bank_schedule_inspector.egg-info/top_level.txt
