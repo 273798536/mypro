@@ -1,0 +1,251 @@
+{
+  "batch_name": "2024年12月华东区差旅费批次导入",
+  "batch_description": "包含上海、杭州、南京三地出差的报销数据",
+  "strategy": "append",
+  "reimbursements": [
+    {
+      "reimbursement_no": "REIMB-20241201-001",
+      "department": "销售部",
+      "purpose": "上海客户拜访-年度合同谈判",
+      "total_amount": 5680.50,
+      "travel_start_date": "2024-12-01T00:00:00",
+      "travel_end_date": "2024-12-03T00:00:00",
+      "travel_destination": "上海",
+      "traveler_names": ["张三", "李四"],
+      "idempotency_key": "SH-20241201-SALES-001",
+      "invoices": [
+        {
+          "invoice_number": "12345678",
+          "invoice_code": "3100123456",
+          "invoice_date": "2024-12-01T00:00:00",
+          "seller_name": "上海希尔顿酒店",
+          "seller_tax_no": "91310000MA1FB2K3XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 1698.11,
+          "tax_amount": 101.89,
+          "amount_with_tax": 1800.00,
+          "category": "住宿",
+          "expense_type": "hotel"
+        },
+        {
+          "invoice_number": "12345679",
+          "invoice_code": "3100123457",
+          "invoice_date": "2024-12-02T00:00:00",
+          "seller_name": "滴滴出行科技有限公司",
+          "seller_tax_no": "91120116MA05J567XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 283.02,
+          "tax_amount": 16.98,
+          "amount_with_tax": 300.00,
+          "category": "交通",
+          "expense_type": "transport"
+        },
+        {
+          "invoice_number": "12345680",
+          "invoice_code": "3100123458",
+          "invoice_date": "2024-12-02T00:00:00",
+          "seller_name": "上海小南国餐饮",
+          "seller_tax_no": "91310104MA1G8123XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 1509.43,
+          "tax_amount": 90.57,
+          "amount_with_tax": 1600.00,
+          "category": "餐饮",
+          "expense_type": "food"
+        }
+      ],
+      "travel_applications": [
+        {
+          "application_no": "TRAVEL-20241128-015",
+          "applicant": "张三",
+          "department": "销售部",
+          "purpose": "拜访上海ABC公司，洽谈2025年度采购合同",
+          "start_date": "2024-12-01T00:00:00",
+          "end_date": "2024-12-03T00:00:00",
+          "destination": "上海",
+          "travelers": ["张三", "李四"],
+          "estimated_amount": 6000.00,
+          "approved_by": "王经理",
+          "approved_at": "2024-11-29T10:30:00"
+        }
+      ],
+      "payment_flows": [
+        {
+          "transaction_no": "PAY202412051001234",
+          "pay_time": "2024-12-05T14:30:00",
+          "pay_amount": 5680.50,
+          "payer": "公司账户",
+          "payee": "张三",
+          "payment_method": "银行转账",
+          "bank_name": "工商银行",
+          "bank_account": "6222021202012345678",
+          "purpose": "报销-2024年12月上海出差"
+        }
+      ],
+      "evidences": [
+        {
+          "evidence_type": "sms_screenshot",
+          "file_name": "短信截图_酒店确认.png",
+          "file_size": 245678,
+          "parsed_content": {
+            "message": "您预订的12月1日-3日上海希尔顿酒店豪华双床房已确认",
+            "sender": "106901234567"
+          }
+        }
+      ]
+    },
+    {
+      "reimbursement_no": "REIMB-20241201-002",
+      "department": "销售部",
+      "purpose": "杭州客户回访-产品演示",
+      "total_amount": 3250.00,
+      "travel_start_date": "2024-12-05T00:00:00",
+      "travel_end_date": "2024-12-06T00:00:00",
+      "travel_destination": "杭州",
+      "traveler_names": ["李四", "王五"],
+      "idempotency_key": "HZ-20241205-SALES-002",
+      "invoices": [
+        {
+          "invoice_number": "22345678",
+          "invoice_code": "3300123456",
+          "invoice_date": "2024-12-05T00:00:00",
+          "seller_name": "杭州西湖国宾馆",
+          "seller_tax_no": "91330100MA27W123XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 1320.75,
+          "tax_amount": 79.25,
+          "amount_with_tax": 1400.00,
+          "category": "住宿",
+          "expense_type": "hotel"
+        },
+        {
+          "invoice_number": "22345679",
+          "invoice_code": "3300123457",
+          "invoice_date": "2024-12-05T00:00:00",
+          "seller_name": "中国铁路上海局集团",
+          "seller_tax_no": "91310000MA1FL123XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 566.04,
+          "tax_amount": 33.96,
+          "amount_with_tax": 600.00,
+          "category": "交通",
+          "expense_type": "transport"
+        }
+      ],
+      "travel_applications": [
+        {
+          "application_no": "TRAVEL-20241203-018",
+          "applicant": "李四",
+          "department": "销售部",
+          "purpose": "杭州XYZ公司产品演示",
+          "start_date": "2024-12-05T00:00:00",
+          "end_date": "2024-12-06T00:00:00",
+          "destination": "杭州",
+          "travelers": ["李四", "王五"],
+          "estimated_amount": 3500.00,
+          "approved_by": "王经理",
+          "approved_at": "2024-12-04T09:15:00"
+        }
+      ],
+      "payment_flows": [
+        {
+          "transaction_no": "PAY202412101001235",
+          "pay_time": "2024-12-10T10:15:00",
+          "pay_amount": 3250.00,
+          "payer": "公司账户",
+          "payee": "李四",
+          "payment_method": "银行转账",
+          "bank_name": "建设银行",
+          "bank_account": "6217001202012345678",
+          "purpose": "报销-2024年12月杭州出差"
+        }
+      ]
+    },
+    {
+      "reimbursement_no": "REIMB-20241201-003",
+      "department": "销售部",
+      "purpose": "南京经销商大会",
+      "total_amount": 8900.00,
+      "travel_start_date": "2024-12-10T00:00:00",
+      "travel_end_date": "2024-12-12T00:00:00",
+      "travel_destination": "南京",
+      "traveler_names": ["张三", "李四", "王五", "赵六"],
+      "idempotency_key": "NJ-20241210-SALES-003",
+      "invoices": [
+        {
+          "invoice_number": "32345678",
+          "invoice_code": "3200123456",
+          "invoice_date": "2024-12-10T00:00:00",
+          "seller_name": "南京金陵饭店",
+          "seller_tax_no": "91320100MA1N1234XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 4528.30,
+          "tax_amount": 271.70,
+          "amount_with_tax": 4800.00,
+          "category": "住宿",
+          "expense_type": "hotel"
+        },
+        {
+          "invoice_number": "32345679",
+          "invoice_code": "3200123457",
+          "invoice_date": "2024-12-11T00:00:00",
+          "seller_name": "南京会议中心",
+          "seller_tax_no": "91320106MA1MT123XX",
+          "buyer_name": "本公司",
+          "buyer_tax_no": "91330100MA2GD12345",
+          "total_amount": 3773.58,
+          "tax_amount": 226.42,
+          "amount_with_tax": 4000.00,
+          "category": "办公",
+          "expense_type": "office"
+        }
+      ],
+      "travel_applications": [
+        {
+          "application_no": "TRAVEL-20241208-022",
+          "applicant": "张三",
+          "department": "销售部",
+          "purpose": "参加南京年度经销商大会",
+          "start_date": "2024-12-10T00:00:00",
+          "end_date": "2024-12-12T00:00:00",
+          "destination": "南京",
+          "travelers": ["张三", "李四", "王五", "赵六"],
+          "estimated_amount": 9000.00,
+          "approved_by": "销售总监",
+          "approved_at": "2024-12-09T16:00:00"
+        }
+      ],
+      "payment_flows": [
+        {
+          "transaction_no": "PAY202412151001236",
+          "pay_time": "2024-12-15T09:00:00",
+          "pay_amount": 8900.00,
+          "payer": "公司账户",
+          "payee": "张三",
+          "payment_method": "银行转账",
+          "bank_name": "工商银行",
+          "bank_account": "6222021202012345678",
+          "purpose": "报销-南京经销商大会费用"
+        }
+      ],
+      "evidences": [
+        {
+          "evidence_type": "store_transfer",
+          "file_name": "门店交接单_南京.xlsx",
+          "file_size": 45678,
+          "parsed_content": {
+            "store_code": "NJ001",
+            "transfer_date": "2024-12-12",
+            "items_count": 156
+          }
+        }
+      ]
+    }
+  ]
+}
