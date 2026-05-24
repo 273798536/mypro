@@ -1,0 +1,11 @@
+material_code,material_name,expected_quantity,actual_quantity,diff_quantity,unit,diff_type,check_time,checker,reason,remark
+MAT001,投影仪,5,4,-1,台,shortage,2024-05-27 10:00:00,盘点员A,借出未还,
+MAT002,展示架,20,20,0,个,consistent,2024-05-27 10:00:00,盘点员A,,
+MAT003,宣传册,1000,850,-150,本,shortage,2024-05-27 10:00:00,盘点员A,客户领取,
+MAT004,笔记本电脑,3,3,0,台,consistent,2024-05-27 10:00:00,盘点员A,,
+MAT005,展示灯,15,16,1,盏,surplus,2024-05-27 10:00:00,盘点员A,上届遗留,
+MAT006,易拉宝,30,30,0,个,consistent,2024-05-27 10:00:00,盘点员A,,
+MAT007,桌椅套装,10,10,0,套,consistent,2024-05-27 10:00:00,盘点员A,,
+MAT008,试戴设备,8,8,0,台,consistent,2024-05-27 10:00:00,盘点员A,,
+MAT009,电源适配器,50,30,-20,个,shortage,2024-05-27 10:00:00,盘点员A,丢失,
+MAT010,签到系统,4,4,0,台,consistent,2024-05-27 10:00:00,盘点员A,,

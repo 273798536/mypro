@@ -1,0 +1,7 @@
+borrow_no,material_code,material_name,quantity,unit,borrower,borrower_department,borrow_time,expected_return_time,actual_return_time,return_status,keeper,remark
+BRW001,MAT001,投影仪,1,台,陈展会,展会部,2024-05-22 09:00:00,2024-05-26 18:00:00,,borrowed,张三,主舞台用
+BRW002,MAT004,笔记本电脑,2,台,林设计,设计部,2024-05-22 10:00:00,2024-05-26 18:00:00,,borrowed,赵六,现场设计用
+BRW003,MAT008,试戴设备,5,台,黄体验,体验部,2024-05-22 11:00:00,2024-05-26 18:00:00,,borrowed,郑十,客户体验区
+BRW004,MAT010,签到系统,2,台,刘签到,运营部,2024-05-22 08:30:00,2024-05-26 18:00:00,,borrowed,孙十二,入口签到
+BRW005,MAT002,展示架,10,个,吴展示,展会部,2024-05-22 09:30:00,2024-05-26 18:00:00,2024-05-26 17:00:00,returned,李四,产品展示区
+BRW006,MAT009,电源适配器,20,个,郑运维,运维部,2024-05-22 08:00:00,2024-05-26 18:00:00,,lost,钱十一,撤展未归还

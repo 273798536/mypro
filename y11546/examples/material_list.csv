@@ -1,0 +1,11 @@
+material_code,material_name,specification,quantity,unit,warehouse,location,batch_no,responsible_person,department,remark
+MAT001,投影仪,爱普生CB-X50,5,台,主仓库,A-01,BATCH2024001,张三,技术部,展会专用
+MAT002,展示架,铝合金,20,个,主仓库,B-02,BATCH2024001,李四,运营部,
+MAT003,宣传册,产品手册,1000,本,主仓库,C-03,BATCH2024001,王五,市场部,
+MAT004,笔记本电脑,MacBook Pro 14,3,台,主仓库,A-02,BATCH2024001,赵六,技术部,
+MAT005,展示灯,LED 50W,15,盏,主仓库,B-03,BATCH2024001,孙七,运营部,
+MAT006,易拉宝,标准尺寸,30,个,主仓库,C-01,BATCH2024001,周八,市场部,
+MAT007,桌椅套装,折叠桌椅,10,套,主仓库,D-01,BATCH2024001,吴九,行政部,
+MAT008,试戴设备,AR眼镜,8,台,主仓库,A-03,BATCH2024001,郑十,产品部,
+MAT009,电源适配器,65W,50,个,主仓库,E-01,BATCH2024001,钱十一,技术部,
+MAT010,签到系统,iPad 10,4,台,主仓库,A-04,BATCH2024001,孙十二,运营部,

@@ -1,0 +1,34 @@
+{
+  "name": "exhibition-material-audit-cli",
+  "version": "1.0.0",
+  "description": "线下展会物料多源导入巡检CLI工具",
+  "main": "dist/index.js",
+  "bin": {
+    "ema": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/cli.js",
+    "api": "node dist/api.js"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7",
+    "commander": "^12.0.0",
+    "csv-parse": "^5.5.5",
+    "csv-stringify": "^6.4.6",
+    "express": "^4.18.3",
+    "uuid": "^9.0.1",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "dayjs": "^1.11.10"
+  },
+  "devDependencies": {
+    "@types/sqlite3": "^3.1.11",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.25",
+    "@types/uuid": "^9.0.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
