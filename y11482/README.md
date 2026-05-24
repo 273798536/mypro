@@ -61,6 +61,151 @@ npm run worker
 
 ## 核心流程演示
 
+### 导入流程：从留样标签、温度记录、门店投诉建账
+
+#### 方式1：直接API批量导入（推荐）
+
+```bash
+# 导入留样标签
+curl -X POST http://localhost:3000/api/import/direct/sample_label \
+  -H "Content-Type: application/json" \
+  -H "x-operator-name: 品控员" \
+  -d '{
+    "sourceName": "2024-01-15留样记录",
+    "records": [
+      {
+        "batch_no": "BATCH20240115001",
+        "pot_no": "POT001",
+        "product_name": "红烧肉",
+        "store_code": "ST001",
+        "store_name": "北京朝阳门店",
+        "produce_time": "2024-01-15 08:30:00",
+        "quantity": 50,
+        "unit": "份",
+        "sampler": "张三"
+      },
+      {
+        "batch_no": "BATCH20240115001",
+        "pot_no": "POT001",
+        "product_name": "红烧肉",
+        "store_code": "ST002",
+        "store_name": "上海浦东门店",
+        "produce_time": "2024-01-15 08:30:00",
+        "quantity": 60,
+        "unit": "份",
+        "sampler": "张三"
+      }
+    ]
+  }'
+```
+
+```bash
+# 导入温度记录
+curl -X POST http://localhost:3000/api/import/direct/temperature_record \
+  -H "Content-Type: application/json" \
+  -H "x-operator-name: 品控员" \
+  -d '{
+    "sourceName": "2024-01-15温度检测",
+    "records": [
+      {
+        "batch_no": "BATCH20240115001",
+        "pot_no": "POT001",
+        "record_type": "出锅温度",
+        "temperature": 96.5,
+        "measure_time": "2024-01-15 08:35:00",
+        "measurer": "李四"
+      }
+    ]
+  }'
+```
+
+```bash
+# 导入门店投诉
+curl -X POST http://localhost:3000/api/import/direct/store_complaint \
+  -H "Content-Type: application/json" \
+  -H "x-operator-name: 客服" \
+  -d '{
+    "sourceName": "2024-01-15客诉记录",
+    "records": [
+      {
+        "complaint_no": "CP20240115001",
+        "store_code": "ST002",
+        "store_name": "上海浦东门店",
+        "batch_no": "BATCH20240115001",
+        "pot_no": "POT002",
+        "product_name": "红烧肉",
+        "complaint_time": "2024-01-15 18:30:00",
+        "complaint_type": "口味异常",
+        "complaint_content": "顾客反映有异味",
+        "complainant": "李女士"
+      }
+    ]
+  }'
+```
+
+#### 方式2：追加盘点差异
+
+```bash
+# 方式A：新建导入源
+curl -X POST http://localhost:3000/api/import/append/inventory_difference \
+  -H "Content-Type: application/json" \
+  -H "x-operator-name: 盘点员" \
+  -d '{
+    "sourceName": "2024-01-16盘点差异",
+    "records": [
+      {
+        "diff_no": "DIFF20240116001",
+        "store_code": "ST003",
+        "store_name": "广州天河门店",
+        "batch_no": "BATCH20240115001",
+        "pot_no": "POT002",
+        "product_name": "红烧肉",
+        "expected_quantity": 50,
+        "actual_quantity": 45,
+        "diff_quantity": -5,
+        "check_time": "2024-01-16 08:00:00"
+      }
+    ]
+  }'
+
+# 方式B：追加到已有导入源（续行号）
+curl -X POST http://localhost:3000/api/import/append/inventory_difference \
+  -H "Content-Type: application/json" \
+  -H "x-operator-name: 盘点员" \
+  -d '{
+    "importSourceId": "xxxx-xxxx-xxxx",
+    "records": [
+      {
+        "diff_no": "DIFF20240116002",
+        "store_code": "ST004",
+        "store_name": "深圳南山门店",
+        "batch_no": "BATCH20240115001",
+        "pot_no": "POT002",
+        "product_name": "糖醋排骨",
+        "expected_quantity": 40,
+        "actual_quantity": 38,
+        "diff_quantity": -2,
+        "check_time": "2024-01-16 08:00:00"
+      }
+    ]
+  }'
+```
+
+#### 查看导入源和原始证据
+
+```bash
+# 查看所有导入源
+curl http://localhost:3000/api/import/sources
+
+# 按类型筛选
+curl "http://localhost:3000/api/import/sources?sourceType=sample_label"
+```
+
+> **原始证据保留说明**：每条导入记录包含：
+> - `import_source_id`：关联到来源文件
+> - `source_line_number`：原始行号（追加时自动续号）
+> - `source_raw_data`：导入时的原始JSON（改判不覆盖）
+
 ### 主流程：回执提交 → 自动处理 → 完成
 
 #### 步骤1：提交回执到队列
@@ -323,6 +468,27 @@ npm run test:watch
 | GET | `/api/batch/inquiry/:id` | 查询任务详情 |
 | POST | `/api/batch/inquiry/:id/complete` | 完成查询 |
 | POST | `/api/batch/export` | 导出批次数据 |
+
+### 数据导入 API
+
+**建账方式**：从留样标签、温度记录、门店投诉、退款流水、盘点差异开始建账，支持后续追加。
+
+**数据留存**：每条导入记录都保留 `import_source_id`（来源文件）、`source_line_number`（原始行号）、`source_raw_data`（原始值），后面改判仅更新标准字段，不覆盖原始证据。
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/import/source-types` | 支持的导入类型 |
+| GET | `/api/import/sources` | 导入源列表 |
+| POST | `/api/import/upload/:sourceType` | CSV文件上传导入 |
+| POST | `/api/import/direct/:sourceType` | 直接API批量导入 |
+| POST | `/api/import/append/:sourceType` | 追加数据（支持续行号） |
+
+**支持的导入类型 (`sourceType`)：**
+- `sample_label`：留样标签
+- `temperature_record`：温度记录
+- `store_complaint`：门店投诉
+- `refund_record`：退款流水
+- `inventory_difference`：盘点差异
 
 ### 审计日志 API
 

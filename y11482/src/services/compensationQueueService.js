@@ -255,11 +255,13 @@ class CompensationQueueService {
     }
 
     const oldStatus = item.status;
+    const finalRetryCount = item.retry_count + 1;
 
     await db('compensation_queue')
       .where({ id })
       .update({
         status: QUEUE_STATUS.PERMANENT_FAILED,
+        retry_count: finalRetryCount,
         last_error: error,
         error_code: errorCode,
         updated_by: operatorId,
@@ -273,7 +275,7 @@ class CompensationQueueService {
       QUEUE_STATUS.PERMANENT_FAILED,
       operatorId,
       operatorName,
-      `永久失败: ${error}`
+      `永久失败（共重试 ${finalRetryCount} 次）: ${error}`
     );
 
     return this.getById(id);

@@ -8,6 +8,7 @@ const path = require('path');
 const queueRoutes = require('./routes/queue');
 const batchRoutes = require('./routes/batch');
 const auditRoutes = require('./routes/audit');
+const importRoutes = require('./routes/import');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ app.get('/health', (req, res) => {
 app.use('/api/queue', queueRoutes);
 app.use('/api/batch', batchRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/import', importRoutes);
 
 app.use((err, req, res, next) => {
   console.error('未处理的错误:', err);
@@ -62,6 +64,10 @@ app.listen(PORT, () => {
   console.log(`  - 统计信息:  GET  /api/queue/statistics`);
   console.log(`  - 死信队列:  GET  /api/queue/dead-letter`);
   console.log(`  - 批次查询:  GET  /api/batch/query?batchNo=xxx`);
+  console.log(`  - 数据导入:  POST /api/import/direct/:sourceType`);
+  console.log(`  - 追加数据:  POST /api/import/append/:sourceType`);
+  console.log(`  - 文件上传:  POST /api/import/upload/:sourceType`);
+  console.log(`  - 导入源:    GET  /api/import/sources`);
   console.log(`  - 审计日志:  GET  /api/audit/entity/queue/:id`);
   console.log(`\n`);
 });

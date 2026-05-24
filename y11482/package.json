@@ -12,22 +12,28 @@
     "test:watch": "jest --watch",
     "worker": "node src/worker/index.js"
   },
-  "keywords": ["central-kitchen", "sample", "retry-queue", "compensation"],
+  "keywords": [
+    "central-kitchen",
+    "sample",
+    "retry-queue",
+    "compensation"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "sqlite3": "^5.1.6",
-    "knex": "^3.1.0",
     "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "morgan": "^1.10.0",
-    "joi": "^17.11.0",
-    "uuid": "^9.0.1",
-    "csv-writer": "^1.6.0",
     "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "joi": "^17.11.0",
+    "knex": "^3.1.0",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "lodash": "^4.17.21"
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",
