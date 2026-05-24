@@ -17,9 +17,9 @@ declare global {
 }
 
 const ROLE_PERMISSIONS: Record<Role, string[]> = {
-  [Role.ADMIN]: ['ledger:create', 'ledger:read', 'ledger:update', 'ledger:delete', 'ledger:submit', 'ledger:reject', 'ledger:confirm', 'audit:read', 'task:manage', 'export:all'],
-  [Role.MANAGER]: ['ledger:create', 'ledger:read', 'ledger:update', 'ledger:submit', 'ledger:reject', 'ledger:confirm', 'audit:read', 'export:sensitive'],
-  [Role.OPERATOR]: ['ledger:create', 'ledger:read', 'ledger:update', 'ledger:submit'],
+  [Role.ADMIN]: ['ledger:create', 'ledger:read', 'ledger:update', 'ledger:delete', 'ledger:submit', 'ledger:reject', 'ledger:confirm', 'audit:read', 'task:manage', 'export:all', 'export:sensitive', 'export:masked'],
+  [Role.MANAGER]: ['ledger:create', 'ledger:read', 'ledger:update', 'ledger:submit', 'ledger:reject', 'ledger:confirm', 'audit:read', 'export:sensitive', 'export:masked'],
+  [Role.OPERATOR]: ['ledger:create', 'ledger:read', 'ledger:update', 'ledger:submit', 'export:masked'],
   [Role.AUDITOR]: ['ledger:read', 'audit:read', 'export:masked'],
   [Role.GUEST]: ['ledger:read']
 };

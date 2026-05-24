@@ -30,20 +30,29 @@ GUEST_HEADER=(
   -H "Content-Type: application/json"
 )
 
+extract_ledger_id() {
+  echo "$1" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('data', {}).get('id', '') if d.get('success') else '')"
+}
+
+extract_task_id() {
+  echo "$1" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d.get('data', {}).get('taskId', '') if d.get('success') else '')"
+}
+
 echo "=========================================="
 echo "会议室占用权限追责台账 API 测试脚本"
 echo "=========================================="
 echo ""
 
 echo "1. 健康检查"
-curl -s "$BASE_URL/health" | python3 -m json.tool
+HEALTH=$(curl -s "$BASE_URL/health")
+echo "$HEALTH" | python3 -m json.tool
 echo ""
 
 echo "=========================================="
 echo "2. 创建台账草稿 (运营员)"
 echo "=========================================="
-CREATE_RESPONSE=$(curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/ledgers" -d '{
-  "meetingId": "MTG-2024-001",
+CREATE_RESPONSE=$(curl -s -X POST "${OPERATOR_HEADER[@]}" "$BASE_URL/api/ledgers" -d '{
+  "meetingId": "MTG-TEST-001",
   "meetingTitle": "Q1季度总结会议",
   "roomName": "301会议室",
   "startTime": "2024-01-15T09:00:00Z",
@@ -57,8 +66,14 @@ CREATE_RESPONSE=$(curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/ledgers" -
   "dataSources": ["calendar"]
 }')
 echo "$CREATE_RESPONSE" | python3 -m json.tool
-LEDGER_ID=$(echo "$CREATE_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['id'])")
+LEDGER_ID=$(extract_ledger_id "$CREATE_RESPONSE")
+echo "台账 ID: $LEDGER_ID"
 echo ""
+
+if [ -z "$LEDGER_ID" ]; then
+  echo "创建台账失败，无法继续测试"
+  exit 1
+fi
 
 echo "=========================================="
 echo "3. 追加客服备注"
@@ -132,7 +147,7 @@ curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/ledgers/batch" -d '{
   "strategy": "ignore",
   "ledgersData": [
     {
-      "meetingId": "MTG-2024-001",
+      "meetingId": "MTG-TEST-001",
       "meetingTitle": "Q1季度总结会议(已更新)",
       "roomName": "301会议室",
       "startTime": "2024-01-15T09:00:00Z",
@@ -141,7 +156,7 @@ curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/ledgers/batch" -d '{
       "participants": ["张三"]
     },
     {
-      "meetingId": "MTG-2024-002",
+      "meetingId": "MTG-TEST-002",
       "meetingTitle": "产品需求评审",
       "roomName": "201会议室",
       "startTime": "2024-01-16T14:00:00Z",
@@ -160,7 +175,7 @@ TASK_RESPONSE=$(curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/tasks/batch-
   "strategy": "append",
   "ledgersData": [
     {
-      "meetingId": "MTG-2024-003",
+      "meetingId": "MTG-TEST-003",
       "meetingTitle": "技术架构讨论",
       "roomName": "101会议室",
       "startTime": "2024-01-17T10:00:00Z",
@@ -174,7 +189,8 @@ TASK_RESPONSE=$(curl -s -X POST "${ADMIN_HEADER[@]}" "$BASE_URL/api/tasks/batch-
   ]
 }')
 echo "$TASK_RESPONSE" | python3 -m json.tool
-TASK_ID=$(echo "$TASK_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin)['data']['taskId'])")
+TASK_ID=$(extract_task_id "$TASK_RESPONSE")
+echo "任务 ID: $TASK_ID"
 
 echo ""
 echo "触发立即执行任务..."
@@ -206,7 +222,7 @@ curl -s "${MANAGER_HEADER[@]}" "$BASE_URL/api/export/manager-report" | python3 -
 echo ""
 
 echo "=========================================="
-echo "15. 脱敏导出示例"
+echo "15. 脱敏导出示例 (运营员有 export:masked 权限)"
 echo "=========================================="
 curl -s "${OPERATOR_HEADER[@]}" "$BASE_URL/api/export/ledgers/masked" | python3 -m json.tool
 echo ""
@@ -215,6 +231,6 @@ echo "=========================================="
 echo "测试完成！"
 echo "=========================================="
 echo ""
-echo "失败清单查看: GET /api/audit/failed"
-echo "任务失败查看: GET /api/tasks/failed"
-echo "最终报告: GET /api/export/manager-report"
+echo "失败清单查看: curl -H \"x-user-id: admin-001\" -H \"x-user-name: 系统管理员\" -H \"x-user-role: admin\" $BASE_URL/api/audit/failed"
+echo "任务失败查看: curl -H \"x-user-id: admin-001\" -H \"x-user-name: 系统管理员\" -H \"x-user-role: admin\" $BASE_URL/api/tasks/failed"
+echo "最终报告: curl -H \"x-user-id: manager-001\" -H \"x-user-name: 张经理\" -H \"x-user-role: manager\" $BASE_URL/api/export/manager-report"
