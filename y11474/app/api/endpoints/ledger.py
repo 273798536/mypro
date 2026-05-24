@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -72,7 +73,7 @@ async def close_ledger(
     
     ledger.is_closed = True
     ledger.closed_by = current_user.id
-    ledger.closed_at = db.func.now()
+    ledger.closed_at = datetime.utcnow()
     
     db.commit()
     db.refresh(ledger)
@@ -110,7 +111,7 @@ async def resolve_dirty_record(
     
     dirty_record.is_resolved = True
     dirty_record.handled_by = current_user.id
-    dirty_record.handled_at = db.func.now()
+    dirty_record.handled_at = datetime.utcnow()
     dirty_record.handling_opinion = handling_opinion
     
     db.commit()
