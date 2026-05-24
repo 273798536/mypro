@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+*.db
+*.sqlite
+*.sqlite3
+logs
+*.log
+.env
+.env.local
+.DS_Store
+tmp
+temp
+export
+*.xlsx
+*.csv
