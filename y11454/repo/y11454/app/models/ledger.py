@@ -55,7 +55,7 @@ class EquipmentLedger(Base):
     actual_return_date = Column(DateTime)
     
     is_dirty = Column(Boolean, default=False)
-    dirty_type = Column(SQLEnum(DirtyRecordType))
+    dirty_type = Column(JSON)
     dirty_note = Column(Text)
     original_content = Column(JSON)
     correction_note = Column(Text)

@@ -17,6 +17,10 @@ class AuditAction(str, enum.Enum):
     HANDLE_DIRTY = "handle_dirty"
     HANDLE_DUPLICATE = "handle_duplicate"
     EXPORT = "export"
+    ADD_OUTBOUND_ORDER = "add_outbound_order"
+    ADD_RETURN_PHOTO = "add_return_photo"
+    ADD_MAINTENANCE_ESTIMATE = "add_maintenance_estimate"
+    ADD_SUPPLIER_STATEMENT = "add_supplier_statement"
 
 
 class Attachment(Base):

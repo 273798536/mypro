@@ -45,7 +45,7 @@ class LedgerResponse(LedgerBase):
     id: int
     status: LedgerStatus
     is_dirty: bool = False
-    dirty_type: Optional[DirtyRecordType] = None
+    dirty_type: Optional[List[str]] = None
     dirty_note: Optional[str] = None
     original_content: Optional[dict] = None
     correction_note: Optional[str] = None
@@ -84,7 +84,7 @@ class LedgerMaskedResponse(BaseModel):
     actual_return_date: Optional[datetime] = None
     status: LedgerStatus
     is_dirty: bool = False
-    dirty_type: Optional[DirtyRecordType] = None
+    dirty_type: Optional[List[str]] = None
     dirty_note: Optional[str] = None
     original_content: Optional[dict] = None
     correction_note: Optional[str] = None

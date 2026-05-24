@@ -183,8 +183,8 @@ def submit_ledger(
     dirty_analysis = analyze_dirty_record(db, ledger)
     if dirty_analysis['is_dirty']:
         ledger.is_dirty = True
-        ledger.dirty_note = dirty_analysis['issues'][0]['description']
-        ledger.dirty_type = DirtyRecordType(dirty_analysis['issues'][0]['type'])
+        ledger.dirty_type = [issue['type'] for issue in dirty_analysis['issues']]
+        ledger.dirty_note = '; '.join([issue['description'] for issue in dirty_analysis['issues']])
         ledger.original_content = dirty_analysis['original_content']
     
     duplicate = find_duplicate_by_batch(db, ledger.batch_number, exclude_id=ledger.id)
@@ -357,7 +357,7 @@ def handle_dirty_record(
         raise HTTPException(status_code=400, detail="该记录不是脏数据")
     
     previous_values = ledger_to_dict(ledger)
-    ledger.dirty_type = handle_data.dirty_type
+    ledger.dirty_type = [handle_data.dirty_type.value]
     ledger.dirty_note = handle_data.dirty_note
     ledger.correction_note = handle_data.correction_note
     ledger.is_dirty = False
@@ -475,6 +475,7 @@ def export_finance_excel(
 @router.post("/outbound-order", response_model=OutboundOrderResponse)
 def create_outbound_order(
     order_data: OutboundOrderCreate,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(can_edit)
 ):
@@ -488,6 +489,25 @@ def create_outbound_order(
     
     order = OutboundOrder(**order_data.dict())
     db.add(order)
+    db.flush()
+    
+    create_audit_log(
+        db, ledger.id, current_user, AuditAction.ADD_OUTBOUND_ORDER,
+        previous_values=ledger_to_dict(ledger),
+        new_values={
+            'outbound_order': {
+                'id': order.id,
+                'order_number': order.order_number,
+                'warehouse': order.warehouse,
+                'handler': order.handler,
+                'outbound_date': order.outbound_date.isoformat() if order.outbound_date else None
+            }
+        },
+        change_reason=f"添加出库单: {order.order_number}",
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent")
+    )
+    
     db.commit()
     db.refresh(order)
     return order
@@ -496,6 +516,7 @@ def create_outbound_order(
 @router.post("/return-photo", response_model=ReturnPhotoResponse)
 def create_return_photo(
     photo_data: ReturnPhotoCreate,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(can_edit)
 ):
@@ -509,6 +530,25 @@ def create_return_photo(
     
     photo = ReturnPhoto(**photo_data.dict())
     db.add(photo)
+    db.flush()
+    
+    create_audit_log(
+        db, ledger.id, current_user, AuditAction.ADD_RETURN_PHOTO,
+        previous_values=ledger_to_dict(ledger),
+        new_values={
+            'return_photo': {
+                'id': photo.id,
+                'photo_url': photo.photo_url,
+                'photo_type': photo.photo_type,
+                'uploader': photo.uploader,
+                'taken_at': photo.taken_at.isoformat() if photo.taken_at else None
+            }
+        },
+        change_reason=f"添加归还照片: {photo.photo_type}",
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent")
+    )
+    
     db.commit()
     db.refresh(photo)
     return photo
@@ -517,6 +557,7 @@ def create_return_photo(
 @router.post("/maintenance-estimate", response_model=MaintenanceEstimateResponse)
 def create_maintenance_estimate(
     estimate_data: MaintenanceEstimateCreate,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(can_edit)
 ):
@@ -530,6 +571,27 @@ def create_maintenance_estimate(
     
     estimate = MaintenanceEstimate(**estimate_data.dict())
     db.add(estimate)
+    db.flush()
+    
+    create_audit_log(
+        db, ledger.id, current_user, AuditAction.ADD_MAINTENANCE_ESTIMATE,
+        previous_values=ledger_to_dict(ledger),
+        new_values={
+            'maintenance_estimate': {
+                'id': estimate.id,
+                'estimate_number': estimate.estimate_number,
+                'maintenance_type': estimate.maintenance_type,
+                'estimated_cost': str(estimate.estimated_cost) if estimate.estimated_cost else None,
+                'actual_cost': str(estimate.actual_cost) if estimate.actual_cost else None,
+                'estimator': estimate.estimator,
+                'maintenance_date': estimate.maintenance_date.isoformat() if estimate.maintenance_date else None
+            }
+        },
+        change_reason=f"添加维修估价: {estimate.estimate_number}",
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent")
+    )
+    
     db.commit()
     db.refresh(estimate)
     return estimate
@@ -538,6 +600,7 @@ def create_maintenance_estimate(
 @router.post("/supplier-statement", response_model=SupplierStatementResponse)
 def create_supplier_statement(
     statement_data: SupplierStatementCreate,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(can_edit)
 ):
@@ -551,6 +614,28 @@ def create_supplier_statement(
     
     statement = SupplierStatement(**statement_data.dict())
     db.add(statement)
+    db.flush()
+    
+    create_audit_log(
+        db, ledger.id, current_user, AuditAction.ADD_SUPPLIER_STATEMENT,
+        previous_values=ledger_to_dict(ledger),
+        new_values={
+            'supplier_statement': {
+                'id': statement.id,
+                'statement_number': statement.statement_number,
+                'supplier_name': statement.supplier_name,
+                'billing_cycle': statement.billing_cycle,
+                'total_billed': str(statement.total_billed) if statement.total_billed else None,
+                'paid_amount': str(statement.paid_amount) if statement.paid_amount else None,
+                'unpaid_amount': str(statement.unpaid_amount) if statement.unpaid_amount else None,
+                'due_date': statement.due_date.isoformat() if statement.due_date else None
+            }
+        },
+        change_reason=f"添加供应商对账单: {statement.statement_number}",
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent")
+    )
+    
     db.commit()
     db.refresh(statement)
     return statement

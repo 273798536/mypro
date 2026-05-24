@@ -119,13 +119,14 @@ def export_summary(
     summary_data = []
     for status in LedgerStatus:
         status_records = [r for r in records if r.status == status]
-        total_quantity = sum(r.quantity or 0 for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE))
-        total_amount = sum(r.total_amount or Decimal('0') for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE))
-        total_deposit = sum(r.deposit_amount or Decimal('0') for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE))
+        filtered_records = [r for r in status_records if not (r.is_duplicate and r.duplicate_handling == DuplicateHandling.IGNORE)]
+        total_quantity = sum(r.quantity or 0 for r in filtered_records)
+        total_amount = sum(r.total_amount or Decimal('0') for r in filtered_records)
+        total_deposit = sum(r.deposit_amount or Decimal('0') for r in filtered_records)
         
         summary_data.append({
             '状态': status.value,
-            '记录数': len(status_records),
+            '记录数': len(filtered_records),
             '总数量': total_quantity,
             '总金额': str(total_amount),
             '总押金': str(total_deposit)
