@@ -16,8 +16,10 @@ export async function downloadFile(url: string, filename?: string): Promise<void
       }
     }
 
+    const rawContentType = response.headers['content-type'];
+    const contentType: string = typeof rawContentType === 'string' ? rawContentType : 'application/octet-stream';
     const blob = new Blob([response.data], {
-      type: response.headers['content-type'] || 'application/octet-stream'
+      type: contentType
     });
 
     const downloadUrl = window.URL.createObjectURL(blob);

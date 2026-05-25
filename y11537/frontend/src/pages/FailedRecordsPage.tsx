@@ -21,6 +21,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import api from '../services/api';
+import { downloadFile, buildExportUrl } from '../utils/download';
 import dayjs from 'dayjs';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -122,7 +123,8 @@ function FailedRecordsPage() {
         params.endDate = filters.dateRange[1].format('YYYY-MM-DD');
       }
 
-      window.open(`/api/reports/failed-records/export?${new URLSearchParams(params).toString()}`, '_blank');
+      const exportUrl = buildExportUrl('/reports/failed-records/export', params);
+      await downloadFile(exportUrl);
       message.success('导出成功');
     } catch (error) {
       message.error('导出失败');

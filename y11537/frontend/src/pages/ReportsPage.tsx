@@ -116,7 +116,8 @@ function ReportsPage() {
         params.endDate = filters.dateRange[1].format('YYYY-MM-DD');
       }
 
-      window.open(`/api/reports/signin/export?${new URLSearchParams(params).toString()}`, '_blank');
+      const exportUrl = buildExportUrl('/reports/signin/export', params);
+      await downloadFile(exportUrl);
       message.success('导出成功');
     } catch (error) {
       message.error('导出失败');
