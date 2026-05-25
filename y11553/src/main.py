@@ -29,6 +29,49 @@ app.add_middleware(
 task_processor = create_task_processor()
 
 
+def _task_to_response_dict(task: ImportTask) -> dict:
+    from .repository import safe_json_loads
+    task_dict = {
+        "task_id": task.task_id,
+        "record_type": task.record_type.value,
+        "source_type": task.source_type.value,
+        "source_file": task.source_file,
+        "status": task.status.value,
+        "total_count": task.total_count,
+        "success_count": task.success_count,
+        "duplicate_count": task.duplicate_count,
+        "error_count": task.error_count,
+        "retry_times": task.retry_times,
+        "error_message": task.error_message,
+        "created_at": task.created_at,
+        "updated_at": task.updated_at,
+        "completed_at": task.completed_at,
+        "pending_records": [],
+    }
+    for pr in task.pending_records:
+        try:
+            raw_data = safe_json_loads(pr.raw_data) if isinstance(pr.raw_data, str) else pr.raw_data
+        except Exception:
+            raw_data = {}
+        pr_dict = {
+            "id": pr.id,
+            "task_id": pr.task_id,
+            "source_file": pr.source_file,
+            "source_row_number": pr.source_row_number,
+            "record_type": pr.record_type.value,
+            "raw_data": raw_data,
+            "status": pr.status.value,
+            "retry_times": pr.retry_times,
+            "max_retry_times": pr.max_retry_times,
+            "error_message": pr.error_message,
+            "created_at": pr.created_at,
+            "updated_at": pr.updated_at,
+            "processed_at": pr.processed_at,
+        }
+        task_dict["pending_records"].append(pr_dict)
+    return task_dict
+
+
 @app.on_event("startup")
 async def startup_event():
     init_db()
@@ -61,7 +104,7 @@ async def import_inventory(
 ):
     importer = DataImporter(db)
     task = importer.import_from_api(RecordType.INVENTORY, request.records)
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.post("/api/import/replenishment", response_model=schemas.TaskResponse, tags=["数据导入"])
@@ -71,7 +114,7 @@ async def import_replenishment(
 ):
     importer = DataImporter(db)
     task = importer.import_from_api(RecordType.REPLENISHMENT, request.records)
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.post("/api/import/refund", response_model=schemas.TaskResponse, tags=["数据导入"])
@@ -81,7 +124,7 @@ async def import_refund(
 ):
     importer = DataImporter(db)
     task = importer.import_from_api(RecordType.REFUND, request.records)
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.post("/api/import/price-adjustment", response_model=schemas.TaskResponse, tags=["数据导入"])
@@ -91,7 +134,7 @@ async def import_price_adjustment(
 ):
     importer = DataImporter(db)
     task = importer.import_from_api(RecordType.PRICE_ADJUSTMENT, request.records)
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.post("/api/import/upload/{record_type}", response_model=schemas.TaskResponse, tags=["数据导入"])
@@ -112,7 +155,7 @@ async def upload_file(
 
     importer = DataImporter(db)
     task = importer.import_from_file(rtype, file_path)
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.get("/api/tasks", response_model=schemas.TaskListResponse, tags=["任务管理"])
@@ -153,49 +196,7 @@ async def get_task(task_id: str, db: Session = Depends(get_db)):
     task = repo.get_task_by_id(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
-
-    from .repository import safe_json_loads
-    task_dict = {
-        "task_id": task.task_id,
-        "record_type": task.record_type.value,
-        "source_type": task.source_type.value,
-        "source_file": task.source_file,
-        "status": task.status.value,
-        "total_count": task.total_count,
-        "success_count": task.success_count,
-        "duplicate_count": task.duplicate_count,
-        "error_count": task.error_count,
-        "retry_times": task.retry_times,
-        "error_message": task.error_message,
-        "created_at": task.created_at,
-        "updated_at": task.updated_at,
-        "completed_at": task.completed_at,
-        "pending_records": [],
-    }
-
-    for pr in task.pending_records:
-        try:
-            raw_data = safe_json_loads(pr.raw_data) if isinstance(pr.raw_data, str) else pr.raw_data
-        except Exception:
-            raw_data = {}
-        pr_dict = {
-            "id": pr.id,
-            "task_id": pr.task_id,
-            "source_file": pr.source_file,
-            "source_row_number": pr.source_row_number,
-            "record_type": pr.record_type.value,
-            "raw_data": raw_data,
-            "status": pr.status.value,
-            "retry_times": pr.retry_times,
-            "max_retry_times": pr.max_retry_times,
-            "error_message": pr.error_message,
-            "created_at": pr.created_at,
-            "updated_at": pr.updated_at,
-            "processed_at": pr.processed_at,
-        }
-        task_dict["pending_records"].append(pr_dict)
-
-    return task_dict
+    return _task_to_response_dict(task)
 
 
 @app.get("/api/tasks/{task_id}/logs", response_model=List[schemas.ProcessingLogResponse], tags=["任务管理"])
@@ -218,20 +219,26 @@ async def get_task_duplicates(task_id: str, db: Session = Depends(get_db)):
 
 @app.post("/api/tasks/{task_id}/retry", response_model=schemas.TaskResponse, tags=["任务管理"])
 async def retry_task(task_id: str, db: Session = Depends(get_db)):
+    from .models import TaskStatus, PendingRecordStatus
     repo = DataRepository(db)
     task = repo.get_task_by_id(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
 
-    if task.status not in ["waiting_retry", "permanent_failed", "waiting_manual"]:
+    if task.status not in [TaskStatus.WAITING_RETRY, TaskStatus.PERMANENT_FAILED, TaskStatus.WAITING_MANUAL]:
         raise HTTPException(status_code=400, detail="该任务状态不支持重试")
 
     task.retry_times = 0
-    task.status = "pending"
+    task.status = TaskStatus.PENDING
     task.error_message = None
+    for pr in task.pending_records:
+        if pr.status in [PendingRecordStatus.WAITING_RETRY, PendingRecordStatus.WAITING_MANUAL, PendingRecordStatus.PERMANENT_FAILED, PendingRecordStatus.ERROR]:
+            pr.status = PendingRecordStatus.PENDING
+            pr.retry_times = 0
+            pr.error_message = None
     db.commit()
     db.refresh(task)
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.post("/api/tasks/{task_id}/manual-resolve", response_model=schemas.TaskResponse, tags=["任务管理"])
@@ -240,18 +247,25 @@ async def manual_resolve_task(
     resolution: str,
     db: Session = Depends(get_db),
 ):
+    from .models import TaskStatus, PendingRecordStatus
+    from datetime import datetime
     repo = DataRepository(db)
     task = repo.get_task_by_id(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
 
-    task.status = "completed"
+    task.status = TaskStatus.COMPLETED
     task.error_message = f"人工处理: {resolution}"
+    for pr in task.pending_records:
+        if pr.status in [PendingRecordStatus.WAITING_RETRY, PendingRecordStatus.WAITING_MANUAL, PendingRecordStatus.PERMANENT_FAILED]:
+            pr.status = PendingRecordStatus.SUCCESS
+            pr.error_message = f"人工处理: {resolution}"
+            pr.processed_at = datetime.utcnow()
     db.commit()
     db.refresh(task)
 
     repo.add_log(task, f"人工处理完成: {resolution}", level="info")
-    return task
+    return _task_to_response_dict(task)
 
 
 @app.get("/api/export/tasks/{task_id}", tags=["数据导出"])
