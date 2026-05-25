@@ -1,22 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const { getDatabase } = require('../db/database');
-
-const TASK_STATUSES = {
-  PENDING: 'pending',
-  PROCESSING: 'processing',
-  RETRY: 'retry',
-  MANUAL: 'manual',
-  FAILED: 'failed',
-  COMPLETED: 'completed'
-};
-
-const TASK_TYPES = {
-  IMPORT_VALIDATION: 'import_validation',
-  DATA_CLEANUP: 'data_cleanup',
-  EXPORT: 'export',
-  REPORT_GENERATION: 'report_generation',
-  CERTIFICATE_CHECK: 'certificate_check'
-};
+const { TASK_STATUSES, TASK_TYPES } = require('../constants');
 
 function createTask(taskType, payload = {}, options = {}) {
   const db = getDatabase();

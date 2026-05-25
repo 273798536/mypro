@@ -1,5 +1,5 @@
 const { getDatabase } = require('../db/database');
-const { SOURCE_TYPES } = require('./importService');
+const { SOURCE_TYPES } = require('../constants');
 
 function generateBatchReport(batchId) {
   const db = getDatabase();
@@ -64,6 +64,27 @@ function generateBatchReport(batchId) {
         ORDER BY original_line_no
       `).all(batchId);
       break;
+    case SOURCE_TYPES.INVENTORY:
+      tableName = 'inventory_diffs';
+      records = db.prepare(`
+        SELECT id, original_line_no, device_id, device_name, department,
+               expected_quantity, actual_quantity, difference, diff_type,
+               inventory_date, status
+        FROM inventory_diffs
+        WHERE batch_id = ?
+        ORDER BY original_line_no
+      `).all(batchId);
+      break;
+    case SOURCE_TYPES.REFUND:
+      tableName = 'refund_records';
+      records = db.prepare(`
+        SELECT id, original_line_no, device_id, device_name, department,
+               refund_amount, refund_date, refund_reason, vendor, status, approval_status
+        FROM refund_records
+        WHERE batch_id = ?
+        ORDER BY original_line_no
+      `).all(batchId);
+      break;
   }
   
   const errorLineNos = new Set(errors.filter(e => !e.is_fixed).map(e => e.original_line_no));
@@ -114,6 +135,8 @@ function generateStatusReport() {
   const inspectionCount = db.prepare('SELECT COUNT(*) as count FROM inspection_records').get().count;
   const calibrationCount = db.prepare('SELECT COUNT(*) as count FROM calibration_certificates').get().count;
   const repairCount = db.prepare('SELECT COUNT(*) as count FROM repair_quotes').get().count;
+  const inventoryCount = db.prepare('SELECT COUNT(*) as count FROM inventory_diffs').get().count;
+  const refundCount = db.prepare('SELECT COUNT(*) as count FROM refund_records').get().count;
   
   const today = new Date().toISOString().split('T')[0];
   const expiredCerts = db.prepare(`
@@ -148,7 +171,9 @@ function generateStatusReport() {
     overview: {
       totalInspectionRecords: inspectionCount,
       totalCalibrationCertificates: calibrationCount,
-      totalRepairQuotes: repairCount
+      totalRepairQuotes: repairCount,
+      totalInventoryDiffs: inventoryCount,
+      totalRefundRecords: refundCount
     },
     calibrationStatus: {
       expiredCertificates: expiredCerts,
@@ -260,6 +285,16 @@ function generateFailedImportTemplate(batchId) {
     case SOURCE_TYPES.REPAIR:
       records = db.prepare(`
         SELECT * FROM repair_quotes WHERE batch_id = ?
+      `).all(batchId);
+      break;
+    case SOURCE_TYPES.INVENTORY:
+      records = db.prepare(`
+        SELECT * FROM inventory_diffs WHERE batch_id = ?
+      `).all(batchId);
+      break;
+    case SOURCE_TYPES.REFUND:
+      records = db.prepare(`
+        SELECT * FROM refund_records WHERE batch_id = ?
       `).all(batchId);
       break;
   }

@@ -1,11 +1,5 @@
 const { getDatabase } = require('../db/database');
-
-const RECORD_TYPES = {
-  INSPECTION: 'inspection',
-  CALIBRATION: 'calibration',
-  REPAIR: 'repair',
-  BATCH: 'batch'
-};
+const { RECORD_TYPES } = require('../constants');
 
 const OPERATION_TYPES = {
   CREATE: 'create',

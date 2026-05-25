@@ -104,6 +104,60 @@ function exportBatchData(batchId, outputDir) {
       filename = `repair_${batchId}.csv`;
       break;
       
+    case SOURCE_TYPES.INVENTORY:
+      records = db.prepare(`
+        SELECT 
+          original_line_no,
+          device_id,
+          device_name,
+          department,
+          expected_quantity,
+          actual_quantity,
+          difference,
+          diff_type,
+          found_location,
+          remarks,
+          inventory_date,
+          status
+        FROM inventory_diffs
+        WHERE batch_id = ?
+        ORDER BY original_line_no
+      `).all(batchId);
+      
+      fields = [
+        'original_line_no', 'device_id', 'device_name', 'department',
+        'expected_quantity', 'actual_quantity', 'difference', 'diff_type',
+        'found_location', 'remarks', 'inventory_date', 'status'
+      ];
+      filename = `inventory_${batchId}.csv`;
+      break;
+      
+    case SOURCE_TYPES.REFUND:
+      records = db.prepare(`
+        SELECT 
+          original_line_no,
+          device_id,
+          device_name,
+          department,
+          refund_amount,
+          refund_date,
+          refund_reason,
+          vendor,
+          status,
+          approval_status
+        FROM refund_records
+        WHERE batch_id = ?
+        ORDER BY original_line_no
+      `).all(batchId);
+      
+      fields = [
+        'original_line_no', 'device_id', 'device_name', 'department',
+        'refund_amount', 'refund_date', 'refund_reason', 'vendor',
+        'status', 'approval_status'
+      ];
+      filename = `refund_${batchId}.csv`;
+      break;
+      
     default:
       throw new Error(`Unknown source type: ${batch.source_type}`);
   }
@@ -224,6 +278,60 @@ function exportFailedRecords(batchId, outputDir) {
           'status', 'approval_status'
         ];
         filename = `failed_repair_${batchId}.csv`;
+        break;
+        
+        case SOURCE_TYPES.INVENTORY:
+        records = db.prepare(`
+          SELECT 
+            original_line_no,
+            device_id,
+            device_name,
+            department,
+            expected_quantity,
+            actual_quantity,
+            difference,
+            diff_type,
+            found_location,
+            remarks,
+            inventory_date,
+            status
+          FROM inventory_diffs
+          WHERE batch_id = ? AND original_line_no IN (${failedLineNos.map(() => '?').join(',')})
+          ORDER BY original_line_no
+        `).all(batchId, ...failedLineNos);
+        
+        fields = [
+          'original_line_no', 'device_id', 'device_name', 'department',
+          'expected_quantity', 'actual_quantity', 'difference', 'diff_type',
+          'found_location', 'remarks', 'inventory_date', 'status'
+        ];
+        filename = `failed_inventory_${batchId}.csv`;
+        break;
+        
+        case SOURCE_TYPES.REFUND:
+        records = db.prepare(`
+          SELECT 
+            original_line_no,
+            device_id,
+            device_name,
+            department,
+            refund_amount,
+            refund_date,
+            refund_reason,
+            vendor,
+            status,
+            approval_status
+          FROM refund_records
+          WHERE batch_id = ? AND original_line_no IN (${failedLineNos.map(() => '?').join(',')})
+          ORDER BY original_line_no
+        `).all(batchId, ...failedLineNos);
+        
+        fields = [
+          'original_line_no', 'device_id', 'device_name', 'department',
+          'refund_amount', 'refund_date', 'refund_reason', 'vendor',
+          'status', 'approval_status'
+        ];
+        filename = `failed_refund_${batchId}.csv`;
         break;
     }
     

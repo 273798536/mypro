@@ -1,17 +1,23 @@
 const { getDatabase } = require('../db/database');
-const { SOURCE_TYPES, logValidationError } = require('./importService');
+const { SOURCE_TYPES, ERROR_CODES } = require('../constants');
 
-const ERROR_CODES = {
-  MISSING_REQUIRED: 'MISSING_REQUIRED',
-  INVALID_DATE: 'INVALID_DATE',
-  INVALID_AMOUNT: 'INVALID_AMOUNT',
-  CERTIFICATE_EXPIRED: 'CERTIFICATE_EXPIRED',
-  CERTIFICATE_EXPIRING_SOON: 'CERTIFICATE_EXPIRING_SOON',
-  DEVICE_NOT_FOUND: 'DEVICE_NOT_FOUND',
-  INVALID_STATUS: 'INVALID_STATUS',
-  DUPLICATE_RECORD: 'DUPLICATE_RECORD',
-  STATUS_LINKAGE_ISSUE: 'STATUS_LINKAGE_ISSUE'
-};
+function logValidationError(db, batchId, sourceType, lineNo, errorCode, errorMessage, fieldName, fieldValue, severityOrRecordId = 'error') {
+  let severity = 'error';
+  let recordId = null;
+  
+  if (typeof severityOrRecordId === 'string') {
+    severity = severityOrRecordId;
+  } else if (typeof severityOrRecordId === 'number') {
+    recordId = severityOrRecordId;
+  }
+  
+  const stmt = db.prepare(`
+    INSERT INTO validation_errors
+    (batch_id, source_type, original_line_no, record_id, error_code, error_message, field_name, field_value, severity)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  stmt.run(batchId, sourceType, lineNo, recordId, errorCode, errorMessage, fieldName, fieldValue, severity);
+}
 
 function isValidDate(dateString) {
   if (!dateString) return false;
@@ -164,12 +170,7 @@ function validateCalibrationCertificate(db, row, lineNo, batchId) {
   }
   
   [...errors, ...warnings].forEach(err => {
-    const stmt = db.prepare(`
-      INSERT INTO validation_errors
-      (batch_id, source_type, original_line_no, error_code, error_message, field_name, field_value, severity)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    stmt.run(batchId, SOURCE_TYPES.CALIBRATION, lineNo, err.code, err.message, err.field, err.value, err.severity || 'error');
+    logValidationError(db, batchId, SOURCE_TYPES.CALIBRATION, lineNo, err.code, err.message, err.field, err.value, err.severity || 'error');
   });
   
   return errors.length === 0;
@@ -215,6 +216,112 @@ function validateRepairQuote(db, row, lineNo, batchId) {
   return errors.length === 0;
 }
 
+function validateInventoryDiff(db, row, lineNo, batchId) {
+  const errors = [];
+  const warnings = [];
+  
+  const requiredFields = ['device_id', 'device_name', 'expected_quantity', 'actual_quantity', 'inventory_date'];
+  for (const field of requiredFields) {
+    if (row[field] === undefined || row[field] === null || row[field] === '') {
+      errors.push({
+        code: ERROR_CODES.MISSING_REQUIRED,
+        message: `缺少必填字段: ${field}`,
+        field,
+        value: row[field]
+      });
+    }
+  }
+  
+  if (row.inventory_date && !isValidDate(row.inventory_date)) {
+    errors.push({
+      code: ERROR_CODES.INVALID_DATE,
+      message: '盘点日期格式无效',
+      field: 'inventory_date',
+      value: row.inventory_date
+    });
+  }
+  
+  const expectedQty = parseInt(row.expected_quantity);
+  const actualQty = parseInt(row.actual_quantity);
+  
+  if (isNaN(expectedQty) || expectedQty < 0) {
+    errors.push({
+      code: ERROR_CODES.INVALID_AMOUNT,
+      message: '账面数量必须为非负整数',
+      field: 'expected_quantity',
+      value: row.expected_quantity
+    });
+  }
+  
+  if (isNaN(actualQty) || actualQty < 0) {
+    errors.push({
+      code: ERROR_CODES.INVALID_AMOUNT,
+      message: '实盘数量必须为非负整数',
+      field: 'actual_quantity',
+      value: row.actual_quantity
+    });
+  }
+  
+  if (!isNaN(expectedQty) && !isNaN(actualQty)) {
+    const diff = actualQty - expectedQty;
+    if (diff !== 0) {
+      warnings.push({
+        code: 'DIFF_DETECTED',
+        message: diff > 0 ? `盘盈 ${diff} 件` : `盘亏 ${Math.abs(diff)} 件`,
+        field: 'difference',
+        value: String(diff),
+        severity: 'warning'
+      });
+    }
+  }
+  
+  [...errors, ...warnings].forEach(err => {
+    logValidationError(db, batchId, SOURCE_TYPES.INVENTORY, lineNo, err.code, err.message, err.field, err.value, err.severity || 'error');
+  });
+  
+  return errors.length === 0;
+}
+
+function validateRefundRecord(db, row, lineNo, batchId) {
+  const errors = [];
+  
+  const requiredFields = ['device_id', 'device_name', 'refund_amount', 'refund_date', 'refund_reason'];
+  for (const field of requiredFields) {
+    if (!row[field]) {
+      errors.push({
+        code: ERROR_CODES.MISSING_REQUIRED,
+        message: `缺少必填字段: ${field}`,
+        field,
+        value: row[field]
+      });
+    }
+  }
+  
+  if (row.refund_date && !isValidDate(row.refund_date)) {
+    errors.push({
+      code: ERROR_CODES.INVALID_DATE,
+      message: '退款日期格式无效',
+      field: 'refund_date',
+      value: row.refund_date
+    });
+  }
+  
+  if (row.refund_amount !== undefined && !isValidAmount(row.refund_amount)) {
+    errors.push({
+      code: ERROR_CODES.INVALID_AMOUNT,
+      message: '退款金额必须为非负数字',
+      field: 'refund_amount',
+      value: row.refund_amount
+    });
+  }
+  
+  errors.forEach(err => {
+    logValidationError(db, batchId, SOURCE_TYPES.REFUND, lineNo, err.code, err.message, err.field, err.value, 'error');
+  });
+  
+  return errors.length === 0;
+}
+
 function validateBatch(batchId) {
   const db = getDatabase();
   const batch = db.prepare('SELECT * FROM import_batches WHERE batch_id = ?').get(batchId);
@@ -240,6 +347,14 @@ function validateBatch(batchId) {
     case SOURCE_TYPES.REPAIR:
       records = db.prepare('SELECT * FROM repair_quotes WHERE batch_id = ?').all(batchId);
       validateFn = validateRepairQuote;
+      break;
+    case SOURCE_TYPES.INVENTORY:
+      records = db.prepare('SELECT * FROM inventory_diffs WHERE batch_id = ?').all(batchId);
+      validateFn = validateInventoryDiff;
+      break;
+    case SOURCE_TYPES.REFUND:
+      records = db.prepare('SELECT * FROM refund_records WHERE batch_id = ?').all(batchId);
+      validateFn = validateRefundRecord;
       break;
     default:
       throw new Error(`Unknown source type: ${batch.source_type}`);
@@ -327,9 +442,12 @@ function getValidationErrors(batchId, unresolvedOnly = true) {
 
 module.exports = {
   ERROR_CODES,
+  logValidationError,
   validateInspectionRecord,
   validateCalibrationCertificate,
   validateRepairQuote,
+  validateInventoryDiff,
+  validateRefundRecord,
   validateBatch,
   validateAll,
   getValidationErrors,

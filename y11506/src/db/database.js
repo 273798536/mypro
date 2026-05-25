@@ -97,6 +97,44 @@ function createTables(db) {
       FOREIGN KEY (batch_id) REFERENCES import_batches(batch_id)
     );
 
+    CREATE TABLE IF NOT EXISTS inventory_diffs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      batch_id TEXT,
+      original_line_no INTEGER,
+      device_id TEXT,
+      device_name TEXT,
+      department TEXT,
+      expected_quantity INTEGER,
+      actual_quantity INTEGER,
+      difference INTEGER,
+      diff_type TEXT,
+      found_location TEXT,
+      remarks TEXT,
+      inventory_date DATE,
+      status TEXT DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (batch_id) REFERENCES import_batches(batch_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS refund_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      batch_id TEXT,
+      original_line_no INTEGER,
+      device_id TEXT,
+      device_name TEXT,
+      department TEXT,
+      refund_amount DECIMAL(10,2),
+      refund_date DATE,
+      refund_reason TEXT,
+      vendor TEXT,
+      status TEXT DEFAULT 'pending',
+      approval_status TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (batch_id) REFERENCES import_batches(batch_id)
+    );
+
     CREATE TABLE IF NOT EXISTS change_history (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       record_type TEXT NOT NULL,
@@ -150,6 +188,10 @@ function createTables(db) {
     CREATE INDEX IF NOT EXISTS idx_calibration_device ON calibration_certificates(device_id);
     CREATE INDEX IF NOT EXISTS idx_calibration_expiry ON calibration_certificates(expiry_date);
     CREATE INDEX IF NOT EXISTS idx_repair_device ON repair_quotes(device_id);
+    CREATE INDEX IF NOT EXISTS idx_inventory_device ON inventory_diffs(device_id);
+    CREATE INDEX IF NOT EXISTS idx_inventory_date ON inventory_diffs(inventory_date);
+    CREATE INDEX IF NOT EXISTS idx_refund_device ON refund_records(device_id);
+    CREATE INDEX IF NOT EXISTS idx_refund_date ON refund_records(refund_date);
     CREATE INDEX IF NOT EXISTS idx_history_record ON change_history(record_type, record_id);
     CREATE INDEX IF NOT EXISTS idx_tasks_status ON async_tasks(status, available_after);
     CREATE INDEX IF NOT EXISTS idx_errors_batch ON validation_errors(batch_id);

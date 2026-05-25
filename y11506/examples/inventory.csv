@@ -1,0 +1,13 @@
+device_id,device_name,department,expected_quantity,actual_quantity,found_location,remarks,inventory_date,status
+DEV001,心电图机,内科,2,2,心内科,账实相符,2024-01-31,matched
+DEV002,血压计,内科,10,9,内科病房,盘亏1台,2024-01-31,pending
+DEV003,血糖仪,检验科,5,6,检验科库房,盘盈1台,2024-01-31,pending
+DEV004,B超机,超声科,1,1,超声科,账实相符,2024-01-31,matched
+DEV005,X光机,放射科,1,1,放射科,账实相符,2024-01-31,matched
+DEV006,呼吸机,ICU,3,4,ICU库房,盘盈1台,2024-01-31,pending
+DEV007,监护仪,ICU,8,7,ICU病房,盘亏1台,2024-01-31,pending
+DEV008,输液泵,内科,5,5,内科仓库,账实相符,2024-01-31,matched
+DEV009,注射泵,外科,6,6,外科,账实相符,2024-01-31,matched
+DEV010,除颤仪,急诊科,2,1,急诊科,盘亏1台,2024-01-31,pending
+DEV011,听诊器,内科,,20,内科病房,缺少账面数据,2024-01-31,pending
+DEV012,体温计,急诊科,50,bad,急诊科,数量格式错误,2024-01-31,pending

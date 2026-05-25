@@ -1,6 +1,6 @@
 const { getDatabase } = require('../db/database');
-const { SOURCE_TYPES } = require('./importService');
-const { logRecordUpdate, RECORD_TYPES } = require('./historyService');
+const { SOURCE_TYPES, RECORD_TYPES } = require('../constants');
+const { logRecordUpdate } = require('./historyService');
 
 function markErrorFixed(errorId, operator) {
   const db = getDatabase();

@@ -4,23 +4,17 @@ const { Command } = require('commander');
 const chalk = require('chalk');
 const Table = require('cli-table3');
 const { initDatabase, getDbPath, closeDatabase } = require('./db/database');
-const { importData, listBatches, getBatchInfo, getBatchErrors, IMPORT_MODES, SOURCE_TYPES } = require('./services/importService');
+const { SOURCE_TYPES, IMPORT_MODES, EXIT_CODES, TASK_STATUSES, TASK_TYPES } = require('./constants');
+const { importData, listBatches, getBatchInfo, getBatchErrors } = require('./services/importService');
 const { validateBatch, validateAll, getValidationErrors } = require('./services/validationService');
 const { fixCertificateStatus, applyFixFromError, getFixSuggestions, markErrorFixed } = require('./services/fixService');
 const { generateBatchReport, generateStatusReport, generateDepartmentReport } = require('./services/reportService');
 const { getRecentHistory, getBatchHistory, getOperatorHistory, getRecordHistory, getChangeSummary } = require('./services/historyService');
 const { exportBatchData, exportFailedRecords, exportCalibrationStatus, exportReport } = require('./services/exportService');
-const { recoverStuckTasks, getTaskStats, getTasksByStatus, retryTask, markAsManual, TASK_STATUSES } = require('./services/taskService');
+const { recoverStuckTasks, getTaskStats, getTasksByStatus, retryTask, markAsManual, createTask, getTaskStatus } = require('./services/taskService');
+const { runStandaloneWorker } = require('./worker');
 
 const program = new Command();
-
-const EXIT_CODES = {
-  SUCCESS: 0,
-  ERROR: 1,
-  VALIDATION_ERRORS: 2,
-  NOT_FOUND: 3,
-  INVALID_INPUT: 4
-};
 
 program
   .name('mdinspect')
@@ -50,9 +44,62 @@ program
   .option('-m, --mode <mode>', `导入模式: ${Object.values(IMPORT_MODES).join(', ')}`, IMPORT_MODES.APPEND)
   .option('-o, --operator <name>', '操作人')
   .option('--no-validate', '跳过数据验证')
+  .option('--async', '异步导入（提交任务队列）')
+  .option('--wait', '异步模式下等待任务完成')
+  .option('--retry-on-fail', '失败时自动重试')
   .action(async (options) => {
     try {
       initDatabase();
+      
+      if (options.async) {
+        const taskId = createTask(TASK_TYPES.IMPORT_ASYNC, {
+          sourceType: options.type,
+          filePath: options.file,
+          options: {
+            mode: options.mode,
+            operator: options.operator,
+            validate: options.validate !== false,
+            noRetry: !options.retryOnFail
+          }
+        }, { priority: 10 });
+        
+        console.log(chalk.green('✓ 异步导入任务已提交'));
+        console.log(`  任务ID: ${chalk.cyan(taskId)}`);
+        console.log(`  类型: ${options.type}`);
+        console.log(`  文件: ${options.file}`);
+        console.log(chalk.yellow(`\n  提示: 启动 worker 处理任务: mdinspect worker`));
+        console.log(chalk.yellow(`  查看任务状态: mdinspect tasks --list`));
+        
+        if (options.wait) {
+          console.log(chalk.gray('\n等待任务完成...'));
+          let completed = false;
+          let status;
+          while (!completed) {
+            await new Promise(r => setTimeout(r, 2000));
+            status = getTaskStatus(taskId);
+            if (status && ['completed', 'failed', 'manual'].includes(status.status)) {
+              completed = true;
+            }
+          }
+          
+          if (status.status === 'completed') {
+            console.log(chalk.green('✓ 任务完成'));
+            closeDatabase();
+            process.exit(EXIT_CODES.SUCCESS);
+          } else if (status.status === 'manual') {
+            console.log(chalk.yellow('⚠ 任务需要人工处理'));
+            closeDatabase();
+            process.exit(EXIT_CODES.VALIDATION_ERRORS);
+          } else {
+            console.log(chalk.red(`✗ 任务失败: ${status.error_message}`));
+            closeDatabase();
+            process.exit(EXIT_CODES.ERROR);
+          }
+        }
+        
+        closeDatabase();
+        process.exit(EXIT_CODES.SUCCESS);
+      }
       
       console.log(chalk.blue(`正在导入数据...`));
       console.log(chalk.gray(`  类型: ${options.type}`));
@@ -67,21 +114,53 @@ program
       
       console.log(chalk.green('\n✓ 导入完成'));
       console.log(`  批次ID: ${chalk.cyan(result.batchId)}`);
+      console.log(`  状态: ${result.status}`);
       console.log(`  总行数: ${result.totalRows}`);
       console.log(`  成功: ${chalk.green(result.successRows)}`);
-      console.log(`  失败: ${chalk.red(result.failedRows)}`);
+      
+      if (result.skippedRows > 0) {
+        console.log(`  跳过: ${chalk.gray(result.skippedRows)}`);
+      }
+      
+      if (result.importFailedRows > 0) {
+        console.log(`  导入失败: ${chalk.red(result.importFailedRows)}`);
+      }
+      
+      if (result.validationFailedRows > 0) {
+        console.log(`  校验失败: ${chalk.yellow(result.validationFailedRows)}`);
+      }
       
       if (result.failedRows > 0) {
+        console.log(`  总失败: ${chalk.red(result.failedRows)}`);
         console.log(chalk.yellow(`\n  提示: 使用 mdinspect check ${result.batchId} 查看错误详情`));
+        console.log(chalk.yellow(`  导出失败清单: mdinspect export ${result.batchId} --failed -o ./failed`));
       }
       
       closeDatabase();
-      process.exit(result.failedRows > 0 ? EXIT_CODES.VALIDATION_ERRORS : EXIT_CODES.SUCCESS);
+      
+      if (result.status === 'validation_failed') {
+        process.exit(EXIT_CODES.VALIDATION_ERRORS);
+      } else if (result.status === 'import_failed' || result.status === 'failed') {
+        process.exit(EXIT_CODES.ERROR);
+      } else if (result.failedRows > 0) {
+        process.exit(EXIT_CODES.VALIDATION_ERRORS);
+      } else {
+        process.exit(EXIT_CODES.SUCCESS);
+      }
     } catch (error) {
       console.error(chalk.red('✗ 导入失败:'), error.message);
       closeDatabase();
       process.exit(EXIT_CODES.ERROR);
     }
+  });
+
+program
+  .command('worker')
+  .description('启动异步任务处理工作进程')
+  .option('--poll-interval <ms>', '轮询间隔毫秒', '1000')
+  .action(async (options) => {
+    process.env.WORKER_POLL_INTERVAL = options.pollInterval;
+    await runStandaloneWorker();
   });
 
 program
@@ -132,41 +211,73 @@ program
           }
         }
       } else if (batchId) {
+        const batchInfo = getBatchInfo(batchId);
+        if (!batchInfo) {
+          console.error(chalk.red(`✗ 批次不存在: ${batchId}`));
+          closeDatabase();
+          process.exit(EXIT_CODES.NOT_FOUND);
+        }
+        
         const result = validateBatch(batchId);
         const errors = getValidationErrors(batchId, true);
         
         if (options.json) {
-          console.log(JSON.stringify({ validation: result, errors }, null, 2));
+          console.log(JSON.stringify({ batch: batchInfo, validation: result, errors }, null, 2));
         } else {
           console.log(chalk.blue(`\n=== 批次检查: ${batchId} ===`));
-          console.log(`\n  数据类型: ${result.sourceType}`);
-          console.log(`  总记录数: ${result.totalRecords}`);
+          console.log(`\n  源文件: ${batchInfo.file_name || '-'}`);
+          console.log(`  数据类型: ${result.sourceType}`);
+          console.log(`  导入模式: ${batchInfo.import_mode}`);
+          console.log(`  批次状态: ${batchInfo.status}`);
+          console.log(`  操作人: ${batchInfo.operator || '-'}`);
+          console.log(`  导入时间: ${batchInfo.created_at}`);
+          console.log(`\n  总记录数: ${result.totalRecords}`);
           console.log(`  有效: ${chalk.green(result.validRecords)}`);
           console.log(`  无效: ${chalk.red(result.invalidRecords)}`);
           
           if (errors.length > 0) {
-            const table = new Table({
-              head: ['行号', '错误代码', '字段', '错误信息'],
-              colWidths: [8, 20, 15, 40]
+            const errorsByType = {};
+            errors.forEach(e => {
+              if (!errorsByType[e.error_code]) {
+                errorsByType[e.error_code] = { count: 0, lines: [] };
+              }
+              errorsByType[e.error_code].count++;
+              errorsByType[e.error_code].lines.push(e.original_line_no);
             });
             
-            errors.slice(0, 20).forEach(e => {
+            console.log(`\n  错误汇总:`);
+            Object.entries(errorsByType).forEach(([code, info]) => {
+              const lines = info.lines.slice(0, 5).join(', ');
+              const more = info.lines.length > 5 ? `...(+${info.lines.length - 5})` : '';
+              console.log(`    ${chalk.red(code)}: ${info.count} 条 (行 ${lines}${more})`);
+            });
+            
+            const table = new Table({
+              head: ['原始行号', '错误代码', '字段', '当前值', '错误信息'],
+              colWidths: [10, 20, 12, 18, 30]
+            });
+            
+            errors.slice(0, 15).forEach(e => {
               table.push([
                 e.original_line_no,
                 e.error_code,
                 e.field_name || '-',
-                e.error_message.substring(0, 37) + (e.error_message.length > 37 ? '...' : '')
+                (e.field_value || '-').toString().substring(0, 15),
+                e.error_message.substring(0, 27) + (e.error_message.length > 27 ? '...' : '')
               ]);
             });
             
-            console.log(`\n  错误详情:`);
+            console.log(`\n  失败清单（按原始行号）:`);
             console.log(table.toString());
             
-            if (errors.length > 20) {
-              console.log(chalk.gray(`  还有 ${errors.length - 20} 条错误未显示`));
+            if (errors.length > 15) {
+              console.log(chalk.gray(`  还有 ${errors.length - 15} 条错误未显示`));
             }
             
-            console.log(chalk.yellow(`\n  提示: 使用 mdinspect fix --batch ${batchId} 自动修复`));
+            console.log(chalk.yellow(`\n  下一步操作:`));
+            console.log(chalk.yellow(`    1. 导出失败清单: mdinspect export ${batchId} --failed -o ./failed`));
+            console.log(chalk.yellow(`    2. 修正 CSV 数据后重新导入`));
+            console.log(chalk.yellow(`    3. 自动修复: mdinspect fix --batch ${batchId}`));
           }
         }
       } else {
@@ -180,6 +291,8 @@ program
           console.log(`    巡检记录: ${report.overview.totalInspectionRecords}`);
           console.log(`    校准证书: ${report.overview.totalCalibrationCertificates}`);
           console.log(`    维修报价: ${report.overview.totalRepairQuotes}`);
+          console.log(`    盘点差异: ${report.overview.totalInventoryDiffs || 0}`);
+          console.log(`    退款流水: ${report.overview.totalRefundRecords || 0}`);
           
           console.log(`\n  待处理问题:`);
           console.log(`    过期证书: ${chalk.red(report.calibrationStatus.expiredCertificates)}`);
@@ -190,8 +303,12 @@ program
           if (report.imports.recentBatches.length > 0) {
             console.log(`\n  最近导入:`);
             report.imports.recentBatches.slice(0, 5).forEach(b => {
-              const statusColor = b.status === 'completed' ? chalk.green : 
-                                 b.status === 'completed_with_errors' ? chalk.yellow : chalk.red;
+              let statusColor = chalk.green;
+              if (b.status === 'validation_failed' || b.status === 'completed_with_errors') {
+                statusColor = chalk.yellow;
+              } else if (b.status !== 'completed') {
+                statusColor = chalk.red;
+              }
               console.log(`    ${b.batch_id.substring(0, 8)}... ${b.source_type} ${b.file_name} ${statusColor(b.status)}`);
             });
           }
