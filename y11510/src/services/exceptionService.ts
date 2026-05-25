@@ -12,6 +12,7 @@ import {
   BorrowApplication,
   ExpressOrder,
   ReaderCompensation,
+  SupplierBill,
 } from '../types';
 import { stateMachine } from './stateMachine';
 import { auditService } from './auditService';
@@ -108,6 +109,7 @@ export class ExceptionService {
       borrowApplication: BorrowApplication;
       expressOrder?: ExpressOrder;
       readerCompensation?: ReaderCompensation;
+      supplierBill?: SupplierBill;
       exceptionType: ExceptionType;
       amount: number;
       reason: string;
@@ -158,16 +160,81 @@ export class ExceptionService {
           continue;
         }
 
+        const now = new Date();
+        const borrowApp = {
+          ...record.borrowApplication,
+          createdAt: record.borrowApplication.createdAt || now,
+          updatedAt: record.borrowApplication.updatedAt || now,
+        };
+
+        const existingBorrowApp = await db('borrow_applications')
+          .where('id', borrowApp.id)
+          .first();
+        if (!existingBorrowApp) {
+          await db('borrow_applications').insert(this.serializeBorrowApplication(borrowApp));
+        }
+
+        let expressOrderId: string | undefined;
+        if (record.expressOrder) {
+          const expressOrder = {
+            ...record.expressOrder,
+            borrowApplicationId: borrowApp.id,
+            createdAt: record.expressOrder.createdAt || now,
+            updatedAt: record.expressOrder.updatedAt || now,
+          };
+          const existingExpress = await db('express_orders')
+            .where('id', expressOrder.id)
+            .first();
+          if (!existingExpress) {
+            await db('express_orders').insert(this.serializeExpressOrder(expressOrder));
+          }
+          expressOrderId = expressOrder.id;
+        }
+
+        let readerCompensationId: string | undefined;
+        if (record.readerCompensation) {
+          const compensation = {
+            ...record.readerCompensation,
+            borrowApplicationId: borrowApp.id,
+            createdAt: record.readerCompensation.createdAt || now,
+            updatedAt: record.readerCompensation.updatedAt || now,
+          };
+          const existingComp = await db('reader_compensations')
+            .where('id', compensation.id)
+            .first();
+          if (!existingComp) {
+            await db('reader_compensations').insert(this.serializeReaderCompensation(compensation));
+          }
+          readerCompensationId = compensation.id;
+        }
+
+        let supplierBillId: string | undefined;
+        if (record.supplierBill) {
+          const supplierBill = {
+            ...record.supplierBill,
+            createdAt: record.supplierBill.createdAt || now,
+            updatedAt: record.supplierBill.updatedAt || now,
+          };
+          const existingBill = await db('supplier_bills')
+            .where('id', supplierBill.id)
+            .first();
+          if (!existingBill) {
+            await db('supplier_bills').insert(this.serializeSupplierBill(supplierBill));
+          }
+          supplierBillId = supplierBill.id;
+        }
+
         const receiptId = await this.createReceipt({
-          borrowApplicationId: record.borrowApplication.id,
-          expressOrderId: record.expressOrder?.id,
-          readerCompensationId: record.readerCompensation?.id,
+          borrowApplicationId: borrowApp.id,
+          expressOrderId,
+          readerCompensationId,
+          supplierBillId,
           exceptionType: record.exceptionType,
           amount: record.amount,
           reason: record.reason,
-          readerId: record.borrowApplication.readerId,
-          readerName: record.borrowApplication.readerName,
-          bookTitle: record.borrowApplication.bookTitle,
+          readerId: borrowApp.readerId,
+          readerName: borrowApp.readerName,
+          bookTitle: borrowApp.bookTitle,
           createdBy,
           batchId,
         });
@@ -539,6 +606,78 @@ export class ExceptionService {
     return {
       receipts: rows.map(this.deserializeReceipt),
       total: count as number,
+    };
+  }
+
+  private serializeBorrowApplication(app: BorrowApplication): Record<string, unknown> {
+    return {
+      id: app.id,
+      application_no: app.applicationNo,
+      reader_id: app.readerId,
+      reader_name: app.readerName,
+      book_id: app.bookId,
+      book_title: app.bookTitle,
+      source_library: app.sourceLibrary,
+      target_library: app.targetLibrary,
+      apply_date: app.applyDate,
+      borrow_date: app.borrowDate,
+      due_date: app.dueDate,
+      return_date: app.returnDate,
+      status: app.status,
+      created_at: app.createdAt,
+      updated_at: app.updatedAt,
+    };
+  }
+
+  private serializeExpressOrder(order: ExpressOrder): Record<string, unknown> {
+    return {
+      id: order.id,
+      order_no: order.orderNo,
+      borrow_application_id: order.borrowApplicationId,
+      courier_company: order.courierCompany,
+      tracking_no: order.trackingNo,
+      sender: order.sender,
+      receiver: order.receiver,
+      send_date: order.sendDate,
+      receive_date: order.receiveDate,
+      cost: order.cost,
+      status: order.status,
+      created_at: order.createdAt,
+      updated_at: order.updatedAt,
+    };
+  }
+
+  private serializeReaderCompensation(comp: ReaderCompensation): Record<string, unknown> {
+    return {
+      id: comp.id,
+      record_no: comp.recordNo,
+      borrow_application_id: comp.borrowApplicationId,
+      reader_id: comp.readerId,
+      reader_name: comp.readerName,
+      compensation_type: comp.compensationType,
+      amount: comp.amount,
+      reason: comp.reason,
+      status: comp.status,
+      paid_date: comp.paidDate,
+      created_at: comp.createdAt,
+      updated_at: comp.updatedAt,
+    };
+  }
+
+  private serializeSupplierBill(bill: SupplierBill): Record<string, unknown> {
+    return {
+      id: bill.id,
+      bill_no: bill.billNo,
+      supplier_id: bill.supplierId,
+      supplier_name: bill.supplierName,
+      borrow_application_ids: JSON.stringify(bill.borrowApplicationIds),
+      total_amount: bill.totalAmount,
+      bill_date: bill.billDate,
+      due_date: bill.dueDate,
+      status: bill.status,
+      paid_date: bill.paidDate,
+      created_at: bill.createdAt,
+      updated_at: bill.updatedAt,
     };
   }
 

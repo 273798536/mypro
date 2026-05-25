@@ -86,57 +86,135 @@ export class ReportService {
   }
 
   async exportToCSV(options: ExportOptions = {}): Promise<string> {
-    let query = db('exception_receipts')
+    let query = db('exception_receipts as er')
+      .leftJoin('borrow_applications as ba', 'er.borrow_application_id', 'ba.id')
+      .leftJoin('express_orders as eo', 'er.express_order_id', 'eo.id')
+      .leftJoin('reader_compensations as rc', 'er.reader_compensation_id', 'rc.id')
+      .leftJoin('supplier_bills as sb', 'er.supplier_bill_id', 'sb.id')
       .select(
-        'receipt_no',
-        'exception_type',
-        'status',
-        'reader_id',
-        'reader_name',
-        'book_title',
-        'amount',
-        'reason',
-        'manual_reason',
-        'review_comment',
-        'status_before_freeze',
-        'frozen_reason',
-        'created_at',
-        'created_by',
-        'batch_id'
+        'er.id as receipt_id',
+        'er.receipt_no',
+        'er.exception_type',
+        'er.status',
+        'er.status_before_freeze',
+        'er.previous_status',
+        'er.reader_id',
+        'er.reader_name',
+        'er.book_title',
+        'er.amount',
+        'er.reason',
+        'er.manual_reason',
+        'er.review_comment',
+        'er.reviewed_by',
+        'er.reviewed_at',
+        'er.frozen_reason',
+        'er.frozen_by',
+        'er.frozen_at',
+        'er.created_at as receipt_created_at',
+        'er.created_by',
+        'er.batch_id',
+        'ba.id as borrow_application_id',
+        'ba.application_no',
+        'ba.source_library',
+        'ba.target_library',
+        'ba.apply_date',
+        'ba.borrow_date',
+        'ba.due_date',
+        'ba.return_date',
+        'ba.status as borrow_status',
+        'eo.id as express_order_id',
+        'eo.order_no',
+        'eo.courier_company',
+        'eo.tracking_no',
+        'eo.sender',
+        'eo.receiver',
+        'eo.cost as express_cost',
+        'eo.status as express_status',
+        'rc.id as compensation_id',
+        'rc.record_no',
+        'rc.compensation_type',
+        'rc.amount as compensation_amount',
+        'rc.reason as compensation_reason',
+        'rc.status as compensation_status',
+        'rc.paid_date',
+        'sb.id as supplier_bill_id',
+        'sb.bill_no',
+        'sb.supplier_name',
+        'sb.total_amount as bill_total_amount',
+        'sb.bill_date',
+        'sb.due_date as bill_due_date',
+        'sb.status as bill_status'
       )
-      .where('is_deleted', false);
+      .where('er.is_deleted', false);
 
     if (options.status) {
-      query = query.andWhere('status', options.status);
+      query = query.andWhere('er.status', options.status);
     }
     if (options.exceptionType) {
-      query = query.andWhere('exception_type', options.exceptionType);
+      query = query.andWhere('er.exception_type', options.exceptionType);
     }
     if (options.startDate) {
-      query = query.andWhere('created_at', '>=', options.startDate);
+      query = query.andWhere('er.created_at', '>=', options.startDate);
     }
     if (options.endDate) {
-      query = query.andWhere('created_at', '<=', options.endDate);
+      query = query.andWhere('er.created_at', '<=', options.endDate);
     }
 
-    const records = await query.orderBy('created_at', 'desc');
+    const records = await query.orderBy('er.created_at', 'desc');
 
     const formattedRecords = records.map((r: any) => ({
+      回执ID: r.receipt_id,
       回执编号: r.receipt_no,
       异常类型: this.translateExceptionType(r.exception_type),
-      状态: this.translateStatus(r.status),
+      当前状态: this.translateStatus(r.status),
+      冻结前状态: r.status_before_freeze ? this.translateStatus(r.status_before_freeze) : '',
+      上一状态: r.previous_status ? this.translateStatus(r.previous_status) : '',
       读者ID: r.reader_id,
       读者姓名: r.reader_name,
       图书名称: r.book_title,
-      金额: r.amount,
+      异常金额: r.amount,
       异常原因: r.reason,
       人工说明: r.manual_reason || '',
       审核意见: r.review_comment || '',
-      冻结前状态: r.status_before_freeze ? this.translateStatus(r.status_before_freeze) : '',
+      审核人: r.reviewed_by || '',
+      审核时间: r.reviewed_at || '',
       冻结原因: r.frozen_reason || '',
-      创建时间: r.created_at,
+      冻结人: r.frozen_by || '',
+      冻结时间: r.frozen_at || '',
+      创建时间: r.receipt_created_at,
       创建人: r.created_by,
       批次ID: r.batch_id,
+      借阅申请ID: r.borrow_application_id || '',
+      申请编号: r.application_no || '',
+      来源馆: r.source_library || '',
+      目标馆: r.target_library || '',
+      申请日期: r.apply_date || '',
+      借阅日期: r.borrow_date || '',
+      应还日期: r.due_date || '',
+      归还日期: r.return_date || '',
+      借阅状态: r.borrow_status || '',
+      快递单ID: r.express_order_id || '',
+      快递单号: r.order_no || '',
+      快递公司: r.courier_company || '',
+      跟踪号: r.tracking_no || '',
+      发件人: r.sender || '',
+      收件人: r.receiver || '',
+      快递费用: r.express_cost || '',
+      快递状态: r.express_status || '',
+      赔偿记录ID: r.compensation_id || '',
+      赔偿编号: r.record_no || '',
+      赔偿类型: r.compensation_type || '',
+      赔偿金额: r.compensation_amount || '',
+      赔偿原因: r.compensation_reason || '',
+      赔偿状态: r.compensation_status || '',
+      赔偿支付日期: r.paid_date || '',
+      供应商账单ID: r.supplier_bill_id || '',
+      账单编号: r.bill_no || '',
+      供应商名称: r.supplier_name || '',
+      账单总金额: r.bill_total_amount || '',
+      账单日期: r.bill_date || '',
+      账单到期日: r.bill_due_date || '',
+      账单状态: r.bill_status || '',
     }));
 
     const json2csvParser = new Parser();
@@ -175,9 +253,17 @@ export class ReportService {
           .first()
       : null;
 
+    const supplierBill = receiptRow.supplier_bill_id
+      ? await db('supplier_bills').where('id', receiptRow.supplier_bill_id).first()
+      : null;
+
     const attachments = await db('attachments')
       .where('receipt_id', receiptId)
       .select('id', 'file_name', 'file_type', 'file_size', 'created_at');
+
+    const approvalEmails = await db('approval_emails')
+      .where('receipt_id', receiptId)
+      .orderBy('sent_at', 'desc');
 
     const auditLogs = await db('audit_logs')
       .where('receipt_id', receiptId)
@@ -188,15 +274,29 @@ export class ReportService {
       receipt: {
         id: receiptRow.id,
         receiptNo: receiptRow.receipt_no,
+        batchId: receiptRow.batch_id,
         exceptionType: receiptRow.exception_type,
         status: receiptRow.status,
         statusBeforeFreeze: receiptRow.status_before_freeze,
+        previousStatus: receiptRow.previous_status,
+        readerId: receiptRow.reader_id,
+        readerName: receiptRow.reader_name,
+        bookTitle: receiptRow.book_title,
         amount: parseFloat(receiptRow.amount),
         reason: receiptRow.reason,
         manualReason: receiptRow.manual_reason,
         reviewComment: receiptRow.review_comment,
+        reviewedBy: receiptRow.reviewed_by,
+        reviewedAt: receiptRow.reviewed_at,
+        frozenBy: receiptRow.frozen_by,
+        frozenAt: receiptRow.frozen_at,
         frozenReason: receiptRow.frozen_reason,
+        borrowApplicationId: receiptRow.borrow_application_id,
+        expressOrderId: receiptRow.express_order_id,
+        readerCompensationId: receiptRow.reader_compensation_id,
+        supplierBillId: receiptRow.supplier_bill_id,
         createdAt: receiptRow.created_at,
+        updatedAt: receiptRow.updated_at,
         createdBy: receiptRow.created_by,
       },
       borrowApplication: borrowApp
@@ -205,19 +305,28 @@ export class ReportService {
             applicationNo: borrowApp.application_no,
             readerId: borrowApp.reader_id,
             readerName: borrowApp.reader_name,
+            bookId: borrowApp.book_id,
             bookTitle: borrowApp.book_title,
             sourceLibrary: borrowApp.source_library,
             targetLibrary: borrowApp.target_library,
             applyDate: borrowApp.apply_date,
+            borrowDate: borrowApp.borrow_date,
             dueDate: borrowApp.due_date,
+            returnDate: borrowApp.return_date,
+            status: borrowApp.status,
           }
         : null,
       expressOrder: expressOrder
         ? {
             id: expressOrder.id,
             orderNo: expressOrder.order_no,
+            borrowApplicationId: expressOrder.borrow_application_id,
             courierCompany: expressOrder.courier_company,
             trackingNo: expressOrder.tracking_no,
+            sender: expressOrder.sender,
+            receiver: expressOrder.receiver,
+            sendDate: expressOrder.send_date,
+            receiveDate: expressOrder.receive_date,
             cost: parseFloat(expressOrder.cost),
             status: expressOrder.status,
           }
@@ -226,10 +335,30 @@ export class ReportService {
         ? {
             id: compensation.id,
             recordNo: compensation.record_no,
+            borrowApplicationId: compensation.borrow_application_id,
+            readerId: compensation.reader_id,
+            readerName: compensation.reader_name,
             compensationType: compensation.compensation_type,
             amount: parseFloat(compensation.amount),
             reason: compensation.reason,
             status: compensation.status,
+            paidDate: compensation.paid_date,
+          }
+        : null,
+      supplierBill: supplierBill
+        ? {
+            id: supplierBill.id,
+            billNo: supplierBill.bill_no,
+            supplierId: supplierBill.supplier_id,
+            supplierName: supplierBill.supplier_name,
+            borrowApplicationIds: supplierBill.borrow_application_ids
+              ? JSON.parse(supplierBill.borrow_application_ids)
+              : [],
+            totalAmount: parseFloat(supplierBill.total_amount),
+            billDate: supplierBill.bill_date,
+            dueDate: supplierBill.due_date,
+            status: supplierBill.status,
+            paidDate: supplierBill.paid_date,
           }
         : null,
       attachments: attachments.map((a: any) => ({
@@ -239,9 +368,24 @@ export class ReportService {
         fileSize: a.file_size,
         createdAt: a.created_at,
       })),
+      approvalEmails: approvalEmails.map((e: any) => ({
+        id: e.id,
+        emailSubject: e.email_subject,
+        emailFrom: e.email_from,
+        emailTo: e.email_to ? JSON.parse(e.email_to) : [],
+        emailCc: e.email_cc ? JSON.parse(e.email_cc) : undefined,
+        emailBody: e.email_body,
+        sentAt: e.sent_at,
+        sentBy: e.sent_by,
+        createdAt: e.created_at,
+      })),
       history: auditLogs.map((log: any) => ({
+        id: log.id,
         actionType: log.action_type,
+        operatorId: log.operator_id,
         operatorName: log.operator_name,
+        previousState: log.previous_state ? JSON.parse(log.previous_state) : null,
+        newState: log.new_state ? JSON.parse(log.new_state) : null,
         changes: log.changes ? JSON.parse(log.changes) : null,
         reason: log.reason,
         createdAt: log.created_at,

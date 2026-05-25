@@ -5,6 +5,7 @@ import { exceptionService } from '../services/exceptionService';
 import { attachmentService } from '../services/attachmentService';
 import { auditService } from '../services/auditService';
 import { reportService } from '../services/reportService';
+import { approvalEmailService } from '../services/approvalEmailService';
 import { authenticate, requireRole } from '../middleware/auth';
 import { ExceptionStatus, ExceptionType, Role } from '../types';
 import logger from '../utils/logger';
@@ -25,6 +26,9 @@ const batchCreateSchema = z.object({
         sourceLibrary: z.string(),
         targetLibrary: z.string(),
         applyDate: z.string(),
+        borrowDate: z.string().optional(),
+        dueDate: z.string().optional(),
+        returnDate: z.string().optional(),
         status: z.string(),
       }),
       expressOrder: z
@@ -33,6 +37,10 @@ const batchCreateSchema = z.object({
           orderNo: z.string(),
           courierCompany: z.string(),
           trackingNo: z.string(),
+          sender: z.string(),
+          receiver: z.string(),
+          sendDate: z.string().optional(),
+          receiveDate: z.string().optional(),
           cost: z.number(),
           status: z.string(),
         })
@@ -45,6 +53,21 @@ const batchCreateSchema = z.object({
           amount: z.number(),
           reason: z.string(),
           status: z.string(),
+          paidDate: z.string().optional(),
+        })
+        .optional(),
+      supplierBill: z
+        .object({
+          id: z.string(),
+          billNo: z.string(),
+          supplierId: z.string(),
+          supplierName: z.string(),
+          borrowApplicationIds: z.array(z.string()),
+          totalAmount: z.number(),
+          billDate: z.string(),
+          dueDate: z.string(),
+          status: z.string(),
+          paidDate: z.string().optional(),
         })
         .optional(),
       exceptionType: z.nativeEnum(ExceptionType),
@@ -93,11 +116,43 @@ router.post(
           borrowApplication: {
             ...r.borrowApplication,
             applyDate: new Date(r.borrowApplication.applyDate),
+            borrowDate: r.borrowApplication.borrowDate ? new Date(r.borrowApplication.borrowDate) : undefined,
+            dueDate: r.borrowApplication.dueDate ? new Date(r.borrowApplication.dueDate) : undefined,
+            returnDate: r.borrowApplication.returnDate ? new Date(r.borrowApplication.returnDate) : undefined,
             createdAt: new Date(),
             updatedAt: new Date(),
-          } as any,
-          expressOrder: r.expressOrder as any,
-          readerCompensation: r.readerCompensation as any,
+          },
+          expressOrder: r.expressOrder
+            ? {
+                ...r.expressOrder,
+                borrowApplicationId: r.borrowApplication.id,
+                sendDate: r.expressOrder.sendDate ? new Date(r.expressOrder.sendDate) : undefined,
+                receiveDate: r.expressOrder.receiveDate ? new Date(r.expressOrder.receiveDate) : undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            : undefined,
+          readerCompensation: r.readerCompensation
+            ? {
+                ...r.readerCompensation,
+                borrowApplicationId: r.borrowApplication.id,
+                readerId: r.borrowApplication.readerId,
+                readerName: r.borrowApplication.readerName,
+                paidDate: r.readerCompensation.paidDate ? new Date(r.readerCompensation.paidDate) : undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            : undefined,
+          supplierBill: r.supplierBill
+            ? {
+                ...r.supplierBill,
+                billDate: new Date(r.supplierBill.billDate),
+                dueDate: new Date(r.supplierBill.dueDate),
+                paidDate: r.supplierBill.paidDate ? new Date(r.supplierBill.paidDate) : undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }
+            : undefined,
           exceptionType: r.exceptionType,
           amount: r.amount,
           reason: r.reason,
@@ -481,6 +536,68 @@ router.get('/batches/:id/receipts', async (req: Request, res: Response) => {
     });
   } catch (error) {
     logger.error('Get batch receipts failed', { error });
+    res.status(500).json({
+      success: false,
+      error: (error as Error).message,
+    });
+  }
+});
+
+const approvalEmailSchema = z.object({
+  emailSubject: z.string(),
+  emailFrom: z.string().email(),
+  emailTo: z.array(z.string().email()),
+  emailCc: z.array(z.string().email()).optional(),
+  emailBody: z.string(),
+  sentAt: z.string(),
+});
+
+router.post(
+  '/receipts/:id/approval-emails',
+  requireRole(Role.ADMIN, Role.OPERATOR, Role.REVIEWER),
+  async (req: Request, res: Response) => {
+    try {
+      const validated = approvalEmailSchema.parse(req.body);
+      const user = req.user!;
+
+      const emailId = await approvalEmailService.addApprovalEmail(
+        req.params.id,
+        {
+          ...validated,
+          sentAt: new Date(validated.sentAt),
+          sentBy: user.id,
+          sentByName: user.name,
+        }
+      );
+
+      const email = await approvalEmailService.getEmailById(emailId);
+
+      res.json({
+        success: true,
+        data: email,
+      });
+    } catch (error) {
+      logger.error('Add approval email failed', { error });
+      res.status(400).json({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  }
+);
+
+router.get('/receipts/:id/approval-emails', async (req: Request, res: Response) => {
+  try {
+    const emails = await approvalEmailService.getEmailsByReceiptId(
+      req.params.id
+    );
+
+    res.json({
+      success: true,
+      data: emails,
+    });
+  } catch (error) {
+    logger.error('Get approval emails failed', { error });
     res.status(500).json({
       success: false,
       error: (error as Error).message,
