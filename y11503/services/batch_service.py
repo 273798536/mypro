@@ -29,7 +29,7 @@ class BatchService:
 
     def _update_part_status(self, part: models.SparePart, status: str, message: str = None):
         part.status = status
-        part.validation_result = "pass" if status == config.PartStatus.NORMAL else "fail"
+        part.validation_result = "fail" if status == config.PartStatus.PENDING else "pass"
         part.validation_message = message
         part.updated_at = datetime.utcnow()
 
@@ -300,15 +300,54 @@ class BatchService:
         old_status = batch.status
         batch.status = config.BatchStatus.REVISED
 
+        order_map = {ro.order_no: ro.id for ro in batch.repair_orders}
+        existing_part_map = {p.id: p for p in batch.parts}
+
+        updated_parts = []
+        appended_parts = []
+        changed_fields_detail = []
+
         if revise_data.parts:
-            order_map = {ro.order_no: ro.id for ro in batch.repair_orders}
             for part_data in revise_data.parts:
                 part_dict = part_data.model_dump()
                 repair_order_no = part_dict.pop('repair_order_no', None)
                 repair_order_id = order_map.get(repair_order_no) if repair_order_no else None
-                part = models.SparePart(batch_id=batch.id, repair_order_id=repair_order_id, **part_dict)
-                self.db.add(part)
-            batch.total_parts += len(revise_data.parts)
+                part_id = part_dict.pop('id', None)
+
+                if part_id and part_id in existing_part_map:
+                    part = existing_part_map[part_id]
+                    changes = []
+                    for key, value in part_dict.items():
+                        if value is not None and getattr(part, key) != value:
+                            old_val = getattr(part, key)
+                            setattr(part, key, value)
+                            changes.append(f"{key}: {old_val}->{value}")
+                    if repair_order_id is not None and part.repair_order_id != repair_order_id:
+                        changes.append(f"repair_order_id: {part.repair_order_id}->{repair_order_id}")
+                        part.repair_order_id = repair_order_id
+                    if changes:
+                        if not (part.is_returned and part.is_scrapped):
+                            if part.is_mixed:
+                                part.is_mixed = False
+                                changes.append("is_mixed: True->False (conflict resolved)")
+                        part.status = config.PartStatus.PENDING
+                        part.validation_result = None
+                        part.validation_message = None
+                        part.updated_at = datetime.utcnow()
+                        updated_parts.append(part.id)
+                        changed_fields_detail.append(f"Part {part_id}: {'; '.join(changes)}")
+                else:
+                    part = models.SparePart(batch_id=batch.id, repair_order_id=repair_order_id, **part_dict)
+                    self.db.add(part)
+                    appended_parts.append(part.part_code)
+
+            batch.total_parts += len(appended_parts)
+
+        changed_fields = {
+            "updated_parts": updated_parts,
+            "appended_parts": appended_parts,
+            "details": changed_fields_detail
+        }
 
         self._log_operation(
             batch_id=batch.id,
@@ -316,7 +355,7 @@ class BatchService:
             operator=revise_data.operator,
             old_status=old_status,
             new_status=config.BatchStatus.REVISED,
-            changed_fields={"added_parts": len(revise_data.parts)},
+            changed_fields=changed_fields,
             remark=revise_data.remark
         )
 

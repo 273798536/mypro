@@ -40,6 +40,9 @@ class SparePartBase(BaseModel):
 class SparePartCreate(SparePartBase):
     pass
 
+class SparePartRevise(SparePartBase):
+    id: Optional[int] = None
+
 class SparePartUpdate(BaseModel):
     status: Optional[str] = None
     is_returned: Optional[bool] = None
@@ -123,7 +126,7 @@ class BatchFreeze(BaseModel):
 class BatchRevise(BaseModel):
     operator: str = Field(..., max_length=50)
     remark: Optional[str] = None
-    parts: List[SparePartCreate] = Field(default_factory=list)
+    parts: List[SparePartRevise] = Field(default_factory=list)
     repair_orders: List[RepairOrderCreate] = Field(default_factory=list)
 
 class BatchJudge(BaseModel):

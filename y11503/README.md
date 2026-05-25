@@ -215,6 +215,12 @@ submitted / partial_failed
 
 7. **先领后补单**: repair_order.is_late_submit 字段标识，导出和对账时单独统计
 
+8. **校验口径**: 
+   - `normal` (正常领用) → validation_result = pass
+   - `returned` (已退回) → validation_result = pass
+   - `scrapped` (已报废) → validation_result = pass
+   - `pending` (待校验) → validation_result = fail
+
 ### 异常不吞掉
 
 - 所有校验错误会记录在 batch.error_message 和 part.validation_message
@@ -234,9 +240,10 @@ python scripts/cli.py replay --wait 2
 1. 创建: None → draft
 2. 提交: draft → partial_failed
 3. 撤回: partial_failed → withdrawn
-4. 再提交: withdrawn → partial_failed
-5. 改判: partial_failed → approved
-6. 冻结: approved → frozen
+4. 修正: withdrawn → revised (支持更新旧脏件 + 追加新件)
+5. 再提交: revised → partial_failed
+6. 改判: partial_failed → approved
+7. 冻结: approved → frozen
 
 ### 幂等性测试
 
