@@ -1,0 +1,6 @@
+"sourceRowNumber","orderNo","guestName","roomNo","roomType","checkinDate","checkoutDate","roomRate","depositAmount","operator","status","sourceFile","importBatch"
+2,"ORD001","张三","1001","标准间","2026-05-20","2026-05-25",380,700,"李前台","正常","checkin_normal.csv","a7a02c3e-50d4-4dbe-8958-91995e1e58af"
+3,"ORD002","李四","1002","大床房","2026-05-21","2026-05-23",480,1500,"李前台","正常","checkin_normal.csv","a7a02c3e-50d4-4dbe-8958-91995e1e58af"
+4,"ORD003","王五","1003","豪华间","2026-05-22","2026-05-24",680,2000,"张前台","正常","checkin_normal.csv","a7a02c3e-50d4-4dbe-8958-91995e1e58af"
+5,"ORD004","赵六","1004","标准间","2026-05-22","2026-05-26",380,800,"张前台","正常","checkin_normal.csv","a7a02c3e-50d4-4dbe-8958-91995e1e58af"
+6,"ORD005","钱七","1005","大床房","2026-05-23","2026-05-25",480,1500,"李前台","正常","checkin_normal.csv","a7a02c3e-50d4-4dbe-8958-91995e1e58af"

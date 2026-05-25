@@ -1,32 +1,32 @@
 {
   "users": [
     {
-      "id": "3a9135dc-e492-4296-a6c8-490c77b821c1",
+      "id": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
       "username": "admin",
       "role": "supervisor",
       "name": "系统管理员",
-      "createdAt": "2026-05-25T20:39:40.426Z"
+      "createdAt": "2026-05-25T21:01:52.988Z"
     },
     {
-      "id": "23fcf60e-acc0-4d5b-9e2e-5305b7c48192",
+      "id": "015d5ed2-e909-4bf6-87f0-6357b02bd805",
       "username": "reviewer",
       "role": "review",
       "name": "复核员小张",
-      "createdAt": "2026-05-25T20:39:40.430Z"
+      "createdAt": "2026-05-25T21:01:52.989Z"
     },
     {
-      "id": "9e9a6a81-feb0-4106-bb33-9338729aa9c4",
+      "id": "97fb57bb-032b-48a9-b857-97a0073d7f14",
       "username": "clerk",
       "role": "entry",
       "name": "录入员小李",
-      "createdAt": "2026-05-25T20:39:40.430Z"
+      "createdAt": "2026-05-25T21:01:52.989Z"
     },
     {
-      "id": "bdeb023a-0f66-4273-8a31-de28f4308b33",
+      "id": "15f411ff-ced9-4606-b3f9-98d9b06a7576",
       "username": "viewer",
       "role": "readonly",
       "name": "查看员小王",
-      "createdAt": "2026-05-25T20:39:40.430Z"
+      "createdAt": "2026-05-25T21:01:52.989Z"
     }
   ],
   "checkinRecords": [
@@ -45,10 +45,10 @@
       "operator": "李前台",
       "status": "正常",
       "source": "checkin",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:02.750Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "c09c14c2-609e-4e87-ba3e-c0b6e6537c08"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:13.876Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "dc2f8012-2308-4d91-acb2-bca5c0d1db98"
     },
     {
       "sourceRowNumber": 3,
@@ -65,10 +65,10 @@
       "operator": "李前台",
       "status": "正常",
       "source": "checkin",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:02.753Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "29ebee46-b2ef-4b6c-ae17-c616a22102a5"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:13.877Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "54c6fda6-1993-4cdd-bbbc-c5524408951e"
     },
     {
       "sourceRowNumber": 4,
@@ -86,10 +86,10 @@
       "status": "正常",
       "remarks": "VIP客人",
       "source": "checkin",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:02.753Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "727bc968-5aec-4245-99b8-8335ec2e12ae"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:13.878Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "b9c5968a-0056-40e1-8e01-171ce0874c68"
     },
     {
       "sourceRowNumber": 5,
@@ -106,10 +106,10 @@
       "operator": "张前台",
       "status": "正常",
       "source": "checkin",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:02.753Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "4d96195a-5838-461b-8e9b-946623d2e5fa"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:13.878Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "8a1401ce-da97-4ecf-83ac-e1e62bc52911"
     },
     {
       "sourceRowNumber": 6,
@@ -126,16 +126,16 @@
       "operator": "李前台",
       "status": "正常",
       "source": "checkin",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:02.754Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "8a99c694-10a9-4067-b048-c11e72ae0f14"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:13.880Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "9c6f2641-c286-4c9a-8378-1f8441bf6715"
     }
   ],
   "depositRecords": [
     {
       "sourceRowNumber": 2,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "deposit.csv",
       "transactionNo": "DEP001",
       "orderNo": "ORD001",
       "guestName": "张三",
@@ -145,14 +145,14 @@
       "operator": "李前台",
       "transactionTime": "2026-05-20 14:30:00",
       "source": "deposit",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:23.835Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "9b122e4f-9516-492a-a0a2-e952d147f3e2"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:27.131Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "6de73e88-9807-40e7-becf-b2f46c255d0d"
     },
     {
       "sourceRowNumber": 3,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "deposit.csv",
       "transactionNo": "DEP002",
       "orderNo": "ORD002",
       "guestName": "李四",
@@ -162,14 +162,14 @@
       "operator": "李前台",
       "transactionTime": "2026-05-21 10:15:00",
       "source": "deposit",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:23.844Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "ff71bfb0-b9c2-4dfb-8983-f21579cf9db7"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:27.139Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "9b0766c7-592e-4d21-91a7-f11f83c4488b"
     },
     {
       "sourceRowNumber": 4,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "deposit.csv",
       "transactionNo": "DEP003",
       "orderNo": "ORD003",
       "guestName": "王五",
@@ -180,14 +180,14 @@
       "transactionTime": "2026-05-22 16:45:00",
       "remarks": "姓名不一致",
       "source": "deposit",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:23.845Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "38db8b28-c218-48c3-a79e-ad84d6732f26"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:27.139Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "d843b276-fd8f-4692-8a71-1d815331a9c3"
     },
     {
       "sourceRowNumber": 5,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "deposit.csv",
       "transactionNo": "DEP004",
       "orderNo": "ORD004",
       "guestName": "赵六",
@@ -198,14 +198,14 @@
       "transactionTime": "2026-05-22 09:00:00",
       "remarks": "金额不一致",
       "source": "deposit",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:23.846Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "965a6a7e-26b4-4cf5-90ee-6c10baea3475"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:27.139Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "ac1b3a8e-419e-4310-8a10-b7bf97ee9a90"
     },
     {
       "sourceRowNumber": 6,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "deposit.csv",
       "transactionNo": "DEP005",
       "orderNo": "ORD005",
       "guestName": "钱七",
@@ -215,14 +215,14 @@
       "operator": "李前台",
       "transactionTime": "2026-05-23 11:30:00",
       "source": "deposit",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:23.846Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "258c5f3b-bdca-4f1a-b1ca-5570933a63a2"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:27.140Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "07b2aa65-0c3e-4737-8bcf-2b45a31018df"
     },
     {
       "sourceRowNumber": 7,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "deposit.csv",
       "transactionNo": "DEP006",
       "orderNo": "ORD001",
       "guestName": "张三",
@@ -233,16 +233,16 @@
       "transactionTime": "2026-05-25 12:00:00",
       "remarks": "退房退款",
       "source": "deposit",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:23.847Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "50f58640-8ca2-4321-9c50-65c1db75cc60"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:27.140Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "ef483e8c-9cee-4c96-b876-d342c32f4c1d"
     }
   ],
   "roomChangeRecords": [
     {
       "sourceRowNumber": 2,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "roomChange.csv",
       "changeNo": "CHG001",
       "orderNo": "ORD001",
       "guestName": "张三",
@@ -256,14 +256,14 @@
       "operator": "李前台",
       "reason": "客人要求升级",
       "source": "roomChange",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:59.760Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "356e786d-a244-430a-855f-a4817248b503"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:44.342Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "410757bc-e82d-40a6-ae7a-260b7f8e68c9"
     },
     {
       "sourceRowNumber": 3,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "roomChange.csv",
       "changeNo": "CHG002",
       "orderNo": "ORD002",
       "guestName": "李四",
@@ -277,14 +277,14 @@
       "operator": "张前台",
       "reason": "换房前后房号相同",
       "source": "roomChange",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:59.768Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "f7f9f90d-3a05-4097-b392-e88196a61c25"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:44.350Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "32d8e59f-a8a2-45a5-8651-5757cd19d6b7"
     },
     {
       "sourceRowNumber": 4,
-      "sourceFile": "checkin_normal.csv",
+      "sourceFile": "roomChange.csv",
       "changeNo": "CHG003",
       "orderNo": "ORD003",
       "guestName": "王五",
@@ -298,24 +298,24 @@
       "operator": "李前台",
       "reason": "客人要求降级",
       "source": "roomChange",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "importedAt": "2026-05-25T20:40:59.769Z",
-      "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "id": "7dfdd760-cb0c-48e3-a18f-69d97dc68f52"
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "importedAt": "2026-05-25T21:02:44.350Z",
+      "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "id": "d8ebe198-b44d-4281-a8e5-6e21a68736df"
     }
   ],
   "shiftRecords": [],
   "supplementRecords": [],
   "dirtyRecords": [
     {
-      "recordId": "f7f9f90d-3a05-4097-b392-e88196a61c25",
+      "recordId": "32d8e59f-a8a2-45a5-8651-5757cd19d6b7",
       "recordType": "roomChange",
       "dirtyType": "invalid_data",
       "fieldName": "newRoomNo",
       "description": "换房前后房号相同",
       "originalContent": {
         "sourceRowNumber": 3,
-        "sourceFile": "checkin_normal.csv",
+        "sourceFile": "roomChange.csv",
         "changeNo": "CHG002",
         "orderNo": "ORD002",
         "guestName": "李四",
@@ -329,20 +329,20 @@
         "operator": "张前台",
         "reason": "换房前后房号相同",
         "source": "roomChange",
-        "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-        "importedAt": "2026-05-25T20:40:59.768Z",
-        "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-        "id": "f7f9f90d-3a05-4097-b392-e88196a61c25"
+        "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+        "importedAt": "2026-05-25T21:02:44.350Z",
+        "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+        "id": "32d8e59f-a8a2-45a5-8651-5757cd19d6b7"
       },
       "suggestion": "请确认是否真的需要换房，或修正新房号",
       "status": "pending",
-      "detectedAt": "2026-05-25T20:40:59.768Z",
-      "detectedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "id": "de13c0af-eef7-428b-978a-2da1cdb0fd84"
+      "detectedAt": "2026-05-25T21:02:44.350Z",
+      "detectedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "id": "c1a4707b-f213-43ff-944a-8a2d923d015e"
     },
     {
-      "recordId": "38db8b28-c218-48c3-a79e-ad84d6732f26",
+      "recordId": "d843b276-fd8f-4692-8a71-1d815331a9c3",
       "recordType": "deposit",
       "dirtyType": "name_changed",
       "fieldName": "guestName",
@@ -352,7 +352,7 @@
       "originalContent": {
         "deposit": {
           "sourceRowNumber": 4,
-          "sourceFile": "checkin_normal.csv",
+          "sourceFile": "deposit.csv",
           "transactionNo": "DEP003",
           "orderNo": "ORD003",
           "guestName": "王五五",
@@ -363,10 +363,10 @@
           "transactionTime": "2026-05-22 16:45:00",
           "remarks": "姓名不一致",
           "source": "deposit",
-          "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-          "importedAt": "2026-05-25T20:40:23.845Z",
-          "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-          "id": "38db8b28-c218-48c3-a79e-ad84d6732f26"
+          "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+          "importedAt": "2026-05-25T21:02:27.139Z",
+          "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+          "id": "d843b276-fd8f-4692-8a71-1d815331a9c3"
         },
         "checkin": {
           "sourceRowNumber": 4,
@@ -384,24 +384,24 @@
           "status": "正常",
           "remarks": "VIP客人",
           "source": "checkin",
-          "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-          "importedAt": "2026-05-25T20:40:02.753Z",
-          "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-          "id": "727bc968-5aec-4245-99b8-8335ec2e12ae"
+          "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+          "importedAt": "2026-05-25T21:02:13.878Z",
+          "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+          "id": "b9c5968a-0056-40e1-8e01-171ce0874c68"
         }
       },
       "suggestion": "请确认客人姓名是否正确，是否存在改名情况",
       "status": "fixed",
-      "detectedAt": "2026-05-25T20:41:24.221Z",
-      "detectedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "id": "f2a54f37-5d37-4c90-a178-1e3f3e7feec1",
+      "detectedAt": "2026-05-25T21:02:57.533Z",
+      "detectedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "id": "6af06659-cf7a-4b17-b588-77f4b0afbc4f",
       "fixedBy": "系统管理员",
-      "fixedAt": "2026-05-25T20:41:47.523Z",
+      "fixedAt": "2026-05-25T21:02:57.730Z",
       "fixRemark": "批量修复: 请确认客人姓名是否正确，是否存在改名情况 (修正值: 王五)"
     },
     {
-      "recordId": "7dfdd760-cb0c-48e3-a18f-69d97dc68f52",
+      "recordId": "d8ebe198-b44d-4281-a8e5-6e21a68736df",
       "recordType": "roomChange",
       "dirtyType": "name_changed",
       "fieldName": "guestName",
@@ -411,7 +411,7 @@
       "originalContent": {
         "roomChange": {
           "sourceRowNumber": 4,
-          "sourceFile": "checkin_normal.csv",
+          "sourceFile": "roomChange.csv",
           "changeNo": "CHG003",
           "orderNo": "ORD003",
           "guestName": "王五五",
@@ -425,10 +425,10 @@
           "operator": "李前台",
           "reason": "客人要求降级",
           "source": "roomChange",
-          "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-          "importedAt": "2026-05-25T20:40:59.769Z",
-          "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-          "id": "7dfdd760-cb0c-48e3-a18f-69d97dc68f52"
+          "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+          "importedAt": "2026-05-25T21:02:44.350Z",
+          "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+          "id": "d8ebe198-b44d-4281-a8e5-6e21a68736df"
         },
         "checkin": {
           "sourceRowNumber": 4,
@@ -446,24 +446,24 @@
           "status": "正常",
           "remarks": "VIP客人",
           "source": "checkin",
-          "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-          "importedAt": "2026-05-25T20:40:02.753Z",
-          "importedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-          "id": "727bc968-5aec-4245-99b8-8335ec2e12ae"
+          "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+          "importedAt": "2026-05-25T21:02:13.878Z",
+          "importedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+          "id": "b9c5968a-0056-40e1-8e01-171ce0874c68"
         }
       },
       "suggestion": "请确认客人姓名是否正确",
       "status": "fixed",
-      "detectedAt": "2026-05-25T20:41:24.221Z",
-      "detectedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "id": "b9b5c1dd-5472-4f67-8240-529c3a4f3ca4",
+      "detectedAt": "2026-05-25T21:02:57.533Z",
+      "detectedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "id": "6c9fa330-65c0-4501-b709-d846a44be587",
       "fixedBy": "系统管理员",
-      "fixedAt": "2026-05-25T20:41:47.524Z",
+      "fixedAt": "2026-05-25T21:02:57.732Z",
       "fixRemark": "批量修复: 请确认客人姓名是否正确 (修正值: 王五)"
     },
     {
-      "recordId": "c09c14c2-609e-4e87-ba3e-c0b6e6537c08",
+      "recordId": "dc2f8012-2308-4d91-acb2-bca5c0d1db98",
       "recordType": "checkin",
       "dirtyType": "amount_conflict",
       "fieldName": "depositAmount",
@@ -485,16 +485,16 @@
       },
       "suggestion": "请核入住单押金金额与押金流水",
       "status": "fixed",
-      "detectedAt": "2026-05-25T20:41:24.221Z",
-      "detectedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "id": "5a6a34e3-927c-4515-8dcb-ffd42125c0a3",
+      "detectedAt": "2026-05-25T21:02:57.533Z",
+      "detectedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "id": "9ae4418e-1846-4fcb-bf94-b5bf5a477dde",
       "fixedBy": "系统管理员",
-      "fixedAt": "2026-05-25T20:41:47.526Z",
+      "fixedAt": "2026-05-25T21:02:57.733Z",
       "fixRemark": "批量修复: 请核入住单押金金额与押金流水 (修正值: 700)"
     },
     {
-      "recordId": "4d96195a-5838-461b-8e9b-946623d2e5fa",
+      "recordId": "8a1401ce-da97-4ecf-83ac-e1e62bc52911",
       "recordType": "checkin",
       "dirtyType": "amount_conflict",
       "fieldName": "depositAmount",
@@ -512,116 +512,116 @@
       },
       "suggestion": "请核入住单押金金额与押金流水",
       "status": "fixed",
-      "detectedAt": "2026-05-25T20:41:24.221Z",
-      "detectedBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73",
-      "id": "9315c196-fc52-4c01-9ced-89235ff92373",
+      "detectedAt": "2026-05-25T21:02:57.533Z",
+      "detectedBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
+      "id": "e27fd464-ac1c-465c-a88c-f94f353393fd",
       "fixedBy": "系统管理员",
-      "fixedAt": "2026-05-25T20:41:47.527Z",
+      "fixedAt": "2026-05-25T21:02:57.734Z",
       "fixRemark": "批量修复: 请核入住单押金金额与押金流水 (修正值: 800)"
     }
   ],
   "statusChanges": [
     {
-      "id": "a00abefd-9e16-4e5f-8410-e96db69f6b48",
-      "recordId": "3b7dd5df-02fa-4220-a4a8-010889632b73",
+      "id": "f4c9e93d-e895-432b-b402-a9b3cdfcb4fb",
+      "recordId": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
       "recordType": "checkin",
       "fromStatus": "pending",
       "toStatus": "imported",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "导入完成: 5条记录",
-      "timestamp": "2026-05-25T20:40:02.754Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:13.881Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "341ad10b-e870-474c-b824-8827c57c6c4b",
-      "recordId": "3b7dd5df-02fa-4220-a4a8-010889632b73",
+      "id": "eb29efdf-066c-426e-b4cf-321e3b7cfb6f",
+      "recordId": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
       "recordType": "deposit",
       "fromStatus": "pending",
       "toStatus": "imported",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "导入完成: 6条记录",
-      "timestamp": "2026-05-25T20:40:23.847Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:27.141Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "6685b825-be56-4809-bd9f-f82fe0619ca4",
-      "recordId": "3b7dd5df-02fa-4220-a4a8-010889632b73",
+      "id": "9790a251-48a3-4801-855d-90d48c2e6218",
+      "recordId": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
       "recordType": "roomChange",
       "fromStatus": "pending",
       "toStatus": "imported",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "导入完成: 3条记录",
-      "timestamp": "2026-05-25T20:40:59.770Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:44.351Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "f4feed8c-b211-459e-b9ac-5af2de0e6e7c",
-      "recordId": "3b7dd5df-02fa-4220-a4a8-010889632b73",
+      "id": "8473934f-c885-4abb-a693-b8edce513df4",
+      "recordId": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
       "recordType": "checkin",
       "fromStatus": "imported",
       "toStatus": "checking",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "开始数据校验",
-      "timestamp": "2026-05-25T20:41:24.215Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:57.527Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "fa276c69-4c52-4c25-83ad-cd43ac6e37cb",
-      "recordId": "38db8b28-c218-48c3-a79e-ad84d6732f26",
+      "id": "c47ccdbd-8893-4d11-8a3e-839167966487",
+      "recordId": "d843b276-fd8f-4692-8a71-1d815331a9c3",
       "recordType": "deposit",
       "fromStatus": "dirty",
       "toStatus": "fixed",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "批量修复: 请确认客人姓名是否正确，是否存在改名情况",
-      "timestamp": "2026-05-25T20:41:47.518Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:57.727Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "4f6b6909-e166-45f3-8a62-6b9105622071",
-      "recordId": "7dfdd760-cb0c-48e3-a18f-69d97dc68f52",
+      "id": "64a772bb-b517-4280-af56-2e98fa1e81ee",
+      "recordId": "d8ebe198-b44d-4281-a8e5-6e21a68736df",
       "recordType": "roomChange",
       "fromStatus": "dirty",
       "toStatus": "fixed",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "批量修复: 请确认客人姓名是否正确",
-      "timestamp": "2026-05-25T20:41:47.524Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:57.731Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "17ba282f-3899-4b93-a154-3156e613a3e2",
-      "recordId": "c09c14c2-609e-4e87-ba3e-c0b6e6537c08",
+      "id": "e1a3eb39-9624-4b34-89de-14b848cef76d",
+      "recordId": "dc2f8012-2308-4d91-acb2-bca5c0d1db98",
       "recordType": "checkin",
       "fromStatus": "dirty",
       "toStatus": "fixed",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "批量修复: 请核入住单押金金额与押金流水",
-      "timestamp": "2026-05-25T20:41:47.526Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:57.733Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     },
     {
-      "id": "793fde90-926c-4c33-97ce-c800d4a80b3c",
-      "recordId": "4d96195a-5838-461b-8e9b-946623d2e5fa",
+      "id": "fe1c2e20-d17b-4a0a-b6c5-4449c71ad701",
+      "recordId": "8a1401ce-da97-4ecf-83ac-e1e62bc52911",
       "recordType": "checkin",
       "fromStatus": "dirty",
       "toStatus": "fixed",
       "operator": "系统管理员",
       "operatorRole": "supervisor",
       "reason": "批量修复: 请核入住单押金金额与押金流水",
-      "timestamp": "2026-05-25T20:41:47.527Z",
-      "importBatch": "3b7dd5df-02fa-4220-a4a8-010889632b73"
+      "timestamp": "2026-05-25T21:02:57.733Z",
+      "importBatch": "a7a02c3e-50d4-4dbe-8958-91995e1e58af"
     }
   ],
   "importBatches": [
     {
-      "id": "3b7dd5df-02fa-4220-a4a8-010889632b73",
+      "id": "a7a02c3e-50d4-4dbe-8958-91995e1e58af",
       "batchNo": "BATCH-2026-05-25-0001",
       "batchDate": "2026-05-25",
       "source": "checkin",
@@ -631,15 +631,15 @@
       "dirtyRecords": 5,
       "fixedRecords": 4,
       "status": "checking",
-      "createdBy": "3a9135dc-e492-4296-a6c8-490c77b821c1",
-      "createdAt": "2026-05-25T20:40:02.738Z"
+      "createdBy": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
+      "createdAt": "2026-05-25T21:02:13.563Z"
     }
   ],
   "auditReports": [],
-  "currentUser": "3a9135dc-e492-4296-a6c8-490c77b821c1",
+  "currentUser": "5e4f93c1-ef01-44b5-bfd1-3b83ffaed240",
   "config": {
     "initialized": true,
-    "initializedAt": "2026-05-25T20:39:40.430Z",
+    "initializedAt": "2026-05-25T21:01:52.989Z",
     "dataDirectory": "/Users/mac/pro/solo/workspaces/y11561/data"
   }
 }

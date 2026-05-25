@@ -1,2 +1,0 @@
-"id","recordId","recordType","dirtyType","fieldName","expectedValue","actualValue","description","status","fixedBy","fixedAt","fixRemark","detectedAt","importBatch"
-"de13c0af-eef7-428b-978a-2da1cdb0fd84","f7f9f90d-3a05-4097-b392-e88196a61c25","roomChange","invalid_data","newRoomNo",,,"换房前后房号相同","pending",,,,"2026-05-25T20:40:59.768Z","3b7dd5df-02fa-4220-a4a8-010889632b73"

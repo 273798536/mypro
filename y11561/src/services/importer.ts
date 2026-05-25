@@ -50,7 +50,7 @@ export class DataImporter {
             const sourceRowNumber = i + 2;
             
             try {
-              await this.processRecord(row, source, sourceRowNumber, batch.id, importedBy);
+              await this.processRecord(row, source, sourceRowNumber, batch.id, importedBy, fileName);
               importedRecords++;
             } catch (error) {
               errors.push(`行 ${sourceRowNumber}: ${(error as Error).message}`);
@@ -97,7 +97,8 @@ export class DataImporter {
     source: RecordSource,
     sourceRowNumber: number,
     batchId: string,
-    importedBy: string
+    importedBy: string,
+    sourceFileName: string
   ): Promise<void> {
     const now = new Date().toISOString();
     
@@ -105,7 +106,7 @@ export class DataImporter {
       case 'checkin': {
         const record = this.db.addCheckinRecord({
           sourceRowNumber,
-          sourceFile: this.db.getBatch(batchId)?.fileName || '',
+          sourceFile: sourceFileName,
           orderNo: String(row.orderNo || row.订单号 || ''),
           guestName: String(row.guestName || row.客人姓名 || ''),
           idCard: String(row.idCard || row.身份证号 || ''),
@@ -135,7 +136,7 @@ export class DataImporter {
       case 'deposit': {
         const record = this.db.addDepositRecord({
           sourceRowNumber,
-          sourceFile: this.db.getBatch(batchId)?.fileName || '',
+          sourceFile: sourceFileName,
           transactionNo: String(row.transactionNo || row.交易号 || ''),
           orderNo: String(row.orderNo || row.订单号 || ''),
           guestName: String(row.guestName || row.客人姓名 || ''),
@@ -161,7 +162,7 @@ export class DataImporter {
       case 'roomChange': {
         const record = this.db.addRoomChangeRecord({
           sourceRowNumber,
-          sourceFile: this.db.getBatch(batchId)?.fileName || '',
+          sourceFile: sourceFileName,
           changeNo: String(row.changeNo || row.换房单号 || ''),
           orderNo: String(row.orderNo || row.订单号 || ''),
           guestName: String(row.guestName || row.客人姓名 || ''),
@@ -190,7 +191,7 @@ export class DataImporter {
       case 'shift': {
         const record = this.db.addShiftRecord({
           sourceRowNumber,
-          sourceFile: this.db.getBatch(batchId)?.fileName || '',
+          sourceFile: sourceFileName,
           shiftNo: String(row.shiftNo || row.班次号 || ''),
           shiftDate: String(row.shiftDate || row.班次日期 || ''),
           shiftType: (String(row.shiftType || row.班次类型 || 'morning') as any),
@@ -217,7 +218,7 @@ export class DataImporter {
       case 'supplement': {
         this.db.addSupplementRecord({
           sourceRowNumber,
-          sourceFile: this.db.getBatch(batchId)?.fileName || '',
+          sourceFile: sourceFileName,
           supplementNo: String(row.supplementNo || row.补录单号 || ''),
           orderNo: String(row.orderNo || row.订单号 || ''),
           guestName: String(row.guestName || row.客人姓名 || ''),
