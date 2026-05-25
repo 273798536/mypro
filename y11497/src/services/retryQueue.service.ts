@@ -87,6 +87,24 @@ export class RetryQueueService {
       return { success: false };
     }
 
+    if (reimbursement.status === ReimbursementStatus.DEAD_LETTER) {
+      dataStore.updateRetryQueue(item.id, { status: 'cancelled' });
+      logger.warn(`跳过死信单据的重试处理: ${item.reimbursementId}`);
+      return { success: false };
+    }
+
+    if (reimbursement.status === ReimbursementStatus.CLOSED) {
+      dataStore.updateRetryQueue(item.id, { status: 'cancelled' });
+      logger.warn(`跳过已关闭单据的重试处理: ${item.reimbursementId}`);
+      return { success: false };
+    }
+
+    if (reimbursement.status === ReimbursementStatus.COMPENSATED) {
+      dataStore.updateRetryQueue(item.id, { status: 'cancelled' });
+      logger.warn(`跳过已补偿单据的重试处理: ${item.reimbursementId}`);
+      return { success: false };
+    }
+
     dataStore.updateRetryQueue(item.id, {
       status: 'processing',
       retryCount: item.retryCount + 1,

@@ -95,7 +95,7 @@ export interface RetryQueueItem {
   lastRetryAt?: string;
   lastError?: string;
   category: RetryCategory;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
   createdAt: string;
 }
 

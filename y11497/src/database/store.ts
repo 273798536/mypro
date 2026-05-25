@@ -90,10 +90,74 @@ class DataStore {
       logger.info(`  重试队列: ${this.retryQueue.size} 条`);
       logger.info(`  死信队列: ${this.deadLetters.size} 条`);
 
+      this.fixDataConsistency();
+
       return true;
     } catch (error) {
       logger.error('数据加载失败，将使用初始数据', error);
       return false;
+    }
+  }
+
+  private fixDataConsistency(): void {
+    let fixedCount = 0;
+
+    for (const [id, reimbursement] of this.reimbursements.entries()) {
+      let needUpdate = false;
+
+      if (reimbursement.status === ReimbursementStatus.DEAD_LETTER) {
+        if (reimbursement.currentRetry) {
+          reimbursement.currentRetry = undefined;
+          needUpdate = true;
+          logger.warn(`一致性修复: 死信单据 ${id} 清理了 currentRetry`);
+        }
+
+        if (reimbursement.isInSummary) {
+          reimbursement.isInSummary = false;
+          needUpdate = true;
+          logger.warn(`一致性修复: 死信单据 ${id} 设置 isInSummary=false`);
+        }
+
+        for (const [queueId, queueItem] of this.retryQueue.entries()) {
+          if (queueItem.reimbursementId === id && 
+              (queueItem.status === 'pending' || queueItem.status === 'processing')) {
+            queueItem.status = 'cancelled';
+            this.retryQueue.set(queueId, queueItem);
+            fixedCount++;
+            logger.warn(`一致性修复: 死信单据 ${id} 的重试记录 ${queueId} 已取消`);
+          }
+        }
+      }
+
+      if (reimbursement.status === ReimbursementStatus.CLOSED || 
+          reimbursement.status === ReimbursementStatus.COMPENSATED) {
+        if (reimbursement.currentRetry) {
+          reimbursement.currentRetry = undefined;
+          needUpdate = true;
+          logger.warn(`一致性修复: ${reimbursement.status}单据 ${id} 清理了 currentRetry`);
+        }
+
+        for (const [queueId, queueItem] of this.retryQueue.entries()) {
+          if (queueItem.reimbursementId === id && 
+              (queueItem.status === 'pending' || queueItem.status === 'processing')) {
+            queueItem.status = 'cancelled';
+            this.retryQueue.set(queueId, queueItem);
+            fixedCount++;
+            logger.warn(`一致性修复: ${reimbursement.status}单据 ${id} 的重试记录 ${queueId} 已取消`);
+          }
+        }
+      }
+
+      if (needUpdate) {
+        this.reimbursements.set(id, reimbursement);
+        fixedCount++;
+      }
+    }
+
+    if (fixedCount > 0) {
+      logger.info(`数据一致性检查完成，修复了 ${fixedCount} 处不一致`);
+    } else {
+      logger.info('数据一致性检查完成，未发现问题');
     }
   }
 
@@ -343,7 +407,17 @@ class DataStore {
       reimbursement.failureReason = failureReason;
       reimbursement.failureDetails = failureDetails;
       reimbursement.isInSummary = false;
+      reimbursement.currentRetry = undefined;
       this.reimbursements.set(reimbursementId, reimbursement);
+    }
+
+    for (const [key, queueItem] of this.retryQueue.entries()) {
+      if (queueItem.reimbursementId === reimbursementId && 
+          (queueItem.status === 'pending' || queueItem.status === 'processing')) {
+        queueItem.status = 'cancelled';
+        this.retryQueue.set(key, queueItem);
+        logger.info(`重试队列记录已取消: ${key} for dead letter ${reimbursementId}`);
+      }
     }
     
     logger.warn(`Moved to dead letter: ${reimbursementId}, reason: ${failureReason}`);
