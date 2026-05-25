@@ -262,7 +262,7 @@ class ReceiptProcessor:
                 queue_item = self.queue_service.submit_from_rework(rework.id)
                 receipt.queue_item_id = queue_item.id
             elif source_type == "sms":
-                exception = data_service.create_exception_record(receipt.payload)
+                exception, dirty_records = data_service.create_exception_record(receipt.payload)
                 receipt.exception_id = exception.id
                 queue_item = self.queue_service.submit_from_exception(exception.id)
                 receipt.queue_item_id = queue_item.id

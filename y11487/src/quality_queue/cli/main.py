@@ -108,7 +108,7 @@ def submit_exception(ctx, json_file):
     db = get_db()
     try:
         data_service = DataService(db)
-        exception = data_service.create_exception_record(data)
+        exception, dirty_records = data_service.create_exception_record(data)
 
         queue_service = QueueService(db, ctx.obj["operator"], ctx.obj["role"])
         queue_item = queue_service.submit_from_exception(exception.id)
@@ -326,7 +326,7 @@ def detail(ctx, queue_id):
     """查看队列项详情"""
     db = get_db()
     try:
-        service = ExportService(db)
+        service = QueueService(db, ctx.obj["operator"], ctx.obj["role"])
         detail = service.get_queue_detail(queue_id)
 
         if not detail:

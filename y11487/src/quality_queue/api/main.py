@@ -221,7 +221,7 @@ def submit_exception(
     """提交异常记录（短信截图/照片）"""
     try:
         data_service = DataService(db)
-        exception = data_service.create_exception_record(data.dict())
+        exception, dirty_records = data_service.create_exception_record(data.dict())
 
         queue_service = QueueService(db, current_user["operator"], current_user["role"])
         queue_item = queue_service.submit_from_exception(exception.id)

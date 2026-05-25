@@ -447,6 +447,59 @@ class QueueService:
             CompensationQueue.queue_no == queue_no
         ).first()
 
+    def get_queue_detail(self, queue_id: int) -> Optional[Dict[str, Any]]:
+        from ..models import AuditLog
+
+        queue_item = self.db.query(CompensationQueue).filter(
+            CompensationQueue.id == queue_id
+        ).first()
+
+        if not queue_item:
+            return None
+
+        audit_logs = self.db.query(AuditLog).filter(
+            AuditLog.queue_item_id == queue_id
+        ).order_by(AuditLog.created_at.asc()).all()
+
+        detail = {
+            "id": queue_item.id,
+            "queue_no": queue_item.queue_no,
+            "status": queue_item.status.value if queue_item.status else None,
+            "retry_category": queue_item.retry_category.value if queue_item.retry_category else None,
+            "defect_type": queue_item.defect_type,
+            "machine_no": queue_item.machine_no,
+            "responsible_shift_code": queue_item.responsible_shift_code,
+            "original_shift_code": queue_item.original_shift_code,
+            "compensation_amount": queue_item.compensation_amount,
+            "compensation_quantity": queue_item.compensation_quantity,
+            "retry_count": queue_item.retry_count,
+            "max_retries": queue_item.max_retries,
+            "next_retry_at": queue_item.next_retry_at.isoformat() if queue_item.next_retry_at else None,
+            "manual_handler": queue_item.manual_handler,
+            "manual_note": queue_item.manual_note,
+            "compensated_by": queue_item.compensated_by,
+            "compensated_at": queue_item.compensated_at.isoformat() if queue_item.compensated_at else None,
+            "closed_by": queue_item.closed_by,
+            "closed_at": queue_item.closed_at.isoformat() if queue_item.closed_at else None,
+            "close_reason": queue_item.close_reason,
+            "created_at": queue_item.created_at.isoformat() if queue_item.created_at else None,
+            "audit_logs": [
+                {
+                    "id": log.id,
+                    "action": log.action,
+                    "operator": log.operator,
+                    "is_allowed": log.is_allowed,
+                    "deny_reason": log.deny_reason,
+                    "old_value": log.old_value,
+                    "new_value": log.new_value,
+                    "created_at": log.created_at.isoformat() if log.created_at else None
+                }
+                for log in audit_logs
+            ]
+        }
+
+        return detail
+
     def list_queue(self, status: Optional[QueueStatus] = None,
                    category: Optional[RetryCategory] = None,
                    machine_no: Optional[str] = None,
