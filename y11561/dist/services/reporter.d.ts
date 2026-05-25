@@ -8,5 +8,8 @@ export declare class ReportGenerator {
     private exportDirtyRecordsToCSV;
     private exportCheckinToCSV;
     private exportDepositToCSV;
+    private exportRoomChangeToCSV;
+    private exportShiftToCSV;
+    private exportSupplementToCSV;
     private generateSummaryReport;
 }

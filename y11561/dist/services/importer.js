@@ -45,9 +45,11 @@ class DataImporter {
                         errors.push(`行 ${sourceRowNumber}: ${error.message}`);
                     }
                 }
+                const existingTotal = existingBatchId ? (batch.totalRecords || 0) : 0;
+                const existingImported = existingBatchId ? (batch.importedRecords || 0) : 0;
                 this.db.updateBatch(batch.id, {
-                    totalRecords,
-                    importedRecords,
+                    totalRecords: existingTotal + totalRecords,
+                    importedRecords: existingImported + importedRecords,
                     status: 'imported'
                 });
                 const user = this.db.getUserById(importedBy);

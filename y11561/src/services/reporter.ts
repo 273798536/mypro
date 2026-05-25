@@ -13,12 +13,25 @@ export class ReportGenerator {
       throw new Error('批次不存在');
     }
     
+    const checkinRecords = this.db.getCheckinRecords(batchId);
+    const depositRecords = this.db.getDepositRecords(batchId);
+    const roomChangeRecords = this.db.getRoomChangeRecords(batchId);
+    const shiftRecords = this.db.getShiftRecords(batchId);
+    const supplementRecords = this.db.getSupplementRecords(batchId);
+    
+    const actualTotalRecords = 
+      checkinRecords.length + 
+      depositRecords.length + 
+      roomChangeRecords.length + 
+      shiftRecords.length + 
+      supplementRecords.length;
+    
     const dirtyRecords = this.db.getDirtyRecords(batchId);
     const statusChanges = this.db.getStatusChanges(undefined, batchId);
     
     const summary = {
-      totalRecords: batch.totalRecords,
-      cleanRecords: batch.importedRecords - dirtyRecords.filter(d => d.status === 'pending').length,
+      totalRecords: actualTotalRecords,
+      cleanRecords: actualTotalRecords - dirtyRecords.filter(d => d.status === 'pending').length,
       dirtyRecords: dirtyRecords.length,
       fixedRecords: dirtyRecords.filter(d => d.status === 'fixed').length,
       pendingRecords: dirtyRecords.filter(d => d.status === 'pending').length,
@@ -87,6 +100,30 @@ export class ReportGenerator {
       files.push(depositPath);
     }
     
+    const roomChangeRecords = this.db.getRoomChangeRecords(batchId);
+    if (roomChangeRecords.length > 0) {
+      const roomChangeCsv = this.exportRoomChangeToCSV(roomChangeRecords);
+      const roomChangePath = path.join(outputDir, `${batch.batchNo}_换房记录_修正后_${timestamp}.csv`);
+      fs.writeFileSync(roomChangePath, roomChangeCsv, 'utf-8');
+      files.push(roomChangePath);
+    }
+    
+    const shiftRecords = this.db.getShiftRecords(batchId);
+    if (shiftRecords.length > 0) {
+      const shiftCsv = this.exportShiftToCSV(shiftRecords);
+      const shiftPath = path.join(outputDir, `${batch.batchNo}_班次记录_修正后_${timestamp}.csv`);
+      fs.writeFileSync(shiftPath, shiftCsv, 'utf-8');
+      files.push(shiftPath);
+    }
+    
+    const supplementRecords = this.db.getSupplementRecords(batchId);
+    if (supplementRecords.length > 0) {
+      const supplementCsv = this.exportSupplementToCSV(supplementRecords);
+      const supplementPath = path.join(outputDir, `${batch.batchNo}_临时补录_修正后_${timestamp}.csv`);
+      fs.writeFileSync(supplementPath, supplementCsv, 'utf-8');
+      files.push(supplementPath);
+    }
+    
     const summaryReport = this.generateSummaryReport(batchId);
     const summaryPath = path.join(outputDir, `${batch.batchNo}_夜审报告_${timestamp}.txt`);
     fs.writeFileSync(summaryPath, summaryReport, 'utf-8');
@@ -125,10 +162,54 @@ export class ReportGenerator {
     return parser.parse(records);
   }
   
+  private exportRoomChangeToCSV(records: any[]): string {
+    const fields = [
+      'sourceRowNumber', 'changeNo', 'orderNo', 'guestName',
+      'oldRoomNo', 'newRoomNo', 'oldRoomType', 'newRoomType',
+      'oldRoomRate', 'newRoomRate', 'changeTime', 'operator',
+      'reason', 'sourceFile', 'importBatch'
+    ];
+    const parser = new Parser({ fields });
+    return parser.parse(records);
+  }
+  
+  private exportShiftToCSV(records: any[]): string {
+    const fields = [
+      'sourceRowNumber', 'shiftNo', 'shiftDate', 'shiftType',
+      'operator', 'checkinCount', 'checkoutCount', 'totalDeposit',
+      'totalRefund', 'totalRevenue', 'handoverTime', 'sourceFile', 'importBatch'
+    ];
+    const parser = new Parser({ fields });
+    return parser.parse(records);
+  }
+  
+  private exportSupplementToCSV(records: any[]): string {
+    const fields = [
+      'sourceRowNumber', 'supplementNo', 'orderNo', 'guestName',
+      'supplementType', 'amount', 'operator', 'supplementTime',
+      'reason', 'sourceFile', 'importBatch'
+    ];
+    const parser = new Parser({ fields });
+    return parser.parse(records);
+  }
+  
   private generateSummaryReport(batchId: string): string {
     const batch = this.db.getBatch(batchId)!;
     const dirtyRecords = this.db.getDirtyRecords(batchId);
     const statusChanges = this.db.getStatusChanges(undefined, batchId);
+    
+    const checkinRecords = this.db.getCheckinRecords(batchId);
+    const depositRecords = this.db.getDepositRecords(batchId);
+    const roomChangeRecords = this.db.getRoomChangeRecords(batchId);
+    const shiftRecords = this.db.getShiftRecords(batchId);
+    const supplementRecords = this.db.getSupplementRecords(batchId);
+    
+    const actualTotalRecords = 
+      checkinRecords.length + 
+      depositRecords.length + 
+      roomChangeRecords.length + 
+      shiftRecords.length + 
+      supplementRecords.length;
     
     const dirtyTypeMap: Record<DirtyType, string> = {
       missing_field: '缺失字段',
@@ -146,15 +227,19 @@ export class ReportGenerator {
 =============================================
 
 批次号: ${batch.batchNo}
-数据源: ${batch.source}
-文件名: ${batch.fileName}
+数据源: 多源合并 (入住单/押金流水/换房记录/班次记录)
+文件名: 多源数据
 导入时间: ${batch.createdAt}
 
 ---------------------------------------------
                 汇总统计
 ---------------------------------------------
-总记录数: ${batch.totalRecords}
-成功导入: ${batch.importedRecords}
+总记录数: ${actualTotalRecords}
+  - 入住单: ${checkinRecords.length}
+  - 押金流水: ${depositRecords.length}
+  - 换房记录: ${roomChangeRecords.length}
+  - 班次记录: ${shiftRecords.length}
+  - 临时补录: ${supplementRecords.length}
 脏记录数: ${dirtyRecords.length}
   - 待处理: ${dirtyRecords.filter(d => d.status === 'pending').length}
   - 已修复: ${dirtyRecords.filter(d => d.status === 'fixed').length}

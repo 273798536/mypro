@@ -1,0 +1,7 @@
+"sourceRowNumber","transactionNo","orderNo","guestName","amount","paymentMethod","transactionType","operator","transactionTime","sourceFile","importBatch"
+2,"DEP001","ORD001","张三",1000,"现金","deposit","李前台","2026-05-20 14:30:00","checkin_normal.csv","3b7dd5df-02fa-4220-a4a8-010889632b73"
+3,"DEP002","ORD002","李四",1500,"微信","deposit","李前台","2026-05-21 10:15:00","checkin_normal.csv","3b7dd5df-02fa-4220-a4a8-010889632b73"
+4,"DEP003","ORD003","王五",2000,"支付宝","deposit","张前台","2026-05-22 16:45:00","checkin_normal.csv","3b7dd5df-02fa-4220-a4a8-010889632b73"
+5,"DEP004","ORD004","赵六",800,"现金","deposit","张前台","2026-05-22 09:00:00","checkin_normal.csv","3b7dd5df-02fa-4220-a4a8-010889632b73"
+6,"DEP005","ORD005","钱七",1500,"银行卡","deposit","李前台","2026-05-23 11:30:00","checkin_normal.csv","3b7dd5df-02fa-4220-a4a8-010889632b73"
+7,"DEP006","ORD001","张三",-300,"现金","refund","张前台","2026-05-25 12:00:00","checkin_normal.csv","3b7dd5df-02fa-4220-a4a8-010889632b73"

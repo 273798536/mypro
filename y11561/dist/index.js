@@ -245,12 +245,19 @@ program
                 },
                 {
                     type: 'input',
+                    name: 'newValue',
+                    message: '修正后的值（留空则使用建议值）:'
+                },
+                {
+                    type: 'input',
                     name: 'remark',
                     message: '修复说明:'
                 }
             ]);
             try {
-                fixer.fixDirtyRecord(idAnswer.dirtyId, idAnswer.remark, currentUser);
+                const dirtyRecord = db.getDirtyRecords().find(d => d.id === idAnswer.dirtyId);
+                const valueToUse = idAnswer.newValue || dirtyRecord?.expectedValue || '';
+                fixer.fixDirtyRecord(idAnswer.dirtyId, idAnswer.remark, currentUser, valueToUse);
                 console.log(chalk_1.default.green('✓ 修复成功！'));
             }
             catch (error) {
