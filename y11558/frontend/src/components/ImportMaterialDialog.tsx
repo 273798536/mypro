@@ -68,14 +68,20 @@ export const ImportMaterialDialog: React.FC<ImportMaterialDialogProps> = ({ open
       let rawContent: any = {};
 
       switch (formData.type) {
-        case 'ORDER':
+        case 'ORDER': {
+          const orderItems = formData.items.filter(i => i.productName);
+          const totalAmount = orderItems.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+          const orderNo = `DD${formData.businessDate.replace(/-/g, '')}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
           parsedData = {
+            orderNo,
             storeName: formData.storeName,
-            businessDate: formData.businessDate,
-            items: formData.items.filter(i => i.productName),
+            orderDate: formData.businessDate,
+            items: orderItems,
+            totalAmount,
           };
           rawContent = { ...parsedData, source: 'order_form' };
           break;
+        }
         case 'TRACK':
           parsedData = {
             driverName: formData.driverName,
@@ -88,24 +94,35 @@ export const ImportMaterialDialog: React.FC<ImportMaterialDialogProps> = ({ open
           };
           rawContent = { ...parsedData, source: 'track_form' };
           break;
-        case 'IOU':
+        case 'IOU': {
+          const iouNo = `QT${formData.businessDate.replace(/-/g, '')}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
           parsedData = {
+            iouNo,
             storeName: formData.storeName,
             customerName: formData.customerName,
             iouAmount: Number(formData.iouAmount),
+            totalAmount: Number(formData.iouAmount),
+            signDate: formData.businessDate,
             iouNote: formData.iouNote,
-            businessDate: formData.businessDate,
+            signature: `${formData.customerName}(签字)`,
           };
           rawContent = { ...parsedData, source: 'iou_form' };
           break;
-        case 'STATEMENT':
+        }
+        case 'STATEMENT': {
+          const stmtItems = formData.statementItems.filter(i => i.productName);
+          const totalAmount = stmtItems.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+          const statementNo = `DZD${formData.businessDate.replace(/-/g, '')}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
           parsedData = {
+            statementNo,
             supplierName: formData.supplierName,
-            statementItems: formData.statementItems.filter(i => i.productName),
-            businessDate: formData.businessDate,
+            statementDate: formData.businessDate,
+            items: stmtItems,
+            totalAmount,
           };
           rawContent = { ...parsedData, source: 'statement_form' };
           break;
+        }
         case 'EMAIL':
           parsedData = {
             emailSubject: formData.emailSubject,

@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma.js';
 import { auditService } from './audit.service.js';
+import { reconciliationService } from './reconciliation.service.js';
 import type { ChainStatus } from '../types/index.js';
 import { toJson, fromJson, safeParse } from '../utils/json.js';
 
@@ -27,9 +28,9 @@ export class ChainService {
     }
 
     const totalAmount = materials.reduce((sum, m) => {
-      const parsed = m.parsedData as any;
+      const parsed = fromJson(m.parsedData) || {};
       return sum + (parsed.totalAmount || 0);
-    }, 0) / materials.filter(m => (m.parsedData as any).totalAmount).length;
+    }, 0);
 
     const chainNo = this.generateChainNo(storeName, businessDate);
 
@@ -63,6 +64,12 @@ export class ChainService {
       operatorId,
       operatorName,
     );
+
+    try {
+      await reconciliationService.startReconciliation(chain.id, operatorId, operatorName);
+    } catch (reconErr) {
+      console.error('自动对账失败:', reconErr);
+    }
 
     return chain;
   }

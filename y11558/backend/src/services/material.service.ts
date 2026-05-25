@@ -166,7 +166,7 @@ export class MaterialService {
     await prisma.material.update({
       where: { id },
       data: {
-        parsedData,
+        parsedData: toJson(parsedData),
       },
     });
 

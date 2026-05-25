@@ -291,22 +291,99 @@ export class DirtyDataService {
       data: {
         dirtyDataId: id,
         beforeValue: record.originalValue,
-        afterValue: finalValue,
+        afterValue: toJson(finalValue),
         reason: fixNote,
         operatorId,
         operatorName,
       },
     });
 
-    return prisma.dirtyDataRecord.update({
+    const material = record.material;
+    const parsedData = fromJson(material.parsedData) || {};
+
+    if (record.type === 'MISSING_FIELD') {
+      const fieldName = record.fieldName;
+      if (fieldName === 'items' && Array.isArray(finalValue)) {
+        parsedData.items = finalValue;
+        parsedData.totalAmount = finalValue.reduce((s: number, i: any) => s + Number(i.amount || 0), 0);
+      } else if (fieldName === 'totalAmount') {
+        parsedData.totalAmount = Number(finalValue);
+      } else {
+        (parsedData as any)[fieldName] = finalValue;
+      }
+    } else if (record.type === 'AMOUNT_CONFLICT') {
+      if (finalValue && typeof finalValue === 'object' && finalValue.amount !== undefined) {
+        parsedData.totalAmount = Number(finalValue.amount);
+      } else if (typeof finalValue === 'number') {
+        parsedData.totalAmount = Number(finalValue);
+      } else if (typeof finalValue === 'string') {
+        parsedData.totalAmount = Number(finalValue);
+      }
+    } else if (record.type === 'QUANTITY_CONFLICT') {
+      if (finalValue && typeof finalValue === 'object' && finalValue.quantity !== undefined) {
+        const match = record.fieldName.match(/items\[(\d+)\]\.quantity/);
+        if (match && parsedData.items) {
+          const idx = Number(match[1]);
+          parsedData.items[idx].quantity = Number(finalValue.quantity);
+          parsedData.items[idx].amount = Number(parsedData.items[idx].quantity) * Number(parsedData.items[idx].price || 0);
+          parsedData.totalAmount = parsedData.items.reduce((s: number, i: any) => s + Number(i.amount || 0), 0);
+        }
+      }
+    } else if (record.type === 'NAME_CHANGE') {
+      if (finalValue && typeof finalValue === 'object' && finalValue.productName !== undefined) {
+        const match = record.fieldName.match(/items\[(\d+)\]\.productName/);
+        if (match && parsedData.items) {
+          const idx = Number(match[1]);
+          parsedData.items[idx].productName = finalValue.productName;
+        }
+      }
+    } else if (record.type === 'CROSS_DATE') {
+      if (finalValue && typeof finalValue === 'string') {
+        const match = record.fieldName;
+        if (match === 'date') {
+          parsedData.signDate = finalValue;
+        }
+      }
+    }
+
+    await prisma.material.update({
+      where: { id: material.id },
+      data: { parsedData: toJson(parsedData) },
+    });
+
+    const updatedRecord = await prisma.dirtyDataRecord.update({
       where: { id },
       data: {
-        finalValue,
+        finalValue: toJson(finalValue),
         fixNote,
         status: 'FIXED',
         fixedAt: new Date(),
       },
     });
+
+    if (material.chainId) {
+      const chainMaterials = await prisma.material.findMany({
+        where: { chainId: material.chainId, isLatest: true },
+      });
+      const newTotalAmount = chainMaterials.reduce((sum, m) => {
+        const pd = fromJson(m.parsedData) || {};
+        return sum + (pd.totalAmount || 0);
+      }, 0);
+      await prisma.chain.update({
+        where: { id: material.chainId },
+        data: {
+          totalAmount: newTotalAmount,
+          status: 'REVIEW_REQUIRED',
+          summaryData: toJson({
+            materialCount: chainMaterials.length,
+            materialTypes: [...new Set(chainMaterials.map(m => m.type))],
+            note: '脏数据修正后自动重新汇总',
+          }),
+        },
+      });
+    }
+
+    return updatedRecord;
   }
 
   async ignoreDirtyData(
@@ -337,8 +414,9 @@ export class DirtyDataService {
     return prisma.dirtyDataRecord.update({
       where: { id },
       data: {
-        status: 'IGNORED',
+        finalValue: record.originalValue,
         fixNote,
+        status: 'IGNORED',
         fixedAt: new Date(),
       },
     });
