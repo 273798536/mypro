@@ -175,11 +175,6 @@ def create_supplier_bill(db: Session, bill: schemas.SupplierBillCreate, batch_id
     db.commit()
     db.refresh(db_bill)
 
-    booking_id = RecordLinkingService.link_bill_to_booking(db, db_bill)
-    if booking_id:
-        db_bill.booking_id = booking_id
-        db.commit()
-
     return db_bill
 
 
@@ -188,6 +183,7 @@ def get_booking(db: Session, booking_id: int, auto_relink: bool = True) -> Optio
     if booking and auto_relink:
         from .services import ReconciliationService
         ReconciliationService.relink_all_for_booking(db, booking)
+        ReconciliationService.distribute_bills_globally(db)
         db.refresh(booking)
 
         has_cancel = len(booking.cancel_messages) > 0
@@ -522,7 +518,9 @@ def batch_import_data(
         r = ReconciliationService.relink_all_for_booking(db, booking)
         relink_stats["access"] += r["access"]
         relink_stats["cancel"] += r["cancel"]
-        relink_stats["bill"] += r["bill"]
+
+    bill_result = ReconciliationService.distribute_bills_globally(db)
+    relink_stats["bill"] = bill_result["bills_linked"]
 
     for booking in bookings:
         db.refresh(booking)

@@ -158,7 +158,9 @@ def relink_all_records(db: Session = Depends(get_db)):
         stats = ReconciliationService.relink_all_for_booking(db, booking)
         relink_stats["relinked_access"] += stats["access"]
         relink_stats["relinked_cancel"] += stats["cancel"]
-        relink_stats["relinked_bill"] += stats["bill"]
+
+    bill_stats = ReconciliationService.distribute_bills_globally(db)
+    relink_stats["relinked_bill"] = bill_stats["bills_linked"]
 
     return {"status": "success", "message": "All records re-linked and re-summarized", "stats": relink_stats}
 

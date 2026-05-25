@@ -263,6 +263,96 @@ class ProcessRecordService:
 
 class ReconciliationService:
     @staticmethod
+    def distribute_bills_globally(db: Session) -> Dict[str, int]:
+        unlinked_bills = db.query(models.SupplierBill).filter(
+            models.SupplierBill.booking_id.is_(None)
+        ).all()
+
+        bills_by_room_date = {}
+        for bill in unlinked_bills:
+            bill_date = bill.meeting_date or bill.bill_date
+            key = (bill.room_name, bill_date.date())
+            if key not in bills_by_room_date:
+                bills_by_room_date[key] = {"tea": [], "equip": [], "other": []}
+
+            is_tea = "tea" in bill.service_type.lower() or "茶歇" in bill.service_type
+            is_equip = "equip" in bill.service_type.lower() or "设备" in bill.service_type
+
+            if is_tea:
+                bills_by_room_date[key]["tea"].append(bill)
+            elif is_equip:
+                bills_by_room_date[key]["equip"].append(bill)
+            else:
+                bills_by_room_date[key]["other"].append(bill)
+
+        total_linked = 0
+        for (room_name, bill_date), bill_groups in bills_by_room_date.items():
+            bookings = db.query(models.BookingRecord).filter(
+                models.BookingRecord.room_name == room_name,
+                models.BookingRecord.start_time >= datetime.combine(bill_date, datetime.min.time()),
+                models.BookingRecord.start_time <= datetime.combine(bill_date, datetime.max.time())
+            ).order_by(models.BookingRecord.start_time).all()
+
+            tea_bookings = [b for b in bookings if b.has_tea_break]
+            equip_bookings = [b for b in bookings if b.has_equipment]
+
+            tea_matched = set()
+            for bill in bill_groups["tea"]:
+                candidates = [b for b in tea_bookings if b.id not in tea_matched]
+                if candidates:
+                    match_by_attendee = [b for b in candidates if abs(b.attendee_count - bill.quantity) < 3]
+                    if match_by_attendee:
+                        bill.booking_id = match_by_attendee[0].id
+                        tea_matched.add(match_by_attendee[0].id)
+                    else:
+                        bill.booking_id = candidates[0].id
+                        tea_matched.add(candidates[0].id)
+                    total_linked += 1
+
+            equip_matched = set()
+            for bill in bill_groups["equip"]:
+                candidates = [b for b in equip_bookings if b.id not in equip_matched]
+                if len(candidates) > 1:
+                    candidates_no_tea = [b for b in candidates if not b.has_tea_break]
+                    if candidates_no_tea:
+                        candidates = candidates_no_tea
+                if candidates:
+                    bill.booking_id = candidates[0].id
+                    equip_matched.add(candidates[0].id)
+                    total_linked += 1
+
+            other_bookings = bookings
+            for i, bill in enumerate(bill_groups["other"]):
+                if i < len(other_bookings):
+                    bill.booking_id = other_bookings[i].id
+                    total_linked += 1
+
+            remaining_unlinked = [
+                b for b in bill_groups["tea"] + bill_groups["equip"] + bill_groups["other"]
+                if b.booking_id is None
+            ]
+            if remaining_unlinked and bookings:
+                for bill in remaining_unlinked:
+                    is_tea = "tea" in bill.service_type.lower() or "茶歇" in bill.service_type
+                    is_equip = "equip" in bill.service_type.lower() or "设备" in bill.service_type
+                    for booking in bookings:
+                        if is_tea and booking.has_tea_break:
+                            continue
+                        if is_equip and booking.has_equipment:
+                            continue
+                        bill.booking_id = booking.id
+                        total_linked += 1
+                        break
+                    else:
+                        bill.booking_id = bookings[0].id
+                        total_linked += 1
+
+        if total_linked > 0:
+            db.commit()
+
+        return {"bills_linked": total_linked}
+
+    @staticmethod
     def relink_all_for_booking(db: Session, booking: models.BookingRecord) -> Dict[str, int]:
         access_count = 0
         for access in db.query(models.AccessRecord).filter(
@@ -286,33 +376,16 @@ class ReconciliationService:
                 if booking.status != "cancelled":
                     booking.status = "cancelled"
 
-        bill_count = 0
-        for bill in db.query(models.SupplierBill).filter(
-            models.SupplierBill.booking_id.is_(None),
-            models.SupplierBill.room_name == booking.room_name
-        ).all():
-            bill_date = bill.meeting_date or bill.bill_date
-            if bill_date.date() == booking.start_time.date():
-                is_tea = "tea" in bill.service_type.lower() or "茶歇" in bill.service_type
-                is_equip = "equip" in bill.service_type.lower() or "设备" in bill.service_type
-
-                if is_tea and not booking.has_tea_break:
-                    continue
-                if is_equip and not booking.has_equipment:
-                    continue
-
-                bill.booking_id = booking.id
-                bill_count += 1
-
-        if access_count or cancel_count or bill_count:
+        if access_count or cancel_count:
             db.commit()
 
-        return {"access": access_count, "cancel": cancel_count, "bill": bill_count}
+        return {"access": access_count, "cancel": cancel_count, "bill": 0}
 
     @staticmethod
     def reconcile_booking(db: Session, booking: models.BookingRecord, auto_relink: bool = True) -> Dict[str, Any]:
         if auto_relink:
             ReconciliationService.relink_all_for_booking(db, booking)
+            ReconciliationService.distribute_bills_globally(db)
             db.refresh(booking)
 
         has_access = len(booking.access_records) > 0

@@ -149,20 +149,57 @@ def test_detail_recon_bill_consistency():
         if recon_item:
             recon_bill_count = recon_item.get('linked_bill_count', 0)
             recon_has_bill = recon_item['has_supplier_bill']
+            recon_cost = recon_item.get('total_cost', 0)
 
-            consistent = (detail_bill_count > 0) == recon_has_bill
+            detail_cost = sum(b['total_amount'] for b in detail['supplier_bills'])
+
+            consistent = (detail_bill_count > 0) == recon_has_bill and abs(detail_cost - recon_cost) < 0.01
             if not consistent:
                 all_consistent = False
 
             icon = "✓" if consistent else "!"
-            print(f"  {icon} {booking['meeting_topic'][:15]}: 详情账单={detail_bill_count}, 对账账单={recon_bill_count}, 对账has_bill={recon_has_bill}")
+            print(f"  {icon} {booking['meeting_topic'][:15]}: 详情账单={detail_bill_count}({detail_cost:.0f}), 对账账单={recon_bill_count}({recon_cost:.0f})")
 
     final_icon = "✓" if all_consistent else "!"
     print(f"  {final_icon} 详情与对账账单标记完全一致: {'是' if all_consistent else '否'}")
 
 
+def test_bill_assignment_correctness():
+    print("\n=== 测试3.9: 验证同日多会议账单正确分配 ===")
+    response = requests.get(f"{BASE_URL}/api/bookings")
+    bookings = response.json()
+
+    q2_booking = next((b for b in bookings if "Q2" in b['meeting_topic'] or "产品" in b['meeting_topic']), None)
+    arch_booking = next((b for b in bookings if "架构" in b['meeting_topic']), None)
+
+    if q2_booking and arch_booking:
+        q2_detail = requests.get(f"{BASE_URL}/api/bookings/{q2_booking['id']}").json()
+        arch_detail = requests.get(f"{BASE_URL}/api/bookings/{arch_booking['id']}").json()
+
+        q2_bill_types = [b['service_type'] for b in q2_detail['supplier_bills']]
+        arch_bill_types = [b['service_type'] for b in arch_detail['supplier_bills']]
+
+        print(f"  Q2产品发布会 (上午): {len(q2_bill_types)}条账单 - {q2_bill_types}")
+        print(f"  系统架构评审会 (下午): {len(arch_bill_types)}条账单 - {arch_bill_types}")
+
+        q2_has_tea = any('茶' in t or 'tea' in t.lower() for t in q2_bill_types)
+        arch_has_equip = any('设备' in t or 'equip' in t.lower() for t in arch_bill_types)
+
+        icon_tea = "✓" if q2_has_tea else "!"
+        icon_equip = "✓" if arch_has_equip else "!"
+        print(f"  {icon_tea} Q2会议有茶歇账单: {'是' if q2_has_tea else '否'}")
+        print(f"  {icon_equip} 架构评审会有设备账单: {'是' if arch_has_equip else '否'}")
+
+        if q2_has_tea and arch_has_equip:
+            print("  ✓ 同日多会议账单正确分配")
+        else:
+            print("  ! 账单分配可能有误")
+    else:
+        print("  未找到目标预约")
+
+
 def test_quantity_conflict_detection():
-    print("\n=== 测试3.9: 验证数量冲突检测 ===")
+    print("\n=== 测试3.10: 验证数量冲突检测 ===")
     with open("sample_data.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -290,6 +327,7 @@ if __name__ == "__main__":
     test_import_overwrite()
     test_overwrite_status_consistency()
     test_detail_recon_bill_consistency()
+    test_bill_assignment_correctness()
     test_quantity_conflict_detection()
     test_get_bookings()
     test_get_booking_detail()
