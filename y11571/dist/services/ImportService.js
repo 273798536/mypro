@@ -44,6 +44,18 @@ class ImportService {
     generateBatchId() {
         return `batch_${Date.now()}_${(0, uuid_1.v4)().slice(0, 8)}`;
     }
+    isUUID(str) {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(str);
+    }
+    resolveTicketId(ticketRef) {
+        if (this.isUUID(ticketRef)) {
+            return ticketRef;
+        }
+        const tickets = FileStorage_1.storage.getTickets();
+        const ticket = tickets.find((t) => t.id === ticketRef || t.ticketNo === ticketRef);
+        return ticket ? ticket.id : null;
+    }
     createImportError(batchId, recordType, rowNumber, errorType, errorMessage, rawData) {
         return {
             id: (0, uuid_1.v4)(),
@@ -211,10 +223,24 @@ class ImportService {
             importBatchId: batchId,
             originalRowNumber: rowNumber,
         };
+        const resolveTicketId = (ticketRef) => {
+            if (typeof ticketRef !== 'string') {
+                return String(ticketRef || '');
+            }
+            if (this.isUUID(ticketRef)) {
+                return ticketRef;
+            }
+            const resolvedId = this.resolveTicketId(ticketRef);
+            if (resolvedId) {
+                return resolvedId;
+            }
+            return ticketRef;
+        };
         switch (recordType) {
             case 'ticket':
                 return {
                     ...baseEntity,
+                    id: data.id && this.isUUID(data.id) ? data.id : baseEntity.id,
                     ticketNo: data.ticketNo,
                     title: data.title,
                     status: data.status || 'open',
@@ -228,7 +254,7 @@ class ImportService {
             case 'sessionSummary':
                 return {
                     ...baseEntity,
-                    ticketId: data.ticketId,
+                    ticketId: resolveTicketId(data.ticketId),
                     summary: data.summary,
                     keyPoints: data.keyPoints || [],
                     createdAt: data.createdAt || now,
@@ -237,7 +263,7 @@ class ImportService {
             case 'slaRule':
                 return {
                     ...baseEntity,
-                    ticketId: data.ticketId,
+                    ticketId: resolveTicketId(data.ticketId),
                     ruleName: data.ruleName,
                     responseTime: data.responseTime || 0,
                     resolutionTime: data.resolutionTime || 0,
@@ -251,7 +277,7 @@ class ImportService {
             case 'compensationApproval':
                 return {
                     ...baseEntity,
-                    ticketId: data.ticketId,
+                    ticketId: resolveTicketId(data.ticketId),
                     amount: data.amount,
                     reason: data.reason,
                     status: data.status || 'pending',
@@ -263,7 +289,7 @@ class ImportService {
             case 'customerServiceNote':
                 return {
                     ...baseEntity,
-                    ticketId: data.ticketId,
+                    ticketId: resolveTicketId(data.ticketId),
                     content: data.content,
                     createdAt: data.createdAt || now,
                     createdBy: data.createdBy || 'import',
@@ -272,7 +298,7 @@ class ImportService {
             case 'exceptionPhoto':
                 return {
                     ...baseEntity,
-                    ticketId: data.ticketId,
+                    ticketId: resolveTicketId(data.ticketId),
                     fileName: data.fileName,
                     filePath: data.filePath,
                     uploadedAt: data.uploadedAt || now,
@@ -282,7 +308,7 @@ class ImportService {
             case 'assignmentHistory':
                 return {
                     ...baseEntity,
-                    ticketId: data.ticketId,
+                    ticketId: resolveTicketId(data.ticketId),
                     fromAssignee: data.fromAssignee || '',
                     toAssignee: data.toAssignee,
                     fromDepartment: data.fromDepartment || '',

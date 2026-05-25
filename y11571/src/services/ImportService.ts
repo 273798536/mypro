@@ -29,6 +29,21 @@ export class ImportService {
     return `batch_${Date.now()}_${uuidv4().slice(0, 8)}`;
   }
 
+  private isUUID(str: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  }
+
+  private resolveTicketId(ticketRef: string): string | null {
+    if (this.isUUID(ticketRef)) {
+      return ticketRef;
+    }
+
+    const tickets = storage.getTickets();
+    const ticket = tickets.find((t) => t.id === ticketRef || t.ticketNo === ticketRef);
+    return ticket ? ticket.id : null;
+  }
+
   private createImportError(
     batchId: string,
     recordType: string,
@@ -287,10 +302,25 @@ export class ImportService {
       originalRowNumber: rowNumber,
     };
 
+    const resolveTicketId = (ticketRef: unknown): string => {
+      if (typeof ticketRef !== 'string') {
+        return String(ticketRef || '');
+      }
+      if (this.isUUID(ticketRef)) {
+        return ticketRef;
+      }
+      const resolvedId = this.resolveTicketId(ticketRef);
+      if (resolvedId) {
+        return resolvedId;
+      }
+      return ticketRef;
+    };
+
     switch (recordType) {
       case 'ticket':
         return {
           ...baseEntity,
+          id: data.id && this.isUUID(data.id as string) ? (data.id as string) : baseEntity.id,
           ticketNo: data.ticketNo,
           title: data.title,
           status: data.status || 'open',
@@ -305,7 +335,7 @@ export class ImportService {
       case 'sessionSummary':
         return {
           ...baseEntity,
-          ticketId: data.ticketId,
+          ticketId: resolveTicketId(data.ticketId),
           summary: data.summary,
           keyPoints: (data.keyPoints as string[]) || [],
           createdAt: (data.createdAt as string) || now,
@@ -315,7 +345,7 @@ export class ImportService {
       case 'slaRule':
         return {
           ...baseEntity,
-          ticketId: data.ticketId,
+          ticketId: resolveTicketId(data.ticketId),
           ruleName: data.ruleName,
           responseTime: (data.responseTime as number) || 0,
           resolutionTime: (data.resolutionTime as number) || 0,
@@ -330,7 +360,7 @@ export class ImportService {
       case 'compensationApproval':
         return {
           ...baseEntity,
-          ticketId: data.ticketId,
+          ticketId: resolveTicketId(data.ticketId),
           amount: data.amount,
           reason: data.reason,
           status: (data.status as string) || 'pending',
@@ -343,7 +373,7 @@ export class ImportService {
       case 'customerServiceNote':
         return {
           ...baseEntity,
-          ticketId: data.ticketId,
+          ticketId: resolveTicketId(data.ticketId),
           content: data.content,
           createdAt: (data.createdAt as string) || now,
           createdBy: (data.createdBy as string) || 'import',
@@ -353,7 +383,7 @@ export class ImportService {
       case 'exceptionPhoto':
         return {
           ...baseEntity,
-          ticketId: data.ticketId,
+          ticketId: resolveTicketId(data.ticketId),
           fileName: data.fileName,
           filePath: data.filePath,
           uploadedAt: (data.uploadedAt as string) || now,
@@ -364,7 +394,7 @@ export class ImportService {
       case 'assignmentHistory':
         return {
           ...baseEntity,
-          ticketId: data.ticketId,
+          ticketId: resolveTicketId(data.ticketId),
           fromAssignee: (data.fromAssignee as string) || '',
           toAssignee: data.toAssignee,
           fromDepartment: (data.fromDepartment as string) || '',

@@ -1,12 +1,12 @@
 [
   {
     "entityType": "ticket",
-    "entityId": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+    "entityId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
     "action": "import",
     "before": null,
     "after": {
-      "id": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
-      "importBatchId": "batch_1779635119823_3859694c",
+      "id": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "importBatchId": "batch_1779742542863_c06d7fc4",
       "originalRowNumber": 1,
       "ticketNo": "TK-2024-001",
       "title": "用户投诉订单无法支付",
@@ -21,12 +21,12 @@
     "diff": [
       {
         "field": "id",
-        "newValue": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
         "changeType": "added"
       },
       {
         "field": "importBatchId",
-        "newValue": "batch_1779635119823_3859694c",
+        "newValue": "batch_1779742542863_c06d7fc4",
         "changeType": "added"
       },
       {
@@ -81,18 +81,18 @@
       }
     ],
     "performedBy": "测试用户",
-    "batchId": "batch_1779635119823_3859694c",
-    "id": "1cafdfac-724d-4811-a4b2-72f6a8c3f60e",
-    "performedAt": "2026-05-24T15:05:19.829Z"
+    "batchId": "batch_1779742542863_c06d7fc4",
+    "id": "64be4c93-b1c5-4c8d-85d9-d954d1f5fa1d",
+    "performedAt": "2026-05-25T20:55:42.867Z"
   },
   {
     "entityType": "ticket",
-    "entityId": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+    "entityId": "c6d88e51-8f10-45c5-8461-432fceda678f",
     "action": "import",
     "before": null,
     "after": {
-      "id": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
-      "importBatchId": "batch_1779635119823_3859694c",
+      "id": "c6d88e51-8f10-45c5-8461-432fceda678f",
+      "importBatchId": "batch_1779742542863_c06d7fc4",
       "originalRowNumber": 2,
       "ticketNo": "TK-2024-002",
       "title": "账户余额显示错误",
@@ -107,12 +107,12 @@
     "diff": [
       {
         "field": "id",
-        "newValue": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
+        "newValue": "c6d88e51-8f10-45c5-8461-432fceda678f",
         "changeType": "added"
       },
       {
         "field": "importBatchId",
-        "newValue": "batch_1779635119823_3859694c",
+        "newValue": "batch_1779742542863_c06d7fc4",
         "changeType": "added"
       },
       {
@@ -167,18 +167,18 @@
       }
     ],
     "performedBy": "测试用户",
-    "batchId": "batch_1779635119823_3859694c",
-    "id": "cf95782c-2c94-4058-b7ed-c0ab346d4483",
-    "performedAt": "2026-05-24T15:05:19.830Z"
+    "batchId": "batch_1779742542863_c06d7fc4",
+    "id": "af6a2e23-450c-4cb2-a241-808eb2e6c6c2",
+    "performedAt": "2026-05-25T20:55:42.868Z"
   },
   {
     "entityType": "ticket",
-    "entityId": "063f6243-a452-40da-a7a3-0e965a7277a2",
+    "entityId": "14673545-56d3-4352-a448-48a3f363de84",
     "action": "import",
     "before": null,
     "after": {
-      "id": "063f6243-a452-40da-a7a3-0e965a7277a2",
-      "importBatchId": "batch_1779635119823_3859694c",
+      "id": "14673545-56d3-4352-a448-48a3f363de84",
+      "importBatchId": "batch_1779742542863_c06d7fc4",
       "originalRowNumber": 3,
       "ticketNo": "TK-2024-003",
       "title": "商品发货延迟",
@@ -193,12 +193,12 @@
     "diff": [
       {
         "field": "id",
-        "newValue": "063f6243-a452-40da-a7a3-0e965a7277a2",
+        "newValue": "14673545-56d3-4352-a448-48a3f363de84",
         "changeType": "added"
       },
       {
         "field": "importBatchId",
-        "newValue": "batch_1779635119823_3859694c",
+        "newValue": "batch_1779742542863_c06d7fc4",
         "changeType": "added"
       },
       {
@@ -253,18 +253,18 @@
       }
     ],
     "performedBy": "测试用户",
-    "batchId": "batch_1779635119823_3859694c",
-    "id": "39f68759-56b8-4343-aeb4-9fbc7ef75dc1",
-    "performedAt": "2026-05-24T15:05:19.831Z"
+    "batchId": "batch_1779742542863_c06d7fc4",
+    "id": "1b3dc257-4ff4-4bf1-9f02-bd2b33a90cb4",
+    "performedAt": "2026-05-25T20:55:42.869Z"
   },
   {
     "entityType": "ticket",
-    "entityId": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+    "entityId": "6a0532dd-99f8-49fc-a1a7-b3248846d09a",
     "action": "import",
     "before": null,
     "after": {
-      "id": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
-      "importBatchId": "batch_1779635119823_3859694c",
+      "id": "6a0532dd-99f8-49fc-a1a7-b3248846d09a",
+      "importBatchId": "batch_1779742542863_c06d7fc4",
       "originalRowNumber": 4,
       "ticketNo": "TK-2024-004",
       "title": "退款申请处理中",
@@ -279,12 +279,12 @@
     "diff": [
       {
         "field": "id",
-        "newValue": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
+        "newValue": "6a0532dd-99f8-49fc-a1a7-b3248846d09a",
         "changeType": "added"
       },
       {
         "field": "importBatchId",
-        "newValue": "batch_1779635119823_3859694c",
+        "newValue": "batch_1779742542863_c06d7fc4",
         "changeType": "added"
       },
       {
@@ -339,25 +339,25 @@
       }
     ],
     "performedBy": "测试用户",
-    "batchId": "batch_1779635119823_3859694c",
-    "id": "da0d8157-4ef7-4405-b94c-b76e8d843f16",
-    "performedAt": "2026-05-24T15:05:19.832Z"
+    "batchId": "batch_1779742542863_c06d7fc4",
+    "id": "20e318b4-ed2b-4647-bda6-7d6b93f499a3",
+    "performedAt": "2026-05-25T20:55:42.870Z"
   },
   {
     "entityType": "ticket",
-    "entityId": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+    "entityId": "337433c8-83ca-498a-bdc4-7144f979432d",
     "action": "import",
     "before": null,
     "after": {
-      "id": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
-      "importBatchId": "batch_1779635119823_3859694c",
+      "id": "337433c8-83ca-498a-bdc4-7144f979432d",
+      "importBatchId": "batch_1779742542863_c06d7fc4",
       "originalRowNumber": 5,
       "ticketNo": "TK-2024-005",
       "title": "登录异常，缺少字段测试",
       "status": "open",
       "priority": "low",
-      "createdAt": "2026-05-24T15:05:19.832Z",
-      "updatedAt": "2026-05-24T15:05:19.832Z",
+      "createdAt": "2026-05-25T20:55:42.870Z",
+      "updatedAt": "2026-05-25T20:55:42.870Z",
       "assignee": "",
       "department": "",
       "source": "import"
@@ -365,12 +365,12 @@
     "diff": [
       {
         "field": "id",
-        "newValue": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
+        "newValue": "337433c8-83ca-498a-bdc4-7144f979432d",
         "changeType": "added"
       },
       {
         "field": "importBatchId",
-        "newValue": "batch_1779635119823_3859694c",
+        "newValue": "batch_1779742542863_c06d7fc4",
         "changeType": "added"
       },
       {
@@ -400,12 +400,12 @@
       },
       {
         "field": "createdAt",
-        "newValue": "2026-05-24T15:05:19.832Z",
+        "newValue": "2026-05-25T20:55:42.870Z",
         "changeType": "added"
       },
       {
         "field": "updatedAt",
-        "newValue": "2026-05-24T15:05:19.832Z",
+        "newValue": "2026-05-25T20:55:42.870Z",
         "changeType": "added"
       },
       {
@@ -425,8 +425,850 @@
       }
     ],
     "performedBy": "测试用户",
-    "batchId": "batch_1779635119823_3859694c",
-    "id": "6633369c-ffbf-4531-8946-4950e2eab244",
-    "performedAt": "2026-05-24T15:05:19.833Z"
+    "batchId": "batch_1779742542863_c06d7fc4",
+    "id": "45b7fce9-a428-4e39-be6b-272fbc457d5c",
+    "performedAt": "2026-05-25T20:55:42.870Z"
+  },
+  {
+    "entityType": "sessionSummary",
+    "entityId": "bde0c70a-d9e7-4bda-8c3c-a769813a9f87",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "bde0c70a-d9e7-4bda-8c3c-a769813a9f87",
+      "importBatchId": "batch_1779742549029_b4dd14a6",
+      "originalRowNumber": 1,
+      "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "summary": "用户反馈订单无法支付，已尝试多种支付方式均失败",
+      "keyPoints": [
+        "支付失败",
+        "多方式尝试",
+        "急单"
+      ],
+      "createdAt": "2026-05-25T20:55:49.030Z",
+      "createdBy": "客服接待"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "bde0c70a-d9e7-4bda-8c3c-a769813a9f87",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742549029_b4dd14a6",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 1,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+        "changeType": "added"
+      },
+      {
+        "field": "summary",
+        "newValue": "用户反馈订单无法支付，已尝试多种支付方式均失败",
+        "changeType": "added"
+      },
+      {
+        "field": "keyPoints",
+        "newValue": [
+          "支付失败",
+          "多方式尝试",
+          "急单"
+        ],
+        "changeType": "added"
+      },
+      {
+        "field": "createdAt",
+        "newValue": "2026-05-25T20:55:49.030Z",
+        "changeType": "added"
+      },
+      {
+        "field": "createdBy",
+        "newValue": "客服接待",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742549029_b4dd14a6",
+    "id": "1bc839b5-e955-4b6f-9a56-1a9cdc4da7d6",
+    "performedAt": "2026-05-25T20:55:49.032Z"
+  },
+  {
+    "entityType": "sessionSummary",
+    "entityId": "9312dccf-5c66-4f9e-9249-24713127d77e",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "9312dccf-5c66-4f9e-9249-24713127d77e",
+      "importBatchId": "batch_1779742549029_b4dd14a6",
+      "originalRowNumber": 2,
+      "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+      "summary": "VIP用户投诉商品发货延迟超过48小时，要求补偿",
+      "keyPoints": [
+        "VIP用户",
+        "发货延迟",
+        "要求补偿"
+      ],
+      "createdAt": "2026-05-25T20:55:49.032Z",
+      "createdBy": "客服接待"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "9312dccf-5c66-4f9e-9249-24713127d77e",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742549029_b4dd14a6",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 2,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "14673545-56d3-4352-a448-48a3f363de84",
+        "changeType": "added"
+      },
+      {
+        "field": "summary",
+        "newValue": "VIP用户投诉商品发货延迟超过48小时，要求补偿",
+        "changeType": "added"
+      },
+      {
+        "field": "keyPoints",
+        "newValue": [
+          "VIP用户",
+          "发货延迟",
+          "要求补偿"
+        ],
+        "changeType": "added"
+      },
+      {
+        "field": "createdAt",
+        "newValue": "2026-05-25T20:55:49.032Z",
+        "changeType": "added"
+      },
+      {
+        "field": "createdBy",
+        "newValue": "客服接待",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742549029_b4dd14a6",
+    "id": "eba7876a-f452-418f-8c09-165671b3bc03",
+    "performedAt": "2026-05-25T20:55:49.032Z"
+  },
+  {
+    "entityType": "slaRule",
+    "entityId": "ee4c3db1-c7d1-4fbc-a5b0-c3b1a20ec12d",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "ee4c3db1-c7d1-4fbc-a5b0-c3b1a20ec12d",
+      "importBatchId": "batch_1779742556929_f4249cce",
+      "originalRowNumber": 1,
+      "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "ruleName": "标准SLA-24h",
+      "responseTime": 120,
+      "resolutionTime": 1440,
+      "warningTime": 720,
+      "startTime": "2024-01-15T09:00:00.000Z",
+      "deadline": "2024-01-16T09:00:00.000Z",
+      "isViolated": false
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "ee4c3db1-c7d1-4fbc-a5b0-c3b1a20ec12d",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742556929_f4249cce",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 1,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+        "changeType": "added"
+      },
+      {
+        "field": "ruleName",
+        "newValue": "标准SLA-24h",
+        "changeType": "added"
+      },
+      {
+        "field": "responseTime",
+        "newValue": 120,
+        "changeType": "added"
+      },
+      {
+        "field": "resolutionTime",
+        "newValue": 1440,
+        "changeType": "added"
+      },
+      {
+        "field": "warningTime",
+        "newValue": 720,
+        "changeType": "added"
+      },
+      {
+        "field": "startTime",
+        "newValue": "2024-01-15T09:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "deadline",
+        "newValue": "2024-01-16T09:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "isViolated",
+        "newValue": false,
+        "changeType": "added"
+      },
+      {
+        "field": "actualResponseTime",
+        "changeType": "added"
+      },
+      {
+        "field": "actualResolutionTime",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742556929_f4249cce",
+    "id": "0eca8989-b1da-4af0-854d-bd706b90e1e6",
+    "performedAt": "2026-05-25T20:55:56.947Z"
+  },
+  {
+    "entityType": "slaRule",
+    "entityId": "ceb333f3-2b3c-4597-b7c3-ccc0045768c3",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "ceb333f3-2b3c-4597-b7c3-ccc0045768c3",
+      "importBatchId": "batch_1779742556929_f4249cce",
+      "originalRowNumber": 2,
+      "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+      "ruleName": "加急SLA-4h",
+      "responseTime": 30,
+      "resolutionTime": 240,
+      "warningTime": 120,
+      "startTime": "2024-01-14T08:00:00.000Z",
+      "deadline": "2024-01-14T12:00:00.000Z",
+      "isViolated": true,
+      "actualResponseTime": 45,
+      "actualResolutionTime": 1560
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "ceb333f3-2b3c-4597-b7c3-ccc0045768c3",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742556929_f4249cce",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 2,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "14673545-56d3-4352-a448-48a3f363de84",
+        "changeType": "added"
+      },
+      {
+        "field": "ruleName",
+        "newValue": "加急SLA-4h",
+        "changeType": "added"
+      },
+      {
+        "field": "responseTime",
+        "newValue": 30,
+        "changeType": "added"
+      },
+      {
+        "field": "resolutionTime",
+        "newValue": 240,
+        "changeType": "added"
+      },
+      {
+        "field": "warningTime",
+        "newValue": 120,
+        "changeType": "added"
+      },
+      {
+        "field": "startTime",
+        "newValue": "2024-01-14T08:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "deadline",
+        "newValue": "2024-01-14T12:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "isViolated",
+        "newValue": true,
+        "changeType": "added"
+      },
+      {
+        "field": "actualResponseTime",
+        "newValue": 45,
+        "changeType": "added"
+      },
+      {
+        "field": "actualResolutionTime",
+        "newValue": 1560,
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742556929_f4249cce",
+    "id": "7c2117a9-09c9-40f1-a538-7f56ec12d089",
+    "performedAt": "2026-05-25T20:55:56.970Z"
+  },
+  {
+    "entityType": "compensationApproval",
+    "entityId": "d40adfe9-c2e8-4b6b-9cf3-c89b8474e130",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "d40adfe9-c2e8-4b6b-9cf3-c89b8474e130",
+      "importBatchId": "batch_1779742564322_6567687d",
+      "originalRowNumber": 1,
+      "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+      "amount": 500,
+      "reason": "发货延迟造成用户损失，按SLA需补偿",
+      "status": "pending",
+      "createdAt": "2026-05-25T20:56:04.324Z",
+      "createdBy": "运营专员A"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "d40adfe9-c2e8-4b6b-9cf3-c89b8474e130",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742564322_6567687d",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 1,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "14673545-56d3-4352-a448-48a3f363de84",
+        "changeType": "added"
+      },
+      {
+        "field": "amount",
+        "newValue": 500,
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "发货延迟造成用户损失，按SLA需补偿",
+        "changeType": "added"
+      },
+      {
+        "field": "status",
+        "newValue": "pending",
+        "changeType": "added"
+      },
+      {
+        "field": "approver",
+        "changeType": "added"
+      },
+      {
+        "field": "approvedAt",
+        "changeType": "added"
+      },
+      {
+        "field": "createdAt",
+        "newValue": "2026-05-25T20:56:04.324Z",
+        "changeType": "added"
+      },
+      {
+        "field": "createdBy",
+        "newValue": "运营专员A",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742564322_6567687d",
+    "id": "5ca66a86-8ffe-4b43-b602-0ba05f879025",
+    "performedAt": "2026-05-25T20:56:04.327Z"
+  },
+  {
+    "entityType": "compensationApproval",
+    "entityId": "a331e924-18b8-4f9e-bc9d-69d948e95751",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "a331e924-18b8-4f9e-bc9d-69d948e95751",
+      "importBatchId": "batch_1779742564322_6567687d",
+      "originalRowNumber": 2,
+      "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "amount": 100,
+      "reason": "支付问题导致用户体验差",
+      "status": "pending",
+      "createdAt": "2026-05-25T20:56:04.328Z",
+      "createdBy": "运营专员B"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "a331e924-18b8-4f9e-bc9d-69d948e95751",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742564322_6567687d",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 2,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+        "changeType": "added"
+      },
+      {
+        "field": "amount",
+        "newValue": 100,
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "支付问题导致用户体验差",
+        "changeType": "added"
+      },
+      {
+        "field": "status",
+        "newValue": "pending",
+        "changeType": "added"
+      },
+      {
+        "field": "approver",
+        "changeType": "added"
+      },
+      {
+        "field": "approvedAt",
+        "changeType": "added"
+      },
+      {
+        "field": "createdAt",
+        "newValue": "2026-05-25T20:56:04.328Z",
+        "changeType": "added"
+      },
+      {
+        "field": "createdBy",
+        "newValue": "运营专员B",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742564322_6567687d",
+    "id": "1f1865d4-ad73-46a3-a2ea-c955892eb1ac",
+    "performedAt": "2026-05-25T20:56:04.329Z"
+  },
+  {
+    "entityType": "assignmentHistory",
+    "entityId": "f658cb8b-d493-4aec-bc67-772bf6ba3257",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "f658cb8b-d493-4aec-bc67-772bf6ba3257",
+      "importBatchId": "batch_1779742572409_dd8fdd8f",
+      "originalRowNumber": 1,
+      "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "fromAssignee": "客服接待",
+      "toAssignee": "张三",
+      "fromDepartment": "前台",
+      "toDepartment": "客服一部",
+      "transferredAt": "2024-01-15T09:30:00.000Z",
+      "reason": "需要技术支持"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "f658cb8b-d493-4aec-bc67-772bf6ba3257",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742572409_dd8fdd8f",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 1,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+        "changeType": "added"
+      },
+      {
+        "field": "fromAssignee",
+        "newValue": "客服接待",
+        "changeType": "added"
+      },
+      {
+        "field": "toAssignee",
+        "newValue": "张三",
+        "changeType": "added"
+      },
+      {
+        "field": "fromDepartment",
+        "newValue": "前台",
+        "changeType": "added"
+      },
+      {
+        "field": "toDepartment",
+        "newValue": "客服一部",
+        "changeType": "added"
+      },
+      {
+        "field": "transferredAt",
+        "newValue": "2024-01-15T09:30:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "需要技术支持",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742572409_dd8fdd8f",
+    "id": "7fd28165-4e58-4d57-9ce0-0a70d27f4064",
+    "performedAt": "2026-05-25T20:56:12.426Z"
+  },
+  {
+    "entityType": "assignmentHistory",
+    "entityId": "c2138f0c-805e-4942-8974-85641f62bfb8",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "c2138f0c-805e-4942-8974-85641f62bfb8",
+      "importBatchId": "batch_1779742572409_dd8fdd8f",
+      "originalRowNumber": 2,
+      "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "fromAssignee": "张三",
+      "toAssignee": "技术支持",
+      "fromDepartment": "客服一部",
+      "toDepartment": "技术部",
+      "transferredAt": "2024-01-15T11:00:00.000Z",
+      "reason": "支付系统问题，需要研发介入"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "c2138f0c-805e-4942-8974-85641f62bfb8",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742572409_dd8fdd8f",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 2,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+        "changeType": "added"
+      },
+      {
+        "field": "fromAssignee",
+        "newValue": "张三",
+        "changeType": "added"
+      },
+      {
+        "field": "toAssignee",
+        "newValue": "技术支持",
+        "changeType": "added"
+      },
+      {
+        "field": "fromDepartment",
+        "newValue": "客服一部",
+        "changeType": "added"
+      },
+      {
+        "field": "toDepartment",
+        "newValue": "技术部",
+        "changeType": "added"
+      },
+      {
+        "field": "transferredAt",
+        "newValue": "2024-01-15T11:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "支付系统问题，需要研发介入",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742572409_dd8fdd8f",
+    "id": "95abf8a1-be57-45f2-9554-c7a17d63d2a3",
+    "performedAt": "2026-05-25T20:56:12.430Z"
+  },
+  {
+    "entityType": "assignmentHistory",
+    "entityId": "43f73d13-0105-4567-a2ed-ebec62b9a3f2",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "43f73d13-0105-4567-a2ed-ebec62b9a3f2",
+      "importBatchId": "batch_1779742572409_dd8fdd8f",
+      "originalRowNumber": 3,
+      "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+      "fromAssignee": "技术支持",
+      "toAssignee": "张三",
+      "fromDepartment": "技术部",
+      "toDepartment": "客服一部",
+      "transferredAt": "2024-01-15T13:00:00.000Z",
+      "reason": "问题已定位，返回客服跟进"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "43f73d13-0105-4567-a2ed-ebec62b9a3f2",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742572409_dd8fdd8f",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 3,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+        "changeType": "added"
+      },
+      {
+        "field": "fromAssignee",
+        "newValue": "技术支持",
+        "changeType": "added"
+      },
+      {
+        "field": "toAssignee",
+        "newValue": "张三",
+        "changeType": "added"
+      },
+      {
+        "field": "fromDepartment",
+        "newValue": "技术部",
+        "changeType": "added"
+      },
+      {
+        "field": "toDepartment",
+        "newValue": "客服一部",
+        "changeType": "added"
+      },
+      {
+        "field": "transferredAt",
+        "newValue": "2024-01-15T13:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "问题已定位，返回客服跟进",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742572409_dd8fdd8f",
+    "id": "f4fd063a-bcbc-4f83-87fd-6d734d4414aa",
+    "performedAt": "2026-05-25T20:56:12.431Z"
+  },
+  {
+    "entityType": "assignmentHistory",
+    "entityId": "640631a0-c789-4057-b502-b3142cee5417",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "640631a0-c789-4057-b502-b3142cee5417",
+      "importBatchId": "batch_1779742572409_dd8fdd8f",
+      "originalRowNumber": 4,
+      "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+      "fromAssignee": "客服接待",
+      "toAssignee": "王五",
+      "fromDepartment": "前台",
+      "toDepartment": "客服一部",
+      "transferredAt": "2024-01-14T08:30:00.000Z",
+      "reason": "VIP用户，加急处理"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "640631a0-c789-4057-b502-b3142cee5417",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742572409_dd8fdd8f",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 4,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "14673545-56d3-4352-a448-48a3f363de84",
+        "changeType": "added"
+      },
+      {
+        "field": "fromAssignee",
+        "newValue": "客服接待",
+        "changeType": "added"
+      },
+      {
+        "field": "toAssignee",
+        "newValue": "王五",
+        "changeType": "added"
+      },
+      {
+        "field": "fromDepartment",
+        "newValue": "前台",
+        "changeType": "added"
+      },
+      {
+        "field": "toDepartment",
+        "newValue": "客服一部",
+        "changeType": "added"
+      },
+      {
+        "field": "transferredAt",
+        "newValue": "2024-01-14T08:30:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "VIP用户，加急处理",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742572409_dd8fdd8f",
+    "id": "b542f92c-a16a-45c5-aab0-f03abbc1834e",
+    "performedAt": "2026-05-25T20:56:12.432Z"
+  },
+  {
+    "entityType": "assignmentHistory",
+    "entityId": "bff16046-82c3-4f57-a118-14beaa90a47f",
+    "action": "import",
+    "before": null,
+    "after": {
+      "id": "bff16046-82c3-4f57-a118-14beaa90a47f",
+      "importBatchId": "batch_1779742572409_dd8fdd8f",
+      "originalRowNumber": 5,
+      "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+      "fromAssignee": "王五",
+      "toAssignee": "物流专员",
+      "fromDepartment": "客服一部",
+      "toDepartment": "物流部",
+      "transferredAt": "2024-01-14T10:00:00.000Z",
+      "reason": "需要核实物流情况"
+    },
+    "diff": [
+      {
+        "field": "id",
+        "newValue": "bff16046-82c3-4f57-a118-14beaa90a47f",
+        "changeType": "added"
+      },
+      {
+        "field": "importBatchId",
+        "newValue": "batch_1779742572409_dd8fdd8f",
+        "changeType": "added"
+      },
+      {
+        "field": "originalRowNumber",
+        "newValue": 5,
+        "changeType": "added"
+      },
+      {
+        "field": "ticketId",
+        "newValue": "14673545-56d3-4352-a448-48a3f363de84",
+        "changeType": "added"
+      },
+      {
+        "field": "fromAssignee",
+        "newValue": "王五",
+        "changeType": "added"
+      },
+      {
+        "field": "toAssignee",
+        "newValue": "物流专员",
+        "changeType": "added"
+      },
+      {
+        "field": "fromDepartment",
+        "newValue": "客服一部",
+        "changeType": "added"
+      },
+      {
+        "field": "toDepartment",
+        "newValue": "物流部",
+        "changeType": "added"
+      },
+      {
+        "field": "transferredAt",
+        "newValue": "2024-01-14T10:00:00.000Z",
+        "changeType": "added"
+      },
+      {
+        "field": "reason",
+        "newValue": "需要核实物流情况",
+        "changeType": "added"
+      }
+    ],
+    "performedBy": "测试用户",
+    "batchId": "batch_1779742572409_dd8fdd8f",
+    "id": "4490d2f9-52a1-430f-9c44-5c946f0eb349",
+    "performedAt": "2026-05-25T20:56:12.433Z"
   }
 ]

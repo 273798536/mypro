@@ -1,7 +1,7 @@
 [
   {
-    "id": "8ecd2471-7edc-4697-872a-fa7c0ae79776",
-    "importBatchId": "batch_1779635119823_3859694c",
+    "id": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "importBatchId": "batch_1779742542863_c06d7fc4",
     "originalRowNumber": 1,
     "ticketNo": "TK-2024-001",
     "title": "用户投诉订单无法支付",
@@ -14,8 +14,8 @@
     "source": "电话"
   },
   {
-    "id": "5d38081f-44bc-4cb4-96bb-cf8a3b4ec2a5",
-    "importBatchId": "batch_1779635119823_3859694c",
+    "id": "c6d88e51-8f10-45c5-8461-432fceda678f",
+    "importBatchId": "batch_1779742542863_c06d7fc4",
     "originalRowNumber": 2,
     "ticketNo": "TK-2024-002",
     "title": "账户余额显示错误",
@@ -28,8 +28,8 @@
     "source": "在线客服"
   },
   {
-    "id": "063f6243-a452-40da-a7a3-0e965a7277a2",
-    "importBatchId": "batch_1779635119823_3859694c",
+    "id": "14673545-56d3-4352-a448-48a3f363de84",
+    "importBatchId": "batch_1779742542863_c06d7fc4",
     "originalRowNumber": 3,
     "ticketNo": "TK-2024-003",
     "title": "商品发货延迟",
@@ -42,8 +42,8 @@
     "source": "邮件"
   },
   {
-    "id": "51aafe8d-8ebb-4e75-90fc-4f73d4b17921",
-    "importBatchId": "batch_1779635119823_3859694c",
+    "id": "6a0532dd-99f8-49fc-a1a7-b3248846d09a",
+    "importBatchId": "batch_1779742542863_c06d7fc4",
     "originalRowNumber": 4,
     "ticketNo": "TK-2024-004",
     "title": "退款申请处理中",
@@ -56,15 +56,15 @@
     "source": "APP"
   },
   {
-    "id": "90d24c31-fa7b-4a5c-a893-ca1d426e03b9",
-    "importBatchId": "batch_1779635119823_3859694c",
+    "id": "337433c8-83ca-498a-bdc4-7144f979432d",
+    "importBatchId": "batch_1779742542863_c06d7fc4",
     "originalRowNumber": 5,
     "ticketNo": "TK-2024-005",
     "title": "登录异常，缺少字段测试",
     "status": "open",
     "priority": "low",
-    "createdAt": "2026-05-24T15:05:19.832Z",
-    "updatedAt": "2026-05-24T15:05:19.832Z",
+    "createdAt": "2026-05-25T20:55:42.870Z",
+    "updatedAt": "2026-05-25T20:55:42.870Z",
     "assignee": "",
     "department": "",
     "source": "import"

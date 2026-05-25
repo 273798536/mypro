@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "id": "d40adfe9-c2e8-4b6b-9cf3-c89b8474e130",
+    "importBatchId": "batch_1779742564322_6567687d",
+    "originalRowNumber": 1,
+    "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+    "amount": 500,
+    "reason": "发货延迟造成用户损失，按SLA需补偿",
+    "status": "pending",
+    "createdAt": "2026-05-25T20:56:04.324Z",
+    "createdBy": "运营专员A"
+  },
+  {
+    "id": "a331e924-18b8-4f9e-bc9d-69d948e95751",
+    "importBatchId": "batch_1779742564322_6567687d",
+    "originalRowNumber": 2,
+    "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "amount": 100,
+    "reason": "支付问题导致用户体验差",
+    "status": "pending",
+    "createdAt": "2026-05-25T20:56:04.328Z",
+    "createdBy": "运营专员B"
+  }
+]

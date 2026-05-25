@@ -7,6 +7,8 @@ interface ImportResult {
 }
 export declare class ImportService {
     private generateBatchId;
+    private isUUID;
+    private resolveTicketId;
     private createImportError;
     private isDuplicateRecord;
     importFromJsonFile(filePath: string, recordType: EntityType, importedBy?: string, skipDuplicates?: boolean): ImportResult;

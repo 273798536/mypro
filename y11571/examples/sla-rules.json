@@ -1,6 +1,6 @@
 [
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "ticketId": "TK-2024-001",
     "ruleName": "标准SLA-24h",
     "responseTime": 120,
     "resolutionTime": 1440,
@@ -10,7 +10,7 @@
     "isViolated": false
   },
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "ticketId": "TK-2024-003",
     "ruleName": "加急SLA-4h",
     "responseTime": 30,
     "resolutionTime": 240,

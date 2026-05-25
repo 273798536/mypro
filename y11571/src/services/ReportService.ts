@@ -90,12 +90,14 @@ export class ReportService {
     if (report.pendingCompensations.length > 0) {
       lines.push('【待审批补偿清单】');
       lines.push('  ' + '-'.repeat(60));
-      lines.push(`  ${"工单ID".padEnd(20)} ${"金额".padEnd(12)} ${"原因".padEnd(28)}`);
+      lines.push(`  ${"工单号".padEnd(20)} ${"金额".padEnd(12)} ${"原因".padEnd(28)}`);
       lines.push('  ' + '-'.repeat(60));
       for (const comp of report.pendingCompensations) {
+        const ticket = report.tickets.find((t) => t.id === comp.ticketId);
+        const ticketNo = ticket?.ticketNo || comp.ticketId.slice(0, 8);
         const reason = comp.reason.slice(0, 25) + (comp.reason.length > 25 ? '...' : '');
         lines.push(
-          `  ${comp.ticketId.padEnd(20)} ¥${String(comp.amount).padEnd(10)} ${reason.padEnd(28)}`
+          `  ${ticketNo.padEnd(20)} ¥${String(comp.amount).padEnd(10)} ${reason.padEnd(28)}`
         );
       }
       lines.push('');

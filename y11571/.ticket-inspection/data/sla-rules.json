@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "ee4c3db1-c7d1-4fbc-a5b0-c3b1a20ec12d",
+    "importBatchId": "batch_1779742556929_f4249cce",
+    "originalRowNumber": 1,
+    "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "ruleName": "标准SLA-24h",
+    "responseTime": 120,
+    "resolutionTime": 1440,
+    "warningTime": 720,
+    "startTime": "2024-01-15T09:00:00.000Z",
+    "deadline": "2024-01-16T09:00:00.000Z",
+    "isViolated": false
+  },
+  {
+    "id": "ceb333f3-2b3c-4597-b7c3-ccc0045768c3",
+    "importBatchId": "batch_1779742556929_f4249cce",
+    "originalRowNumber": 2,
+    "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+    "ruleName": "加急SLA-4h",
+    "responseTime": 30,
+    "resolutionTime": 240,
+    "warningTime": 120,
+    "startTime": "2024-01-14T08:00:00.000Z",
+    "deadline": "2024-01-14T12:00:00.000Z",
+    "isViolated": true,
+    "actualResponseTime": 45,
+    "actualResolutionTime": 1560
+  }
+]

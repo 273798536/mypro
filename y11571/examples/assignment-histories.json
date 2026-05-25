@@ -1,6 +1,6 @@
 [
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "ticketId": "TK-2024-001",
     "fromAssignee": "客服接待",
     "toAssignee": "张三",
     "fromDepartment": "前台",
@@ -9,7 +9,7 @@
     "reason": "需要技术支持"
   },
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "ticketId": "TK-2024-001",
     "fromAssignee": "张三",
     "toAssignee": "技术支持",
     "fromDepartment": "客服一部",
@@ -18,7 +18,7 @@
     "reason": "支付系统问题，需要研发介入"
   },
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_1",
+    "ticketId": "TK-2024-001",
     "fromAssignee": "技术支持",
     "toAssignee": "张三",
     "fromDepartment": "技术部",
@@ -27,7 +27,7 @@
     "reason": "问题已定位，返回客服跟进"
   },
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "ticketId": "TK-2024-003",
     "fromAssignee": "客服接待",
     "toAssignee": "王五",
     "fromDepartment": "前台",
@@ -36,7 +36,7 @@
     "reason": "VIP用户，加急处理"
   },
   {
-    "ticketId": "REPLACE_WITH_TICKET_ID_3",
+    "ticketId": "TK-2024-003",
     "fromAssignee": "王五",
     "toAssignee": "物流专员",
     "fromDepartment": "客服一部",

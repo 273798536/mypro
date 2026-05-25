@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "bde0c70a-d9e7-4bda-8c3c-a769813a9f87",
+    "importBatchId": "batch_1779742549029_b4dd14a6",
+    "originalRowNumber": 1,
+    "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "summary": "用户反馈订单无法支付，已尝试多种支付方式均失败",
+    "keyPoints": [
+      "支付失败",
+      "多方式尝试",
+      "急单"
+    ],
+    "createdAt": "2026-05-25T20:55:49.030Z",
+    "createdBy": "客服接待"
+  },
+  {
+    "id": "9312dccf-5c66-4f9e-9249-24713127d77e",
+    "importBatchId": "batch_1779742549029_b4dd14a6",
+    "originalRowNumber": 2,
+    "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+    "summary": "VIP用户投诉商品发货延迟超过48小时，要求补偿",
+    "keyPoints": [
+      "VIP用户",
+      "发货延迟",
+      "要求补偿"
+    ],
+    "createdAt": "2026-05-25T20:55:49.032Z",
+    "createdBy": "客服接待"
+  }
+]

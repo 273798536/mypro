@@ -1,1 +1,62 @@
-[]
+[
+  {
+    "id": "f658cb8b-d493-4aec-bc67-772bf6ba3257",
+    "importBatchId": "batch_1779742572409_dd8fdd8f",
+    "originalRowNumber": 1,
+    "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "fromAssignee": "客服接待",
+    "toAssignee": "张三",
+    "fromDepartment": "前台",
+    "toDepartment": "客服一部",
+    "transferredAt": "2024-01-15T09:30:00.000Z",
+    "reason": "需要技术支持"
+  },
+  {
+    "id": "c2138f0c-805e-4942-8974-85641f62bfb8",
+    "importBatchId": "batch_1779742572409_dd8fdd8f",
+    "originalRowNumber": 2,
+    "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "fromAssignee": "张三",
+    "toAssignee": "技术支持",
+    "fromDepartment": "客服一部",
+    "toDepartment": "技术部",
+    "transferredAt": "2024-01-15T11:00:00.000Z",
+    "reason": "支付系统问题，需要研发介入"
+  },
+  {
+    "id": "43f73d13-0105-4567-a2ed-ebec62b9a3f2",
+    "importBatchId": "batch_1779742572409_dd8fdd8f",
+    "originalRowNumber": 3,
+    "ticketId": "6fac6502-2d4e-414d-9ae7-0c263f37a8a0",
+    "fromAssignee": "技术支持",
+    "toAssignee": "张三",
+    "fromDepartment": "技术部",
+    "toDepartment": "客服一部",
+    "transferredAt": "2024-01-15T13:00:00.000Z",
+    "reason": "问题已定位，返回客服跟进"
+  },
+  {
+    "id": "640631a0-c789-4057-b502-b3142cee5417",
+    "importBatchId": "batch_1779742572409_dd8fdd8f",
+    "originalRowNumber": 4,
+    "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+    "fromAssignee": "客服接待",
+    "toAssignee": "王五",
+    "fromDepartment": "前台",
+    "toDepartment": "客服一部",
+    "transferredAt": "2024-01-14T08:30:00.000Z",
+    "reason": "VIP用户，加急处理"
+  },
+  {
+    "id": "bff16046-82c3-4f57-a118-14beaa90a47f",
+    "importBatchId": "batch_1779742572409_dd8fdd8f",
+    "originalRowNumber": 5,
+    "ticketId": "14673545-56d3-4352-a448-48a3f363de84",
+    "fromAssignee": "王五",
+    "toAssignee": "物流专员",
+    "fromDepartment": "客服一部",
+    "toDepartment": "物流部",
+    "transferredAt": "2024-01-14T10:00:00.000Z",
+    "reason": "需要核实物流情况"
+  }
+]
