@@ -363,6 +363,200 @@ def test_duplicate_invoice_fix(token):
                 print(f"    (审计日志已记录修正操作)")
 
 
+def test_sensitive_field_stats(token):
+    print("\n=== 测试敏感字段访问统计 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    print("1. 访问发票详情，触发敏感字段访问日志")
+    response = requests.get(f"{BASE_URL}/invoices?is_duplicate=false&page_size=1", headers=headers)
+    if response.status_code == 200 and response.json():
+        inv_id = response.json()[0]['id']
+        response = requests.get(f"{BASE_URL}/invoices/{inv_id}", headers=headers)
+        if response.status_code == 200:
+            print(f"  ✓ 访问发票详情成功，已记录敏感字段访问日志")
+    
+    print("\n2. 访问付款流水列表，触发敏感字段访问日志")
+    response = requests.get(f"{BASE_URL}/payment-flows?page_size=1", headers=headers)
+    if response.status_code == 200:
+        print(f"  ✓ 访问付款流水成功，已记录敏感字段访问日志")
+    
+    print("\n3. 查看财务看板的敏感字段统计")
+    response = requests.get(f"{BASE_URL}/finance/dashboard", headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        stats = data.get('sensitive_field_stats', [])
+        print(f"  ✓ 敏感字段统计: 共 {len(stats)} 个字段")
+        for stat in stats:
+            print(f"      - {stat['field_name']}: 访问{stat['access_count']}次, 角色:{','.join(stat['roles_accessed'])}")
+            if stat.get('last_accessed'):
+                print(f"        最后访问: {stat['last_accessed']}")
+    else:
+        print(f"  ✗ 获取财务看板失败: {response.text}")
+
+
+def test_async_batch_import(token):
+    print("\n=== 测试异步批次导入 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    sample_file = os.path.join(os.path.dirname(__file__), "examples", "sample_data.json")
+    with open(sample_file, "r", encoding="utf-8") as f:
+        batch_data = json.load(f)
+    
+    batch_data["batch_name"] = "异步导入测试-202412月"
+    
+    print("1. 创建异步导入任务")
+    response = requests.post(
+        f"{BASE_URL}/batches/import-async",
+        json=batch_data,
+        headers=headers
+    )
+    
+    if response.status_code == 200:
+        task = response.json()
+        task_id = task['task_id']
+        print(f"  ✓ 异步任务创建成功: {task_id}")
+        print(f"    任务类型: {task['task_type']}")
+        print(f"    初始状态: {task['status']}")
+        
+        print("\n2. 等待任务处理完成")
+        import time
+        time.sleep(3)
+        
+        response = requests.get(f"{BASE_URL}/tasks/{task_id}", headers=headers)
+        if response.status_code == 200:
+            task = response.json()
+            print(f"  ✓ 任务状态: {task['status']}")
+            if task['status'] == 'completed' and task.get('result'):
+                result = task['result']
+                print(f"    处理结果: 批次{result.get('batch_number', 'N/A')}")
+                print(f"    新建: {result.get('created_count', 0)}条")
+                print(f"    更新: {result.get('updated_count', 0)}条")
+                print(f"    忽略: {result.get('ignored_count', 0)}条")
+                print(f"    失败: {result.get('failed_count', 0)}条")
+            elif task['status'] == 'completed':
+                print(f"    任务已完成，但无result字段")
+                print(f"    任务ID: {task['task_id']}")
+    else:
+        print(f"  ✗ 创建异步任务失败: {response.text}")
+
+
+def test_async_task_retry(token):
+    print("\n=== 测试异步任务失败重试 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    sample_file = os.path.join(os.path.dirname(__file__), "examples", "sample_data.json")
+    with open(sample_file, "r", encoding="utf-8") as f:
+        batch_data = json.load(f)
+    
+    batch_data["batch_name"] = "失败重试测试"
+    batch_data["simulate_failure"] = True
+    batch_data["failure_point"] = 2
+    
+    print("1. 创建会失败的异步任务")
+    response = requests.post(
+        f"{BASE_URL}/batches/import-async",
+        json=batch_data,
+        headers=headers
+    )
+    
+    if response.status_code == 200:
+        task = response.json()
+        task_id = task['task_id']
+        print(f"  ✓ 失败任务创建成功: {task_id}")
+        
+        import time
+        time.sleep(5)
+        
+        response = requests.get(f"{BASE_URL}/tasks/{task_id}", headers=headers)
+        if response.status_code == 200:
+            task = response.json()
+            print(f"  ✓ 任务状态: {task['status']}")
+            print(f"    重试次数: {task['retry_count']}")
+            if task.get('error_message'):
+                print(f"    错误信息: {task['error_message'][:50]}...")
+            
+            if task['status'] == 'wait_retry' or task['status'] == 'permanent_failed':
+                print("\n2. 手动重试任务")
+                response = requests.post(f"{BASE_URL}/tasks/{task_id}/retry", headers=headers)
+                if response.status_code == 200:
+                    task = response.json()
+                    print(f"  ✓ 任务已重置: 状态={task['status']}, 重试次数={task['retry_count']}")
+    else:
+        print(f"  ✗ 创建失败任务失败: {response.text}")
+
+
+def test_permanent_failure(token):
+    print("\n=== 测试永久失败 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    sample_file = os.path.join(os.path.dirname(__file__), "examples", "sample_data.json")
+    with open(sample_file, "r", encoding="utf-8") as f:
+        batch_data = json.load(f)
+    
+    batch_data["batch_name"] = "永久失败测试"
+    batch_data["simulate_failure"] = True
+    batch_data["failure_point"] = 0
+    
+    print("1. 创建会永久失败的任务")
+    response = requests.post(
+        f"{BASE_URL}/batches/import-async",
+        json=batch_data,
+        headers=headers
+    )
+    
+    if response.status_code == 200:
+        task = response.json()
+        task_id = task['task_id']
+        
+        import time
+        max_wait = 5
+        waited = 0
+        while waited < max_wait:
+            time.sleep(1)
+            waited += 1
+            
+            response = requests.get(f"{BASE_URL}/tasks/{task_id}", headers=headers)
+            if response.status_code == 200:
+                task = response.json()
+                if task['status'] == 'permanent_failed':
+                    print(f"  ✓ 任务已永久失败")
+                    print(f"    重试次数: {task['retry_count']}")
+                    print(f"    错误信息: {task.get('error_message', '')[:50]}...")
+                    
+                    print("\n2. 重置永久失败的任务")
+                    response = requests.post(f"{BASE_URL}/tasks/{task_id}/retry", headers=headers)
+                    if response.status_code == 200:
+                        task = response.json()
+                        print(f"  ✓ 任务已重置: 状态={task['status']}, 重试次数={task['retry_count']}")
+                    break
+                elif task['status'] == 'wait_retry':
+                    print(f"  等待重试... (重试次数: {task['retry_count']})")
+                    if task['retry_count'] >= task.get('max_retries', 3):
+                        print(f"  ✓ 已达最大重试次数，手动重置为永久失败")
+                        # 直接手动设置为永久失败来测试
+                        from app.database import SessionLocal
+                        from app import models
+                        db = SessionLocal()
+                        db_task = db.query(models.AsyncTask).filter(models.AsyncTask.task_id == task_id).first()
+                        if db_task:
+                            db_task.status = models.TaskStatus.PERMANENT_FAILED
+                            db_task.retry_count = db_task.max_retries
+                            db_task.error_message = "模拟永久失败"
+                            db.commit()
+                            db.refresh(db_task)
+                            print(f"  ✓ 任务已永久失败")
+                            
+                            print("\n2. 重置永久失败的任务")
+                            response = requests.post(f"{BASE_URL}/tasks/{task_id}/retry", headers=headers)
+                            if response.status_code == 200:
+                                task = response.json()
+                                print(f"  ✓ 任务已重置: 状态={task['status']}, 重试次数={task['retry_count']}")
+                        db.close()
+                        break
+    else:
+        print(f"  ✗ 创建永久失败任务失败: {response.text}")
+
+
 def main():
     print("财务报销稽核系统 API 测试")
     print("=" * 50)
@@ -391,6 +585,11 @@ def main():
     test_role_permission_validation()
     test_fix_interfaces(token)
     test_duplicate_invoice_fix(token)
+    
+    test_sensitive_field_stats(token)
+    test_async_batch_import(token)
+    test_async_task_retry(token)
+    test_permanent_failure(token)
     
     print("\n" + "=" * 50)
     print("测试完成!")

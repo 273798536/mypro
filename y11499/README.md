@@ -143,6 +143,56 @@ curl "http://localhost:8000/finance/dashboard" \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
+### 异步批次导入
+```bash
+curl -X POST "http://localhost:8000/batches/import-async" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "batch_name": "异步导入批次",
+    "strategy": "append",
+    "reimbursements": [ ... ],
+    "simulate_failure": false,
+    "failure_point": 0
+  }'
+```
+
+### 查看异步任务状态
+```bash
+curl "http://localhost:8000/tasks/{task_id}" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+### 重试失败任务
+```bash
+curl -X POST "http://localhost:8000/tasks/{task_id}/retry" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+### 查看付款流水详情
+```bash
+curl "http://localhost:8000/payment-flows/{flow_id}" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+### 查看敏感字段访问统计
+```bash
+# 财务看板返回 sensitive_field_stats 字段
+curl "http://localhost:8000/finance/dashboard" \
+  -H "Authorization: Bearer <TOKEN>"
+# 响应示例:
+# {
+#   "sensitive_field_stats": [
+#     {
+#       "field_name": "seller_tax_no",
+#       "access_count": 5,
+#       "roles_accessed": ["finance", "employee"],
+#       "last_accessed": "2024-12-01T10:30:00"
+#     }
+#   ]
+# }
+```
+
 ### 导出数据
 ```bash
 curl -X POST "http://localhost:8000/export" \

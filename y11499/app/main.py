@@ -1,12 +1,16 @@
 from datetime import timedelta
 from typing import List, Optional
-from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Query, Request, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, FileResponse
 from sqlalchemy.orm import Session
 import os
 import io
 import pandas as pd
+import threading
+import time
+import random
+import traceback
 from datetime import datetime
 
 from .database import get_db, engine, Base, settings
@@ -23,9 +27,213 @@ app = FastAPI(
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+TASK_WORKER_RUNNING = False
+TASK_WORKER_THREAD = None
+
+
+def process_batch_import_task(db: Session, task: models.AsyncTask):
+    payload = task.payload or {}
+    batch_data_dict = payload.get("batch_data", {})
+    creator_id = payload.get("creator_id")
+    simulate_failure = payload.get("simulate_failure", False)
+    failure_point = payload.get("failure_point", 0)
+    
+    batch = None
+    created_count = 0
+    updated_count = 0
+    ignored_count = 0
+    failed_count = 0
+    failed_items = []
+    
+    try:
+        services.update_task_status(db, task.task_id, models.TaskStatus.PROCESSING)
+        
+        if simulate_failure and failure_point <= 0:
+            if task.retry_count < task.max_retries:
+                raise Exception("模拟处理失败，等待重试")
+            else:
+                raise Exception("模拟永久失败，已达最大重试次数")
+        
+        batch = models.Batch(
+            batch_number=services.generate_batch_number(),
+            name=batch_data_dict.get("batch_name", ""),
+            description=batch_data_dict.get("batch_description", ""),
+            strategy=batch_data_dict.get("strategy", "append"),
+            creator_id=creator_id,
+            status="processing",
+            total_items=len(batch_data_dict.get("reimbursements", []))
+        )
+        db.add(batch)
+        db.commit()
+        db.refresh(batch)
+        
+        for idx, reimb_dict in enumerate(batch_data_dict.get("reimbursements", [])):
+            if simulate_failure and idx >= failure_point:
+                if task.retry_count < task.max_retries:
+                    db.rollback()
+                    raise Exception(f"模拟在第 {idx} 项失败，等待重试")
+            
+            try:
+                reimbursement_data = schemas.ReimbursementCreate(**reimb_dict)
+                
+                if reimbursement_data.idempotency_key:
+                    idempotency_key = reimbursement_data.idempotency_key
+                else:
+                    key_data = {
+                        "purpose": reimbursement_data.purpose,
+                        "total_amount": reimbursement_data.total_amount,
+                        "travelers": reimbursement_data.traveler_names,
+                        "invoices": [inv.dict() for inv in (reimbursement_data.invoices or [])]
+                    }
+                    idempotency_key = services.generate_idempotency_key(key_data)
+                
+                existing, is_new = services.get_or_create_reimbursement_by_key(
+                    db, idempotency_key, reimbursement_data, creator_id, batch.id
+                )
+                
+                if is_new:
+                    created_count += 1
+                    services._populate_reimbursement_details(db, existing, reimbursement_data, creator_id)
+                else:
+                    strategy = batch_data_dict.get("strategy", "append")
+                    if strategy == "ignore":
+                        ignored_count += 1
+                    elif strategy == "overwrite":
+                        updated_count += 1
+                        services._update_reimbursement_details(db, existing, reimbursement_data, creator_id)
+                    elif strategy == "append":
+                        updated_count += 1
+                        services._append_reimbursement_details(db, existing, reimbursement_data, creator_id)
+                
+                batch.processed_items = created_count + updated_count + ignored_count
+                
+            except Exception as e:
+                failed_count += 1
+                failed_items.append({
+                    "index": idx,
+                    "error": str(e),
+                    "reimbursement_no": reimb_dict.get("reimbursement_no", "")
+                })
+        
+        batch.failed_items = failed_count
+        batch.status = "completed"
+        batch.completed_at = datetime.now()
+        db.commit()
+        
+        result = {
+            "batch_id": batch.id,
+            "batch_number": batch.batch_number,
+            "total_items": len(batch_data_dict.get("reimbursements", [])),
+            "created_count": created_count,
+            "updated_count": updated_count,
+            "ignored_count": ignored_count,
+            "failed_count": failed_count,
+            "failed_items": failed_items
+        }
+        
+        services.update_task_status(
+            db, task.task_id, models.TaskStatus.COMPLETED,
+            result=result
+        )
+        
+    except Exception as e:
+        error_msg = str(e)
+        error_stack = traceback.format_exc()
+        
+        if batch:
+            try:
+                batch.status = "failed"
+                db.commit()
+            except:
+                db.rollback()
+        
+        if "重试" in error_msg and task.retry_count < task.max_retries:
+            services.update_task_status(
+                db, task.task_id, models.TaskStatus.WAIT_RETRY,
+                error_message=error_msg,
+                error_stack=error_stack
+            )
+        elif "永久失败" in error_msg or task.retry_count >= task.max_retries:
+            services.update_task_status(
+                db, task.task_id, models.TaskStatus.PERMANENT_FAILED,
+                error_message=error_msg,
+                error_stack=error_stack
+            )
+        else:
+            services.update_task_status(
+                db, task.task_id, models.TaskStatus.WAIT_MANUAL,
+                error_message=error_msg,
+                error_stack=error_stack
+            )
+
+
+def task_worker():
+    global TASK_WORKER_RUNNING
+    
+    while TASK_WORKER_RUNNING:
+        db = None
+        try:
+            db = next(get_db())
+            
+            pending_task = db.query(models.AsyncTask).filter(
+                models.AsyncTask.status == models.TaskStatus.PENDING
+            ).first()
+            
+            if pending_task:
+                process_batch_import_task(db, pending_task)
+                db.commit()
+            
+            retry_tasks = db.query(models.AsyncTask).filter(
+                models.AsyncTask.status == models.TaskStatus.WAIT_RETRY,
+                models.AsyncTask.next_retry_at <= datetime.now()
+            ).all()
+            
+            for task in retry_tasks:
+                process_batch_import_task(db, task)
+                db.commit()
+            
+            time.sleep(1)
+            
+        except Exception as e:
+            print(f"Task worker error: {e}")
+            time.sleep(5)
+        finally:
+            if db:
+                try:
+                    db.close()
+                except:
+                    pass
+
+
+def resume_pending_tasks():
+    db = next(get_db())
+    try:
+        processing_tasks = db.query(models.AsyncTask).filter(
+            models.AsyncTask.status == models.TaskStatus.PROCESSING
+        ).all()
+        
+        for task in processing_tasks:
+            task.status = models.TaskStatus.WAIT_RETRY
+            task.next_retry_at = datetime.now()
+            db.commit()
+        
+        count = len(processing_tasks)
+        if count > 0:
+            print(f"恢复了 {count} 个未完成的任务，状态设为等待重试")
+    finally:
+        db.close()
+
 
 @app.on_event("startup")
 def startup_event():
+    global TASK_WORKER_RUNNING, TASK_WORKER_THREAD
+    
+    resume_pending_tasks()
+    
+    TASK_WORKER_RUNNING = True
+    TASK_WORKER_THREAD = threading.Thread(target=task_worker, daemon=True)
+    TASK_WORKER_THREAD.start()
+    print("异步任务处理器已启动")
     db = next(get_db())
     admin = db.query(models.User).filter(models.User.username == "admin").first()
     if not admin:
@@ -301,6 +509,11 @@ def get_audit_logs(
     return result
 
 
+class AsyncBatchImportRequest(schemas.BatchImportRequest):
+    simulate_failure: bool = False
+    failure_point: int = 0
+
+
 @app.post("/batches/import", response_model=schemas.BatchImportResponse, tags=["批次处理"])
 def batch_import(
     batch_data: schemas.BatchImportRequest,
@@ -308,6 +521,26 @@ def batch_import(
     current_user: models.User = Depends(auth.require_role([models.UserRole.FINANCE, models.UserRole.ADMIN]))
 ):
     return services.process_batch_import(db, batch_data, current_user.id)
+
+
+@app.post("/batches/import-async", response_model=schemas.AsyncTaskResponse, tags=["批次处理"])
+def batch_import_async(
+    batch_data: AsyncBatchImportRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.require_role([models.UserRole.FINANCE, models.UserRole.ADMIN]))
+):
+    task = services.create_async_task(
+        db,
+        task_type="batch_import",
+        payload={
+            "batch_data": batch_data.dict(),
+            "creator_id": current_user.id,
+            "simulate_failure": batch_data.simulate_failure,
+            "failure_point": batch_data.failure_point
+        },
+        max_retries=3
+    )
+    return task
 
 
 @app.get("/batches", response_model=List[schemas.BatchResponse], tags=["批次处理"])
@@ -478,13 +711,14 @@ def retry_task(
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
     
-    if task.status not in [models.TaskStatus.WAIT_MANUAL, models.TaskStatus.PERMANENT_FAILED]:
+    if task.status not in [models.TaskStatus.WAIT_RETRY, models.TaskStatus.WAIT_MANUAL, models.TaskStatus.PERMANENT_FAILED]:
         raise HTTPException(status_code=400, detail="此任务状态不支持重试")
     
     task.status = models.TaskStatus.PENDING
     task.retry_count = 0
     task.error_message = None
     task.error_stack = None
+    task.next_retry_at = None
     db.commit()
     db.refresh(task)
     
@@ -550,6 +784,7 @@ def list_invoices(
 @app.get("/invoices/{invoice_id}", response_model=schemas.InvoiceResponse, tags=["发票管理"])
 def get_invoice(
     invoice_id: int,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
@@ -563,6 +798,21 @@ def get_invoice(
         ).first()
         if not reimb or reimb.creator_id != current_user.id:
             raise HTTPException(status_code=403, detail="无权访问此发票")
+    
+    if invoice.seller_tax_no:
+        services.log_sensitive_field_access(
+            db, "seller_tax_no", "invoices", invoice_id,
+            current_user.id, current_user.role.value,
+            "read", current_user.role.value not in ["finance", "admin", "auditor"],
+            request.client.host if request.client else None
+        )
+    if invoice.buyer_tax_no:
+        services.log_sensitive_field_access(
+            db, "buyer_tax_no", "invoices", invoice_id,
+            current_user.id, current_user.role.value,
+            "read", current_user.role.value not in ["finance", "admin", "auditor"],
+            request.client.host if request.client else None
+        )
     
     return invoice
 
@@ -760,7 +1010,46 @@ def list_payment_flows(
             models.Reimbursement.creator_id == current_user.id
         )
     
-    return query.offset((page - 1) * page_size).limit(page_size).all()
+    payment_flows = query.offset((page - 1) * page_size).limit(page_size).all()
+    
+    for pf in payment_flows:
+        if pf.bank_account:
+            services.log_sensitive_field_access(
+                db, "bank_account", "payment_flows", pf.id,
+                current_user.id, current_user.role.value,
+                "read", current_user.role.value not in ["finance", "admin"]
+            )
+    
+    return payment_flows
+
+
+@app.get("/payment-flows/{flow_id}", response_model=schemas.PaymentFlowResponse, tags=["付款流水"])
+def get_payment_flow(
+    flow_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    pf = db.query(models.PaymentFlow).filter(models.PaymentFlow.id == flow_id).first()
+    if not pf:
+        raise HTTPException(status_code=404, detail="付款流水不存在")
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        reimb = db.query(models.Reimbursement).filter(
+            models.Reimbursement.id == pf.reimbursement_id
+        ).first()
+        if not reimb or reimb.creator_id != current_user.id:
+            raise HTTPException(status_code=403, detail="无权访问此付款流水")
+    
+    if pf.bank_account:
+        services.log_sensitive_field_access(
+            db, "bank_account", "payment_flows", flow_id,
+            current_user.id, current_user.role.value,
+            "read", current_user.role.value not in ["finance", "admin"],
+            request.client.host if request.client else None
+        )
+    
+    return pf
 
 
 @app.get("/status-transitions", tags=["系统配置"])

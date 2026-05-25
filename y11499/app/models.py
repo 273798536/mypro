@@ -261,3 +261,20 @@ class SensitiveFieldConfig(Base):
     roles_allowed = Column(JSON)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class SensitiveFieldAccessLog(Base):
+    __tablename__ = "sensitive_field_access_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    field_name = Column(String, index=True)
+    table_name = Column(String, index=True)
+    record_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user_role = Column(String)
+    access_type = Column(String)
+    was_masked = Column(Boolean)
+    ip_address = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User")

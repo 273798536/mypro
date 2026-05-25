@@ -479,6 +479,18 @@ def change_reimbursement_status(
     return reimbursement
 
 
+def make_json_serializable(obj):
+    if isinstance(obj, dict):
+        return {k: make_json_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [make_json_serializable(item) for item in obj]
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
+    elif hasattr(obj, 'dict'):
+        return make_json_serializable(obj.dict())
+    return obj
+
+
 def create_async_task(
     db: Session,
     task_type: str,
@@ -491,7 +503,7 @@ def create_async_task(
         batch_id=batch_id,
         task_type=task_type,
         status=models.TaskStatus.PENDING,
-        payload=payload,
+        payload=make_json_serializable(payload),
         max_retries=max_retries
     )
     db.add(task)
@@ -585,30 +597,116 @@ def get_finance_dashboard_data(db: Session) -> schemas.FinanceDashboardResponse:
     duplicate_invoices = db.query(models.Invoice).filter(models.Invoice.is_duplicate == True).count()
     duplicate_payments = db.query(models.PaymentFlow).filter(models.PaymentFlow.is_duplicate == True).count()
     
+    sensitive_stats = get_sensitive_field_stats(db)
+    
     return schemas.FinanceDashboardResponse(
         role_views=role_views,
         top_change_reasons=top_reasons,
-        sensitive_field_stats=[],
+        sensitive_field_stats=sensitive_stats,
         pending_second_confirm=pending_second_confirm,
         duplicate_invoices=duplicate_invoices,
         duplicate_payments=duplicate_payments
     )
 
 
-def mask_sensitive_fields(data: Dict[str, Any], user_role: str) -> Dict[str, Any]:
-    sensitive_config = {
-        "seller_tax_no": {"pattern": "***", "roles": ["finance", "admin", "auditor"]},
-        "buyer_tax_no": {"pattern": "***", "roles": ["finance", "admin", "auditor"]},
-        "bank_account": {"pattern": "****", "roles": ["finance", "admin"]},
-    }
-    
+SENSITIVE_FIELDS = {
+    "seller_tax_no": {
+        "pattern": "***",
+        "roles": ["finance", "admin", "auditor"],
+        "table": "invoices"
+    },
+    "buyer_tax_no": {
+        "pattern": "***",
+        "roles": ["finance", "admin", "auditor"],
+        "table": "invoices"
+    },
+    "bank_account": {
+        "pattern": "****",
+        "roles": ["finance", "admin"],
+        "table": "payment_flows"
+    },
+}
+
+
+def log_sensitive_field_access(
+    db: Session,
+    field_name: str,
+    table_name: str,
+    record_id: int,
+    user_id: int,
+    user_role: str,
+    access_type: str,
+    was_masked: bool,
+    ip_address: Optional[str] = None
+) -> models.SensitiveFieldAccessLog:
+    log = models.SensitiveFieldAccessLog(
+        field_name=field_name,
+        table_name=table_name,
+        record_id=record_id,
+        user_id=user_id,
+        user_role=user_role,
+        access_type=access_type,
+        was_masked=was_masked,
+        ip_address=ip_address
+    )
+    db.add(log)
+    db.commit()
+    db.refresh(log)
+    return log
+
+
+def mask_sensitive_fields(
+    data: Dict[str, Any],
+    user_role: str,
+    user_id: Optional[int] = None,
+    record_id: Optional[int] = None,
+    db: Optional[Session] = None,
+    ip_address: Optional[str] = None
+) -> Dict[str, Any]:
     result = data.copy()
-    for field, config in sensitive_config.items():
-        if field in result and user_role not in config["roles"]:
-            value = str(result[field])
-            if len(value) > 4:
-                result[field] = value[:2] + config["pattern"] + value[-2:]
-            else:
-                result[field] = config["pattern"]
+    
+    for field, config in SENSITIVE_FIELDS.items():
+        if field in result and result[field]:
+            was_masked = user_role not in config["roles"]
+            
+            if db and user_id:
+                log_sensitive_field_access(
+                    db, field, config["table"],
+                    record_id or 0, user_id, user_role,
+                    "read", was_masked, ip_address
+                )
+            
+            if was_masked:
+                value = str(result[field])
+                if len(value) > 4:
+                    result[field] = value[:2] + config["pattern"] + value[-2:]
+                else:
+                    result[field] = config["pattern"]
+    
+    return result
+
+
+def get_sensitive_field_stats(db: Session) -> List[schemas.SensitiveFieldReport]:
+    from sqlalchemy import func
+    
+    stats = db.query(
+        models.SensitiveFieldAccessLog.field_name,
+        func.count(models.SensitiveFieldAccessLog.id).label("access_count"),
+        func.group_concat(func.distinct(models.SensitiveFieldAccessLog.user_role)).label("roles"),
+        func.max(models.SensitiveFieldAccessLog.created_at).label("last_access")
+    ).group_by(models.SensitiveFieldAccessLog.field_name).all()
+    
+    result = []
+    for stat in stats:
+        roles = []
+        if stat.roles:
+            roles = list(set(stat.roles.split(",")))
+        
+        result.append(schemas.SensitiveFieldReport(
+            field_name=stat.field_name,
+            access_count=stat.access_count,
+            roles_accessed=roles,
+            last_accessed=stat.last_access
+        ))
     
     return result

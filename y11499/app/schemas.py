@@ -348,7 +348,11 @@ class AsyncTaskResponse(BaseModel):
     status: TaskStatus
     batch_id: Optional[int] = None
     retry_count: int
+    max_retries: int
+    result: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
+    error_stack: Optional[str] = None
+    next_retry_at: Optional[datetime] = None
     created_at: datetime
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
