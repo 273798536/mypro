@@ -77,6 +77,32 @@ program
   });
 
 program
+  .command('withdraw')
+  .description('撤回批次')
+  .requiredOption('-b, --batchId <batchId>', '批次ID')
+  .option('-o, --operator <operator>', '操作人')
+  .action(async (options) => {
+    await initDatabase();
+    console.log(`正在撤回批次: ${options.batchId}...`);
+    const batch = await batchService.withdraw(options.batchId, options.operator);
+    console.log(`✓ 批次已撤回: ${batch.status}`);
+    process.exit(0);
+  });
+
+program
+  .command('resubmit')
+  .description('撤回后重新提交批次')
+  .requiredOption('-b, --batchId <batchId>', '批次ID')
+  .option('-o, --operator <operator>', '操作人')
+  .action(async (options) => {
+    await initDatabase();
+    console.log(`正在重新提交批次: ${options.batchId}...`);
+    const batch = await batchService.resubmit(options.batchId, options.operator);
+    console.log(`✓ 批次已重新提交: ${batch.status}`);
+    process.exit(0);
+  });
+
+program
   .command('freeze')
   .description('冻结批次')
   .requiredOption('-b, --batchId <batchId>', '批次ID')

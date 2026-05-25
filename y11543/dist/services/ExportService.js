@@ -225,7 +225,7 @@ class ExportService {
                 });
             }
         }
-        if (batch.status !== 'frozen') {
+        if (!batch.frozen) {
             anomalies.push({
                 type: 'freeze_violation',
                 batchId,
