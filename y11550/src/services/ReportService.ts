@@ -213,7 +213,7 @@ export class ReportService {
   async verifyExportConsistency(receiptId: string, exportHash: string): Promise<boolean> {
     const receipt = await this.receiptRepository.findOne({
       where: { id: receiptId },
-      relations: ['stockSnapshots', 'exceptions']
+      relations: ['exceptions']
     });
 
     if (!receipt) return false;
@@ -221,11 +221,28 @@ export class ReportService {
     const currentHash = this.generateDataHash([{
       id: receipt.id,
       batchNo: receipt.batchNo,
+      cabinetId: receipt.cabinetId,
+      cabinetName: receipt.cabinetName,
+      city: receipt.city,
+      status: receipt.status,
+      statusLabel: STATUS_LABELS[receipt.status],
+      isFrozen: receipt.isFrozen,
+      frozenAt: receipt.frozenAt,
+      frozenBy: receipt.frozenBy,
+      freezeReason: receipt.freezeReason,
+      manualReason: receipt.manualReason,
       totalStockBefore: receipt.totalStockBefore,
       totalRestockAmount: receipt.totalRestockAmount,
       totalStockAfter: receipt.totalStockAfter,
+      totalRefundAmount: receipt.totalRefundAmount,
       exceptionCount: receipt.exceptionCount,
-      status: receipt.status
+      hasUnresolvedExceptions: receipt.hasUnresolvedExceptions,
+      previousStatus: receipt.previousStatus,
+      statusChangedAt: receipt.statusChangedAt,
+      statusChangeReason: receipt.statusChangeReason,
+      createdByName: receipt.createdByName,
+      createdAt: receipt.createdAt,
+      settledAt: receipt.settledAt
     }]);
 
     return currentHash === exportHash;
@@ -325,12 +342,35 @@ export class ReportService {
   }
 
   private async populateExceptionSheet(sheet: ExcelJS.Worksheet, filter: ReportFilter): Promise<void> {
-    const exceptions = await this.exceptionRepository
+    const query = this.exceptionRepository
       .createQueryBuilder('e')
       .innerJoin('e.receipt', 'r')
-      .select(['e.*', 'r.batchNo'])
-      .orderBy('e.createdAt', 'DESC')
-      .getRawMany();
+      .select(['e.*', 'r.batchNo']);
+
+    if (filter.city) {
+      query.andWhere('r.city = :city', { city: filter.city });
+    }
+    if (filter.status) {
+      query.andWhere('r.status = :status', { status: filter.status });
+    }
+    if (filter.startDate) {
+      query.andWhere('r.createdAt >= :startDate', { startDate: filter.startDate });
+    }
+    if (filter.endDate) {
+      query.andWhere('r.createdAt <= :endDate', { endDate: filter.endDate });
+    }
+    if (filter.isFrozen !== undefined) {
+      query.andWhere('r.isFrozen = :isFrozen', { isFrozen: filter.isFrozen });
+    }
+    if (filter.hasUnresolvedExceptions !== undefined) {
+      query.andWhere('r.hasUnresolvedExceptions = :hasUnresolved', { 
+        hasUnresolved: filter.hasUnresolvedExceptions 
+      });
+    }
+
+    query.orderBy('e.createdAt', 'DESC');
+
+    const exceptions = await query.getRawMany();
 
     sheet.columns = [
       { header: '批次号', key: 'r_batchNo', width: 25 },
