@@ -86,6 +86,31 @@ class StateMachine:
         end_date: datetime,
         operator: str,
     ) -> ExceptionBatch:
+        date_value = batch_date.date() if hasattr(batch_date, 'date') else batch_date
+        
+        existing_batch = (
+            self.db.query(ExceptionBatch)
+            .filter(
+                ExceptionBatch.branch_id == branch_id,
+                ExceptionBatch.status.in_([
+                    ExceptionStatus.DRAFT,
+                    ExceptionStatus.PENDING_REVIEW,
+                    ExceptionStatus.REVIEWING,
+                    ExceptionStatus.ATTACHMENT_UPLOADED,
+                ]),
+            )
+            .all()
+        )
+        
+        existing_batch = next(
+            (b for b in existing_batch if 
+                (b.batch_date.date() if hasattr(b.batch_date, 'date') else b.batch_date) == date_value),
+            None
+        )
+
+        if existing_batch:
+            return self._refresh_batch(existing_batch, start_date, end_date, operator)
+
         batch_no = self._generate_batch_no(branch_id, batch_date)
 
         batch = ExceptionBatch(
@@ -131,7 +156,6 @@ class StateMachine:
                 existing_record.raw_data = exc_data["raw_data"]
                 existing_record.description = exc_data["description"]
                 existing_record.blocking_point = exc_data["blocking_point"]
-                existing_record.batch_id = batch.id
                 record = existing_record
             else:
                 record = ExceptionRecord(
@@ -193,6 +217,119 @@ class StateMachine:
             action=ActionType.CREATE_BATCH,
             batch_id=batch.id,
             details={"batch_no": batch_no, "record_count": batch.total_records},
+        )
+
+        self.db.commit()
+        self.db.refresh(batch)
+        return batch
+
+    def _refresh_batch(
+        self,
+        batch: ExceptionBatch,
+        start_date: datetime,
+        end_date: datetime,
+        operator: str,
+    ) -> ExceptionBatch:
+        detector = ExceptionDetector(self.db)
+        exceptions, failed = detector.detect_all_exceptions(batch.branch_id, start_date, end_date)
+
+        existing_records = (
+            self.db.query(ExceptionRecord)
+            .filter(ExceptionRecord.batch_id == batch.id)
+            .all()
+        )
+        existing_record_keys = {r.record_key for r in existing_records}
+
+        unprocessed_count = 0
+        corrected_count = 0
+        need_manual_count = 0
+
+        for exc_data in exceptions:
+            raw_data = exc_data.get("raw_data", {})
+            extra_info = ""
+            if raw_data:
+                extra_info = hashlib.md5(json.dumps(raw_data, sort_keys=True, default=str).encode()).hexdigest()[:8]
+            
+            record_key = self._generate_record_key(
+                batch.branch_id,
+                exc_data["exception_type"],
+                exc_data["exception_date"],
+                exc_data.get("teller_id", ""),
+                extra_info,
+            )
+
+            existing_record = (
+                self.db.query(ExceptionRecord)
+                .filter(ExceptionRecord.record_key == record_key)
+                .first()
+            )
+
+            if existing_record:
+                existing_record.raw_data = exc_data["raw_data"]
+                existing_record.description = exc_data["description"]
+                existing_record.blocking_point = exc_data["blocking_point"]
+                if existing_record.batch_id != batch.id:
+                    continue
+                record = existing_record
+            else:
+                record = ExceptionRecord(
+                    batch_id=batch.id,
+                    record_key=record_key,
+                    branch_id=batch.branch_id,
+                    exception_type=exc_data["exception_type"],
+                    status=RecordStatus.UNPROCESSED,
+                    exception_date=exc_data["exception_date"],
+                    teller_id=exc_data.get("teller_id"),
+                    teller_name=exc_data.get("teller_name"),
+                    description=exc_data["description"],
+                    blocking_point=exc_data["blocking_point"],
+                    source_type=exc_data["source_type"],
+                    source_ids=exc_data["source_ids"],
+                    raw_data=exc_data["raw_data"],
+                )
+                self.db.add(record)
+
+            if record.status == RecordStatus.UNPROCESSED:
+                unprocessed_count += 1
+            elif record.status == RecordStatus.CORRECTED:
+                corrected_count += 1
+            elif record.status == RecordStatus.NEED_MANUAL_CONFIRM:
+                need_manual_count += 1
+
+        self.db.query(FailedRecord).filter(FailedRecord.batch_id == batch.id).delete()
+
+        failed_count = len(failed)
+        for fail_data in failed:
+            failed_record = FailedRecord(
+                batch_id=batch.id,
+                record_key=f"fail-{batch.id}-{hashlib.md5(json.dumps(fail_data).encode()).hexdigest()[:8]}",
+                source_type=fail_data["source_type"],
+                raw_data=fail_data.get("raw_data"),
+                error_message=fail_data["error_message"],
+                error_type=fail_data["error_type"],
+            )
+            self.db.add(failed_record)
+
+        batch.total_records = unprocessed_count + corrected_count + need_manual_count
+        batch.unprocessed_records = unprocessed_count
+        batch.corrected_records = corrected_count
+        batch.need_manual_confirm_records = need_manual_count
+        batch.failed_records = failed_count
+
+        self._add_status_history(
+            batch_id=batch.id,
+            action_type=ActionType.CREATE_BATCH,
+            from_status=batch.status,
+            to_status=batch.status,
+            operator=operator,
+            reason="重新检测并刷新批次数据",
+        )
+
+        self._add_operation_log(
+            operator=operator,
+            action=ActionType.CREATE_BATCH,
+            batch_id=batch.id,
+            details={"batch_no": batch.batch_no, "action": "refresh", "record_count": batch.total_records},
         )
 
         self.db.commit()

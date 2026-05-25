@@ -108,34 +108,42 @@ def test_full_workflow():
         print("✓ 全链路异常检测成功")
 
         print("\n" + "=" * 60)
-        print("测试7: 同一网点同一天重复创建批次（批次号唯一性）")
+        print("测试7: 数据一致性验证（幂等+汇总明细一致）")
         print("=" * 60)
         
-        import time
-        batch_dup1 = state_machine.create_batch(
+        first_batch_id = batch.id
+        first_batch_no = batch.batch_no
+        first_batch_records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == first_batch_id).count()
+        
+        print(f"首次批次号: {first_batch_no}")
+        print(f"首次批次记录数: {first_batch_records}")
+        print(f"首次批次汇总: total={batch.total_records}, unprocessed={batch.unprocessed_records}")
+        
+        assert first_batch_records == batch.total_records, "明细记录数应等于汇总总数"
+        
+        batch_dup = state_machine.create_batch(
             branch_id="B001",
             branch_name="朝阳支行",
             batch_date=today,
             start_date=today,
             end_date=today + timedelta(days=7),
-            operator="测试员-重复1",
+            operator="测试员-重复",
         )
-        print(f"批次1号: {batch_dup1.batch_no}")
         
-        time.sleep(1)
+        print(f"重复创建返回批次号: {batch_dup.batch_no}")
+        print(f"重复创建返回批次ID: {batch_dup.id}")
         
-        batch_dup2 = state_machine.create_batch(
-            branch_id="B001",
-            branch_name="朝阳支行",
-            batch_date=today,
-            start_date=today,
-            end_date=today + timedelta(days=7),
-            operator="测试员-重复2",
-        )
-        print(f"批次2号: {batch_dup2.batch_no}")
+        assert batch_dup.batch_no == first_batch_no, "相同参数重复创建应返回同一个批次号"
+        assert batch_dup.id == first_batch_id, "相同参数重复创建应返回同一个批次ID"
         
-        assert batch_dup1.batch_no != batch_dup2.batch_no, "重复创建批次不应产生相同批次号"
-        print("✓ 批次号唯一性测试通过")
+        dup_records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == first_batch_id).count()
+        print(f"重复创建后明细记录数: {dup_records}")
+        print(f"重复创建后汇总: total={batch_dup.total_records}, unprocessed={batch_dup.unprocessed_records}")
+        
+        assert dup_records == first_batch_records, "重复创建后明细记录数应保持不变"
+        assert batch_dup.total_records == first_batch_records, "重复创建后汇总总数应与明细一致"
+        
+        print("✓ 数据一致性测试通过 - 幂等返回同一批次，汇总明细一致")
 
         print("\n" + "=" * 60)
         print("测试8: 批次状态流转")
