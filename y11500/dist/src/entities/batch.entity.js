@@ -16,7 +16,6 @@ const repair_order_entity_1 = require("./repair-order.entity");
 const spare_part_scan_entity_1 = require("./spare-part-scan.entity");
 const customer_sign_photo_entity_1 = require("./customer-sign-photo.entity");
 const scan_detail_entity_1 = require("./scan-detail.entity");
-const status_log_entity_1 = require("./status-log.entity");
 const dirty_record_entity_1 = require("./dirty-record.entity");
 const user_entity_1 = require("./user.entity");
 let Batch = class Batch {
@@ -111,10 +110,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => scan_detail_entity_1.ScanDetail, scanDetail => scanDetail.batch),
     __metadata("design:type", Array)
 ], Batch.prototype, "scanDetails", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => status_log_entity_1.StatusLog, statusLog => statusLog.batch),
-    __metadata("design:type", Array)
-], Batch.prototype, "statusLogs", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => dirty_record_entity_1.DirtyRecord, dirtyRecord => dirtyRecord.batch),
     __metadata("design:type", Array)

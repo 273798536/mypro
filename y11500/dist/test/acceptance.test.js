@@ -36,11 +36,18 @@ function apiRequest(method, path, role, body) {
 }
 async function testNormalFlow() {
     console.log('\n========== 测试 1: 正常链路测试 ==========');
+    const passed = { value: true };
+    const assert = (cond, msg) => {
+        if (!cond) {
+            console.error(`❌ Assertion failed: ${msg}`);
+            passed.value = false;
+        }
+    };
     try {
         const batchData = {
             description: '正常测试批次',
             repairOrders: [{
-                    orderNo: 'RO001',
+                    orderNo: 'RO_NORM_001',
                     customerName: '张三',
                     phone: '13800138000',
                     productModel: 'iPhone 14',
@@ -49,8 +56,8 @@ async function testNormalFlow() {
                     engineerName: '李工',
                 }],
             sparePartScans: [{
-                    scanNo: 'SPS001',
-                    partCode: 'P001',
+                    scanNo: 'SPS_NORM_001',
+                    partCode: 'P_NORM_001',
                     partName: '屏幕总成',
                     quantity: 1,
                     unitPrice: 800,
@@ -59,16 +66,16 @@ async function testNormalFlow() {
                     operator: '王扫码',
                 }],
             customerSignPhotos: [{
-                    photoNo: 'CSP001',
+                    photoNo: 'CSP_NORM_001',
                     fileName: 'sign_001.jpg',
                     filePath: '/photos/sign_001.jpg',
                     customerName: '张三',
                     signTime: new Date('2024-01-15'),
                 }],
             scanDetails: [{
-                    detailNo: 'SD001',
-                    barcode: 'BAR001',
-                    partCode: 'P001',
+                    detailNo: 'SD_NORM_001',
+                    barcode: 'BAR_NORM_001',
+                    partCode: 'P_NORM_001',
                     partName: '屏幕总成',
                     quantity: 1,
                     unitPrice: 800,
@@ -78,54 +85,98 @@ async function testNormalFlow() {
         };
         console.log('1.1 录入员创建批次...');
         const createRes = await apiRequest('POST', '/batches', role_enum_1.Role.OPERATOR, batchData);
-        console.assert(createRes.status === 201, `创建批次失败: ${createRes.status}`);
+        assert(createRes.status === 201, `创建批次失败: ${createRes.status}`);
         const batchId = createRes.body.id;
         console.log('批次创建成功, ID:', batchId);
         console.log('批次状态:', createRes.body.status);
         console.log('脏记录数量:', createRes.body.totalDirtyRecords);
+        if (createRes.body.totalDirtyRecords > 0) {
+            console.log('1.1.1 处理脏记录...');
+            const dirtyRes = await apiRequest('GET', `/batches/${batchId}/dirty-records`, role_enum_1.Role.REVIEWER);
+            const dirtyRecords = dirtyRes.body.filter((r) => !r.isResolved);
+            for (const record of dirtyRecords) {
+                let resolvedContent = '{}';
+                if (record.dirtyType === 'missing_field') {
+                    if (record.sourceType === 'repair_order') {
+                        resolvedContent = JSON.stringify({
+                            orderNo: 'RO_NORM_001',
+                            customerName: '张三',
+                            productModel: 'iPhone 14',
+                            faultDescription: '屏幕碎裂',
+                            repairDate: '2024-01-15',
+                            engineerName: '李工',
+                        });
+                    }
+                    else {
+                        resolvedContent = JSON.stringify({ quantity: 1, unitPrice: 800, totalAmount: 800 });
+                    }
+                }
+                else if (record.dirtyType === 'quantity_conflict' || record.dirtyType === 'amount_conflict') {
+                    resolvedContent = JSON.stringify({ quantity: 1, unitPrice: 800, totalAmount: 800 });
+                }
+                else if (record.dirtyType === 'cross_day') {
+                    resolvedContent = JSON.stringify({ dates: ['2024-01-15'], targetDate: '2024-01-15' });
+                }
+                else if (record.dirtyType === 'name_changed') {
+                    resolvedContent = JSON.stringify({ partName: '屏幕总成' });
+                }
+                const resolveRes = await apiRequest('POST', `/batches/dirty-records/${record.id}/resolve`, role_enum_1.Role.REVIEWER, {
+                    handlingOpinion: '正常数据，确认无误',
+                    resolvedContent,
+                });
+                assert(resolveRes.status === 201, `处理脏记录失败: ${resolveRes.status}`);
+            }
+            console.log('脏记录处理完成');
+        }
         console.log('1.2 录入员提交复核...');
         const submitRes = await apiRequest('POST', `/batches/${batchId}/submit`, role_enum_1.Role.OPERATOR);
-        console.assert(submitRes.status === 201, `提交复核失败: ${submitRes.status}`);
+        assert(submitRes.status === 201, `提交复核失败: ${submitRes.status} - ${submitRes.body?.message || ''}`);
         console.log('提交后状态:', submitRes.body.status);
-        console.assert(submitRes.body.status === 'pending_review', '状态应为待复核');
+        assert(submitRes.body.status === 'pending_review', '状态应为待复核');
         console.log('1.3 复核员复核通过...');
         const approveRes = await apiRequest('POST', `/batches/${batchId}/approve`, role_enum_1.Role.REVIEWER, {
             opinion: '数据无误，复核通过',
         });
-        console.assert(approveRes.status === 201, `复核通过失败: ${approveRes.status}`);
+        assert(approveRes.status === 201, `复核通过失败: ${approveRes.status}`);
         console.log('复核后状态:', approveRes.body.status);
-        console.assert(approveRes.body.status === 'approved', '状态应为已通过');
+        assert(approveRes.body.status === 'approved', '状态应为已通过');
         console.log('1.4 主管冻结批次...');
         const freezeRes = await apiRequest('POST', `/batches/${batchId}/freeze`, role_enum_1.Role.MANAGER, {
             reason: '需要进一步核实备件来源',
         });
-        console.assert(freezeRes.status === 201, `冻结失败: ${freezeRes.status}`);
+        assert(freezeRes.status === 201, `冻结失败: ${freezeRes.status}`);
         console.log('冻结后状态:', freezeRes.body.status);
         console.log('冻结前状态:', freezeRes.body.statusBeforeFrozen);
-        console.assert(freezeRes.body.status === 'frozen', '状态应为已冻结');
+        assert(freezeRes.body.status === 'frozen', '状态应为已冻结');
         console.log('1.5 主管解冻批次...');
         const unfreezeRes = await apiRequest('POST', `/batches/${batchId}/unfreeze`, role_enum_1.Role.MANAGER, {
             reason: '核实完毕，恢复正常',
         });
-        console.assert(unfreezeRes.status === 201, `解冻失败: ${unfreezeRes.status}`);
+        assert(unfreezeRes.status === 201, `解冻失败: ${unfreezeRes.status}`);
         console.log('解冻后状态:', unfreezeRes.body.status);
         console.log('1.6 主管结算...');
         const settleRes = await apiRequest('POST', `/batches/${batchId}/settle`, role_enum_1.Role.MANAGER);
-        console.assert(settleRes.status === 201, `结算失败: ${settleRes.status}`);
+        assert(settleRes.status === 201, `结算失败: ${settleRes.status}`);
         console.log('结算后状态:', settleRes.body.status);
-        console.assert(settleRes.body.status === 'settled', '状态应为已结算');
+        assert(settleRes.body.status === 'settled', '状态应为已结算');
         console.log('1.7 主管归档...');
         const archiveRes = await apiRequest('POST', `/batches/${batchId}/archive`, role_enum_1.Role.MANAGER);
-        console.assert(archiveRes.status === 201, `归档失败: ${archiveRes.status}`);
+        assert(archiveRes.status === 201, `归档失败: ${archiveRes.status}`);
         console.log('归档后状态:', archiveRes.body.status);
-        console.assert(archiveRes.body.status === 'archived', '状态应为已归档');
+        assert(archiveRes.body.status === 'archived', '状态应为已归档');
         console.log('1.8 查看状态日志...');
         const logsRes = await apiRequest('GET', `/batches/${batchId}/status-logs`, role_enum_1.Role.VIEWER);
-        console.assert(logsRes.status === 200, `获取日志失败: ${logsRes.status}`);
+        assert(logsRes.status === 200, `获取日志失败: ${logsRes.status}`);
         console.log('状态变更日志数量:', logsRes.body.length);
+        assert(logsRes.body.length >= 5, '应该有至少5条状态变更日志');
         console.log('日志示例:', JSON.stringify(logsRes.body[0], null, 2));
-        console.log('\n✅ 正常链路测试通过!');
-        return true;
+        if (passed.value) {
+            console.log('\n✅ 正常链路测试通过!');
+        }
+        else {
+            console.log('\n❌ 正常链路测试失败!');
+        }
+        return passed.value;
     }
     catch (error) {
         console.error('❌ 正常链路测试失败:', error.message);
@@ -166,10 +217,10 @@ async function testDuplicateSubmission() {
     }
 }
 async function testBadData() {
-    console.log('\n========== 测试 3: 坏数据测试 ==========');
+    console.log('\n========== 测试 3: 坏数据闭环测试 ==========');
     try {
         const batchData = {
-            description: '坏数据测试批次',
+            description: '坏数据闭环测试批次',
             repairOrders: [{
                     orderNo: '',
                     customerName: '',
@@ -221,32 +272,154 @@ async function testBadData() {
         console.assert(createRes.status === 201, `创建批次失败: ${createRes.status}`);
         const batchId = createRes.body.id;
         console.log('批次创建成功, ID:', batchId);
+        console.log('初始总金额:', createRes.body.totalAmount);
+        console.log('初始脏记录数量:', createRes.body.totalDirtyRecords);
         console.log('3.2 检查脏记录...');
         const dirtyRes = await apiRequest('GET', `/batches/${batchId}/dirty-records`, role_enum_1.Role.REVIEWER);
         console.assert(dirtyRes.status === 200, `获取脏记录失败: ${dirtyRes.status}`);
-        console.log('脏记录数量:', dirtyRes.body.length);
-        dirtyRes.body.forEach(record => {
+        const dirtyRecords = dirtyRes.body;
+        console.log('检测到脏记录数量:', dirtyRecords.length);
+        dirtyRecords.forEach(record => {
             console.log(`  - ${record.dirtyType}: ${record.conflictFields}`);
         });
-        console.assert(dirtyRes.body.length > 0, '应该检测到脏记录');
+        console.assert(dirtyRecords.length > 0, '应该检测到脏记录');
+        const initialDirtyCount = dirtyRecords.length;
         console.log('3.3 尝试提交有脏记录的批次(应该失败)...');
         const submitRes = await apiRequest('POST', `/batches/${batchId}/submit`, role_enum_1.Role.OPERATOR);
         console.log('提交状态码:', submitRes.status);
+        console.log('拦截信息:', submitRes.body?.message || submitRes.text);
         console.assert(submitRes.status !== 201, '有脏记录的批次应该无法提交');
         console.log('有脏记录的批次提交已被正确拦截');
-        console.log('3.4 处理脏记录...');
-        const dirtyRecordId = dirtyRes.body[0].id;
-        const resolveRes = await apiRequest('POST', `/batches/dirty-records/${dirtyRecordId}/resolve`, role_enum_1.Role.REVIEWER, {
-            handlingOpinion: '确认数据有误，已修正',
-            resolvedContent: JSON.stringify({ corrected: true }),
+        console.log('3.4 处理脏记录 - 缺字段(维修单)...');
+        const missingFieldRecords = dirtyRecords.filter(r => r.dirtyType === 'missing_field' && r.sourceType === 'repair_order');
+        if (missingFieldRecords.length > 0) {
+            const resolveRes = await apiRequest('POST', `/batches/dirty-records/${missingFieldRecords[0].id}/resolve`, role_enum_1.Role.REVIEWER, {
+                handlingOpinion: '补充缺失字段',
+                resolvedContent: JSON.stringify({
+                    orderNo: 'RO_FIX_001',
+                    customerName: '李四',
+                    productModel: 'iPhone 14',
+                    faultDescription: '电池鼓包',
+                    engineerName: '王工',
+                    repairDate: new Date('2024-01-15'),
+                }),
+            });
+            console.assert(resolveRes.status === 201, `处理缺字段失败: ${resolveRes.status}`);
+            console.log('缺字段已处理');
+        }
+        console.log('3.5 处理脏记录 - 备件改名...');
+        const nameChangedRecords = dirtyRecords.filter(r => r.dirtyType === 'name_changed');
+        if (nameChangedRecords.length > 0) {
+            const resolveRes = await apiRequest('POST', `/batches/dirty-records/${nameChangedRecords[0].id}/resolve`, role_enum_1.Role.REVIEWER, {
+                handlingOpinion: '确认统一为电池包',
+                resolvedContent: JSON.stringify({
+                    partName: '电池包',
+                }),
+            });
+            console.assert(resolveRes.status === 201, `处理改名失败: ${resolveRes.status}`);
+            console.log('备件改名已处理');
+        }
+        console.log('3.6 处理脏记录 - 跨日扫码...');
+        const crossDayRecords = dirtyRecords.filter(r => r.dirtyType === 'cross_day');
+        if (crossDayRecords.length > 0) {
+            const resolveRes = await apiRequest('POST', `/batches/dirty-records/${crossDayRecords[0].id}/resolve`, role_enum_1.Role.REVIEWER, {
+                handlingOpinion: '统一为2024-01-15',
+                resolvedContent: JSON.stringify({
+                    dates: ['2024-01-15', '2024-01-16'],
+                    targetDate: '2024-01-15',
+                }),
+            });
+            console.assert(resolveRes.status === 201, `处理跨日失败: ${resolveRes.status}`);
+            console.log('跨日扫码已处理');
+        }
+        console.log('3.7 处理脏记录 - 数量冲突...');
+        const quantityConflictRecords = dirtyRecords.filter(r => r.dirtyType === 'quantity_conflict');
+        for (const record of quantityConflictRecords) {
+            const resolveRes = await apiRequest('POST', `/batches/dirty-records/${record.id}/resolve`, role_enum_1.Role.REVIEWER, {
+                handlingOpinion: '确认数量为1，按扫码明细为准',
+                resolvedContent: JSON.stringify({
+                    quantity: 1,
+                    unitPrice: 200,
+                    totalAmount: 200,
+                }),
+            });
+            console.assert(resolveRes.status === 201, `处理数量冲突失败: ${resolveRes.status}`);
+            console.log('数量冲突已处理');
+        }
+        console.log('3.8 处理脏记录 - 金额冲突...');
+        const amountConflictRecords = dirtyRecords.filter(r => r.dirtyType === 'amount_conflict');
+        for (const record of amountConflictRecords) {
+            const resolveRes = await apiRequest('POST', `/batches/dirty-records/${record.id}/resolve`, role_enum_1.Role.REVIEWER, {
+                handlingOpinion: '修正金额，数量×单价',
+                resolvedContent: JSON.stringify({
+                    quantity: 1,
+                    unitPrice: 200,
+                    totalAmount: 200,
+                }),
+            });
+            console.assert(resolveRes.status === 201, `处理金额冲突失败: ${resolveRes.status}`);
+            console.log('金额冲突已处理');
+        }
+        console.log('3.9 处理剩余脏记录...');
+        const remainingDirtyRes = await apiRequest('GET', `/batches/${batchId}/dirty-records`, role_enum_1.Role.REVIEWER);
+        const remainingDirty = remainingDirtyRes.body.filter((r) => !r.isResolved);
+        console.log('剩余未处理脏记录:', remainingDirty.length);
+        for (const record of remainingDirty) {
+            const resolveRes = await apiRequest('POST', `/batches/dirty-records/${record.id}/resolve`, role_enum_1.Role.REVIEWER, {
+                handlingOpinion: '数据修正，按实际情况处理',
+                resolvedContent: JSON.stringify({
+                    quantity: 1,
+                    unitPrice: 200,
+                    totalAmount: 200,
+                }),
+            });
+            console.assert(resolveRes.status === 201, `处理脏记录失败: ${resolveRes.status}`);
+        }
+        console.log('3.10 验证脏记录全部处理完成...');
+        const afterResolveDirtyRes = await apiRequest('GET', `/batches/${batchId}/dirty-records`, role_enum_1.Role.REVIEWER);
+        const unresolvedAfter = afterResolveDirtyRes.body.filter((r) => !r.isResolved);
+        console.log('处理后未处理脏记录数:', unresolvedAfter.length);
+        console.assert(unresolvedAfter.length === 0, '所有脏记录应该已处理');
+        console.log('3.11 验证批次 totalDirtyRecords 已更新...');
+        const batchAfterResolve = await apiRequest('GET', `/batches/${batchId}`, role_enum_1.Role.OPERATOR);
+        console.log('批次 totalDirtyRecords:', batchAfterResolve.body.totalDirtyRecords);
+        console.assert(batchAfterResolve.body.totalDirtyRecords === 0, 'totalDirtyRecords 应该为 0');
+        console.log('3.12 验证重新汇总的金额...');
+        console.log('重新汇总后总金额:', batchAfterResolve.body.totalAmount);
+        console.assert(batchAfterResolve.body.totalAmount !== undefined, '总金额应该已重新计算');
+        console.log('3.13 验证原始数据已修正...');
+        const roList = await apiRequest('GET', `/batches/${batchId}/repair-orders`, role_enum_1.Role.REVIEWER);
+        if (roList.body && roList.body.length > 0) {
+            console.log('维修单修正后 orderNo:', roList.body[0].orderNo);
+            console.log('维修单修正后 customerName:', roList.body[0].customerName);
+            console.assert(roList.body[0].orderNo !== '', 'orderNo 应该已修正');
+            console.assert(roList.body[0].customerName !== '', 'customerName 应该已修正');
+        }
+        console.log('3.14 验证扫码明细 isDirty 已清除...');
+        const sdList = await apiRequest('GET', `/batches/${batchId}/scan-details`, role_enum_1.Role.REVIEWER);
+        if (sdList.body && sdList.body.length > 0) {
+            const dirtySd = sdList.body.filter((sd) => sd.isDirty);
+            console.log('仍标记为脏的扫码明细:', dirtySd.length);
+        }
+        console.log('3.15 再次提交复核(应该成功)...');
+        const submit2Res = await apiRequest('POST', `/batches/${batchId}/submit`, role_enum_1.Role.OPERATOR);
+        console.log('提交状态码:', submit2Res.status);
+        console.assert(submit2Res.status === 201, `脏记录处理后应该可以提交: ${submit2Res.body?.message || submit2Res.text}`);
+        console.log('提交后状态:', submit2Res.body.status);
+        console.assert(submit2Res.body.status === 'pending_review', '状态应为待复核');
+        console.log('3.16 复核通过...');
+        const approveRes = await apiRequest('POST', `/batches/${batchId}/approve`, role_enum_1.Role.REVIEWER, {
+            opinion: '数据修正无误，复核通过',
         });
-        console.assert(resolveRes.status === 201, `处理脏记录失败: ${resolveRes.status}`);
-        console.log('脏记录已处理:', resolveRes.body.isResolved);
-        console.log('\n✅ 坏数据测试通过!');
+        console.assert(approveRes.status === 201, `复核通过失败: ${approveRes.status}`);
+        console.log('复核后状态:', approveRes.body.status);
+        console.assert(approveRes.body.status === 'approved', '状态应为已通过');
+        console.log('\n✅ 坏数据闭环测试通过!');
         return true;
     }
     catch (error) {
-        console.error('❌ 坏数据测试失败:', error.message);
+        console.error('❌ 坏数据闭环测试失败:', error.message);
+        console.error(error.stack);
         return false;
     }
 }

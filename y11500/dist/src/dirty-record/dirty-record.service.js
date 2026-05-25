@@ -19,14 +19,16 @@ const typeorm_2 = require("typeorm");
 const dirty_record_entity_1 = require("../entities/dirty-record.entity");
 const repair_order_entity_1 = require("../entities/repair-order.entity");
 const spare_part_scan_entity_1 = require("../entities/spare-part-scan.entity");
+const customer_sign_photo_entity_1 = require("../entities/customer-sign-photo.entity");
 const scan_detail_entity_1 = require("../entities/scan-detail.entity");
 const batch_entity_1 = require("../entities/batch.entity");
 const dirty_type_enum_1 = require("../common/enums/dirty-type.enum");
 let DirtyRecordService = class DirtyRecordService {
-    constructor(dirtyRecordRepository, repairOrderRepository, sparePartScanRepository, scanDetailRepository) {
+    constructor(dirtyRecordRepository, repairOrderRepository, sparePartScanRepository, customerSignPhotoRepository, scanDetailRepository) {
         this.dirtyRecordRepository = dirtyRecordRepository;
         this.repairOrderRepository = repairOrderRepository;
         this.sparePartScanRepository = sparePartScanRepository;
+        this.customerSignPhotoRepository = customerSignPhotoRepository;
         this.scanDetailRepository = scanDetailRepository;
     }
     async analyzeAndCreateDirtyRecords(batchId, queryRunner) {
@@ -163,16 +165,188 @@ let DirtyRecordService = class DirtyRecordService {
         });
     }
     async resolve(id, user, handlingOpinion, resolvedContent) {
-        const dirtyRecord = await this.dirtyRecordRepository.findOne({ where: { id } });
-        if (!dirtyRecord) {
-            throw new common_1.NotFoundException('脏记录不存在');
+        const queryRunner = this.dirtyRecordRepository.manager.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const manager = queryRunner.manager;
+            const dirtyRecord = await manager.findOne(dirty_record_entity_1.DirtyRecord, { where: { id } });
+            if (!dirtyRecord) {
+                throw new common_1.NotFoundException('脏记录不存在');
+            }
+            if (dirtyRecord.isResolved) {
+                throw new common_1.BadRequestException('该脏记录已处理');
+            }
+            await this.applyResolvedContent(dirtyRecord, resolvedContent, manager);
+            dirtyRecord.isResolved = true;
+            dirtyRecord.handlingOpinion = handlingOpinion;
+            dirtyRecord.resolvedContent = resolvedContent;
+            dirtyRecord.resolvedBy = user.name;
+            dirtyRecord.resolvedAt = new Date();
+            const savedRecord = await manager.save(dirtyRecord);
+            await this.updateSourceRecordDirtyFlag(dirtyRecord, manager);
+            await this.updateBatchDirtyRecordCount(dirtyRecord.batchId, manager);
+            await this.recalculateBatchTotals(dirtyRecord.batchId, manager);
+            await queryRunner.commitTransaction();
+            return savedRecord;
         }
-        dirtyRecord.isResolved = true;
-        dirtyRecord.handlingOpinion = handlingOpinion;
-        dirtyRecord.resolvedContent = resolvedContent;
-        dirtyRecord.resolvedBy = user.name;
-        dirtyRecord.resolvedAt = new Date();
-        return this.dirtyRecordRepository.save(dirtyRecord);
+        catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
+        }
+    }
+    async applyResolvedContent(dirtyRecord, resolvedContent, manager) {
+        try {
+            const resolvedData = JSON.parse(resolvedContent);
+            const { sourceType, sourceId } = dirtyRecord;
+            switch (sourceType) {
+                case 'repair_order': {
+                    const ro = await manager.findOne(repair_order_entity_1.RepairOrder, { where: { id: sourceId } });
+                    if (ro) {
+                        Object.assign(ro, resolvedData);
+                        ro.rawContent = JSON.stringify(ro);
+                        await manager.save(ro);
+                    }
+                    break;
+                }
+                case 'spare_part_scan': {
+                    if (dirtyRecord.dirtyType === dirty_type_enum_1.DirtyType.NAME_CHANGED) {
+                        const partCode = sourceId;
+                        const scans = await manager.find(spare_part_scan_entity_1.SparePartScan, {
+                            where: { batchId: dirtyRecord.batchId, partCode },
+                        });
+                        for (const sps of scans) {
+                            if (resolvedData.partName) {
+                                sps.partName = resolvedData.partName;
+                                sps.rawContent = JSON.stringify(sps);
+                                await manager.save(sps);
+                            }
+                        }
+                    }
+                    else {
+                        const sps = await manager.findOne(spare_part_scan_entity_1.SparePartScan, { where: { id: sourceId } });
+                        if (sps) {
+                            Object.assign(sps, resolvedData);
+                            if (resolvedData.quantity !== undefined && resolvedData.unitPrice !== undefined) {
+                                sps.totalAmount = resolvedData.quantity * resolvedData.unitPrice;
+                            }
+                            sps.rawContent = JSON.stringify(sps);
+                            await manager.save(sps);
+                        }
+                    }
+                    break;
+                }
+                case 'scan_detail': {
+                    if (dirtyRecord.dirtyType === dirty_type_enum_1.DirtyType.CROSS_DAY) {
+                        const dates = resolvedData.dates || [];
+                        const targetDate = resolvedData.targetDate;
+                        if (targetDate) {
+                            const details = await manager.find(scan_detail_entity_1.ScanDetail, {
+                                where: { batchId: dirtyRecord.batchId },
+                            });
+                            for (const sd of details) {
+                                if (sd.scanTime) {
+                                    const dateStr = sd.scanTime.toISOString().slice(0, 10);
+                                    if (dates.includes(dateStr) && dateStr !== targetDate) {
+                                        const newDate = new Date(targetDate);
+                                        const timeStr = sd.scanTime.toISOString().slice(11);
+                                        sd.scanTime = new Date(targetDate + 'T' + timeStr);
+                                        sd.rawContent = JSON.stringify(sd);
+                                        await manager.save(sd);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        const sd = await manager.findOne(scan_detail_entity_1.ScanDetail, { where: { id: sourceId } });
+                        if (sd) {
+                            Object.assign(sd, resolvedData);
+                            if (resolvedData.quantity !== undefined && resolvedData.unitPrice !== undefined) {
+                                sd.totalAmount = resolvedData.quantity * resolvedData.unitPrice;
+                            }
+                            sd.rawContent = JSON.stringify(sd);
+                            await manager.save(sd);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        catch (e) {
+            console.warn('解析 resolvedContent 失败，跳过原始数据修正:', e.message);
+        }
+    }
+    async updateSourceRecordDirtyFlag(dirtyRecord, manager) {
+        const { sourceType, sourceId, batchId, dirtyType } = dirtyRecord;
+        if (dirtyType === dirty_type_enum_1.DirtyType.CROSS_DAY || dirtyType === dirty_type_enum_1.DirtyType.NAME_CHANGED) {
+            const remainingDirty = await manager.count(dirty_record_entity_1.DirtyRecord, {
+                where: { batchId, sourceType, dirtyType, isResolved: false },
+            });
+            if (remainingDirty === 0) {
+                if (sourceType === 'scan_detail') {
+                    await manager.update(scan_detail_entity_1.ScanDetail, { batchId }, { isDirty: false });
+                }
+                else if (sourceType === 'spare_part_scan') {
+                    await manager.update(spare_part_scan_entity_1.SparePartScan, { batchId, partCode: sourceId }, { isDirty: false });
+                }
+            }
+            return;
+        }
+        switch (sourceType) {
+            case 'repair_order': {
+                const remainingDirty = await manager.count(dirty_record_entity_1.DirtyRecord, {
+                    where: { batchId, sourceType, sourceId, isResolved: false },
+                });
+                if (remainingDirty === 0) {
+                    await manager.update(repair_order_entity_1.RepairOrder, { id: sourceId }, { isDirty: false });
+                }
+                break;
+            }
+            case 'spare_part_scan': {
+                const remainingDirty = await manager.count(dirty_record_entity_1.DirtyRecord, {
+                    where: { batchId, sourceType, sourceId, isResolved: false },
+                });
+                if (remainingDirty === 0) {
+                    await manager.update(spare_part_scan_entity_1.SparePartScan, { id: sourceId }, { isDirty: false });
+                }
+                break;
+            }
+            case 'scan_detail': {
+                const remainingDirty = await manager.count(dirty_record_entity_1.DirtyRecord, {
+                    where: { batchId, sourceType, sourceId, isResolved: false },
+                });
+                if (remainingDirty === 0) {
+                    await manager.update(scan_detail_entity_1.ScanDetail, { id: sourceId }, { isDirty: false });
+                }
+                break;
+            }
+        }
+    }
+    async updateBatchDirtyRecordCount(batchId, manager) {
+        const unresolvedCount = await manager.count(dirty_record_entity_1.DirtyRecord, {
+            where: { batchId, isResolved: false },
+        });
+        const batch = await manager.findOne(batch_entity_1.Batch, { where: { id: batchId } });
+        if (batch) {
+            batch.totalDirtyRecords = unresolvedCount;
+            await manager.save(batch);
+        }
+    }
+    async recalculateBatchTotals(batchId, manager) {
+        const batch = await manager.findOne(batch_entity_1.Batch, { where: { id: batchId } });
+        if (!batch)
+            return;
+        batch.totalRepairOrders = await manager.count(repair_order_entity_1.RepairOrder, { where: { batchId } });
+        batch.totalSparePartScans = await manager.count(spare_part_scan_entity_1.SparePartScan, { where: { batchId } });
+        batch.totalCustomerSignPhotos = await manager.count(customer_sign_photo_entity_1.CustomerSignPhoto, { where: { batchId } });
+        batch.totalScanDetails = await manager.count(scan_detail_entity_1.ScanDetail, { where: { batchId } });
+        const scans = await manager.find(spare_part_scan_entity_1.SparePartScan, { where: { batchId } });
+        batch.totalAmount = scans.reduce((sum, item) => sum + Number(item.totalAmount || 0), 0);
+        await manager.save(batch);
     }
 };
 exports.DirtyRecordService = DirtyRecordService;
@@ -181,8 +355,10 @@ exports.DirtyRecordService = DirtyRecordService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(dirty_record_entity_1.DirtyRecord)),
     __param(1, (0, typeorm_1.InjectRepository)(repair_order_entity_1.RepairOrder)),
     __param(2, (0, typeorm_1.InjectRepository)(spare_part_scan_entity_1.SparePartScan)),
-    __param(3, (0, typeorm_1.InjectRepository)(scan_detail_entity_1.ScanDetail)),
+    __param(3, (0, typeorm_1.InjectRepository)(customer_sign_photo_entity_1.CustomerSignPhoto)),
+    __param(4, (0, typeorm_1.InjectRepository)(scan_detail_entity_1.ScanDetail)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])

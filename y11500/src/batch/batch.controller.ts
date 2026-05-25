@@ -115,6 +115,30 @@ export class BatchController {
     return this.dirtyRecordService.findByBatchId(id);
   }
 
+  @Get(':id/repair-orders')
+  @Roles(Role.OPERATOR, Role.REVIEWER, Role.MANAGER, Role.VIEWER)
+  getRepairOrders(@Param('id') id: string) {
+    return this.batchService.findRepairOrders(id);
+  }
+
+  @Get(':id/spare-part-scans')
+  @Roles(Role.OPERATOR, Role.REVIEWER, Role.MANAGER, Role.VIEWER)
+  getSparePartScans(@Param('id') id: string) {
+    return this.batchService.findSparePartScans(id);
+  }
+
+  @Get(':id/customer-sign-photos')
+  @Roles(Role.OPERATOR, Role.REVIEWER, Role.MANAGER, Role.VIEWER)
+  getCustomerSignPhotos(@Param('id') id: string) {
+    return this.batchService.findCustomerSignPhotos(id);
+  }
+
+  @Get(':id/scan-details')
+  @Roles(Role.OPERATOR, Role.REVIEWER, Role.MANAGER, Role.VIEWER)
+  getScanDetails(@Param('id') id: string) {
+    return this.batchService.findScanDetails(id);
+  }
+
   @Post('dirty-records/:id/resolve')
   @Roles(Role.REVIEWER, Role.MANAGER)
   resolveDirtyRecord(

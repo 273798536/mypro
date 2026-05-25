@@ -67,6 +67,18 @@ let BatchController = class BatchController {
     getDirtyRecords(id) {
         return this.dirtyRecordService.findByBatchId(id);
     }
+    getRepairOrders(id) {
+        return this.batchService.findRepairOrders(id);
+    }
+    getSparePartScans(id) {
+        return this.batchService.findSparePartScans(id);
+    }
+    getCustomerSignPhotos(id) {
+        return this.batchService.findCustomerSignPhotos(id);
+    }
+    getScanDetails(id) {
+        return this.batchService.findScanDetails(id);
+    }
     resolveDirtyRecord(id, user, handlingOpinion, resolvedContent) {
         return this.dirtyRecordService.resolve(id, user, handlingOpinion, resolvedContent);
     }
@@ -190,6 +202,38 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BatchController.prototype, "getDirtyRecords", null);
+__decorate([
+    (0, common_1.Get)(':id/repair-orders'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.OPERATOR, role_enum_1.Role.REVIEWER, role_enum_1.Role.MANAGER, role_enum_1.Role.VIEWER),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BatchController.prototype, "getRepairOrders", null);
+__decorate([
+    (0, common_1.Get)(':id/spare-part-scans'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.OPERATOR, role_enum_1.Role.REVIEWER, role_enum_1.Role.MANAGER, role_enum_1.Role.VIEWER),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BatchController.prototype, "getSparePartScans", null);
+__decorate([
+    (0, common_1.Get)(':id/customer-sign-photos'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.OPERATOR, role_enum_1.Role.REVIEWER, role_enum_1.Role.MANAGER, role_enum_1.Role.VIEWER),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BatchController.prototype, "getCustomerSignPhotos", null);
+__decorate([
+    (0, common_1.Get)(':id/scan-details'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.OPERATOR, role_enum_1.Role.REVIEWER, role_enum_1.Role.MANAGER, role_enum_1.Role.VIEWER),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BatchController.prototype, "getScanDetails", null);
 __decorate([
     (0, common_1.Post)('dirty-records/:id/resolve'),
     (0, roles_decorator_1.Roles)(role_enum_1.Role.REVIEWER, role_enum_1.Role.MANAGER),

@@ -20,5 +20,9 @@ export declare class BatchController {
     archive(id: string, user: any): Promise<import("../entities/batch.entity").Batch>;
     getStatusLogs(id: string): Promise<import("../entities/status-log.entity").StatusLog[]>;
     getDirtyRecords(id: string): Promise<import("../entities/dirty-record.entity").DirtyRecord[]>;
+    getRepairOrders(id: string): Promise<import("../entities/repair-order.entity").RepairOrder[]>;
+    getSparePartScans(id: string): Promise<import("../entities/spare-part-scan.entity").SparePartScan[]>;
+    getCustomerSignPhotos(id: string): Promise<import("../entities/customer-sign-photo.entity").CustomerSignPhoto[]>;
+    getScanDetails(id: string): Promise<import("../entities/scan-detail.entity").ScanDetail[]>;
     resolveDirtyRecord(id: string, user: any, handlingOpinion: string, resolvedContent: string): Promise<import("../entities/dirty-record.entity").DirtyRecord>;
 }

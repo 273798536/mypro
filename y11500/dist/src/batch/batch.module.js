@@ -16,6 +16,7 @@ const repair_order_entity_1 = require("../entities/repair-order.entity");
 const spare_part_scan_entity_1 = require("../entities/spare-part-scan.entity");
 const customer_sign_photo_entity_1 = require("../entities/customer-sign-photo.entity");
 const scan_detail_entity_1 = require("../entities/scan-detail.entity");
+const dirty_record_entity_1 = require("../entities/dirty-record.entity");
 const state_machine_module_1 = require("../state-machine/state-machine.module");
 const dirty_record_module_1 = require("../dirty-record/dirty-record.module");
 let BatchModule = class BatchModule {
@@ -24,7 +25,7 @@ exports.BatchModule = BatchModule;
 exports.BatchModule = BatchModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([batch_entity_1.Batch, repair_order_entity_1.RepairOrder, spare_part_scan_entity_1.SparePartScan, customer_sign_photo_entity_1.CustomerSignPhoto, scan_detail_entity_1.ScanDetail]),
+            typeorm_1.TypeOrmModule.forFeature([batch_entity_1.Batch, repair_order_entity_1.RepairOrder, spare_part_scan_entity_1.SparePartScan, customer_sign_photo_entity_1.CustomerSignPhoto, scan_detail_entity_1.ScanDetail, dirty_record_entity_1.DirtyRecord]),
             state_machine_module_1.StateMachineModule,
             dirty_record_module_1.DirtyRecordModule,
         ],

@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Batch } from './batch.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 import { BatchStatus } from '../common/enums/batch-status.enum';
 
 @Entity('status_logs')
@@ -31,11 +30,7 @@ export class StatusLog {
   @Column({ type: 'simple-json', nullable: true })
   metadata: Record<string, any>;
 
-  @ManyToOne(() => Batch, batch => batch.statusLogs, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  batch: Batch;
-
-  @Column()
+  @Column({ type: 'uuid' })
   batchId: string;
 
   @CreateDateColumn()

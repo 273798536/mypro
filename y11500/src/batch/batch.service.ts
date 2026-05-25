@@ -7,6 +7,7 @@ import { RepairOrder } from '../entities/repair-order.entity';
 import { SparePartScan } from '../entities/spare-part-scan.entity';
 import { CustomerSignPhoto } from '../entities/customer-sign-photo.entity';
 import { ScanDetail } from '../entities/scan-detail.entity';
+import { DirtyRecord } from '../entities/dirty-record.entity';
 import { StateMachineService } from '../state-machine/state-machine.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { BatchStatus } from '../common/enums/batch-status.enum';
@@ -26,6 +27,8 @@ export class BatchService {
     private customerSignPhotoRepository: Repository<CustomerSignPhoto>,
     @InjectRepository(ScanDetail)
     private scanDetailRepository: Repository<ScanDetail>,
+    @InjectRepository(DirtyRecord)
+    private dirtyRecordRepository: Repository<DirtyRecord>,
     private stateMachineService: StateMachineService,
     private dirtyRecordService: DirtyRecordService,
     private dataSource: DataSource,
@@ -132,7 +135,7 @@ export class BatchService {
   async findOne(id: string): Promise<Batch> {
     const batch = await this.batchRepository.findOne({
       where: { id },
-      relations: ['repairOrders', 'sparePartScans', 'customerSignPhotos', 'scanDetails', 'statusLogs', 'dirtyRecords'],
+      relations: ['repairOrders', 'sparePartScans', 'customerSignPhotos', 'scanDetails', 'dirtyRecords'],
     });
     if (!batch) {
       throw new NotFoundException('批次不存在');
@@ -143,8 +146,14 @@ export class BatchService {
   async submitForReview(id: string, user: CurrentUser): Promise<Batch> {
     const batch = await this.findOne(id);
     
-    if (batch.totalDirtyRecords > 0) {
-      throw new BadRequestException('存在未处理的脏记录，请先处理后再提交');
+    const unresolvedDirtyCount = await this.dirtyRecordRepository.count({
+      where: { batchId: id, isResolved: false },
+    });
+    
+    if (unresolvedDirtyCount > 0) {
+      throw new BadRequestException(
+        `存在 ${unresolvedDirtyCount} 条未处理的脏记录，请先处理后再提交`,
+      );
     }
 
     const updatedBatch = await this.stateMachineService.transition(
@@ -205,6 +214,26 @@ export class BatchService {
       reason,
     );
     return this.batchRepository.save(updatedBatch);
+  }
+
+  async findScanDetails(batchId: string): Promise<ScanDetail[]> {
+    await this.findOne(batchId);
+    return this.scanDetailRepository.find({ where: { batchId } });
+  }
+
+  async findRepairOrders(batchId: string): Promise<RepairOrder[]> {
+    await this.findOne(batchId);
+    return this.repairOrderRepository.find({ where: { batchId } });
+  }
+
+  async findSparePartScans(batchId: string): Promise<SparePartScan[]> {
+    await this.findOne(batchId);
+    return this.sparePartScanRepository.find({ where: { batchId } });
+  }
+
+  async findCustomerSignPhotos(batchId: string): Promise<CustomerSignPhoto[]> {
+    await this.findOne(batchId);
+    return this.customerSignPhotoRepository.find({ where: { batchId } });
   }
 
   async settle(id: string, user: CurrentUser): Promise<Batch> {

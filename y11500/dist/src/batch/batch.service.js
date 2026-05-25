@@ -21,16 +21,18 @@ const repair_order_entity_1 = require("../entities/repair-order.entity");
 const spare_part_scan_entity_1 = require("../entities/spare-part-scan.entity");
 const customer_sign_photo_entity_1 = require("../entities/customer-sign-photo.entity");
 const scan_detail_entity_1 = require("../entities/scan-detail.entity");
+const dirty_record_entity_1 = require("../entities/dirty-record.entity");
 const state_machine_service_1 = require("../state-machine/state-machine.service");
 const batch_status_enum_1 = require("../common/enums/batch-status.enum");
 const dirty_record_service_1 = require("../dirty-record/dirty-record.service");
 let BatchService = class BatchService {
-    constructor(batchRepository, repairOrderRepository, sparePartScanRepository, customerSignPhotoRepository, scanDetailRepository, stateMachineService, dirtyRecordService, dataSource) {
+    constructor(batchRepository, repairOrderRepository, sparePartScanRepository, customerSignPhotoRepository, scanDetailRepository, dirtyRecordRepository, stateMachineService, dirtyRecordService, dataSource) {
         this.batchRepository = batchRepository;
         this.repairOrderRepository = repairOrderRepository;
         this.sparePartScanRepository = sparePartScanRepository;
         this.customerSignPhotoRepository = customerSignPhotoRepository;
         this.scanDetailRepository = scanDetailRepository;
+        this.dirtyRecordRepository = dirtyRecordRepository;
         this.stateMachineService = stateMachineService;
         this.dirtyRecordService = dirtyRecordService;
         this.dataSource = dataSource;
@@ -115,7 +117,7 @@ let BatchService = class BatchService {
     async findOne(id) {
         const batch = await this.batchRepository.findOne({
             where: { id },
-            relations: ['repairOrders', 'sparePartScans', 'customerSignPhotos', 'scanDetails', 'statusLogs', 'dirtyRecords'],
+            relations: ['repairOrders', 'sparePartScans', 'customerSignPhotos', 'scanDetails', 'dirtyRecords'],
         });
         if (!batch) {
             throw new common_1.NotFoundException('批次不存在');
@@ -124,8 +126,11 @@ let BatchService = class BatchService {
     }
     async submitForReview(id, user) {
         const batch = await this.findOne(id);
-        if (batch.totalDirtyRecords > 0) {
-            throw new common_1.BadRequestException('存在未处理的脏记录，请先处理后再提交');
+        const unresolvedDirtyCount = await this.dirtyRecordRepository.count({
+            where: { batchId: id, isResolved: false },
+        });
+        if (unresolvedDirtyCount > 0) {
+            throw new common_1.BadRequestException(`存在 ${unresolvedDirtyCount} 条未处理的脏记录，请先处理后再提交`);
         }
         const updatedBatch = await this.stateMachineService.transition(batch, batch_status_enum_1.BatchStatus.PENDING_REVIEW, user, '提交复核');
         return this.batchRepository.save(updatedBatch);
@@ -155,6 +160,22 @@ let BatchService = class BatchService {
         const targetStatus = batch.statusBeforeFrozen || batch_status_enum_1.BatchStatus.APPROVED;
         const updatedBatch = await this.stateMachineService.transition(batch, targetStatus, user, reason);
         return this.batchRepository.save(updatedBatch);
+    }
+    async findScanDetails(batchId) {
+        await this.findOne(batchId);
+        return this.scanDetailRepository.find({ where: { batchId } });
+    }
+    async findRepairOrders(batchId) {
+        await this.findOne(batchId);
+        return this.repairOrderRepository.find({ where: { batchId } });
+    }
+    async findSparePartScans(batchId) {
+        await this.findOne(batchId);
+        return this.sparePartScanRepository.find({ where: { batchId } });
+    }
+    async findCustomerSignPhotos(batchId) {
+        await this.findOne(batchId);
+        return this.customerSignPhotoRepository.find({ where: { batchId } });
     }
     async settle(id, user) {
         const batch = await this.findOne(id);
@@ -190,7 +211,9 @@ exports.BatchService = BatchService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(spare_part_scan_entity_1.SparePartScan)),
     __param(3, (0, typeorm_1.InjectRepository)(customer_sign_photo_entity_1.CustomerSignPhoto)),
     __param(4, (0, typeorm_1.InjectRepository)(scan_detail_entity_1.ScanDetail)),
+    __param(5, (0, typeorm_1.InjectRepository)(dirty_record_entity_1.DirtyRecord)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

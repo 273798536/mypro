@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatusLog = void 0;
 const typeorm_1 = require("typeorm");
-const batch_entity_1 = require("./batch.entity");
 const batch_status_enum_1 = require("../common/enums/batch-status.enum");
 let StatusLog = class StatusLog {
 };
@@ -51,12 +50,7 @@ __decorate([
     __metadata("design:type", Object)
 ], StatusLog.prototype, "metadata", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => batch_entity_1.Batch, batch => batch.statusLogs, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", batch_entity_1.Batch)
-], StatusLog.prototype, "batch", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'uuid' }),
     __metadata("design:type", String)
 ], StatusLog.prototype, "batchId", void 0);
 __decorate([

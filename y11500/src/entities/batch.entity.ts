@@ -4,7 +4,6 @@ import { RepairOrder } from './repair-order.entity';
 import { SparePartScan } from './spare-part-scan.entity';
 import { CustomerSignPhoto } from './customer-sign-photo.entity';
 import { ScanDetail } from './scan-detail.entity';
-import { StatusLog } from './status-log.entity';
 import { DirtyRecord } from './dirty-record.entity';
 import { User } from './user.entity';
 
@@ -77,9 +76,6 @@ export class Batch {
 
   @OneToMany(() => ScanDetail, scanDetail => scanDetail.batch)
   scanDetails: ScanDetail[];
-
-  @OneToMany(() => StatusLog, statusLog => statusLog.batch)
-  statusLogs: StatusLog[];
 
   @OneToMany(() => DirtyRecord, dirtyRecord => dirtyRecord.batch)
   dirtyRecords: DirtyRecord[];

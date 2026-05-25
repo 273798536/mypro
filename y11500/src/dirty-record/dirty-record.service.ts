@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryRunner } from 'typeorm';
 import { DirtyRecord } from '../entities/dirty-record.entity';
 import { RepairOrder } from '../entities/repair-order.entity';
 import { SparePartScan } from '../entities/spare-part-scan.entity';
+import { CustomerSignPhoto } from '../entities/customer-sign-photo.entity';
 import { ScanDetail } from '../entities/scan-detail.entity';
 import { Batch } from '../entities/batch.entity';
 import { DirtyType } from '../common/enums/dirty-type.enum';
@@ -18,6 +19,8 @@ export class DirtyRecordService {
     private repairOrderRepository: Repository<RepairOrder>,
     @InjectRepository(SparePartScan)
     private sparePartScanRepository: Repository<SparePartScan>,
+    @InjectRepository(CustomerSignPhoto)
+    private customerSignPhotoRepository: Repository<CustomerSignPhoto>,
     @InjectRepository(ScanDetail)
     private scanDetailRepository: Repository<ScanDetail>,
   ) {}
@@ -239,17 +242,212 @@ export class DirtyRecordService {
     handlingOpinion: string,
     resolvedContent: string,
   ): Promise<DirtyRecord> {
-    const dirtyRecord = await this.dirtyRecordRepository.findOne({ where: { id } });
-    if (!dirtyRecord) {
-      throw new NotFoundException('脏记录不存在');
+    const queryRunner = this.dirtyRecordRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const manager = queryRunner.manager;
+      const dirtyRecord = await manager.findOne(DirtyRecord, { where: { id } });
+      if (!dirtyRecord) {
+        throw new NotFoundException('脏记录不存在');
+      }
+      if (dirtyRecord.isResolved) {
+        throw new BadRequestException('该脏记录已处理');
+      }
+
+      await this.applyResolvedContent(dirtyRecord, resolvedContent, manager);
+
+      dirtyRecord.isResolved = true;
+      dirtyRecord.handlingOpinion = handlingOpinion;
+      dirtyRecord.resolvedContent = resolvedContent;
+      dirtyRecord.resolvedBy = user.name;
+      dirtyRecord.resolvedAt = new Date();
+
+      const savedRecord = await manager.save(dirtyRecord);
+
+      await this.updateSourceRecordDirtyFlag(dirtyRecord, manager);
+
+      await this.updateBatchDirtyRecordCount(dirtyRecord.batchId, manager);
+
+      await this.recalculateBatchTotals(dirtyRecord.batchId, manager);
+
+      await queryRunner.commitTransaction();
+
+      return savedRecord;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  private async applyResolvedContent(
+    dirtyRecord: DirtyRecord,
+    resolvedContent: string,
+    manager: any,
+  ): Promise<void> {
+    try {
+      const resolvedData = JSON.parse(resolvedContent);
+      const { sourceType, sourceId } = dirtyRecord;
+
+      switch (sourceType) {
+        case 'repair_order': {
+          const ro = await manager.findOne(RepairOrder, { where: { id: sourceId } });
+          if (ro) {
+            Object.assign(ro, resolvedData);
+            ro.rawContent = JSON.stringify(ro);
+            await manager.save(ro);
+          }
+          break;
+        }
+        case 'spare_part_scan': {
+          if (dirtyRecord.dirtyType === DirtyType.NAME_CHANGED) {
+            const partCode = sourceId;
+            const scans = await manager.find(SparePartScan, {
+              where: { batchId: dirtyRecord.batchId, partCode },
+            });
+            for (const sps of scans) {
+              if (resolvedData.partName) {
+                sps.partName = resolvedData.partName;
+                sps.rawContent = JSON.stringify(sps);
+                await manager.save(sps);
+              }
+            }
+          } else {
+            const sps = await manager.findOne(SparePartScan, { where: { id: sourceId } });
+            if (sps) {
+              Object.assign(sps, resolvedData);
+              if (resolvedData.quantity !== undefined && resolvedData.unitPrice !== undefined) {
+                sps.totalAmount = resolvedData.quantity * resolvedData.unitPrice;
+              }
+              sps.rawContent = JSON.stringify(sps);
+              await manager.save(sps);
+            }
+          }
+          break;
+        }
+        case 'scan_detail': {
+          if (dirtyRecord.dirtyType === DirtyType.CROSS_DAY) {
+            const dates = resolvedData.dates || [];
+            const targetDate = resolvedData.targetDate;
+            if (targetDate) {
+              const details = await manager.find(ScanDetail, {
+                where: { batchId: dirtyRecord.batchId },
+              });
+              for (const sd of details) {
+                if (sd.scanTime) {
+                  const dateStr = sd.scanTime.toISOString().slice(0, 10);
+                  if (dates.includes(dateStr) && dateStr !== targetDate) {
+                    const newDate = new Date(targetDate);
+                    const timeStr = sd.scanTime.toISOString().slice(11);
+                    sd.scanTime = new Date(targetDate + 'T' + timeStr);
+                    sd.rawContent = JSON.stringify(sd);
+                    await manager.save(sd);
+                  }
+                }
+              }
+            }
+          } else {
+            const sd = await manager.findOne(ScanDetail, { where: { id: sourceId } });
+            if (sd) {
+              Object.assign(sd, resolvedData);
+              if (resolvedData.quantity !== undefined && resolvedData.unitPrice !== undefined) {
+                sd.totalAmount = resolvedData.quantity * resolvedData.unitPrice;
+              }
+              sd.rawContent = JSON.stringify(sd);
+              await manager.save(sd);
+            }
+          }
+          break;
+        }
+      }
+    } catch (e) {
+      console.warn('解析 resolvedContent 失败，跳过原始数据修正:', e.message);
+    }
+  }
+
+  private async updateSourceRecordDirtyFlag(
+    dirtyRecord: DirtyRecord,
+    manager: any,
+  ): Promise<void> {
+    const { sourceType, sourceId, batchId, dirtyType } = dirtyRecord;
+
+    if (dirtyType === DirtyType.CROSS_DAY || dirtyType === DirtyType.NAME_CHANGED) {
+      const remainingDirty = await manager.count(DirtyRecord, {
+        where: { batchId, sourceType, dirtyType, isResolved: false },
+      });
+      if (remainingDirty === 0) {
+        if (sourceType === 'scan_detail') {
+          await manager.update(ScanDetail, { batchId }, { isDirty: false });
+        } else if (sourceType === 'spare_part_scan') {
+          await manager.update(SparePartScan, { batchId, partCode: sourceId }, { isDirty: false });
+        }
+      }
+      return;
     }
 
-    dirtyRecord.isResolved = true;
-    dirtyRecord.handlingOpinion = handlingOpinion;
-    dirtyRecord.resolvedContent = resolvedContent;
-    dirtyRecord.resolvedBy = user.name;
-    dirtyRecord.resolvedAt = new Date();
+    switch (sourceType) {
+      case 'repair_order': {
+        const remainingDirty = await manager.count(DirtyRecord, {
+          where: { batchId, sourceType, sourceId, isResolved: false },
+        });
+        if (remainingDirty === 0) {
+          await manager.update(RepairOrder, { id: sourceId }, { isDirty: false });
+        }
+        break;
+      }
+      case 'spare_part_scan': {
+        const remainingDirty = await manager.count(DirtyRecord, {
+          where: { batchId, sourceType, sourceId, isResolved: false },
+        });
+        if (remainingDirty === 0) {
+          await manager.update(SparePartScan, { id: sourceId }, { isDirty: false });
+        }
+        break;
+      }
+      case 'scan_detail': {
+        const remainingDirty = await manager.count(DirtyRecord, {
+          where: { batchId, sourceType, sourceId, isResolved: false },
+        });
+        if (remainingDirty === 0) {
+          await manager.update(ScanDetail, { id: sourceId }, { isDirty: false });
+        }
+        break;
+      }
+    }
+  }
 
-    return this.dirtyRecordRepository.save(dirtyRecord);
+  private async updateBatchDirtyRecordCount(
+    batchId: string,
+    manager: any,
+  ): Promise<void> {
+    const unresolvedCount = await manager.count(DirtyRecord, {
+      where: { batchId, isResolved: false },
+    });
+    const batch = await manager.findOne(Batch, { where: { id: batchId } });
+    if (batch) {
+      batch.totalDirtyRecords = unresolvedCount;
+      await manager.save(batch);
+    }
+  }
+
+  private async recalculateBatchTotals(
+    batchId: string,
+    manager: any,
+  ): Promise<void> {
+    const batch = await manager.findOne(Batch, { where: { id: batchId } });
+    if (!batch) return;
+
+    batch.totalRepairOrders = await manager.count(RepairOrder, { where: { batchId } });
+    batch.totalSparePartScans = await manager.count(SparePartScan, { where: { batchId } });
+    batch.totalCustomerSignPhotos = await manager.count(CustomerSignPhoto, { where: { batchId } });
+    batch.totalScanDetails = await manager.count(ScanDetail, { where: { batchId } });
+
+    const scans = await manager.find(SparePartScan, { where: { batchId } });
+    batch.totalAmount = scans.reduce((sum, item) => sum + Number(item.totalAmount || 0), 0);
+
+    await manager.save(batch);
   }
 }

@@ -75,21 +75,25 @@ export class StateMachineService {
     reason: string,
     metadata?: Record<string, any>,
   ): Promise<Batch> {
+    if (!batch.id) {
+      throw new BadRequestException('批次ID无效，无法进行状态转换');
+    }
+
     if (!this.canTransition(batch.status, toStatus)) {
       throw new BadRequestException(
         `无法从 ${batch.status} 转换到 ${toStatus}`,
       );
     }
 
-    const log = this.statusLogRepository.create({
-      batchId: batch.id,
-      fromStatus: batch.status,
-      toStatus: toStatus,
-      reason,
-      operatorId: user.id,
-      operatorName: user.name,
-      metadata,
-    });
+    const log = new StatusLog();
+    log.batchId = batch.id;
+    log.fromStatus = batch.status;
+    log.toStatus = toStatus;
+    log.reason = reason;
+    log.operatorId = user.id;
+    log.operatorName = user.name;
+    log.metadata = metadata;
+
     await this.statusLogRepository.save(log);
 
     batch.status = toStatus;

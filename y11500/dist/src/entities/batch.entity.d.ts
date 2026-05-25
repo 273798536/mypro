@@ -3,7 +3,6 @@ import { RepairOrder } from './repair-order.entity';
 import { SparePartScan } from './spare-part-scan.entity';
 import { CustomerSignPhoto } from './customer-sign-photo.entity';
 import { ScanDetail } from './scan-detail.entity';
-import { StatusLog } from './status-log.entity';
 import { DirtyRecord } from './dirty-record.entity';
 import { User } from './user.entity';
 export declare class Batch {
@@ -28,7 +27,6 @@ export declare class Batch {
     sparePartScans: SparePartScan[];
     customerSignPhotos: CustomerSignPhoto[];
     scanDetails: ScanDetail[];
-    statusLogs: StatusLog[];
     dirtyRecords: DirtyRecord[];
     createdAt: Date;
     updatedAt: Date;

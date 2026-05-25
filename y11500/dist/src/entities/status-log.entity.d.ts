@@ -1,4 +1,3 @@
-import { Batch } from './batch.entity';
 import { BatchStatus } from '../common/enums/batch-status.enum';
 export declare class StatusLog {
     id: string;
@@ -8,7 +7,6 @@ export declare class StatusLog {
     operatorId: string;
     operatorName: string;
     metadata: Record<string, any>;
-    batch: Batch;
     batchId: string;
     operatedAt: Date;
 }
