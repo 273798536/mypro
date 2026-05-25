@@ -395,7 +395,7 @@ def test_fix_reimport_closed_loop():
         return False
     
     old_session_id = result['session_id']
-    print_test("初始导入成功", True, f"会话ID: {old_session_id}")
+    print_test("初始导入成功", True, f"会话ID: {old_session_id}, 失败行: {result['failed_rows']}")
     
     conn = get_connection('.')
     cursor = conn.cursor()
@@ -408,15 +408,41 @@ def test_fix_reimport_closed_loop():
         return False
     print_test("有失败记录待修复", True, f"失败记录数: {failed_before}")
     
-    fixed_file = "examples/schedule_data.csv"
-    reimport_result = import_data('schedule', fixed_file, 'admin', '.', force=True)
+    print("\n  --- 测试10a: 含坏行文件重新导入不应关闭清单 ---")
+    bad_reimport = import_data('schedule', test_file, 'admin', '.', force=True)
     
-    if not reimport_result['success']:
-        print_test("重新导入成功", False, f"失败: {reimport_result.get('error', 'unknown')}")
+    if not bad_reimport['success']:
+        print_test("含坏行文件重新导入成功", False, f"失败: {bad_reimport.get('error', 'unknown')}")
+        return False
+    print_test("含坏行文件重新导入成功", True, f"新会话ID: {bad_reimport['session_id']}, 失败行: {bad_reimport['failed_rows']}")
+    
+    conn = get_connection('.')
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM failed_records WHERE session_id = ? AND fixed = 0', (old_session_id,))
+    failed_after_bad = cursor.fetchone()[0]
+    conn.close()
+    
+    if failed_after_bad == failed_before:
+        print_test("含坏行重新导入后旧清单未关闭", True, 
+                   f"旧清单待处理: {failed_after_bad}" if failed_after_bad > 0 else "已全部标记")
+    else:
+        print_test("含坏行重新导入后旧清单未关闭", False, 
+                   f"期望 {failed_before}, 实际 {failed_after_bad}")
         return False
     
-    new_session_id = reimport_result['session_id']
-    print_test("重新导入成功", True, f"新会话ID: {new_session_id}")
+    print("\n  --- 测试10b: 无坏行文件重新导入应关闭清单 ---")
+    fixed_file = "examples/schedule_data_fixed.csv"
+    good_reimport = import_data('schedule', fixed_file, 'admin', '.', force=True)
+    
+    if not good_reimport['success']:
+        print_test("无坏行文件重新导入成功", False, f"失败: {good_reimport.get('error', 'unknown')}")
+        return False
+    
+    new_session_id = good_reimport['session_id']
+    if good_reimport['failed_rows'] != 0:
+        print_test("无坏行文件 failed_rows==0", False, f"失败行: {good_reimport['failed_rows']}")
+        return False
+    print_test("无坏行文件 failed_rows==0", True, f"新会话ID: {new_session_id}")
     
     mark_result = mark_failed_records_fixed(old_session_id, new_session_id, None, '.')
     

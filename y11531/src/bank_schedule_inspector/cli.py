@@ -249,22 +249,30 @@ def fix(workspace, session_id, failed_id, reimport, operator):
         if result['success']:
             new_session_id = result['session_id']
             
-            mark_result = mark_failed_records_fixed(session_id, new_session_id, None, workspace)
-            
-            log_audit(user, 'fix_reimport', source_type, str(new_session_id), new_session_id,
-                      f'重新导入成功: {result["success_rows"]}行, 原会话{session_id}标记为已修复', 
-                      True, None, workspace)
-            
-            click.echo(click.style(f'重新导入成功! 新会话ID: {new_session_id}', fg='green'))
-            click.echo(f'  成功: {result["success_rows"]} 行, 失败: {result["failed_rows"]} 行')
-            
-            if mark_result['success']:
-                click.echo(click.style(f'  ✓ 原会话 {session_id} 的 {mark_result["updated_count"]} 条失败记录已标记为已修复', fg='green'))
+            if result['failed_rows'] == 0:
+                mark_result = mark_failed_records_fixed(session_id, new_session_id, None, workspace)
+                
+                log_audit(user, 'fix_reimport', source_type, str(new_session_id), new_session_id,
+                          f'重新导入成功: {result["success_rows"]}行, 原会话{session_id}标记为已修复', 
+                          True, None, workspace)
+                
+                click.echo(click.style(f'重新导入成功! 新会话ID: {new_session_id}', fg='green'))
+                click.echo(f'  成功: {result["success_rows"]} 行, 失败: {result["failed_rows"]} 行')
+                
+                if mark_result['success']:
+                    click.echo(click.style(f'  ✓ 原会话 {session_id} 的 {mark_result["updated_count"]} 条失败记录已标记为已修复', fg='green'))
+                    click.echo(click.style(f'  ✓ 修正闭环完成，失败清单已关闭', fg='green'))
+                else:
+                    click.echo(click.style(f'  ⚠ 标记失败记录状态时出错: {mark_result.get("error", "未知")}', fg='yellow'))
             else:
-                click.echo(click.style(f'  ⚠ 标记失败记录状态时出错: {mark_result.get("error", "未知")}', fg='yellow'))
-            
-            if result['failed_rows'] > 0:
+                log_audit(user, 'fix_reimport_partial', source_type, str(new_session_id), new_session_id,
+                          f'重新导入有残留失败: {result["failed_rows"]}行, 未关闭原清单', 
+                          True, None, workspace)
+                
+                click.echo(click.style(f'重新导入完成! 新会话ID: {new_session_id}', fg='yellow'))
+                click.echo(f'  成功: {result["success_rows"]} 行, 失败: {result["failed_rows"]} 行')
                 click.echo(click.style(f'  ⚠ 修正文件中仍有 {result["failed_rows"]} 条记录导入失败', fg='yellow'))
+                click.echo(click.style(f'  ⚠ 原会话 {session_id} 的失败清单未关闭，请继续修正后重新导入', fg='yellow'))
         else:
             log_audit(user, 'fix_reimport', source_type, None, None,
                       result.get('error', '导入失败'), False, result.get('error'), workspace)
