@@ -4,6 +4,8 @@
 - 异常保留测试
 - 重启后历史查询一致性
 - 导出数据与数据库一致性
+- 数据可追溯性测试
+- 权限拦截负例测试
 """
 
 import sys
@@ -19,6 +21,21 @@ sys.path.insert(0, str(Path(__file__).parent / 'src'))
 from bank_schedule_inspector.database import init_database, get_connection, get_db_path, is_initialized
 from bank_schedule_inspector.importer import import_data, calculate_file_hash, check_duplicate_import
 from bank_schedule_inspector.reporting import get_import_history, get_session_details, export_to_excel
+from bank_schedule_inspector.auth import has_permission, log_audit, get_audit_logs, get_user_permissions
+
+
+USER_STORE = {
+    'system': {'user_id': 0, 'username': 'system', 'display_name': '系统默认', 'role_name': 'admin', 'branch_id': None},
+    'admin': {'user_id': 2, 'username': 'admin', 'display_name': '系统管理员', 'role_name': 'admin', 'branch_id': None},
+    'branch_mgr_001': {'user_id': 3, 'username': 'branch_mgr_001', 'display_name': '朝阳支行行长', 'role_name': 'branch_manager', 'branch_id': 'B001'},
+    'branch_mgr_002': {'user_id': 4, 'username': 'branch_mgr_002', 'display_name': '海淀支行行长', 'role_name': 'branch_manager', 'branch_id': 'B002'},
+    'supervisor_001': {'user_id': 5, 'username': 'supervisor_001', 'display_name': '主管-张三', 'role_name': 'teller_supervisor', 'branch_id': 'B001'},
+    'viewer_001': {'user_id': 6, 'username': 'viewer_001', 'display_name': '只读用户', 'role_name': 'viewer', 'branch_id': None},
+}
+
+
+def get_current_user(username: str):
+    return USER_STORE.get(username)
 
 
 def print_test(name, passed, message=""):
@@ -207,6 +224,165 @@ def test_data_traceability():
     return True
 
 
+def test_permission_interception():
+    """测试权限拦截功能"""
+    print("\n=== 测试6: 权限拦截 ===")
+    
+    viewer_user = get_current_user('viewer_001')
+    if viewer_user is None:
+        print_test("viewer 用户存在", False, "用户未找到")
+        return False
+    print_test("viewer 用户存在", True, f"角色: {viewer_user['role_name']}")
+    
+    can_import = has_permission(viewer_user, 'import_data', '.')
+    if can_import:
+        print_test("viewer 无导入权限", False, "viewer 不应有 import_data 权限")
+        return False
+    print_test("viewer 无导入权限", True, "import_data 权限已被正确拦截")
+    
+    can_force_import = has_permission(viewer_user, 'force_import', '.')
+    if can_force_import:
+        print_test("viewer 无强制导入权限", False, "viewer 不应有 force_import 权限")
+        return False
+    print_test("viewer 无强制导入权限", True, "force_import 权限已被正确拦截")
+    
+    can_fix = has_permission(viewer_user, 'fix_records', '.')
+    if can_fix:
+        print_test("viewer 无修复权限", False, "viewer 不应有 fix_records 权限")
+        return False
+    print_test("viewer 无修复权限", True, "fix_records 权限已被正确拦截")
+    
+    can_export = has_permission(viewer_user, 'export_data', '.')
+    if can_export:
+        print_test("viewer 无导出权限", False, "viewer 不应有 export_data 权限")
+        return False
+    print_test("viewer 无导出权限", True, "export_data 权限已被正确拦截")
+    
+    return True
+
+
+def test_role_permission_matrix():
+    """测试角色权限矩阵"""
+    print("\n=== 测试7: 角色权限矩阵 ===")
+    
+    test_cases = [
+        ('admin', 'import_data', True, '管理员有导入权限'),
+        ('admin', 'force_import', True, '管理员有强制导入权限'),
+        ('admin', 'run_inspection', True, '管理员有巡检权限'),
+        ('admin', 'fix_records', True, '管理员有修复权限'),
+        ('admin', 'export_data', True, '管理员有导出权限'),
+        ('branch_mgr_001', 'import_data', True, '行长有导入权限'),
+        ('branch_mgr_001', 'force_import', False, '行长无强制导入权限'),
+        ('branch_mgr_001', 'run_inspection', True, '行长有巡检权限'),
+        ('branch_mgr_001', 'fix_records', True, '行长有修复权限'),
+        ('branch_mgr_001', 'export_data', True, '行长有导出权限'),
+        ('supervisor_001', 'import_data', True, '主管有导入权限'),
+        ('supervisor_001', 'force_import', False, '主管无强制导入权限'),
+        ('supervisor_001', 'run_inspection', True, '主管有巡检权限'),
+        ('supervisor_001', 'fix_records', True, '主管有修复权限'),
+        ('supervisor_001', 'export_data', False, '主管无导出权限'),
+        ('viewer_001', 'import_data', False, '只读无导入权限'),
+        ('viewer_001', 'force_import', False, '只读无强制导入权限'),
+        ('viewer_001', 'run_inspection', True, '只读有巡检权限'),
+        ('viewer_001', 'fix_records', False, '只读无修复权限'),
+        ('viewer_001', 'export_data', False, '只读无导出权限'),
+    ]
+    
+    all_passed = True
+    for username, permission, expected, desc in test_cases:
+        user = get_current_user(username)
+        actual = has_permission(user, permission, '.')
+        if actual == expected:
+            print_test(desc, True, f"{username}.{permission} = {actual}")
+        else:
+            print_test(desc, False, f"期望 {expected}, 实际 {actual}")
+            all_passed = False
+    
+    return all_passed
+
+
+def test_audit_logging():
+    """测试审计日志记录"""
+    print("\n=== 测试8: 审计日志 ===")
+    
+    admin_user = get_current_user('admin')
+    
+    log_audit(admin_user, 'test_action', 'test_resource', 'test_123', None,
+              '测试审计日志', True, None, '.')
+    
+    logs = get_audit_logs(limit=5, username='admin', workspace='.')
+    
+    if logs and len(logs) > 0:
+        print_test("审计日志已记录", True, f"找到 {len(logs)} 条日志")
+        
+        latest = logs[0]
+        if latest['action'] == 'test_action' and latest['resource'] == 'test_resource':
+            print_test("审计日志内容正确", True, 
+                       f"action={latest['action']}, resource={latest['resource']}")
+        else:
+            print_test("审计日志内容正确", False, "日志内容不匹配")
+            return False
+    else:
+        print_test("审计日志已记录", False, "未找到审计日志")
+        return False
+    
+    viewer_user = get_current_user('viewer_001')
+    log_audit(viewer_user, 'permission_denied', 'import', None, None,
+              '测试权限拒绝日志', False, '权限不足', '.')
+    
+    viewer_logs = get_audit_logs(limit=5, username='viewer_001', workspace='.')
+    
+    if viewer_logs and len(viewer_logs) > 0:
+        denied_log = viewer_logs[0]
+        if not denied_log['success'] and '权限' in denied_log.get('error_message', ''):
+            print_test("权限拒绝已记录", True, 
+                       f"error_message={denied_log['error_message'][:20]}...")
+        else:
+            print_test("权限拒绝已记录", False, "日志内容不匹配")
+            return False
+    else:
+        print_test("权限拒绝已记录", False, "未找到权限拒绝日志")
+        return False
+    
+    return True
+
+
+def test_permission_denied_cli_flow():
+    """测试 CLI 权限拦截流程"""
+    print("\n=== 测试9: CLI 权限拦截流程 ===")
+    
+    viewer_user = get_current_user('viewer_001')
+    
+    if has_permission(viewer_user, 'import_data', '.'):
+        print_test("viewer 尝试导入被拦截", False, "viewer 不应有导入权限")
+        return False
+    print_test("viewer 尝试导入被拦截", True, "import_data 权限检查正确拦截")
+    
+    log_audit(viewer_user, 'import', 'schedule', None, None,
+              'viewer 尝试导入被权限拦截', False, '权限不足: import_data', '.')
+    
+    admin_user = get_current_user('admin')
+    
+    if not has_permission(admin_user, 'import_data', '.'):
+        print_test("admin 可以正常导入", False, "admin 应有导入权限")
+        return False
+    
+    test_file = "examples/schedule_data.csv"
+    result = import_data('schedule', test_file, 'admin', '.', force=True)
+    
+    if result['success']:
+        print_test("admin 可以正常导入", True, f"会话ID: {result['session_id']}")
+        
+        log_audit(admin_user, 'import', 'schedule', str(result['session_id']), 
+                  result['session_id'], f'成功导入 {result["success_rows"]} 行',
+                  True, None, '.')
+    else:
+        print_test("admin 可以正常导入", False, f"失败: {result.get('error', 'unknown')}")
+        return False
+    
+    return True
+
+
 def main():
     print("=" * 60)
     print("银行网点排班多源导入巡检工具 - 自动化检查")
@@ -223,6 +399,10 @@ def main():
     results.append(('重启历史一致', test_restart_history_consistency()))
     results.append(('导出数据一致', test_export_consistency()))
     results.append(('数据可追溯', test_data_traceability()))
+    results.append(('权限拦截检查', test_permission_interception()))
+    results.append(('角色权限矩阵', test_role_permission_matrix()))
+    results.append(('审计日志记录', test_audit_logging()))
+    results.append(('CLI 权限流程', test_permission_denied_cli_flow()))
     
     print("\n" + "=" * 60)
     print("测试汇总")
