@@ -1,0 +1,14 @@
+[
+  {
+    "ticket_no": "TK-ARC-2026-101",
+    "title": "压缩包测试工单1",
+    "ticket_type": "complaint",
+    "priority": "high",
+    "customer_id": "CUST101",
+    "customer_name": "王五",
+    "handler": "admin",
+    "status": "resolved",
+    "session_summary": "压缩包导入测试，客户投诉问题1",
+    "compensation": 300.0
+  }
+]

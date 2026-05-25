@@ -1,11 +1,18 @@
 import hashlib
 import json
 import csv
+import os
+import zipfile
+import tarfile
+import shutil
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 from io import StringIO
 
-from app.models import ImportSource, ImportRawData, Ticket, SlaRule
+from app.models import (
+    ImportSource, ImportRawData, Ticket, SlaRule,
+    SessionSummary, CompensationApproval
+)
 from app.models.log_models import OperationLog
 
 
@@ -148,7 +155,12 @@ class ImportService:
             'status': str(raw.get('status') or raw.get('状态') or 'open'),
             'session_summary': str(raw.get('session_summary') or raw.get('会话摘要') or ''),
             'sla_rule_code': str(raw.get('sla_rule') or raw.get('SLA规则') or ''),
-            'compensation_amount': float(raw.get('compensation') or raw.get('补偿金额') or 0),
+            'compensation_amount': float(raw.get('compensation') or raw.get('补偿金额') or raw.get('compensation_amount') or 0),
+            'compensation_type': str(raw.get('compensation_type') or raw.get('补偿类型') or 'refund'),
+            'approval_status': str(raw.get('approval_status') or raw.get('审批状态') or 'pending'),
+            'approved_amount': float(raw.get('approved_amount') or raw.get('已批金额') or raw.get('compensation') or raw.get('补偿金额') or 0),
+            'first_response_at': str(raw.get('first_response_at') or raw.get('首次响应时间') or ''),
+            'resolved_at': str(raw.get('resolved_at') or raw.get('解决时间') or ''),
         }
         
         if not parsed['ticket_no']:
@@ -172,21 +184,81 @@ class ImportService:
         if not sla_rule:
             sla_rule = SlaRule.match_rule(parsed['ticket_type'], parsed['priority_level'])
         
-        ticket = Ticket.create(
-            ticket_no=parsed['ticket_no'],
-            title=parsed['title'],
-            ticket_type=parsed['ticket_type'],
-            priority_level=parsed['priority_level'],
-            customer_id=parsed['customer_id'],
-            customer_name=parsed['customer_name'],
-            current_handler=parsed['current_handler'],
-            status=parsed['status'],
-            sla_rule_id=sla_rule.id if sla_rule else None,
-            import_source_id=import_source_id,
-            import_raw_id=import_raw_id
-        )
+        ticket_data = {
+            'ticket_no': parsed['ticket_no'],
+            'title': parsed['title'],
+            'ticket_type': parsed['ticket_type'],
+            'priority_level': parsed['priority_level'],
+            'customer_id': parsed['customer_id'],
+            'customer_name': parsed['customer_name'],
+            'current_handler': parsed['current_handler'],
+            'status': parsed['status'],
+            'sla_rule_id': sla_rule.id if sla_rule else None,
+            'import_source_id': import_source_id,
+            'import_raw_id': import_raw_id,
+        }
+        
+        if parsed.get('first_response_at'):
+            ticket_data['first_response_at'] = parsed['first_response_at']
+        if parsed.get('resolved_at'):
+            ticket_data['resolved_at'] = parsed['resolved_at']
+        
+        ticket = Ticket.create(**ticket_data)
+        
+        if parsed.get('session_summary'):
+            SessionSummary.create(
+                ticket_id=ticket.id,
+                summary_content=parsed['session_summary'],
+                summary_type='imported',
+                created_by='import_system',
+                version=1
+            )
+        
+        if parsed.get('compensation_amount', 0) > 0:
+            CompensationApproval.create(
+                ticket_id=ticket.id,
+                compensation_type=parsed.get('compensation_type', 'refund'),
+                requested_amount=float(parsed['compensation_amount']),
+                approved_amount=float(parsed.get('approved_amount', parsed['compensation_amount'])),
+                approval_status=parsed.get('approval_status', 'pending'),
+                sla_rule_id=sla_rule.id if sla_rule else None,
+                calculation_basis=json.dumps({
+                    'source': 'import',
+                    'original_amount': parsed['compensation_amount'],
+                    'import_source_id': import_source_id
+                }, ensure_ascii=False),
+                applicant='import_system',
+                version=1
+            )
         
         return ticket
+
+    @classmethod
+    def extract_archive(cls, archive_path: str, extract_to: str, archive_type: str) -> List[str]:
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        unique_extract_dir = os.path.join(extract_to, f'archive_{timestamp}_{os.path.basename(archive_path)}')
+        os.makedirs(unique_extract_dir, exist_ok=True)
+        
+        extracted_files = []
+        
+        if archive_type == 'zip':
+            with zipfile.ZipFile(archive_path, 'r') as zf:
+                zf.extractall(unique_extract_dir)
+                for name in zf.namelist():
+                    full_path = os.path.join(unique_extract_dir, name)
+                    if os.path.isfile(full_path):
+                        extracted_files.append(full_path)
+        
+        elif archive_type in ('tar.gz', 'tgz', 'tar'):
+            mode = 'r:gz' if archive_type in ('tar.gz', 'tgz') else 'r:'
+            with tarfile.open(archive_path, mode) as tf:
+                tf.extractall(unique_extract_dir)
+                for member in tf.getmembers():
+                    full_path = os.path.join(unique_extract_dir, member.name)
+                    if os.path.isfile(full_path):
+                        extracted_files.append(full_path)
+        
+        return extracted_files
 
     @classmethod
     def get_import_history(cls, limit: int = 50) -> List[Dict[str, Any]]:

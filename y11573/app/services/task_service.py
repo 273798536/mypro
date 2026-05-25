@@ -160,3 +160,42 @@ def handle_process_exception(task_id: int, params: Dict[str, Any]) -> Dict[str, 
         return {'status': 'resolved', 'exception_id': exception_id}
     
     return {'status': 'pending_manual', 'exception_id': exception_id}
+
+
+@TaskHandler.register('batch_playback')
+def handle_batch_playback(task_id: int, params: Dict[str, Any]) -> Dict[str, Any]:
+    from app.services.playback_service import PlaybackService
+    from app.models import Ticket
+    
+    ticket_ids = params.get('ticket_ids', [])
+    if not ticket_ids:
+        raise ValueError("Missing ticket_ids")
+    
+    service = PlaybackService()
+    results = []
+    success_count = 0
+    failed_count = 0
+    
+    for ticket_id in ticket_ids:
+        try:
+            result = service.playback_ticket(ticket_id)
+            results.append({
+                'ticket_id': ticket_id,
+                'status': 'success',
+                'verdict': result.get('final_verdict', {})
+            })
+            success_count += 1
+        except Exception as e:
+            results.append({
+                'ticket_id': ticket_id,
+                'status': 'failed',
+                'error': str(e)
+            })
+            failed_count += 1
+    
+    return {
+        'total': len(ticket_ids),
+        'success_count': success_count,
+        'failed_count': failed_count,
+        'results': results
+    }

@@ -1,0 +1,14 @@
+[
+  {
+    "ticket_no": "TK-ARC-2026-102",
+    "title": "压缩包测试工单2",
+    "ticket_type": "general",
+    "priority": "normal",
+    "customer_id": "CUST102",
+    "customer_name": "赵六",
+    "handler": "operator1",
+    "status": "open",
+    "session_summary": "压缩包导入测试，客户咨询问题2",
+    "compensation": 150.0
+  }
+]
