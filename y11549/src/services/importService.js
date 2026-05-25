@@ -443,21 +443,48 @@ const importShiftRecord = async (filePath, sourceId, operator) => {
         throw new Error('缺少必填字段: 班次日期');
       }
 
-      await runQuery(`
-        INSERT INTO shift_records (
-          source_id, source_row_number, raw_data,
-          shift_date, shift_type, team_leader, team_member, handover_notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        sourceId,
-        rowNumber,
-        JSON.stringify(record),
-        record['班次日期'],
-        record['班次类型'] || null,
-        record['班长'] || null,
-        record['班组成员'] || null,
-        record['交接备注'] || null
-      ]);
+      try {
+        await runQuery(`
+          INSERT INTO shift_records (
+            source_id, source_row_number, raw_data,
+            shift_date, shift_type, team_leader, team_member, handover_notes
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+          sourceId,
+          rowNumber,
+          JSON.stringify(record),
+          record['班次日期'],
+          record['班次类型'] || null,
+          record['班长'] || null,
+          record['班组成员'] || null,
+          record['交接备注'] || null
+        ]);
+      } catch (insertErr) {
+        if (insertErr.message.includes('UNIQUE') || insertErr.message.includes('unique')) {
+          await runQuery(`
+            UPDATE shift_records SET
+              source_id = ?,
+              source_row_number = ?,
+              raw_data = ?,
+              team_leader = ?,
+              team_member = ?,
+              handover_notes = ?,
+              updated_at = CURRENT_TIMESTAMP
+            WHERE shift_date = ? AND shift_type = ?
+          `, [
+            sourceId,
+            rowNumber,
+            JSON.stringify(record),
+            record['班长'] || null,
+            record['班组成员'] || null,
+            record['交接备注'] || null,
+            record['班次日期'],
+            record['班次类型'] || null
+          ]);
+        } else {
+          throw insertErr;
+        }
+      }
       successCount++;
     } catch (error) {
       failedCount++;

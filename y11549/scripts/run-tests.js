@@ -167,6 +167,68 @@ async function runTests() {
       console.log(`   第一次导入: 成功${result1.successCount}, 失败${result1.failedCount}`);
       console.log(`   第二次导入: 成功${result2.successCount}, 失败${result2.failedCount}`);
       assert(result1.successCount === result2.successCount, '重复导入结果应该一致');
+    }),
+
+    test('11. 班次记录幂等验证', async () => {
+      const result1 = await importService.importFile(
+        path.join(sampleDataDir, 'shift-records.csv'),
+        'shift-records.csv',
+        'shift_record',
+        'test_user'
+      );
+      
+      const result2 = await importService.importFile(
+        path.join(sampleDataDir, 'shift-records.csv'),
+        'shift-records.csv',
+        'shift_record',
+        'test_user'
+      );
+      
+      console.log(`   第一次导入: 成功${result1.successCount}, 失败${result1.failedCount}`);
+      console.log(`   第二次导入: 成功${result2.successCount}, 失败${result2.failedCount}`);
+      assert(result1.successCount === result2.successCount, '班次记录重复导入结果应该一致');
+    }),
+
+    test('12. 敏感字段脱敏验证', async () => {
+      const records = await importService.allQuery(`
+        SELECT br.borrower_phone, ml.estimated_value
+        FROM borrow_records br
+        LEFT JOIN material_lists ml ON br.material_code = ml.material_code
+        LIMIT 1
+      `);
+      assert(records.length > 0, '没有数据可测试');
+      
+      const original = records[0];
+      const masked = exportService.maskSensitiveData(original, 'viewer');
+      
+      console.log(`   原始手机号: ${original.borrower_phone}`);
+      console.log(`   脱敏后手机号: ${masked.borrower_phone}`);
+      console.log(`   原始价值: ${original.estimated_value}`);
+      console.log(`   脱敏后价值: ${masked.estimated_value}`);
+      
+      assert(masked.borrower_phone !== original.borrower_phone, '手机号应该被脱敏');
+      assert(masked.borrower_phone.includes('****'), '脱敏后应包含****');
+    }),
+
+    test('13. 导出前冻结验证', async () => {
+      const before = await importService.getQuery(`
+        SELECT COUNT(*) as not_frozen_count FROM borrow_records 
+        WHERE workflow_state IN ('draft', 'submitted', 'rejected', 'confirmed')
+      `);
+      
+      const frozen = await exportService.freezeBeforeExport('test', 'test_user', 'admin');
+      console.log(`   冻结前未冻结数量: ${before.not_frozen_count}`);
+      frozen.forEach(f => console.log(`   冻结 ${f.table}: ${f.frozen} 条`));
+      
+      const after = await importService.getQuery(`
+        SELECT COUNT(*) as not_frozen_count FROM borrow_records 
+        WHERE workflow_state IN ('draft', 'submitted', 'rejected', 'confirmed')
+      `);
+      console.log(`   冻结后未冻结数量: ${after.not_frozen_count}`);
+      
+      const totalFrozen = frozen.reduce((sum, f) => sum + f.frozen, 0);
+      assert(totalFrozen > 0, '应该有数据被冻结');
+      assert(after.not_frozen_count === 0, '冻结后应该没有未冻结数据');
     })
   ];
 

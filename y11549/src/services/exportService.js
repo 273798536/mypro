@@ -94,7 +94,9 @@ const freezeBeforeExport = async (exportType, operator, operatorRole) => {
   const tables = {
     borrow_records: 'borrow_record',
     material_lists: 'material_list',
-    logistics_receipts: 'logistics_receipt'
+    logistics_receipts: 'logistics_receipt',
+    shift_records: 'shift_record',
+    price_adjustments: 'price_adjustment'
   };
 
   const results = [];
@@ -103,7 +105,7 @@ const freezeBeforeExport = async (exportType, operator, operatorRole) => {
     const updateStmt = `
       UPDATE ${table}
       SET workflow_state = 'frozen', updated_at = CURRENT_TIMESTAMP
-      WHERE workflow_state = 'confirmed'
+      WHERE workflow_state IN ('draft', 'submitted', 'rejected', 'confirmed')
     `;
     const result = await runQuery(updateStmt);
     results.push({ table, frozen: result.changes });

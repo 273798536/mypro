@@ -110,7 +110,8 @@ const initSQL = `
     handover_notes TEXT,
     workflow_state TEXT DEFAULT 'draft',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(shift_date, shift_type)
   );
 
   CREATE TABLE IF NOT EXISTS price_adjustments (

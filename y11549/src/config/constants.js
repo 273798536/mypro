@@ -29,7 +29,16 @@ const BORROW_STATUS = {
   RESOLVED: 'resolved'
 };
 
-const SENSITIVE_FIELDS = ['phone', 'idCard', 'address', 'price', 'cost'];
+const SENSITIVE_FIELDS = [
+  'borrower_phone',
+  'sender_phone', 
+  'receiver_phone',
+  'handler_contact',
+  'estimated_value',
+  'original_price',
+  'adjusted_price',
+  'total_value'
+];
 
 module.exports = {
   WORKFLOW_STATES,
