@@ -1,32 +1,56 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { createObjectCsvWriter } from 'csv-writer';
-import { Ticket, TicketStatus, StateTransition, InventoryDifference } from '../types';
-import TicketDao from '../daos/TicketDao';
-import BatchService from './BatchService';
-
-export class ExportService {
-    private dao: TicketDao;
-    private batchService: BatchService;
-    private exportDir: string;
-
-    constructor(dao: TicketDao, exportDir: string = './exports', batchService?: BatchService) {
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExportService = void 0;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const csv_writer_1 = require("csv-writer");
+const types_1 = require("../types");
+class ExportService {
+    constructor(dao, exportDir = './exports', batchService) {
         this.dao = dao;
         this.exportDir = exportDir;
         this.batchService = batchService || new (require('./BatchService').BatchService)(dao, new (require('../state-machine/TicketStateMachine').default)(dao));
         this.ensureExportDir();
     }
-
-    private ensureExportDir(): void {
+    ensureExportDir() {
         if (!fs.existsSync(this.exportDir)) {
             fs.mkdirSync(this.exportDir, { recursive: true });
         }
     }
-
-    async exportBatchToCSV(
-        batchId: string,
-        requestedBy: string
-    ): Promise<{ exportId: string; fileUrl: string; successCount: number; failedCount: number }> {
+    async exportBatchToCSV(batchId, requestedBy) {
         const exportRequest = await this.dao.createExportRequest({
             batchId,
             status: 'processing',
@@ -36,20 +60,16 @@ export class ExportService {
             requestedBy,
             createdAt: new Date()
         });
-
         const batchDetail = await this.dao.getBatchById(batchId);
         if (!batchDetail) {
             await this.dao.updateExportRequest(exportRequest.id, 'failed');
             throw new Error(`Batch ${batchId} not found`);
         }
-
         const tickets = await this.dao.getTicketsByBatchId(batchId);
         const failedRecords = await this.dao.getFailedRecords({ batchId });
-
         const fileName = `batch_${batchId}_${Date.now()}.csv`;
         const filePath = path.join(this.exportDir, fileName);
-
-        const csvWriter = createObjectCsvWriter({
+        const csvWriter = (0, csv_writer_1.createObjectCsvWriter)({
             path: filePath,
             header: [
                 { id: 'ticketId', title: '工单ID' },
@@ -72,17 +92,14 @@ export class ExportService {
                 { id: 'inventoryExtra', title: '盘盈数量' }
             ]
         });
-
-        const records: any[] = [];
+        const records = [];
         let successCount = 0;
         let failedCount = 0;
-
         for (const ticket of tickets) {
             try {
                 const timeouts = await this.dao.getTimeoutRecordsByTicketId(ticket.id);
                 const assignments = await this.dao.getAssignmentsByTicketId(ticket.id);
                 const inventoryDiffs = await this.dao.getInventoryDifferencesByTicketId(ticket.id);
-
                 records.push({
                     ticketId: ticket.id,
                     status: ticket.status,
@@ -104,7 +121,8 @@ export class ExportService {
                     inventoryExtra: inventoryDiffs.filter(d => d.difference > 0).reduce((sum, d) => sum + d.difference, 0)
                 });
                 successCount++;
-            } catch (error) {
+            }
+            catch (error) {
                 failedCount++;
                 await this.dao.createFailedRecord({
                     batchId,
@@ -117,20 +135,9 @@ export class ExportService {
                 });
             }
         }
-
         await csvWriter.writeRecords(records);
-
         const fileUrl = `/exports/${fileName}`;
-
-        await this.dao.updateExportRequest(
-            exportRequest.id,
-            'completed',
-            fileUrl,
-            tickets.length,
-            successCount,
-            failedCount
-        );
-
+        await this.dao.updateExportRequest(exportRequest.id, 'completed', fileUrl, tickets.length, successCount, failedCount);
         return {
             exportId: exportRequest.id,
             fileUrl,
@@ -138,25 +145,18 @@ export class ExportService {
             failedCount
         };
     }
-
-    async exportTicketDetailToCSV(
-        ticketId: string,
-        requestedBy: string
-    ): Promise<{ exportId: string; fileUrl: string }> {
+    async exportTicketDetailToCSV(ticketId, requestedBy) {
         const ticket = await this.dao.getTicketById(ticketId);
         if (!ticket) {
             throw new Error(`Ticket ${ticketId} not found`);
         }
-
         const transitions = await this.dao.getStateTransitionsByTicketId(ticketId);
         const assignments = await this.dao.getAssignmentsByTicketId(ticketId);
         const timeouts = await this.dao.getTimeoutRecordsByTicketId(ticketId);
         const approvals = await this.dao.getCompensationApprovalsByTicketId(ticketId);
-
         const fileName = `ticket_${ticketId}_${Date.now()}.csv`;
         const filePath = path.join(this.exportDir, fileName);
-
-        const csvWriter = createObjectCsvWriter({
+        const csvWriter = (0, csv_writer_1.createObjectCsvWriter)({
             path: filePath,
             header: [
                 { id: 'section', title: '部分' },
@@ -166,27 +166,11 @@ export class ExportService {
                 { id: 'operator', title: '操作人' }
             ]
         });
-
-        const records: any[] = [];
-
-        records.push(
-            { section: '基本信息', field: '工单ID', value: ticket.id, time: '', operator: '' },
-            { section: '基本信息', field: '状态', value: ticket.status, time: '', operator: '' },
-            { section: '基本信息', field: '客户ID', value: ticket.sessionSummary.customerId, time: '', operator: '' },
-            { section: '基本信息', field: '问题类型', value: ticket.sessionSummary.issueType, time: '', operator: '' },
-            { section: '基本信息', field: '严重程度', value: ticket.sessionSummary.severity, time: '', operator: '' },
-            { section: '基本信息', field: '总补偿金额', value: ticket.totalCompensation, time: '', operator: '' },
-            { section: '基本信息', field: '创建时间', value: ticket.createdAt.toISOString(), time: '', operator: ticket.createdBy }
-        );
-
-        if (ticket.status === TicketStatus.FROZEN) {
-            records.push(
-                { section: '冻结信息', field: '冻结类型', value: ticket.frozenType, time: '', operator: '' },
-                { section: '冻结信息', field: '冻结原因', value: ticket.frozenReason, time: ticket.frozenAt?.toISOString() || '', operator: ticket.frozenBy || '' },
-                { section: '冻结信息', field: '冻结前状态', value: ticket.statusBeforeFrozen, time: '', operator: '' }
-            );
+        const records = [];
+        records.push({ section: '基本信息', field: '工单ID', value: ticket.id, time: '', operator: '' }, { section: '基本信息', field: '状态', value: ticket.status, time: '', operator: '' }, { section: '基本信息', field: '客户ID', value: ticket.sessionSummary.customerId, time: '', operator: '' }, { section: '基本信息', field: '问题类型', value: ticket.sessionSummary.issueType, time: '', operator: '' }, { section: '基本信息', field: '严重程度', value: ticket.sessionSummary.severity, time: '', operator: '' }, { section: '基本信息', field: '总补偿金额', value: ticket.totalCompensation, time: '', operator: '' }, { section: '基本信息', field: '创建时间', value: ticket.createdAt.toISOString(), time: '', operator: ticket.createdBy });
+        if (ticket.status === types_1.TicketStatus.FROZEN) {
+            records.push({ section: '冻结信息', field: '冻结类型', value: ticket.frozenType, time: '', operator: '' }, { section: '冻结信息', field: '冻结原因', value: ticket.frozenReason, time: ticket.frozenAt?.toISOString() || '', operator: ticket.frozenBy || '' }, { section: '冻结信息', field: '冻结前状态', value: ticket.statusBeforeFrozen, time: '', operator: '' });
         }
-
         for (const transition of transitions) {
             records.push({
                 section: '状态流转',
@@ -196,7 +180,6 @@ export class ExportService {
                 operator: transition.operatorName || transition.operatorId
             });
         }
-
         for (const assignment of assignments) {
             records.push({
                 section: '转派记录',
@@ -206,7 +189,6 @@ export class ExportService {
                 operator: ''
             });
         }
-
         for (const timeout of timeouts) {
             records.push({
                 section: '超时记录',
@@ -216,7 +198,6 @@ export class ExportService {
                 operator: timeout.agentId
             });
         }
-
         for (const approval of approvals) {
             records.push({
                 section: '补偿审批',
@@ -226,11 +207,8 @@ export class ExportService {
                 operator: approval.approverId || ''
             });
         }
-
         await csvWriter.writeRecords(records);
-
         const fileUrl = `/exports/${fileName}`;
-
         const exportRequest = await this.dao.createExportRequest({
             filters: { ticketId },
             status: 'completed',
@@ -241,21 +219,15 @@ export class ExportService {
             requestedBy,
             createdAt: new Date()
         });
-
         return {
             exportId: exportRequest.id,
             fileUrl
         };
     }
-
-    async getExportStatus(exportId: string): Promise<any> {
+    async getExportStatus(exportId) {
         return await this.dao.getExportRequestById(exportId);
     }
-
-    async exportInventoryDifferencesToCSV(
-        filters: any,
-        requestedBy: string
-    ): Promise<{ exportId: string; fileUrl: string; totalRecords: number }> {
+    async exportInventoryDifferencesToCSV(filters, requestedBy) {
         const exportRequest = await this.dao.createExportRequest({
             filters,
             status: 'processing',
@@ -265,13 +237,10 @@ export class ExportService {
             requestedBy,
             createdAt: new Date()
         });
-
         const { differences, summary } = await this.batchService.getInventoryDifferences(filters);
-
         const fileName = `inventory_differences_${Date.now()}.csv`;
         const filePath = path.join(this.exportDir, fileName);
-
-        const csvWriter = createObjectCsvWriter({
+        const csvWriter = (0, csv_writer_1.createObjectCsvWriter)({
             path: filePath,
             header: [
                 { id: 'id', title: '差异ID' },
@@ -285,8 +254,7 @@ export class ExportService {
                 { id: 'createdAt', title: '创建时间' }
             ]
         });
-
-        const records = differences.map((diff: InventoryDifference) => ({
+        const records = differences.map((diff) => ({
             id: diff.id,
             ticketId: diff.ticketId,
             productId: diff.productId,
@@ -297,9 +265,7 @@ export class ExportService {
             reason: diff.reason || '',
             createdAt: diff.createdAt.toISOString()
         }));
-
         await csvWriter.writeRecords(records);
-
         const summaryLines = [
             '',
             '',
@@ -310,20 +276,9 @@ export class ExportService {
             `净差异: ${summary.netDifference},,,,,,,,`,
             `未说明原因: ${summary.unresolvedCount},,,,,,,,`
         ].join('\n');
-
         await fs.promises.appendFile(filePath, '\n' + summaryLines);
-
         const fileUrl = `/exports/${fileName}`;
-
-        await this.dao.updateExportRequest(
-            exportRequest.id,
-            'completed',
-            fileUrl,
-            records.length,
-            records.length,
-            0
-        );
-
+        await this.dao.updateExportRequest(exportRequest.id, 'completed', fileUrl, records.length, records.length, 0);
         return {
             exportId: exportRequest.id,
             fileUrl,
@@ -331,5 +286,6 @@ export class ExportService {
         };
     }
 }
-
-export default ExportService;
+exports.ExportService = ExportService;
+exports.default = ExportService;
+//# sourceMappingURL=ExportService.js.map

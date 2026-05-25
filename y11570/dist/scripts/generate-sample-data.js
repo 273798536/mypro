@@ -1,28 +1,27 @@
-import TicketDao from '../daos/TicketDao';
-import TicketStateMachine from '../state-machine/TicketStateMachine';
-import BatchService from '../services/BatchService';
-import { AssignmentType, FrozenType, TicketStatus } from '../types';
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const TicketDao_1 = __importDefault(require("../daos/TicketDao"));
+const TicketStateMachine_1 = __importDefault(require("../state-machine/TicketStateMachine"));
+const BatchService_1 = __importDefault(require("../services/BatchService"));
+const types_1 = require("../types");
 async function generateSampleData() {
-    const dao = new TicketDao();
-    const stateMachine = new TicketStateMachine(dao);
-    const batchService = new BatchService(dao, stateMachine);
-
+    const dao = new TicketDao_1.default();
+    const stateMachine = new TicketStateMachine_1.default(dao);
+    const batchService = new BatchService_1.default(dao, stateMachine);
     console.log('开始生成示例数据...');
-
     const slaRules = await dao.getSLARules();
     if (slaRules.length === 0) {
         console.log('请先运行 init-data.ts 初始化基础数据');
         return;
     }
     const highPrioSLA = slaRules.find(r => r.priority === 'high') || slaRules[0];
-
     console.log('创建示例批次...');
     const batch1 = await batchService.createBatch('2024年5月第一周客服工单', 'admin_001');
     const batch2 = await batchService.createBatch('2024年5月第二周客服工单', 'admin_001');
-
     console.log('向批次添加工单...');
-
     const tickets1 = await batchService.addTicketsToBatch(batch1.id, [
         {
             sessionSummary: {
@@ -64,7 +63,6 @@ async function generateSampleData() {
             createdBy: 'system'
         }
     ], 'admin_001');
-
     const tickets2 = await batchService.addTicketsToBatch(batch2.id, [
         {
             sessionSummary: {
@@ -93,70 +91,29 @@ async function generateSampleData() {
             createdBy: 'system'
         }
     ], 'admin_001');
-
     console.log('模拟工单转派流程...');
     if (tickets1.length > 0) {
-        await stateMachine.reassignTicket(
-            tickets1[0].id,
-            'AGENT_SUPERVISOR',
-            AssignmentType.ESCALATION,
-            '问题复杂，需要主管介入',
-            'admin_001',
-            highPrioSLA
-        );
+        await stateMachine.reassignTicket(tickets1[0].id, 'AGENT_SUPERVISOR', types_1.AssignmentType.ESCALATION, '问题复杂，需要主管介入', 'admin_001', highPrioSLA);
     }
-
     console.log('模拟补偿申请...');
     if (tickets1.length > 1) {
-        await stateMachine.transition(
-            tickets1[1].id,
-            TicketStatus.PROCESSING,
-            '开始处理工单',
-            'AGENT002'
-        );
-
-        await stateMachine.requestCompensation(
-            tickets1[1].id,
-            200,
-            '商品损坏，客户要求赔偿',
-            'AGENT002'
-        );
-
+        await stateMachine.transition(tickets1[1].id, types_1.TicketStatus.PROCESSING, '开始处理工单', 'AGENT002');
+        await stateMachine.requestCompensation(tickets1[1].id, 200, '商品损坏，客户要求赔偿', 'AGENT002');
         const approvals = await dao.getCompensationApprovalsByTicketId(tickets1[1].id);
         if (approvals.length > 0) {
-            await stateMachine.reviewCompensation(
-                tickets1[1].id,
-                approvals[0].id,
-                true,
-                150,
-                '经核实确属我方责任，给予150元补偿',
-                'MANAGER001'
-            );
+            await stateMachine.reviewCompensation(tickets1[1].id, approvals[0].id, true, 150, '经核实确属我方责任，给予150元补偿', 'MANAGER001');
         }
     }
-
     console.log('模拟冻结工单...');
     if (tickets1.length > 2) {
-        await stateMachine.freezeTicket(
-            tickets1[2].id,
-            FrozenType.REVIEW,
-            '涉及服务态度问题，需要复核',
-            'QUALITY_TEAM'
-        );
+        await stateMachine.freezeTicket(tickets1[2].id, types_1.FrozenType.REVIEW, '涉及服务态度问题，需要复核', 'QUALITY_TEAM');
     }
-
     console.log('模拟结算工单...');
     if (tickets1.length > 1) {
-        await stateMachine.settleTicket(
-            tickets1[1].id,
-            '补偿已发放，客户满意',
-            'AGENT002'
-        );
+        await stateMachine.settleTicket(tickets1[1].id, '补偿已发放，客户满意', 'AGENT002');
     }
-
     console.log('提交第一个批次...');
     await batchService.submitBatch(batch1.id, 'admin_001');
-
     console.log('模拟盘点差异...');
     if (tickets1.length > 0) {
         await batchService.createInventoryDifference({
@@ -167,7 +124,6 @@ async function generateSampleData() {
             difference: -2,
             reason: '配送途中丢失'
         }, 'WAREHOUSE001');
-
         await batchService.createInventoryDifference({
             ticketId: tickets1[1].id,
             productId: 'PROD002',
@@ -176,7 +132,6 @@ async function generateSampleData() {
             difference: 0,
             reason: '盘点正常'
         }, 'WAREHOUSE001');
-
         await batchService.createInventoryDifference({
             ticketId: tickets2[0].id,
             productId: 'PROD003',
@@ -185,7 +140,6 @@ async function generateSampleData() {
             difference: 2,
             reason: '入库时多录入'
         }, 'WAREHOUSE001');
-
         await batchService.createInventoryDifference({
             ticketId: tickets1[0].id,
             productId: 'PROD004',
@@ -194,7 +148,6 @@ async function generateSampleData() {
             difference: -2
         }, 'WAREHOUSE001');
     }
-
     console.log('示例数据生成完成！');
     console.log(`批次1 ID: ${batch1.id}，包含 ${tickets1.length} 个工单`);
     console.log(`批次2 ID: ${batch2.id}，包含 ${tickets2.length} 个工单`);
@@ -209,5 +162,5 @@ async function generateSampleData() {
     console.log('  GET  /api/operations/summary-report - 查看汇总报表');
     console.log('  POST /api/exports/inventory-differences - 导出盘点差异');
 }
-
 generateSampleData().catch(console.error);
+//# sourceMappingURL=generate-sample-data.js.map

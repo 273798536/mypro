@@ -1,40 +1,23 @@
-import {
-    Batch,
-    BatchStatus,
-    Ticket,
-    TicketStatus,
-    CreateTicketRequest,
-    FrozenType,
-    InventoryDifference
-} from '../types';
-import TicketDao from '../daos/TicketDao';
-import TicketStateMachine from '../state-machine/TicketStateMachine';
-import {
-    createTicketSchema,
-    addTicketsToBatchSchema,
-    validateSchema
-} from '../validation/schemas';
-
-export class BatchService {
-    private dao: TicketDao;
-    private stateMachine: TicketStateMachine;
-
-    constructor(dao: TicketDao, stateMachine: TicketStateMachine) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BatchService = void 0;
+const types_1 = require("../types");
+const schemas_1 = require("../validation/schemas");
+class BatchService {
+    constructor(dao, stateMachine) {
         this.dao = dao;
         this.stateMachine = stateMachine;
     }
-
-    async createBatch(name: string, createdBy: string): Promise<Batch> {
+    async createBatch(name, createdBy) {
         if (!name || !name.trim()) {
             throw new Error('批次名称不能为空');
         }
         if (!createdBy || !createdBy.trim()) {
             throw new Error('创建人不能为空');
         }
-
         const batch = await this.dao.createBatch({
             name: name.trim(),
-            status: BatchStatus.DRAFT,
+            status: types_1.BatchStatus.DRAFT,
             ticketCount: 0,
             totalAmount: 0,
             frozenCount: 0,
@@ -43,7 +26,6 @@ export class BatchService {
             updatedAt: new Date(),
             createdBy: createdBy.trim()
         });
-
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batch.id,
@@ -52,88 +34,69 @@ export class BatchService {
             operatorId: createdBy,
             createdAt: new Date()
         });
-
         return batch;
     }
-
-    async submitBatch(batchId: string, operatorId: string): Promise<Batch> {
+    async submitBatch(batchId, operatorId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
-        if (batch.status !== BatchStatus.DRAFT) {
+        if (batch.status !== types_1.BatchStatus.DRAFT) {
             throw new Error('Only draft batches can be submitted');
         }
-
-        await this.dao.updateBatchStatus(batchId, BatchStatus.SUBMITTED);
-
+        await this.dao.updateBatchStatus(batchId, types_1.BatchStatus.SUBMITTED);
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batchId,
             action: 'submit',
-            oldValue: BatchStatus.DRAFT,
-            newValue: BatchStatus.SUBMITTED,
+            oldValue: types_1.BatchStatus.DRAFT,
+            newValue: types_1.BatchStatus.SUBMITTED,
             operatorId,
             createdAt: new Date()
         });
-
         const updatedBatch = await this.dao.getBatchById(batchId);
         if (!updatedBatch) {
             throw new Error(`Failed to retrieve updated batch ${batchId}`);
         }
-
         return updatedBatch;
     }
-
-    async startReview(batchId: string, operatorId: string): Promise<Batch> {
+    async startReview(batchId, operatorId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
-        if (batch.status !== BatchStatus.SUBMITTED) {
+        if (batch.status !== types_1.BatchStatus.SUBMITTED) {
             throw new Error('Only submitted batches can be reviewed');
         }
-
-        await this.dao.updateBatchStatus(batchId, BatchStatus.REVIEWING, operatorId);
-
+        await this.dao.updateBatchStatus(batchId, types_1.BatchStatus.REVIEWING, operatorId);
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batchId,
             action: 'start_review',
-            oldValue: BatchStatus.SUBMITTED,
-            newValue: BatchStatus.REVIEWING,
+            oldValue: types_1.BatchStatus.SUBMITTED,
+            newValue: types_1.BatchStatus.REVIEWING,
             operatorId,
             createdAt: new Date()
         });
-
         const updatedBatch = await this.dao.getBatchById(batchId);
         if (!updatedBatch) {
             throw new Error(`Failed to retrieve updated batch ${batchId}`);
         }
-
         return updatedBatch;
     }
-
-    async processBatch(batchId: string, operatorId: string): Promise<Batch> {
+    async processBatch(batchId, operatorId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
         const tickets = await this.dao.getTicketsByBatchId(batchId);
-
         for (const ticket of tickets) {
             try {
-                if (ticket.status !== TicketStatus.FROZEN) {
-                    await this.stateMachine.settleTicket(
-                        ticket.id,
-                        `批次结算: ${batch.name}`,
-                        operatorId
-                    );
+                if (ticket.status !== types_1.TicketStatus.FROZEN) {
+                    await this.stateMachine.settleTicket(ticket.id, `批次结算: ${batch.name}`, operatorId);
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 await this.dao.createFailedRecord({
                     batchId,
                     ticketId: ticket.id,
@@ -145,47 +108,36 @@ export class BatchService {
                 });
             }
         }
-
-        await this.dao.updateBatchStatus(batchId, BatchStatus.PROCESSED, operatorId);
+        await this.dao.updateBatchStatus(batchId, types_1.BatchStatus.PROCESSED, operatorId);
         await this.dao.updateBatchStats(batchId);
-
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batchId,
             action: 'process',
             oldValue: batch.status,
-            newValue: BatchStatus.PROCESSED,
+            newValue: types_1.BatchStatus.PROCESSED,
             operatorId,
             createdAt: new Date()
         });
-
         const updatedBatch = await this.dao.getBatchById(batchId);
         if (!updatedBatch) {
             throw new Error(`Failed to retrieve updated batch ${batchId}`);
         }
-
         return updatedBatch;
     }
-
-    async freezeBatch(batchId: string, frozenType: FrozenType, reason: string, operatorId: string): Promise<Batch> {
+    async freezeBatch(batchId, frozenType, reason, operatorId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
         const tickets = await this.dao.getTicketsByBatchId(batchId);
-
         for (const ticket of tickets) {
             try {
-                if (ticket.status !== TicketStatus.FROZEN) {
-                    await this.stateMachine.freezeTicket(
-                        ticket.id,
-                        frozenType,
-                        `批次冻结: ${reason}`,
-                        operatorId
-                    );
+                if (ticket.status !== types_1.TicketStatus.FROZEN) {
+                    await this.stateMachine.freezeTicket(ticket.id, frozenType, `批次冻结: ${reason}`, operatorId);
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 await this.dao.createFailedRecord({
                     batchId,
                     ticketId: ticket.id,
@@ -197,89 +149,73 @@ export class BatchService {
                 });
             }
         }
-
-        await this.dao.updateBatchStatus(batchId, BatchStatus.FROZEN);
+        await this.dao.updateBatchStatus(batchId, types_1.BatchStatus.FROZEN);
         await this.dao.updateBatchStats(batchId);
-
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batchId,
             action: 'freeze',
             oldValue: batch.status,
-            newValue: BatchStatus.FROZEN,
+            newValue: types_1.BatchStatus.FROZEN,
             operatorId,
             createdAt: new Date()
         });
-
         const updatedBatch = await this.dao.getBatchById(batchId);
         if (!updatedBatch) {
             throw new Error(`Failed to retrieve updated batch ${batchId}`);
         }
-
         return updatedBatch;
     }
-
-    async archiveBatch(batchId: string, operatorId: string): Promise<Batch> {
+    async archiveBatch(batchId, operatorId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
-        if (batch.status !== BatchStatus.PROCESSED) {
+        if (batch.status !== types_1.BatchStatus.PROCESSED) {
             throw new Error('Only processed batches can be archived');
         }
-
-        await this.dao.updateBatchStatus(batchId, BatchStatus.ARCHIVED);
-
+        await this.dao.updateBatchStatus(batchId, types_1.BatchStatus.ARCHIVED);
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batchId,
             action: 'archive',
             oldValue: batch.status,
-            newValue: BatchStatus.ARCHIVED,
+            newValue: types_1.BatchStatus.ARCHIVED,
             operatorId,
             createdAt: new Date()
         });
-
         const updatedBatch = await this.dao.getBatchById(batchId);
         if (!updatedBatch) {
             throw new Error(`Failed to retrieve updated batch ${batchId}`);
         }
-
         return updatedBatch;
     }
-
-    async addTicketsToBatch(batchId: string, requests: CreateTicketRequest[], operatorId: string): Promise<Ticket[]> {
+    async addTicketsToBatch(batchId, requests, operatorId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
-        if (batch.status !== BatchStatus.DRAFT) {
+        if (batch.status !== types_1.BatchStatus.DRAFT) {
             throw new Error('Can only add tickets to draft batches');
         }
-
         if (!operatorId || !operatorId.trim()) {
             throw new Error('操作人不能为空');
         }
-
-        const tickets: Ticket[] = [];
-
+        const tickets = [];
         for (const request of requests) {
             try {
-                const validation = validateSchema(createTicketSchema, request);
+                const validation = (0, schemas_1.validateSchema)(schemas_1.createTicketSchema, request);
                 if (!validation.valid) {
                     throw new Error(`输入校验失败: ${validation.errors?.join('; ')}`);
                 }
-
                 const slaRule = await this.dao.getSLARuleById(request.slaRuleId);
                 if (!slaRule) {
                     throw new Error(`SLA 规则不存在: ${request.slaRuleId}`);
                 }
-
                 const ticket = await this.createTicketInBatch(batchId, request);
                 tickets.push(ticket);
-            } catch (error) {
+            }
+            catch (error) {
                 await this.dao.createFailedRecord({
                     batchId,
                     recordType: 'ticket',
@@ -290,9 +226,7 @@ export class BatchService {
                 });
             }
         }
-
         await this.dao.updateBatchStats(batchId);
-
         await this.dao.createAuditLog({
             entityType: 'batch',
             entityId: batchId,
@@ -301,11 +235,9 @@ export class BatchService {
             operatorId: operatorId.trim(),
             createdAt: new Date()
         });
-
         return tickets;
     }
-
-    private async createTicketInBatch(batchId: string, request: CreateTicketRequest): Promise<Ticket> {
+    async createTicketInBatch(batchId, request) {
         const sessionSummary = {
             ...request.sessionSummary,
             ticketId: '',
@@ -313,11 +245,10 @@ export class BatchService {
             issueType: request.sessionSummary.issueType.trim(),
             description: request.sessionSummary.description.trim()
         };
-
         const ticket = await this.dao.createTicket({
             batchId,
-            status: TicketStatus.CREATED,
-            sessionSummary: sessionSummary as any,
+            status: types_1.TicketStatus.CREATED,
+            sessionSummary: sessionSummary,
             slaRuleId: request.slaRuleId.trim(),
             currentAgentId: request.sessionSummary.agentId?.trim(),
             assignmentHistory: [],
@@ -329,64 +260,52 @@ export class BatchService {
             updatedAt: new Date(),
             createdBy: request.createdBy.trim()
         });
-
         ticket.sessionSummary.ticketId = ticket.id;
-
         await this.dao.createStateTransition({
             ticketId: ticket.id,
-            fromStatus: TicketStatus.CREATED,
-            toStatus: TicketStatus.CREATED,
+            fromStatus: types_1.TicketStatus.CREATED,
+            toStatus: types_1.TicketStatus.CREATED,
             reason: '工单创建',
             operatorId: request.createdBy,
             manual: false,
             createdAt: new Date()
         });
-
         return ticket;
     }
-
-    async getBatchDetail(batchId: string): Promise<{ batch: Batch; tickets: Ticket[]; failedRecords: any[] }> {
+    async getBatchDetail(batchId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
         const tickets = await this.dao.getTicketsByBatchId(batchId);
         const failedRecords = await this.dao.getFailedRecords({ batchId });
-
         for (const ticket of tickets) {
             ticket.assignmentHistory = await this.dao.getAssignmentsByTicketId(ticket.id);
             ticket.compensationApprovals = await this.dao.getCompensationApprovalsByTicketId(ticket.id);
             ticket.timeoutRecords = await this.dao.getTimeoutRecordsByTicketId(ticket.id);
         }
-
         return { batch, tickets, failedRecords };
     }
-
-    async getBatchStats(batchId: string): Promise<any> {
+    async getBatchStats(batchId) {
         const batch = await this.dao.getBatchById(batchId);
         if (!batch) {
             throw new Error(`Batch ${batchId} not found`);
         }
-
         const tickets = await this.dao.getTicketsByBatchId(batchId);
-        const statusCounts: Record<string, number> = {};
+        const statusCounts = {};
         let totalAmount = 0;
         let frozenAmount = 0;
         let settledAmount = 0;
-
         for (const ticket of tickets) {
             statusCounts[ticket.status] = (statusCounts[ticket.status] || 0) + 1;
             totalAmount += ticket.totalCompensation;
-
-            if (ticket.status === TicketStatus.FROZEN) {
+            if (ticket.status === types_1.TicketStatus.FROZEN) {
                 frozenAmount += ticket.totalCompensation;
             }
-            if (ticket.status === TicketStatus.SETTLED || ticket.status === TicketStatus.ARCHIVED) {
+            if (ticket.status === types_1.TicketStatus.SETTLED || ticket.status === types_1.TicketStatus.ARCHIVED) {
                 settledAmount += ticket.totalCompensation;
             }
         }
-
         return {
             batchId,
             batchName: batch.name,
@@ -401,22 +320,18 @@ export class BatchService {
             settledCount: batch.settledCount
         };
     }
-
-    async createInventoryDifference(diffData: Omit<InventoryDifference, 'id' | 'createdAt'>, operatorId: string): Promise<InventoryDifference> {
+    async createInventoryDifference(diffData, operatorId) {
         if (!operatorId || !operatorId.trim()) {
             throw new Error('操作人不能为空');
         }
-
         const ticket = await this.dao.getTicketById(diffData.ticketId);
         if (!ticket) {
             throw new Error(`工单不存在: ${diffData.ticketId}`);
         }
-
         const calculatedDiff = diffData.actualQuantity - diffData.expectedQuantity;
         if (calculatedDiff !== diffData.difference) {
             throw new Error(`差异计算不一致: 计算值=${calculatedDiff}, 输入值=${diffData.difference}`);
         }
-
         const diff = await this.dao.createInventoryDifference({
             ...diffData,
             ticketId: diffData.ticketId.trim(),
@@ -424,7 +339,6 @@ export class BatchService {
             reason: diffData.reason?.trim(),
             createdAt: new Date()
         });
-
         await this.dao.createAuditLog({
             entityType: 'ticket',
             entityId: diffData.ticketId,
@@ -433,57 +347,46 @@ export class BatchService {
             operatorId: operatorId.trim(),
             createdAt: new Date()
         });
-
         return diff;
     }
-
-    async getInventoryDifferencesByTicketId(ticketId: string): Promise<InventoryDifference[]> {
+    async getInventoryDifferencesByTicketId(ticketId) {
         if (!ticketId || !ticketId.trim()) {
             throw new Error('工单ID不能为空');
         }
-
         const ticket = await this.dao.getTicketById(ticketId);
         if (!ticket) {
             throw new Error(`工单不存在: ${ticketId}`);
         }
-
         return await this.dao.getInventoryDifferencesByTicketId(ticketId.trim());
     }
-
-    async getInventoryDifferenceById(id: string): Promise<InventoryDifference | null> {
+    async getInventoryDifferenceById(id) {
         if (!id || !id.trim()) {
             throw new Error('盘点差异ID不能为空');
         }
-
         return await this.dao.getInventoryDifferenceById(id.trim());
     }
-
-    async getInventoryDifferences(filters: any = {}): Promise<{ differences: InventoryDifference[]; summary: any }> {
+    async getInventoryDifferences(filters = {}) {
         const differences = await this.dao.getInventoryDifferences(filters);
-
         let totalMissing = 0;
         let totalExtra = 0;
         let unresolvedCount = 0;
-        const byProduct: Record<string, { count: number; diff: number }> = {};
-
+        const byProduct = {};
         for (const diff of differences) {
             if (diff.difference < 0) {
                 totalMissing += Math.abs(diff.difference);
-            } else {
+            }
+            else {
                 totalExtra += diff.difference;
             }
-
             if (!diff.reason) {
                 unresolvedCount++;
             }
-
             if (!byProduct[diff.productId]) {
                 byProduct[diff.productId] = { count: 0, diff: 0 };
             }
             byProduct[diff.productId].count++;
             byProduct[diff.productId].diff += diff.difference;
         }
-
         return {
             differences,
             summary: {
@@ -496,8 +399,7 @@ export class BatchService {
             }
         };
     }
-
-    async updateInventoryDifferenceReason(id: string, reason: string, operatorId: string): Promise<void> {
+    async updateInventoryDifferenceReason(id, reason, operatorId) {
         if (!id || !id.trim()) {
             throw new Error('盘点差异ID不能为空');
         }
@@ -507,14 +409,11 @@ export class BatchService {
         if (!operatorId || !operatorId.trim()) {
             throw new Error('操作人不能为空');
         }
-
         const diff = await this.dao.getInventoryDifferenceById(id.trim());
         if (!diff) {
             throw new Error(`盘点差异不存在: ${id}`);
         }
-
         await this.dao.updateInventoryDifferenceReason(id.trim(), reason.trim());
-
         await this.dao.createAuditLog({
             entityType: 'ticket',
             entityId: diff.ticketId,
@@ -526,5 +425,6 @@ export class BatchService {
         });
     }
 }
-
-export default BatchService;
+exports.BatchService = BatchService;
+exports.default = BatchService;
+//# sourceMappingURL=BatchService.js.map

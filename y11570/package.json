@@ -4,7 +4,7 @@
   "description": "客服工单升级异常回执状态机服务",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc && cp src/database/schema.sql dist/database/",
+    "build": "node build.js",
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
     "init-data": "ts-node src/scripts/init-data.ts",

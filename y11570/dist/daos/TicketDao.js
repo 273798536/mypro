@@ -1,41 +1,22 @@
-import { v4 as uuidv4 } from 'uuid';
-import { Database } from '../database/Database';
-import {
-    Ticket,
-    TicketStatus,
-    AssignmentRecord,
-    CompensationApproval,
-    InventoryDifference,
-    TimeoutRecord,
-    StateTransition,
-    TicketAttachment,
-    Batch,
-    BatchStatus,
-    AuditLog,
-    FailedRecord,
-    ExportRequest,
-    SLARule,
-    CompensationRule
-} from '../types';
-
-export class TicketDao {
-    private db: Database;
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TicketDao = void 0;
+const uuid_1 = require("uuid");
+const Database_1 = require("../database/Database");
+const types_1 = require("../types");
+class TicketDao {
     constructor() {
-        this.db = Database.getInstance();
+        this.db = Database_1.Database.getInstance();
     }
-
-    async createTicket(ticket: Omit<Ticket, 'id'>): Promise<Ticket> {
-        const id = uuidv4();
+    async createTicket(ticket) {
+        const id = (0, uuid_1.v4)();
         const now = new Date().toISOString();
-
         const sql = `
             INSERT INTO tickets (
                 id, batch_id, status, session_summary, sla_rule_id,
                 current_agent_id, total_compensation, created_at, updated_at, created_by
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             ticket.batchId || null,
@@ -48,44 +29,36 @@ export class TicketDao {
             now,
             ticket.createdBy
         ]);
-
-        return { ...ticket, id } as Ticket;
+        return { ...ticket, id };
     }
-
-    async getTicketById(id: string): Promise<Ticket | null> {
+    async getTicketById(id) {
         const sql = 'SELECT * FROM tickets WHERE id = ?';
-        const row = await this.db.get<any>(sql, [id]);
-        
-        if (!row) return null;
+        const row = await this.db.get(sql, [id]);
+        if (!row)
+            return null;
         return this.mapRowToTicket(row);
     }
-
-    async updateTicketStatus(id: string, status: TicketStatus, statusBeforeFrozen?: TicketStatus): Promise<void> {
+    async updateTicketStatus(id, status, statusBeforeFrozen) {
         const now = new Date().toISOString();
         let sql = 'UPDATE tickets SET status = ?, updated_at = ? WHERE id = ?';
         let params = [status, now, id];
-
         if (statusBeforeFrozen) {
             sql = 'UPDATE tickets SET status = ?, status_before_frozen = ?, updated_at = ? WHERE id = ?';
             params = [status, statusBeforeFrozen, now, id];
         }
-
         await this.db.run(sql, params);
     }
-
-    async updateTicketAgent(id: string, agentId: string | undefined): Promise<void> {
+    async updateTicketAgent(id, agentId) {
         const now = new Date().toISOString();
         const sql = 'UPDATE tickets SET current_agent_id = ?, updated_at = ? WHERE id = ?';
         await this.db.run(sql, [agentId || null, now, id]);
     }
-
-    async addTotalCompensation(id: string, amount: number): Promise<void> {
+    async addTotalCompensation(id, amount) {
         const now = new Date().toISOString();
         const sql = 'UPDATE tickets SET total_compensation = total_compensation + ?, updated_at = ? WHERE id = ?';
         await this.db.run(sql, [amount, now, id]);
     }
-
-    async freezeTicket(id: string, frozenType: string, reason: string, frozenBy: string): Promise<void> {
+    async freezeTicket(id, frozenType, reason, frozenBy) {
         const now = new Date().toISOString();
         const sql = `
             UPDATE tickets 
@@ -94,8 +67,7 @@ export class TicketDao {
         `;
         await this.db.run(sql, [frozenType, reason, frozenBy, now, now, id]);
     }
-
-    async unfreezeTicket(id: string): Promise<void> {
+    async unfreezeTicket(id) {
         const now = new Date().toISOString();
         const sql = `
             UPDATE tickets 
@@ -106,29 +78,24 @@ export class TicketDao {
         `;
         await this.db.run(sql, [now, id]);
     }
-
-    async settleTicket(id: string): Promise<void> {
+    async settleTicket(id) {
         const now = new Date().toISOString();
         const sql = 'UPDATE tickets SET status = ?, settled_at = ?, updated_at = ? WHERE id = ?';
-        await this.db.run(sql, [TicketStatus.SETTLED, now, now, id]);
+        await this.db.run(sql, [types_1.TicketStatus.SETTLED, now, now, id]);
     }
-
-    async archiveTicket(id: string): Promise<void> {
+    async archiveTicket(id) {
         const now = new Date().toISOString();
         const sql = 'UPDATE tickets SET status = ?, archived_at = ?, updated_at = ? WHERE id = ?';
-        await this.db.run(sql, [TicketStatus.ARCHIVED, now, now, id]);
+        await this.db.run(sql, [types_1.TicketStatus.ARCHIVED, now, now, id]);
     }
-
-    async getTicketsByBatchId(batchId: string): Promise<Ticket[]> {
+    async getTicketsByBatchId(batchId) {
         const sql = 'SELECT * FROM tickets WHERE batch_id = ?';
-        const rows = await this.db.all<any>(sql, [batchId]);
+        const rows = await this.db.all(sql, [batchId]);
         return rows.map(row => this.mapRowToTicket(row));
     }
-
-    async getTickets(filters: any = {}, limit: number = 100, offset: number = 0): Promise<Ticket[]> {
+    async getTickets(filters = {}, limit = 100, offset = 0) {
         let sql = 'SELECT * FROM tickets WHERE 1=1';
-        const params: any[] = [];
-
+        const params = [];
         if (filters.status) {
             sql += ' AND status = ?';
             params.push(filters.status);
@@ -141,15 +108,12 @@ export class TicketDao {
             sql += ' AND created_by = ?';
             params.push(filters.createdBy);
         }
-
         sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
         params.push(limit, offset);
-
-        const rows = await this.db.all<any>(sql, params);
+        const rows = await this.db.all(sql, params);
         return rows.map(row => this.mapRowToTicket(row));
     }
-
-    private mapRowToTicket(row: any): Ticket {
+    mapRowToTicket(row) {
         return {
             id: row.id,
             batchId: row.batch_id,
@@ -174,16 +138,14 @@ export class TicketDao {
             createdBy: row.created_by
         };
     }
-
-    async createAssignment(record: Omit<AssignmentRecord, 'id'>): Promise<AssignmentRecord> {
-        const id = uuidv4();
+    async createAssignment(record) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO assignment_records (
                 id, ticket_id, from_agent_id, to_agent_id, assignment_type,
                 reason, assigned_at, expected_complete_time
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             record.ticketId,
@@ -194,13 +156,11 @@ export class TicketDao {
             record.assignedAt.toISOString(),
             record.expectedCompleteTime?.toISOString() || null
         ]);
-
         return { ...record, id };
     }
-
-    async getAssignmentsByTicketId(ticketId: string): Promise<AssignmentRecord[]> {
+    async getAssignmentsByTicketId(ticketId) {
         const sql = 'SELECT * FROM assignment_records WHERE ticket_id = ? ORDER BY assigned_at DESC';
-        const rows = await this.db.all<any>(sql, [ticketId]);
+        const rows = await this.db.all(sql, [ticketId]);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -212,16 +172,14 @@ export class TicketDao {
             expectedCompleteTime: row.expected_complete_time ? new Date(row.expected_complete_time) : undefined
         }));
     }
-
-    async createTimeoutRecord(record: Omit<TimeoutRecord, 'id'>): Promise<TimeoutRecord> {
-        const id = uuidv4();
+    async createTimeoutRecord(record) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO timeout_records (
                 id, ticket_id, assignment_id, agent_id, timeout_type,
                 duration, blame_level, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             record.ticketId,
@@ -232,13 +190,11 @@ export class TicketDao {
             record.blameLevel,
             record.createdAt.toISOString()
         ]);
-
         return { ...record, id };
     }
-
-    async getTimeoutRecordsByTicketId(ticketId: string): Promise<TimeoutRecord[]> {
+    async getTimeoutRecordsByTicketId(ticketId) {
         const sql = 'SELECT * FROM timeout_records WHERE ticket_id = ? ORDER BY created_at DESC';
-        const rows = await this.db.all<any>(sql, [ticketId]);
+        const rows = await this.db.all(sql, [ticketId]);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -250,16 +206,14 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async createCompensationApproval(approval: Omit<CompensationApproval, 'id'>): Promise<CompensationApproval> {
-        const id = uuidv4();
+    async createCompensationApproval(approval) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO compensation_approvals (
                 id, ticket_id, requested_amount, approved_amount, status,
                 reason, approver_id, approved_at, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             approval.ticketId,
@@ -271,16 +225,9 @@ export class TicketDao {
             approval.approvedAt?.toISOString() || null,
             approval.createdAt.toISOString()
         ]);
-
         return { ...approval, id };
     }
-
-    async updateCompensationApproval(
-        id: string,
-        status: string,
-        approvedAmount: number | undefined,
-        approverId: string
-    ): Promise<void> {
+    async updateCompensationApproval(id, status, approvedAmount, approverId) {
         const now = new Date().toISOString();
         const sql = `
             UPDATE compensation_approvals
@@ -289,10 +236,9 @@ export class TicketDao {
         `;
         await this.db.run(sql, [status, approvedAmount || null, approverId, now, id]);
     }
-
-    async getCompensationApprovalsByTicketId(ticketId: string): Promise<CompensationApproval[]> {
+    async getCompensationApprovalsByTicketId(ticketId) {
         const sql = 'SELECT * FROM compensation_approvals WHERE ticket_id = ? ORDER BY created_at DESC';
-        const rows = await this.db.all<any>(sql, [ticketId]);
+        const rows = await this.db.all(sql, [ticketId]);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -305,16 +251,14 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async createStateTransition(transition: Omit<StateTransition, 'id'>): Promise<StateTransition> {
-        const id = uuidv4();
+    async createStateTransition(transition) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO state_transitions (
                 id, ticket_id, from_status, to_status, reason,
                 operator_id, operator_name, manual, metadata, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             transition.ticketId,
@@ -327,13 +271,11 @@ export class TicketDao {
             transition.metadata ? JSON.stringify(transition.metadata) : null,
             transition.createdAt.toISOString()
         ]);
-
         return { ...transition, id };
     }
-
-    async getStateTransitionsByTicketId(ticketId: string): Promise<StateTransition[]> {
+    async getStateTransitionsByTicketId(ticketId) {
         const sql = 'SELECT * FROM state_transitions WHERE ticket_id = ? ORDER BY created_at ASC';
-        const rows = await this.db.all<any>(sql, [ticketId]);
+        const rows = await this.db.all(sql, [ticketId]);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -347,9 +289,8 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async createBatch(batch: Omit<Batch, 'id'>): Promise<Batch> {
-        const id = uuidv4();
+    async createBatch(batch) {
+        const id = (0, uuid_1.v4)();
         const now = new Date().toISOString();
         const sql = `
             INSERT INTO batches (
@@ -357,7 +298,6 @@ export class TicketDao {
                 settled_count, created_at, updated_at, created_by
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             batch.name,
@@ -370,18 +310,16 @@ export class TicketDao {
             now,
             batch.createdBy
         ]);
-
         return { ...batch, id };
     }
-
-    async getBatchById(id: string): Promise<Batch | null> {
+    async getBatchById(id) {
         const sql = 'SELECT * FROM batches WHERE id = ?';
-        const row = await this.db.get<any>(sql, [id]);
-        if (!row) return null;
+        const row = await this.db.get(sql, [id]);
+        if (!row)
+            return null;
         return this.mapRowToBatch(row);
     }
-
-    async updateBatchStats(batchId: string): Promise<void> {
+    async updateBatchStats(batchId) {
         const now = new Date().toISOString();
         const sql = `
             UPDATE batches 
@@ -394,37 +332,29 @@ export class TicketDao {
         `;
         await this.db.run(sql, [batchId, batchId, batchId, batchId, now, batchId]);
     }
-
-    async updateBatchStatus(id: string, status: BatchStatus, reviewedBy?: string): Promise<void> {
+    async updateBatchStatus(id, status, reviewedBy) {
         const now = new Date().toISOString();
         let sql = 'UPDATE batches SET status = ?, updated_at = ? WHERE id = ?';
-        let params: any[] = [status, now, id];
-
+        let params = [status, now, id];
         if (reviewedBy) {
             sql = 'UPDATE batches SET status = ?, reviewed_by = ?, reviewed_at = ?, updated_at = ? WHERE id = ?';
             params = [status, reviewedBy, now, now, id];
         }
-
         await this.db.run(sql, params);
     }
-
-    async getBatches(filters: any = {}, limit: number = 100, offset: number = 0): Promise<Batch[]> {
+    async getBatches(filters = {}, limit = 100, offset = 0) {
         let sql = 'SELECT * FROM batches WHERE 1=1';
-        const params: any[] = [];
-
+        const params = [];
         if (filters.status) {
             sql += ' AND status = ?';
             params.push(filters.status);
         }
-
         sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
         params.push(limit, offset);
-
-        const rows = await this.db.all<any>(sql, params);
+        const rows = await this.db.all(sql, params);
         return rows.map(row => this.mapRowToBatch(row));
     }
-
-    private mapRowToBatch(row: any): Batch {
+    mapRowToBatch(row) {
         return {
             id: row.id,
             name: row.name,
@@ -440,16 +370,14 @@ export class TicketDao {
             reviewedAt: row.reviewed_at ? new Date(row.reviewed_at) : undefined
         };
     }
-
-    async createAuditLog(log: Omit<AuditLog, 'id'>): Promise<AuditLog> {
-        const id = uuidv4();
+    async createAuditLog(log) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO audit_logs (
                 id, entity_type, entity_id, action, old_value, new_value,
                 operator_id, operator_name, ip_address, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             log.entityType,
@@ -462,13 +390,11 @@ export class TicketDao {
             log.ipAddress || null,
             log.createdAt.toISOString()
         ]);
-
         return { ...log, id };
     }
-
-    async getAuditLogs(entityType: string, entityId: string): Promise<AuditLog[]> {
+    async getAuditLogs(entityType, entityId) {
         const sql = 'SELECT * FROM audit_logs WHERE entity_type = ? AND entity_id = ? ORDER BY created_at DESC';
-        const rows = await this.db.all<any>(sql, [entityType, entityId]);
+        const rows = await this.db.all(sql, [entityType, entityId]);
         return rows.map(row => ({
             id: row.id,
             entityType: row.entity_type,
@@ -482,16 +408,14 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async createFailedRecord(record: Omit<FailedRecord, 'id'>): Promise<FailedRecord> {
-        const id = uuidv4();
+    async createFailedRecord(record) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO failed_records (
                 id, batch_id, ticket_id, record_type, raw_data,
                 error_code, error_message, failed_at, retried
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
         `;
-
         await this.db.run(sql, [
             id,
             record.batchId || null,
@@ -502,14 +426,11 @@ export class TicketDao {
             record.errorMessage,
             record.failedAt.toISOString()
         ]);
-
         return { ...record, id, retried: false };
     }
-
-    async getFailedRecords(filters: any = {}): Promise<FailedRecord[]> {
+    async getFailedRecords(filters = {}) {
         let sql = 'SELECT * FROM failed_records WHERE 1=1';
-        const params: any[] = [];
-
+        const params = [];
         if (filters.batchId) {
             sql += ' AND batch_id = ?';
             params.push(filters.batchId);
@@ -518,9 +439,8 @@ export class TicketDao {
             sql += ' AND record_type = ?';
             params.push(filters.recordType);
         }
-
         sql += ' ORDER BY failed_at DESC';
-        const rows = await this.db.all<any>(sql, params);
+        const rows = await this.db.all(sql, params);
         return rows.map(row => ({
             id: row.id,
             batchId: row.batch_id,
@@ -534,16 +454,14 @@ export class TicketDao {
             retriedAt: row.retried_at ? new Date(row.retried_at) : undefined
         }));
     }
-
-    async createExportRequest(request: Omit<ExportRequest, 'id'>): Promise<ExportRequest> {
-        const id = uuidv4();
+    async createExportRequest(request) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO export_requests (
                 id, batch_id, filters, status, file_url, total_records,
                 success_count, failed_count, requested_by, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             request.batchId || null,
@@ -556,18 +474,9 @@ export class TicketDao {
             request.requestedBy,
             request.createdAt.toISOString()
         ]);
-
         return { ...request, id };
     }
-
-    async updateExportRequest(
-        id: string,
-        status: string,
-        fileUrl?: string,
-        totalRecords?: number,
-        successCount?: number,
-        failedCount?: number
-    ): Promise<void> {
+    async updateExportRequest(id, status, fileUrl, totalRecords, successCount, failedCount) {
         const now = new Date().toISOString();
         const sql = `
             UPDATE export_requests
@@ -585,11 +494,11 @@ export class TicketDao {
             id
         ]);
     }
-
-    async getExportRequestById(id: string): Promise<ExportRequest | null> {
+    async getExportRequestById(id) {
         const sql = 'SELECT * FROM export_requests WHERE id = ?';
-        const row = await this.db.get<any>(sql, [id]);
-        if (!row) return null;
+        const row = await this.db.get(sql, [id]);
+        if (!row)
+            return null;
         return {
             id: row.id,
             batchId: row.batch_id,
@@ -604,16 +513,14 @@ export class TicketDao {
             completedAt: row.completed_at ? new Date(row.completed_at) : undefined
         };
     }
-
-    async createAttachment(attachment: Omit<TicketAttachment, 'id'>): Promise<TicketAttachment> {
-        const id = uuidv4();
+    async createAttachment(attachment) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO ticket_attachments (
                 id, ticket_id, file_name, file_type, file_url,
                 uploaded_by, uploaded_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             attachment.ticketId,
@@ -623,13 +530,11 @@ export class TicketDao {
             attachment.uploadedBy,
             attachment.uploadedAt.toISOString()
         ]);
-
         return { ...attachment, id };
     }
-
-    async getAttachmentsByTicketId(ticketId: string): Promise<TicketAttachment[]> {
+    async getAttachmentsByTicketId(ticketId) {
         const sql = 'SELECT * FROM ticket_attachments WHERE ticket_id = ? ORDER BY uploaded_at DESC';
-        const rows = await this.db.all<any>(sql, [ticketId]);
+        const rows = await this.db.all(sql, [ticketId]);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -640,16 +545,14 @@ export class TicketDao {
             uploadedAt: new Date(row.uploaded_at)
         }));
     }
-
-    async createSLARule(rule: Omit<SLARule, 'id'>): Promise<SLARule> {
-        const id = uuidv4();
+    async createSLARule(rule) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO sla_rules (
                 id, ticket_type, priority, first_response_time,
                 resolution_time, escalation_threshold, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             rule.ticketType,
@@ -659,14 +562,13 @@ export class TicketDao {
             rule.escalationThreshold,
             rule.createdAt.toISOString()
         ]);
-
         return { ...rule, id };
     }
-
-    async getSLARuleById(id: string): Promise<SLARule | null> {
+    async getSLARuleById(id) {
         const sql = 'SELECT * FROM sla_rules WHERE id = ?';
-        const row = await this.db.get<any>(sql, [id]);
-        if (!row) return null;
+        const row = await this.db.get(sql, [id]);
+        if (!row)
+            return null;
         return {
             id: row.id,
             ticketType: row.ticket_type,
@@ -677,10 +579,9 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         };
     }
-
-    async getSLARules(): Promise<SLARule[]> {
+    async getSLARules() {
         const sql = 'SELECT * FROM sla_rules ORDER BY created_at DESC';
-        const rows = await this.db.all<any>(sql);
+        const rows = await this.db.all(sql);
         return rows.map(row => ({
             id: row.id,
             ticketType: row.ticket_type,
@@ -691,15 +592,13 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async createCompensationRule(rule: Omit<CompensationRule, 'id'>): Promise<CompensationRule> {
-        const id = uuidv4();
+    async createCompensationRule(rule) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO compensation_rules (
                 id, issue_type, base_amount, max_amount, multiplier, created_at
             ) VALUES (?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             rule.issueType,
@@ -708,13 +607,11 @@ export class TicketDao {
             rule.multiplier,
             rule.createdAt.toISOString()
         ]);
-
         return { ...rule, id };
     }
-
-    async getCompensationRules(): Promise<CompensationRule[]> {
+    async getCompensationRules() {
         const sql = 'SELECT * FROM compensation_rules ORDER BY created_at DESC';
-        const rows = await this.db.all<any>(sql);
+        const rows = await this.db.all(sql);
         return rows.map(row => ({
             id: row.id,
             issueType: row.issue_type,
@@ -724,16 +621,14 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async createInventoryDifference(diff: Omit<InventoryDifference, 'id'>): Promise<InventoryDifference> {
-        const id = uuidv4();
+    async createInventoryDifference(diff) {
+        const id = (0, uuid_1.v4)();
         const sql = `
             INSERT INTO inventory_differences (
                 id, ticket_id, product_id, expected_quantity,
                 actual_quantity, difference, reason, created_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
-
         await this.db.run(sql, [
             id,
             diff.ticketId,
@@ -744,14 +639,13 @@ export class TicketDao {
             diff.reason || null,
             diff.createdAt.toISOString()
         ]);
-
         return { ...diff, id };
     }
-
-    async getInventoryDifferenceById(id: string): Promise<InventoryDifference | null> {
+    async getInventoryDifferenceById(id) {
         const sql = 'SELECT * FROM inventory_differences WHERE id = ?';
-        const row = await this.db.get<any>(sql, [id]);
-        if (!row) return null;
+        const row = await this.db.get(sql, [id]);
+        if (!row)
+            return null;
         return {
             id: row.id,
             ticketId: row.ticket_id,
@@ -763,10 +657,9 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         };
     }
-
-    async getInventoryDifferencesByTicketId(ticketId: string): Promise<InventoryDifference[]> {
+    async getInventoryDifferencesByTicketId(ticketId) {
         const sql = 'SELECT * FROM inventory_differences WHERE ticket_id = ? ORDER BY created_at DESC';
-        const rows = await this.db.all<any>(sql, [ticketId]);
+        const rows = await this.db.all(sql, [ticketId]);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -778,11 +671,9 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async getInventoryDifferences(filters: any = {}, limit: number = 100, offset: number = 0): Promise<InventoryDifference[]> {
+    async getInventoryDifferences(filters = {}, limit = 100, offset = 0) {
         let sql = 'SELECT * FROM inventory_differences WHERE 1=1';
-        const params: any[] = [];
-
+        const params = [];
         if (filters.ticketId) {
             sql += ' AND ticket_id = ?';
             params.push(filters.ticketId);
@@ -794,11 +685,9 @@ export class TicketDao {
         if (filters.hasDifference) {
             sql += ' AND difference != 0';
         }
-
         sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
         params.push(limit, offset);
-
-        const rows = await this.db.all<any>(sql, params);
+        const rows = await this.db.all(sql, params);
         return rows.map(row => ({
             id: row.id,
             ticketId: row.ticket_id,
@@ -810,15 +699,14 @@ export class TicketDao {
             createdAt: new Date(row.created_at)
         }));
     }
-
-    async updateInventoryDifferenceReason(id: string, reason: string): Promise<void> {
+    async updateInventoryDifferenceReason(id, reason) {
         const sql = 'UPDATE inventory_differences SET reason = ? WHERE id = ?';
         await this.db.run(sql, [reason, id]);
     }
-
-    getDatabase(): Database {
+    getDatabase() {
         return this.db;
     }
 }
-
-export default TicketDao;
+exports.TicketDao = TicketDao;
+exports.default = TicketDao;
+//# sourceMappingURL=TicketDao.js.map
