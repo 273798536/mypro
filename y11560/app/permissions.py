@@ -147,16 +147,16 @@ def require_permission(permission: str):
     return decorator
 
 
-def get_current_user(user_id: int = Header(..., alias="X-User-Id"), db: Session = Depends(get_db)) -> User:
-    user = db.query(User).filter(User.id == user_id).first()
+def get_current_user(x_user_id: int = Header(..., alias="X-User-Id"), db: Session = Depends(get_db)) -> User:
+    user = db.query(User).filter(User.id == x_user_id).first()
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
 
 def get_current_user_with_permission(required_permission: str):
-    def _get_user(user_id: int = Header(..., alias="X-User-Id"), db: Session = Depends(get_db)) -> User:
-        user = db.query(User).filter(User.id == user_id).first()
+    def _get_user(x_user_id: int = Header(..., alias="X-User-Id"), db: Session = Depends(get_db)) -> User:
+        user = db.query(User).filter(User.id == x_user_id).first()
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         if not has_permission(user, required_permission):

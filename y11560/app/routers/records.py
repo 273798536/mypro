@@ -5,8 +5,12 @@ import json
 
 from ..database import get_db
 from ..models import (
-    AuditBatch, User, CheckinRecord, DepositRecord, RoomChangeRecord,
-    SupervisorComment, DirtyRecord
+    AuditBatch, User,
+    CheckinRecord as CheckinRecordModel,
+    DepositRecord as DepositRecordModel,
+    RoomChangeRecord as RoomChangeRecordModel,
+    SupervisorComment as SupervisorCommentModel,
+    DirtyRecord as DirtyRecordModel
 )
 from ..schemas import (
     CheckinRecordCreate, DepositRecordCreate, RoomChangeRecordCreate,
@@ -33,14 +37,14 @@ def add_checkin_records(
     
     created = []
     for rec in records:
-        existing = db.query(CheckinRecord).filter(
-            CheckinRecord.batch_id == batch_id,
-            CheckinRecord.record_no == rec.record_no
+        existing = db.query(CheckinRecordModel).filter(
+            CheckinRecordModel.batch_id == batch_id,
+            CheckinRecordModel.record_no == rec.record_no
         ).first()
         if existing:
             continue
         
-        db_rec = CheckinRecord(
+        db_rec = CheckinRecordModel(
             batch_id=batch_id,
             **rec.dict(),
             raw_data=json.dumps(rec.dict(), ensure_ascii=False)
@@ -67,14 +71,14 @@ def add_deposit_records(
     
     created = []
     for rec in records:
-        existing = db.query(DepositRecord).filter(
-            DepositRecord.batch_id == batch_id,
-            DepositRecord.record_no == rec.record_no
+        existing = db.query(DepositRecordModel).filter(
+            DepositRecordModel.batch_id == batch_id,
+            DepositRecordModel.record_no == rec.record_no
         ).first()
         if existing:
             continue
         
-        db_rec = DepositRecord(
+        db_rec = DepositRecordModel(
             batch_id=batch_id,
             **rec.dict(),
             raw_data=json.dumps(rec.dict(), ensure_ascii=False)
@@ -101,14 +105,14 @@ def add_room_change_records(
     
     created = []
     for rec in records:
-        existing = db.query(RoomChangeRecord).filter(
-            RoomChangeRecord.batch_id == batch_id,
-            RoomChangeRecord.record_no == rec.record_no
+        existing = db.query(RoomChangeRecordModel).filter(
+            RoomChangeRecordModel.batch_id == batch_id,
+            RoomChangeRecordModel.record_no == rec.record_no
         ).first()
         if existing:
             continue
         
-        db_rec = RoomChangeRecord(
+        db_rec = RoomChangeRecordModel(
             batch_id=batch_id,
             **rec.dict(),
             raw_data=json.dumps(rec.dict(), ensure_ascii=False)
@@ -135,12 +139,12 @@ def add_records_bulk(
     
     checkins_added = 0
     for rec in data.checkins:
-        existing = db.query(CheckinRecord).filter(
-            CheckinRecord.batch_id == batch_id,
-            CheckinRecord.record_no == rec.record_no
+        existing = db.query(CheckinRecordModel).filter(
+            CheckinRecordModel.batch_id == batch_id,
+            CheckinRecordModel.record_no == rec.record_no
         ).first()
         if not existing:
-            db_rec = CheckinRecord(
+            db_rec = CheckinRecordModel(
                 batch_id=batch_id,
                 **rec.dict(),
                 raw_data=json.dumps(rec.dict(), ensure_ascii=False)
@@ -150,12 +154,12 @@ def add_records_bulk(
     
     deposits_added = 0
     for rec in data.deposits:
-        existing = db.query(DepositRecord).filter(
-            DepositRecord.batch_id == batch_id,
-            DepositRecord.record_no == rec.record_no
+        existing = db.query(DepositRecordModel).filter(
+            DepositRecordModel.batch_id == batch_id,
+            DepositRecordModel.record_no == rec.record_no
         ).first()
         if not existing:
-            db_rec = DepositRecord(
+            db_rec = DepositRecordModel(
                 batch_id=batch_id,
                 **rec.dict(),
                 raw_data=json.dumps(rec.dict(), ensure_ascii=False)
@@ -165,12 +169,12 @@ def add_records_bulk(
     
     room_changes_added = 0
     for rec in data.room_changes:
-        existing = db.query(RoomChangeRecord).filter(
-            RoomChangeRecord.batch_id == batch_id,
-            RoomChangeRecord.record_no == rec.record_no
+        existing = db.query(RoomChangeRecordModel).filter(
+            RoomChangeRecordModel.batch_id == batch_id,
+            RoomChangeRecordModel.record_no == rec.record_no
         ).first()
         if not existing:
-            db_rec = RoomChangeRecord(
+            db_rec = RoomChangeRecordModel(
                 batch_id=batch_id,
                 **rec.dict(),
                 raw_data=json.dumps(rec.dict(), ensure_ascii=False)
@@ -198,7 +202,7 @@ def add_comment(
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
     
-    db_comment = SupervisorComment(
+    db_comment = SupervisorCommentModel(
         batch_id=batch_id,
         created_by=current_user.id,
         **comment.dict()
