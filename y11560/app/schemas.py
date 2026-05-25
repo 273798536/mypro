@@ -36,7 +36,6 @@ class CheckinRecordBase(BaseModel):
     is_extended: bool = False
     original_checkout: Optional[datetime] = None
     source: Optional[str] = None
-    raw_data: Optional[str] = None
 
 
 class CheckinRecordCreate(CheckinRecordBase):
@@ -46,6 +45,7 @@ class CheckinRecordCreate(CheckinRecordBase):
 class CheckinRecord(CheckinRecordBase):
     id: int
     batch_id: int
+    raw_data: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -65,7 +65,6 @@ class DepositRecordBase(BaseModel):
     refund_time: Optional[datetime] = None
     balance: float = 0
     source: Optional[str] = None
-    raw_data: Optional[str] = None
 
 
 class DepositRecordCreate(DepositRecordBase):
@@ -75,6 +74,7 @@ class DepositRecordCreate(DepositRecordBase):
 class DepositRecord(DepositRecordBase):
     id: int
     batch_id: int
+    raw_data: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -97,7 +97,6 @@ class RoomChangeRecordBase(BaseModel):
     reason: Optional[str] = None
     operator: Optional[str] = None
     source: Optional[str] = None
-    raw_data: Optional[str] = None
 
 
 class RoomChangeRecordCreate(RoomChangeRecordBase):
@@ -107,6 +106,7 @@ class RoomChangeRecordCreate(RoomChangeRecordBase):
 class RoomChangeRecord(RoomChangeRecordBase):
     id: int
     batch_id: int
+    raw_data: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
