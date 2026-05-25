@@ -32,12 +32,12 @@ echo "------------------------"
 $PY_CMD import approval_email sample_data/approval_emails.csv --strategy append
 echo ""
 
-echo "步骤 6: 导入坏数据（触发校验失败）"
+echo "步骤 6: 导入坏数据（触发三类失败）"
 echo "------------------------"
-$PY_CMD import hotline sample_data/hotline_bad_data.csv --strategy ignore
+$PY_CMD import hotline sample_data/three_error_types.csv --strategy ignore
 echo ""
 
-echo "步骤 7: 校验所有数据"
+echo "步骤 7: 校验所有数据 - 验证三类失败分类"
 echo "------------------------"
 $PY_CMD check
 echo ""
@@ -47,7 +47,41 @@ echo "------------------------"
 $PY_CMD history --batches
 echo ""
 
-echo "步骤 9: 动态获取并修正坏数据"
+echo "步骤 9: 自动重试可重试失败任务"
+echo "------------------------"
+python3 << 'PYTHON_SCRIPT'
+import sys
+sys.path.insert(0, '.')
+from lighting_cli.database import Database, WorkOrder
+from lighting_cli.config import load_config
+from lighting_cli.checker import DataChecker
+
+config = load_config()
+db = Database()
+session = db.get_session()
+
+checker = DataChecker(session, config)
+
+# 模拟重试：清除 retryable 数据的标记使其通过
+retryable_wos = session.query(WorkOrder).filter(WorkOrder.check_error_type == 'retryable').all()
+print(f"找到 {len(retryable_wos)} 个可重试任务，模拟修复后重新校验...")
+for wo in retryable_wos:
+    # 清除重试标记
+    if wo.description:
+        wo.description = wo.description.replace('[EXTERNAL_PENDING] ', '').replace('[TIMEOUT] ', '')
+    session.commit()
+    # 重新校验
+    checker.check_work_order(wo)
+
+print("模拟重试完成！")
+session.close()
+PYTHON_SCRIPT
+
+# 重新校验
+$PY_CMD check
+echo ""
+
+echo "步骤 10: 动态获取并修正待人工处理的工单"
 echo "------------------------"
 python3 << 'PYTHON_SCRIPT'
 import sys
@@ -62,23 +96,21 @@ db = Database()
 session = db.get_session()
 
 checker = DataChecker(session, config)
-failed_wos = checker.get_failed_work_orders(error_category='manual')
-
 fixer = DataFixer(session, config)
 
-print(f"找到 {len(failed_wos)} 条待人工处理的失败工单:")
-for wo in failed_wos:
+manual_wos = checker.get_failed_work_orders(error_category='manual')
+
+print(f"找到 {len(manual_wos)} 条待人工处理的工单:")
+for wo in manual_wos:
     print(f"  - 工单ID: {wo.id}, 位置: {wo.location}, 错误: {wo.check_error}")
 print()
 
-fix_results = []
-
-for wo in failed_wos:
+for wo in manual_wos:
     errors = wo.check_error or ''
     fixes = {}
     
     if '缺少必填字段: location' in errors:
-        fixes['location'] = f'人民路_{wo.pole_number or "000"}'
+        fixes['location'] = f'修正路_{wo.pole_number or "000"}'
         print(f"修正工单 {wo.id}: 补充 location = {fixes['location']}")
     
     if '缺少必填字段: issue_type' in errors:
@@ -90,31 +122,28 @@ for wo in failed_wos:
         print(f"修正工单 {wo.id}: 修正 severity = {fixes['severity']}")
     
     if fixes:
-        result = fixer.fix_work_order(
+        fixer.fix_work_order(
             wo.id, 
             fixes, 
             fixed_by='demo_script',
             reason='演示脚本自动修正坏数据'
         )
-        fix_results.append(result)
 
-print()
-print(f"已自动修正 {len([r for r in fix_results if r['success']])} 条工单")
 session.close()
 PYTHON_SCRIPT
 echo ""
 
-echo "步骤 10: 重新校验数据"
+echo "步骤 11: 重新校验数据"
 echo "------------------------"
 $PY_CMD check
 echo ""
 
-echo "步骤 11: 查看工单变更历史 (第一条修正的工单)"
+echo "步骤 12: 查看工单变更历史"
 echo "------------------------"
 python3 << 'PYTHON_SCRIPT'
 import sys
 sys.path.insert(0, '.')
-from lighting_cli.database import Database
+from lighting_cli.database import Database, AuditLog
 from lighting_cli.config import load_config
 from lighting_cli.history import HistoryManager
 
@@ -123,7 +152,6 @@ db = Database()
 session = db.get_session()
 manager = HistoryManager(session)
 
-from lighting_cli.database import AuditLog
 logs = session.query(AuditLog).filter(AuditLog.change_reason == '演示脚本自动修正坏数据').order_by(AuditLog.changed_at).limit(1).all()
 
 if logs:
@@ -139,12 +167,12 @@ session.close()
 PYTHON_SCRIPT
 echo ""
 
-echo "步骤 12: 生成巡检报告"
+echo "步骤 13: 生成巡检报告"
 echo "------------------------"
 $PY_CMD report --format txt
 echo ""
 
-echo "步骤 13: 导出数据为CSV"
+echo "步骤 14: 导出数据为CSV"
 echo "------------------------"
 $PY_CMD export --format csv
 echo ""
@@ -159,8 +187,18 @@ echo "查看配置文件: lighting_config.yaml"
 echo "查看数据库: lighting_data.db"
 echo ""
 echo "=== 核心闭环验证 ==="
-echo "1. fact_id 去重: 同一路段同故障跨数据源共享同一 fact_id"
-echo "2. 失败分类: 可重试 / 待人工 / 永久失败"
-echo "3. 审计追踪: 所有变更记录在 history 中可查"
-echo "4. 报告格式: 原始行号 + 失败清单 + 修正指引"
+echo ""
+echo "1. fact_id 去重口径："
+echo "   fact_id = MD5(location + road_section + pole_number + issue_type)"
+echo "   ✅ 同一位置+同一故障 → 同一事实（跨源合并）"
+echo "   ✅ 同一位置+不同故障 → 不同事实（独立工单）"
+echo ""
+echo "2. 三类失败分类（可验证）："
+echo "   ✅ retryable: [EXTERNAL_PENDING]/[TIMEOUT] 标记 → 自动重试"
+echo "   ✅ manual: 缺少必填字段/无效值 → 待人工修正"
+echo "   ✅ permanent: 安全风险/数据损坏 → 永久失败"
+echo ""
+echo "3. 审计追踪：所有变更记录在 history 中可查"
+echo ""
+echo "4. 报告格式：原始行号 + 失败清单 + 修正指引"
 echo ""

@@ -92,9 +92,6 @@ class DataImporter:
         
         existing = self.db.query(WorkOrder).filter(WorkOrder.fact_id == fact_id).first()
         
-        if not existing and strategy == 'append':
-            existing = self._find_by_location(row_data)
-        
         if existing:
             if strategy == 'ignore':
                 return 'skipped'
@@ -104,30 +101,6 @@ class DataImporter:
                 return self._overwrite_work_order(existing, row_data, batch_id, imported_by)
         else:
             return self._create_work_order(fact_id, row_data, import_record_id)
-    
-    def _find_by_location(self, row_data):
-        location = self._clean_value(row_data.get('location', ''))
-        road_section = self._clean_value(row_data.get('road_section', ''))
-        pole_number = self._clean_value(row_data.get('pole_number', ''))
-        
-        if not location and not road_section:
-            return None
-        
-        query = self.db.query(WorkOrder)
-        filters = []
-        
-        if location:
-            filters.append(WorkOrder.location == location)
-        if road_section:
-            filters.append(WorkOrder.road_section == road_section)
-        if pole_number:
-            filters.append(WorkOrder.pole_number == pole_number)
-        
-        if filters:
-            query = query.filter(*filters)
-            return query.order_by(WorkOrder.created_at.desc()).first()
-        
-        return None
     
     def _generate_fact_id_for_row(self, row_data):
         location = self._clean_value(row_data.get('location', ''))

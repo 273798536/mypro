@@ -1,0 +1,15 @@
+﻿id,fact_id,original_line_number,location,road_section,pole_number,issue_type,description,severity,photo_path,hotline_caller,hotline_phone,hotline_time,spare_part_batch,spare_part_name,spare_part_quantity,approval_email_subject,approval_email_from,approval_status,check_status,check_error,check_error_type,created_at,updated_at
+1,e5ea1438ba4d47eb,1,朝阳路_002,朝阳路,002,lighting_failure,巡检照片: 朝阳路_002_灯杆,high,sample_data/photos/朝阳路_002_灯杆.jpg,,,,,,,,,,passed,,,2026-05-26 04:54:06,2026-05-26 04:54:16
+2,317d0997c326b49a,2,朝阳路_001,朝阳路,001,lighting_failure,还是不亮,high,sample_data/photos/朝阳路_001_灯杆.jpg,刘女士,13800138005,2024-01-15 14:00:00,,,,,,,passed,,,2026-05-26 04:54:06,2026-05-26 04:54:16
+3,6783971343b41552,3,建设大道_005,建设大道,005,lighting_failure,整排路灯不亮,critical,sample_data/photos/建设大道_005_灯杆.jpg,王大爷,13800138003,2024-01-15 10:00:00,,,,紧急维修审批,manager@city.gov,approved,passed,,,2026-05-26 04:54:06,2026-05-26 04:54:16
+4,3a95437a420bd0a1,2,朝阳路_002,朝阳路,002,lighting_flicker,路灯闪烁,normal,,李女士,13800138002,2024-01-15 09:15:00,,,,常规维修审批,supervisor@city.gov,pending,passed,,,2026-05-26 04:54:08,2026-05-26 04:54:16
+5,4671a1b13a5dca0e,4,和平街_003,和平街,003,fixture_damage,灯罩损坏,low,,陈先生,13800138004,2024-01-15 11:30:00,,,,,,,passed,,,2026-05-26 04:54:08,2026-05-26 04:54:16
+6,f20259dbac509512,1,朝阳路_001,朝阳路,001,replacement,,normal,,,,,BATCH2024001,LED灯泡,2.0,,,,passed,,,2026-05-26 04:54:11,2026-05-26 04:54:16
+7,39627fa5d0624513,2,建设大道_005,建设大道,005,replacement,,normal,,,,,BATCH2024001,LED灯泡,4.0,,,,passed,,,2026-05-26 04:54:11,2026-05-26 04:54:16
+8,f94bed6ed018af1f,3,和平街_003,和平街,003,replacement,,normal,,,,,BATCH2024002,灯罩,1.0,,,,passed,,,2026-05-26 04:54:11,2026-05-26 04:54:16
+9,3619301dfeb6cb67,1,测试路_001,测试路,001,lighting_failure,这是正常数据,high,,测试员1,13800000001,2024-01-15 08:30:00,,,,,,,passed,,,2026-05-26 04:54:14,2026-05-26 04:54:16
+10,9fe03959d537fac5,2,测试路_002,测试路,002,lighting_failure,外部系统校验中,high,,测试员2,13800000002,2024-01-15 09:00:00,,,,,,,passed,,,2026-05-26 04:54:14,2026-05-26 04:54:19
+11,0c2f1a5e83347646,3,测试路_003,测试路,003,lighting_failure,网络超时重试中,high,,测试员3,13800000003,2024-01-15 09:30:00,,,,,,,passed,,,2026-05-26 04:54:14,2026-05-26 04:54:19
+12,4c14b00d17167d9b,4,测试路_004<script>alert(1)</script>,测试路,004,lighting_failure,包含恶意代码检测,critical,,测试员4,13800000004,2024-01-15 10:00:00,,,,,,,failed,安全风险: location 包含可疑代码,permanent,2026-05-26 04:54:14,2026-05-26 04:54:16
+13,f98b594ef7e71214,5,测试路_005,测试路,005,lighting_failure,缺少故障类型测试,normal,,测试员5,13800000005,2024-01-15 10:30:00,,,,,,,passed,,,2026-05-26 04:54:14,2026-05-26 04:54:22
+14,ea3de598bf778151,6,测试路,测试路,006,lighting_failure,缺少位置测试,normal,,测试员6,13800000006,2024-01-15 11:00:00,,,,,,,passed,,,2026-05-26 04:54:14,2026-05-26 04:54:16

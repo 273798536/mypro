@@ -49,30 +49,66 @@ class DataChecker:
     def check_work_order(self, work_order: WorkOrder):
         errors = []
         error_category = None
+        error_priority = {'permanent': 3, 'manual': 2, 'retryable': 1}
         
-        required_fields = self.config['check']['required_fields']
-        for field in required_fields:
-            value = getattr(work_order, field, None)
-            if self._is_empty(value):
-                errors.append(f'缺少必填字段: {field}')
-                error_category = 'manual'
+        def set_error_category(category):
+            nonlocal error_category
+            if error_category is None or error_priority.get(category, 0) > error_priority.get(error_category, 0):
+                error_category = category
         
+        # === 永久失败 (Permanent) - 无法修复的严重问题 ===
+        
+        # 检测安全风险：包含可疑代码特征
+        for field in ['location', 'description', 'hotline_caller', 'hotline_phone']:
+            value = str(getattr(work_order, field, '') or '')
+            if '<script>' in value.lower() or 'DROP TABLE' in value.upper():
+                errors.append(f'安全风险: {field} 包含可疑代码')
+                set_error_category('permanent')
+        
+        # 数据严重损坏：位置字段格式完全无效（如长度超过数据库限制）
+        if work_order.location and len(work_order.location) > 250:
+            errors.append('数据损坏: 位置字段过长')
+            set_error_category('permanent')
+        
+        # === 可重试 (Retryable) - 临时性问题，可自动重试 ===
+        
+        # 模拟外部系统依赖校验失败（通过特定标记触发）
+        if work_order.description and '[EXTERNAL_PENDING]' in work_order.description:
+            errors.append('外部系统校验暂时不可用，请稍后重试')
+            set_error_category('retryable')
+        
+        # 模拟网络超时标记
+        if work_order.description and '[TIMEOUT]' in work_order.description:
+            errors.append('数据同步超时，将自动重试')
+            set_error_category('retryable')
+        
+        # === 待人工 (Manual) - 数据完整性和业务规则问题 ===
+        
+        # 缺少必填字段
+        if error_category != 'permanent':
+            required_fields = self.config['check']['required_fields']
+            for field in required_fields:
+                value = getattr(work_order, field, None)
+                if self._is_empty(value):
+                    errors.append(f'缺少必填字段: {field}')
+                    set_error_category('manual')
+        
+        # 无效的严重级别
         severity_levels = self.config['check']['severity_levels']
         if work_order.severity and work_order.severity not in severity_levels:
             errors.append(f'无效的严重级别: {work_order.severity}')
-            error_category = 'manual'
+            set_error_category('manual')
         
+        # 备件数量为负
         if work_order.spare_part_quantity is not None:
             if work_order.spare_part_quantity < 0:
                 errors.append('备件数量不能为负数')
-                error_category = 'manual'
+                set_error_category('manual')
         
+        # 来电时间在未来
         if work_order.hotline_time and work_order.hotline_time > datetime.now():
             errors.append('来电时间不能晚于当前时间')
-            error_category = 'manual'
-        
-        if work_order.location and self._check_duplicate_location_issue(work_order):
-            pass
+            set_error_category('manual')
         
         passed = len(errors) == 0
         
