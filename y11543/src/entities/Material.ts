@@ -1,9 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Batch } from './Batch';
-import { AuditResult } from './AuditResult';
-import { CostDaily } from './CostDaily';
-import { MaterialMapping } from './MaterialMapping';
-import { CustomerRemark } from './CustomerRemark';
 
 export type MaterialStatus = 'pending' | 'auditing' | 'approved' | 'rejected' | 'manual_override' | 'failed';
 
@@ -12,32 +8,32 @@ export class Material {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   materialId: string;
 
-  @Column()
+  @Column({ type: 'text' })
   name: string;
 
-  @Column({ nullable: true })
-  platform: string;
+  @Column({ type: 'text', nullable: true })
+  platform: string | null;
 
   @Column({ type: 'text', default: 'pending' })
   status: MaterialStatus;
 
   @Column({ type: 'text', nullable: true })
-  errorMessage: string;
+  errorMessage: string | null;
 
   @Column({ type: 'boolean', default: false })
   isDuplicate: boolean;
 
-  @Column({ nullable: true })
-  originalMaterialId: string;
+  @Column({ type: 'text', nullable: true })
+  originalMaterialId: string | null;
 
   @Column({ type: 'datetime', nullable: true })
-  submittedAt: Date;
+  submittedAt: Date | null;
 
   @Column({ type: 'datetime', nullable: true })
-  completedAt: Date;
+  completedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -49,18 +45,6 @@ export class Material {
   @JoinColumn({ name: 'batchId' })
   batch: Batch;
 
-  @Column()
+  @Column({ type: 'text' })
   batchId: string;
-
-  @OneToMany(() => AuditResult, audit => audit.material)
-  auditResults: AuditResult[];
-
-  @OneToMany(() => CostDaily, cost => cost.material)
-  costDailies: CostDaily[];
-
-  @OneToMany(() => MaterialMapping, mapping => mapping.material)
-  mappings: MaterialMapping[];
-
-  @OneToMany(() => CustomerRemark, remark => remark.material)
-  remarks: CustomerRemark[];
 }

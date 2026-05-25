@@ -1,12 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Material } from './Material';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class CostDaily {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   materialId: string;
 
   @Column({ type: 'date' })
@@ -24,22 +23,18 @@ export class CostDaily {
   @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
   conversionValue: number;
 
-  @Column({ nullable: true })
-  platform: string;
+  @Column({ type: 'text', nullable: true })
+  platform: string | null;
 
   @Column({ type: 'boolean', default: false })
   isReconciled: boolean;
 
   @Column({ type: 'text', nullable: true })
-  reconciliationNote: string;
+  reconciliationNote: string | null;
+
+  @Column({ type: 'text' })
+  materialRecordId: string;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @ManyToOne(() => Material, material => material.costDailies, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'materialRecordId' })
-  material: Material;
-
-  @Column()
-  materialRecordId: string;
 }

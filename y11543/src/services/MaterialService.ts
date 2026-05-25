@@ -54,8 +54,7 @@ export class MaterialService {
 
   async getById(id: string): Promise<Material | null> {
     return await this.materialRepository.findOne({
-      where: { id },
-      relations: ['auditResults', 'costDailies', 'mappings', 'remarks']
+      where: { id }
     });
   }
 
@@ -64,8 +63,7 @@ export class MaterialService {
     if (batchId) where.batchId = batchId;
     
     return await this.materialRepository.find({
-      where,
-      relations: ['auditResults', 'costDailies', 'mappings', 'remarks']
+      where
     });
   }
 
@@ -87,18 +85,21 @@ export class MaterialService {
 
     const version = previousAudit ? (previousAudit.version || 1) + 1 : 1;
 
-    const audit = this.auditRepository.create({
-      materialId: input.materialId,
-      status: input.status,
-      reason: input.reason,
-      auditor: input.auditor || operator,
-      isManual: input.isManual || false,
-      previousStatus: previousAudit?.status || null,
-      version,
-      materialRecordId: material.id
-    });
+    const audit = new AuditResult();
+    audit.materialId = input.materialId;
+    audit.status = input.status;
+    audit.reason = input.reason || null;
+    audit.auditor = input.auditor || operator || null;
+    audit.isManual = input.isManual || false;
+    audit.previousStatus = previousAudit ? previousAudit.status : null;
+    audit.version = version;
+    audit.materialRecordId = material.id;
 
-    const saved = await this.auditRepository.save(audit);
+    const result = await this.auditRepository.insert(audit);
+    const saved = await this.auditRepository.findOneBy({ id: result.identifiers[0].id });
+    if (!saved) {
+      throw new Error('审核结果保存失败');
+    }
 
     let newStatus: MaterialStatus = material.status;
     if (input.status === 'approved') {
@@ -149,16 +150,15 @@ export class MaterialService {
 
     const version = previousAudit ? (previousAudit.version || 1) + 1 : 1;
 
-    const audit = this.auditRepository.create({
-      materialId,
-      status: newStatus,
-      reason,
-      auditor: operator,
-      isManual: true,
-      previousStatus: previousAudit?.status || null,
-      version,
-      materialRecordId: material.id
-    });
+    const audit = new AuditResult();
+    audit.materialId = materialId;
+    audit.status = newStatus;
+    audit.reason = reason;
+    audit.auditor = operator;
+    audit.isManual = true;
+    audit.previousStatus = previousAudit ? previousAudit.status : null;
+    audit.version = version;
+    audit.materialRecordId = material.id;
 
     const saved = await this.auditRepository.save(audit);
 
@@ -201,13 +201,11 @@ export class MaterialService {
     });
 
     if (existing) {
-      Object.assign(existing, {
-        cost: input.cost,
-        impressions: input.impressions || 0,
-        clicks: input.clicks || 0,
-        conversionValue: input.conversionValue || 0,
-        platform: input.platform
-      });
+      existing.cost = input.cost;
+      existing.impressions = input.impressions || 0;
+      existing.clicks = input.clicks || 0;
+      existing.conversionValue = input.conversionValue || 0;
+      existing.platform = input.platform || null;
       const saved = await this.costRepository.save(existing);
       
       await auditLogService.log('cost_added', {
@@ -222,16 +220,15 @@ export class MaterialService {
       return saved;
     }
 
-    const cost = this.costRepository.create({
-      materialId: input.materialId,
-      reportDate: input.reportDate,
-      cost: input.cost,
-      impressions: input.impressions || 0,
-      clicks: input.clicks || 0,
-      conversionValue: input.conversionValue || 0,
-      platform: input.platform,
-      materialRecordId: material.id
-    });
+    const cost = new CostDaily();
+    cost.materialId = input.materialId;
+    cost.reportDate = input.reportDate;
+    cost.cost = input.cost;
+    cost.impressions = input.impressions || 0;
+    cost.clicks = input.clicks || 0;
+    cost.conversionValue = input.conversionValue || 0;
+    cost.platform = input.platform || null;
+    cost.materialRecordId = material.id;
 
     const saved = await this.costRepository.save(cost);
 
@@ -258,14 +255,13 @@ export class MaterialService {
 
     const material = materials[0];
 
-    const mapping = this.mappingRepository.create({
-      canonicalMaterialId: input.canonicalMaterialId,
-      platformMaterialId: input.platformMaterialId,
-      platform: input.platform,
-      platformMaterialName: input.platformMaterialName,
-      mappingReason: input.mappingReason,
-      materialRecordId: material.id
-    });
+    const mapping = new MaterialMapping();
+    mapping.canonicalMaterialId = input.canonicalMaterialId;
+    mapping.platformMaterialId = input.platformMaterialId;
+    mapping.platform = input.platform;
+    mapping.platformMaterialName = input.platformMaterialName || null;
+    mapping.mappingReason = input.mappingReason || null;
+    mapping.materialRecordId = material.id;
 
     const saved = await this.mappingRepository.save(mapping);
 
@@ -291,13 +287,12 @@ export class MaterialService {
 
     const material = materials[0];
 
-    const remark = this.remarkRepository.create({
-      materialId: input.materialId,
-      content: input.content,
-      operator: input.operator || operator,
-      source: input.source,
-      materialRecordId: material.id
-    });
+    const remark = new CustomerRemark();
+    remark.materialId = input.materialId;
+    remark.content = input.content;
+    remark.operator = input.operator || operator || null;
+    remark.source = input.source || null;
+    remark.materialRecordId = material.id;
 
     const saved = await this.remarkRepository.save(remark);
 

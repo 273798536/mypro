@@ -24,32 +24,32 @@ export class AuditLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
-  batchId: string;
+  @Column({ type: 'text', nullable: true })
+  batchId: string | null;
 
-  @Column({ nullable: true })
-  materialId: string;
+  @Column({ type: 'text', nullable: true })
+  materialId: string | null;
 
   @Column({ type: 'text' })
   action: AuditAction;
 
   @Column({ type: 'text', nullable: true })
-  fieldName: string;
+  fieldName: string | null;
 
   @Column({ type: 'text', nullable: true })
-  oldValue: string;
+  oldValue: string | null;
 
   @Column({ type: 'text', nullable: true })
-  newValue: string;
+  newValue: string | null;
 
   @Column({ type: 'text', nullable: true })
-  diff: string;
-
-  @Column({ nullable: true })
-  operator: string;
+  diff: string | null;
 
   @Column({ type: 'text', nullable: true })
-  reason: string;
+  operator: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  reason: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

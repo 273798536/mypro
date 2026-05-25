@@ -21,17 +21,16 @@ export class AuditLogService {
       reason?: string;
     } = {}
   ): Promise<AuditLog> {
-    const log = this.repository.create({
-      action,
-      batchId: options.batchId,
-      materialId: options.materialId,
-      fieldName: options.fieldName,
-      oldValue: options.oldValue !== undefined ? String(options.oldValue) : null,
-      newValue: options.newValue !== undefined ? String(options.newValue) : null,
-      diff: this.generateDiff(options.oldValue, options.newValue),
-      operator: options.operator,
-      reason: options.reason
-    });
+    const log = new AuditLog();
+    log.action = action;
+    log.batchId = options.batchId || null;
+    log.materialId = options.materialId || null;
+    log.fieldName = options.fieldName || null;
+    log.oldValue = options.oldValue !== undefined ? String(options.oldValue) : null;
+    log.newValue = options.newValue !== undefined ? String(options.newValue) : null;
+    log.diff = this.generateDiff(options.oldValue, options.newValue);
+    log.operator = options.operator || null;
+    log.reason = options.reason || null;
 
     return await this.repository.save(log);
   }

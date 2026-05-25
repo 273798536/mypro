@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Material } from './Material';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 export type AuditStatus = 'pending' | 'approved' | 'rejected' | 'needs_review';
 
@@ -8,34 +7,30 @@ export class AuditResult {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   materialId: string;
 
   @Column({ type: 'text', default: 'pending' })
   status: AuditStatus;
 
   @Column({ type: 'text', nullable: true })
-  reason: string;
+  reason: string | null;
 
-  @Column({ nullable: true })
-  auditor: string;
+  @Column({ type: 'text', nullable: true })
+  auditor: string | null;
 
   @Column({ type: 'boolean', default: false })
   isManual: boolean;
 
   @Column({ type: 'text', nullable: true })
-  previousStatus: string;
+  previousStatus: string | null;
 
-  @Column({ nullable: true })
-  version: number;
+  @Column({ type: 'integer', nullable: true })
+  version: number | null;
+
+  @Column({ type: 'text' })
+  materialRecordId: string;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @ManyToOne(() => Material, material => material.auditResults, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'materialRecordId' })
-  material: Material;
-
-  @Column()
-  materialRecordId: string;
 }

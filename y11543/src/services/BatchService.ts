@@ -36,14 +36,13 @@ export class BatchService {
       throw new Error(`批次号 ${request.batchNo} 已存在`);
     }
 
-    const batch = this.repository.create({
-      batchNo: request.batchNo,
-      name: request.name,
-      operator: request.operator,
-      description: request.description,
-      duplicateStrategy: request.duplicateStrategy || 'ignore',
-      status: 'draft'
-    });
+    const batch = new Batch();
+    batch.batchNo = request.batchNo;
+    batch.name = request.name;
+    batch.operator = request.operator || null;
+    batch.description = request.description || null;
+    batch.duplicateStrategy = request.duplicateStrategy || 'ignore';
+    batch.status = 'draft';
 
     const saved = await this.repository.save(batch);
     
@@ -58,15 +57,13 @@ export class BatchService {
 
   async getById(id: string): Promise<Batch | null> {
     return await this.repository.findOne({
-      where: { id },
-      relations: ['materials', 'auditLogs']
+      where: { id }
     });
   }
 
   async getByBatchNo(batchNo: string): Promise<Batch | null> {
     return await this.repository.findOne({
-      where: { batchNo },
-      relations: ['materials']
+      where: { batchNo }
     });
   }
 
@@ -114,11 +111,9 @@ export class BatchService {
             result.skipped.push(existing);
             continue;
           case 'overwrite':
-            Object.assign(existing, {
-              name: item.name,
-              platform: item.platform,
-              originalMaterialId: item.originalMaterialId
-            });
+            existing.name = item.name;
+            existing.platform = item.platform || null;
+            existing.originalMaterialId = item.originalMaterialId || null;
             const updated = await this.materialRepository.save(existing);
             result.added.push(updated);
             
@@ -132,15 +127,15 @@ export class BatchService {
             });
             continue;
           case 'append':
-            const duplicate = this.materialRepository.create({
-              materialId: item.materialId,
-              name: item.name,
-              platform: item.platform,
-              originalMaterialId: item.originalMaterialId,
-              batchId,
-              isDuplicate: true,
-              status: 'pending'
-            });
+            const duplicate = new Material();
+            duplicate.materialId = item.materialId;
+            duplicate.name = item.name;
+            duplicate.platform = item.platform || null;
+            duplicate.originalMaterialId = item.originalMaterialId || null;
+            duplicate.batchId = batchId;
+            duplicate.isDuplicate = true;
+            duplicate.status = 'pending';
+            
             const savedDup = await this.materialRepository.save(duplicate);
             result.duplicates.push(savedDup);
             result.added.push(savedDup);
@@ -155,14 +150,13 @@ export class BatchService {
         }
       }
 
-      const material = this.materialRepository.create({
-        materialId: item.materialId,
-        name: item.name,
-        platform: item.platform,
-        originalMaterialId: item.originalMaterialId,
-        batchId,
-        status: 'pending'
-      });
+      const material = new Material();
+      material.materialId = item.materialId;
+      material.name = item.name;
+      material.platform = item.platform || null;
+      material.originalMaterialId = item.originalMaterialId || null;
+      material.batchId = batchId;
+      material.status = 'pending';
 
       const saved = await this.materialRepository.save(material);
       result.added.push(saved);
@@ -275,7 +269,7 @@ export class BatchService {
 
     batch.frozen = true;
     batch.frozenAt = new Date();
-    batch.frozenBy = operator;
+    batch.frozenBy = operator || null;
     const saved = await this.repository.save(batch);
 
     await auditLogService.log('batch_frozen', {
@@ -300,8 +294,8 @@ export class BatchService {
     }
 
     batch.frozen = false;
-    batch.frozenAt = null as any;
-    batch.frozenBy = null as any;
+    batch.frozenAt = null;
+    batch.frozenBy = null;
     const saved = await this.repository.save(batch);
 
     await auditLogService.log('batch_unfrozen', {

@@ -28,11 +28,11 @@ export class Batch {
   })
   duplicateStrategy: DuplicateStrategy;
 
-  @Column({ nullable: true })
-  operator: string;
+  @Column({ type: 'text', nullable: true })
+  operator: string | null;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description: string | null;
 
   @Column({ default: 0 })
   materialCount: number;
@@ -47,10 +47,10 @@ export class Batch {
   frozen: boolean;
 
   @Column({ type: 'datetime', nullable: true })
-  frozenAt: Date;
+  frozenAt: Date | null;
 
-  @Column({ nullable: true })
-  frozenBy: string;
+  @Column({ type: 'text', nullable: true })
+  frozenBy: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,33 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Material } from './Material';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class MaterialMapping {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   canonicalMaterialId: string;
 
-  @Column()
+  @Column({ type: 'text' })
   platformMaterialId: string;
 
-  @Column()
+  @Column({ type: 'text' })
   platform: string;
 
-  @Column({ nullable: true })
-  platformMaterialName: string;
+  @Column({ type: 'text', nullable: true })
+  platformMaterialName: string | null;
 
   @Column({ type: 'text', nullable: true })
-  mappingReason: string;
+  mappingReason: string | null;
+
+  @Column({ type: 'text' })
+  materialRecordId: string;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @ManyToOne(() => Material, material => material.mappings, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'materialRecordId' })
-  material: Material;
-
-  @Column()
-  materialRecordId: string;
 }

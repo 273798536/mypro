@@ -39,8 +39,7 @@ export class ExportService {
 
   async exportBatchToCsv(batchId: string, operator?: string): Promise<string> {
     const batch = await this.batchRepo.findOne({
-      where: { id: batchId },
-      relations: ['materials']
+      where: { id: batchId }
     });
 
     if (!batch) {
@@ -57,17 +56,22 @@ export class ExportService {
     const filepath = path.join(exportDir, filename);
 
     const materials = await this.materialRepo.find({
-      where: { batchId },
-      relations: ['auditResults', 'costDailies']
+      where: { batchId }
     });
 
     const records = [];
     for (const material of materials) {
-      const latestAudit = material.auditResults.sort((a, b) => 
+      const audits = await this.auditRepo.find({
+        where: { materialRecordId: material.id }
+      });
+      const latestAudit = audits.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )[0];
       
-      const totalCost = material.costDailies.reduce(
+      const costs = await this.costRepo.find({
+        where: { materialRecordId: material.id }
+      });
+      const totalCost = costs.reduce(
         (sum, c) => sum + Number(c.cost), 0
       );
 
@@ -173,22 +177,25 @@ export class ExportService {
         oldValue: h.oldValue,
         newValue: h.newValue,
         changedAt: h.createdAt,
-        operator: h.operator
+        operator: h.operator || undefined
       }));
   }
 
   async detectAnomalies(batchId: string): Promise<AnomalyRecord[]> {
     const anomalies: AnomalyRecord[] = [];
     const batch = await this.batchRepo.findOne({ 
-      where: { id: batchId },
-      relations: ['materials']
+      where: { id: batchId }
     });
 
     if (!batch) {
       throw new Error('批次不存在');
     }
 
-    for (const material of batch.materials) {
+    const materials = await this.materialRepo.find({
+      where: { batchId }
+    });
+
+    for (const material of materials) {
       const audits = await this.auditRepo.find({
         where: { materialRecordId: material.id },
         order: { createdAt: 'ASC' }
@@ -248,8 +255,7 @@ export class ExportService {
 
   async getReconciliationReport(batchId: string): Promise<any> {
     const batch = await this.batchRepo.findOne({
-      where: { id: batchId },
-      relations: ['materials']
+      where: { id: batchId }
     });
 
     if (!batch) {
@@ -257,13 +263,26 @@ export class ExportService {
     }
 
     const materials = await this.materialRepo.find({
-      where: { batchId },
-      relations: ['auditResults', 'costDailies', 'mappings']
+      where: { batchId }
     });
 
-    const totalCost = materials.reduce((sum, m) => {
-      return sum + m.costDailies.reduce((s, c) => s + Number(c.cost), 0);
-    }, 0);
+    let totalCost = 0;
+    const platformStats: Record<string, { count: number; cost: number }> = {};
+    
+    for (const m of materials) {
+      const costs = await this.costRepo.find({
+        where: { materialRecordId: m.id }
+      });
+      const materialCost = costs.reduce((s, c) => s + Number(c.cost), 0);
+      totalCost += materialCost;
+
+      const platform = m.platform || 'unknown';
+      if (!platformStats[platform]) {
+        platformStats[platform] = { count: 0, cost: 0 };
+      }
+      platformStats[platform].count++;
+      platformStats[platform].cost += materialCost;
+    }
 
     const approvedCount = materials.filter(m => 
       m.status === 'approved' || m.status === 'manual_override'
@@ -272,16 +291,6 @@ export class ExportService {
     const rejectedCount = materials.filter(m => 
       m.status === 'rejected' || m.status === 'failed'
     ).length;
-
-    const platformStats: Record<string, { count: number; cost: number }> = {};
-    for (const m of materials) {
-      const platform = m.platform || 'unknown';
-      if (!platformStats[platform]) {
-        platformStats[platform] = { count: 0, cost: 0 };
-      }
-      platformStats[platform].count++;
-      platformStats[platform].cost += m.costDailies.reduce((s, c) => s + Number(c.cost), 0);
-    }
 
     return {
       batchNo: batch.batchNo,

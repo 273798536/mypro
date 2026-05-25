@@ -1,30 +1,25 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Material } from './Material';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class CustomerRemark {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   materialId: string;
 
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ nullable: true })
-  operator: string;
+  @Column({ type: 'text', nullable: true })
+  operator: string | null;
 
-  @Column({ nullable: true })
-  source: string;
+  @Column({ type: 'text', nullable: true })
+  source: string | null;
+
+  @Column({ type: 'text' })
+  materialRecordId: string;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @ManyToOne(() => Material, material => material.remarks, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'materialRecordId' })
-  material: Material;
-
-  @Column()
-  materialRecordId: string;
 }
