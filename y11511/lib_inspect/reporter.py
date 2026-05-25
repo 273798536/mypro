@@ -54,7 +54,7 @@ def print_duplicates(duplicate_groups: List[List[LoanRecord]], console) -> None:
 
 
 def export_data(store: DataStore, output_path: Path, fmt: str,
-                include_failed: bool = False) -> None:
+                include_failed: bool = False) -> int:
     output_path = Path(output_path)
 
     if include_failed:
@@ -64,6 +64,8 @@ def export_data(store: DataStore, output_path: Path, fmt: str,
         fixed = store.get_all_records(status=RecordStatus.FIXED)
         recalculated = store.get_all_records(status=RecordStatus.RECALCULATED)
         records = records + fixed + recalculated
+
+    record_count = len(records)
 
     data = []
     for record in records:
@@ -131,3 +133,5 @@ def export_data(store: DataStore, output_path: Path, fmt: str,
             pd.DataFrame(summary_data).to_excel(writer, sheet_name='汇总统计', index=False)
     else:
         df.to_csv(output_path, index=False, encoding='utf-8-sig')
+
+    return record_count

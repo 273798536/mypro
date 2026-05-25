@@ -284,16 +284,18 @@ class DataStore:
         summary = ReportSummary()
 
         with self._get_conn() as conn:
-            row = conn.execute("""
+            VALID_STATUS_FILTER = "status IN ('校验通过', '已修正', '已重算', '已导出')"
+
+            row = conn.execute(f"""
                 SELECT 
                     COUNT(*) as total,
-                    SUM(CASE WHEN status IN ('校验通过', '已修正', '已重算', '已导出') THEN 1 ELSE 0 END) as valid,
+                    SUM(CASE WHEN {VALID_STATUS_FILTER} THEN 1 ELSE 0 END) as valid,
                     SUM(CASE WHEN status = '校验失败' THEN 1 ELSE 0 END) as invalid,
-                    SUM(express_fee) as total_express,
-                    SUM(compensation_fee) as total_compensation,
-                    SUM(CASE WHEN status IN ('校验通过', '已修正', '已重算', '已导出') THEN overdue_fee ELSE 0 END) as total_overdue,
-                    SUM(CASE WHEN status IN ('校验通过', '已修正', '已重算', '已导出') THEN damage_fee ELSE 0 END) as total_damage,
-                    SUM(CASE WHEN status IN ('校验通过', '已修正', '已重算', '已导出') THEN total_fee ELSE 0 END) as total_sum
+                    SUM(CASE WHEN {VALID_STATUS_FILTER} THEN express_fee ELSE 0 END) as total_express,
+                    SUM(CASE WHEN {VALID_STATUS_FILTER} THEN compensation_fee ELSE 0 END) as total_compensation,
+                    SUM(CASE WHEN {VALID_STATUS_FILTER} THEN overdue_fee ELSE 0 END) as total_overdue,
+                    SUM(CASE WHEN {VALID_STATUS_FILTER} THEN damage_fee ELSE 0 END) as total_damage,
+                    SUM(CASE WHEN {VALID_STATUS_FILTER} THEN total_fee ELSE 0 END) as total_sum
                 FROM loan_records
             """).fetchone()
 

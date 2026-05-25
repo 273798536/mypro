@@ -14,6 +14,7 @@ from . import importer
 from . import checker
 from . import fixer
 from . import reporter
+from . import logger
 
 console = Console()
 WORKSPACE_DIR = Path.cwd() / ".lib-inspect"
@@ -53,6 +54,7 @@ def init(force):
     (WORKSPACE_DIR / "logs").mkdir()
 
     DataStore(DB_PATH)
+    logger.log_init(force)
     console.print(Panel.fit(
         "[green]工作区初始化成功[/green]\n"
         f"位置: {WORKSPACE_DIR}\n"
@@ -61,7 +63,7 @@ def init(force):
     ))
 
 
-@cli.command()
+@cli.command("import")
 @click.argument("file_path", type=click.Path(exists=True))
 @click.option("--source", required=True,
               type=click.Choice(['借阅申请', '快递单', '读者赔偿记录', '客服备注']),
@@ -72,8 +74,9 @@ def import_cmd(file_path, source, operator, sheet_name):
     """导入数据文件"""
     store = get_store()
     source_enum = RecordSource(source)
+    file_name = Path(file_path).name
 
-    console.print(f"[cyan]正在导入 {Path(file_path).name}...[/cyan]")
+    console.print(f"[cyan]正在导入 {file_name}...[/cyan]")
     try:
         records = importer.import_file(
             Path(file_path), source_enum, operator, sheet_name
@@ -81,6 +84,7 @@ def import_cmd(file_path, source, operator, sheet_name):
         for record in records:
             store.add_record(record)
 
+        logger.log_import(file_name, source, len(records), operator)
         console.print(Panel.fit(
             f"[green]成功导入 {len(records)} 条记录[/green]\n"
             f"来源: {source}\n"
@@ -88,6 +92,7 @@ def import_cmd(file_path, source, operator, sheet_name):
             title="导入完成"
         ))
     except Exception as e:
+        logger.log_import_error(file_name, source, str(e), operator)
         console.print(f"[red]导入失败: {str(e)}[/red]")
         raise click.Abort()
 
@@ -95,7 +100,8 @@ def import_cmd(file_path, source, operator, sheet_name):
 @cli.command("check")
 @click.option("--record-id", help="只检查指定记录 ID")
 @click.option("--fix-auto", is_flag=True, help="自动修复可修复的问题")
-def check_cmd(record_id, fix_auto):
+@click.option("--operator", default="system", help="操作人姓名")
+def check_cmd(record_id, fix_auto, operator):
     """校验数据完整性和一致性"""
     store = get_store()
 
@@ -136,6 +142,7 @@ def check_cmd(record_id, fix_auto):
         else:
             failed += 1
 
+    logger.log_check(len(records), passed, failed, fix_auto, operator)
     console.print(table)
     console.print(f"\n总计: {len(results)} 项检查, [green]{passed} 通过[/green], [red]{failed} 失败[/red]")
 
@@ -155,18 +162,23 @@ def fix(record_id, field, value, operator, reason):
         console.print("[red]未找到指定记录[/red]")
         raise click.Abort()
 
+    old_value = str(getattr(record, field, ''))
     try:
         updated_record = fixer.update_field(record, field, value)
         store.update_record(updated_record, operator, reason)
+        logger.log_fix(record_id, field, old_value, value, operator, reason)
         console.print(Panel.fit(
             f"[green]记录已更新[/green]\n"
             f"记录ID: {record_id}\n"
             f"字段: {field}\n"
+            f"旧值: {old_value}\n"
+            f"新值: {value}\n"
             f"操作人: {operator}\n"
             f"原因: {reason}",
             title="修正完成"
         ))
     except Exception as e:
+        logger.log_fix_error(record_id, str(e), operator)
         console.print(f"[red]修正失败: {str(e)}[/red]")
         raise click.Abort()
 
@@ -174,24 +186,41 @@ def fix(record_id, field, value, operator, reason):
 @cli.command()
 @click.option("--operator", required=True, help="操作人姓名")
 @click.option("--reason", default="费用重新汇总", help="重算原因")
-def recalc(operator, reason):
-    """重新计算所有费用汇总"""
+@click.option("--overdue-rate", default=0.5, type=float, help="逾期日费率（元/天）")
+@click.option("--base-loan-period", default=30, type=int, help="基础借阅周期（天）")
+def recalc(operator, reason, overdue_rate, base_loan_period):
+    """重新计算所有费用汇总（处理逾期、污损、续借叠加）"""
     store = get_store()
     records = store.get_all_records()
 
     console.print(f"[cyan]正在重新计算 {len(records)} 条记录的费用...[/cyan]")
+    console.print(f"[dim]逾期费率: ¥{overdue_rate}/天, 基础周期: {base_loan_period}天[/dim]")
 
     updated_count = 0
     for record in records:
-        old_total = record.total_fee
-        record.calculate_total_fee()
-        if old_total != record.total_fee:
-            store.update_record(record, operator, reason)
+        old_record = record.to_dict()
+        updated_record = fixer.recalculate_fees(
+            record,
+            overdue_rate=overdue_rate,
+            base_loan_period=base_loan_period
+        )
+
+        changed = False
+        for key in ['express_fee', 'compensation_fee', 'overdue_fee', 'damage_fee', 'total_fee', 'is_overdue', 'is_damaged']:
+            if old_record.get(key) != updated_record.to_dict().get(key):
+                changed = True
+                break
+
+        if changed:
+            store.update_record(updated_record, operator, reason)
             updated_count += 1
 
+    logger.log_recalc(len(records), updated_count, operator, reason)
     console.print(Panel.fit(
         f"[green]重新计算完成[/green]\n"
+        f"处理记录数: {len(records)}\n"
         f"更新记录数: {updated_count}\n"
+        f"逾期费率: ¥{overdue_rate}/天\n"
         f"操作人: {operator}\n"
         f"原因: {reason}",
         title="费用重算"
@@ -201,9 +230,11 @@ def recalc(operator, reason):
 @cli.command()
 @click.option("--show-failed", is_flag=True, help="只显示失败记录")
 @click.option("--show-duplicates", is_flag=True, help="显示重复记录")
-def report(show_failed, show_duplicates):
+@click.option("--operator", default="system", help="操作人姓名")
+def report(show_failed, show_duplicates, operator):
     """生成数据报表"""
     store = get_store()
+    logger.log_view("报表", operator=operator)
     summary = store.get_summary()
 
     summary_panel = Panel.fit(
@@ -248,9 +279,11 @@ def report(show_failed, show_duplicates):
 @cli.command()
 @click.option("--record-id", help="查询指定记录的历史")
 @click.option("--limit", default=50, help="显示条数限制")
-def history(record_id, limit):
+@click.option("--operator", default="system", help="操作人姓名")
+def history(record_id, limit, operator):
     """查看变更历史"""
     store = get_store()
+    logger.log_view("变更历史", record_id, operator=operator)
     changes = store.get_change_history(record_id)[:limit]
 
     if not changes:
@@ -282,9 +315,11 @@ def history(record_id, limit):
 
 @cli.command()
 @click.argument("record_id")
-def detail(record_id):
+@click.option("--operator", default="system", help="操作人姓名")
+def detail(record_id, operator):
     """查看记录详情"""
     store = get_store()
+    logger.log_view("详情", record_id, operator=operator)
     record = store.get_record(record_id)
 
     if not record:
@@ -339,7 +374,8 @@ def detail(record_id):
               help="导出格式")
 @click.option("--output", help="输出文件名")
 @click.option("--include-failed", is_flag=True, help="包含失败记录")
-def export(fmt, output, include_failed):
+@click.option("--operator", default="system", help="操作人姓名")
+def export(fmt, output, include_failed, operator):
     """导出数据"""
     store = get_store()
 
@@ -350,13 +386,16 @@ def export(fmt, output, include_failed):
         output = Path(output)
 
     try:
-        reporter.export_data(store, output, fmt, include_failed)
+        record_count = reporter.export_data(store, output, fmt, include_failed)
+        logger.log_export(str(output.resolve()), record_count, fmt, include_failed, operator)
         console.print(Panel.fit(
             f"[green]导出成功[/green]\n"
-            f"文件: {output.resolve()}",
+            f"文件: {output.resolve()}\n"
+            f"记录数: {record_count}",
             title="导出完成"
         ))
     except Exception as e:
+        logger.log_export_error(str(output), str(e), operator)
         console.print(f"[red]导出失败: {str(e)}[/red]")
         raise click.Abort()
 
@@ -364,9 +403,11 @@ def export(fmt, output, include_failed):
 @cli.command()
 @click.option("--status", help="按状态筛选")
 @click.option("--source", help="按来源筛选")
-def list(status, source):
+@click.option("--operator", default="system", help="操作人姓名")
+def list(status, source, operator):
     """列出所有记录"""
     store = get_store()
+    logger.log_view("列表", operator=operator)
 
     status_enum = RecordStatus(status) if status else None
     source_enum = RecordSource(source) if source else None

@@ -92,17 +92,47 @@ def merge_records(primary: LoanRecord, duplicates: list) -> LoanRecord:
     return primary
 
 
-def recalculate_fees(record: LoanRecord) -> LoanRecord:
+def recalculate_fees(record: LoanRecord, overdue_rate: float = 0.5,
+                     base_loan_period: int = 30) -> LoanRecord:
+    today = datetime.now()
+
     if record.due_date:
-        today = datetime.now()
+        actual_due_date = record.due_date
+        if record.renew_count > 0:
+            from datetime import timedelta
+            actual_due_date = record.due_date + timedelta(days=base_loan_period * record.renew_count)
+
         actual_return = record.return_date or today
-        if actual_return > record.due_date:
+        if actual_return > actual_due_date:
             record.is_overdue = True
-            days_overdue = (actual_return - record.due_date).days
-            record.overdue_fee = round(days_overdue * 0.5, 2)
+            days_overdue = (actual_return - actual_due_date).days
+            record.overdue_fee = round(days_overdue * overdue_rate, 2)
         else:
             record.is_overdue = False
-            record.overdue_fee = 0.0
+            if record.overdue_fee > 0 and record.return_date and record.return_date <= actual_due_date:
+                record.overdue_fee = 0.0
+    else:
+        if record.apply_date and record.return_date:
+            loan_days = (record.return_date - record.apply_date).days
+            allowed_days = base_loan_period * (record.renew_count + 1)
+            if loan_days > allowed_days:
+                record.is_overdue = True
+                days_overdue = loan_days - allowed_days
+                record.overdue_fee = round(days_overdue * overdue_rate, 2)
+            else:
+                record.is_overdue = False
+                if record.overdue_fee > 0:
+                    record.overdue_fee = 0.0
+
+    if record.damage_fee > 0:
+        record.is_damaged = True
+    elif record.is_damaged and record.damage_fee == 0:
+        record.is_damaged = False
+
+    if customer_notes := record.customer_notes:
+        notes_lower = customer_notes.lower()
+        if any(kw in notes_lower for kw in ['污损', '损坏', '破损', '水渍', '划痕', 'damaged']):
+            record.is_damaged = True
 
     record.calculate_total_fee()
     record.status = RecordStatus.RECALCULATED
