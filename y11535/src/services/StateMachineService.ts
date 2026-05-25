@@ -23,13 +23,13 @@ const TRANSITION_RULES: TransitionRule[] = [
     allowedRoles: ['admin', 'hrbp', 'dept_manager', 'auditor']
   },
   {
-    from: [ExceptionStatus.REVIEWING],
+    from: [ExceptionStatus.PENDING_REVIEW, ExceptionStatus.REVIEWING, ExceptionStatus.SUPPLEMENT_REQUIRED],
     to: ExceptionStatus.APPROVED,
     action: ActionType.REVIEW,
     allowedRoles: ['admin', 'hrbp', 'auditor']
   },
   {
-    from: [ExceptionStatus.REVIEWING],
+    from: [ExceptionStatus.PENDING_REVIEW, ExceptionStatus.REVIEWING, ExceptionStatus.SUPPLEMENT_REQUIRED],
     to: ExceptionStatus.REJECTED,
     action: ActionType.REVIEW,
     allowedRoles: ['admin', 'hrbp', 'auditor']

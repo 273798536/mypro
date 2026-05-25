@@ -504,7 +504,10 @@ draft → pending_review ← supplement_required
            ↓
          archived
 
-withdrawn ← [所有可撤回状态
+注：pending_review 可直接通过复核操作转为 approved 或 rejected
+    (无需先转 reviewing，reviewing 为可选中间状态)
+
+withdrawn ← [所有可撤回状态]
     ↓
 pending_review (重新提交)
 

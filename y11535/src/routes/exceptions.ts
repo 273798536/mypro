@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import * as multer from 'multer';
+import { Router, Response } from 'express';
+import multer from 'multer';
 import { authenticate, AuthRequest, requirePermission } from '../middleware/auth';
 import { exceptionRecordService } from '../services/ExceptionRecordService';
 import { stateMachine } from '../services/StateMachineService';

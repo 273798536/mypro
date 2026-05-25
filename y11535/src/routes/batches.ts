@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import * as multer from 'multer';
-import * as csv from 'csv-parser';
+import { Router, Response } from 'express';
+import multer from 'multer';
+import csv from 'csv-parser';
 import { Readable } from 'stream';
 import { authenticate, AuthRequest, requirePermission } from '../middleware/auth';
 import { batchService } from '../services/BatchService';
@@ -297,7 +297,7 @@ async function parseCsv(buffer: Buffer): Promise<any[]> {
 
     stream
       .pipe(csv())
-      .on('data', (data) => records.push(data))
+      .on('data', (data: any) => records.push(data))
       .on('end', () => resolve(records))
       .on('error', reject);
   });
