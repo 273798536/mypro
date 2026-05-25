@@ -76,7 +76,7 @@ DEAD_LETTER (死信) → 解决后重回队列
 
 ## 测试用户账号
 
-系统预置了4个测试用户，代表不同权限级别：
+系统预置了4个测试用户，代表不同权限级别。**所有用户默认密码均为 `test123`**：
 
 | 用户名 | 姓名 | 角色 | 权限说明 |
 |--------|------|------|----------|
@@ -84,6 +84,12 @@ DEAD_LETTER (死信) → 解决后重回队列
 | reviewer_wang | 王丽 | 复核员 (reviewer) | 审核、重试、请求人工干预 |
 | supervisor_li | 李总监 | 主管 (supervisor) | 补偿入账、关闭、处理死信、看报表 |
 | viewer_zhao | 赵查看 | 只读 (read_only) | 仅查看基本信息 |
+
+> **安全说明**：
+> - 密码使用 bcrypt 加盐哈希存储（10轮）
+> - 登录时严格校验密码，错误密码返回401
+> - 不存在的用户和密码错误返回相同提示，防止用户名枚举
+> - 所有API接口（除登录和角色查询）都需要有效的JWT Token
 
 ---
 
@@ -281,7 +287,52 @@ curl http://localhost:3000/api/reimbursements/{id}/materials/{materialId} \
   -H "Authorization: Bearer <token>"
 ```
 
-#### 3.5 手动持久化数据 (主管)
+#### 3.5 死信可解性验证 (主管)
+
+**在解决死信之前，必须先验证数据已修正**
+
+```bash
+# 检查死信对应的报销单是否已修正所有问题
+curl http://localhost:3000/api/dead-letters/{id}/validate \
+  -H "Authorization: Bearer <token>"
+```
+
+**验证检查项：**
+- ✅ 发票PDF已验证
+- ✅ 差旅申请单已验证（如果有）
+- ✅ 所有重复报销项已处理
+- ✅ 明细金额合计与申报总额匹配
+
+#### 3.6 解决死信 (主管)
+
+```bash
+curl -X POST http://localhost:3000/api/dead-letters/{id}/resolve \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{
+    "resolution": "已补充发票并验证，重复项已移除",
+    "confirmDataCorrected": true
+  }'
+```
+
+> **重要**：必须设置 `confirmDataCorrected: true` 并通过数据验证才能解决死信。解决后报销单状态变为 `queued` 并重新计入汇总。
+
+#### 3.7 关闭死信 (主管)
+
+**当死信无需继续处理时，直接关闭**
+
+```bash
+curl -X POST http://localhost:3000/api/dead-letters/{id}/close \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{
+    "reason": "报销单已取消，无需继续处理"
+  }'
+```
+
+> 关闭后报销单状态变为 `closed` 且不计入汇总。
+
+#### 3.8 手动持久化数据 (主管)
 
 ```bash
 curl -X POST http://localhost:3000/api/admin/save \
@@ -643,7 +694,52 @@ curl -X POST http://localhost:3000/api/reimbursements/{id}/retry \
 
 ---
 
-### 场景4：数据持久化与重启恢复
+### 场景4：死信处理 - 解决vs关闭
+
+**死信的两种处理方式：**
+
+| 操作 | 状态变化 | isInSummary | 使用场景 |
+|------|----------|-------------|----------|
+| 解决死信 | dead_letter → queued | true | 已修正失败数据，需要重新处理 |
+| 关闭死信 | dead_letter → closed | false | 无需继续处理，如报销单已取消 |
+
+**解决死信的完整流程：**
+
+```bash
+# 1. 检查死信数据是否已修正
+curl http://localhost:3000/api/dead-letters/{deadLetterId}/validate \
+  -H "Authorization: Bearer <supervisor_token>"
+
+# 2. 如果验证不通过，先修正数据
+#    - 上传缺少的材料
+#    - 验证材料（调用 /verify 接口）
+#    - 处理重复报销项
+#    - 核对金额一致性
+
+# 3. 修正完成后，再次验证通过，然后解决死信
+curl -X POST http://localhost:3000/api/dead-letters/{deadLetterId}/resolve \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <supervisor_token>" \
+  -d '{
+    "resolution": "已补充发票并验证，重复项已移除，金额已核对",
+    "confirmDataCorrected": true
+  }'
+```
+
+**关闭死信的流程：**
+
+```bash
+curl -X POST http://localhost:3000/api/dead-letters/{deadLetterId}/close \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <supervisor_token>" \
+  -d '{
+    "reason": "报销单已取消，员工放弃报销"
+  }'
+```
+
+---
+
+### 场景5：数据持久化与重启恢复
 
 **重启恢复流程：**
 1. 服务正常运行时，每30秒自动保存数据到 `data/store.json`

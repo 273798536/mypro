@@ -15,6 +15,7 @@ import {
   FailureReason
 } from '../types';
 import logger from '../utils/logger';
+import { hashPasswordSync } from '../utils/password';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'store.json');
@@ -119,13 +120,16 @@ class DataStore {
   }
 
   private initializeTestUsers() {
+    const DEFAULT_PASSWORD = 'test123';
+    const defaultPasswordHash = hashPasswordSync(DEFAULT_PASSWORD);
+    
     const testUsers: User[] = [
       {
         id: uuidv4(),
         username: 'entry_clerk',
         name: '张三',
         role: UserRole.DATA_ENTRY,
-        passwordHash: '$2a$10$examplehash1',
+        passwordHash: defaultPasswordHash,
         department: '财务部',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -135,7 +139,7 @@ class DataStore {
         username: 'reviewer_wang',
         name: '王丽',
         role: UserRole.REVIEWER,
-        passwordHash: '$2a$10$examplehash2',
+        passwordHash: defaultPasswordHash,
         department: '财务部',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -145,7 +149,7 @@ class DataStore {
         username: 'supervisor_li',
         name: '李总监',
         role: UserRole.SUPERVISOR,
-        passwordHash: '$2a$10$examplehash3',
+        passwordHash: defaultPasswordHash,
         department: '财务部',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -155,7 +159,7 @@ class DataStore {
         username: 'viewer_zhao',
         name: '赵查看',
         role: UserRole.READ_ONLY,
-        passwordHash: '$2a$10$examplehash4',
+        passwordHash: defaultPasswordHash,
         department: '审计部',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -163,7 +167,7 @@ class DataStore {
     ];
 
     testUsers.forEach(user => this.users.set(user.id, user));
-    logger.info('Test users initialized');
+    logger.info(`测试用户初始化完成，默认密码: ${DEFAULT_PASSWORD}`);
   }
 
   createReimbursement(data: Omit<Reimbursement, 'id' | 'createdAt' | 'updatedAt' | 'statusLogs' | 'materials' | 'isInSummary'>): Reimbursement {
@@ -359,9 +363,13 @@ class DataStore {
     return results.sort((a, b) => new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime());
   }
 
-  resolveDeadLetter(id: string, resolvedBy: string, resolution: string): DeadLetterItem | undefined {
+  resolveDeadLetter(id: string, resolvedBy: string, resolution: string, dataCorrected: boolean = false): DeadLetterItem | undefined {
     const item = this.deadLetters.get(id);
     if (!item) return undefined;
+
+    if (!dataCorrected) {
+      throw new Error('必须先修正失败数据才能解决死信，请确保材料已验证、重复项已处理、金额已核对');
+    }
 
     item.resolved = true;
     item.resolvedBy = resolvedBy;
@@ -372,13 +380,98 @@ class DataStore {
     
     const reimbursement = this.reimbursements.get(item.reimbursementId);
     if (reimbursement) {
+      this.addStatusLog(item.reimbursementId, {
+        reimbursementId: item.reimbursementId,
+        fromStatus: reimbursement.status,
+        toStatus: ReimbursementStatus.QUEUED,
+        operatorId: resolvedBy,
+        operatorName: this.getUser(resolvedBy)?.name || '未知用户',
+        reason: `死信已解决: ${resolution}`,
+        remarks: '失败数据已修正，重新进入处理队列'
+      });
+
       reimbursement.status = ReimbursementStatus.QUEUED;
+      reimbursement.failureReason = undefined;
+      reimbursement.failureDetails = undefined;
       reimbursement.isInSummary = true;
       this.reimbursements.set(item.reimbursementId, reimbursement);
     }
     
     logger.info(`Dead letter resolved: ${id}`);
     return item;
+  }
+
+  closeDeadLetter(id: string, closedBy: string, reason: string): DeadLetterItem | undefined {
+    const item = this.deadLetters.get(id);
+    if (!item) return undefined;
+
+    item.resolved = true;
+    item.resolvedBy = closedBy;
+    item.resolvedAt = new Date().toISOString();
+    item.resolution = `关闭: ${reason}`;
+    
+    this.deadLetters.set(id, item);
+    
+    const reimbursement = this.reimbursements.get(item.reimbursementId);
+    if (reimbursement) {
+      this.addStatusLog(item.reimbursementId, {
+        reimbursementId: item.reimbursementId,
+        fromStatus: reimbursement.status,
+        toStatus: ReimbursementStatus.CLOSED,
+        operatorId: closedBy,
+        operatorName: this.getUser(closedBy)?.name || '未知用户',
+        reason: `死信关闭: ${reason}`,
+        remarks: '无需继续处理'
+      });
+
+      reimbursement.status = ReimbursementStatus.CLOSED;
+      reimbursement.closedAt = new Date().toISOString();
+      reimbursement.isInSummary = false;
+      this.reimbursements.set(item.reimbursementId, reimbursement);
+    }
+    
+    logger.info(`Dead letter closed: ${id}`);
+    return item;
+  }
+
+  validateDeadLetterResolvable(reimbursementId: string): { valid: boolean; issues: string[] } {
+    const reimbursement = this.getReimbursement(reimbursementId);
+    if (!reimbursement) {
+      return { valid: false, issues: ['报销单不存在'] };
+    }
+
+    const issues: string[] = [];
+
+    const hasVerifiedInvoice = reimbursement.materials.some(
+      m => m.source === MaterialSource.INVOICE_PDF && m.verified
+    );
+    if (!hasVerifiedInvoice) {
+      issues.push('缺少已验证的发票PDF');
+    }
+
+    if (reimbursement.travelApplicationId) {
+      const hasVerifiedTravel = reimbursement.materials.some(
+        m => m.source === MaterialSource.TRAVEL_APPLICATION && m.verified
+      );
+      if (!hasVerifiedTravel) {
+        issues.push('缺少已验证的差旅申请单');
+      }
+    }
+
+    const hasUnresolvedDuplicates = reimbursement.items.some(item => item.isDuplicate);
+    if (hasUnresolvedDuplicates) {
+      issues.push('存在未解决的重复报销项');
+    }
+
+    const calculatedTotal = reimbursement.items.reduce((sum, item) => sum + item.amount, 0);
+    if (Math.abs(calculatedTotal - reimbursement.totalAmount) > 0.01) {
+      issues.push(`明细金额合计(${calculatedTotal})与申报总额(${reimbursement.totalAmount})不匹配`);
+    }
+
+    return {
+      valid: issues.length === 0,
+      issues
+    };
   }
 
   getRetryQueueByReimbursement(reimbursementId: string): RetryQueueItem[] {

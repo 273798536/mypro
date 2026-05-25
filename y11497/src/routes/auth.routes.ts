@@ -4,6 +4,7 @@ import dataStore from '../database/store';
 import { generateToken } from '../middleware/auth';
 import { UserRole } from '../types';
 import logger from '../utils/logger';
+import { verifyPassword } from '../utils/password';
 
 const router = Router();
 
@@ -25,6 +26,15 @@ router.post('/login', async (req: Request, res: Response) => {
     const user = dataStore.getUserByUsername(value.username);
     if (!user) {
       logger.warn(`登录失败: 用户不存在 ${value.username}`);
+      return res.status(401).json({
+        success: false,
+        error: '用户名或密码错误'
+      });
+    }
+
+    const passwordValid = await verifyPassword(value.password, user.passwordHash);
+    if (!passwordValid) {
+      logger.warn(`登录失败: 密码错误 ${value.username}`);
       return res.status(401).json({
         success: false,
         error: '用户名或密码错误'
