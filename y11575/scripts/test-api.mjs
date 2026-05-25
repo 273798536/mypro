@@ -3,8 +3,8 @@
 const BASE_URL = 'http://localhost:3000/api/v1';
 const OPERATOR_HEADERS = {
   'x-operator-id': 'test-user-001',
-  'x-operator-name': '测试用户',
-  'x-operator-role': '质量主管',
+  'x-operator-name': 'TestUser',
+  'x-operator-role': 'QualityManager',
   'Content-Type': 'application/json'
 };
 
@@ -23,8 +23,13 @@ async function main() {
 
   try {
     console.log('1. 健康检查...');
-    const healthRes = await request('/../../health', { method: 'GET' });
-    console.log(`   状态: ${healthRes.status}`, healthRes.data.message);
+    const fetch = await import('node-fetch');
+    const healthRes = await fetch.default('http://localhost:3000/health', {
+      method: 'GET',
+      headers: OPERATOR_HEADERS
+    });
+    const healthData = await healthRes.json();
+    console.log(`   状态: ${healthRes.status}`, healthData.message);
 
     console.log('\n2. 创建对账回执...');
     const createRes = await request('/receipts', {
@@ -43,7 +48,7 @@ async function main() {
     });
     console.log(`   状态: ${createRes.status}`, createRes.data);
     const receiptId = createRes.data.data?.id;
-    console.log(`   创建的回执ID:', receiptId);
+    console.log(`   创建的回执ID: ${receiptId}`);
 
     if (!receiptId) {
       console.error('创建回执失败，退出测试');
@@ -93,33 +98,52 @@ async function main() {
     console.log(`   是否人工改判: ${modifyRes.data.data?.isManualModified}`);
     console.log(`   改判理由: ${modifyRes.data.data?.manualReason}`);
 
-    console.log('\n8. 审核通过...');
+    console.log('\n8. 人工改判后提交复核...');
+    const afterModifyReviewRes = await request(`/receipts/${modifyRes.data.data.id}/review`, {
+      method: 'POST',
+      body: JSON.stringify({ reason: '改判后提交复核' })
+    });
+    console.log(`   状态: ${afterModifyReviewRes.status}`, afterModifyReviewRes.data.data?.status);
+
+    console.log('\n9. 审核通过...');
     const approveRes = await request(`/receipts/${modifyRes.data.data.id}/approve`, {
       method: 'POST',
       body: JSON.stringify({ reason: '审核通过' })
     });
     console.log(`   状态: ${approveRes.status}`, approveRes.data.data?.status);
 
-    console.log('\n9. 撤回回执...');
+    console.log('\n10. 撤回回执（从已通过状态撤回归档流程，先测试改判）...');
+    console.log('   注意: 已通过状态不能直接撤回，需要先人工改判');
+    const modifyAgainRes = await request(`/receipts/${modifyRes.data.data.id}/modify`, {
+      method: 'POST',
+      body: JSON.stringify({
+        confirmedAmount: 150,
+        deductionAmount: 150,
+        manualReason: '重新审核，需要补充材料先撤回'
+      })
+    });
+    console.log(`   状态: ${modifyAgainRes.status}`, modifyAgainRes.data.data?.status);
+
+    console.log('\n11. 撤回回执...');
     const withdrawRes = await request(`/receipts/${modifyRes.data.data.id}/withdraw`, {
       method: 'POST',
       body: JSON.stringify({ reason: '需要补充材料' })
     });
     console.log(`   状态: ${withdrawRes.status}`, withdrawRes.data.data?.status);
 
-    console.log('\n10. 撤回后重新提交...');
+    console.log('\n12. 撤回后重新提交...');
     const resubmitRes = await request(`/receipts/${receiptId}/resubmit`, {
       method: 'POST',
       body: JSON.stringify({ reason: '补充材料完成，重新提交' })
     });
     console.log(`   状态: ${resubmitRes.status}`, resubmitRes.data.data?.status);
 
-    console.log('\n11. 获取回执详情（含状态流转记录）...');
+    console.log('\n13. 获取回执详情（含状态流转记录）...');
     const detailRes = await request(`/receipts/${receiptId}`, { method: 'GET' });
     console.log(`   状态: ${detailRes.status}`);
     console.log(`   状态流转次数: ${detailRes.data.data?.transitions?.length} 次`);
 
-    console.log('\n12. 获取统计数据...');
+    console.log('\n14. 获取统计数据...');
     const statsRes = await request('/dashboard/stats', { method: 'GET' });
     console.log(`   状态: ${statsRes.status}`);
     console.log(`   总异常金额: ${statsRes.data.data?.totalAmounts?.abnormal}`);

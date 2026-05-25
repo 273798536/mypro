@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express, { Request, Response } from 'express';
 import * as path from 'path';
 import reconciliationRoutes from './routes/reconciliation';
 import { errorHandler, notFoundHandler, requestLogger, validateOperator } from './middleware/errorHandler';
@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 app.use(validateOperator);
 
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({
     success: true,
     message: '外协加工对账异常回执状态机 API 运行正常',

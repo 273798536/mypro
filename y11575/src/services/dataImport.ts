@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as XLSX from 'xlsx';
-import * as csv from 'csv-parser';
+import csv from 'csv-parser';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ReconciliationReceiptModel,
@@ -179,7 +179,7 @@ export class DataImportService {
 
       fs.createReadStream(filePath)
         .pipe(csv())
-        .on('data', (row) => {
+        .on('data', (row: Record<string, any>) => {
           lineNumber++;
           if (options.skipHeader && lineNumber === 1) return;
 
