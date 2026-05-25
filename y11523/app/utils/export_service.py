@@ -111,6 +111,10 @@ class ExportService:
                 query = query.filter(Appointment.created_at <= filters["end_time"])
             appts = query.all()
             appointment_nos = [a.appointment_no for a in appts]
+        else:
+            all_appts = self.db.query(Appointment).all()
+            appointment_nos = [a.appointment_no for a in all_appts]
+            filters["freeze_all"] = True
 
         if appointment_nos:
             appts = (
@@ -126,8 +130,7 @@ class ExportService:
                 )
                 frozen_ids.append(appt.id)
 
-            if not filters.get("appointment_no"):
-                filters["appointment_no"] = appointment_nos
+            filters["appointment_no"] = appointment_nos
 
         return frozen_ids
 
