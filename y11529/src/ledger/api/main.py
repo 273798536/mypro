@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .database import init_db
-from .api.routes import router as api_router
+from ..database import init_db
+from .routes import router as api_router
 
 app = FastAPI(
     title="跨境小包清关权限追责台账 API",
