@@ -12,6 +12,7 @@ from app.models import (
     SupplementaryRecord,
     RecordType,
     RecordStatus,
+    CertificateStatus,
 )
 from app.utils.validators import mask_sensitive_data, mask_record_list
 
@@ -224,9 +225,10 @@ def export_summary_report(department=None, user_role="admin", user_id=1):
             "已提交": CalibrationCertificate.query.filter_by(status=RecordStatus.SUBMITTED).count(),
             "已驳回": CalibrationCertificate.query.filter_by(status=RecordStatus.REJECTED).count(),
             "已确认": CalibrationCertificate.query.filter_by(status=RecordStatus.CONFIRMED).count(),
-            "有效": CalibrationCertificate.query.filter_by(certificate_status="valid").count(),
-            "即将过期": CalibrationCertificate.query.filter_by(certificate_status="about_to_expire").count(),
-            "已过期": CalibrationCertificate.query.filter_by(certificate_status="expired").count(),
+            "有效": CalibrationCertificate.query.filter_by(certificate_status=CertificateStatus.VALID).count(),
+            "即将过期": CalibrationCertificate.query.filter_by(certificate_status=CertificateStatus.ABOUT_TO_EXPIRE).count(),
+            "已过期": CalibrationCertificate.query.filter_by(certificate_status=CertificateStatus.EXPIRED).count(),
+            "已停用": CalibrationCertificate.query.filter_by(certificate_status=CertificateStatus.DEACTIVATED).count(),
         },
         "维修报价": {
             "草稿": RepairQuotation.query.filter_by(status=RecordStatus.DRAFT).count(),

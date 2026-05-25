@@ -39,6 +39,14 @@ def clean_dict_for_json(data):
         return to_json_safe(data)
 
 
+def safe_str(value):
+    if value is None:
+        return ""
+    if isinstance(value, float) and pd.isna(value):
+        return ""
+    return str(value).strip()
+
+
 def allowed_file(filename):
     return "." in filename and \
            filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
@@ -60,15 +68,15 @@ def parse_inspection_row(row, row_num):
     record["original_row_number"] = row_num
 
     try:
-        record["record_no"] = str(row.get("记录编号", row.get("record_no", ""))).strip()
+        record["record_no"] = safe_str(row.get("记录编号", row.get("record_no", "")))
         if not record["record_no"]:
             errors.append("记录编号不能为空")
 
-        record["device_name"] = str(row.get("设备名称", row.get("device_name", ""))).strip()
+        record["device_name"] = safe_str(row.get("设备名称", row.get("device_name", "")))
         if not record["device_name"]:
             errors.append("设备名称不能为空")
 
-        record["department"] = str(row.get("科室", row.get("department", ""))).strip()
+        record["department"] = safe_str(row.get("科室", row.get("department", "")))
         if not record["department"]:
             errors.append("科室不能为空")
 
@@ -84,12 +92,12 @@ def parse_inspection_row(row, row_num):
         if valid and next_dt:
             record["next_inspection_date"] = next_dt
 
-        record["device_model"] = str(row.get("设备型号", row.get("device_model", ""))).strip() or None
-        record["device_sn"] = str(row.get("设备序列号", row.get("device_sn", ""))).strip() or None
-        record["inspector"] = str(row.get("巡检人员", row.get("inspector", ""))).strip() or None
-        record["inspection_result"] = str(row.get("巡检结果", row.get("inspection_result", ""))).strip() or None
-        record["issues_found"] = str(row.get("发现问题", row.get("issues_found", ""))).strip() or None
-        record["certificate_no"] = str(row.get("证书编号", row.get("certificate_no", ""))).strip() or None
+        record["device_model"] = safe_str(row.get("设备型号", row.get("device_model", ""))) or None
+        record["device_sn"] = safe_str(row.get("设备序列号", row.get("device_sn", ""))) or None
+        record["inspector"] = safe_str(row.get("巡检人员", row.get("inspector", ""))) or None
+        record["inspection_result"] = safe_str(row.get("巡检结果", row.get("inspection_result", ""))) or None
+        record["issues_found"] = safe_str(row.get("发现问题", row.get("issues_found", ""))) or None
+        record["certificate_no"] = safe_str(row.get("证书编号", row.get("certificate_no", ""))) or None
 
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")
@@ -107,19 +115,19 @@ def parse_calibration_row(row, row_num):
     record["original_row_number"] = row_num
 
     try:
-        record["record_no"] = str(row.get("记录编号", row.get("record_no", ""))).strip()
+        record["record_no"] = safe_str(row.get("记录编号", row.get("record_no", "")))
         if not record["record_no"]:
             errors.append("记录编号不能为空")
 
-        record["device_name"] = str(row.get("设备名称", row.get("device_name", ""))).strip()
+        record["device_name"] = safe_str(row.get("设备名称", row.get("device_name", "")))
         if not record["device_name"]:
             errors.append("设备名称不能为空")
 
-        record["department"] = str(row.get("科室", row.get("department", ""))).strip()
+        record["department"] = safe_str(row.get("科室", row.get("department", "")))
         if not record["department"]:
             errors.append("科室不能为空")
 
-        record["certificate_no"] = str(row.get("证书编号", row.get("certificate_no", ""))).strip()
+        record["certificate_no"] = safe_str(row.get("证书编号", row.get("certificate_no", "")))
         if not record["certificate_no"]:
             errors.append("证书编号不能为空")
 
@@ -133,10 +141,10 @@ def parse_calibration_row(row, row_num):
         if valid and valid_dt:
             record["valid_until"] = valid_dt
 
-        record["device_model"] = str(row.get("设备型号", row.get("device_model", ""))).strip() or None
-        record["device_sn"] = str(row.get("设备序列号", row.get("device_sn", ""))).strip() or None
-        record["calibration_agency"] = str(row.get("校准机构", row.get("calibration_agency", ""))).strip() or None
-        record["calibration_result"] = str(row.get("校准结果", row.get("calibration_result", ""))).strip() or None
+        record["device_model"] = safe_str(row.get("设备型号", row.get("device_model", ""))) or None
+        record["device_sn"] = safe_str(row.get("设备序列号", row.get("device_sn", ""))) or None
+        record["calibration_agency"] = safe_str(row.get("校准机构", row.get("calibration_agency", ""))) or None
+        record["calibration_result"] = safe_str(row.get("校准结果", row.get("calibration_result", ""))) or None
 
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")
@@ -154,19 +162,19 @@ def parse_repair_row(row, row_num):
     record["original_row_number"] = row_num
 
     try:
-        record["record_no"] = str(row.get("记录编号", row.get("record_no", ""))).strip()
+        record["record_no"] = safe_str(row.get("记录编号", row.get("record_no", "")))
         if not record["record_no"]:
             errors.append("记录编号不能为空")
 
-        record["device_name"] = str(row.get("设备名称", row.get("device_name", ""))).strip()
+        record["device_name"] = safe_str(row.get("设备名称", row.get("device_name", "")))
         if not record["device_name"]:
             errors.append("设备名称不能为空")
 
-        record["department"] = str(row.get("科室", row.get("department", ""))).strip()
+        record["department"] = safe_str(row.get("科室", row.get("department", "")))
         if not record["department"]:
             errors.append("科室不能为空")
 
-        record["quotation_no"] = str(row.get("报价单号", row.get("quotation_no", ""))).strip()
+        record["quotation_no"] = safe_str(row.get("报价单号", row.get("quotation_no", "")))
         if not record["quotation_no"]:
             errors.append("报价单号不能为空")
 
@@ -175,16 +183,16 @@ def parse_repair_row(row, row_num):
         if valid and dt:
             record["repair_date"] = dt
 
-        record["device_model"] = str(row.get("设备型号", row.get("device_model", ""))).strip() or None
-        record["device_sn"] = str(row.get("设备序列号", row.get("device_sn", ""))).strip() or None
-        record["fault_description"] = str(row.get("故障描述", row.get("fault_description", ""))).strip() or None
-        record["repair_vendor"] = str(row.get("维修厂商", row.get("repair_vendor", ""))).strip() or None
-        record["repair_status"] = str(row.get("维修状态", row.get("repair_status", ""))).strip() or None
-        record["warranty_period"] = str(row.get("保修期", row.get("warranty_period", ""))).strip() or None
+        record["device_model"] = safe_str(row.get("设备型号", row.get("device_model", ""))) or None
+        record["device_sn"] = safe_str(row.get("设备序列号", row.get("device_sn", ""))) or None
+        record["fault_description"] = safe_str(row.get("故障描述", row.get("fault_description", ""))) or None
+        record["repair_vendor"] = safe_str(row.get("维修厂商", row.get("repair_vendor", ""))) or None
+        record["repair_status"] = safe_str(row.get("维修状态", row.get("repair_status", ""))) or None
+        record["warranty_period"] = safe_str(row.get("保修期", row.get("warranty_period", ""))) or None
 
         try:
             amount = row.get("报价金额", row.get("quotation_amount", 0))
-            record["quotation_amount"] = float(amount) if amount else None
+            record["quotation_amount"] = float(amount) if amount and not pd.isna(amount) else None
         except (ValueError, TypeError):
             pass
 
@@ -204,27 +212,27 @@ def parse_supplementary_row(row, row_num):
     record["original_row_number"] = row_num
 
     try:
-        record["record_no"] = str(row.get("记录编号", row.get("record_no", ""))).strip()
+        record["record_no"] = safe_str(row.get("记录编号", row.get("record_no", "")))
         if not record["record_no"]:
             errors.append("记录编号不能为空")
 
-        record["device_name"] = str(row.get("设备名称", row.get("device_name", ""))).strip()
+        record["device_name"] = safe_str(row.get("设备名称", row.get("device_name", "")))
         if not record["device_name"]:
             errors.append("设备名称不能为空")
 
-        record["department"] = str(row.get("科室", row.get("department", ""))).strip()
+        record["department"] = safe_str(row.get("科室", row.get("department", "")))
         if not record["department"]:
             errors.append("科室不能为空")
 
-        record["supplementary_reason"] = str(row.get("补录原因", row.get("supplementary_reason", ""))).strip()
+        record["supplementary_reason"] = safe_str(row.get("补录原因", row.get("supplementary_reason", "")))
         if not record["supplementary_reason"]:
             errors.append("补录原因不能为空")
 
-        record["device_model"] = str(row.get("设备型号", row.get("device_model", ""))).strip() or None
-        record["device_sn"] = str(row.get("设备序列号", row.get("device_sn", ""))).strip() or None
-        record["supplementary_type"] = str(row.get("补录类型", row.get("supplementary_type", ""))).strip() or None
-        record["original_record_no"] = str(row.get("原记录编号", row.get("original_record_no", ""))).strip() or None
-        record["supplementary_note"] = str(row.get("补录备注", row.get("supplementary_note", ""))).strip() or None
+        record["device_model"] = safe_str(row.get("设备型号", row.get("device_model", ""))) or None
+        record["device_sn"] = safe_str(row.get("设备序列号", row.get("device_sn", ""))) or None
+        record["supplementary_type"] = safe_str(row.get("补录类型", row.get("supplementary_type", ""))) or None
+        record["original_record_no"] = safe_str(row.get("原记录编号", row.get("original_record_no", ""))) or None
+        record["supplementary_note"] = safe_str(row.get("补录备注", row.get("supplementary_note", ""))) or None
 
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")

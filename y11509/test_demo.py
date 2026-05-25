@@ -370,6 +370,13 @@ def test_import_workflow():
                     for detail in import_data["failed_details"][:5]:
                         print(f"      - 行{detail.get('row')}: {', '.join(detail.get('errors', []))}")
 
+                success_count = import_data.get("success", 0)
+                failed_count = import_data.get("failed", 0)
+                if failed_count > 0:
+                    print(f"\n    ✓ 坏数据已正确识别并拦截（成功{success_count}条，失败{failed_count}条）")
+                else:
+                    print(f"\n    ⚠ 未检测到坏数据，请检查样例数据")
+
                 import_source_id = import_data.get("import_source_id")
                 if import_source_id:
                     print("\n  步骤3: 验证导入源记录")
@@ -378,6 +385,8 @@ def test_import_workflow():
                     if sources.get("data"):
                         for src in sources["data"][:5]:
                             print(f"    导入源ID: {src['id']}, 文件: {src['filename']}, 状态: {src['status']}")
+                            if src.get("failed_rows", 0) > 0:
+                                print(f"    ✓ 部分失败状态已记录（成功{src.get('success_rows')}条，失败{src.get('failed_rows')}条）")
 
                     print("\n  步骤4: 验证原始数据保留")
                     resp = requests.get(f"{BASE_URL}/inspection", headers=headers)
@@ -389,6 +398,8 @@ def test_import_workflow():
                                 print(f"      原始行号: {rec.get('original_row_number')}")
                                 print(f"      原始数据存在: {'是' if rec.get('original_data') else '否'}")
                                 print(f"      解析数据存在: {'是' if rec.get('parsed_data') else '否'}")
+                                if rec.get('record_no') and rec.get('record_no') != 'nan':
+                                    print(f"      ✓ 记录编号有效（非'nan'）")
                                 break
 
                     print("\n  步骤5: 验证审计轨迹")
@@ -414,6 +425,51 @@ def test_import_workflow():
     else:
         print("  ✗ 样例文件不存在")
         return False
+
+
+def test_certificate_status_report():
+    print_section("16. 证书状态统计与汇总报告测试")
+
+    headers = {"X-User-ID": "1", "X-User-Role": "admin", "X-User-Name": "Admin"}
+
+    print("  步骤1: 查询即将过期证书")
+    resp = requests.get(f"{BASE_URL}/calibration/about-to-expire", headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        about_count = data.get("total", 0)
+        print(f"    即将过期证书数量: {about_count}")
+        if about_count > 0:
+            print(f"    ✓ 即将过期证书统计正常")
+
+    print("\n  步骤2: 查询已过期证书")
+    resp = requests.get(f"{BASE_URL}/calibration/expired", headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        expired_count = data.get("total", 0)
+        print(f"    已过期证书数量: {expired_count}")
+        if expired_count > 0:
+            print(f"    ✓ 已过期证书统计正常")
+
+    print("\n  步骤3: 生成汇总报告")
+    resp = requests.post(f"{BASE_URL}/export/summary", json={}, headers=headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        summary = data.get("data", {}).get("summary", {})
+        if summary:
+            cert_stats = summary.get("校准证书", {})
+            print(f"    校准证书统计:")
+            for status, count in cert_stats.items():
+                print(f"      {status}: {count}")
+            valid_count = cert_stats.get("有效", 0)
+            expired_count = cert_stats.get("已过期", 0)
+            about_count = cert_stats.get("即将过期", 0)
+            if valid_count + expired_count + about_count > 0:
+                print(f"    ✓ 汇总报告证书状态统计正常")
+            else:
+                print(f"    ⚠ 证书状态统计可能为0，请检查数据")
+
+    print("\n  ✓ 证书状态统计测试完成")
+    return True
 
 
 def test_repair_quotation_workflow():
@@ -655,11 +711,15 @@ def run_all_tests():
         # 导入功能测试
         test_import_workflow()
 
+        # 证书状态统计与汇总报告测试
+        test_certificate_status_report()
+
         print("\n" + "=" * 60)
         print("  ✅ 所有测试完成！")
         print("  测试覆盖: 草稿→提交→驳回→重提→确认→撤回→人工改判→冻结→导出→审计")
         print("  边界场景: 重复提交、撤回重提、冻结保护、状态联动、角色脱敏")
         print("  多入口台账: 巡检记录、校准证书、维修报价、临时补录单")
+        print("  核心链路: 导入坏数据、部分失败、证书统计、汇总报告")
         print("=" * 60)
 
     except requests.exceptions.ConnectionError:

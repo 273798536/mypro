@@ -444,6 +444,24 @@ def list_expired_certificates():
     })
 
 
+@bp.route("/about-to-expire", methods=["GET"])
+def list_about_to_expire_certificates():
+    records = CalibrationCertificate.query.filter_by(
+        certificate_status=CertificateStatus.ABOUT_TO_EXPIRE
+    ).order_by(CalibrationCertificate.valid_until.asc()).all()
+
+    role = getattr(g, "user_role", "admin")
+    result = [record_to_dict(r) for r in records]
+    if role != "admin" and role != "auditor":
+        result = mask_record_list(result, role)
+
+    return jsonify({
+        "data": result,
+        "total": len(result),
+        "code": 200
+    })
+
+
 @bp.route("/<int:record_id>/freeze", methods=["POST"])
 def freeze_calibration(record_id: int):
     record = get_calibration_by_id(record_id)
