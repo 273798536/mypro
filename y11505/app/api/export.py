@@ -101,7 +101,10 @@ def get_freeze_comparison(
             "freeze_operator": summary["freeze_operator"],
             "freeze_time": summary["freeze_time"],
         },
-        "statistics": summary["statistics"],
+        "statistics": {
+            "total_records": summary["record_count"],
+            "abnormal_count": summary["abnormal_count"],
+        },
         "status_distribution": summary["status_distribution"],
     }
     

@@ -22,6 +22,7 @@ app.add_middleware(
 app.include_router(batch_router, prefix="/api/v1")
 app.include_router(task_router, prefix="/api/v1")
 app.include_router(export_router, prefix="/api/v1")
+app.include_router(attachment_router, prefix="/api/v1")
 
 
 @app.on_event("startup")
