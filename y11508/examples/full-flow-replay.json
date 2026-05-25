@@ -17,7 +17,7 @@
       "url": "/inspections",
       "data": {
         "recordNo": "INSP-FLOW-001",
-        "deviceCode": "ECG-0014",
+        "deviceCode": "ECG-0002",
         "inspector": "张三",
         "inspectionDate": "2024-01-20T00:00:00.000Z",
         "inspectionItems": {
@@ -63,7 +63,7 @@
       "url": "/certificates",
       "data": {
         "certificateNo": "CERT-FLOW-001",
-        "deviceCode": "ECG-0014",
+        "deviceCode": "ECG-0002",
         "calibrationAgency": "市计量所",
         "calibrationDate": "2024-01-15T00:00:00.000Z",
         "expiryDate": "2025-01-15T00:00:00.000Z",
@@ -96,7 +96,7 @@
       "url": "/quotes",
       "data": {
         "quoteNo": "QUOTE-FLOW-001",
-        "deviceCode": "ECG-0014",
+        "deviceCode": "ECG-0002",
         "vendor": "原厂维修服务商",
         "quoteDate": "2024-01-18T00:00:00.000Z",
         "estimatedCost": 2500,
@@ -213,7 +213,7 @@
         "confirmNo": "CONF-FLOW-001",
         "relatedRecordType": "inspection",
         "relatedRecordId": "{inspectionId}",
-        "deviceCode": "ECG-0014",
+        "deviceCode": "ECG-0002",
         "confirmer": "李护士长",
         "confirmDate": "2024-01-22T00:00:00.000Z",
         "confirmContent": "已复核巡检记录，设备状态正常"

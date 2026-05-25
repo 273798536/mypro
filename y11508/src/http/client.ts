@@ -33,7 +33,7 @@ export class HttpClient {
   async request<T = any>(config: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
       const response: AxiosResponse<ApiResponse<T>> = await this.client.request(config);
-      const contentType = response.headers['content-type'] || '';
+      const contentType = String(response.headers['content-type'] || '');
       
       if (contentType.includes('text/csv') || typeof response.data === 'string') {
         return {
@@ -41,7 +41,7 @@ export class HttpClient {
           data: {
             contentType,
             content: response.data,
-            filename: response.headers['content-disposition']
+            filename: String(response.headers['content-disposition'] || '')
           } as any
         };
       }
@@ -49,14 +49,14 @@ export class HttpClient {
       return response.data;
     } catch (error: any) {
       if (error.response) {
-        const contentType = error.response.headers['content-type'] || '';
+        const contentType = String(error.response.headers['content-type'] || '');
         if (contentType.includes('text/csv') || typeof error.response.data === 'string') {
           return {
             success: true,
             data: {
               contentType,
               content: error.response.data,
-              filename: error.response.headers['content-disposition']
+              filename: String(error.response.headers['content-disposition'] || '')
             } as any
           };
         }
