@@ -10,7 +10,13 @@ from sqlalchemy.orm import sessionmaker
 from app.database import Base
 from app.services import IdempotencyService, StateMachine, ReportService
 from app.models import ExceptionStatus, RecordStatus
-from tests.test_data import generate_test_schedules, generate_test_leaves
+from tests.test_data import (
+    generate_test_schedules,
+    generate_test_leaves,
+    generate_test_forecasts,
+    generate_test_refunds,
+    generate_test_inventories,
+)
 
 DATABASE_URL = "sqlite:///./test_scheduling_exception.db"
 
@@ -46,7 +52,31 @@ def test_full_workflow():
         print("✓ 请假单导入成功")
 
         print("\n" + "=" * 60)
-        print("测试3: 创建异常批次")
+        print("测试3: 导入业务预测数据")
+        print("=" * 60)
+        forecasts = generate_test_forecasts()
+        forecast_result = idemp_service.batch_import_forecasts(forecasts)
+        print(f"业务预测导入 - 创建: {forecast_result['created']}, 更新: {forecast_result['updated']}")
+        print("✓ 业务预测导入成功")
+
+        print("\n" + "=" * 60)
+        print("测试4: 导入退款流水数据")
+        print("=" * 60)
+        refunds = generate_test_refunds()
+        refund_result = idemp_service.batch_import_refunds(refunds)
+        print(f"退款流水导入 - 创建: {refund_result['created']}, 更新: {refund_result['updated']}")
+        print("✓ 退款流水导入成功")
+
+        print("\n" + "=" * 60)
+        print("测试5: 导入库存差异数据")
+        print("=" * 60)
+        inventories = generate_test_inventories()
+        inventory_result = idemp_service.batch_import_inventories(inventories)
+        print(f"库存差异导入 - 创建: {inventory_result['created']}, 更新: {inventory_result['updated']}")
+        print("✓ 库存差异导入成功")
+
+        print("\n" + "=" * 60)
+        print("测试6: 创建异常批次（全链路检测）")
         print("=" * 60)
         state_machine = StateMachine(db)
         today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -67,11 +97,48 @@ def test_full_workflow():
         print(f"  - 已修正: {batch.corrected_records}")
         print(f"  - 需人工确认: {batch.need_manual_confirm_records}")
         print(f"  - 失败: {batch.failed_records}")
+
+        from app.models import ExceptionRecord
+        records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == batch.id).all()
+        exception_types = list(set(r.exception_type for r in records))
+        print(f"检测到的异常类型: {exception_types}")
+        
         assert batch.status == ExceptionStatus.DRAFT
-        print("✓ 批次创建成功")
+        assert len(exception_types) >= 4, f"应至少检测到4类异常，实际: {exception_types}"
+        print("✓ 全链路异常检测成功")
 
         print("\n" + "=" * 60)
-        print("测试4: 批次状态流转")
+        print("测试7: 同一网点同一天重复创建批次（批次号唯一性）")
+        print("=" * 60)
+        
+        import time
+        batch_dup1 = state_machine.create_batch(
+            branch_id="B001",
+            branch_name="朝阳支行",
+            batch_date=today,
+            start_date=today,
+            end_date=today + timedelta(days=7),
+            operator="测试员-重复1",
+        )
+        print(f"批次1号: {batch_dup1.batch_no}")
+        
+        time.sleep(1)
+        
+        batch_dup2 = state_machine.create_batch(
+            branch_id="B001",
+            branch_name="朝阳支行",
+            batch_date=today,
+            start_date=today,
+            end_date=today + timedelta(days=7),
+            operator="测试员-重复2",
+        )
+        print(f"批次2号: {batch_dup2.batch_no}")
+        
+        assert batch_dup1.batch_no != batch_dup2.batch_no, "重复创建批次不应产生相同批次号"
+        print("✓ 批次号唯一性测试通过")
+
+        print("\n" + "=" * 60)
+        print("测试8: 批次状态流转")
         print("=" * 60)
 
         batch = state_machine.submit_for_review(batch.id, "审核员A")
@@ -101,7 +168,7 @@ def test_full_workflow():
         print("✓ 状态流转测试通过")
 
         print("\n" + "=" * 60)
-        print("测试5: 复核改判功能")
+        print("测试9: 复核改判功能")
         print("=" * 60)
 
         batch2 = state_machine.create_batch(
@@ -112,8 +179,6 @@ def test_full_workflow():
             end_date=today + timedelta(days=7),
             operator="测试员",
         )
-
-        from app.models import ExceptionRecord
 
         records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == batch2.id).all()
         if records:
@@ -135,7 +200,7 @@ def test_full_workflow():
             print("✓ 复核改判测试通过")
 
         print("\n" + "=" * 60)
-        print("测试6: 行长视图报表")
+        print("测试10: 行长视图报表")
         print("=" * 60)
 
         report_service = ReportService(db)
@@ -156,7 +221,7 @@ def test_full_workflow():
         print("✓ 行长视图报表测试通过")
 
         print("\n" + "=" * 60)
-        print("测试7: 导出Excel")
+        print("测试11: 导出Excel")
         print("=" * 60)
 
         export_path = report_service.export_to_excel()

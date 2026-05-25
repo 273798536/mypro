@@ -21,6 +21,7 @@ class ExceptionType(str, Enum):
     LEAVE_SCHEDULE_CONFLICT = "leave_schedule_conflict"
     BUSINESS_FORECAST_MISMATCH = "business_forecast_mismatch"
     INVENTORY_DIFFERENCE = "inventory_difference"
+    REFUND_FLOW_ANOMALY = "refund_flow_anomaly"
 
 
 class DataSource(str, Enum):

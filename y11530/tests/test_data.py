@@ -98,3 +98,56 @@ def generate_test_forecasts(branch_id: str = "B001"):
         )
 
     return forecasts
+
+
+def generate_test_refunds(branch_id: str = "B001"):
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    refunds = []
+
+    for day_offset in range(3):
+        refund_date = today + timedelta(days=day_offset)
+        for i in range(6):
+            refunds.append(
+                {
+                    "branch_id": branch_id,
+                    "transaction_id": f"TXN-{day_offset}-{i}",
+                    "refund_amount": 2000.0 + i * 500,
+                    "refund_date": refund_date.replace(hour=10 + i),
+                    "teller_id": f"T00{(i % 3) + 1}",
+                    "refund_reason": f"退款原因{i}",
+                }
+            )
+
+    return refunds
+
+
+def generate_test_inventories(branch_id: str = "B001"):
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    inventories = []
+
+    for day_offset in range(3):
+        inventory_date = today + timedelta(days=day_offset)
+        inventories.append(
+            {
+                "branch_id": branch_id,
+                "inventory_date": inventory_date,
+                "item_type": "空白凭证",
+                "expected_quantity": 100,
+                "actual_quantity": 95,
+                "difference": -5,
+                "difference_reason": "盘亏待查",
+            }
+        )
+        inventories.append(
+            {
+                "branch_id": branch_id,
+                "inventory_date": inventory_date,
+                "item_type": "重要单证",
+                "expected_quantity": 50,
+                "actual_quantity": 52,
+                "difference": 2,
+                "difference_reason": "盘盈待核实",
+            }
+        )
+
+    return inventories

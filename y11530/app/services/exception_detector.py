@@ -6,6 +6,8 @@ from app.models import (
     TellerSchedule,
     LeaveForm,
     BusinessForecast,
+    RefundFlow,
+    InventoryDifference,
     ExceptionType,
     RecordStatus,
 )
@@ -182,6 +184,158 @@ class ExceptionDetector:
 
         return conflicts
 
+    def detect_business_forecast_mismatch(
+        self, branch_id: str, start_date: datetime, end_date: datetime
+    ) -> List[Dict[str, Any]]:
+        conflicts = []
+        forecasts = (
+            self.db.query(BusinessForecast)
+            .filter(
+                BusinessForecast.branch_id == branch_id,
+                BusinessForecast.forecast_date >= start_date,
+                BusinessForecast.forecast_date <= end_date,
+            )
+            .all()
+        )
+
+        for forecast in forecasts:
+            date_schedules = (
+                self.db.query(TellerSchedule)
+                .filter(
+                    TellerSchedule.branch_id == branch_id,
+                    TellerSchedule.schedule_date == forecast.forecast_date,
+                    TellerSchedule.shift_type == "on_duty",
+                )
+                .all()
+            )
+
+            on_duty_count = len(date_schedules)
+            expected_windows_needed = max(1, forecast.expected_customers // 50)
+
+            if on_duty_count < expected_windows_needed:
+                conflict = {
+                    "exception_type": ExceptionType.BUSINESS_FORECAST_MISMATCH,
+                    "exception_date": forecast.forecast_date,
+                    "teller_id": None,
+                    "teller_name": None,
+                    "description": f"业务量预测与排班窗口数不匹配，日期：{forecast.forecast_date.date()}",
+                    "blocking_point": (
+                        f"预测客户数：{forecast.expected_customers}，"
+                        f"预计需窗口数：{expected_windows_needed}，"
+                        f"实际当值窗口：{on_duty_count}，"
+                        f"冲突点：预测业务量超出现有窗口承载能力"
+                    ),
+                    "source_type": "business_forecast,schedule",
+                    "source_ids": [str(forecast.id)] + [str(s.id) for s in date_schedules],
+                    "raw_data": {
+                        "forecast": {
+                            "expected_customers": forecast.expected_customers,
+                            "expected_transactions": forecast.expected_transactions,
+                            "service_level": forecast.service_level,
+                        },
+                        "on_duty_count": on_duty_count,
+                        "expected_windows_needed": expected_windows_needed,
+                    },
+                }
+                conflicts.append(conflict)
+
+        return conflicts
+
+    def detect_inventory_difference(
+        self, branch_id: str, start_date: datetime, end_date: datetime
+    ) -> List[Dict[str, Any]]:
+        conflicts = []
+        inventories = (
+            self.db.query(InventoryDifference)
+            .filter(
+                InventoryDifference.branch_id == branch_id,
+                InventoryDifference.inventory_date >= start_date,
+                InventoryDifference.inventory_date <= end_date,
+                InventoryDifference.difference != 0,
+            )
+            .all()
+        )
+
+        for inv in inventories:
+            conflict = {
+                "exception_type": ExceptionType.INVENTORY_DIFFERENCE,
+                "exception_date": inv.inventory_date,
+                "teller_id": None,
+                "teller_name": None,
+                "description": f"盘点差异异常，日期：{inv.inventory_date.date()}",
+                "blocking_point": (
+                    f"物品类型：{inv.item_type}，"
+                    f"预期数量：{inv.expected_quantity}，"
+                    f"实际数量：{inv.actual_quantity}，"
+                    f"差异：{inv.difference}，"
+                    f"差异原因：{inv.difference_reason or '未说明'}，"
+                    f"冲突点：盘点数据存在差异需核实"
+                ),
+                "source_type": "inventory",
+                "source_ids": [str(inv.id)],
+                "raw_data": {
+                    "item_type": inv.item_type,
+                    "expected_quantity": inv.expected_quantity,
+                    "actual_quantity": inv.actual_quantity,
+                    "difference": inv.difference,
+                    "difference_reason": inv.difference_reason,
+                },
+            }
+            conflicts.append(conflict)
+
+        return conflicts
+
+    def detect_refund_flow_anomaly(
+        self, branch_id: str, start_date: datetime, end_date: datetime
+    ) -> List[Dict[str, Any]]:
+        conflicts = []
+        refunds = (
+            self.db.query(RefundFlow)
+            .filter(
+                RefundFlow.branch_id == branch_id,
+                RefundFlow.refund_date >= start_date,
+                RefundFlow.refund_date <= end_date,
+            )
+            .all()
+        )
+
+        date_groups: Dict[datetime, List[RefundFlow]] = {}
+        for refund in refunds:
+            refund_date = refund.refund_date.replace(hour=0, minute=0, second=0, microsecond=0)
+            if refund_date not in date_groups:
+                date_groups[refund_date] = []
+            date_groups[refund_date].append(refund)
+
+        for refund_date, day_refunds in date_groups.items():
+            total_amount = sum(r.refund_amount for r in day_refunds)
+            refund_count = len(day_refunds)
+
+            if refund_count >= 5 or total_amount >= 10000:
+                tellers = list(set(r.teller_id for r in day_refunds))
+                conflict = {
+                    "exception_type": ExceptionType.REFUND_FLOW_ANOMALY,
+                    "exception_date": refund_date,
+                    "teller_id": ",".join(tellers),
+                    "teller_name": None,
+                    "description": f"退款流水异常，日期：{refund_date.date()}",
+                    "blocking_point": (
+                        f"退款笔数：{refund_count}，"
+                        f"退款总金额：{total_amount:.2f}，"
+                        f"涉及柜员：{', '.join(tellers)}，"
+                        f"冲突点：退款数据超出正常阈值需核实"
+                    ),
+                    "source_type": "refund_flow",
+                    "source_ids": [str(r.id) for r in day_refunds],
+                    "raw_data": {
+                        "refund_count": refund_count,
+                        "total_amount": total_amount,
+                        "tellers": tellers,
+                    },
+                }
+                conflicts.append(conflict)
+
+        return conflicts
+
     def detect_all_exceptions(
         self, branch_id: str, start_date: datetime, end_date: datetime
     ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
@@ -216,6 +370,39 @@ class ExceptionDetector:
             failed_records.append(
                 {
                     "source_type": "leave_detection",
+                    "error_message": str(e),
+                    "error_type": type(e).__name__,
+                }
+            )
+
+        try:
+            all_exceptions.extend(self.detect_business_forecast_mismatch(branch_id, start_date, end_date))
+        except Exception as e:
+            failed_records.append(
+                {
+                    "source_type": "forecast_detection",
+                    "error_message": str(e),
+                    "error_type": type(e).__name__,
+                }
+            )
+
+        try:
+            all_exceptions.extend(self.detect_inventory_difference(branch_id, start_date, end_date))
+        except Exception as e:
+            failed_records.append(
+                {
+                    "source_type": "inventory_detection",
+                    "error_message": str(e),
+                    "error_type": type(e).__name__,
+                }
+            )
+
+        try:
+            all_exceptions.extend(self.detect_refund_flow_anomaly(branch_id, start_date, end_date))
+        except Exception as e:
+            failed_records.append(
+                {
+                    "source_type": "refund_detection",
                     "error_message": str(e),
                     "error_type": type(e).__name__,
                 }

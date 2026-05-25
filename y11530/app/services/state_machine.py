@@ -23,22 +23,17 @@ class StateMachine:
         self.db = db
 
     def _generate_record_key(
-        self, branch_id: str, exception_type: str, exception_date: datetime, teller_id: str
+        self, branch_id: str, exception_type: str, exception_date: datetime, teller_id: str, extra: str = ""
     ) -> str:
-        key_data = f"{branch_id}:{exception_type}:{exception_date.date().isoformat()}:{teller_id}"
+        key_data = f"{branch_id}:{exception_type}:{exception_date.date().isoformat()}:{teller_id}:{extra}"
         return hashlib.md5(key_data.encode()).hexdigest()
 
     def _generate_batch_no(self, branch_id: str, batch_date: datetime) -> str:
+        import random
         date_str = batch_date.strftime("%Y%m%d")
-        count = (
-            self.db.query(ExceptionBatch)
-            .filter(
-                ExceptionBatch.branch_id == branch_id,
-                ExceptionBatch.batch_date == batch_date.date(),
-            )
-            .count()
-        )
-        return f"BATCH-{branch_id}-{date_str}-{count + 1:04d}"
+        time_str = datetime.now().strftime("%H%M%S%f")
+        random_str = f"{random.randint(0, 9999):04d}"
+        return f"BATCH-{branch_id}-{date_str}-{time_str}-{random_str}"
 
     def _add_status_history(
         self,
@@ -113,11 +108,17 @@ class StateMachine:
         failed_count = len(failed)
 
         for exc_data in exceptions:
+            raw_data = exc_data.get("raw_data", {})
+            extra_info = ""
+            if raw_data:
+                extra_info = hashlib.md5(json.dumps(raw_data, sort_keys=True, default=str).encode()).hexdigest()[:8]
+            
             record_key = self._generate_record_key(
                 branch_id,
                 exc_data["exception_type"],
                 exc_data["exception_date"],
                 exc_data.get("teller_id", ""),
+                extra_info,
             )
 
             existing_record = (
