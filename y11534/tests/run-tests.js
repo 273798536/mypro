@@ -329,6 +329,64 @@ const runTests = async () => {
     logTest('录入员能看到字段', entryFields.length > 0);
     logTest('主管能看到更多或相同字段', adminFields.length >= entryFields.length);
     
+    const sensitiveFields = ['original_data', 'processing_opinion', 'dirty_details', 'created_by', 'updated_by'];
+    const entryHasSensitive = sensitiveFields.some(f => entryFields.includes(f));
+    logTest('录入员无法查看敏感字段(排班)', !entryHasSensitive);
+    
+    const billImportRes = await request('POST', '/api/bills/batch', entryToken, {
+      records: [{
+        bill_no: getUniqueId('TEST_PERM_BILL'),
+        supplier_name: '权限测试供应商',
+        branch: '朝阳支行',
+        bill_date: '2026-06-01',
+        amount: 1000.00,
+        quantity: 10,
+        items: '测试商品'
+      }],
+      duplicateStrategy: 'ignore'
+    });
+    
+    if (billImportRes.body.results && billImportRes.body.results[0] && billImportRes.body.results[0].id) {
+      const billId = billImportRes.body.results[0].id;
+      const billDetail = await request('GET', `/api/bills/${billId}`, entryToken);
+      const billFields = Object.keys(billDetail.body);
+      
+      const entryCannotSeeAmount = !billFields.includes('amount');
+      logTest('录入员无法查看供应商金额', entryCannotSeeAmount);
+      
+      const entryCannotSeeSensitive = !billFields.includes('dirty_details') && 
+                                       !billFields.includes('created_by') && 
+                                       !billFields.includes('original_data');
+      logTest('录入员无法查看供应商敏感字段', entryCannotSeeSensitive);
+      
+      const adminBillDetail = await request('GET', `/api/bills/${billId}`, adminToken);
+      const adminBillFields = Object.keys(adminBillDetail.body);
+      const adminCanSeeAmount = adminBillFields.includes('amount');
+      logTest('主管可以查看供应商金额', adminCanSeeAmount);
+    }
+    
+    const forecastImportRes = await request('POST', '/api/forecasts/batch', entryToken, {
+      records: [{
+        forecast_no: getUniqueId('TEST_PERM_FC'),
+        branch: '朝阳支行',
+        forecast_date: '2026-07-01',
+        customer_count: 100,
+        transaction_count: 200
+      }],
+      duplicateStrategy: 'ignore'
+    });
+    
+    if (forecastImportRes.body.results && forecastImportRes.body.results[0] && forecastImportRes.body.results[0].id) {
+      const fcId = forecastImportRes.body.results[0].id;
+      const fcDetail = await request('GET', `/api/forecasts/${fcId}`, entryToken);
+      const fcFields = Object.keys(fcDetail.body);
+      
+      const entryCannotSeeFcSensitive = !fcFields.includes('dirty_details') && 
+                                         !fcFields.includes('created_by') && 
+                                         !fcFields.includes('original_data');
+      logTest('录入员无法查看业务量预测敏感字段', entryCannotSeeFcSensitive);
+    }
+    
     const supervisorEntry = await request('POST', '/api/schedules', adminToken, {
       teller_id: getUniqueId('T_PERM01'),
       teller_name: '权限测试',

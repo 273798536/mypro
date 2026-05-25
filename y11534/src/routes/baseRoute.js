@@ -323,11 +323,12 @@ const createBaseRouter = (moduleName, tableName, idField = 'id') => {
         SELECT * FROM ${tableName} 
         WHERE ${where}
         ORDER BY created_at DESC
-      `, params, (err, rows) => {
+      `, params, async (err, rows) => {
         if (err) {
           return res.status(500).json({ error: err.message });
         }
-        res.json(rows);
+        const filteredRows = await filterFieldsByPermission(rows, req.user.role, tableName, 'view');
+        res.json(filteredRows);
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -373,7 +374,8 @@ const createBaseRouter = (moduleName, tableName, idField = 'id') => {
   router.get('/batch/:batchNo/records', authenticate, async (req, res) => {
     try {
       const records = await getBatchRecords(tableName, req.params.batchNo);
-      res.json(records);
+      const filteredRecords = await filterFieldsByPermission(records, req.user.role, tableName, 'view');
+      res.json(filteredRecords);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -410,11 +412,18 @@ const createBaseRouter = (moduleName, tableName, idField = 'id') => {
           return res.status(500).json({ error: err.message });
         }
         
-        const summary = getExportSummary(rows, tableName);
-        const buffer = await exportToExcel(rows, {
+        const filteredRows = await filterFieldsByPermission(rows, req.user.role, tableName, 'view');
+        
+        let exportRows = filteredRows;
+        if (maskSensitive) {
+          exportRows = maskSensitiveFields(filteredRows);
+        }
+        
+        const summary = getExportSummary(exportRows, tableName);
+        const buffer = await exportToExcel(exportRows, {
           sheetName: moduleName,
           headers,
-          maskSensitive
+          maskSensitive: false
         });
         
         const fileName = generateExportFileName(moduleName);

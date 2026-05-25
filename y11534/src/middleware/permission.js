@@ -58,7 +58,7 @@ const filterFieldsByPermission = async (data, role, module, action = 'view') => 
   const permissionResult = await getRolePermissions(role, module, action);
   
   if (!permissionResult) {
-    return data;
+    return isArray(data) ? data.map(() => ({})) : {};
   }
   
   const { permissions, hasWildcard, wildcardAllowed } = permissionResult;
@@ -70,7 +70,7 @@ const filterFieldsByPermission = async (data, role, module, action = 'view') => 
   for (const item of items) {
     const filtered = {};
     for (const [key, value] of Object.entries(item)) {
-      let allowed = wildcardAllowed;
+      let allowed = false;
       
       if (permissions[key] !== undefined) {
         allowed = permissions[key];
