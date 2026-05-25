@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 task_handlers: Dict[str, Callable] = {}
 
+MANUAL_TIMEOUT_HOURS = 24
+
 
 def register_task_handler(task_type: str):
     def decorator(func: Callable):
@@ -48,20 +50,20 @@ def process_task(task_id: str):
         
         task = db.query(AsyncTask).filter(AsyncTask.task_id == task_id).first()
         if task:
-            if task.retry_count < task.max_retry - 1:
+            if task.retry_count < task.max_retry:
                 update_task_status(
                     db, task_id, TaskStatus.WAITING_RETRY,
                     error_message=error_msg,
                     error_traceback=error_tb
                 )
-                logger.warning(f"任务 {task_id} 失败，等待重试 ({task.retry_count + 1}/{task.max_retry}): {error_msg}")
+                logger.warning(f"任务 {task_id} 失败，等待重试 ({task.retry_count}/{task.max_retry}): {error_msg}")
             else:
                 update_task_status(
                     db, task_id, TaskStatus.WAITING_MANUAL,
                     error_message=error_msg,
                     error_traceback=error_tb
                 )
-                logger.error(f"任务 {task_id} 重试次数用尽，等待人工处理: {error_msg}")
+                logger.error(f"任务 {task_id} 重试次数用尽，进入人工处理队列: {error_msg}")
     finally:
         db.close()
 
@@ -87,6 +89,45 @@ def retry_waiting_tasks():
         db.close()
 
 
+def check_manual_timeout_tasks():
+    db = SessionLocal()
+    try:
+        now = datetime.now()
+        timeout_threshold = now - timedelta(hours=MANUAL_TIMEOUT_HOURS)
+        
+        timed_out_tasks = db.query(AsyncTask).filter(
+            AsyncTask.status == TaskStatus.WAITING_MANUAL.value,
+            AsyncTask.completed_at <= timeout_threshold
+        ).all()
+        
+        for task in timed_out_tasks:
+            task.status = TaskStatus.PERMANENT_FAILED.value
+            task.completed_at = now
+            task.error_message = (task.error_message or "") + f"\n[自动标记] 人工处理超时({MANUAL_TIMEOUT_HOURS}小时)，已自动标记为永久失败"
+            db.commit()
+            
+            log_audit(
+                db=db,
+                operation_type=OperationType.UPDATE,
+                entity_type="AsyncTask",
+                entity_id=task.id,
+                entity_no=task.task_id,
+                after_state={"status": TaskStatus.PERMANENT_FAILED.value, "auto_marked": True},
+                operator="system",
+                note=f"人工处理超时({MANUAL_TIMEOUT_HOURS}小时)，自动标记为永久失败"
+            )
+            
+            logger.warning(f"任务 {task.task_id} 人工处理超时，自动标记为永久失败")
+        
+        if timed_out_tasks:
+            logger.info(f"检查人工处理超时任务，共处理 {len(timed_out_tasks)} 个超时任务")
+            
+    except Exception as e:
+        logger.error(f"检查人工处理超时任务时出错: {str(e)}")
+    finally:
+        db.close()
+
+
 def resume_pending_tasks_on_startup():
     db = SessionLocal()
     try:
@@ -105,6 +146,13 @@ def resume_pending_tasks_on_startup():
         
         if pending_count > 0:
             logger.info(f"服务重启后，共有 {pending_count} 个待处理任务需要执行")
+
+        waiting_manual_count = db.query(AsyncTask).filter(
+            AsyncTask.status == TaskStatus.WAITING_MANUAL.value
+        ).count()
+        
+        if waiting_manual_count > 0:
+            logger.info(f"服务重启后，共有 {waiting_manual_count} 个等待人工处理的任务")
             
     except Exception as e:
         logger.error(f"恢复任务时出错: {str(e)}")
@@ -129,6 +177,13 @@ def start_task_scheduler():
         process_pending_tasks,
         trigger=IntervalTrigger(seconds=30),
         id="process_pending_tasks",
+        replace_existing=True
+    )
+    
+    scheduler.add_job(
+        check_manual_timeout_tasks,
+        trigger=IntervalTrigger(hours=1),
+        id="check_manual_timeout_tasks",
         replace_existing=True
     )
     

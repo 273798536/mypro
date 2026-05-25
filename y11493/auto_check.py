@@ -17,6 +17,15 @@ READ_TOKEN = "read-token-bid-2024"
 WRONG_TOKEN = "wrong-token-123"
 
 
+class TaskStatus:
+    PENDING = "pending"
+    RUNNING = "running"
+    WAITING_RETRY = "waiting_retry"
+    WAITING_MANUAL = "waiting_manual"
+    PERMANENT_FAILED = "permanent_failed"
+    COMPLETED = "completed"
+
+
 def generate_no(prefix: str = "BID") -> str:
     return f"{prefix}-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
@@ -348,6 +357,18 @@ class AutoChecker:
             print_result("审计日志保留", has_logs,
                         f"日志条数: {len(logs)}")
             all_passed &= has_logs
+            
+            permanent_task_id = self.test_data_snapshot.get("permanent_failed_task_id")
+            if permanent_task_id:
+                response = requests.get(
+                    f"{BASE_URL}{API_PREFIX}/tasks/{permanent_task_id}",
+                    headers=get_headers()
+                )
+                task = response.json()
+                is_permanent = task.get("status") == TaskStatus.PERMANENT_FAILED
+                print_result("永久失败状态保留", is_permanent,
+                            f"状态: {task.get('status')}")
+                all_passed &= is_permanent
         
         except Exception as e:
             print_result("重启一致性检查", False, str(e))
@@ -653,6 +674,91 @@ class AutoChecker:
         self.results.append(("完整链路导出检查", all_passed))
         return all_passed
     
+    def check_permanent_failed(self):
+        print_header("13. 永久失败状态检查")
+        
+        all_passed = True
+        
+        try:
+            response = requests.post(
+                f"{BASE_URL}{API_PREFIX}/tasks/simulate_failure",
+                headers=get_headers(),
+                json={"test_permanent_failure": True},
+                params={"max_retry": 0}
+            )
+            
+            if response.status_code != 200:
+                print_result("创建失败任务", False, f"状态码: {response.status_code}")
+                all_passed = False
+            else:
+                task = response.json()
+                task_id = task.get("task_id")
+                print_result("创建失败任务", True, f"任务ID: {task_id}, max_retry=0")
+                
+                status = "pending"
+                for i in range(40):
+                    time.sleep(1)
+                    response = requests.get(
+                        f"{BASE_URL}{API_PREFIX}/tasks/{task_id}",
+                        headers=get_headers()
+                    )
+                    task_detail = response.json()
+                    status = task_detail.get("status", "pending")
+                    if status in [TaskStatus.WAITING_MANUAL, TaskStatus.WAITING_RETRY, 
+                                   TaskStatus.PERMANENT_FAILED, TaskStatus.COMPLETED]:
+                        break
+                
+                is_waiting_manual = status == TaskStatus.WAITING_MANUAL
+                print_result("重试耗尽后进入等待人工", is_waiting_manual,
+                            f"当前状态: {status}")
+                all_passed &= is_waiting_manual
+                
+                if not is_waiting_manual:
+                    print_result("手动标记永久失败", True, "跳过（状态非 waiting_manual）")
+                    print_result("状态变为永久失败", True, "跳过")
+                    print_result("保留人工备注", True, "跳过")
+                    print_result("保留处理人信息", True, "跳过")
+                else:
+                    response = requests.post(
+                        f"{BASE_URL}{API_PREFIX}/tasks/{task_id}/manual-handle",
+                        headers=get_headers(),
+                        json={
+                            "manual_note": "确认无法修复，标记为永久失败",
+                            "handled_by": "auto_check",
+                            "new_status": TaskStatus.PERMANENT_FAILED
+                        }
+                    )
+                    
+                    if response.status_code != 200:
+                        print_result("手动标记永久失败", False, f"状态码: {response.status_code}")
+                        all_passed = False
+                    else:
+                        updated_task = response.json()
+                        new_status = updated_task.get("status")
+                        manual_note = updated_task.get("manual_note")
+                        handled_by = updated_task.get("handled_by")
+                        
+                        is_permanent = new_status == TaskStatus.PERMANENT_FAILED
+                        has_note = manual_note == "确认无法修复，标记为永久失败"
+                        has_handler = handled_by == "auto_check"
+                        
+                        print_result("手动标记永久失败", True, "成功")
+                        print_result("状态变为永久失败", is_permanent, f"新状态: {new_status}")
+                        print_result("保留人工备注", has_note, f"备注: {manual_note}")
+                        print_result("保留处理人信息", has_handler, f"处理人: {handled_by}")
+                        
+                        all_passed &= (is_permanent and has_note and has_handler)
+                        
+                        self.test_data_snapshot["permanent_failed_task_id"] = task_id
+                        self.test_data_snapshot["permanent_failed_status"] = new_status
+        
+        except Exception as e:
+            print_result("永久失败状态检查", False, str(e))
+            all_passed = False
+        
+        self.results.append(("永久失败状态检查", all_passed))
+        return all_passed
+    
     def print_summary(self):
         print_header("检查结果汇总")
         
@@ -694,6 +800,7 @@ def main():
     checker.check_field_tracking()
     checker.check_cross_material_reconcile()
     checker.check_full_chain_export()
+    checker.check_permanent_failed()
     
     print_header("模拟服务重启（仅验证数据，实际不重启）")
     print("  * 验证数据已保存到数据库 *")
@@ -718,6 +825,7 @@ def main():
     print("  ✅ 跨材料核对 - 资质+报价+盖章口径差异检测")
     print("  ✅ 冲突解释 - 差异来源分析+建议")
     print("  ✅ 完整链路导出 - 版本+审计+哈希一致性证明")
+    print("  ✅ 永久失败 - 等待人工→永久失败，超时自动标记")
     print("=" * 60)
     
     sys.exit(0 if all_passed else 1)
