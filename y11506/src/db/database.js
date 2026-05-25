@@ -4,8 +4,16 @@ const fs = require('fs');
 
 let dbInstance = null;
 
+function getDataDir() {
+  const dataDir = process.env.MD_INSPECT_DATA_DIR || path.resolve(__dirname, '..', '..');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  return dataDir;
+}
+
 function getDbPath() {
-  const dataDir = process.env.MD_INSPECT_DATA_DIR || process.cwd();
+  const dataDir = getDataDir();
   return path.join(dataDir, 'inspection.db');
 }
 
@@ -216,5 +224,6 @@ module.exports = {
   initDatabase,
   getDatabase,
   closeDatabase,
-  getDbPath
+  getDbPath,
+  getDataDir
 };

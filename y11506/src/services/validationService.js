@@ -330,7 +330,7 @@ function validateBatch(batchId) {
     throw new Error(`Batch not found: ${batchId}`);
   }
   
-  db.prepare('DELETE FROM validation_errors WHERE batch_id = ?').run(batchId);
+  db.prepare('DELETE FROM validation_errors WHERE batch_id = ? AND severity = ? AND error_code != ?').run(batchId, 'warning', 'IMPORT_ERROR');
   
   let records;
   let validateFn;

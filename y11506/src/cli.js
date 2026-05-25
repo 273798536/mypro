@@ -218,8 +218,17 @@ program
           process.exit(EXIT_CODES.NOT_FOUND);
         }
         
-        const result = validateBatch(batchId);
         const errors = getValidationErrors(batchId, true);
+        const errorCount = errors.filter(e => e.severity === 'error').length;
+        const warningCount = errors.filter(e => e.severity === 'warning').length;
+        
+        const result = {
+          batchId,
+          sourceType: batchInfo.source_type,
+          totalRecords: batchInfo.total_rows,
+          validRecords: batchInfo.success_rows - errorCount,
+          invalidRecords: errorCount
+        };
         
         if (options.json) {
           console.log(JSON.stringify({ batch: batchInfo, validation: result, errors }, null, 2));

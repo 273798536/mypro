@@ -435,8 +435,8 @@ async function importData(sourceType, filePath, options = {}) {
     }
     
     if (validate && validateFn) {
-      db.prepare('DELETE FROM validation_errors WHERE batch_id = ? AND error_code != ? AND error_code != ?')
-        .run(batchId, 'IMPORT_ERROR', 'IMPORT_ERROR');
+      db.prepare('DELETE FROM validation_errors WHERE batch_id = ? AND error_code != ?')
+        .run(batchId, 'IMPORT_ERROR');
       
       for (const item of importedRecordIds) {
         const isValid = validateFn(db, item.row, item.lineNo, batchId);
@@ -452,7 +452,7 @@ async function importData(sourceType, filePath, options = {}) {
       }
       
       const errorCount = db.prepare(
-        'SELECT COUNT(*) as count FROM validation_errors WHERE batch_id = ? AND severity = ?'
+        'SELECT COUNT(DISTINCT original_line_no) as count FROM validation_errors WHERE batch_id = ? AND severity = ?'
       ).get(batchId, 'error').count;
       
       if (errorCount > 0 && validationErrorCount === 0) {
@@ -533,5 +533,6 @@ module.exports = {
   findExistingRecord,
   insertRecord,
   updateRecord,
-  logValidationError
+  parseCsvFile,
+  getValidateFunction
 };

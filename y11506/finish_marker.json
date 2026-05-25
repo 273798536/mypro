@@ -1,0 +1,88 @@
+{
+  "status": "completed",
+  "completed_at": "2026-05-25T09:58:00.000Z",
+  "version": "1.1.0",
+  "fixes": [
+    {
+      "id": 1,
+      "description": "清理工作区遗留的调试文件",
+      "files": ["debug2.js", "debug3.js"],
+      "status": "completed"
+    },
+    {
+      "id": 2,
+      "description": "修复数据库路径问题，确保数据目录存在",
+      "file": "src/db/database.js",
+      "changes": [
+        "新增 getDataDir() 函数确保数据目录存在",
+        "默认数据目录改为项目根目录而非 process.cwd()"
+      ],
+      "status": "completed"
+    },
+    {
+      "id": 3,
+      "description": "修复 importService 模块导出问题",
+      "file": "src/services/importService.js",
+      "changes": [
+        "导出 parseCsvFile 函数",
+        "导出 getValidateFunction 函数",
+        "修复 DELETE 语句重复参数问题",
+        "使用 COUNT(DISTINCT original_line_no) 统计错误行数"
+      ],
+      "status": "completed"
+    },
+    {
+      "id": 4,
+      "description": "修复导入校验逻辑，确保失败清单和退出码正确",
+      "files": ["src/cli.js", "src/services/validationService.js"],
+      "changes": [
+        "check 命令直接读取已有校验错误，不重新校验丢失原始错误",
+        "validateBatch 只删除 warning 不删除 error，保留导入时的原始错误",
+        "修复导入时空字符串被转成默认值导致校验失效的问题"
+      ],
+      "status": "completed"
+    },
+    {
+      "id": 5,
+      "description": "确保异步任务服务正确接入流程",
+      "file": "src/worker.js",
+      "status": "verified",
+      "tests": [
+        "异步导入任务提交成功",
+        "Worker 处理任务成功",
+        "任务状态从 pending 转为 completed"
+      ]
+    }
+  ],
+  "verification": {
+    "install": "npm install 成功",
+    "commands_tested": [
+      "node src/cli.js --help",
+      "node src/cli.js init",
+      "node src/cli.js import -t inventory -f examples/inventory.csv (退出码 2)",
+      "node src/cli.js check <batchId>",
+      "node src/cli.js check <batchId> --json",
+      "node src/cli.js batches",
+      "node src/cli.js export <batchId> --failed -o ./output",
+      "node src/cli.js import --async",
+      "node src/cli.js tasks --list",
+      "node src/cli.js history --limit 5",
+      "node src/cli.js check --all",
+      "node src/cli.js report",
+      "node src/cli.js import -t unknown (退出码 1)"
+    ],
+    "core_features": [
+      "✅ 多源数据导入：inspection, calibration, repair, inventory, refund",
+      "✅ 导入模式：append, overwrite, ignore",
+      "✅ 数据持久化：SQLite 存储，重启不丢失",
+      "✅ 导入时校验：坏数据形成失败清单",
+      "✅ 退出码：0=成功, 1=错误, 2=校验错误, 3=未找到, 4=无效输入",
+      "✅ 失败清单：原始行号、错误代码、字段名、原始值",
+      "✅ 异步任务队列：pending/retry/manual/failed/completed",
+      "✅ Worker 进程：自动处理任务，支持重启恢复",
+      "✅ 历史变更追踪：记录谁在什么时候改了什么字段",
+      "✅ 盘点差异支持：数据模型、校验、导入、导出",
+      "✅ 导出功能：失败清单、原始数据、校准状态"
+    ]
+  }
+}
