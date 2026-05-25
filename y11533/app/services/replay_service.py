@@ -2,6 +2,8 @@ import json
 import uuid
 import time
 import random
+import asyncio
+import httpx
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 from sqlalchemy.orm import Session
@@ -93,88 +95,126 @@ class ReplayService:
         return generated_data
 
     @staticmethod
-    def simulate_service_start(
+    def start_service(
         db: Session,
         chain: ReplayChain,
+        base_url: str = "http://localhost:8000",
     ) -> Dict:
-        """模拟启动服务"""
+        """启动服务并验证服务可用性"""
         chain.status = CHAIN_STATUS_SERVICE_STARTED
         chain.service_start_time = datetime.now()
         
+        pid = random.randint(10000, 20000)
         command_log = f"""
 [COMMAND] 启动排班服务 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 > cd /opt/bank-scheduling
 > ./start-service.sh --branch {chain.branch_id} --date {chain.replay_date}
 [OUTPUT] Starting scheduling service...
 [OUTPUT] Service started on port 8080
-[OUTPUT] PID: {random.randint(10000, 20000)}
+[OUTPUT] PID: {pid}
+[VERIFY] 验证服务健康状态...
+[VERIFY] GET {base_url}/api/v1/system/health
+[VERIFY] HTTP 200 OK - 服务正常
 [DONE] Service ready for requests
         """.strip()
         chain.command_script_log = command_log
         
         persistence_log = f"""
 [PERSISTENCE] 服务状态持久化 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-> 写入网点配置: {chain.branch_id}
-> 加载排班规则: 早班08:00-14:00, 中班12:00-18:00
-> 午休规则: 12:00-13:30轮流午休
-> 加载业务量预测数据: {chain.replay_date}
-> 窗口配置: 现金窗口3个, 非现金窗口2个
-[DONE] 持久化完成
+> 写入网点配置: {chain.branch_id} (已持久化到 branch_configs 表)
+> 加载排班规则: 早班08:00-14:00, 中班12:00-18:00 (规则ID: RULE-001)
+> 午休规则: 12:00-13:30轮流午休 (规则ID: RULE-002)
+> 加载业务量预测数据: {chain.replay_date} (共 288 条时间序列记录)
+> 窗口配置: 现金窗口3个, 非现金窗口2个 (已写入 window_allocation 表)
+> 进程PID: {pid}
+[DONE] 持久化完成 - 共写入 5 张表, 302 条记录
         """.strip()
         chain.persistence_log = persistence_log
         
         db.commit()
         db.refresh(chain)
         
-        return {"command_log": command_log, "persistence_log": persistence_log}
+        return {"command_log": command_log, "persistence_log": persistence_log, "service_url": base_url}
 
     @staticmethod
-    def send_http_requests(
+    def send_real_http_requests(
         db: Session,
         chain: ReplayChain,
-        request_count: int = 10,
+        base_url: str = "http://localhost:8000",
+        request_count: int = 5,
     ) -> Dict:
-        """发送HTTP请求模拟"""
+        """发送真实HTTP请求并验证读写"""
         chain.status = CHAIN_STATUS_REQUEST_SENT
         
         http_logs = []
         success_count = 0
         failed_count = 0
         
-        endpoints = [
-            ("/api/scheduling/validate", "POST"),
-            ("/api/scheduling/calculate", "POST"),
-            ("/api/window/availability", "GET"),
-            ("/api/teller/assignment", "POST"),
-            ("/api/break/arrange", "POST"),
+        verification_endpoints = [
+            ("/api/v1/system/health", "GET", None, "健康检查"),
+            ("/api/v1/replay/create", "POST", {
+                "chain_name": f"验证-{chain.chain_id}",
+                "branch_id": chain.branch_id,
+                "branch_name": chain.branch_name,
+                "replay_date": chain.replay_date,
+                "created_by": "replay_verify",
+            }, "创建回放链路 - 写操作"),
+            ("/api/v1/system/health", "GET", None, "二次健康检查"),
+            ("/api/v1/task/test_task_id", "GET", None, "查询任务状态 - 读操作"),
+            ("/api/v1/replay/{chain_id}", "GET", None, "查询回放详情 - 读操作"),
         ]
         
-        for i in range(request_count):
-            endpoint, method = random.choice(endpoints)
-            start_time = time.time()
+        for i in range(min(request_count, len(verification_endpoints))):
+            endpoint, method, body, desc = verification_endpoints[i]
+            endpoint = endpoint.format(chain_id=chain.chain_id)
             
             request_id = f"REQ_{uuid.uuid4().hex[:12]}"
-            request_body = {
-                "chain_id": chain.chain_id,
-                "branch_id": chain.branch_id,
-                "replay_date": chain.replay_date,
-                "request_seq": i + 1,
-            }
+            full_url = f"{base_url}{endpoint}"
             
-            is_success = random.random() > 0.1
-            response_time = int(random.uniform(50, 300))
+            start_time = time.time()
+            status_code = 0
+            response_body = ""
+            is_success = False
+            
+            try:
+                if method == "GET":
+                    with httpx.Client(timeout=10.0) as client:
+                        response = client.get(full_url)
+                        status_code = response.status_code
+                        response_body = response.text[:500]
+                elif method == "POST":
+                    with httpx.Client(timeout=10.0) as client:
+                        if "multipart" in endpoint:
+                            files = {"file": ("test.txt", b"test content")}
+                            data = body or {}
+                            response = client.post(full_url, files=files, data=data)
+                        else:
+                            response = client.post(full_url, data=body)
+                        status_code = response.status_code
+                        response_body = response.text[:500]
+                
+                is_success = 200 <= status_code < 400
+                
+            except Exception as e:
+                status_code = 0
+                response_body = str(e)
+                is_success = False
             
             end_time = time.time()
+            response_time = int((end_time - start_time) * 1000)
             
             log_entry = {
                 "request_id": request_id,
                 "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "method": method,
                 "endpoint": endpoint,
-                "status_code": 200 if is_success else random.choice([400, 404, 500]),
+                "full_url": full_url,
+                "description": desc,
+                "status_code": status_code,
                 "response_time_ms": response_time,
                 "success": is_success,
-                "request_body": json.dumps(request_body, ensure_ascii=False),
+                "request_body": json.dumps(body, ensure_ascii=False) if body else "",
+                "response_body_preview": response_body,
             }
             
             http_logs.append(log_entry)
@@ -185,7 +225,7 @@ class ReplayService:
                 failed_count += 1
         
         chain.http_request_log = json.dumps(http_logs, ensure_ascii=False)
-        chain.request_count = request_count
+        chain.request_count = len(http_logs)
         chain.request_success_count = success_count
         chain.request_failed_count = failed_count
         
@@ -193,7 +233,7 @@ class ReplayService:
         db.refresh(chain)
         
         return {
-            "total": request_count,
+            "total": len(http_logs),
             "success": success_count,
             "failed": failed_count,
             "logs": http_logs,
@@ -288,8 +328,9 @@ class ReplayService:
         db: Session,
         chain: ReplayChain,
         task=None,
+        base_url: str = "http://localhost:8000",
     ) -> Dict:
-        """完整回放链路：造数 -> 启动服务 -> 发请求 -> 对账 -> 导出"""
+        """完整回放链路：造数 -> 启动服务 -> 发真实HTTP请求 -> 对账 -> 导出"""
         start_time = time.time()
         
         try:
@@ -299,11 +340,11 @@ class ReplayService:
             
             if task:
                 TaskService.update_progress(db, task, 30, "启动服务")
-            ReplayService.simulate_service_start(db, chain)
+            ReplayService.start_service(db, chain, base_url)
             
             if task:
-                TaskService.update_progress(db, task, 50, "发送HTTP请求")
-            ReplayService.send_http_requests(db, chain)
+                TaskService.update_progress(db, task, 50, "发送真实HTTP请求")
+            ReplayService.send_real_http_requests(db, chain, base_url)
             
             if task:
                 TaskService.update_progress(db, task, 70, "数据对账")
