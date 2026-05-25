@@ -8,10 +8,11 @@ import aiofiles
 from app.database import get_db
 from app.models import User, ReceiptStatus, AuditAction
 from app.schemas import (
-    ReceiptCreate, ReceiptUpdate, ReceiptResponse, ReceiptListResponse,
+    ReceiptCreate, ReceiptUpdate,
     BatchCreate, BatchResponse, AttachmentResponse, DirtyRecordResponse,
     StatusHistoryResponse, AuditLogResponse, ReviewRequest, FreezeRequest,
-    DirtyFixRequest, SupervisorViewResponse
+    DirtyFixRequest, SupervisorViewResponse,
+    get_receipt_response_for_role, get_receipt_list_response_for_role,
 )
 from app.auth import (
     get_current_user, allow_data_entry, allow_reviewer,
@@ -64,7 +65,7 @@ def get_single_batch(
     return batch
 
 
-@router.post("", response_model=ReceiptResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create_new_receipt(
     receipt_in: ReceiptCreate,
     db: Session = Depends(get_db),
@@ -73,10 +74,11 @@ def create_new_receipt(
     receipt = create_receipt(db, receipt_in, current_user)
     db.commit()
     db.refresh(receipt)
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/batch", response_model=List[ReceiptResponse])
+@router.post("/batch")
 def batch_create(
     batch_id: int,
     receipts_in: List[ReceiptCreate],
@@ -89,16 +91,19 @@ def batch_create(
     
     receipts = batch_create_receipts(db, batch_id, receipts_in, current_user)
     db.commit()
+    response_cls = get_receipt_response_for_role(current_user.role)
+    result = []
     for receipt in receipts:
         db.refresh(receipt)
-    return receipts
+        result.append(response_cls.model_validate(receipt))
+    return result
 
 
 @router.get("", response_model=dict)
 def list_receipts(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
-    status: Optional[ReceiptStatus] = None,
+    status_filter: Optional[ReceiptStatus] = None,
     material_id: Optional[str] = None,
     platform: Optional[str] = None,
     has_dirty: Optional[bool] = None,
@@ -106,18 +111,19 @@ def list_receipts(
     current_user: User = Depends(allow_viewer),
 ):
     receipts, total = get_receipts(
-        db, skip=skip, limit=limit, status=status,
+        db, skip=skip, limit=limit, status=status_filter,
         material_id=material_id, platform=platform, has_dirty=has_dirty
     )
+    list_cls = get_receipt_list_response_for_role(current_user.role)
     return {
         "total": total,
         "page": skip // limit + 1,
         "page_size": limit,
-        "items": [ReceiptListResponse.model_validate(r) for r in receipts]
+        "items": [list_cls.model_validate(r) for r in receipts]
     }
 
 
-@router.get("/{receipt_id}", response_model=ReceiptResponse)
+@router.get("/{receipt_id}")
 def get_single_receipt(
     receipt_id: int,
     db: Session = Depends(get_db),
@@ -126,10 +132,11 @@ def get_single_receipt(
     receipt = get_receipt(db, receipt_id)
     if not receipt:
         raise HTTPException(status_code=404, detail="回执不存在")
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.put("/{receipt_id}", response_model=ReceiptResponse)
+@router.put("/{receipt_id}")
 def update_single_receipt(
     receipt_id: int,
     receipt_in: ReceiptUpdate,
@@ -143,13 +150,14 @@ def update_single_receipt(
     if receipt.status not in [ReceiptStatus.DRAFT, ReceiptStatus.REJECTED]:
         raise HTTPException(status_code=400, detail="当前状态不允许修改")
     
-    receipt = update_receipt(db, receipt, receipt_in)
+    receipt = update_receipt(db, receipt, receipt_in, current_user)
     db.commit()
     db.refresh(receipt)
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/submit", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/submit")
 def submit_receipt(
     receipt_id: int,
     request: Optional[ReviewRequest] = None,
@@ -169,10 +177,11 @@ def submit_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/start-review", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/start-review")
 def start_review(
     receipt_id: int,
     request: Optional[ReviewRequest] = None,
@@ -193,10 +202,11 @@ def start_review(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/approve", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/approve")
 def approve_receipt(
     receipt_id: int,
     request: Optional[ReviewRequest] = None,
@@ -218,10 +228,11 @@ def approve_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/reject", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/reject")
 def reject_receipt(
     receipt_id: int,
     request: Optional[ReviewRequest] = None,
@@ -243,10 +254,11 @@ def reject_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/freeze", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/freeze")
 def freeze_receipt(
     receipt_id: int,
     request: FreezeRequest,
@@ -266,10 +278,11 @@ def freeze_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/unfreeze", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/unfreeze")
 def unfreeze_receipt(
     receipt_id: int,
     target_status: ReceiptStatus,
@@ -293,10 +306,11 @@ def unfreeze_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/settle", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/settle")
 def settle_receipt(
     receipt_id: int,
     request: Optional[ReviewRequest] = None,
@@ -316,10 +330,11 @@ def settle_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
-@router.post("/{receipt_id}/archive", response_model=ReceiptResponse)
+@router.post("/{receipt_id}/archive")
 def archive_receipt(
     receipt_id: int,
     request: Optional[ReviewRequest] = None,
@@ -339,7 +354,8 @@ def archive_receipt(
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
     
-    return receipt
+    response_cls = get_receipt_response_for_role(current_user.role)
+    return response_cls.model_validate(receipt)
 
 
 @router.post("/{receipt_id}/attachments", response_model=AttachmentResponse, status_code=status.HTTP_201_CREATED)
@@ -418,13 +434,7 @@ def fix_dirty(
             if hasattr(receipt, field):
                 setattr(receipt, field, value)
     
-    fixed = fix_dirty_record(db, dirty_record, request.fix_note, current_user)
-    
-    remaining_dirty = db.query(type(dirty_record)).filter(
-        type(dirty_record).receipt_id == receipt_id,
-        type(dirty_record).is_fixed == False
-    ).count()
-    receipt.has_dirty = remaining_dirty > 0
+    fixed = fix_dirty_record(db, receipt, dirty_record, request.fix_note, current_user)
     
     db.commit()
     db.refresh(fixed)
@@ -485,13 +495,13 @@ def get_material_timeline(
 def supervisor_view(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
-    status: Optional[ReceiptStatus] = None,
+    status_filter: Optional[ReceiptStatus] = None,
     has_dirty: Optional[bool] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(allow_supervisor),
 ):
     receipts, total = get_supervisor_view(
-        db, skip=skip, limit=limit, status=status, has_dirty=has_dirty
+        db, skip=skip, limit=limit, status=status_filter, has_dirty=has_dirty
     )
     items = [
         SupervisorViewResponse(

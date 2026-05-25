@@ -5,7 +5,7 @@ from sqlalchemy import and_, or_
 
 from app.models import (
     User, Batch, Receipt, Attachment, DirtyRecord,
-    ReceiptStatus, UserRole, AuditAction
+    ReceiptStatus, UserRole, AuditAction, AuditLog
 )
 from app.schemas import (
     BatchCreate, ReceiptCreate, ReceiptUpdate
@@ -23,6 +23,24 @@ def generate_receipt_no() -> str:
     return f"RCPT{timestamp}"
 
 
+def write_audit_log(
+    db: Session,
+    operator: User,
+    action: AuditAction,
+    receipt_id: Optional[int] = None,
+    details: Optional[dict] = None,
+):
+    audit = AuditLog(
+        receipt_id=receipt_id,
+        action=action,
+        operator_id=operator.id,
+        details=details or {},
+    )
+    db.add(audit)
+    db.flush()
+    return audit
+
+
 def create_batch(db: Session, batch_in: BatchCreate, creator: User) -> Batch:
     batch = Batch(
         batch_no=generate_batch_no(),
@@ -32,6 +50,13 @@ def create_batch(db: Session, batch_in: BatchCreate, creator: User) -> Batch:
     )
     db.add(batch)
     db.flush()
+    
+    write_audit_log(db, creator, AuditAction.CREATE, details={
+        "entity": "batch",
+        "batch_no": batch.batch_no,
+        "name": batch.name,
+    })
+    
     return batch
 
 
@@ -79,6 +104,14 @@ def create_receipt(db: Session, receipt_in: ReceiptCreate, creator: User) -> Rec
         if batch:
             batch.total_count += 1
     
+    write_audit_log(db, creator, AuditAction.CREATE, receipt_id=receipt.id, details={
+        "entity": "receipt",
+        "receipt_no": receipt.receipt_no,
+        "material_id": receipt.material_id,
+        "has_dirty": receipt.has_dirty,
+        "dirty_types": receipt.dirty_types,
+    })
+    
     return receipt
 
 
@@ -124,7 +157,7 @@ def get_receipts(
     return receipts, total
 
 
-def update_receipt(db: Session, receipt: Receipt, receipt_in: ReceiptUpdate) -> Receipt:
+def update_receipt(db: Session, receipt: Receipt, receipt_in: ReceiptUpdate, operator: User) -> Receipt:
     update_data = receipt_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(receipt, field, value)
@@ -138,6 +171,13 @@ def update_receipt(db: Session, receipt: Receipt, receipt_in: ReceiptUpdate) -> 
     dirty_records = detector.detect_all()
     for dr in dirty_records:
         db.add(dr)
+    
+    write_audit_log(db, operator, AuditAction.UPDATE, receipt_id=receipt.id, details={
+        "entity": "receipt",
+        "receipt_no": receipt.receipt_no,
+        "updated_fields": list(update_data.keys()),
+        "has_dirty": receipt.has_dirty,
+    })
     
     db.flush()
     return receipt
@@ -162,6 +202,14 @@ def create_attachment(
     )
     db.add(attachment)
     db.flush()
+    
+    write_audit_log(db, uploader, AuditAction.UPLOAD_ATTACHMENT, receipt_id=receipt_id, details={
+        "entity": "attachment",
+        "file_name": file_name,
+        "file_size": file_size,
+        "file_type": file_type,
+    })
+    
     return attachment
 
 
@@ -175,6 +223,7 @@ def get_dirty_records(db: Session, receipt_id: int) -> List[DirtyRecord]:
 
 def fix_dirty_record(
     db: Session,
+    receipt: Receipt,
     dirty_record: DirtyRecord,
     fix_note: Optional[str],
     fixed_by: User,
@@ -183,6 +232,34 @@ def fix_dirty_record(
     dirty_record.fixed_by = fixed_by.id
     dirty_record.fixed_at = datetime.now()
     dirty_record.fix_note = fix_note
+    db.flush()
+    
+    remaining_unfixed = db.query(DirtyRecord).filter(
+        DirtyRecord.receipt_id == receipt.id,
+        DirtyRecord.is_fixed == False
+    ).count()
+    
+    if remaining_unfixed == 0:
+        detector = DirtyRecordDetector(receipt, db)
+        new_dirty = detector.detect_all()
+        for dr in new_dirty:
+            db.add(dr)
+        db.flush()
+    
+    receipt.has_dirty = (db.query(DirtyRecord).filter(
+        DirtyRecord.receipt_id == receipt.id,
+        DirtyRecord.is_fixed == False
+    ).count() > 0)
+    
+    write_audit_log(db, fixed_by, AuditAction.FIX_DIRTY, receipt_id=receipt.id, details={
+        "entity": "dirty_record",
+        "dirty_id": dirty_record.id,
+        "dirty_type": dirty_record.dirty_type.value,
+        "field_name": dirty_record.field_name,
+        "fix_note": fix_note,
+        "remaining_dirty": receipt.has_dirty,
+    })
+    
     db.flush()
     return dirty_record
 

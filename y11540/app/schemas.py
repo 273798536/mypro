@@ -87,39 +87,101 @@ class ReceiptUpdate(BaseModel):
     process_opinion: Optional[str] = None
 
 
-class ReceiptResponse(ReceiptBase):
+class _BaseReceiptResponse(BaseModel):
     id: int
     receipt_no: str
-    batch_id: Optional[int]
-    original_material_name: Optional[str]
     status: ReceiptStatus
-    prev_status: Optional[ReceiptStatus]
-    freeze_reason: Optional[str]
-    review_remark: Optional[str]
     has_dirty: bool
-    dirty_types: Optional[List[str]]
-    process_opinion: Optional[str]
-    created_by: Optional[int]
-    reviewed_by: Optional[int]
     created_at: datetime
-    updated_at: Optional[datetime]
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class ReceiptListResponse(BaseModel):
+class ViewerReceiptResponse(_BaseReceiptResponse):
+    material_id: str
+    material_name: Optional[str] = None
+    platform: Optional[str] = None
+    report_date: Optional[datetime] = None
+    batch_id: Optional[int] = None
+
+
+class DataEntryReceiptResponse(ViewerReceiptResponse):
+    review_result: Optional[str] = None
+    daily_cost: Optional[float] = None
+    daily_impressions: Optional[int] = None
+    daily_clicks: Optional[int] = None
+    secondary_confirmation: Optional[str] = None
+    confirmation_date: Optional[datetime] = None
+    cost_amount: Optional[float] = None
+    original_material_name: Optional[str] = None
+
+
+class ReviewerReceiptResponse(DataEntryReceiptResponse):
+    review_comment: Optional[str] = None
+    review_remark: Optional[str] = None
+    process_opinion: Optional[str] = None
+    raw_data: Optional[Dict[str, Any]] = None
+
+
+class SupervisorReceiptResponse(ReviewerReceiptResponse):
+    prev_status: Optional[ReceiptStatus] = None
+    freeze_reason: Optional[str] = None
+    dirty_types: Optional[List[str]] = None
+    created_by: Optional[int] = None
+    reviewed_by: Optional[int] = None
+    updated_at: Optional[datetime] = None
+
+
+ReceiptResponse = SupervisorReceiptResponse
+
+
+ROLE_RESPONSE_MAP = {
+    UserRole.VIEWER: ViewerReceiptResponse,
+    UserRole.DATA_ENTRY: DataEntryReceiptResponse,
+    UserRole.REVIEWER: ReviewerReceiptResponse,
+    UserRole.SUPERVISOR: SupervisorReceiptResponse,
+}
+
+
+def get_receipt_response_for_role(role: UserRole):
+    return ROLE_RESPONSE_MAP.get(role, ViewerReceiptResponse)
+
+
+class _BaseReceiptListResponse(BaseModel):
     id: int
     receipt_no: str
     material_id: str
-    material_name: Optional[str]
-    platform: Optional[str]
+    material_name: Optional[str] = None
+    platform: Optional[str] = None
     status: ReceiptStatus
     has_dirty: bool
-    report_date: Optional[datetime]
-    daily_cost: Optional[float]
+    report_date: Optional[datetime] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ViewerReceiptListResponse(_BaseReceiptListResponse):
+    pass
+
+
+class DataEntryReceiptListResponse(_BaseReceiptListResponse):
+    daily_cost: Optional[float] = None
+
+
+ReceiptListResponse = DataEntryReceiptListResponse
+
+
+ROLE_LIST_RESPONSE_MAP = {
+    UserRole.VIEWER: ViewerReceiptListResponse,
+    UserRole.DATA_ENTRY: DataEntryReceiptListResponse,
+    UserRole.REVIEWER: DataEntryReceiptListResponse,
+    UserRole.SUPERVISOR: DataEntryReceiptListResponse,
+}
+
+
+def get_receipt_list_response_for_role(role: UserRole):
+    return ROLE_LIST_RESPONSE_MAP.get(role, ViewerReceiptListResponse)
 
 
 class StatusChangeRequest(BaseModel):

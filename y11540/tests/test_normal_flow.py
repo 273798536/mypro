@@ -212,3 +212,34 @@ class TestNormalFlow:
         assert len(view_data["items"]) == 3
         assert "freeze_reason" in view_data["items"][0]
         assert "prev_status" in view_data["items"][0]
+
+    def test_audit_logs_for_batch_and_receipt_creation(self, client, test_users):
+        data_entry_token = get_token(client, "test_data_entry")
+
+        batch_response = client.post(
+            "/api/v1/receipts/batches",
+            json={"name": "审计测试批次"},
+            headers={"Authorization": f"Bearer {data_entry_token}"}
+        )
+        batch_id = batch_response.json()["id"]
+
+        receipt_response = client.post(
+            "/api/v1/receipts",
+            json={
+                "material_id": "AUDIT_TEST_001",
+                "material_name": "审计测试素材",
+                "platform": "抖音",
+                "report_date": "2024-01-20T00:00:00",
+            },
+            headers={"Authorization": f"Bearer {data_entry_token}"}
+        )
+        receipt_id = receipt_response.json()["id"]
+
+        audit_response = client.get(
+            f"/api/v1/receipts/{receipt_id}/audit-logs",
+            headers={"Authorization": f"Bearer {data_entry_token}"}
+        )
+        audit_logs = audit_response.json()
+        
+        create_actions = [log for log in audit_logs if log["action"] == "create"]
+        assert len(create_actions) >= 1
