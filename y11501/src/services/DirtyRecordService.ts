@@ -483,8 +483,8 @@ export class DirtyRecordService {
   private createDirtyRecord(
     sourceType: string,
     sourceRecordId: string,
-    originalRowNumber: number | undefined,
-    originalRowData: string | undefined,
+    originalRowNumber: number | null | undefined,
+    originalRowData: string | null | undefined,
     detail: DirtyRecordDetail
   ): DirtyRecord {
     return this.dirtyRecordRepository.create({

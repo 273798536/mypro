@@ -18,7 +18,7 @@ export class ShiftRecord {
   @Index()
   shiftNo: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   engineerName: string | null;
 
   @Column({
@@ -47,21 +47,21 @@ export class ShiftRecord {
   })
   status: RecordStatus;
 
-  @Column({ nullable: true })
-  originalRowNumber: number;
+  @Column({ type: 'int', nullable: true })
+  originalRowNumber: number | null;
 
   @Column({ type: 'text', nullable: true })
-  originalRowData: string;
+  originalRowData: string | null;
 
   @ManyToOne(() => ImportBatch, batch => batch.shiftRecords, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'importBatchId' })
   importBatch: ImportBatch;
 
-  @Column({ nullable: true })
-  importBatchId: string;
+  @Column({ type: 'varchar', nullable: true })
+  importBatchId: string | null;
 
-  @Column({ nullable: true })
-  createdBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  createdBy: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -17,14 +17,14 @@ export class SparePartScan {
   @Index()
   scanNo: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Index()
   repairOrderNo: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   partCode: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   partName: string | null;
 
   @Column({ type: 'int', nullable: true })
@@ -37,7 +37,7 @@ export class SparePartScan {
   })
   actionType: PartActionType | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   engineerName: string | null;
 
   @Column({ type: 'datetime', nullable: true })
@@ -53,21 +53,21 @@ export class SparePartScan {
   })
   status: RecordStatus;
 
-  @Column({ nullable: true })
-  originalRowNumber: number;
+  @Column({ type: 'int', nullable: true })
+  originalRowNumber: number | null;
 
   @Column({ type: 'text', nullable: true })
-  originalRowData: string;
+  originalRowData: string | null;
 
   @ManyToOne(() => ImportBatch, batch => batch.sparePartScans, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'importBatchId' })
   importBatch: ImportBatch;
 
-  @Column({ nullable: true })
-  importBatchId: string;
+  @Column({ type: 'varchar', nullable: true })
+  importBatchId: string | null;
 
-  @Column({ nullable: true })
-  createdBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  createdBy: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

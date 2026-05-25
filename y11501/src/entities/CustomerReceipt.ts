@@ -11,20 +11,20 @@ export class CustomerReceipt {
   @Index()
   receiptNo: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Index()
   repairOrderNo: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   customerName: string | null;
 
   @Column({ type: 'datetime', nullable: true })
   receiptTime: Date | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   photoUrl: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   photoHash: string | null;
 
   @Column({ type: 'text', nullable: true })
@@ -37,21 +37,21 @@ export class CustomerReceipt {
   })
   status: RecordStatus;
 
-  @Column({ nullable: true })
-  originalRowNumber: number;
+  @Column({ type: 'int', nullable: true })
+  originalRowNumber: number | null;
 
   @Column({ type: 'text', nullable: true })
-  originalRowData: string;
+  originalRowData: string | null;
 
   @ManyToOne(() => ImportBatch, batch => batch.customerReceipts, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'importBatchId' })
   importBatch: ImportBatch;
 
-  @Column({ nullable: true })
-  importBatchId: string;
+  @Column({ type: 'varchar', nullable: true })
+  importBatchId: string | null;
 
-  @Column({ nullable: true })
-  createdBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  createdBy: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

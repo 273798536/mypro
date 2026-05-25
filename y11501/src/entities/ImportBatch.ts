@@ -39,7 +39,7 @@ export class ImportBatch {
   isProcessed: boolean;
 
   @Column({ type: 'text', nullable: true })
-  remark: string;
+  remark: string | null;
 
   @OneToMany(() => RepairOrder, ro => ro.importBatch)
   repairOrders: RepairOrder[];

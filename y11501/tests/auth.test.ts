@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 import { AuthService } from '../src/services/AuthService';
-import { initializeDatabase } from '../src/config/database';
+import { connectDatabase, syncDatabaseSchema } from '../src/config/database';
 import { UserRole } from '../src/types';
 import { canPerformAction } from '../src/config/permissions';
 
@@ -19,7 +19,8 @@ describe('AuthService', () => {
     if (!fs.existsSync(TEST_DB_DIR)) {
       fs.mkdirSync(TEST_DB_DIR, { recursive: true });
     }
-    dataSource = await initializeDatabase(true);
+    dataSource = await connectDatabase();
+    await syncDatabaseSchema(true);
     authService = new AuthService();
   });
 

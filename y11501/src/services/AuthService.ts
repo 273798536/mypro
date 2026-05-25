@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { User } from '../entities/User';
 import { UserRole } from '../types';
 import { AppDataSource } from '../config/database';
@@ -8,8 +8,9 @@ export class AuthService {
   private userRepository: Repository<User>;
   private static currentUser: User | null = null;
 
-  constructor() {
-    this.userRepository = AppDataSource.getRepository(User);
+  constructor(dataSource?: DataSource) {
+    const ds = dataSource || AppDataSource;
+    this.userRepository = ds.getRepository(User);
   }
 
   private hashPassword(password: string, salt: string): string {

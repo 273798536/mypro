@@ -11,19 +11,19 @@ export class RepairOrder {
   @Index()
   orderNo: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   engineerName: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   engineerId: string | null;
 
   @Column({ type: 'datetime', nullable: true })
   orderDate: Date | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   customerName: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   customerPhone: string | null;
 
   @Column({ type: 'text', nullable: true })
@@ -39,27 +39,27 @@ export class RepairOrder {
   })
   status: RecordStatus;
 
-  @Column({ nullable: true })
-  originalRowNumber: number;
+  @Column({ type: 'int', nullable: true })
+  originalRowNumber: number | null;
 
   @Column({ type: 'text', nullable: true })
-  originalRowData: string;
+  originalRowData: string | null;
 
   @ManyToOne(() => ImportBatch, batch => batch.repairOrders, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'importBatchId' })
   importBatch: ImportBatch;
 
-  @Column({ nullable: true })
-  importBatchId: string;
+  @Column({ type: 'varchar', nullable: true })
+  importBatchId: string | null;
 
-  @Column({ nullable: true })
-  createdBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  createdBy: string | null;
 
-  @Column({ nullable: true })
-  reviewedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  reviewedBy: string | null;
 
   @Column({ type: 'datetime', nullable: true })
-  reviewedAt: Date;
+  reviewedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;

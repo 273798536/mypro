@@ -5,7 +5,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import { DirtyRecordService } from '../src/services/DirtyRecordService';
 import { ImportService } from '../src/services/ImportService';
-import { initializeDatabase } from '../src/config/database';
+import { connectDatabase, syncDatabaseSchema } from '../src/config/database';
 import { DataSourceType, DirtyRecordType, RecordStatus } from '../src/types';
 
 const TEST_DB_DIR = path.join(os.tmpdir(), 'spi-cli-test-dirty');
@@ -20,7 +20,8 @@ describe('DirtyRecordService', () => {
     if (!fs.existsSync(TEST_DB_DIR)) {
       fs.mkdirSync(TEST_DB_DIR, { recursive: true });
     }
-    dataSource = await initializeDatabase(true);
+    dataSource = await connectDatabase();
+    await syncDatabaseSchema(true);
     dirtyRecordService = new DirtyRecordService();
     importService = new ImportService();
 

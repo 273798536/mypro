@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { ImportService } from '../src/services/ImportService';
 import { FileParserService } from '../src/services/FileParserService';
 import { AuthService } from '../src/services/AuthService';
-import { initializeDatabase } from '../src/config/database';
+import { connectDatabase, syncDatabaseSchema } from '../src/config/database';
 import { DataSourceType, RecordStatus, UserRole } from '../src/types';
 
 const TEST_DB_DIR = path.join(os.tmpdir(), 'spi-cli-test');
@@ -21,7 +21,8 @@ describe('ImportService', () => {
     if (!fs.existsSync(TEST_DB_DIR)) {
       fs.mkdirSync(TEST_DB_DIR, { recursive: true });
     }
-    dataSource = await initializeDatabase(true);
+    dataSource = await connectDatabase();
+    await syncDatabaseSchema(true);
     importService = new ImportService();
     authService = new AuthService();
     await authService.initDefaultUsers();

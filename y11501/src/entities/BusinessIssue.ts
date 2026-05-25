@@ -15,10 +15,10 @@ export class BusinessIssue {
   @Column()
   sourceType: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   repairOrderNo: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   engineerName: string | null;
 
   @Column({ type: 'text' })
@@ -40,7 +40,7 @@ export class BusinessIssue {
   @Column({ type: 'text', nullable: true })
   handlingResult: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   handledBy: string | null;
 
   @Column({ type: 'datetime', nullable: true })

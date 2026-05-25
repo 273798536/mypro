@@ -19,8 +19,8 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ nullable: true })
-  fullName: string;
+  @Column({ type: 'varchar', nullable: true })
+  fullName: string | null;
 
   @Column({ default: true })
   isActive: boolean;

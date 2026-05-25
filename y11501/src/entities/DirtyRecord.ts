@@ -18,20 +18,20 @@ export class DirtyRecord {
   })
   dirtyType: DirtyRecordType;
 
-  @Column({ nullable: true })
-  fieldName: string;
+  @Column({ type: 'varchar', nullable: true })
+  fieldName: string | null;
 
   @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'text', nullable: true })
-  originalValue: string;
+  originalValue: string | null;
 
   @Column({ type: 'text', nullable: true })
-  expectedValue: string;
+  expectedValue: string | null;
 
   @Column({ type: 'text', nullable: true })
-  suggestedFix: string;
+  suggestedFix: string | null;
 
   @Column({
     type: 'simple-enum',
@@ -41,28 +41,28 @@ export class DirtyRecord {
   status: RecordStatus;
 
   @Column({ type: 'text', nullable: true })
-  fixedValue: string;
+  fixedValue: string | null;
 
-  @Column({ nullable: true })
-  fixedBy: string;
-
-  @Column({ type: 'datetime', nullable: true })
-  fixedAt: Date;
-
-  @Column({ type: 'text', nullable: true })
-  originalRowData: string;
-
-  @Column({ nullable: true })
-  originalRowNumber: number;
-
-  @Column({ type: 'text', nullable: true })
-  reviewRemark: string;
-
-  @Column({ nullable: true })
-  reviewedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  fixedBy: string | null;
 
   @Column({ type: 'datetime', nullable: true })
-  reviewedAt: Date;
+  fixedAt: Date | null;
+
+  @Column({ type: 'text', nullable: true })
+  originalRowData: string | null;
+
+  @Column({ type: 'int', nullable: true })
+  originalRowNumber: number | null;
+
+  @Column({ type: 'text', nullable: true })
+  reviewRemark: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  reviewedBy: string | null;
+
+  @Column({ type: 'datetime', nullable: true })
+  reviewedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;

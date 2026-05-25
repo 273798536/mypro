@@ -29,22 +29,22 @@ export class OperationLog {
   operator: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description: string | null;
 
   @Column({ type: 'text', nullable: true })
-  details: string;
+  details: string | null;
 
-  @Column({ nullable: true })
-  batchId: string;
+  @Column({ type: 'varchar', nullable: true })
+  batchId: string | null;
 
-  @Column({ nullable: true })
-  recordId: string;
+  @Column({ type: 'varchar', nullable: true })
+  recordId: string | null;
 
   @Column({ default: true })
   success: boolean;
 
   @Column({ type: 'text', nullable: true })
-  errorMessage: string;
+  errorMessage: string | null;
 
   @CreateDateColumn()
   @Index()

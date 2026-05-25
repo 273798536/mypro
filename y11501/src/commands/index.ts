@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 import inquirer from 'inquirer';
-import { initializeDatabase, getDatabasePath } from '../config/database';
+import { connectDatabase, isDatabaseInitialized, syncDatabaseSchema, getDatabasePath } from '../config/database';
 import { AuthService } from '../services/AuthService';
 import { ImportService } from '../services/ImportService';
 import { DirtyRecordService } from '../services/DirtyRecordService';
@@ -23,7 +23,11 @@ let logService: OperationLogService;
 
 async function ensureInitialized(): Promise<void> {
   try {
-    await initializeDatabase();
+    if (!isDatabaseInitialized()) {
+      console.log(chalk.yellow('数据库尚未初始化，请先运行: npx ts-node src/index.ts init'));
+      process.exit(1);
+    }
+    await connectDatabase();
     authService = new AuthService();
     importService = new ImportService();
     dirtyRecordService = new DirtyRecordService();
@@ -75,7 +79,8 @@ program
     console.log(chalk.blue('正在初始化数据库...'));
     
     try {
-      await initializeDatabase(options.force);
+      await connectDatabase();
+      await syncDatabaseSchema(options.force);
       authService = new AuthService();
       await authService.initDefaultUsers();
       
@@ -456,7 +461,7 @@ program
         log.createdAt.toLocaleString(),
         log.operationType,
         log.operator,
-        log.description.substring(0, 28),
+        (log.description || '').substring(0, 28),
         log.success ? chalk.green('成功') : chalk.red('失败')
       ]);
     });

@@ -5,7 +5,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import { BusinessIssueService } from '../src/services/BusinessIssueService';
 import { ImportService } from '../src/services/ImportService';
-import { initializeDatabase } from '../src/config/database';
+import { connectDatabase, syncDatabaseSchema } from '../src/config/database';
 import { DataSourceType, BusinessIssueType, RecordStatus } from '../src/types';
 
 const TEST_DB_DIR = path.join(os.tmpdir(), 'spi-cli-test-business');
@@ -20,7 +20,8 @@ describe('BusinessIssueService', () => {
     if (!fs.existsSync(TEST_DB_DIR)) {
       fs.mkdirSync(TEST_DB_DIR, { recursive: true });
     }
-    dataSource = await initializeDatabase(true);
+    dataSource = await connectDatabase();
+    await syncDatabaseSchema(true);
     businessIssueService = new BusinessIssueService();
     importService = new ImportService();
 
