@@ -57,6 +57,33 @@ const buildInvestigationChain = async (borrowRecordId) => {
     timestamp: borrowRecord.logistics_date || null
   });
 
+  const borrowDate = borrowRecord.borrow_date ? borrowRecord.borrow_date.split(' ')[0] : null;
+  const shiftInfo = borrowRecord.shift_info || null;
+  
+  let shiftRecord = null;
+  if (borrowDate) {
+    const shiftStmt = `
+      SELECT * FROM shift_records 
+      WHERE shift_date = ? 
+      ORDER BY shift_date DESC
+      LIMIT 1
+    `;
+    shiftRecord = await getQuery(shiftStmt, [borrowDate]);
+    
+    if (shiftRecord) {
+      chain.push({
+        sequence_no: sequence++,
+        stage: '班次交接',
+        handler: shiftRecord.team_leader || '未知',
+        action: `班次: ${shiftRecord.shift_type || shiftInfo || '未知'}`,
+        team_members: shiftRecord.team_member || null,
+        handover_notes: shiftRecord.handover_notes || null,
+        evidence: `班次日期: ${shiftRecord.shift_date}, 班长: ${shiftRecord.team_leader || '未记录'}`,
+        timestamp: shiftRecord.shift_date || null
+      });
+    }
+  }
+
   chain.push({
     sequence_no: sequence++,
     stage: '设备借出',
@@ -107,6 +134,7 @@ const buildInvestigationChain = async (borrowRecordId) => {
 
   return {
     borrow_record: borrowRecord,
+    shift_record: shiftRecord,
     chain,
     status: borrowRecord.status,
     responsible_person: borrowRecord.responsible_person || determineResponsiblePerson(chain)

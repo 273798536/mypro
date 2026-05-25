@@ -371,23 +371,53 @@ const importPriceAdjustment = async (filePath, sourceId, operator) => {
         throw new Error('缺少必填字段: 物料编码');
       }
 
-      await runQuery(`
-        INSERT INTO price_adjustments (
-          source_id, source_row_number, raw_data,
-          material_code, original_price, adjusted_price,
-          adjustment_reason, adjusted_by, adjustment_date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        sourceId,
-        rowNumber,
-        JSON.stringify(record),
-        record['物料编码'],
-        parseFloat(record['原价']) || 0,
-        parseFloat(record['调整后价格']) || 0,
-        record['调整原因'] || null,
-        record['调整人'] || null,
-        record['调整日期'] || null
-      ]);
+      try {
+        await runQuery(`
+          INSERT INTO price_adjustments (
+            source_id, source_row_number, raw_data,
+            material_code, original_price, adjusted_price,
+            adjustment_reason, adjusted_by, adjustment_date
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+          sourceId,
+          rowNumber,
+          JSON.stringify(record),
+          record['物料编码'],
+          parseFloat(record['原价']) || 0,
+          parseFloat(record['调整后价格']) || 0,
+          record['调整原因'] || null,
+          record['调整人'] || null,
+          record['调整日期'] || null
+        ]);
+      } catch (insertErr) {
+        if (insertErr.message.includes('UNIQUE') || insertErr.message.includes('unique')) {
+          await runQuery(`
+            UPDATE price_adjustments SET
+              source_id = ?,
+              source_row_number = ?,
+              raw_data = ?,
+              original_price = ?,
+              adjusted_price = ?,
+              adjustment_reason = ?,
+              adjusted_by = ?,
+              adjustment_date = ?,
+              updated_at = CURRENT_TIMESTAMP
+            WHERE material_code = ?
+          `, [
+            sourceId,
+            rowNumber,
+            JSON.stringify(record),
+            parseFloat(record['原价']) || 0,
+            parseFloat(record['调整后价格']) || 0,
+            record['调整原因'] || null,
+            record['调整人'] || null,
+            record['调整日期'] || null,
+            record['物料编码']
+          ]);
+        } else {
+          throw insertErr;
+        }
+      }
       successCount++;
     } catch (error) {
       failedCount++;
@@ -399,10 +429,51 @@ const importPriceAdjustment = async (filePath, sourceId, operator) => {
   return { successCount, failedCount, errors };
 };
 
+const importShiftRecord = async (filePath, sourceId, operator) => {
+  const records = await parseCSV(filePath);
+  let successCount = 0;
+  let failedCount = 0;
+  const errors = [];
+
+  for (let i = 0; i < records.length; i++) {
+    const record = records[i];
+    const rowNumber = i + 2;
+    try {
+      if (!record['班次日期']) {
+        throw new Error('缺少必填字段: 班次日期');
+      }
+
+      await runQuery(`
+        INSERT INTO shift_records (
+          source_id, source_row_number, raw_data,
+          shift_date, shift_type, team_leader, team_member, handover_notes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        sourceId,
+        rowNumber,
+        JSON.stringify(record),
+        record['班次日期'],
+        record['班次类型'] || null,
+        record['班长'] || null,
+        record['班组成员'] || null,
+        record['交接备注'] || null
+      ]);
+      successCount++;
+    } catch (error) {
+      failedCount++;
+      errors.push(`行 ${rowNumber}: ${error.message}`);
+      logger.error(`班次记录导入失败 - 行 ${rowNumber}`, { error: error.message, record });
+    }
+  }
+
+  return { successCount, failedCount, errors };
+};
+
 const importHandlers = {
   material_list: importMaterialList,
   logistics_receipt: importLogisticsReceipt,
   borrow_record: importBorrowRecord,
+  shift_record: importShiftRecord,
   price_adjustment: importPriceAdjustment
 };
 

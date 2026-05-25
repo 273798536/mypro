@@ -118,7 +118,7 @@ const initSQL = `
     source_id INTEGER,
     source_row_number INTEGER,
     raw_data TEXT,
-    material_code TEXT,
+    material_code TEXT UNIQUE,
     original_price DECIMAL(10,2),
     adjusted_price DECIMAL(10,2),
     adjustment_reason TEXT,

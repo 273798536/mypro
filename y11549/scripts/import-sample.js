@@ -10,6 +10,7 @@ async function importAll() {
   const imports = [
     { type: 'material_list', file: 'material-list.csv', name: '物料清单' },
     { type: 'logistics_receipt', file: 'logistics-receipt.csv', name: '物流签收' },
+    { type: 'shift_record', file: 'shift-records.csv', name: '班次记录' },
     { type: 'borrow_record', file: 'borrow-records.csv', name: '借用记录' },
     { type: 'price_adjustment', file: 'price-adjustment.csv', name: '价格调整' }
   ];
