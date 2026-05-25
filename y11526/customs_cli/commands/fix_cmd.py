@@ -5,7 +5,7 @@ from rich.prompt import Prompt
 from datetime import datetime
 from ..database import (
     get_session, ExceptionRecord, Package, TaxNotice,
-    SupplierStatement, AuditLog, DataSource
+    SupplierStatement, AuditLog, DataSource, ExceptionStage
 )
 
 
@@ -19,9 +19,10 @@ def fix(ctx):
 @fix.command("list")
 @click.option("--resolved", is_flag=True, help="显示已修复的")
 @click.option("--batch", "-b", "batch_id", help="按批次过滤")
+@click.option("--stage", "-s", type=click.Choice(["import", "check", "all"]), default="all", help="按阶段过滤")
 @click.option("--limit", "-l", default=50, help="显示数量")
 @click.pass_context
-def list_exceptions(ctx, resolved, batch_id, limit):
+def list_exceptions(ctx, resolved, batch_id, stage, limit):
     """列出异常记录"""
     console = ctx.obj["console"]
     session = get_session()
@@ -32,6 +33,10 @@ def list_exceptions(ctx, resolved, batch_id, limit):
             query = query.filter(ExceptionRecord.is_resolved == False)
         if batch_id:
             query = query.filter(ExceptionRecord.batch_id == batch_id)
+        if stage == "import":
+            query = query.filter(ExceptionRecord.exception_stage == ExceptionStage.IMPORT)
+        elif stage == "check":
+            query = query.filter(ExceptionRecord.exception_stage == ExceptionStage.CHECK)
 
         exceptions = query.order_by(ExceptionRecord.created_at.desc()).limit(limit).all()
 
@@ -39,8 +44,9 @@ def list_exceptions(ctx, resolved, batch_id, limit):
             console.print("[yellow]没有找到异常记录[/yellow]")
             return
 
-        table = Table(title=f"异常记录 ({'未修复' if not resolved else '已修复'})")
+        table = Table(title=f"异常记录 ({'未修复' if not resolved else '已修复'}, 阶段: {stage})")
         table.add_column("ID", style="cyan")
+        table.add_column("阶段", style="bright_cyan")
         table.add_column("类型", style="blue")
         table.add_column("运单号", style="yellow")
         table.add_column("原始行号", justify="right")
@@ -50,8 +56,10 @@ def list_exceptions(ctx, resolved, batch_id, limit):
 
         for e in exceptions:
             status = "[green]已修复[/green]" if e.is_resolved else "[red]未修复[/red]"
+            stage_label = f"[yellow]{e.exception_stage.value}[/yellow]" if e.exception_stage == ExceptionStage.IMPORT else f"[cyan]{e.exception_stage.value}[/cyan]"
             table.add_row(
                 str(e.id),
+                stage_label,
                 e.exception_type.value,
                 e.tracking_number or "-",
                 str(e.original_row) if e.original_row else "-",
@@ -79,10 +87,20 @@ def show_exception(ctx, exception_id):
             console.print(f"[red]异常记录不存在: {exception_id}[/red]")
             return
 
+        source = e.source
+        source_type = source.source_type.value if source else "-"
+        source_file = source.file_name if source else "-"
+
+        stage_color = "yellow" if e.exception_stage == ExceptionStage.IMPORT else "cyan"
+        stage_text = "导入阶段" if e.exception_stage == ExceptionStage.IMPORT else "校验阶段"
+
         info = f"""
 [cyan]ID[/cyan]: {e.id}
+[cyan]阶段[/cyan]: [{stage_color}]{stage_text}[/{stage_color}] ({e.exception_stage.value})
 [cyan]类型[/cyan]: {e.exception_type.value}
 [cyan]批次[/cyan]: {e.batch_id}
+[cyan]数据源类型[/cyan]: {source_type}
+[cyan]原始文件名[/cyan]: {source_file}
 [cyan]运单号[/cyan]: {e.tracking_number or '-'}
 [cyan]原始行号[/cyan]: {e.original_row or '-'}
 [cyan]严重程度[/cyan]: {e.severity}

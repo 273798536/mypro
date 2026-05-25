@@ -3,7 +3,7 @@ import json
 from rich.table import Table
 from rich.panel import Panel
 from datetime import datetime
-from ..database import get_session, Package, TaxRecord, ExceptionRecord, DataSource
+from ..database import get_session, Package, TaxRecord, ExceptionRecord, DataSource, ExceptionStage
 
 
 @click.command()
@@ -98,16 +98,58 @@ def report(ctx, batch_id, output_format, output):
 
             console.print(exc_table)
 
+        import_failures = session.query(ExceptionRecord).filter(
+            (True if not batch_id else ExceptionRecord.batch_id == batch_id),
+            ExceptionRecord.exception_stage == ExceptionStage.IMPORT,
+            ExceptionRecord.is_resolved == False
+        ).all()
+
+        if import_failures:
+            failed_detail_table = Table(
+                title="导入失败明细 - 客户经理重点关注（可直接按原始行号回看修正）",
+                show_lines=True
+            )
+            failed_detail_table.add_column("异常ID", style="cyan", justify="right")
+            failed_detail_table.add_column("批次", style="green")
+            failed_detail_table.add_column("数据源类型", style="blue")
+            failed_detail_table.add_column("原始文件名", style="magenta")
+            failed_detail_table.add_column("原始行号", style="red", justify="right")
+            failed_detail_table.add_column("运单号", style="yellow")
+            failed_detail_table.add_column("错误原因", style="white")
+            failed_detail_table.add_column("修正指引", style="bright_cyan")
+
+            for e in import_failures:
+                source = e.source
+                source_type = source.source_type.value if source else "-"
+                file_name = source.file_name if source else "-"
+
+                fix_command = f"customs-cli fix reimport {e.id}"
+                failed_detail_table.add_row(
+                    str(e.id),
+                    e.batch_id or "-",
+                    source_type,
+                    file_name,
+                    str(e.original_row) if e.original_row else "-",
+                    e.tracking_number or "-",
+                    e.message,
+                    fix_command
+                )
+
+            console.print(failed_detail_table)
+            console.print("\n[yellow]操作指引: 运行 'customs-cli fix reimport <异常ID>' 查看原始文件和行号，修正后重新导入[/yellow]")
+
         failed_sources = session.query(DataSource).filter(
             (True if not batch_id else DataSource.batch_id == batch_id),
             DataSource.failed_rows > 0
         ).all()
 
         if failed_sources:
-            failed_table = Table(title="导入失败清单")
+            failed_table = Table(title="导入失败汇总")
             failed_table.add_column("批次", style="green")
             failed_table.add_column("数据源", style="blue")
             failed_table.add_column("文件名", style="cyan")
+            failed_table.add_column("总行数", style="white", justify="right")
+            failed_table.add_column("成功行数", style="green", justify="right")
             failed_table.add_column("失败行数", style="red", justify="right")
 
             for s in failed_sources:
@@ -115,10 +157,11 @@ def report(ctx, batch_id, output_format, output):
                     s.batch_id,
                     s.source_type.value,
                     s.file_name,
+                    str(s.total_rows),
+                    str(s.success_rows),
                     str(s.failed_rows)
                 )
             console.print(failed_table)
-            console.print("\n[yellow]提示: 使用 'customs-cli fix edit' 人工修正后重新导入[/yellow]")
 
     finally:
         session.close()

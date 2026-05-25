@@ -6,7 +6,7 @@ from sqlalchemy import func
 
 from .database import (
     get_session, Package, TrackingNode, TaxNotice,
-    SupplierStatement, TaxRecord, ExceptionRecord, ExceptionType,
+    SupplierStatement, TaxRecord, ExceptionRecord, ExceptionType, ExceptionStage,
     DataSource, AuditLog
 )
 
@@ -34,11 +34,13 @@ class DataChecker:
                        original_row: int = None, field_name: str = None,
                        expected: str = None, actual: str = None,
                        related_table: str = None, related_id: int = None,
-                       source_id: int = None):
+                       source_id: int = None,
+                       exception_stage: ExceptionStage = ExceptionStage.CHECK):
         exc = ExceptionRecord(
             batch_id=self.batch_id,
             source_id=source_id,
             exception_type=exc_type,
+            exception_stage=exception_stage,
             severity=severity,
             tracking_number=None if (isinstance(tracking_number, float) and pd.isna(tracking_number)) or tracking_number is None else str(tracking_number),
             original_row=original_row,
@@ -238,6 +240,7 @@ class DataChecker:
 
     def run_all_checks(self) -> Dict[str, Any]:
         self.session.query(ExceptionRecord).filter(
+            ExceptionRecord.exception_stage == ExceptionStage.CHECK,
             ExceptionRecord.batch_id == self.batch_id if self.batch_id else True
         ).delete(synchronize_session=False)
 

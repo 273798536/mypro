@@ -204,6 +204,11 @@ class TaxRecord(Base):
     package = relationship("Package", backref="tax_records")
 
 
+class ExceptionStage(PyEnum):
+    IMPORT = "import"
+    CHECK = "check"
+
+
 class ExceptionRecord(Base):
     __tablename__ = "exception_records"
     
@@ -211,6 +216,7 @@ class ExceptionRecord(Base):
     batch_id = Column(String(64), index=True)
     source_id = Column(Integer, ForeignKey("data_sources.id"))
     exception_type = Column(Enum(ExceptionType), index=True)
+    exception_stage = Column(Enum(ExceptionStage), default=ExceptionStage.IMPORT, index=True)
     severity = Column(String(20), default="warning")
     tracking_number = Column(String(100), index=True)
     related_table = Column(String(100))

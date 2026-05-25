@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from .database import (
     get_session, DataSource, DataSourceType, ImportStrategy,
     Package, TrackingNode, TaxNotice, SupplierStatement, ApprovalEmail,
-    AuditLog, AsyncTask, TaskStatus, ExceptionRecord, ExceptionType
+    AuditLog, AsyncTask, TaskStatus, ExceptionRecord, ExceptionType, ExceptionStage
 )
 
 
@@ -85,11 +85,13 @@ class BaseImporter:
     def log_exception(self, original_row: int, tracking_number: str,
                       exception_type: ExceptionType, message: str,
                       field_name: str = None, expected: str = None,
-                      actual: str = None, severity: str = "error"):
+                      actual: str = None, severity: str = "error",
+                      exception_stage: ExceptionStage = ExceptionStage.IMPORT):
         exc = ExceptionRecord(
             batch_id=self.batch_id,
             source_id=self.source_id,
             exception_type=exception_type,
+            exception_stage=exception_stage,
             severity=severity,
             tracking_number=None if is_empty_value(tracking_number) else str(tracking_number),
             original_row=original_row,
