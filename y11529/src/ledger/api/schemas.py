@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Any, Dict
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from ..models import (
     RecordStatus, RecordType, NodeType, TaxNoticeType,
@@ -44,6 +44,12 @@ class RecordCreateRequest(BaseModel):
     node_location: Optional[str] = None
     operator: Optional[str] = None
     node_note: Optional[str] = None
+
+    @model_validator(mode='after')
+    def validate_trace_node_required_fields(self):
+        if self.record_type == RecordType.TRACE_NODE and self.node_type is None:
+            raise ValueError("node_type is required when record_type is trace_node")
+        return self
 
 
 class RecordUpdateRequest(BaseModel):

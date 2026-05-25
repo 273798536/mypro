@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from ..models import (
     LedgerRecord, RecordStatus, RecordType, ActionType, Role,
     AuditLog, VersionDiff, DeclarationForm, TraceNode, TaxNotice,
-    SupplementaryRecord, ShiftRecord
+    SupplementaryRecord, ShiftRecord, NodeType
 )
 
 
@@ -247,7 +247,7 @@ class RecordService:
         elif record_type == RecordType.TRACE_NODE:
             trace_node = TraceNode(
                 ledger_record_id=record.id,
-                node_type=kwargs.get("node_type"),
+                node_type=kwargs.get("node_type") or NodeType.CUSTOMS_DECLARATION,
                 node_time=kwargs.get("node_time") or datetime.now(),
                 node_location=kwargs.get("node_location"),
                 operator=kwargs.get("operator"),
