@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma.js';
 import { auditService } from './audit.service.js';
-import type { ExportFormat } from '@prisma/client';
+import type { ExportFormat } from '../types/index.js';
 import { toJson, fromJson } from '../utils/json.js';
 import * as XLSX from 'xlsx';
 import fs from 'fs';
@@ -25,7 +25,7 @@ export class ExportService {
       data: {
         format,
         status: 'RUNNING',
-        snapshotData: {},
+        snapshotData: '{}',
         createdBy: operatorId,
       },
     });
@@ -41,7 +41,7 @@ export class ExportService {
       })),
     );
 
-    const snapshotData = { chains, exportedAt: new Date().toISOString() };
+    const snapshotData = toJson({ chains, exportedAt: new Date().toISOString() });
 
     await prisma.exportTask.update({
       where: { id: exportTask.id },
@@ -81,7 +81,7 @@ export class ExportService {
       data: {
         status: 'COMPLETED',
         filePath,
-        chains: { connect: chainIds.map(id => ({ id })) },
+        chain: { connect: { id: chainIds[0] } },
       },
     });
 

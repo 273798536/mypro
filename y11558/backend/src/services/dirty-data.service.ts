@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma.js';
-import type { DirtyDataType, DirtyDataStatus } from '@prisma/client';
+import type { DirtyDataType, DirtyDataStatus } from '../types/index.js';
 import type { OrderData, IouData } from '../types/index.js';
 import { toJson, fromJson } from '../utils/json.js';
 

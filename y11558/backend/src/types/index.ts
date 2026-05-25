@@ -1,4 +1,4 @@
-export type ChainStatus = 'PENDING' | 'PROCESSING' | 'EXCEPTION' | 'RECONCILING' | 'REVIEW_REQUIRED' | 'RECONCILED' | 'EXPORTED';
+export type ChainStatus = 'PENDING' | 'PROCESSING' | 'EXCEPTION' | 'RECONCILING' | 'REVIEW_REQUIRED' | 'RECONCILED' | 'EXPORTED' | 'COMPLETED' | 'FAILED';
 
 export type MaterialType = 'ORDER' | 'TRACK' | 'IOU' | 'STATEMENT' | 'EMAIL';
 
@@ -7,6 +7,12 @@ export type DirtyDataType = 'MISSING_FIELD' | 'CROSS_DATE' | 'NAME_CHANGE' | 'AM
 export type DirtyDataStatus = 'PENDING' | 'FIXED' | 'IGNORED';
 
 export type HandleMode = 'OVERWRITE' | 'IGNORE';
+
+export type ExportFormat = 'EXCEL' | 'JSON' | 'CSV';
+
+export type ReconStatus = 'PENDING' | 'CONFIRMED';
+
+export type ExportTaskStatus = 'RUNNING' | 'COMPLETED' | 'FAILED';
 
 export interface OrderItem {
   productName: string;

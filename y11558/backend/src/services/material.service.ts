@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma.js';
-import type { MaterialType, HandleMode } from '@prisma/client';
+import type { MaterialType, HandleMode } from '../types/index.js';
 import { auditService } from './audit.service.js';
 import { dirtyDataService } from './dirty-data.service.js';
 import { toJson, fromJson } from '../utils/json.js';
@@ -99,8 +99,8 @@ export class MaterialService {
     const relatedMaterials = await prisma.material.findMany({
       where: {
         OR: [
-          { parsedData: { path: ['storeName'], equals: parsedData.storeName } },
-          { parsedData: { path: ['supplierName'], equals: parsedData.supplierName } },
+          { parsedData: { contains: `"storeName":"${parsedData.storeName}"` } },
+          { parsedData: { contains: `"supplierName":"${parsedData.supplierName}"` } },
         ],
         isLatest: true,
       },
@@ -139,8 +139,8 @@ export class MaterialService {
 
     if (storeName) {
       where.OR = [
-        { parsedData: { path: ['storeName'], contains: storeName } },
-        { parsedData: { path: ['supplierName'], contains: storeName } },
+        { parsedData: { contains: `"storeName":"${storeName}"` } },
+        { parsedData: { contains: `"supplierName":"${storeName}"` } },
       ];
     }
 

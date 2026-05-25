@@ -6,7 +6,7 @@ import { dirtyDataService } from './services/dirty-data.service.js';
 import { reconciliationService } from './services/reconciliation.service.js';
 import { exportService } from './services/export.service.js';
 import { auditService } from './services/audit.service.js';
-import type { MaterialType, HandleMode, ExportFormat } from '@prisma/client';
+import type { MaterialType, HandleMode, ExportFormat } from './types/index.js';
 
 const router = Router();
 

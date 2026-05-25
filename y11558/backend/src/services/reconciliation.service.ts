@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma.js';
 import { auditService } from './audit.service.js';
-import type { ChainStatus } from '@prisma/client';
+import type { ChainStatus } from '../types/index.js';
 import { toJson, fromJson } from '../utils/json.js';
 
 export interface ReconciliationDifference {
@@ -44,7 +44,7 @@ export class ReconciliationService {
 
     await auditService.logStatusChange(
       chainId,
-      chain.status,
+      chain.status as ChainStatus,
       'RECONCILING',
       '启动自动对账',
       operatorId,
@@ -224,7 +224,7 @@ export class ReconciliationService {
 
     await auditService.logStatusChange(
       chainId,
-      chain.status,
+      chain.status as ChainStatus,
       'RECONCILED',
       '人工确认对账完成',
       operatorId,

@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma.js';
-import type { ChainStatus } from '@prisma/client';
+import type { ChainStatus } from '../types/index.js';
 
 export class AuditService {
   async logStatusChange(

@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma.js';
 import { auditService } from './audit.service.js';
+import type { ChainStatus } from '../types/index.js';
 import { toJson, fromJson, safeParse } from '../utils/json.js';
 
 export class ChainService {
@@ -212,7 +213,7 @@ export class ChainService {
 
     await auditService.logStatusChange(
       id,
-      chain.status,
+      chain.status as ChainStatus,
       newStatus,
       reason,
       operatorId,
