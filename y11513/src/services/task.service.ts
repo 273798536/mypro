@@ -8,10 +8,61 @@ import { recordService } from './record.service';
 export class TaskService {
   private isRunning: boolean = false;
 
+  public async hasUnfinishedTask(
+    recordId: string,
+    recordType: RecordType
+  ): Promise<boolean> {
+    const row = await db.get(
+      `SELECT COUNT(*) as count FROM async_tasks 
+       WHERE record_id = ? AND record_type = ? 
+       AND status IN (?, ?, ?)`,
+      [
+        recordId, recordType,
+        TaskStatus.PENDING,
+        TaskStatus.PROCESSING,
+        TaskStatus.WAITING_RETRY
+      ]
+    );
+
+    return (row as any).count > 0;
+  }
+
+  public async getUnfinishedTask(
+    recordId: string,
+    recordType: RecordType
+  ): Promise<AsyncTask | undefined> {
+    const row = await db.get(
+      `SELECT * FROM async_tasks 
+       WHERE record_id = ? AND record_type = ? 
+       AND status IN (?, ?, ?)
+       ORDER BY created_at DESC LIMIT 1`,
+      [
+        recordId, recordType,
+        TaskStatus.PENDING,
+        TaskStatus.PROCESSING,
+        TaskStatus.WAITING_RETRY
+      ]
+    );
+
+    if (!row) return undefined;
+    return this.mapRowToTask(row);
+  }
+
   public async createTask(
     recordId: string,
     recordType: RecordType
   ): Promise<AsyncTask> {
+    const existingTask = await this.getUnfinishedTask(recordId, recordType);
+    if (existingTask) {
+      logger.info('Skipping duplicate task creation - unfinished task exists', {
+        existingTaskId: existingTask.id,
+        recordId,
+        recordType,
+        status: existingTask.status
+      });
+      return existingTask;
+    }
+
     const taskId = uuidv4();
     const now = Date.now();
 
@@ -263,6 +314,26 @@ export class TaskService {
     );
   }
 
+  public async resetStuckProcessingTasks(): Promise<number> {
+    const now = Date.now();
+    const result = await db.run(
+      `UPDATE async_tasks SET 
+        status = ?, 
+        retry_count = retry_count,
+        next_retry_at = ?,
+        updated_at = ?
+       WHERE status = ?`,
+      [TaskStatus.PENDING, now, now, TaskStatus.PROCESSING]
+    );
+
+    const resetCount = result.changes || 0;
+    if (resetCount > 0) {
+      logger.info('Reset stuck processing tasks to pending', { count: resetCount });
+    }
+
+    return resetCount;
+  }
+
   public startTaskProcessor(): void {
     if (this.isRunning) {
       logger.warn('Task processor is already running');
@@ -271,6 +342,10 @@ export class TaskService {
 
     this.isRunning = true;
     logger.info('Starting task processor');
+
+    this.resetStuckProcessingTasks().catch(err => {
+      logger.error('Failed to reset stuck processing tasks', err);
+    });
 
     const processLoop = async () => {
       while (this.isRunning) {

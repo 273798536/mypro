@@ -310,15 +310,13 @@ export class RecordService {
             reader_name = ?, isbn = ?, book_title = ?, applicant_library = ?,
             lending_library = ?, application_date = ?, status = ?,
             expected_return_date = ?, actual_return_date = ?, processing_reason = ?,
-            version = ?, source_file = ?, original_line_number = ?,
-            raw_value = ?, parsed_value = ?, updated_at = ?
+            version = ?, updated_at = ?
           WHERE id = ?`,
           [
             r.readerName, r.isbn, r.bookTitle, r.applicantLibrary,
             r.lendingLibrary, r.applicationDate, r.status,
             r.expectedReturnDate, r.actualReturnDate, r.processingReason,
-            r.version, r.importSource.sourceFile, r.importSource.originalLineNumber,
-            r.importSource.rawValue, r.importSource.parsedValue, r.updatedAt, r.id
+            r.version, r.updatedAt, r.id
           ]
         );
         break;
@@ -328,14 +326,12 @@ export class RecordService {
           `UPDATE ${tableName} SET
             related_application_no = ?, sender = ?, receiver = ?, send_date = ?,
             receive_date = ?, express_company = ?, freight = ?, status = ?,
-            processing_reason = ?, version = ?, source_file = ?, original_line_number = ?,
-            raw_value = ?, parsed_value = ?, updated_at = ?
+            processing_reason = ?, version = ?, updated_at = ?
           WHERE id = ?`,
           [
             r.relatedApplicationNo, r.sender, r.receiver, r.sendDate,
             r.receiveDate, r.expressCompany, r.freight, r.status,
-            r.processingReason, r.version, r.importSource.sourceFile, r.importSource.originalLineNumber,
-            r.importSource.rawValue, r.importSource.parsedValue, r.updatedAt, r.id
+            r.processingReason, r.version, r.updatedAt, r.id
           ]
         );
         break;
@@ -345,14 +341,12 @@ export class RecordService {
           `UPDATE ${tableName} SET
             related_application_no = ?, reader_id = ?, compensation_type = ?,
             amount = ?, compensation_date = ?, status = ?, remark = ?,
-            processing_reason = ?, version = ?, source_file = ?, original_line_number = ?,
-            raw_value = ?, parsed_value = ?, updated_at = ?
+            processing_reason = ?, version = ?, updated_at = ?
           WHERE id = ?`,
           [
             r.relatedApplicationNo, r.readerId, r.compensationType,
             r.amount, r.compensationDate, r.status, r.remark,
-            r.processingReason, r.version, r.importSource.sourceFile, r.importSource.originalLineNumber,
-            r.importSource.rawValue, r.importSource.parsedValue, r.updatedAt, r.id
+            r.processingReason, r.version, r.updatedAt, r.id
           ]
         );
         break;
@@ -362,14 +356,12 @@ export class RecordService {
           `UPDATE ${tableName} SET
             operator_id = ?, operator_name = ?, shift_date = ?, shift_type = ?,
             processed_records = ?, remark = ?, processing_reason = ?, version = ?,
-            source_file = ?, original_line_number = ?, raw_value = ?, parsed_value = ?,
             updated_at = ?
           WHERE id = ?`,
           [
             r.operatorId, r.operatorName, r.shiftDate, r.shiftType,
             r.processedRecords, r.remark, r.processingReason, r.version,
-            r.importSource.sourceFile, r.importSource.originalLineNumber,
-            r.importSource.rawValue, r.importSource.parsedValue, r.updatedAt, r.id
+            r.updatedAt, r.id
           ]
         );
         break;
