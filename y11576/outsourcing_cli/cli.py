@@ -284,7 +284,8 @@ def history(batch_id, limit):
               type=click.Choice(['csv', 'json']), help='导出格式')
 @click.option('--output', help='输出文件路径')
 @click.option('--frozen-only', is_flag=True, help='仅导出已冻结记录')
-def export(batch_id, export_format, output, frozen_only):
+@click.option('--operator', default='system', help='操作人')
+def export(batch_id, export_format, output, frozen_only, operator):
     db = get_db()
     
     records = db.get_reconciliation_records(batch_id, include_frozen=True)
@@ -339,6 +340,17 @@ def export(batch_id, export_format, output, frozen_only):
                 'record_count': len(export_data),
                 'records': export_data
             }, f, ensure_ascii=False, indent=2)
+    
+    db.log_action(
+        batch_id, 'export', operator,
+        new_value={
+            'format': export_format,
+            'output': output,
+            'record_count': len(records),
+            'frozen_only': frozen_only
+        },
+        reason=f'导出对账结果 [格式: {export_format}, 记录数: {len(records)}'
+    )
     
     click.secho(f"✓ 导出成功: {output}", fg='green')
     click.echo(f"导出记录数: {len(records)}")

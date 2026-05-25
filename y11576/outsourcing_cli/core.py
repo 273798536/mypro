@@ -308,7 +308,35 @@ class ImportManager:
         
         is_duplicate = self.db.check_duplicate_file(batch_id, file_type, parser.file_hash)
         
+        if is_duplicate:
+            self.db.log_action(
+                batch_id, 'import_duplicate_rejected', operator,
+                new_value={
+                    'file_type': file_type,
+                    'file_name': Path(file_path).name,
+                    'file_hash': parser.file_hash
+                },
+                reason=f'拒绝重复导入 {FILE_TYPE_NAMES.get(file_type, file_type)}: 文件内容与已有记录完全一致'
+            )
+            return ImportResult(
+                batch_id=batch_id,
+                file_type=file_type,
+                file_name=Path(file_path).name,
+                total_rows=0,
+                success_rows=0,
+                failed_rows=0,
+                is_duplicate=True,
+                errors=[]
+            )
+        
         records, errors = parser.parse()
+        
+        if len(errors) == 0:
+            file_status = 'completed'
+        elif len(errors) < len(records):
+            file_status = 'partial'
+        else:
+            file_status = 'failed'
         
         source_file = SourceFile(
             id=None,
@@ -318,7 +346,7 @@ class ImportManager:
             file_hash=parser.file_hash,
             imported_at=datetime.now().isoformat(),
             imported_by=operator,
-            status='completed' if errors else 'partial' if len(errors) < len(records) else 'failed',
+            status=file_status,
             row_count=len(records)
         )
         
@@ -349,9 +377,10 @@ class ImportManager:
                 'file_type': file_type,
                 'file_name': Path(file_path).name,
                 'total_rows': len(records),
-                'success_rows': success_count
+                'success_rows': success_count,
+                'failed_rows': len(records) - success_count
             },
-            reason=f'导入 {FILE_TYPE_NAMES.get(file_type, file_type)}'
+            reason=f'导入 {FILE_TYPE_NAMES.get(file_type, file_type)} [{file_status}]'
         )
         
         return ImportResult(
@@ -361,6 +390,6 @@ class ImportManager:
             total_rows=len(records),
             success_rows=success_count,
             failed_rows=len(records) - success_count,
-            is_duplicate=is_duplicate,
+            is_duplicate=False,
             errors=errors
         )
