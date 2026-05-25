@@ -55,12 +55,9 @@ export class ReportService {
   }
 
   async getSummaryReport(filter: ReportFilter): Promise<SummaryReport> {
-    const receipts = await this.getFilteredReceipts(filter);
+    const receipts = await this.getFilteredReceipts(filter, true);
 
-    const validReceipts = receipts.filter(r => {
-      const invalidExceptions = r.exceptions?.filter(e => e.affectsSummary && !e.resolved);
-      return !invalidExceptions || invalidExceptions.length === 0;
-    });
+    const validReceipts = receipts.filter(r => this.isValidReceiptForSummary(r));
 
     const byStatus = _.countBy(validReceipts, 'status');
     const byCity = _.countBy(validReceipts, 'city');
@@ -113,7 +110,9 @@ export class ReportService {
   }> {
     const receipts = await this.getFilteredReceipts(filter, true);
 
-    const data = receipts.map(r => ({
+    const validReceipts = receipts.filter(r => this.isValidReceiptForSummary(r));
+
+    const data = validReceipts.map(r => ({
       id: r.id,
       batchNo: r.batchNo,
       cabinetId: r.cabinetId,
@@ -359,5 +358,22 @@ export class ReportService {
     const hash = crypto.createHash('sha256');
     hash.update(JSON.stringify(data));
     return hash.digest('hex');
+  }
+
+  private isValidReceiptForSummary(receipt: Receipt): boolean {
+    if (receipt.hasUnresolvedExceptions) {
+      return false;
+    }
+
+    if (receipt.exceptions && receipt.exceptions.length > 0) {
+      const affectingExceptions = receipt.exceptions.filter(
+        e => e.affectsSummary && !e.resolved
+      );
+      if (affectingExceptions.length > 0) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
