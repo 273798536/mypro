@@ -308,6 +308,27 @@ curl -s "$BASE_URL/api/ledgers/$LEDGER_ID/status-history" \
 sleep 1
 
 echo ""
+echo "=== 14.1 验证已导出终态不可再流转 ==="
+echo "尝试将已导出台账流转回'已提交'（应返回403）:"
+curl -s -X POST "$BASE_URL/api/ledgers/status-transition" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $AUDITOR_TOKEN" \
+  -d "{
+    \"ledger_id\": $LEDGER_ID,
+    \"to_status\": \"已提交\",
+    \"operator\": \"auditor_01\",
+    \"role\": \"审计员\",
+    \"reason\": \"测试终态流转\"
+  }" | python3 -m json.tool
+sleep 1
+
+echo ""
+echo "验证台账状态仍为'已导出':"
+curl -s "$BASE_URL/api/ledgers/$LEDGER_ID" \
+  -H "Authorization: Bearer $AUDITOR_TOKEN" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'状态: {d[\"status\"]}')"
+sleep 1
+
+echo ""
 echo "=== 15. 查看失败任务清单 ==="
 curl -s "$BASE_URL/api/tasks/failed/summary" \
   -H "Authorization: Bearer $AUDITOR_TOKEN" | python3 -m json.tool

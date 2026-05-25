@@ -110,6 +110,12 @@ class MaterialLedgerService:
         return ledger
 
     @staticmethod
+    def check_transition_allowed(ledger: MaterialLedger) -> bool:
+        return ledger.status not in [
+            MaterialStatus.EXPORTED.value
+        ]
+
+    @staticmethod
     async def transition_status(
         db: AsyncSession,
         transition: StatusTransition,
@@ -119,6 +125,9 @@ class MaterialLedgerService:
         ledger = await MaterialLedgerService.get_ledger(db, transition.ledger_id)
         if not ledger:
             return None
+
+        if not MaterialLedgerService.check_transition_allowed(ledger):
+            raise PermissionError(f"台账处于{ledger.status}终态，不可再流转")
 
         if user_role and not MaterialLedgerService.check_site_permission(ledger, user_role, user_site):
             raise PermissionError("无权修改其他站点数据")
