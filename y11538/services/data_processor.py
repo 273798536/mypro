@@ -176,17 +176,22 @@ def detect_count_conflict(session, sign_data: dict) -> tuple:
     if not employee_id or not batch_id:
         return (False, 0, 0)
     
-    existing_count = session.query(SignRecord).filter_by(
+    query = session.query(SignRecord).filter_by(
         batch_id=batch_id,
         employee_id=employee_id
-    ).count()
+    )
+    
+    if sign_id:
+        query = query.filter(SignRecord.sign_id != sign_id)
+    
+    existing_count = query.count()
     
     if existing_count > 0:
         return (True, existing_count, existing_count + 1)
     
     return (False, 0, 1)
 
-def check_and_detect_anomalies(session, data_type: str, data: dict) -> list:
+def check_and_detect_anomalies(session, data_type: str, data: dict, is_update: bool = False) -> list:
     anomalies = []
     
     if data_type == 'sign':
@@ -203,12 +208,13 @@ def check_and_detect_anomalies(session, data_type: str, data: dict) -> list:
                 'error_message': f"姓名不一致: 报名姓名={reg_name}, 签到姓名={sign_name}"
             })
         
-        has_conflict, existing_count, new_count = detect_count_conflict(session, data)
-        if has_conflict:
-            anomalies.append({
-                'dirty_type': 'COUNT_CONFLICT',
-                'error_message': f"该员工已有 {existing_count} 条签到记录，本次为第 {new_count} 条"
-            })
+        if not is_update:
+            has_conflict, existing_count, new_count = detect_count_conflict(session, data)
+            if has_conflict:
+                anomalies.append({
+                    'dirty_type': 'COUNT_CONFLICT',
+                    'error_message': f"该员工已有 {existing_count} 条签到记录，本次为第 {new_count} 条"
+                })
     
     elif data_type == 'refund':
         has_amount_conflict, reg_amount, refund_amount = detect_amount_conflict(session, data)

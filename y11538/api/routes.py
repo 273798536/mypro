@@ -107,40 +107,23 @@ def add_sign():
     existing_id = check_idempotency('sign', data)
     session = get_session()
     anomalies = []
+    is_update = False
     
     try:
-        anomalies = check_and_detect_anomalies(session, 'sign', data)
+        existing_sign = None
+        existing_sign_by_id = None
         
         if existing_id:
-            sign = session.query(SignRecord).filter_by(id=existing_id).first()
-            if sign:
-                sign.employee_id = data.get('employee_id', sign.employee_id)
-                sign.employee_name = data.get('employee_name', sign.employee_name)
-                sign.training_course = data.get('training_course', sign.training_course)
-                sign.sign_time = parse_datetime(data['sign_time']) if data.get('sign_time') else sign.sign_time
-                sign.sign_type = data.get('sign_type', sign.sign_type)
-                sign.qr_code = data.get('qr_code', sign.qr_code)
-                sign.location = data.get('location', sign.location)
-                sign.device_info = data.get('device_info', sign.device_info)
-                sign.is_proxy = data.get('is_proxy', sign.is_proxy)
-                sign.is_makeup = data.get('is_makeup', sign.is_makeup)
-                sign.raw_data = data
-                session.commit()
-                
-                for anomaly in anomalies:
-                    save_dirty_record(batch_id, 'sign', anomaly['dirty_type'], data, anomaly['error_message'])
-                
-                return jsonify({
-                    'message': '签到记录已更新（幂等处理）',
-                    'id': sign.id,
-                    'updated': True,
-                    'anomalies': anomalies
-                })
+            existing_sign = session.query(SignRecord).filter_by(id=existing_id).first()
         
-        existing_sign = session.query(SignRecord).filter_by(
-            batch_id=batch_id,
-            sign_id=data['sign_id']
-        ).first()
+        if not existing_sign:
+            existing_sign_by_id = session.query(SignRecord).filter_by(
+                batch_id=batch_id,
+                sign_id=data['sign_id']
+            ).first()
+        
+        is_update = existing_sign is not None or existing_sign_by_id is not None
+        anomalies = check_and_detect_anomalies(session, 'sign', data, is_update=is_update)
         
         if existing_sign:
             existing_sign.employee_id = data.get('employee_id', existing_sign.employee_id)
@@ -155,7 +138,6 @@ def add_sign():
             existing_sign.is_makeup = data.get('is_makeup', existing_sign.is_makeup)
             existing_sign.raw_data = data
             session.commit()
-            save_idempotency_key('sign', data, existing_sign.id)
             
             for anomaly in anomalies:
                 save_dirty_record(batch_id, 'sign', anomaly['dirty_type'], data, anomaly['error_message'])
@@ -163,6 +145,31 @@ def add_sign():
             return jsonify({
                 'message': '签到记录已更新（幂等处理）',
                 'id': existing_sign.id,
+                'updated': True,
+                'anomalies': anomalies
+            })
+        
+        if existing_sign_by_id:
+            existing_sign_by_id.employee_id = data.get('employee_id', existing_sign_by_id.employee_id)
+            existing_sign_by_id.employee_name = data.get('employee_name', existing_sign_by_id.employee_name)
+            existing_sign_by_id.training_course = data.get('training_course', existing_sign_by_id.training_course)
+            existing_sign_by_id.sign_time = parse_datetime(data['sign_time']) if data.get('sign_time') else existing_sign_by_id.sign_time
+            existing_sign_by_id.sign_type = data.get('sign_type', existing_sign_by_id.sign_type)
+            existing_sign_by_id.qr_code = data.get('qr_code', existing_sign_by_id.qr_code)
+            existing_sign_by_id.location = data.get('location', existing_sign_by_id.location)
+            existing_sign_by_id.device_info = data.get('device_info', existing_sign_by_id.device_info)
+            existing_sign_by_id.is_proxy = data.get('is_proxy', existing_sign_by_id.is_proxy)
+            existing_sign_by_id.is_makeup = data.get('is_makeup', existing_sign_by_id.is_makeup)
+            existing_sign_by_id.raw_data = data
+            session.commit()
+            save_idempotency_key('sign', data, existing_sign_by_id.id)
+            
+            for anomaly in anomalies:
+                save_dirty_record(batch_id, 'sign', anomaly['dirty_type'], data, anomaly['error_message'])
+            
+            return jsonify({
+                'message': '签到记录已更新（幂等处理）',
+                'id': existing_sign_by_id.id,
                 'updated': True,
                 'anomalies': anomalies
             })
@@ -291,36 +298,23 @@ def add_refund():
     existing_id = check_idempotency('refund', data)
     session = get_session()
     anomalies = []
+    is_update = False
     
     try:
-        anomalies = check_and_detect_anomalies(session, 'refund', data)
+        existing_refund = None
+        existing_refund_by_id = None
         
         if existing_id:
-            refund = session.query(Refund).filter_by(id=existing_id).first()
-            if refund:
-                refund.employee_id = data.get('employee_id', refund.employee_id)
-                refund.employee_name = data.get('employee_name', refund.employee_name)
-                refund.training_course = data.get('training_course', refund.training_course)
-                refund.refund_amount = data.get('refund_amount', refund.refund_amount)
-                refund.refund_time = parse_datetime(data['refund_time']) if data.get('refund_time') else refund.refund_time
-                refund.refund_reason = data.get('refund_reason', refund.refund_reason)
-                refund.raw_data = data
-                session.commit()
-                
-                for anomaly in anomalies:
-                    save_dirty_record(batch_id, 'refund', anomaly['dirty_type'], data, anomaly['error_message'])
-                
-                return jsonify({
-                    'message': '退款记录已更新（幂等处理）',
-                    'id': refund.id,
-                    'updated': True,
-                    'anomalies': anomalies
-                })
+            existing_refund = session.query(Refund).filter_by(id=existing_id).first()
         
-        existing_refund = session.query(Refund).filter_by(
-            batch_id=batch_id,
-            refund_id=data['refund_id']
-        ).first()
+        if not existing_refund:
+            existing_refund_by_id = session.query(Refund).filter_by(
+                batch_id=batch_id,
+                refund_id=data['refund_id']
+            ).first()
+        
+        is_update = existing_refund is not None or existing_refund_by_id is not None
+        anomalies = check_and_detect_anomalies(session, 'refund', data, is_update=is_update)
         
         if existing_refund:
             existing_refund.employee_id = data.get('employee_id', existing_refund.employee_id)
@@ -331,7 +325,6 @@ def add_refund():
             existing_refund.refund_reason = data.get('refund_reason', existing_refund.refund_reason)
             existing_refund.raw_data = data
             session.commit()
-            save_idempotency_key('refund', data, existing_refund.id)
             
             for anomaly in anomalies:
                 save_dirty_record(batch_id, 'refund', anomaly['dirty_type'], data, anomaly['error_message'])
@@ -339,6 +332,27 @@ def add_refund():
             return jsonify({
                 'message': '退款记录已更新（幂等处理）',
                 'id': existing_refund.id,
+                'updated': True,
+                'anomalies': anomalies
+            })
+        
+        if existing_refund_by_id:
+            existing_refund_by_id.employee_id = data.get('employee_id', existing_refund_by_id.employee_id)
+            existing_refund_by_id.employee_name = data.get('employee_name', existing_refund_by_id.employee_name)
+            existing_refund_by_id.training_course = data.get('training_course', existing_refund_by_id.training_course)
+            existing_refund_by_id.refund_amount = data.get('refund_amount', existing_refund_by_id.refund_amount)
+            existing_refund_by_id.refund_time = parse_datetime(data['refund_time']) if data.get('refund_time') else existing_refund_by_id.refund_time
+            existing_refund_by_id.refund_reason = data.get('refund_reason', existing_refund_by_id.refund_reason)
+            existing_refund_by_id.raw_data = data
+            session.commit()
+            save_idempotency_key('refund', data, existing_refund_by_id.id)
+            
+            for anomaly in anomalies:
+                save_dirty_record(batch_id, 'refund', anomaly['dirty_type'], data, anomaly['error_message'])
+            
+            return jsonify({
+                'message': '退款记录已更新（幂等处理）',
+                'id': existing_refund_by_id.id,
                 'updated': True,
                 'anomalies': anomalies
             })
