@@ -154,6 +154,7 @@ type RetryTask struct {
 	BatchNo           string        `gorm:"size:50;uniqueIndex;not null"`
 	TaskType          string        `gorm:"size:50"`
 	Status            RetryTaskStatus `gorm:"size:30;index"`
+	StatusBeforeFreeze RetryTaskStatus `gorm:"size:30"`
 	Priority          int           `gorm:"default:0"`
 	RetryCount        int           `gorm:"default:0"`
 	MaxRetryCount     int           `gorm:"default:3"`

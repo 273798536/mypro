@@ -52,8 +52,9 @@ func (s *ExportService) ExportTask(req ExportRequest) (string, error) {
 
 	if task.Status != models.TaskStatusSuccess &&
 		task.Status != models.TaskStatusCompensated &&
-		task.Status != models.TaskStatusClosed {
-		return "", fmt.Errorf("只有成功、补偿或已关闭的任务才能导出")
+		task.Status != models.TaskStatusClosed &&
+		task.Status != models.TaskStatusFrozen {
+		return "", fmt.Errorf("只有成功、补偿、已关闭或已冻结的任务才能导出")
 	}
 
 	exportData := &ExportData{

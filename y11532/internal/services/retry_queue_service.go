@@ -44,6 +44,7 @@ type SubmitTaskRequest struct {
 	Leaves       []models.LeaveRequest
 	Forecasts    []models.BusinessVolumeForecast
 	Scans        []models.ScanDetail
+	Trainings    []models.TempTraining
 	Operator     OperatorInfo
 }
 
@@ -115,6 +116,7 @@ func (s *RetryQueueService) createNewTask(req SubmitTaskRequest) (*models.RetryT
 		"leaves_count":    len(req.Leaves),
 		"forecasts_count": len(req.Forecasts),
 		"scans_count":     len(req.Scans),
+		"trainings_count": len(req.Trainings),
 	})
 
 	task := &models.RetryTask{
@@ -127,7 +129,7 @@ func (s *RetryQueueService) createNewTask(req SubmitTaskRequest) (*models.RetryT
 		DataStrategy:  req.DataStrategy,
 		SubmittedBy:   req.Operator.OperatorID,
 		SubmittedAt:   time.Now(),
-		TotalCount:    len(req.Schedules) + len(req.Leaves) + len(req.Forecasts) + len(req.Scans),
+		TotalCount:    len(req.Schedules) + len(req.Leaves) + len(req.Forecasts) + len(req.Scans) + len(req.Trainings),
 		ScheduleCount: len(req.Schedules),
 		LeaveCount:    len(req.Leaves),
 		ForecastCount: len(req.Forecasts),
@@ -233,6 +235,23 @@ func (s *RetryQueueService) createTaskItems(tx *gorm.DB, task *models.RetryTask,
 		}
 	}
 
+	for i := range req.Trainings {
+		req.Trainings[i].BranchID = task.BranchID
+		if err := tx.Create(&req.Trainings[i]).Error; err != nil {
+			return err
+		}
+
+		item := &models.RetryTaskItem{
+			TaskID:   task.ID,
+			ItemType: "training",
+			ItemID:   req.Trainings[i].ID,
+			Status:   models.TaskStatusPending,
+		}
+		if err := tx.Create(item).Error; err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -253,12 +272,13 @@ func (s *RetryQueueService) overwriteTask(existingTask *models.RetryTask, req Su
 	tx.Where("batch_no = ?", existingTask.BatchNo).Delete(&models.LeaveRequest{})
 	tx.Where("batch_no = ?", existingTask.BatchNo).Delete(&models.BusinessVolumeForecast{})
 	tx.Where("batch_no = ?", existingTask.BatchNo).Delete(&models.ScanDetail{})
+	tx.Where("branch_id = ?", existingTask.BranchID).Delete(&models.TempTraining{})
 
 	existingTask.Status = models.TaskStatusPending
 	existingTask.RetryCount = 0
 	existingTask.SuccessCount = 0
 	existingTask.FailedCount = 0
-	existingTask.TotalCount = len(req.Schedules) + len(req.Leaves) + len(req.Forecasts) + len(req.Scans)
+	existingTask.TotalCount = len(req.Schedules) + len(req.Leaves) + len(req.Forecasts) + len(req.Scans) + len(req.Trainings)
 	existingTask.ScheduleCount = len(req.Schedules)
 	existingTask.LeaveCount = len(req.Leaves)
 	existingTask.ForecastCount = len(req.Forecasts)
@@ -272,6 +292,7 @@ func (s *RetryQueueService) overwriteTask(existingTask *models.RetryTask, req Su
 		"leaves_count":    len(req.Leaves),
 		"forecasts_count": len(req.Forecasts),
 		"scans_count":     len(req.Scans),
+		"trainings_count": len(req.Trainings),
 	})
 	existingTask.SourceData = string(sourceData)
 
@@ -313,7 +334,8 @@ func (s *RetryQueueService) appendToTask(existingTask *models.RetryTask, req Sub
 		return nil, err
 	}
 
-	existingTask.TotalCount += len(req.Schedules) + len(req.Leaves) + len(req.Forecasts) + len(req.Scans)
+	addedCount := len(req.Schedules) + len(req.Leaves) + len(req.Forecasts) + len(req.Scans) + len(req.Trainings)
+	existingTask.TotalCount += addedCount
 	existingTask.ScheduleCount += len(req.Schedules)
 	existingTask.LeaveCount += len(req.Leaves)
 	existingTask.ForecastCount += len(req.Forecasts)
@@ -336,7 +358,7 @@ func (s *RetryQueueService) appendToTask(existingTask *models.RetryTask, req Sub
 		existingTask.ID, uuid.Nil, models.OpTypeSubmit,
 		string(oldTask.Status), string(existingTask.Status),
 		&oldTask, existingTask,
-		fmt.Sprintf("追加数据到批次: %s，新增 %d 条记录", req.BatchNo, len(req.Schedules)+len(req.Leaves)+len(req.Forecasts)+len(req.Scans)),
+		fmt.Sprintf("追加数据到批次: %s，新增 %d 条记录", req.BatchNo, addedCount),
 		req.Operator,
 	)
 
@@ -392,8 +414,19 @@ func (s *RetryQueueService) ProcessTask(taskID uuid.UUID) (*ProcessResult, error
 		return nil, err
 	}
 
+	oldStatus := task.Status
+	oldTask := task
+
 	task.Status = models.TaskStatusProcessing
 	database.DB.Save(&task)
+
+	s.historyService.RecordOperation(
+		taskID, uuid.Nil, models.OpTypeProcess,
+		string(oldStatus), string(task.Status),
+		&oldTask, &task,
+		fmt.Sprintf("开始处理任务，共 %d 个待处理项", len(items)),
+		OperatorInfo{},
+	)
 
 	result := &ProcessResult{
 		Success:     true,
@@ -419,32 +452,55 @@ func (s *RetryQueueService) ProcessTask(taskID uuid.UUID) (*ProcessResult, error
 		}
 	}
 
+	oldTask = task
 	task.SuccessCount += successCount
 	task.FailedCount = task.TotalCount - task.SuccessCount
+
+	var opType models.OperationType
+	var remark string
 
 	if result.Success {
 		task.Status = models.TaskStatusSuccess
 		task.LastError = ""
+		opType = models.OpTypeSuccess
+		remark = fmt.Sprintf("任务处理成功，共 %d 项全部成功", task.TotalCount)
 	} else if successCount > 0 {
 		task.Status = models.TaskStatusPartialFailed
 		task.ConflictTypes = strings.Join(uniqueStrings(conflictTypes), ",")
 		task.LastError = lastError
 		task.ReviewRequired = true
+		opType = models.OpTypeFail
+		remark = fmt.Sprintf("任务部分成功，成功 %d 项，失败 %d 项，冲突类型: %s",
+			successCount, task.TotalCount-successCount, task.ConflictTypes)
 	} else {
 		if task.RetryCount < task.MaxRetryCount {
 			task.Status = models.TaskStatusRetrying
 			task.RetryCount++
 			nextRetry := time.Now().Add(time.Duration(task.RetryCount*30) * time.Second)
 			task.NextRetryAt = &nextRetry
+			opType = models.OpTypeRetry
+			remark = fmt.Sprintf("任务处理失败，第 %d 次重试，下次重试时间: %s，错误: %s",
+				task.RetryCount, nextRetry.Format("2006-01-02 15:04:05"), lastError)
 		} else {
 			task.Status = models.TaskStatusDeadLetter
 			s.moveToDeadLetter(&task, items)
+			opType = models.OpTypeFail
+			remark = fmt.Sprintf("任务达到最大重试次数 %d，转入死信队列，错误: %s",
+				task.MaxRetryCount, lastError)
 		}
 		task.ConflictTypes = strings.Join(uniqueStrings(conflictTypes), ",")
 		task.LastError = lastError
 	}
 
 	database.DB.Save(&task)
+
+	s.historyService.RecordOperation(
+		taskID, uuid.Nil, opType,
+		string(models.TaskStatusProcessing), string(task.Status),
+		&oldTask, &task,
+		remark,
+		OperatorInfo{},
+	)
 
 	return result, nil
 }
@@ -459,6 +515,9 @@ func (s *RetryQueueService) processTaskItem(task *models.RetryTask, item *models
 	tx := database.Begin()
 	defer tx.Rollback()
 
+	oldItemStatus := item.Status
+	var oldData interface{}
+
 	switch item.ItemType {
 	case "schedule":
 		var schedule models.TellerSchedule
@@ -467,6 +526,7 @@ func (s *RetryQueueService) processTaskItem(task *models.RetryTask, item *models
 			result.Error = fmt.Sprintf("查询排班失败: %v", err)
 			return result
 		}
+		oldData = schedule
 
 		ctx := ScheduleValidationContext{
 			BranchID:     task.BranchID,
@@ -501,6 +561,7 @@ func (s *RetryQueueService) processTaskItem(task *models.RetryTask, item *models
 			result.Error = fmt.Sprintf("查询请假单失败: %v", err)
 			return result
 		}
+		oldData = leave
 		leave.Status = "approved"
 		now := time.Now()
 		leave.ApprovedAt = &now
@@ -515,6 +576,7 @@ func (s *RetryQueueService) processTaskItem(task *models.RetryTask, item *models
 			result.Error = fmt.Sprintf("查询预测数据失败: %v", err)
 			return result
 		}
+		oldData = forecast
 		item.Status = models.TaskStatusSuccess
 		item.Resolved = true
 
@@ -525,8 +587,22 @@ func (s *RetryQueueService) processTaskItem(task *models.RetryTask, item *models
 			result.Error = fmt.Sprintf("查询扫码明细失败: %v", err)
 			return result
 		}
+		oldData = scan
 		scan.Status = "verified"
 		tx.Save(&scan)
+		item.Status = models.TaskStatusSuccess
+		item.Resolved = true
+
+	case "training":
+		var training models.TempTraining
+		if err := tx.First(&training, item.ItemID).Error; err != nil {
+			result.Success = false
+			result.Error = fmt.Sprintf("查询培训记录失败: %v", err)
+			return result
+		}
+		oldData = training
+		training.Status = "confirmed"
+		tx.Save(&training)
 		item.Status = models.TaskStatusSuccess
 		item.Resolved = true
 	}
@@ -534,6 +610,23 @@ func (s *RetryQueueService) processTaskItem(task *models.RetryTask, item *models
 	item.RetryCount++
 	tx.Save(item)
 	tx.Commit()
+
+	if item.Status != oldItemStatus {
+		opType := models.OpTypeProcess
+		if item.Status == models.TaskStatusSuccess {
+			opType = models.OpTypeSuccess
+		} else if item.Status == models.TaskStatusFailed {
+			opType = models.OpTypeFail
+		}
+
+		s.historyService.RecordOperation(
+			task.ID, item.ID, opType,
+			string(oldItemStatus), string(item.Status),
+			oldData, nil,
+			fmt.Sprintf("明细项处理: %s", result.Error),
+			OperatorInfo{},
+		)
+	}
 
 	return result
 }
@@ -708,6 +801,7 @@ func (s *RetryQueueService) FreezeTask(taskID uuid.UUID, operator OperatorInfo, 
 	}
 
 	oldStatus := task.Status
+	task.StatusBeforeFreeze = task.Status
 	task.Status = models.TaskStatusFrozen
 
 	if err := database.DB.Save(&task).Error; err != nil {
@@ -718,7 +812,7 @@ func (s *RetryQueueService) FreezeTask(taskID uuid.UUID, operator OperatorInfo, 
 		taskID, uuid.Nil, models.OpTypeFreeze,
 		string(oldStatus), string(task.Status),
 		nil, &task,
-		fmt.Sprintf("冻结任务，原因: %s", reason),
+		fmt.Sprintf("冻结任务，冻结前状态: %s，原因: %s", oldStatus, reason),
 		operator,
 	)
 
@@ -735,12 +829,16 @@ func (s *RetryQueueService) UnfreezeTask(taskID uuid.UUID, operator OperatorInfo
 		return fmt.Errorf("任务未冻结")
 	}
 
-	newStatus := models.TaskStatusPending
-	if task.RetryCount > 0 {
-		newStatus = models.TaskStatusRetrying
+	newStatus := task.StatusBeforeFreeze
+	if newStatus == "" {
+		newStatus = models.TaskStatusPending
+		if task.RetryCount > 0 {
+			newStatus = models.TaskStatusRetrying
+		}
 	}
 
 	task.Status = newStatus
+	task.StatusBeforeFreeze = ""
 	if err := database.DB.Save(&task).Error; err != nil {
 		return err
 	}
@@ -749,7 +847,7 @@ func (s *RetryQueueService) UnfreezeTask(taskID uuid.UUID, operator OperatorInfo
 		taskID, uuid.Nil, models.OpTypeUnfreeze,
 		string(models.TaskStatusFrozen), string(newStatus),
 		nil, &task,
-		"解冻任务",
+		fmt.Sprintf("解冻任务，恢复到冻结前状态: %s", newStatus),
 		operator,
 	)
 

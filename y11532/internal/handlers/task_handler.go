@@ -37,6 +37,7 @@ type SubmitTaskRequest struct {
 	Leaves       []models.LeaveRequest            `json:"leaves"`
 	Forecasts    []models.BusinessVolumeForecast  `json:"forecasts"`
 	Scans        []models.ScanDetail              `json:"scans"`
+	Trainings    []models.TempTraining            `json:"trainings"`
 	OperatorID   string                           `json:"operator_id" binding:"required"`
 	OperatorName string                           `json:"operator_name"`
 }
@@ -66,6 +67,7 @@ func (h *TaskHandler) SubmitTask(c *gin.Context) {
 		Leaves:       req.Leaves,
 		Forecasts:    req.Forecasts,
 		Scans:        req.Scans,
+		Trainings:    req.Trainings,
 		Operator: services.OperatorInfo{
 			OperatorID:   operatorID,
 			OperatorName: req.OperatorName,
