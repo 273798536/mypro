@@ -29,6 +29,16 @@ class DirtyRecordService {
       correctionSuggestion
     } = options;
 
+    const existing = await db.get(
+      `SELECT id FROM dirty_records 
+       WHERE source_table = ? AND source_id = ? AND dirty_type = ? AND field_name = ? AND is_corrected = 0
+       LIMIT 1`,
+      [sourceTable, sourceId, dirtyType, fieldName || '']
+    );
+    if (existing) {
+      return { lastID: existing.id, changes: 0, skipped: true };
+    }
+
     const result = await db.insert('dirty_records', {
       source_table: sourceTable,
       source_id: sourceId,
@@ -71,7 +81,9 @@ class DirtyRecordService {
           rawData: data,
           correctionSuggestion: `请补充字段 ${field} 的值`
         });
-        dirtyRecords.push(record);
+        if (record && !record.skipped) {
+          dirtyRecords.push(record);
+        }
       }
     }
     return dirtyRecords;
@@ -95,7 +107,9 @@ class DirtyRecordService {
         rawData: data,
         correctionSuggestion: `请检查并修正日期范围`
       });
-      dirtyRecords.push(record);
+      if (record && !record.skipped) {
+        dirtyRecords.push(record);
+      }
     }
     return dirtyRecords;
   }
@@ -115,7 +129,9 @@ class DirtyRecordService {
         rawData: { oldData, newData },
         correctionSuggestion: `请确认名称变更是否合理，如需保留变更请备注原因`
       });
-      dirtyRecords.push(record);
+      if (record && !record.skipped) {
+        dirtyRecords.push(record);
+      }
     }
     return dirtyRecords;
   }
@@ -128,8 +144,8 @@ class DirtyRecordService {
     if (Math.abs(amount1 - amount2) > 0.01) {
       const record = await this.recordDirtyRecord({
         sourceTable: table,
-        sourceId,
-        sourceNo,
+        sourceId: sourceId || data1.id,
+        sourceNo: sourceNo || data1.invoice_no || data1.payment_no,
         dirtyType: DIRTY_TYPES.AMOUNT_CONFLICT,
         dirtyDescription: `金额冲突: ${desc1} vs ${desc2}`,
         fieldName: amountField,
@@ -138,8 +154,79 @@ class DirtyRecordService {
         rawData: { data1, data2 },
         correctionSuggestion: `请核对并修正金额，差异: ${(amount2 - amount1).toFixed(2)}`
       });
-      dirtyRecords.push(record);
+      if (record && !record.skipped) {
+        dirtyRecords.push(record);
+      }
     }
+    return dirtyRecords;
+  }
+
+  async checkQuantityConflict(table, data, quantityField, expectedQuantity, sourceId, sourceNo) {
+    const dirtyRecords = [];
+    const actualQuantity = parseInt(data[quantityField]) || 0;
+    const expected = parseInt(expectedQuantity) || 0;
+    
+    if (expected > 0 && actualQuantity !== expected) {
+      const record = await this.recordDirtyRecord({
+        sourceTable: table,
+        sourceId: sourceId || data.id,
+        sourceNo: sourceNo || data.invoice_no,
+        dirtyType: DIRTY_TYPES.QUANTITY_CONFLICT,
+        dirtyDescription: `数量冲突: ${quantityField}`,
+        fieldName: quantityField,
+        expectedValue: String(expected),
+        actualValue: String(actualQuantity),
+        rawData: data,
+        correctionSuggestion: `请核对数量，实际: ${actualQuantity}，期望: ${expected}`
+      });
+      if (record && !record.skipped) {
+        dirtyRecords.push(record);
+      }
+    }
+    return dirtyRecords;
+  }
+
+  async checkInvoiceDirtyRecords(invoice) {
+    const dirtyRecords = [];
+    const { id, invoice_no } = invoice;
+
+    const requiredInvoiceFields = ['invoice_date', 'expense_category', 'total_amount'];
+    const missingResults = await this.checkMissingFields('invoices', invoice, requiredInvoiceFields, id, invoice_no);
+    dirtyRecords.push(...missingResults);
+
+    if (invoice.check_in_date && invoice.check_out_date) {
+      const crossDateResults = await this.checkCrossDate(
+        'invoices', invoice, 'check_in_date', 'check_out_date', id, invoice_no
+      );
+      dirtyRecords.push(...crossDateResults);
+    }
+
+    return dirtyRecords;
+  }
+
+  async checkAllExistingData() {
+    const dirtyRecords = [];
+
+    const invoices = await db.all('SELECT * FROM invoices');
+    for (const invoice of invoices) {
+      const results = await this.checkInvoiceDirtyRecords(invoice);
+      dirtyRecords.push(...results);
+    }
+
+    const applications = await db.all('SELECT * FROM travel_applications');
+    for (const app of applications) {
+      const requiredFields = ['applicant_id', 'applicant_name', 'travel_start_date', 'travel_end_date', 'travel_destination'];
+      const missingResults = await this.checkMissingFields(
+        'travel_applications', app, requiredFields, app.id, app.application_no
+      );
+      dirtyRecords.push(...missingResults);
+
+      const crossDateResults = await this.checkCrossDate(
+        'travel_applications', app, 'travel_start_date', 'travel_end_date', app.id, app.application_no
+      );
+      dirtyRecords.push(...crossDateResults);
+    }
+
     return dirtyRecords;
   }
 

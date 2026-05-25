@@ -4,7 +4,7 @@ const dirtyRecordService = require('./dirtyRecordService');
 
 class AuditEngineService {
   async detectDuplicateInvoices(options = {}) {
-    const { startDate, endDate, expenseCategory, sharedTripGroupId } = options;
+    const { startDate, endDate, expenseCategory, sharedTripGroupId, skipExisting = true } = options;
     
     let sql = `
       SELECT i.*, ta.shared_trip_group_id
@@ -27,6 +27,11 @@ class AuditEngineService {
       const inv1 = invoices[i];
       if (processedInvoices.has(inv1.invoice_no)) continue;
 
+      if (skipExisting && inv1.is_duplicate && inv1.duplicate_group_id) {
+        processedInvoices.add(inv1.invoice_no);
+        continue;
+      }
+
       const duplicates = [inv1];
       processedInvoices.add(inv1.invoice_no);
 
@@ -42,22 +47,40 @@ class AuditEngineService {
       }
 
       if (duplicates.length >= 2) {
-        const groupId = generateNo('DUP');
+        const duplicateKey = this.generateDuplicateKey(inv1);
+
+        const existingGroup = await db.get(
+          'SELECT group_id FROM duplicate_groups WHERE duplicate_key = ? LIMIT 1',
+          [duplicateKey]
+        );
+
+        if (existingGroup && skipExisting) {
+          for (const inv of duplicates) {
+            await db.update('invoices', {
+              is_duplicate: 1,
+              duplicate_group_id: existingGroup.group_id
+            }, 'invoice_no = ?', [inv.invoice_no]);
+          }
+          continue;
+        }
+
+        const groupId = existingGroup ? existingGroup.group_id : generateNo('DUP');
         const totalAmount = duplicates.reduce((sum, inv) => sum + inv.total_amount, 0);
         const applicants = [...new Set(duplicates.map(inv => inv.applicant_name).filter(Boolean))].join(', ');
 
-        const duplicateKey = this.generateDuplicateKey(inv1);
         const groupDesc = this.generateGroupDescription(inv1, duplicates);
 
-        await db.insert('duplicate_groups', {
-          group_id: groupId,
-          group_type: inv1.expense_category || 'mixed',
-          group_desc: groupDesc,
-          duplicate_key: duplicateKey,
-          invoice_count: duplicates.length,
-          total_amount: totalAmount,
-          involved_applicants: applicants
-        });
+        if (!existingGroup) {
+          await db.insert('duplicate_groups', {
+            group_id: groupId,
+            group_type: inv1.expense_category || 'mixed',
+            group_desc: groupDesc,
+            duplicate_key: duplicateKey,
+            invoice_count: duplicates.length,
+            total_amount: totalAmount,
+            involved_applicants: applicants
+          });
+        }
 
         for (const inv of duplicates) {
           await db.update('invoices', {
@@ -159,7 +182,7 @@ class AuditEngineService {
   }
 
   async reconcilePayments(options = {}) {
-    const { startDate, endDate } = options;
+    const { startDate, endDate, writeDirtyRecords = true } = options;
     const discrepancies = [];
 
     let invoiceSql = 'SELECT * FROM invoices WHERE 1=1';
@@ -193,15 +216,44 @@ class AuditEngineService {
           difference: invoice.total_amount,
           description: '发票无对应付款记录'
         });
+
+        if (writeDirtyRecords) {
+          await dirtyRecordService.recordDirtyRecord({
+            sourceTable: 'invoices',
+            sourceId: invoice.id,
+            sourceNo: invoice.invoice_no,
+            dirtyType: 'amount_conflict',
+            dirtyDescription: '发票无对应付款记录',
+            fieldName: 'payment_mapping',
+            expectedValue: '有对应付款记录',
+            actualValue: '无付款记录',
+            rawData: invoice,
+            correctionSuggestion: '请补录付款流水或核实发票有效性'
+          });
+        }
       } else if (Math.abs(totalPaid - invoice.total_amount) > 0.01) {
+        const diff = invoice.total_amount - totalPaid;
         discrepancies.push({
           type: 'amount_mismatch',
           invoice_no: invoice.invoice_no,
           invoice_amount: invoice.total_amount,
           paid_amount: totalPaid,
-          difference: invoice.total_amount - totalPaid,
-          description: `发票金额与付款金额不一致，差异: ${(invoice.total_amount - totalPaid).toFixed(2)}`
+          difference: diff,
+          description: `发票金额与付款金额不一致，差异: ${diff.toFixed(2)}`
         });
+
+        if (writeDirtyRecords) {
+          await dirtyRecordService.checkAmountConflict(
+            'invoices',
+            invoice,
+            { ...invoice, total_amount: totalPaid, _source: 'payment' },
+            'total_amount',
+            '发票金额',
+            '付款金额',
+            invoice.id,
+            invoice.invoice_no
+          );
+        }
       }
     }
 
@@ -215,6 +267,21 @@ class AuditEngineService {
             paid_amount: payment.amount,
             description: '付款无对应发票记录'
           });
+
+          if (writeDirtyRecords) {
+            await dirtyRecordService.recordDirtyRecord({
+              sourceTable: 'payment_flows',
+              sourceId: payment.id,
+              sourceNo: payment.payment_no,
+              dirtyType: 'amount_conflict',
+              dirtyDescription: '付款无对应发票记录',
+              fieldName: 'invoice_mapping',
+              expectedValue: '有对应发票',
+              actualValue: '无发票记录',
+              rawData: payment,
+              correctionSuggestion: '请补录发票或核实付款有效性'
+            });
+          }
         }
       }
     }
@@ -230,10 +297,14 @@ class AuditEngineService {
 
   async runFullAudit(options = {}) {
     const auditNo = generateNo('AUDIT');
-    const { startDate, endDate, createdBy = 'system' } = options;
+    const { startDate, endDate, createdBy = 'system', checkExistingData = true } = options;
 
-    const duplicateResult = await this.detectDuplicateInvoices({ startDate, endDate });
-    const reconcileResult = await this.reconcilePayments({ startDate, endDate });
+    if (checkExistingData) {
+      await dirtyRecordService.checkAllExistingData();
+    }
+
+    const duplicateResult = await this.detectDuplicateInvoices({ startDate, endDate, skipExisting: true });
+    const reconcileResult = await this.reconcilePayments({ startDate, endDate, writeDirtyRecords: true });
     const dirtyStats = await dirtyRecordService.getDirtyStatistics();
 
     let totalInvoices = await db.get('SELECT COUNT(*) as count FROM invoices');

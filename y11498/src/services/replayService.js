@@ -18,8 +18,14 @@ class ReplayService {
       created_by: createdBy
     });
 
-    const duplicateResult = await auditEngineService.detectDuplicateInvoices({ startDate, endDate });
-    const reconcileResult = await auditEngineService.reconcilePayments({ startDate, endDate });
+    await dirtyRecordService.checkAllExistingData();
+
+    const duplicateResult = await auditEngineService.detectDuplicateInvoices({ 
+      startDate, endDate, skipExisting: true 
+    });
+    const reconcileResult = await auditEngineService.reconcilePayments({ 
+      startDate, endDate, writeDirtyRecords: true 
+    });
     const dirtyRecords = await dirtyRecordService.getDirtyRecords({ isCorrected: false });
 
     const anomalyCount = duplicateResult.duplicate_groups_found + 
@@ -76,9 +82,15 @@ class ReplayService {
         (SELECT COUNT(*) FROM invoices i WHERE i.duplicate_group_id = dg.group_id) as invoice_count,
         (SELECT SUM(total_amount) FROM invoices i WHERE i.duplicate_group_id = dg.group_id) as total_amount
       FROM duplicate_groups dg
-      WHERE dg.created_at BETWEEN ? AND ?
       ORDER BY dg.created_at DESC
-    `, [session.start_date || '2000-01-01', session.end_date || '2099-12-31']);
+    `);
+
+    for (const group of duplicateGroups) {
+      group.invoices = await db.all(
+        'SELECT invoice_no, applicant_name, total_amount, expense_category, is_duplicate FROM invoices WHERE duplicate_group_id = ?',
+        [group.group_id]
+      );
+    }
 
     const dirtyRecords = await dirtyRecordService.getDirtyRecords({
       isCorrected: false
@@ -94,7 +106,6 @@ class ReplayService {
       FROM invoices i
       LEFT JOIN payment_flows p ON i.invoice_no = p.invoice_no
       WHERE p.id IS NULL
-      AND i.created_at BETWEEN ? AND ?
       UNION ALL
       SELECT
         'payment_no_invoice' as type,
@@ -105,9 +116,7 @@ class ReplayService {
       FROM payment_flows p
       LEFT JOIN invoices i ON p.invoice_no = i.invoice_no
       WHERE i.id IS NULL AND p.invoice_no IS NOT NULL
-      AND p.created_at BETWEEN ? AND ?
-    `, [session.start_date || '2000-01-01', session.end_date || '2099-12-31',
-        session.start_date || '2000-01-01', session.end_date || '2099-12-31']);
+    `);
 
     return {
       session_id: sessionId,

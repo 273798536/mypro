@@ -1,4 +1,5 @@
 const { db, generateNo } = require('../src/models/db');
+const dirtyRecordService = require('../src/services/dirtyRecordService');
 
 const SHARED_TRIP_GROUP = 'GROUP_SHANGHAI_202405';
 
@@ -9,9 +10,9 @@ const applicants = [
 ];
 
 async function seedData() {
-  console.log('开始生成测试数据...');
+  console.log('开始生成测试数据...\n');
 
-  console.log('\n1. 生成差旅申请 (多人共用同一行程)...');
+  console.log('1. 生成差旅申请 (3人共用同一行程)...');
   for (const applicant of applicants) {
     const taNo = generateNo('TA');
     await db.insert('travel_applications', {
@@ -33,10 +34,12 @@ async function seedData() {
     console.log(`   ✅ 差旅申请: ${taNo} - ${applicant.name}`);
   }
 
-  console.log('\n2. 生成住宿发票 (含重复报销场景 - 3人同开一张酒店发票)...');
+  console.log('\n2. 生成住宿发票 (3人同一酒店同一时段 - 重复报销场景)...');
+  const hotelInvoices = [];
   for (let i = 0; i < applicants.length; i++) {
     const applicant = applicants[i];
     const invNo = generateNo('INV');
+    hotelInvoices.push(invNo);
     await db.insert('invoices', {
       invoice_no: invNo,
       invoice_code: '031002400111',
@@ -58,10 +61,12 @@ async function seedData() {
     console.log(`   ✅ 住宿发票: ${invNo} - ${applicant.name} - ¥1200 (重复风险)`);
   }
 
-  console.log('\n3. 生成交通发票 (含重复报销场景 - 3人同车次/航班)...');
+  console.log('\n3. 生成交通发票 (3人同一车次 - 重复报销场景)...');
+  const trainInvoices = [];
   for (let i = 0; i < applicants.length; i++) {
     const applicant = applicants[i];
     const invNo = generateNo('INV');
+    trainInvoices.push(invNo);
     await db.insert('invoices', {
       invoice_no: invNo,
       invoice_code: '031002400222',
@@ -83,7 +88,7 @@ async function seedData() {
     console.log(`   ✅ 交通发票: ${invNo} - ${applicant.name} - ¥553 (重复风险)`);
   }
 
-  console.log('\n4. 生成一些正常发票 (无重复)...');
+  console.log('\n4. 生成正常发票 (餐饮 - 无重复)...');
   const normalInv = generateNo('INV');
   await db.insert('invoices', {
     invoice_no: normalInv,
@@ -99,38 +104,78 @@ async function seedData() {
   });
   console.log(`   ✅ 正常发票: ${normalInv} - 餐饮费 - ¥350`);
 
-  console.log('\n5. 生成脏记录测试数据 (缺字段)...');
-  const dirtyInv = generateNo('INV');
+  console.log('\n5. 生成脏记录测试数据...');
+  
+  console.log('   5a. 缺失字段 (缺 applicant_name)...');
+  const missingFieldInv = generateNo('INV');
   await db.insert('invoices', {
-    invoice_no: dirtyInv,
+    invoice_no: missingFieldInv,
     invoice_date: '2024-05-18',
     expense_category: 'transportation',
     total_amount: 200,
     applicant_id: '',
-    raw_data: JSON.stringify({ seed: true, dirty: true, missing_field: 'applicant_name' })
+    applicant_name: '',
+    raw_data: JSON.stringify({ seed: true, dirty: 'missing_field' })
   });
-  console.log(`   ✅ 脏记录(缺字段): ${dirtyInv}`);
+  console.log(`   ✅ 缺字段发票: ${missingFieldInv}`);
+
+  console.log('   5b. 跨日逻辑错误 (入住日期晚于退房日期)...');
+  const crossDateInv = generateNo('INV');
+  await db.insert('invoices', {
+    invoice_no: crossDateInv,
+    invoice_date: '2024-05-25',
+    seller_name: '北京王府半岛酒店',
+    expense_category: 'accommodation',
+    total_amount: 1500,
+    applicant_id: 'EMP001',
+    applicant_name: '张三',
+    check_in_date: '2024-05-26',
+    check_out_date: '2024-05-24',
+    hotel_name: '北京王府半岛酒店',
+    raw_data: JSON.stringify({ seed: true, dirty: 'cross_date' })
+  });
+  console.log(`   ✅ 跨日发票: ${crossDateInv}`);
+
+  console.log('   5c. 数量冲突 (room_count 与实际不符)...');
+  const quantityInv = generateNo('INV');
+  await db.insert('invoices', {
+    invoice_no: quantityInv,
+    invoice_date: '2024-05-20',
+    seller_name: '上海国际会议中心酒店',
+    expense_category: 'accommodation',
+    total_amount: 2400,
+    applicant_id: 'EMP002',
+    applicant_name: '李四',
+    check_in_date: '2024-05-18',
+    check_out_date: '2024-05-20',
+    hotel_name: '上海国际会议中心酒店',
+    room_count: 2,
+    raw_data: JSON.stringify({ seed: true, dirty: 'quantity_conflict', expected_rooms: 1 })
+  });
+  console.log(`   ✅ 数量冲突发票: ${quantityInv} (room_count=2, 期望1)`);
 
   console.log('\n6. 生成付款流水...');
-  const payments = [
-    { no: generateNo('PAY'), amount: 1200, invIndex: 0 },
-    { no: generateNo('PAY'), amount: 1200, invIndex: 1 },
-    { no: generateNo('PAY'), amount: 553, invIndex: 3 }
+  const paymentData = [
+    { amount: 1200, invoiceIndex: 0, applicantIndex: 0 },
+    { amount: 1200, invoiceIndex: 1, applicantIndex: 1 },
+    { amount: 553, invoiceIndex: 3, applicantIndex: 0 },
+    { amount: 350, invoiceIndex: 6, applicantIndex: 0 }
   ];
-  for (const p of payments) {
+  for (const p of paymentData) {
+    const payNo = generateNo('PAY');
     await db.insert('payment_flows', {
-      payment_no: p.no,
+      payment_no: payNo,
       payment_date: '2024-05-20',
       payer_account: '622202****1234',
       payer_name: '公司对公账户',
-      payee_name: '员工报销',
+      payee_name: applicants[p.applicantIndex].name,
       amount: p.amount,
       purpose: '差旅费报销',
-      applicant_id: applicants[p.invIndex % 3].id,
-      applicant_name: applicants[p.invIndex % 3].name,
+      applicant_id: applicants[p.applicantIndex].id,
+      applicant_name: applicants[p.applicantIndex].name,
       raw_data: JSON.stringify({ seed: true })
     });
-    console.log(`   ✅ 付款流水: ${p.no} - ¥${p.amount}`);
+    console.log(`   ✅ 付款流水: ${payNo} - ¥${p.amount}`);
   }
 
   console.log('\n7. 生成退款流水...');
@@ -162,34 +207,42 @@ async function seedData() {
   });
   console.log(`   ✅ 盘点差异: ${diffNo} - ¥153`);
 
-  console.log('\n9. 生成跨日测试数据 (入住日期晚于退房日期)...');
-  const crossDateInv = generateNo('INV');
-  await db.insert('invoices', {
-    invoice_no: crossDateInv,
-    invoice_date: '2024-05-25',
-    seller_name: '北京王府半岛酒店',
-    expense_category: 'accommodation',
-    total_amount: 1500,
-    applicant_id: 'EMP001',
-    applicant_name: '张三',
-    check_in_date: '2024-05-26',
-    check_out_date: '2024-05-24',
-    hotel_name: '北京王府半岛酒店',
-    raw_data: JSON.stringify({ seed: true, cross_date: true })
-  });
-  console.log(`   ✅ 跨日发票: ${crossDateInv}`);
+  console.log('\n9. 主动触发脏记录检查 (对已有数据)...');
+  const dirtyResults = await dirtyRecordService.checkAllExistingData();
+  console.log(`   ✅ 脏记录检查完成，发现 ${dirtyResults.length} 条脏记录`);
+
+  console.log('\n10. 对数量冲突发票单独标记...');
+  const quantityInvoice = await db.findByNo('invoices', 'invoice_no', quantityInv);
+  if (quantityInvoice) {
+    await dirtyRecordService.checkQuantityConflict(
+      'invoices', quantityInvoice, 'room_count', 1, quantityInvoice.id, quantityInvoice.invoice_no
+    );
+    console.log(`   ✅ 数量冲突已标记`);
+  }
+
+  console.log('\n11. 对缺失字段差旅申请单独检查...');
+  const missingFieldInvoice = await db.findByNo('invoices', 'invoice_no', missingFieldInv);
+  if (missingFieldInvoice) {
+    await dirtyRecordService.checkMissingFields(
+      'invoices', missingFieldInvoice, ['applicant_name', 'applicant_id'], 
+      missingFieldInvoice.id, missingFieldInvoice.invoice_no
+    );
+    console.log(`   ✅ 缺失字段已标记`);
+  }
 
   console.log('\n═══════════════════════════════════════════════════════════');
   console.log(' 测试数据生成完成！');
   console.log('═══════════════════════════════════════════════════════════');
   console.log(` 共用行程组ID: ${SHARED_TRIP_GROUP}`);
-  console.log(' 包含场景:');
-  console.log('   ✅ 3人共用同一行程 (住宿重复报销)');
-  console.log('   ✅ 3人同一车次 (交通重复报销)');
-  console.log('   ✅ 缺字段脏记录');
-  console.log('   ✅ 跨日逻辑错误');
-  console.log('   ✅ 付款/退款流水');
-  console.log('   ✅ 盘点差异');
+  console.log('\n 包含脏记录场景:');
+  console.log('   ✅ duplicate_record - 3人共用同一行程 (住宿+交通重复报销)');
+  console.log('   ✅ missing_field - 缺少必填字段 (applicant_name)');
+  console.log('   ✅ cross_date - 跨日逻辑错误 (入住日期 > 退房日期)');
+  console.log('   ✅ quantity_conflict - 数量冲突 (room_count=2, 期望1)');
+  console.log('   ✅ amount_conflict - 对账时自动检测 (发票-付款金额不匹配)');
+  console.log('\n 运行以下命令进行完整验证:');
+  console.log('   npm start        # 启动服务');
+  console.log('   然后执行 curl 命令测试各接口');
   console.log('═══════════════════════════════════════════════════════════\n');
 
   db.close();
