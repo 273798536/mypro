@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles, can_review
+from ..auth import get_current_active_user, require_roles, can_review, get_visible_fields_for_role
 from ..models import User, UserRole, Material, RecordStatus
 from ..schemas import MaterialCreate, MaterialUpdate, MaterialResponse, RecordStatusTransition
-from ..utils import log_operation, object_to_dict, is_batch_frozen, can_modify_record, can_transition_record_status
+from ..utils import (
+    log_operation, object_to_dict, is_batch_frozen, can_modify_record,
+    can_transition_record_status, filter_response_data
+)
 
 router = APIRouter(prefix="/materials", tags=["物料清单"])
 
@@ -33,7 +36,7 @@ async def create_material(
     return db_material
 
 
-@router.get("", response_model=list[MaterialResponse])
+@router.get("")
 async def list_materials(
     batch_id: int = None,
     skip: int = 0,
@@ -45,10 +48,11 @@ async def list_materials(
     if batch_id:
         query = query.filter(Material.batch_id == batch_id)
     materials = query.offset(skip).limit(limit).all()
-    return materials
+    visible_fields = get_visible_fields_for_role(current_user.role, "material")
+    return filter_response_data([object_to_dict(m) for m in materials], visible_fields)
 
 
-@router.get("/{material_id}", response_model=MaterialResponse)
+@router.get("/{material_id}")
 async def get_material(
     material_id: int,
     db: Session = Depends(get_db),
@@ -57,7 +61,8 @@ async def get_material(
     material = db.query(Material).filter(Material.id == material_id).first()
     if not material:
         raise HTTPException(status_code=404, detail="Material not found")
-    return material
+    visible_fields = get_visible_fields_for_role(current_user.role, "material")
+    return filter_response_data(object_to_dict(material), visible_fields)
 
 
 @router.put("/{material_id}", response_model=MaterialResponse)

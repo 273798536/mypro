@@ -106,13 +106,56 @@ def can_export(current_user: User) -> bool:
     return current_user.role in [UserRole.REVIEWER, UserRole.SUPERVISOR]
 
 
-def get_visible_fields_for_role(role: UserRole) -> dict:
-    base_fields = ["id", "created_at", "status"]
+def get_visible_fields_for_role(role: UserRole, resource_type: str = "material") -> list:
+    base_material_fields = ["id", "batch_id", "material_code", "material_name", "quantity", "status", "created_at"]
+    base_batch_fields = ["id", "batch_no", "exhibition_name", "location", "start_date", "end_date", "status", "created_at"]
+    base_borrow_fields = ["id", "batch_id", "borrow_no", "material_code", "material_name", "quantity", "status", "borrow_date", "created_at"]
+    base_common_fields = ["id", "status", "created_at"]
     
-    role_fields = {
-        UserRole.READ_ONLY: base_fields + ["material_code", "material_name", "quantity"],
-        UserRole.DATA_ENTRY: base_fields + ["material_code", "material_name", "quantity", "category", "specification", "remark"],
-        UserRole.REVIEWER: base_fields + ["material_code", "material_name", "quantity", "category", "specification", "remark", "created_by", "updated_at"],
-        UserRole.SUPERVISOR: ["*"]
+    field_configs = {
+        "material": {
+            UserRole.READ_ONLY: base_material_fields,
+            UserRole.DATA_ENTRY: base_material_fields + ["category", "specification", "unit", "warehouse_location", "remark"],
+            UserRole.REVIEWER: base_material_fields + ["category", "specification", "unit", "warehouse_location", "remark", "created_by", "updated_at"],
+            UserRole.SUPERVISOR: ["*"]
+        },
+        "logistics": {
+            UserRole.READ_ONLY: base_common_fields + ["batch_id", "material_code", "material_name", "quantity", "receive_date"],
+            UserRole.DATA_ENTRY: base_common_fields + ["batch_id", "material_code", "material_name", "quantity", "receive_date", "waybill_no", "logistics_company", "sender", "receiver", "package_condition", "is_damaged", "remark"],
+            UserRole.REVIEWER: base_common_fields + ["batch_id", "material_code", "material_name", "quantity", "receive_date", "waybill_no", "logistics_company", "sender", "receiver", "package_condition", "is_damaged", "damage_description", "remark", "created_by", "updated_at"],
+            UserRole.SUPERVISOR: ["*"]
+        },
+        "borrow": {
+            UserRole.READ_ONLY: base_borrow_fields + ["borrower_name", "is_returned", "return_quantity"],
+            UserRole.DATA_ENTRY: base_borrow_fields + ["borrower_name", "borrower_phone", "borrower_department", "expected_return_date", "actual_return_date", "is_returned", "return_quantity", "remark"],
+            UserRole.REVIEWER: base_borrow_fields + ["borrower_name", "borrower_phone", "borrower_department", "expected_return_date", "actual_return_date", "is_returned", "return_quantity", "remark", "created_by", "updated_at"],
+            UserRole.SUPERVISOR: ["*"]
+        },
+        "scan": {
+            UserRole.READ_ONLY: base_common_fields + ["batch_id", "material_code", "material_name", "scan_type", "quantity", "scan_time"],
+            UserRole.DATA_ENTRY: base_common_fields + ["batch_id", "material_code", "material_name", "scan_type", "quantity", "scan_time", "scanner", "location", "scan_no", "remark"],
+            UserRole.REVIEWER: base_common_fields + ["batch_id", "material_code", "material_name", "scan_type", "quantity", "scan_time", "scanner", "location", "scan_no", "remark", "created_by", "updated_at"],
+            UserRole.SUPERVISOR: ["*"]
+        },
+        "batch": {
+            UserRole.READ_ONLY: base_batch_fields,
+            UserRole.DATA_ENTRY: base_batch_fields + ["description", "updated_at"],
+            UserRole.REVIEWER: base_batch_fields + ["description", "created_by", "updated_at", "frozen_at", "frozen_by"],
+            UserRole.SUPERVISOR: ["*"]
+        },
+        "import": {
+            UserRole.READ_ONLY: ["id", "task_no", "batch_id", "import_type", "status", "total_count", "success_count", "failed_count", "created_at"],
+            UserRole.DATA_ENTRY: ["id", "task_no", "batch_id", "import_type", "file_name", "status", "total_count", "success_count", "failed_count", "created_at", "completed_at"],
+            UserRole.REVIEWER: ["id", "task_no", "batch_id", "import_type", "file_name", "status", "total_count", "success_count", "failed_count", "created_at", "completed_at", "created_by"],
+            UserRole.SUPERVISOR: ["*"]
+        },
+        "reconciliation": {
+            UserRole.READ_ONLY: ["id", "batch_id", "material_code", "material_name", "is_anomaly", "created_at"],
+            UserRole.DATA_ENTRY: ["id", "batch_id", "material_code", "material_name", "expected_quantity", "actual_quantity", "difference", "is_anomaly", "anomaly_description", "created_at"],
+            UserRole.REVIEWER: ["id", "batch_id", "material_code", "material_name", "expected_quantity", "actual_quantity", "difference", "is_anomaly", "anomaly_description", "created_at", "created_by"],
+            UserRole.SUPERVISOR: ["*"]
+        }
     }
-    return role_fields.get(role, base_fields)
+    
+    resource_config = field_configs.get(resource_type, {})
+    return resource_config.get(role, base_common_fields)

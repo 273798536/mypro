@@ -3,13 +3,13 @@ from sqlalchemy.orm import Session
 from collections import defaultdict
 from datetime import datetime
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles
+from ..auth import get_current_active_user, require_roles, get_visible_fields_for_role
 from ..models import (
     User, UserRole, Material, LogisticsReceipt, BorrowRecord,
     ScanRecord, ReconciliationResult
 )
 from ..schemas import ReconciliationResultResponse
-from ..utils import log_operation
+from ..utils import log_operation, object_to_dict, filter_response_data
 
 router = APIRouter(prefix="/reconciliation", tags=["对账与异常"])
 
@@ -123,7 +123,7 @@ async def run_reconciliation(
     }
 
 
-@router.get("/{batch_id}", response_model=list[ReconciliationResultResponse])
+@router.get("/{batch_id}")
 async def get_reconciliation_results(
     batch_id: int,
     only_anomalies: bool = False,
@@ -133,7 +133,9 @@ async def get_reconciliation_results(
     query = db.query(ReconciliationResult).filter(ReconciliationResult.batch_id == batch_id)
     if only_anomalies:
         query = query.filter(ReconciliationResult.is_anomaly == True)
-    return query.all()
+    results = query.all()
+    visible_fields = get_visible_fields_for_role(current_user.role, "reconciliation")
+    return filter_response_data([object_to_dict(r) for r in results], visible_fields)
 
 
 @router.get("/{batch_id}/trace/{material_code}")

@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles, can_review
+from ..auth import get_current_active_user, require_roles, can_review, get_visible_fields_for_role
 from ..models import User, UserRole, ScanRecord, RecordStatus
 from ..schemas import ScanRecordCreate, ScanRecordUpdate, ScanRecordResponse, RecordStatusTransition
-from ..utils import log_operation, object_to_dict, is_batch_frozen, can_modify_record, can_transition_record_status, generate_no
+from ..utils import (
+    log_operation, object_to_dict, is_batch_frozen, can_modify_record,
+    can_transition_record_status, generate_no, filter_response_data
+)
 
 router = APIRouter(prefix="/scans", tags=["扫码明细"])
 
@@ -37,7 +40,7 @@ async def create_scan(
     return db_scan
 
 
-@router.get("", response_model=list[ScanRecordResponse])
+@router.get("")
 async def list_scans(
     batch_id: int = None,
     scan_type: str = None,
@@ -52,10 +55,11 @@ async def list_scans(
     if scan_type:
         query = query.filter(ScanRecord.scan_type == scan_type)
     scans = query.offset(skip).limit(limit).all()
-    return scans
+    visible_fields = get_visible_fields_for_role(current_user.role, "scan")
+    return filter_response_data([object_to_dict(s) for s in scans], visible_fields)
 
 
-@router.get("/{scan_id}", response_model=ScanRecordResponse)
+@router.get("/{scan_id}")
 async def get_scan(
     scan_id: int,
     db: Session = Depends(get_db),
@@ -64,7 +68,8 @@ async def get_scan(
     scan = db.query(ScanRecord).filter(ScanRecord.id == scan_id).first()
     if not scan:
         raise HTTPException(status_code=404, detail="Scan record not found")
-    return scan
+    visible_fields = get_visible_fields_for_role(current_user.role, "scan")
+    return filter_response_data(object_to_dict(scan), visible_fields)
 
 
 @router.put("/{scan_id}", response_model=ScanRecordResponse)

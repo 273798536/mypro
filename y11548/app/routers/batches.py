@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from datetime import datetime
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles, can_freeze
+from ..auth import get_current_active_user, require_roles, can_freeze, get_visible_fields_for_role
 from ..models import User, UserRole, ExhibitionBatch, BatchStatus
 from ..schemas import (
     ExhibitionBatchCreate, ExhibitionBatchUpdate, ExhibitionBatchResponse,
@@ -10,7 +10,7 @@ from ..schemas import (
 )
 from ..utils import (
     log_operation, object_to_dict, is_batch_frozen,
-    can_transition_batch_status
+    can_transition_batch_status, filter_response_data
 )
 
 router = APIRouter(prefix="/batches", tags=["展会批次"])
@@ -41,7 +41,7 @@ async def create_batch(
     return db_batch
 
 
-@router.get("", response_model=list[ExhibitionBatchResponse])
+@router.get("")
 async def list_batches(
     skip: int = 0,
     limit: int = 100,
@@ -49,10 +49,11 @@ async def list_batches(
     current_user: User = Depends(get_current_active_user)
 ):
     batches = db.query(ExhibitionBatch).offset(skip).limit(limit).all()
-    return batches
+    visible_fields = get_visible_fields_for_role(current_user.role, "batch")
+    return filter_response_data([object_to_dict(b) for b in batches], visible_fields)
 
 
-@router.get("/{batch_id}", response_model=ExhibitionBatchResponse)
+@router.get("/{batch_id}")
 async def get_batch(
     batch_id: int,
     db: Session = Depends(get_db),
@@ -61,7 +62,8 @@ async def get_batch(
     batch = db.query(ExhibitionBatch).filter(ExhibitionBatch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
-    return batch
+    visible_fields = get_visible_fields_for_role(current_user.role, "batch")
+    return filter_response_data(object_to_dict(batch), visible_fields)
 
 
 @router.put("/{batch_id}", response_model=ExhibitionBatchResponse)

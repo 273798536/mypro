@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles, can_review
+from ..auth import get_current_active_user, require_roles, can_review, get_visible_fields_for_role
 from ..models import User, UserRole, LogisticsReceipt, RecordStatus
 from ..schemas import LogisticsReceiptCreate, LogisticsReceiptUpdate, LogisticsReceiptResponse, RecordStatusTransition
-from ..utils import log_operation, object_to_dict, is_batch_frozen, can_modify_record, can_transition_record_status
+from ..utils import (
+    log_operation, object_to_dict, is_batch_frozen, can_modify_record,
+    can_transition_record_status, filter_response_data
+)
 
 router = APIRouter(prefix="/logistics", tags=["物流签收"])
 
@@ -33,7 +36,7 @@ async def create_logistics(
     return db_logistics
 
 
-@router.get("", response_model=list[LogisticsReceiptResponse])
+@router.get("")
 async def list_logistics(
     batch_id: int = None,
     skip: int = 0,
@@ -45,10 +48,11 @@ async def list_logistics(
     if batch_id:
         query = query.filter(LogisticsReceipt.batch_id == batch_id)
     logistics = query.offset(skip).limit(limit).all()
-    return logistics
+    visible_fields = get_visible_fields_for_role(current_user.role, "logistics")
+    return filter_response_data([object_to_dict(l) for l in logistics], visible_fields)
 
 
-@router.get("/{logistics_id}", response_model=LogisticsReceiptResponse)
+@router.get("/{logistics_id}")
 async def get_logistics(
     logistics_id: int,
     db: Session = Depends(get_db),
@@ -57,7 +61,8 @@ async def get_logistics(
     logistics = db.query(LogisticsReceipt).filter(LogisticsReceipt.id == logistics_id).first()
     if not logistics:
         raise HTTPException(status_code=404, detail="Logistics receipt not found")
-    return logistics
+    visible_fields = get_visible_fields_for_role(current_user.role, "logistics")
+    return filter_response_data(object_to_dict(logistics), visible_fields)
 
 
 @router.put("/{logistics_id}", response_model=LogisticsReceiptResponse)

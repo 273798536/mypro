@@ -232,6 +232,8 @@ curl "http://localhost:8000/exports/1/full" \
 
 ## 权限矩阵
 
+### 操作权限
+
 | 操作 | 录入员 | 复核员 | 主管 | 只读 |
 |------|--------|--------|------|------|
 | 查看记录 | ✓ | ✓ | ✓ | ✓ |
@@ -245,6 +247,36 @@ curl "http://localhost:8000/exports/1/full" \
 | 用户管理 | ✗ | ✗ | ✓ | ✗ |
 
 *注：只能修改草稿状态且批次未冻结的记录
+
+### 字段可见性（物料清单为例）
+
+| 字段 | 只读 | 录入员 | 复核员 | 主管 |
+|------|------|--------|--------|------|
+| id | ✓ | ✓ | ✓ | ✓ |
+| batch_id | ✓ | ✓ | ✓ | ✓ |
+| material_code | ✓ | ✓ | ✓ | ✓ |
+| material_name | ✓ | ✓ | ✓ | ✓ |
+| quantity | ✓ | ✓ | ✓ | ✓ |
+| status | ✓ | ✓ | ✓ | ✓ |
+| created_at | ✓ | ✓ | ✓ | ✓ |
+| category | ✗ | ✓ | ✓ | ✓ |
+| specification | ✗ | ✓ | ✓ | ✓ |
+| unit | ✗ | ✓ | ✓ | ✓ |
+| warehouse_location | ✗ | ✓ | ✓ | ✓ |
+| remark | ✗ | ✓ | ✓ | ✓ |
+| created_by | ✗ | ✗ | ✓ | ✓ |
+| updated_at | ✗ | ✗ | ✓ | ✓ |
+
+### 其他资源字段可见性
+
+- **批次**：只读用户看不到 `frozen_by`、`created_by` 等审计字段
+- **借用记录**：只读用户看不到 `borrower_phone`、`borrower_department` 等个人信息
+- **物流签收**：只读用户看不到 `damage_description`、`sender` 等敏感信息
+- **扫码明细**：只读用户看不到 `scanner`、`location` 等操作人信息
+- **导入记录**：只读用户看不到 `file_name`、`created_by` 等审计字段
+- **对账结果**：只读用户看不到 `anomaly_description` 等详细异常原因
+
+运行 `python3 test_field_visibility.py` 可验证所有权限控制。
 
 ## 状态机
 

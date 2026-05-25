@@ -4,13 +4,13 @@ from datetime import datetime
 import pandas as pd
 import io
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles
+from ..auth import get_current_active_user, require_roles, get_visible_fields_for_role
 from ..models import (
     User, UserRole, ImportTask, ImportFailure, ImportStatus,
     Material, LogisticsReceipt, BorrowRecord, ScanRecord, RecordStatus
 )
 from ..schemas import ImportTaskResponse, ImportFailureResponse
-from ..utils import log_operation, generate_no, is_batch_frozen
+from ..utils import log_operation, generate_no, is_batch_frozen, filter_response_data
 
 router = APIRouter(prefix="/imports", tags=["数据导入"])
 
@@ -161,7 +161,7 @@ async def import_data(
     return task
 
 
-@router.get("", response_model=list[ImportTaskResponse])
+@router.get("")
 async def list_import_tasks(
     batch_id: int = None,
     status: ImportStatus = None,
@@ -175,16 +175,18 @@ async def list_import_tasks(
         query = query.filter(ImportTask.batch_id == batch_id)
     if status:
         query = query.filter(ImportTask.status == status)
-    return query.offset(skip).limit(limit).all()
+    tasks = query.offset(skip).limit(limit).all()
+    visible_fields = get_visible_fields_for_role(current_user.role, "import")
+    return filter_response_data([object_to_dict(t) for t in tasks], visible_fields)
 
 
-@router.get("/{task_id}/failures", response_model=list[ImportFailureResponse])
+@router.get("/{task_id}/failures")
 async def get_import_failures(
     task_id: int,
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_roles(UserRole.REVIEWER, UserRole.SUPERVISOR))
 ):
     failures = db.query(ImportFailure).filter(ImportFailure.task_id == task_id).offset(skip).limit(limit).all()
-    return failures
+    return [object_to_dict(f) for f in failures]

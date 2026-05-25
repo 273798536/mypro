@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..auth import get_current_active_user, require_roles, can_review
+from ..auth import get_current_active_user, require_roles, can_review, get_visible_fields_for_role
 from ..models import User, UserRole, BorrowRecord, RecordStatus
 from ..schemas import BorrowRecordCreate, BorrowRecordUpdate, BorrowRecordResponse, RecordStatusTransition
-from ..utils import log_operation, object_to_dict, is_batch_frozen, can_modify_record, can_transition_record_status
+from ..utils import (
+    log_operation, object_to_dict, is_batch_frozen, can_modify_record,
+    can_transition_record_status, filter_response_data
+)
 
 router = APIRouter(prefix="/borrow", tags=["借用记录"])
 
@@ -37,7 +40,7 @@ async def create_borrow(
     return db_borrow
 
 
-@router.get("", response_model=list[BorrowRecordResponse])
+@router.get("")
 async def list_borrows(
     batch_id: int = None,
     is_returned: bool = None,
@@ -52,10 +55,11 @@ async def list_borrows(
     if is_returned is not None:
         query = query.filter(BorrowRecord.is_returned == is_returned)
     borrows = query.offset(skip).limit(limit).all()
-    return borrows
+    visible_fields = get_visible_fields_for_role(current_user.role, "borrow")
+    return filter_response_data([object_to_dict(b) for b in borrows], visible_fields)
 
 
-@router.get("/{borrow_id}", response_model=BorrowRecordResponse)
+@router.get("/{borrow_id}")
 async def get_borrow(
     borrow_id: int,
     db: Session = Depends(get_db),
@@ -64,7 +68,8 @@ async def get_borrow(
     borrow = db.query(BorrowRecord).filter(BorrowRecord.id == borrow_id).first()
     if not borrow:
         raise HTTPException(status_code=404, detail="Borrow record not found")
-    return borrow
+    visible_fields = get_visible_fields_for_role(current_user.role, "borrow")
+    return filter_response_data(object_to_dict(borrow), visible_fields)
 
 
 @router.put("/{borrow_id}", response_model=BorrowRecordResponse)

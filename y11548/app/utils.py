@@ -103,3 +103,15 @@ def get_table_model(table_name: str):
         "scan_records": ScanRecord,
     }
     return table_map.get(table_name)
+
+
+def filter_fields_by_role(obj_dict: dict, visible_fields: list) -> dict:
+    if "*" in visible_fields:
+        return obj_dict
+    return {k: v for k, v in obj_dict.items() if k in visible_fields}
+
+
+def filter_response_data(data, visible_fields: list):
+    if isinstance(data, list):
+        return [filter_fields_by_role(d, visible_fields) for d in data]
+    return filter_fields_by_role(data, visible_fields)
