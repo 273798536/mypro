@@ -162,6 +162,38 @@ class MaterialLedgerService:
         return data
 
     @staticmethod
+    async def mark_ledgers_as_exported(
+        db: AsyncSession,
+        ledger_ids: List[int],
+        operator: str
+    ) -> int:
+        from sqlalchemy import select, update
+
+        result = await db.execute(
+            select(MaterialLedger).where(MaterialLedger.id.in_(ledger_ids))
+        )
+        ledgers = result.scalars().all()
+
+        count = 0
+        for ledger in ledgers:
+            if ledger.status != MaterialStatus.EXPORTED.value:
+                status_history = StatusHistory(
+                    ledger_id=ledger.id,
+                    from_status=ledger.status,
+                    to_status=MaterialStatus.EXPORTED.value,
+                    operator=operator,
+                    reason="数据导出完成",
+                    role=Role.AUDITOR.value
+                )
+                db.add(status_history)
+                ledger.status = MaterialStatus.EXPORTED.value
+                ledger.operator = operator
+                count += 1
+
+        await db.commit()
+        return count
+
+    @staticmethod
     async def get_role_view(
         db: AsyncSession,
         role: Role,
