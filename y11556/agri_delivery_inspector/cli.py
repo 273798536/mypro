@@ -61,7 +61,7 @@ def status(ctx):
     console.print(table)
 
 
-@cli.group()
+@cli.group(name='import')
 def import_cmd():
     """数据导入相关命令"""
     pass

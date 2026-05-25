@@ -471,7 +471,7 @@ def run_all_checks(batch_no=None, db_path=None):
     results = {
         "format": check_format_for_batch(batch_no, db_path) if batch_no else {"success": False, "message": "格式校验需要指定批次"},
         "duplicate": check_duplicates_for_batch(batch_no, db_path) if batch_no else {"success": False, "message": "重复校验需要指定批次"},
-        "cross_validate": check_cross_validation(batch_no, db_path),
+        "cross_validate": check_cross_validation(None, db_path),
         "credit_substitute": check_credit_substitute(batch_no, db_path)
     }
     
@@ -484,6 +484,7 @@ def run_all_checks(batch_no=None, db_path=None):
         "success": True,
         "message": f"全部校验完成，共发现 {total_issues} 个问题",
         "batch_no": batch_no,
+        "cross_validate_scope": "all_batches",
         "total_issues": total_issues,
         "details": results
     }

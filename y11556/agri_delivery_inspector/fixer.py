@@ -23,6 +23,12 @@ def override_check(check_id, reason, operator="manual", db_path=None):
                 "message": f"该校验结果已被改判"
             }
         
+        if check.record and check.record.batch.is_frozen:
+            return {
+                "success": False,
+                "message": f"批次 {check.record.batch.batch_no} 已冻结，无法改判"
+            }
+        
         check.is_overridden = True
         check.override_reason = reason
         check.overridden_by = operator
@@ -70,6 +76,12 @@ def correct_field(record_id, field_name, new_value, reason, operator="manual", d
             return {
                 "success": False,
                 "message": f"记录已删除"
+            }
+        
+        if record.batch.is_frozen:
+            return {
+                "success": False,
+                "message": f"批次 {record.batch.batch_no} 已冻结，无法修改"
             }
         
         std = record.std_data
