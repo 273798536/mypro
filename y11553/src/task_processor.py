@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Dict, Any, List, Callable, Optional
 from sqlalchemy.orm import Session
 from .database import SessionLocal
-from .repository import DataRepository, safe_json_dumps
+from .repository import DataRepository, safe_json_dumps, safe_json_loads
 from .models import (
     ImportTask,
     TaskStatus,
@@ -99,6 +99,14 @@ class TaskProcessor:
             elif permanent_failed_count > 0 and waiting_retry_count == 0:
                 repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, f"有 {permanent_failed_count} 条记录永久失败")
                 repo.add_log(task, f"任务完成，{permanent_failed_count} 条记录永久失败", level="warning")
+            elif waiting_retry_count > 0:
+                task.retry_times += 1
+                if task.retry_times >= task.max_retry_times:
+                    repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, f"有 {waiting_retry_count} 条记录重试失败")
+                    repo.add_log(task, f"任务永久失败，{waiting_retry_count} 条记录达到最大重试次数", level="error")
+                else:
+                    repo.update_task_status(task, TaskStatus.WAITING_RETRY, f"有 {waiting_retry_count} 条记录等待重试")
+                    repo.add_log(task, f"任务部分完成，{waiting_retry_count} 条记录等待重试 ({task.retry_times}/{task.max_retry_times})", level="warning")
             else:
                 self._finalize_task(task, repo)
 
@@ -129,8 +137,8 @@ class TaskProcessor:
         repo.update_pending_record_status(record, PendingRecordStatus.PROCESSING)
 
         try:
-            data = json.loads(record.raw_data)
-        except json.JSONDecodeError as e:
+            data = safe_json_loads(record.raw_data)
+        except Exception as e:
             repo.update_pending_record_status(record, PendingRecordStatus.PERMANENT_FAILED, f"JSON解析失败: {str(e)}")
             repo.add_log(task, f"第{record.source_row_number}行原始数据解析失败: {str(e)}", level="error")
             return ProcessingResult.ERROR

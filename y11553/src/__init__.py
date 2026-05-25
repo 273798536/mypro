@@ -1,5 +1,5 @@
 from .config import *
-from .database import Base, engine, SessionLocal, get_db
+from .database import Base, engine, SessionLocal, get_db, init_db
 from .models import (
     InventoryRecord,
     ReplenishmentPhoto,
@@ -10,6 +10,9 @@ from .models import (
     ProcessingLog,
     ReconciliationResult,
     DuplicateRecord,
+    PendingRecord,
+    PendingRecordStatus,
+    RecordType,
 )
 
 __all__ = [
@@ -17,6 +20,7 @@ __all__ = [
     "engine",
     "SessionLocal",
     "get_db",
+    "init_db",
     "InventoryRecord",
     "ReplenishmentPhoto",
     "RefundRecord",
@@ -26,4 +30,7 @@ __all__ = [
     "ProcessingLog",
     "ReconciliationResult",
     "DuplicateRecord",
+    "PendingRecord",
+    "PendingRecordStatus",
+    "RecordType",
 ]

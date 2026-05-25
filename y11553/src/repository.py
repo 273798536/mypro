@@ -24,7 +24,7 @@ from .duplicate_detector import generate_fingerprint, generate_record_id, check_
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
-            return obj.isoformat()
+            return {"__type__": "datetime", "value": obj.isoformat()}
         return super().default(obj)
 
 
@@ -32,9 +32,48 @@ def safe_json_dumps(data: Any) -> str:
     return json.dumps(data, ensure_ascii=False, cls=DateTimeEncoder)
 
 
+def safe_json_loads(s: str) -> Any:
+    def datetime_hook(obj):
+        if obj.get("__type__") == "datetime":
+            try:
+                return datetime.fromisoformat(obj["value"])
+            except (ValueError, KeyError):
+                return obj["value"]
+        return obj
+
+    try:
+        return json.loads(s, object_hook=datetime_hook)
+    except json.JSONDecodeError:
+        try:
+            return json.loads(s)
+        except json.JSONDecodeError:
+            return {}
+
+
+def _to_datetime(value: Any) -> datetime:
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, str):
+        try:
+            return datetime.fromisoformat(value)
+        except ValueError:
+            try:
+                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                return datetime.utcnow()
+    return datetime.utcnow()
+
+
 class DataRepository:
     def __init__(self, db: Session):
         self.db = db
+
+    def safe_commit(self):
+        try:
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     def create_import_task(
         self,
@@ -50,7 +89,7 @@ class DataRepository:
             status=TaskStatus.PENDING,
         )
         self.db.add(task)
-        self.db.commit()
+        self.safe_commit()
         self.db.refresh(task)
         return task
 
@@ -66,7 +105,7 @@ class DataRepository:
             task.error_message = error_message
         if status == TaskStatus.COMPLETED:
             task.completed_at = datetime.utcnow()
-        self.db.commit()
+        self.safe_commit()
         self.db.refresh(task)
         return task
 
@@ -80,8 +119,9 @@ class DataRepository:
         task.success_count += success
         task.duplicate_count += duplicate
         task.error_count += error
-        task.total_count += success + duplicate + error
-        self.db.commit()
+        if task.total_count == 0:
+            task.total_count = success + duplicate + error
+        self.safe_commit()
         self.db.refresh(task)
         return task
 
@@ -102,7 +142,7 @@ class DataRepository:
             raw_data=raw_data,
         )
         self.db.add(log)
-        self.db.commit()
+        self.safe_commit()
         return log
 
     def add_duplicate_record(
@@ -128,7 +168,7 @@ class DataRepository:
             raw_data=raw_data,
         )
         self.db.add(dup)
-        self.db.commit()
+        self.safe_commit()
         return dup
 
     def create_inventory_record(
@@ -152,10 +192,10 @@ class DataRepository:
             processing_reason=data.get("processing_reason"),
             raw_data=safe_json_dumps(data),
             fingerprint=fingerprint,
-            record_time=data.get("record_time", datetime.utcnow()),
+            record_time=_to_datetime(data.get("record_time")),
         )
         self.db.add(record)
-        self.db.commit()
+        self.safe_commit()
         self.db.refresh(record)
         return record
 
@@ -178,7 +218,7 @@ class DataRepository:
             operator_id=data.get("operator_id"),
             raw_data=safe_json_dumps(data),
             fingerprint=fingerprint,
-            record_time=data.get("record_time", datetime.utcnow()),
+            record_time=_to_datetime(data.get("record_time")),
         )
         self.db.add(record)
         self.db.commit()
@@ -204,7 +244,7 @@ class DataRepository:
             refund_reason=data.get("refund_reason"),
             raw_data=safe_json_dumps(data),
             fingerprint=fingerprint,
-            record_time=data.get("record_time", datetime.utcnow()),
+            record_time=_to_datetime(data.get("record_time")),
         )
         self.db.add(record)
         self.db.commit()
@@ -231,7 +271,7 @@ class DataRepository:
             approval_note=data.get("approval_note"),
             raw_data=safe_json_dumps(data),
             fingerprint=fingerprint,
-            record_time=data.get("record_time", datetime.utcnow()),
+            record_time=_to_datetime(data.get("record_time")),
         )
         self.db.add(record)
         self.db.commit()
@@ -282,7 +322,7 @@ class DataRepository:
             status=PendingRecordStatus.PENDING,
         )
         self.db.add(record)
-        self.db.commit()
+        self.safe_commit()
         self.db.refresh(record)
         return record
 
@@ -313,7 +353,7 @@ class DataRepository:
             record.processed_at = datetime.utcnow()
         if status == PendingRecordStatus.WAITING_RETRY:
             record.retry_times += 1
-        self.db.commit()
+        self.safe_commit()
         self.db.refresh(record)
         return record
 

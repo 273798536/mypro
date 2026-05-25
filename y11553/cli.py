@@ -208,6 +208,7 @@ def recon_summary(cabinet_id):
 def generate_test_data():
     """生成测试数据"""
     from datetime import datetime, timedelta
+    import time
 
     db = SessionLocal()
     try:
@@ -245,7 +246,7 @@ def generate_test_data():
             },
         ]
         task1 = importer.import_from_api(RecordType.INVENTORY, inventory_records)
-        click.echo(f"库存数据导入: {task1.task_id}, 成功{task1.success_count}条")
+        click.echo(f"库存数据导入任务创建: {task1.task_id}, 共{task1.total_count}条记录（异步处理中）")
 
         replenishment_records = [
             {
@@ -268,7 +269,7 @@ def generate_test_data():
             },
         ]
         task2 = importer.import_from_api(RecordType.REPLENISHMENT, replenishment_records)
-        click.echo(f"补货数据导入: {task2.task_id}, 成功{task2.success_count}条")
+        click.echo(f"补货数据导入任务创建: {task2.task_id}, 共{task2.total_count}条记录（异步处理中）")
 
         refund_records = [
             {
@@ -282,13 +283,14 @@ def generate_test_data():
             },
         ]
         task3 = importer.import_from_api(RecordType.REFUND, refund_records)
-        click.echo(f"退款数据导入: {task3.task_id}, 成功{task3.success_count}条")
+        click.echo(f"退款数据导入任务创建: {task3.task_id}, 共{task3.total_count}条记录（异步处理中）")
 
         duplicate_records = [inventory_records[0].copy()]
         task4 = importer.import_from_api(RecordType.INVENTORY, duplicate_records)
-        click.echo(f"重复数据导入: {task4.task_id}, 重复{task4.duplicate_count}条")
+        click.echo(f"重复数据导入任务创建: {task4.task_id}, 共{task4.total_count}条记录（异步处理中）")
 
-        click.echo("\n测试数据生成完成！")
+        click.echo("\n测试数据生成完成！请等待异步处理或启动服务。")
+        click.echo("启动服务后将自动处理待处理任务。")
 
     finally:
         db.close()

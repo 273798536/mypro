@@ -86,7 +86,11 @@ class DataImporter:
                 )
 
         task.total_count = len(records)
-        self.db.commit()
+        try:
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            raise e
         self.db.refresh(task)
 
     def _parse_file(self, file_path: str, record_type: RecordType) -> List[Dict[str, Any]]:
