@@ -121,8 +121,8 @@ GET /api/batches/{batchId}?includeDetails=true
 
 #### 状态流转操作
 ```
-POST /api/batches/{batchId}/submit-processing   # 提交处理
-POST /api/batches/{batchId}/submit-review       # 提交复核
+POST /api/batches/{batchId}/process             # 提交处理
+POST /api/batches/{batchId}/review              # 提交复核
 POST /api/batches/{batchId}/freeze              # 冻结
 POST /api/batches/{batchId}/unfreeze            # 解冻
 POST /api/batches/{batchId}/approve             # 批准
@@ -135,12 +135,33 @@ POST /api/batches/{batchId}/archive             # 归档
 ### 文件管理
 
 #### 上传文件
+```bash
+curl -X POST http://localhost:3000/api/batches/{batchId}/files \
+  -H "X-Username: clerk01" \
+  -F "file=@sample-data/travel-applications.csv" \
+  -F "fileType=TRAVEL_APPLICATION"
 ```
-POST /api/batches/{batchId}/files
-Content-Type: multipart/form-data
 
-file: [选择文件]
-fileType: INVOICE_PDF | TRAVEL_APPLICATION | PAYMENT_RECORD | STORE_HANDOVER | CUSTOMER_SERVICE_NOTE
+**字段说明**：
+- `file`: 二进制文件（PDF/CSV/Excel）
+- `fileType`: 文件类型
+  - `INVOICE_PDF` - 发票PDF
+  - `TRAVEL_APPLICATION` - 差旅申请
+  - `PAYMENT_RECORD` - 付款流水
+  - `STORE_HANDOVER` - 门店交接纸
+  - `CUSTOMER_SERVICE_NOTE` - 客服备注
+
+**响应示例**：
+```json
+{
+  "success": true,
+  "message": "文件上传成功，解析了 4 条记录",
+  "data": {
+    "fileId": "xxx",
+    "parsedCount": 4,
+    "parseErrors": []
+  }
+}
 ```
 
 #### 删除文件
@@ -176,22 +197,16 @@ POST /api/exceptions/{exceptionId}/dismiss   # 驳回异常
 
 #### 导出稽核报告
 ```
-POST /api/batches/{batchId}/export
-Content-Type: application/json
-
-{
-  "note": "2024年1月稽核报告"
-}
+GET /api/batches/{batchId}/export
 ```
+
+> **注意**：只有状态为 `REVIEWING`、`FROZEN`、`APPROVED`、`ARCHIVED` 的批次可以导出。
+> DRAFT/PROCESSING 状态的批次需要先完成稽核检测并提交复核。
+> 冻结状态的批次也可以导出（冻结结算）。
 
 #### 经理仪表板
 ```
 GET /api/batches/{batchId}/dashboard
-```
-
-#### 导出历史
-```
-GET /api/exports?batchId={batchId}
 ```
 
 ### 审计日志
@@ -319,9 +334,21 @@ DRAFT → PROCESSING → WITHDRAWN → DRAFT → PROCESSING → ...
 
 **处理逻辑**：
 - 冻结后无法上传/删除文件
-- 冻结后无法处理异常
-- 冻结原因必填
-- 导出报告中记录冻结状态和原因
+- **冻结后无法确认/驳回/改判异常**（状态锁定）
+- 冻结原因必填（至少5个字符）
+- 只有财务经理和管理员可以冻结/解冻
+- 冻结状态的批次可以导出（冻结结算）
+
+**状态锁定验证**：
+```bash
+# 冻结后尝试确认异常会被拒绝
+curl -X POST http://localhost:3000/api/exceptions/{exceptionId}/confirm \
+  -H "X-Username: reviewer01" \
+  -H "Content-Type: application/json"
+
+# 返回错误：
+# "批次已冻结，无法修改异常状态。批次「AUDIT-XXX」当前处于冻结状态，如需修改异常，请先联系财务经理解冻。"
+```
 
 **报表变化**：
 - 批次信息sheet显示冻结时间、冻结人、冻结原因
@@ -475,8 +502,23 @@ DRAFT    REVIEWING
 
 ## 运行测试
 
+### 单元测试
 ```bash
 npm test
+```
+
+### Service 层演示（不启动API服务）
+```bash
+npm run demo
+```
+
+### API 集成测试（需先启动服务）
+```bash
+# 终端1：启动服务
+npm run dev
+
+# 终端2：运行API测试
+npm run test:api
 ```
 
 ## 开发命令

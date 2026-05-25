@@ -36,6 +36,21 @@ export class ExportService {
       throw new Error('批次不存在');
     }
 
+    const allowedStatuses = [
+      BatchStatus.REVIEWING,
+      BatchStatus.FROZEN,
+      BatchStatus.APPROVED,
+      BatchStatus.ARCHIVED,
+    ];
+
+    if (!allowedStatuses.includes(batch.status as any)) {
+      throw new Error(
+        `批次状态为 ${batch.status}，不允许导出。` +
+        `只有状态为 REVIEWING、FROZEN、APPROVED、ARCHIVED 的批次可以导出。` +
+        `请先完成稽核检测并提交复核，如需冻结请联系财务经理。`
+      );
+    }
+
     const workbook = XLSX.utils.book_new();
 
     const summarySheet = XLSX.utils.json_to_sheet([{

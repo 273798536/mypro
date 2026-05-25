@@ -1,5 +1,5 @@
 import prisma from '../utils/prisma';
-import { DetectedException, UserContext, ExceptionType, ExceptionStatus, AuditAction } from '../types';
+import { DetectedException, UserContext, ExceptionType, ExceptionStatus, AuditAction, BatchStatus } from '../types';
 import { AuditService } from './audit.service';
 import { toJsonString } from '../utils/json';
 
@@ -327,12 +327,35 @@ export class AuditDetectionService {
     return created;
   }
 
+  private static async checkBatchNotFrozen(exceptionId: string): Promise<{ exception: any; batch: any }> {
+    const exception = await prisma.auditException.findUnique({
+      where: { id: exceptionId },
+      include: { batch: true },
+    });
+
+    if (!exception) {
+      throw new Error('异常记录不存在');
+    }
+
+    if (exception.batch.status === BatchStatus.FROZEN) {
+      throw new Error(
+        `批次已冻结，无法修改异常状态。` +
+        `批次「${exception.batch.batchNo}」当前处于冻结状态，` +
+        `如需修改异常，请先联系财务经理解冻。`
+      );
+    }
+
+    return { exception, batch: exception.batch };
+  }
+
   static async confirmException(
     exceptionId: string,
     context: UserContext,
     note?: string
   ) {
-    const exception = await prisma.auditException.update({
+    const { exception, batch } = await this.checkBatchNotFrozen(exceptionId);
+
+    const updated = await prisma.auditException.update({
       where: { id: exceptionId },
       data: {
         status: ExceptionStatus.CONFIRMED,
@@ -345,12 +368,13 @@ export class AuditDetectionService {
       },
     });
 
-    await AuditService.log(AuditAction.EXCEPTION_CONFIRM, context, exception.batchId, {
+    await AuditService.log(AuditAction.EXCEPTION_CONFIRM, context, batch.id, {
       exceptionId,
       note,
+      batchStatus: batch.status,
     });
 
-    return exception;
+    return updated;
   }
 
   static async overruleException(
@@ -362,7 +386,9 @@ export class AuditDetectionService {
       throw new Error('改判理由不能为空且至少5个字符');
     }
 
-    const exception = await prisma.auditException.update({
+    const { exception, batch } = await this.checkBatchNotFrozen(exceptionId);
+
+    const updated = await prisma.auditException.update({
       where: { id: exceptionId },
       data: {
         status: ExceptionStatus.OVERRULED,
@@ -375,12 +401,13 @@ export class AuditDetectionService {
       },
     });
 
-    await AuditService.log(AuditAction.EXCEPTION_OVERRULE, context, exception.batchId, {
+    await AuditService.log(AuditAction.EXCEPTION_OVERRULE, context, batch.id, {
       exceptionId,
       reason,
+      batchStatus: batch.status,
     });
 
-    return exception;
+    return updated;
   }
 
   static async dismissException(
@@ -392,7 +419,9 @@ export class AuditDetectionService {
       throw new Error('驳回理由不能为空且至少5个字符');
     }
 
-    const exception = await prisma.auditException.update({
+    const { exception, batch } = await this.checkBatchNotFrozen(exceptionId);
+
+    const updated = await prisma.auditException.update({
       where: { id: exceptionId },
       data: {
         status: ExceptionStatus.DISMISSED,
@@ -405,12 +434,13 @@ export class AuditDetectionService {
       },
     });
 
-    await AuditService.log(AuditAction.EXCEPTION_DISMISS, context, exception.batchId, {
+    await AuditService.log(AuditAction.EXCEPTION_DISMISS, context, batch.id, {
       exceptionId,
       reason,
+      batchStatus: batch.status,
     });
 
-    return exception;
+    return updated;
   }
 
   static async getBatchExceptions(batchId: string, status?: string) {

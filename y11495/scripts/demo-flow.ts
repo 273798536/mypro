@@ -179,15 +179,7 @@ async function demo() {
     console.log(`  ✓ 已驳回日期重叠异常（情况特殊合理）`);
   }
 
-  console.log('\n【步骤10】财务经理冻结批次');
-  await BatchService.freezeBatch(
-    batch.id,
-    managerContext,
-    '发现重大异常，需要进一步核实多人共用行程的费用分摊情况'
-  );
-  console.log(`  ✓ 批次已冻结，状态: FROZEN`);
-
-  console.log('\n【步骤11】财务经理人工改判异常');
+  console.log('\n【步骤10】财务经理人工改判异常');
   const multiPersonException = exceptions.find(
     e => e.exceptionType === 'MULTIPLE_PERSON_SHARE'
   );
@@ -200,19 +192,42 @@ async function demo() {
     console.log(`  ✓ 已改判多人共用行程异常，提升严重级别`);
   }
 
-  console.log('\n【步骤12】财务经理解冻并批准');
-  await BatchService.unfreezeBatch(batch.id, managerContext, '核实完毕，可正常审批');
-  await BatchService.approveBatch(batch.id, managerContext, '异常已核实，按规定处理');
-  console.log(`  ✓ 批次已批准，状态: APPROVED`);
+  console.log('\n【步骤11】财务经理冻结批次（导出前冻结，结算锁定）');
+  await BatchService.freezeBatch(
+    batch.id,
+    managerContext,
+    '异常已处理完毕，冻结后导出报告，锁定结算状态'
+  );
+  console.log(`  ✓ 批次已冻结，状态: FROZEN`);
+  console.log(`    冻结后：不能上传/删除文件，不能确认/驳回/改判异常`);
+  console.log(`    冻结后：可以导出报告（冻结结算）`);
 
-  console.log('\n【步骤13】导出稽核报告');
+  console.log('\n【步骤12】冻结后尝试确认异常（应该失败）');
+  try {
+    await AuditDetectionService.confirmException(
+      duplicateInvoiceException!.id,
+      reviewerContext,
+      '测试冻结后确认'
+    );
+    console.log('  ✗ 错误：冻结后应该不能确认异常');
+  } catch (e: any) {
+    console.log(`  ✓ 正确拦截：${e.message}`);
+  }
+
+  console.log('\n【步骤13】冻结状态导出稽核报告（冻结结算）');
   const exportResult = await ExportService.exportBatchReport(
     batch.id,
     managerContext
   );
-  console.log(`  ✓ 报告导出成功: ${exportResult.fileName}`);
+  console.log(`  ✓ 报告导出成功（冻结状态）: ${exportResult.fileName}`);
+  console.log(`    导出报告中包含冻结状态、冻结人、冻结原因`);
 
-  console.log('\n【步骤14】文员尝试冻结（权限不足，测试权限控制）');
+  console.log('\n【步骤14】财务经理解冻并批准');
+  await BatchService.unfreezeBatch(batch.id, managerContext, '报告已导出，可正常审批');
+  await BatchService.approveBatch(batch.id, managerContext, '异常已核实，按规定处理');
+  console.log(`  ✓ 批次已批准，状态: APPROVED`);
+
+  console.log('\n【步骤15】文员尝试冻结（权限不足，测试权限控制）');
   try {
     await BatchService.freezeBatch(batch.id, clerkContext, '测试权限');
     console.log('  ✗ 错误：文员应该没有权限冻结');
@@ -221,7 +236,7 @@ async function demo() {
     console.log('    （审计日志中已记录这次权限不足的操作）');
   }
 
-  console.log('\n【步骤15】查看经理仪表板');
+  console.log('\n【步骤16】查看经理仪表板');
   const dashboard = await ExportService.getFinanceDashboard(batch.id);
   console.log(`  ✓ 仪表板数据:`);
   console.log(`    批次: ${dashboard.batchNo} - ${dashboard.title}`);

@@ -206,6 +206,18 @@ async function testAPI() {
     console.log(`  新状态: ${reviewRes.body?.data?.status}`);
     console.log('  ✅ 成功');
 
+    console.log('\n【测试8.1】DRAFT状态尝试导出（应该失败）');
+    const exceptions = await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/exceptions`,
+      method: 'GET',
+      headers: {
+        'X-Username': 'reviewer01',
+      },
+    });
+    const firstException = exceptions.body?.data?.[0];
+    
     console.log('\n【测试8】财务经理冻结批次');
     const freezeRes = await makeRequest({
       hostname: BASE_URL,
@@ -228,7 +240,181 @@ async function testAPI() {
     console.log(`  新状态: ${freezeRes.body?.data?.status}`);
     console.log('  ✅ 成功');
 
-    console.log('\n【测试9】财务经理导出报告（测试BATCH_EXPORT权限）');
+    console.log('\n【测试8.2】冻结后尝试确认异常（应该失败，状态锁定）');
+    const confirmFrozenRes = await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/exceptions/${firstException?.id}/confirm`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'reviewer01',
+        'Content-Type': 'application/json',
+      },
+    }, { note: '测试冻结后确认' });
+    console.log(`  状态码: ${confirmFrozenRes.statusCode}`);
+    console.log(`  错误: ${confirmFrozenRes.body?.error || confirmFrozenRes.body?.message}`);
+    if (confirmFrozenRes.statusCode !== 400) {
+      console.log('  ❌ 失败：冻结后应该不能确认异常');
+      return;
+    }
+    if (!confirmFrozenRes.body?.message?.includes('已冻结')) {
+      console.log('  ❌ 失败：错误信息应该包含"已冻结"');
+      return;
+    }
+    console.log('  ✅ 正确拦截：批次已冻结，无法修改异常状态');
+
+    console.log('\n【测试8.3】冻结后尝试改判异常（应该失败，状态锁定）');
+    const overruleFrozenRes = await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/exceptions/${firstException?.id}/overrule`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'manager01',
+        'Content-Type': 'application/json',
+      },
+    }, { reason: '测试冻结后改判至少5字' });
+    console.log(`  状态码: ${overruleFrozenRes.statusCode}`);
+    console.log(`  错误: ${overruleFrozenRes.body?.error || overruleFrozenRes.body?.message}`);
+    if (overruleFrozenRes.statusCode !== 400) {
+      console.log('  ❌ 失败：冻结后应该不能改判异常');
+      return;
+    }
+    console.log('  ✅ 正确拦截：批次已冻结，无法修改异常状态');
+
+    console.log('\n【测试8.4】冻结后尝试上传文件（应该失败，状态锁定）');
+    const formFrozen = new FormData();
+    formFrozen.append('fileType', 'TRAVEL_APPLICATION');
+    formFrozen.append('file', fs.createReadStream(path.join(process.cwd(), 'sample-data/travel-applications.csv')));
+    const uploadFrozenRes = await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/files`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'clerk01',
+        ...formFrozen.getHeaders(),
+      },
+    }, formFrozen, true);
+    console.log(`  状态码: ${uploadFrozenRes.statusCode}`);
+    console.log(`  错误: ${uploadFrozenRes.body?.error || uploadFrozenRes.body?.message}`);
+    if (uploadFrozenRes.statusCode !== 400) {
+      console.log('  ❌ 失败：冻结后应该不能上传文件');
+      return;
+    }
+    console.log('  ✅ 正确拦截：批次已冻结，无法上传文件');
+
+    console.log('\n【测试9】冻结状态导出报告（应该成功，冻结结算）');
+    const exportFrozenRes = await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/export`,
+      method: 'GET',
+      headers: {
+        'X-Username': 'manager01',
+      },
+    });
+    console.log(`  状态码: ${exportFrozenRes.statusCode}`);
+    if (exportFrozenRes.statusCode === 403) {
+      console.log(`  ❌ 权限被拦截: ${JSON.stringify(exportFrozenRes.body, null, 2)}`);
+      return;
+    }
+    if (exportFrozenRes.statusCode !== 200) {
+      console.log(`  错误: ${JSON.stringify(exportFrozenRes.body, null, 2)}`);
+      return;
+    }
+    console.log(`  响应类型: ${Buffer.isBuffer(exportFrozenRes.body) ? '二进制文件' : 'JSON'}`);
+    console.log('  ✅ 成功（冻结状态可以导出，冻结结算）');
+
+    console.log('\n【测试10】经理先解冻，测试DRAFT状态不能导出');
+    await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/unfreeze`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'manager01',
+        'Content-Type': 'application/json',
+      },
+    }, { reason: '测试解冻' });
+    
+    await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/resubmit`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'clerk01',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('\n【测试10.1】DRAFT状态尝试导出（应该失败）');
+    const exportDraftRes = await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/export`,
+      method: 'GET',
+      headers: {
+        'X-Username': 'manager01',
+      },
+    });
+    console.log(`  状态码: ${exportDraftRes.statusCode}`);
+    console.log(`  消息: ${exportDraftRes.body?.message || exportDraftRes.body?.error}`);
+    if (exportDraftRes.statusCode !== 400) {
+      console.log('  ❌ 失败：DRAFT状态应该不能导出');
+      return;
+    }
+    if (!exportDraftRes.body?.message?.includes('不允许导出')) {
+      console.log('  ❌ 失败：错误信息应该包含"不允许导出"');
+      return;
+    }
+    console.log('  ✅ 正确拦截：DRAFT状态不允许导出，请先提交复核');
+    
+    console.log('\n【测试10.2】重新提交到REVIEWING后再次冻结');
+    await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/process`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'clerk01',
+        'Content-Type': 'application/json',
+      },
+    });
+    await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/audit`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'reviewer01',
+        'Content-Type': 'application/json',
+      },
+    });
+    await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/review`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'reviewer01',
+        'Content-Type': 'application/json',
+      },
+    });
+    await makeRequest({
+      hostname: BASE_URL,
+      port: PORT,
+      path: `/api/batches/${batchId}/freeze`,
+      method: 'POST',
+      headers: {
+        'X-Username': 'manager01',
+        'Content-Type': 'application/json',
+      },
+    }, { reason: '重新冻结用于导出测试' });
+    console.log('  ✅ 已重新提交并冻结');
+
+    console.log('\n【测试11】财务经理导出报告（测试BATCH_EXPORT权限）');
     const exportRes = await makeRequest({
       hostname: BASE_URL,
       port: PORT,
@@ -251,7 +437,7 @@ async function testAPI() {
     console.log(`  Content-Disposition 已设置`);
     console.log('  ✅ 成功（财务经理有导出权限）');
 
-    console.log('\n【测试10】文员尝试导出（权限不足，测试权限拦截）');
+    console.log('\n【测试12】文员尝试导出（权限不足，测试权限拦截）');
     const clerkExportRes = await makeRequest({
       hostname: BASE_URL,
       port: PORT,
@@ -271,7 +457,7 @@ async function testAPI() {
     }
     console.log('  ✅ 正确拦截，审计日志已记录');
 
-    console.log('\n【测试11】查看财务经理仪表板');
+    console.log('\n【测试13】查看财务经理仪表板');
     const dashboardRes = await makeRequest({
       hostname: BASE_URL,
       port: PORT,
@@ -287,7 +473,7 @@ async function testAPI() {
     console.log(`  冻结状态: ${dashboardRes.body?.data?.freezeStatus?.isFrozen}`);
     console.log('  ✅ 成功');
 
-    console.log('\n【测试12】查看审计日志（验证权限拦截记录）');
+    console.log('\n【测试14】查看审计日志（验证权限拦截记录）');
     const logsRes = await makeRequest({
       hostname: BASE_URL,
       port: PORT,
@@ -317,6 +503,9 @@ async function testAPI() {
     console.log('  ✅ 运行稽核 (POST /api/batches/:id/audit)');
     console.log('  ✅ 提交复核 (POST /api/batches/:id/review)');
     console.log('  ✅ 冻结批次 (POST /api/batches/:id/freeze)');
+    console.log('  ✅ 冻结状态锁定 - 不能修改异常/上传文件');
+    console.log('  ✅ 冻结状态可以导出 (GET /api/batches/:id/export) - 冻结结算');
+    console.log('  ✅ DRAFT/PROCESSING 状态不能导出');
     console.log('  ✅ 导出报告 (GET /api/batches/:id/export) - 经理有权限');
     console.log('  ✅ 权限控制 - 文员导出被拦截并记录审计');
     console.log('  ✅ 财务经理仪表板 (GET /api/batches/:id/dashboard)');
