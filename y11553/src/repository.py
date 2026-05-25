@@ -15,6 +15,8 @@ from .models import (
     RefundRecord,
     PriceAdjustment,
     ImportSource,
+    PendingRecord,
+    PendingRecordStatus,
 )
 from .duplicate_detector import generate_fingerprint, generate_record_id, check_duplicate
 
@@ -261,3 +263,72 @@ class DataRepository:
 
     def check_duplicate(self, fingerprint: str, record_type: RecordType) -> Optional[Any]:
         return check_duplicate(self.db, fingerprint, record_type)
+
+    def create_pending_record(
+        self,
+        task: ImportTask,
+        record_type: RecordType,
+        raw_data: Dict[str, Any],
+        source_row_number: int,
+        fingerprint: str,
+    ) -> PendingRecord:
+        record = PendingRecord(
+            task_id=task.id,
+            source_file=task.source_file,
+            source_row_number=source_row_number,
+            record_type=record_type,
+            raw_data=safe_json_dumps(raw_data),
+            fingerprint=fingerprint,
+            status=PendingRecordStatus.PENDING,
+        )
+        self.db.add(record)
+        self.db.commit()
+        self.db.refresh(record)
+        return record
+
+    def get_pending_records(self, task_id: int) -> List[PendingRecord]:
+        return self.db.query(PendingRecord).filter(
+            PendingRecord.task_id == task_id
+        ).order_by(PendingRecord.source_row_number).all()
+
+    def get_pending_records_by_status(
+        self, task_id: int, status: PendingRecordStatus
+    ) -> List[PendingRecord]:
+        return self.db.query(PendingRecord).filter(
+            PendingRecord.task_id == task_id,
+            PendingRecord.status == status,
+        ).order_by(PendingRecord.source_row_number).all()
+
+    def update_pending_record_status(
+        self,
+        record: PendingRecord,
+        status: PendingRecordStatus,
+        error_message: Optional[str] = None,
+    ) -> PendingRecord:
+        record.status = status
+        record.updated_at = datetime.utcnow()
+        if error_message:
+            record.error_message = error_message
+        if status in [PendingRecordStatus.SUCCESS, PendingRecordStatus.DUPLICATE, PendingRecordStatus.PERMANENT_FAILED]:
+            record.processed_at = datetime.utcnow()
+        if status == PendingRecordStatus.WAITING_RETRY:
+            record.retry_times += 1
+        self.db.commit()
+        self.db.refresh(record)
+        return record
+
+    def get_pending_record_count(self, task_id: int) -> Dict[str, int]:
+        records = self.get_pending_records(task_id)
+        counts = {
+            "total": len(records),
+            "pending": 0,
+            "success": 0,
+            "duplicate": 0,
+            "error": 0,
+            "waiting_retry": 0,
+            "waiting_manual": 0,
+            "permanent_failed": 0,
+        }
+        for r in records:
+            counts[r.status.value] = counts.get(r.status.value, 0) + 1
+        return counts

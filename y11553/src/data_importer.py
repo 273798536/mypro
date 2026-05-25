@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from datetime import datetime
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -10,10 +10,9 @@ from .models import (
     TaskStatus,
     RecordType,
     ImportSource,
-    ProcessingResult,
+    PendingRecordStatus,
 )
 from .config import UPLOAD_DIR
-from .task_processor import RecordProcessor
 from .duplicate_detector import generate_fingerprint
 
 
@@ -31,8 +30,8 @@ class DataImporter:
             record_type=record_type,
             source_type=ImportSource.API,
         )
-        self.repo.add_log(task, f"通过API导入，共 {len(records)} 条记录")
-        self._process_records(task, record_type, records)
+        self.repo.add_log(task, f"通过API导入，共 {len(records)} 条记录，等待异步处理")
+        self._persist_pending_records(task, record_type, records)
         return task
 
     def import_from_file(
@@ -52,13 +51,43 @@ class DataImporter:
 
         try:
             records = self._parse_file(file_path, record_type)
-            self.repo.add_log(task, f"从文件 {filename} 导入，共 {len(records)} 条记录")
-            self._process_records(task, record_type, records, source_file=filename)
+            self.repo.add_log(task, f"从文件 {filename} 导入，共 {len(records)} 条记录，等待异步处理")
+            self._persist_pending_records(task, record_type, records, source_file=filename)
         except Exception as e:
             self.repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, str(e))
             self.repo.add_log(task, f"文件解析失败: {str(e)}", level="error")
 
         return task
+
+    def _persist_pending_records(
+        self,
+        task: ImportTask,
+        record_type: RecordType,
+        records: List[Dict[str, Any]],
+        source_file: Optional[str] = None,
+    ):
+        for idx, data in enumerate(records):
+            row_num = idx + 1
+            try:
+                fingerprint = generate_fingerprint(data, record_type)
+                self.repo.create_pending_record(
+                    task=task,
+                    record_type=record_type,
+                    raw_data=data,
+                    source_row_number=row_num,
+                    fingerprint=fingerprint,
+                )
+            except Exception as e:
+                self.repo.add_log(
+                    task,
+                    f"第{row_num}行持久化失败: {str(e)}",
+                    level="error",
+                    raw_data=json.dumps(data, ensure_ascii=False, default=str),
+                )
+
+        task.total_count = len(records)
+        self.db.commit()
+        self.db.refresh(task)
 
     def _parse_file(self, file_path: str, record_type: RecordType) -> List[Dict[str, Any]]:
         ext = os.path.splitext(file_path)[1].lower()
@@ -133,36 +162,3 @@ class DataImporter:
             },
         }
         return mappings.get(record_type, {})
-
-    def _process_records(
-        self,
-        task: ImportTask,
-        record_type: RecordType,
-        records: List[Dict[str, Any]],
-        source_file: Optional[str] = None,
-    ):
-        self.repo.update_task_status(task, TaskStatus.PROCESSING)
-
-        processor_map = {
-            RecordType.INVENTORY: RecordProcessor._process_single_inventory,
-            RecordType.REPLENISHMENT: RecordProcessor._process_single_replenishment,
-            RecordType.REFUND: RecordProcessor._process_single_refund,
-            RecordType.PRICE_ADJUSTMENT: RecordProcessor._process_single_price_adjustment,
-        }
-
-        processor = processor_map.get(record_type)
-        if not processor:
-            raise ValueError(f"未知的记录类型: {record_type}")
-
-        for idx, data in enumerate(records):
-            row_num = idx + 1
-            processor(task, self.repo, data, row_num)
-
-        self.repo.update_task_status(task, TaskStatus.COMPLETED)
-        self.repo.add_log(
-            task,
-            f"导入完成: 总计{task.total_count}条, "
-            f"成功{task.success_count}条, "
-            f"重复{task.duplicate_count}条, "
-            f"错误{task.error_count}条"
-        )

@@ -65,6 +65,7 @@ class ImportTask(Base):
     refunds = relationship("RefundRecord", back_populates="task")
     price_adjustments = relationship("PriceAdjustment", back_populates="task")
     duplicates = relationship("DuplicateRecord", back_populates="task")
+    pending_records = relationship("PendingRecord", back_populates="task")
 
 
 class ProcessingLog(Base):
@@ -211,3 +212,35 @@ class ReconciliationResult(Base):
     description = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     report_time = Column(DateTime, default=datetime.utcnow)
+
+
+class PendingRecordStatus(str, enum.Enum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    SUCCESS = "success"
+    DUPLICATE = "duplicate"
+    ERROR = "error"
+    WAITING_RETRY = "waiting_retry"
+    WAITING_MANUAL = "waiting_manual"
+    PERMANENT_FAILED = "permanent_failed"
+
+
+class PendingRecord(Base):
+    __tablename__ = "pending_records"
+
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey("import_tasks.id"))
+    source_file = Column(String(255), nullable=True)
+    source_row_number = Column(Integer)
+    record_type = Column(Enum(RecordType))
+    raw_data = Column(Text)
+    fingerprint = Column(String(64), index=True)
+    status = Column(Enum(PendingRecordStatus), default=PendingRecordStatus.PENDING)
+    retry_times = Column(Integer, default=0)
+    max_retry_times = Column(Integer, default=3)
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    processed_at = Column(DateTime, nullable=True)
+
+    task = relationship("ImportTask", back_populates="pending_records")
