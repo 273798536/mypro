@@ -222,6 +222,7 @@ export const STATE_TRANSITIONS: StateTransition[] = [
 export const ROLE_PERMISSIONS: Record<UserRoleType, AuditActionType[]> = {
   [UserRole.CLERK]: [
     AuditAction.BATCH_CREATE,
+    AuditAction.BATCH_VIEW,
     AuditAction.BATCH_SUBMIT,
     AuditAction.BATCH_WITHDRAW,
     AuditAction.FILE_UPLOAD,
@@ -230,6 +231,7 @@ export const ROLE_PERMISSIONS: Record<UserRoleType, AuditActionType[]> = {
   ],
   [UserRole.REVIEWER]: [
     AuditAction.BATCH_CREATE,
+    AuditAction.BATCH_VIEW,
     AuditAction.BATCH_SUBMIT,
     AuditAction.BATCH_WITHDRAW,
     AuditAction.FILE_UPLOAD,
@@ -241,6 +243,7 @@ export const ROLE_PERMISSIONS: Record<UserRoleType, AuditActionType[]> = {
   ],
   [UserRole.FINANCE_MANAGER]: [
     AuditAction.BATCH_CREATE,
+    AuditAction.BATCH_VIEW,
     AuditAction.BATCH_SUBMIT,
     AuditAction.BATCH_WITHDRAW,
     AuditAction.BATCH_FREEZE,
@@ -255,6 +258,7 @@ export const ROLE_PERMISSIONS: Record<UserRoleType, AuditActionType[]> = {
     AuditAction.EXCEPTION_OVERRULE,
     AuditAction.EXCEPTION_DISMISS,
     AuditAction.EXPORT_REQUEST,
+    AuditAction.BATCH_EXPORT,
   ],
   [UserRole.ADMIN]: Object.values(AuditAction)
 };

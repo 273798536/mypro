@@ -12,13 +12,20 @@
     "prisma:studio": "prisma studio",
     "test": "jest --runInBand",
     "seed": "ts-node prisma/seed.ts",
-    "demo": "ts-node scripts/demo-flow.ts"
+    "demo": "ts-node scripts/demo-flow.ts",
+    "test:api": "ts-node scripts/api-test.ts"
   },
-  "keywords": ["finance", "audit", "state-machine", "reimbursement"],
+  "keywords": [
+    "finance",
+    "audit",
+    "state-machine",
+    "reimbursement"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/form-data": "^2.2.1",
     "@types/jest": "^29.5.12",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.11.0",
@@ -34,6 +41,7 @@
     "@prisma/client": "^5.8.0",
     "csv-parse": "^5.5.3",
     "express": "^4.18.2",
+    "form-data": "^4.0.0",
     "multer": "^1.4.5-lts.1",
     "pdf-parse": "^1.1.1",
     "xlsx": "^0.18.5",

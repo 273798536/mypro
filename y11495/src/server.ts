@@ -17,7 +17,32 @@ app.use('/api', routes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Unhandled error:', err);
+  
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        error: '文件过大',
+        message: '文件大小不能超过 10MB',
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      error: '文件上传错误',
+      message: err.message,
+    });
+  }
+  
+  if (err.message && err.message.includes('不支持的文件类型')) {
+    return res.status(400).json({
+      success: false,
+      error: '文件类型错误',
+      message: err.message,
+    });
+  }
+  
   res.status(500).json({
+    success: false,
     error: '服务器内部错误',
     message: err.message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,

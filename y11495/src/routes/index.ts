@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, requirePermission } from '../middleware/auth.middleware';
+import { upload } from '../middleware/multer.middleware';
 import {
   createBatch,
   getBatch,
@@ -48,7 +49,7 @@ router.post('/batches/:batchId/withdraw', requirePermission(AuditAction.BATCH_WI
 router.post('/batches/:batchId/resubmit', requirePermission(AuditAction.BATCH_SUBMIT), resubmitBatch);
 router.post('/batches/:batchId/archive', requirePermission(AuditAction.BATCH_ARCHIVE), archiveBatch);
 
-router.post('/batches/:batchId/files', requirePermission(AuditAction.FILE_UPLOAD), uploadFile);
+router.post('/batches/:batchId/files', requirePermission(AuditAction.FILE_UPLOAD), upload.single('file'), uploadFile);
 router.get('/batches/:batchId/files', requirePermission(AuditAction.BATCH_VIEW), getBatchFiles);
 router.delete('/files/:fileId', requirePermission(AuditAction.FILE_DELETE), deleteFile);
 
