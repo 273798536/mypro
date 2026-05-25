@@ -137,7 +137,7 @@ async function test_BatchStatusTransitions(): Promise<TestResult> {
 async function test_DuplicateBatchStrategy(): Promise<TestResult> {
   try {
     const batchNumber = `TEST-DUP-${Date.now()}`;
-    await BatchService.createBatch(
+    const batch = await BatchService.createBatch(
       batchNumber,
       '重复批次测试',
       '2024-05-20',
@@ -150,6 +150,21 @@ async function test_DuplicateBatchStrategy(): Promise<TestResult> {
       fileContent: Buffer.from('测试材料内容').toString('base64')
     };
 
+    const initialMaterial = {
+      type: MaterialType.SIGN_QR_CODE,
+      fileName: '初始二维码.png',
+      fileContent: Buffer.from('初始二维码内容').toString('base64')
+    };
+
+    await MaterialService.uploadMaterial(
+      batch.id,
+      initialMaterial.type,
+      Buffer.from(initialMaterial.fileContent, 'base64'),
+      initialMaterial.fileName,
+      '测试用户',
+      false
+    );
+
     const ignoreResult = await BatchService.processDuplicateBatch({
       batchNumber,
       strategy: BatchStrategy.IGNORE,
@@ -158,6 +173,9 @@ async function test_DuplicateBatchStrategy(): Promise<TestResult> {
     });
     if (ignoreResult.action !== 'ignored') {
       return { name: '重复批次策略', passed: false, error: '忽略策略失败' };
+    }
+    if ((ignoreResult.ignoredCount || 0) !== 1) {
+      return { name: '重复批次策略', passed: false, error: '忽略策略应记录丢弃的材料数量' };
     }
 
     const overwriteResult = await BatchService.processDuplicateBatch({
@@ -181,7 +199,7 @@ async function test_DuplicateBatchStrategy(): Promise<TestResult> {
       batchNumber,
       strategy: BatchStrategy.APPEND,
       operatedBy: '操作人',
-      materials: [{ ...testMaterial, type: MaterialType.SIGN_QR_CODE, fileName: '签到二维码.png' }]
+      materials: [{ ...testMaterial, type: MaterialType.POST_CLASS_ASSIGNMENT, fileName: '课后作业.pdf' }]
     });
     if (appendResult.action !== 'appended') {
       return { name: '重复批次策略', passed: false, error: '追加策略失败' };

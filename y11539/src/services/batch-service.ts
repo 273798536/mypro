@@ -124,7 +124,14 @@ export class BatchService {
 
   static async processDuplicateBatch(
     input: DuplicateBatchInput
-  ): Promise<{ action: string; batch: Batch; addedMaterials: Material[]; overwrittenMaterials: Material[]; ignoredMaterials: Material[] }> {
+  ): Promise<{ 
+    action: string; 
+    batch: Batch; 
+    addedMaterials: Material[]; 
+    overwrittenMaterials: Material[]; 
+    ignoredMaterials: (Material | { type: MaterialType; fileName: string; ignored: boolean; ignoredAt: string })[];
+    ignoredCount?: number;
+  }> {
     const { batchNumber, strategy, operatedBy, trainingName, trainingDate, remark, materials = [] } = input;
 
     const existingBatch = await this.getBatchByNumber(batchNumber);
@@ -149,10 +156,24 @@ export class BatchService {
           'original',
           'ignored',
           operatedBy,
-          `忽略重复批次数据，保留原有 ${materials.length} 份新材料`
+          `忽略重复批次数据，丢弃了 ${materials.length} 份新材料：${materials.map(m => m.fileName).join(', ')}`
         );
-        ignoredMaterials.push(...await this.persistMaterials(existingBatch.id, materials, operatedBy));
-        return { action: 'ignored', batch: existingBatch, addedMaterials, overwrittenMaterials, ignoredMaterials };
+        
+        const ignoredInfo = materials.map(m => ({
+          type: m.type,
+          fileName: m.fileName,
+          ignored: true,
+          ignoredAt: new Date().toISOString()
+        }));
+        
+        return { 
+          action: 'ignored', 
+          batch: existingBatch, 
+          addedMaterials: [], 
+          overwrittenMaterials: [], 
+          ignoredMaterials: ignoredInfo as any,
+          ignoredCount: materials.length
+        };
       }
 
       case BatchStrategy.OVERWRITE: {
