@@ -68,7 +68,7 @@ class StatusHistoryResponse(BaseModel):
     changed_at: datetime
     changed_by: Optional[str] = None
     change_reason: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    extra_data: Optional[Dict[str, Any]] = None
 
     class Config:
         from_attributes = True

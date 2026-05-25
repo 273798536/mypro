@@ -63,4 +63,4 @@ class StatusHistory(TimestampMixin, Base):
     changed_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     changed_by = Column(String(100))
     change_reason = Column(String(500))
-    metadata = Column(JSON)
+    extra_data = Column(JSON)

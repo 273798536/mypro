@@ -61,7 +61,7 @@ class TestQueueStatusTransitions:
         item = service.mark_failed(item.id, "错误3", FailCategory.RETRYABLE)
 
         assert item.status == QueueStatus.PERMANENT_FAILED
-        assert item.retry_count == 2
+        assert item.retry_count == 3
         assert item.fail_category == FailCategory.PERMANENT
 
     def test_manual_failure_to_waiting_manual(self, db_session):

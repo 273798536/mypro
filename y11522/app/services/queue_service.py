@@ -31,7 +31,7 @@ class QueueService:
             changed_at=datetime.utcnow(),
             changed_by=changed_by,
             change_reason=change_reason,
-            metadata=metadata,
+            extra_data=metadata,
         )
         self.db.add(history)
 
@@ -329,6 +329,9 @@ class QueueService:
         queue_item = self.get_queue_item(queue_id)
         if not queue_item:
             raise ValueError(f"队列项不存在: {queue_id}")
+
+        if queue_item.status == QueueStatus.CLOSED:
+            raise ValueError(f"队列项已关闭，不能重复关闭")
 
         queue_item.closed_at = datetime.utcnow()
         queue_item.closed_by = operator
