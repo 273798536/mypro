@@ -5,6 +5,8 @@ from app.models.audit_log import AuditLog
 from app.models.reconciliation import ReconciliationResult
 from app.models.idempotency import IdempotencyRecord
 from app.models.export_snapshot import ExportSnapshot
+from app.models.sms_record import SmsRecord
+from app.models.handover import HandoverRecord
 
 __all__ = [
     "CheckinRecord",
@@ -14,4 +16,6 @@ __all__ = [
     "ReconciliationResult",
     "IdempotencyRecord",
     "ExportSnapshot",
+    "SmsRecord",
+    "HandoverRecord",
 ]

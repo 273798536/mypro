@@ -13,6 +13,7 @@ from app.models.deposit import DepositRecord
 from app.models.room_change import RoomChangeRecord
 from app.models.reconciliation import ReconciliationResult
 from app.services.audit import AuditService
+from app.utils.mask import mask_sensitive_data
 
 settings = get_settings()
 
@@ -29,7 +30,7 @@ class ExportService:
     def generate_snapshot_no(self) -> str:
         return f"EXP-{uuid.uuid4().hex[:16].upper()}"
 
-    def _model_to_dict(self, model, exclude_fields=None):
+    def _model_to_dict(self, model, exclude_fields=None, mask_sensitive=True):
         exclude = exclude_fields or ["id"]
         data = {}
         for column in model.__table__.columns:
@@ -38,6 +39,8 @@ class ExportService:
                 if isinstance(value, datetime):
                     value = value.isoformat()
                 data[column.name] = value
+        if mask_sensitive:
+            data = mask_sensitive_data(data)
         return data
 
     def _get_checkin_data(self, batch_no: Optional[str] = None):
