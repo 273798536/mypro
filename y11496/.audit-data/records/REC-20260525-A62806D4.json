@@ -1,0 +1,123 @@
+{
+  "record_id": "REC-20260525-A62806D4",
+  "employee_id": "E002",
+  "employee_name": "李四",
+  "expense_type": "交通",
+  "amount": 320.5,
+  "currency": "CNY",
+  "expense_date": "2024-03-15",
+  "status": "flagged",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "invoices.csv",
+      "original_line": 5,
+      "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"交通\", \"amount\": \"320.50\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-004\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "invoices.csv",
+        "original_line": 5,
+        "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"交通\", \"amount\": \"320.50\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-004\"}",
+        "employee_id": "E002",
+        "employee_name": "李四",
+        "expense_type": "交通",
+        "amount": 320.5,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "invoice_number": "INV-2024-004"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.400542"
+    },
+    "payment_flow": {
+      "source_type": "payment_flow",
+      "source_file": "payment_flows.csv",
+      "original_line": 5,
+      "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"交通\", \"amount\": \"320.50\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-15\", \"transaction_id\": \"PAY-20240315-004\"}",
+      "parsed_value": {
+        "source_type": "payment_flow",
+        "source_file": "payment_flows.csv",
+        "original_line": 5,
+        "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"交通\", \"amount\": \"320.50\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-15\", \"transaction_id\": \"PAY-20240315-004\"}",
+        "employee_id": "E002",
+        "employee_name": "李四",
+        "expense_type": "交通",
+        "amount": 320.5,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "transaction_id": "PAY-20240315-004"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.616049"
+    }
+  },
+  "issues": [
+    {
+      "issue_type": "duplicate_transportation",
+      "description": "共享行程交通重复：TRIP-BJ-202403 路线 --2024-03-15 多人报销相同交通",
+      "severity": "medium",
+      "related_records": [
+        "REC-20260525-8F8BE375"
+      ],
+      "evidence": {
+        "trip_id": "TRIP-BJ-202403",
+        "route_key": "--2024-03-15",
+        "group_count": 2
+      },
+      "resolved": false,
+      "resolution": null
+    },
+    {
+      "issue_type": "duplicate_transportation",
+      "description": "共享行程交通重复：TRIP-BJ-202403 路线 --2024-03-15 多人报销相同交通",
+      "severity": "medium",
+      "related_records": [
+        "REC-20260525-8F8BE375"
+      ],
+      "evidence": {
+        "trip_id": "TRIP-BJ-202403",
+        "route_key": "--2024-03-15",
+        "group_count": 2
+      },
+      "resolved": false,
+      "resolution": null
+    }
+  ],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "cli_user",
+      "timestamp": "2026-05-25T21:56:20.402716",
+      "comment": "Imported from sample_data/invoices.csv",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "imported",
+      "new_status": "flagged",
+      "operator": "audit_engine",
+      "timestamp": "2026-05-25T21:56:20.922312",
+      "comment": "Issues detected",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "flagged",
+      "new_status": "flagged",
+      "operator": "audit_engine",
+      "timestamp": "2026-05-25T21:56:26.615355",
+      "comment": "Issues detected",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": "TRIP-BJ-202403",
+  "parent_record_id": null,
+  "resubmission_count": 0,
+  "manual_override": false,
+  "override_reason": null,
+  "created_at": "2026-05-25T21:56:20.400528",
+  "updated_at": "2026-05-25T21:56:26.615372",
+  "metadata": {}
+}

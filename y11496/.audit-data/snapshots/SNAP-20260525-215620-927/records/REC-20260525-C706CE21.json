@@ -1,0 +1,102 @@
+{
+  "record_id": "REC-20260525-C706CE21",
+  "employee_id": "E002",
+  "employee_name": "李四",
+  "expense_type": "住宿",
+  "amount": 580.0,
+  "currency": "CNY",
+  "expense_date": "2024-03-15",
+  "status": "flagged",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "invoices.csv",
+      "original_line": 3,
+      "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-002\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "invoices.csv",
+        "original_line": 3,
+        "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-002\"}",
+        "employee_id": "E002",
+        "employee_name": "李四",
+        "expense_type": "住宿",
+        "amount": 580.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "invoice_number": "INV-2024-002"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.395367"
+    },
+    "payment_flow": {
+      "source_type": "payment_flow",
+      "source_file": "payment_flows.csv",
+      "original_line": 3,
+      "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-15\", \"transaction_id\": \"PAY-20240315-002\"}",
+      "parsed_value": {
+        "source_type": "payment_flow",
+        "source_file": "payment_flows.csv",
+        "original_line": 3,
+        "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-15\", \"transaction_id\": \"PAY-20240315-002\"}",
+        "employee_id": "E002",
+        "employee_name": "李四",
+        "expense_type": "住宿",
+        "amount": 580.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "transaction_id": "PAY-20240315-002"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.612306"
+    }
+  },
+  "issues": [
+    {
+      "issue_type": "duplicate_accommodation",
+      "description": "共享行程住宿重复：TRIP-BJ-202403 日期 2024-03-15 多人报销同一住宿，总金额 1740.00，平均 580.00",
+      "severity": "medium",
+      "related_records": [
+        "REC-20260525-0E4BE8DE",
+        "REC-20260525-8D93BE89"
+      ],
+      "evidence": {
+        "trip_id": "TRIP-BJ-202403",
+        "date": "2024-03-15",
+        "total_amount": 1740.0,
+        "avg_amount": 580.0,
+        "group_count": 3
+      },
+      "resolved": false,
+      "resolution": null
+    }
+  ],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "cli_user",
+      "timestamp": "2026-05-25T21:56:20.396497",
+      "comment": "Imported from sample_data/invoices.csv",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "imported",
+      "new_status": "flagged",
+      "operator": "audit_engine",
+      "timestamp": "2026-05-25T21:56:20.915952",
+      "comment": "Issues detected",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": "TRIP-BJ-202403",
+  "parent_record_id": null,
+  "resubmission_count": 0,
+  "manual_override": false,
+  "override_reason": null,
+  "created_at": "2026-05-25T21:56:20.395355",
+  "updated_at": "2026-05-25T21:56:20.915969",
+  "metadata": {}
+}

@@ -1,3 +1,4 @@
-record_id,note,supervisor,approval_date,approval_status
-REC-placeholder-001,情况属实，同意报销,张经理,2024-03-20,approved
-REC-placeholder-002,需进一步核实住宿发票,张经理,2024-03-20,rejected
+record_id,employee_name,expense_type,expense_date,amount,note,supervisor,approval_date,approval_status
+,张三,住宿,2024-03-15,580,拼房住宿属实，同意报销,张经理,2024-03-20,approved
+,李四,住宿,2024-03-15,580,需核实发票真伪后再审批,张经理,2024-03-20,rejected
+,王五,餐饮,2024-03-16,180,公务宴请属实,张经理,2024-03-20,approved

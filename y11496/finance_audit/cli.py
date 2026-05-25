@@ -1,6 +1,7 @@
 import click
 import json
 import sys
+from pathlib import Path
 from typing import Optional
 from tabulate import tabulate
 from datetime import datetime
@@ -100,8 +101,6 @@ def import_cmd(ctx, file_path, source_type, trip_id, operator, snapshot):
 
         storage.save_record(record)
 
-    click.echo(f"✓ 导入完成: 新增 {imported_count} 条, 更新 {updated_count} 条")
-
     if errors:
         click.echo(f"\n✗ 导入错误 ({len(errors)} 条):")
         for err in errors[:10]:
@@ -110,9 +109,11 @@ def import_cmd(ctx, file_path, source_type, trip_id, operator, snapshot):
             click.echo(f"  ... 还有 {len(errors) - 10} 条错误")
         sys.exit(1)
 
+    click.echo(f"✓ 导入完成: 新增 {imported_count} 条, 更新 {updated_count} 条")
+
     if snapshot:
         snap_id = storage.create_snapshot(f"After import: {file_path}", operator)
-        click.echo(f"\n✓ 已创建快照: {snap_id}")
+        click.echo(f"✓ 已创建快照: {snap_id}")
 
 
 def _import_supervisor_notes(ctx, file_path, operator):
@@ -123,14 +124,36 @@ def _import_supervisor_notes(ctx, file_path, operator):
     click.echo(f"\n解析主管批注: {len(notes_data)} 条, {len(errors)} 条错误")
 
     applied = 0
+    not_found = 0
+    all_records = storage.load_all_records()
+    
     for note in notes_data:
         record_id = note.get("record_id")
-        if not record_id:
-            continue
+        match_criteria = note.get("match_criteria")
+        
+        record = None
+        
+        if record_id:
+            record = storage.load_record(record_id)
+        
+        if not record and match_criteria:
+            mc = match_criteria
+            for rec in all_records:
+                if (mc.get("employee_name") and rec.employee_name == mc["employee_name"] and
+                    mc.get("expense_type") and rec.expense_type == mc["expense_type"]):
+                    if mc.get("expense_date") and str(rec.expense_date) != str(mc["expense_date"]):
+                        continue
+                    if mc.get("amount") is not None and abs(rec.amount - mc["amount"]) > 0.01:
+                        continue
+                    record = rec
+                    break
 
-        record = storage.load_record(record_id)
         if not record:
-            click.echo(f"  警告: 记录 {record_id} 不存在")
+            if record_id:
+                click.echo(f"  警告: 记录 {record_id} 不存在")
+            elif match_criteria:
+                click.echo(f"  警告: 未找到匹配记录 {match_criteria}")
+            not_found += 1
             continue
 
         evidence = SourceEvidence(
@@ -151,13 +174,16 @@ def _import_supervisor_notes(ctx, file_path, operator):
         storage.save_record(record)
         applied += 1
 
-    click.echo(f"✓ 批注应用完成: {applied} 条记录已更新")
-
-    if errors:
-        click.echo(f"\n✗ 解析错误 ({len(errors)} 条):")
-        for err in errors[:10]:
-            click.echo(f"  行 {err['line']}: {err['error']}")
+    if errors or not_found > 0:
+        if errors:
+            click.echo(f"\n✗ 解析错误 ({len(errors)} 条):")
+            for err in errors[:10]:
+                click.echo(f"  行 {err['line']}: {err['error']}")
+        if not_found > 0:
+            click.echo(f"\n✗ 有 {not_found} 条记录不存在，无法应用批注")
         sys.exit(1)
+
+    click.echo(f"✓ 批注应用完成: {applied} 条记录已更新")
 
 
 def _find_or_create_record(storage, data, source_type, trip_id=None):
@@ -376,6 +402,108 @@ def unfreeze(ctx, record_id, operator):
     else:
         click.echo(f"✗ 解冻失败：记录不存在")
         sys.exit(1)
+
+
+@cli.command()
+@click.argument('record_id')
+@click.option('--reason', required=True, help='撤回原因')
+@click.option('--operator', default='employee', help='操作人')
+@click.option('--snapshot/--no-snapshot', default=True, help='撤回后创建快照')
+@click.pass_context
+def withdraw(ctx, record_id, reason, operator, snapshot):
+    storage = ctx.obj['storage']
+    engine = ctx.obj['engine']
+
+    if not storage.is_initialized():
+        click.echo("✗ 系统未初始化，请先运行 init 命令")
+        sys.exit(1)
+
+    record = storage.load_record(record_id)
+    if not record:
+        click.echo(f"✗ 记录 {record_id} 不存在")
+        sys.exit(1)
+
+    if record.is_frozen:
+        click.echo(f"✗ 记录已冻结，无法撤回")
+        sys.exit(1)
+
+    record.update_status(RecordStatus.WITHDRAWN, operator, reason)
+    storage.save_record(record)
+    click.echo(f"✓ 记录 {record_id} 已撤回")
+    click.echo(f"  原因: {reason}")
+
+    if snapshot:
+        snap_id = storage.create_snapshot(f"After withdraw: {record_id}", operator)
+        click.echo(f"✓ 已创建快照: {snap_id}")
+
+
+@cli.command()
+@click.argument('file_path')
+@click.option('--parent-record-id', required=True, help='原撤回记录ID')
+@click.option('--operator', default='employee', help='操作人')
+@click.option('--snapshot/--no-snapshot', default=True, help='提交后创建快照')
+@click.pass_context
+def resubmit(ctx, file_path, parent_record_id, operator, snapshot):
+    storage = ctx.obj['storage']
+
+    if not storage.is_initialized():
+        click.echo("✗ 系统未初始化，请先运行 init 命令")
+        sys.exit(1)
+
+    parent_record = storage.load_record(parent_record_id)
+    if not parent_record:
+        click.echo(f"✗ 原记录 {parent_record_id} 不存在")
+        sys.exit(1)
+
+    if parent_record.status != RecordStatus.WITHDRAWN:
+        click.echo(f"✗ 原记录状态为 {parent_record.status.value}，只有 withdrawn 状态才能重新提交")
+        sys.exit(1)
+
+    from finance_audit.importers import get_importer
+    importer = get_importer(SourceType.INVOICE_PDF)
+    records_data, errors = importer.parse(file_path)
+
+    if errors:
+        click.echo(f"✗ 解析错误 ({len(errors)} 条):")
+        for err in errors[:5]:
+            click.echo(f"  行 {err['line']}: {err['error']}")
+        sys.exit(1)
+
+    if not records_data:
+        click.echo(f"✗ 未解析到有效记录")
+        sys.exit(1)
+
+    new_data = records_data[0]
+    new_record = ReimbursementRecord(
+        record_id=generate_record_id(),
+        employee_id=parent_record.employee_id,
+        employee_name=parent_record.employee_name,
+        expense_type=str(new_data.get("expense_type", parent_record.expense_type)),
+        amount=float(new_data.get("amount", parent_record.amount)),
+        expense_date=str(new_data.get("expense_date", parent_record.expense_date)),
+        currency=str(new_data.get("currency", parent_record.currency)),
+        status=RecordStatus.PENDING,
+        parent_record_id=parent_record_id
+    )
+
+    evidence = SourceEvidence(
+        source_type=SourceType.INVOICE_PDF,
+        source_file=Path(file_path).name,
+        original_line=new_data.get("original_line", 1),
+        raw_value=new_data.get("raw_value", ""),
+        parsed_value=new_data
+    )
+    new_record.add_evidence(evidence)
+    new_record.update_status(RecordStatus.IMPORTED, operator, f"Resubmitted after withdraw of {parent_record_id}")
+    storage.save_record(new_record)
+
+    click.echo(f"✓ 重新提交成功")
+    click.echo(f"  新记录ID: {new_record.record_id}")
+    click.echo(f"  原记录ID: {parent_record_id}")
+
+    if snapshot:
+        snap_id = storage.create_snapshot(f"After resubmit: {new_record.record_id}", operator)
+        click.echo(f"✓ 已创建快照: {snap_id}")
 
 
 @cli.command()

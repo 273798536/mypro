@@ -1,0 +1,54 @@
+{
+  "record_id": "REC-20260525-A62806D4",
+  "employee_id": "E002",
+  "employee_name": "李四",
+  "expense_type": "交通",
+  "amount": 320.5,
+  "currency": "CNY",
+  "expense_date": "2024-03-15",
+  "status": "imported",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "invoices.csv",
+      "original_line": 5,
+      "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"交通\", \"amount\": \"320.50\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-004\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "invoices.csv",
+        "original_line": 5,
+        "raw_value": "{\"employee_id\": \"E002\", \"employee_name\": \"李四\", \"expense_type\": \"交通\", \"amount\": \"320.50\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-004\"}",
+        "employee_id": "E002",
+        "employee_name": "李四",
+        "expense_type": "交通",
+        "amount": 320.5,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "invoice_number": "INV-2024-004"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.400542"
+    }
+  },
+  "issues": [],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "cli_user",
+      "timestamp": "2026-05-25T21:56:20.402716",
+      "comment": "Imported from sample_data/invoices.csv",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": "TRIP-BJ-202403",
+  "parent_record_id": null,
+  "resubmission_count": 0,
+  "manual_override": false,
+  "override_reason": null,
+  "created_at": "2026-05-25T21:56:20.400528",
+  "updated_at": "2026-05-25T21:56:20.402726",
+  "metadata": {}
+}

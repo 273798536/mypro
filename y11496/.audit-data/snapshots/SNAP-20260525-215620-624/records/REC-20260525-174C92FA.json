@@ -1,0 +1,74 @@
+{
+  "record_id": "REC-20260525-174C92FA",
+  "employee_id": "E004",
+  "employee_name": "赵六",
+  "expense_type": "交通",
+  "amount": 450.0,
+  "currency": "CNY",
+  "expense_date": "2024-03-17",
+  "status": "imported",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "invoices.csv",
+      "original_line": 8,
+      "raw_value": "{\"employee_id\": \"E004\", \"employee_name\": \"赵六\", \"expense_type\": \"交通\", \"amount\": \"450.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-17\", \"invoice_number\": \"INV-2024-006\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "invoices.csv",
+        "original_line": 8,
+        "raw_value": "{\"employee_id\": \"E004\", \"employee_name\": \"赵六\", \"expense_type\": \"交通\", \"amount\": \"450.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-17\", \"invoice_number\": \"INV-2024-006\"}",
+        "employee_id": "E004",
+        "employee_name": "赵六",
+        "expense_type": "交通",
+        "amount": 450.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-17",
+        "invoice_number": "INV-2024-006"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.412582"
+    },
+    "payment_flow": {
+      "source_type": "payment_flow",
+      "source_file": "payment_flows.csv",
+      "original_line": 7,
+      "raw_value": "{\"employee_id\": \"E004\", \"employee_name\": \"赵六\", \"expense_type\": \"交通\", \"amount\": \"450.00\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-17\", \"transaction_id\": \"PAY-20240317-001\"}",
+      "parsed_value": {
+        "source_type": "payment_flow",
+        "source_file": "payment_flows.csv",
+        "original_line": 7,
+        "raw_value": "{\"employee_id\": \"E004\", \"employee_name\": \"赵六\", \"expense_type\": \"交通\", \"amount\": \"450.00\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-17\", \"transaction_id\": \"PAY-20240317-001\"}",
+        "employee_id": "E004",
+        "employee_name": "赵六",
+        "expense_type": "交通",
+        "amount": 450.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-17",
+        "transaction_id": "PAY-20240317-001"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.622855"
+    }
+  },
+  "issues": [],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "cli_user",
+      "timestamp": "2026-05-25T21:56:20.413545",
+      "comment": "Imported from sample_data/invoices.csv",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": "TRIP-BJ-202403",
+  "parent_record_id": null,
+  "resubmission_count": 0,
+  "manual_override": false,
+  "override_reason": null,
+  "created_at": "2026-05-25T21:56:20.412564",
+  "updated_at": "2026-05-25T21:56:20.622876",
+  "metadata": {}
+}

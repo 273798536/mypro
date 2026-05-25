@@ -6,6 +6,12 @@
 pip install -e .
 ```
 
+## 一键完整演示
+
+```bash
+./run_demo.sh
+```
+
 ## 核心命令说明
 
 | 命令 | 功能 | 说明 |
@@ -15,6 +21,8 @@ pip install -e .
 | `check` | 稽核检查 | 检测重复报销、金额/日期不一致等 |
 | `fix` | 标记修复 | 标记问题为已解决 |
 | `override` | 人工改判 | 财务经理人工改判状态 |
+| `withdraw` | 撤回记录 | 员工撤回报销申请 |
+| `resubmit` | 重新提交 | 撤回后重新提交修正后的发票 |
 | `freeze` | 冻结记录 | 导出前冻结防止修改 |
 | `unfreeze` | 解冻记录 | 解除冻结 |
 | `report` | 生成报告 | 查看稽核报告和失败清单 |
@@ -43,48 +51,57 @@ finance-audit import sample_data/invoices.csv
 finance-audit import sample_data/payment_flows.csv
 ```
 
-### 5. 查看当前记录（注意shared_trip_id列）
-```bash
-finance-audit history
-```
-
-### 6. 执行稽核检查（检测重复提交、共享行程重复等）
+### 5. 执行稽核检查（检测重复提交、共享行程重复等）
 ```bash
 finance-audit check
 ```
 
-### 7. 查看稽核报告和失败清单（含原始行号）
+### 6. 查看稽核报告和失败清单（含原始行号）
 ```bash
 finance-audit report
 finance-audit report --show-evidence
 ```
 
-### 8. 修复问题
-```bash
-# 标记特定问题为已解决
-finance-audit fix REC-XXXX-XXXX --issue-index 0 --resolution "已核实为两人合住，分摊合理"
-
-# 或人工改判
-finance-audit override REC-XXXX-XXXX --reason "财务经理特批，情况特殊" --status approved
-```
-
-### 9. 导入主管批注（先修改notes中的record_id为实际ID）
+### 7. 导入主管批注（按员工+费用类型自动匹配）
 ```bash
 finance-audit import sample_data/supervisor_notes.csv
 ```
+**说明**：主管批注文件支持两种匹配方式：
+- `record_id`：直接指定记录ID
+- `employee_name` + `expense_type`：按员工和费用类型自动匹配
 
-### 10. 冻结待导出记录
+### 8. 撤回记录
+```bash
+finance-audit withdraw REC-XXXX-XXXX --reason "发票有误，需重新开具" --operator "员工姓名"
+```
+
+### 9. 重新提交修正后的发票
+```bash
+finance-audit resubmit sample_data/resubmit_invoice.csv --parent-record-id REC-XXXX-XXXX --operator "员工姓名"
+```
+
+### 10. 再次执行稽核检查（检测撤回重提关联）
+```bash
+finance-audit check
+```
+
+### 11. 人工改判
+```bash
+finance-audit override REC-XXXX-XXXX --reason "财务经理特批，情况特殊" --status approved
+```
+
+### 12. 冻结待导出记录
 ```bash
 finance-audit freeze REC-XXXX-XXXX --reason "导出前冻结"
 ```
 
-### 11. 查看快照对比
+### 13. 查看快照对比
 ```bash
 finance-audit history --list-snapshots
 finance-audit history --snap1 SNAP-XXXX-XXXX --snap2 SNAP-XXXX-XXXX
 ```
 
-### 12. 导出最终结果
+### 14. 导出最终结果
 ```bash
 finance-audit export --status approved --format json
 finance-audit export --status checked --format csv
@@ -99,6 +116,8 @@ finance-audit export --status checked --format csv
 - 预期：同一行程ID下，多人在相同日期报销住宿/交通会被标记
 
 ### 场景3：撤回后再提交
+- 使用 `withdraw` 命令撤回记录
+- 使用 `resubmit` 命令重新提交
 - 通过 `parent_record_id` 关联，标记为撤回重提交
 
 ### 场景4：部分失败

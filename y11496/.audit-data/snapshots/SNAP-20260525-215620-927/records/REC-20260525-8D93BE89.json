@@ -1,0 +1,97 @@
+{
+  "record_id": "REC-20260525-8D93BE89",
+  "employee_id": "E001",
+  "employee_name": "张三",
+  "expense_type": "住宿",
+  "amount": 580.0,
+  "currency": "CNY",
+  "expense_date": "2024-03-15",
+  "status": "flagged",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "invoices.csv",
+      "original_line": 7,
+      "raw_value": "{\"employee_id\": \"E001\", \"employee_name\": \"张三\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-001-DUP\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "invoices.csv",
+        "original_line": 7,
+        "raw_value": "{\"employee_id\": \"E001\", \"employee_name\": \"张三\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-001-DUP\"}",
+        "employee_id": "E001",
+        "employee_name": "张三",
+        "expense_type": "住宿",
+        "amount": 580.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "invoice_number": "INV-2024-001-DUP"
+      },
+      "import_timestamp": "2026-05-25T21:56:20.409203"
+    }
+  },
+  "issues": [
+    {
+      "issue_type": "duplicate_submission",
+      "description": "重复提交：与记录 REC-20260525-0E4BE8DE 内容重复",
+      "severity": "high",
+      "related_records": [
+        "REC-20260525-0E4BE8DE"
+      ],
+      "evidence": {
+        "duplicate_signature": "ca0e7256f36b",
+        "primary_record": "REC-20260525-0E4BE8DE",
+        "matching_fields": "员工ID + 费用类型 + 金额 + 日期"
+      },
+      "resolved": false,
+      "resolution": null
+    },
+    {
+      "issue_type": "duplicate_accommodation",
+      "description": "共享行程住宿重复：TRIP-BJ-202403 日期 2024-03-15 多人报销同一住宿，总金额 1740.00，平均 580.00",
+      "severity": "medium",
+      "related_records": [
+        "REC-20260525-0E4BE8DE",
+        "REC-20260525-C706CE21"
+      ],
+      "evidence": {
+        "trip_id": "TRIP-BJ-202403",
+        "date": "2024-03-15",
+        "total_amount": 1740.0,
+        "avg_amount": 580.0,
+        "group_count": 3
+      },
+      "resolved": false,
+      "resolution": null
+    }
+  ],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "cli_user",
+      "timestamp": "2026-05-25T21:56:20.410214",
+      "comment": "Imported from sample_data/invoices.csv",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "imported",
+      "new_status": "flagged",
+      "operator": "audit_engine",
+      "timestamp": "2026-05-25T21:56:20.924178",
+      "comment": "Issues detected",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": "TRIP-BJ-202403",
+  "parent_record_id": null,
+  "resubmission_count": 0,
+  "manual_override": false,
+  "override_reason": null,
+  "created_at": "2026-05-25T21:56:20.409177",
+  "updated_at": "2026-05-25T21:56:20.924195",
+  "metadata": {}
+}

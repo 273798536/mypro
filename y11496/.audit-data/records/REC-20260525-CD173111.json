@@ -1,0 +1,79 @@
+{
+  "record_id": "REC-20260525-CD173111",
+  "employee_id": "E004",
+  "employee_name": "赵六",
+  "expense_type": "交通",
+  "amount": 550.0,
+  "currency": "CNY",
+  "expense_date": "2024-03-17",
+  "status": "flagged",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "resubmit_invoice.csv",
+      "original_line": 2,
+      "raw_value": "{\"employee_name\": \"赵六\", \"expense_type\": \"交通\", \"amount\": \"550.00\", \"expense_date\": \"2024-03-17\", \"invoice_number\": \"INV-20240317-002\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "resubmit_invoice.csv",
+        "original_line": 2,
+        "raw_value": "{\"employee_name\": \"赵六\", \"expense_type\": \"交通\", \"amount\": \"550.00\", \"expense_date\": \"2024-03-17\", \"invoice_number\": \"INV-20240317-002\"}",
+        "employee_id": "赵六",
+        "employee_name": "赵六",
+        "expense_type": "交通",
+        "amount": 550.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-17",
+        "invoice_number": "INV-20240317-002"
+      },
+      "import_timestamp": "2026-05-25T21:56:25.054152"
+    }
+  },
+  "issues": [
+    {
+      "issue_type": "withdrawn_resubmitted",
+      "description": "撤回后重新提交：原记录 REC-20260525-AD870C86 已撤回，此为重新提交记录（第1次）",
+      "severity": "low",
+      "related_records": [
+        "REC-20260525-AD870C86"
+      ],
+      "evidence": {
+        "parent_record": "REC-20260525-AD870C86",
+        "parent_status": "withdrawn",
+        "resubmission_count": 1
+      },
+      "resolved": false,
+      "resolution": null
+    }
+  ],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "赵六",
+      "timestamp": "2026-05-25T21:56:25.054162",
+      "comment": "Resubmitted after withdraw of REC-20260525-AD870C86",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "imported",
+      "new_status": "flagged",
+      "operator": "audit_engine",
+      "timestamp": "2026-05-25T21:56:26.629021",
+      "comment": "Issues detected",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": null,
+  "parent_record_id": "REC-20260525-AD870C86",
+  "resubmission_count": 1,
+  "manual_override": false,
+  "override_reason": null,
+  "created_at": "2026-05-25T21:56:25.054115",
+  "updated_at": "2026-05-25T21:56:26.629042",
+  "metadata": {}
+}

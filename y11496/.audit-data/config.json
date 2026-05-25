@@ -1,64 +1,57 @@
 {
-  "initialized_at": "2026-05-25T20:53:29.083042",
+  "initialized_at": "2026-05-25T21:56:19.925248",
   "version": "1.0.0",
-  "current_snapshot": "SNAP-20260525-210038-640",
-  "record_count": 11,
+  "current_snapshot": "SNAP-20260525-215620-927",
+  "record_count": 12,
   "operators": [
     "system"
   ],
   "record_ids": [
-    "REC-20260525-03F9EFBA",
-    "REC-20260525-07AA5C31",
-    "REC-20260525-12D77916",
-    "REC-20260525-34DCE9F4",
-    "REC-20260525-67932C28",
-    "REC-20260525-7E4B593F",
-    "REC-20260525-9CB847AA",
-    "REC-20260525-8547A3B2",
-    "REC-20260525-1E62DF22",
-    "REC-20260525-B94592EC",
-    "REC-20260525-0D02AD2D"
+    "REC-20260525-8E28EFB4",
+    "REC-20260525-C4AF1358",
+    "REC-20260525-2B6D55BA",
+    "REC-20260525-AD870C86",
+    "REC-20260525-0E4BE8DE",
+    "REC-20260525-C706CE21",
+    "REC-20260525-8F8BE375",
+    "REC-20260525-A62806D4",
+    "REC-20260525-EC1FB7F7",
+    "REC-20260525-8D93BE89",
+    "REC-20260525-174C92FA",
+    "REC-20260525-CD173111"
   ],
   "snapshots": [
     {
-      "snapshot_id": "SNAP-20260525-205329-355",
-      "created_at": "2026-05-25T20:53:29.363054",
+      "snapshot_id": "SNAP-20260525-215620-184",
+      "created_at": "2026-05-25T21:56:20.190534",
       "operator": "cli_user",
       "description": "After import: sample_data/travel_requests.csv",
       "record_count": 4,
-      "record_hash": "97b8a4958ebbf8a41f31b46a82af6767e7f3e55f79faa45c23477ab96d46d335"
+      "record_hash": "c3c2b0a563ecc6b902befd33ef174d6d9a960b74ddc98a497f9fd470469415ac"
     },
     {
-      "snapshot_id": "SNAP-20260525-205329-705",
-      "created_at": "2026-05-25T20:53:29.716251",
+      "snapshot_id": "SNAP-20260525-215620-414",
+      "created_at": "2026-05-25T21:56:20.422360",
       "operator": "cli_user",
       "description": "After import: sample_data/invoices.csv",
       "record_count": 11,
-      "record_hash": "1212ac9f15a7a5ad6b5804b27c6b16152038c38dab58aa3a2faa1e40e7110632"
+      "record_hash": "28dd44498f6f2f9af672818eb06515382460213615ea14ba1ffa1e568afe5773"
     },
     {
-      "snapshot_id": "SNAP-20260525-205330-215",
-      "created_at": "2026-05-25T20:53:30.227946",
+      "snapshot_id": "SNAP-20260525-215620-624",
+      "created_at": "2026-05-25T21:56:20.638952",
       "operator": "cli_user",
       "description": "After import: sample_data/payment_flows.csv",
       "record_count": 11,
-      "record_hash": "ebd072e9c08a5524093b423b591ef728a7c26af4dc170e5ea0b42c3e69970618"
+      "record_hash": "562a8b31ac3d24dc4c414e583c72b7cf65cc43233e5b99b024ddf0683a54b759"
     },
     {
-      "snapshot_id": "SNAP-20260525-205330-755",
-      "created_at": "2026-05-25T20:53:30.763687",
+      "snapshot_id": "SNAP-20260525-215620-927",
+      "created_at": "2026-05-25T21:56:20.944291",
       "operator": "cli_user",
       "description": "After audit check",
       "record_count": 11,
-      "record_hash": "a9bd96aaff4589fe23648f52527385aa31efdf1bd7ca62c5d97e38d983039260"
-    },
-    {
-      "snapshot_id": "SNAP-20260525-210038-640",
-      "created_at": "2026-05-25T21:00:38.642800",
-      "operator": "finance_manager",
-      "description": "After override: REC-20260525-67932C28",
-      "record_count": 11,
-      "record_hash": "0a4856db798a13e67a0c02b7de44e28c459230633a68e71e86aaf601c552f9dd"
+      "record_hash": "04f0b6dc1561fc5fed75c40153bd5b9e648a453cfde63cb888944aaf174e55bd"
     }
   ]
 }

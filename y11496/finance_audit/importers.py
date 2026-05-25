@@ -592,10 +592,24 @@ class SupervisorNoteImporter(BaseImporter):
         note = get_key('note', '批注', '意见', 'comment', 'approval_note')
         supervisor = get_key('supervisor', '主管', '审批人', 'approver')
         approval_date = get_key('approval_date', '审批日期', '日期')
-        approval_status = get_key('status', '审批状态', '状态')
+        approval_status = get_key('approval_status', 'status', '审批状态', '状态')
+        
+        employee_name = get_key('employee_name', '员工姓名', '姓名', 'employee')
+        expense_type = get_key('expense_type', '费用类型', '类型', 'type')
+        expense_date = get_key('expense_date', '费用日期', '发生日期', 'date')
+        amount = get_key('amount', '金额', 'amount')
 
-        if not record_id and not note:
-            raise ValueError("Missing record_id or note content")
+        if not (record_id or (employee_name and expense_type)):
+            raise ValueError("Missing record_id OR (employee_name + expense_type) for matching")
+
+        match_criteria = None
+        if employee_name and expense_type:
+            match_criteria = {
+                "employee_name": employee_name,
+                "expense_type": expense_type,
+                "expense_date": expense_date,
+                "amount": float(amount) if amount else None
+            }
 
         return {
             "source_type": SourceType.SUPERVISOR_NOTE.value,
@@ -606,7 +620,8 @@ class SupervisorNoteImporter(BaseImporter):
             "note": str(note) if note else "",
             "supervisor": str(supervisor) if supervisor else "主管",
             "approval_date": str(approval_date) if approval_date else datetime.now().strftime('%Y-%m-%d'),
-            "approval_status": str(approval_status) if approval_status else None
+            "approval_status": str(approval_status) if approval_status else None,
+            "match_criteria": match_criteria
         }
 
 
