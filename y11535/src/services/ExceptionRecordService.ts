@@ -496,7 +496,7 @@ export class ExceptionRecordService {
       throw new Error('RECORD_NOT_FOUND');
     }
 
-    if (record.isFrozen) {
+    if (record.isFrozen && record.status !== ExceptionStatus.FROZEN) {
       throw new Error('RECORD_FROZEN: 记录已冻结，无法结算');
     }
 

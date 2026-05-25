@@ -381,6 +381,83 @@ async function testPermissionDenied() {
   console.log('✓ 审计日志中权限拦截记录数:', auditLogs.total);
 }
 
+async function testFreezeThenSettle() {
+  console.log('\n=== 测试7: 冻结后结算 ===');
+
+  const batch = await batchService.createBatch({
+    name: '测试批次-冻结后结算',
+    trainingId: 'TRAIN-007',
+    trainingName: '2024年度技术培训',
+    createdBy: 'user-training-001',
+    creatorName: '培训管理员李四',
+    creatorRole: Role.TRAINING_ADMIN
+  });
+
+  const record = await exceptionRecordService.createRecord({
+    batchId: batch.id,
+    employeeId: 'EMP-TEST-008',
+    employeeName: '测试员工8',
+    department: '技术研发部',
+    trainingId: 'TRAIN-007',
+    trainingName: '2024年度技术培训',
+    trainingDate: new Date(),
+    exceptionType: ExceptionType.MISSING_SIGN,
+    importSource: {
+      sourceFileName: 'test7.csv',
+      sourceFileHash: 'hashjkl',
+      originalRowNumber: 1,
+      originalValue: 'test',
+      parsedValue: {},
+      sourceType: SourceType.REGISTRATION_FORM
+    },
+    originalEvidence: { test: true },
+    createdBy: 'user-training-001',
+    creatorName: '培训管理员李四',
+    creatorRole: Role.TRAINING_ADMIN
+  });
+
+  console.log('✓ 记录创建成功，初始状态:', record.status);
+
+  const reviewed = await exceptionRecordService.reviewRecord({
+    recordId: record.id,
+    reviewerId: 'user-hrbp-001',
+    reviewerName: 'HRBP张三',
+    reviewerRole: Role.HRBP,
+    result: ReviewResult.CONFIRMED_ABNORMAL,
+    reason: '经核实，确未签到'
+  });
+  console.log('✓ 复核完成，当前状态:', reviewed.status);
+
+  const frozen = await exceptionRecordService.freezeRecord({
+    recordId: record.id,
+    operatorId: 'user-hrbp-001',
+    operatorName: 'HRBP张三',
+    operatorRole: Role.HRBP,
+    reason: '数据核对完成，冻结待导出'
+  });
+  console.log('✓ 冻结成功，当前状态:', frozen.status, 'isFrozen:', frozen.isFrozen);
+
+  const settled = await exceptionRecordService.settleRecord({
+    recordId: record.id,
+    operatorId: 'user-hrbp-001',
+    operatorName: 'HRBP张三',
+    operatorRole: Role.HRBP
+  });
+  console.log('✓ 冻结后结算成功，当前状态:', settled.status, 'isFrozen:', settled.isFrozen);
+
+  const archived = await exceptionRecordService.archiveRecord({
+    recordId: record.id,
+    operatorId: 'user-hrbp-001',
+    operatorName: 'HRBP张三',
+    operatorRole: Role.HRBP
+  });
+  console.log('✓ 归档成功，当前状态:', archived.status);
+
+  const transitions = await exceptionRecordService.getStateTransitions(record.id);
+  console.log('✓ 完整状态流转记录数:', transitions.length);
+  console.log('✓ 冻结后结算+归档链路验证通过');
+}
+
 async function runAllTests() {
   try {
     await AppDataSource.initialize();
@@ -392,6 +469,7 @@ async function runAllTests() {
     await testManualOverride();
     await testFreezeBeforeExport();
     await testPermissionDenied();
+    await testFreezeThenSettle();
 
     console.log('\n=== 所有边界情况测试完成 ===');
     process.exit(0);

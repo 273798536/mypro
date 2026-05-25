@@ -65,7 +65,7 @@ const TRANSITION_RULES: TransitionRule[] = [
     allowedRoles: ['admin', 'hrbp', 'auditor']
   },
   {
-    from: [ExceptionStatus.APPROVED, ExceptionStatus.REJECTED],
+    from: [ExceptionStatus.APPROVED, ExceptionStatus.REJECTED, ExceptionStatus.FROZEN],
     to: ExceptionStatus.SETTLED,
     action: ActionType.SETTLE,
     allowedRoles: ['admin', 'hrbp']
