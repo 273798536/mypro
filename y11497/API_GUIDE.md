@@ -32,6 +32,21 @@ curl http://localhost:3000/health
 
 ## 系统架构
 
+### 环境配置
+
+系统使用 `.env` 文件配置关键参数，通过 dotenv 自动加载：
+
+```env
+PORT=3000                    # 服务端口
+NODE_ENV=development          # 运行环境
+JWT_SECRET=...                # JWT密钥
+JWT_EXPIRES_IN=24h            # Token过期时间
+MAX_RETRY_COUNT=3             # 每轮最大重试次数（达到后转人工干预）
+RETRY_INTERVAL_MINUTES=30     # 重试间隔基础（指数退避）
+DEAD_LETTER_THRESHOLD=5       # 累计重试阈值（达到后入死信）
+LOG_LEVEL=info                # 日志级别
+```
+
 ### 核心流程
 
 **快速通道（已核验材料）：**
@@ -43,10 +58,20 @@ curl http://localhost:3000/health
 ```
 提交 → 排队 → 处理(稽核) → 复核 → 补偿入账 → 关闭
            ↓
-         限次重试 → 人工干预 → 手动重试
+         限次重试(每轮最多3次) → 人工干预 → 手动重试
                           ↓
                      死信队列(累计重试≥5次)
 ```
+
+**重试闭环详细流程：**
+
+| 阶段 | 触发条件 | 状态变化 | 重试次数 |
+|------|----------|----------|----------|
+| 第1轮自动重试 | 稽核失败 | queued → retrying → manual_intervention | 累计 0→3 |
+| 人工干预 | 第1轮3次失败 | retrying → manual_intervention | 累计 = 3 |
+| 手动重试 | 主管触发 | manual_intervention → queued | 累计 = 3 |
+| 第2轮自动重试 | 稽核再次失败 | queued → retrying → dead_letter | 累计 3→5 |
+| 死信队列 | 累计达到5次 | retrying → dead_letter | 累计 = 5 |
 
 ### 状态流转图
 

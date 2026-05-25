@@ -281,6 +281,25 @@ router.post('/:id/process', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR),
   }
 });
 
+router.post('/:id/test-retry-failure', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR), async (req: Request, res: Response) => {
+  try {
+    const { category, errorReason } = req.body;
+    const result = RetryQueueService.testEnqueueAndFail(
+      req.params.id,
+      category || RetryCategory.SYSTEM_ERROR,
+      errorReason || '测试重试失败',
+      req.user!
+    );
+    res.json(result);
+  } catch (err: any) {
+    logger.error('测试重试失败', err);
+    res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
+
 router.post('/:id/review', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR), async (req: Request, res: Response) => {
   try {
     const { reason } = req.body;

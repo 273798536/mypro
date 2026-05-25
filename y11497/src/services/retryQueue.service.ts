@@ -237,7 +237,10 @@ export class RetryQueueService {
   ): { success: boolean } {
     const newRetryCount = item.retryCount + 1;
     const allRetryHistory = dataStore.getRetryQueueByReimbursement(item.reimbursementId);
-    const totalHistoricalRetries = allRetryHistory.reduce((sum, h) => sum + h.retryCount, 0) + newRetryCount;
+    const previousHistoryRetries = allRetryHistory
+      .filter(h => h.id !== item.id)
+      .reduce((sum, h) => sum + h.retryCount, 0);
+    const totalHistoricalRetries = previousHistoryRetries + newRetryCount;
 
     if (totalHistoricalRetries >= DEAD_LETTER_THRESHOLD) {
       return this.moveToDeadLetter(item, reimbursement, errorReason);
@@ -347,5 +350,92 @@ export class RetryQueueService {
       operator,
       remainingRetries
     );
+  }
+
+  static testEnqueueAndFail(
+    reimbursementId: string,
+    category: RetryCategory,
+    errorReason: string,
+    operator: User
+  ): {
+    success: boolean;
+    status: string;
+    retryCount: number;
+    totalRetries: number;
+    message: string;
+  } {
+    const reimbursement = dataStore.getReimbursement(reimbursementId);
+    if (!reimbursement) {
+      throw new Error('报销单不存在');
+    }
+
+    const queueItem = this.enqueueForRetry(reimbursementId, category, operator);
+
+    const allRetryHistory = dataStore.getRetryQueueByReimbursement(reimbursementId);
+    const previousHistoryRetries = allRetryHistory
+      .filter(h => h.id !== queueItem.id)
+      .reduce((sum, h) => sum + h.retryCount, 0);
+    
+    let currentRetryCount = 0;
+    let totalRetries = previousHistoryRetries;
+    let finalStatus = '';
+
+    for (let i = 0; i < queueItem.maxRetries; i++) {
+      currentRetryCount = i + 1;
+      totalRetries = previousHistoryRetries + currentRetryCount;
+
+      dataStore.updateRetryQueue(queueItem.id, {
+        retryCount: currentRetryCount,
+        status: 'processing'
+      });
+
+      if (totalRetries >= DEAD_LETTER_THRESHOLD) {
+        this.moveToDeadLetter(
+          { ...queueItem, retryCount: currentRetryCount },
+          reimbursement,
+          errorReason
+        );
+        finalStatus = 'dead_letter';
+        return {
+          success: false,
+          status: finalStatus,
+          retryCount: currentRetryCount,
+          totalRetries,
+          message: `累计重试 ${totalRetries} 次，达到死信阈值 ${DEAD_LETTER_THRESHOLD}，已移入死信队列`
+        };
+      }
+    }
+
+    dataStore.updateRetryQueue(queueItem.id, {
+      status: 'failed',
+      retryCount: currentRetryCount,
+      lastError: errorReason
+    });
+
+    dataStore.addStatusLog(reimbursementId, {
+      reimbursementId,
+      fromStatus: ReimbursementStatus.RETRYING,
+      toStatus: ReimbursementStatus.MANUAL_INTERVENTION,
+      operatorId: 'system',
+      operatorName: '系统',
+      reason: `本轮重试 ${currentRetryCount} 次失败，累计重试 ${totalRetries} 次，需要人工干预: ${errorReason}`
+    });
+
+    dataStore.updateReimbursement(reimbursementId, {
+      status: ReimbursementStatus.MANUAL_INTERVENTION,
+      currentRetry: undefined,
+      failureReason: this.mapCategoryToFailureReason(category),
+      failureDetails: errorReason,
+      isInSummary: false
+    });
+
+    finalStatus = 'manual_intervention';
+    return {
+      success: false,
+      status: finalStatus,
+      retryCount: currentRetryCount,
+      totalRetries,
+      message: `本轮重试 ${currentRetryCount} 次失败，累计重试 ${totalRetries} 次，转入人工干预`
+    };
   }
 }
