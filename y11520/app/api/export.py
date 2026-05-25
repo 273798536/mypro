@@ -1,4 +1,5 @@
 from typing import Optional
+from urllib.parse import quote
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -44,10 +45,15 @@ async def download_excel(
     service = ExportService(db)
     excel_data = service.export_to_excel(region, status)
     
-    filename = f"售后汇总_{current_user.username}_{RecordStatus(status).value if status else '全部'}.xlsx"
+    status_label = RecordStatus(status).value if status else "quanbu"
+    filename_ascii = f"export_summary_{current_user.username}_{status_label}.xlsx"
+    filename_cn = f"售后汇总_{current_user.username}_{RecordStatus(status).value if status else '全部'}.xlsx"
+    filename_encoded = quote(filename_cn, safe="")
     
     return StreamingResponse(
         excel_data,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={
+            "Content-Disposition": f"attachment; filename=\"{filename_ascii}\"; filename*=UTF-8''{filename_encoded}"
+        }
     )

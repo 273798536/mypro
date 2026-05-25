@@ -440,6 +440,8 @@ class DataProcessor:
                         target.bad_review_found = dirty_record.corrected_value.lower() in ('true', '1', 'yes')
                     elif dirty_record.field_name == "bad_review_reason":
                         target.bad_review_reason = dirty_record.corrected_value
+                        if dirty_record.corrected_value and dirty_record.corrected_value.strip():
+                            target.bad_review_found = True
                     else:
                         setattr(target, dirty_record.field_name, dirty_record.corrected_value)
             
@@ -496,7 +498,7 @@ class DataProcessor:
             ),
             "dirty_record_count": len(dirty_records),
             "resolved_dirty_count": sum(1 for d in dirty_records if d.is_resolved),
-            "quantity_conflict_count": sum(1 for d in dirty_records if d.dirty_type == DirtyType.QUANTITY_CONFLICT),
+            "quantity_conflict_count": sum(1 for d in dirty_records if d.dirty_type == DirtyType.QUANTITY_CONFLICT and not d.is_resolved),
             "calculated_at": datetime.utcnow().isoformat()
         }
         

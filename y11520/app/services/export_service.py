@@ -57,7 +57,7 @@ class ExportService:
                 dirty_records = self.db.query(DirtyRecord).filter(DirtyRecord.batch_id == batch.id).all()
                 dirty_record_count += len(dirty_records)
                 resolved_dirty_count += sum(1 for d in dirty_records if d.is_resolved)
-                quantity_conflict_count += sum(1 for d in dirty_records if d.dirty_type == DirtyType.QUANTITY_CONFLICT)
+                quantity_conflict_count += sum(1 for d in dirty_records if d.dirty_type == DirtyType.QUANTITY_CONFLICT and not d.is_resolved)
 
         return SummaryStats(
             total_batches=len(batches),
@@ -115,7 +115,7 @@ class ExportService:
                     if r.rating and r.rating <= 2 and not r.bad_review_found
                 )
                 dirty_record_count = len(dirty_records)
-                quantity_conflict_count = sum(1 for d in dirty_records if d.dirty_type == DirtyType.QUANTITY_CONFLICT)
+                quantity_conflict_count = sum(1 for d in dirty_records if d.dirty_type == DirtyType.QUANTITY_CONFLICT and not d.is_resolved)
             
             latest_log = self.db.query(StatusLog).filter(
                 StatusLog.batch_id == batch.id
