@@ -290,13 +290,198 @@ curl -s -X POST "$BASE_URL/orders/" \
 
 echo ""
 echo "======================================"
+echo "步骤14: 司机轨迹新增和查询"
+echo "======================================"
+
+echo ""
+echo "录入员新增司机轨迹..."
+curl -s -X POST "$BASE_URL/driver-tracks/" \
+  -H "Authorization: Bearer $ENTRY_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "order_no": "ORDER001",
+    "driver_name": "张师傅",
+    "vehicle_no": "沪A12345",
+    "location": "华东农资店门口",
+    "track_time": "2024-05-20T09:30:00Z",
+    "status": "arrived",
+    "remark": "已到达门店，开始卸货"
+  }' | python3 -m json.tool
+
+echo ""
+echo "查询司机轨迹列表..."
+curl -s -X GET "$BASE_URL/driver-tracks/?order_no=ORDER001" \
+  -H "Authorization: Bearer $REVIEW_TOKEN" | python3 -m json.tool
+
+echo ""
+echo "======================================"
+echo "步骤15: 历史压缩包导入准备"
+echo "======================================"
+
+echo ""
+echo "创建历史数据JSON文件并打包为zip..."
+python3 -c "
+import json
+import zipfile
+from io import BytesIO
+
+# 历史订单数据
+old_orders = [
+    {
+        'order_no': 'HIST001',
+        'store_name': '西北农资站',
+        'region': '西北区',
+        'product_name': '磷肥',
+        'quantity': 200,
+        'unit': '袋',
+        'amount': 25000,
+        'driver_name': '老周',
+        'vehicle_no': '陕B88888',
+        'order_date': '2023-12-15T10:00:00Z',
+        'status': 'delivered',
+        'is_supplementary': False
+    },
+    {
+        'order_no': 'HIST002',
+        'store_name': '华北农资店',
+        'region': '华北区',
+        'product_name': '钾肥',
+        'quantity': 150,
+        'unit': '袋',
+        'amount': 18000,
+        'driver_name': '老赵',
+        'vehicle_no': '京A66666',
+        'order_date': '2023-11-20T14:00:00Z',
+        'status': 'delivered',
+        'is_supplementary': False
+    }
+]
+
+# 历史轨迹数据
+old_tracks = [
+    {
+        'order_no': 'HIST001',
+        'driver_name': '老周',
+        'vehicle_no': '陕B88888',
+        'location': '西北农资站',
+        'track_time': '2023-12-15T16:00:00Z',
+        'status': 'completed',
+        'remark': '历史数据迁移'
+    }
+]
+
+# 历史回执数据
+old_receipts = [
+    {
+        'receipt_no': 'HISTRCPT001',
+        'order_no': 'HIST001',
+        'store_name': '西北农资站',
+        'signatory': '刘老板',
+        'sign_time': '2023-12-15T17:00:00Z',
+        'actual_quantity': 200,
+        'actual_amount': 25000,
+        'is_iou': False,
+        'payment_status': 'paid',
+        'remark': '历史数据迁移'
+    }
+]
+
+# 创建zip文件
+with zipfile.ZipFile('/tmp/history_data.zip', 'w', zipfile.ZIP_DEFLATED) as zf:
+    zf.writestr('orders.json', json.dumps(old_orders, ensure_ascii=False))
+    zf.writestr('tracks.json', json.dumps(old_tracks, ensure_ascii=False))
+    zf.writestr('receipts.json', json.dumps(old_receipts, ensure_ascii=False))
+
+print('历史数据压缩包已创建: /tmp/history_data.zip')
+"
+
+echo ""
+echo "======================================"
+echo "步骤16: 上传历史压缩包导入数据"
+echo "======================================"
+
+echo ""
+echo "上传历史压缩包（旧口径数据）..."
+curl -s -X POST "$BASE_URL/history/upload?import_type=all&data_version=old" \
+  -H "Authorization: Bearer $SUPER_TOKEN" \
+  -F "file=@/tmp/history_data.zip" | python3 -m json.tool
+
+echo ""
+echo "查看历史数据版本统计..."
+curl -s -X GET "$BASE_URL/history/versions" \
+  -H "Authorization: Bearer $SUPER_TOKEN" | python3 -m json.tool
+
+echo ""
+echo "======================================"
+echo "步骤17: 报表钻取明细（追到单条记录）"
+echo "======================================"
+
+echo ""
+echo "钻取: 按状态查看订单明细..."
+curl -s -X POST "$BASE_URL/reports/drilldown" \
+  -H "Authorization: Bearer $SUPER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "report_type": "orders_by_status",
+    "status": "closed",
+    "region": "华东区"
+  }' | python3 -m json.tool
+
+echo ""
+echo "钻取: 查看待付款回执明细..."
+curl -s -X POST "$BASE_URL/reports/drilldown" \
+  -H "Authorization: Bearer $SUPER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "report_type": "receipts_by_payment",
+    "status": "unpaid"
+  }' | python3 -m json.tool
+
+echo ""
+echo "钻取: 查看重试队列明细..."
+curl -s -X POST "$BASE_URL/reports/drilldown" \
+  -H "Authorization: Bearer $SUPER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "report_type": "retry_queue_details",
+    "status": "success"
+  }' | python3 -m json.tool
+
+echo ""
+echo "钻取: 查看失败记录明细..."
+curl -s -X POST "$BASE_URL/reports/drilldown" \
+  -H "Authorization: Bearer $SUPER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "report_type": "failures_details",
+    "status": "resolved"
+  }' | python3 -m json.tool
+
+echo ""
+echo "======================================"
+echo "步骤18: 带来源的汇总报表"
+echo "======================================"
+
+echo ""
+echo "查看带来源记录的汇总报表..."
+curl -s -X GET "$BASE_URL/reports/summary-with-sources" \
+  -H "Authorization: Bearer $SUPER_TOKEN" | python3 -m json.tool
+
+echo ""
+echo "======================================"
 echo "测试完成！"
 echo "======================================"
+echo ""
+echo "新增功能验证要点:"
+echo "✓ 司机轨迹: 新增和查询接口正常"
+echo "✓ 历史导入: 压缩包上传和解析正常"
+echo "✓ 报表钻取: 能追到单条记录明细"
+echo "✓ 来源追踪: 汇总数据有对应的原始记录"
 echo ""
 echo "下一步验证操作："
 echo "1. 重启服务: Ctrl+C 停止，然后重新运行 ./start.sh"
 echo "2. 重启后验证数据持久化:"
-echo "   - 查看失败记录: 运行下面的验证命令"
-echo "   - 查看审计日志"
-echo "   - 重新导出数据验证"
+echo "   - 运行 ./verify_after_restart.sh"
+echo "   - 检查司机轨迹是否保留"
+echo "   - 检查历史导入数据是否保留"
 echo ""

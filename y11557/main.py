@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Query, File, UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, FileResponse
 from sqlalchemy import func, or_, and_
@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import json
 import os
+import zipfile
 import pandas as pd
 from io import BytesIO
 
@@ -87,6 +88,30 @@ class CloseOrderRequest(BaseModel):
 class ResolveFailureRequest(BaseModel):
     failure_id: int
     resolution_note: str
+
+
+class DriverTrackCreate(BaseModel):
+    order_no: str
+    driver_name: str
+    vehicle_no: str
+    location: str
+    track_time: str
+    status: str
+    remark: str = ""
+
+
+class HistoryImportRequest(BaseModel):
+    import_type: str
+    data_version: str
+    remark: str = ""
+
+
+class ReportDrilldownRequest(BaseModel):
+    report_type: str
+    status: Optional[str] = None
+    region: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
 
 
 @app.on_event("startup")
@@ -803,6 +828,501 @@ async def export_failures(
         f.write(output.getvalue())
 
     return FileResponse(filepath, filename=filename, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+
+@app.post("/driver-tracks/")
+async def create_driver_track(
+    track: DriverTrackCreate,
+    current_user: User = Depends(require_permission("create_order")),
+    db: Session = Depends(get_db)
+):
+    order = db.query(StoreOrder).filter(StoreOrder.order_no == track.order_no).first()
+    if not order:
+        raise HTTPException(status_code=400, detail=f"关联订单 {track.order_no} 不存在")
+
+    db_track = DriverTrack(
+        order_no=track.order_no,
+        driver_name=track.driver_name,
+        vehicle_no=track.vehicle_no,
+        location=track.location,
+        track_time=datetime.fromisoformat(track.track_time.replace("Z", "+00:00")),
+        status=track.status,
+        remark=track.remark
+    )
+    db.add(db_track)
+    db.commit()
+
+    log_audit(db, track.order_no, "create_driver_track", {}, track.dict(), current_user.username, current_user.role, "新增司机轨迹")
+
+    return {"message": "司机轨迹创建成功", "track_id": db_track.id}
+
+
+@app.get("/driver-tracks/")
+async def list_driver_tracks(
+    order_no: Optional[str] = None,
+    driver_name: Optional[str] = None,
+    vehicle_no: Optional[str] = None,
+    status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(require_permission("view_orders")),
+    db: Session = Depends(get_db)
+):
+    query = db.query(DriverTrack)
+    if order_no:
+        query = query.filter(DriverTrack.order_no == order_no)
+    if driver_name:
+        query = query.filter(DriverTrack.driver_name == driver_name)
+    if vehicle_no:
+        query = query.filter(DriverTrack.vehicle_no == vehicle_no)
+    if status:
+        query = query.filter(DriverTrack.status == status)
+
+    tracks = query.order_by(DriverTrack.track_time.desc()).offset(skip).limit(limit).all()
+    result = []
+    for track in tracks:
+        result.append({
+            "id": track.id,
+            "order_no": track.order_no,
+            "driver_name": track.driver_name,
+            "vehicle_no": track.vehicle_no,
+            "location": track.location,
+            "track_time": track.track_time.isoformat(),
+            "status": track.status,
+            "remark": track.remark,
+            "created_at": track.created_at.isoformat()
+        })
+
+    return {"total": query.count(), "data": result}
+
+
+@app.get("/driver-tracks/{track_id}")
+async def get_driver_track(
+    track_id: int,
+    current_user: User = Depends(require_permission("view_orders")),
+    db: Session = Depends(get_db)
+):
+    track = db.query(DriverTrack).filter(DriverTrack.id == track_id).first()
+    if not track:
+        raise HTTPException(status_code=404, detail="司机轨迹不存在")
+
+    return {
+        "id": track.id,
+        "order_no": track.order_no,
+        "driver_name": track.driver_name,
+        "vehicle_no": track.vehicle_no,
+        "location": track.location,
+        "track_time": track.track_time.isoformat(),
+        "status": track.status,
+        "remark": track.remark,
+        "created_at": track.created_at.isoformat()
+    }
+
+
+@app.post("/history/import")
+async def import_history_data(
+    import_request: HistoryImportRequest,
+    current_user: User = Depends(require_permission("create_order")),
+    db: Session = Depends(get_db)
+):
+    log_audit(db, "HISTORY_IMPORT", "history_import", {}, import_request.dict(), current_user.username, current_user.role, f"历史数据导入请求 - 类型: {import_request.import_type}, 版本: {import_request.data_version}")
+
+    return {
+        "message": "历史数据导入请求已记录",
+        "import_type": import_request.import_type,
+        "data_version": import_request.data_version,
+        "remark": import_request.remark,
+        "next_step": "请使用 /history/upload 接口上传压缩包文件"
+    }
+
+
+@app.post("/history/upload")
+async def upload_history_archive(
+    file: UploadFile = File(...),
+    import_type: str = Query(..., description="导入类型: orders/tracks/receipts/all"),
+    data_version: str = Query(..., description="数据版本: old/new/mixed"),
+    current_user: User = Depends(require_permission("create_order")),
+    db: Session = Depends(get_db)
+):
+    if not file.filename.endswith('.zip'):
+        raise HTTPException(status_code=400, detail="仅支持 .zip 格式的压缩包")
+
+    content = await file.read()
+
+    try:
+        with zipfile.ZipFile(BytesIO(content), 'r') as zf:
+            file_list = zf.namelist()
+
+            import_results = {
+                "orders": {"success": 0, "failed": 0},
+                "tracks": {"success": 0, "failed": 0},
+                "receipts": {"success": 0, "failed": 0}
+            }
+
+            for filename in file_list:
+                if filename.endswith('.json'):
+                    try:
+                        data = json.loads(zf.read(filename))
+                        if isinstance(data, list):
+                            for item in data:
+                                try:
+                                    if import_type in ["orders", "all"] and "order_no" in item and "store_name" in item:
+                                        existing = db.query(StoreOrder).filter(StoreOrder.order_no == item.get("order_no")).first()
+                                        if not existing:
+                                            db_order = StoreOrder(
+                                                order_no=item.get("order_no"),
+                                                store_name=item.get("store_name", ""),
+                                                region=item.get("region", ""),
+                                                product_name=item.get("product_name", ""),
+                                                quantity=float(item.get("quantity", 0)),
+                                                unit=item.get("unit", ""),
+                                                amount=float(item.get("amount", 0)),
+                                                driver_name=item.get("driver_name", ""),
+                                                vehicle_no=item.get("vehicle_no", ""),
+                                                order_date=datetime.fromisoformat(item.get("order_date", "2024-01-01T00:00:00").replace("Z", "+00:00")),
+                                                status=item.get("status", "pending"),
+                                                data_source=data_version,
+                                                is_supplementary=item.get("is_supplementary", False),
+                                                created_by=f"history_{current_user.username}"
+                                            )
+                                            db.add(db_order)
+                                            import_results["orders"]["success"] += 1
+                                        else:
+                                            import_results["orders"]["failed"] += 1
+
+                                    if import_type in ["tracks", "all"] and "order_no" in item and "location" in item:
+                                        db_track = DriverTrack(
+                                            order_no=item.get("order_no", ""),
+                                            driver_name=item.get("driver_name", ""),
+                                            vehicle_no=item.get("vehicle_no", ""),
+                                            location=item.get("location", ""),
+                                            track_time=datetime.fromisoformat(item.get("track_time", "2024-01-01T00:00:00").replace("Z", "+00:00")),
+                                            status=item.get("status", "completed"),
+                                            remark=item.get("remark", f"历史导入-{data_version}")
+                                        )
+                                        db.add(db_track)
+                                        import_results["tracks"]["success"] += 1
+
+                                    if import_type in ["receipts", "all"] and "receipt_no" in item and "order_no" in item:
+                                        existing = db.query(ReceiptIOU).filter(ReceiptIOU.receipt_no == item.get("receipt_no")).first()
+                                        if not existing:
+                                            db_receipt = ReceiptIOU(
+                                                order_no=item.get("order_no", ""),
+                                                receipt_no=item.get("receipt_no", ""),
+                                                store_name=item.get("store_name", ""),
+                                                signatory=item.get("signatory", ""),
+                                                sign_time=datetime.fromisoformat(item.get("sign_time", "2024-01-01T00:00:00").replace("Z", "+00:00")),
+                                                actual_quantity=float(item.get("actual_quantity", 0)),
+                                                actual_amount=float(item.get("actual_amount", 0)),
+                                                is_iou=item.get("is_iou", False),
+                                                iou_amount=float(item.get("iou_amount", 0)),
+                                                payment_status=item.get("payment_status", "unpaid"),
+                                                remark=item.get("remark", f"历史导入-{data_version}"),
+                                                created_by=f"history_{current_user.username}"
+                                            )
+                                            db.add(db_receipt)
+                                            import_results["receipts"]["success"] += 1
+                                        else:
+                                            import_results["receipts"]["failed"] += 1
+
+                                except Exception as e:
+                                    if import_type in ["orders", "all"]:
+                                        import_results["orders"]["failed"] += 1
+                                    if import_type in ["tracks", "all"]:
+                                        import_results["tracks"]["failed"] += 1
+                                    if import_type in ["receipts", "all"]:
+                                        import_results["receipts"]["failed"] += 1
+
+                        db.commit()
+
+                    except json.JSONDecodeError:
+                        continue
+
+            log_audit(db, "HISTORY_UPLOAD", "history_upload", {"filename": file.filename}, import_results, current_user.username, current_user.role, f"历史数据压缩包导入完成")
+
+            return {
+                "message": "历史数据导入完成",
+                "filename": file.filename,
+                "import_type": import_type,
+                "data_version": data_version,
+                "file_count": len(file_list),
+                "import_results": import_results
+            }
+
+    except zipfile.BadZipFile:
+        raise HTTPException(status_code=400, detail="无效的压缩包文件")
+
+
+@app.get("/history/versions")
+async def list_history_versions(
+    current_user: User = Depends(require_permission("view_reports")),
+    db: Session = Depends(get_db)
+):
+    orders_by_version = db.query(
+        StoreOrder.data_source,
+        func.count(StoreOrder.id)
+    ).group_by(StoreOrder.data_source).all()
+
+    receipts_by_version = db.query(
+        ReceiptIOU.created_by,
+        func.count(ReceiptIOU.id)
+    ).filter(ReceiptIOU.created_by.like('history_%')).group_by(ReceiptIOU.created_by).all()
+
+    return {
+        "orders_by_data_source": [
+            {"data_source": v[0], "count": v[1]} for v in orders_by_version
+        ],
+        "receipts_by_import_user": [
+            {"import_user": v[0], "count": v[1]} for v in receipts_by_version
+        ]
+    }
+
+
+@app.post("/reports/drilldown")
+async def get_report_drilldown(
+    request: ReportDrilldownRequest,
+    current_user: User = Depends(require_permission("view_reports")),
+    db: Session = Depends(get_db)
+):
+    if request.report_type == "orders_by_status":
+        query = db.query(StoreOrder)
+        if request.status:
+            query = query.filter(StoreOrder.status == request.status)
+        if request.region:
+            query = query.filter(StoreOrder.region == request.region)
+
+        orders = query.all()
+        records = []
+        for order in orders:
+            records.append({
+                "order_no": order.order_no,
+                "store_name": order.store_name,
+                "region": order.region,
+                "product_name": order.product_name,
+                "quantity": order.quantity,
+                "amount": order.amount,
+                "status": order.status,
+                "driver_name": order.driver_name,
+                "data_source": order.data_source,
+                "is_supplementary": order.is_supplementary,
+                "created_at": order.created_at.isoformat()
+            })
+
+        return {
+            "report_type": request.report_type,
+            "filters": {
+                "status": request.status,
+                "region": request.region
+            },
+            "total_count": len(records),
+            "total_amount": sum(r["amount"] for r in records),
+            "records": records
+        }
+
+    elif request.report_type == "receipts_by_payment":
+        payment_status = request.status or "unpaid"
+        receipts = db.query(ReceiptIOU).filter(ReceiptIOU.payment_status == payment_status).all()
+        records = []
+        for receipt in receipts:
+            records.append({
+                "receipt_no": receipt.receipt_no,
+                "order_no": receipt.order_no,
+                "store_name": receipt.store_name,
+                "actual_amount": receipt.actual_amount,
+                "is_iou": receipt.is_iou,
+                "iou_amount": receipt.iou_amount,
+                "payment_status": receipt.payment_status,
+                "signatory": receipt.signatory,
+                "sign_time": receipt.sign_time.isoformat()
+            })
+
+        return {
+            "report_type": request.report_type,
+            "filters": {
+                "payment_status": payment_status
+            },
+            "total_count": len(records),
+            "total_amount": sum(r["actual_amount"] for r in records),
+            "records": records
+        }
+
+    elif request.report_type == "retry_queue_details":
+        status = request.status or "queued"
+        tasks = db.query(RetryQueue).filter(RetryQueue.current_status == status).all()
+        records = []
+        for task in tasks:
+            records.append({
+                "queue_id": task.id,
+                "order_no": task.order_no,
+                "task_type": task.task_type,
+                "retry_count": task.retry_count,
+                "max_retries": task.max_retries,
+                "current_status": task.current_status,
+                "error_category": task.error_category,
+                "error_message": task.error_message,
+                "is_dead_letter": task.is_dead_letter,
+                "manual_override": task.manual_override,
+                "created_at": task.created_at.isoformat()
+            })
+
+        return {
+            "report_type": request.report_type,
+            "filters": {
+                "status": status
+            },
+            "total_count": len(records),
+            "records": records
+        }
+
+    elif request.report_type == "failures_details":
+        is_resolved = None
+        if request.status == "resolved":
+            is_resolved = True
+        elif request.status == "unresolved":
+            is_resolved = False
+
+        query = db.query(FailedRecord)
+        if is_resolved is not None:
+            query = query.filter(FailedRecord.is_resolved == is_resolved)
+
+        failures = query.all()
+        records = []
+        for f in failures:
+            records.append({
+                "failure_id": f.id,
+                "order_no": f.order_no,
+                "receipt_no": f.receipt_no,
+                "failure_type": f.failure_type,
+                "error_code": f.error_code,
+                "error_message": f.error_message,
+                "is_resolved": f.is_resolved,
+                "resolved_by": f.resolved_by,
+                "resolution_note": f.resolution_note,
+                "created_at": f.created_at.isoformat(),
+                "resolved_at": f.resolved_at.isoformat() if f.resolved_at else None
+            })
+
+        return {
+            "report_type": request.report_type,
+            "filters": {
+                "status": request.status
+            },
+            "total_count": len(records),
+            "records": records
+        }
+
+    elif request.report_type == "compensation_details":
+        compensations = db.query(CompensationRecord).all()
+        records = []
+        for c in compensations:
+            records.append({
+                "compensation_id": c.id,
+                "order_no": c.order_no,
+                "compensation_type": c.compensation_type,
+                "compensation_amount": c.compensation_amount,
+                "compensation_reason": c.compensation_reason,
+                "accounting_status": c.accounting_status,
+                "posted_by": c.posted_by,
+                "posted_at": c.posted_at.isoformat()
+            })
+
+        return {
+            "report_type": request.report_type,
+            "total_count": len(records),
+            "total_amount": sum(r["compensation_amount"] for r in records),
+            "records": records
+        }
+
+    else:
+        raise HTTPException(status_code=400, detail=f"不支持的报表类型: {request.report_type}")
+
+
+@app.get("/reports/summary-with-sources")
+async def get_report_summary_with_sources(
+    status: Optional[str] = None,
+    region: Optional[str] = None,
+    current_user: User = Depends(require_permission("view_reports")),
+    db: Session = Depends(get_db)
+):
+    base_query = db.query(StoreOrder)
+    if region:
+        base_query = base_query.filter(StoreOrder.region == region)
+    if status:
+        base_query = base_query.filter(StoreOrder.status == status)
+
+    orders = base_query.all()
+    order_records = []
+    for order in orders:
+        order_records.append({
+            "order_no": order.order_no,
+            "store_name": order.store_name,
+            "region": order.region,
+            "amount": order.amount,
+            "status": order.status,
+            "data_source": order.data_source,
+            "is_supplementary": order.is_supplementary
+        })
+
+    receipts = db.query(ReceiptIOU).all()
+    receipt_records = []
+    for receipt in receipts:
+        receipt_records.append({
+            "receipt_no": receipt.receipt_no,
+            "order_no": receipt.order_no,
+            "actual_amount": receipt.actual_amount,
+            "is_iou": receipt.is_iou,
+            "payment_status": receipt.payment_status
+        })
+
+    retry_tasks = db.query(RetryQueue).all()
+    retry_records = []
+    for task in retry_tasks:
+        retry_records.append({
+            "queue_id": task.id,
+            "order_no": task.order_no,
+            "task_type": task.task_type,
+            "current_status": task.current_status,
+            "retry_count": task.retry_count,
+            "is_dead_letter": task.is_dead_letter
+        })
+
+    compensations = db.query(CompensationRecord).all()
+    compensation_records = []
+    for c in compensations:
+        compensation_records.append({
+            "compensation_id": c.id,
+            "order_no": c.order_no,
+            "compensation_type": c.compensation_type,
+            "compensation_amount": c.compensation_amount
+        })
+
+    return {
+        "summary": {
+            "orders": {
+                "total_count": len(order_records),
+                "total_amount": sum(r["amount"] for r in order_records)
+            },
+            "receipts": {
+                "total_count": len(receipt_records),
+                "total_amount": sum(r["actual_amount"] for r in receipt_records)
+            },
+            "retry_queue": {
+                "queued": len([r for r in retry_records if r["current_status"] == "queued"]),
+                "success": len([r for r in retry_records if r["current_status"] == "success"]),
+                "failed": len([r for r in retry_records if r["current_status"] == "failed"]),
+                "dead_letter": len([r for r in retry_records if r["is_dead_letter"]])
+            },
+            "compensation": {
+                "total_amount": sum(r["compensation_amount"] for r in compensation_records)
+            }
+        },
+        "source_records": {
+            "orders": order_records,
+            "receipts": receipt_records,
+            "retry_queue": retry_records,
+            "compensations": compensation_records
+        }
+    }
 
 
 @app.get("/health")
