@@ -114,7 +114,7 @@ program
     console.log(chalk_1.default.blue(`正在导入 ${source} 数据...`));
     console.log(chalk_1.default.gray(`文件: ${file}`));
     try {
-        const result = await importer.importFromCSV(file, source, currentUser.id);
+        const result = await importer.importFromCSV(file, source, currentUser.id, options.batch);
         console.log(chalk_1.default.green('✓ 导入完成！'));
         const table = new cli_table3_1.default({
             head: ['项目', '数值'],
@@ -140,7 +140,8 @@ program
 program
     .command('check <batchId>')
     .description('校验批次数据')
-    .action((batchId) => {
+    .option('-s, --single', '仅校验当前批次，不跨批次')
+    .action((batchId, options) => {
     const currentUser = requireAuth('check');
     printBanner();
     const batch = db.getBatch(batchId);
@@ -149,7 +150,13 @@ program
         return;
     }
     console.log(chalk_1.default.blue(`正在校验批次 ${batch.batchNo}...`));
-    const { crossSourceIssues, duplicateIssues } = importer.validateBatch(batchId, currentUser.id);
+    if (options.single) {
+        console.log(chalk_1.default.gray('模式: 仅校验当前批次'));
+    }
+    else {
+        console.log(chalk_1.default.gray('模式: 跨批次校验（同日数据合并）'));
+    }
+    const { crossSourceIssues, duplicateIssues } = importer.validateBatch(batchId, currentUser.id, !options.single);
     const allDirtyRecords = db.getDirtyRecords(batchId);
     console.log(chalk_1.default.green('✓ 校验完成！'));
     const table = new cli_table3_1.default({

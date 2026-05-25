@@ -139,7 +139,7 @@ program
     console.log(chalk.gray(`文件: ${file}`));
     
     try {
-      const result = await importer.importFromCSV(file, source as RecordSource, currentUser.id);
+      const result = await importer.importFromCSV(file, source as RecordSource, currentUser.id, options.batch);
       
       console.log(chalk.green('✓ 导入完成！'));
       
@@ -177,7 +177,8 @@ program
 program
   .command('check <batchId>')
   .description('校验批次数据')
-  .action((batchId: string) => {
+  .option('-s, --single', '仅校验当前批次，不跨批次')
+  .action((batchId: string, options: { single?: boolean }) => {
     const currentUser = requireAuth('check');
     printBanner();
     
@@ -188,8 +189,13 @@ program
     }
     
     console.log(chalk.blue(`正在校验批次 ${batch.batchNo}...`));
+    if (options.single) {
+      console.log(chalk.gray('模式: 仅校验当前批次'));
+    } else {
+      console.log(chalk.gray('模式: 跨批次校验（同日数据合并）'));
+    }
     
-    const { crossSourceIssues, duplicateIssues } = importer.validateBatch(batchId, currentUser.id);
+    const { crossSourceIssues, duplicateIssues } = importer.validateBatch(batchId, currentUser.id, !options.single);
     const allDirtyRecords = db.getDirtyRecords(batchId);
     
     console.log(chalk.green('✓ 校验完成！'));

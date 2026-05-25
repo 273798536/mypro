@@ -27,6 +27,10 @@ export declare class Database {
     getShiftRecords(batchId?: string): ShiftRecord[];
     addSupplementRecord(record: Omit<SupplementRecord, 'id'>): SupplementRecord;
     getSupplementRecords(batchId?: string): SupplementRecord[];
+    updateCheckinRecord(id: string, updates: Partial<CheckinRecord>): void;
+    updateDepositRecord(id: string, updates: Partial<DepositRecord>): void;
+    updateRoomChangeRecord(id: string, updates: Partial<RoomChangeRecord>): void;
+    updateShiftRecord(id: string, updates: Partial<ShiftRecord>): void;
     addDirtyRecord(record: Omit<DirtyRecord, 'id'>): DirtyRecord;
     getDirtyRecords(batchId?: string, status?: 'pending' | 'fixed' | 'ignored'): DirtyRecord[];
     updateDirtyRecord(dirtyId: string, updates: Partial<DirtyRecord>): void;

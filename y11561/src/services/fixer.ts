@@ -1,5 +1,5 @@
 import { getDatabase } from '../db/database';
-import { User } from '../types';
+import { User, RecordStatus } from '../types';
 
 export class RecordFixer {
   private db = getDatabase();
@@ -19,11 +19,26 @@ export class RecordFixer {
       throw new Error('该记录已处理');
     }
     
+    if (newValue && dirtyRecord.fieldName) {
+      this.applyFixToSourceRecord(dirtyRecord.recordId, dirtyRecord.recordType, dirtyRecord.fieldName, newValue);
+    }
+    
+    this.db.addStatusChange(
+      dirtyRecord.recordId,
+      dirtyRecord.recordType,
+      'dirty',
+      'fixed',
+      fixedBy.name,
+      fixedBy.role,
+      fixRemark,
+      dirtyRecord.importBatch
+    );
+    
     this.db.updateDirtyRecord(dirtyId, {
       status: 'fixed',
       fixedBy: fixedBy.name,
       fixedAt: new Date().toISOString(),
-      fixRemark
+      fixRemark: newValue ? `${fixRemark} (修正值: ${newValue})` : fixRemark
     });
     
     const batch = this.db.getBatch(dirtyRecord.importBatch);
@@ -35,6 +50,44 @@ export class RecordFixer {
     }
   }
   
+  private applyFixToSourceRecord(
+    recordId: string,
+    recordType: string,
+    fieldName: string,
+    newValue: string
+  ): void {
+    const parsedValue = this.parseValue(fieldName, newValue);
+    
+    switch (recordType) {
+      case 'checkin':
+        this.db.updateCheckinRecord(recordId, { [fieldName]: parsedValue } as any);
+        break;
+      case 'deposit':
+        this.db.updateDepositRecord(recordId, { [fieldName]: parsedValue } as any);
+        break;
+      case 'roomChange':
+        this.db.updateRoomChangeRecord(recordId, { [fieldName]: parsedValue } as any);
+        break;
+      case 'shift':
+        this.db.updateShiftRecord(recordId, { [fieldName]: parsedValue } as any);
+        break;
+    }
+  }
+  
+  private parseValue(fieldName: string, value: string): unknown {
+    const numericFields = [
+      'roomRate', 'depositAmount', 'amount', 'oldRoomRate', 'newRoomRate',
+      'checkinCount', 'checkoutCount', 'totalDeposit', 'totalRefund', 'totalRevenue'
+    ];
+    
+    if (numericFields.includes(fieldName)) {
+      const num = parseFloat(value);
+      return isNaN(num) ? value : num;
+    }
+    
+    return value;
+  }
+  
   ignoreDirtyRecord(
     dirtyId: string,
     ignoreRemark: string,
@@ -44,6 +97,17 @@ export class RecordFixer {
     if (!dirtyRecord) {
       throw new Error('脏记录不存在');
     }
+    
+    this.db.addStatusChange(
+      dirtyRecord.recordId,
+      dirtyRecord.recordType,
+      'dirty',
+      'rejected',
+      ignoredBy.name,
+      ignoredBy.role,
+      `忽略: ${ignoreRemark}`,
+      dirtyRecord.importBatch
+    );
     
     this.db.updateDirtyRecord(dirtyId, {
       status: 'ignored',
@@ -61,8 +125,8 @@ export class RecordFixer {
     let fixedCount = 0;
     
     for (const dirty of dirtyRecords) {
-      if (dirty.suggestion) {
-        this.fixDirtyRecord(dirty.id, `批量修复: ${dirty.suggestion}`, fixedBy);
+      if (dirty.suggestion && dirty.expectedValue) {
+        this.fixDirtyRecord(dirty.id, `批量修复: ${dirty.suggestion}`, fixedBy, dirty.expectedValue);
         fixedCount++;
       }
     }

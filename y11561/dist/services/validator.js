@@ -260,11 +260,24 @@ class DataValidator {
             dirtyRecords
         };
     }
-    checkCrossSourceConsistency(batchId, detectedBy) {
+    checkCrossSourceConsistency(batchId, detectedBy, includeAllBatches = false) {
         const dirtyRecords = [];
-        const checkinRecords = this.db.getCheckinRecords(batchId);
-        const depositRecords = this.db.getDepositRecords(batchId);
-        const roomChangeRecords = this.db.getRoomChangeRecords(batchId);
+        const batch = this.db.getBatch(batchId);
+        const batchDate = batch?.batchDate || new Date().toISOString().split('T')[0];
+        let checkinRecords = this.db.getCheckinRecords(batchId);
+        let depositRecords = this.db.getDepositRecords(batchId);
+        let roomChangeRecords = this.db.getRoomChangeRecords(batchId);
+        if (includeAllBatches) {
+            const allCheckin = this.db.getCheckinRecords();
+            const allDeposit = this.db.getDepositRecords();
+            const allRoomChange = this.db.getRoomChangeRecords();
+            const sameDateBatches = this.db.getBatches()
+                .filter(b => b.batchDate === batchDate)
+                .map(b => b.id);
+            checkinRecords = allCheckin.filter(r => sameDateBatches.includes(r.importBatch));
+            depositRecords = allDeposit.filter(r => sameDateBatches.includes(r.importBatch));
+            roomChangeRecords = allRoomChange.filter(r => sameDateBatches.includes(r.importBatch));
+        }
         const orderMap = new Map();
         for (const record of checkinRecords) {
             orderMap.set(record.orderNo, record);

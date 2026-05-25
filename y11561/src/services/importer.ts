@@ -20,9 +20,16 @@ export class DataImporter {
   async importFromCSV(
     filePath: string,
     source: RecordSource,
-    importedBy: string
+    importedBy: string,
+    existingBatchId?: string
   ): Promise<ImportResult> {
-    const batch = this.db.createBatch(source, filePath.split('/').pop() || 'unknown', importedBy);
+    const fileName = filePath.split('/').pop() || 'unknown';
+    let batch = existingBatchId ? this.db.getBatch(existingBatchId) : undefined;
+    if (!batch) {
+      batch = this.db.createBatch(source, fileName, importedBy);
+    } else {
+      this.db.updateBatch(batch.id, { status: 'importing' });
+    }
     const errors: string[] = [];
     let totalRecords = 0;
     let importedRecords = 0;
@@ -55,6 +62,18 @@ export class DataImporter {
             importedRecords,
             status: 'imported'
           });
+          
+          const user = this.db.getUserById(importedBy);
+          this.db.addStatusChange(
+            batch.id,
+            source,
+            'pending',
+            'imported',
+            user?.name || 'system',
+            user?.role || 'entry',
+            `导入完成: ${totalRecords}条记录`,
+            batch.id
+          );
           
           resolve({
             batchId: batch.id,
@@ -215,16 +234,29 @@ export class DataImporter {
     }
   }
   
-  validateBatch(batchId: string, validatedBy: string): { crossSourceIssues: number; duplicateIssues: number } {
+  validateBatch(batchId: string, validatedBy: string, crossBatch: boolean = true): { crossSourceIssues: number; duplicateIssues: number } {
     const batch = this.db.getBatch(batchId);
     if (!batch) {
       throw new Error('批次不存在');
     }
     
+    const user = this.db.getUserById(validatedBy);
+    
+    this.db.addStatusChange(
+      batchId,
+      batch.source,
+      'imported',
+      'checking',
+      user?.name || 'system',
+      user?.role || 'supervisor',
+      '开始数据校验',
+      batchId
+    );
+    
     let crossSourceIssues = 0;
     let duplicateIssues = 0;
     
-    const crossSourceDirty = this.validator.checkCrossSourceConsistency(batchId, validatedBy);
+    const crossSourceDirty = this.validator.checkCrossSourceConsistency(batchId, validatedBy, crossBatch);
     for (const dirty of crossSourceDirty) {
       this.db.addDirtyRecord(dirty);
       crossSourceIssues++;

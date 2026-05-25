@@ -10,9 +10,9 @@ export interface ImportResult {
 export declare class DataImporter {
     private db;
     private validator;
-    importFromCSV(filePath: string, source: RecordSource, importedBy: string): Promise<ImportResult>;
+    importFromCSV(filePath: string, source: RecordSource, importedBy: string, existingBatchId?: string): Promise<ImportResult>;
     private processRecord;
-    validateBatch(batchId: string, validatedBy: string): {
+    validateBatch(batchId: string, validatedBy: string, crossBatch?: boolean): {
         crossSourceIssues: number;
         duplicateIssues: number;
     };

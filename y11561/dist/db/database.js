@@ -229,6 +229,34 @@ class Database {
         }
         return records;
     }
+    updateCheckinRecord(id, updates) {
+        const record = this.data.checkinRecords.find(r => r.id === id);
+        if (record) {
+            Object.assign(record, updates);
+            this.save();
+        }
+    }
+    updateDepositRecord(id, updates) {
+        const record = this.data.depositRecords.find(r => r.id === id);
+        if (record) {
+            Object.assign(record, updates);
+            this.save();
+        }
+    }
+    updateRoomChangeRecord(id, updates) {
+        const record = this.data.roomChangeRecords.find(r => r.id === id);
+        if (record) {
+            Object.assign(record, updates);
+            this.save();
+        }
+    }
+    updateShiftRecord(id, updates) {
+        const record = this.data.shiftRecords.find(r => r.id === id);
+        if (record) {
+            Object.assign(record, updates);
+            this.save();
+        }
+    }
     addDirtyRecord(record) {
         const newRecord = {
             ...record,

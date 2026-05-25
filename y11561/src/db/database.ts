@@ -274,6 +274,38 @@ export class Database {
     return records;
   }
   
+  updateCheckinRecord(id: string, updates: Partial<CheckinRecord>): void {
+    const record = this.data.checkinRecords.find(r => r.id === id);
+    if (record) {
+      Object.assign(record, updates);
+      this.save();
+    }
+  }
+  
+  updateDepositRecord(id: string, updates: Partial<DepositRecord>): void {
+    const record = this.data.depositRecords.find(r => r.id === id);
+    if (record) {
+      Object.assign(record, updates);
+      this.save();
+    }
+  }
+  
+  updateRoomChangeRecord(id: string, updates: Partial<RoomChangeRecord>): void {
+    const record = this.data.roomChangeRecords.find(r => r.id === id);
+    if (record) {
+      Object.assign(record, updates);
+      this.save();
+    }
+  }
+  
+  updateShiftRecord(id: string, updates: Partial<ShiftRecord>): void {
+    const record = this.data.shiftRecords.find(r => r.id === id);
+    if (record) {
+      Object.assign(record, updates);
+      this.save();
+    }
+  }
+  
   addDirtyRecord(record: Omit<DirtyRecord, 'id'>): DirtyRecord {
     const newRecord: DirtyRecord = {
       ...record,
