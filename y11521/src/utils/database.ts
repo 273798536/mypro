@@ -277,3 +277,145 @@ export function getOperationLogs(): OperationLog[] {
 export function getDbPath(): string {
   return DB_FILE;
 }
+
+export function getAppointmentById(id: string): AppointmentRecord | undefined {
+  return loadDb().appointments.find((r) => r.id === id);
+}
+
+export function getLocationById(id: string): LocationRecord | undefined {
+  return loadDb().locations.find((r) => r.id === id);
+}
+
+export function getReviewById(id: string): ReviewRecord | undefined {
+  return loadDb().reviews.find((r) => r.id === id);
+}
+
+export function getPriceAdjustmentById(id: string): PriceAdjustmentRecord | undefined {
+  return loadDb().priceAdjustments.find((r) => r.id === id);
+}
+
+export function getAppointmentsByOrderNo(orderNo: string): AppointmentRecord[] {
+  return loadDb().appointments.filter((r) => r.orderNo === orderNo);
+}
+
+export function getLocationsByOrderNo(orderNo: string): LocationRecord[] {
+  return loadDb().locations.filter((r) => r.orderNo === orderNo);
+}
+
+export function getReviewsByOrderNo(orderNo: string): ReviewRecord[] {
+  return loadDb().reviews.filter((r) => r.orderNo === orderNo);
+}
+
+export function getPriceAdjustmentsByOrderNo(orderNo: string): PriceAdjustmentRecord[] {
+  return loadDb().priceAdjustments.filter((r) => r.orderNo === orderNo);
+}
+
+export function updateAppointment(
+  id: string,
+  updates: Partial<AppointmentRecord>
+): AppointmentRecord | null {
+  const db = loadDb();
+  const index = db.appointments.findIndex((r) => r.id === id);
+  if (index === -1) return null;
+  db.appointments[index] = { ...db.appointments[index], ...updates };
+  saveDb(db);
+  return db.appointments[index];
+}
+
+export function updateLocation(
+  id: string,
+  updates: Partial<LocationRecord>
+): LocationRecord | null {
+  const db = loadDb();
+  const index = db.locations.findIndex((r) => r.id === id);
+  if (index === -1) return null;
+  db.locations[index] = { ...db.locations[index], ...updates };
+  saveDb(db);
+  return db.locations[index];
+}
+
+export function updateReview(
+  id: string,
+  updates: Partial<ReviewRecord>
+): ReviewRecord | null {
+  const db = loadDb();
+  const index = db.reviews.findIndex((r) => r.id === id);
+  if (index === -1) return null;
+  db.reviews[index] = { ...db.reviews[index], ...updates };
+  saveDb(db);
+  return db.reviews[index];
+}
+
+export function updatePriceAdjustment(
+  id: string,
+  updates: Partial<PriceAdjustmentRecord>
+): PriceAdjustmentRecord | null {
+  const db = loadDb();
+  const index = db.priceAdjustments.findIndex((r) => r.id === id);
+  if (index === -1) return null;
+  db.priceAdjustments[index] = { ...db.priceAdjustments[index], ...updates };
+  saveDb(db);
+  return db.priceAdjustments[index];
+}
+
+export function deleteAppointment(id: string): boolean {
+  const db = loadDb();
+  const initialLength = db.appointments.length;
+  db.appointments = db.appointments.filter((r) => r.id !== id);
+  saveDb(db);
+  return db.appointments.length < initialLength;
+}
+
+export function deleteLocation(id: string): boolean {
+  const db = loadDb();
+  const initialLength = db.locations.length;
+  db.locations = db.locations.filter((r) => r.id !== id);
+  saveDb(db);
+  return db.locations.length < initialLength;
+}
+
+export function deleteReview(id: string): boolean {
+  const db = loadDb();
+  const initialLength = db.reviews.length;
+  db.reviews = db.reviews.filter((r) => r.id !== id);
+  saveDb(db);
+  return db.reviews.length < initialLength;
+}
+
+export function deletePriceAdjustment(id: string): boolean {
+  const db = loadDb();
+  const initialLength = db.priceAdjustments.length;
+  db.priceAdjustments = db.priceAdjustments.filter((r) => r.id !== id);
+  saveDb(db);
+  return db.priceAdjustments.length < initialLength;
+}
+
+export function mergeAppointments(
+  orderNo: string,
+  keepId: string,
+  removeIds: string[],
+  mergeData?: Partial<AppointmentRecord>
+): AppointmentRecord | null {
+  const db = loadDb();
+  const keepRecord = db.appointments.find((r) => r.id === keepId);
+  if (!keepRecord) return null;
+
+  const mergedRecord = { ...keepRecord, ...mergeData };
+  const keepIndex = db.appointments.findIndex((r) => r.id === keepId);
+  db.appointments[keepIndex] = mergedRecord;
+
+  db.appointments = db.appointments.filter((r) => !removeIds.includes(r.id));
+
+  saveDb(db);
+  return mergedRecord;
+}
+
+export function cleanDirtyRecordsByOrderNo(orderNo: string, dirtyType: string): number {
+  const db = loadDb();
+  const initialLength = db.dirtyRecords.length;
+  db.dirtyRecords = db.dirtyRecords.filter(
+    (r) => !(r.originalData?.orderNo === orderNo && r.dirtyType === dirtyType)
+  );
+  saveDb(db);
+  return initialLength - db.dirtyRecords.length;
+}

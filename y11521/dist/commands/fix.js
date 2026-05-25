@@ -46,7 +46,7 @@ async function handleFix(dirtyId, options) {
     }
     else {
         const choices = pendingRecords.slice(0, 20).map((r) => ({
-            name: `${r.id.slice(0, 8)} | 行${r.rawRow} | ${(0, dirtyChecker_1.getSourceTypeLabel)(r.sourceType)} | ${(0, dirtyChecker_1.getDirtyTypeLabel)(r.dirtyType)} | ${r.description.slice(0, 30)}`,
+            name: `${r.id.slice(0, 8)} | 行${r.rawRow || '-'} | ${(0, dirtyChecker_1.getSourceTypeLabel)(r.sourceType)} | ${(0, dirtyChecker_1.getDirtyTypeLabel)(r.dirtyType)} | ${r.description.slice(0, 30)}`,
             value: r.id,
         }));
         const answer = await inquirer_1.default.prompt([
@@ -63,7 +63,7 @@ async function handleFix(dirtyId, options) {
     }
     let fixedCount = 0;
     for (const record of toFix) {
-        const result = await fixSingleRecord(record, options.auto ?? false);
+        const result = await fixByDirtyType(record, options.auto ?? false);
         if (result)
             fixedCount++;
     }
@@ -71,10 +71,27 @@ async function handleFix(dirtyId, options) {
         (0, database_1.addOperationLog)('fix_records', user, { afterData: { fixedCount } });
     }
 }
-async function fixSingleRecord(record, auto) {
+async function fixByDirtyType(record, auto) {
+    switch (record.dirtyType) {
+        case 'missing_field':
+        case 'cross_day':
+        case 'amount_conflict':
+            return await fixFieldIssue(record, auto);
+        case 'duplicate':
+            return await fixDuplicate(record, auto);
+        case 'name_changed':
+            return await fixNameChange(record, auto);
+        case 'quantity_conflict':
+            return await fixQuantityConflict(record, auto);
+        case 'merge_conflict':
+            return await fixMergeConflict(record, auto);
+        default:
+            return await fixFieldIssue(record, auto);
+    }
+}
+async function fixFieldIssue(record, auto) {
     const user = (0, database_1.getCurrentUser)();
     console.log(chalk_1.default.cyan(`\n📝 记录ID: ${record.id}`));
-    console.log(`数据源: ${(0, dirtyChecker_1.getSourceTypeLabel)(record.sourceType)}`);
     console.log(`问题类型: ${(0, dirtyChecker_1.getDirtyTypeLabel)(record.dirtyType)}`);
     console.log(`问题描述: ${record.description}`);
     if (record.sourceFile)
@@ -102,9 +119,6 @@ async function fixSingleRecord(record, auto) {
             fixData = { ...fixData, ...suggestedEditable };
             hasChanges = true;
         }
-        else {
-            console.log(chalk_1.default.yellow('⚠️  您的角色没有权限编辑建议修复中的任何字段'));
-        }
     }
     else if (record.suggestedFix) {
         console.log(`\n${chalk_1.default.blue('建议修复:')}`);
@@ -112,11 +126,6 @@ async function fixSingleRecord(record, auto) {
         const filteredDiffs = diffs.filter(d => (0, permissions_1.canEditField)(user.role, d.field));
         if (filteredDiffs.length > 0) {
             console.log((0, diff_1.formatDiff)(filteredDiffs));
-        }
-        else {
-            console.log(chalk_1.default.yellow('⚠️  您的角色没有权限编辑建议修复中的任何字段'));
-        }
-        if (filteredDiffs.length > 0) {
             const answer = await inquirer_1.default.prompt([
                 {
                     type: 'confirm',
@@ -188,9 +197,6 @@ async function fixSingleRecord(record, auto) {
                 }
             }
         }
-        else {
-            console.log(chalk_1.default.yellow('⚠️  此记录中没有您有权限编辑的字段'));
-        }
     }
     const diffs = (0, diff_1.compareObjects)(record.originalData, fixData);
     const actualDiffs = diffs.filter(d => d.type === 'changed' || d.type === 'added' || d.type === 'removed');
@@ -210,19 +216,21 @@ async function fixSingleRecord(record, auto) {
                 default: '手动修复',
             },
         ]);
-    let importedRecord = null;
     try {
-        if (record.sourceType === 'appointment') {
-            importedRecord = (0, database_1.addAppointment)(fixData);
-        }
-        else if (record.sourceType === 'location') {
-            importedRecord = (0, database_1.addLocation)(fixData);
-        }
-        else if (record.sourceType === 'review') {
-            importedRecord = (0, database_1.addReview)(fixData);
-        }
-        else if (record.sourceType === 'price_adjustment') {
-            importedRecord = (0, database_1.addPriceAdjustment)(fixData);
+        const originalId = record.originalData?.id;
+        if (originalId) {
+            if (record.sourceType === 'appointment') {
+                (0, database_1.updateAppointment)(originalId, fixData);
+            }
+            else if (record.sourceType === 'location') {
+                (0, database_1.updateLocation)(originalId, fixData);
+            }
+            else if (record.sourceType === 'review') {
+                (0, database_1.updateReview)(originalId, fixData);
+            }
+            else if (record.sourceType === 'price_adjustment') {
+                (0, database_1.updatePriceAdjustment)(originalId, fixData);
+            }
         }
         (0, database_1.updateDirtyRecord)(record.id, {
             status: 'fixed',
@@ -236,13 +244,393 @@ async function fixSingleRecord(record, auto) {
             beforeData: record.originalData,
             afterData: fixData,
         });
-        console.log(chalk_1.default.green(`\n✅ 修复完成！记录已重新导入`));
+        console.log(chalk_1.default.green(`\n✅ 修复完成！记录已更新`));
         return true;
     }
     catch (err) {
         console.log(chalk_1.default.red(`\n❌ 修复失败: ${err.message}`));
         return false;
     }
+}
+async function fixDuplicate(record, auto) {
+    const user = (0, database_1.getCurrentUser)();
+    const orderNo = record.originalData?.orderNo;
+    const records = record.originalData?.records || [];
+    if (!orderNo) {
+        console.log(chalk_1.default.red('❌ 缺少订单号信息'));
+        return false;
+    }
+    console.log(chalk_1.default.cyan(`\n📝 记录ID: ${record.id}`));
+    console.log(`问题类型: 重复记录`);
+    console.log(`订单号: ${orderNo}`);
+    console.log(`重复次数: ${records.length || '多'}`);
+    const existingRecords = (0, database_1.getAppointmentsByOrderNo)(orderNo);
+    if (existingRecords.length <= 1) {
+        console.log(chalk_1.default.yellow('⚠️  当前已无重复记录，自动标记为已修复'));
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: '重复记录已被其他操作处理',
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+        });
+        return true;
+    }
+    console.log(`\n${chalk_1.default.yellow('当前重复记录:')}`);
+    const dupTable = new cli_table3_1.default({
+        head: ['ID', '状态', '预约日期', '师傅', '原始行号', '来源文件'],
+        colWidths: [12, 12, 14, 10, 12, 18],
+    });
+    existingRecords.forEach((r) => {
+        dupTable.push([
+            r.id.slice(0, 10),
+            r.status,
+            r.appointmentDate,
+            r.technicianName || '-',
+            String(r.rawRow || '-'),
+            (r.sourceFile || '-').slice(0, 16),
+        ]);
+    });
+    console.log(dupTable.toString());
+    if (auto) {
+        console.log(chalk_1.default.green('\n🔧 自动保留第一条，删除其他重复记录...'));
+        const keepRecord = existingRecords[0];
+        const removeIds = existingRecords.slice(1).map(r => r.id);
+        removeIds.forEach(id => (0, database_1.deleteAppointment)(id));
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: `自动保留 ID:${keepRecord.id.slice(0, 8)}, 删除 ${removeIds.length} 条重复`,
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+            suggestedFix: {
+                action: 'keep_and_delete',
+                keepId: keepRecord.id,
+                removedIds: removeIds,
+            },
+        });
+        (0, database_1.addOperationLog)('fix_duplicate', user, {
+            recordId: record.id,
+            beforeData: { count: existingRecords.length, records: existingRecords.map(r => r.id) },
+            afterData: { action: 'merged', keepId: keepRecord.id, removedCount: removeIds.length },
+        });
+        console.log(chalk_1.default.green(`✅ 已保留 ${keepRecord.id.slice(0, 8)}，删除 ${removeIds.length} 条重复记录`));
+        return true;
+    }
+    const choices = existingRecords.map((r) => ({
+        name: `保留 ${r.id.slice(0, 8)} - ${r.status} - ${r.appointmentDate}`,
+        value: r.id,
+    }));
+    const answer = await inquirer_1.default.prompt([
+        {
+            type: 'list',
+            name: 'keepId',
+            message: '选择要保留的记录:',
+            choices,
+        },
+        {
+            type: 'input',
+            name: 'fixNote',
+            message: '修复说明:',
+            default: '删除重复记录',
+        },
+    ]);
+    const keepId = answer.keepId;
+    const removeIds = existingRecords.filter(r => r.id !== keepId).map(r => r.id);
+    removeIds.forEach(id => (0, database_1.deleteAppointment)(id));
+    (0, database_1.updateDirtyRecord)(record.id, {
+        status: 'fixed',
+        fixNote: answer.fixNote,
+        fixedBy: user.id,
+        fixedAt: (0, dayjs_1.default)().toISOString(),
+        suggestedFix: {
+            action: 'keep_and_delete',
+            keepId,
+            removedIds: removeIds,
+        },
+    });
+    (0, database_1.addOperationLog)('fix_duplicate', user, {
+        recordId: record.id,
+        beforeData: { count: existingRecords.length },
+        afterData: { action: 'merged', removedCount: removeIds.length },
+    });
+    console.log(chalk_1.default.green(`\n✅ 已保留 ${keepId.slice(0, 8)}，删除 ${removeIds.length} 条重复记录`));
+    return true;
+}
+async function fixNameChange(record, auto) {
+    const user = (0, database_1.getCurrentUser)();
+    const orderNo = record.originalData?.orderNo;
+    const names = record.originalData?.names || [];
+    if (!orderNo) {
+        console.log(chalk_1.default.red('❌ 缺少订单号信息'));
+        return false;
+    }
+    console.log(chalk_1.default.cyan(`\n📝 记录ID: ${record.id}`));
+    console.log(`问题类型: 客户改名`);
+    console.log(`订单号: ${orderNo}`);
+    console.log(`姓名不一致: ${names.join(' vs ')}`);
+    const existingRecords = (0, database_1.getAppointmentsByOrderNo)(orderNo);
+    if (existingRecords.length === 0) {
+        console.log(chalk_1.default.yellow('⚠️  订单已不存在，自动标记为已修复'));
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: '订单已被删除',
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+        });
+        return true;
+    }
+    console.log(`\n${chalk_1.default.yellow('当前订单记录:')}`);
+    const nameTable = new cli_table3_1.default({
+        head: ['ID', '客户姓名', '状态', '预约日期'],
+        colWidths: [12, 15, 12, 14],
+    });
+    existingRecords.forEach((r) => {
+        nameTable.push([r.id.slice(0, 10), r.customerName, r.status, r.appointmentDate]);
+    });
+    console.log(nameTable.toString());
+    let correctName;
+    let fixNote;
+    if (auto) {
+        correctName = names[0];
+        fixNote = `自动统一姓名为: ${correctName}`;
+        console.log(chalk_1.default.green(`\n🔧 自动统一姓名为: ${correctName}`));
+    }
+    else {
+        const nameChoices = names.map((n) => ({ name: n, value: n }));
+        const answer = await inquirer_1.default.prompt([
+            {
+                type: 'list',
+                name: 'correctName',
+                message: '选择正确的客户姓名:',
+                choices: nameChoices,
+            },
+            {
+                type: 'input',
+                name: 'fixNote',
+                message: '修复说明:',
+                default: '统一客户姓名',
+            },
+        ]);
+        correctName = answer.correctName;
+        fixNote = answer.fixNote;
+    }
+    existingRecords.forEach(r => {
+        (0, database_1.updateAppointment)(r.id, { customerName: correctName });
+    });
+    (0, database_1.updateDirtyRecord)(record.id, {
+        status: 'fixed',
+        fixNote,
+        fixedBy: user.id,
+        fixedAt: (0, dayjs_1.default)().toISOString(),
+        suggestedFix: { correctName },
+    });
+    (0, database_1.addOperationLog)('fix_name_changed', user, {
+        recordId: record.id,
+        beforeData: { names },
+        afterData: { correctName },
+    });
+    console.log(chalk_1.default.green(`\n✅ 已将 ${existingRecords.length} 条记录的客户姓名统一为: ${correctName}`));
+    return true;
+}
+async function fixQuantityConflict(record, auto) {
+    const user = (0, database_1.getCurrentUser)();
+    const orderNo = record.originalData?.orderNo;
+    const types = record.originalData?.types || [];
+    if (!orderNo) {
+        console.log(chalk_1.default.red('❌ 缺少订单号信息'));
+        return false;
+    }
+    console.log(chalk_1.default.cyan(`\n📝 记录ID: ${record.id}`));
+    console.log(`问题类型: 数量冲突（多台家电）`);
+    console.log(`订单号: ${orderNo}`);
+    console.log(`家电类型: ${types.join(', ')}`);
+    const existingRecords = (0, database_1.getAppointmentsByOrderNo)(orderNo);
+    console.log(`\n${chalk_1.default.yellow('当前订单记录:')}`);
+    const qtyTable = new cli_table3_1.default({
+        head: ['ID', '家电类型', '状态', '预约日期', '师傅'],
+        colWidths: [12, 12, 12, 14, 12],
+    });
+    existingRecords.forEach((r) => {
+        qtyTable.push([
+            r.id.slice(0, 10),
+            r.applianceType,
+            r.status,
+            r.appointmentDate,
+            r.technicianName || '-',
+        ]);
+    });
+    console.log(qtyTable.toString());
+    if (auto) {
+        console.log(chalk_1.default.green('\n🔧 自动确认多台家电，保留全部记录...'));
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: '确认多台家电安装，保留全部记录',
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+            suggestedFix: { action: 'keep_multi_appliance' },
+        });
+        (0, database_1.addOperationLog)('fix_quantity_conflict', user, {
+            recordId: record.id,
+            beforeData: { orderNo, count: existingRecords.length },
+            afterData: { action: 'confirmed_multi' },
+        });
+        return true;
+    }
+    const answer = await inquirer_1.default.prompt([
+        {
+            type: 'list',
+            name: 'action',
+            message: '确认处理方式:',
+            choices: [
+                { name: '确认多台家电安装（保留全部）', value: 'keep' },
+                { name: '删除重复记录', value: 'delete' },
+                { name: '跳过', value: 'skip' },
+            ],
+        },
+    ]);
+    if (answer.action === 'skip') {
+        console.log(chalk_1.default.yellow('已跳过'));
+        return false;
+    }
+    if (answer.action === 'keep') {
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: '确认多台家电安装',
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+        });
+        (0, database_1.addOperationLog)('fix_quantity_conflict', user, {
+            recordId: record.id,
+            afterData: { action: 'confirmed_multi' },
+        });
+        console.log(chalk_1.default.green('\n✅ 已确认多台家电安装，保留全部记录'));
+        return true;
+    }
+    if (answer.action === 'delete') {
+        return await fixDuplicate(record, auto);
+    }
+    return false;
+}
+async function fixMergeConflict(record, auto) {
+    const user = (0, database_1.getCurrentUser)();
+    const orderNo = record.originalData?.orderNo;
+    const statuses = record.originalData?.statuses || [];
+    const dates = record.originalData?.dates || [];
+    if (!orderNo) {
+        console.log(chalk_1.default.red('❌ 缺少订单号信息'));
+        return false;
+    }
+    console.log(chalk_1.default.cyan(`\n📝 记录ID: ${record.id}`));
+    console.log(`问题类型: 改约/二次上门合并冲突`);
+    console.log(`订单号: ${orderNo}`);
+    console.log(`状态: ${statuses.join(', ')}`);
+    console.log(`日期: ${dates.join(', ')}`);
+    const existingRecords = (0, database_1.getAppointmentsByOrderNo)(orderNo);
+    console.log(`\n${chalk_1.default.yellow('当前订单记录 (可能需要合并):')}`);
+    const mergeTable = new cli_table3_1.default({
+        head: ['ID', '状态', '预约日期', '师傅', '原始行号'],
+        colWidths: [12, 12, 14, 12, 12],
+    });
+    existingRecords.forEach((r) => {
+        mergeTable.push([
+            r.id.slice(0, 10),
+            r.status,
+            r.appointmentDate,
+            r.technicianName || '-',
+            String(r.rawRow || '-'),
+        ]);
+    });
+    console.log(mergeTable.toString());
+    if (auto) {
+        console.log(chalk_1.default.green('\n🔧 自动标记为改约，保留最新记录...'));
+        const sorted = [...existingRecords].sort((a, b) => (0, dayjs_1.default)(b.appointmentDate).unix() - (0, dayjs_1.default)(a.appointmentDate).unix());
+        const keepRecord = sorted[0];
+        const removeIds = sorted.slice(1).map(r => r.id);
+        removeIds.forEach(id => (0, database_1.deleteAppointment)(id));
+        (0, database_1.updateAppointment)(keepRecord.id, { status: '已改约' });
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: `自动合并改约，保留最新日期`,
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+            suggestedFix: {
+                action: 'merge_reschedule',
+                keepId: keepRecord.id,
+                removedIds: removeIds,
+                newStatus: '已改约',
+            },
+        });
+        (0, database_1.addOperationLog)('fix_merge_conflict', user, {
+            recordId: record.id,
+            beforeData: { count: existingRecords.length },
+            afterData: { action: 'merged', keepId: keepRecord.id },
+        });
+        console.log(chalk_1.default.green(`✅ 已合并，保留 ${keepRecord.id.slice(0, 8)}，删除 ${removeIds.length} 条记录`));
+        return true;
+    }
+    const answer = await inquirer_1.default.prompt([
+        {
+            type: 'list',
+            name: 'action',
+            message: '确认处理方式:',
+            choices: [
+                { name: '改约合并（保留最新，标记为已改约）', value: 'merge_reschedule' },
+                { name: '二次上门（保留全部）', value: 'keep_second_visit' },
+                { name: '手动选择保留记录', value: 'manual' },
+                { name: '跳过', value: 'skip' },
+            ],
+        },
+    ]);
+    if (answer.action === 'skip') {
+        console.log(chalk_1.default.yellow('已跳过'));
+        return false;
+    }
+    const noteAnswer = await inquirer_1.default.prompt([
+        {
+            type: 'input',
+            name: 'fixNote',
+            message: '修复说明:',
+            default: answer.action === 'merge_reschedule' ? '合并改约记录' : '确认二次上门',
+        },
+    ]);
+    if (answer.action === 'keep_second_visit') {
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: noteAnswer.fixNote,
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+            suggestedFix: { action: 'confirmed_second_visit' },
+        });
+        (0, database_1.addOperationLog)('fix_merge_conflict', user, {
+            recordId: record.id,
+            afterData: { action: 'confirmed_second_visit' },
+        });
+        console.log(chalk_1.default.green('\n✅ 已确认二次上门，保留全部记录'));
+        return true;
+    }
+    if (answer.action === 'merge_reschedule') {
+        const sorted = [...existingRecords].sort((a, b) => (0, dayjs_1.default)(b.appointmentDate).unix() - (0, dayjs_1.default)(a.appointmentDate).unix());
+        const keepRecord = sorted[0];
+        const removeIds = sorted.slice(1).map(r => r.id);
+        removeIds.forEach(id => (0, database_1.deleteAppointment)(id));
+        (0, database_1.updateAppointment)(keepRecord.id, { status: '已改约' });
+        (0, database_1.updateDirtyRecord)(record.id, {
+            status: 'fixed',
+            fixNote: noteAnswer.fixNote,
+            fixedBy: user.id,
+            fixedAt: (0, dayjs_1.default)().toISOString(),
+        });
+        (0, database_1.addOperationLog)('fix_merge_conflict', user, {
+            recordId: record.id,
+            beforeData: { count: existingRecords.length },
+            afterData: { action: 'merged', keepId: keepRecord.id },
+        });
+        console.log(chalk_1.default.green(`\n✅ 已合并，保留 ${keepRecord.id.slice(0, 8)}，删除 ${removeIds.length} 条记录`));
+        return true;
+    }
+    if (answer.action === 'manual') {
+        return await fixDuplicate(record, auto);
+    }
+    return false;
 }
 async function handleApprove(dirtyId) {
     (0, login_1.requirePermission)('approve');
@@ -265,9 +653,6 @@ async function handleApprove(dirtyId) {
     const beforeData = record.originalData;
     const afterData = record.suggestedFix;
     const diffs = (0, diff_1.compareObjects)(beforeData, afterData);
-    if (diffs.length === 0) {
-        console.log(chalk_1.default.yellow(`⚠️  没有检测到实际修改，复核需确认是否有变更`));
-    }
     (0, database_1.updateDirtyRecord)(record.id, { status: 'approved' });
     (0, database_1.addOperationLog)('approve_fix', user, {
         recordId: record.id,

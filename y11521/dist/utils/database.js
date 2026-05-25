@@ -27,6 +27,24 @@ exports.getDirtyRecords = getDirtyRecords;
 exports.getImportHistory = getImportHistory;
 exports.getOperationLogs = getOperationLogs;
 exports.getDbPath = getDbPath;
+exports.getAppointmentById = getAppointmentById;
+exports.getLocationById = getLocationById;
+exports.getReviewById = getReviewById;
+exports.getPriceAdjustmentById = getPriceAdjustmentById;
+exports.getAppointmentsByOrderNo = getAppointmentsByOrderNo;
+exports.getLocationsByOrderNo = getLocationsByOrderNo;
+exports.getReviewsByOrderNo = getReviewsByOrderNo;
+exports.getPriceAdjustmentsByOrderNo = getPriceAdjustmentsByOrderNo;
+exports.updateAppointment = updateAppointment;
+exports.updateLocation = updateLocation;
+exports.updateReview = updateReview;
+exports.updatePriceAdjustment = updatePriceAdjustment;
+exports.deleteAppointment = deleteAppointment;
+exports.deleteLocation = deleteLocation;
+exports.deleteReview = deleteReview;
+exports.deletePriceAdjustment = deletePriceAdjustment;
+exports.mergeAppointments = mergeAppointments;
+exports.cleanDirtyRecordsByOrderNo = cleanDirtyRecordsByOrderNo;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const uuid_1 = require("uuid");
@@ -241,5 +259,112 @@ function getOperationLogs() {
 }
 function getDbPath() {
     return DB_FILE;
+}
+function getAppointmentById(id) {
+    return loadDb().appointments.find((r) => r.id === id);
+}
+function getLocationById(id) {
+    return loadDb().locations.find((r) => r.id === id);
+}
+function getReviewById(id) {
+    return loadDb().reviews.find((r) => r.id === id);
+}
+function getPriceAdjustmentById(id) {
+    return loadDb().priceAdjustments.find((r) => r.id === id);
+}
+function getAppointmentsByOrderNo(orderNo) {
+    return loadDb().appointments.filter((r) => r.orderNo === orderNo);
+}
+function getLocationsByOrderNo(orderNo) {
+    return loadDb().locations.filter((r) => r.orderNo === orderNo);
+}
+function getReviewsByOrderNo(orderNo) {
+    return loadDb().reviews.filter((r) => r.orderNo === orderNo);
+}
+function getPriceAdjustmentsByOrderNo(orderNo) {
+    return loadDb().priceAdjustments.filter((r) => r.orderNo === orderNo);
+}
+function updateAppointment(id, updates) {
+    const db = loadDb();
+    const index = db.appointments.findIndex((r) => r.id === id);
+    if (index === -1)
+        return null;
+    db.appointments[index] = { ...db.appointments[index], ...updates };
+    saveDb(db);
+    return db.appointments[index];
+}
+function updateLocation(id, updates) {
+    const db = loadDb();
+    const index = db.locations.findIndex((r) => r.id === id);
+    if (index === -1)
+        return null;
+    db.locations[index] = { ...db.locations[index], ...updates };
+    saveDb(db);
+    return db.locations[index];
+}
+function updateReview(id, updates) {
+    const db = loadDb();
+    const index = db.reviews.findIndex((r) => r.id === id);
+    if (index === -1)
+        return null;
+    db.reviews[index] = { ...db.reviews[index], ...updates };
+    saveDb(db);
+    return db.reviews[index];
+}
+function updatePriceAdjustment(id, updates) {
+    const db = loadDb();
+    const index = db.priceAdjustments.findIndex((r) => r.id === id);
+    if (index === -1)
+        return null;
+    db.priceAdjustments[index] = { ...db.priceAdjustments[index], ...updates };
+    saveDb(db);
+    return db.priceAdjustments[index];
+}
+function deleteAppointment(id) {
+    const db = loadDb();
+    const initialLength = db.appointments.length;
+    db.appointments = db.appointments.filter((r) => r.id !== id);
+    saveDb(db);
+    return db.appointments.length < initialLength;
+}
+function deleteLocation(id) {
+    const db = loadDb();
+    const initialLength = db.locations.length;
+    db.locations = db.locations.filter((r) => r.id !== id);
+    saveDb(db);
+    return db.locations.length < initialLength;
+}
+function deleteReview(id) {
+    const db = loadDb();
+    const initialLength = db.reviews.length;
+    db.reviews = db.reviews.filter((r) => r.id !== id);
+    saveDb(db);
+    return db.reviews.length < initialLength;
+}
+function deletePriceAdjustment(id) {
+    const db = loadDb();
+    const initialLength = db.priceAdjustments.length;
+    db.priceAdjustments = db.priceAdjustments.filter((r) => r.id !== id);
+    saveDb(db);
+    return db.priceAdjustments.length < initialLength;
+}
+function mergeAppointments(orderNo, keepId, removeIds, mergeData) {
+    const db = loadDb();
+    const keepRecord = db.appointments.find((r) => r.id === keepId);
+    if (!keepRecord)
+        return null;
+    const mergedRecord = { ...keepRecord, ...mergeData };
+    const keepIndex = db.appointments.findIndex((r) => r.id === keepId);
+    db.appointments[keepIndex] = mergedRecord;
+    db.appointments = db.appointments.filter((r) => !removeIds.includes(r.id));
+    saveDb(db);
+    return mergedRecord;
+}
+function cleanDirtyRecordsByOrderNo(orderNo, dirtyType) {
+    const db = loadDb();
+    const initialLength = db.dirtyRecords.length;
+    db.dirtyRecords = db.dirtyRecords.filter((r) => !(r.originalData?.orderNo === orderNo && r.dirtyType === dirtyType));
+    saveDb(db);
+    return initialLength - db.dirtyRecords.length;
 }
 //# sourceMappingURL=database.js.map
