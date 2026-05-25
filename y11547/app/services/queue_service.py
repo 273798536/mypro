@@ -26,6 +26,16 @@ class QueueService:
         return f"RQ{datetime.now().strftime('%Y%m%d')}{uuid.uuid4().hex[:8].upper()}"
 
     @staticmethod
+    def _calculate_amount(db: Session, material_code: Optional[str], quantity: float, unit_price: Optional[float] = None) -> float:
+        if unit_price is not None and unit_price > 0:
+            return round(quantity * unit_price, 2)
+        if material_code:
+            material = db.query(Material).filter(Material.material_code == material_code).first()
+            if material and material.unit_price > 0:
+                return round(quantity * material.unit_price, 2)
+        return 0.0
+
+    @staticmethod
     def _add_status_history(
         db: Session,
         queue_id: int,
@@ -51,7 +61,8 @@ class QueueService:
         material_code: Optional[str],
         quantity: float,
         amount: float,
-        source_type: str
+        source_type: str,
+        business_time: Optional[datetime] = None
     ) -> tuple[bool, Optional[str], Optional[str]]:
         is_dirty = False
         dirty_type = None
@@ -73,24 +84,44 @@ class QueueService:
                 dirty_note = f"物料编码{material_code}对应名称应为{existing.name}，实际为{material_name}"
                 return is_dirty, dirty_type, dirty_note
 
-        if material_code:
-            same_material = db.query(ReceiptQueue).filter(
+        if business_time and material_code:
+            today_start = business_time.replace(hour=0, minute=0, second=0, microsecond=0)
+            same_day_material = db.query(ReceiptQueue).filter(
                 ReceiptQueue.material_code == material_code,
                 ReceiptQueue.material_name == material_name,
-                ReceiptQueue.created_at >= datetime.now() - timedelta(days=1)
+                ReceiptQueue.created_at >= today_start,
+                ReceiptQueue.created_at < today_start + timedelta(days=1)
             ).all()
 
-            for record in same_material:
+            for record in same_day_material:
                 if abs(record.quantity - quantity) > 0.001:
                     is_dirty = True
                     dirty_type = DirtyType.QUANTITY_CONFLICT
                     dirty_note = f"同一物料当日数量冲突: 历史记录{record.quantity}，当前{quantity}"
                     return is_dirty, dirty_type, dirty_note
-                if abs(record.amount - amount) > 0.01:
+                if amount > 0 and record.amount > 0 and abs(record.amount - amount) > 0.01:
                     is_dirty = True
                     dirty_type = DirtyType.AMOUNT_CONFLICT
                     dirty_note = f"同一物料当日金额冲突: 历史记录{record.amount}，当前{amount}"
                     return is_dirty, dirty_type, dirty_note
+
+        if business_time and material_code and not is_dirty:
+            yesterday = business_time - timedelta(days=1)
+            yesterday_start = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
+            today_start = business_time.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            yesterday_record = db.query(ReceiptQueue).filter(
+                ReceiptQueue.material_code == material_code,
+                ReceiptQueue.material_name == material_name,
+                ReceiptQueue.created_at >= yesterday_start,
+                ReceiptQueue.created_at < today_start
+            ).first()
+
+            if yesterday_record:
+                is_dirty = True
+                dirty_type = DirtyType.CROSS_DAY
+                dirty_note = f"跨日重复提交: 昨日已有相同物料记录（{yesterday_record.queue_no}），今日再次提交"
+                return is_dirty, dirty_type, dirty_note
 
         return is_dirty, dirty_type, dirty_note
 
@@ -98,7 +129,8 @@ class QueueService:
     def create_queue_item(
         cls,
         db: Session,
-        item_data: ReceiptQueueCreate
+        item_data: ReceiptQueueCreate,
+        business_time: Optional[datetime] = None
     ) -> ReceiptQueue:
         is_dirty, dirty_type, dirty_note = cls._detect_dirty_data(
             db,
@@ -106,7 +138,8 @@ class QueueService:
             item_data.material_code,
             item_data.quantity,
             item_data.amount,
-            item_data.source_type
+            item_data.source_type,
+            business_time
         )
 
         queue_item = ReceiptQueue(
@@ -154,6 +187,7 @@ class QueueService:
         data: LogisticsReceiptCreate
     ) -> ReceiptQueue:
         raw_data = data.raw_data or json.dumps(data.model_dump(), ensure_ascii=False, default=str)
+        amount = cls._calculate_amount(db, data.material_code, data.quantity)
 
         receipt = LogisticsReceipt(
             tracking_number=data.tracking_number,
@@ -174,14 +208,14 @@ class QueueService:
             material_name=data.material_name,
             material_code=data.material_code,
             quantity=data.quantity,
-            amount=0,
+            amount=amount,
             source_type="logistics",
             source_id=receipt.id,
             logistics_receipt_id=receipt.id,
             original_data=raw_data
         )
 
-        return cls.create_queue_item(db, queue_data)
+        return cls.create_queue_item(db, queue_data, business_time=data.receive_time)
 
     @classmethod
     def submit_borrow_record(
@@ -190,6 +224,7 @@ class QueueService:
         data: BorrowRecordCreate
     ) -> ReceiptQueue:
         raw_data = data.raw_data or json.dumps(data.model_dump(), ensure_ascii=False, default=str)
+        amount = cls._calculate_amount(db, data.material_code, data.quantity)
 
         record = BorrowRecord(
             borrow_no=data.borrow_no,
@@ -211,14 +246,14 @@ class QueueService:
             material_name=data.material_name,
             material_code=data.material_code,
             quantity=data.quantity,
-            amount=0,
+            amount=amount,
             source_type="borrow",
             source_id=record.id,
             borrow_record_id=record.id,
             original_data=raw_data
         )
 
-        return cls.create_queue_item(db, queue_data)
+        return cls.create_queue_item(db, queue_data, business_time=data.borrow_time)
 
     @classmethod
     def submit_store_transfer(
@@ -227,6 +262,7 @@ class QueueService:
         data: StoreTransferCreate
     ) -> ReceiptQueue:
         raw_data = data.raw_data or json.dumps(data.model_dump(), ensure_ascii=False, default=str)
+        amount = cls._calculate_amount(db, data.material_code, data.quantity)
 
         transfer = StoreTransferRecord(
             transfer_no=data.transfer_no,
@@ -247,14 +283,53 @@ class QueueService:
             material_name=data.material_name,
             material_code=data.material_code,
             quantity=data.quantity,
-            amount=0,
+            amount=amount,
             source_type="store_transfer",
             source_id=transfer.id,
             store_transfer_id=transfer.id,
             original_data=raw_data
         )
 
-        return cls.create_queue_item(db, queue_data)
+        return cls.create_queue_item(db, queue_data, business_time=data.transfer_time)
+
+    @classmethod
+    def submit_material_list(
+        cls,
+        db: Session,
+        data: MaterialListCreate
+    ) -> ReceiptQueue:
+        raw_data = data.raw_data or json.dumps(data.model_dump(), ensure_ascii=False, default=str)
+        quantity = data.actual_quantity if data.actual_quantity is not None else data.planned_quantity
+        unit_price = data.unit_price if data.unit_price > 0 else None
+        amount = cls._calculate_amount(db, data.material_code, quantity, unit_price)
+        total_amount = round(quantity * (unit_price or 0), 2) if unit_price else amount
+
+        material_list = MaterialList(
+            list_no=data.list_no,
+            exhibition_name=data.exhibition_name,
+            material_name=data.material_name,
+            material_code=data.material_code,
+            planned_quantity=data.planned_quantity,
+            actual_quantity=data.actual_quantity,
+            unit_price=data.unit_price,
+            total_amount=total_amount,
+            responsible_person=data.responsible_person,
+            raw_data=raw_data
+        )
+        db.add(material_list)
+        db.flush()
+
+        queue_data = ReceiptQueueCreate(
+            material_name=data.material_name,
+            material_code=data.material_code,
+            quantity=quantity,
+            amount=amount,
+            source_type="material_list",
+            source_id=material_list.id,
+            original_data=raw_data
+        )
+
+        return cls.create_queue_item(db, queue_data, business_time=datetime.now())
 
     @classmethod
     def process_retry(

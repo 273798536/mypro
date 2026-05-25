@@ -8,7 +8,7 @@ from app.database import SessionLocal
 from app.services.queue_service import QueueService
 from app.schemas import (
     LogisticsReceiptCreate, BorrowRecordCreate,
-    StoreTransferCreate
+    StoreTransferCreate, MaterialListCreate
 )
 
 
@@ -120,6 +120,43 @@ def seed_sample_data():
     for data in transfer_data:
         QueueService.submit_store_transfer(db, data)
         print(f"✓ 门店交接: {data.material_name} x {data.quantity}")
+
+    material_list_data = [
+        MaterialListCreate(
+            list_no="ML202401001",
+            exhibition_name="2024北京国际车展",
+            material_name="易拉宝",
+            material_code="MAT001",
+            planned_quantity=10,
+            actual_quantity=10,
+            unit_price=150.0,
+            responsible_person="张经理"
+        ),
+        MaterialListCreate(
+            list_no="ML202401002",
+            exhibition_name="2024北京国际车展",
+            material_name="宣传册",
+            material_code="MAT003",
+            planned_quantity=500,
+            actual_quantity=480,
+            unit_price=5.0,
+            responsible_person="李主管"
+        ),
+        MaterialListCreate(
+            list_no="ML202401003",
+            exhibition_name="2024北京国际车展",
+            material_name="名片",
+            material_code="MAT004",
+            planned_quantity=20,
+            actual_quantity=20,
+            unit_price=25.0,
+            responsible_person="王助理"
+        ),
+    ]
+
+    for data in material_list_data:
+        item = QueueService.submit_material_list(db, data)
+        print(f"✓ 物料清单: {data.material_name} x {data.planned_quantity}, 金额: {item.amount}元")
 
     db.close()
 

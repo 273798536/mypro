@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional, List
+import urllib.parse
 
 from app.database import get_db
 from app.schemas import ExportRequest
@@ -20,11 +21,12 @@ def export_excel(
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"回执队列数据_{timestamp}.xlsx"
+    encoded_filename = urllib.parse.quote(filename)
 
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"}
     )
 
 

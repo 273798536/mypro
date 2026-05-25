@@ -1,0 +1,56 @@
+{
+  "stats": {
+    "total_queue": 20,
+    "pending": 11,
+    "processing": 0,
+    "retrying": 0,
+    "manual_review": 8,
+    "compensated": 1,
+    "closed": 0,
+    "dead_letter": 0,
+    "dirty_records": 10
+  },
+  "retry_categories": [
+    {
+      "category": "need_manual",
+      "count": 11,
+      "amount": 173600.0
+    }
+  ],
+  "dirty_types": [
+    {
+      "dirty_type": "cross_day",
+      "count": 8
+    },
+    {
+      "dirty_type": "missing_field",
+      "count": 1
+    },
+    {
+      "dirty_type": "name_changed",
+      "count": 1
+    }
+  ],
+  "sources": [
+    {
+      "source_type": "borrow",
+      "count": 2,
+      "amount": 6400.0
+    },
+    {
+      "source_type": "logistics",
+      "count": 11,
+      "amount": 176700.0
+    },
+    {
+      "source_type": "material_list",
+      "count": 4,
+      "amount": 10400.0
+    },
+    {
+      "source_type": "store_transfer",
+      "count": 3,
+      "amount": 2980.0
+    }
+  ]
+}

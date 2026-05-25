@@ -5,9 +5,11 @@ from datetime import datetime, timedelta
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import SessionLocal
+from app.models import ReceiptQueue, QueueStatus
 from app.services.queue_service import QueueService
 from app.schemas import (
     LogisticsReceiptCreate, BorrowRecordCreate,
+    MaterialListCreate, StoreTransferCreate,
     RetryRequest, ManualReviewRequest,
     CompensationRequest, DeadLetterRecoverRequest
 )
@@ -112,7 +114,108 @@ def trigger_dirty_data():
     )
     print(f"   ✓ 死信恢复完成: status={recovered_item.status}, retry_count={recovered_item.retry_count}")
 
-    print("\n7. 补偿入账...")
+    print("\n7. 金额冲突检测 (同一物料当日金额不一致)...")
+    amount_data1 = LogisticsReceiptCreate(
+        tracking_number="AMT001",
+        material_name="LED显示屏",
+        material_code="MAT005",
+        quantity=1,
+        sender="测试",
+        receiver="测试",
+        receive_time=now,
+        signatory="测试"
+    )
+    amount_item1 = QueueService.submit_logistics_receipt(db, amount_data1)
+    print(f"   ✓ 第1条LED显示屏记录: quantity={amount_item1.quantity}, amount={amount_item1.amount} (单价3500元)")
+
+    amount_item1.amount = 3500.0
+    db.commit()
+    db.refresh(amount_item1)
+
+    amount_data2_raw = LogisticsReceiptCreate(
+        tracking_number="AMT002",
+        material_name="LED显示屏",
+        material_code="MAT005",
+        quantity=1,
+        sender="测试",
+        receiver="测试",
+        receive_time=now,
+        signatory="测试"
+    )
+    raw_data2 = '{"tracking_number": "AMT002", "material_name": "LED显示屏", "material_code": "MAT005", "quantity": 1, "unit_price": 5000.0}'
+    from app.schemas import ReceiptQueueCreate
+    queue_data = ReceiptQueueCreate(
+        material_name="LED显示屏",
+        material_code="MAT005",
+        quantity=1,
+        amount=5000.0,
+        source_type="logistics",
+        source_id=998,
+        original_data=raw_data2
+    )
+    amount_item2 = QueueService.create_queue_item(db, queue_data, business_time=now)
+    print(f"   ✓ 金额冲突检测: is_dirty={amount_item2.is_dirty}, type={amount_item2.dirty_type}, amount={amount_item2.amount} (单价5000元)")
+
+    print("\n8. 跨日检测 (昨日已有相同物料记录)...")
+    yesterday_item = ReceiptQueue(
+        queue_no=QueueService.generate_queue_no(),
+        source_type="logistics",
+        source_id=999,
+        material_name="投影仪",
+        material_code="MAT006",
+        quantity=1,
+        amount=2800.0,
+        status=QueueStatus.PENDING,
+        original_data='{"test": "yesterday"}',
+        created_at=now - timedelta(days=1)
+    )
+    db.add(yesterday_item)
+    db.flush()
+    print(f"   ✓ 已创建昨日记录: {yesterday_item.queue_no}")
+
+    cross_day_data = LogisticsReceiptCreate(
+        tracking_number="CROSS001",
+        material_name="投影仪",
+        material_code="MAT006",
+        quantity=1,
+        sender="测试",
+        receiver="测试",
+        receive_time=now,
+        signatory="测试"
+    )
+    cross_day_item = QueueService.submit_logistics_receipt(db, cross_day_data)
+    print(f"   ✓ 跨日检测: is_dirty={cross_day_item.is_dirty}, type={cross_day_item.dirty_type}")
+
+    print("\n9. 物料清单提交测试...")
+    ml_data = MaterialListCreate(
+        list_no="MLTEST001",
+        exhibition_name="测试展会",
+        material_name="洽谈桌椅",
+        material_code="MAT008",
+        planned_quantity=5,
+        actual_quantity=5,
+        unit_price=1200.0,
+        responsible_person="测试负责人"
+    )
+    ml_item = QueueService.submit_material_list(db, ml_data)
+    print(f"   ✓ 物料清单提交: queue_no={ml_item.queue_no}, amount={ml_item.amount}, source={ml_item.source_type}")
+
+    print("\n10. 门店交接测试 (含金额计算)...")
+    st_data = StoreTransferCreate(
+        transfer_no="STTEST001",
+        material_name="展架",
+        material_code="MAT002",
+        quantity=10,
+        from_store="测试店A",
+        to_store="测试店B",
+        transfer_time=now,
+        handler="测试",
+        receiver="测试"
+    )
+    st_item = QueueService.submit_store_transfer(db, st_data)
+    print(f"   ✓ 门店交接: quantity={st_item.quantity}, amount={st_item.amount} (单价80元 x 10 = 800元)")
+
+    print("\n11. 补偿入账...")
     compensated_item = QueueService.compensate(
         db, item2.id,
         CompensationRequest(

@@ -6,9 +6,9 @@ from app.database import get_db
 from app.schemas import (
     ReceiptQueueResponse, ReceiptQueueListResponse,
     LogisticsReceiptCreate, BorrowRecordCreate,
-    StoreTransferCreate, ManualReviewRequest,
-    CompensationRequest, CloseRequest, RetryRequest,
-    DeadLetterRecoverRequest
+    StoreTransferCreate, MaterialListCreate,
+    ManualReviewRequest, CompensationRequest,
+    CloseRequest, RetryRequest, DeadLetterRecoverRequest
 )
 from app.services.queue_service import QueueService
 
@@ -44,6 +44,17 @@ def submit_store_transfer(
 ):
     try:
         return QueueService.submit_store_transfer(db, data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/material-list", response_model=ReceiptQueueResponse)
+def submit_material_list(
+    data: MaterialListCreate,
+    db: Session = Depends(get_db)
+):
+    try:
+        return QueueService.submit_material_list(db, data)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
