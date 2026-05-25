@@ -55,7 +55,7 @@ class AuditBatch(Base):
     status = Column(Enum(BatchStatus), default=BatchStatus.DRAFT)
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     frozen_at = Column(DateTime(timezone=True), nullable=True)
     frozen_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     freeze_reason = Column(Text, nullable=True)
@@ -93,7 +93,7 @@ class CheckinRecord(Base):
     original_checkout = Column(DateTime, nullable=True)
     source = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     raw_data = Column(Text)
 
     batch = relationship("AuditBatch", back_populates="checkins")
@@ -116,7 +116,7 @@ class DepositRecord(Base):
     balance = Column(Float, default=0)
     source = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     raw_data = Column(Text)
 
     batch = relationship("AuditBatch", back_populates="deposits")
@@ -142,7 +142,7 @@ class RoomChangeRecord(Base):
     operator = Column(String)
     source = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     raw_data = Column(Text)
 
     batch = relationship("AuditBatch", back_populates="room_changes")

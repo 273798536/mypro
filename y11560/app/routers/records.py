@@ -91,8 +91,8 @@ def add_deposit_records(
         
         db_rec = DepositRecordModel(
             batch_id=batch_id,
-            **rec.dict(),
-            raw_data=json.dumps(rec.dict(), ensure_ascii=False)
+            **rec.model_dump(),
+            raw_data=safe_dumps(rec.model_dump())
         )
         db.add(db_rec)
         created.append(db_rec)
@@ -125,8 +125,8 @@ def add_room_change_records(
         
         db_rec = RoomChangeRecordModel(
             batch_id=batch_id,
-            **rec.dict(),
-            raw_data=json.dumps(rec.dict(), ensure_ascii=False)
+            **rec.model_dump(),
+            raw_data=safe_dumps(rec.model_dump())
         )
         db.add(db_rec)
         created.append(db_rec)
@@ -157,8 +157,8 @@ def add_records_bulk(
         if not existing:
             db_rec = CheckinRecordModel(
                 batch_id=batch_id,
-                **rec.dict(),
-                raw_data=json.dumps(rec.dict(), ensure_ascii=False)
+                **rec.model_dump(),
+                raw_data=safe_dumps(rec.model_dump())
             )
             db.add(db_rec)
             checkins_added += 1
@@ -172,8 +172,8 @@ def add_records_bulk(
         if not existing:
             db_rec = DepositRecordModel(
                 batch_id=batch_id,
-                **rec.dict(),
-                raw_data=json.dumps(rec.dict(), ensure_ascii=False)
+                **rec.model_dump(),
+                raw_data=safe_dumps(rec.model_dump())
             )
             db.add(db_rec)
             deposits_added += 1
@@ -187,8 +187,8 @@ def add_records_bulk(
         if not existing:
             db_rec = RoomChangeRecordModel(
                 batch_id=batch_id,
-                **rec.dict(),
-                raw_data=json.dumps(rec.dict(), ensure_ascii=False)
+                **rec.model_dump(),
+                raw_data=safe_dumps(rec.model_dump())
             )
             db.add(db_rec)
             room_changes_added += 1
@@ -216,7 +216,7 @@ def add_comment(
     db_comment = SupervisorCommentModel(
         batch_id=batch_id,
         created_by=current_user.id,
-        **comment.dict()
+        **comment.model_dump()
     )
     db.add(db_comment)
     db.commit()
