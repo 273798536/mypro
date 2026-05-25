@@ -32,15 +32,17 @@ const authorize = (...allowedRoles) => {
 
     if (!allowedRoles.includes(req.user.role)) {
       try {
+        const baseUrlParts = req.baseUrl.split('/');
+        const targetType = baseUrlParts[baseUrlParts.length - 1] || 'unknown';
         const targetId = req.params.id || null;
-        const operationType = req.method.toLowerCase() + '_' + (req.path.split('/')[1] || 'unknown');
+        const operationType = req.method.toLowerCase() + '_' + targetType;
         
         await OperationLog.create({
           operationType: operationType,
           operator: req.user._id,
           operatorName: req.user.name,
           operatorRole: req.user.role,
-          targetType: req.path.split('/')[1] || 'unknown',
+          targetType,
           targetId,
           ip: req.ip,
           userAgent: req.get('User-Agent'),
@@ -67,6 +69,8 @@ const requirePermission = (action) => {
     const permissions = ROLE_PERMISSIONS[req.user.role];
     if (!permissions.canEdit.includes(action) && !permissions.canEdit.includes('*')) {
       try {
+        const baseUrlParts = req.baseUrl.split('/');
+        const targetType = baseUrlParts[baseUrlParts.length - 1] || 'unknown';
         const targetId = req.params.id || null;
         
         await OperationLog.create({
@@ -74,7 +78,7 @@ const requirePermission = (action) => {
           operator: req.user._id,
           operatorName: req.user.name,
           operatorRole: req.user.role,
-          targetType: req.path.split('/')[1] || 'unknown',
+          targetType,
           targetId,
           ip: req.ip,
           userAgent: req.get('User-Agent'),

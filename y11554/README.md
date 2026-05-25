@@ -4,6 +4,15 @@
 
 ## 🛠 修复记录
 
+### v1.2.1 - 权限拦截日志 targetType 修复 (2026-05-26)
+
+**问题：权限拦截日志 targetType 记录错误导致查询不到**
+- 当访问 `/api/ledger/:id/submit` 被拒绝时，`req.path.split('/')[1]` 得到台账ID而非 `ledger`
+- [auth.js:35-36](file:///Users/mac/pro/solo/workspaces/y11554/src/middleware/auth.js#L35-L36) 改为使用 `req.baseUrl` 获取 targetType
+- [auth.js:72-73](file:///Users/mac/pro/solo/workspaces/y11554/src/middleware/auth.js#L72-L73) `requirePermission` 中间件同样修复
+- [autoCheckService.js:252-268](file:///Users/mac/pro/solo/workspaces/y11554/src/services/autoCheckService.js#L252-L268) 权限拦截查询支持 ObjectId 和字符串两种匹配
+- 修复后自动化检查能正确匹配真实拦截日志，不再误报"权限控制正常"
+
 ### v1.2 - 核心闭环修复 (2026-05-26)
 
 **问题1：脱敏导出空表头**

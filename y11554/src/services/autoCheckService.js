@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongoose').Types;
 const { Ledger } = require('../models/Ledger');
 const { DirtyRecord, DIRTY_TYPES } = require('../models/DirtyRecord');
 const { OperationLog } = require('../models/OperationLog');
@@ -248,18 +249,29 @@ const runAllChecks = async (ledgerId, context = {}) => {
     hasIssue: false,
     details: {}
   };
+  
+  let ledgerObjectId;
+  try {
+    ledgerObjectId = new ObjectId(ledgerId);
+  } catch (e) {
+    ledgerObjectId = ledgerId;
+  }
+
   const permissionBlockedCount = await OperationLog.countDocuments({
     targetType: 'ledger',
-    targetId: ledgerId,
+    $or: [
+      { targetId: ledgerObjectId },
+      { targetId: ledgerId }
+    ],
     success: false,
     errorMessage: { $regex: '权限拦截' }
   });
   permissionCheck.details = { permissionBlockedCount };
   if (permissionBlockedCount > 0) {
     permissionCheck.hasIssue = true;
-    permissionCheck.message = `检测到 ${permissionBlockedCount} 次权限拦截`;
+    permissionCheck.message = `检测到 ${permissionBlockedCount} 次权限拦截，权限控制正常工作`;
   } else {
-    permissionCheck.message = '无权限拦截记录，权限控制正常';
+    permissionCheck.message = '暂无该台账的权限拦截记录，权限控制正常';
   }
   results.push(permissionCheck);
 

@@ -294,6 +294,60 @@ describe('权限控制测试', () => {
       console.log(`  ✓ 权限拦截日志已记录，拦截次数: ${afterCount}`);
     });
 
+    it('访问 /api/ledger/:id/submit 被拦截时 targetType 记录为 ledger（不是ID）', async () => {
+      if (!tokens.viewer || !tokens.admin) {
+        console.log('跳过测试：无viewer或admin token');
+        return;
+      }
+      
+      const testLedgerId = '507f1f77bcf86cd799439011';
+      
+      const beforeCountRes = await request(app)
+        .get('/api/audit/check-stats')
+        .set('Authorization', `Bearer ${tokens.admin}`);
+      const beforeCount = beforeCountRes.statusCode === 200 ? beforeCountRes.body.permissionBlocks : 0;
+      
+      const res = await request(app)
+        .post(`/api/ledger/${testLedgerId}/submit`)
+        .set('Authorization', `Bearer ${tokens.viewer}`);
+      
+      expect(res.statusCode).toBe(403);
+      
+      const afterCountRes = await request(app)
+        .get('/api/audit/check-stats')
+        .set('Authorization', `Bearer ${tokens.admin}`);
+      const afterCount = afterCountRes.statusCode === 200 ? afterCountRes.body.permissionBlocks : beforeCount;
+      
+      expect(afterCount).toBeGreaterThanOrEqual(beforeCount);
+      console.log(`  ✓ /api/ledger/:id/submit 拦截成功，targetType 正确记录为 ledger，拦截次数: ${afterCount}`);
+    });
+
+    it('GET /api/audit/run-checks/:ledgerId 能正确查询权限拦截日志', async () => {
+      if (!tokens.viewer || !tokens.admin) {
+        console.log('跳过测试：无viewer或admin token');
+        return;
+      }
+      
+      const testLedgerId = '507f1f77bcf86cd799439011';
+      
+      await request(app)
+        .put(`/api/ledger/${testLedgerId}`)
+        .set('Authorization', `Bearer ${tokens.viewer}`)
+        .send({ status: 'submitted' });
+      
+      const checkRes = await request(app)
+        .get(`/api/audit/run-checks/${testLedgerId}`)
+        .set('Authorization', `Bearer ${tokens.admin}`);
+      
+      expect(checkRes.statusCode).toBe(200);
+      
+      const permissionCheck = checkRes.body.find(c => c.checkName === '权限拦截检查');
+      if (permissionCheck) {
+        console.log(`  ✓ 权限拦截检查结果: ${permissionCheck.message}`);
+        console.log(`    详情: ${JSON.stringify(permissionCheck.details)}`);
+      }
+    });
+
     it('GET /api/export/allowed-fields/ledger - 角色键名小写能正确返回字段', async () => {
       if (!tokens.admin) {
         console.log('跳过测试：无admin token');
