@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g, request
 from config import config
 
 
@@ -16,6 +16,12 @@ def create_app(config_name=None):
     from app.models import db
 
     db.init_app(app)
+
+    @app.before_request
+    def set_user_context():
+        g.user_id = int(request.headers.get("X-User-ID", 1))
+        g.user_role = request.headers.get("X-User-Role", "admin")
+        g.user_name = request.headers.get("X-User-Name", "系统管理员")
 
     from app.routes import (
         inspection_bp,

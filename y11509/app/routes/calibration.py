@@ -442,3 +442,171 @@ def list_expired_certificates():
         "total": len(result),
         "code": 200
     })
+
+
+@bp.route("/<int:record_id>/freeze", methods=["POST"])
+def freeze_calibration(record_id: int):
+    record = get_calibration_by_id(record_id)
+    if not record:
+        return jsonify({"error": "校准证书不存在", "code": 404}), 404
+
+    data = request.get_json() or {}
+    reason = data.get("reason", "导出前冻结")
+
+    frozen = FrozenRecord.query.filter_by(
+        record_type=RecordType.CALIBRATION,
+        record_id=record_id,
+        is_frozen=True
+    ).first()
+
+    if frozen:
+        return jsonify({"error": "记录已处于冻结状态", "code": 400}), 400
+
+    old_status = record.status
+    record.status = RecordStatus.FROZEN
+
+    frozen_record = FrozenRecord(
+        record_type=RecordType.CALIBRATION,
+        record_id=record_id,
+        record_no=record.record_no,
+        frozen_by=getattr(g, "user_id", 1),
+        freeze_reason=reason,
+    )
+    db.session.add(frozen_record)
+
+    create_audit_trail(
+        record_type=RecordType.CALIBRATION,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.FREEZE,
+        old_status=old_status,
+        new_status=RecordStatus.FROZEN,
+        change_reason=reason,
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "冻结成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })
+
+
+@bp.route("/<int:record_id>/unfreeze", methods=["POST"])
+def unfreeze_calibration(record_id: int):
+    record = get_calibration_by_id(record_id)
+    if not record:
+        return jsonify({"error": "校准证书不存在", "code": 404}), 404
+
+    if record.status != RecordStatus.FROZEN:
+        return jsonify({"error": "记录未处于冻结状态", "code": 400}), 400
+
+    frozen = FrozenRecord.query.filter_by(
+        record_type=RecordType.CALIBRATION,
+        record_id=record_id,
+        is_frozen=True
+    ).first()
+
+    if frozen:
+        frozen.is_frozen = False
+        frozen.unfrozen_by = getattr(g, "user_id", 1)
+        frozen.unfrozen_at = datetime.utcnow()
+
+    record.status = RecordStatus.CONFIRMED
+    update_certificate_status(record)
+
+    data = request.get_json() or {}
+    create_audit_trail(
+        record_type=RecordType.CALIBRATION,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.UNFREEZE,
+        old_status=RecordStatus.FROZEN,
+        new_status=RecordStatus.CONFIRMED,
+        change_reason=data.get("reason", "解除冻结"),
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "解冻成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })
+
+
+@bp.route("/<int:record_id>", methods=["PUT"])
+def update_calibration(record_id: int):
+    record = get_calibration_by_id(record_id)
+    if not record:
+        return jsonify({"error": "校准证书不存在", "code": 404}), 404
+
+    if record.status == RecordStatus.FROZEN:
+        return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403
+
+    if record.status == RecordStatus.CONFIRMED:
+        return jsonify({"error": "已确认记录不允许直接修改，请使用人工改判接口", "code": 403}), 403
+
+    data = request.get_json()
+    old_values = record_to_dict(record)
+
+    if "record_no" in data and data["record_no"] != record.record_no:
+        existing = CalibrationCertificate.query.filter_by(record_no=data["record_no"]).first()
+        if existing:
+            return jsonify({"error": "记录编号已存在", "code": 409}), 409
+        valid, error = validate_record_no(data["record_no"])
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.record_no = data["record_no"]
+
+    if "device_name" in data:
+        valid, error = validate_device_name(data["device_name"])
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.device_name = data["device_name"]
+
+    if "department" in data:
+        valid, error = validate_department(data["department"])
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.department = data["department"]
+
+    if "calibration_date" in data:
+        valid, error, dt = validate_date(data["calibration_date"], "校准日期")
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.calibration_date = dt
+
+    if "valid_until" in data:
+        valid, error, dt = validate_date(data["valid_until"], "有效期至")
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.valid_until = dt
+
+    for field in ["device_model", "device_sn", "certificate_no", "calibration_agency", "calibration_result", "calibration_items"]:
+        if field in data:
+            setattr(record, field, data[field])
+
+    record.updated_by = getattr(g, "user_id", 1)
+    update_certificate_status(record)
+
+    create_audit_trail(
+        record_type=RecordType.CALIBRATION,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.UPDATE,
+        old_status=record.status,
+        new_status=record.status,
+        old_values=old_values,
+        new_values=record_to_dict(record),
+        change_reason=data.get("change_reason", "更新记录"),
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "更新成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })

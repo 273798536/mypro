@@ -16,13 +16,6 @@ def user_to_dict(user: User) -> dict:
     }
 
 
-@bp.before_request
-def set_user_context():
-    g.user_id = int(request.headers.get("X-User-ID", 1))
-    g.user_role = request.headers.get("X-User-Role", "admin")
-    g.user_name = request.headers.get("X-User-Name", "系统管理员")
-
-
 @bp.route("", methods=["POST"])
 def create_user():
     data = request.get_json()

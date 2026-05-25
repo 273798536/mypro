@@ -4,8 +4,10 @@ from app.models import (
     db,
     RepairQuotation,
     RecordStatus,
+    CertificateStatus,
     RecordType,
     ActionType,
+    FrozenRecord,
 )
 from app.utils.audit import create_audit_trail
 from app.utils.validators import (
@@ -331,6 +333,221 @@ def withdraw_repair(record_id: int):
 
     return jsonify({
         "message": "撤回成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })
+
+
+@bp.route("/<int:record_id>/manual-edit", methods=["POST"])
+def manual_edit_repair(record_id: int):
+    record = get_repair_by_id(record_id)
+    if not record:
+        return jsonify({"error": "维修报价不存在", "code": 404}), 404
+
+    if record.status == RecordStatus.FROZEN:
+        return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403
+
+    data = request.get_json() or {}
+    note = data.get("judgment_note")
+    if not note:
+        return jsonify({"error": "人工改判说明不能为空", "code": 400}), 400
+
+    old_values = record_to_dict(record)
+
+    allowed_fields = [
+        "device_name", "device_model", "device_sn", "department",
+        "fault_description", "repair_status", "certificate_status"
+    ]
+    for field in allowed_fields:
+        if field in data:
+            setattr(record, field, data[field])
+
+    if "certificate_status" in data:
+        try:
+            record.certificate_status = CertificateStatus(data["certificate_status"])
+        except ValueError:
+            return jsonify({"error": "证书状态值无效", "code": 400}), 400
+
+    record.is_manually_edited = True
+    record.manual_judgment_note = note
+    record.updated_by = getattr(g, "user_id", 1)
+
+    create_audit_trail(
+        record_type=RecordType.REPAIR,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.MANUAL_EDIT,
+        old_status=record.status,
+        new_status=record.status,
+        old_values=old_values,
+        new_values=record_to_dict(record),
+        change_reason=note,
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "人工改判成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })
+
+
+@bp.route("/<int:record_id>/freeze", methods=["POST"])
+def freeze_repair(record_id: int):
+    record = get_repair_by_id(record_id)
+    if not record:
+        return jsonify({"error": "维修报价不存在", "code": 404}), 404
+
+    data = request.get_json() or {}
+    reason = data.get("reason", "导出前冻结")
+
+    frozen = FrozenRecord.query.filter_by(
+        record_type=RecordType.REPAIR,
+        record_id=record_id,
+        is_frozen=True
+    ).first()
+
+    if frozen:
+        return jsonify({"error": "记录已处于冻结状态", "code": 400}), 400
+
+    old_status = record.status
+    record.status = RecordStatus.FROZEN
+
+    frozen_record = FrozenRecord(
+        record_type=RecordType.REPAIR,
+        record_id=record_id,
+        record_no=record.record_no,
+        frozen_by=getattr(g, "user_id", 1),
+        freeze_reason=reason,
+    )
+    db.session.add(frozen_record)
+
+    create_audit_trail(
+        record_type=RecordType.REPAIR,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.FREEZE,
+        old_status=old_status,
+        new_status=RecordStatus.FROZEN,
+        change_reason=reason,
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "冻结成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })
+
+
+@bp.route("/<int:record_id>/unfreeze", methods=["POST"])
+def unfreeze_repair(record_id: int):
+    record = get_repair_by_id(record_id)
+    if not record:
+        return jsonify({"error": "维修报价不存在", "code": 404}), 404
+
+    if record.status != RecordStatus.FROZEN:
+        return jsonify({"error": "记录未处于冻结状态", "code": 400}), 400
+
+    frozen = FrozenRecord.query.filter_by(
+        record_type=RecordType.REPAIR,
+        record_id=record_id,
+        is_frozen=True
+    ).first()
+
+    if frozen:
+        frozen.is_frozen = False
+        frozen.unfrozen_by = getattr(g, "user_id", 1)
+        frozen.unfrozen_at = datetime.utcnow()
+
+    record.status = RecordStatus.CONFIRMED
+
+    data = request.get_json() or {}
+    create_audit_trail(
+        record_type=RecordType.REPAIR,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.UNFREEZE,
+        old_status=RecordStatus.FROZEN,
+        new_status=RecordStatus.CONFIRMED,
+        change_reason=data.get("reason", "解除冻结"),
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "解冻成功",
+        "data": record_to_dict(record),
+        "code": 200
+    })
+
+
+@bp.route("/<int:record_id>", methods=["PUT"])
+def update_repair(record_id: int):
+    record = get_repair_by_id(record_id)
+    if not record:
+        return jsonify({"error": "维修报价不存在", "code": 404}), 404
+
+    if record.status == RecordStatus.FROZEN:
+        return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403
+
+    if record.status == RecordStatus.CONFIRMED:
+        return jsonify({"error": "已确认记录不允许直接修改，请使用人工改判接口", "code": 403}), 403
+
+    data = request.get_json()
+    old_values = record_to_dict(record)
+
+    if "record_no" in data and data["record_no"] != record.record_no:
+        existing = RepairQuotation.query.filter_by(record_no=data["record_no"]).first()
+        if existing:
+            return jsonify({"error": "记录编号已存在", "code": 409}), 409
+        valid, error = validate_record_no(data["record_no"])
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.record_no = data["record_no"]
+
+    if "device_name" in data:
+        valid, error = validate_device_name(data["device_name"])
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.device_name = data["device_name"]
+
+    if "department" in data:
+        valid, error = validate_department(data["department"])
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.department = data["department"]
+
+    if "repair_date" in data:
+        valid, error, dt = validate_date(data["repair_date"], "维修日期")
+        if not valid:
+            return jsonify({"error": error, "code": 400}), 400
+        record.repair_date = dt
+
+    for field in ["device_model", "device_sn", "quotation_no", "fault_description", "repair_vendor", "quotation_amount", "repair_status", "warranty_period"]:
+        if field in data:
+            setattr(record, field, data[field])
+
+    record.updated_by = getattr(g, "user_id", 1)
+
+    create_audit_trail(
+        record_type=RecordType.REPAIR,
+        record_id=record.id,
+        record_no=record.record_no,
+        action=ActionType.UPDATE,
+        old_status=record.status,
+        new_status=record.status,
+        old_values=old_values,
+        new_values=record_to_dict(record),
+        change_reason=data.get("change_reason", "更新记录"),
+    )
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "更新成功",
         "data": record_to_dict(record),
         "code": 200
     })

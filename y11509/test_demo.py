@@ -239,7 +239,7 @@ def test_audit_trail(record_id):
 
 
 def test_role_view():
-    print_section("9. 角色视图测试")
+    print_section("9. 角色视图与脱敏测试")
 
     roles = ["admin", "department_head", "nurse"]
     for role in roles:
@@ -252,6 +252,35 @@ def test_role_view():
             print(f"    名称: {role_info['role']}")
             print(f"    权限: {', '.join(role_info['permissions'][:3])}...")
             print(f"    脱敏: {'是' if role_info['masked'] else '否'}")
+
+    print("\n  --- 验证业务接口脱敏效果 ---")
+
+    print("\n  以管理员角色查询巡检记录（应返回完整数据）:")
+    admin_headers = {"X-User-Role": "admin", "X-User-ID": "1", "X-User-Name": "Admin"}
+    resp = requests.get(f"{BASE_URL}/inspection", headers=admin_headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        records = data.get("data", [])
+        if records:
+            sn = records[0].get("device_sn", "")
+            print(f"    设备序列号: {sn}")
+            print(f"    脱敏验证: {'完整可见' if sn and '****' not in sn else '已脱敏'}")
+
+    print("\n  以护士角色查询巡检记录（应脱敏处理）:")
+    nurse_headers = {"X-User-Role": "nurse", "X-User-ID": "4", "X-User-Name": "Nurse"}
+    resp = requests.get(f"{BASE_URL}/inspection", headers=nurse_headers)
+    if resp.status_code == 200:
+        data = resp.json()
+        records = data.get("data", [])
+        if records:
+            sn = records[0].get("device_sn", "")
+            issues = records[0].get("issues_found", "")
+            print(f"    设备序列号: {sn}")
+            print(f"    问题详情: {issues}")
+            sn_masked = "****" in str(sn)
+            print(f"    脱敏验证: {'已脱敏 ✓' if sn_masked else '未脱敏 ✗'}")
+            if not sn_masked:
+                print("    ⚠ 警告: 护士角色应看到脱敏后的设备序列号!")
 
 
 def test_certificate_status_linkage():
@@ -299,6 +328,212 @@ def test_restart_verification():
     return True
 
 
+def test_repair_quotation_workflow():
+    print_section("12. 维修报价完整工作流测试")
+
+    print("  步骤1: 创建维修报价")
+    payload = {
+        "record_no": f"TEST-REPAIR-{datetime.now().strftime('%H%M%S')}",
+        "device_name": "测试维修设备",
+        "device_model": "TEST-REP-001",
+        "device_sn": "SN9876543210",
+        "department": "测试科室",
+        "quotation_no": "Q" + datetime.now().strftime('%Y%m%d%H%M%S'),
+        "fault_description": "设备无法正常开机",
+        "repair_date": datetime.now().strftime("%Y-%m-%d"),
+        "repair_vendor": "测试维修公司",
+        "quotation_amount": 5000.00,
+        "repair_status": "待维修",
+        "warranty_period": "3个月",
+    }
+    resp = requests.post(f"{BASE_URL}/repair", json=payload)
+    data = print_response(resp)
+    record_id = data.get("data", {}).get("id") if data else None
+
+    if not record_id:
+        print("  ✗ 创建维修报价失败")
+        return False
+
+    print(f"\n  记录ID: {record_id}")
+
+    print("\n  步骤2: 提交维修报价")
+    resp = requests.post(f"{BASE_URL}/repair/{record_id}/submit", json={"reason": "提交审核"})
+    print_response(resp)
+
+    print("\n  步骤3: 人工改判维修报价")
+    resp = requests.post(
+        f"{BASE_URL}/repair/{record_id}/manual-edit",
+        json={
+            "judgment_note": "维修价格偏高，建议重新报价",
+            "repair_status": "需重新报价",
+        }
+    )
+    data = print_response(resp)
+    if data and resp.status_code == 200:
+        print(f"  ✓ 人工改判: {data['data']['repair_status']}")
+
+    print("\n  步骤4: 冻结维修报价")
+    resp = requests.post(
+        f"{BASE_URL}/repair/{record_id}/freeze",
+        json={"reason": "导出审计"}
+    )
+    data = print_response(resp)
+
+    print("\n  步骤5: 尝试修改已冻结记录（应失败）")
+    resp = requests.put(
+        f"{BASE_URL}/repair/{record_id}",
+        json={"repair_status": "已完成"}
+    )
+    if resp.status_code == 403:
+        print("  ✓ 冻结状态下修改被正确拦截")
+    else:
+        print_response(resp)
+
+    print("\n  步骤6: 解冻维修报价")
+    resp = requests.post(
+        f"{BASE_URL}/repair/{record_id}/unfreeze",
+        json={"reason": "解冻"}
+    )
+    print_response(resp)
+
+    return True
+
+
+def test_supplementary_workflow():
+    print_section("13. 临时补录单完整工作流测试")
+
+    print("  步骤1: 创建临时补录单")
+    payload = {
+        "record_no": f"TEST-SUPP-{datetime.now().strftime('%H%M%S')}",
+        "device_name": "补录测试设备",
+        "device_model": "TEST-SUP-001",
+        "device_sn": "SN5556667778",
+        "department": "测试科室",
+        "supplementary_reason": "历史记录补录",
+        "supplementary_type": "巡检记录补录",
+        "original_record_no": "OLD-001",
+        "supplementary_note": "原记录丢失，需补录",
+    }
+    resp = requests.post(f"{BASE_URL}/supplementary", json=payload)
+    data = print_response(resp)
+    record_id = data.get("data", {}).get("id") if data else None
+
+    if not record_id:
+        print("  ✗ 创建临时补录单失败")
+        return False
+
+    print(f"\n  记录ID: {record_id}")
+
+    print("\n  步骤2: 提交补录单")
+    resp = requests.post(f"{BASE_URL}/supplementary/{record_id}/submit", json={"reason": "提交审核"})
+    print_response(resp)
+
+    print("\n  步骤3: 人工改判补录单")
+    resp = requests.post(
+        f"{BASE_URL}/supplementary/{record_id}/manual-edit",
+        json={
+            "judgment_note": "补录资料完整，确认真实有效",
+            "supplementary_type": "校准证书补录",
+        }
+    )
+    data = print_response(resp)
+    if data and resp.status_code == 200:
+        print(f"  ✓ 人工改判: {data['data']['supplementary_type']}")
+
+    print("\n  步骤4: 冻结补录单")
+    resp = requests.post(
+        f"{BASE_URL}/supplementary/{record_id}/freeze",
+        json={"reason": "导出审计"}
+    )
+    data = print_response(resp)
+
+    print("\n  步骤5: 尝试修改已冻结记录（应失败）")
+    resp = requests.put(
+        f"{BASE_URL}/supplementary/{record_id}",
+        json={"supplementary_reason": "尝试修改"}
+    )
+    if resp.status_code == 403:
+        print("  ✓ 冻结状态下修改被正确拦截")
+    else:
+        print_response(resp)
+
+    print("\n  步骤6: 解冻补录单")
+    resp = requests.post(
+        f"{BASE_URL}/supplementary/{record_id}/unfreeze",
+        json={"reason": "解冻"}
+    )
+    print_response(resp)
+
+    return True
+
+
+def test_calibration_workflow():
+    print_section("14. 校准证书完整工作流测试")
+
+    print("  步骤1: 创建校准证书")
+    payload = {
+        "record_no": f"TEST-CAL-{datetime.now().strftime('%H%M%S')}",
+        "device_name": "校准测试设备",
+        "device_model": "TEST-CAL-001",
+        "device_sn": "SN1112223334",
+        "department": "测试科室",
+        "certificate_no": "CERT" + datetime.now().strftime('%Y%m%d%H%M%S'),
+        "calibration_date": datetime.now().strftime("%Y-%m-%d"),
+        "valid_until": (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d"),
+        "calibration_agency": "测试校准机构",
+        "calibration_result": "合格",
+        "calibration_items": ["精度", "线性度"],
+    }
+    resp = requests.post(f"{BASE_URL}/calibration", json=payload)
+    data = print_response(resp)
+    record_id = data.get("data", {}).get("id") if data else None
+
+    if not record_id:
+        print("  ✗ 创建校准证书失败")
+        return False
+
+    print(f"\n  记录ID: {record_id}")
+
+    print("\n  步骤2: 更新校准证书")
+    resp = requests.put(
+        f"{BASE_URL}/calibration/{record_id}",
+        json={"calibration_agency": "更新后的校准机构"}
+    )
+    data = print_response(resp)
+    if data and resp.status_code == 200:
+        print(f"  ✓ 更新成功: {data['data']['calibration_agency']}")
+
+    print("\n  步骤3: 提交校准证书")
+    resp = requests.post(f"{BASE_URL}/calibration/{record_id}/submit", json={"reason": "提交审核"})
+    print_response(resp)
+
+    print("\n  步骤4: 冻结校准证书")
+    resp = requests.post(
+        f"{BASE_URL}/calibration/{record_id}/freeze",
+        json={"reason": "导出审计"}
+    )
+    print_response(resp)
+
+    print("\n  步骤5: 尝试修改已冻结记录（应失败）")
+    resp = requests.put(
+        f"{BASE_URL}/calibration/{record_id}",
+        json={"calibration_agency": "尝试修改"}
+    )
+    if resp.status_code == 403:
+        print("  ✓ 冻结状态下修改被正确拦截")
+    else:
+        print_response(resp)
+
+    print("\n  步骤6: 解冻校准证书")
+    resp = requests.post(
+        f"{BASE_URL}/calibration/{record_id}/unfreeze",
+        json={"reason": "解冻"}
+    )
+    print_response(resp)
+
+    return True
+
+
 def run_all_tests():
     print("\n" + "╔" + "═" * 58 + "╗")
     print("║" + " " * 10 + "医疗器械巡检权限追责台账系统 - 功能测试" + " " * 10 + "║")
@@ -324,10 +559,16 @@ def run_all_tests():
         test_certificate_status_linkage()
         test_restart_verification()
 
+        # 新增业务接口完整测试
+        test_repair_quotation_workflow()
+        test_supplementary_workflow()
+        test_calibration_workflow()
+
         print("\n" + "=" * 60)
         print("  ✅ 所有测试完成！")
         print("  测试覆盖: 草稿→提交→驳回→重提→确认→撤回→人工改判→冻结→导出→审计")
         print("  边界场景: 重复提交、撤回重提、冻结保护、状态联动、角色脱敏")
+        print("  多入口台账: 巡检记录、校准证书、维修报价、临时补录单")
         print("=" * 60)
 
     except requests.exceptions.ConnectionError:
