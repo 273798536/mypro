@@ -557,6 +557,58 @@ def test_permanent_failure(token):
         print(f"  ✗ 创建永久失败任务失败: {response.text}")
 
 
+def test_sensitive_export(token):
+    print("\n=== 测试脱敏导出功能 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    print("1. 测试完整导出（include_sensitive=true）")
+    response = requests.post(
+        f"{BASE_URL}/export",
+        json={
+            "include_sensitive": True,
+            "format": "xlsx"
+        },
+        headers=headers
+    )
+    if response.status_code == 200:
+        content_type = response.headers.get('content-type', '')
+        filename = response.headers.get('content-disposition', '')
+        print(f"  ✓ 完整导出成功")
+        print(f"    Content-Type: {content_type}")
+        print(f"    文件名包含: {'完整' if '完整' in filename else filename}")
+    else:
+        print(f"  ✗ 完整导出失败: {response.text}")
+    
+    print("\n2. 测试脱敏导出（include_sensitive=false）")
+    response = requests.post(
+        f"{BASE_URL}/export",
+        json={
+            "include_sensitive": False,
+            "format": "xlsx"
+        },
+        headers=headers
+    )
+    if response.status_code == 200:
+        content_type = response.headers.get('content-type', '')
+        filename = response.headers.get('content-disposition', '')
+        print(f"  ✓ 脱敏导出成功")
+        print(f"    Content-Type: {content_type}")
+        print(f"    文件名包含: {'脱敏' if '脱敏' in filename else filename}")
+    else:
+        print(f"  ✗ 脱敏导出失败: {response.text}")
+    
+    print("\n3. 验证财务看板的敏感字段统计已更新")
+    response = requests.get(f"{BASE_URL}/finance/dashboard", headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        stats = data.get('sensitive_field_stats', [])
+        print(f"  ✓ 敏感字段统计已更新: 共 {len(stats)} 个字段")
+        for stat in stats:
+            print(f"      - {stat['field_name']}: 访问{stat['access_count']}次, 角色:{','.join(stat['roles_accessed'])}")
+    else:
+        print(f"  ✗ 获取财务看板失败: {response.text}")
+
+
 def main():
     print("财务报销稽核系统 API 测试")
     print("=" * 50)
@@ -590,6 +642,8 @@ def main():
     test_async_batch_import(token)
     test_async_task_retry(token)
     test_permanent_failure(token)
+    
+    test_sensitive_export(token)
     
     print("\n" + "=" * 50)
     print("测试完成!")

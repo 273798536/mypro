@@ -641,6 +641,7 @@ def finance_dashboard(
 @app.post("/export", tags=["导出"])
 def export_data(
     export_request: schemas.ExportRequest,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.require_role([models.UserRole.FINANCE, models.UserRole.AUDITOR, models.UserRole.ADMIN]))
 ):
@@ -673,8 +674,131 @@ def export_data(
             "重复发票数量": sum(1 for inv in r.invoices if inv.is_duplicate),
         }
         
-        if not export_request.include_sensitive:
-            row = services.mask_sensitive_fields(row, current_user.role.value)
+        if export_request.include_sensitive:
+            for idx, inv in enumerate(r.invoices):
+                prefix = f"发票{idx+1}"
+                row[f"{prefix}_号码"] = inv.invoice_number or ""
+                row[f"{prefix}_代码"] = inv.invoice_code or ""
+                row[f"{prefix}_日期"] = inv.invoice_date.strftime("%Y-%m-%d") if inv.invoice_date else ""
+                row[f"{prefix}_金额"] = inv.total_amount or 0
+                row[f"{prefix}_税额"] = inv.tax_amount or 0
+                row[f"{prefix}_价税合计"] = inv.amount_with_tax or 0
+                row[f"{prefix}_类别"] = inv.category or ""
+                row[f"{prefix}_销售方名称"] = inv.seller_name or ""
+                row[f"{prefix}_销售方税号"] = inv.seller_tax_no or ""
+                row[f"{prefix}_购买方名称"] = inv.buyer_name or ""
+                row[f"{prefix}_购买方税号"] = inv.buyer_tax_no or ""
+                row[f"{prefix}_是否重复"] = "是" if inv.is_duplicate else "否"
+                
+                if inv.seller_tax_no:
+                    services.log_sensitive_field_access(
+                        db, "seller_tax_no", "invoices", inv.id,
+                        current_user.id, current_user.role.value,
+                        "export", False,
+                        request.client.host if request.client else None
+                    )
+                if inv.buyer_tax_no:
+                    services.log_sensitive_field_access(
+                        db, "buyer_tax_no", "invoices", inv.id,
+                        current_user.id, current_user.role.value,
+                        "export", False,
+                        request.client.host if request.client else None
+                    )
+            
+            for idx, pf in enumerate(r.payment_flows):
+                prefix = f"付款{idx+1}"
+                row[f"{prefix}_流水号"] = pf.transaction_no or ""
+                row[f"{prefix}_金额"] = pf.pay_amount or 0
+                row[f"{prefix}_付款时间"] = pf.pay_time.strftime("%Y-%m-%d %H:%M:%S") if pf.pay_time else ""
+                row[f"{prefix}_收款方"] = pf.payee or ""
+                row[f"{prefix}_银行账号"] = pf.bank_account or ""
+                row[f"{prefix}_是否重复"] = "是" if pf.is_duplicate else "否"
+                
+                if pf.bank_account:
+                    services.log_sensitive_field_access(
+                        db, "bank_account", "payment_flows", pf.id,
+                        current_user.id, current_user.role.value,
+                        "export", False,
+                        request.client.host if request.client else None
+                    )
+        else:
+            for idx, inv in enumerate(r.invoices):
+                prefix = f"发票{idx+1}"
+                row[f"{prefix}_号码"] = inv.invoice_number or ""
+                row[f"{prefix}_代码"] = inv.invoice_code or ""
+                row[f"{prefix}_日期"] = inv.invoice_date.strftime("%Y-%m-%d") if inv.invoice_date else ""
+                row[f"{prefix}_金额"] = inv.total_amount or 0
+                row[f"{prefix}_税额"] = inv.tax_amount or 0
+                row[f"{prefix}_价税合计"] = inv.amount_with_tax or 0
+                row[f"{prefix}_类别"] = inv.category or ""
+                row[f"{prefix}_销售方名称"] = inv.seller_name or ""
+                
+                seller_tax_no = inv.seller_tax_no or ""
+                buyer_tax_no = inv.buyer_tax_no or ""
+                
+                if current_user.role.value in ["finance", "admin", "auditor"]:
+                    row[f"{prefix}_销售方税号"] = seller_tax_no
+                    row[f"{prefix}_购买方税号"] = buyer_tax_no
+                else:
+                    if len(seller_tax_no) > 4:
+                        row[f"{prefix}_销售方税号"] = seller_tax_no[:2] + "***" + seller_tax_no[-2:]
+                    elif seller_tax_no:
+                        row[f"{prefix}_销售方税号"] = "***"
+                    else:
+                        row[f"{prefix}_销售方税号"] = ""
+                    
+                    if len(buyer_tax_no) > 4:
+                        row[f"{prefix}_购买方税号"] = buyer_tax_no[:2] + "***" + buyer_tax_no[-2:]
+                    elif buyer_tax_no:
+                        row[f"{prefix}_购买方税号"] = "***"
+                    else:
+                        row[f"{prefix}_购买方税号"] = ""
+                
+                row[f"{prefix}_购买方名称"] = inv.buyer_name or ""
+                row[f"{prefix}_是否重复"] = "是" if inv.is_duplicate else "否"
+                
+                if inv.seller_tax_no:
+                    services.log_sensitive_field_access(
+                        db, "seller_tax_no", "invoices", inv.id,
+                        current_user.id, current_user.role.value,
+                        "export", current_user.role.value not in ["finance", "admin", "auditor"],
+                        request.client.host if request.client else None
+                    )
+                if inv.buyer_tax_no:
+                    services.log_sensitive_field_access(
+                        db, "buyer_tax_no", "invoices", inv.id,
+                        current_user.id, current_user.role.value,
+                        "export", current_user.role.value not in ["finance", "admin", "auditor"],
+                        request.client.host if request.client else None
+                    )
+            
+            for idx, pf in enumerate(r.payment_flows):
+                prefix = f"付款{idx+1}"
+                row[f"{prefix}_流水号"] = pf.transaction_no or ""
+                row[f"{prefix}_金额"] = pf.pay_amount or 0
+                row[f"{prefix}_付款时间"] = pf.pay_time.strftime("%Y-%m-%d %H:%M:%S") if pf.pay_time else ""
+                row[f"{prefix}_收款方"] = pf.payee or ""
+                
+                bank_account = pf.bank_account or ""
+                if current_user.role.value in ["finance", "admin"]:
+                    row[f"{prefix}_银行账号"] = bank_account
+                else:
+                    if len(bank_account) > 4:
+                        row[f"{prefix}_银行账号"] = bank_account[:2] + "****" + bank_account[-2:]
+                    elif bank_account:
+                        row[f"{prefix}_银行账号"] = "****"
+                    else:
+                        row[f"{prefix}_银行账号"] = ""
+                
+                row[f"{prefix}_是否重复"] = "是" if pf.is_duplicate else "否"
+                
+                if pf.bank_account:
+                    services.log_sensitive_field_access(
+                        db, "bank_account", "payment_flows", pf.id,
+                        current_user.id, current_user.role.value,
+                        "export", current_user.role.value not in ["finance", "admin"],
+                        request.client.host if request.client else None
+                    )
         
         data.append(row)
     
@@ -685,7 +809,7 @@ def export_data(
     return FileResponse(
         output_path,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        filename=f"报销数据导出_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        filename=f"报销数据导出_{'脱敏' if not export_request.include_sensitive else '完整'}_{datetime.now().strftime('%Y%m%d')}.xlsx"
     )
 
 
