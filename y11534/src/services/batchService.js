@@ -111,9 +111,18 @@ const processBatchRecords = async (recordType, records, user, duplicateStrategy 
           timestamp: new Date().toISOString()
         });
         
+        const dirtyAnalysis = analyzeDirtyRecord(record, existingRecord, recordType);
+        
+        if (dirtyAnalysis.isDirty) {
+          record.is_dirty = 1;
+          record.dirty_type = dirtyAnalysis.dirtyType;
+          record.dirty_details = dirtyAnalysis.dirtyDetails;
+          stats.dirtyCount++;
+        }
+        
         if (duplicateStrategy === config.DUPLICATE_STRATEGY.OVERWRITE) {
           record.updated_by = user.id;
-          const updateResult = await updateRecord(recordType, existingRecord.id, record, user);
+          const updateResult = await updateRecordWithDirtyInfo(recordType, existingRecord.id, record, user);
           
           await recordWorkFlow(
             recordType,
@@ -123,10 +132,20 @@ const processBatchRecords = async (recordType, records, user, duplicateStrategy 
             existingRecord.status,
             user,
             `重复数据覆盖处理: 原批次${existingRecord.batch_no}, 新批次${batchNo}`,
-            { oldRecord: existingRecord, newRecord: record }
+            { 
+              oldRecord: existingRecord, 
+              newRecord: record,
+              dirtyIssues: dirtyAnalysis.issues
+            }
           );
           
-          results.push({ status: 'overwritten', ...updateResult });
+          results.push({ 
+            status: 'overwritten', 
+            ...updateResult,
+            dirty: dirtyAnalysis.isDirty,
+            dirtyType: dirtyAnalysis.dirtyType,
+            dirtyIssues: dirtyAnalysis.issues
+          });
           stats.successCount++;
         } else {
           await recordWorkFlow(
@@ -137,10 +156,19 @@ const processBatchRecords = async (recordType, records, user, duplicateStrategy 
             existingRecord.status,
             user,
             `重复数据忽略处理: 原批次${existingRecord.batch_no}, 新批次${batchNo}`,
-            { ignoredRecord: record }
+            { 
+              ignoredRecord: record,
+              dirtyIssues: dirtyAnalysis.issues
+            }
           );
           
-          results.push({ status: 'ignored', record: record, reason: 'duplicate' });
+          results.push({ 
+            status: 'ignored', 
+            record: record, 
+            reason: 'duplicate',
+            dirty: dirtyAnalysis.isDirty,
+            dirtyIssues: dirtyAnalysis.issues
+          });
         }
         continue;
       }
@@ -217,6 +245,26 @@ const updateRecord = (recordType, id, data, user) => {
   });
 };
 
+const updateRecordWithDirtyInfo = (recordType, id, data, user) => {
+  return new Promise((resolve, reject) => {
+    const dirtyFields = ['is_dirty', 'dirty_type', 'dirty_details'];
+    const columns = Object.keys(data).filter(col => col !== 'id' && col !== 'batch_no');
+    const allColumns = [...new Set([...columns, ...dirtyFields])];
+    
+    const setClause = allColumns.map(col => `${col} = ?`).join(', ');
+    const values = [...allColumns.map(col => data[col]), user.id, id];
+    
+    db.run(`
+      UPDATE ${recordType}
+      SET ${setClause}, updated_by = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `, values, function(err) {
+      if (err) reject(err);
+      else resolve({ id, changes: this.changes });
+    });
+  });
+};
+
 const getBatchInfo = (batchNo) => {
   return new Promise((resolve, reject) => {
     db.get(`
@@ -252,6 +300,7 @@ module.exports = {
   processBatchRecords,
   insertRecord,
   updateRecord,
+  updateRecordWithDirtyInfo,
   getBatchInfo,
   getBatchRecords
 };

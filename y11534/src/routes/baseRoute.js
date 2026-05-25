@@ -5,7 +5,7 @@ const { authenticate, requireRole } = require('../middleware/auth');
 const { filterFieldsByPermission, canEditRecord } = require('../middleware/permission');
 const { logAction } = require('../services/auditService');
 const { recordWorkFlow, getWorkflowHistory, canPerformAction, getNextStatus } = require('../services/workflowService');
-const { processBatchRecords, getBatchInfo, getBatchRecords, updateRecord } = require('../services/batchService');
+const { processBatchRecords, getBatchInfo, getBatchRecords, updateRecord, generateBatchNo } = require('../services/batchService');
 const { analyzeDirtyRecord, resolveDirtyRecord } = require('../services/dataQualityService');
 const { exportToExcel, generateExportFileName, getExportSummary } = require('../services/exportService');
 
@@ -105,6 +105,7 @@ const createBaseRouter = (moduleName, tableName, idField = 'id') => {
   router.post('/', authenticate, requireRole(config.ROLES.DATA_ENTRY, config.ROLES.SUPERVISOR), async (req, res) => {
     try {
       const data = req.body;
+      data.batch_no = data.batch_no || generateBatchNo(tableName);
       data.status = config.RECORD_STATUS.DRAFT;
       data.created_by = req.user.id;
       data.updated_by = req.user.id;
