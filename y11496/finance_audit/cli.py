@@ -38,7 +38,7 @@ def init(ctx):
         sys.exit(1)
 
 
-@cli.command()
+@cli.command('import')
 @click.argument('file_path')
 @click.option('--source-type', type=click.Choice(['invoice_pdf', 'travel_request', 'payment_flow', 'supervisor_note']),
               help='数据源类型，自动检测时可省略')
@@ -46,7 +46,7 @@ def init(ctx):
 @click.option('--operator', default='cli_user', help='操作人')
 @click.option('--snapshot/--no-snapshot', default=True, help='导入后创建快照')
 @click.pass_context
-def import_data(ctx, file_path, source_type, trip_id, operator, snapshot):
+def import_cmd(ctx, file_path, source_type, trip_id, operator, snapshot):
     storage = ctx.obj['storage']
     engine = ctx.obj['engine']
 
@@ -76,7 +76,7 @@ def import_data(ctx, file_path, source_type, trip_id, operator, snapshot):
     updated_count = 0
 
     for data in records_data:
-        record = _find_or_create_record(storage, data, st)
+        record = _find_or_create_record(storage, data, st, trip_id)
 
         evidence = SourceEvidence(
             source_type=st,
@@ -89,6 +89,8 @@ def import_data(ctx, file_path, source_type, trip_id, operator, snapshot):
 
         if trip_id:
             record.shared_trip_id = trip_id
+        elif st in [SourceType.INVOICE_PDF, SourceType.PAYMENT_FLOW]:
+            _auto_link_trip_id(storage, record, data)
 
         if record.status == RecordStatus.PENDING:
             record.update_status(RecordStatus.IMPORTED, operator, f"Imported from {file_path}")
@@ -151,9 +153,22 @@ def _import_supervisor_notes(ctx, file_path, operator):
     click.echo(f"✓ 批注应用完成: {applied} 条记录已更新")
 
 
-def _find_or_create_record(storage, data, source_type):
+def _find_or_create_record(storage, data, source_type, trip_id=None):
     all_records = storage.load_all_records()
-
+    
+    if source_type == SourceType.INVOICE_PDF:
+        return ReimbursementRecord(
+            record_id=generate_record_id(),
+            employee_id=str(data.get("employee_id", "UNKNOWN")),
+            employee_name=str(data.get("employee_name", "未知")),
+            expense_type=str(data.get("expense_type", "其他")),
+            amount=float(data.get("amount", 0)),
+            currency=str(data.get("currency", "CNY")),
+            expense_date=str(data.get("expense_date", datetime.now().strftime('%Y-%m-%d'))),
+            status=RecordStatus.PENDING,
+            shared_trip_id=trip_id
+        )
+    
     key_fields = {
         "employee_id": data.get("employee_id"),
         "amount": data.get("amount"),
@@ -164,6 +179,8 @@ def _find_or_create_record(storage, data, source_type):
         if (str(record.employee_id) == str(key_fields["employee_id"]) and
             abs(record.amount - float(key_fields["amount"])) < 0.01 and
             record.expense_date[:10] == str(key_fields["expense_date"])[:10]):
+            if trip_id and not record.shared_trip_id:
+                record.shared_trip_id = trip_id
             return record
 
     return ReimbursementRecord(
@@ -174,8 +191,42 @@ def _find_or_create_record(storage, data, source_type):
         amount=float(data.get("amount", 0)),
         currency=str(data.get("currency", "CNY")),
         expense_date=str(data.get("expense_date", datetime.now().strftime('%Y-%m-%d'))),
-        status=RecordStatus.PENDING
+        status=RecordStatus.PENDING,
+        shared_trip_id=trip_id
     )
+
+
+def _auto_link_trip_id(storage, record, data):
+    if record.shared_trip_id:
+        return
+    
+    all_records = storage.load_all_records()
+    expense_date = str(data.get("expense_date", ""))[:10]
+    employee_id = str(data.get("employee_id", ""))
+    
+    for r in all_records:
+        if (r.shared_trip_id and 
+            str(r.employee_id) == employee_id and
+            r.status not in [RecordStatus.WITHDRAWN, RecordStatus.REJECTED]):
+            trip_start = None
+            trip_end = None
+            for src_type, evidence in r.evidences.items():
+                parsed = evidence.parsed_value
+                if isinstance(parsed, dict):
+                    trip_start = parsed.get("start_date") or parsed.get("start_date")
+                    trip_end = parsed.get("end_date") or parsed.get("end_date")
+            
+            if trip_start and trip_end:
+                from datetime import datetime as dt
+                try:
+                    start_dt = dt.strptime(str(trip_start)[:10], "%Y-%m-%d")
+                    end_dt = dt.strptime(str(trip_end)[:10], "%Y-%m-%d")
+                    expense_dt = dt.strptime(expense_date, "%Y-%m-%d")
+                    if start_dt <= expense_dt <= end_dt:
+                        record.shared_trip_id = r.shared_trip_id
+                        return
+                except (ValueError, TypeError):
+                    pass
 
 
 @cli.command()

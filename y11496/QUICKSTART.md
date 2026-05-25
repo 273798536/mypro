@@ -33,28 +33,33 @@ finance-audit init
 finance-audit import sample_data/travel_requests.csv --trip-id TRIP-BJ-202403
 ```
 
-### 3. 导入发票PDF数据
+### 3. 导入发票PDF数据（会自动关联到对应trip_id）
 ```bash
 finance-audit import sample_data/invoices.csv
 ```
 
-### 4. 查看当前记录
+### 4. 导入付款流水数据（会自动关联到对应trip_id）
+```bash
+finance-audit import sample_data/payment_flows.csv
+```
+
+### 5. 查看当前记录（注意shared_trip_id列）
 ```bash
 finance-audit history
 ```
 
-### 5. 执行稽核检查
+### 6. 执行稽核检查（检测重复提交、共享行程重复等）
 ```bash
 finance-audit check
 ```
 
-### 6. 查看稽核报告和失败清单
+### 7. 查看稽核报告和失败清单（含原始行号）
 ```bash
 finance-audit report
 finance-audit report --show-evidence
 ```
 
-### 7. 修复问题
+### 8. 修复问题
 ```bash
 # 标记特定问题为已解决
 finance-audit fix REC-XXXX-XXXX --issue-index 0 --resolution "已核实为两人合住，分摊合理"
@@ -63,23 +68,23 @@ finance-audit fix REC-XXXX-XXXX --issue-index 0 --resolution "已核实为两人
 finance-audit override REC-XXXX-XXXX --reason "财务经理特批，情况特殊" --status approved
 ```
 
-### 8. 导入主管批注（先修改notes中的record_id为实际ID）
+### 9. 导入主管批注（先修改notes中的record_id为实际ID）
 ```bash
 finance-audit import sample_data/supervisor_notes.csv
 ```
 
-### 9. 冻结待导出记录
+### 10. 冻结待导出记录
 ```bash
 finance-audit freeze REC-XXXX-XXXX --reason "导出前冻结"
 ```
 
-### 10. 查看快照对比
+### 11. 查看快照对比
 ```bash
 finance-audit history --list-snapshots
 finance-audit history --snap1 SNAP-XXXX-XXXX --snap2 SNAP-XXXX-XXXX
 ```
 
-### 11. 导出最终结果
+### 12. 导出最终结果
 ```bash
 finance-audit export --status approved --format json
 finance-audit export --status checked --format csv
