@@ -2,7 +2,9 @@ from flask import Blueprint, request, jsonify, send_from_directory
 import os
 from config import EXPORT_DIR
 from services.idempotency import check_idempotency, save_idempotency_key
-from services.data_processor import validate_data, save_dirty_record, parse_datetime
+from services.data_processor import (
+    validate_data, save_dirty_record, parse_datetime, check_and_detect_anomalies
+)
 from services.reconciliation import run_reconciliation, get_reconciliation_result, analyze_anomalies
 from services.exporter import export_to_excel
 from models.database import get_session
@@ -45,6 +47,27 @@ def add_registration():
                     'updated': True
                 })
         
+        existing_reg = session.query(Registration).filter_by(
+            batch_id=batch_id,
+            employee_id=data['employee_id'],
+            training_course=data['training_course']
+        ).first()
+        
+        if existing_reg:
+            existing_reg.employee_name = data.get('employee_name', existing_reg.employee_name)
+            existing_reg.department = data.get('department', existing_reg.department)
+            existing_reg.training_date = data.get('training_date', existing_reg.training_date)
+            existing_reg.amount = data.get('amount', existing_reg.amount)
+            existing_reg.status = data.get('status', existing_reg.status)
+            existing_reg.raw_data = data
+            session.commit()
+            save_idempotency_key('registration', data, existing_reg.id)
+            return jsonify({
+                'message': '报名信息已更新（幂等处理）',
+                'id': existing_reg.id,
+                'updated': True
+            })
+        
         reg = Registration(
             batch_id=batch_id,
             employee_id=data['employee_id'],
@@ -82,8 +105,11 @@ def add_sign():
     
     existing_id = check_idempotency('sign', data)
     session = get_session()
+    anomalies = []
     
     try:
+        anomalies = check_and_detect_anomalies(session, 'sign', data)
+        
         if existing_id:
             sign = session.query(SignRecord).filter_by(id=existing_id).first()
             if sign:
@@ -96,11 +122,43 @@ def add_sign():
                 sign.is_makeup = data.get('is_makeup', sign.is_makeup)
                 sign.raw_data = data
                 session.commit()
+                
+                for anomaly in anomalies:
+                    save_dirty_record(batch_id, 'sign', anomaly['dirty_type'], data, anomaly['error_message'])
+                
                 return jsonify({
                     'message': '签到记录已更新（幂等处理）',
                     'id': sign.id,
-                    'updated': True
+                    'updated': True,
+                    'anomalies': anomalies
                 })
+        
+        existing_sign = session.query(SignRecord).filter_by(
+            batch_id=batch_id,
+            sign_id=data['sign_id']
+        ).first()
+        
+        if existing_sign:
+            existing_sign.employee_id = data.get('employee_id', existing_sign.employee_id)
+            existing_sign.employee_name = data.get('employee_name', existing_sign.employee_name)
+            existing_sign.training_course = data.get('training_course', existing_sign.training_course)
+            existing_sign.sign_time = parse_datetime(data['sign_time']) if data.get('sign_time') else existing_sign.sign_time
+            existing_sign.sign_type = data.get('sign_type', existing_sign.sign_type)
+            existing_sign.is_proxy = data.get('is_proxy', existing_sign.is_proxy)
+            existing_sign.is_makeup = data.get('is_makeup', existing_sign.is_makeup)
+            existing_sign.raw_data = data
+            session.commit()
+            save_idempotency_key('sign', data, existing_sign.id)
+            
+            for anomaly in anomalies:
+                save_dirty_record(batch_id, 'sign', anomaly['dirty_type'], data, anomaly['error_message'])
+            
+            return jsonify({
+                'message': '签到记录已更新（幂等处理）',
+                'id': existing_sign.id,
+                'updated': True,
+                'anomalies': anomalies
+            })
         
         sign = SignRecord(
             batch_id=batch_id,
@@ -122,7 +180,14 @@ def add_sign():
         save_idempotency_key('sign', data, sign.id)
         session.commit()
         
-        return jsonify({'message': '签到记录已录入', 'id': sign.id}), 201
+        for anomaly in anomalies:
+            save_dirty_record(batch_id, 'sign', anomaly['dirty_type'], data, anomaly['error_message'])
+        
+        return jsonify({
+            'message': '签到记录已录入',
+            'id': sign.id,
+            'anomalies': anomalies
+        }), 201
     except Exception as e:
         session.rollback()
         save_dirty_record(batch_id, 'sign', 'INVALID_FORMAT', data, str(e))
@@ -161,6 +226,27 @@ def add_homework():
                     'updated': True
                 })
         
+        existing_hw = session.query(Homework).filter_by(
+            batch_id=batch_id,
+            homework_id=data['homework_id']
+        ).first()
+        
+        if existing_hw:
+            existing_hw.employee_id = data.get('employee_id', existing_hw.employee_id)
+            existing_hw.employee_name = data.get('employee_name', existing_hw.employee_name)
+            existing_hw.training_course = data.get('training_course', existing_hw.training_course)
+            existing_hw.submit_time = parse_datetime(data['submit_time']) if data.get('submit_time') else existing_hw.submit_time
+            existing_hw.score = data.get('score', existing_hw.score)
+            existing_hw.status = data.get('status', existing_hw.status)
+            existing_hw.raw_data = data
+            session.commit()
+            save_idempotency_key('homework', data, existing_hw.id)
+            return jsonify({
+                'message': '作业记录已更新（幂等处理）',
+                'id': existing_hw.id,
+                'updated': True
+            })
+        
         hw = Homework(
             batch_id=batch_id,
             homework_id=data['homework_id'],
@@ -197,8 +283,11 @@ def add_refund():
     
     existing_id = check_idempotency('refund', data)
     session = get_session()
+    anomalies = []
     
     try:
+        anomalies = check_and_detect_anomalies(session, 'refund', data)
+        
         if existing_id:
             refund = session.query(Refund).filter_by(id=existing_id).first()
             if refund:
@@ -210,11 +299,42 @@ def add_refund():
                 refund.refund_reason = data.get('refund_reason', refund.refund_reason)
                 refund.raw_data = data
                 session.commit()
+                
+                for anomaly in anomalies:
+                    save_dirty_record(batch_id, 'refund', anomaly['dirty_type'], data, anomaly['error_message'])
+                
                 return jsonify({
                     'message': '退款记录已更新（幂等处理）',
                     'id': refund.id,
-                    'updated': True
+                    'updated': True,
+                    'anomalies': anomalies
                 })
+        
+        existing_refund = session.query(Refund).filter_by(
+            batch_id=batch_id,
+            refund_id=data['refund_id']
+        ).first()
+        
+        if existing_refund:
+            existing_refund.employee_id = data.get('employee_id', existing_refund.employee_id)
+            existing_refund.employee_name = data.get('employee_name', existing_refund.employee_name)
+            existing_refund.training_course = data.get('training_course', existing_refund.training_course)
+            existing_refund.refund_amount = data.get('refund_amount', existing_refund.refund_amount)
+            existing_refund.refund_time = parse_datetime(data['refund_time']) if data.get('refund_time') else existing_refund.refund_time
+            existing_refund.refund_reason = data.get('refund_reason', existing_refund.refund_reason)
+            existing_refund.raw_data = data
+            session.commit()
+            save_idempotency_key('refund', data, existing_refund.id)
+            
+            for anomaly in anomalies:
+                save_dirty_record(batch_id, 'refund', anomaly['dirty_type'], data, anomaly['error_message'])
+            
+            return jsonify({
+                'message': '退款记录已更新（幂等处理）',
+                'id': existing_refund.id,
+                'updated': True,
+                'anomalies': anomalies
+            })
         
         refund = Refund(
             batch_id=batch_id,
@@ -232,7 +352,14 @@ def add_refund():
         save_idempotency_key('refund', data, refund.id)
         session.commit()
         
-        return jsonify({'message': '退款记录已录入', 'id': refund.id}), 201
+        for anomaly in anomalies:
+            save_dirty_record(batch_id, 'refund', anomaly['dirty_type'], data, anomaly['error_message'])
+        
+        return jsonify({
+            'message': '退款记录已录入',
+            'id': refund.id,
+            'anomalies': anomalies
+        }), 201
     except Exception as e:
         session.rollback()
         save_dirty_record(batch_id, 'refund', 'INVALID_FORMAT', data, str(e))
@@ -292,6 +419,8 @@ def get_dirty_records(batch_id):
             'raw_data': d.raw_data,
             'suggestion': d.suggestion,
             'is_fixed': d.is_fixed,
+            'fixed_by': d.fixed_by,
+            'fixed_data': d.fixed_data,
             'created_at': d.created_at.isoformat()
         } for d in dirty]
         return jsonify({'count': len(result), 'records': result})
@@ -310,10 +439,62 @@ def fix_dirty_record(dirty_id):
         
         dirty.is_fixed = True
         dirty.fixed_by = data.get('fixed_by', 'system')
-        dirty.fixed_data = data.get('fixed_data')
+        fixed_data = data.get('fixed_data', {})
+        dirty.fixed_data = fixed_data
+        
+        if fixed_data and dirty.data_type:
+            batch_id = dirty.batch_id
+            
+            if dirty.data_type == 'registration':
+                reg = session.query(Registration).filter_by(
+                    batch_id=batch_id,
+                    employee_id=dirty.raw_data.get('employee_id')
+                ).first()
+                if reg:
+                    for key, value in fixed_data.items():
+                        if hasattr(reg, key) and value is not None:
+                            setattr(reg, key, value)
+                    reg.raw_data = {**dirty.raw_data, **fixed_data}
+            
+            elif dirty.data_type == 'sign':
+                sign = session.query(SignRecord).filter_by(
+                    batch_id=batch_id,
+                    sign_id=dirty.raw_data.get('sign_id')
+                ).first()
+                if sign:
+                    for key, value in fixed_data.items():
+                        if hasattr(sign, key) and value is not None:
+                            setattr(sign, key, value)
+                    sign.raw_data = {**dirty.raw_data, **fixed_data}
+            
+            elif dirty.data_type == 'homework':
+                hw = session.query(Homework).filter_by(
+                    batch_id=batch_id,
+                    homework_id=dirty.raw_data.get('homework_id')
+                ).first()
+                if hw:
+                    for key, value in fixed_data.items():
+                        if hasattr(hw, key) and value is not None:
+                            setattr(hw, key, value)
+                    hw.raw_data = {**dirty.raw_data, **fixed_data}
+            
+            elif dirty.data_type == 'refund':
+                refund = session.query(Refund).filter_by(
+                    batch_id=batch_id,
+                    refund_id=dirty.raw_data.get('refund_id')
+                ).first()
+                if refund:
+                    for key, value in fixed_data.items():
+                        if hasattr(refund, key) and value is not None:
+                            setattr(refund, key, value)
+                    refund.raw_data = {**dirty.raw_data, **fixed_data}
+        
         session.commit()
         
-        return jsonify({'message': '脏记录已标记为修复'})
+        return jsonify({
+            'message': '脏记录已修复，事实数据已更新',
+            'fixed_data_applied': bool(fixed_data)
+        })
     except Exception as e:
         session.rollback()
         return jsonify({'error': str(e)}), 500

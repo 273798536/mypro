@@ -9,4 +9,4 @@ app.register_blueprint(api_bp, url_prefix='/api')
 init_db()
 
 if __name__ == '__main__':
-    app.run(host=API_HOST, port=API_PORT, debug=True)
+    app.run(host=API_HOST, port=API_PORT, debug=False, threaded=True)

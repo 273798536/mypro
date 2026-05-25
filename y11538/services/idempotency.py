@@ -1,12 +1,26 @@
 import hashlib
-import json
 from models.database import get_session
 from models.tables import IdempotencyKey
 
+def get_business_key(data_type: str, data: dict) -> str:
+    key_fields = {
+        'registration': ['batch_id', 'employee_id', 'training_course'],
+        'sign': ['batch_id', 'sign_id'],
+        'homework': ['batch_id', 'homework_id'],
+        'refund': ['batch_id', 'refund_id']
+    }
+    
+    fields = key_fields.get(data_type, [])
+    key_parts = [data_type]
+    for field in fields:
+        value = data.get(field, '')
+        key_parts.append(str(value))
+    
+    return ':'.join(key_parts)
+
 def generate_idempotency_key(data_type: str, data: dict) -> str:
-    data_str = json.dumps(data, sort_keys=True, ensure_ascii=False)
-    raw_key = f"{data_type}:{data_str}"
-    return hashlib.md5(raw_key.encode('utf-8')).hexdigest()
+    business_key = get_business_key(data_type, data)
+    return hashlib.md5(business_key.encode('utf-8')).hexdigest()
 
 def check_idempotency(data_type: str, data: dict):
     session = get_session()
