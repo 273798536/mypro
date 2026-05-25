@@ -313,6 +313,7 @@ class StateMachine:
             )
             stats["temp_records"] = added
 
+        self.db.flush()
         self._update_batch_totals(batch)
         batch.updated_at = datetime.utcnow()
 
@@ -367,6 +368,7 @@ class StateMachine:
             )
             stats["temp_records"] = added
 
+        self.db.flush()
         self._update_batch_totals(batch)
 
         self._create_audit_log(
