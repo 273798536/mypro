@@ -1,0 +1,44 @@
+{
+  "record_id": "dispatch_order_39dbd937ed4cea36",
+  "source_type": "dispatch_order",
+  "business_key": "39dbd937ed4cea36",
+  "status": "pending",
+  "current_value": {
+    "order_no": "WQ20260524007",
+    "repair_date": "2026-05-24",
+    "site": "西城区德胜门水厂",
+    "material_list": "DN150蝶阀",
+    "quantity": -1.0,
+    "operator": "李四"
+  },
+  "source_evidence": [
+    {
+      "source_file": "../sample_data/invalid_dispatch.csv",
+      "source_file_hash": "47c2f4fa76713ee4edb37b4a77646e4455f022d035688e3f61856f1471b5b667",
+      "original_row_number": 3,
+      "original_content": {
+        "order_no": "WQ20260524007",
+        "repair_date": "2026-05-24",
+        "site": "西城区德胜门水厂",
+        "material_list": "DN150蝶阀",
+        "quantity": "-1",
+        "operator": "李四"
+      },
+      "parsed_standard_value": {
+        "order_no": "WQ20260524007",
+        "repair_date": "2026-05-24",
+        "site": "西城区德胜门水厂",
+        "material_list": "DN150蝶阀",
+        "quantity": -1.0,
+        "operator": "李四"
+      },
+      "import_timestamp": "2026-05-25T19:33:29.851388"
+    }
+  ],
+  "check_results": [],
+  "fix_history": [],
+  "manual_judgment": null,
+  "is_frozen": false,
+  "created_at": "2026-05-25T19:33:29.851411",
+  "updated_at": "2026-05-25T19:33:29.851414"
+}

@@ -8,6 +8,7 @@ import pandas as pd
 
 from .config import Config
 from .storage import RecordStorage
+from .deadletter import DeadLetterQueue
 from .models import (
     DataSourceType, RecordStatus, ImportStatus,
     SourceEvidence, RepairRecord,
@@ -20,6 +21,7 @@ class DataImporter:
         self.config = config
         self.storage = storage
         self.batch_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.dlq = DeadLetterQueue(config)
 
     def import_file(self, source_type_str: str, file_path: str,
                     sheet: str = '0') -> Dict[str, Any]:
@@ -100,11 +102,22 @@ class DataImporter:
                 
             except Exception as e:
                 result['failed_count'] += 1
-                result['failed_rows'].append({
+                fail_row = {
                     'row': original_row_number,
                     'content': self._clean_row_data(row.to_dict()),
                     'error': str(e)
-                })
+                }
+                result['failed_rows'].append(fail_row)
+                
+                dlq_id = self.dlq.enqueue(
+                    source_type=source_type_str,
+                    source_file=str(file_path),
+                    batch_id=self.batch_id,
+                    row_number=original_row_number,
+                    original_content=fail_row['content'],
+                    error_message=str(e)
+                )
+                fail_row['dlq_id'] = dlq_id
         
         if result['failed_count'] > 0:
             if result['success_count'] > 0:
