@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { Search, Filter, Eye, FileText } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Filter, Eye, FileText, Plus, Upload } from 'lucide-react';
 import { chainApi } from '../services/api';
 import { StatusBadge } from '../components/StatusBadge';
+import { ImportMaterialDialog } from '../components/ImportMaterialDialog';
+import { GenerateChainDialog } from '../components/GenerateChainDialog';
 
 export const ChainList: React.FC = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     storeName: '',
     status: '',
@@ -28,6 +34,22 @@ export const ChainList: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">链路管理</h1>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setImportDialogOpen(true)}
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 flex items-center"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            导入材料
+          </button>
+          <button
+            onClick={() => setGenerateDialogOpen(true)}
+            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            创建链路
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -153,6 +175,25 @@ export const ChainList: React.FC = () => {
           共 {chains?.total || 0} 条记录
         </p>
       </div>
+
+      <ImportMaterialDialog
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['materialsForChain'] });
+          queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+        }}
+      />
+
+      <GenerateChainDialog
+        open={generateDialogOpen}
+        onClose={() => setGenerateDialogOpen(false)}
+        onSuccess={(chainId) => {
+          queryClient.invalidateQueries({ queryKey: ['chains'] });
+          queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+          navigate(`/chains/${chainId}`);
+        }}
+      />
     </div>
   );
 };
