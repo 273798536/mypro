@@ -5,12 +5,14 @@ import pandas as pd
 from datetime import datetime
 from pathlib import Path
 from .config import get_session, SOURCE_TYPES, SOURCE_TYPE_NAMES
-from .models import ImportBatch, ImportRecord, RawData, StandardData
+from .models import ImportBatch, ImportRecord, RawData, StandardData, CheckResult
 
 
 def generate_batch_no(source_type):
+    import random
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"{source_type.upper()[:3]}-{timestamp}"
+    suffix = random.randint(1000, 9999)
+    return f"{source_type.upper()[:3]}-{timestamp}-{suffix}"
 
 
 def calculate_file_hash(file_path):
@@ -24,8 +26,7 @@ def calculate_file_hash(file_path):
 def check_duplicate_file(session, file_hash, source_type):
     existing = session.query(ImportBatch).filter(
         ImportBatch.file_hash == file_hash,
-        ImportBatch.source_type == source_type,
-        ImportBatch.is_frozen == False
+        ImportBatch.source_type == source_type
     ).first()
     return existing is not None, existing
 
@@ -195,23 +196,24 @@ def import_file(file_path, source_type, operator="system", remark="", db_path=No
         
         for idx, (_, row) in enumerate(df.iterrows()):
             row_num = idx + 2
+            
+            record = ImportRecord(
+                batch_id=batch.id,
+                source_row=row_num
+            )
+            session.add(record)
+            session.flush()
+            
+            raw_json = json.dumps(row.to_dict(), ensure_ascii=False, default=str)
+            raw_data = RawData(
+                record_id=record.id,
+                raw_json=raw_json,
+                source_file=os.path.abspath(file_path),
+                source_row=row_num
+            )
+            session.add(raw_data)
+            
             try:
-                record = ImportRecord(
-                    batch_id=batch.id,
-                    source_row=row_num
-                )
-                session.add(record)
-                session.flush()
-                
-                raw_json = json.dumps(row.to_dict(), ensure_ascii=False, default=str)
-                raw_data = RawData(
-                    record_id=record.id,
-                    raw_json=raw_json,
-                    source_file=os.path.abspath(file_path),
-                    source_row=row_num
-                )
-                session.add(raw_data)
-                
                 std_data = standardizer(row, row_num)
                 std_data.record_id = record.id
                 session.add(std_data)
@@ -220,10 +222,21 @@ def import_file(file_path, source_type, operator="system", remark="", db_path=No
                 
             except Exception as e:
                 fail_count += 1
+                error_msg = str(e)
                 errors.append({
                     "row": row_num,
-                    "error": str(e)
+                    "error": error_msg
                 })
+                
+                check_result = CheckResult(
+                    record_id=record.id,
+                    check_type="import",
+                    check_item="parse",
+                    is_passed=False,
+                    message=f"导入解析失败: {error_msg}",
+                    severity="critical"
+                )
+                session.add(check_result)
         
         batch.success_rows = success_count
         batch.failed_rows = fail_count
