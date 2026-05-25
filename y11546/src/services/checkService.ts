@@ -100,6 +100,40 @@ export class CheckService {
           });
         }
       }
+
+      if (sourceType === 'logistics_receipt') {
+        const receipt = item as any;
+        if (!receipt.waybill_no || receipt.waybill_no.trim() === '') {
+          issues.push({
+            type: 'no_waybill_no',
+            severity: 'error',
+            material_code: item.material_code,
+            original_line_no: item.original_line_no,
+            message: '运单号为空',
+            suggestion: '请补充运单号',
+          });
+        }
+        if (!receipt.sign_status || receipt.sign_status === 'unsigned') {
+          issues.push({
+            type: 'logistics_unsigned',
+            severity: 'warning',
+            material_code: item.material_code,
+            original_line_no: item.original_line_no,
+            message: '运单未签收',
+            suggestion: '请确认物流签收状态',
+          });
+        }
+        if (receipt.sign_status === 'rejected') {
+          issues.push({
+            type: 'logistics_rejected',
+            severity: 'error',
+            material_code: item.material_code,
+            original_line_no: item.original_line_no,
+            message: '运单被拒收，物料未入库',
+            suggestion: '请联系供应商或物流处理拒收问题',
+          });
+        }
+      }
     }
 
     const consistentCount = data.length - issues.filter((i) => i.severity === 'error').length;
@@ -123,12 +157,75 @@ export class CheckService {
 
   async crossCheck(): Promise<CheckResult> {
     const materials = await this.materialDAO.findAll('material_list');
+    const logistics = await this.materialDAO.findAll('logistics_receipt');
     const borrows = await this.materialDAO.findAll('on_site_borrow');
     const diffs = await this.materialDAO.findAll('inventory_diff');
 
     const issues: CheckResult['issues'] = [];
 
     const materialMap = new Map(materials.map((m) => [m.material_code, m]));
+
+    for (const receipt of logistics) {
+      const receiptData = receipt as any;
+      if (!materialMap.has(receiptData.material_code)) {
+        issues.push({
+          type: 'logistics_not_in_list',
+          severity: 'warning',
+          material_code: receiptData.material_code,
+          original_line_no: receiptData.original_line_no,
+          message: '物流签收中的物料不在物料清单中',
+          suggestion: '请检查是否漏登物料清单',
+        });
+      }
+
+      if (!receiptData.sign_status || receiptData.sign_status === 'unsigned') {
+        issues.push({
+          type: 'logistics_unsigned',
+          severity: 'warning',
+          material_code: receiptData.material_code,
+          original_line_no: receiptData.original_line_no,
+          message: '运单未签收',
+          suggestion: '请确认物流签收状态',
+        });
+      }
+
+      if (receiptData.sign_status === 'rejected') {
+        issues.push({
+          type: 'logistics_rejected',
+          severity: 'error',
+          material_code: receiptData.material_code,
+          original_line_no: receiptData.original_line_no,
+          message: '运单被拒收，物料未入库',
+          suggestion: '请联系供应商或物流处理拒收问题',
+        });
+      }
+    }
+
+    const logisticsMap = new Map<string, any[]>();
+    for (const receipt of logistics) {
+      const receiptData = receipt as any;
+      if (receiptData.sign_status === 'signed') {
+        if (!logisticsMap.has(receiptData.material_code)) {
+          logisticsMap.set(receiptData.material_code, []);
+        }
+        logisticsMap.get(receiptData.material_code)!.push(receiptData);
+      }
+    }
+
+    for (const [code, receipts] of logisticsMap) {
+      const totalReceived = receipts.reduce((sum, r) => sum + r.quantity, 0);
+      const material = materialMap.get(code);
+      if (material && totalReceived !== material.quantity) {
+        issues.push({
+          type: 'logistics_quantity_mismatch',
+          severity: 'error',
+          material_code: code,
+          original_line_no: receipts[0].original_line_no,
+          message: `物流签收总量(${totalReceived})与物料清单数量(${material.quantity})不一致`,
+          suggestion: '请核对物流签收和物料清单数量',
+        });
+      }
+    }
 
     for (const borrow of borrows) {
       if (!materialMap.has(borrow.material_code)) {
@@ -181,7 +278,7 @@ export class CheckService {
       }
     }
 
-    const totalCount = materials.length + borrows.length + diffs.length;
+    const totalCount = materials.length + logistics.length + borrows.length + diffs.length;
 
     const result: Omit<CheckResult, 'id'> = {
       check_time: dayjs().toISOString(),
@@ -202,9 +299,43 @@ export class CheckService {
 
   async generateReport(): Promise<ReportData> {
     const materials = await this.materialDAO.findAll('material_list');
+    const logistics = await this.materialDAO.findAll('logistics_receipt');
     const borrows = await this.materialDAO.findAll('on_site_borrow');
     const diffs = await this.materialDAO.findAll('inventory_diff');
     const failedRecords = await this.failedRecordDAO.findByStatus('pending');
+
+    const materialMap = new Map(materials.map((m) => [m.material_code, m]));
+
+    const logisticsStatus = {
+      signed: 0,
+      unsigned: 0,
+      rejected: 0,
+      total_quantity: 0,
+    };
+
+    let logisticsNotInList = 0;
+    let borrowNotInList = 0;
+    let diffNotInList = 0;
+    let borrowExceedStock = 0;
+
+    const borrowMap = new Map<string, any[]>();
+
+    for (const receipt of logistics) {
+      const receiptData = receipt as any;
+      const status = receiptData.sign_status || 'unsigned';
+      if (status === 'signed') {
+        logisticsStatus.signed++;
+        logisticsStatus.total_quantity += receiptData.quantity;
+      } else if (status === 'unsigned') {
+        logisticsStatus.unsigned++;
+      } else if (status === 'rejected') {
+        logisticsStatus.rejected++;
+      }
+
+      if (!materialMap.has(receiptData.material_code)) {
+        logisticsNotInList++;
+      }
+    }
 
     const borrowStatus = {
       borrowed: 0,
@@ -214,9 +345,30 @@ export class CheckService {
     };
 
     for (const borrow of borrows) {
-      const status = borrow.return_status || 'unconfirmed';
+      const borrowData = borrow as any;
+      const status = borrowData.return_status || 'unconfirmed';
       if (status in borrowStatus) {
         (borrowStatus as any)[status]++;
+      }
+
+      if (!materialMap.has(borrowData.material_code)) {
+        borrowNotInList++;
+      }
+
+      if (!borrowMap.has(borrowData.material_code)) {
+        borrowMap.set(borrowData.material_code, []);
+      }
+      borrowMap.get(borrowData.material_code)!.push(borrowData);
+    }
+
+    for (const [code, itemBorrows] of borrowMap) {
+      const totalBorrowed = itemBorrows
+        .filter((b) => b.return_status === 'borrowed' || b.return_status === 'lost')
+        .reduce((sum, b) => sum + b.quantity, 0);
+
+      const material = materialMap.get(code);
+      if (material && totalBorrowed > material.quantity) {
+        borrowExceedStock++;
       }
     }
 
@@ -227,22 +379,35 @@ export class CheckService {
     };
 
     for (const diff of diffs) {
-      const type = diff.diff_type;
+      const diffData = diff as any;
+      const type = diffData.diff_type;
       if (type in inventoryDiff) {
         (inventoryDiff as any)[type]++;
+      }
+
+      if (!materialMap.has(diffData.material_code)) {
+        diffNotInList++;
       }
     }
 
     return {
       summary: {
         total_materials: materials.length,
+        total_logistics: logistics.length,
         total_borrowed: borrows.length,
         total_lost: borrowStatus.lost,
         total_diffs: diffs.length,
       },
       failed_records: failedRecords,
+      logistics_status: logisticsStatus,
       borrow_status: borrowStatus,
       inventory_diff: inventoryDiff,
+      cross_check: {
+        logistics_not_in_list: logisticsNotInList,
+        borrow_not_in_list: borrowNotInList,
+        diff_not_in_list: diffNotInList,
+        borrow_exceed_stock: borrowExceedStock,
+      },
     };
   }
 }

@@ -24,10 +24,23 @@ export async function reportCommand(options: ReportOptions): Promise<number> {
       colWidths: [20, 15],
     });
     summaryTable.push(['物料总数', report.summary.total_materials.toString()]);
+    summaryTable.push(['物流签收', report.summary.total_logistics.toString()]);
     summaryTable.push(['借用记录', report.summary.total_borrowed.toString()]);
     summaryTable.push(['丢失物料', chalk.red(report.summary.total_lost.toString())]);
     summaryTable.push(['盘点差异', report.summary.total_diffs.toString()]);
     console.log(summaryTable.toString());
+    console.log('');
+
+    console.log(chalk.bold('【物流签收状态】'));
+    const logisticsTable = new Table({
+      head: ['状态', '数量'],
+      colWidths: [20, 15],
+    });
+    logisticsTable.push(['已签收', chalk.green(report.logistics_status.signed.toString())]);
+    logisticsTable.push(['待签收', chalk.yellow(report.logistics_status.unsigned.toString())]);
+    logisticsTable.push(['已拒收', chalk.red(report.logistics_status.rejected.toString())]);
+    logisticsTable.push(['已签收总量', report.logistics_status.total_quantity.toString()]);
+    console.log(logisticsTable.toString());
     console.log('');
 
     console.log(chalk.bold('【借用状态】'));
@@ -51,6 +64,34 @@ export async function reportCommand(options: ReportOptions): Promise<number> {
     diffTable.push(['盘亏', chalk.red(report.inventory_diff.shortage.toString())]);
     diffTable.push(['一致', chalk.gray(report.inventory_diff.consistent.toString())]);
     console.log(diffTable.toString());
+    console.log('');
+
+    console.log(chalk.bold('【跨源校验结果】'));
+    const crossTable = new Table({
+      head: ['校验项', '数量'],
+      colWidths: [30, 15],
+    });
+    let hasCrossIssues = false;
+    if (report.cross_check.logistics_not_in_list > 0) {
+      crossTable.push(['物流物料不在物料清单', chalk.yellow(report.cross_check.logistics_not_in_list.toString())]);
+      hasCrossIssues = true;
+    }
+    if (report.cross_check.borrow_not_in_list > 0) {
+      crossTable.push(['借用物料不在物料清单', chalk.yellow(report.cross_check.borrow_not_in_list.toString())]);
+      hasCrossIssues = true;
+    }
+    if (report.cross_check.diff_not_in_list > 0) {
+      crossTable.push(['盘点物料不在物料清单', chalk.yellow(report.cross_check.diff_not_in_list.toString())]);
+      hasCrossIssues = true;
+    }
+    if (report.cross_check.borrow_exceed_stock > 0) {
+      crossTable.push(['借用量超过库存', chalk.red(report.cross_check.borrow_exceed_stock.toString())]);
+      hasCrossIssues = true;
+    }
+    if (!hasCrossIssues) {
+      crossTable.push(['所有跨源校验通过', chalk.green('✓')]);
+    }
+    console.log(crossTable.toString());
     console.log('');
 
     if (report.failed_records.length > 0) {

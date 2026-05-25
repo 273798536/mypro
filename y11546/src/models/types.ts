@@ -190,11 +190,18 @@ export interface AsyncTask {
 export interface ReportData {
   summary: {
     total_materials: number;
+    total_logistics: number;
     total_borrowed: number;
     total_lost: number;
     total_diffs: number;
   };
   failed_records: FailedRecord[];
+  logistics_status: {
+    signed: number;
+    unsigned: number;
+    rejected: number;
+    total_quantity: number;
+  };
   borrow_status: {
     borrowed: number;
     returned: number;
@@ -205,5 +212,11 @@ export interface ReportData {
     surplus: number;
     shortage: number;
     consistent: number;
+  };
+  cross_check: {
+    logistics_not_in_list: number;
+    borrow_not_in_list: number;
+    diff_not_in_list: number;
+    borrow_exceed_stock: number;
   };
 }
