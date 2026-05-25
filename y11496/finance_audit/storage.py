@@ -176,7 +176,14 @@ class AuditStorage:
         return False
 
     def create_snapshot(self, description: str, operator: str) -> str:
-        snapshot_id = f"SNAP-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+        import time
+        base_id = f"SNAP-{datetime.now().strftime('%Y%m%d-%H%M%S')}-{int(time.time() * 1000) % 1000:03d}"
+        snapshot_id = base_id
+        counter = 1
+        while (self.snapshots_path / snapshot_id).exists():
+            snapshot_id = f"{base_id}-{counter}"
+            counter += 1
+        
         snapshot_path = self.snapshots_path / snapshot_id
         snapshot_path.mkdir()
         
