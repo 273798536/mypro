@@ -747,22 +747,103 @@ def import_records(
     duplicate_count = 0
     errors = []
     
+    valid_types = ["borrow_application", "express_order", "compensation_record", "refund_record"]
+    if record_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"无效的记录类型: {record_type}，支持: {', '.join(valid_types)}")
+    
     for idx, row in df.iterrows():
         try:
             if record_type == "borrow_application":
-                if check_duplicate(db, "borrow_application", str(row.get("application_no", ""))):
+                app_no = str(row.get("application_no", f"TEMP{idx}"))
+                if check_duplicate(db, "borrow_application", app_no):
                     duplicate_count += 1
                     continue
                 app = BorrowApplicationCreate(
-                    application_no=str(row.get("application_no", f"TEMP{idx}")),
+                    application_no=app_no,
                     reader_name=str(row.get("reader_name", "")),
                     reader_id=str(row.get("reader_id", "")),
+                    reader_department=str(row.get("reader_department", "")) if pd.notna(row.get("reader_department")) else None,
                     book_title=str(row.get("book_title", "")),
+                    book_isbn=str(row.get("book_isbn", "")) if pd.notna(row.get("book_isbn")) else None,
+                    book_author=str(row.get("book_author", "")) if pd.notna(row.get("book_author")) else None,
                     lending_library=str(row.get("lending_library", "")),
-                    borrowing_library=str(row.get("borrowing_library", ""))
+                    borrowing_library=str(row.get("borrowing_library", "")),
+                    apply_date=pd.to_datetime(row.get("apply_date")).to_pydatetime() if pd.notna(row.get("apply_date")) else None,
+                    expected_return_date=pd.to_datetime(row.get("expected_return_date")).to_pydatetime() if pd.notna(row.get("expected_return_date")) else None,
+                    actual_return_date=pd.to_datetime(row.get("actual_return_date")).to_pydatetime() if pd.notna(row.get("actual_return_date")) else None,
+                    renew_count=int(row.get("renew_count", 0)) if pd.notna(row.get("renew_count")) else 0
                 )
                 create_borrow_application(db, app, current_user, raw_data=row.to_json())
                 success_count += 1
+            
+            elif record_type == "express_order":
+                order_no = str(row.get("order_no", f"EXP{idx}"))
+                if check_duplicate(db, "express_order", order_no):
+                    duplicate_count += 1
+                    continue
+                order = ExpressOrderCreate(
+                    order_no=order_no,
+                    borrow_application_id=int(row.get("borrow_application_id", 0)),
+                    sender_name=str(row.get("sender_name", "")) if pd.notna(row.get("sender_name")) else None,
+                    sender_phone=str(row.get("sender_phone", "")) if pd.notna(row.get("sender_phone")) else None,
+                    receiver_name=str(row.get("receiver_name", "")) if pd.notna(row.get("receiver_name")) else None,
+                    receiver_phone=str(row.get("receiver_phone", "")) if pd.notna(row.get("receiver_phone")) else None,
+                    send_address=str(row.get("send_address", "")) if pd.notna(row.get("send_address")) else None,
+                    receive_address=str(row.get("receive_address", "")) if pd.notna(row.get("receive_address")) else None,
+                    send_date=pd.to_datetime(row.get("send_date")).to_pydatetime() if pd.notna(row.get("send_date")) else None,
+                    receive_date=pd.to_datetime(row.get("receive_date")).to_pydatetime() if pd.notna(row.get("receive_date")) else None,
+                    express_company=str(row.get("express_company", "")) if pd.notna(row.get("express_company")) else None,
+                    shipping_cost=float(row.get("shipping_cost", 0)) if pd.notna(row.get("shipping_cost")) else None,
+                    cost_borne_by=str(row.get("cost_borne_by", "")) if pd.notna(row.get("cost_borne_by")) else None
+                )
+                create_express_order_service(db, order, current_user, raw_data=row.to_json())
+                success_count += 1
+            
+            elif record_type == "compensation_record":
+                record_no = str(row.get("record_no", f"COMP{idx}"))
+                if check_duplicate(db, "compensation_record", record_no):
+                    duplicate_count += 1
+                    continue
+                comp = CompensationRecordCreate(
+                    record_no=record_no,
+                    borrow_application_id=int(row.get("borrow_application_id", 0)),
+                    reader_name=str(row.get("reader_name", "")),
+                    reader_id=str(row.get("reader_id", "")),
+                    damage_type=row.get("damage_type", "other"),
+                    damage_description=str(row.get("damage_description", "")) if pd.notna(row.get("damage_description")) else None,
+                    compensation_amount=float(row.get("compensation_amount", 0)) if pd.notna(row.get("compensation_amount")) else None,
+                    overdue_days=int(row.get("overdue_days", 0)) if pd.notna(row.get("overdue_days")) else None,
+                    daily_overdue_fee=float(row.get("daily_overdue_fee", 0)) if pd.notna(row.get("daily_overdue_fee")) else None,
+                    soiling_fee=float(row.get("soiling_fee", 0)) if pd.notna(row.get("soiling_fee")) else None,
+                    other_fees=float(row.get("other_fees", 0)) if pd.notna(row.get("other_fees")) else None,
+                    total_amount=float(row.get("total_amount", 0)) if pd.notna(row.get("total_amount")) else None,
+                    paid_amount=float(row.get("paid_amount", 0)) if pd.notna(row.get("paid_amount")) else 0,
+                    payment_date=pd.to_datetime(row.get("payment_date")).to_pydatetime() if pd.notna(row.get("payment_date")) else None,
+                    payment_method=str(row.get("payment_method", "")) if pd.notna(row.get("payment_method")) else None
+                )
+                create_compensation_record_service(db, comp, current_user, raw_data=row.to_json())
+                success_count += 1
+            
+            elif record_type == "refund_record":
+                refund_no = str(row.get("refund_no", f"REF{idx}"))
+                if check_duplicate(db, "refund_record", refund_no):
+                    duplicate_count += 1
+                    continue
+                refund = RefundRecordCreate(
+                    refund_no=refund_no,
+                    compensation_record_id=int(row.get("compensation_record_id", 0)),
+                    borrow_application_id=int(row.get("borrow_application_id", 0)),
+                    reader_name=str(row.get("reader_name", "")),
+                    reader_id=str(row.get("reader_id", "")),
+                    refund_amount=float(row.get("refund_amount", 0)),
+                    refund_reason=str(row.get("refund_reason", "")) if pd.notna(row.get("refund_reason")) else None,
+                    refund_date=pd.to_datetime(row.get("refund_date")).to_pydatetime() if pd.notna(row.get("refund_date")) else None,
+                    refund_method=str(row.get("refund_method", "")) if pd.notna(row.get("refund_method")) else None,
+                    related_flow_no=str(row.get("related_flow_no", "")) if pd.notna(row.get("related_flow_no")) else None
+                )
+                create_refund_record_service(db, refund, current_user, raw_data=row.to_json())
+                success_count += 1
+                
         except Exception as e:
             error_count += 1
             errors.append(f"行{idx+2}: {str(e)}")
@@ -787,7 +868,8 @@ def import_records(
         "total": total_count,
         "success": success_count,
         "errors": error_count,
-        "duplicates": duplicate_count
+        "duplicates": duplicate_count,
+        "error_details": errors[:5] if errors else []
     }
 
 

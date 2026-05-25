@@ -397,25 +397,36 @@ def calculate_cost_trace(db: Session, application_no: str) -> Tuple[CostBreakdow
 
 
 def get_statistics(db: Session) -> Dict:
-    total_apps = db.query(BorrowApplication).count()
+    models_with_status = [
+        ("borrow_applications", BorrowApplication),
+        ("express_orders", ExpressOrder),
+        ("compensation_records", CompensationRecord),
+        ("refund_records", RefundRecord)
+    ]
     
-    unprocessed = db.query(BorrowApplication).filter(
-        BorrowApplication.record_status.in_([
-            RecordStatus.DIRTY_MISSING_FIELD,
-            RecordStatus.DIRTY_CROSS_DAY,
-            RecordStatus.DIRTY_NAME_CHANGE,
-            RecordStatus.DIRTY_AMOUNT_CONFLICT,
-            RecordStatus.DIRTY_QUANTITY_CONFLICT
-        ])
-    ).count()
+    total_records = 0
+    for _, model in models_with_status:
+        total_records += db.query(model).count()
     
-    corrected = db.query(BorrowApplication).filter(
-        BorrowApplication.record_status == RecordStatus.CORRECTED
-    ).count()
+    dirty_statuses = [
+        RecordStatus.DIRTY_MISSING_FIELD,
+        RecordStatus.DIRTY_CROSS_DAY,
+        RecordStatus.DIRTY_NAME_CHANGE,
+        RecordStatus.DIRTY_AMOUNT_CONFLICT,
+        RecordStatus.DIRTY_QUANTITY_CONFLICT
+    ]
     
-    needs_confirm = db.query(BorrowApplication).filter(
-        BorrowApplication.record_status == RecordStatus.NEEDS_MANUAL_CONFIRM
-    ).count()
+    unprocessed = 0
+    for _, model in models_with_status:
+        unprocessed += db.query(model).filter(model.record_status.in_(dirty_statuses)).count()
+    
+    corrected = 0
+    for _, model in models_with_status:
+        corrected += db.query(model).filter(model.record_status == RecordStatus.CORRECTED).count()
+    
+    needs_confirm = 0
+    for _, model in models_with_status:
+        needs_confirm += db.query(model).filter(model.record_status == RecordStatus.NEEDS_MANUAL_CONFIRM).count()
     
     total_comp = db.query(CompensationRecord).all()
     total_comp_amount = sum(c.total_amount or 0 for c in total_comp)
@@ -425,9 +436,9 @@ def get_statistics(db: Session) -> Dict:
     
     by_status = {}
     for status in RecordStatus:
-        count = db.query(BorrowApplication).filter(
-            BorrowApplication.record_status == status
-        ).count()
+        count = 0
+        for _, model in models_with_status:
+            count += db.query(model).filter(model.record_status == status).count()
         by_status[status.value] = count
     
     by_damage = {}
@@ -439,13 +450,13 @@ def get_statistics(db: Session) -> Dict:
     
     by_workflow = {}
     for wf in WorkflowStatus:
-        count = db.query(BorrowApplication).filter(
-            BorrowApplication.status == wf
-        ).count()
+        count = 0
+        for _, model in models_with_status:
+            count += db.query(model).filter(model.status == wf).count()
         by_workflow[wf.value] = count
     
     return {
-        "total_records": total_apps,
+        "total_records": total_records,
         "unprocessed_records": unprocessed,
         "corrected_records": corrected,
         "needs_manual_confirm_records": needs_confirm,
