@@ -1,0 +1,8 @@
+{
+  "snapshot_id": "SNAP-20260525-205329-705",
+  "created_at": "2026-05-25T20:53:29.716251",
+  "operator": "cli_user",
+  "description": "After import: sample_data/invoices.csv",
+  "record_count": 11,
+  "record_hash": "1212ac9f15a7a5ad6b5804b27c6b16152038c38dab58aa3a2faa1e40e7110632"
+}

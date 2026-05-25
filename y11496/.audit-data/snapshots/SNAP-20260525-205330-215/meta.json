@@ -1,0 +1,8 @@
+{
+  "snapshot_id": "SNAP-20260525-205330-215",
+  "created_at": "2026-05-25T20:53:30.227946",
+  "operator": "cli_user",
+  "description": "After import: sample_data/payment_flows.csv",
+  "record_count": 11,
+  "record_hash": "ebd072e9c08a5524093b423b591ef728a7c26af4dc170e5ea0b42c3e69970618"
+}

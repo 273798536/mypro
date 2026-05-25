@@ -1,0 +1,134 @@
+{
+  "record_id": "REC-20260525-67932C28",
+  "employee_id": "E001",
+  "employee_name": "张三",
+  "expense_type": "住宿",
+  "amount": 580.0,
+  "currency": "CNY",
+  "expense_date": "2024-03-15",
+  "status": "exported",
+  "evidences": {
+    "invoice_pdf": {
+      "source_type": "invoice_pdf",
+      "source_file": "invoices.csv",
+      "original_line": 2,
+      "raw_value": "{\"employee_id\": \"E001\", \"employee_name\": \"张三\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-001\"}",
+      "parsed_value": {
+        "source_type": "invoice_pdf",
+        "source_file": "invoices.csv",
+        "original_line": 2,
+        "raw_value": "{\"employee_id\": \"E001\", \"employee_name\": \"张三\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"expense_date\": \"2024-03-15\", \"invoice_number\": \"INV-2024-001\"}",
+        "employee_id": "E001",
+        "employee_name": "张三",
+        "expense_type": "住宿",
+        "amount": 580.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "invoice_number": "INV-2024-001"
+      },
+      "import_timestamp": "2026-05-25T20:53:29.674896"
+    },
+    "payment_flow": {
+      "source_type": "payment_flow",
+      "source_file": "payment_flows.csv",
+      "original_line": 2,
+      "raw_value": "{\"employee_id\": \"E001\", \"employee_name\": \"张三\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-15\", \"transaction_id\": \"PAY-20240315-001\"}",
+      "parsed_value": {
+        "source_type": "payment_flow",
+        "source_file": "payment_flows.csv",
+        "original_line": 2,
+        "raw_value": "{\"employee_id\": \"E001\", \"employee_name\": \"张三\", \"expense_type\": \"住宿\", \"amount\": \"580.00\", \"currency\": \"CNY\", \"payment_date\": \"2024-03-15\", \"transaction_id\": \"PAY-20240315-001\"}",
+        "employee_id": "E001",
+        "employee_name": "张三",
+        "expense_type": "住宿",
+        "amount": 580.0,
+        "currency": "CNY",
+        "expense_date": "2024-03-15",
+        "transaction_id": "PAY-20240315-001"
+      },
+      "import_timestamp": "2026-05-25T20:53:30.198927"
+    }
+  },
+  "issues": [
+    {
+      "issue_type": "duplicate_accommodation",
+      "description": "共享行程住宿重复：TRIP-BJ-202403 日期 2024-03-15 多人报销同一住宿，总金额 1740.00，平均 580.00",
+      "severity": "medium",
+      "related_records": [
+        "REC-20260525-7E4B593F",
+        "REC-20260525-B94592EC"
+      ],
+      "evidence": {
+        "trip_id": "TRIP-BJ-202403",
+        "date": "2024-03-15",
+        "total_amount": 1740.0,
+        "avg_amount": 580.0,
+        "group_count": 3
+      },
+      "resolved": true,
+      "resolution": "Manual override: 财务经理核实：两人拼房各报一半，金额正确"
+    },
+    {
+      "issue_type": "manual_override",
+      "description": "人工改判：财务经理核实：两人拼房各报一半，金额正确",
+      "severity": "info",
+      "related_records": [],
+      "evidence": {
+        "operator": "finance_manager",
+        "reason": "财务经理核实：两人拼房各报一半，金额正确"
+      },
+      "resolved": true,
+      "resolution": "财务经理核实：两人拼房各报一半，金额正确"
+    }
+  ],
+  "audit_log": [
+    {
+      "action": "status_change",
+      "previous_status": "pending",
+      "new_status": "imported",
+      "operator": "cli_user",
+      "timestamp": "2026-05-25T20:53:29.681540",
+      "comment": "Imported from sample_data/invoices.csv",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "imported",
+      "new_status": "flagged",
+      "operator": "audit_engine",
+      "timestamp": "2026-05-25T20:53:30.751520",
+      "comment": "Issues detected",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "flagged",
+      "new_status": "approved",
+      "operator": "finance_manager",
+      "timestamp": "2026-05-25T21:00:38.639433",
+      "comment": "Manual override: 财务经理核实：两人拼房各报一半，金额正确",
+      "changes": null
+    },
+    {
+      "action": "status_change",
+      "previous_status": "approved",
+      "new_status": "exported",
+      "operator": "exporter",
+      "timestamp": "2026-05-25T21:01:34.701948",
+      "comment": "Exported in EXPORT-20260525-210134",
+      "changes": null
+    }
+  ],
+  "is_frozen": false,
+  "freeze_reason": null,
+  "shared_trip_id": "TRIP-BJ-202403",
+  "parent_record_id": null,
+  "resubmission_count": 0,
+  "manual_override": true,
+  "override_reason": "财务经理核实：两人拼房各报一半，金额正确",
+  "created_at": "2026-05-25T20:53:29.674876",
+  "updated_at": "2026-05-25T21:01:34.701951",
+  "metadata": {
+    "last_export_id": "EXPORT-20260525-210134"
+  }
+}

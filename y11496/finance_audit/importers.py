@@ -37,12 +37,20 @@ class InvoicePDFImporter(BaseImporter):
                 return self._parse_csv(file_path)
             elif file_path.suffix.lower() == '.json':
                 return self._parse_json(file_path)
+            elif file_path.suffix.lower() == '.pdf':
+                return self._parse_pdf(file_path)
             else:
                 return self._parse_text_based(file_path)
+        except FileNotFoundError as e:
+            errors.append({
+                "line": 0,
+                "error": f"文件不存在: {str(e)}",
+                "raw": ""
+            })
         except Exception as e:
             errors.append({
                 "line": 0,
-                "error": str(e),
+                "error": f"解析失败: {str(e)}",
                 "raw": ""
             })
         
@@ -91,12 +99,92 @@ class InvoicePDFImporter(BaseImporter):
         
         return records, errors
 
+    def _parse_pdf(self, file_path: Path) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        records = []
+        errors = []
+        
+        try:
+            from PyPDF2 import PdfReader
+        except ImportError:
+            errors.append({
+                "line": 0,
+                "error": "PyPDF2 not installed. Please install with: pip install PyPDF2",
+                "raw": ""
+            })
+            return records, errors
+        
+        try:
+            reader = PdfReader(str(file_path))
+            full_text = ""
+            for page_num, page in enumerate(reader.pages, start=1):
+                full_text += f"\n--- Page {page_num} ---\n"
+                full_text += page.extract_text() or ""
+            
+            invoice_pattern = re.compile(
+                r'(?:员工|employee|报销人)[:：\s]*(\S+).*?'
+                r'(?:金额|amount|总价)[:：\s]*([\d,.]+).*?'
+                r'(?:日期|date|开票日期)[:：\s]*([\d\-年月日]+).*?'
+                r'(?:项目|类型|type|项目名称)[:：\s]*(\S+)',
+                re.DOTALL | re.IGNORECASE
+            )
+            
+            for match_num, match in enumerate(invoice_pattern.finditer(full_text), start=1):
+                try:
+                    amount_str = match.group(2).replace(',', '')
+                    date_str = match.group(3)
+                    date_str = re.sub(r'[年月日]', '-', date_str).strip('-')
+                    
+                    record = {
+                        "source_type": SourceType.INVOICE_PDF.value,
+                        "source_file": file_path.name,
+                        "original_line": match_num,
+                        "raw_value": match.group(0),
+                        "employee_id": match.group(1),
+                        "employee_name": match.group(1),
+                        "expense_type": match.group(4),
+                        "amount": float(amount_str),
+                        "currency": "CNY",
+                        "expense_date": date_str,
+                        "invoice_number": f"INV-PDF-{match_num:04d}"
+                    }
+                    records.append(record)
+                except Exception as e:
+                    errors.append({
+                        "line": match_num,
+                        "error": str(e),
+                        "raw": match.group(0)
+                    })
+            
+            if not records:
+                errors.append({
+                    "line": 0,
+                    "error": "PDF中未识别到发票数据，请检查格式",
+                    "raw": full_text[:500] + "..." if len(full_text) > 500 else full_text
+                })
+            
+        except Exception as e:
+            errors.append({
+                "line": 0,
+                "error": f"PDF读取失败: {str(e)}",
+                "raw": ""
+            })
+        
+        return records, errors
+
     def _parse_text_based(self, file_path: Path) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         records = []
         errors = []
         
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except UnicodeDecodeError:
+            errors.append({
+                "line": 0,
+                "error": "文件不是UTF-8编码的文本文件，可能是二进制文件（如PDF），请使用.pdf后缀",
+                "raw": ""
+            })
+            return records, errors
         
         invoice_pattern = re.compile(
             r'(?:发票|invoice).*?(?:员工|employee)[:：]\s*(\w+).*?'

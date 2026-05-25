@@ -103,11 +103,12 @@ def import_cmd(ctx, file_path, source_type, trip_id, operator, snapshot):
     click.echo(f"✓ 导入完成: 新增 {imported_count} 条, 更新 {updated_count} 条")
 
     if errors:
-        click.echo(f"\n⚠ 导入错误 ({len(errors)} 条):")
+        click.echo(f"\n✗ 导入错误 ({len(errors)} 条):")
         for err in errors[:10]:
             click.echo(f"  行 {err['line']}: {err['error']}")
         if len(errors) > 10:
             click.echo(f"  ... 还有 {len(errors) - 10} 条错误")
+        sys.exit(1)
 
     if snapshot:
         snap_id = storage.create_snapshot(f"After import: {file_path}", operator)
@@ -151,6 +152,12 @@ def _import_supervisor_notes(ctx, file_path, operator):
         applied += 1
 
     click.echo(f"✓ 批注应用完成: {applied} 条记录已更新")
+
+    if errors:
+        click.echo(f"\n✗ 解析错误 ({len(errors)} 条):")
+        for err in errors[:10]:
+            click.echo(f"  行 {err['line']}: {err['error']}")
+        sys.exit(1)
 
 
 def _find_or_create_record(storage, data, source_type, trip_id=None):
