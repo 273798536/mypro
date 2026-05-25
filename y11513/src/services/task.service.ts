@@ -48,13 +48,28 @@ export class TaskService {
     return this.mapRowToTask(row);
   }
 
+  public async getExistingTask(
+    recordId: string,
+    recordType: RecordType
+  ): Promise<AsyncTask | undefined> {
+    const row = await db.get(
+      `SELECT * FROM async_tasks 
+       WHERE record_id = ? AND record_type = ? 
+       ORDER BY created_at DESC LIMIT 1`,
+      [recordId, recordType]
+    );
+
+    if (!row) return undefined;
+    return this.mapRowToTask(row);
+  }
+
   public async createTask(
     recordId: string,
     recordType: RecordType
   ): Promise<AsyncTask> {
-    const existingTask = await this.getUnfinishedTask(recordId, recordType);
+    const existingTask = await this.getExistingTask(recordId, recordType);
     if (existingTask) {
-      logger.info('Skipping duplicate task creation - unfinished task exists', {
+      logger.info('Skipping duplicate task creation - task already exists', {
         existingTaskId: existingTask.id,
         recordId,
         recordType,
