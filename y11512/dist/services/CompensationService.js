@@ -31,6 +31,7 @@ class CompensationService {
             createdBy: operatorId
         });
         const saved = await this.repository.save(record);
+        const beforeApplication = { ...application };
         if (data.compensationType === CompensationRecord_1.CompensationType.OVERDUE) {
             application.overdueFee += data.amount;
         }
@@ -49,6 +50,23 @@ class CompensationService {
             operatorId,
             operatorName,
             remark: `创建赔偿记录: ${data.compensationType}`,
+            batchId: data.batchId
+        });
+        const feeField = data.compensationType === CompensationRecord_1.CompensationType.OVERDUE ? 'overdueFee' : 'damageFee';
+        const feeFieldName = data.compensationType === CompensationRecord_1.CompensationType.OVERDUE ? '逾期费' : '污损/遗失赔偿';
+        await AuditLogService_1.AuditLogService.log(OperationLog_1.OperationType.FEE_ADJUST, OperationLog_1.EntityType.BORROW_APPLICATION, application.id, {
+            entityNo: application.applicationNo,
+            beforeData: beforeApplication,
+            afterData: application,
+            changes: {
+                [feeField]: application[feeField],
+                totalFee: application.totalFee,
+                isDamaged: application.isDamaged,
+                version: application.version
+            },
+            operatorId,
+            operatorName,
+            remark: `赔偿记录 ${saved.recordNo} 费用入账，${feeFieldName} +${data.amount} 元`,
             batchId: data.batchId
         });
         await QueueService_1.QueueService.enqueue({

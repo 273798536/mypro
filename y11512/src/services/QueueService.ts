@@ -103,6 +103,10 @@ export class QueueService {
     return savedTask;
   }
 
+  static async getTaskById(taskId: string): Promise<RetryQueue | null> {
+    return await this.retryRepository.findOne({ where: { taskId } });
+  }
+
   static async getPendingTasks(limit: number = 10): Promise<RetryQueue[]> {
     const now = new Date();
     return await this.retryRepository.find({
@@ -139,7 +143,7 @@ export class QueueService {
 
   static async processTask(
     taskId: string,
-    processor: (payload: any) => Promise<void>,
+    processor: (payload: any) => Promise<any>,
     operatorId?: string
   ): Promise<ProcessResult> {
     const task = await this.retryRepository.findOne({ where: { taskId } });
@@ -162,7 +166,7 @@ export class QueueService {
     await this.retryRepository.save(task);
 
     try {
-      await processor(task.payload);
+      const processResult = await processor(task.payload);
       
       task.status = QueueStatus.SUCCESS;
       task.lastError = undefined;
@@ -177,13 +181,13 @@ export class QueueService {
           entityNo: task.taskId,
           beforeData,
           afterData: task,
-          changes: { status: QueueStatus.SUCCESS },
+          changes: { status: QueueStatus.SUCCESS, processResult },
           operatorId,
           remark: '任务处理成功'
         }
       );
 
-      return { success: true, taskId };
+      return { success: true, taskId, errorDetails: processResult };
     } catch (error: any) {
       task.status = QueueStatus.FAILED;
       task.lastError = error.message;
@@ -407,6 +411,86 @@ export class QueueService {
     );
 
     return task;
+  }
+
+  static async resolveDeadLetter(
+    deadLetterId: string,
+    operatorId: string,
+    operatorName: string,
+    note?: string
+  ): Promise<DeadLetter> {
+    const deadLetter = await this.deadLetterRepository.findOne({ where: { deadLetterId } });
+    if (!deadLetter) {
+      throw new Error('死信记录不存在');
+    }
+
+    const beforeData = { ...deadLetter };
+    deadLetter.status = DeadLetterStatus.RESOLVED;
+    deadLetter.resolvedBy = operatorId;
+    deadLetter.resolvedAt = new Date();
+    deadLetter.resolutionNote = note || '人工处理解决';
+    await this.deadLetterRepository.save(deadLetter);
+
+    await AuditLogService.log(
+      OperationType.MANUAL_DECISION,
+      EntityType.DEAD_LETTER,
+      deadLetter.id,
+      {
+        entityNo: deadLetter.deadLetterId,
+        beforeData,
+        afterData: deadLetter,
+        changes: {
+          status: DeadLetterStatus.RESOLVED,
+          resolvedBy: operatorId,
+          resolutionNote: deadLetter.resolutionNote
+        },
+        operatorId,
+        operatorName,
+        remark: `人工解决死信: ${deadLetter.resolutionNote}`
+      }
+    );
+
+    return deadLetter;
+  }
+
+  static async discardDeadLetter(
+    deadLetterId: string,
+    operatorId: string,
+    operatorName: string,
+    note?: string
+  ): Promise<DeadLetter> {
+    const deadLetter = await this.deadLetterRepository.findOne({ where: { deadLetterId } });
+    if (!deadLetter) {
+      throw new Error('死信记录不存在');
+    }
+
+    const beforeData = { ...deadLetter };
+    deadLetter.status = DeadLetterStatus.DISCARDED;
+    deadLetter.resolvedBy = operatorId;
+    deadLetter.resolvedAt = new Date();
+    deadLetter.resolutionNote = note || '人工丢弃';
+    await this.deadLetterRepository.save(deadLetter);
+
+    await AuditLogService.log(
+      OperationType.MANUAL_DECISION,
+      EntityType.DEAD_LETTER,
+      deadLetter.id,
+      {
+        entityNo: deadLetter.deadLetterId,
+        beforeData,
+        afterData: deadLetter,
+        changes: {
+          status: DeadLetterStatus.DISCARDED,
+          resolvedBy: operatorId,
+          resolutionNote: deadLetter.resolutionNote
+        },
+        operatorId,
+        operatorName,
+        remark: `丢弃死信: ${deadLetter.resolutionNote}`
+      }
+    );
+
+    return deadLetter;
   }
 
   static async getTaskStats() {

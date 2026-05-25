@@ -104,23 +104,12 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { note } = req.body;
-      const deadLetter = await repository.findOne({
-        where: { deadLetterId: req.params.deadLetterId }
-      });
-
-      if (!deadLetter) {
-        res.status(404).json({
-          success: false,
-          error: '死信记录不存在'
-        });
-        return;
-      }
-
-      deadLetter.status = DeadLetterStatus.RESOLVED;
-      deadLetter.resolvedBy = req.user!.userId;
-      deadLetter.resolvedAt = new Date();
-      deadLetter.resolutionNote = note;
-      await repository.save(deadLetter);
+      const deadLetter = await QueueService.resolveDeadLetter(
+        req.params.deadLetterId,
+        req.user!.userId,
+        req.user!.userName,
+        note
+      );
 
       res.json({
         success: true,
@@ -141,23 +130,12 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { note } = req.body;
-      const deadLetter = await repository.findOne({
-        where: { deadLetterId: req.params.deadLetterId }
-      });
-
-      if (!deadLetter) {
-        res.status(404).json({
-          success: false,
-          error: '死信记录不存在'
-        });
-        return;
-      }
-
-      deadLetter.status = DeadLetterStatus.DISCARDED;
-      deadLetter.resolvedBy = req.user!.userId;
-      deadLetter.resolvedAt = new Date();
-      deadLetter.resolutionNote = note;
-      await repository.save(deadLetter);
+      const deadLetter = await QueueService.discardDeadLetter(
+        req.params.deadLetterId,
+        req.user!.userId,
+        req.user!.userName,
+        note
+      );
 
       res.json({
         success: true,

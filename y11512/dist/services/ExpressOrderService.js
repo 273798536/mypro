@@ -28,6 +28,7 @@ class ExpressOrderService {
             createdBy: operatorId
         });
         const saved = await this.repository.save(order);
+        const beforeApplication = { ...application };
         application.shippingFee += data.fee;
         application.totalFee = application.overdueFee + application.damageFee + application.shippingFee;
         application.version += 1;
@@ -38,6 +39,20 @@ class ExpressOrderService {
             operatorId,
             operatorName,
             remark: '创建快递单',
+            batchId: data.batchId
+        });
+        await AuditLogService_1.AuditLogService.log(OperationLog_1.OperationType.FEE_ADJUST, OperationLog_1.EntityType.BORROW_APPLICATION, application.id, {
+            entityNo: application.applicationNo,
+            beforeData: beforeApplication,
+            afterData: application,
+            changes: {
+                shippingFee: application.shippingFee,
+                totalFee: application.totalFee,
+                version: application.version
+            },
+            operatorId,
+            operatorName,
+            remark: `快递单 ${saved.expressNo} 费用入账，快递费 +${data.fee} 元`,
             batchId: data.batchId
         });
         await QueueService_1.QueueService.enqueue({

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { QueueService } from '../services/QueueService';
+import { TaskProcessorService } from '../services/TaskProcessorService';
 import { requirePermission } from '../middleware/auth';
 import { PayloadType } from '../entities/RetryQueue';
 
@@ -161,16 +162,86 @@ router.post(
   requirePermission('queue:manual'),
   async (req: Request, res: Response) => {
     try {
+      const task = await QueueService.getTaskById(req.params.taskId);
+      if (!task) {
+        res.status(404).json({
+          success: false,
+          error: '任务不存在'
+        });
+        return;
+      }
+
       const result = await QueueService.processTask(
         req.params.taskId,
         async (payload) => {
-          console.log('处理任务:', payload);
+          return await TaskProcessorService.processTask(
+            task.payloadType,
+            payload,
+            task.applicationId,
+            req.user?.userId,
+            req.user?.userName
+          );
         },
         req.user?.userId
       );
+
       res.json({
         success: true,
         data: result
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+);
+
+router.post(
+  '/process-batch',
+  requirePermission('queue:manual'),
+  async (req: Request, res: Response) => {
+    try {
+      const limit = parseInt(req.body.limit as string) || 10;
+      const tasks = await QueueService.getPendingTasks(limit);
+      const results = [];
+
+      for (const task of tasks) {
+        try {
+          const result = await QueueService.processTask(
+            task.taskId,
+            async (payload) => {
+              return await TaskProcessorService.processTask(
+                task.payloadType,
+                payload,
+                task.applicationId,
+                req.user?.userId,
+                req.user?.userName
+              );
+            },
+            req.user?.userId
+          );
+          results.push({
+            taskId: task.taskId,
+            success: true,
+            result
+          });
+        } catch (error: any) {
+          results.push({
+            taskId: task.taskId,
+            success: false,
+            error: error.message
+          });
+        }
+      }
+
+      res.json({
+        success: true,
+        data: {
+          processed: results.length,
+          results
+        }
       });
     } catch (error: any) {
       res.status(500).json({

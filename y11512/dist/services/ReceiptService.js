@@ -103,10 +103,24 @@ class ReceiptService {
         });
         const saved = await this.expressRepository.save(order);
         if (data.fee) {
+            const beforeApplication = { ...application };
             application.shippingFee += data.fee;
             application.totalFee = application.overdueFee + application.damageFee + application.shippingFee;
             application.version += 1;
             await this.applicationRepository.save(application);
+            await AuditLogService_1.AuditLogService.log(OperationLog_1.OperationType.FEE_ADJUST, OperationLog_1.EntityType.BORROW_APPLICATION, application.id, {
+                entityNo: application.applicationNo,
+                beforeData: beforeApplication,
+                afterData: application,
+                changes: {
+                    shippingFee: application.shippingFee,
+                    totalFee: application.totalFee,
+                    version: application.version
+                },
+                operatorId,
+                operatorName,
+                remark: `外部回执快递单 ${saved.expressNo} 费用入账，快递费 +${data.fee} 元`
+            });
         }
         await AuditLogService_1.AuditLogService.log(OperationLog_1.OperationType.CREATE, OperationLog_1.EntityType.EXPRESS_ORDER, saved.id, {
             entityNo: saved.expressNo,
@@ -152,6 +166,7 @@ class ReceiptService {
             createdBy: operatorId
         });
         const saved = await this.compensationRepository.save(record);
+        const beforeApplication = { ...application };
         if (compensationType === CompensationRecord_1.CompensationType.OVERDUE) {
             application.overdueFee += amount;
         }
@@ -170,6 +185,22 @@ class ReceiptService {
             operatorId,
             operatorName,
             remark: '外部回执创建赔偿记录'
+        });
+        const feeField = compensationType === CompensationRecord_1.CompensationType.OVERDUE ? 'overdueFee' : 'damageFee';
+        const feeFieldName = compensationType === CompensationRecord_1.CompensationType.OVERDUE ? '逾期费' : '污损/遗失赔偿';
+        await AuditLogService_1.AuditLogService.log(OperationLog_1.OperationType.FEE_ADJUST, OperationLog_1.EntityType.BORROW_APPLICATION, application.id, {
+            entityNo: application.applicationNo,
+            beforeData: beforeApplication,
+            afterData: application,
+            changes: {
+                [feeField]: application[feeField],
+                totalFee: application.totalFee,
+                isDamaged: application.isDamaged,
+                version: application.version
+            },
+            operatorId,
+            operatorName,
+            remark: `外部回执赔偿记录 ${saved.recordNo} 费用入账，${feeFieldName} +${amount} 元`
         });
         return {
             success: true,

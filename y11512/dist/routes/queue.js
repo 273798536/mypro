@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const QueueService_1 = require("../services/QueueService");
+const TaskProcessorService_1 = require("../services/TaskProcessorService");
 const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
 router.get('/stats', (0, auth_1.requirePermission)('queue:view'), async (req, res) => {
@@ -115,12 +116,59 @@ router.post('/:taskId/manual', (0, auth_1.requirePermission)('queue:manual'), as
 });
 router.post('/:taskId/process', (0, auth_1.requirePermission)('queue:manual'), async (req, res) => {
     try {
+        const task = await QueueService_1.QueueService.getTaskById(req.params.taskId);
+        if (!task) {
+            res.status(404).json({
+                success: false,
+                error: '任务不存在'
+            });
+            return;
+        }
         const result = await QueueService_1.QueueService.processTask(req.params.taskId, async (payload) => {
-            console.log('处理任务:', payload);
+            return await TaskProcessorService_1.TaskProcessorService.processTask(task.payloadType, payload, task.applicationId, req.user?.userId, req.user?.userName);
         }, req.user?.userId);
         res.json({
             success: true,
             data: result
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+router.post('/process-batch', (0, auth_1.requirePermission)('queue:manual'), async (req, res) => {
+    try {
+        const limit = parseInt(req.body.limit) || 10;
+        const tasks = await QueueService_1.QueueService.getPendingTasks(limit);
+        const results = [];
+        for (const task of tasks) {
+            try {
+                const result = await QueueService_1.QueueService.processTask(task.taskId, async (payload) => {
+                    return await TaskProcessorService_1.TaskProcessorService.processTask(task.payloadType, payload, task.applicationId, req.user?.userId, req.user?.userName);
+                }, req.user?.userId);
+                results.push({
+                    taskId: task.taskId,
+                    success: true,
+                    result
+                });
+            }
+            catch (error) {
+                results.push({
+                    taskId: task.taskId,
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        res.json({
+            success: true,
+            data: {
+                processed: results.length,
+                results
+            }
         });
     }
     catch (error) {

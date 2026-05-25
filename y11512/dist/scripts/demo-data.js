@@ -7,6 +7,7 @@ const QueueService_1 = require("../services/QueueService");
 const ExpressOrderService_1 = require("../services/ExpressOrderService");
 const CompensationService_1 = require("../services/CompensationService");
 const ReceiptService_1 = require("../services/ReceiptService");
+const TaskProcessorService_1 = require("../services/TaskProcessorService");
 const BorrowApplication_1 = require("../entities/BorrowApplication");
 const SupervisorComment_1 = require("../entities/SupervisorComment");
 const ExpressOrder_1 = require("../entities/ExpressOrder");
@@ -239,6 +240,30 @@ async function main() {
         compensationList.forEach((c, i) => {
             console.log(`  ${i + 1}. ${c.recordNo} - ${c.compensationType} - ${c.amount}元 - ${c.status}`);
         });
+        console.log('');
+        console.log('=== 处理排队任务 ===\n');
+        const pendingTasks = await QueueService_1.QueueService.getPendingTasks(20);
+        console.log(`待处理任务: ${pendingTasks.length} 条`);
+        let processedCount = 0;
+        for (const task of pendingTasks) {
+            try {
+                const result = await QueueService_1.QueueService.processTask(task.taskId, async (payload) => {
+                    return await TaskProcessorService_1.TaskProcessorService.processTask(task.payloadType, payload, task.applicationId, operatorId, operatorName);
+                }, operatorId);
+                if (result.success) {
+                    processedCount++;
+                }
+            }
+            catch (err) {
+                console.log(`  任务 ${task.taskId} 处理失败: ${err.message}`);
+            }
+        }
+        const processedStats = await QueueService_1.QueueService.getTaskStats();
+        console.log(`处理后队列状态:`);
+        console.log(`  成功: ${processedStats.queue.success}`);
+        console.log(`  失败: ${processedStats.queue.failed}`);
+        console.log(`  待处理: ${processedStats.queue.pending}`);
+        console.log(`  死信: ${processedStats.deadLetter.total} 条`);
         console.log('');
         console.log('=== 示例数据创建完成 ===');
         console.log('\n接下来可以运行:');
