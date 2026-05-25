@@ -10,7 +10,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "test": "jest"
+    "test": "bash test-data/acceptance_test.sh",
+    "test:quick": "node dist/index.js init --force && node dist/index.js login admin admin123 && node dist/index.js import test-data/预约单_正常.csv && node dist/index.js check --detail && node dist/index.js report --detail"
   },
   "dependencies": {
     "commander": "^11.1.0",

@@ -1,0 +1,6 @@
+﻿"orderNo","customerName","rating","reviewContent","reviewDate","technicianId","technicianName","rawRow","sourceFile","id","source","badReason"
+"ORD001","张三",5,"安装师傅很专业，服务态度很好！","2024-01-15","T001","李师傅",2,"用户评价.csv","cbe6663e-cda7-4d0f-83cb-22bf4cccf5cf","review",
+"ORD002","李四",4,"整体不错，就是稍微晚了一点","2024-01-15","T002","王师傅",3,"用户评价.csv","46272fe0-b10c-440f-8b1f-85a11a2e5c88","review",
+"ORD004","赵六",1,"安装质量很差，还把墙面弄花了","2024-01-16","T003","张师傅",5,"用户评价.csv","b9487e74-8751-4326-a5a5-95d2f30952ef","review","安装不规范导致墙面损坏"
+"ORD005","孙七",3,"一般般吧，没什么特别的","2024-01-17","T002","王师傅",6,"用户评价.csv","9a5d0a35-74e9-45dd-a6d9-aa75f6bba9b5","review",
+"ORD007","吴九",5,"非常满意，师傅技术好，服务周到","2024-01-18","T002","王师傅",8,"用户评价.csv","fd5f5ce0-1628-4a3e-b45e-26ccffe20072","review",

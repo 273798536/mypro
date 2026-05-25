@@ -59,11 +59,15 @@ async function handleCheck(options) {
     });
     console.log(sourceTable.toString());
     console.log(`\n${chalk_1.default.cyan('📋 脏记录明细 (按角色权限过滤显示)')}`);
+    const detailColWidths = options.detail
+        ? [12, 8, 12, 12, 10, 14, 50]
+        : [10, 8, 12, 12, 10, 12, 28];
     const detailTable = new cli_table3_1.default({
         head: ['ID', '行号', '数据源', '问题类型', '状态', '订单号', '描述'],
-        colWidths: [10, 8, 12, 12, 10, 12, 28],
+        colWidths: detailColWidths,
     });
-    filtered.slice(0, 20).forEach((r) => {
+    const displayLimit = options.detail ? filtered.length : 20;
+    filtered.slice(0, displayLimit).forEach((r) => {
         const statusColor = r.status === 'dirty'
             ? chalk_1.default.yellow
             : r.status === 'fixed'
@@ -76,6 +80,7 @@ async function handleCheck(options) {
         const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo')
             ? (r.originalData?.orderNo || '-').toString().slice(0, 10)
             : '******';
+        const desc = options.detail ? r.description : r.description.slice(0, 26);
         detailTable.push([
             r.id.slice(0, 8),
             String(r.rawRow || '-'),
@@ -83,12 +88,15 @@ async function handleCheck(options) {
             (0, dirtyChecker_1.getDirtyTypeLabel)(r.dirtyType),
             statusColor(r.status),
             orderNo,
-            r.description.slice(0, 26),
+            desc,
         ]);
     });
     console.log(detailTable.toString());
-    if (filtered.length > 20) {
+    if (!options.detail && filtered.length > 20) {
         console.log(chalk_1.default.gray(`... 还有 ${filtered.length - 20} 条记录，使用 hai check --detail 查看全部`));
+    }
+    else if (options.detail) {
+        console.log(chalk_1.default.green(`共显示 ${filtered.length} 条记录（完整明细）`));
     }
     console.log(`\n${chalk_1.default.cyan('🔍 重复检测 (跨源订单号)')}`);
     const appointments = (0, database_1.getAppointments)();

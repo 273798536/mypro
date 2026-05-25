@@ -1,0 +1,5 @@
+﻿"orderNo","originalAmount","adjustedAmount","adjustmentReason","operator","adjustmentDate","rawRow","sourceFile","id","source"
+"ORD001",200,250,"增加高空作业费","管理员","2024-01-15",2,"手工改价表.csv","3ca7a226-6387-4314-8d3e-be7e3d34f46c","price_adjustment"
+"ORD002",150,150,"无调整","管理员","2024-01-15",3,"手工改价表.csv","5cf48912-c588-404b-88fe-d1604ff56a5a","price_adjustment"
+"ORD004",300,280,"优惠券抵扣","管理员","2024-01-16",5,"手工改价表.csv","8db6b582-dcb1-4cfc-82c4-78d6bf4c4600","price_adjustment"
+"ORD005",200,220,"增加配件费用","管理员","2024-01-17",6,"手工改价表.csv","3eb60375-fe93-4733-940a-8540515bdf35","price_adjustment"

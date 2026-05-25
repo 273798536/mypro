@@ -51,6 +51,7 @@ program
   .description('数据巡检')
   .option('-t, --type <type>', '按数据源过滤')
   .option('-s, --status <status>', '按状态过滤')
+  .option('-d, --detail', '显示完整脏记录明细（不截断）')
   .action(handleCheck);
 
 program
