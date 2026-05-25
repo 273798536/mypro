@@ -164,7 +164,6 @@ export class RecordController {
   public async importRecords(req: Request, res: Response): Promise<void> {
     try {
       const { recordType } = req.params;
-      const { records, sourceFile } = req.body;
 
       if (!Object.values(RecordType).includes(recordType as RecordType)) {
         res.status(400).json({
@@ -174,22 +173,46 @@ export class RecordController {
         return;
       }
 
-      if (!Array.isArray(records)) {
-        res.status(400).json({
-          success: false,
-          error: 'Records must be an array',
+      let records: any[];
+      let sourceFile: string;
+
+      if (Array.isArray(req.body)) {
+        records = req.body;
+        const typeName = recordType.replace(/_/g, ' ');
+        const timestamp = new Date().toISOString().slice(0, 10);
+        sourceFile = `api_import_${recordType}_${timestamp}.json`;
+        logger.info('Detected raw array import format', {
+          recordType,
+          recordCount: records.length,
+          sourceFile,
         });
-        return;
+      } else {
+        const bodyRecords = req.body.records;
+        sourceFile = req.body.sourceFile;
+
+        if (!Array.isArray(bodyRecords)) {
+          res.status(400).json({
+            success: false,
+            error: 'Invalid request format. Expected either:\n' +
+                   '  1. Raw JSON array: [{...}, {...}]\n' +
+                   '  2. Wrapped object: { "sourceFile": "xxx.json", "records": [{...}, {...}] }',
+          });
+          return;
+        }
+
+        records = bodyRecords;
+        sourceFile = sourceFile || `api_import_${recordType}.json`;
       }
 
       const result = await importExportService.processImportWithTasks(
         records,
         recordType as RecordType,
-        sourceFile || 'api_import'
+        sourceFile
       );
 
       logger.info('Bulk import completed', {
         recordType,
+        sourceFile,
         total: result.total,
         created: result.created,
         updated: result.updated,
@@ -198,8 +221,11 @@ export class RecordController {
 
       res.json({
         success: true,
-        data: result,
-        message: `Imported ${result.total} records (created: ${result.created}, updated: ${result.updated}, skipped: ${result.skipped})`,
+        data: {
+          ...result,
+          sourceFile,
+        },
+        message: `Imported ${result.total} records (created: ${result.created}, updated: ${result.updated}, skipped: ${result.skipped}) from ${sourceFile}`,
       });
     } catch (error) {
       logger.error('Failed to import records', error as Error);
