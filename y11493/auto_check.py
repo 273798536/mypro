@@ -2,10 +2,12 @@
 import sys
 import os
 import time
+import uuid
 import requests
 import subprocess
 import signal
 import json
+from datetime import datetime
 from pathlib import Path
 
 BASE_URL = "http://localhost:8000"
@@ -13,6 +15,10 @@ API_PREFIX = "/api/v1"
 ADMIN_TOKEN = "admin-token-bid-2024"
 READ_TOKEN = "read-token-bid-2024"
 WRONG_TOKEN = "wrong-token-123"
+
+
+def generate_no(prefix: str = "BID") -> str:
+    return f"{prefix}-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8].upper()}"
 
 
 def print_header(title):
@@ -421,6 +427,232 @@ class AutoChecker:
         self.results.append(("异常回放检查", all_passed))
         return all_passed
     
+    def check_archive_import(self):
+        print_header("9. 历史压缩包导入检查")
+        
+        all_passed = True
+        
+        import zipfile
+        zip_path = Path("test_archive.zip")
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr("资质文件1.txt", "这是资质文件内容")
+            zf.writestr("报价单1.xlsx", "模拟Excel内容")
+        
+        try:
+            with open(zip_path, "rb") as f:
+                response = requests.post(
+                    f"{BASE_URL}{API_PREFIX}/import",
+                    headers={"X-Auth-Token": ADMIN_TOKEN},
+                    files={"file": ("test.zip", f, "application/zip")},
+                    data={"document_type": "history_archive", "imported_by": "auto_check"}
+                )
+            
+            if response.status_code != 200:
+                print_result("压缩包导入", False, f"状态码: {response.status_code}")
+                all_passed = False
+            else:
+                result = response.json()
+                import_type = result.get("import_type")
+                total_files = result.get("total_files", 0)
+                
+                is_archive = import_type == "archive"
+                has_files = total_files > 0
+                
+                print_result("识别压缩包导入", is_archive, f"import_type: {import_type}")
+                print_result("解压并导入文件", has_files, f"文件数: {total_files}")
+                
+                all_passed &= (is_archive and has_files)
+                
+                if result.get("documents") and len(result["documents"]) > 0:
+                    self.test_data_snapshot["archive_doc_id"] = result["documents"][0]["document_id"]
+        
+        except Exception as e:
+            print_result("压缩包导入检查", False, str(e))
+            all_passed = False
+        finally:
+            if zip_path.exists():
+                zip_path.unlink()
+        
+        self.results.append(("压缩包导入检查", all_passed))
+        return all_passed
+    
+    def check_field_tracking(self):
+        print_header("10. 谁改了哪页 - 字段级变更追踪")
+        
+        all_passed = True
+        
+        try:
+            response = requests.post(
+                f"{BASE_URL}{API_PREFIX}/test-data/generate",
+                headers=get_headers(),
+                json={"document_count": 1, "with_tasks": False, "generated_by": "auto_check"}
+            )
+            result = response.json()
+            doc_id = result["documents"][0]["id"]
+            
+            response = requests.put(
+                f"{BASE_URL}{API_PREFIX}/documents/{doc_id}/with-tracking",
+                headers=get_headers(),
+                json={
+                    "content": {
+                        "company_name": "测试公司A",
+                        "amount": "10000",
+                        "bid_no": "BID-2024-001"
+                    },
+                    "change_reason": "初始化测试数据",
+                    "updated_by": "auto_check"
+                }
+            )
+            
+            response = requests.put(
+                f"{BASE_URL}{API_PREFIX}/documents/{doc_id}/with-tracking",
+                headers=get_headers(),
+                json={
+                    "content": {
+                        "company_name": "测试公司B",
+                        "amount": "15000",
+                        "bid_no": "BID-2024-001"
+                    },
+                    "change_reason": "修改发票抬头和金额",
+                    "updated_by": "张三"
+                }
+            )
+            
+            if response.status_code != 200:
+                print_result("追踪式更新", False, f"状态码: {response.status_code}")
+                all_passed = False
+            else:
+                result = response.json()
+                change_count = result.get("field_changes_count", 0)
+                print_result("追踪式更新记录变更", change_count > 0,
+                            f"检测到 {change_count} 个字段变更")
+                all_passed &= (change_count > 0)
+            
+            response = requests.get(
+                f"{BASE_URL}{API_PREFIX}/documents/{doc_id}/field-changes",
+                headers=get_headers()
+            )
+            
+            if response.status_code != 200:
+                print_result("查询谁改了哪页", False, f"状态码: {response.status_code}")
+                all_passed = False
+            else:
+                result = response.json()
+                changes = result.get("changes", [])
+                has_operator = any(c.get("operator") == "张三" for c in changes)
+                has_page_hint = any(c.get("page_hint") for c in changes)
+                
+                print_result("记录操作人", has_operator, "找到'张三'的操作记录")
+                print_result("推测修改页码", has_page_hint, "包含页码提示信息")
+                
+                all_passed &= (has_operator and has_page_hint)
+                self.test_data_snapshot["tracking_doc_id"] = doc_id
+        
+        except Exception as e:
+            print_result("字段追踪检查", False, str(e))
+            all_passed = False
+        
+        self.results.append(("字段变更追踪检查", all_passed))
+        return all_passed
+    
+    def check_cross_material_reconcile(self):
+        print_header("11. 跨材料核对检查")
+        
+        all_passed = True
+        
+        try:
+            for i, doc_type in enumerate(["qualification", "quotation", "stamped"]):
+                doc_no = generate_no("DOC")
+                response = requests.post(
+                    f"{BASE_URL}{API_PREFIX}/documents",
+                    headers=get_headers(),
+                    json={
+                        "document_no": doc_no,
+                        "title": f"测试{doc_type}文档",
+                        "document_type": doc_type,
+                        "content": {
+                            "company_name": "北京科技有限公司" if i == 0 else "上海科技有限公司",
+                            "amount": "100000" if i == 0 else "200000",
+                            "bid_no": "PROJECT-2024-001"
+                        },
+                        "created_by": "auto_check"
+                    }
+                )
+            
+            response = requests.post(
+                f"{BASE_URL}{API_PREFIX}/cross-material-reconcile",
+                headers=get_headers(),
+                params={"project_no": "TEST-PROJECT", "reconciled_by": "auto_check"}
+            )
+            
+            if response.status_code != 200:
+                print_result("跨材料核对", False, f"状态码: {response.status_code}")
+                all_passed = False
+            else:
+                result = response.json()
+                conflict_count = result.get("conflict_count", 0)
+                has_explanations = len(result.get("conflict_explanations", [])) > 0
+                
+                print_result("检测跨材料冲突", conflict_count > 0,
+                            f"发现 {conflict_count} 个口径差异")
+                print_result("生成冲突解释", has_explanations,
+                            f"包含 {len(result.get('conflict_explanations', []))} 条解释")
+                
+                all_passed &= (conflict_count > 0 and has_explanations)
+        
+        except Exception as e:
+            print_result("跨材料核对检查", False, str(e))
+            all_passed = False
+        
+        self.results.append(("跨材料核对检查", all_passed))
+        return all_passed
+    
+    def check_full_chain_export(self):
+        print_header("12. 完整历史链路导出检查")
+        
+        all_passed = True
+        
+        try:
+            doc_id = self.test_data_snapshot.get("tracking_doc_id")
+            if not doc_id:
+                print_result("完整链路导出", False, "无测试文档ID")
+                all_passed = False
+            else:
+                response = requests.get(
+                    f"{BASE_URL}{API_PREFIX}/documents/{doc_id}/export-full-chain",
+                    headers=get_headers()
+                )
+                
+                if response.status_code != 200:
+                    print_result("完整链路导出", False, f"状态码: {response.status_code}")
+                    all_passed = False
+                else:
+                    result = response.json()
+                    chain_data = result.get("chain_data", {})
+                    proof = chain_data.get("consistency_proof", {})
+                    
+                    has_version_chain = len(chain_data.get("version_chain", [])) > 0
+                    has_audit_chain = len(chain_data.get("audit_chain", [])) > 0
+                    has_chain_hash = bool(proof.get("chain_hash"))
+                    
+                    print_result("包含版本链路", has_version_chain,
+                                f"{len(chain_data.get('version_chain', []))} 个版本")
+                    print_result("包含审计链路", has_audit_chain,
+                                f"{len(chain_data.get('audit_chain', []))} 条审计")
+                    print_result("包含一致性哈希", has_chain_hash,
+                                f"chain_hash: {proof.get('chain_hash', '')[:20]}...")
+                    
+                    all_passed &= (has_version_chain and has_audit_chain and has_chain_hash)
+                    
+                    self.test_data_snapshot["chain_hash"] = proof.get("chain_hash")
+        
+        except Exception as e:
+            print_result("完整链路导出检查", False, str(e))
+            all_passed = False
+        
+        self.results.append(("完整链路导出检查", all_passed))
+        return all_passed
+    
     def print_summary(self):
         print_header("检查结果汇总")
         
@@ -449,7 +681,7 @@ def main():
     
     print("\n等待服务启动...")
     if not wait_for_service():
-        print("❌ 服务启动超时，请先启动服务: python main.py")
+        print("❌ 服务启动超时，请先启动服务: python3 main.py")
         sys.exit(1)
     print("✅ 服务已启动")
     
@@ -458,6 +690,10 @@ def main():
     checker.check_exception_retention()
     checker.check_export_function()
     checker.create_manual_note()
+    checker.check_archive_import()
+    checker.check_field_tracking()
+    checker.check_cross_material_reconcile()
+    checker.check_full_chain_export()
     
     print_header("模拟服务重启（仅验证数据，实际不重启）")
     print("  * 验证数据已保存到数据库 *")
@@ -477,6 +713,11 @@ def main():
     print("  ✅ 异常保留 - 失败原因、人工备注、处理人")
     print("  ✅ 重启验证 - 历史数据、导出记录一致性")
     print("  ✅ 回放功能 - 异常任务重新执行")
+    print("  ✅ 压缩包导入 - zip/tar.gz 历史压缩包支持")
+    print("  ✅ 字段追踪 - 谁改了哪页，操作人+页码推测")
+    print("  ✅ 跨材料核对 - 资质+报价+盖章口径差异检测")
+    print("  ✅ 冲突解释 - 差异来源分析+建议")
+    print("  ✅ 完整链路导出 - 版本+审计+哈希一致性证明")
     print("=" * 60)
     
     sys.exit(0 if all_passed else 1)

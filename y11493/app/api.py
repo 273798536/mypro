@@ -22,7 +22,9 @@ from .schemas import (
 from .utils import (
     generate_no, save_upload_file, create_import_records,
     create_document_version, create_async_task, calculate_file_hash,
-    deep_diff, log_audit, calculate_content_hash
+    deep_diff, log_audit, calculate_content_hash,
+    import_archive_files, cross_material_reconcile,
+    track_detailed_changes, export_full_chain
 )
 from .task_engine import process_task
 from .config import settings
@@ -325,7 +327,7 @@ async def replace_attachment(
     return new_attachment
 
 
-@router.post("/import", summary="导入文件")
+@router.post("/import", summary="导入文件（支持csv/xlsx/zip/tar）")
 async def import_file(
     request: Request,
     file: UploadFile = File(...),
@@ -340,22 +342,42 @@ async def import_file(
     batch_no = batch_no or generate_no("BATCH")
     file_path, file_name, file_size = save_upload_file(file, "imports")
     
-    records = create_import_records(
-        db=db,
-        file_path=file_path,
-        file_name=file_name,
-        batch_no=batch_no,
-        document_type=document_type,
-        imported_by=imported_by,
-        is_supplement=is_supplement
-    )
-    
-    return {
-        "batch_no": batch_no,
-        "total_count": len(records),
-        "duplicate_count": sum(1 for r in records if r.is_duplicate),
-        "records": records
-    }
+    if file_name.endswith(('.zip', '.tar.gz', '.tgz', '.tar')):
+        result = import_archive_files(
+            db=db,
+            file_path=file_path,
+            file_name=file_name,
+            batch_no=batch_no,
+            document_type=document_type,
+            imported_by=imported_by,
+            is_supplement=is_supplement
+        )
+        return {
+            "batch_no": batch_no,
+            "import_type": "archive",
+            "archive_name": file_name,
+            "total_files": result["total_files"],
+            "files": result["files"],
+            "documents": result["documents"]
+        }
+    else:
+        records = create_import_records(
+            db=db,
+            file_path=file_path,
+            file_name=file_name,
+            batch_no=batch_no,
+            document_type=document_type,
+            imported_by=imported_by,
+            is_supplement=is_supplement
+        )
+        
+        return {
+            "batch_no": batch_no,
+            "import_type": "table",
+            "total_count": len(records),
+            "duplicate_count": sum(1 for r in records if r.is_duplicate),
+            "records": records
+        }
 
 
 @router.get("/imports", response_model=List[ImportRecordResponse], summary="获取导入记录")
@@ -775,6 +797,212 @@ def replay_task(
     )
     
     return task
+
+
+@router.post("/cross-material-reconcile", summary="跨材料核对：资质、报价、盖章文件一致性检查")
+def cross_material_check(
+    request: Request,
+    project_no: str = "default",
+    reconciled_by: str = "system",
+    db: Session = Depends(get_db)
+):
+    verify_admin(request)
+    
+    result = cross_material_reconcile(
+        db=db,
+        project_no=project_no,
+        reconciled_by=reconciled_by
+    )
+    
+    return result
+
+
+@router.get("/documents/{document_id}/field-changes", summary="查询谁改了哪页/哪个字段")
+def get_document_field_changes(
+    request: Request,
+    document_id: int,
+    db: Session = Depends(get_db)
+):
+    verify_read(request)
+    
+    field_changes = db.query(AuditLog).filter(
+        AuditLog.entity_type == "FieldChange",
+        AuditLog.entity_id == document_id
+    ).order_by(AuditLog.operated_at.desc()).all()
+    
+    document = db.query(Document).filter(Document.id == document_id).first()
+    if not document:
+        raise HTTPException(status_code=404, detail="文档不存在")
+    
+    result = {
+        "document_id": document_id,
+        "document_no": document.document_no,
+        "title": document.title,
+        "total_changes": len(field_changes),
+        "changes": []
+    }
+    
+    for fc in field_changes:
+        change_info = {
+            "id": fc.id,
+            "field_path": fc.entity_no.replace(f"FIELD-{document_id}-", "") if fc.entity_no else "",
+            "action": fc.changes.get(list(fc.changes.keys())[0], {}).get("action") if fc.changes else None,
+            "old_value": fc.before_state.get("value") if fc.before_state else None,
+            "new_value": fc.after_state.get("value") if fc.after_state else None,
+            "operator": fc.operator,
+            "operated_at": fc.operated_at.isoformat() if fc.operated_at else None,
+            "page_hint": fc.note.split("推测页面: ")[-1] if fc.note and "推测页面: " in fc.note else None
+        }
+        result["changes"].append(change_info)
+    
+    return result
+
+
+@router.put("/documents/{document_id}/with-tracking", summary="更新文档并追踪字段级变更（谁改了哪页）")
+def update_document_with_tracking(
+    request: Request,
+    document_id: int,
+    doc_update: DocumentUpdate,
+    db: Session = Depends(get_db)
+):
+    verify_admin(request)
+    
+    document = db.query(Document).filter(Document.id == document_id).first()
+    if not document:
+        raise HTTPException(status_code=404, detail="文档不存在")
+    
+    old_version = db.query(DocumentVersion).filter(
+        DocumentVersion.document_id == document_id,
+        DocumentVersion.version == document.current_version
+    ).first()
+    
+    old_content = old_version.content_snapshot if old_version else {}
+    
+    if doc_update.title:
+        document.title = doc_update.title
+    if doc_update.status:
+        document.status = doc_update.status
+    
+    if doc_update.content:
+        new_version = create_document_version(
+            db=db,
+            document_id=document_id,
+            content=doc_update.content,
+            change_reason=doc_update.change_reason,
+            created_by=doc_update.updated_by
+        )
+        
+        detailed_changes = track_detailed_changes(
+            db=db,
+            document_id=document_id,
+            old_content=old_content,
+            new_content=doc_update.content,
+            changed_by=doc_update.updated_by,
+            change_reason=doc_update.change_reason
+        )
+        
+        return {
+            "document": {
+                "id": document.id,
+                "document_no": document.document_no,
+                "title": document.title,
+                "current_version": document.current_version
+            },
+            "new_version": new_version.version,
+            "field_changes_count": len(detailed_changes),
+            "field_changes": detailed_changes
+        }
+    
+    db.commit()
+    db.refresh(document)
+    
+    return {
+        "document": {
+            "id": document.id,
+            "document_no": document.document_no,
+            "title": document.title,
+            "current_version": document.current_version
+        },
+        "field_changes_count": 0,
+        "field_changes": []
+    }
+
+
+@router.get("/documents/{document_id}/export-full-chain", summary="导出完整历史链路（含一致性证明）")
+def export_document_chain(
+    request: Request,
+    document_id: int,
+    db: Session = Depends(get_db)
+):
+    verify_read(request)
+    
+    chain_data = export_full_chain(db, document_id)
+    
+    return {
+        "document_id": document_id,
+        "export_type": "full_chain",
+        "chain_data": chain_data,
+        "verification": {
+            "chain_hash": chain_data["consistency_proof"]["chain_hash"],
+            "note": chain_data["consistency_proof"]["verification_note"]
+        }
+    }
+
+
+@router.post("/export-full-chain/{document_id}", summary="导出完整历史链路到文件")
+def export_chain_to_file(
+    request: Request,
+    document_id: int,
+    exported_by: str = "system",
+    db: Session = Depends(get_db)
+):
+    verify_admin(request)
+    
+    chain_data = export_full_chain(db, document_id)
+    
+    export_no = generate_no("CHAIN")
+    file_name = f"chain_{export_no}.json"
+    file_path = settings.EXPORT_DIR / file_name
+    
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(chain_data, f, ensure_ascii=False, indent=2)
+    
+    file_hash = calculate_file_hash(str(file_path))
+    
+    export_record = ExportRecord(
+        export_no=export_no,
+        export_type="full_chain",
+        file_path=str(file_path),
+        file_name=file_name,
+        file_hash=file_hash,
+        filter_params={"document_id": document_id, "chain_hash": chain_data["consistency_proof"]["chain_hash"]},
+        record_count=chain_data["consistency_proof"]["version_count"],
+        exported_by=exported_by
+    )
+    db.add(export_record)
+    db.commit()
+    db.refresh(export_record)
+    
+    log_audit(
+        db=db,
+        operation_type=OperationType.EXPORT,
+        entity_type="FullChainExport",
+        entity_id=document_id,
+        entity_no=export_no,
+        after_state={"chain_hash": chain_data["consistency_proof"]["chain_hash"]},
+        operator=exported_by,
+        ip_address=request.client.host if request.client else None,
+        note=f"导出文档 {document_id} 完整历史链路"
+    )
+    
+    return {
+        "export_no": export_no,
+        "file_name": file_name,
+        "file_path": str(file_path),
+        "file_hash": file_hash,
+        "chain_hash": chain_data["consistency_proof"]["chain_hash"],
+        "consistency_proof": chain_data["consistency_proof"]
+    }
 
 
 @router.get("/health", summary="健康检查")

@@ -69,6 +69,17 @@ api_post_file() {
         "$BASE_URL$API_PREFIX$endpoint"
 }
 
+api_put() {
+    local endpoint=$1
+    local data=$2
+    local token=${3:-$ADMIN_TOKEN}
+    curl -s -X PUT \
+        -H "X-Auth-Token: $token" \
+        -H "Content-Type: application/json" \
+        -d "$data" \
+        "$BASE_URL$API_PREFIX$endpoint"
+}
+
 wait_for_service() {
     echo "等待服务启动..."
     for i in {1..30}; do
@@ -85,29 +96,29 @@ wait_for_service() {
 case "$1" in
     start)
         print_header "启动服务"
-        python main.py
+        python3 main.py
         ;;
     
     install)
         print_header "安装依赖"
-        pip install -r requirements.txt
+        pip3 install -r requirements.txt
         print_success "依赖安装完成"
         ;;
     
     test)
         print_header "运行自动化检查"
-        python auto_check.py
+        python3 auto_check.py
         ;;
     
     health)
         print_header "健康检查"
-        result=$(curl -s "$BASE_URL/health")
-        echo "$result" | python -m json.tool
+        result=$(curl -s "$BASE_URL$API_PREFIX/health")
+        echo "$result" | python3 -m json.tool
         ;;
     
     list-docs)
         print_header "文档列表"
-        api_get "/documents" | python -m json.tool
+        api_get "/documents" | python3 -m json.tool
         ;;
     
     create-doc)
@@ -117,18 +128,18 @@ case "$1" in
         TYPE=${4:-"qualification"}
         
         data="{\"document_no\": \"$DOC_NO\", \"title\": \"$TITLE\", \"document_type\": \"$TYPE\", \"created_by\": \"cli\"}"
-        api_post "/documents" "$data" | python -m json.tool
+        api_post "/documents" "$data" | python3 -m json.tool
         print_success "文档已创建: $DOC_NO"
         ;;
     
     get-doc)
         print_header "文档详情"
-        api_get "/documents/$2" | python -m json.tool
+        api_get "/documents/$2" | python3 -m json.tool
         ;;
     
     list-versions)
         print_header "版本历史"
-        api_get "/documents/$2/versions" | python -m json.tool
+        api_get "/documents/$2/versions" | python3 -m json.tool
         ;;
     
     import)
@@ -142,13 +153,13 @@ case "$1" in
             exit 1
         fi
         
-        api_post_file "/import" "$FILE_PATH" "document_type=$DOC_TYPE;imported_by=$IMPORTED_BY" | python -m json.tool
+        api_post_file "/import" "$FILE_PATH" "document_type=$DOC_TYPE;imported_by=$IMPORTED_BY" | python3 -m json.tool
         print_success "文件导入完成"
         ;;
     
     list-imports)
         print_header "导入记录"
-        api_get "/imports" | python -m json.tool
+        api_get "/imports" | python3 -m json.tool
         ;;
     
     export)
@@ -157,33 +168,33 @@ case "$1" in
         EXPORTED_BY=${3:-"cli"}
         
         data="{\"export_type\": \"$EXPORT_TYPE\", \"exported_by\": \"$EXPORTED_BY\"}"
-        api_post "/export" "$data" | python -m json.tool
+        api_post "/export" "$data" | python3 -m json.tool
         print_success "导出任务已提交"
         ;;
     
     list-exports)
         print_header "导出记录"
-        api_get "/exports" | python -m json.tool
+        api_get "/exports" | python3 -m json.tool
         ;;
     
     list-tasks)
         print_header "任务列表"
         STATUS=${2:-""}
         if [ -n "$STATUS" ]; then
-            api_get "/tasks?status=$STATUS" | python -m json.tool
+            api_get "/tasks?status=$STATUS" | python3 -m json.tool
         else
-            api_get "/tasks" | python -m json.tool
+            api_get "/tasks" | python3 -m json.tool
         fi
         ;;
     
     get-task)
         print_header "任务详情"
-        api_get "/tasks/$2" | python -m json.tool
+        api_get "/tasks/$2" | python3 -m json.tool
         ;;
     
     replay-task)
         print_header "回放异常任务"
-        api_post "/tasks/$2/replay" "{}" | python -m json.tool
+        api_post "/tasks/$2/replay" "{}" | python3 -m json.tool
         print_success "任务回放请求已发送"
         ;;
     
@@ -194,20 +205,20 @@ case "$1" in
         RECONCILED_BY=${4:-"cli"}
         
         data="{\"left_document_id\": $LEFT_ID, \"right_document_id\": $RIGHT_ID, \"reconciled_by\": \"$RECONCILED_BY\"}"
-        api_post "/reconcile" "$data" | python -m json.tool
+        api_post "/reconcile" "$data" | python3 -m json.tool
         print_success "对账完成"
         ;;
     
     audit-logs)
         print_header "审计日志"
-        api_get "/audit-logs?limit=$2" | python -m json.tool
+        api_get "/audit-logs?limit=$2" | python3 -m json.tool
         ;;
     
     generate-test)
         print_header "生成测试数据"
         COUNT=${2:-5}
         data="{\"document_count\": $COUNT, \"with_tasks\": true, \"generated_by\": \"cli\"}"
-        api_post "/test-data/generate" "$data" | python -m json.tool
+        api_post "/test-data/generate" "$data" | python3 -m json.tool
         print_success "测试数据生成完成"
         ;;
     
@@ -219,8 +230,51 @@ case "$1" in
         NEW_STATUS=${5:-"waiting_manual"}
         
         data="{\"manual_note\": \"$NOTE\", \"handled_by\": \"$HANDLER\", \"new_status\": \"$NEW_STATUS\"}"
-        api_post "/tasks/$TASK_ID/manual-handle" "$data" | python -m json.tool
+        api_post "/tasks/$TASK_ID/manual-handle" "$data" | python3 -m json.tool
         print_success "人工处理已记录"
+        ;;
+    
+    cross-check)
+        print_header "跨材料核对"
+        PROJECT_NO=${2:-"default"}
+        RECONCILED_BY=${3:-"cli"}
+        
+        api_post "/cross-material-reconcile?project_no=$PROJECT_NO&reconciled_by=$RECONCILED_BY" "{}" | python3 -m json.tool
+        print_success "跨材料核对完成"
+        ;;
+    
+    who-changed)
+        print_header "谁改了哪页"
+        DOC_ID=$2
+        api_get "/documents/$DOC_ID/field-changes" | python3 -m json.tool
+        print_success "变更记录查询完成"
+        ;;
+    
+    update-with-track)
+        print_header "追踪式更新"
+        DOC_ID=$2
+        FIELD=$3
+        NEW_VALUE=$4
+        REASON=${5:-"更新内容"}
+        UPDATER=${6:-"cli"}
+        
+        data="{\"content\": {\"$FIELD\": \"$NEW_VALUE\"}, \"change_reason\": \"$REASON\", \"updated_by\": \"$UPDATER\"}"
+        api_put "/documents/$DOC_ID/with-tracking" "$data" | python3 -m json.tool
+        print_success "追踪式更新完成"
+        ;;
+    
+    export-chain)
+        print_header "导出完整历史链路"
+        DOC_ID=$2
+        EXPORTED_BY=${3:-"cli"}
+        api_post "/export-full-chain/$DOC_ID?exported_by=$EXPORTED_BY" "{}" | python3 -m json.tool
+        print_success "链路导出完成"
+        ;;
+    
+    view-chain)
+        print_header "查看完整历史链路"
+        DOC_ID=$2
+        api_get "/documents/$DOC_ID/export-full-chain" | python3 -m json.tool
         ;;
     
     docs)
@@ -247,11 +301,15 @@ case "$1" in
         echo "  create-doc [编号] [标题] [类型]  创建文档"
         echo "  get-doc <id>               文档详情"
         echo "  list-versions <id>         版本历史"
+        echo "  update-with-track <id> <字段> <新值> [原因] [操作人]  追踪式更新"
+        echo "  who-changed <id>           谁改了哪页/哪个字段"
         echo ""
         echo "导入导出:"
-        echo "  import <文件路径> [类型] [导入人]  导入文件"
+        echo "  import <文件路径> [类型] [导入人]  导入文件 (支持csv/xlsx/zip/tar.gz)"
         echo "  list-imports               导入记录"
-        echo "  export [类型] [导出人]     导出数据"
+        echo "  export [类型] [导出人]     导出数据列表"
+        echo "  export-chain <id> [导出人]  导出完整历史链路"
+        echo "  view-chain <id>            查看完整历史链路"
         echo "  list-exports               导出记录"
         echo ""
         echo "任务命令:"
@@ -260,13 +318,16 @@ case "$1" in
         echo "  replay-task <task_id>      回放异常任务"
         echo "  manual-handle <task_id> [备注] [处理人] [状态]  人工处理任务"
         echo ""
+        echo "核对回放:"
+        echo "  reconcile <左id> <右id>    文档对账对比"
+        echo "  cross-check [项目号] [核对人]  跨材料核对(资质+报价+盖章)"
+        echo ""
         echo "其他命令:"
-        echo "  reconcile <左id> <右id>    对账对比"
         echo "  audit-logs [条数]          审计日志"
         echo "  generate-test [数量]       生成测试数据"
         echo ""
         echo "文档类型: qualification(资质), quotation(报价), stamped(盖章)"
-        echo "         history_archive(历史), supplement(补录)"
+        echo "         history_archive(历史压缩包), supplement(临时补录)"
         echo "任务状态: pending, running, waiting_retry, waiting_manual"
         echo "         permanent_failed, completed"
         echo ""
@@ -276,5 +337,10 @@ case "$1" in
         echo "  ./cli.sh test"
         echo "  ./cli.sh create-doc DOC-001 \"资质文件\" qualification"
         echo "  ./cli.sh import data.csv qualification admin"
+        echo "  ./cli.sh import history.zip history_archive admin"
+        echo "  ./cli.sh update-with-track 1 company_name \"新公司名\" \"发票抬头变更\" admin"
+        echo "  ./cli.sh who-changed 1"
+        echo "  ./cli.sh cross-check"
+        echo "  ./cli.sh export-chain 1"
         ;;
 esac
