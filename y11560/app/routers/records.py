@@ -1,9 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from datetime import datetime
 import json
 
 from ..database import get_db
+
+
+def json_serializer(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
+
+def safe_dumps(data, **kwargs):
+    return json.dumps(data, default=json_serializer, ensure_ascii=False, **kwargs)
 from ..models import (
     AuditBatch, User,
     CheckinRecord as CheckinRecordModel,
@@ -46,8 +57,8 @@ def add_checkin_records(
         
         db_rec = CheckinRecordModel(
             batch_id=batch_id,
-            **rec.dict(),
-            raw_data=json.dumps(rec.dict(), ensure_ascii=False)
+            **rec.model_dump(),
+            raw_data=safe_dumps(rec.model_dump())
         )
         db.add(db_rec)
         created.append(db_rec)
