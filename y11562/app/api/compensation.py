@@ -29,9 +29,26 @@ from app.services.compensation_service import (
     process_compensation,
     handle_processing_success
 )
-from app.tasks.compensation_tasks import process_compensation_task
+from app.tasks.compensation_tasks import (
+    process_compensation_task,
+    _process_compensation_impl
+)
+from app.celery_app import is_celery_enabled
 
 router = APIRouter()
+
+
+def _execute_process(compensation_no: str, background_tasks: Optional[BackgroundTasks] = None):
+    if is_celery_enabled():
+        if background_tasks:
+            background_tasks.add_task(
+                process_compensation_task.delay,
+                compensation_no
+            )
+        else:
+            process_compensation_task.delay(compensation_no)
+    else:
+        _process_compensation_impl(compensation_no)
 
 
 @router.post("/", response_model=CompensationQueue)
@@ -41,12 +58,9 @@ def create_compensation_api(
     db: Session = Depends(get_db)
 ):
     compensation = create_compensation(db, compensation_data)
-    
-    background_tasks.add_task(
-        process_compensation_task.delay,
-        compensation.compensation_no
-    )
-    
+
+    _execute_process(compensation.compensation_no, background_tasks)
+
     return compensation
 
 
@@ -78,7 +92,7 @@ def list_compensations_api(
         page=page,
         page_size=page_size
     )
-    
+
     items_dict = [
         {
             "id": item.id,
@@ -102,7 +116,7 @@ def list_compensations_api(
         }
         for item in items
     ]
-    
+
     return PaginatedResponse(
         total=total,
         page=page,
@@ -119,7 +133,7 @@ def get_compensation_transitions(
     compensation = get_compensation_by_no(db, compensation_no)
     if not compensation:
         raise HTTPException(status_code=404, detail="补偿记录不存在")
-    
+
     transitions = get_state_transitions(db, compensation.id)
     return transitions
 
@@ -132,7 +146,7 @@ def get_compensation_logs(
     compensation = get_compensation_by_no(db, compensation_no)
     if not compensation:
         raise HTTPException(status_code=404, detail="补偿记录不存在")
-    
+
     logs = get_operation_logs(db, compensation.id)
     return logs
 
@@ -150,16 +164,13 @@ def retry_compensation_api(
         operator=request.operator,
         remark=request.remark
     )
-    
+
     if not success:
         raise HTTPException(status_code=400, detail=message)
-    
+
     if new_status == CompensationStatus.PENDING:
-        background_tasks.add_task(
-            process_compensation_task.delay,
-            compensation_no
-        )
-    
+        _execute_process(compensation_no, background_tasks)
+
     return CompensationActionResponse(
         success=success,
         compensation_no=compensation_no,
@@ -180,10 +191,10 @@ def manual_takeover_api(
         operator=request.operator,
         judgment_remark=request.judgment_remark
     )
-    
+
     if not success:
         raise HTTPException(status_code=400, detail=message)
-    
+
     return CompensationActionResponse(
         success=success,
         compensation_no=compensation_no,
@@ -201,7 +212,7 @@ def compensate_api(
     compensation = get_compensation_by_no(db, compensation_no)
     if not compensation:
         raise HTTPException(status_code=404, detail="补偿记录不存在")
-    
+
     if compensation.status == CompensationStatus.MANUAL_TAKEOVER:
         success, message, new_status = manual_compensate(
             db=db,
@@ -221,10 +232,10 @@ def compensate_api(
                 compensation_no=compensation_no,
                 operator=request.operator
             )
-    
+
     if not success:
         raise HTTPException(status_code=400, detail=message)
-    
+
     return CompensationActionResponse(
         success=success,
         compensation_no=compensation_no,
@@ -245,10 +256,10 @@ def close_compensation_api(
         operator=request.operator,
         close_remark=request.close_remark
     )
-    
+
     if not success:
         raise HTTPException(status_code=400, detail=message)
-    
+
     return CompensationActionResponse(
         success=success,
         compensation_no=compensation_no,
@@ -266,12 +277,11 @@ def trigger_process(
     compensation = get_compensation_by_no(db, compensation_no)
     if not compensation:
         raise HTTPException(status_code=404, detail="补偿记录不存在")
-    
-    background_tasks.add_task(
-        process_compensation_task.delay,
-        compensation_no
-    )
-    
+
+    _execute_process(compensation_no, background_tasks)
+
+    db.refresh(compensation)
+
     return CompensationActionResponse(
         success=True,
         compensation_no=compensation_no,
