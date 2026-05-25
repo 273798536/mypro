@@ -23,9 +23,9 @@ class StateMachine:
         self.db = db
 
     def _generate_record_key(
-        self, branch_id: str, exception_type: str, exception_date: datetime, teller_id: str, extra: str = ""
+        self, batch_id: int, branch_id: str, exception_type: str, exception_date: datetime, teller_id: str, extra: str = ""
     ) -> str:
-        key_data = f"{branch_id}:{exception_type}:{exception_date.date().isoformat()}:{teller_id}:{extra}"
+        key_data = f"{batch_id}:{branch_id}:{exception_type}:{exception_date.date().isoformat()}:{teller_id}:{extra}"
         return hashlib.md5(key_data.encode()).hexdigest()
 
     def _generate_batch_no(self, branch_id: str, batch_date: datetime) -> str:
@@ -139,6 +139,7 @@ class StateMachine:
                 extra_info = hashlib.md5(json.dumps(raw_data, sort_keys=True, default=str).encode()).hexdigest()[:8]
             
             record_key = self._generate_record_key(
+                batch.id,
                 branch_id,
                 exc_data["exception_type"],
                 exc_data["exception_date"],
@@ -146,41 +147,24 @@ class StateMachine:
                 extra_info,
             )
 
-            existing_record = (
-                self.db.query(ExceptionRecord)
-                .filter(ExceptionRecord.record_key == record_key)
-                .first()
+            record = ExceptionRecord(
+                batch_id=batch.id,
+                record_key=record_key,
+                branch_id=branch_id,
+                exception_type=exc_data["exception_type"],
+                status=RecordStatus.UNPROCESSED,
+                exception_date=exc_data["exception_date"],
+                teller_id=exc_data.get("teller_id"),
+                teller_name=exc_data.get("teller_name"),
+                description=exc_data["description"],
+                blocking_point=exc_data["blocking_point"],
+                source_type=exc_data["source_type"],
+                source_ids=exc_data["source_ids"],
+                raw_data=exc_data["raw_data"],
             )
+            self.db.add(record)
 
-            if existing_record:
-                existing_record.raw_data = exc_data["raw_data"]
-                existing_record.description = exc_data["description"]
-                existing_record.blocking_point = exc_data["blocking_point"]
-                record = existing_record
-            else:
-                record = ExceptionRecord(
-                    batch_id=batch.id,
-                    record_key=record_key,
-                    branch_id=branch_id,
-                    exception_type=exc_data["exception_type"],
-                    status=RecordStatus.UNPROCESSED,
-                    exception_date=exc_data["exception_date"],
-                    teller_id=exc_data.get("teller_id"),
-                    teller_name=exc_data.get("teller_name"),
-                    description=exc_data["description"],
-                    blocking_point=exc_data["blocking_point"],
-                    source_type=exc_data["source_type"],
-                    source_ids=exc_data["source_ids"],
-                    raw_data=exc_data["raw_data"],
-                )
-                self.db.add(record)
-
-            if record.status == RecordStatus.UNPROCESSED:
-                unprocessed_count += 1
-            elif record.status == RecordStatus.CORRECTED:
-                corrected_count += 1
-            elif record.status == RecordStatus.NEED_MANUAL_CONFIRM:
-                need_manual_count += 1
+            unprocessed_count += 1
 
         for fail_data in failed:
             failed_record = FailedRecord(
@@ -251,6 +235,7 @@ class StateMachine:
                 extra_info = hashlib.md5(json.dumps(raw_data, sort_keys=True, default=str).encode()).hexdigest()[:8]
             
             record_key = self._generate_record_key(
+                batch.id,
                 batch.branch_id,
                 exc_data["exception_type"],
                 exc_data["exception_date"],
@@ -260,7 +245,10 @@ class StateMachine:
 
             existing_record = (
                 self.db.query(ExceptionRecord)
-                .filter(ExceptionRecord.record_key == record_key)
+                .filter(
+                    ExceptionRecord.batch_id == batch.id,
+                    ExceptionRecord.record_key == record_key,
+                )
                 .first()
             )
 
@@ -268,8 +256,6 @@ class StateMachine:
                 existing_record.raw_data = exc_data["raw_data"]
                 existing_record.description = exc_data["description"]
                 existing_record.blocking_point = exc_data["blocking_point"]
-                if existing_record.batch_id != batch.id:
-                    continue
                 record = existing_record
             else:
                 record = ExceptionRecord(

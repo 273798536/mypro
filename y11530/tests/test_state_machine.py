@@ -173,10 +173,44 @@ def test_full_workflow():
         batch = state_machine.archive_batch(batch.id, "档案管理员")
         print(f"归档后状态: {batch.status}")
         assert batch.status == ExceptionStatus.ARCHIVED
+        
+        archived_batch_id = batch.id
+        archived_batch_records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == archived_batch_id).count()
+        print(f"归档批次记录数: {archived_batch_records}")
         print("✓ 状态流转测试通过")
 
         print("\n" + "=" * 60)
-        print("测试9: 复核改判功能")
+        print("测试9: 归档后重建批次（新批次数据独立）")
+        print("=" * 60)
+        
+        batch_rebuild = state_machine.create_batch(
+            branch_id="B001",
+            branch_name="朝阳支行",
+            batch_date=today,
+            start_date=today,
+            end_date=today + timedelta(days=7),
+            operator="测试员-重建",
+        )
+        
+        print(f"重建批次号: {batch_rebuild.batch_no}")
+        print(f"重建批次ID: {batch_rebuild.id}")
+        print(f"重建批次汇总: total={batch_rebuild.total_records}, unprocessed={batch_rebuild.total_records}")
+        
+        rebuild_records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == batch_rebuild.id).count()
+        print(f"重建批次明细记录数: {rebuild_records}")
+        
+        archived_records = db.query(ExceptionRecord).filter(ExceptionRecord.batch_id == archived_batch_id).count()
+        print(f"原归档批次明细记录数: {archived_records}")
+        
+        assert batch_rebuild.id != archived_batch_id, "重建批次应是新的批次ID"
+        assert batch_rebuild.total_records == rebuild_records, "重建批次汇总应与明细一致"
+        assert archived_records == archived_batch_records, "原归档批次记录数不应变化"
+        assert rebuild_records > 0, "重建批次应有独立的明细记录"
+        
+        print("✓ 归档后重建批次测试通过 - 新旧批次数据独立")
+
+        print("\n" + "=" * 60)
+        print("测试10: 复核改判功能")
         print("=" * 60)
 
         batch2 = state_machine.create_batch(
@@ -208,7 +242,7 @@ def test_full_workflow():
             print("✓ 复核改判测试通过")
 
         print("\n" + "=" * 60)
-        print("测试10: 行长视图报表")
+        print("测试11: 行长视图报表")
         print("=" * 60)
 
         report_service = ReportService(db)
@@ -229,7 +263,7 @@ def test_full_workflow():
         print("✓ 行长视图报表测试通过")
 
         print("\n" + "=" * 60)
-        print("测试11: 导出Excel")
+        print("测试12: 导出Excel")
         print("=" * 60)
 
         export_path = report_service.export_to_excel()
