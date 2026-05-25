@@ -3,23 +3,59 @@ import { useQuery } from '@tanstack/react-query';
 import { Terminal, Database, Globe, Copy, Check } from 'lucide-react';
 import { techViewApi } from '../services/api';
 
+interface HttpLogRecord {
+  id: string;
+  method: string;
+  url: string;
+  statusCode: number;
+  duration: number;
+  requestBody?: string | null;
+  responseBody?: string | null;
+  createdAt: string;
+}
+
+interface SqlLogRecord {
+  id: string;
+  sql: string;
+  params: string;
+  duration: number;
+  createdAt: string;
+}
+
+interface CommandLogRecord {
+  id: string;
+  command: string;
+  output: string;
+  exitCode: number;
+  createdAt: string;
+}
+
 export const TechView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'http' | 'sql' | 'commands'>('http');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const { data: httpLogs } = useQuery({
+  const { data: httpLogs } = useQuery<HttpLogRecord[]>({
     queryKey: ['httpLogs'],
-    queryFn: techViewApi.getHttpLogs,
+    queryFn: async () => {
+      const result = await techViewApi.getHttpLogs();
+      return result as HttpLogRecord[];
+    },
   });
 
-  const { data: sqlLogs } = useQuery({
+  const { data: sqlLogs } = useQuery<SqlLogRecord[]>({
     queryKey: ['sqlLogs'],
-    queryFn: techViewApi.getSqlLogs,
+    queryFn: async () => {
+      const result = await techViewApi.getSqlLogs();
+      return result as SqlLogRecord[];
+    },
   });
 
-  const { data: commands } = useQuery({
+  const { data: commands } = useQuery<CommandLogRecord[]>({
     queryKey: ['commandLogs'],
-    queryFn: techViewApi.getCommands,
+    queryFn: async () => {
+      const result = await techViewApi.getCommands();
+      return result as CommandLogRecord[];
+    },
   });
 
   const copyToClipboard = (id: string, text: string) => {

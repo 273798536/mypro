@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Play, Check, X, FileSpreadsheet, AlertCircle } from 'lucide-react';
+import { Play, Check, FileSpreadsheet, AlertCircle } from 'lucide-react';
 import { chainApi, reconciliationApi } from '../services/api';
 import { StatusBadge } from '../components/StatusBadge';
-import { Link } from 'react-router-dom';
 
 export const Reconciliation: React.FC = () => {
   const queryClient = useQueryClient();

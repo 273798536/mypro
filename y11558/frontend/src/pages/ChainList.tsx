@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Eye, FileText } from 'lucide-react';
 import { chainApi } from '../services/api';
-import { StatusBadge, MaterialTypeBadge } from '../components/StatusBadge';
+import { StatusBadge } from '../components/StatusBadge';
 
 export const ChainList: React.FC = () => {
   const [filters, setFilters] = useState({
