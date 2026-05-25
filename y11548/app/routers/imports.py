@@ -10,7 +10,7 @@ from ..models import (
     Material, LogisticsReceipt, BorrowRecord, ScanRecord, RecordStatus
 )
 from ..schemas import ImportTaskResponse, ImportFailureResponse
-from ..utils import log_operation, generate_no, is_batch_frozen, filter_response_data
+from ..utils import log_operation, generate_no, is_batch_frozen, filter_response_data, object_to_dict
 
 router = APIRouter(prefix="/imports", tags=["数据导入"])
 
