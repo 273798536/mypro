@@ -1,0 +1,34 @@
+[
+  {
+    "package_no": "PKG202405240001",
+    "node_type": "customs_clearance",
+    "node_time": "2024-05-24T10:30:00",
+    "location": "上海浦东海关",
+    "status": "清关中",
+    "remark": "正常申报"
+  },
+  {
+    "package_no": "PKG202405240002",
+    "node_type": "customs_inspection",
+    "node_time": "2024-05-24T14:15:00",
+    "location": "上海浦东海关",
+    "status": "扣留检查",
+    "remark": "申报价值异常，需人工复核"
+  },
+  {
+    "package_no": "PKG202405240003",
+    "node_type": "customs_release",
+    "node_time": "2024-05-24T16:45:00",
+    "location": "上海浦东海关",
+    "status": "已放行",
+    "remark": "正常放行"
+  },
+  {
+    "package_no": "PKG202405240001",
+    "node_type": "sorting_center",
+    "node_time": "2024-05-24T18:00:00",
+    "location": "上海分拣中心",
+    "status": "分拣完成",
+    "remark": "发往北京"
+  }
+]

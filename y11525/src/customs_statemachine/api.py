@@ -1,22 +1,27 @@
 import uuid
+import shutil
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, Query, Request
+from fastapi import FastAPI, Depends, HTTPException, Query, Request, File, UploadFile, Form
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from .database import get_db, init_db
-from .models import Batch, BatchStatus, AsyncTask, TaskStatus
+from .models import Batch, BatchStatus, AsyncTask, TaskStatus, Attachment
 from .schemas import (
     BatchCreate, BatchUpdate, Batch as BatchSchema, BatchList,
     PaginatedResponse, StatusTransition, FreezeRequest, UnfreezeRequest,
     BatchDataAppend, ExportRequest, ExportResponse,
-    TaskRetryRequest, TaskResolveRequest, AsyncTask as TaskSchema
+    TaskRetryRequest, TaskResolveRequest, AsyncTask as TaskSchema,
+    AsyncTaskCreate
 )
 from .state_machine import StateMachine, StateTransitionError
 from .audit_service import AuditService
 from .task_processor import TaskProcessor
 from .export_service import ExportService
+from .task_handlers import register_handlers
+from .config import settings
 
 app = FastAPI(title="跨境小包清关异常回执状态机 API", version="1.0.0")
 
@@ -24,6 +29,12 @@ app = FastAPI(title="跨境小包清关异常回执状态机 API", version="1.0.
 @app.on_event("startup")
 def on_startup():
     init_db()
+
+
+def get_task_processor(db: Session = Depends(get_db)) -> TaskProcessor:
+    tp = TaskProcessor(db)
+    register_handlers(tp)
+    return tp
 
 
 @app.get("/")
@@ -302,22 +313,45 @@ def list_tasks(
 
 
 @app.get("/tasks/manual", response_model=List[TaskSchema])
-def get_manual_tasks(db: Session = Depends(get_db)):
-    tp = TaskProcessor(db)
+def get_manual_tasks(tp: TaskProcessor = Depends(get_task_processor)):
     return tp.get_manual_tasks()
+
+
+@app.post("/tasks", response_model=TaskSchema)
+def create_task(
+    task_data: AsyncTaskCreate,
+    tp: TaskProcessor = Depends(get_task_processor)
+):
+    """创建异步任务
+    任务类型: tax_calculation, abnormal_detection, data_reconciliation, export_generation
+    """
+    valid_task_types = ["tax_calculation", "abnormal_detection", "data_reconciliation", "export_generation"]
+    if task_data.task_type not in valid_task_types:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid task type. Must be one of: {valid_task_types}"
+        )
+
+    payload = task_data.payload or {"batch_id": task_data.batch_id}
+    return tp.create_task(
+        batch_id=task_data.batch_id,
+        task_type=task_data.task_type,
+        created_by=task_data.created_by,
+        payload=payload,
+        max_retries=task_data.max_retries
+    )
 
 
 @app.post("/tasks/{task_id}/retry", response_model=TaskSchema)
 def retry_task(
     task_id: str,
     retry_req: TaskRetryRequest,
-    db: Session = Depends(get_db)
+    tp: TaskProcessor = Depends(get_task_processor)
 ):
-    task = db.query(AsyncTask).filter(AsyncTask.id == task_id).first()
+    task = tp.db.query(AsyncTask).filter(AsyncTask.id == task_id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    tp = TaskProcessor(db)
     try:
         return tp.retry_task(task, retry_req.retried_by, retry_req.reason)
     except ValueError as e:
@@ -328,13 +362,12 @@ def retry_task(
 def resolve_manual_task(
     task_id: str,
     resolve_req: TaskResolveRequest,
-    db: Session = Depends(get_db)
+    tp: TaskProcessor = Depends(get_task_processor)
 ):
-    task = db.query(AsyncTask).filter(AsyncTask.id == task_id).first()
+    task = tp.db.query(AsyncTask).filter(AsyncTask.id == task_id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    tp = TaskProcessor(db)
     try:
         return tp.resolve_manual_task(
             task, resolve_req.resolved_by, resolve_req.resolution, resolve_req.result
@@ -344,14 +377,129 @@ def resolve_manual_task(
 
 
 @app.post("/tasks/process", response_model=dict)
-def process_pending_tasks(db: Session = Depends(get_db)):
-    tp = TaskProcessor(db)
+def process_pending_tasks(tp: TaskProcessor = Depends(get_task_processor)):
     count = tp.run_once()
     return {"processed_tasks": count}
 
 
 @app.post("/tasks/recover", response_model=dict)
-def recover_stuck_tasks(db: Session = Depends(get_db)):
-    tp = TaskProcessor(db)
+def recover_stuck_tasks(tp: TaskProcessor = Depends(get_task_processor)):
     count = tp.recover_tasks()
     return {"recovered_tasks": count}
+
+
+@app.post("/batches/{batch_id}/attachments")
+def upload_attachment(
+    batch_id: str,
+    file: UploadFile = File(...),
+    uploaded_by: str = Form(...),
+    description: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    """补传附件到批次"""
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    upload_dir = settings.DATA_DIR / "attachments" / batch_id
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    file_ext = Path(file.filename).suffix if file.filename else ""
+    dest_path = upload_dir / f"{uuid.uuid4().hex}{file_ext}"
+
+    with open(dest_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    file_size = dest_path.stat().st_size
+    file_type = file.content_type or file_ext.lstrip('.') or "application/octet-stream"
+
+    attachment = Attachment(
+        id=str(uuid.uuid4()),
+        batch_id=batch_id,
+        file_name=file.filename or "unknown",
+        file_type=file_type,
+        file_size=file_size,
+        file_path=str(dest_path),
+        uploaded_by=uploaded_by,
+        uploaded_at=datetime.utcnow(),
+        description=description
+    )
+    db.add(attachment)
+
+    audit = AuditService(db)
+    audit.log_action(
+        batch_id=batch_id,
+        action="attachment_uploaded",
+        old_status=batch.status.value,
+        new_status=batch.status.value,
+        changed_by=uploaded_by,
+        reason=f"上传附件: {file.filename}",
+        changes={
+            "file_name": file.filename,
+            "file_size": file_size,
+            "description": description
+        }
+    )
+
+    if batch.status == BatchStatus.CREATED:
+        sm = StateMachine(db)
+        sm.transition(
+            batch=batch,
+            target_status=BatchStatus.ATTACHMENTS_UPLOADED,
+            changed_by=uploaded_by,
+            reason="附件补传完成"
+        )
+
+    db.commit()
+    db.refresh(attachment)
+
+    return {
+        "id": attachment.id,
+        "file_name": attachment.file_name,
+        "file_size": attachment.file_size,
+        "uploaded_at": attachment.uploaded_at
+    }
+
+
+@app.get("/batches/{batch_id}/attachments")
+def list_attachments(batch_id: str, db: Session = Depends(get_db)):
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    return [
+        {
+            "id": att.id,
+            "file_name": att.file_name,
+            "file_type": att.file_type,
+            "file_size": att.file_size,
+            "uploaded_by": att.uploaded_by,
+            "uploaded_at": att.uploaded_at,
+            "description": att.description
+        }
+        for att in batch.attachments
+    ]
+
+
+@app.get("/batches/{batch_id}/attachments/{attachment_id}/download")
+def download_attachment(
+    batch_id: str,
+    attachment_id: str,
+    db: Session = Depends(get_db)
+):
+    attachment = (
+        db.query(Attachment)
+        .filter(Attachment.id == attachment_id, Attachment.batch_id == batch_id)
+        .first()
+    )
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+
+    if not Path(attachment.file_path).exists():
+        raise HTTPException(status_code=404, detail="File not found on disk")
+
+    return FileResponse(
+        path=attachment.file_path,
+        filename=attachment.file_name,
+        media_type=attachment.file_type or "application/octet-stream"
+    )

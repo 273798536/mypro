@@ -1,0 +1,23 @@
+[
+  {
+    "record_type": "ownership_correction",
+    "package_no": "PKG202405240002",
+    "content": "该包裹原归属批次错误，已从BATCH-001调整到本批次，税费由本批次承担",
+    "recorded_by": "correction_officer_1",
+    "recorded_at": "2024-05-24T15:30:00"
+  },
+  {
+    "record_type": "abnormal_registration",
+    "package_no": "PKG202405240002",
+    "content": "客户投诉包裹丢失，经核实为拆分配送时归属错误",
+    "recorded_by": "service_agent_1",
+    "recorded_at": "2024-05-24T16:00:00"
+  },
+  {
+    "record_type": "supplement_info",
+    "package_no": "PKG202405240001",
+    "content": "补充上传了购买凭证和支付截图",
+    "recorded_by": "operator_2",
+    "recorded_at": "2024-05-24T11:00:00"
+  }
+]

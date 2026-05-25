@@ -1,16 +1,22 @@
 import sys
 import json
+import uuid
+import shutil
 import click
 from datetime import datetime
 from pathlib import Path
 
 from .database import SessionLocal, init_db
-from .models import Batch, BatchStatus, TaskStatus
-from .schemas import BatchCreate, BatchDataAppend, PackageCreate
+from .models import Batch, BatchStatus, TaskStatus, Attachment
+from .schemas import (
+    BatchCreate, BatchDataAppend, PackageCreate,
+    TrackingNodeCreate, TaxNoticeCreate, TempRecordCreate
+)
 from .state_machine import StateMachine
 from .audit_service import AuditService
 from .task_processor import TaskProcessor
 from .export_service import ExportService
+from .task_handlers import register_handlers
 from .config import settings
 
 
@@ -65,27 +71,38 @@ def batch_list(status, limit):
     sys.exit(EXIT_SUCCESS)
 
 
+def _load_json_data(file_path, create_class):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data_list = json.load(f)
+            return [create_class(**d) for d in data_list]
+    except Exception as e:
+        raise RuntimeError(f"Failed to load {create_class.__name__}: {e}")
+
+
 @batch.command("create")
 @click.argument("batch_no")
 @click.option("--created-by", required=True, help="创建人")
 @click.option("--source-type", help="来源类型")
 @click.option("--customs-code", help="关区代码")
-@click.option("--packages", type=click.Path(exists=True), help="包裹数据 JSON 文件")
+@click.option("--packages", type=click.Path(exists=True), help="申报表-包裹数据 JSON 文件")
+@click.option("--tracking-nodes", type=click.Path(exists=True), help="轨迹节点 JSON 文件")
+@click.option("--tax-notices", type=click.Path(exists=True), help="补税通知 JSON 文件")
+@click.option("--temp-records", type=click.Path(exists=True), help="临时补录单 JSON 文件")
 @click.option("--idempotency", type=click.Choice(["ignore", "overwrite", "append"]), default="ignore")
-def batch_create(batch_no, created_by, source_type, customs_code, packages, idempotency):
-    """创建新批次"""
+def batch_create(batch_no, created_by, source_type, customs_code, packages, tracking_nodes, tax_notices, temp_records, idempotency):
+    """创建新批次（支持多数据源：申报表、轨迹节点、补税通知、临时补录单）"""
     db = get_db()
     sm = StateMachine(db)
 
-    packages_data = []
-    if packages:
-        try:
-            with open(packages, 'r', encoding='utf-8') as f:
-                pkg_list = json.load(f)
-                packages_data = [PackageCreate(**p) for p in pkg_list]
-        except Exception as e:
-            click.echo(f"Failed to load packages: {e}", err=True)
-            sys.exit(EXIT_ERROR)
+    try:
+        packages_data = _load_json_data(packages, PackageCreate) if packages else []
+        tracking_data = _load_json_data(tracking_nodes, TrackingNodeCreate) if tracking_nodes else []
+        tax_data = _load_json_data(tax_notices, TaxNoticeCreate) if tax_notices else []
+        temp_data = _load_json_data(temp_records, TempRecordCreate) if temp_records else []
+    except RuntimeError as e:
+        click.echo(str(e), err=True)
+        sys.exit(EXIT_ERROR)
 
     batch_data = BatchCreate(
         batch_no=batch_no,
@@ -93,6 +110,9 @@ def batch_create(batch_no, created_by, source_type, customs_code, packages, idem
         source_type=source_type,
         customs_code=customs_code,
         packages=packages_data,
+        tracking_nodes=tracking_data,
+        tax_notices=tax_data,
+        temp_records=temp_data,
         idempotency_mode=idempotency
     )
 
@@ -110,7 +130,8 @@ def batch_create(batch_no, created_by, source_type, customs_code, packages, idem
 
 @batch.command("show")
 @click.argument("batch_id")
-def batch_show(batch_id):
+@click.option("--full", is_flag=True, help="显示完整数据明细")
+def batch_show(batch_id, full):
     """显示批次详情"""
     db = get_db()
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
@@ -138,6 +159,41 @@ def batch_show(batch_id):
 
     if batch.manual_remark:
         click.echo(f"\n人工备注: {batch.manual_remark}")
+
+    click.echo(f"\n数据统计:")
+    click.echo(f"  包裹数: {len(batch.packages)}")
+    click.echo(f"  轨迹节点数: {len(batch.tracking_nodes)}")
+    click.echo(f"  补税通知数: {len(batch.tax_notices)}")
+    click.echo(f"  临时补录单数: {len(batch.temp_records)}")
+    click.echo(f"  附件数: {len(batch.attachments)}")
+    click.echo(f"  任务数: {len(batch.tasks)}")
+    click.echo(f"  审计日志数: {len(batch.audit_logs)}")
+
+    abnormal_count = sum(1 for p in batch.packages if p.is_abnormal)
+    click.echo(f"  异常包裹数: {abnormal_count}")
+
+    if full:
+        if batch.packages:
+            click.echo(f"\n包裹明细:")
+            for p in batch.packages:
+                status = "异常" if p.is_abnormal else "正常"
+                click.echo(f"  - {p.package_no} | {status} | 税费: {p.tax_amount} | 来源: {p.source.value if p.source else '-'}")
+                if p.abnormal_reason:
+                    click.echo(f"    异常原因: {p.abnormal_reason}")
+
+        if batch.attachments:
+            click.echo(f"\n附件列表:")
+            for att in batch.attachments:
+                click.echo(f"  - {att.file_name} ({att.file_type or '未知类型'}, {att.file_size} bytes)")
+                click.echo(f"    上传人: {att.uploaded_by} | 上传时间: {att.uploaded_at}")
+
+        if batch.tasks:
+            click.echo(f"\n任务列表:")
+            for t in batch.tasks:
+                status_icon = "✓" if t.status.value == "completed" else "✗" if t.status.value == "permanent_failed" else "⏳"
+                click.echo(f"  {status_icon} {t.task_type:<20} {t.status.value:<18} 重试:{t.retry_count}/{t.max_retries}")
+                if t.last_error:
+                    click.echo(f"    错误: {t.last_error}")
 
     sys.exit(EXIT_SUCCESS)
 
@@ -286,10 +342,13 @@ def batch_export(batch_id, output, no_history, no_packages):
 @batch.command("append")
 @click.argument("batch_id")
 @click.option("--changed-by", required=True, help="操作人")
-@click.option("--packages", type=click.Path(exists=True), help="包裹数据 JSON 文件")
+@click.option("--packages", type=click.Path(exists=True), help="申报表-包裹数据 JSON 文件")
+@click.option("--tracking-nodes", type=click.Path(exists=True), help="轨迹节点 JSON 文件")
+@click.option("--tax-notices", type=click.Path(exists=True), help="补税通知 JSON 文件")
+@click.option("--temp-records", type=click.Path(exists=True), help="临时补录单 JSON 文件")
 @click.option("--idempotency", type=click.Choice(["ignore", "overwrite", "append"]), default="append")
-def batch_append(batch_id, changed_by, packages, idempotency):
-    """追加数据到批次"""
+def batch_append(batch_id, changed_by, packages, tracking_nodes, tax_notices, temp_records, idempotency):
+    """追加数据到批次（支持多数据源）"""
     db = get_db()
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
 
@@ -297,25 +356,131 @@ def batch_append(batch_id, changed_by, packages, idempotency):
         click.echo(f"Batch not found: {batch_id}", err=True)
         sys.exit(EXIT_NOT_FOUND)
 
-    packages_data = []
-    if packages:
-        try:
-            with open(packages, 'r', encoding='utf-8') as f:
-                pkg_list = json.load(f)
-                packages_data = [PackageCreate(**p) for p in pkg_list]
-        except Exception as e:
-            click.echo(f"Failed to load packages: {e}", err=True)
-            sys.exit(EXIT_ERROR)
+    try:
+        packages_data = _load_json_data(packages, PackageCreate) if packages else []
+        tracking_data = _load_json_data(tracking_nodes, TrackingNodeCreate) if tracking_nodes else []
+        tax_data = _load_json_data(tax_notices, TaxNoticeCreate) if tax_notices else []
+        temp_data = _load_json_data(temp_records, TempRecordCreate) if temp_records else []
+    except RuntimeError as e:
+        click.echo(str(e), err=True)
+        sys.exit(EXIT_ERROR)
 
     sm = StateMachine(db)
     append_data = BatchDataAppend(
         packages=packages_data,
+        tracking_nodes=tracking_data,
+        tax_notices=tax_data,
+        temp_records=temp_data,
         idempotency_mode=idempotency,
         changed_by=changed_by
     )
 
     stats = sm.append_data(batch, append_data)
     click.echo(f"Data appended: {json.dumps(stats, ensure_ascii=False, indent=2)}")
+    sys.exit(EXIT_SUCCESS)
+
+
+@batch.command("upload-attachment")
+@click.argument("batch_id")
+@click.argument("file_path", type=click.Path(exists=True))
+@click.option("--uploaded-by", required=True, help="上传人")
+@click.option("--description", help="附件描述")
+@click.option("--file-type", help="文件类型")
+def batch_upload_attachment(batch_id, file_path, uploaded_by, description, file_type):
+    """补传附件到批次"""
+    db = get_db()
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+
+    if not batch:
+        click.echo(f"Batch not found: {batch_id}", err=True)
+        sys.exit(EXIT_NOT_FOUND)
+
+    src_path = Path(file_path)
+    if not src_path.exists():
+        click.echo(f"File not found: {file_path}", err=True)
+        sys.exit(EXIT_ERROR)
+
+    upload_dir = settings.DATA_DIR / "attachments" / batch_id
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    dest_path = upload_dir / f"{uuid.uuid4().hex}_{src_path.name}"
+    shutil.copy2(src_path, dest_path)
+
+    file_size = dest_path.stat().st_size
+    detected_type = file_type or src_path.suffix.lstrip('.') or "application/octet-stream"
+
+    attachment = Attachment(
+        id=str(uuid.uuid4()),
+        batch_id=batch_id,
+        file_name=src_path.name,
+        file_type=detected_type,
+        file_size=file_size,
+        file_path=str(dest_path),
+        uploaded_by=uploaded_by,
+        uploaded_at=datetime.utcnow(),
+        description=description
+    )
+    db.add(attachment)
+
+    audit = AuditService(db)
+    audit.log_action(
+        batch_id=batch_id,
+        action="attachment_uploaded",
+        old_status=batch.status.value,
+        new_status=batch.status.value,
+        changed_by=uploaded_by,
+        reason=f"上传附件: {src_path.name}",
+        changes={
+            "file_name": src_path.name,
+            "file_size": file_size,
+            "description": description
+        }
+    )
+
+    if batch.status == BatchStatus.CREATED:
+        sm = StateMachine(db)
+        sm.transition(
+            batch=batch,
+            target_status=BatchStatus.ATTACHMENTS_UPLOADED,
+            changed_by=uploaded_by,
+            reason="附件补传完成"
+        )
+
+    db.commit()
+
+    click.echo(f"Attachment uploaded successfully")
+    click.echo(f"  File: {src_path.name}")
+    click.echo(f"  Size: {file_size} bytes")
+    click.echo(f"  Saved to: {dest_path}")
+    sys.exit(EXIT_SUCCESS)
+
+
+@batch.command("list-attachments")
+@click.argument("batch_id")
+def batch_list_attachments(batch_id):
+    """列出批次附件"""
+    db = get_db()
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+
+    if not batch:
+        click.echo(f"Batch not found: {batch_id}", err=True)
+        sys.exit(EXIT_NOT_FOUND)
+
+    if not batch.attachments:
+        click.echo("No attachments found")
+        sys.exit(EXIT_SUCCESS)
+
+    click.echo(f"Attachments for batch {batch.batch_no}:")
+    for att in batch.attachments:
+        click.echo(f"  - {att.id}")
+        click.echo(f"    文件名: {att.file_name}")
+        click.echo(f"    类型: {att.file_type or '-'}")
+        click.echo(f"    大小: {att.file_size} bytes")
+        click.echo(f"    上传人: {att.uploaded_by}")
+        click.echo(f"    上传时间: {att.uploaded_at}")
+        if att.description:
+            click.echo(f"    描述: {att.description}")
+
     sys.exit(EXIT_SUCCESS)
 
 
@@ -352,14 +517,76 @@ def task_list(status):
     sys.exit(EXIT_SUCCESS)
 
 
+@task.command("create")
+@click.argument("batch_id")
+@click.argument("task_type", type=click.Choice([
+    "tax_calculation", "abnormal_detection", "data_reconciliation", "export_generation"
+]))
+@click.option("--created-by", required=True, help="创建人")
+@click.option("--max-retries", type=int, default=3, help="最大重试次数")
+def task_create(batch_id, task_type, created_by, max_retries):
+    """创建异步任务
+    任务类型:
+    - tax_calculation: 税费核算，检测税费错位
+    - abnormal_detection: 异常件检测，识别归属问题
+    - data_reconciliation: 数据核对，生成复核依据
+    - export_generation: 导出生成，异步生成Excel
+    """
+    db = get_db()
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+
+    if not batch:
+        click.echo(f"Batch not found: {batch_id}", err=True)
+        sys.exit(EXIT_NOT_FOUND)
+
+    tp = TaskProcessor(db)
+    register_handlers(tp)
+
+    payload = {"batch_id": batch_id}
+    task = tp.create_task(
+        batch_id=batch_id,
+        task_type=task_type,
+        created_by=created_by,
+        payload=payload,
+        max_retries=max_retries
+    )
+
+    click.echo(f"Task created: {task.id}")
+    click.echo(f"Type: {task.task_type}")
+    click.echo(f"Status: {task.status.value}")
+    sys.exit(EXIT_SUCCESS)
+
+
 @task.command("process")
 def task_process():
     """处理待处理任务"""
     db = get_db()
     tp = TaskProcessor(db)
+    register_handlers(tp)
     count = tp.run_once()
     click.echo(f"Processed {count} tasks")
     sys.exit(EXIT_SUCCESS)
+
+
+@task.command("process-loop")
+@click.option("--interval", type=int, default=5, help="处理间隔秒数")
+def task_process_loop(interval):
+    """持续处理待处理任务（后台循环模式）"""
+    import time
+    db = get_db()
+    tp = TaskProcessor(db)
+    register_handlers(tp)
+
+    click.echo(f"Starting task processing loop with {interval}s interval...")
+    try:
+        while True:
+            count = tp.run_once()
+            if count > 0:
+                click.echo(f"[{datetime.now()}] Processed {count} tasks")
+            time.sleep(interval)
+    except KeyboardInterrupt:
+        click.echo("\nProcessing loop stopped")
+        sys.exit(EXIT_SUCCESS)
 
 
 @task.command("recover")
