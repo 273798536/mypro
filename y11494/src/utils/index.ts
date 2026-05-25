@@ -49,8 +49,8 @@ export const recordStatusTransition = async (
   );
 };
 
-export const detectDirtyRecord = (document: any): { type: string; field?: string; description: string }[] => {
-  const issues: { type: string; field?: string; description: string }[] = [];
+export const detectDirtyRecord = (document: any, oldDocument?: any): { type: string; field?: string; originalValue?: string; currentValue?: string; description: string }[] => {
+  const issues: { type: string; field?: string; originalValue?: string; currentValue?: string; description: string }[] = [];
   const requiredFields = [
     { dbField: 'title', label: '标题' },
     { dbField: 'document_no', label: '文档编号' }
@@ -60,6 +60,8 @@ export const detectDirtyRecord = (document: any): { type: string; field?: string
       issues.push({
         type: 'missing_field',
         field: field.dbField,
+        originalValue: oldDocument?.[field.dbField] ? String(oldDocument[field.dbField]) : undefined,
+        currentValue: document[field.dbField] ? String(document[field.dbField]) : undefined,
         description: `缺少必填字段: ${field.label}`
       });
     }
@@ -71,6 +73,8 @@ export const detectDirtyRecord = (document: any): { type: string; field?: string
       issues.push({
         type: 'cross_date',
         field: 'effective_date,expiry_date',
+        originalValue: oldDocument?.effective_date ? String(oldDocument.effective_date) : undefined,
+        currentValue: `${document.effective_date},${document.expiry_date}`,
         description: '生效日期晚于失效日期'
       });
     }
@@ -79,6 +83,8 @@ export const detectDirtyRecord = (document: any): { type: string; field?: string
     issues.push({
       type: 'amount_conflict',
       field: 'amount',
+      originalValue: oldDocument?.amount !== undefined ? String(oldDocument.amount) : undefined,
+      currentValue: String(document.amount),
       description: '金额为负数'
     });
   }
@@ -86,8 +92,30 @@ export const detectDirtyRecord = (document: any): { type: string; field?: string
     issues.push({
       type: 'quantity_conflict',
       field: 'quantity',
+      originalValue: oldDocument?.quantity !== undefined ? String(oldDocument.quantity) : undefined,
+      currentValue: String(document.quantity),
       description: '数量为负数'
     });
+  }
+  if (oldDocument) {
+    if (oldDocument.title && document.title && oldDocument.title !== document.title) {
+      issues.push({
+        type: 'renamed',
+        field: 'title',
+        originalValue: String(oldDocument.title),
+        currentValue: String(document.title),
+        description: `标题已修改: ${oldDocument.title} → ${document.title}`
+      });
+    }
+    if (oldDocument.document_no && document.document_no && oldDocument.document_no !== document.document_no) {
+      issues.push({
+        type: 'renamed',
+        field: 'document_no',
+        originalValue: String(oldDocument.document_no),
+        currentValue: String(document.document_no),
+        description: `文档编号已修改: ${oldDocument.document_no} → ${document.document_no}`
+      });
+    }
   }
   return issues;
 };
@@ -101,6 +129,27 @@ export const createDirtyRecord = async (
   currentValue: string | undefined,
   description: string
 ): Promise<void> => {
+  if (dirtyType === 'renamed') {
+    const existingRenamed = await getOne(
+      'SELECT id FROM dirty_records WHERE document_id = ? AND dirty_type = ? AND field_name = ? AND is_resolved = 0',
+      [documentId, dirtyType, fieldName || null]
+    );
+    if (existingRenamed) {
+      await runQuery(
+        'UPDATE dirty_records SET current_value = ?, description = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [currentValue || null, description, existingRenamed.id]
+      );
+      return;
+    }
+  } else {
+    const existing = await getOne(
+      'SELECT id FROM dirty_records WHERE document_id = ? AND dirty_type = ? AND field_name = ? AND is_resolved = 0',
+      [documentId, dirtyType, fieldName || null]
+    );
+    if (existing) {
+      return;
+    }
+  }
   await runQuery(
     'INSERT INTO dirty_records (document_id, project_id, dirty_type, field_name, original_value, current_value, description) VALUES (?, ?, ?, ?, ?, ?, ?)',
     [documentId, projectId, dirtyType, fieldName || null, originalValue || null, currentValue || null, description]

@@ -114,7 +114,7 @@ router.post('/upload', requireRoles(UserRole.MANAGER, UserRole.DATA_ENTRY, UserR
     if (hasDirty) {
       await runQuery('UPDATE documents SET is_dirty = 1 WHERE id = ?', [result.lastID]);
       for (const issue of dirtyIssues) {
-        await createDirtyRecord(result.lastID as number, parseInt(projectId), issue.type, issue.field, undefined, undefined, issue.description);
+        await createDirtyRecord(result.lastID as number, parseInt(projectId), issue.type, issue.field, issue.originalValue, issue.currentValue, issue.description);
       }
     }
     const finalDocument = await getOne('SELECT * FROM documents WHERE id = ?', [result.lastID]);
@@ -166,13 +166,13 @@ router.put('/:id', requireRoles(UserRole.MANAGER, UserRole.REVIEWER, UserRole.DA
     params.push(documentId);
     await runQuery(`UPDATE documents SET ${updates.join(', ')} WHERE id = ?`, params);
     const updatedDocument = await getOne('SELECT * FROM documents WHERE id = ?', [documentId]);
-    const dirtyIssues = detectDirtyRecord(updatedDocument);
+    const dirtyIssues = detectDirtyRecord(updatedDocument, document);
     const hasDirty = dirtyIssues.length > 0;
     await runQuery('UPDATE documents SET is_dirty = ? WHERE id = ?', [hasDirty ? 1 : 0, documentId]);
     await syncDirtyRecords(documentId, dirtyIssues, user.userId, user.name);
     if (hasDirty) {
       for (const issue of dirtyIssues) {
-        await createDirtyRecord(documentId, document.project_id, issue.type, issue.field, undefined, undefined, issue.description);
+        await createDirtyRecord(documentId, document.project_id, issue.type, issue.field, issue.originalValue, issue.currentValue, issue.description);
       }
     }
     const finalDocument = await getOne('SELECT * FROM documents WHERE id = ?', [documentId]);
@@ -231,13 +231,13 @@ router.post('/:id/new-version', requireRoles(UserRole.MANAGER, UserRole.REVIEWER
     );
     await recordChange(result.lastID as number, oldDocument.project_id, user.userId, user.name, 'version', String(oldDocument.version), String(newVersion), changeReason || '创建新版本');
     const newDocument = await getOne('SELECT * FROM documents WHERE id = ?', [result.lastID]);
-    const dirtyIssues = detectDirtyRecord(newDocument);
+    const dirtyIssues = detectDirtyRecord(newDocument, oldDocument);
     const hasDirty = dirtyIssues.length > 0;
     await runQuery('UPDATE documents SET is_dirty = ? WHERE id = ?', [hasDirty ? 1 : 0, result.lastID]);
     await resolveAllDirtyRecords(documentId, user.userId, user.name, '创建新版本，旧版本问题已在新版本中处理');
     if (hasDirty) {
       for (const issue of dirtyIssues) {
-        await createDirtyRecord(result.lastID as number, oldDocument.project_id, issue.type, issue.field, undefined, undefined, issue.description);
+        await createDirtyRecord(result.lastID as number, oldDocument.project_id, issue.type, issue.field, issue.originalValue, issue.currentValue, issue.description);
       }
     }
     res.status(201).json({ data: newDocument, message: '新版本创建成功' });
