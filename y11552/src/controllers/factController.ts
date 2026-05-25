@@ -212,7 +212,7 @@ export const factController = {
 
   async freeze(req: AuthRequest, res: Response): Promise<void> {
     try {
-      await CompensationService.unfreezeFact(
+      await CompensationService.freezeFact(
         req.params.id,
         req.user?.id || 'unknown',
         req.user?.name || 'unknown'

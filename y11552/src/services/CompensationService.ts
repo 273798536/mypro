@@ -260,6 +260,25 @@ export const CompensationService = {
     return updatedFact;
   },
 
+  async freezeFact(factId: string, operatorId: string, operatorName: string): Promise<void> {
+    const fact = await FactDAO.findByFactId(factId);
+    if (!fact) {
+      throw new Error('Fact not found');
+    }
+
+    await FactDAO.freeze(factId, operatorId);
+
+    await AuditDAO.create(
+      factId,
+      OperationType.FREEZE,
+      operatorId,
+      operatorName,
+      { frozen: fact.frozen },
+      { frozen: true },
+      '冻结记录'
+    );
+  },
+
   async freezeForExport(factIds: string[], operatorId: string, operatorName: string): Promise<void> {
     for (const factId of factIds) {
       const fact = await FactDAO.findByFactId(factId);
@@ -272,7 +291,7 @@ export const CompensationService = {
         OperationType.FREEZE,
         operatorId,
         operatorName,
-        { frozen: false },
+        { frozen: fact.frozen },
         { frozen: true },
         '导出前冻结记录'
       );
@@ -299,6 +318,8 @@ export const CompensationService = {
   },
 
   async exportFacts(request: ExportRequest): Promise<any[]> {
+    let factIds: string[];
+    
     if (request.batchId) {
       const facts = await FactDAO.findByBatchId(request.batchId);
       const filtered = facts.filter(f => {
@@ -306,10 +327,26 @@ export const CompensationService = {
         if (request.status && !request.status.includes(f.status)) return false;
         return true;
       });
-      const factIds = filtered.map(f => f.factId);
-      await this.freezeForExport(factIds, request.operatorId, request.operatorName);
+      factIds = filtered.map(f => f.factId);
+    } else {
+      const facts = await FactDAO.findAll({
+        city: request.city,
+        startDate: request.startDate,
+        endDate: request.endDate,
+        status: request.status
+      });
+      factIds = facts.map(f => f.factId);
+    }
 
-      return filtered.map(fact => ({
+    await this.freezeForExport(factIds, request.operatorId, request.operatorName);
+
+    const frozenFacts = await Promise.all(
+      factIds.map(id => FactDAO.findByFactId(id))
+    );
+
+    return frozenFacts
+      .filter((f): f is NonNullable<typeof f> => f !== undefined)
+      .map(fact => ({
         factId: fact.factId,
         batchId: fact.batchId,
         city: fact.city,
@@ -329,38 +366,6 @@ export const CompensationService = {
         createdAt: fact.createdAt,
         createdBy: fact.createdBy
       }));
-    }
-
-    const facts = await FactDAO.findAll({
-      city: request.city,
-      startDate: request.startDate,
-      endDate: request.endDate,
-      status: request.status
-    });
-
-    const factIds = facts.map(f => f.factId);
-    await this.freezeForExport(factIds, request.operatorId, request.operatorName);
-
-    return facts.map(fact => ({
-      factId: fact.factId,
-      batchId: fact.batchId,
-      city: fact.city,
-      status: fact.status,
-      cabinetId: fact.cabinetInventory.cabinetId,
-      slotId: fact.cabinetInventory.slotId,
-      productId: fact.cabinetInventory.productId,
-      expectedQuantity: fact.cabinetInventory.expectedQuantity,
-      actualQuantity: fact.cabinetInventory.actualQuantity,
-      photoCount: fact.replenishPhotos.length,
-      refundCount: fact.refundRecords.length,
-      totalRefundAmount: fact.refundRecords.reduce((sum, r) => sum + r.amount, 0),
-      receiptCount: fact.externalReceipts.length,
-      retryCount: fact.retryCount,
-      retryCategory: fact.retryCategory,
-      frozen: fact.frozen,
-      createdAt: fact.createdAt,
-      createdBy: fact.createdBy
-    }));
   },
 
   async getOperationDashboard(city?: string): Promise<any> {
