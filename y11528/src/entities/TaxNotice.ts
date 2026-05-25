@@ -26,13 +26,13 @@ export class TaxNotice {
   taxAmount: number;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  vatAmount: number;
+  vatAmount: number | null;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  dutyAmount: number;
+  dutyAmount: number | null;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  lateFee: number;
+  lateFee: number | null;
 
   @Column()
   taxCategory: string;
@@ -41,10 +41,10 @@ export class TaxNotice {
   issueDate: Date;
 
   @Column({ type: 'datetime', nullable: true })
-  dueDate: Date;
+  dueDate: Date | null;
 
   @Column({ type: 'datetime', nullable: true })
-  paymentDate: Date;
+  paymentDate: Date | null;
 
   @Column({
     type: 'simple-enum',
@@ -53,29 +53,29 @@ export class TaxNotice {
   })
   status: TaxNoticeStatus;
 
-  @Column({ nullable: true })
-  paymentReference: string;
+  @Column({ type: 'varchar', nullable: true })
+  paymentReference: string | null;
 
-  @Column({ nullable: true, type: 'text' })
-  disputeReason: string;
+  @Column({ type: 'text', nullable: true })
+  disputeReason: string | null;
 
-  @Column({ nullable: true })
-  disputedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  disputedBy: string | null;
 
-  @Column({ nullable: true, type: 'text' })
-  resolutionNotes: string;
+  @Column({ type: 'text', nullable: true })
+  resolutionNotes: string | null;
 
-  @Column({ nullable: true })
-  resolvedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  resolvedBy: string | null;
 
-  @Column({ nullable: true })
-  originalPackageNo: string;
+  @Column({ type: 'varchar', nullable: true })
+  originalPackageNo: string | null;
 
   @Column({ default: false })
   isSplitTax: boolean;
 
-  @Column({ nullable: true })
-  splitFromNoticeId: string;
+  @Column({ type: 'varchar', nullable: true })
+  splitFromNoticeId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

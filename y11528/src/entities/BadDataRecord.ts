@@ -44,28 +44,28 @@ export class BadDataRecord {
   errorMessage: string;
 
   @Column('simple-json', { nullable: true })
-  errorDetails: Record<string, any>;
+  errorDetails: Record<string, any> | null;
 
-  @Column({ nullable: true })
-  sourceFile: string;
+  @Column({ type: 'varchar', nullable: true })
+  sourceFile: string | null;
 
-  @Column({ nullable: true })
-  sourceRow: number;
+  @Column({ type: 'integer', nullable: true })
+  sourceRow: number | null;
 
-  @Column({ nullable: true })
-  reportedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  reportedBy: string | null;
 
-  @Column({ nullable: true })
-  fixedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  fixedBy: string | null;
 
   @Column({ type: 'datetime', nullable: true })
-  fixedAt: Date;
+  fixedAt: Date | null;
 
-  @Column({ nullable: true, type: 'text' })
-  fixNotes: string;
+  @Column({ type: 'text', nullable: true })
+  fixNotes: string | null;
 
-  @Column({ nullable: true })
-  correctionRecordId: string;
+  @Column({ type: 'varchar', nullable: true })
+  correctionRecordId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

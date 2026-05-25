@@ -43,13 +43,13 @@ export class ReconciliationService {
     let declarations: Declaration[];
     
     if (options?.declarationIds?.length) {
-      declarations = await declarationRepo.findByIds(options.declarationIds);
+      declarations = await declarationRepo.findByIds(options.declarationIds) as Declaration[];
     } else if (options?.packageNos?.length) {
       declarations = await declarationRepo.createQueryBuilder('d')
         .where('d.packageNo IN (:...packageNos)', { packageNos: options.packageNos })
-        .getMany();
+        .getMany() as Declaration[];
     } else {
-      declarations = await declarationRepo.find();
+      declarations = await declarationRepo.find() as Declaration[];
     }
 
     const stats: ReconciliationStats = {

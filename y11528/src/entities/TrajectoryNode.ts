@@ -30,7 +30,7 @@ export class TrajectoryNode {
 
   @ManyToOne(() => Declaration, declaration => declaration.trajectoryNodes)
   @JoinColumn({ name: 'declarationId' })
-  declaration: Declaration;
+  declaration?: Declaration;
 
   @Column({
     type: 'simple-enum',
@@ -51,29 +51,29 @@ export class TrajectoryNode {
   @Column({ type: 'datetime' })
   occurredAt: Date;
 
-  @Column({ nullable: true })
-  location: string;
+  @Column({ type: 'varchar', nullable: true })
+  location: string | null;
 
-  @Column({ nullable: true, type: 'text' })
-  description: string;
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
 
-  @Column({ nullable: true })
-  operator: string;
+  @Column({ type: 'varchar', nullable: true })
+  operator: string | null;
 
   @Column('simple-json', { nullable: true })
-  metadata: Record<string, any>;
+  metadata: Record<string, any> | null;
 
   @Column({ default: false })
   isAbnormal: boolean;
 
-  @Column({ nullable: true })
-  abnormalReason: string;
+  @Column({ type: 'varchar', nullable: true })
+  abnormalReason: string | null;
 
-  @Column({ nullable: true })
-  parentPackageNo: string;
+  @Column({ type: 'varchar', nullable: true })
+  parentPackageNo: string | null;
 
-  @Column({ nullable: true })
-  splitFromNodeId: string;
+  @Column({ type: 'varchar', nullable: true })
+  splitFromNodeId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

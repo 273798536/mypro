@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, NextFunction } from 'express';
 import { UserRole } from '../entities';
 import { AuthenticatedRequest } from './auth.middleware';
 

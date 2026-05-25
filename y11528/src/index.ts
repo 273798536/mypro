@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import * as dotenv from 'dotenv';
-import * as express from 'express';
-import * as cors from 'cors';
-import * as helmet from 'helmet';
-import * as morgan from 'morgan';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import { initializeDatabase } from './config/database';
 import routes from './routes';
 
@@ -20,7 +20,7 @@ app.use(morgan('combined'));
 
 app.use('/api', routes);
 
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),

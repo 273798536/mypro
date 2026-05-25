@@ -16,11 +16,11 @@ export class SupervisorComment {
   @Column()
   declarationId: string;
 
-  @Column({ nullable: true })
-  taxNoticeId: string;
+  @Column({ type: 'varchar', nullable: true })
+  taxNoticeId: string | null;
 
-  @Column({ nullable: true })
-  trajectoryNodeId: string;
+  @Column({ type: 'varchar', nullable: true })
+  trajectoryNodeId: string | null;
 
   @Column()
   supervisorId: string;
@@ -38,16 +38,16 @@ export class SupervisorComment {
   comment: string;
 
   @Column('simple-json', { nullable: true })
-  previousState: Record<string, any>;
+  previousState: Record<string, any> | null;
 
   @Column('simple-json', { nullable: true })
-  newState: Record<string, any>;
+  newState: Record<string, any> | null;
 
   @Column({ default: false })
   isManualOverride: boolean;
 
-  @Column({ nullable: true })
-  overrideReason: string;
+  @Column({ type: 'varchar', nullable: true })
+  overrideReason: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

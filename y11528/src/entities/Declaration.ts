@@ -51,8 +51,8 @@ export class Declaration {
   @Column({ default: false })
   hasAttachment: boolean;
 
-  @Column({ nullable: true })
-  attachmentUrl: string;
+  @Column({ type: 'varchar', nullable: true })
+  attachmentUrl: string | null;
 
   @Column({
     type: 'simple-enum',
@@ -62,22 +62,22 @@ export class Declaration {
   status: DeclarationStatus;
 
   @Column('simple-array', { nullable: true })
-  tags: string[];
+  tags: string[] | null;
 
-  @Column({ nullable: true })
-  enteredBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  enteredBy: string | null;
 
-  @Column({ nullable: true })
-  reviewedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  reviewedBy: string | null;
 
-  @Column({ nullable: true })
-  approvedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  approvedBy: string | null;
 
-  @Column({ nullable: true, type: 'text' })
-  reviewNotes: string;
+  @Column({ type: 'text', nullable: true })
+  reviewNotes: string | null;
 
   @OneToMany(() => TrajectoryNode, node => node.declaration)
-  trajectoryNodes: TrajectoryNode[];
+  trajectoryNodes?: TrajectoryNode[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -61,7 +61,7 @@ export class ReportService {
       query = query.andWhere('r.createdAt <= :endDate', { endDate: options.endDate });
     }
 
-    const results = await query.getMany();
+    const results = await query.getMany() as ReconciliationResult[];
 
     const summary = this.calculateSummary(results, batchNo);
 

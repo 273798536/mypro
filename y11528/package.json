@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "prestart": "npm run build",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "db:init": "ts-node src/cli/index.ts db:init",
@@ -12,7 +13,8 @@
     "db:bad-data": "ts-node src/cli/index.ts db:bad-data",
     "report:generate": "ts-node src/cli/index.ts report:generate",
     "reconcile": "ts-node src/cli/index.ts reconcile",
-    "test:flow": "ts-node src/cli/index.ts test:flow"
+    "test:flow": "ts-node src/cli/index.ts test:flow",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -35,6 +37,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
+    "@types/helmet": "^4.0.0",
     "@types/morgan": "^1.9.9",
     "@types/uuid": "^9.0.7",
     "typescript": "^5.3.3",

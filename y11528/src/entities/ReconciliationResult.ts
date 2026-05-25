@@ -37,34 +37,34 @@ export class ReconciliationResult {
   status: ReconciliationStatus;
 
   @Column('simple-array', { nullable: true })
-  mismatchTypes: MismatchType[];
+  mismatchTypes: MismatchType[] | null;
 
   @Column('simple-json', { nullable: true })
-  mismatchDetails: Record<string, any>;
+  mismatchDetails: Record<string, any> | null;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  expectedTaxAmount: number;
+  expectedTaxAmount: number | null;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  actualTaxAmount: number;
+  actualTaxAmount: number | null;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  taxDifference: number;
+  taxDifference: number | null;
 
-  @Column({ nullable: true })
-  resolvedBy: string;
+  @Column({ type: 'varchar', nullable: true })
+  resolvedBy: string | null;
 
   @Column({ type: 'datetime', nullable: true })
-  resolvedAt: Date;
+  resolvedAt: Date | null;
 
-  @Column({ nullable: true, type: 'text' })
-  resolutionNotes: string;
+  @Column({ type: 'text', nullable: true })
+  resolutionNotes: string | null;
 
   @Column({ default: false })
   hasSplitPackages: boolean;
 
   @Column('simple-array', { nullable: true })
-  relatedPackageNos: string[];
+  relatedPackageNos: string[] | null;
 
   @Column('simple-json', { nullable: true })
   playbackChain: {
@@ -72,7 +72,7 @@ export class ReconciliationResult {
     trajectoryNodes: any[];
     taxNotices: any[];
     supervisorComments: any[];
-  };
+  } | null;
 
   @Column()
   batchNo: string;
