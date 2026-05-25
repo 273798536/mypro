@@ -33,9 +33,10 @@ export class ReconciliationService {
 
   async reconcileWorkOrder(
     workOrderNo: string,
-    operator: string
+    operator: string,
+    operationId?: string
   ): Promise<Reconciliation> {
-    const operationId = uuidv4();
+    const opId = operationId || uuidv4();
 
     const workOrder = await this.workOrderRepo.findOne({
       where: { orderNo: workOrderNo },
@@ -53,7 +54,7 @@ export class ReconciliationService {
       workOrder,
       undefined,
       {
-        operationId,
+        operationId: opId,
         operationName: "reconcile_work_order",
         operator,
       }
@@ -84,16 +85,35 @@ export class ReconciliationService {
       billSummary
     );
 
+    const details = matchResult.details;
+    const hasBillItems = billSummary.items.length > 0;
+
     let status: ReconcileStatus = "matched";
-    if (!matchResult.quantityMatched || !matchResult.amountMatched) {
-      const allMatched = matchResult.details.every((d) => d.status === "matched");
-      if (allMatched) {
-        status = "matched";
-      } else if (matchResult.details.some((d) => d.status === "matched")) {
-        status = "partial_match";
-      } else {
-        status = "mismatch";
+
+    const allThreeWayMatched = details.every((d) => {
+      if (d.status !== "matched") return false;
+      if (hasBillItems) {
+        return (
+          d.workOrderQty === d.inventoryQty &&
+          d.workOrderQty === d.billQty &&
+          Math.abs(d.workOrderAmount - d.inventoryAmount) < 0.01 &&
+          Math.abs(d.workOrderAmount - d.billAmount) < 0.01
+        );
       }
+      return (
+        d.workOrderQty === d.inventoryQty &&
+        Math.abs(d.workOrderAmount - d.inventoryAmount) < 0.01
+      );
+    });
+
+    const anyMatched = details.some((d) => d.status === "matched");
+
+    if (allThreeWayMatched) {
+      status = "matched";
+    } else if (anyMatched) {
+      status = "partial_match";
+    } else {
+      status = "mismatch";
     }
 
     const reconciliation = new Reconciliation();
@@ -116,7 +136,7 @@ export class ReconciliationService {
       result,
       workOrder,
       {
-        operationId,
+        operationId: opId,
         operationName: "reconcile_work_order",
         operator,
         remark: `对账完成，状态: ${status}`,
@@ -199,6 +219,9 @@ export class ReconciliationService {
     const details: any[] = [];
     let totalQtyDiff = 0;
     let totalAmountDiff = 0;
+    const hasBillItems = billSummary.items.length > 0;
+    let threeWayQtyMatched = true;
+    let threeWayAmountMatched = true;
 
     for (const code of allMaterialCodes) {
       const woMat = workOrderSummary.materials.find(
@@ -229,14 +252,37 @@ export class ReconciliationService {
         status = "missing_in_workorder";
       } else if (!invMat) {
         status = "missing_in_inventory";
-      } else if (!billMat) {
+      } else if (hasBillItems && !billMat) {
         status = "missing_in_bill";
       } else if (
         workOrderQty !== inventoryQty ||
-        workOrderQty !== billQty ||
-        Math.abs(workOrderAmount - inventoryAmount) > 0.01
+        (hasBillItems && workOrderQty !== billQty) ||
+        Math.abs(workOrderAmount - inventoryAmount) > 0.01 ||
+        (hasBillItems && Math.abs(workOrderAmount - billAmount) > 0.01)
       ) {
         status = "mismatch";
+      }
+
+      if (hasBillItems) {
+        if (
+          workOrderQty !== inventoryQty ||
+          workOrderQty !== billQty
+        ) {
+          threeWayQtyMatched = false;
+        }
+        if (
+          Math.abs(workOrderAmount - inventoryAmount) > 0.01 ||
+          Math.abs(workOrderAmount - billAmount) > 0.01
+        ) {
+          threeWayAmountMatched = false;
+        }
+      } else {
+        if (workOrderQty !== inventoryQty) {
+          threeWayQtyMatched = false;
+        }
+        if (Math.abs(workOrderAmount - inventoryAmount) > 0.01) {
+          threeWayAmountMatched = false;
+        }
       }
 
       details.push({
@@ -259,8 +305,8 @@ export class ReconciliationService {
     }
 
     return {
-      quantityMatched: totalQtyDiff === 0,
-      amountMatched: Math.abs(totalAmountDiff) < 0.01,
+      quantityMatched: threeWayQtyMatched,
+      amountMatched: threeWayAmountMatched,
       quantityDiff: totalQtyDiff,
       amountDiff: totalAmountDiff,
       details,

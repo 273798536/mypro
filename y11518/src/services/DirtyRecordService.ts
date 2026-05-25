@@ -10,7 +10,9 @@ import { WorkOrder } from "../entities/WorkOrder";
 import { ValveInventory } from "../entities/ValveInventory";
 import { MaterialUsage } from "../entities/MaterialUsage";
 import { AuditService } from "./AuditService";
+import { ReconciliationService } from "./ReconciliationService";
 import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
 
 export class DirtyRecordService {
   private dirtyRepo: Repository<DirtyRecord>;
@@ -18,6 +20,7 @@ export class DirtyRecordService {
   private inventoryRepo: Repository<ValveInventory>;
   private materialUsageRepo: Repository<MaterialUsage>;
   private auditService: AuditService;
+  private reconciliationService: ReconciliationService;
 
   constructor() {
     this.dirtyRepo = AppDataSource.getRepository(DirtyRecord);
@@ -25,6 +28,7 @@ export class DirtyRecordService {
     this.inventoryRepo = AppDataSource.getRepository(ValveInventory);
     this.materialUsageRepo = AppDataSource.getRepository(MaterialUsage);
     this.auditService = new AuditService();
+    this.reconciliationService = new ReconciliationService();
   }
 
   async validateWorkOrder(workOrder: WorkOrder): Promise<DirtyRecord[]> {
@@ -262,7 +266,79 @@ export class DirtyRecordService {
 
     await this.applyCorrection(dirty);
 
+    try {
+      await this.reReconcileAfterCorrection(dirty, resolvedBy);
+    } catch (e: any) {
+      console.log("修正后重新对账失败:", e.message);
+    }
+
     return result;
+  }
+
+  private async reReconcileAfterCorrection(
+    dirty: DirtyRecord,
+    operator: string
+  ): Promise<void> {
+    const operationId = uuidv4();
+    let workOrderNo: string | null = null;
+
+    switch (dirty.recordType) {
+      case "work_order":
+        const wo = await this.workOrderRepo.findOne({
+          where: { id: dirty.recordId },
+        });
+        if (wo) workOrderNo = wo.orderNo;
+        break;
+      case "inventory":
+        const inv = await this.inventoryRepo.findOne({
+          where: { id: dirty.recordId },
+        });
+        if (inv && inv.workOrderNo) workOrderNo = inv.workOrderNo;
+        break;
+      case "material_usage":
+        const usage = await this.materialUsageRepo.findOne({
+          where: { id: dirty.recordId },
+          relations: ["workOrder"],
+        });
+        if (usage && usage.workOrder) workOrderNo = usage.workOrder.orderNo;
+        break;
+    }
+
+    if (workOrderNo) {
+      await this.auditService.createSnapshot(
+        "before_rereconcile",
+        "reconciliation",
+        workOrderNo,
+        { workOrderNo, dirtyRecordId: dirty.id },
+        undefined,
+        {
+          operationId,
+          operationName: "auto_rereconcile_after_correction",
+          operator,
+          remark: `异常记录${dirty.id}修正后自动重新对账`,
+        }
+      );
+
+      await this.reconciliationService.reconcileWorkOrder(
+        workOrderNo,
+        operator,
+        operationId
+      );
+
+      await this.auditService.createSnapshot(
+        "after_rereconcile",
+        "reconciliation",
+        workOrderNo,
+        { workOrderNo, dirtyRecordId: dirty.id, reReconciled: true },
+        undefined,
+        {
+          operationId,
+          operationName: "auto_rereconcile_after_correction",
+          operator,
+          remark: `异常记录${dirty.id}修正后自动重新对账完成`,
+        }
+      );
+    }
   }
 
   private async applyCorrection(dirty: DirtyRecord): Promise<void> {

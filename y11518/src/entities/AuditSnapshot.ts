@@ -15,6 +15,8 @@ export type SnapshotType =
   | "after_delete"
   | "before_reconcile"
   | "after_reconcile"
+  | "before_rereconcile"
+  | "after_rereconcile"
   | "before_export"
   | "custom";
 
@@ -27,6 +29,7 @@ export type TargetType =
   | "supplier_bill"
   | "bill_item"
   | "dirty_record"
+  | "reconciliation"
   | "system";
 
 @Entity()

@@ -5,6 +5,8 @@ import { ValveInventory } from "../entities/ValveInventory";
 import { MaterialUsage } from "../entities/MaterialUsage";
 import { SupplierBill } from "../entities/SupplierBill";
 import { BillItem } from "../entities/BillItem";
+import { SitePhoto, PhotoType } from "../entities/SitePhoto";
+import { ApprovalEmail } from "../entities/ApprovalEmail";
 import { DirtyRecordService } from "../services/DirtyRecordService";
 import moment from "moment";
 
@@ -28,6 +30,8 @@ async function seed() {
   const materialUsageRepo = AppDataSource.getRepository(MaterialUsage);
   const billRepo = AppDataSource.getRepository(SupplierBill);
   const billItemRepo = AppDataSource.getRepository(BillItem);
+  const sitePhotoRepo = AppDataSource.getRepository(SitePhoto);
+  const approvalEmailRepo = AppDataSource.getRepository(ApprovalEmail);
   const dirtyRecordService = new DirtyRecordService();
 
   for (let i = 1; i <= 5; i++) {
@@ -155,6 +159,55 @@ async function seed() {
     await billRepo.save(bill);
 
     await dirtyRecordService.validateWorkOrder(savedWO);
+
+    const photoTypes: PhotoType[] = ["before_repair", "during_repair", "after_repair", "material_usage"];
+    for (let p = 0; p < 4; p++) {
+      const photo = new SitePhoto();
+      photo.workOrderId = savedWO.id;
+      photo.photoType = photoTypes[p];
+      photo.fileName = `${savedWO.orderNo}_${photoTypes[p]}.jpg`;
+      photo.filePath = `/uploads/photos/${savedWO.orderNo}_${photoTypes[p]}.jpg`;
+      photo.fileSize = 1024 * 1024 * (1 + Math.floor(Math.random() * 3));
+      photo.mimeType = "image/jpeg";
+      photo.captureTime = completeDate.toDate();
+      photo.uploader = isNightShift ? "李夜" : "张队";
+      photo.latitude = 31.2304 + Math.random() * 0.1;
+      photo.longitude = 121.4737 + Math.random() * 0.1;
+      photo.description = `${["抢修前", "抢修中", "抢修后", "材料使用"][p]}照片`;
+      photo.rawData = { ...photo };
+      await sitePhotoRepo.save(photo);
+    }
+    console.log(`  [现场照片] 上传${isNightShift ? "夜间" : ""}抢修照片4张`);
+
+    const email = new ApprovalEmail();
+    email.workOrderNo = savedWO.orderNo;
+    email.messageId = `MSG-${savedWO.orderNo}-001`;
+    email.subject = `【抢修审批】${savedWO.orderNo} ${savedWO.siteName} ${savedWO.faultDescription}`;
+    email.from = `${isNightShift ? "李夜" : "张队"} <repair@water.com>`;
+    email.to = "王主管 <approver@water.com>";
+    email.cc = "调度中心 <dispatch@water.com>";
+    email.body = `
+工单编号: ${savedWO.orderNo}
+站点: ${savedWO.siteName}
+报修人: ${savedWO.reporter}
+故障描述: ${savedWO.faultDescription}
+抢修内容: ${savedWO.repairContent}
+人工费用: ${savedWO.laborCost}元
+材料费用: ${totalAmount}元
+
+请审批。
+
+${isNightShift ? "注：此为夜间抢修工单，已先用料后补录。" : ""}
+    `.trim();
+    email.sentTime = moment(completeDate).add(10, "minutes").toDate();
+    email.receivedTime = moment(completeDate).add(12, "minutes").toDate();
+    email.approvalStatus = "approved";
+    email.approvalComment = "同意，已紧急处理";
+    email.approvalTime = moment(completeDate).add(30, "minutes").toDate();
+    email.approver = "王主管";
+    email.rawData = { ...email };
+    await approvalEmailRepo.save(email);
+    console.log(`  [审批邮件] 发送审批邮件1封，状态: 已批准`);
   }
 
   const dirtyInventory = new ValveInventory();
@@ -177,6 +230,8 @@ async function seed() {
   console.log("- 库存记录: 自动生成");
   console.log("- 材料使用: 自动生成");
   console.log("- 供应商对账单: 5个");
+  console.log("- 现场照片: 20张（每工单4张）");
+  console.log("- 审批邮件: 5封");
   console.log("- 异常记录: 自动识别");
 
   process.exit(0);
