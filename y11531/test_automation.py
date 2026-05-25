@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
 from bank_schedule_inspector.database import init_database, get_connection, get_db_path, is_initialized
 from bank_schedule_inspector.importer import import_data, calculate_file_hash, check_duplicate_import
-from bank_schedule_inspector.reporting import get_import_history, get_session_details, export_to_excel
+from bank_schedule_inspector.reporting import get_import_history, get_session_details, export_to_excel, mark_failed_records_fixed
 from bank_schedule_inspector.auth import has_permission, log_audit, get_audit_logs, get_user_permissions
 
 
@@ -383,6 +383,79 @@ def test_permission_denied_cli_flow():
     return True
 
 
+def test_fix_reimport_closed_loop():
+    """测试修正-再导入闭环"""
+    print("\n=== 测试10: 修正-再导入闭环 ===")
+    
+    test_file = "examples/schedule_data.csv"
+    result = import_data('schedule', test_file, 'admin', '.', force=True)
+    
+    if not result['success']:
+        print_test("初始导入成功", False, f"失败: {result.get('error', 'unknown')}")
+        return False
+    
+    old_session_id = result['session_id']
+    print_test("初始导入成功", True, f"会话ID: {old_session_id}")
+    
+    conn = get_connection('.')
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM failed_records WHERE session_id = ? AND fixed = 0', (old_session_id,))
+    failed_before = cursor.fetchone()[0]
+    conn.close()
+    
+    if failed_before <= 0:
+        print_test("有失败记录待修复", False, "没有失败记录")
+        return False
+    print_test("有失败记录待修复", True, f"失败记录数: {failed_before}")
+    
+    fixed_file = "examples/schedule_data.csv"
+    reimport_result = import_data('schedule', fixed_file, 'admin', '.', force=True)
+    
+    if not reimport_result['success']:
+        print_test("重新导入成功", False, f"失败: {reimport_result.get('error', 'unknown')}")
+        return False
+    
+    new_session_id = reimport_result['session_id']
+    print_test("重新导入成功", True, f"新会话ID: {new_session_id}")
+    
+    mark_result = mark_failed_records_fixed(old_session_id, new_session_id, None, '.')
+    
+    if not mark_result['success']:
+        print_test("标记失败记录已修复", False, f"失败: {mark_result.get('error', 'unknown')}")
+        return False
+    print_test("标记失败记录已修复", True, f"标记了 {mark_result['updated_count']} 条记录")
+    
+    conn = get_connection('.')
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT COUNT(*) FROM failed_records WHERE session_id = ? AND fixed = 0', (old_session_id,))
+    pending_after = cursor.fetchone()[0]
+    print_test("原失败记录不再待处理", pending_after == 0, 
+               f"待处理: {pending_after}" if pending_after > 0 else "已全部标记")
+    
+    cursor.execute('SELECT fixed, fixed_session_id FROM failed_records WHERE session_id = ? LIMIT 1', (old_session_id,))
+    fixed_record = cursor.fetchone()
+    
+    if fixed_record and fixed_record['fixed'] == 1 and fixed_record['fixed_session_id'] == new_session_id:
+        print_test("fixed_session_id 已关联", True, f"关联到新会话: {fixed_record['fixed_session_id']}")
+    else:
+        print_test("fixed_session_id 已关联", False, "fixed_session_id 未正确写入")
+        conn.close()
+        return False
+    
+    cursor.execute('SELECT status FROM import_sessions WHERE id = ?', (old_session_id,))
+    session_status = cursor.fetchone()
+    
+    if session_status and session_status['status'] == 'FIXED':
+        print_test("原会话状态已更新为 FIXED", True, "状态: FIXED")
+    else:
+        print_test("原会话状态已更新为 FIXED", False, f"状态: {session_status['status'] if session_status else '未知'}")
+    
+    conn.close()
+    
+    return True
+
+
 def main():
     print("=" * 60)
     print("银行网点排班多源导入巡检工具 - 自动化检查")
@@ -403,6 +476,7 @@ def main():
     results.append(('角色权限矩阵', test_role_permission_matrix()))
     results.append(('审计日志记录', test_audit_logging()))
     results.append(('CLI 权限流程', test_permission_denied_cli_flow()))
+    results.append(('修正再导入闭环', test_fix_reimport_closed_loop()))
     
     print("\n" + "=" * 60)
     print("测试汇总")

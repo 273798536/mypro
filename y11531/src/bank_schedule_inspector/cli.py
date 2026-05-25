@@ -17,6 +17,7 @@ from .reporting import (
     export_failed_records_csv,
     generate_report,
     mark_inspection_fixed,
+    mark_failed_records_fixed,
 )
 from .auth import has_permission, log_audit, get_audit_logs
 
@@ -246,10 +247,24 @@ def fix(workspace, session_id, failed_id, reimport, operator):
         result = import_data(source_type, reimport, operator, workspace, force=False)
         
         if result['success']:
-            log_audit(user, 'fix_reimport', source_type, str(result['session_id']), result['session_id'],
-                      f'重新导入成功: {result["success_rows"]}行', True, None, workspace)
-            click.echo(click.style(f'重新导入成功! 新会话ID: {result["session_id"]}', fg='green'))
+            new_session_id = result['session_id']
+            
+            mark_result = mark_failed_records_fixed(session_id, new_session_id, None, workspace)
+            
+            log_audit(user, 'fix_reimport', source_type, str(new_session_id), new_session_id,
+                      f'重新导入成功: {result["success_rows"]}行, 原会话{session_id}标记为已修复', 
+                      True, None, workspace)
+            
+            click.echo(click.style(f'重新导入成功! 新会话ID: {new_session_id}', fg='green'))
             click.echo(f'  成功: {result["success_rows"]} 行, 失败: {result["failed_rows"]} 行')
+            
+            if mark_result['success']:
+                click.echo(click.style(f'  ✓ 原会话 {session_id} 的 {mark_result["updated_count"]} 条失败记录已标记为已修复', fg='green'))
+            else:
+                click.echo(click.style(f'  ⚠ 标记失败记录状态时出错: {mark_result.get("error", "未知")}', fg='yellow'))
+            
+            if result['failed_rows'] > 0:
+                click.echo(click.style(f'  ⚠ 修正文件中仍有 {result["failed_rows"]} 条记录导入失败', fg='yellow'))
         else:
             log_audit(user, 'fix_reimport', source_type, None, None,
                       result.get('error', '导入失败'), False, result.get('error'), workspace)

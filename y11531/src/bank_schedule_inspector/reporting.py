@@ -204,6 +204,64 @@ def export_to_excel(session_id: Optional[int] = None, output_path: str = None,
         return {'success': False, 'error': f'导出失败: {str(e)}'}
 
 
+def mark_failed_records_fixed(session_id: int, fixed_session_id: int, 
+                               failed_record_ids: Optional[List[int]] = None,
+                               workspace: Optional[str] = None) -> Dict:
+    """标记失败记录为已修复
+    
+    Args:
+        session_id: 原会话ID
+        fixed_session_id: 修正后重新导入的新会话ID
+        failed_record_ids: 可选，指定要标记的失败记录ID列表，如不传则标记该会话所有失败记录
+        workspace: 工作目录
+    
+    Returns:
+        标记结果字典
+    """
+    conn = get_connection(workspace)
+    cursor = conn.cursor()
+    
+    try:
+        if failed_record_ids:
+            placeholders = ','.join(['?'] * len(failed_record_ids))
+            query = f'''
+            UPDATE failed_records 
+            SET fixed = 1, fixed_session_id = ?
+            WHERE session_id = ? AND id IN ({placeholders})
+            '''
+            params = [fixed_session_id, session_id] + failed_record_ids
+        else:
+            query = '''
+            UPDATE failed_records 
+            SET fixed = 1, fixed_session_id = ?
+            WHERE session_id = ? AND fixed = 0
+            '''
+            params = [fixed_session_id, session_id]
+        
+        cursor.execute(query, params)
+        updated_count = cursor.rowcount
+        
+        cursor.execute('''
+        UPDATE import_sessions
+        SET status = ?
+        WHERE id = ?
+        ''', ('FIXED', session_id))
+        
+        conn.commit()
+        
+        return {
+            'success': True,
+            'session_id': session_id,
+            'fixed_session_id': fixed_session_id,
+            'updated_count': updated_count,
+        }
+    except Exception as e:
+        conn.rollback()
+        return {'success': False, 'error': str(e)}
+    finally:
+        conn.close()
+
+
 def export_failed_records_csv(session_id: Optional[int] = None, output_path: str = None,
                               workspace: Optional[str] = None) -> Dict:
     if output_path is None:
