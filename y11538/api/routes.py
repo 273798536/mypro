@@ -3,7 +3,8 @@ import os
 from config import EXPORT_DIR
 from services.idempotency import check_idempotency, save_idempotency_key
 from services.data_processor import (
-    validate_data, save_dirty_record, parse_datetime, check_and_detect_anomalies
+    validate_data, save_dirty_record, parse_datetime, check_and_detect_anomalies,
+    safe_update_fact_record
 )
 from services.reconciliation import run_reconciliation, get_reconciliation_result, analyze_anomalies
 from services.exporter import export_to_excel
@@ -118,6 +119,9 @@ def add_sign():
                 sign.training_course = data.get('training_course', sign.training_course)
                 sign.sign_time = parse_datetime(data['sign_time']) if data.get('sign_time') else sign.sign_time
                 sign.sign_type = data.get('sign_type', sign.sign_type)
+                sign.qr_code = data.get('qr_code', sign.qr_code)
+                sign.location = data.get('location', sign.location)
+                sign.device_info = data.get('device_info', sign.device_info)
                 sign.is_proxy = data.get('is_proxy', sign.is_proxy)
                 sign.is_makeup = data.get('is_makeup', sign.is_makeup)
                 sign.raw_data = data
@@ -144,6 +148,9 @@ def add_sign():
             existing_sign.training_course = data.get('training_course', existing_sign.training_course)
             existing_sign.sign_time = parse_datetime(data['sign_time']) if data.get('sign_time') else existing_sign.sign_time
             existing_sign.sign_type = data.get('sign_type', existing_sign.sign_type)
+            existing_sign.qr_code = data.get('qr_code', existing_sign.qr_code)
+            existing_sign.location = data.get('location', existing_sign.location)
+            existing_sign.device_info = data.get('device_info', existing_sign.device_info)
             existing_sign.is_proxy = data.get('is_proxy', existing_sign.is_proxy)
             existing_sign.is_makeup = data.get('is_makeup', existing_sign.is_makeup)
             existing_sign.raw_data = data
@@ -437,64 +444,88 @@ def fix_dirty_record(dirty_id):
         if not dirty:
             return jsonify({'error': '脏记录不存在'}), 404
         
-        dirty.is_fixed = True
-        dirty.fixed_by = data.get('fixed_by', 'system')
         fixed_data = data.get('fixed_data', {})
-        dirty.fixed_data = fixed_data
+        updated_fields = {}
+        fact_record = None
         
         if fixed_data and dirty.data_type:
             batch_id = dirty.batch_id
             
             if dirty.data_type == 'registration':
-                reg = session.query(Registration).filter_by(
+                fact_record = session.query(Registration).filter_by(
                     batch_id=batch_id,
                     employee_id=dirty.raw_data.get('employee_id')
                 ).first()
-                if reg:
-                    for key, value in fixed_data.items():
-                        if hasattr(reg, key) and value is not None:
-                            setattr(reg, key, value)
-                    reg.raw_data = {**dirty.raw_data, **fixed_data}
             
             elif dirty.data_type == 'sign':
-                sign = session.query(SignRecord).filter_by(
+                fact_record = session.query(SignRecord).filter_by(
                     batch_id=batch_id,
                     sign_id=dirty.raw_data.get('sign_id')
                 ).first()
-                if sign:
-                    for key, value in fixed_data.items():
-                        if hasattr(sign, key) and value is not None:
-                            setattr(sign, key, value)
-                    sign.raw_data = {**dirty.raw_data, **fixed_data}
             
             elif dirty.data_type == 'homework':
-                hw = session.query(Homework).filter_by(
+                fact_record = session.query(Homework).filter_by(
                     batch_id=batch_id,
                     homework_id=dirty.raw_data.get('homework_id')
                 ).first()
-                if hw:
-                    for key, value in fixed_data.items():
-                        if hasattr(hw, key) and value is not None:
-                            setattr(hw, key, value)
-                    hw.raw_data = {**dirty.raw_data, **fixed_data}
             
             elif dirty.data_type == 'refund':
-                refund = session.query(Refund).filter_by(
+                fact_record = session.query(Refund).filter_by(
                     batch_id=batch_id,
                     refund_id=dirty.raw_data.get('refund_id')
                 ).first()
-                if refund:
-                    for key, value in fixed_data.items():
-                        if hasattr(refund, key) and value is not None:
-                            setattr(refund, key, value)
-                    refund.raw_data = {**dirty.raw_data, **fixed_data}
+            
+            if fact_record:
+                updated_fields = safe_update_fact_record(fact_record, fixed_data)
+                fact_record.raw_data = {**dirty.raw_data, **fixed_data}
+        
+        dirty.is_fixed = True
+        dirty.fixed_by = data.get('fixed_by', 'system')
+        dirty.fixed_data = fixed_data
         
         session.commit()
         
-        return jsonify({
+        result = {
             'message': '脏记录已修复，事实数据已更新',
-            'fixed_data_applied': bool(fixed_data)
-        })
+            'fixed_data_applied': bool(fixed_data),
+            'updated_fields': list(updated_fields.keys()) if updated_fields else [],
+            'fact_record_updated': fact_record is not None
+        }
+        
+        if fact_record:
+            if isinstance(fact_record, Registration):
+                result['fact_record'] = {
+                    'employee_id': fact_record.employee_id,
+                    'employee_name': fact_record.employee_name,
+                    'training_date': fact_record.training_date,
+                    'amount': fact_record.amount
+                }
+            elif isinstance(fact_record, SignRecord):
+                result['fact_record'] = {
+                    'sign_id': fact_record.sign_id,
+                    'employee_id': fact_record.employee_id,
+                    'employee_name': fact_record.employee_name,
+                    'sign_time': fact_record.sign_time.isoformat() if fact_record.sign_time else None,
+                    'location': fact_record.location,
+                    'is_proxy': fact_record.is_proxy,
+                    'is_makeup': fact_record.is_makeup
+                }
+            elif isinstance(fact_record, Homework):
+                result['fact_record'] = {
+                    'homework_id': fact_record.homework_id,
+                    'employee_id': fact_record.employee_id,
+                    'score': fact_record.score,
+                    'status': fact_record.status
+                }
+            elif isinstance(fact_record, Refund):
+                result['fact_record'] = {
+                    'refund_id': fact_record.refund_id,
+                    'employee_id': fact_record.employee_id,
+                    'refund_amount': fact_record.refund_amount,
+                    'refund_time': fact_record.refund_time.isoformat() if fact_record.refund_time else None
+                }
+        
+        return jsonify(result)
     except Exception as e:
         session.rollback()
         return jsonify({'error': str(e)}), 500

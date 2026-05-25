@@ -45,7 +45,7 @@ python scripts/generate_test_data.py
 ## API 接口文档
 
 ### 基础信息
-- Base URL: `http://localhost:5001/api`
+- Base URL: `http://localhost:5002/api`
 - Content-Type: `application/json`
 
 ---
@@ -53,7 +53,7 @@ python scripts/generate_test_data.py
 ### 1. 健康检查
 
 ```bash
-curl http://localhost:5001/api/health
+curl http://localhost:5002/api/health
 ```
 
 ---

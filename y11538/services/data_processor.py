@@ -1,4 +1,5 @@
 from datetime import datetime
+from sqlalchemy import DateTime, Float, Boolean, Integer, String
 from models.database import get_session
 from models.tables import DirtyRecord, Registration, SignRecord, Refund
 
@@ -218,3 +219,53 @@ def check_and_detect_anomalies(session, data_type: str, data: dict) -> list:
             })
     
     return anomalies
+
+def convert_field_value(model, field_name: str, value):
+    if value is None:
+        return None
+    
+    try:
+        column = getattr(model.__class__, field_name)
+        column_type = column.property.columns[0].type
+        
+        if isinstance(column_type, DateTime):
+            if isinstance(value, datetime):
+                return value
+            return parse_datetime(value)
+        
+        elif isinstance(column_type, Float):
+            return float(value)
+        
+        elif isinstance(column_type, Integer):
+            return int(value)
+        
+        elif isinstance(column_type, Boolean):
+            if isinstance(value, bool):
+                return value
+            return str(value).lower() in ('true', '1', 'yes', 'y')
+        
+        elif isinstance(column_type, String):
+            return str(value)
+        
+        return value
+    
+    except Exception as e:
+        raise ValueError(f"字段 {field_name} 转换失败: {str(e)}")
+
+def safe_update_fact_record(model_instance, fixed_data: dict):
+    updated_fields = {}
+    errors = []
+    
+    for key, value in fixed_data.items():
+        if hasattr(model_instance, key) and value is not None:
+            try:
+                converted_value = convert_field_value(model_instance, key, value)
+                setattr(model_instance, key, converted_value)
+                updated_fields[key] = converted_value
+            except Exception as e:
+                errors.append(f"{key}: {str(e)}")
+    
+    if errors:
+        raise ValueError("字段转换错误: " + "; ".join(errors))
+    
+    return updated_fields

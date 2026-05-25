@@ -3,7 +3,7 @@ import json
 import requests
 import sys
 
-BASE_URL = "http://localhost:5001/api"
+BASE_URL = "http://localhost:5002/api"
 BATCH_ID = "BATCH_2024_Q1_TRAINING_001"
 
 employees = [

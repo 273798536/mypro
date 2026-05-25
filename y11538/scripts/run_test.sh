@@ -4,7 +4,7 @@ echo "=========================================="
 echo "  企业培训签到验收回放链路 - 测试脚本"
 echo "=========================================="
 
-BASE_URL="http://localhost:5001/api"
+BASE_URL="http://localhost:5002/api"
 BATCH_ID="BATCH_2024_Q1_TRAINING_001"
 
 echo ""

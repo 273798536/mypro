@@ -3,7 +3,7 @@ import json
 import requests
 import sys
 
-BASE_URL = "http://localhost:5001/api"
+BASE_URL = "http://localhost:5002/api"
 BATCH_ID = "QC_BATCH_001"
 
 def test_health():
