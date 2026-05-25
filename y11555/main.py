@@ -89,23 +89,23 @@ def freeze_receipt(request: schemas.FreezeRequest, db: Session = Depends(get_db)
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/receipt/{receipt_no}/unfreeze", tags=["Status Management"])
-def unfreeze_receipt(receipt_no: str, operated_by: str, db: Session = Depends(get_db)):
+def unfreeze_receipt(receipt_no: str, operated_by: str, operator_role: str, db: Session = Depends(get_db)):
     try:
-        return ReceiptService.unfreeze_receipt(db, receipt_no, operated_by)
+        return ReceiptService.unfreeze_receipt(db, receipt_no, operated_by, operator_role)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/receipt/{receipt_no}/revoke", tags=["Status Management"])
-def revoke_receipt(receipt_no: str, operated_by: str, reason: str, db: Session = Depends(get_db)):
+def revoke_receipt(receipt_no: str, operated_by: str, reason: str, operator_role: str, db: Session = Depends(get_db)):
     try:
-        return ReceiptService.revoke_receipt(db, receipt_no, operated_by, reason)
+        return ReceiptService.revoke_receipt(db, receipt_no, operated_by, reason, operator_role)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/receipt/{receipt_no}/archive", tags=["Status Management"])
-def archive_receipt(receipt_no: str, operated_by: str, db: Session = Depends(get_db)):
+def archive_receipt(receipt_no: str, operated_by: str, operator_role: str, db: Session = Depends(get_db)):
     try:
-        return ReceiptService.archive_receipt(db, receipt_no, operated_by)
+        return ReceiptService.archive_receipt(db, receipt_no, operated_by, operator_role)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -149,7 +149,7 @@ def get_receipt_detail(receipt_no: str, db: Session = Depends(get_db)):
 @app.post("/api/export/summary", tags=["Export"])
 def export_summary(request: schemas.ExportRequest, db: Session = Depends(get_db)):
     try:
-        return ReceiptService.export_summary(db, request.filters, request.exported_by)
+        return ReceiptService.export_summary(db, request.filters, request.exported_by, request.operator_role)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

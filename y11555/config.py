@@ -49,8 +49,21 @@ ABNORMAL_TYPES = [
 
 ROLES = {
     "driver": ["import"],
-    "store_manager": ["confirm", "attach"],
-    "area_manager": ["review", "freeze", "unfreeze"],
-    "finance": ["settle", "export"],
-    "admin": ["revoke", "archive"]
+    "store_manager": ["confirm", "attach", "status:abnormal_detected→abnormal_confirmed"],
+    "area_manager": ["review", "freeze", "unfreeze", "status:abnormal_detected→abnormal_confirmed", "status:abnormal_confirmed→verified", "status:abnormal_confirmed→abnormal_confirmed", "status:verified→frozen", "status:frozen→verified"],
+    "finance": ["settle", "export", "status:frozen→settled"],
+    "admin": ["revoke", "archive", "status:*→revoked", "status:revoked→*", "status:settled→archived", "status:revoked→archived"]
+}
+
+PERMISSIONS = {
+    "import": ["driver"],
+    "confirm": ["store_manager", "area_manager", "admin"],
+    "attach": ["store_manager", "area_manager", "admin"],
+    "review": ["area_manager", "admin"],
+    "freeze": ["area_manager", "admin"],
+    "unfreeze": ["area_manager", "admin"],
+    "settle": ["finance", "admin"],
+    "export": ["finance", "area_manager", "admin"],
+    "revoke": ["admin"],
+    "archive": ["admin"]
 }

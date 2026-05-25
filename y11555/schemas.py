@@ -104,12 +104,14 @@ class ReviewRequest(BaseModel):
     review_result: str
     review_reason: str
     reviewed_by: str
+    operator_role: str
     service_remark: Optional[str] = None
 
 class FreezeRequest(BaseModel):
     receipt_no: str
     frozen_reason: str
     frozen_by: str
+    operator_role: str
 
 class AttachmentCreate(BaseModel):
     receipt_no: str
@@ -118,6 +120,7 @@ class AttachmentCreate(BaseModel):
     file_type: str
     file_size: int
     uploaded_by: str
+    operator_role: str
     description: Optional[str] = None
 
 class ReceiptQuery(BaseModel):
@@ -171,6 +174,7 @@ class ExportRequest(BaseModel):
     export_type: str = "summary"
     filters: Dict[str, Any] = {}
     exported_by: str
+    operator_role: str
 
 class ExportSummaryItem(BaseModel):
     receipt_no: str

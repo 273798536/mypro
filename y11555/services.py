@@ -3,7 +3,7 @@ from sqlalchemy import and_
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 import uuid
-from config import Status, STATUS_TRANSITIONS
+from config import Status, STATUS_TRANSITIONS, PERMISSIONS, ROLES
 import models
 import schemas
 
@@ -328,6 +328,8 @@ class ReceiptService:
                 "message": "already_in_target_status"
             }
 
+        PermissionService.check_status_transition_permission(request.operator_role, receipt.current_status, request.target_status)
+
         old_status = receipt.current_status
         receipt.previous_status = old_status
         receipt.current_status = request.target_status
@@ -365,6 +367,8 @@ class ReceiptService:
         if receipt.is_frozen:
             raise Exception("Cannot review frozen receipt")
 
+        PermissionService.check_permission(request.operator_role, "review")
+
         receipt.review_result = request.review_result
         receipt.review_reason = request.review_reason
         receipt.reviewed_by = request.reviewed_by
@@ -375,19 +379,22 @@ class ReceiptService:
 
         old_status = receipt.current_status
         new_status = Status.VERIFIED if request.review_result == "approve" else Status.ABNORMAL_CONFIRMED
-        receipt.previous_status = old_status
-        receipt.current_status = new_status
+        
+        if old_status != new_status:
+            PermissionService.check_status_transition_permission(request.operator_role, old_status, new_status)
+            receipt.previous_status = old_status
+            receipt.current_status = new_status
 
-        StatusHistoryService.add_history(
-            db, receipt.id, old_status, new_status,
-            request.reviewed_by, f"Review: {request.review_result}",
-            "area_manager"
-        )
+            StatusHistoryService.add_history(
+                db, receipt.id, old_status, new_status,
+                request.reviewed_by, f"Review: {request.review_result}",
+                request.operator_role
+            )
 
         OperationLogService.add_log(
             db, receipt.id, "review",
             f"Review completed. Result: {request.review_result}, Reason: {request.review_reason}",
-            request.reviewed_by, "area_manager"
+            request.reviewed_by, request.operator_role
         )
 
         db.commit()
@@ -405,12 +412,17 @@ class ReceiptService:
         if not receipt:
             raise Exception(f"Receipt {request.receipt_no} not found")
 
+        PermissionService.check_permission(request.operator_role, "freeze")
+
         if receipt.is_frozen:
             return {
                 "receipt_no": receipt.receipt_no,
                 "is_frozen": True,
                 "message": "already_frozen"
             }
+
+        old_status = receipt.current_status
+        PermissionService.check_status_transition_permission(request.operator_role, old_status, Status.FROZEN)
 
         receipt.status_before_freeze = receipt.current_status
         receipt.is_frozen = True
@@ -422,13 +434,13 @@ class ReceiptService:
         StatusHistoryService.add_history(
             db, receipt.id, receipt.status_before_freeze, Status.FROZEN,
             request.frozen_by, f"Freeze: {request.frozen_reason}",
-            "area_manager"
+            request.operator_role
         )
 
         OperationLogService.add_log(
             db, receipt.id, "freeze",
             f"Receipt frozen. Reason: {request.frozen_reason}",
-            request.frozen_by, "area_manager"
+            request.frozen_by, request.operator_role
         )
 
         db.commit()
@@ -441,10 +453,12 @@ class ReceiptService:
         }
 
     @staticmethod
-    def unfreeze_receipt(db: Session, receipt_no: str, operated_by: str) -> Dict[str, Any]:
+    def unfreeze_receipt(db: Session, receipt_no: str, operated_by: str, operator_role: str) -> Dict[str, Any]:
         receipt = db.query(models.AbnormalReceipt).filter(models.AbnormalReceipt.receipt_no == receipt_no).first()
         if not receipt:
             raise Exception(f"Receipt {receipt_no} not found")
+
+        PermissionService.check_permission(operator_role, "unfreeze")
 
         if not receipt.is_frozen:
             return {
@@ -454,19 +468,21 @@ class ReceiptService:
             }
 
         restore_status = receipt.status_before_freeze or Status.VERIFIED
+        PermissionService.check_status_transition_permission(operator_role, Status.FROZEN, restore_status)
+
         receipt.is_frozen = False
         receipt.current_status = restore_status
 
         StatusHistoryService.add_history(
             db, receipt.id, Status.FROZEN, restore_status,
             operated_by, "Unfreeze",
-            "area_manager"
+            operator_role
         )
 
         OperationLogService.add_log(
             db, receipt.id, "unfreeze",
             "Receipt unfrozen",
-            operated_by, "area_manager"
+            operated_by, operator_role
         )
 
         db.commit()
@@ -479,12 +495,15 @@ class ReceiptService:
         }
 
     @staticmethod
-    def revoke_receipt(db: Session, receipt_no: str, operated_by: str, reason: str) -> Dict[str, Any]:
+    def revoke_receipt(db: Session, receipt_no: str, operated_by: str, reason: str, operator_role: str) -> Dict[str, Any]:
         receipt = db.query(models.AbnormalReceipt).filter(models.AbnormalReceipt.receipt_no == receipt_no).first()
         if not receipt:
             raise Exception(f"Receipt {receipt_no} not found")
 
+        PermissionService.check_permission(operator_role, "revoke")
+
         old_status = receipt.current_status
+        PermissionService.check_status_transition_permission(operator_role, old_status, Status.REVOKED)
         
         if receipt.is_frozen:
             receipt.is_frozen = False
@@ -495,13 +514,13 @@ class ReceiptService:
         StatusHistoryService.add_history(
             db, receipt.id, old_status, Status.REVOKED,
             operated_by, f"Revoke: {reason}",
-            "admin"
+            operator_role
         )
 
         OperationLogService.add_log(
             db, receipt.id, "revoke",
             f"Receipt revoked. Reason: {reason}",
-            operated_by, "admin"
+            operated_by, operator_role
         )
 
         db.commit()
@@ -514,27 +533,31 @@ class ReceiptService:
         }
 
     @staticmethod
-    def archive_receipt(db: Session, receipt_no: str, operated_by: str) -> Dict[str, Any]:
+    def archive_receipt(db: Session, receipt_no: str, operated_by: str, operator_role: str) -> Dict[str, Any]:
         receipt = db.query(models.AbnormalReceipt).filter(models.AbnormalReceipt.receipt_no == receipt_no).first()
         if not receipt:
             raise Exception(f"Receipt {receipt_no} not found")
+
+        PermissionService.check_permission(operator_role, "archive")
 
         if receipt.current_status not in [Status.SETTLED, Status.REVOKED]:
             raise Exception("Can only archive settled or revoked receipts")
 
         old_status = receipt.current_status
+        PermissionService.check_status_transition_permission(operator_role, old_status, Status.ARCHIVED)
+
         receipt.current_status = Status.ARCHIVED
 
         StatusHistoryService.add_history(
             db, receipt.id, old_status, Status.ARCHIVED,
             operated_by, "Archive",
-            "admin"
+            operator_role
         )
 
         OperationLogService.add_log(
             db, receipt.id, "archive",
             "Receipt archived",
-            operated_by, "admin"
+            operated_by, operator_role
         )
 
         db.commit()
@@ -551,6 +574,8 @@ class ReceiptService:
         receipt = db.query(models.AbnormalReceipt).filter(models.AbnormalReceipt.receipt_no == attachment.receipt_no).first()
         if not receipt:
             raise Exception(f"Receipt {attachment.receipt_no} not found")
+
+        PermissionService.check_permission(attachment.operator_role, "attach")
 
         if receipt.is_frozen:
             raise Exception("Cannot add attachment to frozen receipt")
@@ -569,7 +594,7 @@ class ReceiptService:
         OperationLogService.add_log(
             db, receipt.id, "attachment",
             f"Attachment added: {attachment.file_name}",
-            attachment.uploaded_by, "store_manager"
+            attachment.uploaded_by, attachment.operator_role
         )
 
         db.commit()
@@ -629,7 +654,9 @@ class ReceiptService:
         }
 
     @staticmethod
-    def export_summary(db: Session, filters: Dict[str, Any], exported_by: str) -> Dict[str, Any]:
+    def export_summary(db: Session, filters: Dict[str, Any], exported_by: str, operator_role: str) -> Dict[str, Any]:
+        PermissionService.check_permission(operator_role, "export")
+
         q = db.query(models.AbnormalReceipt)
 
         if filters.get("area"):
@@ -785,3 +812,43 @@ class OperationLogService:
             ip_address=ip_address
         )
         db.add(log)
+
+
+class PermissionService:
+    @staticmethod
+    def has_permission(operator_role: str, operation: str) -> bool:
+        if operator_role == "admin":
+            return True
+        allowed_roles = PERMISSIONS.get(operation, [])
+        return operator_role in allowed_roles
+
+    @staticmethod
+    def has_status_transition_permission(operator_role: str, from_status: str, to_status: str) -> bool:
+        if operator_role == "admin":
+            return True
+
+        role_permissions = ROLES.get(operator_role, [])
+
+        exact_match = f"status:{from_status}→{to_status}"
+        if exact_match in role_permissions:
+            return True
+
+        wildcard_from = f"status:*→{to_status}"
+        if wildcard_from in role_permissions:
+            return True
+
+        wildcard_to = f"status:{from_status}→*"
+        if wildcard_to in role_permissions:
+            return True
+
+        return False
+
+    @staticmethod
+    def check_permission(operator_role: str, operation: str):
+        if not PermissionService.has_permission(operator_role, operation):
+            raise Exception(f"权限不足：角色[{operator_role}]无[{operation}]操作权限")
+
+    @staticmethod
+    def check_status_transition_permission(operator_role: str, from_status: str, to_status: str):
+        if not PermissionService.has_status_transition_permission(operator_role, from_status, to_status):
+            raise Exception(f"权限不足：角色[{operator_role}]无[{from_status}→{to_status}]状态流转权限")

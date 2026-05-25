@@ -123,6 +123,20 @@ curl -s -X POST "$BASE_URL/api/receipt/status/change" \
 echo ""
 echo "--------------------------------------------------"
 
+# 6b. 门店确认第二个回执（为人工改判做准备）
+echo "6b. 门店确认异常（$RCP_NO2）..."
+curl -s -X POST "$BASE_URL/api/receipt/status/change" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"receipt_no\": \"$RCP_NO2\",
+    \"target_status\": \"abnormal_confirmed\",
+    \"changed_by\": \"store_manager_li\",
+    \"operator_role\": \"store_manager\",
+    \"change_reason\": \"门店确认赊销情况属实\"
+  }" | python3 -m json.tool
+echo ""
+echo "--------------------------------------------------"
+
 # 7. 添加异常照片附件
 echo "7. 添加异常照片附件（$RCP_NO1）..."
 curl -s -X POST "$BASE_URL/api/attachment/add" \
@@ -134,6 +148,7 @@ curl -s -X POST "$BASE_URL/api/attachment/add" \
     \"file_type\": \"image/jpeg\",
     \"file_size\": 1024000,
     \"uploaded_by\": \"store_manager_li\",
+    \"operator_role\": \"store_manager\",
     \"description\": \"近效期药盒实拍照片，批号20230101\"
   }" | python3 -m json.tool
 echo ""
@@ -148,6 +163,7 @@ curl -s -X POST "$BASE_URL/api/receipt/review" \
     \"review_result\": \"approve\",
     \"review_reason\": \"情况属实，同意按异常处理，扣供应商货款\",
     \"reviewed_by\": \"area_manager_wang\",
+    \"operator_role\": \"area_manager\",
     \"service_remark\": \"已联系供应商，下批次补货时扣除\"
   }" | python3 -m json.tool
 echo ""
@@ -162,6 +178,7 @@ curl -s -X POST "$BASE_URL/api/receipt/review" \
     \"review_result\": \"reject\",
     \"review_reason\": \"赊销欠条照片缺失，请补充附件后重新提交\",
     \"reviewed_by\": \"area_manager_wang\",
+    \"operator_role\": \"area_manager\",
     \"service_remark\": \"欠条照片是必填凭证\"
   }" | python3 -m json.tool
 echo ""
@@ -169,7 +186,7 @@ echo "--------------------------------------------------"
 
 # 10. 撤回（测试撤回后再提交流程）
 echo "10. 管理员撤回第三个回执（$RCP_NO3）..."
-curl -s -X POST "$BASE_URL/api/receipt/$RCP_NO3/revoke?operated_by=admin_zhang&reason=数据录入错误，需要重新核对" | python3 -m json.tool
+curl -s -X POST "$BASE_URL/api/receipt/$RCP_NO3/revoke?operated_by=admin_zhang&reason=数据录入错误，需要重新核对&operator_role=admin" | python3 -m json.tool
 echo ""
 echo "--------------------------------------------------"
 
@@ -180,7 +197,8 @@ curl -s -X POST "$BASE_URL/api/receipt/freeze" \
   -d "{
     \"receipt_no\": \"$RCP_NO1\",
     \"frozen_reason\": \"月度结算冻结，待财务对账\",
-    \"frozen_by\": \"area_manager_wang\"
+    \"frozen_by\": \"area_manager_wang\",
+    \"operator_role\": \"area_manager\"
   }" | python3 -m json.tool
 echo ""
 echo "--------------------------------------------------"
@@ -191,21 +209,22 @@ curl -s "$BASE_URL/api/receipt/$RCP_NO1" | python3 -m json.tool
 echo ""
 echo "--------------------------------------------------"
 
-# 13. 导出汇总报表（片区经理视角）
-echo "13. 导出汇总报表 - 片区经理视角..."
+# 13. 导出汇总（片区经理视角）
+echo "13. 导出汇总报表（片区经理视角）..."
 curl -s -X POST "$BASE_URL/api/export/summary" \
   -H "Content-Type: application/json" \
   -d '{
     "export_type": "summary",
     "filters": {"area": "华东区"},
-    "exported_by": "area_manager_wang"
+    "exported_by": "area_manager_wang",
+    "operator_role": "area_manager"
   }' | python3 -m json.tool
 echo ""
 echo "--------------------------------------------------"
 
 # 14. 解冻
 echo "14. 解冻回执（$RCP_NO1）..."
-curl -s -X POST "$BASE_URL/api/receipt/$RCP_NO1/unfreeze?operated_by=area_manager_wang" | python3 -m json.tool
+curl -s -X POST "$BASE_URL/api/receipt/$RCP_NO1/unfreeze?operated_by=area_manager_wang&operator_role=area_manager" | python3 -m json.tool
 echo ""
 echo "--------------------------------------------------"
 
