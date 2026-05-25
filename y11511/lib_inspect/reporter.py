@@ -63,7 +63,8 @@ def export_data(store: DataStore, output_path: Path, fmt: str,
         records = store.get_all_records(status=RecordStatus.CHECK_PASSED)
         fixed = store.get_all_records(status=RecordStatus.FIXED)
         recalculated = store.get_all_records(status=RecordStatus.RECALCULATED)
-        records = records + fixed + recalculated
+        merged = store.get_all_records(status=RecordStatus.MERGED)
+        records = records + fixed + recalculated + merged
 
     record_count = len(records)
 

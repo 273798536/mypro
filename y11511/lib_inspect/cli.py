@@ -184,6 +184,74 @@ def fix(record_id, field, value, operator, reason):
 
 
 @cli.command()
+@click.argument("primary_id")
+@click.option("--merge-ids", multiple=True, help="要合并的其他记录ID（可多次指定）")
+@click.option("--operator", required=True, help="操作人姓名")
+@click.option("--auto", is_flag=True, help="自动查找并合并所有相关多源记录")
+def merge(primary_id, merge_ids, operator, auto):
+    """合并多源记录为同一事实源"""
+    store = get_store()
+    primary = store.get_record(primary_id)
+
+    if not primary:
+        console.print("[red]未找到主记录[/red]")
+        raise click.Abort()
+
+    try:
+        ids_to_merge = list(merge_ids)
+        if auto:
+            all_records = store.get_all_records()
+            for other in all_records:
+                if other.id == primary.id:
+                    continue
+                if (other.borrower_id == primary.borrower_id and
+                    other.book_title == primary.book_title and
+                    other.library_from == primary.library_from and
+                    other.library_to == primary.library_to):
+                    ids_to_merge.append(other.id)
+
+        if not ids_to_merge:
+            console.print("[yellow]没有找到可合并的记录[/yellow]")
+            return
+
+        records_to_merge = []
+        for rid in ids_to_merge:
+            record = store.get_record(rid)
+            if record:
+                records_to_merge.append(record)
+
+        if not records_to_merge:
+            console.print("[yellow]指定的记录ID都不存在[/yellow]")
+            return
+
+        console.print(f"[cyan]正在合并 {len(records_to_merge)} 条记录到主记录...[/cyan]")
+        
+        merged_record = fixer.merge_records(primary, records_to_merge)
+        merged_record.status = RecordStatus.MERGED
+        
+        merged_record.issues = [i for i in merged_record.issues if '多源补传' not in i]
+
+        store.update_record(merged_record, operator, "多源记录合并")
+
+        for rid in ids_to_merge:
+            store.delete_record(rid)
+
+        logger.log_merge(primary_id, ids_to_merge, operator)
+        console.print(Panel.fit(
+            f"[green]合并成功[/green]\n"
+            f"主记录ID: {primary_id[:8]}...\n"
+            f"合并记录数: {len(records_to_merge)}\n"
+            f"合并后状态: 已合并\n"
+            f"操作人: {operator}",
+            title="合并完成"
+        ))
+    except Exception as e:
+        logger.log_merge_error(str(e), operator)
+        console.print(f"[red]合并失败: {str(e)}[/red]")
+        raise click.Abort()
+
+
+@cli.command()
 @click.option("--operator", required=True, help="操作人姓名")
 @click.option("--reason", default="费用重新汇总", help="重算原因")
 @click.option("--overdue-rate", default=0.5, type=float, help="逾期日费率（元/天）")

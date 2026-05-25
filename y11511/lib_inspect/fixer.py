@@ -135,7 +135,17 @@ def recalculate_fees(record: LoanRecord, overdue_rate: float = 0.5,
             record.is_damaged = True
 
     record.calculate_total_fee()
-    record.status = RecordStatus.RECALCULATED
+
+    VALID_STATUSES = [
+        RecordStatus.CHECK_PASSED,
+        RecordStatus.FIXED,
+        RecordStatus.RECALCULATED,
+        RecordStatus.MERGED,
+        RecordStatus.EXPORTED
+    ]
+    if record.status in VALID_STATUSES or record.status == RecordStatus.CHECKING:
+        record.status = RecordStatus.RECALCULATED
+
     record.updated_at = datetime.now()
 
     return record

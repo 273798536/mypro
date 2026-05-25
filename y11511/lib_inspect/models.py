@@ -15,6 +15,7 @@ class RecordSource(Enum):
 class RecordStatus(Enum):
     PENDING = "待处理"
     IMPORTED = "已导入"
+    MERGED = "已合并"
     CHECKING = "校验中"
     CHECK_PASSED = "校验通过"
     CHECK_FAILED = "校验失败"
@@ -26,7 +27,8 @@ class RecordStatus(Enum):
 
 
 class IssueType(Enum):
-    DUPLICATE = "重复记录"
+    TRUE_DUPLICATE = "真正重复"
+    MULTI_SOURCE = "多源补传"
     MISSING_DATA = "缺失数据"
     FEE_MISMATCH = "费用不匹配"
     STATUS_CONFLICT = "状态冲突"

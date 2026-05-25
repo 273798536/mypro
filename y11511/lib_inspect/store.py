@@ -284,7 +284,7 @@ class DataStore:
         summary = ReportSummary()
 
         with self._get_conn() as conn:
-            VALID_STATUS_FILTER = "status IN ('校验通过', '已修正', '已重算', '已导出')"
+            VALID_STATUS_FILTER = "status IN ('校验通过', '已修正', '已重算', '已导出', '已合并')"
 
             row = conn.execute(f"""
                 SELECT 

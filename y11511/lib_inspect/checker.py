@@ -99,9 +99,10 @@ def check_fees(record: LoanRecord) -> Dict[str, Any]:
     }
 
 
-def check_duplicates(store: DataStore, record: LoanRecord) -> Dict[str, Any]:
+def check_multi_source(store: DataStore, record: LoanRecord) -> Dict[str, Any]:
     all_records = store.get_all_records()
-    duplicates = []
+    related = []
+    true_duplicates = []
 
     for other in all_records:
         if other.id == record.id:
@@ -110,17 +111,35 @@ def check_duplicates(store: DataStore, record: LoanRecord) -> Dict[str, Any]:
             other.book_title == record.book_title and
             other.library_from == record.library_from and
                 other.library_to == record.library_to):
-            duplicates.append({
-                'id': other.id,
-                'source': other.source.value,
-                'original_row': other.original_row,
-                'original_file': other.original_file
-            })
+            if other.source == record.source:
+                true_duplicates.append({
+                    'id': other.id,
+                    'source': other.source.value,
+                    'original_row': other.original_row,
+                    'original_file': other.original_file
+                })
+            else:
+                related.append({
+                    'id': other.id,
+                    'source': other.source.value,
+                    'original_row': other.original_row,
+                    'original_file': other.original_file
+                })
 
+    has_issues = len(true_duplicates) > 0
+    message_parts = []
+    if true_duplicates:
+        message_parts.append(f'真正重复 {len(true_duplicates)} 条')
+    if related:
+        message_parts.append(f'多源补传 {len(related)} 条')
+    
     return {
-        'passed': len(duplicates) == 0,
-        'message': '无重复记录' if not duplicates else f'发现 {len(duplicates)} 条重复记录',
-        'details': {'duplicates': duplicates}
+        'passed': not has_issues,
+        'message': '; '.join(message_parts) if message_parts else '无相关记录',
+        'details': {
+            'true_duplicates': true_duplicates,
+            'multi_source': related
+        }
     }
 
 
@@ -159,23 +178,26 @@ def check_records(store: DataStore, records: List[LoanRecord],
 
             results.append(result)
 
-        dup_result = check_duplicates(store, record)
-        dup_result['record_id'] = record.id
-        dup_result['check_name'] = '重复检测'
-        dup_result['book_title'] = record.book_title
+        ms_result = check_multi_source(store, record)
+        ms_result['record_id'] = record.id
+        ms_result['check_name'] = '多源检测'
+        ms_result['book_title'] = record.book_title
 
         store.save_check_result(
             record_id=record.id,
-            check_name='重复检测',
-            passed=dup_result['passed'],
-            message=dup_result['message'],
-            details=dup_result['details']
+            check_name='多源检测',
+            passed=ms_result['passed'],
+            message=ms_result['message'],
+            details=ms_result['details']
         )
 
-        if not dup_result['passed']:
-            record.add_issue(f"重复检测: {dup_result['message']}")
+        if ms_result['details'].get('true_duplicates'):
+            record.add_issue(f"真正重复: 发现 {len(ms_result['details']['true_duplicates'])} 条同来源重复记录")
+        
+        if ms_result['details'].get('multi_source'):
+            record.add_issue(f"多源补传: 发现 {len(ms_result['details']['multi_source'])} 条其他来源记录，建议合并")
 
-        results.append(dup_result)
+        results.append(ms_result)
 
         if fix_auto:
             calculated = record.express_fee + record.compensation_fee + \
@@ -183,8 +205,13 @@ def check_records(store: DataStore, records: List[LoanRecord],
             if abs(calculated - record.total_fee) > 0.01:
                 record.total_fee = calculated
 
-        if record.issues:
+        has_fatal_issues = any('真正重复' in issue or '必填字段' in issue or '日期逻辑' in issue or '费用校验' in issue for issue in record.issues)
+        has_merge_issues = any('多源补传' in issue for issue in record.issues)
+        
+        if has_fatal_issues:
             record.status = RecordStatus.CHECK_FAILED
+        elif has_merge_issues:
+            record.status = RecordStatus.IMPORTED
         else:
             record.status = RecordStatus.CHECK_PASSED
 

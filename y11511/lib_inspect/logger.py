@@ -135,3 +135,20 @@ def log_view(action: str, record_id: Optional[str] = None, operator: str = "syst
     if record_id:
         msg += f", 记录ID: {record_id}"
     log_operation("VIEW", msg, operator=operator)
+
+
+def log_merge(primary_id: str, merged_ids: list, operator: str) -> None:
+    log_operation(
+        "MERGE",
+        f"合并记录, 主记录: {primary_id}, 合并: {', '.join(merged_ids)}",
+        operator=operator
+    )
+
+
+def log_merge_error(error: str, operator: str) -> None:
+    log_operation(
+        "MERGE_ERROR",
+        f"合并失败, 错误: {error}",
+        operator=operator,
+        level="error"
+    )
