@@ -15,19 +15,19 @@ afterAll(async () => {
 
 const authHeaders = {
   'x-user-id': 'admin001',
-  'x-user-name': '超级管理员',
+  'x-user-name': 'Admin User',
   'x-user-role': Role.ADMIN,
 };
 
 const reviewerHeaders = {
   'x-user-id': 'reviewer001',
-  'x-user-name': '审核员',
+  'x-user-name': 'Reviewer User',
   'x-user-role': Role.REVIEWER,
 };
 
 const operatorHeaders = {
   'x-user-id': 'operator001',
-  'x-user-name': '操作员',
+  'x-user-name': 'Operator User',
   'x-user-role': Role.OPERATOR,
 };
 
@@ -52,7 +52,7 @@ describe('API Tests', () => {
         .get('/api/exceptions/receipts')
         .set({
           'x-user-id': 'user001',
-          'x-user-name': '测试用户',
+          'x-user-name': 'Test User',
           'x-user-role': 'invalid_role',
         });
       expect(res.status).toBe(400);

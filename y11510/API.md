@@ -23,11 +23,40 @@
 | 冻结结算 | ✅ | ❌ | ❌ | ❌ |
 | 撤回归档 | ✅ | ❌ | ❌ | ❌ |
 | 附件上传 | ✅ | ✅ | ✅ | ❌ |
+| 追加审批邮件 | ✅ | ✅ | ✅ | ❌ |
 | 查看记录 | ✅ | ✅ | ✅ | ✅ |
 | 导出报表 | ✅ | ✅ | ❌ | ❌ |
 | 自动检查 | ✅ | ❌ | ❌ | ❌ |
 
 ## API 端点
+
+### 快速索引
+
+| 分类 | 方法 | 路径 | 说明 |
+|------|------|------|------|
+| 健康检查 | GET | `/health` | 检查服务健康状态 |
+| 异常回执 | POST | `/api/exceptions/batch` | 批次创建异常回执 |
+| 异常回执 | GET | `/api/exceptions/receipts` | 查询异常回执列表 |
+| 异常回执 | GET | `/api/exceptions/receipts/:id/detail` | 获取完整详情（含关联数据和历史） |
+| 异常回执 | GET | `/api/exceptions/receipts/:id/history` | 获取变更历史 |
+| 异常回执 | POST | `/api/exceptions/receipts/:id/review` | 复核改判 |
+| 异常回执 | POST | `/api/exceptions/receipts/:id/freeze` | 冻结结算 |
+| 异常回执 | POST | `/api/exceptions/receipts/:id/unfreeze` | 解冻 |
+| 异常回执 | POST | `/api/exceptions/receipts/:id/cancel` | 撤回归档 |
+| 异常回执 | PATCH | `/api/exceptions/receipts/:id/manual-reason` | 更新人工说明 |
+| 附件管理 | POST | `/api/exceptions/receipts/:id/attachments` | 上传附件 |
+| 附件管理 | GET | `/api/exceptions/receipts/:id/attachments` | 获取附件列表 |
+| 审批邮件 | POST | `/api/exceptions/receipts/:id/approval-emails` | 追加审批邮件 |
+| 审批邮件 | GET | `/api/exceptions/receipts/:id/approval-emails` | 获取审批邮件列表 |
+| 批次管理 | GET | `/api/exceptions/batches/:id` | 获取批次信息 |
+| 批次管理 | GET | `/api/exceptions/batches` | 查询批次列表 |
+| 报表导出 | GET | `/api/reports/summary` | 获取汇总报表 |
+| 报表导出 | GET | `/api/reports/export/csv` | 导出CSV |
+| 报表导出 | GET | `/api/reports/failed-records` | 获取失败记录列表 |
+| 自动化检查 | POST | `/api/reports/auto-check` | 运行自动化检查 |
+| 自动化检查 | GET | `/api/reports/auto-check/history` | 获取检查历史 |
+
+---
 
 ### 健康检查
 
@@ -68,6 +97,8 @@
         "sourceLibrary": "图书馆A",
         "targetLibrary": "图书馆B",
         "applyDate": "2024-01-01T00:00:00.000Z",
+        "borrowDate": "2024-01-05T00:00:00.000Z",
+        "dueDate": "2024-02-05T00:00:00.000Z",
         "status": "exception"
       },
       "expressOrder": {
@@ -75,6 +106,10 @@
         "orderNo": "EXP202401001",
         "courierCompany": "顺丰",
         "trackingNo": "SF1234567890",
+        "sender": "图书馆A",
+        "receiver": "图书馆B",
+        "sendDate": "2024-01-02T00:00:00.000Z",
+        "receiveDate": "2024-01-04T00:00:00.000Z",
         "cost": 15,
         "status": "delivered"
       },
@@ -84,7 +119,20 @@
         "compensationType": "overdue",
         "amount": 50,
         "reason": "逾期30天",
-        "status": "pending"
+        "paidDate": "2024-02-10T00:00:00.000Z",
+        "status": "paid"
+      },
+      "supplierBill": {
+        "id": "bill-001",
+        "billNo": "BILL202401001",
+        "supplierId": "SUP001",
+        "supplierName": "快递服务供应商",
+        "borrowApplicationIds": ["app-001"],
+        "totalAmount": 15,
+        "billDate": "2024-01-10T00:00:00.000Z",
+        "dueDate": "2024-02-10T00:00:00.000Z",
+        "paidDate": "2024-02-05T00:00:00.000Z",
+        "status": "paid"
       },
       "exceptionType": "overdue",
       "amount": 50,
@@ -204,16 +252,98 @@
 {
   "success": true,
   "data": {
-    "receipt": { ... },
-    "borrowApplication": { ... },
-    "expressOrder": { ... },
-    "readerCompensation": { ... },
-    "attachments": [ ... ],
+    "receipt": {
+      "id": "receipt-uuid",
+      "exceptionType": "overdue",
+      "amount": 50,
+      "reason": "逾期30天未归还",
+      "status": "approved",
+      "manualReason": "经与读者沟通，确认逾期原因是出差在外",
+      "reviewComment": "情况属实，予以通过",
+      "statusBeforeFreeze": null,
+      "frozenReason": null,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "createdBy": "user001",
+      "batchId": "batch-uuid"
+    },
+    "borrowApplication": {
+      "id": "app-001",
+      "applicationNo": "APP202401001",
+      "readerId": "R001",
+      "readerName": "张三",
+      "bookId": "B001",
+      "bookTitle": "计算机网络",
+      "sourceLibrary": "图书馆A",
+      "targetLibrary": "图书馆B",
+      "applyDate": "2024-01-01T00:00:00.000Z",
+      "borrowDate": "2024-01-05T00:00:00.000Z",
+      "dueDate": "2024-02-05T00:00:00.000Z",
+      "status": "exception"
+    },
+    "expressOrder": {
+      "id": "exp-001",
+      "orderNo": "EXP202401001",
+      "courierCompany": "顺丰",
+      "trackingNo": "SF1234567890",
+      "sender": "图书馆A",
+      "receiver": "图书馆B",
+      "sendDate": "2024-01-02T00:00:00.000Z",
+      "receiveDate": "2024-01-04T00:00:00.000Z",
+      "cost": 15,
+      "status": "delivered"
+    },
+    "readerCompensation": {
+      "id": "comp-001",
+      "recordNo": "COMP202401001",
+      "compensationType": "overdue",
+      "amount": 50,
+      "reason": "逾期30天",
+      "paidDate": "2024-02-10T00:00:00.000Z",
+      "status": "paid"
+    },
+    "supplierBill": {
+      "id": "bill-001",
+      "billNo": "BILL202401001",
+      "supplierId": "SUP001",
+      "supplierName": "快递服务供应商",
+      "totalAmount": 15,
+      "billDate": "2024-01-10T00:00:00.000Z",
+      "dueDate": "2024-02-10T00:00:00.000Z",
+      "status": "paid"
+    },
+    "attachments": [
+      {
+        "id": "att-uuid",
+        "fileName": "逾期说明.pdf",
+        "fileType": "application/pdf",
+        "fileSize": 1024000,
+        "uploadedBy": "user001",
+        "createdAt": "2024-01-02T00:00:00.000Z"
+      }
+    ],
+    "approvalEmails": [
+      {
+        "id": "email-uuid",
+        "emailSubject": "关于逾期费用减免的审批",
+        "emailFrom": "admin@library.com",
+        "emailTo": ["librarian@library.com"],
+        "emailCc": ["director@library.com"],
+        "emailBody": "经核实，该读者因住院导致逾期，同意减免50%费用。",
+        "sentAt": "2024-01-15T10:30:00.000Z",
+        "sentBy": "admin001",
+        "createdAt": "2024-01-15T10:30:00.000Z"
+      }
+    ],
     "history": [
       {
         "actionType": "batch_create",
         "operatorName": "管理员",
-        "changes": { ... },
+        "changes": {
+          "status": {
+            "old": null,
+            "new": "pending_review"
+          }
+        },
         "reason": "Create exception receipt",
         "createdAt": "2024-01-01T00:00:00.000Z"
       }
@@ -403,6 +533,80 @@
 #### `GET /api/exceptions/receipts/:id/attachments`
 
 获取附件列表
+
+---
+
+#### `POST /api/exceptions/receipts/:id/approval-emails`
+
+追加审批邮件
+
+**需要角色：** `admin`、`reviewer` 或 `operator`
+
+**请求体：**
+```json
+{
+  "emailSubject": "关于逾期费用减免的审批",
+  "emailFrom": "admin@library.com",
+  "emailTo": ["librarian@library.com"],
+  "emailCc": ["director@library.com"],
+  "emailBody": "经核实，该读者因住院导致逾期，同意减免50%费用。",
+  "sentAt": "2024-01-15T10:30:00.000Z"
+}
+```
+
+**字段说明：**
+- `emailSubject` - 邮件主题（必填）
+- `emailFrom` - 发件人邮箱（必填，需符合邮箱格式）
+- `emailTo` - 收件人邮箱列表（必填，数组）
+- `emailCc` - 抄送人邮箱列表（可选，数组）
+- `emailBody` - 邮件正文（必填）
+- `sentAt` - 发送时间（必填，ISO 格式）
+
+**响应示例：**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "email-uuid",
+    "receiptId": "receipt-uuid",
+    "emailSubject": "关于逾期费用减免的审批",
+    "emailFrom": "admin@library.com",
+    "emailTo": ["librarian@library.com"],
+    "emailCc": ["director@library.com"],
+    "emailBody": "经核实，该读者因住院导致逾期，同意减免50%费用。",
+    "sentAt": "2024-01-15T10:30:00.000Z",
+    "sentBy": "admin001",
+    "createdAt": "2024-01-15T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+#### `GET /api/exceptions/receipts/:id/approval-emails`
+
+获取审批邮件列表
+
+**响应示例：**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "email-uuid",
+      "receiptId": "receipt-uuid",
+      "emailSubject": "关于逾期费用减免的审批",
+      "emailFrom": "admin@library.com",
+      "emailTo": ["librarian@library.com"],
+      "emailCc": ["director@library.com"],
+      "emailBody": "经核实，该读者因住院导致逾期，同意减免50%费用。",
+      "sentAt": "2024-01-15T10:30:00.000Z",
+      "sentBy": "admin001",
+      "createdAt": "2024-01-15T10:30:00.000Z"
+    }
+  ]
+}
+```
 
 ---
 

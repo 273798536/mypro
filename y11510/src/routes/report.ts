@@ -43,7 +43,7 @@ router.get('/export/csv', requireRole(Role.ADMIN, Role.REVIEWER), async (req: Re
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename*=UTF-8\'\'${encodeURIComponent(fileName || 'export.csv')}`
+      `attachment; filename*=UTF-8''${encodeURIComponent(fileName || 'export.csv')}`
     );
 
     const fileStream = fs.createReadStream(filePath);
