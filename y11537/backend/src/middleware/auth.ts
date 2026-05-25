@@ -16,7 +16,9 @@ export interface AuthRequest extends Request {
 
 export function authenticateToken(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const tokenFromHeader = authHeader && authHeader.split(' ')[1];
+  const tokenFromQuery = req.query.token as string;
+  const token = tokenFromHeader || tokenFromQuery;
 
   if (!token) {
     return res.status(401).json({ error: '未提供认证令牌' });

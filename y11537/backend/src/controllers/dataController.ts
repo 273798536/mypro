@@ -144,36 +144,99 @@ export async function submitSignin(req: AuthRequest, res: Response) {
     console.error('提交签到错误:', error);
     
     const retryCategory = classifyError(error);
+    const originalData = req.body;
     
-    const queueItem = await addToCompensationQueue({
-      source: DataSource.SIGNIN_QRCODE,
-      signinType: SigninType.NORMAL,
-      employeeId: req.body.employeeId,
-      employeeName: req.body.employeeName,
-      department: req.body.department,
-      trainingId: req.body.trainingId,
-      trainingName: req.body.trainingName,
-      trainingDate: req.body.trainingDate,
-      signinTime: req.body.signinTime,
-      retryCategory,
-      errorMessage: error.message,
-      errorStack: error.stack,
-      originalData: req.body,
-      isProxy: req.body.isProxy,
-      proxyEmployeeId: req.body.proxyEmployeeId,
-      proxyEmployeeName: req.body.proxyEmployeeName,
-      createdBy: req.user?.id,
-      operatorName: req.user?.realName,
-      operatorRole: req.user?.role,
-      ipAddress: req.ip
-    });
+    const requiredFields = ['employeeId', 'employeeName', 'department', 'trainingId', 'trainingName', 'trainingDate'];
+    const missingFields = requiredFields.filter(field => !originalData[field]);
+    let failedRecord: any = null;
     
-    res.json({
-      success: true,
-      warning: '签到处理异常，已加入补偿队列',
-      queueNo: queueItem.queueNo,
-      error: error.message
-    });
+    if (missingFields.length > 0) {
+      failedRecord = await createFailedRecord({
+        source: DataSource.SIGNIN_QRCODE,
+        recordType: 'signin_record',
+        retryCategory: RetryCategory.MISSING_DATA,
+        errorMessage: `缺少必填字段: ${missingFields.join(', ')}`,
+        errorDetail: error.stack,
+        originalData,
+        affectedReportFields: ['signinCount', 'attendanceRate'],
+        createdBy: req.user?.id
+      });
+      
+      return res.status(400).json({
+        success: false,
+        error: `缺少必填字段: ${missingFields.join(', ')}`,
+        failureNo: failedRecord.failureNo,
+        retryCategory: RetryCategory.MISSING_DATA
+      });
+    }
+    
+    try {
+      failedRecord = await createFailedRecord({
+        source: DataSource.SIGNIN_QRCODE,
+        recordType: 'signin_record',
+        retryCategory,
+        errorMessage: error.message,
+        errorDetail: error.stack,
+        originalData,
+        affectedReportFields: ['signinCount', 'attendanceRate'],
+        createdBy: req.user?.id
+      });
+      
+      const queueItem = await addToCompensationQueue({
+        source: DataSource.SIGNIN_QRCODE,
+        signinType: SigninType.NORMAL,
+        employeeId: originalData.employeeId,
+        employeeName: originalData.employeeName,
+        department: originalData.department,
+        trainingId: originalData.trainingId,
+        trainingName: originalData.trainingName,
+        trainingDate: originalData.trainingDate,
+        signinTime: originalData.signinTime,
+        retryCategory,
+        errorMessage: error.message,
+        errorStack: error.stack,
+        originalData,
+        isProxy: originalData.isProxy,
+        proxyEmployeeId: originalData.proxyEmployeeId,
+        proxyEmployeeName: originalData.proxyEmployeeName,
+        createdBy: req.user?.id,
+        operatorName: req.user?.realName,
+        operatorRole: req.user?.role,
+        ipAddress: req.ip
+      });
+      
+      if (failedRecord) {
+        await failedRecord.update({
+          queueId: queueItem.id,
+          queueNo: queueItem.queueNo
+        });
+      }
+      
+      res.json({
+        success: true,
+        warning: '签到处理异常，已加入补偿队列',
+        queueNo: queueItem.queueNo,
+        failureNo: failedRecord?.failureNo,
+        error: error.message
+      });
+      
+    } catch (queueError: any) {
+      console.error('加入补偿队列失败:', queueError);
+      
+      if (failedRecord) {
+        await failedRecord.update({
+          errorMessage: `${error.message}; 队列加入失败: ${queueError.message}`,
+          errorDetail: `${error.stack}\n\n${queueError.stack}`
+        });
+      }
+      
+      res.json({
+        success: true,
+        warning: '签到处理异常，已记录到失败列表',
+        failureNo: failedRecord?.failureNo,
+        error: error.message
+      });
+    }
   }
 }
 
