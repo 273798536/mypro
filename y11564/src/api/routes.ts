@@ -5,16 +5,15 @@ import { LedgerStatus, Role } from '../types';
 
 const router = Router();
 
-interface AuthenticatedRequest extends Request {
-  headers: {
-    'x-operator'?: string;
-    'x-role'?: string;
-  };
+interface AuthHeaders {
+  'x-operator'?: string;
+  'x-role'?: string;
 }
 
-function getAuthInfo(req: AuthenticatedRequest): { operator: string; role: Role } {
-  const operator = req.headers['x-operator'] || 'anonymous';
-  const role = (req.headers['x-role'] as Role) || Role.FRONT_DESK;
+function getAuthInfo(req: Request): { operator: string; role: Role } {
+  const headers = req.headers as AuthHeaders;
+  const operator = headers['x-operator'] || 'anonymous';
+  const role = (headers['x-role'] as Role) || Role.FRONT_DESK;
   return { operator, role };
 }
 
@@ -22,7 +21,7 @@ router.get('/health', (req: Request, res: Response) => {
   res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() } });
 });
 
-router.post('/ledgers/check-in', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/check-in', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const result = await ledgerService.createLedgerFromCheckIn(req.body, operator, role);
@@ -32,7 +31,7 @@ router.post('/ledgers/check-in', async (req: AuthenticatedRequest, res: Response
   }
 });
 
-router.post('/ledgers/deposit', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/deposit', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const result = await ledgerService.addDeposit(req.body, operator, role);
@@ -42,7 +41,7 @@ router.post('/ledgers/deposit', async (req: AuthenticatedRequest, res: Response)
   }
 });
 
-router.post('/ledgers/room-change', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/room-change', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const result = await ledgerService.addRoomChange(req.body, operator, role);
@@ -52,7 +51,7 @@ router.post('/ledgers/room-change', async (req: AuthenticatedRequest, res: Respo
   }
 });
 
-router.post('/ledgers/:id/submit', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/:id/submit', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const result = await ledgerService.submitLedger(req.params.id, operator, role);
@@ -62,7 +61,7 @@ router.post('/ledgers/:id/submit', async (req: AuthenticatedRequest, res: Respon
   }
 });
 
-router.post('/ledgers/:id/reject', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/:id/reject', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const { reason } = req.body;
@@ -73,7 +72,7 @@ router.post('/ledgers/:id/reject', async (req: AuthenticatedRequest, res: Respon
   }
 });
 
-router.post('/ledgers/:id/confirm', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/:id/confirm', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const result = await ledgerService.confirmLedger(req.params.id, operator, role);
@@ -83,7 +82,7 @@ router.post('/ledgers/:id/confirm', async (req: AuthenticatedRequest, res: Respo
   }
 });
 
-router.post('/ledgers/:id/audit', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/ledgers/:id/audit', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const result = await ledgerService.auditLedger(req.params.id, operator, role);
@@ -93,7 +92,7 @@ router.post('/ledgers/:id/audit', async (req: AuthenticatedRequest, res: Respons
   }
 });
 
-router.get('/ledgers', async (req: AuthenticatedRequest, res: Response) => {
+router.get('/ledgers', async (req: Request, res: Response) => {
   try {
     const { role } = getAuthInfo(req);
     const page = parseInt(req.query.page as string) || 1;
@@ -108,7 +107,7 @@ router.get('/ledgers', async (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
-router.get('/ledgers/:id', async (req: AuthenticatedRequest, res: Response) => {
+router.get('/ledgers/:id', async (req: Request, res: Response) => {
   try {
     const { role } = getAuthInfo(req);
     const detail = await ledgerService.getLedgerDetail(req.params.id, role);
@@ -151,7 +150,7 @@ router.get('/report/summary', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/export/ledgers', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/export/ledgers', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const { status, hasSyncIssue } = req.body;
@@ -162,7 +161,7 @@ router.post('/export/ledgers', async (req: AuthenticatedRequest, res: Response) 
   }
 });
 
-router.post('/export/ledgers/:id', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/export/ledgers/:id', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const filePath = await exportService.exportLedgerDetailToCSV(req.params.id, operator, role);
@@ -172,7 +171,7 @@ router.post('/export/ledgers/:id', async (req: AuthenticatedRequest, res: Respon
   }
 });
 
-router.post('/export/failed-records', async (req: AuthenticatedRequest, res: Response) => {
+router.post('/export/failed-records', async (req: Request, res: Response) => {
   try {
     const { operator, role } = getAuthInfo(req);
     const filePath = await exportService.exportFailedRecordsToCSV(operator, role);
