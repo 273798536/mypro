@@ -181,6 +181,25 @@ curl -s -X POST "$BASE_URL/api/ledgers/status-transition" \
 sleep 1
 
 echo ""
+echo "=== 9.1 验证只读审计状态下不可修改 ==="
+echo "操作员尝试修改只读台账（应返回403）:"
+curl -s -X PUT "$BASE_URL/api/ledgers/$LEDGER_ID" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPERATOR_TOKEN" \
+  -d '{
+    "material_name": "审计后仍可改",
+    "operator": "operator_01",
+    "change_reason": "测试只读状态"
+  }' | python3 -m json.tool
+sleep 1
+
+echo ""
+echo "验证台账数据未被修改:"
+curl -s "$BASE_URL/api/ledgers/$LEDGER_ID" \
+  -H "Authorization: Bearer $AUDITOR_TOKEN" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'材料名: {d[\"material_name\"]}, 状态: {d[\"status\"]}')"
+sleep 1
+
+echo ""
 echo "=== 10. 查看状态流转历史 ==="
 curl -s "$BASE_URL/api/ledgers/$LEDGER_ID/status-history" \
   -H "Authorization: Bearer $AUDITOR_TOKEN" | python3 -m json.tool
@@ -304,7 +323,20 @@ FAILED_TASK=$(curl -s -X POST "$BASE_URL/api/tasks/" \
     "task_type": "sync_batch",
     "batch_no": "BATCH-FAILED-001",
     "sync_strategy": "追加",
-    "payload": {"batch_no": "BATCH-FAILED-001", "materials": [], "sync_strategy": "追加", "operator": "operator_01"},
+    "payload": {
+      "batch_no": "BATCH-FAILED-001",
+      "materials": [
+        {
+          "material_name": "测试失败材料",
+          "material_code": "FAILED-001",
+          "quantity": 10,
+          "unit": "个",
+          "source": "派工单",
+          "created_by": "operator_01"
+        }
+      ],
+      "sync_strategy": "追加"
+    },
     "max_retries": 3
   }')
 echo "$FAILED_TASK" | python3 -m json.tool

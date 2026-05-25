@@ -259,6 +259,20 @@ async def mark_task_manual(
     return task
 
 
+@app.post("/api/tasks/{task_id}/execute", response_model=AsyncTaskResponse)
+async def execute_task(
+    task_id: int,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(require_roles(Role.ADMIN, Role.OPERATOR))
+):
+    task = await AsyncTaskService.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    background_tasks.add_task(AsyncTaskService.process_task, db, task.id)
+    return task
+
+
 @app.post("/api/export/")
 async def export_data(
     request: ExportRequest,

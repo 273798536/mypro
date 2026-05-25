@@ -63,6 +63,13 @@ class MaterialLedgerService:
         return True
 
     @staticmethod
+    def check_editable(ledger: MaterialLedger) -> bool:
+        return ledger.status not in [
+            MaterialStatus.AUDIT.value,
+            MaterialStatus.EXPORTED.value
+        ]
+
+    @staticmethod
     async def update_ledger(
         db: AsyncSession,
         ledger_id: int,
@@ -73,6 +80,9 @@ class MaterialLedgerService:
         ledger = await MaterialLedgerService.get_ledger(db, ledger_id)
         if not ledger:
             return None
+
+        if not MaterialLedgerService.check_editable(ledger):
+            raise PermissionError(f"台账处于{ledger.status}状态，不可修改")
 
         if user_role and not MaterialLedgerService.check_site_permission(ledger, user_role, user_site):
             raise PermissionError("无权修改其他站点数据")
@@ -151,9 +161,14 @@ class MaterialLedgerService:
                         existing = existing_map[material_data.material_code]
                         update_data = MaterialLedgerUpdate(
                             **material_data.model_dump(exclude_unset=True),
-                            change_reason=f"批次同步覆盖 - {request.batch_no}"
+                            change_reason=f"批次同步覆盖 - {request.batch_no}",
+                            operator=request.operator
                         )
-                        await MaterialLedgerService.update_ledger(db, existing.id, update_data)
+                        await MaterialLedgerService.update_ledger(
+                            db, existing.id, update_data,
+                            user_role=request.operator_role.value if hasattr(request, 'operator_role') else None,
+                            user_site=request.operator_site if hasattr(request, 'operator_site') else None
+                        )
                         result.updated += 1
                     else:
                         await MaterialLedgerService.create_ledger(db, material_data)
