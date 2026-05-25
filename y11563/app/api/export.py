@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.common import ExportRequest, FreezeRequest
 from app.services.export import ExportService
-from app.api.deps import require_permission
+from app.api.deps import require_permission, acquire_lock
 
 router = APIRouter()
 
@@ -38,24 +38,36 @@ def export_excel(
 def freeze_snapshot(
     request: FreezeRequest,
     db: Session = Depends(get_db),
+    lock_ctx: dict = acquire_lock("export"),
     current_user: dict = require_permission("export:freeze", "冻结导出快照"),
 ):
     service = ExportService(db)
-    snapshot = service.freeze_snapshot(
-        snapshot_no=request.snapshot_no,
-        frozen_by=request.frozen_by,
-        remarks=request.remarks,
-    )
-    if not snapshot:
-        raise HTTPException(status_code=404, detail="快照不存在")
-    return {
-        "status": "success",
-        "snapshot_no": snapshot.snapshot_no,
-        "is_frozen": snapshot.is_frozen,
-        "frozen_at": snapshot.frozen_at,
-        "frozen_by": snapshot.frozen_by,
-        "authorized_by": current_user,
-    }
+    lock_service = lock_ctx["lock_service"]
+    user_id = lock_ctx["user_id"]
+
+    if not lock_service.acquire_lock("export", request.snapshot_no, user_id):
+        holder = lock_service.is_locked("export", request.snapshot_no)
+        raise HTTPException(status_code=409, detail=f"导出快照 {request.snapshot_no} 正在被 {holder} 处理，请稍后重试")
+
+    try:
+        snapshot = service.freeze_snapshot(
+            snapshot_no=request.snapshot_no,
+            frozen_by=request.frozen_by,
+            remarks=request.remarks,
+        )
+        if not snapshot:
+            raise HTTPException(status_code=404, detail="快照不存在")
+        return {
+            "status": "success",
+            "snapshot_no": snapshot.snapshot_no,
+            "is_frozen": snapshot.is_frozen,
+            "frozen_at": snapshot.frozen_at,
+            "frozen_by": snapshot.frozen_by,
+            "authorized_by": current_user,
+            "locked_by": user_id,
+        }
+    finally:
+        lock_service.release_lock("export", request.snapshot_no)
 
 
 @router.get("/snapshot/{snapshot_no}")

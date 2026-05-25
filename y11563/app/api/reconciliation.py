@@ -8,7 +8,7 @@ from app.schemas.common import (
     ManualAdjustRequest,
 )
 from app.services.reconciliation import ReconciliationService
-from app.api.deps import require_permission
+from app.api.deps import require_permission, acquire_lock
 
 router = APIRouter()
 
@@ -74,19 +74,30 @@ def get_unmatched(
 def manual_adjust(
     request: ManualAdjustRequest,
     db: Session = Depends(get_db),
+    lock_ctx: dict = acquire_lock("reconciliation"),
     current_user: dict = require_permission("reconciliation:adjust", "对账人工改判"),
 ):
     service = ReconciliationService(db)
-    result = service.manual_adjust(
-        reconciliation_no=request.reconciliation_no,
-        is_matched=request.is_matched,
-        adjust_reason=request.adjust_reason,
-        adjusted_by=request.adjusted_by,
-        remarks=request.remarks,
-    )
-    if not result:
-        raise HTTPException(status_code=404, detail="对账记录不存在")
-    return {"status": "success", "result": result, "authorized_by": current_user}
+    lock_service = lock_ctx["lock_service"]
+    user_id = lock_ctx["user_id"]
+
+    if not lock_service.acquire_lock("reconciliation", request.reconciliation_no, user_id):
+        holder = lock_service.is_locked("reconciliation", request.reconciliation_no)
+        raise HTTPException(status_code=409, detail=f"对账记录 {request.reconciliation_no} 正在被 {holder} 处理，请稍后重试")
+
+    try:
+        result = service.manual_adjust(
+            reconciliation_no=request.reconciliation_no,
+            is_matched=request.is_matched,
+            adjust_reason=request.adjust_reason,
+            adjusted_by=request.adjusted_by,
+            remarks=request.remarks,
+        )
+        if not result:
+            raise HTTPException(status_code=404, detail="对账记录不存在")
+        return {"status": "success", "result": result, "authorized_by": current_user, "locked_by": user_id}
+    finally:
+        lock_service.release_lock("reconciliation", request.reconciliation_no)
 
 
 @router.get("/{reconciliation_no}")

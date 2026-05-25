@@ -42,7 +42,8 @@ def health():
 @click.option("-f", "--file", help="JSON数据文件")
 @click.option("-c", "--count", type=int, default=5, help="生成数据数量")
 @click.option("-b", "--batch", help="批次号")
-def ingest(file, count, batch):
+@click.option("-r", "--role", default="reception", help="角色: admin/finance/reception/auditor")
+def ingest(file, count, batch, role):
     """导入数据（入住单、押金、换房记录）"""
     if file:
         with open(file, "r", encoding="utf-8") as f:
@@ -57,21 +58,27 @@ def ingest(file, count, batch):
 
     batch_no = data.get("batch_no", "unknown")
     console.print(f"[blue]导入批次: {batch_no}[/blue]")
+    console.print(f"[blue]使用角色: {role}[/blue]")
 
+    headers = {"X-User-Role": role, "X-User-Id": "cli_user"}
     start = time.time()
 
     console.print(f"  导入入住单: {len(data['checkins'])} 条...")
-    resp = requests.post(f"{BASE_URL}/checkin/batch", json=data["checkins"], params={"batch_no": batch_no})
+    resp = requests.post(f"{BASE_URL}/checkin/batch", json=data["checkins"], params={"batch_no": batch_no}, headers=headers)
     checkin_result = resp.json()
     console.print(f"    成功: {checkin_result['success_count']}, 失败: {checkin_result['failed_count']}")
+    if checkin_result.get("retry_stats"):
+        console.print(f"    重试统计: {checkin_result['retry_stats']}")
+    if checkin_result.get("dlq_stats"):
+        console.print(f"    死信统计: {checkin_result['dlq_stats']}")
 
     console.print(f"  导入押金流水: {len(data['deposits'])} 条...")
-    resp = requests.post(f"{BASE_URL}/deposit/batch", json=data["deposits"], params={"batch_no": batch_no})
+    resp = requests.post(f"{BASE_URL}/deposit/batch", json=data["deposits"], params={"batch_no": batch_no}, headers=headers)
     deposit_result = resp.json()
     console.print(f"    成功: {deposit_result['success_count']}, 失败: {deposit_result['failed_count']}")
 
     console.print(f"  导入换房记录: {len(data['room_changes'])} 条...")
-    resp = requests.post(f"{BASE_URL}/room-change/batch", json=data["room_changes"], params={"batch_no": batch_no})
+    resp = requests.post(f"{BASE_URL}/room-change/batch", json=data["room_changes"], params={"batch_no": batch_no}, headers=headers)
     change_result = resp.json()
     console.print(f"    成功: {change_result['success_count']}, 失败: {change_result['failed_count']}")
 
@@ -189,21 +196,23 @@ def audit(batch):
 @cli.command()
 @click.argument("record_type")
 @click.argument("record_id")
-def history(record_type, record_id):
+@click.option("-r", "--role", default="auditor", help="角色: admin/finance/reception/auditor")
+def history(record_type, record_id, role):
     """查看单条记录的历史变更"""
-    resp = requests.get(f"{BASE_URL}/audit/history/{record_type}/{record_id}")
+    headers = {"X-User-Role": role, "X-User-Id": "cli_user"}
+    resp = requests.get(f"{BASE_URL}/audit/history/{record_type}/{record_id}", headers=headers)
     result = resp.json()
 
     console.print(Panel(f"[bold]{record_type} - {record_id}[/bold]"))
 
     for log in result["history"]:
         console.print(f"\n[blue]{log['operation_time']}[/blue] - {log['operation']} by {log['operator']}")
-    if log.get("change_reason"):
-        console.print(f"  原因: {log['change_reason']}")
-    if log.get("before_data"):
-        console.print(f"  变更前: {json.dumps(log['before_data'], ensure_ascii=False)[:100]}...")
-    if log.get("after_data"):
-        console.print(f"  变更后: {json.dumps(log['after_data'], ensure_ascii=False)[:100]}...")
+        if log.get("change_reason"):
+            console.print(f"  原因: {log['change_reason']}")
+        if log.get("before_data"):
+            console.print(f"  变更前: {json.dumps(log['before_data'], ensure_ascii=False)[:100]}...")
+        if log.get("after_data"):
+            console.print(f"  变更后: {json.dumps(log['after_data'], ensure_ascii=False)[:100]}...")
 
 
 @cli.command()

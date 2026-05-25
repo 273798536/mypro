@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.sms import SmsCreate, SmsResponse, SmsUpdate
 from app.models.sms_record import SmsRecord
-from app.api.deps import require_permission
+from app.api.deps import require_permission, acquire_lock
 
 router = APIRouter()
 
@@ -13,21 +13,32 @@ router = APIRouter()
 def create_sms(
     data: SmsCreate,
     db: Session = Depends(get_db),
+    lock_ctx: dict = acquire_lock("sms"),
     current_user: dict = require_permission("sms:write", "上传短信记录"),
 ):
-    existing = db.query(SmsRecord).filter(SmsRecord.sms_no == data.sms_no).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="短信记录已存在")
+    service_lock = lock_ctx["lock_service"]
+    user_id = lock_ctx["user_id"]
 
-    record = SmsRecord(
-        **data.model_dump(exclude_unset=True),
-        created_by=data.operator or "system",
-        updated_by=data.operator or "system",
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
-    return record
+    if not service_lock.acquire_lock("sms", data.sms_no, user_id):
+        holder = service_lock.is_locked("sms", data.sms_no)
+        raise HTTPException(status_code=409, detail=f"短信记录 {data.sms_no} 正在被 {holder} 处理，请稍后重试")
+
+    try:
+        existing = db.query(SmsRecord).filter(SmsRecord.sms_no == data.sms_no).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="短信记录已存在")
+
+        record = SmsRecord(
+            **data.model_dump(exclude_unset=True),
+            created_by=data.operator or "system",
+            updated_by=data.operator or "system",
+        )
+        db.add(record)
+        db.commit()
+        db.refresh(record)
+        return record
+    finally:
+        service_lock.release_lock("sms", data.sms_no)
 
 
 @router.get("/{sms_no}", response_model=SmsResponse)
@@ -64,17 +75,28 @@ def update_sms(
     sms_no: str,
     data: SmsUpdate,
     db: Session = Depends(get_db),
+    lock_ctx: dict = acquire_lock("sms"),
     current_user: dict = require_permission("sms:write", "更新短信记录"),
 ):
-    record = db.query(SmsRecord).filter(SmsRecord.sms_no == sms_no).first()
-    if not record:
-        raise HTTPException(status_code=404, detail="短信记录不存在")
+    service_lock = lock_ctx["lock_service"]
+    user_id = lock_ctx["user_id"]
 
-    for key, value in data.model_dump(exclude_unset=True).items():
-        if hasattr(record, key) and key != "updated_by":
-            setattr(record, key, value)
-    record.updated_by = data.updated_by
+    if not service_lock.acquire_lock("sms", sms_no, user_id):
+        holder = service_lock.is_locked("sms", sms_no)
+        raise HTTPException(status_code=409, detail=f"短信记录 {sms_no} 正在被 {holder} 处理，请稍后重试")
 
-    db.commit()
-    db.refresh(record)
-    return {"status": "success", "record": record}
+    try:
+        record = db.query(SmsRecord).filter(SmsRecord.sms_no == sms_no).first()
+        if not record:
+            raise HTTPException(status_code=404, detail="短信记录不存在")
+
+        for key, value in data.model_dump(exclude_unset=True).items():
+            if hasattr(record, key) and key != "updated_by":
+                setattr(record, key, value)
+        record.updated_by = data.updated_by
+
+        db.commit()
+        db.refresh(record)
+        return {"status": "success", "record": record, "locked_by": user_id}
+    finally:
+        service_lock.release_lock("sms", sms_no)

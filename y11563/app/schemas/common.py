@@ -11,6 +11,8 @@ class BatchResponse(BaseModel):
     failed_details: List[Dict[str, Any]] = []
     process_time: float
     idempotency_strategy: str
+    retry_stats: Optional[Dict[str, Any]] = None
+    dlq_stats: Optional[Dict[str, Any]] = None
 
 
 class ReconciliationRequest(BaseModel):

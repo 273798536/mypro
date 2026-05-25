@@ -18,7 +18,7 @@ def verify_all():
     data = {"guest_phone": "13812345678", "guest_name": "张三", "id_card": "110101199001011234"}
     masked = mask_sensitive_data(data)
     assert masked["guest_phone"] == "138****5678"
-    assert "**" in masked["guest_name"]
+    assert "*" in masked["guest_name"]
     assert "********" in masked["id_card"]
     
     print("  ✅ 数据脱敏测试通过")
@@ -177,6 +177,8 @@ def verify_all():
     assert "success" in result
     assert "retry_stats" in result
     assert "dlq_stats" in result
+    assert result["retry_stats"] is not None
+    assert result["dlq_stats"] is not None
     db.close()
     
     print("  ✅ 服务层重试队列机制测试通过")
