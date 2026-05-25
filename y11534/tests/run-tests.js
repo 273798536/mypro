@@ -367,11 +367,13 @@ const runTests = async () => {
     
     const forecastImportRes = await request('POST', '/api/forecasts/batch', entryToken, {
       records: [{
-        forecast_no: getUniqueId('TEST_PERM_FC'),
         branch: '朝阳支行',
         forecast_date: '2026-07-01',
-        customer_count: 100,
-        transaction_count: 200
+        window_count: 3,
+        expected_customers: 100,
+        expected_transactions: 200,
+        peak_hours: '09:00-11:00,14:00-16:00',
+        remarks: '月度业务预测'
       }],
       duplicateStrategy: 'ignore'
     });
@@ -381,9 +383,15 @@ const runTests = async () => {
       const fcDetail = await request('GET', `/api/forecasts/${fcId}`, entryToken);
       const fcFields = Object.keys(fcDetail.body);
       
+      const entryCanSeeBusinessFields = fcFields.includes('expected_customers') && 
+                                        fcFields.includes('expected_transactions') &&
+                                        fcFields.includes('remarks');
+      logTest('录入员可以查看预测业务字段', entryCanSeeBusinessFields);
+      
       const entryCannotSeeFcSensitive = !fcFields.includes('dirty_details') && 
                                          !fcFields.includes('created_by') && 
-                                         !fcFields.includes('original_data');
+                                         !fcFields.includes('original_data') &&
+                                         !fcFields.includes('processing_opinion');
       logTest('录入员无法查看业务量预测敏感字段', entryCannotSeeFcSensitive);
     }
     
@@ -527,6 +535,40 @@ const runTests = async () => {
     
   } catch (e) {
     logTest('数据一致性验证', false, e.message);
+  }
+
+  console.log('\n--- 10. 导出接口测试 ---\n');
+  
+  try {
+    const exportSchedule = await request('POST', '/api/schedules/export', entryToken, {
+      filters: {},
+      maskSensitive: true
+    });
+    logTest('录入员可以导出排班数据', exportSchedule.statusCode === 200 && 
+                                          exportSchedule.body.type === 'Buffer' || 
+                                          Buffer.isBuffer(exportSchedule.body) ||
+                                          (typeof exportSchedule.body === 'string' && exportSchedule.body.length > 0));
+    
+    const exportBills = await request('POST', '/api/bills/export', entryToken, {
+      filters: {},
+      maskSensitive: true
+    });
+    logTest('录入员可以导出供应商对账单', exportBills.statusCode === 200);
+    
+    const exportForecast = await request('POST', '/api/forecasts/export', entryToken, {
+      filters: {},
+      maskSensitive: true
+    });
+    logTest('录入员可以导出业务量预测', exportForecast.statusCode === 200);
+    
+    const adminExport = await request('POST', '/api/bills/export', adminToken, {
+      filters: {},
+      maskSensitive: true
+    });
+    logTest('主管可以导出供应商对账单', adminExport.statusCode === 200);
+    
+  } catch (e) {
+    logTest('导出接口', false, e.message);
   }
 
   console.log('\n========================================');
