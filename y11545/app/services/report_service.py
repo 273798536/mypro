@@ -15,6 +15,7 @@ class ReportService:
     def get_batch_report(db: Session, batch: Batch) -> BatchReportResponse:
         items = []
         status_before_freeze_map = {}
+        freeze_time_map = {}
         manual_reasons = {}
         
         if batch.is_frozen or batch.frozen_at:
@@ -24,6 +25,7 @@ class ReportService:
             ).all()
             for snap in freeze_snapshots:
                 status_before_freeze_map[snap.material_id] = snap.to_status
+                freeze_time_map[snap.material_id] = snap.changed_at
         
         manual_state_records = db.query(StateRecord).filter(
             StateRecord.batch_id == batch.id,
@@ -67,13 +69,18 @@ class ReportService:
             status_after = None
             
             if status_before:
-                post_freeze_states = db.query(StateRecord).filter(
-                    StateRecord.batch_id == batch.id,
-                    StateRecord.material_id == material.id,
-                    StateRecord.changed_at >= batch.frozen_at
-                ).order_by(StateRecord.changed_at.asc()).all()
-                if post_freeze_states:
-                    status_after = post_freeze_states[-1].to_status
+                freeze_time = freeze_time_map.get(material.id)
+                if freeze_time:
+                    freeze_time_str = freeze_time.strftime("%Y-%m-%d %H:%M:%S")
+                    from sqlalchemy import func, text
+                    post_freeze_states = db.query(StateRecord).filter(
+                        StateRecord.batch_id == batch.id,
+                        StateRecord.material_id == material.id,
+                        StateRecord.changed_at >= freeze_time_str,
+                        StateRecord.is_freeze_snapshot == False
+                    ).order_by(StateRecord.changed_at.asc()).all()
+                    if post_freeze_states:
+                        status_after = post_freeze_states[-1].to_status
             
             item = ReportItem(
                 material_code=material.material_code,

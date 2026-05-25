@@ -38,6 +38,7 @@ def main():
         ("python3 scripts/sample_data.py", "导入样例数据"),
         ("python3 scripts/demo_flow.py", "运行完整业务流程演示"),
         ("python3 scripts/verify_manual_reason.py", "验证项目经理报告人工理由"),
+        ("python3 scripts/verify_freeze_status.py", "验证冻结前后状态正确性"),
         ("python3 scripts/test_api.py", "验证所有API接口返回200"),
         ("python3 scripts/generate_reports.py", "生成Excel报告"),
     ]
