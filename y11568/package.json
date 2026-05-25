@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "verify": "node scripts/verify-core.js",
     "init-db": "node scripts/init-db.js",
     "import-sample": "node scripts/import-sample.js",
     "trigger-bad": "node scripts/trigger-bad-data.js",

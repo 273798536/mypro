@@ -42,6 +42,46 @@ node scripts/cli.js start
 
 服务运行在: http://127.0.0.1:50001
 
+### 端口受限环境下的验证
+
+如果运行 `npm start` 报 `EACCES` 或 `EPERM` 权限错误（沙箱环境常见），可直接验证核心业务逻辑（无需HTTP）：
+
+```bash
+# 运行核心功能验证
+npm run verify
+# 或
+node scripts/verify-core.js
+```
+
+该脚本会验证 15 项核心功能：
+- 数据库连接
+- 用户完整性与ID映射
+- 密码bcrypt验证
+- JWT认证机制
+- 工单归属正确性
+- 权限字段过滤（录入员/只读用户）
+- 数据校验规则
+- 完整链路数据完整性
+- 对账逻辑
+- 坏数据隔离
+- 操作日志差异计算
+- 路段合并分析
+- 导出汇总统计
+- 操作记录查询
+
+### 服务启动失败的解决方案
+
+```bash
+# 1. 手动指定端口
+PORT=12345 npm start
+
+# 2. 提升权限（需要系统密码）
+sudo npm start
+
+# 3. 使用功能验证模式（无需端口）
+npm run verify
+```
+
 ## 默认账号
 
 | 角色 | 用户名 | 密码 | 权限说明 |
@@ -250,31 +290,34 @@ npm install
 # 2. 完整演示（初始化+导入+坏数据+报告）
 node scripts/cli.js full-demo
 
-# 3. 启动服务
+# 3. 验证核心功能（推荐，无需HTTP）
+npm run verify
+
+# 4. 启动服务（可选，需要端口权限）
 npm start
 
-# 4. 用主管账号登录获取 token
+# 5. 用主管账号登录获取 token（需要HTTP服务正常运行）
 curl -X POST http://127.0.0.1:50001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"super_user","password":"super123"}'
 
-# 5. 查看工单列表
+# 6. 查看工单列表（需要HTTP服务正常运行）
 curl http://127.0.0.1:50001/api/work-orders \
   -H "Authorization: Bearer <token>"
 
-# 6. 查看坏数据
+# 7. 查看坏数据（需要HTTP服务正常运行）
 curl http://127.0.0.1:50001/api/bad-data \
   -H "Authorization: Bearer <token>"
 
-# 7. 对账检查
+# 8. 对账检查（需要HTTP服务正常运行）
 curl -X POST http://127.0.0.1:50001/api/reconciliation/check/1 \
   -H "Authorization: Bearer <token>"
 
-# 8. 查看操作日志
+# 9. 查看操作日志（需要HTTP服务正常运行）
 curl http://127.0.0.1:50001/api/replay/logs \
   -H "Authorization: Bearer <token>"
 
-# 9. 导出汇总报告
+# 10. 导出汇总报告（需要HTTP服务正常运行）
 curl http://127.0.0.1:50001/api/export/summary \
   -H "Authorization: Bearer <token>"
 ```
