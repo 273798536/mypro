@@ -318,12 +318,22 @@ python cli.py test-freeze --batch-id 1
 
 **状态冻结后能否被错误修改？**
 
-不能。系统在三个层面做了保护：
-1. API 层检查 - 所有写入接口先检查批次状态
-2. 状态机校验 - 状态转移有严格规则
-3. 操作日志 - 所有尝试都留下记录
+不能。系统在四个层面做了严格保护：
 
-运行 `python cli.py test-freeze --batch-id 1` 可自动验证。
+1. **状态机层** - `utils.py:75` FROZEN/COMPLETED 状态转移列表为空，无法转回任何状态
+2. **状态转移层** - `batches.py:120-124` 状态转移前检查当前状态，FROZEN/COMPLETED 批次不可变 (immutable)
+3. **数据写入层** - 所有写入接口（创建/修改/导入）先检查批次状态
+4. **操作日志层** - 所有尝试都留下记录
+
+**已修复的安全漏洞：**
+
+| 漏洞 | 原代码 | 修复 |
+|------|--------|------|
+| FROZEN 可转回 IN_PROGRESS | `utils.py:75` `FROZEN: [IN_PROGRESS]` | `FROZEN: []` |
+| 只读用户可解冻批次 | `batches.py:117` 只限制冻结权限 | `batches.py:120-124` 检查当前状态 |
+| 冻结后可导入数据 | `imports.py` 无检查 | `imports.py:31-32` 导入前检查批次状态 |
+
+运行 `python cli.py test-freeze --batch-id 1` 可自动验证 5 项安全测试。
 
 ## 退出码说明
 

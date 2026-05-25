@@ -206,6 +206,40 @@ def e2e_test():
     else:
         print_fail(f"✗ 冻结保护失效: {test_update.status_code}")
     
+    print_info("额外验证: 冻结状态无法转回 in_progress...")
+    
+    test_unfreeze = session.post(f"{BASE_URL}/batches/{batch1_id}/transition",
+                                headers=admin_headers, json={"target_status": "in_progress"})
+    
+    if test_unfreeze.status_code == 400 and "immutable" in test_unfreeze.text:
+        print_pass("✓ 冻结状态无法转回 in_progress - 状态机保护生效")
+    else:
+        print_fail(f"✗ 状态机保护失效: {test_unfreeze.status_code} - {test_unfreeze.text}")
+    
+    print_info("额外验证: 只读用户无法修改冻结批次状态...")
+    
+    test_viewer_unfreeze = session.post(f"{BASE_URL}/batches/{batch1_id}/transition",
+                                       headers=viewer_headers, json={"target_status": "in_progress"})
+    
+    if test_viewer_unfreeze.status_code in [400, 403]:
+        print_pass("✓ 只读用户无法修改冻结批次状态 - 权限保护生效")
+    else:
+        print_fail(f"✗ 权限保护失效: {test_viewer_unfreeze.status_code}")
+    
+    print_info("额外验证: 冻结批次无法导入数据...")
+    
+    import_data = "material_code,material_name,quantity\nHACK-IMP,恶意导入,1\n"
+    test_import = session.post(
+        f"{BASE_URL}/imports/material?batch_id={batch1_id}",
+        headers=admin_headers,
+        files={"file": ("test.csv", import_data, "text/csv")}
+    )
+    
+    if test_import.status_code == 400 and "frozen" in test_import.text:
+        print_pass("✓ 冻结批次无法导入数据 - 导入保护生效")
+    else:
+        print_fail(f"✗ 导入保护失效: {test_import.status_code} - {test_import.text}")
+    
     print_step(step, "测试8: 权限控制 - 不同角色可见字段和操作")
     step += 1
     
@@ -280,6 +314,9 @@ def e2e_test():
     print("\n关键验证点总结:")
     print("  ✓ 跨日/跨批次边界 - 两个独立批次，数据隔离")
     print("  ✓ 状态冻结 - 冻结后无法修改，防止篡改")
+    print("  ✓ 状态机安全 - FROZEN 状态无法转回 IN_PROGRESS")
+    print("  ✓ 状态转移权限 - 只读用户无法修改冻结批次状态")
+    print("  ✓ 导入安全 - 冻结批次无法导入数据")
     print("  ✓ 权限控制 - 四种角色各有不同操作权限")
     print("  ✓ 责任追踪 - 借用记录关联到人")
     print("  ✓ 对账异常 - 自动发现账实不符")
@@ -287,9 +324,13 @@ def e2e_test():
     print("  ✓ 操作审计 - 所有修改留下日志")
     print("  ✓ 报表导出 - 完整报表支持导出")
     print("\n项目经理关注:")
-    print(f"  - HTTP请求数: ~30 次 (创建-对账-导出 全流程)")
+    print(f"  - HTTP请求数: ~35 次 (创建-对账-导出-安全验证 全流程)")
     print(f"  - 本地持久化: 所有记录在SQLite数据库")
     print(f"  - 命令脚本: material-cli 支持所有操作")
+    print("\n安全修复验证:")
+    print("  1. utils.py: FROZEN 状态转移列表为空，无法转回任何状态")
+    print("  2. batches.py: 状态转移前检查当前状态是否为 FROZEN/COMPLETED")
+    print("  3. imports.py: 导入前检查批次是否冻结")
     print("\n测试用例文件: scripts/e2e_test.py")
     
     return 0

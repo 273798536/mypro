@@ -117,6 +117,12 @@ async def transition_batch_status(
     if target_status in [BatchStatus.FROZEN, BatchStatus.COMPLETED] and not can_freeze(current_user):
         raise HTTPException(status_code=403, detail="Only supervisor can freeze or complete batch")
     
+    if db_batch.status in [BatchStatus.FROZEN, BatchStatus.COMPLETED]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot transition from {db_batch.status.value}. Frozen/completed batches are immutable."
+        )
+    
     if not can_transition_batch_status(db_batch.status, target_status):
         raise HTTPException(
             status_code=400,

@@ -10,7 +10,7 @@ from ..models import (
     Material, LogisticsReceipt, BorrowRecord, ScanRecord, RecordStatus
 )
 from ..schemas import ImportTaskResponse, ImportFailureResponse
-from ..utils import log_operation, generate_no
+from ..utils import log_operation, generate_no, is_batch_frozen
 
 router = APIRouter(prefix="/imports", tags=["数据导入"])
 
@@ -27,6 +27,9 @@ async def import_data(
     valid_types = ["material", "logistics", "borrow", "scan"]
     if import_type not in valid_types:
         raise HTTPException(status_code=400, detail=f"Invalid import type. Must be one of {valid_types}")
+    
+    if is_batch_frozen(db, batch_id):
+        raise HTTPException(status_code=400, detail="Cannot import data to frozen or completed batch")
     
     task_no = generate_no("IMP")
     task = ImportTask(

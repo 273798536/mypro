@@ -72,7 +72,7 @@ BATCH_STATUS_TRANSITIONS = {
     BatchStatus.DRAFT: [BatchStatus.IN_PROGRESS, BatchStatus.FROZEN],
     BatchStatus.IN_PROGRESS: [BatchStatus.REVIEWING, BatchStatus.FROZEN],
     BatchStatus.REVIEWING: [BatchStatus.IN_PROGRESS, BatchStatus.FROZEN, BatchStatus.COMPLETED],
-    BatchStatus.FROZEN: [BatchStatus.IN_PROGRESS],
+    BatchStatus.FROZEN: [],
     BatchStatus.COMPLETED: []
 }
 

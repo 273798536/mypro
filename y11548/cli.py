@@ -439,7 +439,31 @@ def test_freeze(batch_id):
             else:
                 click.secho(f"  ✗ 失败 - 错误地允许修改 (状态码: {test_mat_update.status_code})", fg="red")
         
+        click.echo("\n测试4: 尝试将冻结状态转回 in_progress...")
+        test_unfreeze = requests.post(f"http://localhost:8000/batches/{batch_id}/transition", 
+                                       headers=headers, json={"target_status": "in_progress"})
+        if test_unfreeze.status_code == 400 and "immutable" in test_unfreeze.text:
+            click.secho(f"  ✓ 通过 - 状态机拒绝转回 (状态码: {test_unfreeze.status_code})", fg="green")
+        else:
+            click.secho(f"  ✗ 失败 - 错误地允许状态转移 (状态码: {test_unfreeze.status_code})", fg="red")
+        
+        click.echo("\n测试5: 尝试导入数据到冻结批次...")
+        import_data = "material_code,material_name,quantity\nHACK-IMP,恶意导入,1\n"
+        test_import = requests.post(
+            f"http://localhost:8000/imports/material?batch_id={batch_id}",
+            headers=headers,
+            files={"file": ("test.csv", import_data, "text/csv")}
+        )
+        if test_import.status_code == 400 and "frozen" in test_import.text:
+            click.secho(f"  ✓ 通过 - 拒绝导入 (状态码: {test_import.status_code})", fg="green")
+        else:
+            click.secho(f"  ✗ 失败 - 错误地允许导入 (状态码: {test_import.status_code})", fg="red")
+        
         click.echo("\n冻结保护测试完成！")
+        click.echo("\n安全验证:")
+        click.echo("  1. 状态机: FROZEN 状态转移列表为空，无法转回任何状态")
+        click.echo("  2. 状态转移: 冻结/完成批次不可变 (immutable)")
+        click.echo("  3. 数据导入: 冻结批次拒绝导入")
         sys.exit(EXIT_SUCCESS)
         
     except requests.exceptions.ConnectionError:
