@@ -28,6 +28,27 @@ function recordFailure(dataSource, rawData, errorMessage, appointmentNo, batchNo
   `);
     stmt.run((0, uuid_1.v4)(), dataSource, rawData, errorMessage, appointmentNo, batchNo, now());
 }
+function recordDataModificationAttempt(ledgerId, dataSource, rawData, operatorId, operatorName) {
+    const db = (0, connection_1.getDatabase)();
+    const logId = (0, uuid_1.v4)();
+    const sensitiveFields = JSON.stringify(['attempted_modification_after_audit']);
+    db.prepare(`
+    INSERT INTO status_change_logs (
+      id, ledger_id, from_status, to_status, operator_id, operator_name,
+      change_reason, sensitive_fields, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(logId, ledgerId, types_1.LedgerStatus.AUDIT_ONLY, types_1.LedgerStatus.AUDIT_ONLY, operatorId, operatorName, `尝试在只读审计状态下修改${dataSource}数据，已拒绝`, sensitiveFields, now());
+}
+function assertNotAuditOnly(ledger, dataSource, rawData, operatorId, operatorName) {
+    if (ledger.status === types_1.LedgerStatus.AUDIT_ONLY) {
+        const errorMessage = `台账已进入只读审计状态(audit_only)，无法修改${dataSource}数据`;
+        recordFailure(dataSource, rawData, errorMessage, ledger.appointmentNo, ledger.batchNo);
+        if (operatorId && operatorName) {
+            recordDataModificationAttempt(ledger.id, dataSource, rawData, operatorId, operatorName);
+        }
+        throw new Error(errorMessage);
+    }
+}
 function importAppointmentOrder(input) {
     const db = (0, connection_1.getDatabase)();
     const rawData = JSON.stringify(input);
@@ -39,6 +60,9 @@ function importAppointmentOrder(input) {
             .prepare('SELECT * FROM appointment_orders WHERE appointment_no = ? AND batch_no = ?')
             .get(input.appointmentNo, input.batchNo));
         const isNew = !existingLedger;
+        if (!isNew) {
+            assertNotAuditOnly(existingLedger, types_1.DataSource.APPOINTMENT, rawData, input.operatorId, input.operatorName);
+        }
         let ledgerId;
         if (isNew) {
             ledgerId = (0, uuid_1.v4)();
@@ -91,6 +115,7 @@ function importTechnicianLocation(input) {
         if (!ledger) {
             throw new Error('台账记录不存在，请先导入预约单');
         }
+        assertNotAuditOnly(ledger, types_1.DataSource.TECHNICIAN_LOCATION, rawData, input.technicianId);
         const existing = (0, caseConvert_1.snakeToCamel)(db
             .prepare('SELECT * FROM technician_locations WHERE appointment_no = ? AND batch_no = ?')
             .get(input.appointmentNo, input.batchNo));
@@ -132,6 +157,7 @@ function importUserReview(input) {
         if (!ledger) {
             throw new Error('台账记录不存在，请先导入预约单');
         }
+        assertNotAuditOnly(ledger, types_1.DataSource.USER_REVIEW, rawData);
         const existing = (0, caseConvert_1.snakeToCamel)(db
             .prepare('SELECT * FROM user_reviews WHERE appointment_no = ? AND batch_no = ?')
             .get(input.appointmentNo, input.batchNo));
@@ -172,6 +198,7 @@ function importSecondConfirmation(input) {
         if (!ledger) {
             throw new Error('台账记录不存在，请先导入预约单');
         }
+        assertNotAuditOnly(ledger, types_1.DataSource.SECOND_CONFIRMATION, rawData, input.operatorId, input.operatorName);
         const existing = (0, caseConvert_1.snakeToCamel)(db
             .prepare('SELECT * FROM second_confirmations WHERE appointment_no = ? AND batch_no = ?')
             .get(input.appointmentNo, input.batchNo));
