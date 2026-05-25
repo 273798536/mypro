@@ -406,7 +406,7 @@ def _convert_field_value(record, field_name: str, value: str):
 
 @cli.command()
 @click.option("--batch-id", type=int, help="指定批次ID")
-@click.option("--source", type=click.Choice(["rework", "inspection", "shift", "supplier"]), help="指定数据源")
+@click.option("--source", type=click.Choice(["rework", "inspection", "shift", "supplier", "approval"]), help="指定数据源")
 @click.option("--format", type=click.Choice(["table", "json", "csv"]), default="table", help="输出格式")
 @click.option("--show-failed/--no-failed", default=True, help="显示失败清单")
 def report(batch_id: Optional[int], source: Optional[str], format: str, show_failed: bool):
@@ -414,6 +414,8 @@ def report(batch_id: Optional[int], source: Optional[str], format: str, show_fai
     with get_db() as db:
         if source == "rework" or source is None:
             _show_rework_report(db, batch_id, show_failed)
+        if source == "approval":
+            _show_approval_report(db, batch_id, show_failed)
         if source == "inspection" or (source is None and show_failed):
             _show_summary_report(db, batch_id)
 
@@ -467,6 +469,52 @@ def _show_rework_report(db, batch_id: Optional[int], show_failed: bool):
         console.print(fail_table)
 
 
+def _show_approval_report(db, batch_id: Optional[int], show_failed: bool):
+    query = db.query(ApprovalRecord)
+    if batch_id:
+        query = query.filter(ApprovalRecord.batch_id == batch_id)
+
+    all_records = query.all()
+    failed_records = [r for r in all_records if not r.is_valid]
+
+    table = Table(title="审批邮件清单（生产经理视图）")
+    table.add_column("原始行号", style="cyan")
+    table.add_column("邮件主题", style="blue")
+    table.add_column("审批类型", style="green")
+    table.add_column("关联序列号", style="yellow")
+    table.add_column("审批人", style="magenta")
+    table.add_column("审批结果", style="white")
+    table.add_column("状态", style="green")
+
+    for record in all_records:
+        status = "[green]✓[/green]" if record.is_valid else "[red]✗[/red]"
+        table.add_row(
+            str(record.original_row or "N/A"),
+            (record.email_subject or "")[:30],
+            record.approval_type or "",
+            record.related_serial or "",
+            record.approver or "",
+            record.approval_result or "",
+            status
+        )
+
+    console.print(table)
+
+    if show_failed and failed_records:
+        fail_table = Table(title="审批邮件失败清单")
+        fail_table.add_column("原始行号", style="cyan")
+        fail_table.add_column("邮件主题", style="blue")
+        fail_table.add_column("错误信息", style="red")
+
+        for record in failed_records:
+            fail_table.add_row(
+                str(record.original_row or "N/A"),
+                (record.email_subject or "")[:30],
+                record.validation_errors or ""
+            )
+        console.print(fail_table)
+
+
 def _show_summary_report(db, batch_id: Optional[int]):
     query = db.query(AsyncTask).filter(
         AsyncTask.status != TaskStatus.COMPLETED.value
@@ -488,7 +536,7 @@ def _show_summary_report(db, batch_id: Optional[int]):
 
 @cli.command()
 @click.option("--record-id", type=int, help="指定记录ID")
-@click.option("--source", type=click.Choice(["rework", "inspection", "shift", "supplier"]), help="数据源类型")
+@click.option("--source", type=click.Choice(["rework", "inspection", "shift", "supplier", "approval"]), help="数据源类型")
 @click.option("--operator", help="按操作者筛选")
 @click.option("--limit", type=int, default=50, help="显示条数")
 def history(record_id: Optional[int], source: Optional[str], operator: Optional[str], limit: int):
@@ -505,6 +553,7 @@ def history(record_id: Optional[int], source: Optional[str], operator: Optional[
                 "inspection": AuditLog.inspection_record_id == record_id,
                 "shift": AuditLog.shift_record_id == record_id,
                 "supplier": AuditLog.supplier_record_id == record_id,
+                "approval": AuditLog.approval_record_id == record_id,
             }
             query = query.filter(filter_map[source])
 
@@ -534,7 +583,7 @@ def history(record_id: Optional[int], source: Optional[str], operator: Optional[
 
 
 @cli.command()
-@click.argument("source", type=click.Choice(["rework", "inspection", "shift", "supplier"]))
+@click.argument("source", type=click.Choice(["rework", "inspection", "shift", "supplier", "approval"]))
 @click.argument("output_file", type=click.Path())
 @click.option("--batch-id", type=int, help="指定批次ID")
 @click.option("--valid-only/--no-valid-only", default=True, help="只导出有效数据")
@@ -546,6 +595,7 @@ def export(source: str, output_file: str, batch_id: Optional[int], valid_only: b
             "inspection": InspectionRecord,
             "shift": ShiftRecord,
             "supplier": SupplierRecord,
+            "approval": ApprovalRecord,
         }
         model = model_map[source]
 
