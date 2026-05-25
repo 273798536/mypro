@@ -267,17 +267,30 @@ program
             detail.restockRecords.slice(0, 5).forEach((r) => {
                 console.log(`   行${r.original_line_number} | ${r.photo_time} | +${r.restock_quantity}件 | ${r.source_file || '未知'}`);
             });
+            console.log(`\n💰 退款记录 (${detail.refundRecords.length}条):`);
+            detail.refundRecords.slice(0, 5).forEach((r) => {
+                console.log(`   行${r.original_line_number} | ${r.refund_time} | ¥${r.refund_amount} | ${r.source_file || '未知'} | ${r.refund_reason || ''}`);
+            });
+            console.log(`\n⚠️  异常记录 (${detail.exceptionRecords.length}条):`);
+            detail.exceptionRecords.slice(0, 5).forEach((r) => {
+                console.log(`   行${r.original_line_number} | ${r.exception_time} | ${r.exception_type || ''} | ${r.source_file || '未知'}`);
+            });
+            console.log(`\n💬 短信记录 (${detail.smsRecords.length}条):`);
+            detail.smsRecords.slice(0, 5).forEach((r) => {
+                const content = (r.sms_content || '').substring(0, 30);
+                console.log(`   行${r.original_line_number} | ${r.send_time} | ${content}... | ${r.source_file || '未知'}`);
+            });
         }
         else {
             const reports = await (0, report_1.generateReport)(options.city);
             console.log('\n📊 巡检汇总报表:');
-            console.log('='.repeat(120));
-            console.log('城市\t柜机ID\t初始库存\t补货\t销售\t当前库存\t退款\t异常\t热销满仓');
-            console.log('-'.repeat(120));
+            console.log('='.repeat(135));
+            console.log('城市\t柜机ID\t初始库存\t补货\t销售\t当前库存\t退款\t异常\t短信\t热销满仓');
+            console.log('-'.repeat(135));
             for (const r of reports) {
-                console.log(`${r.city}\t${r.cabinetId}\t${r.initialStock}\t\t${r.restockQuantity}\t${r.salesQuantity}\t${r.currentStock}\t\t${r.refundCount}\t${r.exceptionCount}\t${r.hotSkuFullCount}`);
+                console.log(`${r.city}\t${r.cabinetId}\t${r.initialStock}\t\t${r.restockQuantity}\t${r.salesQuantity}\t${r.currentStock}\t\t${r.refundCount}\t${r.exceptionCount}\t${r.smsCount}\t${r.hotSkuFullCount}`);
             }
-            console.log('='.repeat(120));
+            console.log('='.repeat(135));
             console.log(`\n总计: ${reports.length} 台柜机`);
         }
     }

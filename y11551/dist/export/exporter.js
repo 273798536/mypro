@@ -60,6 +60,7 @@ async function exportReport(outputPath, city) {
         { header: '当前库存', key: 'currentStock', width: 12 },
         { header: '退款次数', key: 'refundCount', width: 12 },
         { header: '异常次数', key: 'exceptionCount', width: 12 },
+        { header: '短信次数', key: 'smsCount', width: 12 },
         { header: '热销格口满仓数', key: 'hotSkuFullCount', width: 18 },
         { header: '最后更新时间', key: 'lastUpdateTime', width: 25 }
     ];
@@ -121,6 +122,16 @@ async function exportReport(outputPath, city) {
             detailSheet.getCell(detailRow, 5).value = ex.exception_time;
             detailSheet.getCell(detailRow, 6).value = '';
             detailSheet.getCell(detailRow, 7).value = ex.exception_type || '';
+            detailRow++;
+        }
+        for (const sms of detail.smsRecords) {
+            detailSheet.getCell(detailRow, 1).value = summary.cabinetId;
+            detailSheet.getCell(detailRow, 2).value = '短信';
+            detailSheet.getCell(detailRow, 3).value = sms.source_file || '';
+            detailSheet.getCell(detailRow, 4).value = sms.original_line_number;
+            detailSheet.getCell(detailRow, 5).value = sms.send_time;
+            detailSheet.getCell(detailRow, 6).value = '';
+            detailSheet.getCell(detailRow, 7).value = (sms.sms_content || '').substring(0, 50);
             detailRow++;
         }
     }

@@ -100,6 +100,7 @@ async function getCabinetDetail(cabinetId) {
     const restockQuantity = restockRecords.reduce((sum, r) => sum + (r.restock_quantity || 0), 0);
     const refundCount = refundRecords.length;
     const exceptionCount = exceptionRecords.length;
+    const smsCount = smsRecords.length;
     const hotSkuFullCount = inventoryRecords.filter((r) => r.is_hot_sku === 1 && r.is_full === 1).length;
     const cabinetName = inventoryRecords[0]?.cabinet_name || '';
     const city = inventoryRecords[0]?.city || '';
@@ -118,6 +119,7 @@ async function getCabinetDetail(cabinetId) {
             currentStock,
             refundCount,
             exceptionCount,
+            smsCount,
             hotSkuFullCount,
             lastUpdateTime
         },

@@ -103,6 +103,7 @@ export async function getCabinetDetail(cabinetId: string): Promise<{
   const restockQuantity = restockRecords.reduce((sum: number, r: any) => sum + (r.restock_quantity || 0), 0);
   const refundCount = refundRecords.length;
   const exceptionCount = exceptionRecords.length;
+  const smsCount = smsRecords.length;
   
   const hotSkuFullCount = inventoryRecords.filter((r: any) => 
     r.is_hot_sku === 1 && r.is_full === 1
@@ -127,6 +128,7 @@ export async function getCabinetDetail(cabinetId: string): Promise<{
       currentStock,
       refundCount,
       exceptionCount,
+      smsCount,
       hotSkuFullCount,
       lastUpdateTime
     },

@@ -131,6 +131,7 @@ export interface ReportSummary {
     currentStock: number;
     refundCount: number;
     exceptionCount: number;
+    smsCount: number;
     hotSkuFullCount: number;
     lastUpdateTime: string;
 }
