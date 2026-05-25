@@ -11,6 +11,20 @@ class DataImporter:
         self.db = db_session
         self.config = config
     
+    def _clean_value(self, value):
+        if value is None:
+            return ''
+        if isinstance(value, float):
+            import math
+            if math.isnan(value):
+                return ''
+            if value.is_integer():
+                return str(int(value))
+        val_str = str(value).strip()
+        if val_str.lower() in ['nan', 'none', 'null', '']:
+            return ''
+        return val_str
+    
     def import_data(self, source_type, source_path, strategy='ignore', imported_by='system'):
         batch_id = generate_batch_id()
         import_record = ImportRecord(
@@ -75,7 +89,11 @@ class DataImporter:
     
     def _import_single_row(self, row_data, import_record_id, strategy, batch_id, imported_by):
         fact_id = self._generate_fact_id_for_row(row_data)
+        
         existing = self.db.query(WorkOrder).filter(WorkOrder.fact_id == fact_id).first()
+        
+        if not existing and strategy == 'append':
+            existing = self._find_by_location(row_data)
         
         if existing:
             if strategy == 'ignore':
@@ -87,15 +105,38 @@ class DataImporter:
         else:
             return self._create_work_order(fact_id, row_data, import_record_id)
     
+    def _find_by_location(self, row_data):
+        location = self._clean_value(row_data.get('location', ''))
+        road_section = self._clean_value(row_data.get('road_section', ''))
+        pole_number = self._clean_value(row_data.get('pole_number', ''))
+        
+        if not location and not road_section:
+            return None
+        
+        query = self.db.query(WorkOrder)
+        filters = []
+        
+        if location:
+            filters.append(WorkOrder.location == location)
+        if road_section:
+            filters.append(WorkOrder.road_section == road_section)
+        if pole_number:
+            filters.append(WorkOrder.pole_number == pole_number)
+        
+        if filters:
+            query = query.filter(*filters)
+            return query.order_by(WorkOrder.created_at.desc()).first()
+        
+        return None
+    
     def _generate_fact_id_for_row(self, row_data):
-        source_type = row_data.get('source_type', 'unknown')
-        location = row_data.get('location', '')
-        road_section = row_data.get('road_section', '')
-        pole_number = row_data.get('pole_number', '')
-        issue_type = row_data.get('issue_type', '')
+        location = self._clean_value(row_data.get('location', ''))
+        road_section = self._clean_value(row_data.get('road_section', ''))
+        pole_number = self._clean_value(row_data.get('pole_number', ''))
+        issue_type = self._clean_value(row_data.get('issue_type', ''))
         
         id_fields = [location, road_section, pole_number, issue_type]
-        return generate_fact_id(source_type, id_fields)
+        return generate_fact_id('fact', id_fields)
     
     def _create_work_order(self, fact_id, row_data, import_record_id):
         try:
@@ -247,7 +288,7 @@ class DataImporter:
         return rows
     
     def _parse_hotline_csv(self, csv_path):
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, dtype=str, keep_default_na=False, na_values=[''])
         rows = []
         
         column_mapping = {
@@ -266,7 +307,7 @@ class DataImporter:
             row_data = {'source_type': 'hotline'}
             for cn_col, en_col in column_mapping.items():
                 if cn_col in df.columns:
-                    row_data[en_col] = row[cn_col]
+                    row_data[en_col] = self._clean_value(row[cn_col])
             
             if not row_data.get('location') and row_data.get('road_section'):
                 row_data['location'] = row_data['road_section']
@@ -276,9 +317,9 @@ class DataImporter:
     
     def _parse_spare_parts(self, file_path):
         if file_path.endswith('.csv'):
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(file_path, dtype=str, keep_default_na=False, na_values=[''])
         else:
-            df = pd.read_excel(file_path)
+            df = pd.read_excel(file_path, dtype=str, keep_default_na=False, na_values=[''])
         
         rows = []
         
@@ -296,7 +337,7 @@ class DataImporter:
             row_data = {'source_type': 'spare_part'}
             for cn_col, en_col in column_mapping.items():
                 if cn_col in df.columns:
-                    row_data[en_col] = row[cn_col]
+                    row_data[en_col] = self._clean_value(row[cn_col])
             
             if not row_data.get('issue_type'):
                 row_data['issue_type'] = 'replacement'
@@ -305,7 +346,10 @@ class DataImporter:
         return rows
     
     def _parse_approval_emails(self, file_path):
-        df = pd.read_csv(file_path) if file_path.endswith('.csv') else pd.read_excel(file_path)
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path, dtype=str, keep_default_na=False, na_values=[''])
+        else:
+            df = pd.read_excel(file_path, dtype=str, keep_default_na=False, na_values=[''])
         rows = []
         
         column_mapping = {
@@ -323,6 +367,6 @@ class DataImporter:
             row_data = {'source_type': 'approval_email'}
             for cn_col, en_col in column_mapping.items():
                 if cn_col in df.columns:
-                    row_data[en_col] = row[cn_col]
+                    row_data[en_col] = self._clean_value(row[cn_col])
             rows.append(row_data)
         return rows

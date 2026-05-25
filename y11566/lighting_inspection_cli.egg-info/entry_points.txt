@@ -1,0 +1,2 @@
+[console_scripts]
+lighting = lighting_cli.main:cli

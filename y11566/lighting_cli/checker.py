@@ -38,6 +38,14 @@ class DataChecker:
         
         return results
     
+    def _is_empty(self, value):
+        if value is None:
+            return True
+        val_str = str(value).strip()
+        if val_str == '' or val_str.lower() in ['nan', 'none', 'null', 'n/a']:
+            return True
+        return False
+    
     def check_work_order(self, work_order: WorkOrder):
         errors = []
         error_category = None
@@ -45,7 +53,7 @@ class DataChecker:
         required_fields = self.config['check']['required_fields']
         for field in required_fields:
             value = getattr(work_order, field, None)
-            if not value or not str(value).strip():
+            if self._is_empty(value):
                 errors.append(f'缺少必填字段: {field}')
                 error_category = 'manual'
         
