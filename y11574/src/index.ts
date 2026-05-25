@@ -36,17 +36,19 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`服务器运行在 http://localhost:${PORT}`);
-  console.log('');
-  console.log('可用测试用户:');
-  console.log('  录入员:    entry-1');
-  console.log('  复核员:    reviewer-1');
-  console.log('  主管:      supervisor-1');
-  console.log('  只读用户:  readonly-1');
-  console.log('');
-  console.log('使用示例:');
-  console.log('  curl -H "x-user-id: entry-1" http://localhost:3000/health');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`服务器运行在 http://localhost:${PORT}`);
+    console.log('');
+    console.log('可用测试用户:');
+    console.log('  录入员:    entry-1');
+    console.log('  复核员:    reviewer-1');
+    console.log('  主管:      supervisor-1');
+    console.log('  只读用户:  readonly-1');
+    console.log('');
+    console.log('使用示例:');
+    console.log('  curl -H "x-user-id: entry-1" http://localhost:3000/health');
+  });
+}
 
 export default app;

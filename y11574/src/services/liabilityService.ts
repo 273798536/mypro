@@ -370,5 +370,33 @@ export const liabilityService = {
     opinion: string
   ): Promise<LiabilityRecord | null> {
     return this.updateRecord(id, { handlingOpinion: opinion }, user, '添加处理意见');
+  },
+
+  async supplementDataSource(
+    id: string,
+    user: User,
+    dataSource: DataSource,
+    sourceId: string,
+    sourceIdField: string
+  ): Promise<LiabilityRecord | null> {
+    const existing = await liabilityRecordModel.findById(id);
+    if (!existing) return null;
+
+    const currentDataSources = [...existing.dataSources];
+    if (!currentDataSources.includes(dataSource)) {
+      currentDataSources.push(dataSource);
+    }
+
+    const updates: Partial<LiabilityRecord> = {
+      dataSources: currentDataSources,
+      [sourceIdField]: sourceId
+    } as Partial<LiabilityRecord>;
+
+    return this.updateRecord(
+      id,
+      updates,
+      user,
+      `补全数据源: ${dataSource}`
+    );
   }
 };

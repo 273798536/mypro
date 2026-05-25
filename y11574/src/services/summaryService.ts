@@ -2,6 +2,7 @@ import { User, UserRole, WorkflowStatus } from '../types';
 import { liabilityRecordModel } from '../models/liabilityRecord';
 import { historyRecordModel } from '../models/historyRecord';
 import { dirtyRecordLogModel } from '../models/dirtyRecordLog';
+import { exportLogModel } from '../models/exportLog';
 
 export interface RoleViewSummary {
   role: UserRole;
@@ -123,18 +124,25 @@ export const summaryService = {
     const totalAmountFromList = listRecords.reduce((sum, r) => sum + r.compensationAmount, 0);
 
     const allHistory = await historyRecordModel.list({ limit: 10000 });
-    const historyRecordIds = new Set(allHistory.map(h => h.recordId));
-    const historyCount = historyRecordIds.size;
+    const liabilityHistoryRecordIds = new Set(
+      allHistory
+        .map(h => h.recordId)
+        .filter(recordId => !recordId.startsWith('export-'))
+    );
+    const historyCount = liabilityHistoryRecordIds.size;
+
+    const allExportLogs = await exportLogModel.list(10000);
+    const exportLogCount = allExportLogs.length;
 
     const inconsistencies: string[] = [];
 
     if (listCount !== historyCount) {
-      inconsistencies.push(`记录数不一致: 列表${listCount}条 vs 历史${historyCount}条`);
+      inconsistencies.push(`台账记录数与历史记录数不一致: 列表${listCount}条 vs 历史${historyCount}条`);
     }
 
     for (const record of listRecords) {
-      if (!historyRecordIds.has(record.id)) {
-        inconsistencies.push(`记录${record.id}无历史记录`);
+      if (!liabilityHistoryRecordIds.has(record.id)) {
+        inconsistencies.push(`台账记录${record.id}无对应的历史记录`);
       }
     }
 
@@ -150,11 +158,25 @@ export const summaryService = {
       }
     }
 
+    const historyAmounts: Record<string, number> = {};
+    for (const record of listRecords) {
+      const recordHistory = allHistory.filter(h => h.recordId === record.id);
+      const lastUpdate = recordHistory.find(h => h.operationType === 'update' || h.operationType === 'create');
+      if (lastUpdate?.newValues?.compensationAmount !== undefined) {
+        historyAmounts[record.id] = lastUpdate.newValues.compensationAmount as number;
+      }
+    }
+
+    const totalAmountFromHistory = Object.values(historyAmounts).reduce((s, v) => s + v, 0);
+    if (Math.abs(totalAmountFromList - totalAmountFromHistory) > 0.01 && historyCount > 0) {
+      inconsistencies.push(`总金额不一致: 列表${totalAmountFromList} vs 历史${totalAmountFromHistory}`);
+    }
+
     return {
       listCount,
       detailCount: listCount,
       historyCount,
-      exportLogCount: 0,
+      exportLogCount,
       totalAmountFromList,
       totalAmountFromDetails: totalAmountFromList,
       isConsistent: inconsistencies.length === 0,

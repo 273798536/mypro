@@ -495,4 +495,129 @@ describe('数据一致性集成测试', () => {
       expect(res.body.data.status).toBe('audit_only');
     });
   });
+
+  describe('导出校验一致性修复验证', () => {
+    let exportLogId: string;
+
+    beforeAll(async () => {
+      const exportRes = await request(app)
+        .post('/api/export/csv')
+        .set('x-user-id', USERS.supervisor)
+        .send({ isMasked: true });
+      exportLogId = exportRes.headers['x-export-log-id'];
+    });
+
+    it('同一导出内容导出校验一致', async () => {
+      const verifyRes = await request(app)
+        .get(`/api/export/verify/${exportLogId}`)
+        .set('x-user-id', USERS.supervisor);
+
+      expect(verifyRes.status).toBe(200);
+      expect(verifyRes.body.data.consistent).toBe(true);
+      expect(verifyRes.body.data.expectedChecksum).toBe(verifyRes.body.data.actualChecksum);
+    });
+
+    it('导出前后记录数和总金额一致', async () => {
+      const verifyRes = await request(app)
+        .get(`/api/export/verify/${exportLogId}`)
+        .set('x-user-id', USERS.supervisor);
+
+      expect(verifyRes.body.data.details.recordCount).toBeGreaterThan(0);
+      expect(verifyRes.body.data.details.totalAmount).toBeGreaterThan(0);
+    });
+  });
+
+  describe('一致性报告修复验证', () => {
+    it('exportLogCount 正确统计不为0', async () => {
+      const reportRes = await request(app)
+        .get('/api/summary/consistency-report')
+        .set('x-user-id', USERS.supervisor);
+
+      expect(reportRes.status).toBe(200);
+      expect(reportRes.body.data.exportLogCount).toBeGreaterThan(0);
+    });
+
+    it('导出历史不混入台账历史记录数', async () => {
+      const reportRes = await request(app)
+        .get('/api/summary/consistency-report')
+        .set('x-user-id', USERS.supervisor);
+
+      const report = reportRes.body.data;
+      expect(report.listCount).toBe(report.historyCount);
+      expect(report.inconsistencies).not.toContainEqual(
+        expect.stringContaining('export-')
+      );
+    });
+  });
+
+  describe('补全数据源接口验证', () => {
+    let testRecordId: string;
+
+    beforeAll(async () => {
+      const res = await request(app)
+        .post('/api/records')
+        .set('x-user-id', USERS.entry)
+        .send({
+          ticketId: generateUniqueTicketId('TICKET-G'),
+          compensationAmount: 250,
+          dataSources: ['session_summary'],
+          occurrenceDate: '2024-01-22'
+        });
+      testRecordId = res.body.data.id;
+    });
+
+    it('可以补全审批邮件来源', async () => {
+      const res = await request(app)
+        .post(`/api/records/${testRecordId}/supplement-source`)
+        .set('x-user-id', USERS.entry)
+        .send({
+          dataSource: 'approval_email',
+          sourceId: 'EMAIL-APPROVAL-001',
+          sourceIdField: 'sourceApprovalEmailId'
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.dataSources).toContain('approval_email');
+      expect(res.body.data.sourceApprovalEmailId).toBe('EMAIL-APPROVAL-001');
+    });
+
+    it('可以补全供应商对账单来源', async () => {
+      const res = await request(app)
+        .post(`/api/records/${testRecordId}/supplement-source`)
+        .set('x-user-id', USERS.entry)
+        .send({
+          dataSource: 'supplier_statement',
+          sourceId: 'SUPPLIER-STMT-001',
+          sourceIdField: 'sourceSupplierStatementId'
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.dataSources).toContain('supplier_statement');
+      expect(res.body.data.sourceSupplierStatementId).toBe('SUPPLIER-STMT-001');
+    });
+
+    it('补全来源后历史记录可追溯', async () => {
+      const historyRes = await request(app)
+        .get(`/api/records/${testRecordId}/history`)
+        .set('x-user-id', USERS.supervisor);
+
+      const supplementHistory = historyRes.body.data.find(
+        (h: any) => h.changeReason && h.changeReason.includes('补全数据源')
+      );
+      expect(supplementHistory).toBeDefined();
+    });
+
+    it('无效的sourceIdField返回错误', async () => {
+      const res = await request(app)
+        .post(`/api/records/${testRecordId}/supplement-source`)
+        .set('x-user-id', USERS.entry)
+        .send({
+          dataSource: 'approval_email',
+          sourceId: 'EMAIL-002',
+          sourceIdField: 'invalidField'
+        });
+
+      expect(res.status).toBe(400);
+    });
+  });
 });

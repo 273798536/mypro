@@ -390,4 +390,55 @@ router.post(
   }
 );
 
+router.post(
+  '/:id/supplement-source',
+  requirePermission('update_draft'),
+  async (req: Request, res: Response) => {
+    const user = req.user!;
+    const { dataSource, sourceId, sourceIdField } = req.body;
+
+    if (!dataSource || !sourceId || !sourceIdField) {
+      return res.status(400).json({
+        success: false,
+        error: 'dataSource, sourceId and sourceIdField are required'
+      });
+    }
+
+    const validSourceIdFields = [
+      'sourceSessionSummaryId',
+      'sourceSlaRuleId',
+      'sourceCompensationApprovalId',
+      'sourceSupplierStatementId',
+      'sourceApprovalEmailId'
+    ];
+
+    if (!validSourceIdFields.includes(sourceIdField)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid sourceIdField. Must be one of: ${validSourceIdFields.join(', ')}`
+      });
+    }
+
+    const updated = await liabilityService.supplementDataSource(
+      req.params.id,
+      user,
+      dataSource,
+      sourceId,
+      sourceIdField
+    );
+    
+    if (!updated) {
+      return res.status(404).json({ success: false, error: 'Record not found' });
+    }
+
+    const filteredRecord = filterFieldsByRole(updated, user.role);
+
+    res.json({
+      success: true,
+      data: filteredRecord,
+      message: `Successfully supplemented data source: ${dataSource}`
+    });
+  }
+);
+
 export default router;

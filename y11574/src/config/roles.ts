@@ -7,6 +7,8 @@ export const rolePermissions: Record<UserRole, RolePermissions> = {
       'agentName', 'agentId', 'department', 'slaBreachType', 'slaBreachDuration',
       'compensationAmount', 'compensationType', 'escalationLevel', 'transferCount',
       'responsibleParty', 'liabilityReason', 'status', 'dataSources', 'occurrenceDate',
+      'sourceSessionSummaryId', 'sourceSlaRuleId', 'sourceCompensationApprovalId',
+      'sourceSupplierStatementId', 'sourceApprovalEmailId',
       'isDirty', 'dirtyRecordTypes', 'handlingOpinion', 'isCorrected',
       'createdAt', 'updatedAt', 'version'
     ],
@@ -21,6 +23,8 @@ export const rolePermissions: Record<UserRole, RolePermissions> = {
       'agentName', 'agentId', 'department', 'slaBreachType', 'slaBreachDuration',
       'compensationAmount', 'compensationType', 'escalationLevel', 'transferCount',
       'responsibleParty', 'liabilityReason', 'status', 'dataSources', 'occurrenceDate',
+      'sourceSessionSummaryId', 'sourceSlaRuleId', 'sourceCompensationApprovalId',
+      'sourceSupplierStatementId', 'sourceApprovalEmailId',
       'submittedBy', 'submittedAt', 'isDirty', 'dirtyRecordTypes',
       'originalContent', 'handlingOpinion', 'isCorrected',
       'createdAt', 'updatedAt', 'version'
@@ -37,6 +41,8 @@ export const rolePermissions: Record<UserRole, RolePermissions> = {
       'agentName', 'agentId', 'department', 'slaBreachType', 'slaBreachDuration',
       'compensationAmount', 'compensationType', 'escalationLevel', 'transferCount',
       'responsibleParty', 'liabilityReason', 'status', 'dataSources', 'occurrenceDate',
+      'sourceSessionSummaryId', 'sourceSlaRuleId', 'sourceCompensationApprovalId',
+      'sourceSupplierStatementId', 'sourceApprovalEmailId',
       'submittedBy', 'submittedAt', 'reviewedBy', 'reviewedAt',
       'rejectedBy', 'rejectedAt', 'rejectionReason',
       'secondConfirmedBy', 'secondConfirmedAt',

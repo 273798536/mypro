@@ -12,6 +12,21 @@ const SENSITIVE_FIELDS = [
   'agentId'
 ];
 
+function generateChecksum(records: LiabilityRecord[]): string {
+  const sortedRecords = [...records].sort((a, b) => a.id.localeCompare(b.id));
+  const normalizedData = sortedRecords.map(r => ({
+    id: r.id,
+    compensationAmount: r.compensationAmount,
+    status: r.status,
+    occurrenceDate: r.occurrenceDate,
+    ticketId: r.ticketId
+  }));
+  return crypto
+    .createHash('md5')
+    .update(JSON.stringify(normalizedData) + records.length + normalizedData.reduce((s, r) => s + r.compensationAmount, 0))
+    .digest('hex');
+}
+
 function maskValue(value: string | undefined, type: 'phone' | 'name' | 'id'): string {
   if (!value) return '';
   
@@ -76,10 +91,7 @@ export const exportService = {
     const csv = json2csvParser.parse(visibleRecords);
 
     const totalAmount = records.reduce((sum, r) => sum + r.compensationAmount, 0);
-    const checksum = crypto
-      .createHash('md5')
-      .update(csv + records.length + totalAmount)
-      .digest('hex');
+    const checksum = generateChecksum(records);
 
     const maskedFields = isMasked ? SENSITIVE_FIELDS.filter(f => canViewField(user.role, f)) : [];
 
@@ -140,10 +152,7 @@ export const exportService = {
     const records = await liabilityRecordModel.list(filters);
     
     const totalAmount = records.reduce((sum, r) => sum + r.compensationAmount, 0);
-    const currentChecksum = crypto
-      .createHash('md5')
-      .update(JSON.stringify(records) + records.length + totalAmount)
-      .digest('hex');
+    const currentChecksum = generateChecksum(records);
 
     return {
       consistent: exportLog.checksum === currentChecksum && 
