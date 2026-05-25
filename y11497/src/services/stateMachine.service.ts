@@ -11,6 +11,7 @@ export class StateMachineService {
     ],
     [ReimbursementStatus.QUEUED]: [
       ReimbursementStatus.PROCESSING,
+      ReimbursementStatus.PENDING_REVIEW,
       ReimbursementStatus.RETRYING,
       ReimbursementStatus.MANUAL_INTERVENTION,
       ReimbursementStatus.FAILED

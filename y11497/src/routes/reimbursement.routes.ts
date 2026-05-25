@@ -180,6 +180,61 @@ router.post('/:id/materials', requireRole(UserRole.DATA_ENTRY, UserRole.REVIEWER
   }
 });
 
+router.post('/:id/materials/:materialId/verify', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR), async (req: Request, res: Response) => {
+  try {
+    const material = dataStore.getMaterial(req.params.id, req.params.materialId);
+    if (!material) {
+      return res.status(404).json({
+        success: false,
+        error: '材料不存在'
+      });
+    }
+
+    const verified = dataStore.verifyMaterial(req.params.id, req.params.materialId, req.user!.id);
+    if (!verified) {
+      return res.status(404).json({
+        success: false,
+        error: '材料验证失败'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: verified,
+      message: '材料验证成功'
+    });
+  } catch (err) {
+    logger.error('验证材料失败', err);
+    res.status(500).json({
+      success: false,
+      error: '服务器内部错误'
+    });
+  }
+});
+
+router.get('/:id/materials/:materialId', requireRole(UserRole.DATA_ENTRY, UserRole.REVIEWER, UserRole.SUPERVISOR, UserRole.READ_ONLY), async (req: Request, res: Response) => {
+  try {
+    const material = dataStore.getMaterial(req.params.id, req.params.materialId);
+    if (!material) {
+      return res.status(404).json({
+        success: false,
+        error: '材料不存在'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: material
+    });
+  } catch (err) {
+    logger.error('查询材料失败', err);
+    res.status(500).json({
+      success: false,
+      error: '服务器内部错误'
+    });
+  }
+});
+
 router.post('/:id/queue', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR), async (req: Request, res: Response) => {
   try {
     const updated = StateMachineService.queue(req.params.id, req.user!);
@@ -196,6 +251,29 @@ router.post('/:id/queue', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR), a
     });
   } catch (err: any) {
     logger.error('排入队列失败', err);
+    res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
+
+router.post('/:id/process', requireRole(UserRole.REVIEWER, UserRole.SUPERVISOR), async (req: Request, res: Response) => {
+  try {
+    const updated = StateMachineService.process(req.params.id, req.user!);
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        error: '报销单不存在'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: filterFields(updated, req.user!.role)
+    });
+  } catch (err: any) {
+    logger.error('开始稽核处理失败', err);
     res.status(400).json({
       success: false,
       error: err.message

@@ -34,10 +34,18 @@ curl http://localhost:3000/health
 
 ### 核心流程
 
+**快速通道（已核验材料）：**
 ```
-外部回执提交 → 排队 → 限次重试 → 人工接管 → 补偿入账 → 关闭
+提交 → 排队 → 复核 → 补偿入账 → 关闭
+```
+
+**标准稽核流程（需系统稽核）：**
+```
+提交 → 排队 → 处理(稽核) → 复核 → 补偿入账 → 关闭
+           ↓
+         限次重试 → 人工干预 → 手动重试
                           ↓
-                     死信队列(超过重试阈值)
+                     死信队列(累计重试≥5次)
 ```
 
 ### 状态流转图
@@ -248,7 +256,41 @@ curl -X POST http://localhost:3000/api/reimbursements/{id}/queue \
   -H "Authorization: Bearer <token>"
 ```
 
-#### 3.2 提交复核 (复核员/主管)
+#### 3.2 开始稽核处理 (复核员/主管)
+
+**路径：排队 → 处理 → 复核**
+
+```bash
+curl -X POST http://localhost:3000/api/reimbursements/{id}/process \
+  -H "Authorization: Bearer <token>"
+```
+
+#### 3.3 材料验证 (复核员/主管)
+
+```bash
+curl -X POST http://localhost:3000/api/reimbursements/{id}/materials/{materialId}/verify \
+  -H "Authorization: Bearer <token>"
+```
+
+**使用场景：** 当报销单因 `missing_document` 进入重试队列时，先上传缺少的材料，调用此接口验证材料，然后触发重试即可恢复正常流程。
+
+#### 3.4 查询材料详情
+
+```bash
+curl http://localhost:3000/api/reimbursements/{id}/materials/{materialId} \
+  -H "Authorization: Bearer <token>"
+```
+
+#### 3.5 手动持久化数据 (主管)
+
+```bash
+curl -X POST http://localhost:3000/api/admin/save \
+  -H "Authorization: Bearer <token>"
+```
+
+> **持久化说明**：系统每30秒自动保存一次数据到 `data/store.json`，服务关闭时也会自动保存。重启服务时会自动加载数据。
+
+#### 3.6 提交复核 (复核员/主管)
 
 ```bash
 curl -X POST http://localhost:3000/api/reimbursements/{id}/review \
@@ -563,9 +605,62 @@ curl http://localhost:3000/api/dead-letters/statistics/summary \
 3. 进入 `missing_document` 重试分类
 
 **修正方式：**
-1. 录入员补上班次记录
-2. 系统自动重试时检测到班次记录存在
-3. 验证行程与班次一致，通过稽核
+1. 录入员补上班次记录（调用材料上传接口）
+2. 复核员调用材料验证接口，标记材料为已验证
+3. 触发重试，系统检测到材料已验证
+4. 验证行程与班次一致，通过稽核
+
+**完整命令示例：**
+
+```bash
+# 1. 上传缺少的班次记录
+curl -X POST http://localhost:3000/api/reimbursements/{id}/materials \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{
+    "source": "shift_record",
+    "sourceId": "SHIFT-2024-0524-001",
+    "parsedData": {
+      "employeeId": "EMP001",
+      "date": "2024-05-20",
+      "shiftType": "business_trip",
+      "location": "上海"
+    }
+  }'
+
+# 2. 验证材料
+curl -X POST http://localhost:3000/api/reimbursements/{id}/materials/{materialId}/verify \
+  -H "Authorization: Bearer <token>"
+
+# 3. 触发重试
+curl -X POST http://localhost:3000/api/reimbursements/{id}/retry \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{
+    "category": "missing_document"
+  }'
+```
+
+---
+
+### 场景4：数据持久化与重启恢复
+
+**重启恢复流程：**
+1. 服务正常运行时，每30秒自动保存数据到 `data/store.json`
+2. 服务关闭（SIGTERM/SIGINT）时自动调用 `gracefulShutdown()` 保存数据
+3. 服务重启时，构造函数自动调用 `load()` 从磁盘加载数据
+4. 如果加载失败，使用初始化的测试用户数据继续运行
+
+**验证持久化：**
+
+```bash
+# 手动触发保存
+curl -X POST http://localhost:3000/api/admin/save \
+  -H "Authorization: Bearer <supervisor_token>"
+
+# 检查数据文件
+ls -la data/store.json
+```
 
 ---
 
@@ -576,7 +671,9 @@ curl http://localhost:3000/api/dead-letters/statistics/summary \
 | 创建报销单 | ✅ | ✅ | ✅ | ❌ |
 | 查看报销单 | ✅ | ✅ | ✅ | ✅ |
 | 上传材料 | ✅ | ✅ | ✅ | ❌ |
+| 验证材料 | ❌ | ✅ | ✅ | ❌ |
 | 排入队列 | ❌ | ✅ | ✅ | ❌ |
+| 开始处理 | ❌ | ✅ | ✅ | ❌ |
 | 提交复核 | ❌ | ✅ | ✅ | ❌ |
 | 请求人工干预 | ❌ | ✅ | ✅ | ❌ |
 | 手动重试 | ❌ | ✅ | ✅ | ❌ |
@@ -586,6 +683,7 @@ curl http://localhost:3000/api/dead-letters/statistics/summary \
 | 查看汇总报表 | ❌ | ✅ | ✅ | ✅ |
 | 经理看板 | ❌ | ❌ | ✅ | ❌ |
 | 导出报表 | ❌ | ❌ | ✅ | ❌ |
+| 手动持久化 | ❌ | ❌ | ✅ | ❌ |
 
 ### 字段可见性控制
 

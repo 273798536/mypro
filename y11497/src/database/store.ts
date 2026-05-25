@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 import {
   Reimbursement,
   User,
@@ -14,14 +16,106 @@ import {
 } from '../types';
 import logger from '../utils/logger';
 
+const DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_FILE = path.join(DATA_DIR, 'store.json');
+
+interface PersistedData {
+  reimbursements: Array<[string, Reimbursement]>;
+  users: Array<[string, User]>;
+  retryQueue: Array<[string, RetryQueueItem]>;
+  deadLetters: Array<[string, DeadLetterItem]>;
+  savedAt: string;
+}
+
 class DataStore {
   private reimbursements: Map<string, Reimbursement> = new Map();
   private users: Map<string, User> = new Map();
   private retryQueue: Map<string, RetryQueueItem> = new Map();
   private deadLetters: Map<string, DeadLetterItem> = new Map();
+  private autoSaveInterval?: NodeJS.Timeout;
 
   constructor() {
-    this.initializeTestUsers();
+    this.ensureDataDir();
+    const loaded = this.load();
+    if (!loaded) {
+      this.initializeTestUsers();
+    }
+    this.startAutoSave();
+  }
+
+  private ensureDataDir(): void {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      logger.info(`数据目录已创建: ${DATA_DIR}`);
+    }
+  }
+
+  save(): boolean {
+    try {
+      const data: PersistedData = {
+        reimbursements: Array.from(this.reimbursements.entries()),
+        users: Array.from(this.users.entries()),
+        retryQueue: Array.from(this.retryQueue.entries()),
+        deadLetters: Array.from(this.deadLetters.entries()),
+        savedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      logger.debug(`数据已持久化到: ${DATA_FILE}`);
+      return true;
+    } catch (error) {
+      logger.error('数据持久化失败', error);
+      return false;
+    }
+  }
+
+  load(): boolean {
+    try {
+      if (!fs.existsSync(DATA_FILE)) {
+        logger.info('未找到持久化数据文件，使用空数据');
+        return false;
+      }
+
+      const fileContent = fs.readFileSync(DATA_FILE, 'utf-8');
+      const data: PersistedData = JSON.parse(fileContent);
+
+      this.reimbursements = new Map(data.reimbursements);
+      this.users = new Map(data.users);
+      this.retryQueue = new Map(data.retryQueue);
+      this.deadLetters = new Map(data.deadLetters);
+
+      logger.info(`数据加载成功，保存时间: ${data.savedAt}`);
+      logger.info(`  报销单: ${this.reimbursements.size} 条`);
+      logger.info(`  用户: ${this.users.size} 条`);
+      logger.info(`  重试队列: ${this.retryQueue.size} 条`);
+      logger.info(`  死信队列: ${this.deadLetters.size} 条`);
+
+      return true;
+    } catch (error) {
+      logger.error('数据加载失败，将使用初始数据', error);
+      return false;
+    }
+  }
+
+  private startAutoSave(): void {
+    const intervalMs = 30000;
+    this.autoSaveInterval = setInterval(() => {
+      this.save();
+    }, intervalMs);
+    logger.info(`自动持久化已启动，每 ${intervalMs / 1000} 秒保存一次`);
+  }
+
+  stopAutoSave(): void {
+    if (this.autoSaveInterval) {
+      clearInterval(this.autoSaveInterval);
+      this.autoSaveInterval = undefined;
+      logger.info('自动持久化已停止');
+    }
+  }
+
+  gracefulShutdown(): void {
+    this.stopAutoSave();
+    this.save();
+    logger.info('数据存储已优雅关闭');
   }
 
   private initializeTestUsers() {
@@ -154,6 +248,29 @@ class DataStore {
     
     logger.info(`Material added for ${reimbursementId}: ${material.source}`);
     return newMaterial;
+  }
+
+  verifyMaterial(reimbursementId: string, materialId: string, verifiedBy: string): Material | undefined {
+    const reimbursement = this.reimbursements.get(reimbursementId);
+    if (!reimbursement) return undefined;
+
+    const material = reimbursement.materials.find(m => m.id === materialId);
+    if (!material) return undefined;
+
+    material.verified = true;
+    material.verifiedBy = verifiedBy;
+    material.verifiedAt = new Date().toISOString();
+    reimbursement.updatedAt = material.verifiedAt;
+    
+    this.reimbursements.set(reimbursementId, reimbursement);
+    logger.info(`Material verified: ${materialId} for ${reimbursementId} by ${verifiedBy}`);
+    return material;
+  }
+
+  getMaterial(reimbursementId: string, materialId: string): Material | undefined {
+    const reimbursement = this.reimbursements.get(reimbursementId);
+    if (!reimbursement) return undefined;
+    return reimbursement.materials.find(m => m.id === materialId);
   }
 
   getUser(id: string): User | undefined {

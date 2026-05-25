@@ -6,6 +6,9 @@ import reportRoutes from './routes/report.routes';
 import deadLetterRoutes from './routes/deadLetter.routes';
 import logger from './utils/logger';
 import { RetryQueueService } from './services/retryQueue.service';
+import dataStore from './database/store';
+import { authenticate, requireRole } from './middleware/auth';
+import { UserRole } from './types';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +45,21 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.post('/api/admin/save', authenticate, requireRole(UserRole.SUPERVISOR), (req, res) => {
+  const saved = dataStore.save();
+  if (saved) {
+    res.json({
+      success: true,
+      message: '数据已持久化到磁盘'
+    });
+  } else {
+    res.status(500).json({
+      success: false,
+      error: '数据持久化失败'
+    });
+  }
+});
+
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error', err);
   res.status(500).json({
@@ -74,6 +92,7 @@ const server = app.listen(PORT, () => {
 process.on('SIGTERM', () => {
   logger.info('收到SIGTERM信号，正在关闭服务器...');
   clearInterval(retryInterval);
+  dataStore.gracefulShutdown();
   server.close(() => {
     logger.info('服务器已关闭');
     process.exit(0);
@@ -83,6 +102,7 @@ process.on('SIGTERM', () => {
 process.on('SIGINT', () => {
   logger.info('收到SIGINT信号，正在关闭服务器...');
   clearInterval(retryInterval);
+  dataStore.gracefulShutdown();
   server.close(() => {
     logger.info('服务器已关闭');
     process.exit(0);

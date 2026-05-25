@@ -8,9 +8,9 @@ import {
 } from '../types';
 import logger from '../utils/logger';
 
-const MAX_RETRY_COUNT = parseInt(process.env.MAX_RETRY_COUNT || '3');
-const RETRY_INTERVAL_MINUTES = parseInt(process.env.RETRY_INTERVAL_MINUTES || '30');
 const DEAD_LETTER_THRESHOLD = parseInt(process.env.DEAD_LETTER_THRESHOLD || '5');
+const MAX_RETRY_COUNT = parseInt(process.env.MAX_RETRY_COUNT || String(DEAD_LETTER_THRESHOLD));
+const RETRY_INTERVAL_MINUTES = parseInt(process.env.RETRY_INTERVAL_MINUTES || '30');
 
 export class RetryQueueService {
   static calculateNextRetryTime(retryCount: number): string {
@@ -236,8 +236,10 @@ export class RetryQueueService {
     errorReason: string
   ): { success: boolean } {
     const newRetryCount = item.retryCount + 1;
+    const allRetryHistory = dataStore.getRetryQueueByReimbursement(item.reimbursementId);
+    const totalHistoricalRetries = allRetryHistory.reduce((sum, h) => sum + h.retryCount, 0) + newRetryCount;
 
-    if (newRetryCount >= DEAD_LETTER_THRESHOLD) {
+    if (totalHistoricalRetries >= DEAD_LETTER_THRESHOLD) {
       return this.moveToDeadLetter(item, reimbursement, errorReason);
     }
 
@@ -253,7 +255,7 @@ export class RetryQueueService {
         toStatus: ReimbursementStatus.MANUAL_INTERVENTION,
         operatorId: 'system',
         operatorName: '系统',
-        reason: `重试 ${newRetryCount} 次失败，需要人工干预: ${errorReason}`
+        reason: `本轮重试 ${newRetryCount} 次失败，累计重试 ${totalHistoricalRetries} 次，需要人工干预: ${errorReason}`
       });
 
       dataStore.updateReimbursement(item.reimbursementId, {
@@ -264,7 +266,7 @@ export class RetryQueueService {
         isInSummary: false
       });
 
-      logger.warn(`重试次数用尽，转入人工干预: ${item.reimbursementId}`);
+      logger.warn(`本轮重试次数用尽，转入人工干预: ${item.reimbursementId}, 累计重试: ${totalHistoricalRetries}/${DEAD_LETTER_THRESHOLD}`);
       return { success: false };
     }
 
@@ -281,14 +283,14 @@ export class RetryQueueService {
       toStatus: ReimbursementStatus.QUEUED,
       operatorId: 'system',
       operatorName: '系统',
-      reason: `第 ${newRetryCount} 次重试失败，下次重试时间: ${nextRetryAt}，原因: ${errorReason}`
+      reason: `第 ${newRetryCount} 次重试失败，累计重试 ${totalHistoricalRetries} 次，下次重试时间: ${nextRetryAt}，原因: ${errorReason}`
     });
 
     dataStore.updateReimbursement(item.reimbursementId, {
       status: ReimbursementStatus.QUEUED
     });
 
-    logger.info(`重试失败，安排下次重试: ${item.reimbursementId}, 下次时间: ${nextRetryAt}`);
+    logger.info(`重试失败，安排下次重试: ${item.reimbursementId}, 下次时间: ${nextRetryAt}, 累计重试: ${totalHistoricalRetries}/${DEAD_LETTER_THRESHOLD}`);
     return { success: false };
   }
 
@@ -332,13 +334,18 @@ export class RetryQueueService {
       throw new Error('报销单不存在');
     }
 
+    const allRetryHistory = dataStore.getRetryQueueByReimbursement(reimbursementId);
+    const totalHistoricalRetries = allRetryHistory.reduce((sum, h) => sum + h.retryCount, 0);
+    const remainingRetries = Math.max(1, DEAD_LETTER_THRESHOLD - totalHistoricalRetries);
     const category = reimbursement.currentRetry?.category || RetryCategory.SYSTEM_ERROR;
+    
+    logger.info(`人工重试: ${reimbursementId}, 历史重试: ${totalHistoricalRetries}, 剩余可用: ${remainingRetries}`);
     
     return this.enqueueForRetry(
       reimbursementId,
       category,
       operator,
-      MAX_RETRY_COUNT
+      remainingRetries
     );
   }
 }
