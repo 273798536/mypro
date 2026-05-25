@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Material } from './Material';
-import { AuditLog } from './AuditLog';
 
 export type BatchStatus = 'draft' | 'submitted' | 'processing' | 'partial_failed' | 'completed' | 'frozen' | 'withdrawn';
 export type DuplicateStrategy = 'ignore' | 'overwrite' | 'append';
@@ -10,10 +9,10 @@ export class Batch {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'text' })
   batchNo: string;
 
-  @Column()
+  @Column({ type: 'text' })
   name: string;
 
   @Column({
@@ -34,16 +33,16 @@ export class Batch {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
-  @Column({ default: 0 })
+  @Column({ type: 'integer', default: 0 })
   materialCount: number;
 
-  @Column({ default: 0 })
+  @Column({ type: 'integer', default: 0 })
   successCount: number;
 
-  @Column({ default: 0 })
+  @Column({ type: 'integer', default: 0 })
   failedCount: number;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   frozen: boolean;
 
   @Column({ type: 'datetime', nullable: true })
@@ -60,7 +59,4 @@ export class Batch {
 
   @OneToMany(() => Material, material => material.batch)
   materials: Material[];
-
-  @OneToMany(() => AuditLog, log => log.batch)
-  auditLogs: AuditLog[];
 }

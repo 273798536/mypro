@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuditLog = void 0;
 const typeorm_1 = require("typeorm");
-const Batch_1 = require("./Batch");
 let AuditLog = class AuditLog {
 };
 exports.AuditLog = AuditLog;
@@ -59,11 +58,6 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], AuditLog.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => Batch_1.Batch, batch => batch.auditLogs, { onDelete: 'CASCADE', nullable: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'batchId' }),
-    __metadata("design:type", Batch_1.Batch)
-], AuditLog.prototype, "batch", void 0);
 exports.AuditLog = AuditLog = __decorate([
     (0, typeorm_1.Entity)()
 ], AuditLog);

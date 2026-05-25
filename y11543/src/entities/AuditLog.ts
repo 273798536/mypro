@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Batch } from './Batch';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 export type AuditAction = 
   | 'batch_created'
@@ -9,6 +8,7 @@ export type AuditAction =
   | 'batch_frozen'
   | 'batch_unfrozen'
   | 'batch_completed'
+  | 'batch_status_changed'
   | 'material_added'
   | 'material_updated'
   | 'material_removed'
@@ -17,7 +17,9 @@ export type AuditAction =
   | 'remark_added'
   | 'manual_override'
   | 'mapping_created'
-  | 'exported';
+  | 'exported'
+  | 'store_handover_added'
+  | 'store_handover_confirmed';
 
 @Entity()
 export class AuditLog {
@@ -53,8 +55,4 @@ export class AuditLog {
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @ManyToOne(() => Batch, batch => batch.auditLogs, { onDelete: 'CASCADE', nullable: true })
-  @JoinColumn({ name: 'batchId' })
-  batch: Batch;
 }

@@ -19,19 +19,19 @@ __decorate([
     __metadata("design:type", String)
 ], StoreHandover.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)
 ], StoreHandover.prototype, "batchId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)
 ], StoreHandover.prototype, "materialId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)
 ], StoreHandover.prototype, "storeId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)
 ], StoreHandover.prototype, "storeName", void 0);
 __decorate([
@@ -39,12 +39,12 @@ __decorate([
     __metadata("design:type", String)
 ], StoreHandover.prototype, "handoverDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", Object)
 ], StoreHandover.prototype, "receiver", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], StoreHandover.prototype, "handoverContent", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'boolean', default: false }),
@@ -52,7 +52,7 @@ __decorate([
 ], StoreHandover.prototype, "isConfirmed", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'datetime', nullable: true }),
-    __metadata("design:type", Date)
+    __metadata("design:type", Object)
 ], StoreHandover.prototype, "confirmedAt", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),

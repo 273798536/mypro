@@ -5,32 +5,32 @@ export class StoreHandover {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   batchId: string;
 
-  @Column()
+  @Column({ type: 'text' })
   materialId: string;
 
-  @Column()
+  @Column({ type: 'text' })
   storeId: string;
 
-  @Column()
+  @Column({ type: 'text' })
   storeName: string;
 
   @Column({ type: 'date' })
   handoverDate: string;
 
-  @Column({ nullable: true })
-  receiver: string;
+  @Column({ type: 'text', nullable: true })
+  receiver: string | null;
 
   @Column({ type: 'text', nullable: true })
-  handoverContent: string;
+  handoverContent: string | null;
 
   @Column({ type: 'boolean', default: false })
   isConfirmed: boolean;
 
   @Column({ type: 'datetime', nullable: true })
-  confirmedAt: Date;
+  confirmedAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;

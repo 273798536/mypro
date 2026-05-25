@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportService = exports.materialService = exports.batchService = exports.auditLogService = void 0;
+exports.storeHandoverService = exports.exportService = exports.materialService = exports.batchService = exports.auditLogService = void 0;
 var AuditLogService_1 = require("./AuditLogService");
 Object.defineProperty(exports, "auditLogService", { enumerable: true, get: function () { return AuditLogService_1.auditLogService; } });
 var BatchService_1 = require("./BatchService");
@@ -9,3 +9,5 @@ var MaterialService_1 = require("./MaterialService");
 Object.defineProperty(exports, "materialService", { enumerable: true, get: function () { return MaterialService_1.materialService; } });
 var ExportService_1 = require("./ExportService");
 Object.defineProperty(exports, "exportService", { enumerable: true, get: function () { return ExportService_1.exportService; } });
+var StoreHandoverService_1 = require("./StoreHandoverService");
+Object.defineProperty(exports, "storeHandoverService", { enumerable: true, get: function () { return StoreHandoverService_1.storeHandoverService; } });

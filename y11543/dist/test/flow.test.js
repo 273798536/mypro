@@ -67,10 +67,27 @@ async function testMainFlow() {
     console.log('   ✓ 客服备注已添加');
     console.log('\n6. 提交批次...');
     await services_1.batchService.submit(batch.id, '张三');
-    console.log('   ✓ 批次已提交');
+    let b = await services_1.batchService.getById(batch.id);
+    console.log(`   ✓ 批次已提交, 当前状态: ${b?.status}`);
     console.log('\n7. 人工改判...');
     await services_1.materialService.manualOverride(batch.id, 'MAT0002', 'approved', '客户确认可以投放，特殊放行', '审核主管');
-    console.log('   ✓ 人工改判完成');
+    b = await services_1.batchService.getById(batch.id);
+    console.log(`   ✓ 人工改判完成, 当前状态: ${b?.status}`);
+    console.log('\n8. 审核剩余素材以完成批次...');
+    await services_1.materialService.addAuditResult(batch.id, {
+        materialId: 'MAT0003',
+        status: 'approved',
+        reason: '符合规范',
+        auditor: '李四'
+    }, '李四');
+    b = await services_1.batchService.getById(batch.id);
+    console.log(`   ✓ 所有素材审核完成, 批次状态: ${b?.status}`);
+    if (b?.status === 'completed') {
+        console.log(`   ✓ 状态机验证: 自动从 submitted → processing → completed`);
+    }
+    else {
+        console.log(`   ⚠ 状态: ${b?.status}`);
+    }
     console.log('\n8. 获取对账报告...');
     const report = await services_1.exportService.getReconciliationReport(batch.id);
     console.log(`   批次: ${report.batchNo}`);
@@ -218,12 +235,124 @@ async function testMultiPlatformMapping() {
     console.log('✅ 多平台映射测试完成!');
     console.log('='.repeat(60));
 }
+async function testStoreHandover() {
+    console.log('\n\n' + '='.repeat(60));
+    console.log('🏪 测试门店交接: 添加交接记录、确认交接、汇总查询');
+    console.log('='.repeat(60));
+    console.log('\n1. 创建批次...');
+    const batch = await services_1.batchService.create({
+        batchNo: 'STORE-HANDOVER-' + Date.now(),
+        name: '门店交接测试批次',
+        operator: '市场专员',
+        description: '测试门店交接流程'
+    });
+    console.log('\n2. 添加素材...');
+    await services_1.batchService.addMaterials(batch.id, [
+        { materialId: 'MAT-STORE-001', name: '门店海报1', platform: '线下' },
+        { materialId: 'MAT-STORE-002', name: '门店展架1', platform: '线下' }
+    ], '市场专员');
+    console.log('\n3. 添加门店交接记录...');
+    const h1 = await services_1.storeHandoverService.addHandover(batch.id, {
+        materialId: 'MAT-STORE-001',
+        storeId: 'STORE-001',
+        storeName: '北京朝阳大悦城店',
+        handoverDate: '2024-05-20',
+        receiver: '店长王小明',
+        handoverContent: '海报5张，展架2个'
+    }, '市场专员');
+    console.log(`   ✓ 交接记录1已添加: ${h1.id}`);
+    const h2 = await services_1.storeHandoverService.addHandover(batch.id, {
+        materialId: 'MAT-STORE-002',
+        storeId: 'STORE-002',
+        storeName: '上海南京路步行街店',
+        handoverDate: '2024-05-21',
+        receiver: '店长李小红',
+        handoverContent: '展架3个'
+    }, '市场专员');
+    console.log(`   ✓ 交接记录2已添加: ${h2.id}`);
+    console.log('\n4. 确认交接记录1...');
+    await services_1.storeHandoverService.confirmHandover(h1.id, '店长王小明');
+    console.log(`   ✓ 交接记录1已确认`);
+    console.log('\n5. 查询批次交接汇总...');
+    const summary = await services_1.storeHandoverService.getBatchHandoversSummary(batch.id);
+    console.log(`   总记录数: ${summary.totalCount}`);
+    console.log(`   已确认: ${summary.confirmedCount}`);
+    console.log(`   待确认: ${summary.unconfirmedCount}`);
+    if (summary.totalCount === 2 && summary.confirmedCount === 1 && summary.unconfirmedCount === 1) {
+        console.log(`   ✓ 门店交接功能验证通过!`);
+    }
+    else {
+        console.log(`   ⚠ 门店交接数据异常`);
+    }
+    console.log('\n' + '='.repeat(60));
+    console.log('✅ 门店交接测试完成!');
+    console.log('='.repeat(60));
+}
+async function testStateMachine() {
+    console.log('\n\n' + '='.repeat(60));
+    console.log('⚙️  测试状态机: 完整状态流转验证');
+    console.log('='.repeat(60));
+    console.log('\n1. 创建批次...');
+    const batch = await services_1.batchService.create({
+        batchNo: 'STATE-MACHINE-' + Date.now(),
+        name: '状态机测试批次',
+        operator: '测试员'
+    });
+    console.log(`   初始状态: ${batch.status}`);
+    console.log('\n2. 添加素材 (2个)...');
+    await services_1.batchService.addMaterials(batch.id, [
+        { materialId: 'MAT-SM-001', name: '测试素材1', platform: '抖音' },
+        { materialId: 'MAT-SM-002', name: '测试素材2', platform: '快手' }
+    ], '测试员');
+    console.log('\n3. 提交批次...');
+    await services_1.batchService.submit(batch.id, '测试员');
+    let b = await services_1.batchService.getById(batch.id);
+    console.log(`   提交后状态: ${b?.status}`);
+    console.log('\n4. 审核第一个素材通过...');
+    await services_1.materialService.addAuditResult(batch.id, {
+        materialId: 'MAT-SM-001',
+        status: 'approved',
+        reason: 'OK',
+        auditor: '审核员'
+    }, '审核员');
+    b = await services_1.batchService.getById(batch.id);
+    console.log(`   部分审核后状态: ${b?.status}`);
+    if (b?.status === 'processing') {
+        console.log(`   ✓ 正确进入 processing 状态`);
+    }
+    console.log('\n5. 审核第二个素材不通过...');
+    await services_1.materialService.addAuditResult(batch.id, {
+        materialId: 'MAT-SM-002',
+        status: 'rejected',
+        reason: '违规',
+        auditor: '审核员'
+    }, '审核员');
+    b = await services_1.batchService.getById(batch.id);
+    console.log(`   全部审核后状态: ${b?.status}`);
+    if (b?.status === 'partial_failed') {
+        console.log(`   ✓ 正确进入 partial_failed 状态`);
+    }
+    console.log('\n6. 尝试冻结 (应该允许，因为是 partial_failed)...');
+    try {
+        await services_1.batchService.freeze(batch.id, '管理员');
+        b = await services_1.batchService.getById(batch.id);
+        console.log(`   ✓ 冻结成功, frozen=${b?.frozen}, status=${b?.status}`);
+    }
+    catch (e) {
+        console.log(`   ✗ 冻结失败: ${e.message}`);
+    }
+    console.log('\n' + '='.repeat(60));
+    console.log('✅ 状态机测试完成!');
+    console.log('='.repeat(60));
+}
 async function runAllTests() {
     try {
         await testMainFlow();
         await testIdempotency();
         await testDuplicateStrategies();
         await testMultiPlatformMapping();
+        await testStoreHandover();
+        await testStateMachine();
         console.log('\n\n🎉 所有测试通过!');
         process.exit(0);
     }

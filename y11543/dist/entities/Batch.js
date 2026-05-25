@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Batch = void 0;
 const typeorm_1 = require("typeorm");
 const Material_1 = require("./Material");
-const AuditLog_1 = require("./AuditLog");
 let Batch = class Batch {
 };
 exports.Batch = Batch;
@@ -21,11 +20,11 @@ __decorate([
     __metadata("design:type", String)
 ], Batch.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ unique: true, type: 'text' }),
     __metadata("design:type", String)
 ], Batch.prototype, "batchNo", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)
 ], Batch.prototype, "name", void 0);
 __decorate([
@@ -51,19 +50,19 @@ __decorate([
     __metadata("design:type", Object)
 ], Batch.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
+    (0, typeorm_1.Column)({ type: 'integer', default: 0 }),
     __metadata("design:type", Number)
 ], Batch.prototype, "materialCount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
+    (0, typeorm_1.Column)({ type: 'integer', default: 0 }),
     __metadata("design:type", Number)
 ], Batch.prototype, "successCount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
+    (0, typeorm_1.Column)({ type: 'integer', default: 0 }),
     __metadata("design:type", Number)
 ], Batch.prototype, "failedCount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: false }),
+    (0, typeorm_1.Column)({ type: 'boolean', default: false }),
     __metadata("design:type", Boolean)
 ], Batch.prototype, "frozen", void 0);
 __decorate([
@@ -86,10 +85,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => Material_1.Material, material => material.batch),
     __metadata("design:type", Array)
 ], Batch.prototype, "materials", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => AuditLog_1.AuditLog, log => log.batch),
-    __metadata("design:type", Array)
-], Batch.prototype, "auditLogs", void 0);
 exports.Batch = Batch = __decorate([
     (0, typeorm_1.Entity)()
 ], Batch);

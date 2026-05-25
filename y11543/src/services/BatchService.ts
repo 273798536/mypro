@@ -267,6 +267,10 @@ export class BatchService {
       throw new Error('批次已冻结');
     }
 
+    if (batch.status !== 'completed' && batch.status !== 'partial_failed') {
+      throw new Error(`批次状态为 ${batch.status}，只能在 completed 或 partial_failed 状态下冻结`);
+    }
+
     batch.frozen = true;
     batch.frozenAt = new Date();
     batch.frozenBy = operator || null;
@@ -309,7 +313,10 @@ export class BatchService {
     return saved;
   }
 
-  async updateBatchStats(batchId: string): Promise<void> {
+  async updateBatchStats(batchId: string): Promise<Batch | null> {
+    const batch = await this.getById(batchId);
+    if (!batch) return null;
+
     const materials = await this.materialRepository.find({ where: { batchId } });
     
     const successCount = materials.filter(m => 
@@ -320,11 +327,42 @@ export class BatchService {
       m.status === 'rejected' || m.status === 'failed'
     ).length;
 
-    await this.repository.update(batchId, {
+    const pendingCount = materials.filter(m => 
+      m.status === 'pending' || m.status === 'auditing'
+    ).length;
+
+    let newStatus = batch.status;
+    if (batch.status === 'submitted' || batch.status === 'processing') {
+      if (pendingCount > 0) {
+        newStatus = 'processing';
+      } else if (failedCount > 0 && successCount > 0) {
+        newStatus = 'partial_failed';
+      } else if (failedCount > 0 && successCount === 0) {
+        newStatus = 'partial_failed';
+      } else if (successCount > 0 && failedCount === 0 && pendingCount === 0) {
+        newStatus = 'completed';
+      }
+    }
+
+    const updateData: any = {
       materialCount: materials.length,
       successCount,
       failedCount
-    });
+    };
+
+    if (newStatus !== batch.status) {
+      updateData.status = newStatus;
+      await auditLogService.log('batch_status_changed', {
+        batchId,
+        fieldName: 'status',
+        oldValue: batch.status,
+        newValue: newStatus
+      });
+    }
+
+    await this.repository.update(batchId, updateData);
+
+    return await this.getById(batchId);
   }
 
   async updateStatus(batchId: string, status: BatchStatus, operator?: string): Promise<Batch> {

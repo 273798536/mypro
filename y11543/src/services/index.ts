@@ -8,3 +8,4 @@ export {
   RemarkInput 
 } from './MaterialService';
 export { exportService, ReplayDiff, AnomalyRecord } from './ExportService';
+export { storeHandoverService, StoreHandoverInput } from './StoreHandoverService';

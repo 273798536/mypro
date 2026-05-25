@@ -2,7 +2,7 @@
 import 'reflect-metadata';
 import { Command } from 'commander';
 import { initDatabase } from '../database/data-source';
-import { batchService, materialService, exportService } from '../services';
+import { batchService, materialService, exportService, storeHandoverService } from '../services';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -205,6 +205,64 @@ program
     
     fs.writeFileSync(options.file, JSON.stringify(materials, null, 2));
     console.log(`✓ 样例数据已生成: ${options.file}`);
+    process.exit(0);
+  });
+
+program
+  .command('add-handover')
+  .description('添加门店交接记录')
+  .requiredOption('-b, --batchId <batchId>', '批次ID')
+  .requiredOption('-m, --materialId <materialId>', '素材ID')
+  .requiredOption('-s, --storeId <storeId>', '门店ID')
+  .requiredOption('-N, --storeName <storeName>', '门店名称')
+  .requiredOption('-d, --handoverDate <handoverDate>', '交接日期 (YYYY-MM-DD)')
+  .option('-r, --receiver <receiver>', '接收人')
+  .option('-c, --handoverContent <handoverContent>', '交接内容')
+  .option('-o, --operator <operator>', '操作人')
+  .action(async (options) => {
+    await initDatabase();
+    console.log(`正在添加门店交接记录...`);
+    const handover = await storeHandoverService.addHandover(
+      options.batchId,
+      {
+        materialId: options.materialId,
+        storeId: options.storeId,
+        storeName: options.storeName,
+        handoverDate: options.handoverDate,
+        receiver: options.receiver,
+        handoverContent: options.handoverContent
+      },
+      options.operator
+    );
+    console.log(`✓ 交接记录已添加: ${handover.id}`);
+    console.log(JSON.stringify(handover, null, 2));
+    process.exit(0);
+  });
+
+program
+  .command('confirm-handover')
+  .description('确认门店交接记录')
+  .requiredOption('-i, --id <id>', '交接记录ID')
+  .option('-o, --operator <operator>', '操作人')
+  .action(async (options) => {
+    await initDatabase();
+    console.log(`正在确认交接记录: ${options.id}...`);
+    const handover = await storeHandoverService.confirmHandover(options.id, options.operator);
+    console.log(`✓ 交接记录已确认`);
+    console.log(JSON.stringify(handover, null, 2));
+    process.exit(0);
+  });
+
+program
+  .command('list-handovers')
+  .description('列出批次的门店交接记录')
+  .requiredOption('-b, --batchId <batchId>', '批次ID')
+  .action(async (options) => {
+    await initDatabase();
+    console.log(`正在查询批次交接记录: ${options.batchId}...`);
+    const summary = await storeHandoverService.getBatchHandoversSummary(options.batchId);
+    console.log(`总记录数: ${summary.totalCount}, 已确认: ${summary.confirmedCount}, 待确认: ${summary.unconfirmedCount}`);
+    console.log(JSON.stringify(summary.details, null, 2));
     process.exit(0);
   });
 
