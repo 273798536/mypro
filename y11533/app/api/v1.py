@@ -15,6 +15,7 @@ from app.services.replay_service import ReplayService
 from app.services.task_service import TaskService, TASK_STATUS_SUCCESS, TASK_STATUS_WAITING_MANUAL
 from app.services.status_service import StatusService
 from app.services.automation_check_service import AutomationCheckService
+from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/api/v1", tags=["银行网点排班验收回放链路"])
 
@@ -228,10 +229,10 @@ async def manual_resolve_task(
     task_id: str,
     new_status: str = Form(...),
     opinion: str = Form(...),
-    operator: str = Form(...),
+    operator_id: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    """人工处理等待人工的任务"""
+    """人工处理等待人工的任务 - 需要branch_manager或admin角色"""
     task = TaskService.get_task(db, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
@@ -239,10 +240,20 @@ async def manual_resolve_task(
     if task.status != TASK_STATUS_WAITING_MANUAL:
         raise HTTPException(status_code=400, detail="任务不处于待人工处理状态")
     
-    permission_check = AutomationCheckService.check_permission_intercept(
-        "branch_manager", settings.ADMIN_ROLES, "人工处理任务"
+    permission_check = AuthService.require_permission(
+        db,
+        operator_id,
+        settings.ADMIN_ROLES,
+        "人工处理任务"
     )
     
+    if not permission_check["passed"]:
+        raise HTTPException(
+            status_code=403,
+            detail=permission_check["message"]
+        )
+    
+    operator = permission_check.get("username", operator_id)
     task = TaskService.manual_resolve(db, task, new_status, opinion, operator)
     
     AutomationCheckService.check_exception_preserve(db, task_id)
@@ -250,7 +261,7 @@ async def manual_resolve_task(
     return {
         "code": 0,
         "message": "人工处理完成",
-        "data": {"task_id": task_id, "new_status": task.status},
+        "data": {"task_id": task_id, "new_status": task.status, "operator": operator},
     }
 
 @router.get("/task/{task_id}/history", summary="获取任务状态历史")

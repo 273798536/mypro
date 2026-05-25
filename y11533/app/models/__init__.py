@@ -9,6 +9,7 @@ from app.models.async_task import AsyncTask
 from app.models.replay_chain import ReplayChain
 from app.models.import_batch import ImportBatch
 from app.models.automation_check import AutomationCheck
+from app.models.user import User
 
 __all__ = [
     "ImportEvidenceMixin",
@@ -23,4 +24,5 @@ __all__ = [
     "ReplayChain",
     "ImportBatch",
     "AutomationCheck",
+    "User",
 ]

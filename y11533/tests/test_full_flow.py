@@ -15,6 +15,7 @@ from app.services.import_service import ImportService
 from app.services.export_service import ExportService
 from app.services.status_service import StatusService
 from app.services.automation_check_service import AutomationCheckService
+from app.services.auth_service import AuthService
 
 def test_full_flow():
     print("=" * 60)
@@ -24,11 +25,12 @@ def test_full_flow():
     db = SessionLocal()
     
     try:
-        print("\n[1/8] 初始化数据库...")
+        print("\n[1/9] 初始化数据库和默认用户...")
         init_db()
-        print("✓ 数据库初始化完成")
+        AuthService.init_default_users(db)
+        print("✓ 数据库和默认用户初始化完成")
         
-        print("\n[2/8] 测试创建回放链路...")
+        print("\n[2/9] 测试创建回放链路...")
         chain = ReplayService.create_chain(
             db,
             chain_name="测试回放-中关村支行2024-01-15",
@@ -39,39 +41,58 @@ def test_full_flow():
         )
         print(f"✓ 回放链路创建成功，ID: {chain.chain_id}")
         
-        print("\n[3/8] 测试造数功能...")
+        print("\n[3/9] 测试造数功能...")
         test_data = ReplayService.generate_test_data(db, chain, teller_count=5)
         print(f"✓ 造数完成，生成 {len(test_data['schedules'])} 条排班记录")
         
-        print("\n[4/8] 测试模拟启动服务...")
-        start_result = ReplayService.simulate_service_start(db, chain)
-        print("✓ 服务启动模拟完成")
+        print("\n[4/9] 测试启动服务...")
+        start_result = ReplayService.start_service(db, chain)
+        print("✓ 服务启动完成")
         print("  - 命令脚本日志已记录")
         print("  - 本地持久化日志已记录")
+        print(f"  - 服务地址: {start_result['service_url']}")
         
-        print("\n[5/8] 测试发送HTTP请求...")
-        http_result = ReplayService.send_http_requests(db, chain, request_count=10)
-        print(f"✓ HTTP请求发送完成: 成功{http_result['success']}条, 失败{http_result['failed']}条")
+        print("\n[5/9] 测试发送真实HTTP请求...")
+        http_result = ReplayService.send_real_http_requests(db, chain, request_count=5)
+        print(f"✓ 真实HTTP请求发送完成: 成功{http_result['success']}条, 失败{http_result['failed']}条")
+        for log in http_result['logs']:
+            status = "✓" if log['success'] else "✗"
+            print(f"  {status} {log['method']} {log['endpoint']} [{log['status_code']}] {log['response_time_ms']}ms - {log['description']}")
         
-        print("\n[6/8] 测试数据对账...")
+        print("\n[6/9] 测试数据对账...")
         reconcile_result = ReplayService.reconcile_data(db, chain)
         print(f"✓ 对账完成: 发现 {reconcile_result['diff_count']} 个差异, {reconcile_result['anomaly_count']} 个异常")
         if reconcile_result['anomalies']:
             for anomaly in reconcile_result['anomalies'][:2]:
                 print(f"  - {anomaly['type']}: {anomaly['description']}")
         
-        print("\n[7/8] 测试导出报告...")
-        export_path, export_name = ReplayService.export_report(db, chain)
+        print("\n[7/9] 测试导出报告...")
+        export_path, export_name = ReplayService.export_report(db, chain, operator="system")
         print(f"✓ 报告导出成功: {export_name}")
         print(f"  - 文件路径: {export_path}")
         
-        print("\n[8/8] 测试自动化检查...")
+        print("\n[8/9] 测试权限拦截...")
+        print("\n  [8.1] 无权限用户测试(operator王柜员)...")
+        perm_fail = AuthService.require_permission(db, "U003", ["branch_manager", "admin"], "人工改判")
+        print(f"  {'✓' if not perm_fail['passed'] else '✗'} 无权限拦截: {perm_fail['message']}")
+        print(f"    实际拦截: {perm_fail['intercepted']}")
         
-        print("\n  [8.1] 导出一致性检查...")
+        print("\n  [8.2] 有权限用户测试(branch_manager张行长)...")
+        perm_pass = AuthService.require_permission(db, "U001", ["branch_manager", "admin"], "人工改判")
+        print(f"  {'✓' if perm_pass['passed'] else '✗'} 有权限通过: {perm_pass['message']}")
+        print(f"    实际拦截: {perm_pass['intercepted']}")
+        
+        print("\n[9/9] 测试自动化检查...")
+        
+        print("\n  [9.1] 导出一致性检查...")
         consistency_result = AutomationCheckService.check_export_consistency(db, chain.chain_id, export_path)
         print(f"  {'✓' if consistency_result['passed'] else '✗'} 导出一致性检查: {consistency_result['message']}")
+        for check in consistency_result['checks']:
+            status = "✓" if check['passed'] else "✗"
+            extra = f" ({check.get('log_count', 0)}条日志, 操作者: {check.get('operator', 'N/A')})" if check['passed'] and check['check'] == 'status_log_exists' else ""
+            print(f"    {status} {check['check']}: {check.get('message', '通过')}{extra}")
         
-        print("\n  [8.2] 异常保留检查...")
+        print("\n  [9.2] 异常保留检查...")
         test_task = TaskService.create_task(db, "test", "测试任务", created_by="system")
         TaskService.start_task(db, test_task)
         test_error = Exception("培训导致窗口人手不足，午休规则冲突")
@@ -80,16 +101,46 @@ def test_full_flow():
         preserve_result = AutomationCheckService.check_exception_preserve(db, test_task.task_id)
         print(f"  {'✓' if preserve_result['passed'] else '✗'} 异常保留检查: {preserve_result['message']}")
         
-        print("\n  [8.3] 重启后历史一致性检查...")
+        print("\n  [9.3] 重启后历史一致性检查...")
         snapshot = AutomationCheckService.capture_before_restart_snapshot(db, "async_task", test_task.task_id)
         restart_result = AutomationCheckService.check_restart_history(db, "async_task", test_task.task_id, snapshot)
         print(f"  {'✓' if restart_result['passed'] else '✗'} 重启历史检查: {restart_result['message']}")
         
-        print("\n  [8.4] 权限拦截检查...")
-        perm_result = AutomationCheckService.check_permission_intercept(
-            "teller", ["branch_manager", "admin"], "人工改判"
-        )
-        print(f"  {'✓' if not perm_result['passed'] else '✗'} 权限拦截检查: {perm_result['message']}")
+        print("\n  [9.4] 重复导入检查...")
+        import tempfile
+        from app.models.import_batch import ImportBatch
+        from datetime import datetime
+        import uuid
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            f.write("test,data,123")
+            temp_file = f.name
+        
+        try:
+            file_hash = __import__('app.services.import_service', fromlist=['ImportService']).ImportService.calculate_file_hash(temp_file)
+            
+            existing_batch = ImportBatch(
+                batch_id=f"BATCH_{uuid.uuid4().hex[:16]}",
+                batch_name=f"teller_schedule_{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                data_type="teller_schedule",
+                source_file_name="test.csv",
+                source_file_hash=file_hash,
+                source_file_path=temp_file,
+                total_rows=1,
+                success_rows=1,
+                status="completed",
+                created_by="test_user",
+            )
+            db.add(existing_batch)
+            db.commit()
+            
+            dup_result1 = AutomationCheckService.check_duplicate_import(db, temp_file, "teller_schedule")
+            print(f"  {'✓' if not dup_result1['passed'] else '✗'} 重复导入拦截: {dup_result1['message']}")
+            print(f"    现有批次ID: {dup_result1.get('existing_batch_id', 'N/A')}")
+        finally:
+            import os
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
         
         print("\n" + "=" * 60)
         print("测试结果汇总")

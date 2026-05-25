@@ -5,6 +5,7 @@ from app.config import settings
 from app.database import init_db, get_db
 from app.api.v1 import router as api_router
 from app.services.task_service import TaskService
+from app.services.auth_service import AuthService
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -27,6 +28,8 @@ async def startup_event():
     init_db()
     
     db = next(get_db())
+    AuthService.init_default_users(db)
+    
     recovered_count = TaskService.resume_interrupted_tasks(db)
     if recovered_count > 0:
         print(f"[系统启动] 已恢复 {recovered_count} 个中断的任务")

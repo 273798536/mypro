@@ -312,11 +312,28 @@ class ReplayService:
     def export_report(
         db: Session,
         chain: ReplayChain,
+        operator: str = "system",
     ) -> Tuple[str, str]:
-        """导出报告"""
-        chain.status = CHAIN_STATUS_EXPORTED
+        """导出报告 - 写入状态变更日志以支持自动化检查"""
+        old_status = chain.status
         
         filepath, filename = ExportService.export_replay_chain(db, chain.chain_id)
+        
+        chain.status = CHAIN_STATUS_EXPORTED
+        chain.export_file_path = filepath
+        chain.export_file_name = filename
+        
+        StatusService.log_status_change(
+            db=db,
+            entity_type="replay_chains",
+            entity_id=str(chain.id),
+            old_status=old_status,
+            new_status=CHAIN_STATUS_EXPORTED,
+            change_reason=f"导出回放报告完成: {filename}",
+            operator=operator,
+            operator_role="system",
+            extra_info={"export_file": filename, "export_path": filepath},
+        )
         
         db.commit()
         db.refresh(chain)
