@@ -55,9 +55,29 @@ def test_full_flow():
         print("\n[5/9] 测试发送真实HTTP请求...")
         http_result = ReplayService.send_real_http_requests(db, chain, request_count=5)
         print(f"✓ 真实HTTP请求发送完成: 成功{http_result['success']}条, 失败{http_result['failed']}条")
+        
+        assert http_result['total'] == 5, f"应该发送5条请求，实际发送{http_result['total']}条"
+        assert http_result['failed'] >= 1, "应该至少有1条预期失败的请求（查询不存在的task_id）"
+        
+        failed_logs = [log for log in http_result['logs'] if not log['success']]
+        assert len(failed_logs) == http_result['failed'], "失败计数与实际失败日志数不一致"
+        
+        expected_404 = [log for log in failed_logs if log['status_code'] == 404 and 'task' in log['endpoint']]
+        assert len(expected_404) >= 1, "应该有一个查询不存在任务的404失败"
+        
+        success_logs = [log for log in http_result['logs'] if log['success']]
+        assert len(success_logs) == http_result['success'], "成功计数与实际成功日志数不一致"
+        
+        db.refresh(chain)
+        assert chain.request_count == 5, f"数据库中request_count应为5，实际为{chain.request_count}"
+        assert chain.request_failed_count >= 1, f"数据库中request_failed_count应>=1，实际为{chain.request_failed_count}"
+        
         for log in http_result['logs']:
             status = "✓" if log['success'] else "✗"
             print(f"  {status} {log['method']} {log['endpoint']} [{log['status_code']}] {log['response_time_ms']}ms - {log['description']}")
+            assert 'request_id' in log, "每条HTTP日志应该有request_id"
+            assert 'timestamp' in log, "每条HTTP日志应该有timestamp"
+            assert 'response_body_preview' in log, "每条HTTP日志应该有响应体预览"
         
         print("\n[6/9] 测试数据对账...")
         reconcile_result = ReplayService.reconcile_data(db, chain)
@@ -170,8 +190,9 @@ def test_full_flow():
             print(f"  导入批次: {schedule.import_batch_id}")
         
         print(f"\n状态审计验证:")
-        logs = StatusService.get_entity_status_history(db, "async_tasks", str(test_task.id))
+        logs = StatusService.get_entity_status_history(db, "async_tasks", test_task.task_id)
         print(f"  状态变更记录: {len(logs)}条")
+        assert len(logs) > 0, "任务状态历史应该有记录（pending→running→waiting_manual）"
         for log in logs[:3]:
             print(f"    - {log.change_time}: {log.old_status} → {log.new_status} ({log.operator})")
         

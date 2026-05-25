@@ -122,11 +122,17 @@ async def start_replay(
     def run_replay_task():
         db_local = next(get_db())
         try:
+            chain_local = db_local.query(ReplayChain).filter(ReplayChain.chain_id == chain_id).first()
+            if not chain_local:
+                raise ValueError(f"回放链路 {chain_id} 在后台任务中不存在")
+            
             task_local = TaskService.get_task(db_local, task.task_id)
             TaskService.start_task(db_local, task_local)
-            ReplayService.run_full_replay(db_local, chain, task_local)
+            ReplayService.run_full_replay(db_local, chain_local, task_local)
             TaskService.complete_task(db_local, task_local)
-            AutomationCheckService.check_export_consistency(db_local, chain_id, chain.export_file_path)
+            
+            chain_local = db_local.query(ReplayChain).filter(ReplayChain.chain_id == chain_id).first()
+            AutomationCheckService.check_export_consistency(db_local, chain_id, chain_local.export_file_path)
         except Exception as e:
             task_local = TaskService.get_task(db_local, task.task_id)
             TaskService.handle_failure(db_local, task_local, e, "WAITING_MANUAL")
@@ -274,7 +280,7 @@ async def get_task_history(
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
     
-    logs = StatusService.get_entity_status_history(db, "async_tasks", str(task.id))
+    logs = StatusService.get_entity_status_history(db, "async_tasks", task.task_id)
     
     return {
         "code": 0,
