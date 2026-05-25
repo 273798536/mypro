@@ -4,16 +4,24 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const dbPath = path.resolve(process.env.DB_PATH || './data/city_lighting.db');
-
 const db = new sqlite3.Database(dbPath);
+
+const runQuery = (sql, params = []) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function(err) {
+      if (err) reject(err);
+      else resolve(this.lastID);
+    });
+  });
+};
 
 const initDatabase = () => {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run('BEGIN TRANSACTION');
-
+    db.serialize(async () => {
       try {
-        db.run(`
+        await runQuery('BEGIN TRANSACTION');
+
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -26,7 +34,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS work_orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             order_no TEXT UNIQUE NOT NULL,
@@ -45,7 +53,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS inspection_photos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             work_order_id INTEGER NOT NULL,
@@ -60,7 +68,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS repair_hotlines (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             work_order_id INTEGER NOT NULL,
@@ -74,7 +82,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS spare_parts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             work_order_id INTEGER NOT NULL,
@@ -90,7 +98,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS external_receipts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             work_order_id INTEGER NOT NULL,
@@ -106,7 +114,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS operation_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             operation_type TEXT NOT NULL,
@@ -123,7 +131,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS bad_data_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             source_table TEXT NOT NULL,
@@ -141,7 +149,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS reconciliation_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             work_order_id INTEGER NOT NULL,
@@ -157,7 +165,7 @@ const initDatabase = () => {
           )
         `);
 
-        db.run(`
+        await runQuery(`
           CREATE TABLE IF NOT EXISTS road_section_relations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             main_road_section TEXT NOT NULL,
@@ -169,55 +177,67 @@ const initDatabase = () => {
           )
         `);
 
-        db.run('COMMIT');
+        await runQuery('COMMIT');
         console.log('数据库表结构创建完成');
         resolve();
       } catch (err) {
-        db.run('ROLLBACK');
+        await runQuery('ROLLBACK').catch(() => {});
         reject(err);
       }
     });
   });
 };
 
-const initUsers = () => {
-  return new Promise((resolve, reject) => {
-    const users = [
-      { username: 'entry_user', password: 'entry123', role: 'entry', name: '录入员张三', department: '运维部' },
-      { username: 'review_user', password: 'review123', role: 'review', name: '复核员李四', department: '质控部' },
-      { username: 'super_user', password: 'super123', role: 'supervisor', name: '主管王五', department: '市政管理处' },
-      { username: 'readonly_user', password: 'readonly123', role: 'readonly', name: '查看员赵六', department: '审计部' }
-    ];
+const initUsers = async () => {
+  const users = [
+    { username: 'entry_user', password: 'entry123', role: 'entry', name: '录入员张三', department: '运维部' },
+    { username: 'review_user', password: 'review123', role: 'review', name: '复核员李四', department: '质控部' },
+    { username: 'super_user', password: 'super123', role: 'supervisor', name: '主管王五', department: '市政管理处' },
+    { username: 'readonly_user', password: 'readonly123', role: 'readonly', name: '查看员赵六', department: '审计部' }
+  ];
 
-    db.serialize(() => {
-      db.run('BEGIN TRANSACTION');
-      
-      let completed = 0;
-      users.forEach(user => {
-        bcrypt.hash(user.password, 10, (err, hash) => {
-          if (err) {
-            db.run('ROLLBACK');
-            return reject(err);
-          }
-          
-          db.run(
-            'INSERT OR IGNORE INTO users (username, password, role, name, department) VALUES (?, ?, ?, ?, ?)',
-            [user.username, hash, user.role, user.name, user.department],
-            function(err) {
-              if (err) {
-                db.run('ROLLBACK');
-                return reject(err);
-              }
-              completed++;
-              if (completed === users.length) {
-                db.run('COMMIT');
-                console.log('初始用户创建完成');
-                resolve();
-              }
-            }
-          );
+  await runQuery('BEGIN TRANSACTION');
+  
+  try {
+    for (const user of users) {
+      const existing = await new Promise((resolve, reject) => {
+        db.get('SELECT id FROM users WHERE username = ?', [user.username], (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
         });
       });
+      
+      if (!existing) {
+        const hash = await bcrypt.hash(user.password, 10);
+        await runQuery(
+          'INSERT INTO users (username, password, role, name, department) VALUES (?, ?, ?, ?, ?)',
+          [user.username, hash, user.role, user.name, user.department]
+        );
+        console.log(`  创建用户: ${user.username} (${user.role})`);
+      } else {
+        console.log(`  跳过已存在用户: ${user.username}`);
+      }
+    }
+    
+    await runQuery('COMMIT');
+    console.log('初始用户创建完成');
+  } catch (err) {
+    await runQuery('ROLLBACK').catch(() => {});
+    throw err;
+  }
+};
+
+const printUserIds = () => {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT id, username, role, name FROM users ORDER BY id', (err, rows) => {
+      if (err) reject(err);
+      else {
+        console.log('\n用户ID映射:');
+        rows.forEach(u => {
+          console.log(`  id=${u.id}: ${u.username} (${u.role}) - ${u.name}`);
+        });
+        resolve();
+      }
     });
   });
 };
@@ -227,7 +247,8 @@ const init = async () => {
     console.log('开始初始化数据库...');
     await initDatabase();
     await initUsers();
-    console.log('数据库初始化完成!');
+    await printUserIds();
+    console.log('\n数据库初始化完成!');
     console.log('\n默认账号:');
     console.log('  录入员: entry_user / entry123');
     console.log('  复核员: review_user / review123');
