@@ -20,6 +20,25 @@ from app.utils.audit import create_audit_trail
 from app.utils.validators import validate_date
 
 
+def to_json_safe(value):
+    if isinstance(value, (datetime, pd.Timestamp)):
+        return value.isoformat()
+    if hasattr(value, "value"):
+        return value.value
+    if isinstance(value, float) and pd.isna(value):
+        return None
+    return value
+
+
+def clean_dict_for_json(data):
+    if isinstance(data, dict):
+        return {k: clean_dict_for_json(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [clean_dict_for_json(v) for v in data]
+    else:
+        return to_json_safe(data)
+
+
 def allowed_file(filename):
     return "." in filename and \
            filename.rsplit(".", 1)[1].lower() in current_app.config["ALLOWED_EXTENSIONS"]
@@ -36,7 +55,8 @@ def calculate_file_hash(file_path):
 def parse_inspection_row(row, row_num):
     errors = []
     record = {}
-    record["original_data"] = row.to_dict()
+    raw_data = row.to_dict()
+    record["original_data"] = clean_dict_for_json(raw_data)
     record["original_row_number"] = row_num
 
     try:
@@ -74,14 +94,16 @@ def parse_inspection_row(row, row_num):
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")
 
-    record["parsed_data"] = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    parsed = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    record["parsed_data"] = clean_dict_for_json(parsed)
     return record, errors
 
 
 def parse_calibration_row(row, row_num):
     errors = []
     record = {}
-    record["original_data"] = row.to_dict()
+    raw_data = row.to_dict()
+    record["original_data"] = clean_dict_for_json(raw_data)
     record["original_row_number"] = row_num
 
     try:
@@ -119,14 +141,16 @@ def parse_calibration_row(row, row_num):
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")
 
-    record["parsed_data"] = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    parsed = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    record["parsed_data"] = clean_dict_for_json(parsed)
     return record, errors
 
 
 def parse_repair_row(row, row_num):
     errors = []
     record = {}
-    record["original_data"] = row.to_dict()
+    raw_data = row.to_dict()
+    record["original_data"] = clean_dict_for_json(raw_data)
     record["original_row_number"] = row_num
 
     try:
@@ -167,14 +191,16 @@ def parse_repair_row(row, row_num):
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")
 
-    record["parsed_data"] = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    parsed = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    record["parsed_data"] = clean_dict_for_json(parsed)
     return record, errors
 
 
 def parse_supplementary_row(row, row_num):
     errors = []
     record = {}
-    record["original_data"] = row.to_dict()
+    raw_data = row.to_dict()
+    record["original_data"] = clean_dict_for_json(raw_data)
     record["original_row_number"] = row_num
 
     try:
@@ -203,7 +229,8 @@ def parse_supplementary_row(row, row_num):
     except Exception as e:
         errors.append(f"解析异常: {str(e)}")
 
-    record["parsed_data"] = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    parsed = {k: v for k, v in record.items() if k not in ["original_data", "original_row_number"]}
+    record["parsed_data"] = clean_dict_for_json(parsed)
     return record, errors
 
 

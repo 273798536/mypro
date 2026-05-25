@@ -328,6 +328,94 @@ def test_restart_verification():
     return True
 
 
+def test_import_workflow():
+    print_section("15. 导入功能测试（样例数据+坏数据+追溯链路）")
+
+    import subprocess
+    import os
+
+    print("  步骤1: 生成样例导入数据")
+    subprocess.run(["python3", "generate_samples.py"], capture_output=True)
+
+    upload_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir, exist_ok=True)
+
+    sample_file = os.path.join(upload_dir, "sample_inspection.xlsx")
+    if not os.path.exists(sample_file):
+        from generate_samples import generate_all_samples
+        generate_all_samples()
+
+    print("\n  步骤2: 导入巡检记录（包含有效数据和坏数据）")
+    print(f"  文件: {sample_file}")
+
+    if os.path.exists(sample_file):
+        with open(sample_file, "rb") as f:
+            files = {"file": ("sample_inspection.xlsx", f, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+            data = {"record_type": "inspection"}
+            headers = {"X-User-ID": "1", "X-User-Role": "admin", "X-User-Name": "Admin"}
+            resp = requests.post(f"{BASE_URL}/import", files=files, data=data, headers=headers)
+            result = resp.json()
+
+            print(f"  HTTP状态: {resp.status_code}")
+            if resp.status_code == 200:
+                import_data = result.get("data", {})
+                print(f"  导入结果:")
+                print(f"    导入源ID: {import_data.get('import_source_id')}")
+                print(f"    总行数: {import_data.get('total')}")
+                print(f"    成功: {import_data.get('success')}")
+                print(f"    失败: {import_data.get('failed')}")
+                if import_data.get("failed_details"):
+                    print(f"    失败详情:")
+                    for detail in import_data["failed_details"][:5]:
+                        print(f"      - 行{detail.get('row')}: {', '.join(detail.get('errors', []))}")
+
+                import_source_id = import_data.get("import_source_id")
+                if import_source_id:
+                    print("\n  步骤3: 验证导入源记录")
+                    resp = requests.get(f"{BASE_URL}/import/sources", headers=headers)
+                    sources = resp.json()
+                    if sources.get("data"):
+                        for src in sources["data"][:5]:
+                            print(f"    导入源ID: {src['id']}, 文件: {src['filename']}, 状态: {src['status']}")
+
+                    print("\n  步骤4: 验证原始数据保留")
+                    resp = requests.get(f"{BASE_URL}/inspection", headers=headers)
+                    records = resp.json()
+                    if records.get("data"):
+                        for rec in records["data"][:5]:
+                            if rec.get("import_source_id") == import_source_id:
+                                print(f"    记录: {rec.get('record_no')}")
+                                print(f"      原始行号: {rec.get('original_row_number')}")
+                                print(f"      原始数据存在: {'是' if rec.get('original_data') else '否'}")
+                                print(f"      解析数据存在: {'是' if rec.get('parsed_data') else '否'}")
+                                break
+
+                    print("\n  步骤5: 验证审计轨迹")
+                    resp = requests.get(f"{BASE_URL}/audit", headers=headers)
+                    audits = resp.json()
+                    import_audits = [a for a in audits.get("data", []) if a.get("action") == "import"]
+                    print(f"    导入相关审计记录: {len(import_audits)} 条")
+
+                    print("\n  步骤6: 重复导入同一文件（应被拦截）")
+                    with open(sample_file, "rb") as f2:
+                        files2 = {"file": ("sample_inspection.xlsx", f2, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+                        resp2 = requests.post(f"{BASE_URL}/import", files=files2, data=data, headers=headers)
+                        if resp2.status_code in [400, 409]:
+                            print("    ✓ 重复导入已被正确拦截")
+                        else:
+                            print(f"    ⚠ 重复导入未被拦截: {resp2.status_code}")
+
+                print("\n  ✓ 导入功能测试完成")
+                return True
+            else:
+                print(f"  ✗ 导入失败: {result.get('error')}")
+                return False
+    else:
+        print("  ✗ 样例文件不存在")
+        return False
+
+
 def test_repair_quotation_workflow():
     print_section("12. 维修报价完整工作流测试")
 
@@ -563,6 +651,9 @@ def run_all_tests():
         test_repair_quotation_workflow()
         test_supplementary_workflow()
         test_calibration_workflow()
+
+        # 导入功能测试
+        test_import_workflow()
 
         print("\n" + "=" * 60)
         print("  ✅ 所有测试完成！")
