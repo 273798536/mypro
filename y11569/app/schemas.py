@@ -217,3 +217,111 @@ class RoleViewItem(BaseModel):
 class RoleViewConfig(BaseModel):
     role: Role
     view_items: List[RoleViewItem]
+
+
+class TaskStatus(PyEnum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    RETRYING = "retrying"
+    FAILED = "failed"
+    COMPLETED = "completed"
+    DEAD_LETTER = "dead_letter"
+
+
+class TaskType(PyEnum):
+    IMPORT = "import"
+    EXPORT = "export"
+    STATUS_CHANGE = "status_change"
+    NOTIFICATION = "notification"
+    DATA_SYNC = "data_sync"
+    EVIDENCE_PROCESS = "evidence_process"
+
+
+class RetryTaskBase(BaseModel):
+    task_type: TaskType
+    task_data: Dict[str, Any]
+    max_retries: int = 3
+    work_order_id: Optional[int] = None
+    priority: int = 0
+
+
+class RetryTaskCreate(RetryTaskBase):
+    created_by: Optional[int] = None
+
+
+class RetryTask(RetryTaskBase):
+    id: int
+    status: TaskStatus
+    retry_count: int
+    last_error: Optional[str] = None
+    last_retry_at: Optional[datetime] = None
+    next_retry_at: datetime
+    created_by: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DeadLetterTaskBase(BaseModel):
+    task_type: TaskType
+    task_data: Dict[str, Any]
+    error_message: str
+    retry_count: int
+    work_order_id: Optional[int] = None
+
+
+class DeadLetterTask(DeadLetterTaskBase):
+    id: int
+    original_task_id: int
+    error_stacktrace: Optional[str] = None
+    moved_at: datetime
+    moved_by: Optional[int] = None
+    is_resolved: bool = False
+    resolved_at: Optional[datetime] = None
+    resolved_by: Optional[int] = None
+    resolution_note: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class DeadLetterResolveRequest(BaseModel):
+    dlq_id: int
+    resolved_by: int
+    resolution_note: str
+    requeue: bool = False
+
+
+class ReplaySessionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    work_order_id: int
+
+
+class ReplaySessionCreate(ReplaySessionBase):
+    created_by: int
+
+
+class ReplaySession(ReplaySessionBase):
+    id: int
+    start_time: datetime
+    end_time: datetime
+    created_by: int
+    created_at: datetime
+    status: str
+    replay_events: Optional[List[Dict[str, Any]]] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ReplayToTimestampRequest(BaseModel):
+    session_id: int
+    target_timestamp: datetime
+
+
+class QueueStats(BaseModel):
+    retry_queue: Dict[str, int]
+    dead_letter_queue: Dict[str, int]

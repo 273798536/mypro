@@ -167,3 +167,80 @@ class ExportLog(Base):
     is_sensitive_masked = Column(Boolean, default=True)
     file_path = Column(String(500))
     parameters = Column(JSON)
+
+
+class TaskStatus(PyEnum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    RETRYING = "retrying"
+    FAILED = "failed"
+    COMPLETED = "completed"
+    DEAD_LETTER = "dead_letter"
+
+
+class TaskType(PyEnum):
+    IMPORT = "import"
+    EXPORT = "export"
+    STATUS_CHANGE = "status_change"
+    NOTIFICATION = "notification"
+    DATA_SYNC = "data_sync"
+    EVIDENCE_PROCESS = "evidence_process"
+
+
+class RetryQueue(Base):
+    __tablename__ = "retry_queue"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    task_type = Column(Enum(TaskType), nullable=False)
+    task_data = Column(JSON, nullable=False)
+    status = Column(Enum(TaskStatus), default=TaskStatus.PENDING, nullable=False)
+    retry_count = Column(Integer, default=0, nullable=False)
+    max_retries = Column(Integer, default=3, nullable=False)
+    last_error = Column(Text)
+    last_retry_at = Column(DateTime)
+    next_retry_at = Column(DateTime, nullable=False)
+    created_by = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    priority = Column(Integer, default=0)
+    work_order_id = Column(Integer, ForeignKey("work_orders.id"))
+    
+    work_order = relationship("WorkOrder", foreign_keys=[work_order_id])
+
+
+class DeadLetterQueue(Base):
+    __tablename__ = "dead_letter_queue"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    original_task_id = Column(Integer, nullable=False)
+    task_type = Column(Enum(TaskType), nullable=False)
+    task_data = Column(JSON, nullable=False)
+    error_message = Column(Text, nullable=False)
+    error_stacktrace = Column(Text)
+    retry_count = Column(Integer, default=0, nullable=False)
+    moved_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    moved_by = Column(Integer, ForeignKey("users.id"))
+    work_order_id = Column(Integer, ForeignKey("work_orders.id"))
+    is_resolved = Column(Boolean, default=False)
+    resolved_at = Column(DateTime)
+    resolved_by = Column(Integer, ForeignKey("users.id"))
+    resolution_note = Column(Text)
+    
+    work_order = relationship("WorkOrder", foreign_keys=[work_order_id])
+
+
+class ReplaySession(Base):
+    __tablename__ = "replay_sessions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(200), nullable=False)
+    description = Column(Text)
+    work_order_id = Column(Integer, ForeignKey("work_orders.id"))
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+    created_by = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    status = Column(String(50), default="created")
+    replay_events = Column(JSON)
+    
+    work_order = relationship("WorkOrder", foreign_keys=[work_order_id])

@@ -29,6 +29,11 @@
 - ✅ **人工改判**: 保留改判前后数据，原始证据不覆盖
 - ✅ **冻结保护**: 冻结后无法修改，仅可导出
 
+### 关键机制
+- ✅ **重试队列**: 指数退避策略，支持导入/导出/状态变更等任务自动重试
+- ✅ **死信队列**: 超过最大重试次数的任务自动转入，支持手动解决和重新入队
+- ✅ **历史回放**: 完整记录状态变更序列，支持按时间点回溯工单任意历史状态
+
 ## 快速开始
 
 ### 安装依赖
@@ -102,6 +107,36 @@ python cli.py exporter json --wo-ids 1,2,3 --exported-by 3 --output export.json
 python cli.py exporter json --wo-ids 1 --exported-by 1 --no-mask
 ```
 
+#### 重试队列管理
+```bash
+# 查看待处理任务
+python cli.py queue list
+
+# 查看队列统计
+python cli.py queue stats
+```
+
+#### 死信队列管理
+```bash
+# 列出死信任务
+python cli.py deadletter list
+
+# 解决死信任务（可选重新入队）
+python cli.py deadletter resolve 1 --resolved-by 1 --note "已修正数据" --requeue
+```
+
+#### 历史回放管理
+```bash
+# 创建历史回放会话
+python cli.py replay create 1 --created-by 3 --name "问题回溯分析"
+
+# 回放至指定时间点
+python cli.py replay to-time 1 --timestamp "2024-05-20T14:30:00"
+
+# 列出回放会话
+python cli.py replay list
+```
+
 #### 退出码
 - `0`: 成功
 - `1`: 通用错误
@@ -132,6 +167,23 @@ python cli.py exporter json --wo-ids 1 --exported-by 1 --no-mask
 
 ### 角色视图
 - `GET /api/role-view-config/{role}` - 获取角色视图配置
+- `GET /api/work-orders/?viewer_role={role}` - 按角色视图列出工单
+- `GET /api/work-orders/{id}?viewer_role={role}` - 按角色视图查看工单详情
+
+### 重试队列
+- `POST /api/retry-tasks/` - 创建重试任务
+- `GET /api/retry-tasks/` - 列出待处理任务
+- `GET /api/queue-stats/` - 获取队列统计
+
+### 死信队列
+- `GET /api/dead-letter/` - 列出死信任务
+- `POST /api/dead-letter/resolve/` - 解决死信任务
+
+### 历史回放
+- `POST /api/replay/sessions/` - 创建回放会话
+- `GET /api/replay/sessions/` - 列出回放会话
+- `GET /api/replay/sessions/{id}` - 获取回放会话详情
+- `POST /api/replay/to-timestamp/` - 回放至指定时间点
 
 ## 数据模型
 
@@ -145,34 +197,56 @@ python cli.py exporter json --wo-ids 1 --exported-by 1 --no-mask
 - **export_logs**: 导出日志
 - **users**: 用户与角色
 
+### 新增表（v1.1）
+- **retry_queue**: 重试队列（指数退避、最大重试次数）
+- **dead_letter_queue**: 死信队列（支持重新入队）
+- **replay_sessions**: 历史回放会话
+
+## Bug 修复（v1.1）
+
+### 角色视图接口修复
+- **问题**: `GET /api/work-orders/?viewer_role=operator` 返回 500，报 `ResponseValidationError`
+- **原因**: 接口使用 `response_model=List[WorkOrder]`，但角色视图返回裁剪后的 dict
+- **修复**: 移除 `response_model` 约束，动态构建完整数据结构后再裁剪
+
+### 状态流转修复
+- **问题**: `examples/role_view_demo.py` 第 120 行从 `submitted` 直接转 `audit_only` 抛状态错误
+- **原因**: 违反状态机规则，缺少 `reconfirmed` 中间状态
+- **修复**: 添加正确的状态转换路径 `submitted → reconfirmed → audit_only`
+
 ## 项目结构
 ```
 .
 ├── app/
 │   ├── __init__.py
-│   ├── models.py          # 数据模型
-│   ├── schemas.py         # Pydantic 模式
+│   ├── models.py          # 数据模型（新增重试/死信/回放表）
+│   ├── schemas.py         # Pydantic 模式（新增队列相关模式）
 │   ├── database.py        # 数据库连接
 │   ├── services.py        # 业务逻辑
 │   ├── importer.py        # 导入功能
-│   └── main.py            # FastAPI 应用
+│   ├── queue_service.py   # 队列与回放服务（新增）
+│   └── main.py            # FastAPI 应用（新增队列/回放接口）
 ├── examples/
-│   ├── demo_workflow.py   # 完整流程演示
-│   ├── test_edge_cases.py # 边界情况测试
-│   └── role_view_demo.py  # 角色视图演示
-├── cli.py                 # CLI 工具
+│   ├── demo_workflow.py          # 完整流程演示
+│   ├── test_edge_cases.py        # 边界情况测试
+│   ├── role_view_demo.py         # 角色视图演示（已修复）
+│   └── test_queue_and_replay.py  # 队列与回放测试（新增）
+├── cli.py                 # CLI 工具（新增队列/回放命令）
 ├── requirements.txt       # 依赖
 └── README.md              # 说明文档
 ```
 
 ## 运行演示
 ```bash
-# 完整流程演示
+# 完整流程演示（创建到导出）
 python examples/demo_workflow.py
 
 # 边界情况测试
 python examples/test_edge_cases.py
 
-# 角色视图演示
+# 角色视图演示（已修复状态流转）
 python examples/role_view_demo.py
+
+# 队列与回放功能测试
+python examples/test_queue_and_replay.py
 ```

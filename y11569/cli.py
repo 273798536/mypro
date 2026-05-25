@@ -544,6 +544,212 @@ def export_json(wo_ids, exported_by, no_mask, output):
         db.close()
 
 
+@cli.group()
+def queue():
+    """重试队列管理"""
+    pass
+
+
+@queue.command("list")
+@click.option("--type", "task_type", type=click.Choice([t.value for t in SourceType.__members__.values()] if 'SourceType' in globals() else ['import', 'export', 'status_change']), help="按任务类型筛选")
+@click.option("--limit", type=int, default=50, help="返回数量")
+def list_queue(task_type, limit):
+    """列出待处理任务"""
+    db = get_db_session()
+    try:
+        from app.queue_service import get_pending_tasks
+        from app.models import TaskType
+        tt = TaskType(task_type) if task_type else None
+        tasks = get_pending_tasks(db, task_type=tt, limit=limit)
+        
+        result = []
+        for t in tasks:
+            result.append({
+                "id": t.id,
+                "task_type": t.task_type.value,
+                "status": t.status.value,
+                "retry_count": t.retry_count,
+                "max_retries": t.max_retries,
+                "next_retry_at": t.next_retry_at.isoformat(),
+                "work_order_id": t.work_order_id,
+                "priority": t.priority,
+            })
+        print_json({"count": len(result), "items": result})
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
+@queue.command("stats")
+def queue_stats():
+    """查看队列统计"""
+    db = get_db_session()
+    try:
+        from app.queue_service import get_retry_queue_stats
+        stats = get_retry_queue_stats(db)
+        print_json(stats)
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
+@cli.group()
+def deadletter():
+    """死信队列管理"""
+    pass
+
+
+@deadletter.command("list")
+@click.option("--type", "task_type", type=click.Choice(['import', 'export', 'status_change', 'notification', 'data_sync', 'evidence_process']), help="按任务类型筛选")
+@click.option("--include-resolved", is_flag=True, help="包含已解决的任务")
+@click.option("--limit", type=int, default=100, help="返回数量")
+def list_deadletter(task_type, include_resolved, limit):
+    """列出死信任务"""
+    db = get_db_session()
+    try:
+        from app.queue_service import get_dead_letter_tasks
+        from app.models import TaskType
+        tt = TaskType(task_type) if task_type else None
+        tasks = get_dead_letter_tasks(db, task_type=tt, only_unresolved=not include_resolved, limit=limit)
+        
+        result = []
+        for t in tasks:
+            result.append({
+                "id": t.id,
+                "original_task_id": t.original_task_id,
+                "task_type": t.task_type.value,
+                "error_message": t.error_message,
+                "retry_count": t.retry_count,
+                "moved_at": t.moved_at.isoformat(),
+                "work_order_id": t.work_order_id,
+                "is_resolved": t.is_resolved,
+            })
+        print_json({"count": len(result), "items": result})
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
+@deadletter.command("resolve")
+@click.argument("dlq_id", type=int)
+@click.option("--resolved-by", type=int, required=True, help="处理人用户ID")
+@click.option("--note", required=True, help="处理说明")
+@click.option("--requeue", is_flag=True, help="重新入队")
+def resolve_deadletter(dlq_id, resolved_by, note, requeue):
+    """解决死信任务"""
+    db = get_db_session()
+    try:
+        from app.queue_service import resolve_dead_letter
+        result = resolve_dead_letter(
+            db,
+            dlq_id=dlq_id,
+            resolved_by=resolved_by,
+            resolution_note=note,
+            requeue=requeue,
+        )
+        print_json({
+            "status": "resolved",
+            "dlq_id": dlq_id,
+            "requeued": result is not None,
+            "new_task_id": result.id if result else None,
+        })
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
+@cli.group()
+def replay():
+    """历史回放管理"""
+    pass
+
+
+@replay.command("create")
+@click.argument("wo_id", type=int)
+@click.option("--created-by", type=int, required=True, help="创建人用户ID")
+@click.option("--name", help="回放会话名称")
+@click.option("--description", help="回放会话描述")
+def create_replay(wo_id, created_by, name, description):
+    """创建历史回放会话"""
+    db = get_db_session()
+    try:
+        from app.queue_service import replay_work_order_history
+        session = replay_work_order_history(
+            db,
+            work_order_id=wo_id,
+            created_by=created_by,
+            name=name,
+            description=description,
+        )
+        print_json({
+            "id": session.id,
+            "name": session.name,
+            "work_order_id": session.work_order_id,
+            "event_count": len(session.replay_events),
+            "start_time": session.start_time.isoformat(),
+            "end_time": session.end_time.isoformat(),
+        })
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
+@replay.command("to-time")
+@click.argument("session_id", type=int)
+@click.option("--timestamp", required=True, help="目标时间点，格式: 2024-05-20T14:30:00")
+def replay_to_time(session_id, timestamp):
+    """回放至指定时间点"""
+    db = get_db_session()
+    try:
+        from app.queue_service import replay_to_timestamp
+        target_time = datetime.fromisoformat(timestamp)
+        result = replay_to_timestamp(db, session_id, target_time)
+        print_json(result)
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
+@replay.command("list")
+@click.option("--wo-id", type=int, help="按工单筛选")
+@click.option("--limit", type=int, default=50, help="返回数量")
+def list_replay(wo_id, limit):
+    """列出回放会话"""
+    db = get_db_session()
+    try:
+        from app.queue_service import list_replay_sessions
+        sessions = list_replay_sessions(db, work_order_id=wo_id, limit=limit)
+        
+        result = []
+        for s in sessions:
+            result.append({
+                "id": s.id,
+                "name": s.name,
+                "work_order_id": s.work_order_id,
+                "event_count": len(s.replay_events) if s.replay_events else 0,
+                "created_at": s.created_at.isoformat(),
+                "status": s.status,
+            })
+        print_json({"count": len(result), "items": result})
+        sys.exit(EXIT_SUCCESS)
+    except Exception as e:
+        handle_exception(e)
+    finally:
+        db.close()
+
+
 @cli.command()
 def status_flow():
     """显示状态流转图"""

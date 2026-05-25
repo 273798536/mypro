@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import SessionLocal, init_db
 from app.models import Role, WorkOrderStatus
-from app.schemas import WorkOrderCreate, ExportRequest
+from app.schemas import WorkOrderCreate, ExportRequest, StatusChangeRequest
 from app.services import (
     create_user, get_user_by_username, create_work_order,
     change_work_order_status, export_work_orders,
@@ -111,17 +111,23 @@ def main():
         print("\n4. 导出时的敏感字段处理:")
         print("-" * 60)
         
-        wo, _ = change_work_order_status(db, wo.id, type('obj', (object,), {
-            'new_status': WorkOrderStatus.SUBMITTED,
-            'reason': '提交',
-            'operator_id': op.id
-        })())
+        wo, _ = change_work_order_status(db, wo.id, StatusChangeRequest(
+            new_status=WorkOrderStatus.SUBMITTED,
+            reason='提交',
+            operator_id=op.id
+        ))
         
-        wo, _ = change_work_order_status(db, wo.id, type('obj', (object,), {
-            'new_status': WorkOrderStatus.AUDIT_ONLY,
-            'reason': '进入审计',
-            'operator_id': ad.id
-        })())
+        wo, _ = change_work_order_status(db, wo.id, StatusChangeRequest(
+            new_status=WorkOrderStatus.RECONFIRMED,
+            reason='二次确认',
+            operator_id=op.id
+        ))
+        
+        wo, _ = change_work_order_status(db, wo.id, StatusChangeRequest(
+            new_status=WorkOrderStatus.AUDIT_ONLY,
+            reason='进入审计',
+            operator_id=ad.id
+        ))
         
         print("\n  【脱敏导出】:")
         export_data_masked, _ = export_work_orders(db, ExportRequest(
