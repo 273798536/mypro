@@ -33,10 +33,22 @@ const demoFix = async () => {
     switch (item.dirtyType) {
       case 'missing_fields':
         console.log('   正在补全缺失字段...');
-        recordData = {
-          department: rawData.department || '通用科室',
-          inspector: rawData.inspector || '默认检查员',
-        };
+        if (item.recordType === 'inspection') {
+          recordData = {
+            department: rawData.department || '通用科室',
+            inspector: rawData.inspector || '默认检查员',
+          };
+        } else if (item.recordType === 'calibration') {
+          recordData = {
+            calibrationOrg: rawData.calibrationOrg || '默认校准机构',
+            status: rawData.status || 'valid',
+          };
+        } else if (item.recordType === 'repair') {
+          recordData = {
+            description: rawData.description || '默认描述',
+            status: rawData.status || 'pending',
+          };
+        }
         break;
 
       case 'cross_day':

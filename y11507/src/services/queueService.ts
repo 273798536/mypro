@@ -224,6 +224,21 @@ export const retryQueueItem = async (id: string, operator: string = 'system'): P
   const item = await getQueueItem(id);
   if (!item) return null;
 
+  const retryableStatuses = ['pending', 'retrying', 'manual_intervention'];
+  if (!retryableStatuses.includes(item.status)) {
+    await logDiff(
+      id,
+      item.recordType,
+      item.recordId,
+      'retry_rejected',
+      { status: item.status },
+      { error: `当前状态 ${item.status} 不允许重试，仅 pending/retrying/manual_intervention 可重试` },
+      operator,
+      `重试被拒绝: 当前状态为 ${item.status}`
+    );
+    return item;
+  }
+
   const beforeState = { status: item.status, retryCount: item.retryCount };
   const newRetryCount = item.retryCount + 1;
   const now = formatISO(new Date());
@@ -257,17 +272,32 @@ export const retryQueueItem = async (id: string, operator: string = 'system'): P
 
   if (newStatus === 'retrying') {
     const rawData = JSON.parse(item.rawData);
-    const success = await attemptRecordCreation(item, rawData);
+    const result = await attemptRecordCreation(item, rawData);
     
-    if (success) {
+    if (result.success) {
       await compensateAndClose(id, operator);
+    } else if (!result.canRetry) {
+      await runQuery(
+        `UPDATE queue_items SET status = 'manual_intervention', errorMessage = ?, updatedAt = ? WHERE id = ?`,
+        [result.error, now, id]
+      );
+      await logDiff(
+        id,
+        item.recordType,
+        item.recordId,
+        'retry_failed',
+        { status: 'retrying' },
+        { status: 'manual_intervention', error: result.error },
+        operator,
+        `重试失败，转入人工处理: ${result.error}`
+      );
     }
   }
 
   return getQueueItem(id);
 };
 
-const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<boolean> => {
+const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<{ success: boolean; canRetry: boolean; error?: string }> => {
   const now = formatISO(new Date());
   try {
     let recordId = item.recordId;
@@ -333,14 +363,56 @@ const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<boo
       }
     }
 
-    return true;
+    const validation = await validateRecordCompleteness(item.recordType, recordId);
+    if (!validation.valid) {
+      return { 
+        success: false, 
+        canRetry: true, 
+        error: `记录不完整: ${validation.missingFields.join(', ')}` 
+      };
+    }
+
+    return { success: true, canRetry: true };
   } catch (error) {
-    await runQuery(
-      `UPDATE queue_items SET errorMessage = ?, updatedAt = ? WHERE id = ?`,
-      [error instanceof Error ? error.message : '重试失败', now, item.id]
-    );
-    return false;
+    return { 
+      success: false, 
+      canRetry: false, 
+      error: error instanceof Error ? error.message : '重试失败' 
+    };
   }
+};
+
+const validateRecordCompleteness = async (recordType: RecordType, recordId: string): Promise<{ valid: boolean; missingFields: string[] }> => {
+  const requiredFields: Record<RecordType, string[]> = {
+    inspection: ['deviceId', 'deviceName', 'department', 'inspectionDate', 'inspector', 'result'],
+    calibration: ['deviceId', 'deviceName', 'certificateNo', 'calibrationDate', 'validUntil', 'calibrationOrg', 'status'],
+    repair: ['deviceId', 'deviceName', 'quoteNo', 'repairDate', 'description', 'amount', 'quantity', 'status'],
+  };
+
+  const tableMap: Record<RecordType, string> = {
+    inspection: 'inspection_records',
+    calibration: 'calibration_certificates',
+    repair: 'repair_quotes',
+  };
+
+  const record = await getOne<any>(
+    `SELECT * FROM ${tableMap[recordType]} WHERE id = ? AND isDeleted = 0`,
+    [recordId]
+  );
+
+  if (!record) {
+    return { valid: false, missingFields: ['记录不存在'] };
+  }
+
+  const missingFields = requiredFields[recordType].filter(field => {
+    const value = record[field];
+    return value === undefined || value === null || value === '';
+  });
+
+  return {
+    valid: missingFields.length === 0,
+    missingFields,
+  };
 };
 
 export const assignToManual = async (
@@ -464,6 +536,21 @@ export const fixAndCompensate = async (
           await runQuery(`UPDATE queue_items SET recordId = ? WHERE id = ?`, [updatedRecord.id, id]);
         }
         break;
+    }
+
+    const validation = await validateRecordCompleteness(item.recordType, updatedRecord.id);
+    if (!validation.valid) {
+      await logDiff(
+        id,
+        item.recordType,
+        updatedRecord.id,
+        'fix_incomplete',
+        rawData,
+        { ...recordData, missingFields: validation.missingFields },
+        operator,
+        `修正后记录仍不完整，缺少: ${validation.missingFields.join(', ')}`
+      );
+      throw new Error(`记录仍不完整，缺少字段: ${validation.missingFields.join(', ')}`);
     }
 
     await compensateAndClose(id, operator);
