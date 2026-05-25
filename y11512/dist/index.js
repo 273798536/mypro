@@ -11,6 +11,9 @@ const applications_1 = __importDefault(require("./routes/applications"));
 const queue_1 = __importDefault(require("./routes/queue"));
 const deadletter_1 = __importDefault(require("./routes/deadletter"));
 const export_1 = __importDefault(require("./routes/export"));
+const express_2 = __importDefault(require("./routes/express"));
+const compensation_1 = __importDefault(require("./routes/compensation"));
+const receipts_1 = __importDefault(require("./routes/receipts"));
 const AutomatedCheckService_1 = require("./services/AutomatedCheckService");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
@@ -30,6 +33,9 @@ app.use('/api/applications', applications_1.default);
 app.use('/api/queue', queue_1.default);
 app.use('/api/dead-letters', deadletter_1.default);
 app.use('/api/export', export_1.default);
+app.use('/api/express-orders', express_2.default);
+app.use('/api/compensations', compensation_1.default);
+app.use('/api/receipts', receipts_1.default);
 app.get('/api/checks', async (req, res) => {
     try {
         const results = await AutomatedCheckService_1.AutomatedCheckService.runAllChecks();

@@ -6,6 +6,9 @@ import applicationsRouter from './routes/applications';
 import queueRouter from './routes/queue';
 import deadLetterRouter from './routes/deadletter';
 import exportRouter from './routes/export';
+import expressRouter from './routes/express';
+import compensationRouter from './routes/compensation';
+import receiptsRouter from './routes/receipts';
 import { AutomatedCheckService } from './services/AutomatedCheckService';
 
 const app = express();
@@ -29,6 +32,9 @@ app.use('/api/applications', applicationsRouter);
 app.use('/api/queue', queueRouter);
 app.use('/api/dead-letters', deadLetterRouter);
 app.use('/api/export', exportRouter);
+app.use('/api/express-orders', expressRouter);
+app.use('/api/compensations', compensationRouter);
+app.use('/api/receipts', receiptsRouter);
 
 app.get('/api/checks', async (req, res) => {
   try {

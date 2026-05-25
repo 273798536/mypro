@@ -2,8 +2,13 @@ import 'reflect-metadata';
 import { initializeDatabase } from '../config/database';
 import { BorrowApplicationService } from '../services/BorrowApplicationService';
 import { QueueService } from '../services/QueueService';
+import { ExpressOrderService } from '../services/ExpressOrderService';
+import { CompensationService } from '../services/CompensationService';
+import { ReceiptService } from '../services/ReceiptService';
 import { BorrowType } from '../entities/BorrowApplication';
 import { CommentType } from '../entities/SupervisorComment';
+import { ExpressType } from '../entities/ExpressOrder';
+import { CompensationType } from '../entities/CompensationRecord';
 import { v4 as uuidv4 } from 'uuid';
 
 async function main() {
@@ -128,6 +133,176 @@ async function main() {
     console.log(`总费用: ${details.feeCalculation.totalFee} 元`);
     console.log('');
 
+    console.log('=== 创建快递单 ===\n');
+
+    const application1 = await BorrowApplicationService.getApplicationWithDetails(app2.application.id);
+    
+    const expressOrder1 = await ExpressOrderService.createExpressOrder(
+      {
+        expressNo: `SF-2024-${uuidv4().slice(0, 6).toUpperCase()}`,
+        applicationId: app2.application.id,
+        expressType: ExpressType.FORWARD,
+        courierCompany: '顺丰速运',
+        receiver: '李四',
+        receiverPhone: '13800138001',
+        receiverAddress: '上海市闵行区上海交通大学图书馆',
+        fee: 25,
+        sender: '复旦大学图书馆',
+        senderPhone: '021-65641234',
+        senderAddress: '上海市杨浦区复旦大学图书馆'
+      },
+      operatorId,
+      operatorName
+    );
+    console.log(`创建快递单: ${expressOrder1.expressNo}`);
+    console.log(`  快递公司: ${expressOrder1.courierCompany}`);
+    console.log(`  费用: ${expressOrder1.fee} 元`);
+    console.log('');
+
+    const expressOrder2 = await ExpressOrderService.createExpressOrder(
+      {
+        expressNo: `SF-2024-${uuidv4().slice(0, 6).toUpperCase()}`,
+        applicationId: app2.application.id,
+        expressType: ExpressType.RETURN,
+        courierCompany: '顺丰速运',
+        receiver: '复旦大学图书馆',
+        receiverPhone: '021-65641234',
+        receiverAddress: '上海市杨浦区复旦大学图书馆',
+        fee: 20,
+        sender: '李四',
+        senderPhone: '13800138001',
+        senderAddress: '上海市闵行区上海交通大学图书馆'
+      },
+      operatorId,
+      operatorName
+    );
+    console.log(`创建归还快递单: ${expressOrder2.expressNo}`);
+    console.log(`  费用: ${expressOrder2.fee} 元`);
+    console.log('');
+
+    console.log('=== 创建赔偿记录 ===\n');
+
+    const compensation1 = await CompensationService.createCompensationRecord(
+      {
+        applicationId: app2.application.id,
+        compensationType: CompensationType.OVERDUE,
+        amount: 20,
+        reason: '逾期10天',
+        rawData: { overdueDays: 10, dailyRate: 2 }
+      },
+      operatorId,
+      operatorName
+    );
+    console.log(`创建逾期赔偿: ${compensation1.recordNo}`);
+    console.log(`  类型: ${compensation1.compensationType}`);
+    console.log(`  金额: ${compensation1.amount} 元`);
+    console.log('');
+
+    const compensation2 = await CompensationService.createCompensationRecord(
+      {
+        applicationId: app2.application.id,
+        compensationType: CompensationType.DAMAGE,
+        amount: 50,
+        reason: '书籍封面有轻微破损',
+        evidence: '图片: damage_001.jpg'
+      },
+      operatorId,
+      operatorName
+    );
+    console.log(`创建污损赔偿: ${compensation2.recordNo}`);
+    console.log(`  类型: ${compensation2.compensationType}`);
+    console.log(`  金额: ${compensation2.amount} 元`);
+    console.log('');
+
+    console.log('=== 提交外部回执 ===\n');
+
+    const receipt1 = await ReceiptService.submitExternalReceipt({
+      applicationNo: app2.application.applicationNo,
+      receiptType: 'status_update',
+      externalReference: `LIB-SYS-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      data: {
+        status: 'returned',
+        borrowDate: '2024-01-01',
+        dueDate: '2024-01-15',
+        returnDate: '2024-01-20',
+        renewalCount: 1,
+        isOverdue: true
+      },
+      operatorId,
+      operatorName
+    });
+    console.log(`提交状态更新回执: ${receipt1.action}`);
+    console.log(`  申请编号: ${receipt1.applicationNo}`);
+    console.log('');
+
+    const receipt2 = await ReceiptService.submitExternalReceipt({
+      applicationNo: app2.application.applicationNo,
+      receiptType: 'express',
+      externalReference: `EXP-SYS-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      data: {
+        expressNo: `EXT-${Date.now()}`,
+        courierCompany: '中通快递',
+        fee: 18,
+        receiver: '复旦大学图书馆',
+        receiverAddress: '上海市杨浦区',
+        trackingInfo: '77889900112233'
+      },
+      operatorId,
+      operatorName
+    });
+    console.log(`提交快递回执: ${receipt2.action}`);
+    console.log(`  申请编号: ${receipt2.applicationNo}`);
+    console.log('');
+
+    console.log('=== 计算费用并入账 ===\n');
+
+    const feeResult = await ReceiptService.calculateAndRecordFees(
+      app2.application.id,
+      supervisorId,
+      supervisorName
+    );
+    console.log(`费用计算结果:`);
+    console.log(`  逾期费: ${feeResult.details.overdueFee} 元`);
+    console.log(`  污损费: ${feeResult.details.damageFee} 元`);
+    console.log(`  快递费: ${feeResult.details.shippingFee} 元`);
+    console.log(`  总费用: ${feeResult.details.totalFee} 元`);
+    console.log(`  明细项数: ${feeResult.details.breakdown.length} 项`);
+    console.log('');
+
+    console.log('=== 处理赔偿支付 ===\n');
+
+    const paymentResult = await CompensationService.processPayment(
+      {
+        recordId: compensation1.id,
+        amount: compensation1.amount,
+        paymentMethod: '现金',
+        paymentReference: 'PAY-2024-0001'
+      },
+      supervisorId,
+      supervisorName
+    );
+    console.log(`赔偿支付完成: ${paymentResult.recordNo}`);
+    console.log(`  已付金额: ${paymentResult.paidAmount} 元`);
+    console.log(`  状态: ${paymentResult.status}`);
+    console.log('');
+
+    console.log('=== 获取完整申请详情 ===\n');
+
+    const completeDetails = await BorrowApplicationService.getApplicationWithDetails(app2.application.id);
+    console.log(`申请编号: ${completeDetails.application.applicationNo}`);
+    console.log(`读者: ${completeDetails.application.readerName}`);
+    console.log(`状态: ${completeDetails.application.status}`);
+    console.log(`逾期费: ${completeDetails.application.overdueFee} 元`);
+    console.log(`污损费: ${completeDetails.application.damageFee} 元`);
+    console.log(`快递费: ${completeDetails.application.shippingFee} 元`);
+    console.log(`总费用: ${completeDetails.application.totalFee} 元`);
+    console.log(`费用明细: ${completeDetails.feeCalculation.breakdown.length} 项`);
+    console.log(`操作历史: ${completeDetails.history.length} 条`);
+    console.log(`版本号: ${completeDetails.application.version}`);
+    console.log('');
+
     console.log('=== 队列统计 ===\n');
 
     const stats = await QueueService.getTaskStats();
@@ -139,6 +314,22 @@ async function main() {
     console.log(`  人工处理: ${stats.queue.manual}`);
     console.log(`  已冻结: ${stats.queue.frozen}`);
     console.log(`死信队列: ${stats.deadLetter.total} 条`);
+    console.log('');
+
+    console.log('=== 验证多事实写入 ===\n');
+
+    const expressList = await ExpressOrderService.getExpressOrdersByApplication(app2.application.id);
+    const compensationList = await CompensationService.getCompensationRecordsByApplication(app2.application.id);
+    
+    console.log(`快递单数量: ${expressList.length}`);
+    expressList.forEach((e, i) => {
+      console.log(`  ${i + 1}. ${e.expressNo} - ${e.courierCompany} - ${e.fee}元 - ${e.status}`);
+    });
+    
+    console.log(`赔偿记录数量: ${compensationList.length}`);
+    compensationList.forEach((c, i) => {
+      console.log(`  ${i + 1}. ${c.recordNo} - ${c.compensationType} - ${c.amount}元 - ${c.status}`);
+    });
     console.log('');
 
     console.log('=== 示例数据创建完成 ===');
