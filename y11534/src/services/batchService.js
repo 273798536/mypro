@@ -1,6 +1,7 @@
 const db = require('../database/connection');
 const config = require('../config');
 const { analyzeDirtyRecord } = require('./dataQualityService');
+const { recordWorkFlow } = require('./workflowService');
 
 const generateBatchNo = (recordType) => {
   const date = new Date();
@@ -113,9 +114,32 @@ const processBatchRecords = async (recordType, records, user, duplicateStrategy 
         if (duplicateStrategy === config.DUPLICATE_STRATEGY.OVERWRITE) {
           record.updated_by = user.id;
           const updateResult = await updateRecord(recordType, existingRecord.id, record, user);
+          
+          await recordWorkFlow(
+            recordType,
+            existingRecord.id,
+            'duplicate_overwrite',
+            existingRecord.status,
+            existingRecord.status,
+            user,
+            `重复数据覆盖处理: 原批次${existingRecord.batch_no}, 新批次${batchNo}`,
+            { oldRecord: existingRecord, newRecord: record }
+          );
+          
           results.push({ status: 'overwritten', ...updateResult });
           stats.successCount++;
         } else {
+          await recordWorkFlow(
+            recordType,
+            existingRecord.id,
+            'duplicate_ignore',
+            existingRecord.status,
+            existingRecord.status,
+            user,
+            `重复数据忽略处理: 原批次${existingRecord.batch_no}, 新批次${batchNo}`,
+            { ignoredRecord: record }
+          );
+          
           results.push({ status: 'ignored', record: record, reason: 'duplicate' });
         }
         continue;
@@ -131,6 +155,18 @@ const processBatchRecords = async (recordType, records, user, duplicateStrategy 
       }
       
       const insertResult = await insertRecord(recordType, record);
+      
+      await recordWorkFlow(
+        recordType,
+        insertResult.id,
+        'batch_import',
+        null,
+        config.RECORD_STATUS.DRAFT,
+        user,
+        `批量导入创建草稿，批次: ${batchNo}`,
+        { batchNo, recordData: record }
+      );
+      
       results.push({ status: 'inserted', id: insertResult.id });
       stats.successCount++;
       

@@ -62,6 +62,18 @@ const analyzeDirtyRecord = (data, existingRecord = null, recordType) => {
     });
   }
   
+  if (recordType === 'leave_forms' && data.start_date && data.end_date) {
+    if (checkCrossDate(data.start_date, data.end_date, false)) {
+      isDirty = true;
+      issues.push({
+        type: config.DIRTY_TYPES.CROSS_DATE,
+        details: `请假跨日: ${data.start_date} 到 ${data.end_date}`,
+        startDate: data.start_date,
+        endDate: data.end_date
+      });
+    }
+  }
+  
   if (existingRecord) {
     if (recordType === 'teller_schedules') {
       if (checkNameChanged(existingRecord.teller_name, data.teller_name)) {
@@ -71,18 +83,6 @@ const analyzeDirtyRecord = (data, existingRecord = null, recordType) => {
           details: `柜员姓名不一致: 原有"${existingRecord.teller_name}", 新数据"${data.teller_name}"`,
           oldValue: existingRecord.teller_name,
           newValue: data.teller_name
-        });
-      }
-    }
-    
-    if (recordType === 'leave_forms') {
-      if (checkCrossDate(data.start_date, data.end_date, false)) {
-        isDirty = true;
-        issues.push({
-          type: config.DIRTY_TYPES.CROSS_DATE,
-          details: `请假跨日: ${data.start_date} 到 ${data.end_date}`,
-          startDate: data.start_date,
-          endDate: data.end_date
         });
       }
     }
