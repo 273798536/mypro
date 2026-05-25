@@ -6,3 +6,4 @@ export { SupplierBillItem } from './SupplierBillItem';
 export { ExceptionRecord } from './ExceptionRecord';
 export { AuditLog } from './AuditLog';
 export { FailedRecord } from './FailedRecord';
+export { ApprovalEmail } from './ApprovalEmail';

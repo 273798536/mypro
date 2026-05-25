@@ -102,8 +102,8 @@ export class ReceiptService {
         savedReceipt.supplierBillItems = await this.processSupplierBillItems(tx, savedReceipt.id, params.supplierBillItems);
       }
 
-      await this.updateReceiptTotals(tx, savedReceipt);
       await this.detectAndSaveExceptions(tx, savedReceipt);
+      await this.updateReceiptTotals(tx, savedReceipt);
 
       await this.auditService.logCreate(
         savedReceipt.id,
@@ -199,8 +199,8 @@ export class ReceiptService {
       if (params.stockSnapshots?.length) {
         await tx.delete(StockSnapshot, { receiptId: id });
         receipt.stockSnapshots = await this.processStockSnapshots(tx, id, params.stockSnapshots);
-        await this.updateReceiptTotals(tx, receipt);
         await this.detectAndSaveExceptions(tx, receipt);
+        await this.updateReceiptTotals(tx, receipt);
         changes.stockSnapshots = { old: 'updated', new: params.stockSnapshots.length };
       }
 

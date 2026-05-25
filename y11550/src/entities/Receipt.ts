@@ -6,6 +6,7 @@ import { RefundRecord } from './RefundRecord';
 import { SupplierBillItem } from './SupplierBillItem';
 import { ExceptionRecord } from './ExceptionRecord';
 import { AuditLog } from './AuditLog';
+import { ApprovalEmail } from './ApprovalEmail';
 
 @Entity('receipts')
 export class Receipt {
@@ -120,4 +121,7 @@ export class Receipt {
 
   @OneToMany(() => AuditLog, log => log.receipt, { cascade: true })
   auditLogs: AuditLog[];
+
+  @OneToMany(() => ApprovalEmail, email => email.receipt, { cascade: true })
+  approvalEmails: ApprovalEmail[];
 }
