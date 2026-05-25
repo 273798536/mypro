@@ -226,7 +226,7 @@ export const retryQueueItem = async (id: string, operator: string = 'system'): P
   const item = await getQueueItem(id);
   if (!item) return null;
 
-  const retryableStatuses = ['pending', 'retrying', 'manual_intervention'];
+  const retryableStatuses = ['pending', 'retrying'];
   if (!retryableStatuses.includes(item.status)) {
     await logDiff(
       id,
@@ -234,9 +234,23 @@ export const retryQueueItem = async (id: string, operator: string = 'system'): P
       item.recordId,
       'retry_rejected',
       { status: item.status },
-      { error: `当前状态 ${item.status} 不允许重试，仅 pending/retrying/manual_intervention 可重试` },
+      { error: `当前状态 ${item.status} 不允许自动重试，仅 pending/retrying 可重试。manual_intervention 状态请使用人工修正接口(fixAndCompensate)处理` },
       operator,
-      `重试被拒绝: 当前状态为 ${item.status}`
+      `重试被拒绝: ${item.status} 状态需要人工处理，不能自动重试`
+    );
+    return item;
+  }
+
+  if (item.dirtyType && item.dirtyType !== 'none') {
+    await logDiff(
+      id,
+      item.recordType,
+      item.recordId,
+      'retry_rejected',
+      { status: item.status, dirtyType: item.dirtyType },
+      { error: `存在脏数据类型: ${item.dirtyType}，需要人工修正后才能补偿入账` },
+      operator,
+      `重试被拒绝: 存在 ${item.dirtyType} 脏数据，请先人工修正`
     );
     return item;
   }
@@ -301,10 +315,28 @@ export const retryQueueItem = async (id: string, operator: string = 'system'): P
 
 const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<{ success: boolean; canRetry: boolean; error?: string }> => {
   const now = formatISO(new Date());
+  
+  if (item.dirtyType && item.dirtyType !== 'none') {
+    return {
+      success: false,
+      canRetry: false,
+      error: `存在脏数据类型: ${item.dirtyType}，需要人工修正后才能创建业务记录`
+    };
+  }
+
   try {
     let recordId = item.recordId;
 
     if (recordId === 'pending') {
+      const rawValidation = validateRawDataCompleteness(item.recordType, rawData);
+      if (!rawValidation.valid) {
+        return {
+          success: false,
+          canRetry: false,
+          error: `原始数据不完整，缺少字段: ${rawValidation.missingFields.join(', ')}，需要人工修正`
+        };
+      }
+
       switch (item.recordType) {
         case 'inspection':
           const inspection = await createInspectionRecord(
@@ -369,8 +401,8 @@ const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<{ s
     if (!validation.valid) {
       return { 
         success: false, 
-        canRetry: true, 
-        error: `记录不完整: ${validation.missingFields.join(', ')}` 
+        canRetry: false, 
+        error: `记录不完整: ${validation.missingFields.join(', ')}，需要人工修正` 
       };
     }
 
@@ -382,6 +414,24 @@ const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<{ s
       error: error instanceof Error ? error.message : '重试失败' 
     };
   }
+};
+
+const validateRawDataCompleteness = (recordType: RecordType, rawData: any): { valid: boolean; missingFields: string[] } => {
+  const requiredFields: Record<RecordType, string[]> = {
+    inspection: ['deviceId', 'deviceName', 'department', 'inspectionDate', 'inspector', 'result'],
+    calibration: ['deviceId', 'deviceName', 'certificateNo', 'calibrationDate', 'validUntil', 'calibrationOrg', 'status'],
+    repair: ['deviceId', 'deviceName', 'quoteNo', 'repairDate', 'description', 'amount', 'quantity', 'status'],
+  };
+
+  const missingFields = requiredFields[recordType].filter(field => {
+    const value = rawData[field];
+    return value === undefined || value === null || value === '';
+  });
+
+  return {
+    valid: missingFields.length === 0,
+    missingFields,
+  };
 };
 
 const validateRecordCompleteness = async (recordType: RecordType, recordId: string): Promise<{ valid: boolean; missingFields: string[] }> => {
