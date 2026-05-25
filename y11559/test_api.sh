@@ -222,17 +222,21 @@ echo "16. 查看变更历史（按批次）"
 curl -s "$BASE_URL/api/change-histories/?batch_no=$BATCH_NO" | python3 -m json.tool
 echo ""
 
-echo "17. 创建模拟失败的异步任务"
-curl -s -X POST "$BASE_URL/api/async-tasks/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task_id": "TASK-EXPORT-001",
-    "task_type": "data_export",
-    "batch_no": "'"$BATCH_NO"'",
-    "payload": {"format": "excel"},
-    "max_retries": 3,
-    "created_by": 2
-  }' | python3 -m json.tool
+echo "17. 创建模拟失败的异步任务 (001-003)"
+for i in 1 2 3; do
+  curl -s -X POST "$BASE_URL/api/async-tasks/" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"task_id\": \"TASK-EXPORT-00${i}\",
+      \"task_type\": \"data_export\",
+      \"batch_no\": \"'$BATCH_NO'\",
+      \"payload\": {\"format\": \"excel\"},
+      \"max_retries\": 3,
+      \"created_by\": 2
+    }" > /dev/null
+done
+echo "已创建 TASK-EXPORT-001、TASK-EXPORT-002、TASK-EXPORT-003 三个任务"
+curl -s "$BASE_URL/api/async-tasks/failed/" | python3 -m json.tool
 echo ""
 
 echo "18. 查看片区经理角色视图"
@@ -254,10 +258,108 @@ echo "20. 查看订单详情（关联所有数据）"
 curl -s "$BASE_URL/api/orders/1" | python3 -m json.tool
 echo ""
 
+echo "=== 修复验证测试 ==="
+echo ""
+
+echo "21. 测试 append 策略（同订单号追加）"
+curl -s -X POST "$BASE_URL/api/orders/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "batch_no": "'"$BATCH_NO"'",
+    "order_no": "ORDER-2024-001",
+    "store_name": "南京栖霞农资店",
+    "product_name": "尿素",
+    "quantity": 300,
+    "unit": "公斤",
+    "unit_price": 2.5,
+    "total_amount": 750,
+    "is_credit": true,
+    "credit_amount": 750,
+    "remark": "追加补货订单",
+    "created_by": 3,
+    "change_reason": "追加送货，农忙补货",
+    "duplicate_strategy": "append"
+  }' | python3 -m json.tool
+echo ""
+
+echo "22. 测试敏感字段脱敏（店员角色查询）"
+curl -s "$BASE_URL/api/orders/1?role=store_clerk" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+phone = data.get('store_phone', 'N/A')
+print(f'原始手机号: 13812345678')
+print(f'脱敏后手机号: {phone}')
+if phone and '*' in phone:
+    print('✓ 脱敏成功: 手机号包含星号掩码')
+else:
+    print('✗ 脱敏失败: 手机号未正确掩码')
+"
+echo ""
+
+echo "23. 测试异步任务 - 标记 wait_retry"
+curl -s -X PUT "$BASE_URL/api/async-tasks/TASK-EXPORT-001/mark-wait-retry" \
+  -H "Content-Type: application/json" \
+  -d '{"error_message": "数据库连接超时，可重试"}' | python3 -m json.tool
+echo ""
+
+echo "24. 测试异步任务 - 标记 wait_manual"
+curl -s -X PUT "$BASE_URL/api/async-tasks/TASK-EXPORT-002/mark-wait-manual" \
+  -H "Content-Type: application/json" \
+  -d '{"error_message": "数据格式异常，需人工核对"}' | python3 -m json.tool
+echo ""
+
+echo "25. 测试异步任务 - 标记 permanent_failed"
+curl -s -X PUT "$BASE_URL/api/async-tasks/TASK-EXPORT-003/mark-permanent-failed" \
+  -H "Content-Type: application/json" \
+  -d '{"error_message": "文件已损坏，无法恢复"}' | python3 -m json.tool
+echo ""
+
+echo "26. 查看失败任务清单（验证三种失败状态）"
+curl -s "$BASE_URL/api/async-tasks/failed/" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+print(f'失败任务总数: {len(data)}')
+statuses = set()
+for t in data:
+    statuses.add(t.get('status'))
+    print(f'  - {t.get(\"task_id\")}: {t.get(\"status\")} | 重试次数: {t.get(\"retry_count\")}')
+print()
+print('状态检查:')
+expected = {'wait_retry', 'wait_manual', 'permanent_failed'}
+if expected.issubset(statuses):
+    print('✓ 所有三种失败状态都已记录')
+else:
+    print(f'✗ 缺少状态: {expected - statuses}')
+"
+echo ""
+
 echo "=== 测试完成 ==="
 echo ""
-echo "查看失败任务清单:"
-echo "  curl $BASE_URL/api/async-tasks/failed/"
+echo "=== 核心修复验证清单 ==="
+echo "1. 重复数据处理 (ignore/overwrite/append):"
+echo "   curl -X POST $BASE_URL/api/orders/ -d '{...\"duplicate_strategy\":\"append\"}'"
+echo ""
+echo "2. 敏感字段脱敏:"
+echo "   curl '$BASE_URL/api/orders/1?role=store_clerk'"
+echo "   期望: 手机号 138****5678 (含星号掩码)"
+echo ""
+echo "3. 异步任务失败状态:"
+echo "   # 查看所有失败任务"
+echo "   curl $BASE_URL/api/async-tasks/failed/"
+echo ""
+echo "   # 标记为等待重试"
+echo "   curl -X PUT $BASE_URL/api/async-tasks/{task_id}/mark-wait-retry \\"
+echo "     -H 'Content-Type: application/json' \\"
+echo "     -d '{\"error_message\": \"数据库连接超时\"}'"
+echo ""
+echo "   # 标记为等待人工"
+echo "   curl -X PUT $BASE_URL/api/async-tasks/{task_id}/mark-wait-manual"
+echo ""
+echo "   # 标记为永久失败"
+echo "   curl -X PUT $BASE_URL/api/async-tasks/{task_id}/mark-permanent-failed"
+echo ""
+echo "4. 片区经理视图:"
+echo "   curl '$BASE_URL/api/views/area-manager/?batch_no=$BATCH_NO'"
 echo ""
 echo "查看Swagger文档:"
 echo "  打开浏览器访问 $BASE_URL/docs"

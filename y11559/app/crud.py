@@ -66,7 +66,7 @@ def create_store_order(db: Session, order: schemas.StoreOrderCreate):
             return existing, "ignored"
         elif order.duplicate_strategy == DuplicateStrategy.OVERWRITE:
             for key, value in order.model_dump(exclude_unset=True).items():
-                if key != "created_by" and key != "change_reason" and key != "duplicate_strategy":
+                if key != "created_by" and key != "change_reason" and key != "duplicate_strategy" and key != "order_no":
                     old_value = getattr(existing, key)
                     if old_value != value:
                         setattr(existing, key, value)
@@ -92,6 +92,37 @@ def create_store_order(db: Session, order: schemas.StoreOrderCreate):
                 change_reason=order.change_reason or "覆盖更新"
             ))
             return existing, "overwritten"
+        elif order.duplicate_strategy == DuplicateStrategy.APPEND:
+            append_count = db.query(models.StoreOrder).filter(
+                models.StoreOrder.order_no.like(f"{order.order_no}-APPEND-%")
+            ).count() + 1
+            new_order_no = f"{order.order_no}-APPEND-{append_count}"
+            order_data = order.model_dump(exclude={"change_reason", "duplicate_strategy"})
+            order_data["order_no"] = new_order_no
+            db_order = models.StoreOrder(**order_data)
+            db.add(db_order)
+            db.commit()
+            db.refresh(db_order)
+            create_change_history(db, schemas.ChangeHistoryCreate(
+                order_id=db_order.id,
+                batch_no=db_order.batch_no,
+                field_name="order_no",
+                old_value=order.order_no,
+                new_value=new_order_no,
+                changed_by=order.created_by,
+                change_reason=order.change_reason or f"追加记录，原单号{order.order_no}",
+                is_sensitive_field=False
+            ))
+            create_audit_log(db, schemas.AuditLogCreate(
+                operator_id=order.created_by,
+                operation_type="append",
+                target_type="store_order",
+                target_id=db_order.id,
+                batch_no=db_order.batch_no,
+                new_value={"order_no": new_order_no, "original_order_no": order.order_no},
+                change_reason=order.change_reason or f"追加记录，原单号{order.order_no}"
+            ))
+            return db_order, "appended"
     
     order_data = order.model_dump(exclude={"change_reason", "duplicate_strategy"})
     db_order = models.StoreOrder(**order_data)
@@ -111,18 +142,34 @@ def create_store_order(db: Session, order: schemas.StoreOrderCreate):
     return db_order, "created"
 
 
+def desensitize_order(order: models.StoreOrder, role: UserRole):
+    if role in [UserRole.AREA_MANAGER, UserRole.AUDITOR, UserRole.ADMIN]:
+        return order
+    
+    for field in SENSITIVE_FIELDS:
+        if hasattr(order, field):
+            value = getattr(order, field)
+            if value:
+                value_str = str(value)
+                if len(value_str) > 4:
+                    masked = value_str[:2] + "*" * (len(value_str) - 4) + value_str[-2:]
+                else:
+                    masked = "*" * len(value_str)
+                setattr(order, field, masked)
+    return order
+
+
 def get_store_order(db: Session, order_id: int, role: UserRole = UserRole.ADMIN):
     order = db.query(models.StoreOrder).filter(models.StoreOrder.id == order_id).first()
-    if order and role not in [UserRole.AREA_MANAGER, UserRole.AUDITOR, UserRole.ADMIN]:
-        order.store_phone = desensitize_data({"phone": order.store_phone}, role).get("phone")
+    if order:
+        order = desensitize_order(order, role)
     return order
 
 
 def get_store_orders_by_batch(db: Session, batch_no: str, role: UserRole = UserRole.ADMIN):
     orders = db.query(models.StoreOrder).filter(models.StoreOrder.batch_no == batch_no).all()
-    if role not in [UserRole.AREA_MANAGER, UserRole.AUDITOR, UserRole.ADMIN]:
-        for order in orders:
-            order.store_phone = desensitize_data({"phone": order.store_phone}, role).get("phone")
+    for i in range(len(orders)):
+        orders[i] = desensitize_order(orders[i], role)
     return orders
 
 

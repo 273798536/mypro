@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
@@ -285,6 +286,72 @@ def manual_resolve_task(task_id: str, db: Session = Depends(get_db)):
     if task is None:
         raise HTTPException(status_code=404, detail="任务不存在")
     return {"message": "任务已标记为人工处理成功", "task_id": task_id}
+
+
+class TaskFailureUpdate(BaseModel):
+    error_message: Optional[str] = None
+    result: Optional[dict] = None
+
+
+@app.put("/api/async-tasks/{task_id}/mark-wait-retry", tags=["异步任务"])
+def mark_task_wait_retry(
+    task_id: str,
+    failure_update: Optional[TaskFailureUpdate] = None,
+    db: Session = Depends(get_db)
+):
+    task = crud.update_async_task_status(
+        db, task_id, TaskStatus.WAIT_RETRY,
+        error_message=failure_update.error_message if failure_update else None,
+        result=failure_update.result if failure_update else None
+    )
+    if task is None:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return {
+        "message": "任务已标记为等待重试",
+        "task_id": task_id,
+        "retry_count": task.retry_count,
+        "next_retry_time": task.next_retry_time
+    }
+
+
+@app.put("/api/async-tasks/{task_id}/mark-wait-manual", tags=["异步任务"])
+def mark_task_wait_manual(
+    task_id: str,
+    failure_update: Optional[TaskFailureUpdate] = None,
+    db: Session = Depends(get_db)
+):
+    task = crud.update_async_task_status(
+        db, task_id, TaskStatus.WAIT_MANUAL,
+        error_message=failure_update.error_message if failure_update else None,
+        result=failure_update.result if failure_update else None
+    )
+    if task is None:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return {
+        "message": "任务已标记为等待人工处理",
+        "task_id": task_id,
+        "retry_count": task.retry_count
+    }
+
+
+@app.put("/api/async-tasks/{task_id}/mark-permanent-failed", tags=["异步任务"])
+def mark_task_permanent_failed(
+    task_id: str,
+    failure_update: Optional[TaskFailureUpdate] = None,
+    db: Session = Depends(get_db)
+):
+    task = crud.update_async_task_status(
+        db, task_id, TaskStatus.PERMANENT_FAILED,
+        error_message=failure_update.error_message if failure_update else None,
+        result=failure_update.result if failure_update else None
+    )
+    if task is None:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return {
+        "message": "任务已标记为永久失败",
+        "task_id": task_id,
+        "retry_count": task.retry_count
+    }
 
 
 @app.get("/api/views/area-manager/", tags=["角色视图"])
