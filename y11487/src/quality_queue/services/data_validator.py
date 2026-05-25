@@ -119,7 +119,26 @@ class DataValidator:
             return value.lower() in ["true", "1", "yes", "是"]
         return value
 
-    def _get_source_record(self, source_type: RecordSource, source_id: str):
+    def _get_source_record(self, source_type: RecordSource, source_id: str,
+                          draft_record_id: Optional[int] = None):
+        if draft_record_id:
+            if source_type == RecordSource.INSPECTION:
+                return self.db.query(Inspection).filter(
+                    Inspection.id == draft_record_id
+                ).first()
+            elif source_type == RecordSource.REWORK:
+                return self.db.query(ReworkOrder).filter(
+                    ReworkOrder.id == draft_record_id
+                ).first()
+            elif source_type == RecordSource.SHIFT:
+                return self.db.query(MachineShift).filter(
+                    MachineShift.id == draft_record_id
+                ).first()
+            elif source_type == RecordSource.SMS:
+                return self.db.query(ExceptionRecord).filter(
+                    ExceptionRecord.id == draft_record_id
+                ).first()
+
         if source_type == RecordSource.INSPECTION:
             return self.db.query(Inspection).filter(
                 Inspection.inspection_no == source_id
@@ -337,7 +356,9 @@ class DataValidator:
         if dirty.is_corrected:
             return False, "该脏记录已修正，不能重复修正"
 
-        source_record = self._get_source_record(dirty.source_type, dirty.source_id)
+        source_record = self._get_source_record(
+            dirty.source_type, dirty.source_id, dirty.draft_record_id
+        )
         if not source_record:
             return False, "源记录不存在，无法回写"
 
@@ -345,9 +366,14 @@ class DataValidator:
         for column in source_record.__table__.columns:
             old_snapshot[column.name] = getattr(source_record, column.name)
 
+        id_field = self._get_source_id_field(dirty.source_type)
+        resource_id = dirty.source_id
+        if hasattr(source_record, id_field):
+            resource_id = str(getattr(source_record, id_field)) or dirty.source_id
+
         self._save_data_history(
             resource_type=dirty.source_type.value,
-            resource_id=dirty.source_id,
+            resource_id=resource_id,
             data_snapshot=old_snapshot,
             change_reason=f"修正脏记录: {dirty.dirty_type.value} - {dirty.field_name}",
             changed_by=operator
@@ -363,7 +389,6 @@ class DataValidator:
             if hasattr(source_record, field_name):
                 setattr(source_record, field_name, parsed_value)
         else:
-            import ast
             try:
                 kv_pairs = corrected_value.split(",")
                 for kv in kv_pairs:
@@ -389,6 +414,16 @@ class DataValidator:
 
         self.db.flush()
 
+        required_fields = self._get_required_fields(dirty.source_type)
+        is_complete = self._check_record_complete(source_record, required_fields)
+
+        was_draft = getattr(source_record, 'is_draft', False)
+        if was_draft and is_complete:
+            setattr(source_record, 'is_draft', False)
+            if hasattr(source_record, id_field):
+                dirty.source_id = str(getattr(source_record, id_field))
+            self.db.flush()
+
         self._recalculate_related_queue_items(
             source_type=dirty.source_type.value,
             source_id=source_record.id
@@ -396,7 +431,28 @@ class DataValidator:
 
         self.db.commit()
 
-        return True, f"已修正并回写源记录，相关队列项已重新汇总"
+        status_msg = "已修正并回写源记录"
+        if was_draft and is_complete:
+            status_msg += "，草稿已转为正式记录"
+        status_msg += "，相关队列项已重新汇总"
+
+        return True, status_msg
+
+    def _get_required_fields(self, source_type: RecordSource) -> List[str]:
+        required = {
+            RecordSource.INSPECTION: ["inspection_no", "machine_no", "inspection_date", "sample_size"],
+            RecordSource.REWORK: ["rework_no", "machine_no", "rework_date", "defect_type", "rework_quantity"],
+            RecordSource.SHIFT: ["shift_code", "machine_no", "shift_date", "shift_type"],
+            RecordSource.SMS: ["record_no"],
+        }
+        return required.get(source_type, [])
+
+    def _check_record_complete(self, record, required_fields: List[str]) -> bool:
+        for field in required_fields:
+            value = getattr(record, field, None)
+            if value in (None, "", 0):
+                return False
+        return True
 
     def get_dirty_records(self, source_type: Optional[RecordSource] = None,
                           dirty_type: Optional[DirtyType] = None,
