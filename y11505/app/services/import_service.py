@@ -376,18 +376,131 @@ class ImportService:
         
         return quote, "created", True
     
+    def import_price_adjustment(
+        self,
+        batch: Batch,
+        adjustment_data: Dict[str, Any],
+        operator: str,
+    ) -> Tuple[PriceAdjustment, str, bool]:
+        adjustment_no = adjustment_data.get("adjustment_no")
+        if not adjustment_no:
+            adjustment_no = f"PRICE-{batch.batch_no}-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}"
+        
+        existing = (
+            self.db.query(PriceAdjustment)
+            .filter(PriceAdjustment.adjustment_no == adjustment_no)
+            .first()
+        )
+        
+        source_hash = self._calculate_source_hash(adjustment_data)
+        
+        if existing:
+            if batch.duplicate_strategy == DuplicateStrategy.IGNORE:
+                return existing, "ignored", False
+            elif batch.duplicate_strategy == DuplicateStrategy.APPEND:
+                adjustment_no = f"{adjustment_no}-{uuid.uuid4().hex[:6]}"
+            elif batch.duplicate_strategy == DuplicateStrategy.OVERWRITE:
+                before_data = {
+                    "original_price": existing.original_price,
+                    "adjusted_price": existing.adjusted_price,
+                    "price_difference": existing.price_difference,
+                    "version": existing.version,
+                }
+                
+                existing.original_price = adjustment_data.get("original_price", existing.original_price)
+                existing.adjusted_price = adjustment_data.get("adjusted_price", existing.adjusted_price)
+                existing.price_difference = adjustment_data.get("price_difference", existing.price_difference)
+                existing.adjustment_reason = adjustment_data.get("adjustment_reason", existing.adjustment_reason)
+                existing.source_hash = source_hash
+                existing.version += 1
+                existing.updated_at = datetime.now()
+                
+                after_data = {
+                    "original_price": existing.original_price,
+                    "adjusted_price": existing.adjusted_price,
+                    "price_difference": existing.price_difference,
+                    "version": existing.version,
+                }
+                
+                self.audit_service.log_operation(
+                    batch_id=batch.id,
+                    operation_type=OperationType.DATA_IMPORT,
+                    record_type="price_adjustment",
+                    record_id=existing.id,
+                    operator=operator,
+                    before_data=before_data,
+                    after_data=after_data,
+                    change_reason="覆盖更新手工改价表",
+                )
+                
+                self.db.flush()
+                return existing, "overwritten", True
+        
+        device = self._get_or_create_device(
+            device_code=adjustment_data["device_code"],
+            device_name=adjustment_data["device_name"],
+            department=batch.department,
+        )
+        
+        def parse_date(d):
+            if isinstance(d, str):
+                return datetime.strptime(d, "%Y-%m-%d").date()
+            return d
+        
+        adjustment = PriceAdjustment(
+            id=str(uuid.uuid4()),
+            batch_id=batch.id,
+            adjustment_no=adjustment_no,
+            device_id=device.id,
+            device_name=adjustment_data["device_name"],
+            device_code=adjustment_data["device_code"],
+            original_price=adjustment_data["original_price"],
+            adjusted_price=adjustment_data["adjusted_price"],
+            price_difference=adjustment_data.get("price_difference", adjustment_data["adjusted_price"] - adjustment_data["original_price"]),
+            adjustment_reason=adjustment_data.get("adjustment_reason", ""),
+            effective_date=parse_date(adjustment_data["effective_date"]),
+            source_hash=source_hash,
+            version=1,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        
+        self.db.add(adjustment)
+        self.db.flush()
+        
+        self.audit_service.log_operation(
+            batch_id=batch.id,
+            operation_type=OperationType.DATA_IMPORT,
+            record_type="price_adjustment",
+            record_id=adjustment.id,
+            operator=operator,
+            before_data=None,
+            after_data={
+                "adjustment_no": adjustment_no,
+                "device_code": adjustment.device_code,
+                "original_price": adjustment.original_price,
+                "adjusted_price": adjustment.adjusted_price,
+                "price_difference": adjustment.price_difference,
+            },
+            change_reason="导入手工改价表",
+        )
+        
+        return adjustment, "created", True
+    
     def import_batch_data(
         self,
         batch: Batch,
         inspection_records: List[Dict[str, Any]],
         calibration_certificates: List[Dict[str, Any]],
         repair_quotes: List[Dict[str, Any]],
+        price_adjustments: List[Dict[str, Any]],
         operator: str,
     ) -> Dict[str, Any]:
         results = {
             "inspection_records": {"created": 0, "overwritten": 0, "ignored": 0, "failed": 0},
             "calibration_certificates": {"created": 0, "overwritten": 0, "ignored": 0, "failed": 0},
             "repair_quotes": {"created": 0, "overwritten": 0, "ignored": 0, "failed": 0},
+            "price_adjustments": {"created": 0, "overwritten": 0, "ignored": 0, "failed": 0},
             "errors": [],
         }
         
@@ -423,6 +536,17 @@ class ImportService:
             except Exception as e:
                 results["repair_quotes"]["failed"] += 1
                 results["errors"].append(f"维修报价导入失败: {str(e)}")
+        
+        for adjustment_data in price_adjustments:
+            try:
+                _, status, changed = self.import_price_adjustment(batch, adjustment_data, operator)
+                if changed:
+                    results["price_adjustments"][status] += 1
+                else:
+                    results["price_adjustments"]["ignored"] += 1
+            except Exception as e:
+                results["price_adjustments"]["failed"] += 1
+                results["errors"].append(f"手工改价表导入失败: {str(e)}")
         
         self.db.commit()
         return results

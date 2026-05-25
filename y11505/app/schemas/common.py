@@ -81,3 +81,16 @@ class AuditLogResponse(BaseModel):
     change_reason: Optional[str] = None
     before_data: Optional[dict] = None
     after_data: Optional[dict] = None
+
+
+class BatchStatusHistoryResponse(BaseModel):
+    id: str
+    record_type: str
+    from_status: Optional[str]
+    to_status: str
+    change_reason: Optional[str]
+    operator: str
+    change_time: datetime
+    
+    class Config:
+        from_attributes = True

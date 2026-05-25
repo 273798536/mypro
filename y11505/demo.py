@@ -118,6 +118,19 @@ def step2_import_sample_data():
         },
     ]
     
+    price_adjustments = [
+        {
+            "adjustment_no": "PRICE-2024-001",
+            "device_code": "DEV-002",
+            "device_name": "血压监测仪",
+            "original_price": 15000.00,
+            "adjusted_price": 12500.00,
+            "price_difference": -2500.00,
+            "adjustment_reason": "设备老化折旧调整",
+            "effective_date": "2024-01-01",
+        },
+    ]
+    
     import_request = BatchImportRequest(
         batch_no="BATCH-2024-001",
         batch_name="2024年1月第一批次巡检",
@@ -128,6 +141,7 @@ def step2_import_sample_data():
         inspection_records=inspection_records,
         calibration_certificates=calibration_certificates,
         repair_quotes=repair_quotes,
+        price_adjustments=price_adjustments,
     )
     
     batch = batch_service.get_batch_by_no(import_request.batch_no)
@@ -148,6 +162,7 @@ def step2_import_sample_data():
         inspection_records=import_request.inspection_records,
         calibration_certificates=import_request.calibration_certificates,
         repair_quotes=import_request.repair_quotes,
+        price_adjustments=import_request.price_adjustments,
         operator=import_request.operator,
     )
     
@@ -157,6 +172,7 @@ def step2_import_sample_data():
     print(f"  巡检记录: {results['inspection_records']}")
     print(f"  校准证书: {results['calibration_certificates']}")
     print(f"  维修报价: {results['repair_quotes']}")
+    print(f"  手工改价表: {results['price_adjustments']}")
     
     if results["errors"]:
         print(f"\n  错误: {results['errors']}")
@@ -443,6 +459,7 @@ def step8_duplicate_import_demo():
         inspection_records=inspection_records_v2,
         calibration_certificates=[],
         repair_quotes=[],
+        price_adjustments=[],
         operator="系统管理员",
     )
     

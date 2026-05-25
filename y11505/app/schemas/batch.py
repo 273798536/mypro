@@ -51,16 +51,3 @@ class BatchListResponse(BaseModel):
     items: List[BatchResponse]
     page: int
     page_size: int
-
-
-class BatchStatusHistoryResponse(BaseModel):
-    id: str
-    record_type: str
-    from_status: Optional[str]
-    to_status: str
-    change_reason: Optional[str]
-    operator: str
-    change_time: datetime
-    
-    class Config:
-        from_attributes = True

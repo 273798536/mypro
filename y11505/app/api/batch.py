@@ -119,6 +119,7 @@ def import_batch_data(data: BatchImportRequest, db: Session = Depends(get_db)):
         inspection_records=data.inspection_records,
         calibration_certificates=data.calibration_certificates,
         repair_quotes=data.repair_quotes,
+        price_adjustments=data.price_adjustments,
         operator=data.operator,
     )
     

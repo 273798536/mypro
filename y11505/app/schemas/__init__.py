@@ -24,6 +24,8 @@ from app.schemas.common import (
     BatchDataImport,
     OperationResponse,
     TaskResponse,
+    BatchStatusHistoryResponse,
+    AuditLogResponse,
 )
 
 __all__ = [
@@ -44,4 +46,6 @@ __all__ = [
     "BatchDataImport",
     "OperationResponse",
     "TaskResponse",
+    "BatchStatusHistoryResponse",
+    "AuditLogResponse",
 ]
