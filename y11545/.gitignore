@@ -10,6 +10,7 @@ build/
 *.db
 *.sqlite
 reports/
+attachments/
 venv/
 .env
 .idea/

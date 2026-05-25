@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import uuid
 import traceback
 
-from app.models import AsyncTask, TaskStatus, Batch, BatchStatus
+from app.models import AsyncTask, TaskStatus, Batch, BatchStatus, OperationType
 from app.config import settings
 from app.services.audit_service import AuditService
 from app.services.batch_service import BatchService
@@ -160,7 +160,7 @@ class TaskService:
         
         AuditService.log_operation(
             db=db,
-            operation_type="retry",
+            operation_type=OperationType.RETRY,
             operated_by=operated_by,
             batch_id=task.batch_id,
             record_type="async_task",

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, File, UploadFile, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
@@ -11,13 +11,14 @@ from app.schemas import (
     FreezeRequest, UnfreezeRequest, ReviewRequest,
     StateRecordResponse, AuditLogResponse, AsyncTaskResponse,
     BatchReportResponse, DeviceTrackingCreate, DeviceTrackingResponse,
-    DeviceTrackingUpdate
+    DeviceTrackingUpdate, AttachmentResponse
 )
 from app.services.batch_service import BatchService
 from app.services.state_machine import MaterialStateMachine, DeviceTrackingService
 from app.services.report_service import ReportService
 from app.services.task_service import TaskService
 from app.services.audit_service import AuditService
+from app.services.attachment_service import AttachmentService
 
 router = APIRouter(prefix="/batches", tags=["批次管理"])
 
@@ -304,3 +305,78 @@ def retry_task(
         return {"success": True, "message": "任务已重新加入队列"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/{batch_id}/attachments", response_model=List[AttachmentResponse])
+def list_attachments(
+    batch_id: int,
+    db: Session = Depends(get_db)
+):
+    batch = BatchService.get_batch(db, batch_id)
+    if not batch:
+        raise HTTPException(status_code=404, detail="批次不存在")
+    return AttachmentService.get_attachments(db, batch_id)
+
+
+@router.post("/{batch_id}/attachments", response_model=AttachmentResponse)
+async def upload_attachment(
+    batch_id: int,
+    file: UploadFile = File(...),
+    description: Optional[str] = Form(None),
+    uploaded_by: Optional[str] = Form(None),
+    db: Session = Depends(get_db)
+):
+    batch = BatchService.get_batch(db, batch_id)
+    if not batch:
+        raise HTTPException(status_code=404, detail="批次不存在")
+    
+    if batch.is_frozen:
+        raise HTTPException(status_code=400, detail="批次已冻结，无法上传附件")
+    
+    file_content = await file.read()
+    
+    return AttachmentService.save_attachment(
+        db=db,
+        batch=batch,
+        file_content=file_content,
+        file_name=file.filename or "unnamed_file",
+        file_type=file.content_type,
+        uploaded_by=uploaded_by,
+        description=description
+    )
+
+
+@router.get("/attachments/{attachment_id}")
+def download_attachment(
+    attachment_id: int,
+    db: Session = Depends(get_db)
+):
+    from fastapi.responses import FileResponse
+    import os
+    
+    attachment = AttachmentService.get_attachment(db, attachment_id)
+    if not attachment:
+        raise HTTPException(status_code=404, detail="附件不存在")
+    
+    if not attachment.file_path or not os.path.exists(attachment.file_path):
+        raise HTTPException(status_code=404, detail="附件文件不存在")
+    
+    return FileResponse(
+        path=attachment.file_path,
+        filename=attachment.file_name,
+        media_type=attachment.file_type
+    )
+
+
+@router.delete("/attachments/{attachment_id}")
+def delete_attachment(
+    attachment_id: int,
+    operated_by: str,
+    db: Session = Depends(get_db)
+):
+    attachment = AttachmentService.get_attachment(db, attachment_id)
+    if not attachment:
+        raise HTTPException(status_code=404, detail="附件不存在")
+    
+    AttachmentService.delete_attachment(db, attachment, operated_by)
+    return {"success": True, "message": "附件已删除"}

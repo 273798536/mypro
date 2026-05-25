@@ -50,6 +50,7 @@ class OperationType(str, Enum):
     OVERRULE = "overrule"
     ARCHIVE = "archive"
     ATTACH = "attach"
+    RETRY = "retry"
 
 
 class Batch(Base):

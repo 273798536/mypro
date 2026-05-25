@@ -241,6 +241,10 @@ class BatchService:
                 db.refresh(existing)
                 material_map[mat_data.material_code] = existing
                 results["materials_added"] += 1
+            elif existing and batch.idempotent_action == IdempotentAction.APPEND:
+                results["materials_skipped"] += 1
+                material_map[mat_data.material_code] = existing
+                continue
             else:
                 material = MaterialItem(
                     batch_id=batch.id,
@@ -268,6 +272,11 @@ class BatchService:
                     after_data={"material_code": mat_data.material_code, "material_name": mat_data.material_name},
                     change_reason="导入物料清单"
                 )
+        if batch.idempotent_action == IdempotentAction.OVERWRITE:
+            db.query(LogisticsReceipt).filter(LogisticsReceipt.batch_id == batch.id).delete()
+            db.query(BorrowRecord).filter(BorrowRecord.batch_id == batch.id).delete()
+            db.query(SupplementRecord).filter(SupplementRecord.batch_id == batch.id).delete()
+            db.commit()
         
         for log_data in import_data.logistics:
             material = material_map.get(log_data.material_code)
@@ -291,7 +300,7 @@ class BatchService:
             )
             db.add(receipt)
             
-            if log_data.is_received:
+            if log_data.is_received and batch.idempotent_action != IdempotentAction.APPEND:
                 MaterialStateMachine.transition(
                     db=db,
                     material=material,
@@ -300,6 +309,16 @@ class BatchService:
                     reason="物流签收",
                     change_source="logistics_import"
                 )
+            elif log_data.is_received and batch.idempotent_action == IdempotentAction.APPEND:
+                if material.status == MaterialStatus.IN_TRANSIT:
+                    MaterialStateMachine.transition(
+                        db=db,
+                        material=material,
+                        to_status=MaterialStatus.RECEIVED,
+                        changed_by=import_data.imported_by or "system",
+                        reason="物流签收",
+                        change_source="logistics_import"
+                    )
             
             results["logistics_added"] += 1
         
@@ -325,16 +344,18 @@ class BatchService:
             )
             db.add(borrow)
             
-            MaterialStateMachine.transition(
-                db=db,
-                material=material,
-                to_status=MaterialStatus.BORROWED,
-                changed_by=import_data.imported_by or "system",
-                reason=f"现场借用: {borrow_data.borrower}",
-                change_source="borrow_import"
-            )
+            if material.status not in [MaterialStatus.BORROWED, MaterialStatus.LOST]:
+                MaterialStateMachine.transition(
+                    db=db,
+                    material=material,
+                    to_status=MaterialStatus.BORROWED,
+                    changed_by=import_data.imported_by or "system",
+                    reason=f"现场借用: {borrow_data.borrower}",
+                    change_source="borrow_import"
+                )
             
-            material.current_holder = borrow_data.borrower
+            if not material.current_holder:
+                material.current_holder = borrow_data.borrower
             results["borrow_records_added"] += 1
         
         db.commit()

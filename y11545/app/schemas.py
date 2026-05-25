@@ -192,6 +192,24 @@ class DeviceTrackingResponse(DeviceTrackingBase):
         from_attributes = True
 
 
+class AttachmentBase(BaseModel):
+    file_name: str
+    description: Optional[str] = None
+    uploaded_by: Optional[str] = None
+
+
+class AttachmentResponse(AttachmentBase):
+    id: int
+    batch_id: int
+    file_path: Optional[str] = None
+    file_type: Optional[str] = None
+    file_size: Optional[int] = None
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class BatchDataImportRequest(BaseModel):
     materials: List[MaterialItemCreate] = Field(default_factory=list)
     logistics: List[LogisticsReceiptCreate] = Field(default_factory=list)
