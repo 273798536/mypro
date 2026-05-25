@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List
 from pydantic import BaseModel, Field
 
 
@@ -50,3 +50,32 @@ class OperationLogResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AttachmentCreate(BaseModel):
+    file_name: str
+    file_path: str
+    file_type: str
+    file_size: int
+    uploaded_by: str
+    description: Optional[str] = None
+
+
+class AttachmentResponse(BaseModel):
+    id: int
+    batch_id: int
+    file_name: str
+    file_path: str
+    file_type: str
+    file_size: int
+    uploaded_by: str
+    uploaded_at: datetime
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AttachmentListResponse(BaseModel):
+    total: int
+    items: List[AttachmentResponse]

@@ -22,6 +22,9 @@ from app.schemas.common import (
     FailedRecordResponse,
     OperationLogResponse,
     PaginationParams,
+    AttachmentCreate,
+    AttachmentResponse,
+    AttachmentListResponse,
 )
 from app.schemas.manager_view import (
     ManagerDashboardResponse,
@@ -49,6 +52,9 @@ __all__ = [
     "FailedRecordResponse",
     "OperationLogResponse",
     "PaginationParams",
+    "AttachmentCreate",
+    "AttachmentResponse",
+    "AttachmentListResponse",
     "ManagerDashboardResponse",
     "BatchDetailReport",
     "ExportRequest",

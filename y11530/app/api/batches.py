@@ -1,9 +1,12 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
+import os
+import shutil
+from datetime import datetime
 
 from app.database import get_db
-from app.models import ExceptionBatch, ExceptionRecord, StatusHistory, FailedRecord
+from app.models import ExceptionBatch, ExceptionRecord, StatusHistory, FailedRecord, Attachment, OperationLog
 from app.schemas import (
     BatchCreate,
     BatchResponse,
@@ -14,6 +17,9 @@ from app.schemas import (
     RecordListResponse,
     StatusHistoryResponse,
     FailedRecordResponse,
+    AttachmentResponse,
+    AttachmentListResponse,
+    OperationLogResponse,
 )
 from app.services import StateMachine
 
@@ -203,3 +209,203 @@ def get_record(record_id: int, db: Session = Depends(get_db)):
     if not record:
         raise HTTPException(status_code=404, detail="Record not found")
     return record
+
+
+@router.post("/{batch_id}/attachments", response_model=AttachmentResponse)
+async def upload_attachment(
+    batch_id: int,
+    file: UploadFile = File(...),
+    uploaded_by: str = Form(...),
+    description: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+):
+    batch = db.query(ExceptionBatch).filter(ExceptionBatch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    upload_dir = f"./uploads/batch_{batch_id}"
+    os.makedirs(upload_dir, exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_ext = os.path.splitext(file.filename)[1] if file.filename else ""
+    safe_filename = f"{timestamp}_{file.filename}" if file.filename else f"{timestamp}_uploaded_file"
+    file_path = os.path.join(upload_dir, safe_filename)
+
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        file_size = os.path.getsize(file_path)
+        
+        attachment = Attachment(
+            batch_id=batch_id,
+            file_name=file.filename or safe_filename,
+            file_path=file_path,
+            file_type=file.content_type or "application/octet-stream",
+            file_size=file_size,
+            uploaded_by=uploaded_by,
+            description=description,
+        )
+        db.add(attachment)
+        
+        state_machine = StateMachine(db)
+        state_machine._add_operation_log(
+            operator=uploaded_by,
+            action="UPLOAD_ATTACHMENT",
+            batch_id=batch_id,
+            details={"file_name": file.filename, "file_size": file_size},
+        )
+        
+        db.commit()
+        db.refresh(attachment)
+        return attachment
+    except Exception as e:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+
+
+@router.post("/{batch_id}/attachments/supplement", response_model=AttachmentResponse)
+async def supplement_attachment(
+    batch_id: int,
+    file: UploadFile = File(...),
+    uploaded_by: str = Form(...),
+    description: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+):
+    batch = db.query(ExceptionBatch).filter(ExceptionBatch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    upload_dir = f"./uploads/batch_{batch_id}"
+    os.makedirs(upload_dir, exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_filename = f"{timestamp}_supplement_{file.filename}" if file.filename else f"{timestamp}_supplement"
+    file_path = os.path.join(upload_dir, safe_filename)
+
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        file_size = os.path.getsize(file_path)
+        
+        attachment = Attachment(
+            batch_id=batch_id,
+            file_name=file.filename or safe_filename,
+            file_path=file_path,
+            file_type=file.content_type or "application/octet-stream",
+            file_size=file_size,
+            uploaded_by=uploaded_by,
+            description=description or "补传附件",
+        )
+        db.add(attachment)
+        
+        state_machine = StateMachine(db)
+        state_machine._add_operation_log(
+            operator=uploaded_by,
+            action="SUPPLEMENT_ATTACHMENT",
+            batch_id=batch_id,
+            details={"file_name": file.filename, "file_size": file_size, "type": "supplement"},
+        )
+        
+        db.commit()
+        db.refresh(attachment)
+        return attachment
+    except Exception as e:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+
+
+@router.get("/{batch_id}/attachments", response_model=AttachmentListResponse)
+def list_attachments(batch_id: int, db: Session = Depends(get_db)):
+    attachments = (
+        db.query(Attachment)
+        .filter(Attachment.batch_id == batch_id)
+        .order_by(Attachment.uploaded_at.desc())
+        .all()
+    )
+    return AttachmentListResponse(total=len(attachments), items=attachments)
+
+
+@router.get("/{batch_id}/attachments/{attachment_id}", response_model=AttachmentResponse)
+def get_attachment(batch_id: int, attachment_id: int, db: Session = Depends(get_db)):
+    attachment = (
+        db.query(Attachment)
+        .filter(Attachment.id == attachment_id, Attachment.batch_id == batch_id)
+        .first()
+    )
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    return attachment
+
+
+@router.delete("/{batch_id}/attachments/{attachment_id}")
+def delete_attachment(batch_id: int, attachment_id: int, operator: str = Query(...), db: Session = Depends(get_db)):
+    attachment = (
+        db.query(Attachment)
+        .filter(Attachment.id == attachment_id, Attachment.batch_id == batch_id)
+        .first()
+    )
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+
+    file_path = attachment.file_path
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    db.delete(attachment)
+    
+    state_machine = StateMachine(db)
+    state_machine._add_operation_log(
+        operator=operator,
+        action="DELETE_ATTACHMENT",
+        batch_id=batch_id,
+        details={"attachment_id": attachment_id, "file_name": attachment.file_name},
+    )
+    
+    db.commit()
+    return {"message": "Attachment deleted successfully"}
+
+
+@router.get("/{batch_id}/logs", response_model=List[OperationLogResponse])
+def get_batch_logs(
+    batch_id: int,
+    action: Optional[str] = None,
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    query = db.query(OperationLog).filter(OperationLog.batch_id == batch_id)
+    if action:
+        query = query.filter(OperationLog.action == action)
+    
+    logs = query.order_by(OperationLog.created_at.desc()).limit(limit).all()
+    return logs
+
+
+@router.get("/logs/all", response_model=List[OperationLogResponse])
+def list_all_logs(
+    operator: Optional[str] = None,
+    action: Optional[str] = None,
+    batch_id: Optional[int] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = Query(200, ge=1, le=1000),
+    db: Session = Depends(get_db),
+):
+    query = db.query(OperationLog)
+    
+    if operator:
+        query = query.filter(OperationLog.operator == operator)
+    if action:
+        query = query.filter(OperationLog.action == action)
+    if batch_id:
+        query = query.filter(OperationLog.batch_id == batch_id)
+    if start_date:
+        query = query.filter(OperationLog.created_at >= start_date)
+    if end_date:
+        query = query.filter(OperationLog.created_at <= end_date)
+    
+    logs = query.order_by(OperationLog.created_at.desc()).limit(limit).all()
+    return logs

@@ -272,6 +272,65 @@ def test_full_workflow():
         print("✓ Excel导出测试通过")
 
         print("\n" + "=" * 60)
+        print("测试13: 附件上传和补传")
+        print("=" * 60)
+
+        from app.models import Attachment, OperationLog
+        
+        test_batch_id = batch2.id
+        
+        test_attachment = Attachment(
+            batch_id=test_batch_id,
+            file_name="test_document.pdf",
+            file_path="./uploads/test_document.pdf",
+            file_type="application/pdf",
+            file_size=1024,
+            uploaded_by="测试员",
+            description="测试附件",
+        )
+        db.add(test_attachment)
+        db.commit()
+        
+        attachments = db.query(Attachment).filter(Attachment.batch_id == test_batch_id).all()
+        print(f"附件数量: {len(attachments)}")
+        assert len(attachments) == 1
+        assert attachments[0].file_name == "test_document.pdf"
+        
+        test_supplement = Attachment(
+            batch_id=test_batch_id,
+            file_name="supplement_document.pdf",
+            file_path="./uploads/supplement_document.pdf",
+            file_type="application/pdf",
+            file_size=2048,
+            uploaded_by="补传员",
+            description="补传附件",
+        )
+        db.add(test_supplement)
+        db.commit()
+        
+        attachments = db.query(Attachment).filter(Attachment.batch_id == test_batch_id).all()
+        print(f"补传后附件数量: {len(attachments)}")
+        assert len(attachments) == 2
+        print("✓ 附件上传和补传测试通过")
+
+        print("\n" + "=" * 60)
+        print("测试14: 操作日志查询")
+        print("=" * 60)
+
+        logs = db.query(OperationLog).filter(OperationLog.batch_id == test_batch_id).all()
+        print(f"批次操作日志数量: {len(logs)}")
+        
+        all_logs = db.query(OperationLog).all()
+        print(f"全部操作日志数量: {len(all_logs)}")
+        
+        log_actions = list(set(log.action for log in all_logs))
+        print(f"操作类型: {log_actions}")
+        
+        assert len(all_logs) > 0
+        assert "create_batch" in log_actions
+        print("✓ 操作日志查询测试通过")
+
+        print("\n" + "=" * 60)
         print("✅ 所有测试通过!")
         print("=" * 60)
 
