@@ -149,10 +149,30 @@ export class ReceiptService {
     const saved = await this.expressRepository.save(order);
 
     if (data.fee) {
+      const beforeApplication = { ...application };
       application.shippingFee += data.fee;
       application.totalFee = application.overdueFee + application.damageFee + application.shippingFee;
       application.version += 1;
       await this.applicationRepository.save(application);
+
+      await AuditLogService.log(
+        OperationType.FEE_ADJUST,
+        EntityType.BORROW_APPLICATION,
+        application.id,
+        {
+          entityNo: application.applicationNo,
+          beforeData: beforeApplication,
+          afterData: application,
+          changes: {
+            shippingFee: application.shippingFee,
+            totalFee: application.totalFee,
+            version: application.version
+          },
+          operatorId,
+          operatorName,
+          remark: `外部回执快递单 ${saved.expressNo} 费用入账，快递费 +${data.fee} 元`
+        }
+      );
     }
 
     await AuditLogService.log(
@@ -216,6 +236,7 @@ export class ReceiptService {
 
     const saved = await this.compensationRepository.save(record);
 
+    const beforeApplication = { ...application };
     if (compensationType === CompensationType.OVERDUE) {
       application.overdueFee += amount;
     } else {
@@ -238,6 +259,28 @@ export class ReceiptService {
         operatorId,
         operatorName,
         remark: '外部回执创建赔偿记录'
+      }
+    );
+
+    const feeField = compensationType === CompensationType.OVERDUE ? 'overdueFee' : 'damageFee';
+    const feeFieldName = compensationType === CompensationType.OVERDUE ? '逾期费' : '污损/遗失赔偿';
+    await AuditLogService.log(
+      OperationType.FEE_ADJUST,
+      EntityType.BORROW_APPLICATION,
+      application.id,
+      {
+        entityNo: application.applicationNo,
+        beforeData: beforeApplication,
+        afterData: application,
+        changes: {
+          [feeField]: application[feeField as keyof typeof application],
+          totalFee: application.totalFee,
+          isDamaged: application.isDamaged,
+          version: application.version
+        },
+        operatorId,
+        operatorName,
+        remark: `外部回执赔偿记录 ${saved.recordNo} 费用入账，${feeFieldName} +${amount} 元`
       }
     );
 

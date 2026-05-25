@@ -56,6 +56,7 @@ export class ExpressOrderService {
 
     const saved = await this.repository.save(order);
 
+    const beforeApplication = { ...application };
     application.shippingFee += data.fee;
     application.totalFee = application.overdueFee + application.damageFee + application.shippingFee;
     application.version += 1;
@@ -71,6 +72,26 @@ export class ExpressOrderService {
         operatorId,
         operatorName,
         remark: '创建快递单',
+        batchId: data.batchId
+      }
+    );
+
+    await AuditLogService.log(
+      OperationType.FEE_ADJUST,
+      EntityType.BORROW_APPLICATION,
+      application.id,
+      {
+        entityNo: application.applicationNo,
+        beforeData: beforeApplication,
+        afterData: application,
+        changes: {
+          shippingFee: application.shippingFee,
+          totalFee: application.totalFee,
+          version: application.version
+        },
+        operatorId,
+        operatorName,
+        remark: `快递单 ${saved.expressNo} 费用入账，快递费 +${data.fee} 元`,
         batchId: data.batchId
       }
     );
