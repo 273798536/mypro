@@ -7,7 +7,17 @@ class AuditService {
     constructor(db) {
         this.db = db || (0, database_1.getDatabase)();
     }
+    async recordFailedRecord(recordType, originalData, errorReason) {
+        await this.db.run(`INSERT INTO failed_records (id, recordType, originalData, errorReason, failedAt, source)
+       VALUES (?, ?, ?, ?, ?, ?)`, [(0, uuid_1.v4)(), recordType, JSON.stringify(originalData), errorReason, new Date().toISOString(), 'api']);
+    }
     async addAuditRecord(request) {
+        const material = await this.db.get('SELECT materialId FROM materials WHERE materialId = ?', [request.materialId]);
+        if (!material) {
+            const error = `Material ${request.materialId} does not exist`;
+            await this.recordFailedRecord('audit', request, error);
+            throw new Error(error);
+        }
         const now = new Date().toISOString();
         const id = (0, uuid_1.v4)();
         await this.db.run(`INSERT INTO audit_records (id, materialId, auditResult, auditComment, auditedBy, auditedAt)
@@ -18,6 +28,12 @@ class AuditService {
         return this.db.all('SELECT * FROM audit_records WHERE materialId = ? ORDER BY auditedAt DESC', [materialId]);
     }
     async addManagerComment(request) {
+        const material = await this.db.get('SELECT materialId FROM materials WHERE materialId = ?', [request.materialId]);
+        if (!material) {
+            const error = `Material ${request.materialId} does not exist`;
+            await this.recordFailedRecord('comment', request, error);
+            throw new Error(error);
+        }
         const now = new Date().toISOString();
         const id = (0, uuid_1.v4)();
         await this.db.run(`INSERT INTO manager_comments (id, materialId, comment, evidence, commentedBy, commentedAt)

@@ -198,4 +198,115 @@ describe('Duplicate Submission and Bad Data Tests', () => {
     expect(failedRecord.originalData).toBeDefined();
     expect(failedRecord.failedAt).toBeDefined();
   });
+
+  it('should reject cost import for non-existent material', async () => {
+    const response = await request(app)
+      .post('/api/costs')
+      .set('x-user-role', UserRole.OPERATOR)
+      .set('x-user-id', 'operator1')
+      .send({
+        materialId: 'NO-SUCH',
+        date: '2024-01-20',
+        cost: 500,
+        impressions: 10000,
+        clicks: 200,
+        source: 'test'
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.error).toContain('does not exist');
+  });
+
+  it('should reject audit record for non-existent material', async () => {
+    const response = await request(app)
+      .post('/api/audit')
+      .set('x-user-role', UserRole.REVIEWER)
+      .set('x-user-id', 'reviewer1')
+      .send({
+        materialId: 'NO-SUCH',
+        auditResult: 'pass',
+        auditComment: 'test'
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toContain('does not exist');
+  });
+
+  it('should reject manager comment for non-existent material', async () => {
+    const response = await request(app)
+      .post('/api/comments')
+      .set('x-user-role', UserRole.MANAGER)
+      .set('x-user-id', 'manager1')
+      .send({
+        materialId: 'NO-SUCH',
+        comment: 'test comment'
+      });
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toContain('does not exist');
+  });
+
+  it('should record orphan records in failed_records', async () => {
+    const costResponse = await request(app)
+      .get('/api/failed-records?type=cost_import')
+      .set('x-user-role', UserRole.AUDITOR);
+
+    const auditResponse = await request(app)
+      .get('/api/failed-records?type=audit')
+      .set('x-user-role', UserRole.AUDITOR);
+
+    const commentResponse = await request(app)
+      .get('/api/failed-records?type=comment')
+      .set('x-user-role', UserRole.AUDITOR);
+
+    expect(costResponse.status).toBe(200);
+    expect(auditResponse.status).toBe(200);
+    expect(commentResponse.status).toBe(200);
+
+    const orphanCost = costResponse.body.items.find((r: any) =>
+      r.originalData.materialId === 'NO-SUCH'
+    );
+    const orphanAudit = auditResponse.body.items.find((r: any) =>
+      r.originalData.materialId === 'NO-SUCH'
+    );
+    const orphanComment = commentResponse.body.items.find((r: any) =>
+      r.originalData.materialId === 'NO-SUCH'
+    );
+
+    expect(orphanCost).toBeDefined();
+    expect(orphanAudit).toBeDefined();
+    expect(orphanComment).toBeDefined();
+
+    expect(orphanCost.errorReason).toContain('does not exist');
+    expect(orphanAudit.errorReason).toContain('does not exist');
+    expect(orphanComment.errorReason).toContain('does not exist');
+  });
+
+  it('should have zero orphan records in daily_costs', async () => {
+    const db = getDatabase();
+    const costs = await db.all(
+      'SELECT COUNT(*) as count FROM daily_costs WHERE materialId = ?',
+      ['NO-SUCH']
+    );
+    expect(costs[0].count).toBe(0);
+  });
+
+  it('should have zero orphan records in audit_records', async () => {
+    const db = getDatabase();
+    const audits = await db.all(
+      'SELECT COUNT(*) as count FROM audit_records WHERE materialId = ?',
+      ['NO-SUCH']
+    );
+    expect(audits[0].count).toBe(0);
+  });
+
+  it('should have zero orphan records in manager_comments', async () => {
+    const db = getDatabase();
+    const comments = await db.all(
+      'SELECT COUNT(*) as count FROM manager_comments WHERE materialId = ?',
+      ['NO-SUCH']
+    );
+    expect(comments[0].count).toBe(0);
+  });
 });

@@ -29,6 +29,17 @@ export class CostService {
       return { success: false, error: validationError };
     }
 
+    const material = await this.db.get(
+      'SELECT materialId FROM materials WHERE materialId = ?',
+      [request.materialId]
+    );
+
+    if (!material) {
+      const error = `Material ${request.materialId} does not exist`;
+      await this.recordFailedImport(request, error);
+      return { success: false, error };
+    }
+
     const id = uuidv4();
 
     try {

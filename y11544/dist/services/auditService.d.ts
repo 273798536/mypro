@@ -3,6 +3,7 @@ import { AuditRecord, AuditRequest, ManagerComment, ManagerCommentRequest } from
 export declare class AuditService {
     private db;
     constructor(db?: Database);
+    private recordFailedRecord;
     addAuditRecord(request: AuditRequest): Promise<AuditRecord>;
     getAuditRecords(materialId: string): Promise<AuditRecord[]>;
     addManagerComment(request: ManagerCommentRequest): Promise<ManagerComment>;

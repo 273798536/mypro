@@ -31,6 +31,12 @@ class CostService {
             await this.recordFailedImport(request, validationError);
             return { success: false, error: validationError };
         }
+        const material = await this.db.get('SELECT materialId FROM materials WHERE materialId = ?', [request.materialId]);
+        if (!material) {
+            const error = `Material ${request.materialId} does not exist`;
+            await this.recordFailedImport(request, error);
+            return { success: false, error };
+        }
         const id = (0, uuid_1.v4)();
         try {
             const existing = await this.db.get('SELECT id FROM daily_costs WHERE materialId = ? AND date = ?', [request.materialId, request.date]);

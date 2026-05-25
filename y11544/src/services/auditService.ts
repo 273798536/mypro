@@ -9,7 +9,30 @@ export class AuditService {
     this.db = db || getDatabase();
   }
 
+  private async recordFailedRecord(
+    recordType: 'audit' | 'comment',
+    originalData: any,
+    errorReason: string
+  ): Promise<void> {
+    await this.db.run(
+      `INSERT INTO failed_records (id, recordType, originalData, errorReason, failedAt, source)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [uuidv4(), recordType, JSON.stringify(originalData), errorReason, new Date().toISOString(), 'api']
+    );
+  }
+
   async addAuditRecord(request: AuditRequest): Promise<AuditRecord> {
+    const material = await this.db.get(
+      'SELECT materialId FROM materials WHERE materialId = ?',
+      [request.materialId]
+    );
+
+    if (!material) {
+      const error = `Material ${request.materialId} does not exist`;
+      await this.recordFailedRecord('audit', request, error);
+      throw new Error(error);
+    }
+
     const now = new Date().toISOString();
     const id = uuidv4();
 
@@ -33,6 +56,17 @@ export class AuditService {
   }
 
   async addManagerComment(request: ManagerCommentRequest): Promise<ManagerComment> {
+    const material = await this.db.get(
+      'SELECT materialId FROM materials WHERE materialId = ?',
+      [request.materialId]
+    );
+
+    if (!material) {
+      const error = `Material ${request.materialId} does not exist`;
+      await this.recordFailedRecord('comment', request, error);
+      throw new Error(error);
+    }
+
     const now = new Date().toISOString();
     const id = uuidv4();
 
