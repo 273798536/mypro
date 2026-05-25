@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { AppDataSource } from '../config/database';
-import { BorrowApplication, BorrowStatus } from '../entities/BorrowApplication';
+import { BorrowApplication, BorrowStatus, BorrowType } from '../entities/BorrowApplication';
 import { ExpressOrder } from '../entities/ExpressOrder';
 import { CompensationRecord } from '../entities/CompensationRecord';
 import { SupervisorComment, CommentType } from '../entities/SupervisorComment';
-import { QueueService, PayloadType } from './QueueService';
+import { QueueService } from './QueueService';
+import { PayloadType } from '../entities/RetryQueue';
 import { FeeCalculationService } from './FeeCalculationService';
 import { AuditLogService } from './AuditLogService';
 import { OperationType, EntityType } from '../entities/OperationLog';
@@ -18,7 +19,7 @@ export interface SubmitApplicationData {
   isbn?: string;
   sourceLibrary: string;
   targetLibrary: string;
-  borrowType: string;
+  borrowType: BorrowType;
   rawData?: any;
   batchId?: string;
   externalReference?: string;

@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { initializeDatabase } from '../config/database';
 import { BorrowApplicationService } from '../services/BorrowApplicationService';
 import { QueueService } from '../services/QueueService';
-import { PayloadType } from '../entities/RetryQueue';
+import { BorrowType } from '../entities/BorrowApplication';
 import { CommentType } from '../entities/SupervisorComment';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,7 +27,7 @@ async function main() {
         isbn: '978-7-111-12345-6',
         sourceLibrary: '北京大学图书馆',
         targetLibrary: '清华大学图书馆',
-        borrowType: 'inter_library'
+        borrowType: BorrowType.INTER_LIBRARY
       },
       {
         applicationNo: 'ILL-2024-00002',
@@ -37,7 +37,7 @@ async function main() {
         isbn: '978-7-111-23456-7',
         sourceLibrary: '复旦大学图书馆',
         targetLibrary: '上海交通大学图书馆',
-        borrowType: 'inter_library'
+        borrowType: BorrowType.INTER_LIBRARY
       },
       {
         applicationNo: 'ILL-2024-00003',
@@ -47,7 +47,7 @@ async function main() {
         isbn: '978-7-111-34567-8',
         sourceLibrary: '浙江大学图书馆',
         targetLibrary: '南京大学图书馆',
-        borrowType: 'document_delivery'
+        borrowType: BorrowType.DOCUMENT_DELIVERY
       }
     ];
 
