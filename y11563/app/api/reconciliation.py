@@ -8,6 +8,7 @@ from app.schemas.common import (
     ManualAdjustRequest,
 )
 from app.services.reconciliation import ReconciliationService
+from app.api.deps import require_permission
 
 router = APIRouter()
 
@@ -73,6 +74,7 @@ def get_unmatched(
 def manual_adjust(
     request: ManualAdjustRequest,
     db: Session = Depends(get_db),
+    current_user: dict = require_permission("reconciliation:adjust", "对账人工改判"),
 ):
     service = ReconciliationService(db)
     result = service.manual_adjust(
@@ -84,7 +86,7 @@ def manual_adjust(
     )
     if not result:
         raise HTTPException(status_code=404, detail="对账记录不存在")
-    return {"status": "success", "result": result}
+    return {"status": "success", "result": result, "authorized_by": current_user}
 
 
 @router.get("/{reconciliation_no}")

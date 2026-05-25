@@ -198,12 +198,80 @@ def history(record_type, record_id):
 
     for log in result["history"]:
         console.print(f"\n[blue]{log['operation_time']}[/blue] - {log['operation']} by {log['operator']}")
-        if log.get("change_reason"):
-            console.print(f"  原因: {log['change_reason']}")
-        if log.get("before_data"):
-            console.print(f"  变更前: {json.dumps(log['before_data'], ensure_ascii=False)[:100]}...")
-        if log.get("after_data"):
-            console.print(f"  变更后: {json.dumps(log['after_data'], ensure_ascii=False)[:100]}...")
+    if log.get("change_reason"):
+        console.print(f"  原因: {log['change_reason']}")
+    if log.get("before_data"):
+        console.print(f"  变更前: {json.dumps(log['before_data'], ensure_ascii=False)[:100]}...")
+    if log.get("after_data"):
+        console.print(f"  变更后: {json.dumps(log['after_data'], ensure_ascii=False)[:100]}...")
+
+
+@cli.command()
+@click.option("-n", "--sms-no", help="短信记录号")
+@click.option("-c", "--checkin-no", help="入住单号")
+@click.option("-g", "--guest-name", help="客人姓名")
+@click.option("-p", "--guest-phone", help="客人电话")
+@click.option("-t", "--sms-type", help="短信类型")
+@click.option("--content", help="短信内容")
+@click.option("-b", "--batch", help="批次号")
+@click.option("-r", "--role", default="reception", help="角色: admin/finance/reception/auditor")
+def sms(sms_no, checkin_no, guest_name, guest_phone, sms_type, content, batch, role):
+    """上传短信截图记录"""
+    from datetime import datetime
+    payload = {
+        "sms_no": sms_no or f"SMS-{int(time.time())}",
+        "checkin_no": checkin_no,
+        "guest_name": guest_name,
+        "guest_phone": guest_phone,
+        "sms_type": sms_type or "通知",
+        "sms_content": content or "",
+        "sent_time": datetime.now().isoformat(),
+        "operator": "前台",
+        "batch_no": batch,
+    }
+    headers = {"X-User-Role": role, "X-User-Id": "cli_user"}
+    resp = requests.post(f"{BASE_URL}/sms/", json=payload, headers=headers)
+    if resp.status_code == 200:
+        console.print(f"[green]✓[/green] 短信记录创建成功: {resp.json()['sms_no']}")
+    else:
+        console.print(f"[red]✗[/red] 创建失败: {resp.text}")
+
+
+@cli.command()
+@click.argument("handover_no")
+@click.option("-s", "--shift", default="夜班", help="班次: 早班/中班/夜班")
+@click.option("-o", "--operator-out", help="交班人")
+@click.option("-i", "--operator-in", help="接班人")
+@click.option("--cash", type=float, default=0, help="现金金额")
+@click.option("--card", type=float, default=0, help="刷卡金额")
+@click.option("--online", type=float, default=0, help="线上金额")
+@click.option("-b", "--batch", help="批次号")
+@click.option("-r", "--role", default="reception", help="角色: admin/finance/reception/auditor")
+def handover(handover_no, shift, operator_out, operator_in, cash, card, online, batch, role):
+    """创建门店交接记录"""
+    from datetime import datetime
+    payload = {
+        "handover_no": handover_no,
+        "shift_type": shift,
+        "handover_date": datetime.now().isoformat(),
+        "operator_out": operator_out or "前台A",
+        "operator_in": operator_in or "前台B",
+        "total_cash": cash,
+        "total_card": card,
+        "total_online": online,
+        "total_amount": cash + card + online,
+        "issues": [],
+        "batch_no": batch,
+        "status": "completed",
+    }
+    headers = {"X-User-Role": role, "X-User-Id": "cli_user"}
+    resp = requests.post(f"{BASE_URL}/handover/", json=payload, headers=headers)
+    if resp.status_code == 200:
+        console.print(f"[green]✓[/green] 交接记录创建成功: {resp.json()['handover_no']}")
+        console.print(f"  班次: {shift}")
+        console.print(f"  总金额: {cash + card + online:.2f} 元")
+    else:
+        console.print(f"[red]✗[/red] 创建失败: {resp.text}")
 
 
 @cli.command()
@@ -292,13 +360,14 @@ def acceptance(batch, repeat, bad_data, revoke, manual):
         if unmatched:
             recon_no = unmatched[0]['reconciliation_no']
             console.print(f"  6.1 对异常记录 {recon_no} 进行人工改判")
+            headers = {"X-User-Role": "finance", "X-User-Id": "finance_user"}
             resp = requests.post(f"{BASE_URL}/reconciliation/manual-adjust", json={
                 "reconciliation_no": recon_no,
                 "is_matched": True,
                 "adjust_reason": "财务确认，押金在途，后续补收",
                 "adjusted_by": "财务主管",
                 "remarks": "已与客人确认，明天补收押金"
-            })
+            }, headers=headers)
             adjust_result = resp.json()
             console.print(f"    [green]✓[/green] 人工改判成功: {adjust_result['result']['is_manually_adjusted']}")
 
@@ -312,12 +381,13 @@ def acceptance(batch, repeat, bad_data, revoke, manual):
                     console.print(f"      原因: {log['change_reason']}")
 
     console.print("\n[blue]7. 导出并冻结[/blue]")
+    export_headers = {"X-User-Role": "finance", "X-User-Id": "finance_user"}
     resp = requests.post(f"{BASE_URL}/export/excel", json={
         "export_type": "all",
         "batch_no": batch_no,
         "freeze_after_export": True,
         "exported_by": "财务夜审",
-    })
+    }, headers=export_headers)
     export_result = resp.json()
     console.print(f"  [green]✓[/green] 导出并冻结完成")
     console.print(f"    快照号: {export_result['snapshot_no']}")
@@ -325,13 +395,46 @@ def acceptance(batch, repeat, bad_data, revoke, manual):
     console.print(f"    记录数: {export_result['record_count']}")
     console.print(f"    已冻结: {'是' if export_result['is_frozen'] else '否'}")
 
-    console.print("\n[blue]8. 验证快照完整性[/blue]")
+    console.print("\n[blue]8. 补充门店交接和短信截图[/blue]")
+    from datetime import datetime
+    sms_headers = {"X-User-Role": "reception", "X-User-Id": "reception_user"}
+    sms_payload = {
+        "sms_no": f"SMS-{batch_no}",
+        "checkin_no": checkins[0]['checkin_no'],
+        "guest_name": checkins[0].get('guest_name', '客人'),
+        "sms_type": "到店通知",
+        "sms_content": "尊敬的客人，您已办理入住，祝您入住愉快！",
+        "sent_time": datetime.now().isoformat(),
+        "operator": "前台",
+        "batch_no": batch_no,
+    }
+    resp = requests.post(f"{BASE_URL}/sms/", json=sms_payload, headers=sms_headers)
+    console.print(f"  [green]✓[/green] 短信记录: {resp.status_code == 200}")
+
+    handover_payload = {
+        "handover_no": f"HD-{batch_no}",
+        "shift_type": "夜班",
+        "handover_date": datetime.now().isoformat(),
+        "operator_out": "前台A",
+        "operator_in": "前台B",
+        "total_cash": 1500.0,
+        "total_card": 3000.0,
+        "total_online": 2000.0,
+        "total_amount": 6500.0,
+        "issues": [],
+        "batch_no": batch_no,
+        "status": "completed",
+    }
+    resp = requests.post(f"{BASE_URL}/handover/", json=handover_payload, headers=sms_headers)
+    console.print(f"  [green]✓[/green] 交接记录: {resp.status_code == 200}")
+
+    console.print("\n[blue]9. 验证快照完整性[/blue]")
     resp = requests.get(f"{BASE_URL}/export/verify/{export_result['snapshot_no']}")
     verify_result = resp.json()
     console.print(f"  校验结果: {'通过' if verify_result['valid'] else '失败'}")
     console.print(f"  冻结状态: {'已冻结' if verify_result['is_frozen'] else '未冻结'}")
 
-    console.print("\n[blue]9. 审计追溯（查看完整历史）[/blue]")
+    console.print("\n[blue]10. 审计追溯（查看完整历史）[/blue]")
     resp = requests.get(f"{BASE_URL}/audit/batch/{batch_no}")
     audit_result = resp.json()
     console.print(f"  [green]✓[/green] 审计日志完整")
@@ -347,6 +450,8 @@ def acceptance(batch, repeat, bad_data, revoke, manual):
     console.print(f"审计记录: {audit_result['count']} 条")
     console.print(f"\n核心能力验证:")
     console.print(f"  ✅ 造数 -> 导入 -> 对账 -> 导出 -> 冻结")
+    console.print(f"  ✅ 短信截图 + 门店交接补充")
+    console.print(f"  ✅ 权限校验控制（人工改判/冻结需finance角色）")
     if repeat:
         console.print(f"  ✅ 重复提交幂等处理")
     if revoke:

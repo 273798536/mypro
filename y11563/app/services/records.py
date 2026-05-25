@@ -408,3 +408,75 @@ class RecordService:
         )
 
         return True
+
+    def batch_process_with_retry(
+        self,
+        items: List[Dict[str, Any]],
+        record_type: str,
+        max_retries: int = 3,
+        batch_no: Optional[str] = None,
+        operator: str = "system",
+    ) -> Dict[str, Any]:
+        """带重试机制的批量处理"""
+        from app.utils.retry_queue import RetryQueueService, DeadLetterQueueService
+
+        retry_queue = RetryQueueService(max_retries=max_retries)
+        dead_letter_queue = DeadLetterQueueService()
+
+        success_count = 0
+        failed_count = 0
+        dead_letter_count = 0
+        results = []
+
+        process_map = {
+            "checkin": self.create_or_update_checkin,
+            "deposit": self.create_or_update_deposit,
+            "room_change": self.create_or_update_room_change,
+        }
+        process_func = process_map.get(record_type)
+        if not process_func:
+            raise ValueError(f"不支持的记录类型: {record_type}")
+
+        for item in items:
+            def callback(data):
+                return process_func(
+                    data=data,
+                    operator=operator,
+                    batch_no=batch_no,
+                )
+
+            try:
+                result, is_dup, action = process_func(
+                    data=item,
+                    operator=operator,
+                    batch_no=batch_no,
+                )
+                success_count += 1
+                results.append({"status": "success", "action": action})
+            except Exception as e:
+                task_id = retry_queue.enqueue(
+                    task_type=f"create_{record_type}",
+                    data=item,
+                    callback=lambda d: process_func(d, operator=operator, batch_no=batch_no),
+                )
+                results.append({"status": "retry", "task_id": task_id, "error": str(e)})
+
+        for _ in range(max_retries):
+            stats = retry_queue.process_all()
+            success_count += stats["completed"]
+            dead_letter_count += stats["dead_letter"]
+
+        for failed_task in retry_queue.get_failed():
+            dlq_id = dead_letter_queue.add(failed_task)
+            results.append({"status": "dead_letter", "dlq_id": dlq_id})
+            failed_count += 1
+
+        return {
+            "total": len(items),
+            "success": success_count,
+            "failed": failed_count,
+            "dead_letter": dead_letter_count,
+            "results": results,
+            "retry_stats": retry_queue.get_stats(),
+            "dlq_stats": dead_letter_queue.get_stats(),
+        }

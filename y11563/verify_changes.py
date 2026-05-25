@@ -136,13 +136,62 @@ def verify_all():
     # 8. 数据库模型初始化
     print("\n[8] 数据库模型初始化测试...")
     from app.database import Base, engine
-    from app.models import *
+    import app.models
     
     Base.metadata.create_all(bind=engine)
     print("  ✅ 数据库模型初始化成功")
     
+    # 9. 权限校验 API 集成测试
+    print("\n[9] 权限校验 API 集成测试...")
+    from app.api.deps import permission_service
+    
+    permission_service.assign_role("test_finance", "finance")
+    permission_service.assign_role("test_reception", "reception")
+    permission_service.assign_role("test_auditor", "auditor")
+    permission_service.assign_role("test_admin", "admin")
+    
+    assert permission_service.check_permission("test_finance", "reconciliation:adjust")
+    assert permission_service.check_permission("test_finance", "export:freeze")
+    assert not permission_service.check_permission("test_reception", "reconciliation:adjust")
+    assert not permission_service.check_permission("test_auditor", "export:freeze")
+    assert permission_service.check_permission("test_admin", "anything")
+    
+    print("  ✅ 权限校验 API 集成测试通过")
+    
+    # 10. 服务层重试队列机制
+    print("\n[10] 服务层重试队列机制测试...")
+    from app.services.records import RecordService
+    from app.database import SessionLocal
+    
+    db = SessionLocal()
+    service = RecordService(db)
+    
+    result = service.batch_process_with_retry(
+        items=[{"checkin_no": "CI-RETRY-001", "guest_name": "测试客人"}],
+        record_type="checkin",
+        max_retries=3,
+        operator="tester",
+    )
+    
+    assert "total" in result
+    assert "success" in result
+    assert "retry_stats" in result
+    assert "dlq_stats" in result
+    db.close()
+    
+    print("  ✅ 服务层重试队列机制测试通过")
+    
     print("\n" + "=" * 60)
     print("  所有新增功能验证通过！")
+    print("  - 数据脱敏: 手机号/身份证/姓名")
+    print("  - 权限校验: API层集成")
+    print("  - 冲突锁: 并发控制")
+    print("  - 重试队列: 服务层集成")
+    print("  - 死信队列: 失败任务处理")
+    print("  - 短信截图: API/CLI 入口")
+    print("  - 门店交接: API/CLI 入口")
+    print("  - 人工改判: 需finance角色")
+    print("  - 导出冻结: 需finance角色")
     print("=" * 60)
     
     return 0

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.common import ExportRequest, FreezeRequest
 from app.services.export import ExportService
+from app.api.deps import require_permission
 
 router = APIRouter()
 
@@ -12,6 +13,7 @@ router = APIRouter()
 def export_excel(
     request: ExportRequest,
     db: Session = Depends(get_db),
+    current_user: dict = require_permission("export:create", "数据导出"),
 ):
     service = ExportService(db)
     snapshot = service.export_to_excel(
@@ -28,6 +30,7 @@ def export_excel(
         "file_name": snapshot.file_name,
         "record_count": snapshot.record_count,
         "is_frozen": snapshot.is_frozen,
+        "authorized_by": current_user,
     }
 
 
@@ -35,6 +38,7 @@ def export_excel(
 def freeze_snapshot(
     request: FreezeRequest,
     db: Session = Depends(get_db),
+    current_user: dict = require_permission("export:freeze", "冻结导出快照"),
 ):
     service = ExportService(db)
     snapshot = service.freeze_snapshot(
@@ -50,6 +54,7 @@ def freeze_snapshot(
         "is_frozen": snapshot.is_frozen,
         "frozen_at": snapshot.frozen_at,
         "frozen_by": snapshot.frozen_by,
+        "authorized_by": current_user,
     }
 
 
