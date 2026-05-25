@@ -2,12 +2,14 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"bank-schedule-retry/internal/database"
 	"bank-schedule-retry/internal/models"
 
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type StatisticsService struct {
@@ -379,32 +381,100 @@ func (s *StatisticsService) ListDeadLetters(branchID uuid.UUID, resolved *bool, 
 func (s *StatisticsService) RestoreDeadLetter(deadLetterID uuid.UUID, operator OperatorInfo) (*models.RetryTask, error) {
 	var deadLetter models.DeadLetter
 	if err := database.DB.First(&deadLetter, deadLetterID).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("查询死信记录失败: %w", err)
 	}
 
 	if deadLetter.Resolved {
-		return nil, nil
+		return nil, fmt.Errorf("死信已处理，无需重复恢复，解决方式: %s，解决时间: %v",
+			deadLetter.ResolveMethod, deadLetter.ResolvedAt)
 	}
 
 	var task models.RetryTask
 	if err := database.DB.First(&task, deadLetter.TaskID).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("查询关联任务失败: %w", err)
 	}
 
-	task.Status = models.TaskStatusPending
-	task.RetryCount = 0
-	task.LastError = ""
+	oldTask := task
 
 	var item models.RetryTaskItem
-	database.DB.Where("id = ?", deadLetter.ItemID).First(&item)
+	if deadLetter.RetryTaskItemID != uuid.Nil {
+		err := database.DB.Where("id = ?", deadLetter.RetryTaskItemID).First(&item).Error
+		if err != nil {
+			logrus.Warnf("根据 RetryTaskItemID=%s 查询任务项失败，将根据业务数据重建: %v",
+				deadLetter.RetryTaskItemID, err)
+		}
+	}
+
+	if item.ID == uuid.Nil {
+		err := database.DB.Where("item_id = ? AND task_id = ?",
+			deadLetter.BusinessDataID, task.ID).First(&item).Error
+		if err != nil {
+			logrus.Warnf("根据业务数据ID=%s 查询任务项失败，将重建任务项: %v",
+				deadLetter.BusinessDataID, err)
+
+			item = models.RetryTaskItem{
+				TaskID:     task.ID,
+				ItemType:   deadLetter.ItemType,
+				ItemID:     deadLetter.BusinessDataID,
+				Status:     models.TaskStatusPending,
+				RetryCount: 0,
+			}
+		}
+	}
+
+	oldItemStatus := item.Status
+
 	item.Status = models.TaskStatusPending
 	item.RetryCount = 0
 	item.LastError = ""
 	item.Resolved = false
+	item.ConflictType = ""
+	item.ConflictDetail = ""
+
+	oldStatus := task.Status
+
+	if task.Status == models.TaskStatusDeadLetter {
+		var remainingDeadItems int64
+		database.DB.Model(&models.RetryTaskItem{}).
+			Where("task_id = ? AND status = ?", task.ID, models.TaskStatusDeadLetter).
+			Where("id != ?", item.ID).
+			Count(&remainingDeadItems)
+
+		if remainingDeadItems > 0 {
+			task.Status = models.TaskStatusRetrying
+		} else {
+			task.Status = models.TaskStatusPending
+		}
+	} else if task.Status != models.TaskStatusPending &&
+		task.Status != models.TaskStatusRetrying &&
+		task.Status != models.TaskStatusQueued {
+		task.Status = models.TaskStatusPending
+	}
+
+	task.RetryCount = 0
+	task.LastError = ""
 
 	tx := database.Begin()
-	tx.Save(&task)
-	tx.Save(&item)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	if err := tx.Save(&task).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("更新任务状态失败: %w", err)
+	}
+
+	if item.ID == uuid.Nil {
+		if err := tx.Create(&item).Error; err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("创建任务项失败: %w", err)
+		}
+	} else {
+		if err := tx.Save(&item).Error; err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("更新任务项失败: %w", err)
+		}
+	}
 
 	deadLetter.Resolved = true
 	deadLetter.ResolvedBy = operator.OperatorID
@@ -412,9 +482,34 @@ func (s *StatisticsService) RestoreDeadLetter(deadLetterID uuid.UUID, operator O
 	deadLetter.ResolvedAt = &now
 	deadLetter.ResolveMethod = "restore"
 	deadLetter.RestoredTaskID = task.ID
-	tx.Save(&deadLetter)
 
-	tx.Commit()
+	if err := tx.Save(&deadLetter).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("更新死信状态失败: %w", err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	s.historyService.RecordOperation(
+		task.ID, item.ID, models.OpTypeProcess,
+		string(oldItemStatus), string(item.Status),
+		nil, nil,
+		fmt.Sprintf("死信恢复成功，项类型: %s，错误: %s", deadLetter.ItemType, deadLetter.LastError),
+		operator,
+	)
+
+	s.historyService.RecordOperation(
+		task.ID, uuid.Nil, models.OpTypeProcess,
+		string(oldStatus), string(task.Status),
+		&oldTask, &task,
+		fmt.Sprintf("死信恢复，任务状态变更，恢复项ID: %s", item.ID),
+		operator,
+	)
+
+	logrus.Infof("Dead letter restored successfully: dead_letter_id=%s, task_id=%s, item_id=%s",
+		deadLetterID, task.ID, item.ID)
 
 	return &task, nil
 }

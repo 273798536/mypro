@@ -606,17 +606,13 @@ func (h *TaskHandler) RestoreDeadLetter(c *gin.Context) {
 
 	task, err := h.statisticsService.RestoreDeadLetter(deadLetterID, operator)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if task == nil {
-		c.JSON(http.StatusOK, gin.H{"message": "死信已处理，无需恢复"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"task_id": task.ID,
-		"message": "死信恢复成功，任务已重新加入待处理队列",
+		"status":  task.Status,
+		"message": "死信恢复成功，任务已重新加入待处理队列，可通过入队接口继续处理",
 	})
 }

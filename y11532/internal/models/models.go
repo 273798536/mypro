@@ -244,20 +244,21 @@ type OperationHistory struct {
 
 type DeadLetter struct {
 	BaseModel
-	TaskID          uuid.UUID `gorm:"type:uuid;index"`
-	ItemID          uuid.UUID `gorm:"type:uuid"`
-	ItemType        string    `gorm:"size:50"`
-	FailedAt        time.Time
-	ErrorCount      int
-	LastError       string    `gorm:"size:1000"`
-	ConflictType    string    `gorm:"size:50"`
-	OriginalData    string    `gorm:"type:text"`
-	Resolved        bool      `gorm:"default:false"`
-	ResolvedBy      uuid.UUID
-	ResolvedAt      *time.Time
-	ResolveMethod   string    `gorm:"size:50"`
-	ResolveComment  string    `gorm:"size:1000"`
-	RestoredTaskID  uuid.UUID
+	TaskID            uuid.UUID `gorm:"type:uuid;index"`
+	RetryTaskItemID   uuid.UUID `gorm:"type:uuid;index"`
+	BusinessDataID    uuid.UUID `gorm:"type:uuid"`
+	ItemType          string    `gorm:"size:50"`
+	FailedAt          time.Time
+	ErrorCount        int
+	LastError         string    `gorm:"size:1000"`
+	ConflictType      string    `gorm:"size:50"`
+	OriginalData      string    `gorm:"type:text"`
+	Resolved          bool      `gorm:"default:false"`
+	ResolvedBy        uuid.UUID
+	ResolvedAt        *time.Time
+	ResolveMethod     string    `gorm:"size:50"`
+	ResolveComment    string    `gorm:"size:1000"`
+	RestoredTaskID    uuid.UUID
 }
 
 type ExportRecord struct {

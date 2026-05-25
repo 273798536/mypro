@@ -11,6 +11,7 @@ import (
 	"bank-schedule-retry/internal/models"
 
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -483,6 +484,12 @@ func (s *RetryQueueService) ProcessTask(taskID uuid.UUID) (*ProcessResult, error
 				task.RetryCount, nextRetry.Format("2006-01-02 15:04:05"), lastError)
 		} else {
 			task.Status = models.TaskStatusDeadLetter
+			for i := range items {
+				if items[i].Status != models.TaskStatusSuccess && items[i].Status != models.TaskStatusCompensated {
+					items[i].Status = models.TaskStatusDeadLetter
+					database.DB.Save(&items[i])
+				}
+			}
 			s.moveToDeadLetter(&task, items)
 			opType = models.OpTypeFail
 			remark = fmt.Sprintf("任务达到最大重试次数 %d，转入死信队列，错误: %s",
@@ -638,41 +645,55 @@ func (s *RetryQueueService) moveToDeadLetter(task *models.RetryTask, items []mod
 		}
 
 		deadLetter := &models.DeadLetter{
-			TaskID:       task.ID,
-			ItemID:       item.ItemID,
-			ItemType:     item.ItemType,
-			FailedAt:     time.Now(),
-			ErrorCount:   item.RetryCount,
-			LastError:    item.LastError,
-			ConflictType: item.ConflictType,
+			TaskID:          task.ID,
+			RetryTaskItemID: item.ID,
+			BusinessDataID:  item.ItemID,
+			ItemType:        item.ItemType,
+			FailedAt:        time.Now(),
+			ErrorCount:      item.RetryCount,
+			LastError:       item.LastError,
+			ConflictType:    item.ConflictType,
 		}
 
 		var originalData string
+		var err error
 		switch item.ItemType {
 		case "schedule":
 			var s models.TellerSchedule
-			database.DB.First(&s, item.ItemID)
-			data, _ := json.Marshal(s)
-			originalData = string(data)
+			if err = database.DB.First(&s, item.ItemID).Error; err == nil {
+				data, _ := json.Marshal(s)
+				originalData = string(data)
+			}
 		case "leave":
 			var l models.LeaveRequest
-			database.DB.First(&l, item.ItemID)
-			data, _ := json.Marshal(l)
-			originalData = string(data)
+			if err = database.DB.First(&l, item.ItemID).Error; err == nil {
+				data, _ := json.Marshal(l)
+				originalData = string(data)
+			}
 		case "forecast":
 			var f models.BusinessVolumeForecast
-			database.DB.First(&f, item.ItemID)
-			data, _ := json.Marshal(f)
-			originalData = string(data)
+			if err = database.DB.First(&f, item.ItemID).Error; err == nil {
+				data, _ := json.Marshal(f)
+				originalData = string(data)
+			}
 		case "scan":
 			var sc models.ScanDetail
-			database.DB.First(&sc, item.ItemID)
-			data, _ := json.Marshal(sc)
-			originalData = string(data)
+			if err = database.DB.First(&sc, item.ItemID).Error; err == nil {
+				data, _ := json.Marshal(sc)
+				originalData = string(data)
+			}
+		case "training":
+			var tr models.TempTraining
+			if err = database.DB.First(&tr, item.ItemID).Error; err == nil {
+				data, _ := json.Marshal(tr)
+				originalData = string(data)
+			}
 		}
 		deadLetter.OriginalData = originalData
 
-		database.DB.Create(deadLetter)
+		if err := database.DB.Create(deadLetter).Error; err != nil {
+			logrus.Errorf("Failed to create dead letter for item %s: %v", item.ID, err)
+		}
 	}
 }
 
