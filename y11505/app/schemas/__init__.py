@@ -27,6 +27,12 @@ from app.schemas.common import (
     BatchStatusHistoryResponse,
     AuditLogResponse,
 )
+from app.schemas.attachment import (
+    AttachmentResponse,
+    AttachmentListResponse,
+    ZipParseResponse,
+    ZipImportResponse,
+)
 
 __all__ = [
     "BatchCreate",
@@ -48,4 +54,8 @@ __all__ = [
     "TaskResponse",
     "BatchStatusHistoryResponse",
     "AuditLogResponse",
+    "AttachmentResponse",
+    "AttachmentListResponse",
+    "ZipParseResponse",
+    "ZipImportResponse",
 ]

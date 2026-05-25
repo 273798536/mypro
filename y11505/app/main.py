@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api import batch_router, task_router, export_router
+from app.api import batch_router, task_router, export_router, attachment_router
 
 app = FastAPI(
     title=settings.APP_NAME,

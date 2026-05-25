@@ -4,6 +4,7 @@ from app.services.audit_service import AuditService
 from app.services.import_service import ImportService
 from app.services.export_service import ExportService
 from app.services.device_status_linker import DeviceStatusLinkerService
+from app.services.attachment_service import AttachmentService
 
 __all__ = [
     "StateMachineService",
@@ -12,4 +13,5 @@ __all__ = [
     "ImportService",
     "ExportService",
     "DeviceStatusLinkerService",
+    "AttachmentService",
 ]
