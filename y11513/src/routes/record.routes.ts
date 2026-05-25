@@ -31,11 +31,11 @@ const upload = multer({
 });
 
 router.get('/:recordType', recordController.getRecords.bind(recordController));
+router.get('/:recordType/export', recordController.exportRecords.bind(recordController));
 router.get('/:recordType/:id', recordController.getRecordById.bind(recordController));
 router.get('/:recordType/:id/history', recordController.getRecordHistory.bind(recordController));
 router.post('/:recordType', recordController.createRecord.bind(recordController));
 router.post('/:recordType/import', recordController.importRecords.bind(recordController));
-router.get('/:recordType/export', recordController.exportRecords.bind(recordController));
 router.post('/:recordType/upload', upload.single('file'), recordController.uploadCsv.bind(recordController));
 
 export default router;

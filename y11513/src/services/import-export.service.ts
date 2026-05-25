@@ -8,6 +8,7 @@ import { config } from '../config';
 import { logger } from '../utils/logger';
 import { recordService } from './record.service';
 import { taskService } from './task.service';
+import { deduplicationService } from './deduplication.service';
 
 export class ImportExportService {
   public async importFromCsv(
@@ -195,31 +196,8 @@ export class ImportExportService {
   }
 
   private async findExistingRecord(recordType: RecordType, data: any): Promise<any> {
-    const businessKey = this.generateBusinessKey(recordType, data);
+    const businessKey = deduplicationService.generateBusinessKey(recordType, data);
     return recordService.findByBusinessKey(recordType, businessKey);
-  }
-
-  private generateBusinessKey(recordType: RecordType, data: any): string {
-    let keyComponents: string[] = [];
-
-    switch (recordType) {
-      case RecordType.BORROW_APPLICATION:
-        keyComponents = [data.applicationNo, data.readerId, data.isbn];
-        break;
-      case RecordType.EXPRESS_ORDER:
-        keyComponents = [data.expressNo, data.relatedApplicationNo];
-        break;
-      case RecordType.COMPENSATION_RECORD:
-        keyComponents = [data.compensationNo, data.relatedApplicationNo, data.compensationType];
-        break;
-      case RecordType.SHIFT_RECORD:
-        keyComponents = [data.shiftNo, data.operatorId, String(data.shiftDate)];
-        break;
-      default:
-        throw new Error(`Unknown record type: ${recordType}`);
-    }
-
-    return keyComponents.filter(Boolean).join('|');
   }
 
   private checkDuplicateType(existing: any, newData: any): 'exact' | 'partial' | 'conflicting' {

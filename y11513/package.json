@@ -9,7 +9,7 @@
     "dev": "ts-node src/server.ts",
     "generate": "ts-node scripts/generate-data.ts",
     "replay": "ts-node scripts/replay-exceptions.ts",
-    "reconcile": "ts-node/scripts/reconcile.ts",
+    "reconcile": "ts-node scripts/reconcile.ts",
     "export": "ts-node scripts/export.ts",
     "lint": "eslint src --ext .ts",
     "test": "jest"

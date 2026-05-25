@@ -38,12 +38,12 @@ npm run generate
 npm run dev
 ```
 
-服务启动在 `http://localhost:3000`
+服务启动在 `http://localhost:3001`
 
 ### 4. 验证服务
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3001/health
 ```
 
 ## 核心流程
@@ -205,7 +205,7 @@ POST /api/tasks/verify-consistency
 ### 导入借阅申请
 
 ```bash
-curl -X POST http://localhost:3000/api/records/borrow_application/import \
+curl -X POST http://localhost:3001/api/records/borrow_application/import \
   -H "Content-Type: application/json" \
   -d @data/borrow_applications.json
 ```
@@ -213,20 +213,20 @@ curl -X POST http://localhost:3000/api/records/borrow_application/import \
 ### 上传快递单 CSV
 
 ```bash
-curl -X POST http://localhost:3000/api/records/express_order/upload \
+curl -X POST http://localhost:3001/api/records/express_order/upload \
   -F "file=@data/express_orders.csv"
 ```
 
 ### 执行对账
 
 ```bash
-curl -X POST http://localhost:3000/api/tasks/reconcile
+curl -X POST http://localhost:3001/api/tasks/reconcile
 ```
 
 ### 查看赔偿记录历史
 
 ```bash
-curl http://localhost:3000/api/records/compensation_record/{id}/history
+curl http://localhost:3001/api/records/compensation_record/{id}/history
 ```
 
 ## 核心机制

@@ -2,7 +2,7 @@ import path from 'path';
 
 export const config = {
   server: {
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || 3001,
     host: process.env.HOST || 'localhost',
   },
   database: {
