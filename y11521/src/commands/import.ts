@@ -170,13 +170,15 @@ async function importSingleFile(
             batchId,
           });
         } else {
+          const pendingRecord = addAppointment(normalized);
+          const originalDataWithId = { ...normalized, id: pendingRecord.id };
           addDirtyRecord({
             recordId: uuidv4(),
             sourceType,
             dirtyType: checkResult.dirtyType!,
             description: checkResult.description!,
             missingFields: checkResult.missingFields,
-            originalData: normalized,
+            originalData: originalDataWithId,
             suggestedFix: checkResult.suggestedFix,
             rawRow: row,
             sourceFile: fileName,
@@ -196,13 +198,15 @@ async function importSingleFile(
             batchId,
           });
         } else {
+          const pendingRecord = addLocation(normalized);
+          const originalDataWithId = { ...normalized, id: pendingRecord.id };
           addDirtyRecord({
             recordId: uuidv4(),
             sourceType,
             dirtyType: checkResult.dirtyType!,
             description: checkResult.description!,
             missingFields: checkResult.missingFields,
-            originalData: normalized,
+            originalData: originalDataWithId,
             suggestedFix: checkResult.suggestedFix,
             rawRow: row,
             sourceFile: fileName,
@@ -222,13 +226,15 @@ async function importSingleFile(
             batchId,
           });
         } else {
+          const pendingRecord = addReview(normalized);
+          const originalDataWithId = { ...normalized, id: pendingRecord.id };
           addDirtyRecord({
             recordId: uuidv4(),
             sourceType,
             dirtyType: checkResult.dirtyType!,
             description: checkResult.description!,
             missingFields: checkResult.missingFields,
-            originalData: normalized,
+            originalData: originalDataWithId,
             suggestedFix: checkResult.suggestedFix,
             rawRow: row,
             sourceFile: fileName,
@@ -248,13 +254,15 @@ async function importSingleFile(
             batchId,
           });
         } else {
+          const pendingRecord = addPriceAdjustment(normalized);
+          const originalDataWithId = { ...normalized, id: pendingRecord.id };
           addDirtyRecord({
             recordId: uuidv4(),
             sourceType,
             dirtyType: checkResult.dirtyType!,
             description: checkResult.description!,
             missingFields: checkResult.missingFields,
-            originalData: normalized,
+            originalData: originalDataWithId,
             suggestedFix: checkResult.suggestedFix,
             rawRow: row,
             sourceFile: fileName,

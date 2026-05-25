@@ -18,12 +18,16 @@ import {
   getPriceAdjustmentById,
   updateLocation,
   getLocationById,
+  addAppointment,
+  addLocation,
+  addReview,
+  addPriceAdjustment,
 } from '../utils/database';
 import { getDirtyTypeLabel, getSourceTypeLabel } from '../utils/dirtyChecker';
 import { requirePermission } from './login';
 import { canEditField, maskDataByRole, getEditableFields } from '../config/permissions';
 import { compareObjects, formatDiff } from '../utils/diff';
-import { DirtyRecord, Role, AppointmentRecord } from '../types';
+import { DirtyRecord, Role, AppointmentRecord, LocationRecord, ReviewRecord, PriceAdjustmentRecord } from '../types';
 
 const roleLabels: Record<Role, string> = {
   entry: '录入员',
@@ -250,6 +254,8 @@ async function fixFieldIssue(record: DirtyRecord, auto: boolean): Promise<boolea
 
   try {
     const originalId = (record.originalData as any)?.id;
+    let newRecordId: string | undefined;
+
     if (originalId) {
       if (record.sourceType === 'appointment') {
         updateAppointment(originalId, fixData);
@@ -260,11 +266,27 @@ async function fixFieldIssue(record: DirtyRecord, auto: boolean): Promise<boolea
       } else if (record.sourceType === 'price_adjustment') {
         updatePriceAdjustment(originalId, fixData);
       }
+    } else {
+      if (record.sourceType === 'appointment') {
+        const newRecord = addAppointment(fixData as Omit<AppointmentRecord, 'id' | 'source'>);
+        newRecordId = newRecord.id;
+      } else if (record.sourceType === 'location') {
+        const newRecord = addLocation(fixData as Omit<LocationRecord, 'id' | 'source'>);
+        newRecordId = newRecord.id;
+      } else if (record.sourceType === 'review') {
+        const newRecord = addReview(fixData as Omit<ReviewRecord, 'id' | 'source'>);
+        newRecordId = newRecord.id;
+      } else if (record.sourceType === 'price_adjustment') {
+        const newRecord = addPriceAdjustment(fixData as Omit<PriceAdjustmentRecord, 'id' | 'source'>);
+        newRecordId = newRecord.id;
+      }
     }
+
+    const fixDataWithId = newRecordId ? { ...fixData, id: newRecordId } : fixData;
 
     updateDirtyRecord(record.id, {
       status: 'fixed',
-      suggestedFix: fixData,
+      suggestedFix: fixDataWithId,
       fixNote: fixNoteAnswer.fixNote,
       fixedBy: user.id,
       fixedAt: dayjs().toISOString(),
@@ -273,10 +295,10 @@ async function fixFieldIssue(record: DirtyRecord, auto: boolean): Promise<boolea
     addOperationLog('fix_dirty_record', user, {
       recordId: record.id,
       beforeData: record.originalData,
-      afterData: fixData,
+      afterData: fixDataWithId,
     });
 
-    console.log(chalk.green(`\n✅ 修复完成！记录已更新`));
+    console.log(chalk.green(`\n✅ 修复完成！${newRecordId ? '已追加到主业务表' : '记录已更新'}`));
     return true;
   } catch (err: any) {
     console.log(chalk.red(`\n❌ 修复失败: ${err.message}`));

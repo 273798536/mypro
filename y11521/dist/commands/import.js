@@ -140,13 +140,15 @@ async function importSingleFile(filePath, batchId, forceType) {
                     });
                 }
                 else {
+                    const pendingRecord = (0, database_1.addAppointment)(normalized);
+                    const originalDataWithId = { ...normalized, id: pendingRecord.id };
                     (0, database_1.addDirtyRecord)({
                         recordId: (0, uuid_1.v4)(),
                         sourceType,
                         dirtyType: checkResult.dirtyType,
                         description: checkResult.description,
                         missingFields: checkResult.missingFields,
-                        originalData: normalized,
+                        originalData: originalDataWithId,
                         suggestedFix: checkResult.suggestedFix,
                         rawRow: row,
                         sourceFile: fileName,
@@ -167,13 +169,15 @@ async function importSingleFile(filePath, batchId, forceType) {
                     });
                 }
                 else {
+                    const pendingRecord = (0, database_1.addLocation)(normalized);
+                    const originalDataWithId = { ...normalized, id: pendingRecord.id };
                     (0, database_1.addDirtyRecord)({
                         recordId: (0, uuid_1.v4)(),
                         sourceType,
                         dirtyType: checkResult.dirtyType,
                         description: checkResult.description,
                         missingFields: checkResult.missingFields,
-                        originalData: normalized,
+                        originalData: originalDataWithId,
                         suggestedFix: checkResult.suggestedFix,
                         rawRow: row,
                         sourceFile: fileName,
@@ -194,13 +198,15 @@ async function importSingleFile(filePath, batchId, forceType) {
                     });
                 }
                 else {
+                    const pendingRecord = (0, database_1.addReview)(normalized);
+                    const originalDataWithId = { ...normalized, id: pendingRecord.id };
                     (0, database_1.addDirtyRecord)({
                         recordId: (0, uuid_1.v4)(),
                         sourceType,
                         dirtyType: checkResult.dirtyType,
                         description: checkResult.description,
                         missingFields: checkResult.missingFields,
-                        originalData: normalized,
+                        originalData: originalDataWithId,
                         suggestedFix: checkResult.suggestedFix,
                         rawRow: row,
                         sourceFile: fileName,
@@ -221,13 +227,15 @@ async function importSingleFile(filePath, batchId, forceType) {
                     });
                 }
                 else {
+                    const pendingRecord = (0, database_1.addPriceAdjustment)(normalized);
+                    const originalDataWithId = { ...normalized, id: pendingRecord.id };
                     (0, database_1.addDirtyRecord)({
                         recordId: (0, uuid_1.v4)(),
                         sourceType,
                         dirtyType: checkResult.dirtyType,
                         description: checkResult.description,
                         missingFields: checkResult.missingFields,
-                        originalData: normalized,
+                        originalData: originalDataWithId,
                         suggestedFix: checkResult.suggestedFix,
                         rawRow: row,
                         sourceFile: fileName,

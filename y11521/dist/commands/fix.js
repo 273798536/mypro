@@ -218,6 +218,7 @@ async function fixFieldIssue(record, auto) {
         ]);
     try {
         const originalId = record.originalData?.id;
+        let newRecordId;
         if (originalId) {
             if (record.sourceType === 'appointment') {
                 (0, database_1.updateAppointment)(originalId, fixData);
@@ -232,9 +233,28 @@ async function fixFieldIssue(record, auto) {
                 (0, database_1.updatePriceAdjustment)(originalId, fixData);
             }
         }
+        else {
+            if (record.sourceType === 'appointment') {
+                const newRecord = (0, database_1.addAppointment)(fixData);
+                newRecordId = newRecord.id;
+            }
+            else if (record.sourceType === 'location') {
+                const newRecord = (0, database_1.addLocation)(fixData);
+                newRecordId = newRecord.id;
+            }
+            else if (record.sourceType === 'review') {
+                const newRecord = (0, database_1.addReview)(fixData);
+                newRecordId = newRecord.id;
+            }
+            else if (record.sourceType === 'price_adjustment') {
+                const newRecord = (0, database_1.addPriceAdjustment)(fixData);
+                newRecordId = newRecord.id;
+            }
+        }
+        const fixDataWithId = newRecordId ? { ...fixData, id: newRecordId } : fixData;
         (0, database_1.updateDirtyRecord)(record.id, {
             status: 'fixed',
-            suggestedFix: fixData,
+            suggestedFix: fixDataWithId,
             fixNote: fixNoteAnswer.fixNote,
             fixedBy: user.id,
             fixedAt: (0, dayjs_1.default)().toISOString(),
@@ -242,9 +262,9 @@ async function fixFieldIssue(record, auto) {
         (0, database_1.addOperationLog)('fix_dirty_record', user, {
             recordId: record.id,
             beforeData: record.originalData,
-            afterData: fixData,
+            afterData: fixDataWithId,
         });
-        console.log(chalk_1.default.green(`\n✅ 修复完成！记录已更新`));
+        console.log(chalk_1.default.green(`\n✅ 修复完成！${newRecordId ? '已追加到主业务表' : '记录已更新'}`));
         return true;
     }
     catch (err) {

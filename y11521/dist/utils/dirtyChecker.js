@@ -28,11 +28,27 @@ function checkAppointment(record, rawRow, sourceFile) {
     ];
     const missingFields = requiredFields.filter((f) => !record[f]);
     if (missingFields.length > 0) {
+        const suggestedFix = {};
+        missingFields.forEach((f) => {
+            if (f === 'customerName')
+                suggestedFix[f] = '待补充';
+            else if (f === 'phone')
+                suggestedFix[f] = '待补充';
+            else if (f === 'address')
+                suggestedFix[f] = '待补充';
+            else if (f === 'applianceType')
+                suggestedFix[f] = '待确认';
+            else if (f === 'appointmentDate')
+                suggestedFix[f] = (0, dayjs_1.default)().format('YYYY-MM-DD');
+            else if (f === 'appointmentTime')
+                suggestedFix[f] = '09:00-12:00';
+        });
         return {
             isValid: false,
             dirtyType: 'missing_field',
             description: `缺少必填字段: ${missingFields.join(', ')}`,
             missingFields,
+            suggestedFix,
         };
     }
     if (record.appointmentDate) {
@@ -48,11 +64,13 @@ function checkAppointment(record, rawRow, sourceFile) {
         }
     }
     if (record.phone && !/^1[3-9]\d{9}$/.test(record.phone)) {
+        const digits = record.phone.replace(/\D/g, '');
+        const fixedPhone = digits.length >= 11 ? digits.slice(0, 11) : digits.padEnd(11, '0');
         return {
             isValid: false,
             dirtyType: 'missing_field',
             description: '手机号格式无效',
-            suggestedFix: { phone: record.phone?.replace(/\D/g, '') },
+            suggestedFix: { phone: fixedPhone },
         };
     }
     return { isValid: true };
