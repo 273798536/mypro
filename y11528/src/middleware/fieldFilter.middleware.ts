@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import { UserRole } from '../entities';
 import { AuthenticatedRequest } from './auth.middleware';
 
-const fieldVisibility: Record<UserRole, Record<string, string[]>> = {
+export const fieldVisibility: Record<UserRole, Record<string, string[]>> = {
   [UserRole.DATA_ENTRY]: {
     declaration: ['id', 'declarationNo', 'packageNo', 'senderName', 'senderAddress', 'receiverName', 'receiverAddress', 'declaredValue', 'currency', 'weight', 'itemDescription', 'hsCode', 'hasAttachment', 'status', 'enteredBy', 'createdAt', 'updatedAt'],
     trajectory: ['id', 'declarationId', 'nodeType', 'nodeName', 'status', 'occurredAt', 'location', 'description', 'operator', 'isAbnormal', 'abnormalReason'],
@@ -37,7 +37,7 @@ const fieldVisibility: Record<UserRole, Record<string, string[]>> = {
   }
 };
 
-const filterObject = (obj: any, allowedFields: string[]): any => {
+export const filterObject = (obj: any, allowedFields: string[]): any => {
   if (allowedFields.includes('*')) {
     return obj;
   }
@@ -48,6 +48,19 @@ const filterObject = (obj: any, allowedFields: string[]): any => {
   
   if (typeof obj !== 'object' || obj === null) {
     return obj;
+  }
+  
+  if ('data' in obj && 'pagination' in obj) {
+    return {
+      data: filterObject(obj.data, allowedFields),
+      pagination: obj.pagination
+    };
+  }
+  
+  if ('data' in obj && typeof obj.data === 'object' && obj.data !== null) {
+    return {
+      data: filterObject(obj.data, allowedFields)
+    };
   }
   
   const result: Record<string, any> = {};
