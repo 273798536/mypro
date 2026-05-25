@@ -205,7 +205,15 @@ router.post('/:id/fix', async (req: Request, res: Response) => {
 router.post('/:id/compensate', async (req: Request, res: Response) => {
   try {
     const operator = req.headers['x-operator'] || 'system';
-    await compensateAndClose(req.params.id, String(operator));
+    const result = await compensateAndClose(req.params.id, String(operator));
+    
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.error || '补偿失败',
+      });
+    }
+    
     const item = await getQueueItem(req.params.id);
     res.json({ success: true, data: item });
   } catch (error) {

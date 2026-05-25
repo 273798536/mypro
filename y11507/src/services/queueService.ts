@@ -29,69 +29,71 @@ export const submitToQueue = async (
   let initialStatus: QueueStatus = 'pending';
   let errorMessage: string | undefined;
 
-  try {
-    switch (recordType) {
-      case 'inspection':
-        const inspection = await createInspectionRecord(
-          {
-            deviceId: rawData.deviceId,
-            deviceName: rawData.deviceName,
-            department: rawData.department || '',
-            inspectionDate: rawData.inspectionDate,
-            inspector: rawData.inspector || '',
-            result: rawData.result || 'pending',
-            remarks: rawData.remarks,
-          },
-          operator
-        );
-        recordId = inspection.id;
-        break;
-      case 'calibration':
-        const calibration = await createCalibrationCertificate(
-          {
-            deviceId: rawData.deviceId,
-            deviceName: rawData.deviceName,
-            certificateNo: rawData.certificateNo,
-            calibrationDate: rawData.calibrationDate,
-            validUntil: rawData.validUntil,
-            calibrationOrg: rawData.calibrationOrg,
-            status: rawData.status || 'valid',
-            certificateFile: rawData.certificateFile,
-          },
-          operator
-        );
-        recordId = calibration.id;
-        break;
-      case 'repair':
-        const repair = await createRepairQuote(
-          {
-            deviceId: rawData.deviceId,
-            deviceName: rawData.deviceName,
-            quoteNo: rawData.quoteNo,
-            repairDate: rawData.repairDate,
-            description: rawData.description,
-            amount: rawData.amount,
-            quantity: rawData.quantity,
-            status: rawData.status || 'pending',
-            serviceRemarks: rawData.serviceRemarks,
-            manualOpinion: rawData.manualOpinion,
-          },
-          operator
-        );
-        recordId = repair.id;
-        break;
-    }
-
-    if (dirtyCheck.isDirty) {
+  if (!dirtyCheck.isDirty) {
+    try {
+      switch (recordType) {
+        case 'inspection':
+          const inspection = await createInspectionRecord(
+            {
+              deviceId: rawData.deviceId,
+              deviceName: rawData.deviceName,
+              department: rawData.department || '',
+              inspectionDate: rawData.inspectionDate,
+              inspector: rawData.inspector || '',
+              result: rawData.result || 'pending',
+              remarks: rawData.remarks,
+            },
+            operator
+          );
+          recordId = inspection.id;
+          break;
+        case 'calibration':
+          const calibration = await createCalibrationCertificate(
+            {
+              deviceId: rawData.deviceId,
+              deviceName: rawData.deviceName,
+              certificateNo: rawData.certificateNo,
+              calibrationDate: rawData.calibrationDate,
+              validUntil: rawData.validUntil,
+              calibrationOrg: rawData.calibrationOrg,
+              status: rawData.status || 'valid',
+              certificateFile: rawData.certificateFile,
+            },
+            operator
+          );
+          recordId = calibration.id;
+          break;
+        case 'repair':
+          const repair = await createRepairQuote(
+            {
+              deviceId: rawData.deviceId,
+              deviceName: rawData.deviceName,
+              quoteNo: rawData.quoteNo,
+              repairDate: rawData.repairDate,
+              description: rawData.description,
+              amount: rawData.amount,
+              quantity: rawData.quantity,
+              status: rawData.status || 'pending',
+              serviceRemarks: rawData.serviceRemarks,
+              manualOpinion: rawData.manualOpinion,
+            },
+            operator
+          );
+          recordId = repair.id;
+          break;
+      }
+    } catch (error) {
       initialStatus = 'manual_intervention';
+      errorMessage = error instanceof Error ? error.message : '业务表写入失败，需要人工处理';
     }
-  } catch (error) {
+  } else {
     initialStatus = 'manual_intervention';
-    errorMessage = error instanceof Error ? error.message : '业务表写入失败，需要人工处理';
+    errorMessage = dirtyCheck.details;
   }
 
   if (dirtyCheck.isDirty) {
     initialStatus = 'manual_intervention';
+    errorMessage = errorMessage || dirtyCheck.details;
   }
 
   const queueItem: QueueItem = {
@@ -445,9 +447,41 @@ export const assignToManual = async (
   );
 };
 
-export const compensateAndClose = async (id: string, operator: string = 'system'): Promise<void> => {
+export const compensateAndClose = async (id: string, operator: string = 'system'): Promise<{ success: boolean; error?: string }> => {
   const item = await getQueueItem(id);
-  if (!item) return;
+  if (!item) return { success: false, error: '队列项不存在' };
+
+  const compensableStatuses = ['pending', 'processing', 'retrying', 'manual_intervention'];
+  if (!compensableStatuses.includes(item.status)) {
+    await logDiff(
+      id,
+      item.recordType,
+      item.recordId,
+      'compensate_rejected',
+      { status: item.status },
+      { error: `当前状态 ${item.status} 不允许补偿，仅 pending/processing/retrying/manual_intervention 可补偿` },
+      operator,
+      `补偿被拒绝: 当前状态为 ${item.status}`
+    );
+    return { success: false, error: `当前状态 ${item.status} 不允许补偿` };
+  }
+
+  if (item.recordId && item.recordId !== 'pending') {
+    const validation = await validateRecordCompleteness(item.recordType, item.recordId);
+    if (!validation.valid) {
+      await logDiff(
+        id,
+        item.recordType,
+        item.recordId,
+        'compensate_rejected',
+        { status: item.status, recordId: item.recordId },
+        { error: `记录不完整，缺少字段: ${validation.missingFields.join(', ')}` },
+        operator,
+        `补偿被拒绝: 记录不完整，缺少 ${validation.missingFields.join(', ')}`
+      );
+      return { success: false, error: `记录不完整，缺少字段: ${validation.missingFields.join(', ')}` };
+    }
+  }
 
   const beforeState = { status: item.status, processedAt: item.processedAt };
   const now = formatISO(new Date());
@@ -469,6 +503,8 @@ export const compensateAndClose = async (id: string, operator: string = 'system'
     operator,
     '补偿入账，记录已同步'
   );
+
+  return { success: true };
 };
 
 export const closeQueueItem = async (id: string, operator: string = 'system'): Promise<void> => {
@@ -582,14 +618,17 @@ export const processPendingItems = async (operator: string = 'system'): Promise<
       await updateQueueStatus(item.id, 'processing', undefined, operator);
       
       const rawData = JSON.parse(item.rawData);
-      const success = await attemptRecordCreation(item, rawData);
+      const result = await attemptRecordCreation(item, rawData);
       
-      if (success) {
+      if (result.success) {
         await compensateAndClose(item.id, operator);
         processed++;
         compensated++;
-      } else {
+      } else if (result.canRetry) {
         await retryQueueItem(item.id, operator);
+        failed++;
+      } else {
+        await updateQueueStatus(item.id, 'manual_intervention', result.error, operator);
         failed++;
       }
     } catch (error) {
