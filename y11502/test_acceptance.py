@@ -183,8 +183,8 @@ def test_async_task_integration():
         response = requests.post(
             f"{BASE_URL}{API_PREFIX}/queue/submit",
             params={
-                "order_no": "MO20240501001",
-                "part_code": "PAR-001-SCR",
+                "order_no": "MO20240501002",
+                "part_code": "PAR-002-KEY",
                 "quantity": 1
             }
         )
@@ -199,17 +199,12 @@ def test_async_task_integration():
         result = response.json()
         print(f"响应: {json.dumps(result, ensure_ascii=False, indent=2)}")
         assert result["success"] == True
-        task_id = result["task_id"]
-        print(f"异步任务 ID: {task_id}")
+        task_uuid = result["task_id"]
+        print(f"异步任务 UUID: {task_uuid}")
 
-        print("\n5.3 执行异步任务...")
-        task_db_id = result["task_id"]
-        response = requests.get(f"{BASE_URL}{API_PREFIX}/async-tasks")
-        tasks = response.json()
-        task_db_id = tasks[0]["id"]
-
+        print("\n5.3 执行异步任务（通过UUID）...")
         response = requests.post(
-            f"{BASE_URL}{API_PREFIX}/async-tasks/{task_db_id}/execute"
+            f"{BASE_URL}{API_PREFIX}/async-tasks/{task_uuid}/execute"
         )
         result = response.json()
         print(f"执行结果: {json.dumps(result, ensure_ascii=False, indent=2)}")
@@ -487,6 +482,15 @@ def test_source_evidence_tracing():
         return False
 
 
+def cleanup_runtime_data():
+    """清理数据库中的运行时数据（队列、异步任务、补偿记录）"""
+    try:
+        requests.delete(f"{BASE_URL}{API_PREFIX}/queue/cleanup-test-data")
+        print("  ✓ 运行时数据已清理")
+    except Exception as e:
+        print(f"  ⚠️  清理失败（可能是首次运行）: {e}")
+
+
 def main():
     print("\n" + "="*60)
     print("  售后备件领用重试补偿队列 API - 完整验收测试 v2.0")
@@ -494,6 +498,10 @@ def main():
     print("="*60)
 
     time.sleep(1)
+
+    print("\n清理数据库运行时数据（队列/异步任务/补偿记录）...")
+    cleanup_runtime_data()
+    time.sleep(0.5)
 
     results = []
 

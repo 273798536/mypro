@@ -217,6 +217,24 @@ def process_pending_items(db: Session = Depends(get_db)):
     return {"processed_count": len(processed), "details": processed}
 
 
+@router.delete("/queue/cleanup-test-data")
+def cleanup_test_data(db: Session = Depends(get_db)):
+    from app.models import CompensationQueue, AsyncTask, CompensationRecord, AuditLog
+    deleted_queue = db.query(CompensationQueue).delete()
+    deleted_tasks = db.query(AsyncTask).delete()
+    deleted_records = db.query(CompensationRecord).delete()
+    deleted_logs = db.query(AuditLog).delete()
+    db.commit()
+    return {
+        "deleted": {
+            "queues": deleted_queue,
+            "async_tasks": deleted_tasks,
+            "compensation_records": deleted_records,
+            "audit_logs": deleted_logs
+        }
+    }
+
+
 @router.post("/queue/{queue_id}/create-async-task")
 def create_async_task_for_queue(queue_id: int, db: Session = Depends(get_db)):
     try:
@@ -226,13 +244,21 @@ def create_async_task_for_queue(queue_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/async-tasks/{task_id}/execute")
-def execute_task(task_id: int, db: Session = Depends(get_db)):
+@router.post("/async-tasks/{task_ref}/execute")
+def execute_task(task_ref: str, db: Session = Depends(get_db)):
     from app.models import AsyncTask
-    task = db.query(AsyncTask).filter(AsyncTask.id == task_id).first()
+    task = None
+
+    if task_ref.isdigit():
+        task = db.query(AsyncTask).filter(AsyncTask.id == int(task_ref)).first()
+    else:
+        task = db.query(AsyncTask).filter(AsyncTask.task_id == task_ref).first()
+
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
-    success = execute_async_task(db, task_id)
+
+    success = execute_async_task(db, task.id)
+    db.refresh(task)
     return {"success": success, "task_id": task.task_id, "status": task.status}
 
 
