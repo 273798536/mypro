@@ -10,6 +10,7 @@ export interface ParseResult {
     totalCount: number;
     validCount: number;
     invalidCount: number;
+    sourceType: SourceType;
 }
 declare function validateCabinetInventory(row: any, lineNumber: number): ParsedRecord;
 export declare function getValidator(sourceType: SourceType): typeof validateCabinetInventory;

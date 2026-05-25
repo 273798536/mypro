@@ -91,8 +91,11 @@ program
         const sourceType = options.type ? sourceTypeMap[options.type] : undefined;
         console.log(`📖 正在解析文件: ${file}`);
         const result = await (0, parser_1.parseFile)(file, sourceType);
+        const detectedSourceType = result.sourceType;
+        const sourceTypeName = Object.entries(sourceTypeMap).find(([_, v]) => v === detectedSourceType)?.[0] || detectedSourceType;
+        console.log(`🔍 识别数据类型: ${sourceTypeName}`);
         const batchId = await (0, database_1.insertBatch)({
-            sourceType: sourceType || types_1.SourceType.CABINET_INVENTORY,
+            sourceType: detectedSourceType,
             fileName: path.basename(file),
             filePath: path.resolve(file),
             importTime: (0, dayjs_1.default)().toISOString(),
@@ -102,8 +105,7 @@ program
             operator: options.operator,
             remark: options.remark
         });
-        const mapper = (0, parser_1.getDataMapper)(sourceType || types_1.SourceType.CABINET_INVENTORY);
-        const detectedSourceType = sourceType || types_1.SourceType.CABINET_INVENTORY;
+        const mapper = (0, parser_1.getDataMapper)(detectedSourceType);
         let successCount = 0;
         let failureCount = 0;
         for (const record of result.records) {

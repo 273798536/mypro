@@ -190,7 +190,8 @@ function parseCsvFile(filePath, sourceType) {
                 records: results,
                 totalCount: results.length,
                 validCount,
-                invalidCount: results.length - validCount
+                invalidCount: results.length - validCount,
+                sourceType: detectedType
             });
         })
             .on('error', (error) => {
@@ -234,7 +235,8 @@ function parseExcelFile(filePath, sourceType) {
                 records: results,
                 totalCount: results.length,
                 validCount,
-                invalidCount: results.length - validCount
+                invalidCount: results.length - validCount,
+                sourceType: detectedType
             });
         }
         catch (error) {

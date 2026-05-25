@@ -15,6 +15,7 @@ export interface ParseResult {
   totalCount: number;
   validCount: number;
   invalidCount: number;
+  sourceType: SourceType;
 }
 
 function detectSourceType(fileName: string): SourceType {
@@ -178,7 +179,8 @@ export function parseCsvFile(filePath: string, sourceType?: SourceType): Promise
           records: results,
           totalCount: results.length,
           validCount,
-          invalidCount: results.length - validCount
+          invalidCount: results.length - validCount,
+          sourceType: detectedType
         });
       })
       .on('error', (error) => {
@@ -228,7 +230,8 @@ export function parseExcelFile(filePath: string, sourceType?: SourceType): Promi
         records: results,
         totalCount: results.length,
         validCount,
-        invalidCount: results.length - validCount
+        invalidCount: results.length - validCount,
+        sourceType: detectedType
       });
     } catch (error) {
       reject(error);
