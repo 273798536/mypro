@@ -217,6 +217,12 @@ describe('After-Sales Parts Ledger API Tests', () => {
     });
 
     test('3.3 Bad data excluded from summary but visible in failure list', async () => {
+      const initialStats = await request(app)
+        .get('/api/ledgers/statistics')
+        .set(managerHeaders);
+      const initialTotal = initialStats.body.data.total;
+      const initialInvalid = initialStats.body.data.invalidTotal;
+
       await createTestLedger(app, {
         engineerId: '',
         partScans: [{ partCode: '', quantity: 0 }],
@@ -226,7 +232,8 @@ describe('After-Sales Parts Ledger API Tests', () => {
         .get('/api/ledgers/statistics')
         .set(managerHeaders);
 
-      expect(statsResponse.body.data.invalidTotal).toBeGreaterThan(0);
+      expect(statsResponse.body.data.total).toBe(initialTotal);
+      expect(statsResponse.body.data.invalidTotal).toBe(initialInvalid + 1);
 
       const failedRecordsResponse = await request(app)
         .get('/api/failed-records')
@@ -349,7 +356,7 @@ describe('After-Sales Parts Ledger API Tests', () => {
         .get(`/api/ledgers/${ledgerId}`)
         .set(engineerHeaders);
 
-      expect(response.headers['x-data-consistency']).toBeDefined();
+      expect(response.headers['x-data-consistency']).toBe('verified');
       expect(response.headers['x-api-version']).toBe('1.0.0');
     });
 

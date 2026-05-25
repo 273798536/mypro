@@ -18,7 +18,7 @@ class DataConsistencyMiddleware {
                     relations: ['partScans', 'receiptPhotos', 'externalReceipts'],
                 });
                 if (ledger && ledger.dataHash) {
-                    const currentHash = this.calculateLedgerHash(ledger);
+                    const currentHash = (0, hash_1.generateLedgerHash)(ledger);
                     if (currentHash !== ledger.dataHash) {
                         res.setHeader('X-Data-Consistency', 'warning');
                         res.setHeader('X-Data-Hash-Mismatch', 'true');
@@ -32,43 +32,6 @@ class DataConsistencyMiddleware {
             }
             next();
         };
-    }
-    calculateLedgerHash(ledger) {
-        const data = {
-            id: ledger.id,
-            ledgerNo: ledger.ledgerNo,
-            status: ledger.status,
-            dataQuality: ledger.dataQuality,
-            repairOrderId: ledger.repairOrderId,
-            engineerId: ledger.engineerId,
-            engineerName: ledger.engineerName,
-            submitTime: ledger.submitTime,
-            confirmTime: ledger.confirmTime,
-            auditTime: ledger.auditTime,
-            rejectReason: ledger.rejectReason,
-            rejectBy: ledger.rejectBy,
-            confirmBy: ledger.confirmBy,
-            auditBy: ledger.auditBy,
-            changeReason: ledger.changeReason,
-            version: ledger.version,
-            partScans: ledger.partScans?.map((p) => ({
-                partCode: p.partCode,
-                partName: p.partName,
-                partType: p.partType,
-                quantity: p.quantity,
-                batchNo: p.batchNo,
-            })) || [],
-            receiptPhotos: ledger.receiptPhotos?.map((p) => ({
-                photoUrl: p.photoUrl,
-                photoHash: p.photoHash,
-            })) || [],
-            externalReceipts: ledger.externalReceipts?.map((r) => ({
-                receiptNo: r.receiptNo,
-                source: r.source,
-                sourceSystem: r.sourceSystem,
-            })) || [],
-        };
-        return (0, hash_1.generateDataHash)(data);
     }
 }
 exports.DataConsistencyMiddleware = DataConsistencyMiddleware;

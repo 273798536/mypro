@@ -1,4 +1,4 @@
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, Not } from 'typeorm';
 import { Ledger } from '../entities/Ledger';
 import { PartScan } from '../entities/PartScan';
 import { ReceiptPhoto } from '../entities/ReceiptPhoto';
@@ -6,7 +6,7 @@ import { ExternalReceipt } from '../entities/ExternalReceipt';
 import { RepairOrder } from '../entities/RepairOrder';
 import { FailedRecord } from '../entities/FailedRecord';
 import { LedgerStatus, DataQuality, ChangeAction, UserRole } from '../types/enums';
-import { generateLedgerNo, generateDataHash } from '../utils/hash';
+import { generateLedgerNo, generateLedgerHash } from '../utils/hash';
 import { validateLedgerData, validatePartScan, validateReceiptPhoto, validateExternalReceipt, ValidationResult } from '../utils/validation';
 import { ChangeHistoryService } from './ChangeHistoryService';
 import { FailedRecordService } from './FailedRecordService';
@@ -243,9 +243,10 @@ export class LedgerService {
         ledger.dataQuality = DataQuality.SUSPICIOUS;
       }
 
-      ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
-
       const savedLedger = await manager.save(ledger);
+
+      savedLedger.dataHash = generateLedgerHash(savedLedger);
+      await manager.save(savedLedger);
 
       await this.changeHistoryService.recordChange(
         savedLedger.id,
@@ -378,7 +379,7 @@ export class LedgerService {
         ledger.dataQuality = DataQuality.SUSPICIOUS;
       }
 
-      ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
+      ledger.dataHash = generateLedgerHash(ledger);
 
       const savedLedger = await manager.save(ledger);
       const afterData = this.serializeLedger(savedLedger);
@@ -438,7 +439,7 @@ export class LedgerService {
       ledger.dataQuality = validation.quality;
       ledger.updatedBy = operator.id;
       ledger.version += 1;
-      ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
+      ledger.dataHash = generateLedgerHash(ledger);
 
       const savedLedger = await manager.save(ledger);
       const afterData = this.serializeLedger(savedLedger);
@@ -489,7 +490,7 @@ export class LedgerService {
       ledger.rejectBy = operator.id;
       ledger.updatedBy = operator.id;
       ledger.version += 1;
-      ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
+      ledger.dataHash = generateLedgerHash(ledger);
 
       const savedLedger = await manager.save(ledger);
       const afterData = this.serializeLedger(savedLedger);
@@ -540,7 +541,7 @@ export class LedgerService {
       ledger.confirmBy = operator.id;
       ledger.updatedBy = operator.id;
       ledger.version += 1;
-      ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
+      ledger.dataHash = generateLedgerHash(ledger);
 
       const savedLedger = await manager.save(ledger);
       const afterData = this.serializeLedger(savedLedger);
@@ -591,7 +592,7 @@ export class LedgerService {
       ledger.auditBy = operator.id;
       ledger.updatedBy = operator.id;
       ledger.version += 1;
-      ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
+      ledger.dataHash = generateLedgerHash(ledger);
 
       const savedLedger = await manager.save(ledger);
       const afterData = this.serializeLedger(savedLedger);
@@ -693,7 +694,12 @@ export class LedgerService {
     byStatus: Record<LedgerStatus, number>;
     byQuality: Record<DataQuality, number>;
   }> {
-    const total = await this.repository.count({ where: { isDeleted: false } });
+    const total = await this.repository.count({
+      where: {
+        isDeleted: false,
+        dataQuality: Not(DataQuality.INVALID) as any
+      }
+    });
 
     const validTotal = await this.repository.count({
       where: {

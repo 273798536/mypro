@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LedgerService = void 0;
+const typeorm_1 = require("typeorm");
 const Ledger_1 = require("../entities/Ledger");
 const PartScan_1 = require("../entities/PartScan");
 const ReceiptPhoto_1 = require("../entities/ReceiptPhoto");
@@ -140,8 +141,9 @@ class LedgerService {
             if (hasInvalidData && ledgerData.dataQuality === enums_1.DataQuality.VALID) {
                 ledger.dataQuality = enums_1.DataQuality.SUSPICIOUS;
             }
-            ledger.dataHash = (0, hash_1.generateDataHash)(this.serializeLedger(ledger));
             const savedLedger = await manager.save(ledger);
+            savedLedger.dataHash = (0, hash_1.generateLedgerHash)(savedLedger);
+            await manager.save(savedLedger);
             await this.changeHistoryService.recordChange(savedLedger.id, enums_1.ChangeAction.CREATE, null, this.serializeLedger(savedLedger), {
                 fromStatus: undefined,
                 toStatus: enums_1.LedgerStatus.DRAFT,
@@ -234,7 +236,7 @@ class LedgerService {
             if (hasInvalidData && ledger.dataQuality === enums_1.DataQuality.VALID) {
                 ledger.dataQuality = enums_1.DataQuality.SUSPICIOUS;
             }
-            ledger.dataHash = (0, hash_1.generateDataHash)(this.serializeLedger(ledger));
+            ledger.dataHash = (0, hash_1.generateLedgerHash)(ledger);
             const savedLedger = await manager.save(ledger);
             const afterData = this.serializeLedger(savedLedger);
             if ((0, diff_1.hasChanges)(beforeData, afterData)) {
@@ -275,7 +277,7 @@ class LedgerService {
             ledger.dataQuality = validation.quality;
             ledger.updatedBy = operator.id;
             ledger.version += 1;
-            ledger.dataHash = (0, hash_1.generateDataHash)(this.serializeLedger(ledger));
+            ledger.dataHash = (0, hash_1.generateLedgerHash)(ledger);
             const savedLedger = await manager.save(ledger);
             const afterData = this.serializeLedger(savedLedger);
             await this.changeHistoryService.recordChange(savedLedger.id, enums_1.ChangeAction.SUBMIT, beforeData, afterData, {
@@ -308,7 +310,7 @@ class LedgerService {
             ledger.rejectBy = operator.id;
             ledger.updatedBy = operator.id;
             ledger.version += 1;
-            ledger.dataHash = (0, hash_1.generateDataHash)(this.serializeLedger(ledger));
+            ledger.dataHash = (0, hash_1.generateLedgerHash)(ledger);
             const savedLedger = await manager.save(ledger);
             const afterData = this.serializeLedger(savedLedger);
             await this.changeHistoryService.recordChange(savedLedger.id, enums_1.ChangeAction.REJECT, beforeData, afterData, {
@@ -341,7 +343,7 @@ class LedgerService {
             ledger.confirmBy = operator.id;
             ledger.updatedBy = operator.id;
             ledger.version += 1;
-            ledger.dataHash = (0, hash_1.generateDataHash)(this.serializeLedger(ledger));
+            ledger.dataHash = (0, hash_1.generateLedgerHash)(ledger);
             const savedLedger = await manager.save(ledger);
             const afterData = this.serializeLedger(savedLedger);
             await this.changeHistoryService.recordChange(savedLedger.id, enums_1.ChangeAction.CONFIRM, beforeData, afterData, {
@@ -374,7 +376,7 @@ class LedgerService {
             ledger.auditBy = operator.id;
             ledger.updatedBy = operator.id;
             ledger.version += 1;
-            ledger.dataHash = (0, hash_1.generateDataHash)(this.serializeLedger(ledger));
+            ledger.dataHash = (0, hash_1.generateLedgerHash)(ledger);
             const savedLedger = await manager.save(ledger);
             const afterData = this.serializeLedger(savedLedger);
             await this.changeHistoryService.recordChange(savedLedger.id, enums_1.ChangeAction.AUDIT, beforeData, afterData, {
@@ -439,7 +441,12 @@ class LedgerService {
         };
     }
     async getStatistics() {
-        const total = await this.repository.count({ where: { isDeleted: false } });
+        const total = await this.repository.count({
+            where: {
+                isDeleted: false,
+                dataQuality: (0, typeorm_1.Not)(enums_1.DataQuality.INVALID)
+            }
+        });
         const validTotal = await this.repository.count({
             where: {
                 isDeleted: false,
