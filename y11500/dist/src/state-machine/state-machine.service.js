@@ -27,14 +27,21 @@ let StateMachineService = class StateMachineService {
     initTransitions() {
         this.addTransition(batch_status_enum_1.BatchStatus.DRAFT, batch_status_enum_1.BatchStatus.PENDING_REVIEW);
         this.addTransition(batch_status_enum_1.BatchStatus.DRAFT, batch_status_enum_1.BatchStatus.CANCELLED);
+        this.addTransition(batch_status_enum_1.BatchStatus.DRAFT, batch_status_enum_1.BatchStatus.FROZEN);
         this.addTransition(batch_status_enum_1.BatchStatus.PENDING_REVIEW, batch_status_enum_1.BatchStatus.APPROVED);
         this.addTransition(batch_status_enum_1.BatchStatus.PENDING_REVIEW, batch_status_enum_1.BatchStatus.REJECTED);
         this.addTransition(batch_status_enum_1.BatchStatus.PENDING_REVIEW, batch_status_enum_1.BatchStatus.DRAFT);
+        this.addTransition(batch_status_enum_1.BatchStatus.PENDING_REVIEW, batch_status_enum_1.BatchStatus.FROZEN);
         this.addTransition(batch_status_enum_1.BatchStatus.APPROVED, batch_status_enum_1.BatchStatus.FROZEN);
         this.addTransition(batch_status_enum_1.BatchStatus.APPROVED, batch_status_enum_1.BatchStatus.SETTLED);
         this.addTransition(batch_status_enum_1.BatchStatus.REJECTED, batch_status_enum_1.BatchStatus.DRAFT);
         this.addTransition(batch_status_enum_1.BatchStatus.REJECTED, batch_status_enum_1.BatchStatus.CANCELLED);
+        this.addTransition(batch_status_enum_1.BatchStatus.REJECTED, batch_status_enum_1.BatchStatus.FROZEN);
         this.addTransition(batch_status_enum_1.BatchStatus.FROZEN, batch_status_enum_1.BatchStatus.APPROVED);
+        this.addTransition(batch_status_enum_1.BatchStatus.FROZEN, batch_status_enum_1.BatchStatus.SETTLED);
+        this.addTransition(batch_status_enum_1.BatchStatus.FROZEN, batch_status_enum_1.BatchStatus.PENDING_REVIEW);
+        this.addTransition(batch_status_enum_1.BatchStatus.FROZEN, batch_status_enum_1.BatchStatus.REJECTED);
+        this.addTransition(batch_status_enum_1.BatchStatus.FROZEN, batch_status_enum_1.BatchStatus.DRAFT);
         this.addTransition(batch_status_enum_1.BatchStatus.FROZEN, batch_status_enum_1.BatchStatus.CANCELLED);
         this.addTransition(batch_status_enum_1.BatchStatus.SETTLED, batch_status_enum_1.BatchStatus.ARCHIVED);
         this.addTransition(batch_status_enum_1.BatchStatus.SETTLED, batch_status_enum_1.BatchStatus.FROZEN);

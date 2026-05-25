@@ -149,16 +149,31 @@ let BatchService = class BatchService {
     }
     async freeze(id, user, reason) {
         const batch = await this.findOne(id);
+        if (batch.status === batch_status_enum_1.BatchStatus.FROZEN) {
+            throw new common_1.BadRequestException('批次已处于冻结状态');
+        }
+        if (!this.stateMachineService.canTransition(batch.status, batch_status_enum_1.BatchStatus.FROZEN)) {
+            throw new common_1.BadRequestException(`当前状态 ${batch.status} 无法冻结`);
+        }
         batch.statusBeforeFrozen = batch.status;
         batch.freezeReason = reason;
         batch.manualReason = reason;
-        const updatedBatch = await this.stateMachineService.transition(batch, batch_status_enum_1.BatchStatus.FROZEN, user, reason);
+        const updatedBatch = await this.stateMachineService.transition(batch, batch_status_enum_1.BatchStatus.FROZEN, user, reason, { statusBeforeFrozen: batch.statusBeforeFrozen });
         return this.batchRepository.save(updatedBatch);
     }
     async unfreeze(id, user, reason) {
         const batch = await this.findOne(id);
-        const targetStatus = batch.statusBeforeFrozen || batch_status_enum_1.BatchStatus.APPROVED;
-        const updatedBatch = await this.stateMachineService.transition(batch, targetStatus, user, reason);
+        if (batch.status !== batch_status_enum_1.BatchStatus.FROZEN) {
+            throw new common_1.BadRequestException('批次未处于冻结状态，无法解冻');
+        }
+        if (!batch.statusBeforeFrozen) {
+            throw new common_1.BadRequestException('无法确定解冻后状态，请联系管理员');
+        }
+        const targetStatus = batch.statusBeforeFrozen;
+        const statusBeforeFrozen = batch.statusBeforeFrozen;
+        const updatedBatch = await this.stateMachineService.transition(batch, targetStatus, user, reason, { statusBeforeFrozen });
+        updatedBatch.statusBeforeFrozen = null;
+        updatedBatch.freezeReason = null;
         return this.batchRepository.save(updatedBatch);
     }
     async findScanDetails(batchId) {

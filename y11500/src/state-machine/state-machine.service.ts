@@ -25,18 +25,25 @@ export class StateMachineService {
   private initTransitions() {
     this.addTransition(BatchStatus.DRAFT, BatchStatus.PENDING_REVIEW);
     this.addTransition(BatchStatus.DRAFT, BatchStatus.CANCELLED);
+    this.addTransition(BatchStatus.DRAFT, BatchStatus.FROZEN);
     
     this.addTransition(BatchStatus.PENDING_REVIEW, BatchStatus.APPROVED);
     this.addTransition(BatchStatus.PENDING_REVIEW, BatchStatus.REJECTED);
     this.addTransition(BatchStatus.PENDING_REVIEW, BatchStatus.DRAFT);
+    this.addTransition(BatchStatus.PENDING_REVIEW, BatchStatus.FROZEN);
     
     this.addTransition(BatchStatus.APPROVED, BatchStatus.FROZEN);
     this.addTransition(BatchStatus.APPROVED, BatchStatus.SETTLED);
     
     this.addTransition(BatchStatus.REJECTED, BatchStatus.DRAFT);
     this.addTransition(BatchStatus.REJECTED, BatchStatus.CANCELLED);
+    this.addTransition(BatchStatus.REJECTED, BatchStatus.FROZEN);
     
     this.addTransition(BatchStatus.FROZEN, BatchStatus.APPROVED);
+    this.addTransition(BatchStatus.FROZEN, BatchStatus.SETTLED);
+    this.addTransition(BatchStatus.FROZEN, BatchStatus.PENDING_REVIEW);
+    this.addTransition(BatchStatus.FROZEN, BatchStatus.REJECTED);
+    this.addTransition(BatchStatus.FROZEN, BatchStatus.DRAFT);
     this.addTransition(BatchStatus.FROZEN, BatchStatus.CANCELLED);
     
     this.addTransition(BatchStatus.SETTLED, BatchStatus.ARCHIVED);

@@ -25,7 +25,7 @@ export class Batch {
   })
   status: BatchStatus;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'varchar', length: 50, nullable: true })
   statusBeforeFrozen: BatchStatus;
 
   @Column({ type: 'text', nullable: true })

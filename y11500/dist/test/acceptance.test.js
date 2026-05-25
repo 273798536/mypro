@@ -426,28 +426,160 @@ async function testBadData() {
 async function testManagerView() {
     console.log('\n========== 测试 4: 服务经理视图 ==========');
     try {
-        console.log('4.1 获取经理视图数据...');
+        console.log('4.0 创建并审批一个新批次用于冻结测试...');
+        const freezeBatchData = {
+            description: '冻结测试批次',
+            repairOrders: [{
+                    orderNo: 'RO_FREEZE_001',
+                    customerName: '测试客户',
+                    repairDate: '2026-05-25',
+                    faultDescription: '设备故障',
+                }],
+            sparePartScans: [{
+                    scanNo: 'SPS_FREEZE_001',
+                    scanTime: '2026-05-25T10:00:00Z',
+                    partCode: 'P_FREEZE_001',
+                    partName: '冻结测试零件',
+                    quantity: 5,
+                    unitPrice: 200,
+                    totalAmount: 1000,
+                }],
+            scanDetails: [{
+                    detailNo: 'SD_FREEZE_001',
+                    barcode: 'BC_FREEZE_001',
+                    partCode: 'P_FREEZE_001',
+                    partName: '冻结测试零件',
+                    quantity: 5,
+                    unitPrice: 200,
+                    totalAmount: 1000,
+                }],
+        };
+        const freezeCreateRes = await apiRequest('POST', '/batches', role_enum_1.Role.OPERATOR, freezeBatchData);
+        const freezeBatchId = freezeCreateRes.body.id;
+        console.log('创建批次 ID:', freezeBatchId);
+        console.log('初始状态:', freezeCreateRes.body.status);
+        console.log('初始脏记录数量:', freezeCreateRes.body.totalDirtyRecords);
+        console.assert(freezeCreateRes.body.status === 'draft', '初始状态应为草稿');
+        if (freezeCreateRes.body.totalDirtyRecords > 0) {
+            console.log('4.0.0 处理批次脏记录...');
+            const drList = await apiRequest('GET', `/batches/${freezeBatchId}/dirty-records`, role_enum_1.Role.REVIEWER);
+            for (const dr of drList.body) {
+                if (!dr.isResolved) {
+                    const resolvedContent = { ...dr.originalContent };
+                    if (dr.dirtyType === 'missing_field') {
+                        const fields = dr.missingFields || [];
+                        for (const f of fields) {
+                            if (f === 'orderNo')
+                                resolvedContent.orderNo = 'RO_FIX_001';
+                            if (f === 'customerName')
+                                resolvedContent.customerName = '测试客户';
+                            if (f === 'repairDate')
+                                resolvedContent.repairDate = '2026-05-25';
+                            if (f === 'quantity')
+                                resolvedContent.quantity = 5;
+                            if (f === 'unitPrice')
+                                resolvedContent.unitPrice = 200;
+                            if (f === 'totalAmount')
+                                resolvedContent.totalAmount = 1000;
+                        }
+                    }
+                    await apiRequest('POST', `/batches/dirty-records/${dr.id}/resolve`, role_enum_1.Role.REVIEWER, {
+                        resolution: '修复字段',
+                        resolvedContent,
+                    });
+                }
+            }
+            console.log('脏记录处理完成');
+        }
+        console.log('4.0.1 提交复核...');
+        const submitRes = await apiRequest('POST', `/batches/${freezeBatchId}/submit`, role_enum_1.Role.OPERATOR);
+        console.log('提交状态码:', submitRes.status);
+        console.assert(submitRes.status === 201, `提交失败: ${submitRes.status} - ${submitRes.body?.message || ''}`);
+        console.log('提交后状态:', submitRes.body.status);
+        console.log('4.0.2 复核通过...');
+        const approveRes = await apiRequest('POST', `/batches/${freezeBatchId}/approve`, role_enum_1.Role.REVIEWER, {
+            opinion: '数据无误',
+        });
+        console.assert(approveRes.status === 201, `复核失败: ${approveRes.status}`);
+        console.log('复核后状态:', approveRes.body.status);
+        console.assert(approveRes.body.status === 'approved', '状态应为已通过');
+        console.log('4.1 冻结批次(验证 statusBeforeFrozen)...');
+        const freezeRes = await apiRequest('POST', `/batches/${freezeBatchId}/freeze`, role_enum_1.Role.MANAGER, {
+            reason: '财务核对，暂停结算',
+        });
+        console.assert(freezeRes.status === 201, `冻结失败: ${freezeRes.status}`);
+        console.log('冻结后状态:', freezeRes.body.status);
+        console.log('冻结前状态(statusBeforeFrozen):', freezeRes.body.statusBeforeFrozen);
+        console.log('冻结理由:', freezeRes.body.freezeReason);
+        console.assert(freezeRes.body.status === 'frozen', '状态应为已冻结');
+        console.assert(freezeRes.body.statusBeforeFrozen === 'approved', `冻结前状态应为 approved，实际为 ${freezeRes.body.statusBeforeFrozen}`);
+        console.assert(freezeRes.body.freezeReason === '财务核对，暂停结算', '冻结理由应正确保存');
+        console.assert(freezeRes.body.statusBeforeFrozen !== null, 'statusBeforeFrozen 不应为 null');
+        console.assert(freezeRes.body.statusBeforeFrozen !== undefined, 'statusBeforeFrozen 不应为 undefined');
+        console.assert(freezeRes.body.statusBeforeFrozen !== '', 'statusBeforeFrozen 不应为空字符串');
+        console.assert(!String(freezeRes.body.statusBeforeFrozen).includes('NaN'), 'statusBeforeFrozen 不应包含 NaN');
+        console.log('4.2 查询经理视图(验证冻结前后状态)...');
         const viewRes = await apiRequest('GET', '/export/manager-view', role_enum_1.Role.MANAGER);
         console.assert(viewRes.status === 200, `获取经理视图失败: ${viewRes.status}`);
-        console.log('批次数量:', viewRes.body.length);
-        if (viewRes.body.length > 0) {
-            console.log('示例数据:');
-            const item = viewRes.body[0];
-            console.log(`  批次号: ${item.batchNo}`);
-            console.log(`  状态: ${item.status}`);
-            console.log(`  冻结前状态: ${item.statusBeforeFrozen || 'N/A'}`);
-            console.log(`  人工理由: ${item.manualReason || 'N/A'}`);
-            console.log(`  总金额: ${item.totalAmount}`);
-        }
-        console.log('4.2 获取统计数据...');
+        const frozenItem = viewRes.body.find((b) => b.id === freezeBatchId);
+        console.assert(frozenItem, '应该能找到冻结的批次');
+        console.log('经理视图 - 当前状态:', frozenItem.status);
+        console.log('经理视图 - 冻结前状态:', frozenItem.statusBeforeFrozen);
+        console.log('经理视图 - 人工理由:', frozenItem.manualReason);
+        console.assert(frozenItem.status === 'frozen', '经理视图中状态应为 frozen');
+        console.assert(frozenItem.statusBeforeFrozen === 'approved', `经理视图中冻结前状态应为 approved，实际为 ${frozenItem.statusBeforeFrozen}`);
+        console.assert(frozenItem.manualReason === '财务核对，暂停结算', '经理视图中人工理由应正确');
+        console.assert(!String(frozenItem.statusBeforeFrozen).includes('NaN'), '经理视图中 statusBeforeFrozen 不应包含 NaN');
+        console.log('4.3 解冻批次(验证恢复原状态)...');
+        const unfreezeRes = await apiRequest('POST', `/batches/${freezeBatchId}/unfreeze`, role_enum_1.Role.MANAGER, {
+            reason: '核对完成，恢复结算',
+        });
+        console.assert(unfreezeRes.status === 201, `解冻失败: ${unfreezeRes.status}`);
+        console.log('解冻后状态:', unfreezeRes.body.status);
+        console.log('解冻后 statusBeforeFrozen:', unfreezeRes.body.statusBeforeFrozen);
+        console.assert(unfreezeRes.body.status === 'approved', `解冻后应恢复为 approved，实际为 ${unfreezeRes.body.status}`);
+        console.assert(unfreezeRes.body.statusBeforeFrozen === null, '解冻后 statusBeforeFrozen 应为 null');
+        console.log('4.4 再次查询经理视图(验证解冻后)...');
+        const viewRes2 = await apiRequest('GET', '/export/manager-view', role_enum_1.Role.MANAGER);
+        const unfrozenItem = viewRes2.body.find((b) => b.id === freezeBatchId);
+        console.log('经理视图 - 解冻后状态:', unfrozenItem.status);
+        console.log('经理视图 - 解冻后冻结前状态:', unfrozenItem.statusBeforeFrozen);
+        console.assert(unfrozenItem.status === 'approved', '解冻后状态应为 approved');
+        console.log('4.5 再次冻结(验证经理视图汇总)...');
+        const freeze2Res = await apiRequest('POST', `/batches/${freezeBatchId}/freeze`, role_enum_1.Role.MANAGER, {
+            reason: '审计需要',
+        });
+        console.assert(freeze2Res.status === 201, `第二次冻结失败: ${freeze2Res.status}`);
+        console.assert(freeze2Res.body.statusBeforeFrozen === 'approved', `第二次冻结前状态应为 approved`);
+        console.log('4.6 获取统计数据...');
         const statsRes = await apiRequest('GET', '/export/statistics', role_enum_1.Role.MANAGER);
         console.assert(statsRes.status === 200, `获取统计失败: ${statsRes.status}`);
         console.log('统计数据:', JSON.stringify(statsRes.body, null, 2));
-        console.log('\n✅ 服务经理视图测试通过!');
+        console.assert(statsRes.body.frozenCount >= 1, '冻结批次统计应 >= 1');
+        console.log('4.7 验证状态日志(追溯复盘)...');
+        const logsRes = await apiRequest('GET', `/batches/${freezeBatchId}/status-logs`, role_enum_1.Role.MANAGER);
+        console.assert(logsRes.status === 200, `查询状态日志失败: ${logsRes.status}`);
+        console.log('状态变更记录数:', logsRes.body.length);
+        console.assert(logsRes.body.length >= 5, '状态变更记录至少应有5条(创建→提交→通过→冻结→解冻→冻结)');
+        const freezeLog = logsRes.body.find((l) => l.toStatus === 'frozen');
+        console.assert(freezeLog, '应有冻结状态日志');
+        console.assert(freezeLog.reason === '财务核对，暂停结算' || freezeLog.reason === '审计需要', '冻结日志应包含理由');
+        console.assert(freezeLog.operatorName, '操作人应记录');
+        console.assert(freezeLog.operatedAt, '操作时间应记录');
+        if (freezeLog.metadata) {
+            console.log('冻结日志 metadata:', JSON.stringify(freezeLog.metadata));
+            console.assert(freezeLog.metadata.statusBeforeFrozen === 'approved', '日志 metadata 应包含冻结前状态');
+        }
+        console.log('4.8 导出 CSV...');
+        const csvRes = await apiRequest('GET', '/export/csv', role_enum_1.Role.MANAGER);
+        console.assert(csvRes.status === 200, `导出CSV失败: ${csvRes.status}`);
+        console.log('CSV 内容长度:', csvRes.body.length);
+        console.log('\n✅ 服务经理视图测试通过! 冻结链路完整闭环!');
         return true;
     }
     catch (error) {
         console.error('❌ 服务经理视图测试失败:', error.message);
+        console.error(error.stack);
         return false;
     }
 }
