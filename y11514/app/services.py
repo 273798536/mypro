@@ -56,12 +56,39 @@ def detect_dirty_record(db: Session, record_type: str, record_id: int) -> List[s
         
         if not record.reader_name or not record.reader_id or not record.book_title:
             issues.append("缺少必填字段")
+        if not record.lending_library or not record.borrowing_library:
+            issues.append("缺少必填字段")
         if record.apply_date and record.expected_return_date:
             if record.apply_date > record.expected_return_date:
                 issues.append("申请日期晚于应还日期")
         if record.actual_return_date and record.expected_return_date:
-            if record.actual_return_date.date() != record.expected_return_date.date():
+            if (record.actual_return_date - record.expected_return_date).days >= 1:
+                issues.append("跨日")
+        
+        if record.raw_original_data and record.reader_name:
+            try:
+                original = json.loads(record.raw_original_data)
+                original_name = original.get("reader_name")
+                if original_name and original_name != record.reader_name:
+                    issues.append("改名")
+            except (json.JSONDecodeError, TypeError):
                 pass
+    
+    elif record_type == "express_order":
+        record = db.query(ExpressOrder).filter(ExpressOrder.id == record_id).first()
+        if not record:
+            return issues
+        
+        if not record.order_no:
+            issues.append("缺少必填字段")
+        if record.send_date and record.receive_date:
+            if record.send_date > record.receive_date:
+                issues.append("寄件日期晚于收件日期")
+            if (record.receive_date - record.send_date).days >= 1:
+                issues.append("跨日")
+        
+        if record.shipping_cost is not None and record.shipping_cost < 0:
+            issues.append("金额冲突")
     
     elif record_type == "compensation_record":
         record = db.query(CompensationRecord).filter(CompensationRecord.id == record_id).first()
@@ -70,11 +97,61 @@ def detect_dirty_record(db: Session, record_type: str, record_id: int) -> List[s
         
         if not record.reader_name or not record.reader_id or not record.damage_type:
             issues.append("缺少必填字段")
-        if record.total_amount is not None:
+        if record.total_amount is not None and record.total_amount < 0:
+            issues.append("金额冲突")
+        if record.overdue_days is not None and record.overdue_days < 0:
+            issues.append("数量冲突")
+        
+        if record.total_amount is not None and record.total_amount > 0:
             calculated = (record.overdue_days or 0) * (record.daily_overdue_fee or 0) + \
                          (record.soiling_fee or 0) + (record.other_fees or 0)
-            if abs(record.total_amount - calculated) > 0.01 and record.total_amount > 0:
-                issues.append("金额计算不一致")
+            if abs(record.total_amount - calculated) > 0.01:
+                issues.append("金额冲突")
+        
+        if record.raw_original_data and record.reader_name:
+            try:
+                original = json.loads(record.raw_original_data)
+                original_name = original.get("reader_name")
+                if original_name and original_name != record.reader_name:
+                    issues.append("改名")
+            except (json.JSONDecodeError, TypeError):
+                pass
+    
+    elif record_type == "refund_record":
+        record = db.query(RefundRecord).filter(RefundRecord.id == record_id).first()
+        if not record:
+            return issues
+        
+        if not record.refund_no or not record.reader_id:
+            issues.append("缺少必填字段")
+        if record.refund_amount is not None and record.refund_amount < 0:
+            issues.append("金额冲突")
+        
+        if record.compensation_record_id:
+            comp = db.query(CompensationRecord).filter(
+                CompensationRecord.id == record.compensation_record_id
+            ).first()
+            if comp and comp.paid_amount is not None:
+                total_refunds = db.query(RefundRecord).filter(
+                    RefundRecord.compensation_record_id == record.compensation_record_id,
+                    RefundRecord.id != record_id
+                ).all()
+                total_refunded = sum(r.refund_amount or 0 for r in total_refunds) + (record.refund_amount or 0)
+                if total_refunded > comp.paid_amount:
+                    issues.append("金额冲突")
+    
+    elif record_type == "inventory_difference":
+        record = db.query(InventoryDifference).filter(InventoryDifference.id == record_id).first()
+        if not record:
+            return issues
+        
+        if record.expected_quantity is not None and record.actual_quantity is not None:
+            if record.expected_quantity < 0 or record.actual_quantity < 0:
+                issues.append("数量冲突")
+            if record.difference_quantity is not None:
+                expected_diff = record.expected_quantity - record.actual_quantity
+                if expected_diff != record.difference_quantity:
+                    issues.append("数量冲突")
     
     return issues
 
@@ -86,10 +163,14 @@ def validate_record_status(db: Session, record_type: str, record_id: int) -> Rec
     
     if "缺少必填字段" in issues:
         return RecordStatus.DIRTY_MISSING_FIELD
-    elif "金额计算不一致" in issues:
-        return RecordStatus.DIRTY_AMOUNT_CONFLICT
     elif "跨日" in issues:
         return RecordStatus.DIRTY_CROSS_DAY
+    elif "改名" in issues:
+        return RecordStatus.DIRTY_NAME_CHANGE
+    elif "金额冲突" in issues:
+        return RecordStatus.DIRTY_AMOUNT_CONFLICT
+    elif "数量冲突" in issues:
+        return RecordStatus.DIRTY_QUANTITY_CONFLICT
     
     return RecordStatus.NEEDS_MANUAL_CONFIRM
 
@@ -154,6 +235,63 @@ def update_borrow_application(db: Session, app_id: int, update: BorrowApplicatio
     
     log_audit(db, user, "更新借阅申请", "borrow_applications", app_id, change_reason=change_reason)
     return db_app
+
+
+def create_express_order(db: Session, order: ExpressOrderCreate, user: User, raw_data: Optional[str] = None) -> ExpressOrder:
+    db_order = ExpressOrder(
+        **order.model_dump(),
+        created_by=user.id,
+        raw_original_data=raw_data or json.dumps(order.model_dump(), ensure_ascii=False, default=str)
+    )
+    db.add(db_order)
+    db.flush()
+    
+    record_status = validate_record_status(db, "express_order", db_order.id)
+    if record_status != RecordStatus.NORMAL:
+        db_order.record_status = record_status
+        log_audit(db, user, "标记异常记录", "express_orders", db_order.id,
+                   change_reason=f"自动检测到异常: {record_status.value}")
+    
+    log_audit(db, user, "创建快递单", "express_orders", db_order.id)
+    return db_order
+
+
+def create_compensation_record(db: Session, record: CompensationRecordCreate, user: User, raw_data: Optional[str] = None) -> CompensationRecord:
+    db_record = CompensationRecord(
+        **record.model_dump(),
+        created_by=user.id,
+        raw_original_data=raw_data or json.dumps(record.model_dump(), ensure_ascii=False, default=str)
+    )
+    db.add(db_record)
+    db.flush()
+    
+    record_status = validate_record_status(db, "compensation_record", db_record.id)
+    if record_status != RecordStatus.NORMAL:
+        db_record.record_status = record_status
+        log_audit(db, user, "标记异常记录", "compensation_records", db_record.id,
+                   change_reason=f"自动检测到异常: {record_status.value}")
+    
+    log_audit(db, user, "创建赔偿记录", "compensation_records", db_record.id)
+    return db_record
+
+
+def create_refund_record(db: Session, record: RefundRecordCreate, user: User, raw_data: Optional[str] = None) -> RefundRecord:
+    db_record = RefundRecord(
+        **record.model_dump(),
+        created_by=user.id,
+        raw_original_data=raw_data or json.dumps(record.model_dump(), ensure_ascii=False, default=str)
+    )
+    db.add(db_record)
+    db.flush()
+    
+    record_status = validate_record_status(db, "refund_record", db_record.id)
+    if record_status != RecordStatus.NORMAL:
+        db_record.record_status = record_status
+        log_audit(db, user, "标记异常记录", "refund_records", db_record.id,
+                   change_reason=f"自动检测到异常: {record_status.value}")
+    
+    log_audit(db, user, "创建退款记录", "refund_records", db_record.id)
+    return db_record
 
 
 def transition_workflow_status(

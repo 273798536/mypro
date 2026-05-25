@@ -103,12 +103,14 @@ def get_sensitive_fields_for_role(role: UserRole) -> dict:
                 "id", "application_no", "reader_name", "reader_id", "reader_department",
                 "book_title", "book_isbn", "book_author", "lending_library", "borrowing_library",
                 "apply_date", "expected_return_date", "actual_return_date", "renew_count",
-                "status", "record_status", "created_at", "updated_at"
+                "latest_renew_date", "status", "record_status", "created_by", "created_at",
+                "updated_by", "updated_at", "processing_notes", "rejection_reason"
             ],
             "editable": [
                 "reader_name", "reader_id", "reader_department", "book_title", "book_isbn",
                 "book_author", "lending_library", "borrowing_library", "apply_date",
-                "expected_return_date", "actual_return_date", "renew_count", "processing_notes"
+                "expected_return_date", "actual_return_date", "renew_count", "latest_renew_date",
+                "processing_notes"
             ]
         },
         UserRole.REVIEWER: {
@@ -129,9 +131,11 @@ def get_sensitive_fields_for_role(role: UserRole) -> dict:
         },
         UserRole.READ_ONLY: {
             "visible": [
-                "id", "application_no", "reader_name", "reader_id", "book_title", "lending_library",
-                "borrowing_library", "apply_date", "status", "record_status",
-                "created_by", "created_at", "updated_by", "updated_at"
+                "id", "application_no", "reader_name", "reader_id", "reader_department",
+                "book_title", "book_isbn", "book_author", "lending_library",
+                "borrowing_library", "apply_date", "expected_return_date",
+                "actual_return_date", "renew_count", "latest_renew_date",
+                "status", "record_status", "created_by", "created_at"
             ],
             "editable": []
         }

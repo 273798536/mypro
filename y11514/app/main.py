@@ -32,7 +32,11 @@ from app.services import (
     create_borrow_application, update_borrow_application,
     transition_workflow_status, calculate_cost_trace,
     get_statistics, get_role_view, check_duplicate,
-    log_audit
+    log_audit,
+    create_express_order as create_express_order_service,
+    create_compensation_record as create_compensation_record_service,
+    create_refund_record as create_refund_record_service,
+    validate_record_status
 )
 
 Base.metadata.create_all(bind=engine)
@@ -279,14 +283,7 @@ def create_express_order(
 ):
     if check_duplicate(db, "express_order", order.order_no):
         raise HTTPException(status_code=400, detail="快递单号已存在")
-    db_order = ExpressOrder(
-        **order.model_dump(),
-        created_by=current_user.id,
-        raw_original_data=json.dumps(order.model_dump(), ensure_ascii=False, default=str)
-    )
-    db.add(db_order)
-    db.flush()
-    log_audit(db, current_user, "创建快递单", "express_orders", db_order.id)
+    db_order = create_express_order_service(db, order, current_user)
     db.commit()
     db.refresh(db_order)
     return db_order
@@ -306,6 +303,110 @@ def read_express_orders(
     return query.order_by(ExpressOrder.created_at.desc()).offset(skip).limit(limit).all()
 
 
+@app.get("/express-orders/{order_id}", response_model=ExpressOrderResponse)
+def read_express_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_all_authenticated)
+):
+    db_order = db.query(ExpressOrder).filter(ExpressOrder.id == order_id).first()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="快递单不存在")
+    return db_order
+
+
+@app.put("/express-orders/{order_id}", response_model=ExpressOrderResponse)
+def update_express_order(
+    order_id: int,
+    update: ExpressOrderUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_data_entry)
+):
+    db_order = db.query(ExpressOrder).filter(ExpressOrder.id == order_id).first()
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="快递单不存在")
+    
+    update_data = update.model_dump(exclude_unset=True)
+    change_reason = update_data.pop("change_reason", None)
+    
+    for field, new_value in update_data.items():
+        old_value = getattr(db_order, field)
+        if old_value != new_value:
+            setattr(db_order, field, new_value)
+            log_audit(db, current_user, "更新字段", "express_orders", order_id,
+                       field_name=field,
+                       old_value=str(old_value) if old_value else None,
+                       new_value=str(new_value) if new_value else None,
+                       change_reason=change_reason)
+    
+    db_order.updated_by = current_user.id
+    db_order.updated_at = datetime.now()
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
+@app.post("/express-orders/{order_id}/submit")
+def submit_express_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_data_entry)
+):
+    success = transition_workflow_status(
+        db, "express_order", order_id, WorkflowStatus.SUBMITTED, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="快递单不存在")
+    db.commit()
+    return {"message": "提交成功", "status": WorkflowStatus.SUBMITTED}
+
+
+@app.post("/express-orders/{order_id}/reject")
+def reject_express_order(
+    order_id: int,
+    reason: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_reviewer)
+):
+    success = transition_workflow_status(
+        db, "express_order", order_id, WorkflowStatus.REJECTED, current_user, reason
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="快递单不存在")
+    db.commit()
+    return {"message": "已驳回", "status": WorkflowStatus.REJECTED, "reason": reason}
+
+
+@app.post("/express-orders/{order_id}/second-confirm")
+def second_confirm_express_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_supervisor)
+):
+    success = transition_workflow_status(
+        db, "express_order", order_id, WorkflowStatus.SECOND_CONFIRM, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="快递单不存在")
+    db.commit()
+    return {"message": "二次确认完成", "status": WorkflowStatus.SECOND_CONFIRM}
+
+
+@app.post("/express-orders/{order_id}/finalize")
+def finalize_express_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_supervisor)
+):
+    success = transition_workflow_status(
+        db, "express_order", order_id, WorkflowStatus.FINALIZED, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="快递单不存在")
+    db.commit()
+    return {"message": "已完成归档", "status": WorkflowStatus.FINALIZED}
+
+
 @app.post("/compensation-records/", response_model=CompensationRecordResponse)
 def create_compensation_record(
     record: CompensationRecordCreate,
@@ -314,14 +415,7 @@ def create_compensation_record(
 ):
     if check_duplicate(db, "compensation_record", record.record_no):
         raise HTTPException(status_code=400, detail="赔偿记录编号已存在")
-    db_record = CompensationRecord(
-        **record.model_dump(),
-        created_by=current_user.id,
-        raw_original_data=json.dumps(record.model_dump(), ensure_ascii=False, default=str)
-    )
-    db.add(db_record)
-    db.flush()
-    log_audit(db, current_user, "创建赔偿记录", "compensation_records", db_record.id)
+    db_record = create_compensation_record_service(db, record, current_user)
     db.commit()
     db.refresh(db_record)
     return db_record
@@ -341,6 +435,110 @@ def read_compensation_records(
     return query.order_by(CompensationRecord.created_at.desc()).offset(skip).limit(limit).all()
 
 
+@app.get("/compensation-records/{record_id}", response_model=CompensationRecordResponse)
+def read_compensation_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_all_authenticated)
+):
+    db_record = db.query(CompensationRecord).filter(CompensationRecord.id == record_id).first()
+    if db_record is None:
+        raise HTTPException(status_code=404, detail="赔偿记录不存在")
+    return db_record
+
+
+@app.put("/compensation-records/{record_id}", response_model=CompensationRecordResponse)
+def update_compensation_record(
+    record_id: int,
+    update: CompensationRecordUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_data_entry)
+):
+    db_record = db.query(CompensationRecord).filter(CompensationRecord.id == record_id).first()
+    if db_record is None:
+        raise HTTPException(status_code=404, detail="赔偿记录不存在")
+    
+    update_data = update.model_dump(exclude_unset=True)
+    change_reason = update_data.pop("change_reason", None)
+    
+    for field, new_value in update_data.items():
+        old_value = getattr(db_record, field)
+        if old_value != new_value:
+            setattr(db_record, field, new_value)
+            log_audit(db, current_user, "更新字段", "compensation_records", record_id,
+                       field_name=field,
+                       old_value=str(old_value) if old_value else None,
+                       new_value=str(new_value) if new_value else None,
+                       change_reason=change_reason)
+    
+    db_record.updated_by = current_user.id
+    db_record.updated_at = datetime.now()
+    db.commit()
+    db.refresh(db_record)
+    return db_record
+
+
+@app.post("/compensation-records/{record_id}/submit")
+def submit_compensation_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_data_entry)
+):
+    success = transition_workflow_status(
+        db, "compensation_record", record_id, WorkflowStatus.SUBMITTED, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="赔偿记录不存在")
+    db.commit()
+    return {"message": "提交成功", "status": WorkflowStatus.SUBMITTED}
+
+
+@app.post("/compensation-records/{record_id}/reject")
+def reject_compensation_record(
+    record_id: int,
+    reason: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_reviewer)
+):
+    success = transition_workflow_status(
+        db, "compensation_record", record_id, WorkflowStatus.REJECTED, current_user, reason
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="赔偿记录不存在")
+    db.commit()
+    return {"message": "已驳回", "status": WorkflowStatus.REJECTED, "reason": reason}
+
+
+@app.post("/compensation-records/{record_id}/second-confirm")
+def second_confirm_compensation_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_supervisor)
+):
+    success = transition_workflow_status(
+        db, "compensation_record", record_id, WorkflowStatus.SECOND_CONFIRM, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="赔偿记录不存在")
+    db.commit()
+    return {"message": "二次确认完成", "status": WorkflowStatus.SECOND_CONFIRM}
+
+
+@app.post("/compensation-records/{record_id}/finalize")
+def finalize_compensation_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_supervisor)
+):
+    success = transition_workflow_status(
+        db, "compensation_record", record_id, WorkflowStatus.FINALIZED, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="赔偿记录不存在")
+    db.commit()
+    return {"message": "已完成归档", "status": WorkflowStatus.FINALIZED}
+
+
 @app.post("/refund-records/", response_model=RefundRecordResponse)
 def create_refund_record(
     record: RefundRecordCreate,
@@ -349,14 +547,7 @@ def create_refund_record(
 ):
     if check_duplicate(db, "refund_record", record.refund_no):
         raise HTTPException(status_code=400, detail="退款记录编号已存在")
-    db_record = RefundRecord(
-        **record.model_dump(),
-        created_by=current_user.id,
-        raw_original_data=json.dumps(record.model_dump(), ensure_ascii=False, default=str)
-    )
-    db.add(db_record)
-    db.flush()
-    log_audit(db, current_user, "创建退款记录", "refund_records", db_record.id)
+    db_record = create_refund_record_service(db, record, current_user)
     db.commit()
     db.refresh(db_record)
     return db_record
@@ -374,6 +565,110 @@ def read_refund_records(
     if borrow_application_id:
         query = query.filter(RefundRecord.borrow_application_id == borrow_application_id)
     return query.order_by(RefundRecord.created_at.desc()).offset(skip).limit(limit).all()
+
+
+@app.get("/refund-records/{record_id}", response_model=RefundRecordResponse)
+def read_refund_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_all_authenticated)
+):
+    db_record = db.query(RefundRecord).filter(RefundRecord.id == record_id).first()
+    if db_record is None:
+        raise HTTPException(status_code=404, detail="退款记录不存在")
+    return db_record
+
+
+@app.put("/refund-records/{record_id}", response_model=RefundRecordResponse)
+def update_refund_record(
+    record_id: int,
+    update: RefundRecordUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_data_entry)
+):
+    db_record = db.query(RefundRecord).filter(RefundRecord.id == record_id).first()
+    if db_record is None:
+        raise HTTPException(status_code=404, detail="退款记录不存在")
+    
+    update_data = update.model_dump(exclude_unset=True)
+    change_reason = update_data.pop("change_reason", None)
+    
+    for field, new_value in update_data.items():
+        old_value = getattr(db_record, field)
+        if old_value != new_value:
+            setattr(db_record, field, new_value)
+            log_audit(db, current_user, "更新字段", "refund_records", record_id,
+                       field_name=field,
+                       old_value=str(old_value) if old_value else None,
+                       new_value=str(new_value) if new_value else None,
+                       change_reason=change_reason)
+    
+    db_record.updated_by = current_user.id
+    db_record.updated_at = datetime.now()
+    db.commit()
+    db.refresh(db_record)
+    return db_record
+
+
+@app.post("/refund-records/{record_id}/submit")
+def submit_refund_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_data_entry)
+):
+    success = transition_workflow_status(
+        db, "refund_record", record_id, WorkflowStatus.SUBMITTED, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="退款记录不存在")
+    db.commit()
+    return {"message": "提交成功", "status": WorkflowStatus.SUBMITTED}
+
+
+@app.post("/refund-records/{record_id}/reject")
+def reject_refund_record(
+    record_id: int,
+    reason: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_reviewer)
+):
+    success = transition_workflow_status(
+        db, "refund_record", record_id, WorkflowStatus.REJECTED, current_user, reason
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="退款记录不存在")
+    db.commit()
+    return {"message": "已驳回", "status": WorkflowStatus.REJECTED, "reason": reason}
+
+
+@app.post("/refund-records/{record_id}/second-confirm")
+def second_confirm_refund_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_supervisor)
+):
+    success = transition_workflow_status(
+        db, "refund_record", record_id, WorkflowStatus.SECOND_CONFIRM, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="退款记录不存在")
+    db.commit()
+    return {"message": "二次确认完成", "status": WorkflowStatus.SECOND_CONFIRM}
+
+
+@app.post("/refund-records/{record_id}/finalize")
+def finalize_refund_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_supervisor)
+):
+    success = transition_workflow_status(
+        db, "refund_record", record_id, WorkflowStatus.FINALIZED, current_user
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="退款记录不存在")
+    db.commit()
+    return {"message": "已完成归档", "status": WorkflowStatus.FINALIZED}
 
 
 @app.post("/calculate-cost", response_model=CostCalculationResponse)
@@ -546,3 +841,98 @@ def export_records(
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+@app.post("/{record_type}/{record_id}/mark-corrected")
+def mark_record_corrected(
+    record_type: str,
+    record_id: int,
+    reason: str = "已修正异常",
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_reviewer)
+):
+    model_map = {
+        "borrow-applications": (BorrowApplication, "borrow_application"),
+        "express-orders": (ExpressOrder, "express_order"),
+        "compensation-records": (CompensationRecord, "compensation_record"),
+        "refund-records": (RefundRecord, "refund_record")
+    }
+    
+    if record_type not in model_map:
+        raise HTTPException(status_code=400, detail="无效的记录类型")
+    
+    model, service_type = model_map[record_type]
+    record = db.query(model).filter(model.id == record_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    
+    old_status = record.record_status.value
+    record.record_status = RecordStatus.CORRECTED
+    record.updated_by = current_user.id
+    record.updated_at = datetime.now()
+    
+    if record.processing_notes:
+        record.processing_notes += f"\n[{datetime.now()}] {reason}"
+    else:
+        record.processing_notes = f"[{datetime.now()}] {reason}"
+    
+    log_audit(db, current_user, f"标记修正: {old_status} -> corrected",
+               service_type, record_id,
+               field_name="record_status",
+               old_value=old_status,
+               new_value="corrected",
+               change_reason=reason)
+    
+    db.commit()
+    return {
+        "message": "已标记为修正",
+        "record_type": record_type,
+        "record_id": record_id,
+        "old_status": old_status,
+        "new_status": "corrected"
+    }
+
+
+@app.post("/{record_type}/{record_id}/mark-needs-confirm")
+def mark_record_needs_confirm(
+    record_type: str,
+    record_id: int,
+    reason: str = "需要人工确认",
+    db: Session = Depends(get_db),
+    current_user: User = Depends(allow_reviewer)
+):
+    model_map = {
+        "borrow-applications": (BorrowApplication, "borrow_application"),
+        "express-orders": (ExpressOrder, "express_order"),
+        "compensation-records": (CompensationRecord, "compensation_record"),
+        "refund-records": (RefundRecord, "refund_record")
+    }
+    
+    if record_type not in model_map:
+        raise HTTPException(status_code=400, detail="无效的记录类型")
+    
+    model, service_type = model_map[record_type]
+    record = db.query(model).filter(model.id == record_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="记录不存在")
+    
+    old_status = record.record_status.value
+    record.record_status = RecordStatus.NEEDS_MANUAL_CONFIRM
+    record.updated_by = current_user.id
+    record.updated_at = datetime.now()
+    
+    log_audit(db, current_user, f"标记需确认: {old_status} -> needs_manual_confirm",
+               service_type, record_id,
+               field_name="record_status",
+               old_value=old_status,
+               new_value="needs_manual_confirm",
+               change_reason=reason)
+    
+    db.commit()
+    return {
+        "message": "已标记为需要人工确认",
+        "record_type": record_type,
+        "record_id": record_id,
+        "old_status": old_status,
+        "new_status": "needs_manual_confirm"
+    }
