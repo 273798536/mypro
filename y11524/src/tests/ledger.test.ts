@@ -488,3 +488,222 @@ describe('台账 API - 敏感字段脱敏测试', () => {
     expect(response.body.data.appointment.customerAddress).toContain('***');
   });
 });
+
+describe('台账 API - 只读审计状态保护测试', () => {
+  async function createAndMoveToAuditOnly(appointmentNo: string, batchNo: string = 'BATCH001') {
+    const createResp = await createTestAppointment(appointmentNo, batchNo);
+    const ledgerId = createResp.body.data.ledgerId;
+
+    await request(app)
+      .post('/api/ledger/status/change')
+      .send({
+        ledgerId,
+        targetStatus: LedgerStatus.SUBMITTED,
+        changeReason: '提交审核',
+        operatorId: 'OP001',
+        operatorName: '操作人',
+        role: 'after_sales',
+      });
+
+    await request(app)
+      .post('/api/ledger/status/change')
+      .send({
+        ledgerId,
+        targetStatus: LedgerStatus.SECOND_CONFIRM,
+        changeReason: '需要二次确认',
+        operatorId: 'AUD001',
+        operatorName: '审核员',
+        role: 'auditor',
+      });
+
+    await request(app)
+      .post('/api/ledger/status/change')
+      .send({
+        ledgerId,
+        targetStatus: LedgerStatus.AUDIT_ONLY,
+        changeReason: '确认无误，归档',
+        operatorId: 'AUD001',
+        operatorName: '审核员',
+        role: 'auditor',
+      });
+
+    return ledgerId;
+  }
+
+  test('进入只读审计后，预约单导入应被拒绝', async () => {
+    const appointmentNo = 'AUDITPROTECT001';
+    await createAndMoveToAuditOnly(appointmentNo);
+
+    const response = await request(app)
+      .post('/api/ledger/import/appointment')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        customerName: '尝试修改用户',
+        customerPhone: '13800138001',
+        customerAddress: '尝试修改地址',
+        area: '北京',
+        applianceType: '空调',
+        appointmentTime: '2024-01-15 10:00:00',
+        technicianId: 'TECH001',
+        technicianName: '归档后仍被修改',
+        status: '已完成',
+        operatorId: 'OP002',
+        operatorName: '尝试修改人',
+      });
+
+    expect(response.body.success).toBe(false);
+    expect(response.body.error).toContain('只读审计状态');
+  });
+
+  test('进入只读审计后，师傅定位导入应被拒绝', async () => {
+    const appointmentNo = 'AUDITPROTECT002';
+    await createAndMoveToAuditOnly(appointmentNo);
+
+    const response = await request(app)
+      .post('/api/ledger/import/technician-location')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        technicianId: 'TECH002',
+        checkInTime: '2024-01-15 09:00:00',
+        locationAddress: '测试地址',
+        latitude: 39.9042,
+        longitude: 116.4074,
+        distanceToCustomer: 100,
+      });
+
+    expect(response.body.success).toBe(false);
+    expect(response.body.error).toContain('只读审计状态');
+  });
+
+  test('进入只读审计后，用户评价导入应被拒绝', async () => {
+    const appointmentNo = 'AUDITPROTECT003';
+    await createAndMoveToAuditOnly(appointmentNo);
+
+    const response = await request(app)
+      .post('/api/ledger/import/user-review')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        rating: 1,
+        reviewContent: '差评内容',
+        reviewTime: '2024-01-15 18:00:00',
+        reviewerPhone: '13900139000',
+      });
+
+    expect(response.body.success).toBe(false);
+    expect(response.body.error).toContain('只读审计状态');
+  });
+
+  test('进入只读审计后，二次确认单导入应被拒绝', async () => {
+    const appointmentNo = 'AUDITPROTECT004';
+    await createAndMoveToAuditOnly(appointmentNo);
+
+    const response = await request(app)
+      .post('/api/ledger/import/second-confirmation')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        confirmType: 'reschedule',
+        confirmResult: '已确认改约',
+        confirmTime: '2024-01-15 20:00:00',
+        operatorId: 'OP003',
+        operatorName: '确认人',
+      });
+
+    expect(response.body.success).toBe(false);
+    expect(response.body.error).toContain('只读审计状态');
+  });
+
+  test('只读审计状态下尝试修改应记录到失败表', async () => {
+    const appointmentNo = 'AUDITPROTECT005';
+    await createAndMoveToAuditOnly(appointmentNo);
+
+    await request(app)
+      .post('/api/ledger/import/appointment')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        customerName: '尝试修改用户',
+        customerPhone: '13800138002',
+        customerAddress: '尝试修改地址',
+        area: '北京',
+        applianceType: '空调',
+        appointmentTime: '2024-01-15 10:00:00',
+        technicianId: 'TECH001',
+        technicianName: '归档后仍被修改',
+        status: '已完成',
+        operatorId: 'OP002',
+        operatorName: '尝试修改人',
+      });
+
+    const failedResponse = await request(app).get('/api/ledger/failed-records');
+    expect(failedResponse.body.success).toBe(true);
+    const failedRecord = failedResponse.body.data.list.find(
+      (r: any) => r.appointmentNo === appointmentNo && r.errorMessage.includes('只读审计')
+    );
+    expect(failedRecord).toBeDefined();
+  });
+
+  test('只读审计状态下尝试修改应在历史中留下痕迹', async () => {
+    const appointmentNo = 'AUDITPROTECT006';
+    const ledgerId = await createAndMoveToAuditOnly(appointmentNo);
+
+    await request(app)
+      .post('/api/ledger/import/appointment')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        customerName: '尝试修改用户',
+        customerPhone: '13800138003',
+        customerAddress: '尝试修改地址',
+        area: '北京',
+        applianceType: '空调',
+        appointmentTime: '2024-01-15 10:00:00',
+        technicianId: 'TECH001',
+        technicianName: '归档后仍被修改',
+        status: '已完成',
+        operatorId: 'OP002',
+        operatorName: '尝试修改人',
+      });
+
+    const detailResponse = await request(app).get(`/api/ledger/detail/${ledgerId}?role=admin`);
+    expect(detailResponse.body.success).toBe(true);
+    const attemptLog = detailResponse.body.data.statusHistory.find(
+      (log: any) => log.changeReason && log.changeReason.includes('尝试在只读审计状态下修改')
+    );
+    expect(attemptLog).toBeDefined();
+    expect(attemptLog.fromStatus).toBe(LedgerStatus.AUDIT_ONLY);
+    expect(attemptLog.toStatus).toBe(LedgerStatus.AUDIT_ONLY);
+  });
+
+  test('只读审计状态下数据应保持原值不被修改', async () => {
+    const appointmentNo = 'AUDITPROTECT007';
+    const ledgerId = await createAndMoveToAuditOnly(appointmentNo);
+
+    const originalDetail = await request(app).get(`/api/ledger/detail/${ledgerId}?role=admin`);
+    const originalTechnicianName = originalDetail.body.data.appointment.technicianName;
+
+    await request(app)
+      .post('/api/ledger/import/appointment')
+      .send({
+        appointmentNo,
+        batchNo: 'BATCH001',
+        customerName: '尝试修改用户',
+        customerPhone: '13800138004',
+        customerAddress: '尝试修改地址',
+        area: '北京',
+        applianceType: '空调',
+        appointmentTime: '2024-01-15 10:00:00',
+        technicianId: 'TECH001',
+        technicianName: '归档后仍被修改',
+        status: '已完成',
+        operatorId: 'OP002',
+        operatorName: '尝试修改人',
+      });
+
+    const detailResponse = await request(app).get(`/api/ledger/detail/${ledgerId}?role=admin`);
+    expect(detailResponse.body.data.appointment.technicianName).toBe(originalTechnicianName);
+  });
+});

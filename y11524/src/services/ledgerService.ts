@@ -44,6 +44,51 @@ function recordFailure(
   stmt.run(uuidv4(), dataSource, rawData, errorMessage, appointmentNo, batchNo, now());
 }
 
+function recordDataModificationAttempt(
+  ledgerId: string,
+  dataSource: DataSource,
+  rawData: string,
+  operatorId: string,
+  operatorName: string
+): void {
+  const db = getDatabase();
+  const logId = uuidv4();
+  const sensitiveFields = JSON.stringify(['attempted_modification_after_audit']);
+  db.prepare(`
+    INSERT INTO status_change_logs (
+      id, ledger_id, from_status, to_status, operator_id, operator_name,
+      change_reason, sensitive_fields, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    logId,
+    ledgerId,
+    LedgerStatus.AUDIT_ONLY,
+    LedgerStatus.AUDIT_ONLY,
+    operatorId,
+    operatorName,
+    `尝试在只读审计状态下修改${dataSource}数据，已拒绝`,
+    sensitiveFields,
+    now()
+  );
+}
+
+function assertNotAuditOnly(
+  ledger: Ledger,
+  dataSource: DataSource,
+  rawData: string,
+  operatorId?: string,
+  operatorName?: string
+): void {
+  if (ledger.status === LedgerStatus.AUDIT_ONLY) {
+    const errorMessage = `台账已进入只读审计状态(audit_only)，无法修改${dataSource}数据`;
+    recordFailure(dataSource, rawData, errorMessage, ledger.appointmentNo, ledger.batchNo);
+    if (operatorId && operatorName) {
+      recordDataModificationAttempt(ledger.id, dataSource, rawData, operatorId, operatorName);
+    }
+    throw new Error(errorMessage);
+  }
+}
+
 export function importAppointmentOrder(
   input: AppointmentOrderInput
 ): IdempotencyResult<{ ledger: Ledger; appointment: AppointmentOrder }> {
@@ -64,6 +109,16 @@ export function importAppointmentOrder(
     ) as AppointmentOrder | undefined;
 
     const isNew = !existingLedger;
+
+    if (!isNew) {
+      assertNotAuditOnly(
+        existingLedger,
+        DataSource.APPOINTMENT,
+        rawData,
+        input.operatorId,
+        input.operatorName
+      );
+    }
 
     let ledgerId: string;
     if (isNew) {
@@ -174,6 +229,13 @@ export function importTechnicianLocation(
       throw new Error('台账记录不存在，请先导入预约单');
     }
 
+    assertNotAuditOnly(
+      ledger,
+      DataSource.TECHNICIAN_LOCATION,
+      rawData,
+      input.technicianId
+    );
+
     const existing = snakeToCamel(
       db
         .prepare('SELECT * FROM technician_locations WHERE appointment_no = ? AND batch_no = ?')
@@ -260,6 +322,12 @@ export function importUserReview(
       throw new Error('台账记录不存在，请先导入预约单');
     }
 
+    assertNotAuditOnly(
+      ledger,
+      DataSource.USER_REVIEW,
+      rawData
+    );
+
     const existing = snakeToCamel(
       db
         .prepare('SELECT * FROM user_reviews WHERE appointment_no = ? AND batch_no = ?')
@@ -340,6 +408,14 @@ export function importSecondConfirmation(
     if (!ledger) {
       throw new Error('台账记录不存在，请先导入预约单');
     }
+
+    assertNotAuditOnly(
+      ledger,
+      DataSource.SECOND_CONFIRMATION,
+      rawData,
+      input.operatorId,
+      input.operatorName
+    );
 
     const existing = snakeToCamel(
       db
