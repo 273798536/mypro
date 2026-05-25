@@ -288,8 +288,14 @@ def correct(clue_id, data, notes, operator):
     db = get_db_session()
     try:
         service = DirtyRecordService(db)
-        success, msg = service.correct_clue(clue_id, corrected_content, notes, operator)
+        success, msg, aggregation = service.correct_clue(clue_id, corrected_content, notes, operator)
         click.echo(msg)
+        if success and aggregation:
+            click.echo("重新汇总结果:")
+            click.echo(f"  已验证线索: {aggregation.get('validated_clues', 0)}")
+            click.echo(f"  总灯数: {aggregation.get('total_lamps', 0)}")
+            click.echo(f"  总金额: {aggregation.get('total_amount', 0)}")
+            click.echo(f"  数据来源: {', '.join(aggregation.get('source_types', []))}")
         sys.exit(EXIT_SUCCESS if success else EXIT_NOT_FOUND)
     except Exception as e:
         click.echo(f"修正失败: {e}", err=True)

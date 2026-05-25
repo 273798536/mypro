@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 from ..models import (
     WorkOrder, WorkOrderStatus, Clue, SourceType,
     RetryRecord, RetryCategory, DeadLetter,
-    CompensationRecord, OperationLog, ChangeEvent
+    CompensationRecord, OperationLog, ChangeEvent, DirtyType
 )
 from .location_matcher import normalize_location, locations_match, generate_order_no
+from .dirty_record_service import DirtyRecordService
 from ..config import MAX_RETRY_COUNT, RETRY_INTERVAL_MINUTES
 
 
@@ -106,6 +107,20 @@ class WorkOrderService:
             sms_content=sms_content
         )
         self.db.add(clue)
+        self.db.flush()
+
+        dirty_service = DirtyRecordService(self.db)
+        issues = dirty_service.analyze_clue(clue, work_order)
+        
+        if issues:
+            dirty_service.mark_dirty(clue.id, issues)
+            self._log_operation(
+                work_order.id, "clue_dirty",
+                None, len(issues),
+                operator,
+                f"检测到脏记录问题: {issues[0]['reason']}"
+            )
+
         self.db.commit()
         self.db.refresh(work_order)
         self.db.refresh(clue)

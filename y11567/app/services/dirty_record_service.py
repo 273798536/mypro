@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Tuple, Optional
 from sqlalchemy.orm import Session
 from collections import defaultdict
 
-from ..models import Clue, DirtyType, WorkOrder
+from ..models import Clue, DirtyType, WorkOrder, OperationLog
 from .location_matcher import normalize_location, locations_match
 
 
@@ -131,21 +131,45 @@ class DirtyRecordService:
         return True
 
     def correct_clue(self, clue_id: int, corrected_content: Dict[str, Any],
-                     notes: str, operator: str) -> Tuple[bool, str]:
+                     notes: str, operator: str) -> Tuple[bool, str, Dict[str, Any]]:
         clue = self.db.query(Clue).filter(Clue.id == clue_id).first()
         if not clue:
-            return False, "线索不存在"
+            return False, "线索不存在", {}
         
         if clue.original_content is None:
             clue.original_content = dict(clue.content)
         
+        old_content = dict(clue.content)
         clue.content = corrected_content
         clue.correction_notes = f"{notes} (由 {operator} 修正)"
         clue.is_validated = True
         clue.is_dirty = False
         
+        self.db.flush()
+        
+        aggregation = self.reaggregate_work_order(clue.work_order_id)
+        
+        work_order = self.db.query(WorkOrder).filter(WorkOrder.id == clue.work_order_id).first()
+        if work_order:
+            if aggregation.get("total_lamps"):
+                work_order.lamp_count = aggregation["total_lamps"]
+            if aggregation.get("total_amount"):
+                pass
+            
+            work_order.updated_at = datetime.now()
+        
+        log = OperationLog(
+            work_order_id=clue.work_order_id,
+            operation="correct_clue",
+            old_value={"clue_id": clue_id, "content": old_content},
+            new_value={"clue_id": clue_id, "content": corrected_content, "aggregation": aggregation},
+            operator=operator,
+            remarks=f"修正线索: {notes}"
+        )
+        self.db.add(log)
+        
         self.db.commit()
-        return True, "修正成功"
+        return True, "修正成功", aggregation
 
     def get_dirty_clues(self, dirty_type: DirtyType = None) -> List[Clue]:
         query = self.db.query(Clue).filter(Clue.is_dirty == True)

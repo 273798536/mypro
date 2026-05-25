@@ -279,12 +279,16 @@ def get_dirty_summary(db: Session = Depends(get_db)):
 @app.post("/dirty-clues/{clue_id}/correct", summary="修正脏记录")
 def correct_clue(clue_id: int, request: CorrectClueRequest, db: Session = Depends(get_db)):
     service = DirtyRecordService(db)
-    success, msg = service.correct_clue(
+    success, msg, aggregation = service.correct_clue(
         clue_id, request.corrected_content, request.notes, request.operator
     )
     if not success:
         raise HTTPException(status_code=404, detail=msg)
-    return {"success": True, "message": msg}
+    return {
+        "success": True, 
+        "message": msg,
+        "reaggregation": aggregation if aggregation else None
+    }
 
 
 @app.get("/stats/retry-categories", summary="重试分类统计")

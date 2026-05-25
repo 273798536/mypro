@@ -174,6 +174,93 @@ def test_export_service():
         traceback.print_exc()
         return False
 
+def test_dirty_record_detection():
+    print("\n测试脏记录自动检测...")
+    try:
+        from app.database import SessionLocal
+        from app.services.work_order_service import WorkOrderService
+        from app.services.dirty_record_service import DirtyRecordService
+        from app.models import SourceType
+        
+        db = SessionLocal()
+        service = WorkOrderService(db)
+        dirty_service = DirtyRecordService(db)
+        
+        wo, clue, is_new = service.submit_clue(
+            source_type=SourceType.HOTLINE,
+            content={"location": "脏记录测试路1号"},
+            operator="test"
+        )
+        
+        db.refresh(clue)
+        
+        assert clue.is_dirty == True, "缺少必填字段应该被标记为脏记录"
+        assert clue.dirty_type is not None, "脏记录类型应该被设置"
+        assert clue.original_content is not None, "原始内容应该被保留"
+        
+        print(f"  ✓ 脏记录自动检测成功")
+        print(f"    - 脏记录类型: {clue.dirty_type.value}")
+        print(f"    - 原因: {clue.dirty_reason}")
+        
+        db.close()
+        return True
+    except Exception as e:
+        print(f"  ✗ 脏记录检测测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def test_dirty_record_correction():
+    print("\n测试脏记录修正与重新汇总...")
+    try:
+        from app.database import SessionLocal
+        from app.services.work_order_service import WorkOrderService
+        from app.services.dirty_record_service import DirtyRecordService
+        from app.models import SourceType
+        
+        db = SessionLocal()
+        service = WorkOrderService(db)
+        dirty_service = DirtyRecordService(db)
+        
+        wo, clue, is_new = service.submit_clue(
+            source_type=SourceType.HOTLINE,
+            content={"location": "修正测试路2号"},
+            operator="test"
+        )
+        
+        db.refresh(clue)
+        assert clue.is_dirty == True
+        
+        corrected_content = {
+            "location": "修正测试路2号",
+            "phone": "13900139000",
+            "report_time": "2024-05-20T14:00:00",
+            "lamp_count": 3
+        }
+        
+        success, msg, aggregation = dirty_service.correct_clue(
+            clue.id, corrected_content, "补充缺失字段", "test"
+        )
+        
+        assert success == True
+        db.refresh(clue)
+        assert clue.is_dirty == False
+        assert clue.is_validated == True
+        assert clue.original_content is not None
+        
+        print(f"  ✓ 脏记录修正成功")
+        print(f"    - 原始内容已保留: {clue.original_content is not None}")
+        print(f"    - 已验证: {clue.is_validated}")
+        print(f"    - 重新汇总结果: 已验证线索={aggregation.get('validated_clues')}, 总灯数={aggregation.get('total_lamps')}")
+        
+        db.close()
+        return True
+    except Exception as e:
+        print(f"  ✗ 脏记录修正测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
 def main():
     print("=" * 60)
     print("城市照明抢修重试补偿队列 - 基础功能测试")
@@ -185,6 +272,8 @@ def main():
         test_work_order_service,
         test_clue_association,
         test_retry_flow,
+        test_dirty_record_detection,
+        test_dirty_record_correction,
         test_report_service,
         test_export_service,
     ]
