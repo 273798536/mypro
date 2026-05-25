@@ -161,6 +161,11 @@ class ImportService:
         cert_data: Dict[str, Any],
         operator: str,
     ) -> Tuple[CalibrationCertificate, str, bool]:
+        def parse_date(d):
+            if isinstance(d, str):
+                return datetime.strptime(d, "%Y-%m-%d").date()
+            return d
+        
         certificate_no = cert_data.get("certificate_no")
         if not certificate_no:
             certificate_no = f"CERT-{batch.batch_no}-{datetime.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}"
@@ -182,11 +187,18 @@ class ImportService:
                 before_data = {
                     "calibration_result": existing.calibration_result,
                     "is_valid": existing.is_valid,
+                    "expiry_date": str(existing.expiry_date),
+                    "is_expired": existing.is_expired,
                     "version": existing.version,
                 }
                 
                 existing.calibration_result = cert_data.get("calibration_result", existing.calibration_result)
                 existing.is_valid = cert_data.get("is_valid", existing.is_valid)
+                existing.calibration_agency = cert_data.get("calibration_agency", existing.calibration_agency)
+                existing.calibration_date = parse_date(cert_data.get("calibration_date", existing.calibration_date))
+                existing.effective_date = parse_date(cert_data.get("effective_date", existing.effective_date))
+                existing.expiry_date = parse_date(cert_data.get("expiry_date", existing.expiry_date))
+                existing.calibration_items = cert_data.get("calibration_items", existing.calibration_items)
                 existing.source_hash = source_hash
                 existing.version += 1
                 existing.updated_at = datetime.now()
@@ -218,11 +230,6 @@ class ImportService:
             department=batch.department,
         )
         
-        def parse_date(d):
-            if isinstance(d, str):
-                return datetime.strptime(d, "%Y-%m-%d").date()
-            return d
-        
         certificate = CalibrationCertificate(
             id=str(uuid.uuid4()),
             batch_id=batch.id,
@@ -243,8 +250,6 @@ class ImportService:
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
-        
-        certificate.is_expired = certificate.check_expired()
         
         self.db.add(certificate)
         self.db.flush()

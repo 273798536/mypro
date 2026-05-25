@@ -10,6 +10,7 @@ from app.models import (
     InspectionRecord,
     CalibrationCertificate,
     RepairQuote,
+    PriceAdjustment,
     StatusHistory,
     AuditLog,
 )
@@ -112,10 +113,32 @@ class ExportService:
                 "version": quote.version,
             })
         
+        adjustments = (
+            self.db.query(PriceAdjustment)
+            .filter(PriceAdjustment.batch_id == batch.id, PriceAdjustment.is_deleted == False)
+            .all()
+        )
+        
+        adjustment_details = []
+        for adj in adjustments:
+            adjustment_details.append({
+                "adjustment_no": adj.adjustment_no,
+                "device_code": adj.device_code,
+                "device_name": adj.device_name,
+                "original_price": adj.original_price,
+                "adjusted_price": adj.adjusted_price,
+                "price_difference": adj.price_difference,
+                "adjustment_reason": adj.adjustment_reason,
+                "effective_date": adj.effective_date.isoformat() if adj.effective_date else None,
+                "approval_status": adj.approval_status,
+                "version": adj.version,
+            })
+        
         return {
             "inspection_records": record_details,
             "calibration_certificates": cert_details,
             "repair_quotes": quote_details,
+            "price_adjustments": adjustment_details,
         }
     
     def generate_status_history(self, batch: Batch) -> List[Dict[str, Any]]:
@@ -182,6 +205,9 @@ class ExportService:
             
             if details["repair_quotes"]:
                 pd.DataFrame(details["repair_quotes"]).to_excel(writer, sheet_name="维修报价", index=False)
+            
+            if details["price_adjustments"]:
+                pd.DataFrame(details["price_adjustments"]).to_excel(writer, sheet_name="手工改价表", index=False)
             
             if history:
                 pd.DataFrame(history).to_excel(writer, sheet_name="状态流转", index=False)

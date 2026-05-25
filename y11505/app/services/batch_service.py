@@ -229,6 +229,7 @@ class BatchService:
         return device
     
     def update_batch_stats(self, batch: Batch) -> None:
+        self.db.refresh(batch)
         record_count = (
             self.db.query(InspectionRecord)
             .filter(InspectionRecord.batch_id == batch.id, InspectionRecord.is_deleted == False)
@@ -247,3 +248,4 @@ class BatchService:
         batch.abnormal_count = abnormal_count
         batch.updated_at = datetime.now()
         self.db.flush()
+        self.db.commit()
