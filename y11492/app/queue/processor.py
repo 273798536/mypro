@@ -19,7 +19,7 @@ class TaskProcessor:
         self._handlers[task_type] = handler
     
     def process_task(self, db: Session, task: TenderTask) -> bool:
-        if task.is_frozen:
+        if task.is_frozen or task.status == TaskStatus.FROZEN:
             return False
         
         old_status = task.status

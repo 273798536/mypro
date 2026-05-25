@@ -57,6 +57,7 @@ class TenderTask(Base):
     frozen_by = Column(String(64))
     frozen_time = Column(DateTime(timezone=True))
     frozen_reason = Column(String(512))
+    status_before_frozen = Column(Enum(TaskStatus))
     
     closed_by = Column(String(64))
     closed_time = Column(DateTime(timezone=True))

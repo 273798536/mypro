@@ -55,6 +55,8 @@ class QueueWorker:
             for task in pending_tasks:
                 if not self._running:
                     break
+                if task.status == TaskStatus.FROZEN or task.is_frozen:
+                    continue
                 self._processor.process_task(db, task)
                 
         finally:
@@ -73,6 +75,8 @@ class QueueWorker:
             for task in retry_tasks:
                 if not self._running:
                     break
+                if task.status == TaskStatus.FROZEN or task.is_frozen:
+                    continue
                 
                 from app.services.task_service import TaskService
                 TaskService._create_history(
@@ -101,6 +105,8 @@ class QueueWorker:
             for task in retrying_tasks:
                 if not self._running:
                     break
+                if task.status == TaskStatus.FROZEN or task.is_frozen:
+                    continue
                 self._processor.process_task(db, task)
                 
         finally:

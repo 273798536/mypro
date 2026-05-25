@@ -227,21 +227,27 @@ class TaskService:
         if not task:
             return None
         
-        if task.is_frozen:
+        if task.is_frozen or task.status == TaskStatus.FROZEN:
+            return None
+        
+        if task.status in [TaskStatus.SUCCESS, TaskStatus.CANCELLED, TaskStatus.CLOSED]:
             return None
         
         old_status = task.status
+        task.status_before_frozen = old_status
         task.is_frozen = True
+        task.status = TaskStatus.FROZEN
         task.frozen_by = request.operator
         task.frozen_time = datetime.now()
         task.frozen_reason = request.reason
         
         TaskService._create_history(
             db, task, "freeze",
-            {"reason": request.reason},
+            {"reason": request.reason, "status_before_frozen": old_status.value},
             request.operator,
             before_status=old_status,
-            after_status=TaskStatus.FROZEN
+            after_status=TaskStatus.FROZEN,
+            changed_fields=["status", "is_frozen"]
         )
         
         db.commit()
@@ -254,20 +260,22 @@ class TaskService:
         if not task:
             return None
         
-        if not task.is_frozen:
+        if not task.is_frozen and task.status != TaskStatus.FROZEN:
             return None
         
-        old_status = TaskStatus.FROZEN
+        old_status = task.status
         task.is_frozen = False
-        target_status = TaskStatus.PENDING
+        target_status = task.status_before_frozen or TaskStatus.PENDING
         task.status = target_status
+        task.status_before_frozen = None
         
         TaskService._create_history(
             db, task, "unfreeze",
-            {"remark": remark},
+            {"remark": remark, "restored_status": target_status.value},
             operator,
             before_status=old_status,
-            after_status=target_status
+            after_status=target_status,
+            changed_fields=["status", "is_frozen"]
         )
         
         db.commit()
@@ -347,13 +355,25 @@ class TaskService:
             ).scalar()
             status_counts[status.value] = count
         
-        today = datetime.now().date()
+        frozen_by_is_frozen = db.query(func.count(TenderTask.id)).filter(
+            TenderTask.is_frozen == True
+        ).scalar() or 0
+        
+        if status_counts.get("frozen", 0) < frozen_by_is_frozen:
+            status_counts["frozen"] = frozen_by_is_frozen
+        
+        now = datetime.now()
+        today_start = datetime(now.year, now.month, now.day)
+        tomorrow_start = datetime(now.year, now.month, now.day + 1)
+        
         today_submitted = db.query(func.count(TenderTask.id)).filter(
-            func.date(TenderTask.submit_time) == today
+            TenderTask.submit_time >= today_start,
+            TenderTask.submit_time < tomorrow_start
         ).scalar()
         
         today_completed = db.query(func.count(TenderTask.id)).filter(
-            func.date(TenderTask.last_process_time) == today,
+            TenderTask.last_process_time >= today_start,
+            TenderTask.last_process_time < tomorrow_start,
             TenderTask.status == TaskStatus.SUCCESS
         ).scalar()
         
@@ -368,16 +388,16 @@ class TaskService:
         ).scalar()
         
         return {
-            "total_tasks": total,
-            "pending_tasks": status_counts.get("pending", 0),
-            "processing_tasks": status_counts.get("processing", 0),
-            "success_tasks": status_counts.get("success", 0),
-            "failed_tasks": status_counts.get("failed", 0),
-            "retrying_tasks": status_counts.get("retrying", 0),
-            "dead_letter_tasks": status_counts.get("dead_letter", 0),
-            "manual_tasks": status_counts.get("manual", 0),
-            "frozen_tasks": status_counts.get("frozen", 0),
-            "closed_tasks": status_counts.get("closed", 0),
+            "total_tasks": total or 0,
+            "pending_tasks": status_counts.get("pending", 0) or 0,
+            "processing_tasks": status_counts.get("processing", 0) or 0,
+            "success_tasks": status_counts.get("success", 0) or 0,
+            "failed_tasks": status_counts.get("failed", 0) or 0,
+            "retrying_tasks": status_counts.get("retrying", 0) or 0,
+            "dead_letter_tasks": status_counts.get("dead_letter", 0) or 0,
+            "manual_tasks": status_counts.get("manual", 0) or 0,
+            "frozen_tasks": status_counts.get("frozen", 0) or 0,
+            "closed_tasks": status_counts.get("closed", 0) or 0,
             "today_submitted": today_submitted or 0,
             "today_completed": today_completed or 0,
             "recoverable_dead_letter": recoverable or 0,
