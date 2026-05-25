@@ -261,12 +261,24 @@ def reconcile(start_date, end_date, operator):
 @click.option("--task-type", type=click.Choice(['complaints', 'appointments', 'reviews', 'audit_logs', 'full_chain']), default="full_chain", help="导出类型")
 @click.option("--operator", default="cli_user", help="操作人")
 @click.option("--freeze", is_flag=True, help="导出前冻结数据")
-def export(task_type, operator, freeze):
+@click.option("--appointment-no", multiple=True, help="预约单号筛选（可多次使用）")
+@click.option("--start-time", help="开始时间筛选 (ISO格式，如 2024-01-01T00:00:00)")
+@click.option("--end-time", help="结束时间筛选 (ISO格式，如 2024-12-31T23:59:59)")
+def export(task_type, operator, freeze, appointment_no, start_time, end_time):
     """导出数据"""
+    filters = {}
+    if appointment_no:
+        filters["appointment_no"] = list(appointment_no)
+    if start_time:
+        filters["start_time"] = start_time
+    if end_time:
+        filters["end_time"] = end_time
+
     payload = {
         "task_type": task_type,
         "operator": operator,
         "freeze_before_export": freeze,
+        "filters": filters if filters else None,
     }
 
     try:
@@ -279,6 +291,8 @@ def export(task_type, operator, freeze):
         click.echo(f"文件名: {result.get('file_name', 'N/A')}")
         click.echo(f"记录数: {result['record_count']}")
         click.echo(f"是否冻结: {'是' if result['is_frozen'] else '否'}")
+        if result.get('filters_applied'):
+            click.echo(f"筛选条件: {json.dumps(result['filters_applied'], ensure_ascii=False)}")
 
     except requests.exceptions.RequestException as e:
         click.echo(f"请求失败: {e}", err=True)

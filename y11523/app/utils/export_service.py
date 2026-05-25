@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime
 import uuid
@@ -17,6 +17,76 @@ from app.models.schemas import (
 from app.utils.audit import AuditLogger
 
 
+def _apply_appointment_filters(query, filters: Dict[str, Any]):
+    if not filters:
+        return query
+    if filters.get("appointment_no"):
+        query = query.filter(Appointment.appointment_no.in_(filters["appointment_no"]))
+    if filters.get("start_time"):
+        query = query.filter(Appointment.created_at >= filters["start_time"])
+    if filters.get("end_time"):
+        query = query.filter(Appointment.created_at <= filters["end_time"])
+    return query
+
+
+def _apply_review_filters(query, filters: Dict[str, Any]):
+    if not filters:
+        return query
+    if filters.get("appointment_no"):
+        query = query.filter(UserReview.appointment_no.in_(filters["appointment_no"]))
+    if filters.get("start_time"):
+        query = query.filter(UserReview.created_at >= filters["start_time"])
+    if filters.get("end_time"):
+        query = query.filter(UserReview.created_at <= filters["end_time"])
+    return query
+
+
+def _apply_location_filters(query, filters: Dict[str, Any]):
+    if not filters:
+        return query
+    if filters.get("appointment_no"):
+        query = query.filter(TechnicianLocation.appointment_no.in_(filters["appointment_no"]))
+    if filters.get("start_time"):
+        query = query.filter(TechnicianLocation.created_at >= filters["start_time"])
+    if filters.get("end_time"):
+        query = query.filter(TechnicianLocation.created_at <= filters["end_time"])
+    return query
+
+
+def _apply_photo_filters(query, filters: Dict[str, Any]):
+    if not filters:
+        return query
+    if filters.get("appointment_no"):
+        query = query.filter(AbnormalPhoto.appointment_no.in_(filters["appointment_no"]))
+    if filters.get("start_time"):
+        query = query.filter(AbnormalPhoto.created_at >= filters["start_time"])
+    if filters.get("end_time"):
+        query = query.filter(AbnormalPhoto.created_at <= filters["end_time"])
+    return query
+
+
+def _apply_complaint_filters(query, filters: Dict[str, Any]):
+    if not filters:
+        return query
+    if filters.get("appointment_no"):
+        query = query.filter(Complaint.appointment_no.in_(filters["appointment_no"]))
+    if filters.get("start_time"):
+        query = query.filter(Complaint.created_at >= filters["start_time"])
+    if filters.get("end_time"):
+        query = query.filter(Complaint.created_at <= filters["end_time"])
+    return query
+
+
+def _apply_audit_filters(query, filters: Dict[str, Any]):
+    if not filters:
+        return query
+    if filters.get("start_time"):
+        query = query.filter(AuditLog.operation_time >= filters["start_time"])
+    if filters.get("end_time"):
+        query = query.filter(AuditLog.operation_time <= filters["end_time"])
+    return query
+
+
 class ExportService:
     def __init__(self, db: Session, audit_logger: AuditLogger):
         self.db = db
@@ -31,17 +101,16 @@ class ExportService:
         frozen_ids = []
         appointment_nos = []
 
-        if "appointment_no" in filters and filters["appointment_no"]:
+        if filters.get("appointment_no"):
             appointment_nos = filters["appointment_no"]
-        else:
-            if filters.get("start_time") or filters.get("end_time"):
-                query = self.db.query(Appointment)
-                if filters.get("start_time"):
-                    query = query.filter(Appointment.created_at >= filters["start_time"])
-                if filters.get("end_time"):
-                    query = query.filter(Appointment.created_at <= filters["end_time"])
-                appts = query.all()
-                appointment_nos = [a.appointment_no for a in appts]
+        elif filters.get("start_time") or filters.get("end_time"):
+            query = self.db.query(Appointment)
+            if filters.get("start_time"):
+                query = query.filter(Appointment.created_at >= filters["start_time"])
+            if filters.get("end_time"):
+                query = query.filter(Appointment.created_at <= filters["end_time"])
+            appts = query.all()
+            appointment_nos = [a.appointment_no for a in appts]
 
         if appointment_nos:
             appts = (
@@ -71,7 +140,9 @@ class ExportService:
     ) -> Dict[str, Any]:
         task_no = f"EXP{datetime.now().strftime('%Y%m%d%H%M%S')}{uuid.uuid4().hex[:4].upper()}"
 
-        if freeze_before_export and filters:
+        if freeze_before_export:
+            if not filters:
+                filters = {}
             self._freeze_records(filters, operator)
 
         task = ExportTask(
@@ -96,11 +167,12 @@ class ExportService:
                 "task_type": task_type,
                 "filters": filters,
                 "freeze_before_export": freeze_before_export,
+                "frozen_appointment_count": len(filters.get("appointment_no", [])) if filters else 0,
             },
         )
 
         try:
-            file_name, record_count = self._generate_export(task_type, filters, task_no)
+            file_name, record_count = self._generate_export(task_type, filters or {}, task_no)
 
             task.file_name = file_name
             task.file_path = os.path.join(self.export_dir, file_name)
@@ -124,6 +196,7 @@ class ExportService:
                 "record_count": record_count,
                 "is_frozen": freeze_before_export,
                 "created_at": task.created_at,
+                "filters_applied": filters or {},
             }
 
         except Exception as e:
@@ -150,29 +223,24 @@ class ExportService:
 
     def _export_complaints(self, filters: Dict[str, Any], task_no: str) -> tuple:
         query = self.db.query(Complaint)
-        if filters and "start_time" in filters:
-            query = query.filter(Complaint.created_at >= filters["start_time"])
-        if filters and "end_time" in filters:
-            query = query.filter(Complaint.created_at <= filters["end_time"])
+        query = _apply_complaint_filters(query, filters)
 
         complaints = query.all()
         data = []
         for c in complaints:
-            data.append(
-                {
-                    "投诉单号": c.complaint_no,
-                    "预约单号": c.appointment_no,
-                    "投诉类型": c.complaint_type,
-                    "投诉原因": c.complaint_reason,
-                    "状态": c.status,
-                    "是否合并": "是" if c.is_merged else "否",
-                    "合并预约单": ",".join(c.merged_from or []),
-                    "处理人": c.handled_by,
-                    "处理时间": c.handled_at,
-                    "处理结果": c.handle_result,
-                    "创建时间": c.created_at,
-                }
-            )
+            data.append({
+                "投诉单号": c.complaint_no,
+                "预约单号": c.appointment_no,
+                "投诉类型": c.complaint_type,
+                "投诉原因": c.complaint_reason,
+                "状态": c.status,
+                "是否合并": "是" if c.is_merged else "否",
+                "合并预约单": ",".join(c.merged_from or []),
+                "处理人": c.handled_by,
+                "处理时间": c.handled_at,
+                "处理结果": c.handle_result,
+                "创建时间": c.created_at,
+            })
 
         df = pd.DataFrame(data)
         file_name = f"{task_no}_投诉单.xlsx"
@@ -181,38 +249,33 @@ class ExportService:
 
     def _export_appointments(self, filters: Dict[str, Any], task_no: str) -> tuple:
         query = self.db.query(Appointment)
-        if filters and "start_time" in filters:
-            query = query.filter(Appointment.created_at >= filters["start_time"])
-        if filters and "end_time" in filters:
-            query = query.filter(Appointment.created_at <= filters["end_time"])
+        query = _apply_appointment_filters(query, filters)
 
         appts = query.all()
         data = []
         for a in appts:
-            data.append(
-                {
-                    "预约单号": a.appointment_no,
-                    "订单号": a.order_no,
-                    "用户姓名": a.user_name,
-                    "用户电话": a.user_phone,
-                    "地址": a.address,
-                    "家电类型": a.appliance_type,
-                    "家电型号": a.appliance_model,
-                    "服务类型": a.service_type,
-                    "预约时间": a.scheduled_time,
-                    "实际时间": a.actual_time,
-                    "师傅ID": a.technician_id,
-                    "师傅姓名": a.technician_name,
-                    "状态": a.status,
-                    "是否改约": "是" if a.is_rescheduled else "否",
-                    "原预约单号": a.original_appointment_no,
-                    "是否二次上门": "是" if a.is_second_visit else "否",
-                    "父预约单号": a.parent_appointment_no,
-                    "是否撤回": "是" if a.is_withdrawn else "否",
-                    "撤回时间": a.withdrawn_at,
-                    "创建时间": a.created_at,
-                }
-            )
+            data.append({
+                "预约单号": a.appointment_no,
+                "订单号": a.order_no,
+                "用户姓名": a.user_name,
+                "用户电话": a.user_phone,
+                "地址": a.address,
+                "家电类型": a.appliance_type,
+                "家电型号": a.appliance_model,
+                "服务类型": a.service_type,
+                "预约时间": a.scheduled_time,
+                "实际时间": a.actual_time,
+                "师傅ID": a.technician_id,
+                "师傅姓名": a.technician_name,
+                "状态": a.status,
+                "是否改约": "是" if a.is_rescheduled else "否",
+                "原预约单号": a.original_appointment_no,
+                "是否二次上门": "是" if a.is_second_visit else "否",
+                "父预约单号": a.parent_appointment_no,
+                "是否撤回": "是" if a.is_withdrawn else "否",
+                "撤回时间": a.withdrawn_at,
+                "创建时间": a.created_at,
+            })
 
         df = pd.DataFrame(data)
         file_name = f"{task_no}_预约单.xlsx"
@@ -221,32 +284,27 @@ class ExportService:
 
     def _export_reviews(self, filters: Dict[str, Any], task_no: str) -> tuple:
         query = self.db.query(UserReview)
-        if filters and "start_time" in filters:
-            query = query.filter(UserReview.created_at >= filters["start_time"])
-        if filters and "end_time" in filters:
-            query = query.filter(UserReview.created_at <= filters["end_time"])
+        query = _apply_review_filters(query, filters)
 
         reviews = query.all()
         data = []
         for r in reviews:
-            data.append(
-                {
-                    "评价单号": r.review_no,
-                    "预约单号": r.appointment_no,
-                    "评分": r.rating,
-                    "是否差评": "是" if r.is_negative else "否",
-                    "差评原因": r.negative_reason,
-                    "差评详情": r.negative_reason_detail,
-                    "评价内容": r.review_content,
-                    "评价人": r.reviewer_name,
-                    "评价时间": r.review_time,
-                    "是否人工调整": "是" if r.manually_adjusted else "否",
-                    "调整人": r.adjusted_by,
-                    "调整时间": r.adjusted_at,
-                    "调整原因": r.adjustment_reason,
-                    "创建时间": r.created_at,
-                }
-            )
+            data.append({
+                "评价单号": r.review_no,
+                "预约单号": r.appointment_no,
+                "评分": r.rating,
+                "是否差评": "是" if r.is_negative else "否",
+                "差评原因": r.negative_reason,
+                "差评详情": r.negative_reason_detail,
+                "评价内容": r.review_content,
+                "评价人": r.reviewer_name,
+                "评价时间": r.review_time,
+                "是否人工调整": "是" if r.manually_adjusted else "否",
+                "调整人": r.adjusted_by,
+                "调整时间": r.adjusted_at,
+                "调整原因": r.adjustment_reason,
+                "创建时间": r.created_at,
+            })
 
         df = pd.DataFrame(data)
         file_name = f"{task_no}_用户评价.xlsx"
@@ -255,25 +313,20 @@ class ExportService:
 
     def _export_audit_logs(self, filters: Dict[str, Any], task_no: str) -> tuple:
         query = self.db.query(AuditLog).order_by(AuditLog.operation_time.desc())
-        if filters and "start_time" in filters:
-            query = query.filter(AuditLog.operation_time >= filters["start_time"])
-        if filters and "end_time" in filters:
-            query = query.filter(AuditLog.operation_time <= filters["end_time"])
+        query = _apply_audit_filters(query, filters)
 
         logs = query.all()
         data = []
         for log in logs:
-            data.append(
-                {
-                    "操作类型": log.operation_type,
-                    "实体类型": log.entity_type,
-                    "实体ID": log.entity_id,
-                    "操作人": log.operator,
-                    "操作时间": log.operation_time,
-                    "变更原因": log.change_reason,
-                    "IP地址": log.ip_address,
-                }
-            )
+            data.append({
+                "操作类型": log.operation_type,
+                "实体类型": log.entity_type,
+                "实体ID": log.entity_id,
+                "操作人": log.operator,
+                "操作时间": log.operation_time,
+                "变更原因": log.change_reason,
+                "IP地址": log.ip_address,
+            })
 
         df = pd.DataFrame(data)
         file_name = f"{task_no}_操作日志.xlsx"
@@ -297,88 +350,92 @@ class ExportService:
 
     def _export_complaints_to_sheet(self, writer, filters):
         query = self.db.query(Complaint)
+        query = _apply_complaint_filters(query, filters)
         complaints = query.all()
-        data = [
-            {
-                "投诉单号": c.complaint_no,
-                "预约单号": c.appointment_no,
-                "投诉类型": c.complaint_type,
-                "投诉原因": c.complaint_reason,
-                "状态": c.status,
-                "是否合并": "是" if c.is_merged else "否",
-                "创建时间": c.created_at,
-            }
-            for c in complaints
-        ]
+
+        data = [{
+            "投诉单号": c.complaint_no,
+            "预约单号": c.appointment_no,
+            "投诉类型": c.complaint_type,
+            "投诉原因": c.complaint_reason,
+            "状态": c.status,
+            "是否合并": "是" if c.is_merged else "否",
+            "创建时间": c.created_at,
+        } for c in complaints]
+
         df = pd.DataFrame(data)
         df.to_excel(writer, sheet_name="投诉单", index=False)
         return None, len(data)
 
     def _export_appointments_to_sheet(self, writer, filters):
-        appts = self.db.query(Appointment).all()
-        data = [
-            {
-                "预约单号": a.appointment_no,
-                "用户姓名": a.user_name,
-                "家电类型": a.appliance_type,
-                "服务类型": a.service_type,
-                "师傅姓名": a.technician_name,
-                "是否改约": "是" if a.is_rescheduled else "否",
-                "是否二次上门": "是" if a.is_second_visit else "否",
-            }
-            for a in appts
-        ]
+        query = self.db.query(Appointment)
+        query = _apply_appointment_filters(query, filters)
+        appts = query.all()
+
+        data = [{
+            "预约单号": a.appointment_no,
+            "用户姓名": a.user_name,
+            "家电类型": a.appliance_type,
+            "服务类型": a.service_type,
+            "师傅姓名": a.technician_name,
+            "是否改约": "是" if a.is_rescheduled else "否",
+            "是否二次上门": "是" if a.is_second_visit else "否",
+        } for a in appts]
+
         df = pd.DataFrame(data)
         df.to_excel(writer, sheet_name="预约单", index=False)
         return None, len(data)
 
     def _export_reviews_to_sheet(self, writer, filters):
-        reviews = self.db.query(UserReview).all()
-        data = [
-            {
-                "评价单号": r.review_no,
-                "预约单号": r.appointment_no,
-                "评分": r.rating,
-                "是否差评": "是" if r.is_negative else "否",
-                "差评原因": r.negative_reason,
-                "评价时间": r.review_time,
-            }
-            for r in reviews
-        ]
+        query = self.db.query(UserReview)
+        query = _apply_review_filters(query, filters)
+        reviews = query.all()
+
+        data = [{
+            "评价单号": r.review_no,
+            "预约单号": r.appointment_no,
+            "评分": r.rating,
+            "是否差评": "是" if r.is_negative else "否",
+            "差评原因": r.negative_reason,
+            "评价时间": r.review_time,
+        } for r in reviews]
+
         df = pd.DataFrame(data)
         df.to_excel(writer, sheet_name="用户评价", index=False)
         return None, len(data)
 
     def _export_locations_to_sheet(self, writer, filters):
-        locations = self.db.query(TechnicianLocation).all()
-        data = [
-            {
-                "预约单号": l.appointment_no,
-                "师傅ID": l.technician_id,
-                "纬度": l.latitude,
-                "经度": l.longitude,
-                "定位时间": l.location_time,
-                "定位类型": l.location_type,
-            }
-            for l in locations
-        ]
+        query = self.db.query(TechnicianLocation)
+        query = _apply_location_filters(query, filters)
+        locations = query.all()
+
+        data = [{
+            "预约单号": l.appointment_no,
+            "师傅ID": l.technician_id,
+            "纬度": l.latitude,
+            "经度": l.longitude,
+            "定位时间": l.location_time,
+            "定位类型": l.location_type,
+        } for l in locations]
+
         df = pd.DataFrame(data)
         df.to_excel(writer, sheet_name="师傅定位", index=False)
         return None, len(data)
 
     def _export_photos_to_sheet(self, writer, filters):
-        photos = self.db.query(AbnormalPhoto).all()
-        data = [
-            {
-                "照片单号": p.photo_no,
-                "预约单号": p.appointment_no,
-                "照片类型": p.photo_type,
-                "是否异常": "是" if p.is_abnormal else "否",
-                "描述": p.description,
-                "上传时间": p.upload_time,
-            }
-            for p in photos
-        ]
+        query = self.db.query(AbnormalPhoto)
+        query = _apply_photo_filters(query, filters)
+        photos = query.all()
+
+        data = [{
+            "照片单号": p.photo_no,
+            "预约单号": p.appointment_no,
+            "照片类型": p.photo_type,
+            "是否异常": "是" if p.is_abnormal else "否",
+            "描述": p.description,
+            "上传时间": p.upload_time,
+        } for p in photos]
+
         df = pd.DataFrame(data)
         df.to_excel(writer, sheet_name="异常照片", index=False)
         return None, len(data)
@@ -445,24 +502,20 @@ class ReconciliationService:
                 negative_with_evidence += 1
             else:
                 negative_without_evidence += 1
-                issues.append(
-                    {
-                        "type": "差评缺少证据",
-                        "review_no": review.review_no,
-                        "appointment_no": review.appointment_no,
-                        "description": f"差评{review.review_no}没有对应的异常照片证据",
-                    }
-                )
+                issues.append({
+                    "type": "差评缺少证据",
+                    "review_no": review.review_no,
+                    "appointment_no": review.appointment_no,
+                    "description": f"差评{review.review_no}没有对应的异常照片证据",
+                })
 
         for complaint in unmerged_complaints:
-            issues.append(
-                {
-                    "type": "投诉单未合并",
-                    "complaint_no": complaint.complaint_no,
-                    "appointment_no": complaint.appointment_no,
-                    "description": f"投诉单{complaint.complaint_no}未进行链路合并",
-                }
-            )
+            issues.append({
+                "type": "投诉单未合并",
+                "complaint_no": complaint.complaint_no,
+                "appointment_no": complaint.appointment_no,
+                "description": f"投诉单{complaint.complaint_no}未进行链路合并",
+            })
 
         for appt in appts:
             if appt.is_rescheduled or appt.is_second_visit:
@@ -471,19 +524,15 @@ class ReconciliationService:
                 )
                 if has_complaint:
                     complaint = next(
-                        c
-                        for c in complaints
-                        if c.appointment_no == appt.appointment_no
+                        c for c in complaints if c.appointment_no == appt.appointment_no
                     )
                     if not complaint.is_merged:
-                        issues.append(
-                            {
-                                "type": "改约/二次上门投诉未合并",
-                                "complaint_no": complaint.complaint_no,
-                                "appointment_no": appt.appointment_no,
-                                "description": f"预约单{appt.appointment_no}存在改约/二次上门，但投诉单未合并",
-                            }
-                        )
+                        issues.append({
+                            "type": "改约/二次上门投诉未合并",
+                            "complaint_no": complaint.complaint_no,
+                            "appointment_no": appt.appointment_no,
+                            "description": f"预约单{appt.appointment_no}存在改约/二次上门，但投诉单未合并",
+                        })
 
         return {
             "total_appointments": len(appts),

@@ -250,6 +250,7 @@ class ExportResponse(BaseModel):
     record_count: int
     is_frozen: bool
     created_at: datetime
+    filters_applied: Optional[Dict[str, Any]] = None
 
 
 class ReconciliationRequest(BaseModel):
