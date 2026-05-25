@@ -1,0 +1,47 @@
+data_sources:
+  dispatch_order:
+    date_format: '%Y-%m-%d'
+    encoding: utf-8
+    required_columns:
+    - order_no
+    - repair_date
+    - site
+    - material_list
+    - quantity
+  scan_detail:
+    date_format: '%Y-%m-%d %H:%M:%S'
+    encoding: utf-8
+    required_columns:
+    - order_no
+    - material_code
+    - material_name
+    - quantity
+    - scan_time
+    - operator
+  site_photo:
+    date_format: '%Y-%m-%d %H:%M:%S'
+    encoding: utf-8
+    required_columns:
+    - order_no
+    - photo_sequence
+    - photo_path
+    - shoot_time
+    - description
+  valve_inventory:
+    date_format: '%Y-%m-%d'
+    encoding: utf-8
+    required_columns:
+    - valve_code
+    - valve_name
+    - inventory_date
+    - quantity
+    - unit
+reporting:
+  highlight_thresholds:
+    mismatch_rate: 0.1
+    missing_photo: 0
+    negative_inventory: -1
+validation:
+  allow_negative_inventory: false
+  max_quantity: 10000
+  quantity_precision: 2

@@ -548,8 +548,8 @@ def user_add(ctx, username, role, name, operator):
     ctx.init_config()
     
     auth = AuthManager(ctx.config)
-    if not auth.check_permission(operator, 'manual_judge'):
-        click.echo(f"✗ 权限不足: {operator}", err=True)
+    if not auth.check_admin_role(operator):
+        click.echo(f"✗ 权限不足: {operator} 不是admin角色，无法管理用户", err=True)
         sys.exit(1)
     
     if auth.add_user(username, role, name):
@@ -571,8 +571,8 @@ def user_remove(ctx, username, operator):
     ctx.init_config()
     
     auth = AuthManager(ctx.config)
-    if not auth.check_permission(operator, 'manual_judge'):
-        click.echo(f"✗ 权限不足: {operator}", err=True)
+    if not auth.check_admin_role(operator):
+        click.echo(f"✗ 权限不足: {operator} 不是admin角色，无法管理用户", err=True)
         sys.exit(1)
     
     if auth.remove_user(username):

@@ -1,0 +1,2 @@
+[2026-05-26T00:15:08.778521] user=admin op=user_add target=reviewer1 details=role=reviewer
+[2026-05-26T00:15:23.482944] user=reviewer1 op=manual_judge target=dispatch_order_07423c21b61f4bb3 details=有效

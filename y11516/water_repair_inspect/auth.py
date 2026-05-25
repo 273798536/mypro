@@ -15,7 +15,7 @@ DEFAULT_ROLES = {
         'description': '巡检员'
     },
     'reviewer': {
-        'permissions': ['import', 'check', 'view', 'manual_judge', 'fix', 'withdraw'],
+        'permissions': ['import', 'check', 'view', 'manual_judge', 'fix', 'withdraw', 'dlq_manage'],
         'description': '审核员'
     },
     'operator': {
@@ -78,6 +78,10 @@ class AuthManager:
         
         permissions = self.get_role_permissions(role)
         return '*' in permissions or permission in permissions
+
+    def check_admin_role(self, username: str) -> bool:
+        role = self.get_user_role(username)
+        return role == 'admin'
 
     def add_user(self, username: str, role: str, name: str = None) -> bool:
         auth_data = self._load_auth_data()
