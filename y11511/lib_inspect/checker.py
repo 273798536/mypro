@@ -204,6 +204,10 @@ def check_records(store: DataStore, records: List[LoanRecord],
                 record.overdue_fee + record.damage_fee
             if abs(calculated - record.total_fee) > 0.01:
                 record.total_fee = calculated
+                # 自动修复后重新检查费用校验
+                fee_check_result = check_fees(record)
+                if fee_check_result['passed']:
+                    record.issues = [i for i in record.issues if not i.startswith('费用校验:')]
 
         has_fatal_issues = any('真正重复' in issue or '必填字段' in issue or '日期逻辑' in issue or '费用校验' in issue for issue in record.issues)
         has_merge_issues = any('多源补传' in issue for issue in record.issues)

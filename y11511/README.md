@@ -40,13 +40,17 @@ lib-inspect <command> [options]
 
 ## 快速开始
 
-### 1. 初始化工作区
+### 运行方式
+
+### 1. 初始化
 
 ```bash
 python3 -m lib_inspect.cli init
 ```
 
 ### 2. 导入数据
+
+支持四种数据源，支持分批次补传：
 
 ```bash
 # 导入借阅申请
@@ -62,7 +66,16 @@ python3 -m lib_inspect.cli import examples/读者赔偿记录.csv --source 读�
 python3 -m lib_inspect.cli import examples/客服备注.csv --source 客服备注 --operator 张老师
 ```
 
-### 3. 合并多源记录
+### 3. 查看记录（获取记录ID）
+
+```bash
+# 列出所有记录，显示完整ID
+python3 -m lib_inspect.cli list
+```
+
+**短 ID 使用**：所有需要记录 ID 的命令（`merge`、`fix`、`detail`、`history`、`check --record-id`）都支持使用记录 ID 的前 8 位。例如记录 ID 为 `b43753c9-e3ea-43f4-abad-326f1d7c01e8`，可以使用 `b43753c9` 进行操作。
+
+### 4. 合并多源记录
 
 当同一借阅事项有多个来源的数据（借阅申请、快递单、客服备注）时，需要合并为同一事实源：
 
@@ -81,7 +94,7 @@ python3 -m lib_inspect.cli merge <主记录ID> --merge-ids <记录ID1> --merge-i
 - 合并后状态为"已合并"
 - 其他记录会被删除
 
-### 4. 数据校验
+### 5. 数据校验
 
 ```bash
 # 校验所有记录
@@ -94,26 +107,15 @@ python3 -m lib_inspect.cli check --fix-auto
 python3 -m lib_inspect.cli check --record-id <记录ID>
 ```
 
-### 4. 查看记录
+**自动修复**：`--fix-auto` 会自动修正费用计算错误，修复后重新校验，问题已解决的记录不再标记为校验失败。
 
-```bash
-# 列出所有记录
-python3 -m lib_inspect.cli list
-
-# 按状态筛选
-python3 -m lib_inspect.cli list --status 校验失败
-
-# 按来源筛选
-python3 -m lib_inspect.cli list --source 借阅申请
-```
-
-### 5. 查看记录详情
+### 6. 查看记录详情
 
 ```bash
 python3 -m lib_inspect.cli detail <记录ID>
 ```
 
-### 6. 修正记录
+### 7. 修正记录
 
 ```bash
 # 修改字段（必须提供操作人和原因）
@@ -123,7 +125,7 @@ python3 -m lib_inspect.cli fix <记录ID> --field overdue_fee --value 15.0 --ope
 python3 -m lib_inspect.cli fix <记录ID> --field due_date --value 2024-03-15 --operator 王老师 --reason "续借一个月"
 ```
 
-### 7. 重新计算费用
+### 8. 重新计算费用
 
 当逾期、污损和续借叠在一起导致费用算不明白时：
 
@@ -143,8 +145,9 @@ python3 -m lib_inspect.cli recalc --operator 王老师 --reason "费用重新汇
 - 根据实际归还日期（或当前日期）计算逾期天数
 - 自动识别客服备注中的污损标记
 - 重新汇总快递费、赔偿费、逾期费、污损费
+- **重要**：只会更新状态为"校验通过"、"已修正"、"已重算"、"已合并"、"已导出"的记录，校验失败或待合并的记录状态保持不变
 
-### 8. 查看报表
+### 9. 查看报表
 
 ```bash
 # 汇总报表
@@ -157,7 +160,7 @@ python3 -m lib_inspect.cli report --show-failed
 python3 -m lib_inspect.cli report --show-duplicates
 ```
 
-### 9. 查看变更历史
+### 10. 查看变更历史
 
 ```bash
 # 所有变更历史
@@ -167,7 +170,7 @@ python3 -m lib_inspect.cli history
 python3 -m lib_inspect.cli history --record-id <记录ID>
 ```
 
-### 10. 导出数据
+### 11. 导出数据
 
 ```bash
 # 导出为 Excel（默认）

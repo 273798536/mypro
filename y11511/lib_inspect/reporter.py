@@ -104,9 +104,13 @@ def export_data(store: DataStore, output_path: Path, fmt: str,
             df.to_excel(writer, sheet_name='有效数据', index=False)
 
             failed_records = store.get_all_records(status=RecordStatus.CHECK_FAILED)
-            if failed_records:
+            pending_records = store.get_all_records(status=RecordStatus.IMPORTED)
+            all_issue_records = failed_records + pending_records
+            
+            if all_issue_records:
                 failed_data = []
-                for record in failed_records:
+                for record in all_issue_records:
+                    issue_type = '校验失败' if record.status == RecordStatus.CHECK_FAILED else '待合并'
                     failed_data.append({
                         '记录ID': record.id,
                         '原始行号': record.original_row,
@@ -115,6 +119,7 @@ def export_data(store: DataStore, output_path: Path, fmt: str,
                         '书名': record.book_title,
                         '借阅人': record.borrower_name,
                         '借阅人ID': record.borrower_id,
+                        '当前状态': issue_type,
                         '问题原因': '; '.join(record.issues),
                         '客服备注': record.customer_notes,
                     })

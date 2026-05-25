@@ -186,6 +186,16 @@ class DataStore:
             row = conn.execute("SELECT * FROM loan_records WHERE id = ?", (record_id,)).fetchone()
             return self._row_to_record(dict(row)) if row else None
 
+    def find_record_by_short_id(self, short_id: str) -> Optional[LoanRecord]:
+        with self._get_conn() as conn:
+            rows = conn.execute("SELECT * FROM loan_records WHERE id LIKE ?", (short_id + '%',)).fetchall()
+            if len(rows) == 1:
+                return self._row_to_record(dict(rows[0]))
+            elif len(rows) > 1:
+                raise ValueError(f"找到多条匹配记录: {len(rows)} 条，请使用更完整的 ID")
+            else:
+                return None
+
     def _row_to_record(self, row: Dict[str, Any]) -> LoanRecord:
         return LoanRecord(
             id=row['id'],

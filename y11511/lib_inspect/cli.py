@@ -28,6 +28,20 @@ def get_store() -> DataStore:
     return DataStore(DB_PATH)
 
 
+def resolve_record_id(store: DataStore, record_id: str):
+    try:
+        record = store.find_record_by_short_id(record_id)
+    except ValueError as e:
+        console.print(f"[red]{str(e)}[/red]")
+        raise click.Abort()
+    if not record:
+        record = store.get_record(record_id)
+    if not record:
+        console.print("[red]未找到指定记录[/red]")
+        raise click.Abort()
+    return record
+
+
 @click.group()
 @click.version_option(version="1.0.0")
 def cli():
@@ -106,10 +120,8 @@ def check_cmd(record_id, fix_auto, operator):
     store = get_store()
 
     if record_id:
-        records = [store.get_record(record_id)]
-        if not records[0]:
-            console.print("[red]未找到指定记录[/red]")
-            raise click.Abort()
+        record = resolve_record_id(store, record_id)
+        records = [record]
     else:
         records = store.get_all_records()
 
@@ -156,20 +168,16 @@ def check_cmd(record_id, fix_auto, operator):
 def fix(record_id, field, value, operator, reason):
     """修正单条记录"""
     store = get_store()
-    record = store.get_record(record_id)
-
-    if not record:
-        console.print("[red]未找到指定记录[/red]")
-        raise click.Abort()
+    record = resolve_record_id(store, record_id)
 
     old_value = str(getattr(record, field, ''))
     try:
         updated_record = fixer.update_field(record, field, value)
         store.update_record(updated_record, operator, reason)
-        logger.log_fix(record_id, field, old_value, value, operator, reason)
+        logger.log_fix(record.id, field, old_value, value, operator, reason)
         console.print(Panel.fit(
             f"[green]记录已更新[/green]\n"
-            f"记录ID: {record_id}\n"
+            f"记录ID: {record.id[:8]}...\n"
             f"字段: {field}\n"
             f"旧值: {old_value}\n"
             f"新值: {value}\n"
@@ -178,7 +186,7 @@ def fix(record_id, field, value, operator, reason):
             title="修正完成"
         ))
     except Exception as e:
-        logger.log_fix_error(record_id, str(e), operator)
+        logger.log_fix_error(record.id, str(e), operator)
         console.print(f"[red]修正失败: {str(e)}[/red]")
         raise click.Abort()
 
@@ -191,14 +199,14 @@ def fix(record_id, field, value, operator, reason):
 def merge(primary_id, merge_ids, operator, auto):
     """合并多源记录为同一事实源"""
     store = get_store()
-    primary = store.get_record(primary_id)
-
-    if not primary:
-        console.print("[red]未找到主记录[/red]")
-        raise click.Abort()
+    primary = resolve_record_id(store, primary_id)
 
     try:
-        ids_to_merge = list(merge_ids)
+        ids_to_merge = []
+        for mid in merge_ids:
+            mrec = resolve_record_id(store, mid)
+            ids_to_merge.append(mrec.id)
+            
         if auto:
             all_records = store.get_all_records()
             for other in all_records:
@@ -236,10 +244,10 @@ def merge(primary_id, merge_ids, operator, auto):
         for rid in ids_to_merge:
             store.delete_record(rid)
 
-        logger.log_merge(primary_id, ids_to_merge, operator)
+        logger.log_merge(primary.id, ids_to_merge, operator)
         console.print(Panel.fit(
             f"[green]合并成功[/green]\n"
-            f"主记录ID: {primary_id[:8]}...\n"
+            f"主记录ID: {primary.id[:8]}...\n"
             f"合并记录数: {len(records_to_merge)}\n"
             f"合并后状态: 已合并\n"
             f"操作人: {operator}",
@@ -351,8 +359,12 @@ def report(show_failed, show_duplicates, operator):
 def history(record_id, limit, operator):
     """查看变更历史"""
     store = get_store()
-    logger.log_view("变更历史", record_id, operator=operator)
-    changes = store.get_change_history(record_id)[:limit]
+    resolved_id = None
+    if record_id:
+        record = resolve_record_id(store, record_id)
+        resolved_id = record.id
+    logger.log_view("变更历史", resolved_id, operator=operator)
+    changes = store.get_change_history(resolved_id)[:limit]
 
     if not changes:
         console.print("[yellow]未找到变更历史[/yellow]")
@@ -387,14 +399,10 @@ def history(record_id, limit, operator):
 def detail(record_id, operator):
     """查看记录详情"""
     store = get_store()
-    logger.log_view("详情", record_id, operator=operator)
-    record = store.get_record(record_id)
+    record = resolve_record_id(store, record_id)
+    logger.log_view("详情", record.id, operator=operator)
 
-    if not record:
-        console.print("[red]未找到指定记录[/red]")
-        raise click.Abort()
-
-    tree = Tree(f"[bold blue]记录详情[/bold blue] (ID: {record_id})")
+    tree = Tree(f"[bold blue]记录详情[/bold blue] (ID: {record.id})")
 
     basic = tree.add("[bold]基本信息[/bold]")
     basic.add(f"来源: {record.source.value}")
@@ -497,7 +505,7 @@ def list(status, source, operator):
 
     for record in records:
         table.add_row(
-            record.id[:8] + "...",
+            record.id,
             str(record.original_row),
             record.book_title[:15],
             record.borrower_name,
@@ -507,6 +515,7 @@ def list(status, source, operator):
         )
 
     console.print(table)
+    console.print(f"\n[dim]提示: 可使用记录ID的前8位（如 {records[0].id[:8]}）进行操作[/dim]")
 
 
 if __name__ == "__main__":
