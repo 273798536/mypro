@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from app.models import (
     SourceEvidence, MaintenanceOrder, SparePartScan, CustomerReceipt,
+    SupplierStatement, ApprovalEmail,
     CompensationQueue, CompensationRecord, AuditLog, AsyncTask,
     SourceType, QueueStatus, TaskStatus
 )
@@ -212,6 +213,141 @@ def import_customer_receipts(
     return success_count, failed_count, errors
 
 
+def import_supplier_statements(
+    db: Session,
+    statements_data: List[Dict[str, Any]],
+    source_file: str = "manual_upload"
+) -> Tuple[int, int, List[str]]:
+    success_count = 0
+    failed_count = 0
+    errors = []
+
+    for idx, data in enumerate(statements_data, start=1):
+        try:
+            statement_date = data.get("statement_date")
+            if isinstance(statement_date, str):
+                statement_date = datetime.fromisoformat(statement_date.replace("Z", "+00:00"))
+
+            parsed_data = {
+                "statement_no": str(data.get("statement_no", "")),
+                "supplier_name": str(data.get("supplier_name", "")),
+                "order_no": str(data.get("order_no", "")),
+                "part_code": str(data.get("part_code", "")),
+                "quantity": int(data.get("quantity", 0)),
+                "unit_price": float(data.get("unit_price", 0)),
+                "total_amount": float(data.get("total_amount", 0)),
+                "statement_date": statement_date
+            }
+
+            evidence = create_source_evidence(
+                db, source_file, idx, SourceType.SUPPLIER_STATEMENT,
+                data, parsed_data
+            )
+
+            existing = db.query(SupplierStatement).filter(
+                SupplierStatement.statement_no == parsed_data["statement_no"]
+            ).first()
+
+            if existing:
+                existing.supplier_name = parsed_data["supplier_name"]
+                existing.order_no = parsed_data["order_no"]
+                existing.part_code = parsed_data["part_code"]
+                existing.quantity = parsed_data["quantity"]
+                existing.unit_price = parsed_data["unit_price"]
+                existing.total_amount = parsed_data["total_amount"]
+                existing.statement_date = parsed_data["statement_date"]
+                existing.source_evidence_id = evidence.id
+            else:
+                statement = SupplierStatement(
+                    **parsed_data,
+                    source_evidence_id=evidence.id
+                )
+                db.add(statement)
+
+            success_count += 1
+        except Exception as e:
+            failed_count += 1
+            errors.append(f"Line {idx}: {str(e)}")
+
+    db.commit()
+    return success_count, failed_count, errors
+
+
+def import_approval_emails(
+    db: Session,
+    emails_data: List[Dict[str, Any]],
+    source_file: str = "manual_upload"
+) -> Tuple[int, int, List[str]]:
+    success_count = 0
+    failed_count = 0
+    errors = []
+
+    for idx, data in enumerate(emails_data, start=1):
+        try:
+            sent_at = data.get("sent_at")
+            if isinstance(sent_at, str):
+                sent_at = datetime.fromisoformat(sent_at.replace("Z", "+00:00"))
+
+            parsed_data = {
+                "email_id": str(data.get("email_id", "")),
+                "subject": str(data.get("subject", "")),
+                "sender": str(data.get("sender", "")),
+                "recipient": str(data.get("recipient", "")),
+                "order_no": str(data.get("order_no", "")),
+                "approval_status": str(data.get("approval_status", "pending")),
+                "approval_note": str(data.get("approval_note", "")),
+                "approver": str(data.get("approver", "")),
+                "sent_at": sent_at
+            }
+
+            evidence = create_source_evidence(
+                db, source_file, idx, SourceType.APPROVAL_EMAIL,
+                data, parsed_data
+            )
+
+            existing = db.query(ApprovalEmail).filter(
+                ApprovalEmail.email_id == parsed_data["email_id"]
+            ).first()
+
+            if existing:
+                existing.subject = parsed_data["subject"]
+                existing.sender = parsed_data["sender"]
+                existing.recipient = parsed_data["recipient"]
+                existing.order_no = parsed_data["order_no"]
+                existing.approval_status = parsed_data["approval_status"]
+                existing.approval_note = parsed_data["approval_note"]
+                existing.approver = parsed_data["approver"]
+                existing.sent_at = parsed_data["sent_at"]
+                existing.source_evidence_id = evidence.id
+            else:
+                email = ApprovalEmail(
+                    **parsed_data,
+                    source_evidence_id=evidence.id
+                )
+                db.add(email)
+
+            success_count += 1
+        except Exception as e:
+            failed_count += 1
+            errors.append(f"Line {idx}: {str(e)}")
+
+    db.commit()
+    return success_count, failed_count, errors
+
+
+def get_all_pending_items(db: Session) -> List[CompensationQueue]:
+    now = datetime.utcnow()
+    return db.query(CompensationQueue).filter(
+        or_(
+            CompensationQueue.status == QueueStatus.PENDING,
+            and_(
+                CompensationQueue.status == QueueStatus.RETRYING,
+                CompensationQueue.next_retry_at <= now
+            )
+        )
+    ).order_by(CompensationQueue.created_at).all()
+
+
 def create_compensation_queue(
     db: Session,
     order_no: str,
@@ -303,13 +439,13 @@ def process_queue_item(db: Session, queue_id: int) -> bool:
     if not queue:
         return False
 
-    if queue.status not in [QueueStatus.PENDING, QueueStatus.RETRYING]:
+    if queue.status not in [QueueStatus.PENDING, QueueStatus.RETRYING, QueueStatus.WAITING_MANUAL]:
         return False
 
     update_queue_status(db, queue_id, QueueStatus.PROCESSING, "system", "开始处理补偿")
 
     try:
-        success = _execute_compensation_logic(db, queue)
+        success, message = _execute_compensation_logic(db, queue)
 
         if success:
             record = CompensationRecord(
@@ -325,13 +461,18 @@ def process_queue_item(db: Session, queue_id: int) -> bool:
             update_queue_status(db, queue_id, QueueStatus.COMPENSATED, "system", "补偿成功")
             return True
         else:
-            raise Exception("补偿逻辑执行失败")
+            raise Exception(message)
 
     except Exception as e:
         queue.retry_count += 1
         queue.last_error = str(e)
 
-        if queue.retry_count >= queue.max_retry:
+        if "等供应商对账单" in str(e) or "等审批邮件" in str(e):
+            update_queue_status(
+                db, queue_id, QueueStatus.WAITING_MANUAL,
+                "system", f"等待外部回执: {str(e)}", str(e)
+            )
+        elif queue.retry_count >= queue.max_retry:
             update_queue_status(
                 db, queue_id, QueueStatus.DEAD_LETTER,
                 "system", f"重试次数耗尽: {queue.retry_count}/{queue.max_retry}", str(e)
@@ -346,7 +487,7 @@ def process_queue_item(db: Session, queue_id: int) -> bool:
         return False
 
 
-def _execute_compensation_logic(db: Session, queue: CompensationQueue) -> bool:
+def _execute_compensation_logic(db: Session, queue: CompensationQueue) -> Tuple[bool, str]:
     order = db.query(MaintenanceOrder).filter(
         MaintenanceOrder.order_no == queue.order_no
     ).first()
@@ -360,13 +501,207 @@ def _execute_compensation_logic(db: Session, queue: CompensationQueue) -> bool:
     ).first()
 
     if not order:
-        raise Exception(f"维修单不存在: {queue.order_no}")
+        return False, f"维修单不存在: {queue.order_no}"
     if not scan:
-        raise Exception(f"备件扫码记录不存在: {queue.part_code}")
+        return False, f"备件扫码记录不存在: {queue.part_code}"
     if not receipt:
-        raise Exception(f"客户签收记录不存在: {queue.order_no}")
+        return False, f"客户签收记录不存在: {queue.order_no}"
 
-    return True
+    statement = db.query(SupplierStatement).filter(
+        and_(
+            SupplierStatement.order_no == queue.order_no,
+            SupplierStatement.part_code == queue.part_code
+        )
+    ).first()
+
+    if not statement:
+        return False, f"等供应商对账单: {queue.order_no}-{queue.part_code}"
+
+    approval = db.query(ApprovalEmail).filter(
+        and_(
+            ApprovalEmail.order_no == queue.order_no,
+            ApprovalEmail.approval_status == "approved"
+        )
+    ).first()
+
+    if not approval:
+        return False, f"等审批邮件: {queue.order_no}"
+
+    return True, "验证通过"
+
+
+def create_queue_async_task(db: Session, queue_id: int) -> AsyncTask:
+    queue = db.query(CompensationQueue).filter(CompensationQueue.id == queue_id).first()
+    if not queue:
+        raise Exception(f"队列项不存在: {queue_id}")
+
+    payload = {
+        "queue_id": queue.id,
+        "order_no": queue.order_no,
+        "part_code": queue.part_code,
+        "quantity": queue.quantity,
+        "operation": "process_compensation"
+    }
+
+    return create_async_task(db, "queue_process", payload)
+
+
+def execute_async_task(db: Session, task_id: int) -> bool:
+    task = db.query(AsyncTask).filter(AsyncTask.id == task_id).first()
+    if not task:
+        return False
+
+    if task.status not in [TaskStatus.WAITING_RETRY, TaskStatus.WAITING_MANUAL]:
+        return False
+
+    task.last_run_at = datetime.utcnow()
+    task.retry_count += 1
+
+    try:
+        payload = json.loads(task.payload)
+        operation = payload.get("operation")
+
+        if operation == "process_compensation":
+            queue_id = payload.get("queue_id")
+            success = process_queue_item(db, queue_id)
+
+            if success:
+                task.status = TaskStatus.COMPLETED
+                task.error_message = None
+                task.next_run_at = None
+                db.commit()
+                return True
+            else:
+                queue = db.query(CompensationQueue).filter(CompensationQueue.id == queue_id).first()
+                if queue:
+                    last_error = queue.last_error or ""
+                    task.error_message = last_error
+
+                    if "等供应商对账单" in last_error or "等审批邮件" in last_error:
+                        task.status = TaskStatus.WAITING_MANUAL
+                        update_queue_status(
+                            db, queue_id, QueueStatus.WAITING_MANUAL,
+                            "system", f"等待外部回执: {last_error}"
+                        )
+                    elif queue.status == QueueStatus.DEAD_LETTER:
+                        task.status = TaskStatus.PERMANENT_FAILED
+                    else:
+                        task.status = TaskStatus.WAITING_RETRY
+                        task.next_run_at = datetime.utcnow() + timedelta(minutes=settings.RETRY_INTERVAL_MINUTES)
+                else:
+                    task.status = TaskStatus.WAITING_RETRY
+                    task.next_run_at = datetime.utcnow() + timedelta(minutes=settings.RETRY_INTERVAL_MINUTES)
+        else:
+            raise Exception(f"未知操作类型: {operation}")
+
+    except Exception as e:
+        task.error_message = str(e)
+        if task.retry_count >= task.max_retry:
+            task.status = TaskStatus.PERMANENT_FAILED
+            task.next_run_at = None
+        else:
+            task.status = TaskStatus.WAITING_RETRY
+            task.next_run_at = datetime.utcnow() + timedelta(minutes=settings.RETRY_INTERVAL_MINUTES)
+
+    task.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(task)
+    return task.status == TaskStatus.COMPLETED
+
+
+def get_pending_async_tasks(db: Session) -> List[AsyncTask]:
+    now = datetime.utcnow()
+    return db.query(AsyncTask).filter(
+        and_(
+            AsyncTask.status.in_([TaskStatus.WAITING_RETRY, TaskStatus.WAITING_MANUAL]),
+            AsyncTask.next_run_at <= now
+        )
+    ).order_by(AsyncTask.next_run_at).all()
+
+
+def process_all_pending_async_tasks(db: Session) -> Tuple[int, int, int]:
+    tasks = get_pending_async_tasks(db)
+    success_count = 0
+    manual_count = 0
+    failed_count = 0
+
+    for task in tasks:
+        success = execute_async_task(db, task.id)
+        if success:
+            success_count += 1
+        elif task.status == TaskStatus.WAITING_MANUAL:
+            manual_count += 1
+        else:
+            failed_count += 1
+
+    return success_count, manual_count, failed_count
+
+
+def recover_queue_from_async_tasks(db: Session) -> int:
+    tasks = db.query(AsyncTask).filter(
+        AsyncTask.status == TaskStatus.WAITING_RETRY
+    ).all()
+
+    recovered = 0
+    for task in tasks:
+        try:
+            payload = json.loads(task.payload)
+            queue_id = payload.get("queue_id")
+            if queue_id:
+                queue = db.query(CompensationQueue).filter(
+                    CompensationQueue.id == queue_id
+                ).first()
+                if queue and queue.status in [QueueStatus.PROCESSING, QueueStatus.RETRYING]:
+                    queue.status = QueueStatus.PENDING
+                    queue.updated_at = datetime.utcnow()
+                    db.add(AuditLog(
+                        queue_id=queue_id,
+                        action="recovery",
+                        old_status=queue.status,
+                        new_status=QueueStatus.PENDING,
+                        operator="system",
+                        remark=f"服务恢复，重置队列状态: 任务ID={task.task_id}"
+                    ))
+                    recovered += 1
+        except Exception as e:
+            task.error_message = f"恢复失败: {str(e)}"
+            task.status = TaskStatus.PERMANENT_FAILED
+
+    db.commit()
+    return recovered
+
+
+def mark_queue_waiting_manual(
+    db: Session,
+    queue_id: int,
+    reason: str,
+    operator: str = "system"
+) -> Optional[CompensationQueue]:
+    return update_queue_status(
+        db, queue_id, QueueStatus.WAITING_MANUAL,
+        operator, f"人工干预: {reason}"
+    )
+
+
+def mark_queue_permanent_failed(
+    db: Session,
+    queue_id: int,
+    reason: str,
+    operator: str = "system"
+) -> Optional[CompensationQueue]:
+    queue = update_queue_status(
+        db, queue_id, QueueStatus.DEAD_LETTER,
+        operator, f"永久失败: {reason}"
+    )
+    if queue:
+        tasks = db.query(AsyncTask).filter(
+            AsyncTask.payload.like(f'%"queue_id": {queue_id}%')
+        ).all()
+        for task in tasks:
+            task.status = TaskStatus.PERMANENT_FAILED
+            task.updated_at = datetime.utcnow()
+        db.commit()
+    return queue
 
 
 def manual_handle_queue(

@@ -10,6 +10,7 @@ class SourceType(str, enum.Enum):
     SPARE_PART_SCAN = "spare_part_scan"
     CUSTOMER_RECEIPT = "customer_receipt"
     SUPPLIER_STATEMENT = "supplier_statement"
+    APPROVAL_EMAIL = "approval_email"
 
 
 class QueueStatus(str, enum.Enum):
@@ -132,6 +133,44 @@ class AuditLog(Base):
     operator = Column(String)
     remark = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SupplierStatement(Base):
+    __tablename__ = "supplier_statements"
+
+    id = Column(Integer, primary_key=True, index=True)
+    statement_no = Column(String, unique=True, index=True)
+    supplier_name = Column(String)
+    order_no = Column(String, index=True)
+    part_code = Column(String, index=True)
+    quantity = Column(Integer)
+    unit_price = Column(Float, default=0)
+    total_amount = Column(Float, default=0)
+    statement_date = Column(DateTime)
+    status = Column(String, default="pending")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    source_evidence_id = Column(Integer, ForeignKey("source_evidences.id"))
+    source_evidence = relationship("SourceEvidence")
+
+
+class ApprovalEmail(Base):
+    __tablename__ = "approval_emails"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email_id = Column(String, unique=True, index=True)
+    subject = Column(String)
+    sender = Column(String)
+    recipient = Column(String)
+    order_no = Column(String, index=True)
+    approval_status = Column(String, default="pending")
+    approval_note = Column(Text)
+    approver = Column(String)
+    sent_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    source_evidence_id = Column(Integer, ForeignKey("source_evidences.id"))
+    source_evidence = relationship("SourceEvidence")
 
 
 class AsyncTask(Base):

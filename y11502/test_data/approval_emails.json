@@ -1,0 +1,24 @@
+[
+  {
+    "email_id": "EM20240501001",
+    "subject": "审批：MO20240501001 备件补偿申请",
+    "sender": "manager@company.com",
+    "recipient": "service@company.com",
+    "order_no": "MO20240501001",
+    "approval_status": "approved",
+    "approval_note": "情况属实，同意补偿",
+    "approver": "张经理",
+    "sent_at": "2024-05-02T10:00:00+08:00"
+  },
+  {
+    "email_id": "EM20240501002",
+    "subject": "审批：MO20240501002 备件补偿申请",
+    "sender": "manager@company.com",
+    "recipient": "service@company.com",
+    "order_no": "MO20240501002",
+    "approval_status": "approved",
+    "approval_note": "核实无误，同意补偿",
+    "approver": "李经理",
+    "sent_at": "2024-05-02T10:30:00+08:00"
+  }
+]

@@ -90,6 +90,75 @@ class CustomerReceiptResponse(CustomerReceiptBase):
         from_attributes = True
 
 
+class SupplierStatementBase(BaseModel):
+    statement_no: str
+    supplier_name: str
+    order_no: str
+    part_code: str
+    quantity: int
+    unit_price: float
+    total_amount: float
+    statement_date: datetime
+
+
+class SupplierStatementCreate(SupplierStatementBase):
+    source_evidence_id: Optional[int] = None
+
+
+class SupplierStatementResponse(SupplierStatementBase):
+    id: int
+    status: str
+    created_at: datetime
+    updated_at: datetime
+    source_evidence: Optional[SourceEvidenceResponse] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ApprovalEmailBase(BaseModel):
+    email_id: str
+    subject: str
+    sender: str
+    recipient: str
+    order_no: str
+    approval_status: str = "pending"
+    approval_note: Optional[str] = None
+    approver: str
+    sent_at: datetime
+
+
+class ApprovalEmailCreate(ApprovalEmailBase):
+    source_evidence_id: Optional[int] = None
+
+
+class ApprovalEmailResponse(ApprovalEmailBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    source_evidence: Optional[SourceEvidenceResponse] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AsyncTaskResponse(BaseModel):
+    id: int
+    task_id: str
+    task_type: str
+    status: TaskStatus
+    error_message: Optional[str] = None
+    retry_count: int
+    max_retry: int
+    last_run_at: Optional[datetime] = None
+    next_run_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class CompensationQueueBase(BaseModel):
     order_no: str
     part_code: str

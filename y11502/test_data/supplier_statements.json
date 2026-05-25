@@ -1,0 +1,22 @@
+[
+  {
+    "statement_no": "SS20240501001",
+    "supplier_name": "苹果供应商有限公司",
+    "order_no": "MO20240501001",
+    "part_code": "PAR-001-SCR",
+    "quantity": 1,
+    "unit_price": 800.0,
+    "total_amount": 800.0,
+    "statement_date": "2024-05-02T09:00:00+08:00"
+  },
+  {
+    "statement_no": "SS20240501002",
+    "supplier_name": "苹果供应商有限公司",
+    "order_no": "MO20240501002",
+    "part_code": "PAR-002-KEY",
+    "quantity": 1,
+    "unit_price": 1200.0,
+    "total_amount": 1200.0,
+    "statement_date": "2024-05-02T09:30:00+08:00"
+  }
+]
