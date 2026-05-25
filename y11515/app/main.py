@@ -287,9 +287,22 @@ def archive_batch(batch_id: int, operator: str = Form(...), reason: Optional[str
         records = db.query(Record).filter(Record.batch_id == batch_id).all()
         for record in records:
             if record.status != RecordState.ARCHIVED:
-                RecordStateMachine.archive(db, record, operator, reason or "批次归档")
+                if batch.is_frozen:
+                    RecordStateMachine.force_archive(
+                        db, record, operator,
+                        reason or f"冻结批次归档: {batch.freeze_reason}"
+                    )
+                else:
+                    RecordStateMachine.archive(db, record, operator, reason or "批次归档")
 
-        BatchStateMachine.archive(db, batch, operator, reason)
+        if batch.is_frozen:
+            BatchStateMachine.force_archive(
+                db, batch, operator,
+                reason or "冻结批次归档"
+            )
+        else:
+            BatchStateMachine.archive(db, batch, operator, reason)
+
         db.commit()
 
         return {"message": "批次归档成功", "batch_id": batch_id, "status": RecordState.ARCHIVED}

@@ -13,9 +13,9 @@ class StateTransitionError(Exception):
 
 class StateMachine:
     VALID_TRANSITIONS = {
-        RecordState.DRAFT: [RecordState.SUBMITTED, RecordState.WITHDRAWN],
-        RecordState.SUBMITTED: [RecordState.UNDER_REVIEW, RecordState.WITHDRAWN],
-        RecordState.UNDER_REVIEW: [RecordState.APPROVED, RecordState.REJECTED, RecordState.WITHDRAWN],
+        RecordState.DRAFT: [RecordState.SUBMITTED, RecordState.WITHDRAWN, RecordState.ARCHIVED],
+        RecordState.SUBMITTED: [RecordState.UNDER_REVIEW, RecordState.WITHDRAWN, RecordState.ARCHIVED],
+        RecordState.UNDER_REVIEW: [RecordState.APPROVED, RecordState.REJECTED, RecordState.WITHDRAWN, RecordState.ARCHIVED],
         RecordState.APPROVED: [RecordState.FROZEN, RecordState.ARCHIVED],
         RecordState.REJECTED: [RecordState.SUBMITTED, RecordState.ARCHIVED],
         RecordState.FROZEN: [RecordState.APPROVED, RecordState.ARCHIVED],
@@ -123,6 +123,37 @@ class RecordStateMachine(StateMachine):
         )
 
     @classmethod
+    def force_archive(cls, db: Session, record: Record, operator: str, reason: str = "") -> Tuple[Record, RecordStateHistory]:
+        from_state = record.status
+
+        if from_state == RecordState.ARCHIVED:
+            history = RecordStateHistory(
+                record_id=record.id,
+                from_state=from_state,
+                to_state=RecordState.ARCHIVED,
+                transition_type="archive_skip",
+                operator=operator,
+                reason="已是归档状态"
+            )
+            db.add(history)
+            return record, history
+
+        history = RecordStateHistory(
+            record_id=record.id,
+            from_state=from_state,
+            to_state=RecordState.ARCHIVED,
+            transition_type="force_archive",
+            operator=operator,
+            reason=reason or "强制归档"
+        )
+        db.add(history)
+
+        record.status = RecordState.ARCHIVED
+        record.updated_at = datetime.now()
+
+        return record, history
+
+    @classmethod
     def override(
         cls,
         db: Session,
@@ -133,6 +164,11 @@ class RecordStateMachine(StateMachine):
         permission_level: str = "supervisor"
     ) -> Tuple[Record, OverrideRecord, RecordStateHistory]:
         from_state = record.status
+
+        if permission_level != "supervisor":
+            raise StateTransitionError(
+                f"Permission denied: {operator} does not have supervisor permission to override"
+            )
 
         override = OverrideRecord(
             record_id=record.id,
@@ -244,3 +280,35 @@ class BatchStateMachine(StateMachine):
             db, batch, RecordState.ARCHIVED, operator,
             reason=reason or "批次归档", transition_type="archive"
         )
+
+    @classmethod
+    def force_archive(cls, db: Session, batch: Batch, operator: str, reason: str = "") -> Tuple[Batch, BatchStateHistory]:
+        from_state = batch.status
+
+        if from_state == RecordState.ARCHIVED:
+            history = BatchStateHistory(
+                batch_id=batch.id,
+                from_state=from_state,
+                to_state=RecordState.ARCHIVED,
+                transition_type="archive_skip",
+                operator=operator,
+                reason="已是归档状态"
+            )
+            db.add(history)
+            return batch, history
+
+        history = BatchStateHistory(
+            batch_id=batch.id,
+            from_state=from_state,
+            to_state=RecordState.ARCHIVED,
+            transition_type="force_archive",
+            operator=operator,
+            reason=reason or "强制归档"
+        )
+        db.add(history)
+
+        batch.status = RecordState.ARCHIVED
+        batch.is_frozen = False
+        batch.updated_at = datetime.now()
+
+        return batch, history
