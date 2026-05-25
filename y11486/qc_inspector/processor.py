@@ -14,20 +14,33 @@ from .database import log_audit
 
 class DataValidator:
     @staticmethod
+    def _is_empty(value: Any) -> bool:
+        if value is None:
+            return True
+        try:
+            if pd.isna(value):
+                return True
+        except (TypeError, ValueError):
+            pass
+        if isinstance(value, str) and value.strip() == "":
+            return True
+        return False
+
+    @staticmethod
     def validate_rework(row: Dict[str, Any]) -> Tuple[bool, List[str]]:
         errors = []
-        if not row.get("product_model"):
+        if DataValidator._is_empty(row.get("product_model")):
             errors.append("产品型号不能为空")
-        if not row.get("serial_number"):
+        if DataValidator._is_empty(row.get("serial_number")):
             errors.append("序列号不能为空")
-        if row.get("yield_rate") is not None:
+        if not DataValidator._is_empty(row.get("yield_rate")):
             try:
                 yr = float(row["yield_rate"])
                 if yr < 0 or yr > 100:
                     errors.append("良率应在0-100之间")
             except (ValueError, TypeError):
                 errors.append("良率格式不正确")
-        if row.get("rework_count") is not None:
+        if not DataValidator._is_empty(row.get("rework_count")):
             try:
                 rc = int(row["rework_count"])
                 if rc < 0:
@@ -39,9 +52,9 @@ class DataValidator:
     @staticmethod
     def validate_inspection(row: Dict[str, Any]) -> Tuple[bool, List[str]]:
         errors = []
-        if not row.get("product_model"):
+        if DataValidator._is_empty(row.get("product_model")):
             errors.append("产品型号不能为空")
-        if row.get("sample_size") is not None and row.get("defect_count") is not None:
+        if not DataValidator._is_empty(row.get("sample_size")) and not DataValidator._is_empty(row.get("defect_count")):
             try:
                 ss = int(row["sample_size"])
                 dc = int(row["defect_count"])
@@ -54,23 +67,23 @@ class DataValidator:
     @staticmethod
     def validate_shift(row: Dict[str, Any]) -> Tuple[bool, List[str]]:
         errors = []
-        if not row.get("shift_name"):
+        if DataValidator._is_empty(row.get("shift_name")):
             errors.append("班次名称不能为空")
         return len(errors) == 0, errors
 
     @staticmethod
     def validate_supplier(row: Dict[str, Any]) -> Tuple[bool, List[str]]:
         errors = []
-        if not row.get("supplier_name"):
+        if DataValidator._is_empty(row.get("supplier_name")):
             errors.append("供应商名称不能为空")
         return len(errors) == 0, errors
 
     @staticmethod
     def validate_approval(row: Dict[str, Any]) -> Tuple[bool, List[str]]:
         errors = []
-        if not row.get("email_subject"):
+        if DataValidator._is_empty(row.get("email_subject")):
             errors.append("邮件主题不能为空")
-        if not row.get("approver"):
+        if DataValidator._is_empty(row.get("approver")):
             errors.append("审批人不能为空")
         return len(errors) == 0, errors
 
