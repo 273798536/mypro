@@ -1,8 +1,8 @@
-import { Database, resetDatabase } from '../src/database';
+import { Database, resetDatabase, getDatabase } from '../src/database';
 
 export async function setupTestDatabase(): Promise<Database> {
   resetDatabase();
-  const db = new Database(':memory:');
+  const db = getDatabase(':memory:');
   await db.init();
   return db;
 }

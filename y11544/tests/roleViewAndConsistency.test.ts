@@ -1,24 +1,18 @@
 import request from 'supertest';
-import app from '../src/index';
 import { setupTestDatabase, teardownTestDatabase } from './setup';
 import { getDatabase } from '../src/database';
 import { UserRole, MaterialStatus } from '../src/types';
 
 describe('Role View and Data Consistency Tests', () => {
+  let app: any;
+  const materialId = 'MAT-CONSISTENCY-001';
+
   beforeAll(async () => {
     await setupTestDatabase();
     const db = getDatabase();
     await db.init();
-  });
+    app = (await import('../src/index')).default;
 
-  afterAll(async () => {
-    const db = getDatabase();
-    await teardownTestDatabase(db);
-  });
-
-  const materialId = 'MAT-CONSISTENCY-001';
-
-  beforeAll(async () => {
     await request(app)
       .post('/api/materials')
       .set('x-user-role', UserRole.OPERATOR)

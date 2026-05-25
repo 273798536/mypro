@@ -1,19 +1,22 @@
 import request from 'supertest';
-import app from '../src/index';
 import { setupTestDatabase, teardownTestDatabase } from './setup';
 import { getDatabase } from '../src/database';
 import { UserRole } from '../src/types';
 
 describe('Duplicate Submission and Bad Data Tests', () => {
+  let app: any;
+
   beforeAll(async () => {
     await setupTestDatabase();
     const db = getDatabase();
     await db.init();
+    app = (await import('../src/index')).default;
   });
 
   afterAll(async () => {
     const db = getDatabase();
     await teardownTestDatabase(db);
+    jest.resetModules();
   });
 
   const materialId = 'MAT-TEST-002';

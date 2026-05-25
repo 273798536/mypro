@@ -1,19 +1,22 @@
 import request from 'supertest';
-import app from '../src/index';
 import { setupTestDatabase, teardownTestDatabase } from './setup';
 import { getDatabase } from '../src/database';
 import { MaterialStatus, UserRole } from '../src/types';
 
 describe('Normal Flow Test', () => {
+  let app: any;
+
   beforeAll(async () => {
     await setupTestDatabase();
     const db = getDatabase();
     await db.init();
+    app = (await import('../src/index')).default;
   });
 
   afterAll(async () => {
     const db = getDatabase();
     await teardownTestDatabase(db);
+    jest.resetModules();
   });
 
   const materialId = 'MAT-001';
