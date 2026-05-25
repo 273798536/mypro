@@ -68,10 +68,12 @@ class WorkOrderService:
         existing_wo = self._find_existing_work_order(location)
         is_new = False
         
+        now = datetime.now()
+        
         if existing_wo:
             work_order = existing_wo
         else:
-            timestamp_str = datetime.now().strftime("%Y%m%d%H%M%S")
+            timestamp_str = now.strftime("%Y%m%d%H%M%S")
             order_no = generate_order_no(location, timestamp_str)
             work_order = WorkOrder(
                 order_no=order_no,
@@ -79,7 +81,9 @@ class WorkOrderService:
                 location_normalized=normalize_location(location),
                 status=WorkOrderStatus.PENDING,
                 description=content.get("description", ""),
-                lamp_count=content.get("lamp_count")
+                lamp_count=content.get("lamp_count"),
+                created_at=now,
+                updated_at=now
             )
             self.db.add(work_order)
             self.db.flush()
@@ -91,7 +95,7 @@ class WorkOrderService:
         spare_part_batch = content.get("spare_part_batch") or content.get("batch_no")
         sms_content = content.get("sms_content")
         occurred_at_str = content.get("occurred_at")
-        occurred_at = datetime.fromisoformat(occurred_at_str) if occurred_at_str else datetime.now()
+        occurred_at = datetime.fromisoformat(occurred_at_str) if occurred_at_str else now
 
         clue = Clue(
             work_order_id=work_order.id,

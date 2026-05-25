@@ -27,6 +27,18 @@ class DirtyRecordService:
     def check_cross_day(self, clue: Clue, work_order: WorkOrder) -> bool:
         if not clue.occurred_at or not work_order.created_at:
             return False
+        
+        has_explicit_occurred_at = False
+        if clue.content and "occurred_at" in clue.content:
+            has_explicit_occurred_at = True
+        
+        if not has_explicit_occurred_at:
+            return False
+        
+        time_diff = abs((clue.occurred_at - work_order.created_at).total_seconds())
+        if time_diff < 3600:
+            return False
+        
         clue_date = clue.occurred_at.date()
         wo_date = work_order.created_at.date()
         return clue_date != wo_date

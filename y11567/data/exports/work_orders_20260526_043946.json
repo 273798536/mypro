@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "order_no": "WO202605260439390C0E27AE276A",
+    "location": "人民路123号",
+    "status": "compensated",
+    "retry_count": 1,
+    "compensated_amount": 150.0,
+    "created_at": "2026-05-26T04:39:39.064602",
+    "closed_at": null
+  }
+]
