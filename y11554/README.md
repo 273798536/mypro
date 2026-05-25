@@ -4,6 +4,14 @@
 
 ## 🛠 修复记录
 
+### v1.2.2 - ledgerNo 自动生成修复 (2026-05-26)
+
+**问题：ledgerNo 在 pre('save') 中生成，但验证在 save 之前执行**
+- [Ledger.js:182](file:///Users/mac/pro/solo/workspaces/y11554/src/models/Ledger.js#L182-L189) 将 `pre('save')` 改为 `pre('validate')`
+- Mongoose 执行顺序：`pre('validate')` → `validate` → `pre('save')` → `save`
+- 修复后 ledgerNo 在验证前生成，不再报 "Path `ledgerNo` is required" 错误
+- `/api/ledger` 核心入口可正常创建台账草稿
+
 ### v1.2.1 - 权限拦截日志 targetType 修复 (2026-05-26)
 
 **问题：权限拦截日志 targetType 记录错误导致查询不到**

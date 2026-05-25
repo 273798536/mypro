@@ -179,7 +179,7 @@ ledgerSchema.index({ city: 1, restockDate: -1 });
 ledgerSchema.index({ status: 1, createdAt: -1 });
 ledgerSchema.index({ createdBy: 1, createdAt: -1 });
 
-ledgerSchema.pre('save', function(next) {
+ledgerSchema.pre('validate', function(next) {
   if (!this.ledgerNo) {
     const dateStr = dayjs().format('YYYYMMDD');
     const random = Math.random().toString(36).substring(2, 8).toUpperCase();
