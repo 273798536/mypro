@@ -81,9 +81,16 @@ class MaterialStateMachine:
         db.refresh(material)
         
         after_data = {"status": to_status}
+        
+        audit_op_type = OperationType.UPDATE
+        if is_overrule:
+            audit_op_type = OperationType.OVERRULE
+        elif change_source in ["review", "manual_check"]:
+            audit_op_type = OperationType.REVIEW
+        
         AuditService.log_operation(
             db=db,
-            operation_type=OperationType.UPDATE,
+            operation_type=audit_op_type,
             operated_by=changed_by,
             batch_id=material.batch_id,
             record_type="material",

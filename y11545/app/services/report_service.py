@@ -25,13 +25,30 @@ class ReportService:
             for snap in freeze_snapshots:
                 status_before_freeze_map[snap.material_id] = snap.to_status
         
+        manual_state_records = db.query(StateRecord).filter(
+            StateRecord.batch_id == batch.id,
+            StateRecord.material_id.isnot(None),
+            StateRecord.is_freeze_snapshot == False,
+            StateRecord.change_source.notin_(["logistics_import", "borrow_import", "freeze"])
+        ).order_by(StateRecord.changed_at.asc()).all()
+        for sr in manual_state_records:
+            existing = manual_reasons.get(sr.material_id)
+            if existing:
+                manual_reasons[sr.material_id] = existing + "\n" + sr.reason
+            else:
+                manual_reasons[sr.material_id] = sr.reason
+        
         manual_audits = db.query(AuditLog).filter(
             AuditLog.batch_id == batch.id,
             AuditLog.operation_type.in_([OperationType.REVIEW, OperationType.OVERRULE])
-        ).all()
+        ).order_by(AuditLog.operated_at.asc()).all()
         for audit in manual_audits:
-            if audit.record_id:
-                manual_reasons[audit.record_id] = audit.change_reason
+            if audit.record_id and audit.record_type == "material":
+                existing = manual_reasons.get(audit.record_id)
+                if existing and audit.change_reason not in existing:
+                    manual_reasons[audit.record_id] = existing + "\n" + audit.change_reason
+                elif not existing:
+                    manual_reasons[audit.record_id] = audit.change_reason
         
         for material in batch.materials:
             borrow_record = db.query(BorrowRecord).filter(
