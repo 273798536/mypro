@@ -2,7 +2,7 @@ const http = require('http');
 require('dotenv').config();
 
 const HOST = process.env.HOST || '127.0.0.1';
-const PORT = parseInt(process.env.PORT || '3001');
+const PORT = parseInt(process.env.PORT || '50001');
 
 function request(options, data = null) {
   const defaultOptions = {

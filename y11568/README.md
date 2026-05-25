@@ -40,7 +40,7 @@ npm start
 node scripts/cli.js start
 ```
 
-服务运行在: http://127.0.0.1:3001
+服务运行在: http://127.0.0.1:50001
 
 ## 默认账号
 
@@ -57,12 +57,12 @@ node scripts/cli.js start
 
 ```bash
 # 登录获取 token
-curl -X POST http://127.0.0.1:3001/api/auth/login \
+curl -X POST http://127.0.0.1:50001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"super_user","password":"super123"}'
 
 # 获取当前用户信息
-curl http://127.0.0.1:3001/api/auth/me \
+curl http://127.0.0.1:50001/api/auth/me \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -70,11 +70,11 @@ curl http://127.0.0.1:3001/api/auth/me \
 
 ```bash
 # 工单列表
-curl http://127.0.0.1:3001/api/work-orders \
+curl http://127.0.0.1:50001/api/work-orders \
   -H "Authorization: Bearer <token>"
 
 # 创建工单
-curl -X POST http://127.0.0.1:3001/api/work-orders \
+curl -X POST http://127.0.0.1:50001/api/work-orders \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{
@@ -86,11 +86,11 @@ curl -X POST http://127.0.0.1:3001/api/work-orders \
   }'
 
 # 工单完整链路（照片+热线+备件+回执）
-curl http://127.0.0.1:3001/api/work-orders/1/full-chain \
+curl http://127.0.0.1:50001/api/work-orders/1/full-chain \
   -H "Authorization: Bearer <token>"
 
 # 工单操作历史
-curl http://127.0.0.1:3001/api/work-orders/1/history \
+curl http://127.0.0.1:50001/api/work-orders/1/history \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -98,11 +98,11 @@ curl http://127.0.0.1:3001/api/work-orders/1/history \
 
 ```bash
 # 单条工单对账
-curl -X POST http://127.0.0.1:3001/api/reconciliation/check/1 \
+curl -X POST http://127.0.0.1:50001/api/reconciliation/check/1 \
   -H "Authorization: Bearer <token>"
 
 # 批量对账
-curl -X POST http://127.0.0.1:3001/api/reconciliation/batch-check \
+curl -X POST http://127.0.0.1:50001/api/reconciliation/batch-check \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{"status":"pending"}'
@@ -112,19 +112,19 @@ curl -X POST http://127.0.0.1:3001/api/reconciliation/batch-check \
 
 ```bash
 # 操作日志
-curl http://127.0.0.1:3001/api/replay/logs \
+curl http://127.0.0.1:50001/api/replay/logs \
   -H "Authorization: Bearer <token>"
 
 # 工单时间线
-curl http://127.0.0.1:3001/api/replay/work-order/1/timeline \
+curl http://127.0.0.1:50001/api/replay/work-order/1/timeline \
   -H "Authorization: Bearer <token>"
 
 # 路段合并分析
-curl http://127.0.0.1:3001/api/replay/road-section/中山路/merge-analysis \
+curl http://127.0.0.1:50001/api/replay/road-section/中山路/merge-analysis \
   -H "Authorization: Bearer <token>"
 
 # 异常汇总
-curl http://127.0.0.1:3001/api/replay/abnormal-summary \
+curl http://127.0.0.1:50001/api/replay/abnormal-summary \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -132,11 +132,11 @@ curl http://127.0.0.1:3001/api/replay/abnormal-summary \
 
 ```bash
 # 坏数据列表
-curl http://127.0.0.1:3001/api/bad-data \
+curl http://127.0.0.1:50001/api/bad-data \
   -H "Authorization: Bearer <token>"
 
 # 解决坏数据（主管权限）
-curl -X POST http://127.0.0.1:3001/api/bad-data/1/resolve \
+curl -X POST http://127.0.0.1:50001/api/bad-data/1/resolve \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{"resolution_note":"已人工修正"}'
@@ -146,11 +146,11 @@ curl -X POST http://127.0.0.1:3001/api/bad-data/1/resolve \
 
 ```bash
 # 汇总报告
-curl http://127.0.0.1:3001/api/export/summary \
+curl http://127.0.0.1:50001/api/export/summary \
   -H "Authorization: Bearer <token>"
 
 # 工单完整报告
-curl http://127.0.0.1:3001/api/export/full-report/1 \
+curl http://127.0.0.1:50001/api/export/full-report/1 \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -254,27 +254,27 @@ node scripts/cli.js full-demo
 npm start
 
 # 4. 用主管账号登录获取 token
-curl -X POST http://127.0.0.1:3001/api/auth/login \
+curl -X POST http://127.0.0.1:50001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"super_user","password":"super123"}'
 
 # 5. 查看工单列表
-curl http://127.0.0.1:3001/api/work-orders \
+curl http://127.0.0.1:50001/api/work-orders \
   -H "Authorization: Bearer <token>"
 
 # 6. 查看坏数据
-curl http://127.0.0.1:3001/api/bad-data \
+curl http://127.0.0.1:50001/api/bad-data \
   -H "Authorization: Bearer <token>"
 
 # 7. 对账检查
-curl -X POST http://127.0.0.1:3001/api/reconciliation/check/1 \
+curl -X POST http://127.0.0.1:50001/api/reconciliation/check/1 \
   -H "Authorization: Bearer <token>"
 
 # 8. 查看操作日志
-curl http://127.0.0.1:3001/api/replay/logs \
+curl http://127.0.0.1:50001/api/replay/logs \
   -H "Authorization: Bearer <token>"
 
 # 9. 导出汇总报告
-curl http://127.0.0.1:3001/api/export/summary \
+curl http://127.0.0.1:50001/api/export/summary \
   -H "Authorization: Bearer <token>"
 ```
