@@ -195,19 +195,22 @@ async function importInspections(filePath, options = {}) {
     const photoName = normalizeField(row['照片名称'] || row['photo_name']) || `photo_${i}`;
     const photoUrl = normalizeField(row['照片链接'] || row['photo_url']);
     const inspectionResult = normalizeField(row['质检结果'] || row['inspection_result']);
-    const inspectionQty = safeParseInt(row['质检数量'] || row['inspection_qty'], 0);
+    const inspectionQtyRaw = row['质检数量'] || row['inspection_qty'];
     const inspector = normalizeField(row['质检员'] || row['inspector']);
     const inspectionDate = normalizeField(row['质检日期'] || row['inspection_date']) || new Date().toISOString().split('T')[0];
     
     const batchValid = validateBatchNo(batchNo);
     const skuValid = validateSkuCode(skuCode);
+    const qtyValid = validateQty(inspectionQtyRaw, '质检数量');
     
-    if (!batchValid.valid || !skuValid.valid) {
-      const errors = [batchValid.reason, skuValid.reason].filter(Boolean).join('; ');
+    if (!batchValid.valid || !skuValid.valid || !qtyValid.valid) {
+      const errors = [batchValid.reason, skuValid.reason, qtyValid.reason].filter(Boolean).join('; ');
       await recordImportFailure(batchId, SOURCE_TYPES.INSPECTION, originalLineNo, row, errors);
       failCount++;
       continue;
     }
+    
+    const inspectionQty = qtyValid.value;
     
     const recordId = generateId();
     await run(
@@ -254,8 +257,8 @@ async function importLogistics(filePath, options = {}) {
     const batchNo = normalizeField(row['批次号'] || row['batch_no']);
     const skuCode = normalizeField(row['SKU编码'] || row['sku_code']);
     const trackingNo = normalizeField(row['运单号'] || row['tracking_no'] || row['物流单号']);
-    const shippedQty = safeParseInt(row['发货数量'] || row['shipped_qty'], 0);
-    const receivedQty = safeParseInt(row['实收数量'] || row['received_qty'], 0);
+    const shippedQtyRaw = row['发货数量'] || row['shipped_qty'];
+    const receivedQtyRaw = row['实收数量'] || row['received_qty'];
     const shippingDate = normalizeField(row['发货日期'] || row['shipping_date']);
     const receivingDate = normalizeField(row['收货日期'] || row['receiving_date']);
     const carrier = normalizeField(row['承运商'] || row['carrier']);
@@ -263,13 +266,18 @@ async function importLogistics(filePath, options = {}) {
     
     const batchValid = validateBatchNo(batchNo);
     const skuValid = validateSkuCode(skuCode);
+    const shippedQtyValid = validateQty(shippedQtyRaw, '发货数量');
+    const receivedQtyValid = validateQty(receivedQtyRaw, '实收数量');
     
-    if (!batchValid.valid || !skuValid.valid) {
-      const errors = [batchValid.reason, skuValid.reason].filter(Boolean).join('; ');
+    if (!batchValid.valid || !skuValid.valid || !shippedQtyValid.valid || !receivedQtyValid.valid) {
+      const errors = [batchValid.reason, skuValid.reason, shippedQtyValid.reason, receivedQtyValid.reason].filter(Boolean).join('; ');
       await recordImportFailure(batchId, SOURCE_TYPES.LOGISTICS, originalLineNo, row, errors);
       failCount++;
       continue;
     }
+    
+    const shippedQty = shippedQtyValid.value;
+    const receivedQty = receivedQtyValid.value;
     
     const recordId = generateId();
     await run(
@@ -319,16 +327,20 @@ async function importSms(filePath, options = {}) {
     const sender = normalizeField(row['发送方'] || row['sender']);
     const receiver = normalizeField(row['接收方'] || row['receiver']);
     const sendTime = normalizeField(row['发送时间'] || row['send_time']);
-    const confirmedQty = safeParseInt(row['确认数量'] || row['confirmed_qty'], 0);
+    const confirmedQtyRaw = row['确认数量'] || row['confirmed_qty'];
     const photoRef = normalizeField(row['照片引用'] || row['photo_ref']);
     
     const batchValid = validateBatchNo(batchNo);
+    const qtyValid = validateQty(confirmedQtyRaw, '确认数量');
     
-    if (!batchValid.valid) {
-      await recordImportFailure(batchId, SOURCE_TYPES.SMS, originalLineNo, row, batchValid.reason);
+    if (!batchValid.valid || !qtyValid.valid) {
+      const errors = [batchValid.reason, qtyValid.reason].filter(Boolean).join('; ');
+      await recordImportFailure(batchId, SOURCE_TYPES.SMS, originalLineNo, row, errors);
       failCount++;
       continue;
     }
+    
+    const confirmedQty = qtyValid.value;
     
     const recordId = generateId();
     await run(
@@ -381,19 +393,22 @@ async function importExceptions(filePath, options = {}) {
     const photoUrl = normalizeField(row['照片链接'] || row['photo_url']);
     const exceptionType = normalizeField(row['异常类型'] || row['exception_type']);
     const exceptionDesc = normalizeField(row['异常描述'] || row['exception_desc']);
-    const exceptionQty = safeParseInt(row['异常数量'] || row['exception_qty'], 0);
+    const exceptionQtyRaw = row['异常数量'] || row['exception_qty'];
     const reporter = normalizeField(row['上报人'] || row['reporter']);
     const reportDate = normalizeField(row['上报日期'] || row['report_date']) || new Date().toISOString().split('T')[0];
     
     const batchValid = validateBatchNo(batchNo);
     const skuValid = validateSkuCode(skuCode);
+    const qtyValid = validateQty(exceptionQtyRaw, '异常数量');
     
-    if (!batchValid.valid || !skuValid.valid) {
-      const errors = [batchValid.reason, skuValid.reason].filter(Boolean).join('; ');
+    if (!batchValid.valid || !skuValid.valid || !qtyValid.valid) {
+      const errors = [batchValid.reason, skuValid.reason, qtyValid.reason].filter(Boolean).join('; ');
       await recordImportFailure(batchId, SOURCE_TYPES.EXCEPTION, originalLineNo, row, errors);
       failCount++;
       continue;
     }
+    
+    const exceptionQty = qtyValid.value;
     
     const recordId = generateId();
     await run(

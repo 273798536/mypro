@@ -1,0 +1,4 @@
+批次号,SKU编码,照片名称,照片链接,异常类型,异常描述,异常数量,上报人,上报日期
+BATCH001,SKU001,exp_1.jpg,https://example.com/1.jpg,破损,外包装破损,abc,仓管A,2024-01-19
+BATCH001,SKU002,exp_2.jpg,https://example.com/2.jpg,变质,商品过期,-10,仓管B,2024-01-19
+BATCH001,SKU003,exp_3.jpg,https://example.com/3.jpg,短缺,少了3件,3,仓管C,2024-01-19
