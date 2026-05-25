@@ -736,23 +736,19 @@ def export_data(
                 seller_tax_no = inv.seller_tax_no or ""
                 buyer_tax_no = inv.buyer_tax_no or ""
                 
-                if current_user.role.value in ["finance", "admin", "auditor"]:
-                    row[f"{prefix}_销售方税号"] = seller_tax_no
-                    row[f"{prefix}_购买方税号"] = buyer_tax_no
+                if len(seller_tax_no) > 4:
+                    row[f"{prefix}_销售方税号"] = seller_tax_no[:2] + "***" + seller_tax_no[-2:]
+                elif seller_tax_no:
+                    row[f"{prefix}_销售方税号"] = "***"
                 else:
-                    if len(seller_tax_no) > 4:
-                        row[f"{prefix}_销售方税号"] = seller_tax_no[:2] + "***" + seller_tax_no[-2:]
-                    elif seller_tax_no:
-                        row[f"{prefix}_销售方税号"] = "***"
-                    else:
-                        row[f"{prefix}_销售方税号"] = ""
-                    
-                    if len(buyer_tax_no) > 4:
-                        row[f"{prefix}_购买方税号"] = buyer_tax_no[:2] + "***" + buyer_tax_no[-2:]
-                    elif buyer_tax_no:
-                        row[f"{prefix}_购买方税号"] = "***"
-                    else:
-                        row[f"{prefix}_购买方税号"] = ""
+                    row[f"{prefix}_销售方税号"] = ""
+                
+                if len(buyer_tax_no) > 4:
+                    row[f"{prefix}_购买方税号"] = buyer_tax_no[:2] + "***" + buyer_tax_no[-2:]
+                elif buyer_tax_no:
+                    row[f"{prefix}_购买方税号"] = "***"
+                else:
+                    row[f"{prefix}_购买方税号"] = ""
                 
                 row[f"{prefix}_购买方名称"] = inv.buyer_name or ""
                 row[f"{prefix}_是否重复"] = "是" if inv.is_duplicate else "否"
@@ -761,14 +757,14 @@ def export_data(
                     services.log_sensitive_field_access(
                         db, "seller_tax_no", "invoices", inv.id,
                         current_user.id, current_user.role.value,
-                        "export", current_user.role.value not in ["finance", "admin", "auditor"],
+                        "export", True,
                         request.client.host if request.client else None
                     )
                 if inv.buyer_tax_no:
                     services.log_sensitive_field_access(
                         db, "buyer_tax_no", "invoices", inv.id,
                         current_user.id, current_user.role.value,
-                        "export", current_user.role.value not in ["finance", "admin", "auditor"],
+                        "export", True,
                         request.client.host if request.client else None
                     )
             
@@ -780,15 +776,12 @@ def export_data(
                 row[f"{prefix}_收款方"] = pf.payee or ""
                 
                 bank_account = pf.bank_account or ""
-                if current_user.role.value in ["finance", "admin"]:
-                    row[f"{prefix}_银行账号"] = bank_account
+                if len(bank_account) > 4:
+                    row[f"{prefix}_银行账号"] = bank_account[:2] + "****" + bank_account[-2:]
+                elif bank_account:
+                    row[f"{prefix}_银行账号"] = "****"
                 else:
-                    if len(bank_account) > 4:
-                        row[f"{prefix}_银行账号"] = bank_account[:2] + "****" + bank_account[-2:]
-                    elif bank_account:
-                        row[f"{prefix}_银行账号"] = "****"
-                    else:
-                        row[f"{prefix}_银行账号"] = ""
+                    row[f"{prefix}_银行账号"] = ""
                 
                 row[f"{prefix}_是否重复"] = "是" if pf.is_duplicate else "否"
                 
@@ -796,7 +789,7 @@ def export_data(
                     services.log_sensitive_field_access(
                         db, "bank_account", "payment_flows", pf.id,
                         current_user.id, current_user.role.value,
-                        "export", current_user.role.value not in ["finance", "admin"],
+                        "export", True,
                         request.client.host if request.client else None
                     )
         
