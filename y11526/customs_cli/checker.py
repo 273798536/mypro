@@ -1,3 +1,4 @@
+import pandas as pd
 from datetime import datetime
 from typing import Dict, List, Any
 from sqlalchemy.orm import Session
@@ -16,6 +17,7 @@ class DataChecker:
         self.batch_id = batch_id
         self._own_session = session is None
         self.exceptions: List[Dict] = []
+        self.source_id = None
 
     def close(self):
         if self._own_session:
@@ -31,12 +33,14 @@ class DataChecker:
                        message: str, severity: str = "error",
                        original_row: int = None, field_name: str = None,
                        expected: str = None, actual: str = None,
-                       related_table: str = None, related_id: int = None):
+                       related_table: str = None, related_id: int = None,
+                       source_id: int = None):
         exc = ExceptionRecord(
             batch_id=self.batch_id,
+            source_id=source_id,
             exception_type=exc_type,
             severity=severity,
-            tracking_number=tracking_number,
+            tracking_number=None if (isinstance(tracking_number, float) and pd.isna(tracking_number)) or tracking_number is None else str(tracking_number),
             original_row=original_row,
             field_name=field_name,
             expected_value=str(expected) if expected else None,
@@ -54,11 +58,11 @@ class DataChecker:
         })
 
     def check_missing_declarations(self) -> int:
-        subquery = self.session.query(TaxNotice.tracking_number).distinct()
+        subquery = self.session.query(TaxNotice).distinct()
         if self.batch_id:
             subquery = subquery.filter(TaxNotice.batch_id == self.batch_id)
 
-        missing = subquery.filter(
+        missing_notices = subquery.filter(
             ~TaxNotice.tracking_number.in_(
                 self.session.query(Package.tracking_number).filter(
                     Package.batch_id == self.batch_id if self.batch_id else True
@@ -67,23 +71,26 @@ class DataChecker:
         ).all()
 
         count = 0
-        for (tracking_number,) in missing:
+        for notice in missing_notices:
             self._add_exception(
                 ExceptionType.MISSING_DATA,
-                tracking_number,
+                notice.tracking_number,
                 "有补税通知但缺少申报表数据",
                 severity="error",
-                related_table="tax_notices"
+                related_table="tax_notices",
+                related_id=notice.id,
+                source_id=notice.source_id,
+                original_row=notice.original_row
             )
             count += 1
         return count
 
     def check_missing_tracking(self) -> int:
-        subquery = self.session.query(Package.tracking_number).distinct()
+        subquery = self.session.query(Package).distinct()
         if self.batch_id:
             subquery = subquery.filter(Package.batch_id == self.batch_id)
 
-        missing = subquery.filter(
+        missing_packages = subquery.filter(
             ~Package.tracking_number.in_(
                 self.session.query(TrackingNode.tracking_number).filter(
                     TrackingNode.batch_id == self.batch_id if self.batch_id else True
@@ -92,13 +99,16 @@ class DataChecker:
         ).all()
 
         count = 0
-        for (tracking_number,) in missing:
+        for pkg in missing_packages:
             self._add_exception(
                 ExceptionType.MISSING_DATA,
-                tracking_number,
+                pkg.tracking_number,
                 "有申报但缺少轨迹节点数据",
                 severity="warning",
-                related_table="packages"
+                related_table="packages",
+                related_id=pkg.id,
+                source_id=pkg.source_id,
+                original_row=pkg.original_row
             )
             count += 1
         return count
@@ -143,6 +153,7 @@ class DataChecker:
                         is_matched=False
                     )
                     self.session.add(tax_record)
+                    self.session.flush()
 
                 self._add_exception(
                     ExceptionType.TAX_DISCREPANCY,
@@ -154,7 +165,8 @@ class DataChecker:
                     expected=f"{calc_tax:.2f}",
                     actual=f"{notice.tax_amount:.2f}",
                     related_table="tax_records",
-                    related_id=tax_record.id
+                    related_id=tax_record.id,
+                    source_id=pkg.source_id
                 )
                 count += 1
 
@@ -187,7 +199,9 @@ class DataChecker:
                     field_name="supplier",
                     expected=pkg.supplier,
                     actual=stmt.supplier,
-                    related_table="supplier_statements"
+                    related_table="supplier_statements",
+                    related_id=stmt.id,
+                    source_id=pkg.source_id
                 )
                 count += 1
 
@@ -214,7 +228,9 @@ class DataChecker:
                     "拆分包裹缺少对应的补税通知",
                     severity="error",
                     original_row=pkg.original_row,
-                    related_table="packages"
+                    related_table="packages",
+                    related_id=pkg.id,
+                    source_id=pkg.source_id
                 )
                 count += 1
 

@@ -9,10 +9,10 @@ from ..database import DataSourceType, ImportStrategy
 @click.argument("filepath", type=click.Path(exists=True))
 @click.option("--type", "-t", "source_type", required=True,
               type=click.Choice(["declaration", "tracking", "tax_notice",
-                                 "supplier_statement", "approval_email"]),
+                                 "supplier_statement", "approval_email", "split_package"]),
               help="数据类型: declaration(申报表), tracking(轨迹节点), "
                    "tax_notice(补税通知), supplier_statement(供应商对账单), "
-                   "approval_email(审批邮件)")
+                   "approval_email(审批邮件), split_package(拆分包裹)")
 @click.option("--strategy", "-s", default="append",
               type=click.Choice(["ignore", "overwrite", "append"]),
               help="导入策略: ignore(忽略重复), overwrite(覆盖), append(追加)")
@@ -30,6 +30,7 @@ def import_data(ctx, filepath, source_type, strategy, batch_id, user, async_mode
         "tax_notice": DataSourceType.TAX_NOTICE,
         "supplier_statement": DataSourceType.SUPPLIER_STATEMENT,
         "approval_email": DataSourceType.APPROVAL_EMAIL,
+        "split_package": DataSourceType.DECLARATION,
     }
     strategy_map = {
         "ignore": ImportStrategy.IGNORE,
@@ -43,6 +44,7 @@ def import_data(ctx, filepath, source_type, strategy, batch_id, user, async_mode
         "tax_notice": "补税通知",
         "supplier_statement": "供应商对账单",
         "approval_email": "审批邮件",
+        "split_package": "拆分包裹",
     }
 
     console.print(f"[cyan]正在导入[/cyan]: {filepath}")

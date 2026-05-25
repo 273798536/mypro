@@ -26,6 +26,25 @@ def calculate_file_hash(filepath: str) -> str:
     return sha256_hash.hexdigest()
 
 
+def is_empty_value(val) -> bool:
+    if val is None:
+        return True
+    if isinstance(val, float) and pd.isna(val):
+        return True
+    s = str(val).strip()
+    if not s:
+        return True
+    if s.lower() in ("nan", "none", "null", "n/a", "na"):
+        return True
+    return False
+
+
+def safe_str_value(val) -> Optional[str]:
+    if is_empty_value(val):
+        return None
+    return str(val).strip()
+
+
 def log_audit(session: Session, batch_id: str, table_name: str, record_id: int,
               action: str, field_name: str = None, old_value: str = None,
               new_value: str = None, changed_by: str = "system",
@@ -58,6 +77,7 @@ class BaseImporter:
         self.success_count = 0
         self.failed_count = 0
         self.failed_rows: List[Tuple[int, str]] = []
+        self.source_id = None
 
     def import_row(self, row: pd.Series, original_row: int) -> Optional[int]:
         raise NotImplementedError
@@ -68,9 +88,10 @@ class BaseImporter:
                       actual: str = None, severity: str = "error"):
         exc = ExceptionRecord(
             batch_id=self.batch_id,
+            source_id=self.source_id,
             exception_type=exception_type,
             severity=severity,
-            tracking_number=tracking_number,
+            tracking_number=None if is_empty_value(tracking_number) else str(tracking_number),
             original_row=original_row,
             field_name=field_name,
             expected_value=str(expected) if expected else None,
@@ -86,13 +107,15 @@ class DeclarationImporter(BaseImporter):
 
     def import_row(self, row: pd.Series, original_row: int) -> Optional[int]:
         try:
-            tracking_number = str(row.get("tracking_number", row.get("运单号", ""))).strip()
-            if not tracking_number:
+            raw_tracking = row.get("tracking_number", row.get("运单号", ""))
+            if is_empty_value(raw_tracking):
                 self.failed_count += 1
                 self.failed_rows.append((original_row, "缺少运单号"))
-                self.log_exception(original_row, "", ExceptionType.MISSING_DATA,
+                self.log_exception(original_row, None, ExceptionType.MISSING_DATA,
                                    "缺少运单号", field_name="tracking_number")
                 return None
+
+            tracking_number = str(raw_tracking).strip()
 
             existing = self.session.query(Package).filter(
                 Package.tracking_number == tracking_number
@@ -127,6 +150,18 @@ class DeclarationImporter(BaseImporter):
                     self.success_count += 1
                     return existing.id
 
+            split_flag = str(row.get("split_flag", row.get("拆分标记", ""))).lower() in ("true", "1", "yes", "是")
+            parent_package_id = None
+
+            if split_flag:
+                parent_tracking = safe_str_value(row.get("parent_package_tracking", row.get("父包裹运单号", "")))
+                if parent_tracking:
+                    parent = self.session.query(Package).filter(
+                        Package.tracking_number == parent_tracking
+                    ).first()
+                    if parent:
+                        parent_package_id = parent.id
+
             package = Package(
                 batch_id=self.batch_id,
                 original_row=original_row,
@@ -143,6 +178,8 @@ class DeclarationImporter(BaseImporter):
                 destination_country=str(row.get("destination_country", row.get("目的国", ""))),
                 item_description=str(row.get("item_description", row.get("商品描述", ""))),
                 hs_code=str(row.get("hs_code", row.get("HS编码", ""))),
+                split_flag=split_flag,
+                parent_package_id=parent_package_id,
             )
             self.session.add(package)
             self.session.flush()
@@ -156,7 +193,7 @@ class DeclarationImporter(BaseImporter):
         except Exception as e:
             self.failed_count += 1
             self.failed_rows.append((original_row, str(e)))
-            self.log_exception(original_row, str(row.get("tracking_number", "")),
+            self.log_exception(original_row, row.get("tracking_number", ""),
                                ExceptionType.INVALID_FORMAT, str(e))
             return None
 
@@ -167,15 +204,18 @@ class TrackingImporter(BaseImporter):
 
     def import_row(self, row: pd.Series, original_row: int) -> Optional[int]:
         try:
-            tracking_number = str(row.get("tracking_number", row.get("运单号", ""))).strip()
-            node_time_str = str(row.get("node_time", row.get("节点时间", ""))).strip()
+            raw_tracking = row.get("tracking_number", row.get("运单号", ""))
+            raw_node_time = row.get("node_time", row.get("节点时间", ""))
 
-            if not tracking_number or not node_time_str:
+            if is_empty_value(raw_tracking) or is_empty_value(raw_node_time):
                 self.failed_count += 1
                 self.failed_rows.append((original_row, "缺少运单号或节点时间"))
-                self.log_exception(original_row, tracking_number, ExceptionType.MISSING_DATA,
+                self.log_exception(original_row, raw_tracking, ExceptionType.MISSING_DATA,
                                    "缺少运单号或节点时间")
                 return None
+
+            tracking_number = str(raw_tracking).strip()
+            node_time_str = str(raw_node_time).strip()
 
             try:
                 node_time = pd.to_datetime(node_time_str).to_pydatetime()
@@ -222,15 +262,18 @@ class TaxNoticeImporter(BaseImporter):
 
     def import_row(self, row: pd.Series, original_row: int) -> Optional[int]:
         try:
-            notice_number = str(row.get("notice_number", row.get("通知书号", ""))).strip()
-            tracking_number = str(row.get("tracking_number", row.get("运单号", ""))).strip()
+            raw_notice = row.get("notice_number", row.get("通知书号", ""))
+            raw_tracking = row.get("tracking_number", row.get("运单号", ""))
 
-            if not notice_number:
+            if is_empty_value(raw_notice):
                 self.failed_count += 1
                 self.failed_rows.append((original_row, "缺少通知书号"))
-                self.log_exception(original_row, tracking_number, ExceptionType.MISSING_DATA,
+                self.log_exception(original_row, raw_tracking, ExceptionType.MISSING_DATA,
                                    "缺少通知书号", field_name="notice_number")
                 return None
+
+            notice_number = str(raw_notice).strip()
+            tracking_number = None if is_empty_value(raw_tracking) else str(raw_tracking).strip()
 
             existing = self.session.query(TaxNotice).filter(
                 TaxNotice.notice_number == notice_number
@@ -297,15 +340,19 @@ class SupplierStatementImporter(BaseImporter):
 
     def import_row(self, row: pd.Series, original_row: int) -> Optional[int]:
         try:
-            statement_number = str(row.get("statement_number", row.get("对账单号", ""))).strip()
+            raw_statement = row.get("statement_number", row.get("对账单号", ""))
+            raw_tracking = row.get("tracking_number", row.get("运单号", ""))
 
-            if not statement_number:
+            if is_empty_value(raw_statement):
                 self.failed_count += 1
                 self.failed_rows.append((original_row, "缺少对账单号"))
-                self.log_exception(original_row, str(row.get("tracking_number", "")),
+                self.log_exception(original_row, raw_tracking,
                                    ExceptionType.MISSING_DATA, "缺少对账单号",
                                    field_name="statement_number")
                 return None
+
+            statement_number = str(raw_statement).strip()
+            tracking_number = None if is_empty_value(raw_tracking) else str(raw_tracking).strip()
 
             existing = self.session.query(SupplierStatement).filter(
                 SupplierStatement.statement_number == statement_number
@@ -370,14 +417,16 @@ class ApprovalEmailImporter(BaseImporter):
 
     def import_row(self, row: pd.Series, original_row: int) -> Optional[int]:
         try:
-            email_id = str(row.get("email_id", row.get("邮件ID", ""))).strip()
+            raw_email_id = row.get("email_id", row.get("邮件ID", ""))
 
-            if not email_id:
+            if is_empty_value(raw_email_id):
                 self.failed_count += 1
                 self.failed_rows.append((original_row, "缺少邮件ID"))
-                self.log_exception(original_row, "", ExceptionType.MISSING_DATA,
+                self.log_exception(original_row, None, ExceptionType.MISSING_DATA,
                                    "缺少邮件ID", field_name="email_id")
                 return None
+
+            email_id = str(raw_email_id).strip()
 
             existing = self.session.query(ApprovalEmail).filter(
                 ApprovalEmail.email_id == email_id

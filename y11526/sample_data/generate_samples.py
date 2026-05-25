@@ -188,6 +188,55 @@ def generate_approval_emails():
     print(f"生成: {output_path} ({len(df)} 行)")
 
 
+def generate_split_packages():
+    """生成拆分包裹样例数据"""
+    data = []
+    suppliers = ["供应商A", "供应商B"]
+
+    for i in range(1, 4):
+        parent_tracking = f"SPLIT{202405000 + i}"
+        data.append({
+            "tracking_number": parent_tracking,
+            "declaration_number": f"DEC-SPLIT{i:03d}",
+            "supplier": suppliers[i % len(suppliers)],
+            "sender": f"发件人拆分{i}",
+            "receiver": f"收件人拆分{i}",
+            "weight": 10.0,
+            "declared_value": 1000.0,
+            "currency": "USD",
+            "origin_country": "US",
+            "destination_country": "CN",
+            "item_description": f"大型商品{i}（需要拆分配送）",
+            "hs_code": "85171210",
+            "split_flag": True,
+            "parent_package_id": None,
+        })
+
+        for j in range(1, 4):
+            child_tracking = f"SPLIT{202405000 + i}-{j}"
+            data.append({
+                "tracking_number": child_tracking,
+                "declaration_number": f"DEC-SPLIT{i:03d}-{j}",
+                "supplier": suppliers[i % len(suppliers)],
+                "sender": f"发件人拆分{i}",
+                "receiver": f"收件人拆分{i}",
+                "weight": 3.33,
+                "declared_value": 333.33,
+                "currency": "USD",
+                "origin_country": "US",
+                "destination_country": "CN",
+                "item_description": f"大型商品{i} 拆分{j}",
+                "hs_code": "85171210",
+                "split_flag": True,
+                "parent_package_tracking": parent_tracking,
+            })
+
+    df = pd.DataFrame(data)
+    output_path = os.path.join(OUTPUT_DIR, "split_packages.csv")
+    df.to_csv(output_path, index=False, encoding="utf-8-sig")
+    print(f"生成: {output_path} ({len(df)} 行)")
+
+
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     print("=" * 50)
@@ -198,5 +247,6 @@ if __name__ == "__main__":
     generate_tax_notices()
     generate_supplier_statements()
     generate_approval_emails()
+    generate_split_packages()
     print("=" * 50)
     print("完成！")
