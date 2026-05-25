@@ -4,8 +4,11 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:api": "ENABLE_WORKER=false tsx watch src/index.ts",
+    "dev:worker": "tsx watch src/workers/signinWorker.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "start:worker": "node dist/workers/signinWorker.js",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
     "test:data": "tsx src/scripts/testData.ts"

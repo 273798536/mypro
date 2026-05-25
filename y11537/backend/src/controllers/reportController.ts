@@ -1,8 +1,8 @@
 import { Response } from 'express';
 import { SigninRecord, CompensationQueue, FailedRecord } from '../models';
-import { QueueStatus, UserRole } from '../models/types';
+import { QueueStatus, UserRole, AuditAction } from '../models/types';
 import { AuthRequest } from '../middleware/auth';
-import { getAuditLogs } from '../services/auditService';
+import { getAuditLogs, createAuditLog } from '../services/auditService';
 import { filterFieldsByRole, hrbpFocusFields } from '../config/permissions';
 import { Op, fn, col, literal } from 'sequelize';
 import ExcelJS from 'exceljs';
@@ -360,6 +360,73 @@ export async function getRecordDiff(req: AuthRequest, res: Response) {
     });
   } catch (error: any) {
     console.error('获取记录差异错误:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+export async function resolveFailedRecord(req: AuthRequest, res: Response) {
+  try {
+    const user = req.user!;
+    const { id } = req.params;
+    const { resolutionMethod, resolutionRemark } = req.body;
+    
+    if (!resolutionRemark) {
+      return res.status(400).json({
+        success: false,
+        error: '解决备注不能为空'
+      });
+    }
+    
+    const failedRecord = await FailedRecord.findByPk(parseInt(id));
+    if (!failedRecord) {
+      return res.status(404).json({
+        success: false,
+        error: '失败记录不存在'
+      });
+    }
+    
+    if (failedRecord.isResolved) {
+      return res.status(400).json({
+        success: false,
+        error: '该记录已被解决'
+      });
+    }
+    
+    const beforeData = failedRecord.toJSON();
+    
+    await failedRecord.update({
+      isResolved: true,
+      resolvedAt: new Date(),
+      resolvedBy: user.id,
+      resolutionMethod: resolutionMethod || 'manual_fix',
+      resolutionRemark
+    });
+    
+    await createAuditLog({
+      action: AuditAction.UPDATE,
+      source: failedRecord.source,
+      recordType: 'failed_record',
+      recordId: failedRecord.id,
+      recordNo: failedRecord.failureNo,
+      beforeData,
+      afterData: failedRecord.toJSON(),
+      changeReason: resolutionRemark,
+      operatorId: user.id,
+      operatorName: user.realName,
+      operatorRole: user.role,
+      ipAddress: req.ip
+    });
+    
+    res.json({
+      success: true,
+      message: '失败记录已标记为解决',
+      data: failedRecord
+    });
+  } catch (error: any) {
+    console.error('解决失败记录错误:', error);
     res.status(500).json({
       success: false,
       error: error.message

@@ -132,8 +132,9 @@ function FailedRecordsPage() {
   const handleResolve = async (values: any) => {
     if (!selectedItem) return;
     try {
-      await api.post(`/queue/${selectedItem.id}/close`, {
-        closeReason: values.resolutionRemark
+      await api.post(`/failed-records/${selectedItem.id}/resolve`, {
+        resolutionMethod: values.resolutionMethod || 'manual_fix',
+        resolutionRemark: values.resolutionRemark
       });
       message.success('标记已解决成功');
       setResolveVisible(false);
@@ -411,6 +412,19 @@ function FailedRecordsPage() {
         onOk={() => resolveForm.submit()}
       >
         <Form form={resolveForm} onFinish={handleResolve} layout="vertical">
+          <Form.Item
+            name="resolutionMethod"
+            label="解决方式"
+            rules={[{ required: true, message: '请选择解决方式' }]}
+          >
+            <Select placeholder="请选择解决方式">
+              <Select.Option value="manual_fix">人工修正</Select.Option>
+              <Select.Option value="data_cleanup">数据清理</Select.Option>
+              <Select.Option value="reimport">重新导入</Select.Option>
+              <Select.Option value="ignore">忽略此错误</Select.Option>
+              <Select.Option value="other">其他</Select.Option>
+            </Select>
+          </Form.Item>
           <Form.Item
             name="resolutionRemark"
             label="解决备注"

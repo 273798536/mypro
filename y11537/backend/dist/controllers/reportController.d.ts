@@ -6,3 +6,4 @@ export declare function getHrbpDashboard(req: AuthRequest, res: Response): Promi
 export declare function exportSigninReport(req: AuthRequest, res: Response): Promise<void>;
 export declare function exportFailedRecords(req: AuthRequest, res: Response): Promise<void>;
 export declare function getRecordDiff(req: AuthRequest, res: Response): Promise<void>;
+export declare function resolveFailedRecord(req: AuthRequest, res: Response): Promise<Response<any, Record<string, any>> | undefined>;

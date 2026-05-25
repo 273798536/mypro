@@ -10,8 +10,11 @@ import {
   message,
   InputNumber,
   Switch,
-  Space
+  Space,
+  Upload,
+  Alert
 } from 'antd';
+import { UploadOutlined, FileZipOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -121,6 +124,9 @@ function DataSubmissionPage() {
     }
   };
 
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   const handleSubmitHistory = async (values: any) => {
     if (!canSubmit) {
       message.error('您没有提交权限');
@@ -140,6 +146,34 @@ function DataSubmissionPage() {
       }
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!uploadedFile) {
+      message.error('请先选择压缩包文件');
+      return;
+    }
+    if (!canSubmit) {
+      message.error('您没有提交权限');
+      return;
+    }
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+      await api.post('/data/history-archive/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      message.success('压缩包导入成功');
+      setUploadedFile(null);
+      historyForm.resetFields();
+    } catch (error: any) {
+      message.error(error.response?.data?.error || '压缩包导入失败');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -491,63 +525,118 @@ function DataSubmissionPage() {
           </TabPane>
 
           <TabPane tab="历史压缩包" key="history">
-            <Form
-              form={historyForm}
-              onFinish={handleSubmitHistory}
-              layout="vertical"
-              style={{ maxWidth: 800 }}
-            >
-              <Form.Item
-                name="jsonData"
-                label="历史数据 (JSON格式)"
-                rules={[{ required: true, message: '请输入JSON数据' }]}
-                extra='格式示例: {"registrations": [{...}], "signins": [{...}]}'
-              >
-                <TextArea
-                  rows={15}
-                  placeholder='请输入JSON格式的历史数据，包含registrations和signins数组'
-                  style={{ fontFamily: 'monospace' }}
-                />
-              </Form.Item>
-              <Form.Item>
-                <Space>
-                  <Button type="primary" htmlType="submit" loading={submitting}>
-                    导入历史数据
-                  </Button>
-                  <Button
-                    onClick={() => historyForm.setFieldsValue({
-                      jsonData: JSON.stringify({
-                        registrations: [
-                          {
-                            employeeId: "E001",
-                            employeeName: "张三",
-                            department: "技术部",
-                            trainingId: "T001",
-                            trainingName: "React高级开发",
-                            trainingDate: "2024-01-15",
-                            trainingLocation: "会议室A",
-                            trainer: "李老师"
-                          }
-                        ],
-                        signins: [
-                          {
-                            employeeId: "E001",
-                            employeeName: "张三",
-                            department: "技术部",
-                            trainingId: "T001",
-                            trainingName: "React高级开发",
-                            trainingDate: "2024-01-15",
-                            signinTime: "2024-01-15T09:00:00.000Z"
-                          }
-                        ]
-                      }, null, 2)
-                    })}
+            <div style={{ maxWidth: 800 }}>
+              <Alert
+                message="支持两种导入方式"
+                description="方式一：上传压缩包文件(.zip/.tar/.tar.gz/.rar)；方式二：粘贴JSON数据"
+                type="info"
+                showIcon
+                style={{ marginBottom: 16 }}
+              />
+              
+              <Card size="small" title="方式一：上传压缩包文件" style={{ marginBottom: 16 }}>
+                <Form layout="vertical">
+                  <Form.Item
+                    name="archiveFile"
+                    label="压缩包文件"
+                    rules={[{ required: false, message: '请选择压缩包文件' }]}
+                    extra="支持格式: .zip, .tar, .tar.gz, .rar (最大50MB)"
                   >
-                    填充示例数据
+                    <Upload
+                      beforeUpload={(file) => {
+                        const isArchive = /\.(zip|tar|gz|rar|tgz)$/i.test(file.name);
+                        if (!isArchive) {
+                          message.error('只支持 .zip, .tar, .tar.gz, .rar 格式');
+                          return Upload.LIST_IGNORE;
+                        }
+                        const isLt50M = file.size / 1024 / 1024 < 50;
+                        if (!isLt50M) {
+                          message.error('文件大小不能超过50MB');
+                          return Upload.LIST_IGNORE;
+                        }
+                        setUploadedFile(file);
+                        return false;
+                      }}
+                      maxCount={1}
+                      fileList={uploadedFile ? [{
+                        uid: '-1',
+                        name: uploadedFile.name,
+                        status: 'done' as const,
+                        size: uploadedFile.size
+                      }] : []}
+                      onRemove={() => setUploadedFile(null)}
+                    >
+                      <Button icon={<UploadOutlined />}>选择压缩包</Button>
+                    </Upload>
+                  </Form.Item>
+                  <Button
+                    type="primary"
+                    icon={<FileZipOutlined />}
+                    onClick={handleFileUpload}
+                    loading={uploading}
+                    disabled={!uploadedFile}
+                  >
+                    导入压缩包
                   </Button>
-                </Space>
-              </Form.Item>
-            </Form>
+                </Form>
+              </Card>
+
+              <Card size="small" title="方式二：粘贴JSON数据">
+                <Form
+                  form={historyForm}
+                  onFinish={handleSubmitHistory}
+                  layout="vertical"
+                >
+                  <Form.Item
+                    name="jsonData"
+                    label="历史数据 (JSON格式)"
+                    extra='格式示例: {"registrations": [{...}], "signins": [{...}]}'
+                  >
+                    <TextArea
+                      rows={10}
+                      placeholder='请输入JSON格式的历史数据，包含registrations和signins数组'
+                      style={{ fontFamily: 'monospace' }}
+                    />
+                  </Form.Item>
+                  <Space>
+                    <Button type="primary" htmlType="submit" loading={submitting}>
+                      导入JSON数据
+                    </Button>
+                    <Button
+                      onClick={() => historyForm.setFieldsValue({
+                        jsonData: JSON.stringify({
+                          registrations: [
+                            {
+                              employeeId: "E001",
+                              employeeName: "张三",
+                              department: "技术部",
+                              trainingId: "T001",
+                              trainingName: "React高级开发",
+                              trainingDate: "2024-01-15",
+                              trainingLocation: "会议室A",
+                              trainer: "李老师"
+                            }
+                          ],
+                          signins: [
+                            {
+                              employeeId: "E001",
+                              employeeName: "张三",
+                              department: "技术部",
+                              trainingId: "T001",
+                              trainingName: "React高级开发",
+                              trainingDate: "2024-01-15",
+                              signinTime: "2024-01-15T09:00:00.000Z"
+                            }
+                          ]
+                        }, null, 2)
+                      })}
+                    >
+                      填充示例数据
+                    </Button>
+                  </Space>
+                </Form>
+              </Card>
+            </div>
           </TabPane>
         </Tabs>
       </Card>

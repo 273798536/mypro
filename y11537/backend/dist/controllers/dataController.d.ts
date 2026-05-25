@@ -5,3 +5,4 @@ export declare function submitSignin(req: AuthRequest, res: Response): Promise<R
 export declare function submitHomework(req: AuthRequest, res: Response): Promise<void>;
 export declare function submitPriceAdjustment(req: AuthRequest, res: Response): Promise<void>;
 export declare function submitHistoryArchive(req: AuthRequest, res: Response): Promise<void>;
+export declare function uploadHistoryArchive(req: AuthRequest, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
