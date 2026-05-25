@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { User, ROLES, ROLE_PERMISSIONS } = require('../models/User');
+const { OperationLog } = require('../models/OperationLog');
 const _ = require('lodash');
 
 const authenticate = async (req, res, next) => {
@@ -24,12 +25,32 @@ const authenticate = async (req, res, next) => {
 };
 
 const authorize = (...allowedRoles) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ error: '未认证' });
     }
 
     if (!allowedRoles.includes(req.user.role)) {
+      try {
+        const targetId = req.params.id || null;
+        const operationType = req.method.toLowerCase() + '_' + (req.path.split('/')[1] || 'unknown');
+        
+        await OperationLog.create({
+          operationType: operationType,
+          operator: req.user._id,
+          operatorName: req.user.name,
+          operatorRole: req.user.role,
+          targetType: req.path.split('/')[1] || 'unknown',
+          targetId,
+          ip: req.ip,
+          userAgent: req.get('User-Agent'),
+          success: false,
+          errorMessage: `权限拦截: 角色[${req.user.role}]无权限执行此操作，需要角色: ${allowedRoles.join(', ')}`
+        });
+      } catch (logErr) {
+        console.error('记录权限拦截日志失败:', logErr.message);
+      }
+      
       return res.status(403).json({ error: '权限不足，禁止访问' });
     }
 
@@ -38,13 +59,32 @@ const authorize = (...allowedRoles) => {
 };
 
 const requirePermission = (action) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ error: '未认证' });
     }
 
     const permissions = ROLE_PERMISSIONS[req.user.role];
     if (!permissions.canEdit.includes(action) && !permissions.canEdit.includes('*')) {
+      try {
+        const targetId = req.params.id || null;
+        
+        await OperationLog.create({
+          operationType: action,
+          operator: req.user._id,
+          operatorName: req.user.name,
+          operatorRole: req.user.role,
+          targetType: req.path.split('/')[1] || 'unknown',
+          targetId,
+          ip: req.ip,
+          userAgent: req.get('User-Agent'),
+          success: false,
+          errorMessage: `权限拦截: 角色[${req.user.role}]无权限执行操作: ${action}`
+        });
+      } catch (logErr) {
+        console.error('记录权限拦截日志失败:', logErr.message);
+      }
+      
       return res.status(403).json({ error: `没有权限执行: ${action}` });
     }
 

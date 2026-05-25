@@ -2,21 +2,41 @@
 
 一个完整的后端服务系统，用于智能柜补货业务的台账管理、权限控制、审计追踪和追责追溯。
 
-## 🛠 修复记录 (v1.1)
+## 🛠 修复记录
 
-### 权限闭环修复
+### v1.2 - 核心闭环修复 (2026-05-26)
+
+**问题1：脱敏导出空表头**
+- 修复 [exportService.js:16](file:///Users/mac/pro/solo/workspaces/y11554/src/services/exportService.js#L16-L21) `EXPORT_ROLES` 键名大小写问题
+- 键名从 `DATA_ENTRY`/`SUPERVISOR` 改为 `data_entry`/`supervisor`，与实际角色值一致
+- 修复后导出CSV将生成正确表头，不再空表头
+
+**问题2：权限拦截不写日志导致误报**
+- 修复 [auth.js:27-58](file:///Users/mac/pro/solo/workspaces/y11554/src/middleware/auth.js#L27-L58) `authorize` 中间件，权限拦截时记录失败日志
+- 修复 [auth.js:61-92](file:///Users/mac/pro/solo/workspaces/y11554/src/middleware/auth.js#L61-L92) `requirePermission` 中间件，同样记录失败日志
+- 修复 [autoCheckService.js:251](file:///Users/mac/pro/solo/workspaces/y11554/src/services/autoCheckService.js#L251-L256) 和 [autoCheckService.js:337](file:///Users/mac/pro/solo/workspaces/y11554/src/services/autoCheckService.js#L337-L341) 权限拦截日志查询匹配逻辑
+- 修复后自动化检查能正确统计权限拦截次数，不再误报"无权限拦截记录"
+
+**问题3：路由被抢占**
+- 修复 [ledger.js:55-57](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/ledger.js#L55-L57) `/statuses` 路由位置，移到 `/:id` 之前
+- 删除底部重复的 `/statuses` 路由
+- 修复后 `/api/ledger/statuses` 能正确返回状态枚举，不再被匹配为台账ID
+
+### v1.1 - 基础功能修复
+
+**权限闭环修复**
 - 修复 [ledger.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/ledger.js) 中所有写接口权限拦截：`POST /`, `PUT /:id`, `POST /:id/submit`, `POST /:id/add-refund`, `POST /:id/add-photo`
 - 修复 [inventory.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/inventory.js) 中 `POST /` 和 `PUT /:id` 权限拦截
 - 修复 [refund.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/refund.js) 中 `POST /` 和 `PUT /:id` 权限拦截
 - 所有写接口仅允许 `data_entry`、`reviewer`、`supervisor` 角色访问，`read_only` 角色无法触发写操作
 
-### 功能补全
+**功能补全**
 - ✅ 新增 [multer.js](file:///Users/mac/pro/solo/workspaces/y11554/src/config/multer.js) 照片上传配置
 - ✅ 新增 [photo.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/photo.js) 照片上传/管理API，支持真实文件上传、去重、审核
 - ✅ 脏记录检测接入主流程：[ledgerService.js](file:///Users/mac/pro/solo/workspaces/y11554/src/services/ledgerService.js#L69-L195) 创建/更新台账时自动检测缺字段、跨日、改名、金额/数量冲突
 - ✅ 自动化检查覆盖5项：[autoCheckService.js](file:///Users/mac/pro/solo/workspaces/y11554/src/services/autoCheckService.js#L214-L316) 历史版本完整性、重复导入、权限拦截、异常保留、导出一致性
 
-### 测试与验证
+**测试与验证**
 - ✅ 新增 [auth.test.js](file:///Users/mac/pro/solo/workspaces/y11554/tests/auth.test.js) 认证接口测试
 - ✅ 新增 [permission.test.js](file:///Users/mac/pro/solo/workspaces/y11554/tests/permission.test.js) 权限控制测试（验证read_only角色被正确拦截）
 - ✅ 新增 [full-flow.test.js](file:///Users/mac/pro/solo/workspaces/y11554/tests/full-flow.test.js) 完整业务流程闭环测试（从建账到结案）

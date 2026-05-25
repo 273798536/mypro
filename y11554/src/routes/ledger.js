@@ -52,6 +52,10 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/statuses', (req, res) => {
+  res.json(LEDGER_STATUS);
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const ledger = await getLedgerDetail(req.params.id);
@@ -218,10 +222,6 @@ router.get('/:id/auto-checks', authorize(ROLES.SUPERVISOR), async (req, res) => 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
-
-router.get('/statuses', (req, res) => {
-  res.json(LEDGER_STATUS);
 });
 
 module.exports = router;

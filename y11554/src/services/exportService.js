@@ -14,10 +14,10 @@ const EXPORT_TYPES = {
 };
 
 const EXPORT_ROLES = {
-  DATA_ENTRY: ['basic', 'inventory', 'photos'],
-  REVIEWER: ['basic', 'inventory', 'photos', 'refund', 'audit'],
-  SUPERVISOR: ['*'],
-  READ_ONLY: ['basic', 'summary']
+  data_entry: ['basic', 'inventory', 'photos'],
+  reviewer: ['basic', 'inventory', 'photos', 'refund', 'audit'],
+  supervisor: ['*'],
+  read_only: ['basic', 'summary']
 };
 
 const ensureExportDir = () => {

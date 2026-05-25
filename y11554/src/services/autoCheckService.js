@@ -252,7 +252,7 @@ const runAllChecks = async (ledgerId, context = {}) => {
     targetType: 'ledger',
     targetId: ledgerId,
     success: false,
-    errorMessage: /权限拦截/
+    errorMessage: { $regex: '权限拦截' }
   });
   permissionCheck.details = { permissionBlockedCount };
   if (permissionBlockedCount > 0) {
@@ -337,7 +337,7 @@ const getCheckStats = async (timeRange = {}) => {
   const permissionBlockedCount = await OperationLog.countDocuments({
     ...query,
     success: false,
-    errorMessage: /权限拦截/
+    errorMessage: { $regex: '权限拦截' }
   });
 
   const duplicateImportCount = await DirtyRecord.countDocuments({
