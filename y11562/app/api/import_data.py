@@ -25,7 +25,7 @@ def batch_import(
     db: Session = Depends(get_db)
 ):
     try:
-        batch_no, total_count, success_count, failed_records = batch_import_records(
+        batch_no, total_count, success_count, skipped_count, failed_records = batch_import_records(
             db=db,
             source_type=request.source_type,
             source_file=request.source_file,
@@ -39,6 +39,7 @@ def batch_import(
             import_batch_no=batch_no,
             total_count=total_count,
             success_count=success_count,
+            skipped_count=skipped_count,
             failed_count=len(failed_records),
             failed_records=failed_records
         )

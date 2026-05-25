@@ -142,6 +142,7 @@ class BatchImportResponse(BaseModel):
     import_batch_no: str
     total_count: int
     success_count: int
+    skipped_count: int = 0
     failed_count: int
     failed_records: List[Dict[str, Any]]
 

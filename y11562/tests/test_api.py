@@ -56,6 +56,42 @@ class TestImportAPI:
         data = response.json()
         assert data["success"] is True
 
+    def test_batch_import_duplicate_skipped(self, client):
+        record = {
+            "check_in_no": "CI001",
+            "amount": 500,
+            "room_no": "101",
+            "guest_name": "张三"
+        }
+
+        response1 = client.post(
+            "/api/v1/import/batch",
+            json={
+                "source_type": "check_in",
+                "source_file": "dup_test.xlsx",
+                "import_batch_no": "DUP001",
+                "records": [record]
+            }
+        )
+        assert response1.status_code == 200
+        data1 = response1.json()
+        assert data1["success_count"] == 1
+        assert data1["skipped_count"] == 0
+
+        response2 = client.post(
+            "/api/v1/import/batch",
+            json={
+                "source_type": "check_in",
+                "source_file": "dup_test.xlsx",
+                "import_batch_no": "DUP001",
+                "records": [record]
+            }
+        )
+        assert response2.status_code == 200
+        data2 = response2.json()
+        assert data2["success_count"] == 0
+        assert data2["skipped_count"] == 1
+
     def test_get_import_batch_records(self, client):
         import_response = client.post(
             "/api/v1/import/batch",

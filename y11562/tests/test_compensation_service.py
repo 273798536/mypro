@@ -6,6 +6,7 @@ from app.services.compensation_service import (
     handle_processing_success,
     handle_processing_failure,
     retry_compensation,
+    reset_processing_to_pending,
     manual_takeover,
     manual_compensate,
     close_compensation,
@@ -358,3 +359,190 @@ class TestInvalidTransitions:
         
         assert success is False
         assert "不允许人工补偿" in message
+
+
+class TestServiceRecovery:
+    def test_reset_processing_to_pending(self, db_session):
+        compensation_data = CompensationQueueCreate(
+            source_type=DataSourceType.CHECK_IN,
+            check_in_no="CI20240520001",
+            amount=580.0
+        )
+        compensation = create_compensation(db_session, compensation_data)
+        process_compensation(db_session, compensation.compensation_no)
+
+        compensation = get_compensation_by_no(db_session, compensation.compensation_no)
+        assert compensation.status == CompensationStatus.PROCESSING
+
+        success, message, new_status = reset_processing_to_pending(
+            db_session,
+            compensation.compensation_no,
+            operator="system",
+            remark="服务恢复测试"
+        )
+
+        assert success is True
+        assert new_status == CompensationStatus.PENDING
+
+        compensation = get_compensation_by_no(db_session, compensation.compensation_no)
+        assert compensation.status == CompensationStatus.PENDING
+        assert compensation.celery_task_id is None
+
+    def test_reset_waiting_retry_to_pending(self, db_session):
+        compensation_data = CompensationQueueCreate(
+            source_type=DataSourceType.CHECK_IN,
+            check_in_no="CI20240520001",
+            amount=580.0
+        )
+        compensation = create_compensation(db_session, compensation_data)
+        process_compensation(db_session, compensation.compensation_no)
+        handle_processing_failure(
+            db_session, compensation.compensation_no, "网络超时", FailureType.RETRYABLE
+        )
+
+        compensation = get_compensation_by_no(db_session, compensation.compensation_no)
+        assert compensation.status == CompensationStatus.WAITING_RETRY
+
+        success, message, new_status = reset_processing_to_pending(
+            db_session,
+            compensation.compensation_no,
+            operator="system",
+            remark="服务恢复测试"
+        )
+
+        assert success is True
+        assert new_status == CompensationStatus.PENDING
+
+    def test_cannot_reset_compensated(self, db_session):
+        compensation_data = CompensationQueueCreate(
+            source_type=DataSourceType.CHECK_IN,
+            check_in_no="CI20240520001",
+            amount=580.0
+        )
+        compensation = create_compensation(db_session, compensation_data)
+        process_compensation(db_session, compensation.compensation_no)
+        handle_processing_success(db_session, compensation.compensation_no)
+
+        success, message, _ = reset_processing_to_pending(
+            db_session,
+            compensation.compensation_no,
+            operator="system"
+        )
+
+        assert success is False
+        assert "不允许重置" in message
+
+    def test_reset_records_state_transition(self, db_session):
+        compensation_data = CompensationQueueCreate(
+            source_type=DataSourceType.CHECK_IN,
+            check_in_no="CI20240520001",
+            amount=580.0
+        )
+        compensation = create_compensation(db_session, compensation_data)
+        process_compensation(db_session, compensation.compensation_no)
+
+        reset_processing_to_pending(
+            db_session,
+            compensation.compensation_no,
+            operator="system",
+            remark="服务恢复测试"
+        )
+
+        transitions = get_state_transitions(db_session, compensation.id)
+        recovery_transitions = [
+            t for t in transitions
+            if t.from_status == CompensationStatus.PROCESSING
+            and t.to_status == CompensationStatus.PENDING
+        ]
+        assert len(recovery_transitions) == 1
+        assert "服务恢复重置" in recovery_transitions[0].transition_reason
+
+
+class TestImportIdempotency:
+    def test_duplicate_import_skipped(self, db_session):
+        from app.services.import_service import batch_import_records
+        from app.models.models import DataSourceType
+
+        records = [
+            {"check_in_no": "CI001", "amount": 500, "room_no": "101", "guest_name": "张三"}
+        ]
+
+        batch_no1, total1, success1, skipped1, failed1 = batch_import_records(
+            db_session,
+            source_type=DataSourceType.CHECK_IN,
+            source_file="test_file.xlsx",
+            records=records,
+            import_batch_no="BATCH001"
+        )
+
+        assert success1 == 1
+        assert skipped1 == 0
+
+        batch_no2, total2, success2, skipped2, failed2 = batch_import_records(
+            db_session,
+            source_type=DataSourceType.CHECK_IN,
+            source_file="test_file.xlsx",
+            records=records,
+            import_batch_no="BATCH001"
+        )
+
+        assert success2 == 0
+        assert skipped2 == 1
+
+    def test_different_batch_can_import_same_rows(self, db_session):
+        from app.services.import_service import batch_import_records
+        from app.models.models import DataSourceType
+
+        records = [
+            {"check_in_no": "CI001", "amount": 500, "room_no": "101", "guest_name": "张三"}
+        ]
+
+        batch_no1, total1, success1, skipped1, failed1 = batch_import_records(
+            db_session,
+            source_type=DataSourceType.CHECK_IN,
+            source_file="file_a.xlsx",
+            records=records,
+            import_batch_no="BATCH_A"
+        )
+
+        assert success1 == 1
+
+        batch_no2, total2, success2, skipped2, failed2 = batch_import_records(
+            db_session,
+            source_type=DataSourceType.CHECK_IN,
+            source_file="file_b.xlsx",
+            records=records,
+            import_batch_no="BATCH_B"
+        )
+
+        assert success2 == 1
+
+    def test_compensation_not_duplicated_on_reimport(self, db_session):
+        from app.services.import_service import batch_import_records
+        from app.models.models import DataSourceType, CompensationQueue
+
+        records = [
+            {"check_in_no": "CI001", "amount": 500, "room_no": "101", "guest_name": "张三"}
+        ]
+
+        batch_import_records(
+            db_session,
+            source_type=DataSourceType.CHECK_IN,
+            source_file="test.xlsx",
+            records=records,
+            import_batch_no="BATCH001"
+        )
+
+        comp_count_1 = db_session.query(CompensationQueue).count()
+
+        batch_import_records(
+            db_session,
+            source_type=DataSourceType.CHECK_IN,
+            source_file="test.xlsx",
+            records=records,
+            import_batch_no="BATCH001"
+        )
+
+        comp_count_2 = db_session.query(CompensationQueue).count()
+
+        assert comp_count_1 == comp_count_2

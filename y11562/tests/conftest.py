@@ -1,23 +1,10 @@
 import os
-import sys
-from unittest.mock import MagicMock, patch
 
 os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-
-sys.modules['celery'] = MagicMock()
-sys.modules['celery_app'] = MagicMock()
-
-mock_celery = MagicMock()
-mock_celery.control = MagicMock()
-mock_celery.control.ping = MagicMock(return_value=[])
-mock_task = MagicMock()
-mock_task.delay = MagicMock()
-mock_celery.task = MagicMock(return_value=lambda f: mock_task)
-mock_celery.on_after_configure = MagicMock()
-mock_celery.on_after_configure.connect = MagicMock()
-sys.modules['app.celery_app'] = MagicMock(celery_app=mock_celery)
+os.environ["CELERY_ENABLED"] = "False"
 
 import pytest
+from unittest.mock import MagicMock, patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
@@ -45,7 +32,7 @@ def db_session():
 
 
 @pytest.fixture(scope="function", autouse=True)
-def mock_celery():
+def mock_tasks():
     with patch('app.api.compensation.process_compensation_task') as mock_task:
         mock_task.delay = MagicMock()
         yield mock_task

@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from app.database import engine, Base
 from app.api import compensation, import_data, export_data
-from app.celery_app import celery_app
+from app.config import get_settings
 
 Base.metadata.create_all(bind=engine)
+
+settings = get_settings()
 
 app = FastAPI(
     title="酒店前台夜审重试补偿队列 API",
@@ -18,7 +20,11 @@ app.include_router(export_data.router, prefix="/api/v1/export", tags=["导出"])
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "celery_connected": celery_app.control.ping() is not None}
+    return {
+        "status": "healthy",
+        "database": engine.url.database,
+        "celery_enabled": settings.CELERY_ENABLED
+    }
 
 
 @app.get("/")

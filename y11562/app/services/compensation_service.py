@@ -454,6 +454,54 @@ def retry_compensation(
     return True, "重试已触发", CompensationStatus.PENDING
 
 
+def reset_processing_to_pending(
+    db: Session,
+    compensation_no: str,
+    operator: str = "system",
+    remark: Optional[str] = None
+) -> Tuple[bool, str, CompensationStatus]:
+    compensation = get_compensation_by_no(db, compensation_no)
+    if not compensation:
+        return False, "补偿记录不存在", CompensationStatus.PENDING
+
+    if compensation.status not in [
+        CompensationStatus.PROCESSING,
+        CompensationStatus.WAITING_RETRY,
+        CompensationStatus.WAITING_MANUAL,
+        CompensationStatus.PERMANENT_FAILED
+    ]:
+        return False, f"当前状态{compensation.status.value}不允许重置", compensation.status
+
+    original_status = compensation.status
+    compensation.status = CompensationStatus.PENDING
+    compensation.next_retry_at = None
+    compensation.last_failure_type = None
+    compensation.last_error_message = None
+    compensation.celery_task_id = None
+
+    record_state_transition(
+        db,
+        compensation_id=compensation.id,
+        from_status=original_status,
+        to_status=CompensationStatus.PENDING,
+        transition_reason=f"服务恢复重置: {remark or '系统自动重置'}",
+        operated_by=operator,
+        extra_info={"recovery": True}
+    )
+
+    record_operation_log(
+        db,
+        operation_type=OperationType.RETRY,
+        compensation_id=compensation.id,
+        operator=operator,
+        operation_detail={"remark": remark, "recovery": True}
+    )
+
+    db.commit()
+    db.refresh(compensation)
+    return True, "已重置为待处理", CompensationStatus.PENDING
+
+
 def list_compensations(
     db: Session,
     status: Optional[CompensationStatus] = None,

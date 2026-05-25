@@ -135,6 +135,7 @@ def batch_import_records(
         raise ValueError(f"不支持的数据类型: {source_type}")
     
     success_count = 0
+    skipped_count = 0
     failed_records = []
     
     import_record_ids = []
@@ -142,6 +143,17 @@ def batch_import_records(
     for idx, raw_data in enumerate(records, start=1):
         try:
             parsed_data = parse_func(raw_data)
+
+            existing = db.query(ImportRecord).filter(
+                ImportRecord.source_file == source_file,
+                ImportRecord.source_type == source_type,
+                ImportRecord.original_row_number == idx
+            ).first()
+
+            if existing:
+                skipped_count += 1
+                import_record_ids.append(existing.id)
+                continue
             
             import_record = create_import_record(
                 db,
@@ -175,6 +187,7 @@ def batch_import_records(
             "import_batch_no": import_batch_no,
             "total_count": len(records),
             "success_count": success_count,
+            "skipped_count": skipped_count,
             "failed_count": len(failed_records)
         }
     )
@@ -187,12 +200,16 @@ def batch_import_records(
                 ImportRecord.id == record_id
             ).first()
             if import_record and not import_record.is_used:
-                try:
-                    _create_compensation_from_import(db, import_record)
-                except Exception:
-                    pass
+                existing_comp = db.query(CompensationQueue).filter(
+                    CompensationQueue.import_record_id == import_record.id
+                ).first()
+                if not existing_comp:
+                    try:
+                        _create_compensation_from_import(db, import_record)
+                    except Exception:
+                        pass
     
-    return import_batch_no, len(records), success_count, failed_records
+    return import_batch_no, len(records), success_count, skipped_count, failed_records
 
 
 def _create_compensation_from_import(
