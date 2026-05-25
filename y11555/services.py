@@ -125,6 +125,9 @@ class ReceiptService:
                     fail_count += 1
             else:
                 try:
+                    if existing and existing.receipt_id:
+                        ReceiptService._cleanup_dirty_receipt(db, existing.receipt_id)
+                        existing.receipt_id = None
                     receipt = ReceiptService._create_receipt_from_item(db, batch.id, item, request.created_by)
                     if existing:
                         existing.parsed_data = ReceiptService._item_to_parsed_data(item)
@@ -192,7 +195,38 @@ class ReceiptService:
         }
 
     @staticmethod
+    def _validate_item_fields(item: schemas.BatchImportItem) -> List[str]:
+        errors = []
+        if item.store_order is None and item.driver_track is None and item.sign_receipt is None:
+            errors.append("门店订单、司机轨迹、签收回执至少提供一项")
+
+        if item.store_order:
+            if not item.store_order.order_no:
+                errors.append("门店订单编号(order_no)不能为空")
+            if not item.store_order.store_name and not item.store_name:
+                errors.append("门店名称(store_name)不能为空")
+            if not item.store_order.product_name and not item.product_name:
+                errors.append("产品名称(product_name)不能为空")
+
+        if item.driver_track:
+            if not item.driver_track.track_no:
+                errors.append("司机轨迹编号(track_no)不能为空")
+
+        if item.sign_receipt:
+            if not item.sign_receipt.sign_no:
+                errors.append("签收回执编号(sign_no)不能为空")
+
+        if item.abnormal_type and item.abnormal_amount is None:
+            errors.append("异常类型已填写时，异常金额(abnormal_amount)不能为空")
+
+        return errors
+
+    @staticmethod
     def _create_receipt_from_item(db: Session, batch_id: int, item: schemas.BatchImportItem, created_by: str) -> models.AbnormalReceipt:
+        validation_errors = ReceiptService._validate_item_fields(item)
+        if validation_errors:
+            raise Exception("; ".join(validation_errors))
+
         order_id = None
         if item.store_order:
             order = db.query(models.StoreOrder).filter(models.StoreOrder.order_no == item.store_order.order_no).first()
@@ -668,6 +702,13 @@ class ReceiptService:
         } for d in failed_details]
 
     @staticmethod
+    def _cleanup_dirty_receipt(db: Session, receipt_id: int):
+        db.query(models.StatusHistory).filter(models.StatusHistory.receipt_id == receipt_id).delete()
+        db.query(models.OperationLog).filter(models.OperationLog.receipt_id == receipt_id).delete()
+        db.query(models.Attachment).filter(models.Attachment.receipt_id == receipt_id).delete()
+        db.query(models.AbnormalReceipt).filter(models.AbnormalReceipt.id == receipt_id).delete()
+
+    @staticmethod
     def resubmit_failed_item(db: Session, batch_no: str, row_number: int, item: schemas.BatchImportItem) -> Dict[str, Any]:
         batch = db.query(models.Batch).filter(models.Batch.batch_no == batch_no).first()
         if not batch:
@@ -681,15 +722,22 @@ class ReceiptService:
         if not existing:
             raise Exception(f"Row {row_number} not found in batch")
 
+        was_previously_failed = (existing.import_status == "failed")
+
+        if existing.receipt_id and was_previously_failed:
+            ReceiptService._cleanup_dirty_receipt(db, existing.receipt_id)
+            existing.receipt_id = None
+
         try:
             receipt = ReceiptService._create_receipt_from_item(db, batch.id, item, batch.created_by or "system")
+            existing.original_data = item.original_data
             existing.parsed_data = ReceiptService._item_to_parsed_data(item)
             existing.import_status = "success"
             existing.receipt_id = receipt.id
             existing.error_message = None
             db.commit()
 
-            if existing.import_status != "success":
+            if was_previously_failed:
                 batch.success_count += 1
                 batch.fail_count = max(0, batch.fail_count - 1)
                 if batch.fail_count == 0:
