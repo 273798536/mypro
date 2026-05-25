@@ -52,14 +52,14 @@ export const recordStatusTransition = async (
 export const detectDirtyRecord = (document: any): { type: string; field?: string; description: string }[] => {
   const issues: { type: string; field?: string; description: string }[] = [];
   const requiredFields = [
-    { dbField: 'title', displayField: 'title', label: '标题' },
-    { dbField: 'document_no', displayField: 'documentNo', label: '文档编号' }
+    { dbField: 'title', label: '标题' },
+    { dbField: 'document_no', label: '文档编号' }
   ];
   for (const field of requiredFields) {
     if (!document[field.dbField]) {
       issues.push({
         type: 'missing_field',
-        field: field.displayField,
+        field: field.dbField,
         description: `缺少必填字段: ${field.label}`
       });
     }
@@ -70,7 +70,7 @@ export const detectDirtyRecord = (document: any): { type: string; field?: string
     if (effective.isAfter(expiry)) {
       issues.push({
         type: 'cross_date',
-        field: 'effectiveDate,expiryDate',
+        field: 'effective_date,expiry_date',
         description: '生效日期晚于失效日期'
       });
     }
