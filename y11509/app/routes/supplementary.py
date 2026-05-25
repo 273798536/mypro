@@ -18,6 +18,15 @@ from app.utils.validators import (
     mask_sensitive_data,
     mask_record_list,
 )
+from app.utils.permissions import (
+    can_edit_record,
+    can_freeze,
+    can_manual_edit,
+    can_submit,
+    can_approve,
+    apply_department_filter,
+    can_view_department,
+)
 
 bp = Blueprint("supplementary", __name__)
 
@@ -125,6 +134,9 @@ def get_supplementary(record_id: int):
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
 
+    if not can_view_department(record.department):
+        return jsonify({"error": "无权限查看该部门数据", "code": 403}), 403
+
     role = getattr(g, "user_role", "admin")
     data = record_to_dict(record)
     if role != "admin" and role != "auditor":
@@ -142,6 +154,7 @@ def list_supplementary():
     supplementary_type = request.args.get("supplementary_type")
 
     query = SupplementaryRecord.query
+    query = apply_department_filter(query, SupplementaryRecord)
 
     if department:
         query = query.filter(SupplementaryRecord.department.like(f"%{department}%"))
@@ -177,6 +190,9 @@ def submit_supplementary(record_id: int):
     record = get_supplementary_by_id(record_id)
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
+
+    if not can_edit_record(record):
+        return jsonify({"error": "无权限编辑该记录，仅管理员或记录创建者可操作", "code": 403}), 403
 
     if record.status == RecordStatus.FROZEN:
         return jsonify({"error": "记录已冻结，不允许提交", "code": 403}), 403
@@ -218,6 +234,9 @@ def reject_supplementary(record_id: int):
     record = get_supplementary_by_id(record_id)
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
+
+    if not can_approve(record):
+        return jsonify({"error": "无权限驳回，仅管理员或部门负责人可操作", "code": 403}), 403
 
     if record.status != RecordStatus.SUBMITTED:
         return jsonify({
@@ -261,6 +280,9 @@ def confirm_supplementary(record_id: int):
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
 
+    if not can_approve(record):
+        return jsonify({"error": "无权限确认，仅管理员或部门负责人可操作", "code": 403}), 403
+
     if record.status != RecordStatus.SUBMITTED:
         return jsonify({
             "error": f"当前状态{record.status.value}不允许确认",
@@ -298,6 +320,9 @@ def withdraw_supplementary(record_id: int):
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
 
+    if not can_edit_record(record):
+        return jsonify({"error": "无权限撤回该记录，仅管理员或记录创建者可操作", "code": 403}), 403
+
     if record.status not in [RecordStatus.SUBMITTED, RecordStatus.DRAFT]:
         return jsonify({
             "error": f"当前状态{record.status.value}不允许撤回",
@@ -334,6 +359,9 @@ def manual_edit_supplementary(record_id: int):
     record = get_supplementary_by_id(record_id)
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
+
+    if not can_manual_edit():
+        return jsonify({"error": "无权限人工改判，仅管理员或部门负责人可操作", "code": 403}), 403
 
     if record.status == RecordStatus.FROZEN:
         return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403
@@ -390,6 +418,9 @@ def freeze_supplementary(record_id: int):
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
 
+    if not can_freeze():
+        return jsonify({"error": "无权限冻结记录，仅管理员或部门负责人可操作", "code": 403}), 403
+
     data = request.get_json() or {}
     reason = data.get("reason", "导出前冻结")
 
@@ -439,6 +470,9 @@ def unfreeze_supplementary(record_id: int):
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
 
+    if not can_freeze():
+        return jsonify({"error": "无权限解冻记录，仅管理员或部门负责人可操作", "code": 403}), 403
+
     if record.status != RecordStatus.FROZEN:
         return jsonify({"error": "记录未处于冻结状态", "code": 400}), 400
 
@@ -480,6 +514,9 @@ def update_supplementary(record_id: int):
     record = get_supplementary_by_id(record_id)
     if not record:
         return jsonify({"error": "临时补录单不存在", "code": 404}), 404
+
+    if not can_edit_record(record):
+        return jsonify({"error": "无权限编辑该记录，仅管理员或记录创建者可操作", "code": 403}), 403
 
     if record.status == RecordStatus.FROZEN:
         return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403

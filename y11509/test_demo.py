@@ -678,6 +678,126 @@ def test_calibration_workflow():
     return True
 
 
+def test_permission_boundary():
+    print_section("17. 权限边界测试（科室过滤+越权拦截）")
+
+    admin_headers = {"X-User-ID": "1", "X-User-Role": "admin", "X-User-Name": "Admin"}
+    nurse_headers = {"X-User-ID": "3", "X-User-Role": "nurse", "X-User-Name": "Nurse"}
+    dept_head_headers = {"X-User-ID": "2", "X-User-Role": "department_head", "X-User-Name": "DeptHead"}
+
+    print("\n  步骤1: 管理员创建不同科室的巡检记录")
+    payload1 = {
+        "record_no": f"PERM-DEPT1-{datetime.now().strftime('%H%M%S')}",
+        "device_name": "权限测试设备1",
+        "department": "内科",
+        "inspection_date": datetime.now().strftime("%Y-%m-%d"),
+        "inspector": "管理员",
+        "inspection_result": "合格",
+        "next_inspection_date": (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d"),
+    }
+    resp = requests.post(f"{BASE_URL}/inspection", json=payload1, headers=admin_headers)
+    dept1_record = resp.json().get("data", {})
+    dept1_id = dept1_record.get("id")
+    print(f"    内科记录ID: {dept1_id}")
+
+    payload2 = {
+        "record_no": f"PERM-DEPT2-{datetime.now().strftime('%H%M%S')}",
+        "device_name": "权限测试设备2",
+        "department": "外科",
+        "inspection_date": datetime.now().strftime("%Y-%m-%d"),
+        "inspector": "管理员",
+        "inspection_result": "合格",
+        "next_inspection_date": (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d"),
+    }
+    resp = requests.post(f"{BASE_URL}/inspection", json=payload2, headers=admin_headers)
+    dept2_record = resp.json().get("data", {})
+    dept2_id = dept2_record.get("id")
+    print(f"    外科记录ID: {dept2_id}")
+
+    print("\n  步骤2: 护士查询巡检记录（应只看到本科室记录）")
+    resp = requests.get(f"{BASE_URL}/inspection", headers=nurse_headers)
+    data = resp.json()
+    records = data.get("data", [])
+    print(f"    护士可见记录数: {len(records)}")
+    other_dept_records = [r for r in records if r.get("department") != "内科"]
+    if len(other_dept_records) == 0:
+        print("    ✓ 护士无法看到其他科室记录（科室过滤生效）")
+    else:
+        print(f"    ⚠ 护士可见其他科室记录: {len(other_dept_records)}条")
+
+    print("\n  步骤3: 护士尝试查看其他科室记录详情（应返回403）")
+    resp = requests.get(f"{BASE_URL}/inspection/{dept2_id}", headers=nurse_headers)
+    if resp.status_code == 403:
+        print("    ✓ 护士查看外科记录被正确拦截（403）")
+    else:
+        print(f"    ⚠ 护士查看外科记录状态: {resp.status_code}")
+
+    print("\n  步骤4: 护士尝试修改管理员创建的记录（应返回403）")
+    resp = requests.put(
+        f"{BASE_URL}/inspection/{dept1_id}",
+        json={"inspector": "越权修改"},
+        headers=nurse_headers
+    )
+    if resp.status_code == 403:
+        print("    ✓ 护士修改管理员记录被正确拦截（403）")
+    else:
+        print(f"    ⚠ 护士修改管理员记录状态: {resp.status_code}")
+
+    print("\n  步骤5: 护士尝试冻结管理员创建的记录（应返回403）")
+    resp = requests.post(
+        f"{BASE_URL}/inspection/{dept1_id}/freeze",
+        json={"reason": "越权冻结"},
+        headers=nurse_headers
+    )
+    if resp.status_code == 403:
+        print("    ✓ 护士冻结管理员记录被正确拦截（403）")
+    else:
+        print(f"    ⚠ 护士冻结管理员记录状态: {resp.status_code}")
+
+    print("\n  步骤6: 护士尝试人工改判（应返回403）")
+    resp = requests.post(
+        f"{BASE_URL}/inspection/{dept1_id}/manual-edit",
+        json={"judgment_note": "越权改判", "inspection_result": "不合格"},
+        headers=nurse_headers
+    )
+    if resp.status_code == 403:
+        print("    ✓ 护士人工改判被正确拦截（403）")
+    else:
+        print(f"    ⚠ 护士人工改判状态: {resp.status_code}")
+
+    print("\n  步骤7: 护士尝试驳回/确认（应返回403）")
+    resp = requests.post(
+        f"{BASE_URL}/inspection/{dept1_id}/submit",
+        json={"reason": "提交"},
+        headers=admin_headers
+    )
+    print(f"    管理员先提交: {resp.status_code}")
+
+    resp = requests.post(
+        f"{BASE_URL}/inspection/{dept1_id}/reject",
+        json={"reason": "越权驳回"},
+        headers=nurse_headers
+    )
+    if resp.status_code == 403:
+        print("    ✓ 护士驳回被正确拦截（403）")
+    else:
+        print(f"    ⚠ 护士驳回状态: {resp.status_code}")
+
+    print("\n  步骤8: 科室护士长可以确认记录")
+    resp = requests.post(
+        f"{BASE_URL}/inspection/{dept1_id}/confirm",
+        json={"reason": "确认通过"},
+        headers=dept_head_headers
+    )
+    if resp.status_code == 200:
+        print("    ✓ 科室护士长确认记录成功")
+    else:
+        print(f"    ⚠ 科室护士长确认状态: {resp.status_code}")
+
+    print("\n  ✓ 权限边界测试完成")
+    return True
+
+
 def run_all_tests():
     print("\n" + "╔" + "═" * 58 + "╗")
     print("║" + " " * 10 + "医疗器械巡检权限追责台账系统 - 功能测试" + " " * 10 + "║")
@@ -714,12 +834,16 @@ def run_all_tests():
         # 证书状态统计与汇总报告测试
         test_certificate_status_report()
 
+        # 权限边界测试
+        test_permission_boundary()
+
         print("\n" + "=" * 60)
         print("  ✅ 所有测试完成！")
         print("  测试覆盖: 草稿→提交→驳回→重提→确认→撤回→人工改判→冻结→导出→审计")
         print("  边界场景: 重复提交、撤回重提、冻结保护、状态联动、角色脱敏")
         print("  多入口台账: 巡检记录、校准证书、维修报价、临时补录单")
         print("  核心链路: 导入坏数据、部分失败、证书统计、汇总报告")
+        print("  权限边界: 科室过滤、越权拦截、角色权限")
         print("=" * 60)
 
     except requests.exceptions.ConnectionError:

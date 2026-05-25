@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, g, send_from_directory, current_app
 from app.models import RecordType, ExportLog
 from app.utils.export_utils import export_records_to_excel, export_summary_report
+from app.utils.permissions import can_export
 import os
 
 bp = Blueprint("export", __name__)
@@ -22,6 +23,9 @@ def export_log_to_dict(log: ExportLog) -> dict:
 
 @bp.route("/records", methods=["POST"])
 def export_records():
+    if not can_export():
+        return jsonify({"error": "无权限导出数据，仅管理员、部门负责人或审计人员可操作", "code": 403}), 403
+
     data = request.get_json() or {}
     record_type_str = data.get("record_type")
 
@@ -59,6 +63,9 @@ def export_records():
 
 @bp.route("/summary", methods=["POST"])
 def export_summary():
+    if not can_export():
+        return jsonify({"error": "无权限导出数据，仅管理员、部门负责人或审计人员可操作", "code": 403}), 403
+
     data = request.get_json() or {}
 
     result, error = export_summary_report(

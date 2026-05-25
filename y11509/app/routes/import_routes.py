@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify, g, current_app
 from werkzeug.utils import secure_filename
 from app.models import db, ImportSource, RecordType
 from app.utils.import_utils import allowed_file, import_records_from_file
+from app.utils.permissions import can_import
 
 bp = Blueprint("import", __name__)
 
@@ -24,6 +25,9 @@ def import_source_to_dict(source: ImportSource) -> dict:
 
 @bp.route("", methods=["POST"])
 def upload_file():
+    if not can_import():
+        return jsonify({"error": "无权限导入数据，仅管理员、部门负责人或技术人员可操作", "code": 403}), 403
+
     if "file" not in request.files:
         return jsonify({"error": "没有上传文件", "code": 400}), 400
 

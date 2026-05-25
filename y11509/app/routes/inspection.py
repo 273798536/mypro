@@ -17,6 +17,15 @@ from app.utils.validators import (
     mask_sensitive_data,
     mask_record_list,
 )
+from app.utils.permissions import (
+    can_edit_record,
+    can_freeze,
+    can_manual_edit,
+    can_submit,
+    can_approve,
+    apply_department_filter,
+    can_view_department,
+)
 
 bp = Blueprint("inspection", __name__)
 
@@ -134,6 +143,9 @@ def get_inspection(record_id: int):
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
 
+    if not can_view_department(record.department):
+        return jsonify({"error": "无权限查看该科室记录", "code": 403}), 403
+
     role = getattr(g, "user_role", "admin")
     data = record_to_dict(record)
     if role != "admin" and role != "auditor":
@@ -151,6 +163,8 @@ def list_inspections():
     device_name = request.args.get("device_name")
 
     query = InspectionRecord.query
+
+    query = apply_department_filter(query, InspectionRecord)
 
     if department:
         query = query.filter(InspectionRecord.department.like(f"%{department}%"))
@@ -186,6 +200,9 @@ def submit_inspection(record_id: int):
     record = get_inspection_by_id(record_id)
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
+
+    if not can_edit_record(record):
+        return jsonify({"error": "无权限修改该记录", "code": 403}), 403
 
     if record.status == RecordStatus.FROZEN:
         return jsonify({"error": "记录已冻结，不允许提交", "code": 403}), 403
@@ -227,6 +244,9 @@ def reject_inspection(record_id: int):
     record = get_inspection_by_id(record_id)
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
+
+    if not can_approve(record):
+        return jsonify({"error": "无权限驳回该记录", "code": 403}), 403
 
     if record.status != RecordStatus.SUBMITTED:
         return jsonify({
@@ -270,6 +290,9 @@ def confirm_inspection(record_id: int):
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
 
+    if not can_approve(record):
+        return jsonify({"error": "无权限确认该记录", "code": 403}), 403
+
     if record.status != RecordStatus.SUBMITTED:
         return jsonify({
             "error": f"当前状态{record.status.value}不允许确认",
@@ -307,6 +330,9 @@ def withdraw_inspection(record_id: int):
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
 
+    if not can_edit_record(record):
+        return jsonify({"error": "无权限撤回该记录", "code": 403}), 403
+
     if record.status not in [RecordStatus.SUBMITTED, RecordStatus.DRAFT]:
         return jsonify({
             "error": f"当前状态{record.status.value}不允许撤回",
@@ -343,6 +369,9 @@ def manual_edit_inspection(record_id: int):
     record = get_inspection_by_id(record_id)
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
+
+    if not can_manual_edit():
+        return jsonify({"error": "无权限进行人工改判", "code": 403}), 403
 
     if record.status == RecordStatus.FROZEN:
         return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403
@@ -400,6 +429,9 @@ def freeze_inspection(record_id: int):
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
 
+    if not can_freeze():
+        return jsonify({"error": "无权限冻结该记录", "code": 403}), 403
+
     data = request.get_json() or {}
     reason = data.get("reason", "导出前冻结")
 
@@ -449,6 +481,9 @@ def unfreeze_inspection(record_id: int):
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
 
+    if not can_freeze():
+        return jsonify({"error": "无权限解冻该记录", "code": 403}), 403
+
     if record.status != RecordStatus.FROZEN:
         return jsonify({"error": "记录未处于冻结状态", "code": 400}), 400
 
@@ -490,6 +525,9 @@ def update_inspection(record_id: int):
     record = get_inspection_by_id(record_id)
     if not record:
         return jsonify({"error": "巡检记录不存在", "code": 404}), 404
+
+    if not can_edit_record(record):
+        return jsonify({"error": "无权限修改该记录", "code": 403}), 403
 
     if record.status == RecordStatus.FROZEN:
         return jsonify({"error": "记录已冻结，不允许修改", "code": 403}), 403
