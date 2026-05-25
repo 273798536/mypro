@@ -75,6 +75,23 @@ export const getFieldPermissions = (role: UserRole) => {
   return permissions;
 };
 
+const camelToSnakeMap: Record<string, string> = {
+  documentNo: 'document_no',
+  documentType: 'document_type',
+  supplierName: 'supplier_name',
+  effectiveDate: 'effective_date',
+  expiryDate: 'expiry_date',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  createdBy: 'created_by',
+  isDirty: 'is_dirty',
+  pageCount: 'page_count'
+};
+
+const snakeToCamelMap: Record<string, string> = Object.fromEntries(
+  Object.entries(camelToSnakeMap).map(([k, v]) => [v, k])
+);
+
 export const filterFieldsByRole = (data: any, role: UserRole): any => {
   const permissions = getFieldPermissions(role);
   if (Array.isArray(data)) {
@@ -87,7 +104,8 @@ const filterSingleItem = (item: any, permissions: Record<string, { visible: bool
   if (!item || typeof item !== 'object') return item;
   const filtered: any = {};
   for (const [key, value] of Object.entries(item)) {
-    if (permissions[key]?.visible !== false) {
+    const camelKey = snakeToCamelMap[key] || key;
+    if (permissions[camelKey]?.visible !== false) {
       filtered[key] = value;
     } else {
       filtered[key] = '***';

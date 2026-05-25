@@ -49,21 +49,24 @@ export const recordStatusTransition = async (
   );
 };
 
-export const detectDirtyRecord = async (document: any): Promise<{ type: string; field?: string; description: string }[]> => {
+export const detectDirtyRecord = (document: any): { type: string; field?: string; description: string }[] => {
   const issues: { type: string; field?: string; description: string }[] = [];
-  const requiredFields = ['title', 'documentNo'];
+  const requiredFields = [
+    { dbField: 'title', displayField: 'title', label: '标题' },
+    { dbField: 'document_no', displayField: 'documentNo', label: '文档编号' }
+  ];
   for (const field of requiredFields) {
-    if (!document[field]) {
+    if (!document[field.dbField]) {
       issues.push({
         type: 'missing_field',
-        field,
-        description: `缺少必填字段: ${field}`
+        field: field.displayField,
+        description: `缺少必填字段: ${field.label}`
       });
     }
   }
-  if (document.effectiveDate && document.expiryDate) {
-    const effective = dayjs(document.effectiveDate);
-    const expiry = dayjs(document.expiryDate);
+  if (document.effective_date && document.expiry_date) {
+    const effective = dayjs(document.effective_date);
+    const expiry = dayjs(document.expiry_date);
     if (effective.isAfter(expiry)) {
       issues.push({
         type: 'cross_date',
