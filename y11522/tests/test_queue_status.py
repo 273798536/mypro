@@ -57,6 +57,7 @@ class TestQueueStatusTransitions:
         service.mark_failed(item.id, "错误1", FailCategory.RETRYABLE)
         service.retry_item(item.id)
         service.mark_failed(item.id, "错误2", FailCategory.RETRYABLE)
+        service.retry_item(item.id)
 
         item = service.mark_failed(item.id, "错误3", FailCategory.RETRYABLE)
 
@@ -147,3 +148,98 @@ class TestQueueStatusTransitions:
         assert history[2].changed_by == "op3"
         assert history[3].changed_by == "op4"
         assert history[4].changed_by == "op5"
+
+
+class TestIllegalStateTransitions:
+    def test_submit_receipt_not_from_pending(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_001"))
+        service.submit_receipt(item.id, {"回执编号": "RCPT001"})
+
+        assert item.receipt_submitted is True
+        result = service.submit_receipt(item.id, {"回执编号": "RCPT002"})
+        assert result.receipt_data["回执编号"] == "RCPT001"
+
+    def test_start_compensation_from_pending_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_002"))
+
+        with pytest.raises(ValueError, match="不允许开始补偿"):
+            service.start_compensation(item.id, 50, "测试", "op1")
+
+    def test_start_compensation_from_closed_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_003"))
+        service.close_queue_item(item.id, "测试关闭", "op1")
+
+        with pytest.raises(ValueError, match="不允许开始补偿"):
+            service.start_compensation(item.id, 50, "测试", "op2")
+
+    def test_mark_failed_from_pending_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_004"))
+
+        with pytest.raises(ValueError, match="不允许标记失败"):
+            service.mark_failed(item.id, "错误", FailCategory.RETRYABLE)
+
+    def test_mark_failed_from_closed_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_005"))
+        service.submit_receipt(item.id, {"回执编号": "RCPT001"})
+        service.close_queue_item(item.id, "测试关闭", "op1")
+
+        with pytest.raises(ValueError, match="不允许标记失败"):
+            service.mark_failed(item.id, "错误", FailCategory.RETRYABLE)
+
+    def test_mark_failed_from_completed_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_006"))
+        service.submit_receipt(item.id, {"回执编号": "RCPT001"})
+        service.start_compensation(item.id, 50, "测试", "op1")
+        service.complete_compensation(item.id, "finance")
+
+        with pytest.raises(ValueError, match="不允许标记失败"):
+            service.mark_failed(item.id, "错误", FailCategory.RETRYABLE)
+
+    def test_retry_from_pending_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_007"))
+
+        with pytest.raises(ValueError, match="不支持重试"):
+            service.retry_item(item.id)
+
+    def test_retry_from_processing_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_008"))
+        service.submit_receipt(item.id, {"回执编号": "RCPT001"})
+
+        with pytest.raises(ValueError, match="不支持重试"):
+            service.retry_item(item.id)
+
+    def test_complete_compensation_not_from_compensating(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_009"))
+        service.submit_receipt(item.id, {"回执编号": "RCPT001"})
+
+        with pytest.raises(ValueError, match="不是补偿中状态"):
+            service.complete_compensation(item.id, "finance")
+
+    def test_close_queue_item_twice_forbidden(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_010"))
+        service.close_queue_item(item.id, "原因1", "op1")
+
+        with pytest.raises(ValueError, match="已关闭"):
+            service.close_queue_item(item.id, "原因2", "op2")
+
+    def test_valid_compensation_via_manual_takeover(self, db_session):
+        service = QueueService(db_session)
+        item = service.create_queue_item(QueueItemCreate(queue_key="illegal_011"))
+        service.submit_receipt(item.id, {"回执编号": "RCPT001"})
+        service.manual_takeover(item.id, "supervisor", "需要审核")
+
+        item = service.start_compensation(item.id, 100, "审核通过", "supervisor")
+        assert item.status == QueueStatus.COMPENSATING
+
+        item = service.complete_compensation(item.id, "finance")
+        assert item.status == QueueStatus.COMPLETED

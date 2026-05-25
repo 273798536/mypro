@@ -56,6 +56,18 @@ class QueueService:
             queue_item.status = new_status
             queue_item.updated_at = datetime.utcnow()
 
+    def _require_status(
+        self,
+        queue_item: CompensationQueue,
+        allowed: List[QueueStatus],
+        action: str,
+    ) -> None:
+        if queue_item.status not in allowed:
+            allowed_str = ", ".join(s.value for s in allowed)
+            raise ValueError(
+                f"当前状态 {queue_item.status.value} 不允许{action}，合法状态: {allowed_str}"
+            )
+
     def create_queue_item(self, item_data: QueueItemCreate, operator: Optional[str] = None) -> CompensationQueue:
         existing = self.db.query(CompensationQueue).filter(CompensationQueue.queue_key == item_data.queue_key).first()
         if existing:
@@ -128,6 +140,8 @@ class QueueService:
         if queue_item.receipt_submitted:
             return queue_item
 
+        self._require_status(queue_item, [QueueStatus.PENDING], "提交外部回执")
+
         queue_item.receipt_data = receipt_data
         queue_item.receipt_submitted = True
         queue_item.receipt_submitted_at = datetime.utcnow()
@@ -152,6 +166,8 @@ class QueueService:
         if not queue_item:
             raise ValueError(f"队列项不存在: {queue_id}")
 
+        self._require_status(queue_item, [QueueStatus.PENDING, QueueStatus.WAITING_RETRY], "标记处理中")
+
         self._change_status(
             queue_item,
             QueueStatus.PROCESSING,
@@ -173,6 +189,12 @@ class QueueService:
         queue_item = self.get_queue_item(queue_id)
         if not queue_item:
             raise ValueError(f"队列项不存在: {queue_id}")
+
+        self._require_status(
+            queue_item,
+            [QueueStatus.PROCESSING],
+            "标记失败",
+        )
 
         queue_item.last_error = error
         queue_item.last_failed_at = datetime.utcnow()
@@ -217,7 +239,7 @@ class QueueService:
             raise ValueError(f"队列项不存在: {queue_id}")
 
         if queue_item.status not in [QueueStatus.WAITING_RETRY, QueueStatus.PERMANENT_FAILED]:
-            raise ValueError(f"当前状态 {queue_item.status} 不支持重试")
+            raise ValueError(f"当前状态 {queue_item.status.value} 不支持重试")
 
         self._change_status(
             queue_item,
@@ -253,6 +275,12 @@ class QueueService:
         if not queue_item:
             raise ValueError(f"队列项不存在: {queue_id}")
 
+        self._require_status(
+            queue_item,
+            [QueueStatus.PENDING, QueueStatus.PROCESSING, QueueStatus.WAITING_RETRY, QueueStatus.PERMANENT_FAILED, QueueStatus.WAITING_MANUAL],
+            "人工接管",
+        )
+
         queue_item.manual_taken_by = operator
         queue_item.manual_taken_at = datetime.utcnow()
         if note:
@@ -280,6 +308,12 @@ class QueueService:
         if not queue_item:
             raise ValueError(f"队列项不存在: {queue_id}")
 
+        self._require_status(
+            queue_item,
+            [QueueStatus.PROCESSING, QueueStatus.WAITING_MANUAL],
+            "开始补偿",
+        )
+
         queue_item.compensation_amount = amount
         queue_item.compensation_reason = reason
 
@@ -304,7 +338,7 @@ class QueueService:
             raise ValueError(f"队列项不存在: {queue_id}")
 
         if queue_item.status != QueueStatus.COMPENSATING:
-            raise ValueError(f"当前状态 {queue_item.status} 不是补偿中状态")
+            raise ValueError(f"当前状态 {queue_item.status.value} 不是补偿中状态")
 
         queue_item.compensated_at = datetime.utcnow()
         queue_item.compensated_by = operator

@@ -127,6 +127,9 @@ def simulate_workflow(db: Session, queue_service: QueueService):
         queue_service.mark_failed(item3.id, "网络超时", FailCategory.RETRYABLE, "system")
         print(f"  第1次失败 -> {item3.status.value}, 重试次数={item3.retry_count}")
 
+        queue_service.retry_item(item3.id, "system")
+        print(f"  手动重试 -> {item3.status.value}")
+
         queue_service.mark_failed(item3.id, "第三方接口限流", FailCategory.RETRYABLE, "system")
         print(f"  第2次失败 -> {item3.status.value}, 重试次数={item3.retry_count}")
 
