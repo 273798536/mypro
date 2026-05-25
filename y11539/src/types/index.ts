@@ -6,6 +6,23 @@ export enum MaterialType {
   ANOMALY_PHOTO = 'anomaly_photo'
 }
 
+export interface NewMaterialInput {
+  type: MaterialType;
+  fileName: string;
+  fileContent: string;
+  isSensitive?: boolean;
+}
+
+export interface DuplicateBatchInput {
+  batchNumber: string;
+  strategy: BatchStrategy;
+  operatedBy: string;
+  trainingName?: string;
+  trainingDate?: string;
+  remark?: string;
+  materials?: NewMaterialInput[];
+}
+
 export enum BatchStatus {
   DRAFT = 'draft',
   SUBMITTED = 'submitted',

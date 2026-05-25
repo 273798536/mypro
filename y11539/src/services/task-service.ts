@@ -132,6 +132,39 @@ export class TaskService {
     return rows.map(r => mapTaskRow(r));
   }
 
+  static async recoverProcessingTasks(): Promise<number> {
+    const rows = await all<any>(
+      `SELECT * FROM async_tasks WHERE status = ?`,
+      [TaskStatus.PROCESSING]
+    );
+
+    if (rows.length === 0) {
+      return 0;
+    }
+
+    for (const row of rows) {
+      const task = mapTaskRow(row);
+      const newRetryCount = task.retryCount + 1;
+
+      if (newRetryCount >= task.maxRetries) {
+        await this.updateTaskStatus(
+          task.id,
+          TaskStatus.PENDING_MANUAL,
+          `服务中断后恢复：任务在 processing 状态时被中断，重试次数 ${newRetryCount}/${task.maxRetries}，需人工介入`
+        );
+      } else {
+        const nextRetryAt = new Date(Date.now() + Math.pow(2, newRetryCount) * 60000).toISOString();
+        await run(
+          `UPDATE async_tasks SET status = ?, retry_count = ?, last_error = ?, next_retry_at = ? WHERE id = ?`,
+          [TaskStatus.PENDING_RETRY, newRetryCount, `服务中断后恢复：任务在 processing 状态时被中断，自动重试 ${newRetryCount}/${task.maxRetries}`, nextRetryAt, task.id]
+        );
+      }
+    }
+
+    console.log(`[TaskService] 恢复了 ${rows.length} 个中断的 processing 状态任务`);
+    return rows.length;
+  }
+
   static async processTask(task: AsyncTask): Promise<void> {
     const handler = this.handlers.get(task.taskType);
     
@@ -190,11 +223,14 @@ export class TaskService {
     return this.getTaskById(taskId) as Promise<AsyncTask>;
   }
 
-  static startWorker(pollIntervalMs: number = 5000): void {
+  static async startWorker(pollIntervalMs: number = 5000): Promise<void> {
     if (this.isRunning) return;
     
     this.isRunning = true;
-    console.log('异步任务处理器已启动');
+    console.log('[TaskService] 异步任务处理器正在启动...');
+
+    const recovered = await this.recoverProcessingTasks();
+    console.log(`[TaskService] 异步任务处理器已启动，恢复 ${recovered} 个中断任务`);
 
     this.pollInterval = setInterval(async () => {
       try {
@@ -203,7 +239,7 @@ export class TaskService {
           await this.processTask(task);
         }
       } catch (error) {
-        console.error('任务处理循环出错:', error);
+        console.error('[TaskService] 任务处理循环出错:', error);
       }
     }, pollIntervalMs);
   }
@@ -214,7 +250,7 @@ export class TaskService {
       this.pollInterval = null;
     }
     this.isRunning = false;
-    console.log('异步任务处理器已停止');
+    console.log('[TaskService] 异步任务处理器已停止');
   }
 
   static async getTaskStats(): Promise<{

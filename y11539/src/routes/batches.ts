@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { BatchService } from '../services/batch-service';
-import { BatchStatus, BatchStrategy, ProcessResult } from '../types';
+import { BatchStatus, BatchStrategy, ProcessResult, MaterialType } from '../types';
 import Joi from 'joi';
 
 const router = Router();
@@ -21,7 +21,16 @@ const updateStatusSchema = Joi.object({
 
 const processDuplicateSchema = Joi.object({
   strategy: Joi.string().valid(...Object.values(BatchStrategy)).required(),
-  operatedBy: Joi.string().required()
+  operatedBy: Joi.string().required(),
+  trainingName: Joi.string().optional(),
+  trainingDate: Joi.string().optional(),
+  remark: Joi.string().optional(),
+  materials: Joi.array().items(Joi.object({
+    type: Joi.string().valid(...Object.values(MaterialType)).required(),
+    fileName: Joi.string().required(),
+    fileContent: Joi.string().base64().required(),
+    isSensitive: Joi.boolean().optional()
+  })).optional()
 });
 
 const setResultSchema = Joi.object({
@@ -124,11 +133,15 @@ router.post('/:batchNumber/duplicate', async (req: Request, res: Response) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const result = await BatchService.processDuplicateBatch(
-      req.params.batchNumber,
-      value.strategy,
-      value.operatedBy
-    );
+    const result = await BatchService.processDuplicateBatch({
+      batchNumber: req.params.batchNumber,
+      strategy: value.strategy,
+      operatedBy: value.operatedBy,
+      trainingName: value.trainingName,
+      trainingDate: value.trainingDate,
+      remark: value.remark,
+      materials: value.materials
+    });
 
     res.json(result);
   } catch (err: any) {

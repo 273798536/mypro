@@ -3,7 +3,8 @@ import { BatchService } from '../services/batch-service';
 import { MaterialService } from '../services/material-service';
 import { AuditService } from '../services/audit-service';
 import { HrbpService } from '../services/hrbp-service';
-import { BatchStatus, BatchStrategy, ProcessResult, MaterialType } from '../types';
+import { TaskService } from '../services/task-service';
+import { BatchStatus, BatchStrategy, ProcessResult, MaterialType, TaskStatus } from '../types';
 
 interface TestResult {
   name: string;
@@ -23,6 +24,7 @@ async function runTests() {
   results.push(await test_HrbpRoleView());
   results.push(await test_ExportReport());
   results.push(await test_FailedItemsReport());
+  results.push(await test_TaskRecovery());
 
   console.log('\n=== 测试结果总结 ===');
   const passed = results.filter(r => r.passed).length;
@@ -142,31 +144,50 @@ async function test_DuplicateBatchStrategy(): Promise<TestResult> {
       '测试用户'
     );
 
-    const ignoreResult = await BatchService.processDuplicateBatch(
+    const testMaterial = {
+      type: MaterialType.REGISTRATION_FORM,
+      fileName: '测试报名表.xlsx',
+      fileContent: Buffer.from('测试材料内容').toString('base64')
+    };
+
+    const ignoreResult = await BatchService.processDuplicateBatch({
       batchNumber,
-      BatchStrategy.IGNORE,
-      '操作人'
-    );
+      strategy: BatchStrategy.IGNORE,
+      operatedBy: '操作人',
+      materials: [testMaterial]
+    });
     if (ignoreResult.action !== 'ignored') {
       return { name: '重复批次策略', passed: false, error: '忽略策略失败' };
     }
 
-    const overwriteResult = await BatchService.processDuplicateBatch(
+    const overwriteResult = await BatchService.processDuplicateBatch({
       batchNumber,
-      BatchStrategy.OVERWRITE,
-      '操作人'
-    );
+      strategy: BatchStrategy.OVERWRITE,
+      operatedBy: '操作人',
+      trainingName: '更新后的培训名称',
+      materials: [testMaterial]
+    });
     if (overwriteResult.action !== 'overwritten') {
       return { name: '重复批次策略', passed: false, error: '覆盖策略失败' };
     }
+    if (overwriteResult.overwrittenMaterials.length === 0) {
+      return { name: '重复批次策略', passed: false, error: '覆盖策略应记录被覆盖的材料' };
+    }
+    if (overwriteResult.addedMaterials.length === 0) {
+      return { name: '重复批次策略', passed: false, error: '覆盖策略应添加新材料' };
+    }
 
-    const appendResult = await BatchService.processDuplicateBatch(
+    const appendResult = await BatchService.processDuplicateBatch({
       batchNumber,
-      BatchStrategy.APPEND,
-      '操作人'
-    );
+      strategy: BatchStrategy.APPEND,
+      operatedBy: '操作人',
+      materials: [{ ...testMaterial, type: MaterialType.SIGN_QR_CODE, fileName: '签到二维码.png' }]
+    });
     if (appendResult.action !== 'appended') {
       return { name: '重复批次策略', passed: false, error: '追加策略失败' };
+    }
+    if (appendResult.addedMaterials.length === 0) {
+      return { name: '重复批次策略', passed: false, error: '追加策略应添加新材料' };
     }
 
     return { name: '重复批次策略', passed: true };
@@ -303,6 +324,53 @@ async function test_FailedItemsReport(): Promise<TestResult> {
     return { name: '失败项报表', passed: true };
   } catch (err: any) {
     return { name: '失败项报表', passed: false, error: err.message };
+  }
+}
+
+async function test_TaskRecovery(): Promise<TestResult> {
+  try {
+    const { run: dbRun } = require('../database');
+
+    await dbRun(`DELETE FROM async_tasks WHERE task_type = ?`, ['test_recovery']);
+
+    const task = await TaskService.createTask(
+      'test_recovery',
+      { testData: 'recovery test' },
+      undefined,
+      3
+    );
+
+    await dbRun(
+      `UPDATE async_tasks SET status = ? WHERE id = ?`,
+      [TaskStatus.PROCESSING, task.id]
+    );
+
+    const beforeRecovery = await TaskService.getTaskById(task.id);
+    if (!beforeRecovery || beforeRecovery.status !== TaskStatus.PROCESSING) {
+      return { name: '任务恢复', passed: false, error: '设置 processing 状态失败' };
+    }
+
+    const recovered = await TaskService.recoverProcessingTasks();
+    if (recovered !== 1) {
+      return { name: '任务恢复', passed: false, error: `应恢复 1 个任务，实际恢复 ${recovered} 个` };
+    }
+
+    const afterRecovery = await TaskService.getTaskById(task.id);
+    if (!afterRecovery) {
+      return { name: '任务恢复', passed: false, error: '任务不存在' };
+    }
+
+    if (afterRecovery.status !== TaskStatus.PENDING_RETRY && afterRecovery.status !== TaskStatus.PENDING_MANUAL) {
+      return { name: '任务恢复', passed: false, error: `恢复后状态应为 PENDING_RETRY 或 PENDING_MANUAL，实际为 ${afterRecovery.status}` };
+    }
+
+    if (!afterRecovery.lastError || !afterRecovery.lastError.includes('服务中断后恢复')) {
+      return { name: '任务恢复', passed: false, error: '应记录恢复原因' };
+    }
+
+    return { name: '任务恢复', passed: true };
+  } catch (err: any) {
+    return { name: '任务恢复', passed: false, error: err.message };
   }
 }
 

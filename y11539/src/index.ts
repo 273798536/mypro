@@ -63,11 +63,11 @@ TaskService.registerHandler('export_generation', async (task: AsyncTask) => {
   console.log(`[导出生成任务] 完成: ${payload.exportType}`);
 });
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log(`企业培训签到权限追责台账服务已启动`);
   console.log(`服务地址: http://localhost:${PORT}`);
   console.log(`健康检查: http://localhost:${PORT}/health`);
-  TaskService.startWorker(5000);
+  await TaskService.startWorker(5000);
 });
 
 process.on('SIGTERM', () => {

@@ -88,4 +88,13 @@ router.post('/:id/retry', async (req: Request, res: Response) => {
   }
 });
 
+router.post('/recover', async (req: Request, res: Response) => {
+  try {
+    const recovered = await TaskService.recoverProcessingTasks();
+    res.json({ recovered });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

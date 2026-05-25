@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
+import path from 'path';
+import fs from 'fs';
 import { run, get, all } from '../database';
-import { Batch, BatchStatus, BatchStrategy, ProcessResult, MaterialType } from '../types';
+import { Batch, BatchStatus, BatchStrategy, ProcessResult, MaterialType, NewMaterialInput, DuplicateBatchInput, Material } from '../types';
 import { AuditService } from './audit-service';
 
 export class BatchService {
@@ -11,10 +14,7 @@ export class BatchService {
     createdBy: string,
     remark?: string
   ): Promise<Batch> {
-    const existing = await get<Batch>(
-      `SELECT * FROM batches WHERE batch_number = ?`,
-      [batchNumber]
-    );
+    const existing = await this.getBatchByNumber(batchNumber);
 
     if (existing) {
       throw new Error(`批次号 ${batchNumber} 已存在`);
@@ -123,44 +123,220 @@ export class BatchService {
   }
 
   static async processDuplicateBatch(
-    batchNumber: string,
-    strategy: BatchStrategy,
-    operatedBy: string
-  ): Promise<{ action: string; batch: Batch | null }> {
-    const existingBatch = await this.getBatchByNumber(batchNumber);
+    input: DuplicateBatchInput
+  ): Promise<{ action: string; batch: Batch; addedMaterials: Material[]; overwrittenMaterials: Material[]; ignoredMaterials: Material[] }> {
+    const { batchNumber, strategy, operatedBy, trainingName, trainingDate, remark, materials = [] } = input;
 
+    const existingBatch = await this.getBatchByNumber(batchNumber);
     if (!existingBatch) {
       throw new Error(`批次不存在: ${batchNumber}`);
     }
 
-    switch (strategy) {
-      case BatchStrategy.IGNORE:
-        return { action: 'ignored', batch: existingBatch };
+    if (existingBatch.status === BatchStatus.AUDIT_ONLY && strategy !== BatchStrategy.IGNORE) {
+      throw new Error(`批次已进入只读审计状态，只能使用 ignore 策略`);
+    }
 
-      case BatchStrategy.OVERWRITE:
+    const addedMaterials: Material[] = [];
+    const overwrittenMaterials: Material[] = [];
+    const ignoredMaterials: Material[] = [];
+    const now = new Date().toISOString();
+
+    switch (strategy) {
+      case BatchStrategy.IGNORE: {
+        await AuditService.recordChange(
+          existingBatch.id,
+          'batch_strategy',
+          'original',
+          'ignored',
+          operatedBy,
+          `忽略重复批次数据，保留原有 ${materials.length} 份新材料`
+        );
+        ignoredMaterials.push(...await this.persistMaterials(existingBatch.id, materials, operatedBy));
+        return { action: 'ignored', batch: existingBatch, addedMaterials, overwrittenMaterials, ignoredMaterials };
+      }
+
+      case BatchStrategy.OVERWRITE: {
+        const existingMaterials = await this.getMaterialsByBatchId(existingBatch.id);
+
+        for (const material of existingMaterials) {
+          await this.deleteMaterialInternal(material.id, operatedBy, `覆盖策略：删除旧材料 ${material.fileName}`);
+          overwrittenMaterials.push(material);
+        }
+
+        const newMaterials = await this.persistMaterials(existingBatch.id, materials, operatedBy);
+        addedMaterials.push(...newMaterials);
+
+        const updates: string[] = [];
+        const params: any[] = [];
+
+        if (trainingName !== undefined) {
+          updates.push(`training_name = ?`);
+          params.push(trainingName);
+          await AuditService.recordChange(existingBatch.id, 'training_name', existingBatch.trainingName, trainingName, operatedBy, '覆盖策略更新培训名称');
+        }
+        if (trainingDate !== undefined) {
+          updates.push(`training_date = ?`);
+          params.push(trainingDate);
+          await AuditService.recordChange(existingBatch.id, 'training_date', existingBatch.trainingDate, trainingDate, operatedBy, '覆盖策略更新培训日期');
+        }
+        if (remark !== undefined) {
+          updates.push(`remark = ?`);
+          params.push(remark);
+          await AuditService.recordChange(existingBatch.id, 'remark', existingBatch.remark, remark, operatedBy, '覆盖策略更新备注');
+        }
+
+        updates.push(`updated_at = ?`);
+        params.push(now, existingBatch.id);
+
+        if (updates.length > 1) {
+          await run(`UPDATE batches SET ${updates.join(', ')} WHERE id = ?`, params);
+        }
+
         await AuditService.recordChange(
           existingBatch.id,
           'batch_strategy',
           'original',
           'overwritten',
           operatedBy,
-          '覆盖批次数据'
+          `覆盖策略：删除 ${overwrittenMaterials.length} 份旧材料，新增 ${addedMaterials.length} 份新材料`
         );
-        return { action: 'overwritten', batch: existingBatch };
 
-      case BatchStrategy.APPEND:
+        const updatedBatch = await this.getBatchById(existingBatch.id);
+        return { action: 'overwritten', batch: updatedBatch!, addedMaterials, overwrittenMaterials, ignoredMaterials };
+      }
+
+      case BatchStrategy.APPEND: {
+        const existingMaterialTypes = new Set<string>();
+        const existingMaterials = await this.getMaterialsByBatchId(existingBatch.id);
+        existingMaterials.forEach(m => existingMaterialTypes.add(m.type));
+
+        for (const materialInput of materials) {
+          if (existingMaterialTypes.has(materialInput.type)) {
+            const existingOfType = existingMaterials.find(m => m.type === materialInput.type);
+            if (existingOfType) {
+              await this.deleteMaterialInternal(existingOfType.id, operatedBy, `追加策略：替换同类型材料 ${materialInput.fileName}`);
+              overwrittenMaterials.push(existingOfType);
+            }
+          }
+        }
+
+        const newMaterials = await this.persistMaterials(existingBatch.id, materials, operatedBy);
+        addedMaterials.push(...newMaterials);
+
+        if (remark !== undefined) {
+          await AuditService.recordChange(existingBatch.id, 'remark', existingBatch.remark, remark, operatedBy, '追加策略更新备注');
+          await run(`UPDATE batches SET remark = ?, updated_at = ? WHERE id = ?`, [remark, now, existingBatch.id]);
+        } else {
+          await run(`UPDATE batches SET updated_at = ? WHERE id = ?`, [now, existingBatch.id]);
+        }
+
         await AuditService.recordChange(
           existingBatch.id,
           'batch_strategy',
           'original',
           'appended',
           operatedBy,
-          '追加批次数据'
+          `追加策略：替换 ${overwrittenMaterials.length} 份同类型材料，新增 ${addedMaterials.length} 份新材料`
         );
-        return { action: 'appended', batch: existingBatch };
+
+        const updatedBatch = await this.getBatchById(existingBatch.id);
+        return { action: 'appended', batch: updatedBatch!, addedMaterials, overwrittenMaterials, ignoredMaterials };
+      }
 
       default:
         throw new Error(`未知策略: ${strategy}`);
+    }
+  }
+
+  private static async persistMaterials(batchId: string, materials: NewMaterialInput[], operatedBy: string): Promise<Material[]> {
+    const result: Material[] = [];
+    for (const input of materials) {
+      const fileBuffer = Buffer.from(input.fileContent, 'base64');
+      const material = await this.uploadMaterialInternal(batchId, input.type, fileBuffer, input.fileName, operatedBy, input.isSensitive || false);
+      result.push(material);
+    }
+    return result;
+  }
+
+  private static async uploadMaterialInternal(
+    batchId: string,
+    type: MaterialType,
+    fileBuffer: Buffer,
+    fileName: string,
+    uploadedBy: string,
+    isSensitive: boolean = false
+  ): Promise<Material> {
+    const fileHash = crypto.createHash('md5').update(fileBuffer).digest('hex');
+    const fileSize = fileBuffer.length;
+
+    const fileExt = path.extname(fileName);
+    const storedFileName = `${uuidv4()}${fileExt}`;
+    const uploadPath = path.join(process.cwd(), 'uploads', storedFileName);
+
+    fs.writeFileSync(uploadPath, fileBuffer);
+
+    const fileUrl = `/uploads/${storedFileName}`;
+    const id = uuidv4();
+    const now = new Date().toISOString();
+
+    await run(
+      `INSERT INTO materials (id, batch_id, type, file_name, file_url, file_hash, file_size, uploaded_by, uploaded_at, is_sensitive)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, batchId, type, fileName, fileUrl, fileHash, fileSize, uploadedBy, now, isSensitive ? 1 : 0]
+    );
+
+    return this.getMaterialById(id) as Promise<Material>;
+  }
+
+  private static async getMaterialById(id: string): Promise<Material | undefined> {
+    const material = await get<any>(`SELECT * FROM materials WHERE id = ?`, [id]);
+    if (material) {
+      return this.mapMaterialRow(material);
+    }
+    return undefined;
+  }
+
+  private static async getMaterialsByBatchId(batchId: string): Promise<Material[]> {
+    const materials = await all<any>(`SELECT * FROM materials WHERE batch_id = ? ORDER BY uploaded_at DESC`, [batchId]);
+    return materials.map(m => this.mapMaterialRow(m));
+  }
+
+  private static mapMaterialRow(row: any): Material {
+    return {
+      id: row.id,
+      batchId: row.batch_id,
+      type: row.type,
+      fileName: row.file_name,
+      fileUrl: row.file_url,
+      fileHash: row.file_hash,
+      fileSize: row.file_size,
+      uploadedBy: row.uploaded_by,
+      uploadedAt: row.uploaded_at,
+      isSensitive: row.is_sensitive === 1,
+      processResult: row.process_result,
+      processNote: row.process_note
+    };
+  }
+
+  private static async deleteMaterialInternal(materialId: string, operatedBy: string, reason: string): Promise<void> {
+    const material = await this.getMaterialById(materialId);
+    if (!material) return;
+
+    await AuditService.recordChange(
+      material.batchId,
+      'material_deleted',
+      material.fileName,
+      null as any,
+      operatedBy,
+      reason,
+      materialId
+    );
+
+    await run(`DELETE FROM materials WHERE id = ?`, [materialId]);
+
+    const filePath = path.join(process.cwd(), material.fileUrl);
+    if (fs.existsSync(filePath)) {
+      try { fs.unlinkSync(filePath); } catch {}
     }
   }
 
@@ -200,7 +376,7 @@ export class BatchService {
   }> {
     const rows = await all<any>(`SELECT * FROM batches`);
     const allBatches = rows.map(r => this.mapBatchRow(r));
-    
+
     const byStatus = {} as Record<BatchStatus, number>;
     const byResult = {} as Record<ProcessResult, number>;
 
