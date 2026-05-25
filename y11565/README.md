@@ -77,6 +77,13 @@ python cli.py export summary --format xlsx
 # 查看统计
 python cli.py stats
 
+# 任务调度（异步任务恢复执行）
+python cli.py task list                    # 列出异步任务
+python cli.py task show <task_id>          # 显示任务详情
+python cli.py task run-once                # 立即执行一次待处理任务
+python cli.py task worker --interval 30    # 启动任务工作进程，持续轮询
+python cli.py task retry <task_id>         # 重试失败任务
+
 # 启动 API 服务
 python cli.py api --port 8000
 ```

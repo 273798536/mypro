@@ -35,8 +35,13 @@ def get_batches(
 
 
 def _update_batch_stats(db: Session, batch: Batch):
-    batch.total_work_orders = len(batch.work_orders)
-    batch.abnormal_count = sum(1 for wo in batch.work_orders if wo.is_abnormal)
+    total = db.query(WorkOrder).filter(WorkOrder.batch_id == batch.id).count()
+    abnormal = db.query(WorkOrder).filter(
+        WorkOrder.batch_id == batch.id,
+        WorkOrder.is_abnormal == True
+    ).count()
+    batch.total_work_orders = total
+    batch.abnormal_count = abnormal
 
 
 def create_batch(db: Session, batch_data: BatchCreate, created_by: str = None) -> Batch:
@@ -386,8 +391,10 @@ def add_work_orders(
             added += 1
             existing_order_nos.add(wo_data.order_no)
 
+    db.flush()
     _update_batch_stats(db, db_batch)
     db.commit()
+    db.refresh(db_batch)
     return results, added, skipped
 
 
