@@ -1,0 +1,6 @@
+"id","borrow_no","material_code","material_name","borrower_name","borrower_phone","borrower_department","borrow_date","location","shift_info","status","responsible_person","category","estimated_value","source_file_name"
+6,"BOR006","EQ007","无线麦克风","王主持","13****06","活动部","2024-03-19 09:00:00","C馆论坛区","中班","investigating",,"音频设备","****","borrow-records.csv"
+1,"BOR001","EQ001","投影仪","陈技术","13****01","技术部","2024-03-18 09:00:00","A馆主舞台","早班","lost",,"电子设备","15****00","borrow-records.csv"
+3,"BOR003","EQ003","音响系统","周工程师","13****03","技术部","2024-03-18 08:30:00","A馆舞台区","早班","investigating",,"电子设备","12****00","borrow-records.csv"
+5,"BOR005","EQ006","摄像机","郑摄影","13****05","市场部","2024-03-18 08:00:00","全场巡展","早班","lost",,"摄影器材","25****00","borrow-records.csv"
+8,"BOR008","EQ002","展示屏","黄搭建","13****08","搭建部","2024-03-17 16:00:00","A馆VIP区","晚班","lost",,"电子设备","****","borrow-records.csv"

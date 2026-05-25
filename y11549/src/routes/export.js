@@ -2,12 +2,22 @@ const express = require('express');
 const fs = require('fs');
 const exportService = require('../services/exportService');
 const logger = require('../config/logger');
+const { ROLES } = require('../config/constants');
 
 const router = express.Router();
 
+const CAN_EXPORT_SENSITIVE = [ROLES.ADMIN, ROLES.AUDITOR];
+
 router.post('/lost-items', async (req, res) => {
   try {
-    const { taskName, requestedBy, filters, includeSensitive, role = 'viewer' } = req.body;
+    const { taskName, requestedBy, filters, role = 'viewer' } = req.body;
+
+    const canAccessSensitive = CAN_EXPORT_SENSITIVE.includes(role);
+    const includeSensitive = canAccessSensitive && req.body.includeSensitive === true;
+
+    if (req.body.includeSensitive && !canAccessSensitive) {
+      logger.warn('敏感数据导出权限被拒绝', { role, requestedBy });
+    }
 
     await exportService.freezeBeforeExport('lost-items', requestedBy, role);
 
@@ -25,7 +35,8 @@ router.post('/lost-items', async (req, res) => {
       success: true,
       data: {
         taskId,
-        ...result
+        ...result,
+        sensitive_included: includeSensitive
       }
     });
   } catch (error) {

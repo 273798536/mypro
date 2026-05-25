@@ -229,6 +229,55 @@ async function runTests() {
       const totalFrozen = frozen.reduce((sum, f) => sum + f.frozen, 0);
       assert(totalFrozen > 0, '应该有数据被冻结');
       assert(after.not_frozen_count === 0, '冻结后应该没有未冻结数据');
+    }),
+
+    test('14. Viewer角色无法绕过脱敏', async () => {
+      const records = await importService.allQuery(`
+        SELECT br.borrower_phone FROM borrow_records br LIMIT 1
+      `);
+      assert(records.length > 0, '没有数据可测试');
+      
+      const originalPhone = records[0].borrower_phone;
+      
+      const taskId = await exportService.createExportTask(
+        'Viewer敏感数据测试',
+        'lost-items',
+        'viewer_user',
+        {},
+        true
+      );
+      
+      const result = await exportService.exportLostItemsReport(taskId, 'viewer', true);
+      assert(result.sensitive_included === false, 'Viewer即使请求敏感数据也应该被拒绝');
+      
+      const exportedData = await importService.allQuery(`
+        SELECT borrower_phone FROM borrow_records 
+        WHERE status IN ('lost', 'investigating', 'resolved')
+        LIMIT 1
+      `);
+      
+      const exportedPhone = exportedData[0].borrower_phone;
+      const masked = exportService.maskSensitiveData({ borrower_phone: exportedPhone }, 'viewer');
+      console.log(`   原始手机号: ${originalPhone}`);
+      console.log(`   脱敏后手机号: ${masked.borrower_phone}`);
+      console.log(`   sensitive_included: ${result.sensitive_included}`);
+      
+      assert(masked.borrower_phone !== exportedPhone, '手机号应该被脱敏');
+      assert(masked.borrower_phone.includes('****'), '脱敏后应包含****');
+    }),
+
+    test('15. Admin角色可导出敏感数据', async () => {
+      const taskId = await exportService.createExportTask(
+        'Admin敏感数据测试',
+        'lost-items',
+        'admin_user',
+        {},
+        true
+      );
+      
+      const result = await exportService.exportLostItemsReport(taskId, 'admin', true);
+      console.log(`   sensitive_included: ${result.sensitive_included}`);
+      assert(result.sensitive_included === true, 'Admin应该可以导出敏感数据');
     })
   ];
 

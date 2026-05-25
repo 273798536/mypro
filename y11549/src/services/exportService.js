@@ -152,7 +152,10 @@ const exportLostItemsReport = async (exportTaskId, role, includeSensitive = fals
 
     let records = await allQuery(query, params);
 
-    if (!includeSensitive) {
+    const canAccessSensitive = [ROLES.ADMIN, ROLES.AUDITOR].includes(role);
+    const shouldMask = !canAccessSensitive || !includeSensitive;
+    
+    if (shouldMask) {
       records = records.map(r => maskSensitiveData(r, role));
     }
 
@@ -190,7 +193,8 @@ const exportLostItemsReport = async (exportTaskId, role, includeSensitive = fals
       success: true,
       filePath,
       fileName,
-      recordCount: records.length
+      recordCount: records.length,
+      sensitive_included: !shouldMask
     };
   } catch (error) {
     await runQuery(`UPDATE export_tasks SET status = 'failed' WHERE id = ?`, [exportTaskId]);
