@@ -161,6 +161,8 @@ class ReceiptQueue(Base):
     closed_by = Column(String, nullable=True)
     close_note = Column(Text, nullable=True)
 
+    business_date = Column(DateTime(timezone=True), nullable=True)
+
     original_data = Column(Text)
     corrected_data = Column(Text, nullable=True)
     correction_note = Column(Text, nullable=True)
@@ -200,6 +202,7 @@ class MaterialList(Base):
     actual_quantity = Column(Float, nullable=True)
     unit_price = Column(Float, default=0)
     total_amount = Column(Float, default=0)
+    list_date = Column(DateTime(timezone=True), nullable=True)
     responsible_person = Column(String)
     source = Column(String, default=MaterialSource.MATERIAL_LIST)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -18,6 +18,7 @@ class ExportService:
             ReceiptQueue.material_code,
             ReceiptQueue.quantity,
             ReceiptQueue.amount,
+            ReceiptQueue.business_date,
             ReceiptQueue.status,
             ReceiptQueue.retry_count,
             ReceiptQueue.is_dirty,
@@ -52,7 +53,7 @@ class ExportService:
 
         columns = [
             "队列编号", "来源类型", "物料名称", "物料编码",
-            "数量", "金额", "状态", "重试次数", "是否脏数据",
+            "数量", "金额", "业务日期", "状态", "重试次数", "是否脏数据",
             "脏数据类型", "脏数据说明", "重试分类", "处理人",
             "处理时间", "补偿金额", "补偿时间", "关闭时间", "创建时间"
         ]
@@ -66,6 +67,7 @@ class ExportService:
                 r.material_code or "",
                 r.quantity,
                 r.amount,
+                r.business_date.strftime("%Y-%m-%d %H:%M:%S") if r.business_date else "",
                 r.status,
                 r.retry_count,
                 "是" if r.is_dirty else "否",
@@ -115,6 +117,7 @@ class ExportService:
                 "material_code": r.material_code,
                 "quantity": r.quantity,
                 "amount": r.amount,
+                "business_date": r.business_date,
                 "status": r.status,
                 "retry_count": r.retry_count,
                 "is_dirty": r.is_dirty,

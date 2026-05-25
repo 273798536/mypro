@@ -60,6 +60,7 @@ class ReceiptQueueResponse(BaseModel):
     compensated_amount: float
     compensated_at: Optional[datetime] = None
     compensated_by: Optional[str] = None
+    business_date: Optional[datetime] = None
     closed_at: Optional[datetime] = None
     closed_by: Optional[str] = None
     close_note: Optional[str] = None
@@ -194,6 +195,7 @@ class MaterialListCreate(BaseModel):
     planned_quantity: float
     actual_quantity: Optional[float] = None
     unit_price: float = 0
+    list_date: Optional[datetime] = None
     responsible_person: str
     raw_data: Optional[str] = None
 

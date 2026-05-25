@@ -130,6 +130,7 @@ def seed_sample_data():
             planned_quantity=10,
             actual_quantity=10,
             unit_price=150.0,
+            list_date=now - timedelta(days=2),
             responsible_person="张经理"
         ),
         MaterialListCreate(
@@ -140,6 +141,7 @@ def seed_sample_data():
             planned_quantity=500,
             actual_quantity=480,
             unit_price=5.0,
+            list_date=now - timedelta(days=2),
             responsible_person="李主管"
         ),
         MaterialListCreate(
@@ -150,6 +152,7 @@ def seed_sample_data():
             planned_quantity=20,
             actual_quantity=20,
             unit_price=25.0,
+            list_date=now - timedelta(days=2),
             responsible_person="王助理"
         ),
     ]

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import SessionLocal
-from app.models import ReceiptQueue, QueueStatus
+from app.models import ReceiptQueue, QueueStatus, DirtyType
 from app.services.queue_service import QueueService
 from app.schemas import (
     LogisticsReceiptCreate, BorrowRecordCreate,
@@ -167,11 +167,12 @@ def trigger_dirty_data():
         amount=2800.0,
         status=QueueStatus.PENDING,
         original_data='{"test": "yesterday"}',
+        business_date=now - timedelta(days=1),
         created_at=now - timedelta(days=1)
     )
     db.add(yesterday_item)
     db.flush()
-    print(f"   ✓ 已创建昨日记录: {yesterday_item.queue_no}")
+    print(f"   ✓ 已创建昨日记录: {yesterday_item.queue_no}, business_date={yesterday_item.business_date.strftime('%Y-%m-%d')}")
 
     cross_day_data = LogisticsReceiptCreate(
         tracking_number="CROSS001",
@@ -184,7 +185,85 @@ def trigger_dirty_data():
         signatory="测试"
     )
     cross_day_item = QueueService.submit_logistics_receipt(db, cross_day_data)
-    print(f"   ✓ 跨日检测: is_dirty={cross_day_item.is_dirty}, type={cross_day_item.dirty_type}")
+    print(f"   ✓ 跨日检测: is_dirty={cross_day_item.is_dirty}, type={cross_day_item.dirty_type}, business_date={cross_day_item.business_date.strftime('%Y-%m-%d')}")
+
+    print("\n8.1 跨日场景专项验证: 2026-01-01 vs 2026-01-02...")
+    date_jan1 = datetime(2026, 1, 1, 10, 0, 0)
+    date_jan2 = datetime(2026, 1, 2, 14, 0, 0)
+
+    jan1_data = LogisticsReceiptCreate(
+        tracking_number="JAN01001",
+        material_name="易拉宝",
+        material_code="MAT001",
+        quantity=5,
+        sender="供应商A",
+        receiver="展会仓储",
+        receive_time=date_jan1,
+        signatory="张收货"
+    )
+    jan1_item = QueueService.submit_logistics_receipt(db, jan1_data)
+    print(f"   ✓ 2026-01-01 记录: is_dirty={jan1_item.is_dirty}, type={jan1_item.dirty_type}, business_date={jan1_item.business_date.strftime('%Y-%m-%d')}, amount={jan1_item.amount}")
+
+    jan2_data = LogisticsReceiptCreate(
+        tracking_number="JAN02001",
+        material_name="易拉宝",
+        material_code="MAT001",
+        quantity=5,
+        sender="供应商A",
+        receiver="展会仓储",
+        receive_time=date_jan2,
+        signatory="张收货"
+    )
+    jan2_item = QueueService.submit_logistics_receipt(db, jan2_data)
+    print(f"   ✓ 2026-01-02 记录: is_dirty={jan2_item.is_dirty}, type={jan2_item.dirty_type}, business_date={jan2_item.business_date.strftime('%Y-%m-%d')}, amount={jan2_item.amount}")
+    assert jan2_item.is_dirty == True, "2026-01-02 记录应标记为脏数据"
+    assert jan2_item.dirty_type == DirtyType.CROSS_DAY, "2026-01-02 记录脏数据类型应为 cross_day"
+    print(f"   ✅ 跨日检测验证通过! 2026-01-02 记录正确标记为 cross_day")
+
+    print("\n8.2 同日金额冲突专项验证...")
+    same_day_date = datetime(2026, 1, 15, 9, 0, 0)
+    amount_conflict1 = LogisticsReceiptCreate(
+        tracking_number="AC001",
+        material_name="宣传册",
+        material_code="MAT003",
+        quantity=100,
+        sender="印刷厂",
+        receiver="展会筹备组",
+        receive_time=same_day_date,
+        signatory="李物料"
+    )
+    ac_item1 = QueueService.submit_logistics_receipt(db, amount_conflict1)
+    print(f"   ✓ 同日记录1: is_dirty={ac_item1.is_dirty}, type={ac_item1.dirty_type}, amount={ac_item1.amount} (单价24元×100=2400元)")
+
+    amount_conflict2_data = LogisticsReceiptCreate(
+        tracking_number="AC002",
+        material_name="宣传册",
+        material_code="MAT003",
+        quantity=100,
+        sender="印刷厂",
+        receiver="展会筹备组",
+        receive_time=same_day_date,
+        signatory="李物料"
+    )
+    amount_conflict2_data.raw_data = '{"material_code": "MAT003", "quantity": 100, "unit_price": 25.0}'
+    amount_conflict2 = QueueService.submit_logistics_receipt(db, amount_conflict2_data)
+    amount_conflict2.amount = 2500.0
+    db.flush()
+    print(f"   ✓ 同日记录2: is_dirty={amount_conflict2.is_dirty}, type={amount_conflict2.dirty_type}, amount={amount_conflict2.amount} (单价25元×100=2500元)")
+
+    ac_redetect_result = QueueService._detect_dirty_data(
+        db,
+        "宣传册",
+        "MAT003",
+        100,
+        2500.0,
+        "logistics",
+        same_day_date
+    )
+    print(f"   ✓ 重检测结果: is_dirty={ac_redetect_result[0]}, type={ac_redetect_result[1]}")
+    assert ac_redetect_result[0] == True, "同日金额不同应标记为脏数据"
+    assert ac_redetect_result[1] == DirtyType.AMOUNT_CONFLICT, "同日金额不同脏数据类型应为 amount_conflict"
+    print(f"   ✅ 同日金额冲突验证通过! 正确标记为 amount_conflict")
 
     print("\n9. 物料清单提交测试...")
     ml_data = MaterialListCreate(

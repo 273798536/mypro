@@ -85,42 +85,50 @@ class QueueService:
                 return is_dirty, dirty_type, dirty_note
 
         if business_time and material_code:
-            today_start = business_time.replace(hour=0, minute=0, second=0, microsecond=0)
+            current_date = business_time.date()
+
             same_day_material = db.query(ReceiptQueue).filter(
                 ReceiptQueue.material_code == material_code,
                 ReceiptQueue.material_name == material_name,
-                ReceiptQueue.created_at >= today_start,
-                ReceiptQueue.created_at < today_start + timedelta(days=1)
+                ReceiptQueue.business_date.isnot(None),
+                func.date(ReceiptQueue.business_date) == current_date
             ).all()
 
             for record in same_day_material:
-                if abs(record.quantity - quantity) > 0.001:
-                    is_dirty = True
-                    dirty_type = DirtyType.QUANTITY_CONFLICT
-                    dirty_note = f"同一物料当日数量冲突: 历史记录{record.quantity}，当前{quantity}"
-                    return is_dirty, dirty_type, dirty_note
-                if amount > 0 and record.amount > 0 and abs(record.amount - amount) > 0.01:
+                quantity_conflict = abs(record.quantity - quantity) > 0.001
+                amount_conflict = amount > 0 and record.amount > 0 and abs(record.amount - amount) > 0.01
+                biz_date_str = record.business_date.strftime("%Y-%m-%d") if record.business_date else "N/A"
+
+                if amount_conflict:
                     is_dirty = True
                     dirty_type = DirtyType.AMOUNT_CONFLICT
-                    dirty_note = f"同一物料当日金额冲突: 历史记录{record.amount}，当前{amount}"
+                    dirty_note = f"同一物料当日金额冲突: 业务日期{biz_date_str}，历史记录{record.amount}，当前{amount}"
+                    if quantity_conflict:
+                        dirty_note += f"；同时存在数量冲突: 历史记录{record.quantity}，当前{quantity}"
+                    return is_dirty, dirty_type, dirty_note
+
+                if quantity_conflict:
+                    is_dirty = True
+                    dirty_type = DirtyType.QUANTITY_CONFLICT
+                    dirty_note = f"同一物料当日数量冲突: 业务日期{biz_date_str}，历史记录{record.quantity}，当前{quantity}"
                     return is_dirty, dirty_type, dirty_note
 
         if business_time and material_code and not is_dirty:
-            yesterday = business_time - timedelta(days=1)
-            yesterday_start = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
-            today_start = business_time.replace(hour=0, minute=0, second=0, microsecond=0)
+            current_date = business_time.date()
+            yesterday_date = current_date - timedelta(days=1)
 
             yesterday_record = db.query(ReceiptQueue).filter(
                 ReceiptQueue.material_code == material_code,
                 ReceiptQueue.material_name == material_name,
-                ReceiptQueue.created_at >= yesterday_start,
-                ReceiptQueue.created_at < today_start
+                ReceiptQueue.business_date.isnot(None),
+                func.date(ReceiptQueue.business_date) == yesterday_date
             ).first()
 
             if yesterday_record:
                 is_dirty = True
                 dirty_type = DirtyType.CROSS_DAY
-                dirty_note = f"跨日重复提交: 昨日已有相同物料记录（{yesterday_record.queue_no}），今日再次提交"
+                biz_date_str = yesterday_record.business_date.strftime("%Y-%m-%d") if yesterday_record.business_date else "N/A"
+                dirty_note = f"跨日重复提交: 业务日期{biz_date_str}已有相同物料记录（{yesterday_record.queue_no}），今日再次提交"
                 return is_dirty, dirty_type, dirty_note
 
         return is_dirty, dirty_type, dirty_note
@@ -150,6 +158,7 @@ class QueueService:
             material_code=item_data.material_code,
             quantity=item_data.quantity,
             amount=item_data.amount,
+            business_date=business_time,
             logistics_receipt_id=item_data.logistics_receipt_id,
             borrow_record_id=item_data.borrow_record_id,
             store_transfer_id=item_data.store_transfer_id,
@@ -304,6 +313,8 @@ class QueueService:
         amount = cls._calculate_amount(db, data.material_code, quantity, unit_price)
         total_amount = round(quantity * (unit_price or 0), 2) if unit_price else amount
 
+        business_time = data.list_date or datetime.now()
+
         material_list = MaterialList(
             list_no=data.list_no,
             exhibition_name=data.exhibition_name,
@@ -313,6 +324,7 @@ class QueueService:
             actual_quantity=data.actual_quantity,
             unit_price=data.unit_price,
             total_amount=total_amount,
+            list_date=data.list_date,
             responsible_person=data.responsible_person,
             raw_data=raw_data
         )
@@ -329,7 +341,7 @@ class QueueService:
             original_data=raw_data
         )
 
-        return cls.create_queue_item(db, queue_data, business_time=datetime.now())
+        return cls.create_queue_item(db, queue_data, business_time=business_time)
 
     @classmethod
     def process_retry(
