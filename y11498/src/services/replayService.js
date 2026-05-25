@@ -28,9 +28,7 @@ class ReplayService {
     });
     const dirtyRecords = await dirtyRecordService.getDirtyRecords({ isCorrected: false });
 
-    const anomalyCount = duplicateResult.duplicate_groups_found + 
-                        reconcileResult.discrepancy_count + 
-                        dirtyRecords.length;
+    const anomalyCount = dirtyRecords.length;
 
     await db.update('replay_sessions', {
       status: 'completed',
@@ -123,7 +121,7 @@ class ReplayService {
       duplicate_groups: duplicateGroups,
       dirty_records: dirtyRecords,
       reconciliation_discrepancies: discrepancies,
-      total_anomalies: duplicateGroups.length + dirtyRecords.length + discrepancies.length
+      total_anomalies: dirtyRecords.length
     };
   }
 
