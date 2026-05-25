@@ -66,9 +66,14 @@ class AppointmentOrderResponse(AppointmentOrderBase):
         from_attributes = True
 
 
-class AppointmentOrderReadOnly(AppointmentOrderBase):
+class AppointmentOrderReadOnly(BaseModel):
     id: int
     batch_id: int
+    order_no: str
+    product_name: Optional[str] = None
+    quantity: Optional[int] = None
+    appointment_time: Optional[datetime] = None
+    status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

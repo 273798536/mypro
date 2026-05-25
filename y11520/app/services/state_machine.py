@@ -38,11 +38,10 @@ class StateMachine:
         from_status = batch.status
         
         if from_status == RecordStatus.FROZEN and to_status != RecordStatus.FROZEN:
-            if batch.status_before_freeze:
-                if not cls.can_transition(batch.status_before_freeze, to_status):
-                    raise StateTransitionError(
-                        f"Cannot transition from frozen (original: {batch.status_before_freeze}) to {to_status}"
-                    )
+            if not cls.can_transition(RecordStatus.FROZEN, to_status):
+                raise StateTransitionError(
+                    f"Cannot unfreeze from frozen to {to_status}"
+                )
         else:
             if not cls.can_transition(from_status, to_status):
                 raise StateTransitionError(
@@ -161,7 +160,6 @@ class StateMachine:
 
         batch.unfreeze_reason = unfreeze_reason
         batch.unfreeze_time = datetime.utcnow()
-        batch.status_before_freeze = None
 
         result = cls.transition(
             db, batch, target_status, operator,

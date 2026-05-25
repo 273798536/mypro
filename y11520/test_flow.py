@@ -239,6 +239,8 @@ def test_main_flow():
     batch = response.json()
     print(f"✅ 解冻成功")
     print(f"   当前状态: {batch['status']}")
+    print(f"   冻结前状态（保留）: {batch.get('status_before_freeze')}")
+    assert batch.get('status_before_freeze') is not None, "解冻后 status_before_freeze 应该保留，用于区域售后导出"
     
     print("\n" + "-" * 50)
     print("步骤 8: 复核用户处理脏记录（回写修正值）")
@@ -339,6 +341,16 @@ def test_main_flow():
     print(f"   差评原因未找到: {stats['bad_review_not_found_count']}")
     print(f"   数量冲突: {stats['quantity_conflict_count']}")
     
+    response = client.get("/export/summary", params={"status": "settled"})
+    summary = response.json()
+    if summary:
+        item = summary[0]
+        print(f"\n✅ 区域售后导出汇总:")
+        print(f"   批次号: {item['batch_no']}")
+        print(f"   状态: {item['status']}")
+        print(f"   冻结前状态（区域售后可见）: {item.get('status_before_freeze')}")
+        assert item.get('status_before_freeze') is not None, "导出汇总中应该显示冻结前状态"
+    
     print("\n" + "=" * 70)
     print("✅ 主流程测试完成!")
     print("=" * 70)
@@ -385,7 +397,44 @@ def test_role_based_fields():
         print(f"   包含 status_logs: {'status_logs' in result} (应该是 False)")
     
     print("\n" + "-" * 50)
-    print("测试3: 主管查看批次详情")
+    print("测试3: 只读用户查看预约单子字段（精简版）")
+    print("-" * 50)
+    client.login("entry", "entry123")
+    
+    response = client.post("/batches", json={
+        "batch_no": f"FIELD-TEST2-{int(time.time())}",
+        "name": "字段测试批次2",
+        "region": "华东区"
+    })
+    batch_id2 = response.json()['id']
+    
+    client.post(f"/batches/{batch_id2}/upload", json={
+        "appointment_orders": [{
+            "order_no": "TEST-ORDER-FIELD",
+            "customer_name": "张三",
+            "customer_phone": "13800138000",
+            "address": "上海市浦东新区xx路123号",
+            "product_name": "空调",
+            "quantity": 1,
+            "raw_data": {"test": "data"}
+        }]
+    })
+    
+    client.login("readonly", "readonly123")
+    response = client.get(f"/batches/{batch_id2}")
+    if response.status_code == 200:
+        result = response.json()
+        orders = result.get('appointment_orders', [])
+        if orders:
+            order_fields = list(orders[0].keys())
+            print(f"   只读预约单字段: {order_fields}")
+            print(f"   包含 customer_phone: {'customer_phone' in order_fields} (应该是 False)")
+            print(f"   包含 address: {'address' in order_fields} (应该是 False)")
+            print(f"   包含 raw_data: {'raw_data' in order_fields} (应该是 False)")
+            print(f"   包含 reschedule_count: {'reschedule_count' in order_fields} (应该是 False)")
+    
+    print("\n" + "-" * 50)
+    print("测试4: 主管查看批次详情")
     print("-" * 50)
     client.login("manager", "manager123")
     response = client.get(f"/batches/{batch_id}")
