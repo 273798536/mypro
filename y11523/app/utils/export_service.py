@@ -29,11 +29,24 @@ class ExportService:
 
     def _freeze_records(self, filters: Dict[str, Any], operator: str) -> List[int]:
         frozen_ids = []
+        appointment_nos = []
 
-        if "appointment_no" in filters:
+        if "appointment_no" in filters and filters["appointment_no"]:
+            appointment_nos = filters["appointment_no"]
+        else:
+            if filters.get("start_time") or filters.get("end_time"):
+                query = self.db.query(Appointment)
+                if filters.get("start_time"):
+                    query = query.filter(Appointment.created_at >= filters["start_time"])
+                if filters.get("end_time"):
+                    query = query.filter(Appointment.created_at <= filters["end_time"])
+                appts = query.all()
+                appointment_nos = [a.appointment_no for a in appts]
+
+        if appointment_nos:
             appts = (
                 self.db.query(Appointment)
-                .filter(Appointment.appointment_no.in_(filters["appointment_no"]))
+                .filter(Appointment.appointment_no.in_(appointment_nos))
                 .all()
             )
             for appt in appts:
@@ -43,6 +56,9 @@ class ExportService:
                     operator=operator,
                 )
                 frozen_ids.append(appt.id)
+
+            if not filters.get("appointment_no"):
+                filters["appointment_no"] = appointment_nos
 
         return frozen_ids
 
