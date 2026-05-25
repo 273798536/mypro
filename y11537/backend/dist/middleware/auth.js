@@ -10,7 +10,9 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const permissions_1 = require("../config/permissions");
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const tokenFromHeader = authHeader && authHeader.split(' ')[1];
+    const tokenFromQuery = req.query.token;
+    const token = tokenFromHeader || tokenFromQuery;
     if (!token) {
         return res.status(401).json({ error: '未提供认证令牌' });
     }
