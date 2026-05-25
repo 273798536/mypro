@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const db = require('../database/db');
 const config = require('../config/config');
 const { createAuditLog } = require('../middleware/auth');
@@ -8,16 +9,72 @@ class QueueService {
     this.processingItems = new Set();
   }
 
-  async enqueue(workOrderId, itemType, payload, userId, ipAddress) {
+  generateIdempotentKey(workOrderId, itemType, payload) {
+    const payloadHash = crypto
+      .createHash('md5')
+      .update(JSON.stringify(payload))
+      .digest('hex');
+    return `${workOrderId}:${itemType}:${payloadHash}`;
+  }
+
+  async checkIdempotent(idempotentKey) {
+    return await db.getSync(
+      'SELECT * FROM idempotent_keys WHERE idempotent_key = ?',
+      [idempotentKey]
+    );
+  }
+
+  async enqueue(workOrderId, itemType, payload, userId, ipAddress, options = {}) {
+    const { idempotent = true, mergeDuplicates = true } = options;
+    
+    if (idempotent) {
+      const idempotentKey = this.generateIdempotentKey(workOrderId, itemType, payload);
+      const existing = await this.checkIdempotent(idempotentKey);
+      
+      if (existing) {
+        const existingItem = await db.getSync(
+          'SELECT * FROM queue_items WHERE id = ?',
+          [existing.queue_item_id]
+        );
+        
+        if (mergeDuplicates && existingItem && ['pending', 'retry'].includes(existingItem.status)) {
+          await this._addHistory(existingItem.id, existingItem.status, existingItem.status, 
+            'merge', '重复提交已合并，不创建新队列项', userId);
+          return {
+            id: existingItem.id,
+            merged: true,
+            message: '重复提交已合并到现有队列项'
+          };
+        }
+        
+        return {
+          id: existingItem.id,
+          duplicate: true,
+          message: '重复提交，返回已存在的队列项'
+        };
+      }
+
+      const itemId = await this._createQueueItem(workOrderId, itemType, payload, userId, ipAddress);
+      
+      await db.runSync(
+        'INSERT INTO idempotent_keys (idempotent_key, queue_item_id, work_order_id) VALUES (?, ?, ?)',
+        [idempotentKey, itemId, workOrderId]
+      );
+      
+      return itemId;
+    }
+
+    return await this._createQueueItem(workOrderId, itemType, payload, userId, ipAddress);
+  }
+
+  async _createQueueItem(workOrderId, itemType, payload, userId, ipAddress) {
     const itemId = uuidv4();
     const now = new Date().toISOString();
 
-    const stmt = db.prepare(`
+    await db.runSync(`
       INSERT INTO queue_items (id, work_order_id, item_type, payload, status, created_at, updated_at)
       VALUES (?, ?, ?, ?, 'pending', ?, ?)
-    `);
-
-    await stmt.run(itemId, workOrderId, itemType, JSON.stringify(payload), now, now);
+    `, [itemId, workOrderId, itemType, JSON.stringify(payload), now, now]);
 
     await this._addHistory(itemId, null, 'pending', 'enqueue', '任务加入队列', userId);
     
@@ -28,10 +85,71 @@ class QueueService {
     return itemId;
   }
 
+  async correctAndRetry(queueItemId, correctedPayload, correctionNote, userId) {
+    const item = await db.getSync('SELECT * FROM queue_items WHERE id = ?', [queueItemId]);
+    
+    if (!item) {
+      throw new Error('队列项不存在');
+    }
+
+    const originalPayload = item.payload;
+    const now = new Date().toISOString();
+
+    await db.runSync(`
+      INSERT INTO compensation_corrections 
+      (queue_item_id, original_payload, corrected_payload, correction_note, corrected_by)
+      VALUES (?, ?, ?, ?, ?)
+    `, [queueItemId, originalPayload, JSON.stringify(correctedPayload), correctionNote, userId]);
+
+    await db.runSync(`
+      UPDATE queue_items 
+      SET payload = ?,
+          status = 'pending',
+          retry_count = 0,
+          last_error = NULL,
+          error_stack = NULL,
+          next_retry_at = NULL,
+          updated_at = ?
+      WHERE id = ?
+    `, [JSON.stringify(correctedPayload), now, queueItemId]);
+
+    await this._addHistory(queueItemId, item.status, 'pending', 'correct', 
+      `数据修正: ${correctionNote}`, userId);
+
+    await createAuditLog(userId, 'correct_retry', 'queue_items', queueItemId, { correctionNote }, null);
+
+    return { success: true, message: '数据已修正并重新排队处理' };
+  }
+
+  async reprocess(queueItemId, userId) {
+    const item = await db.getSync('SELECT * FROM queue_items WHERE id = ?', [queueItemId]);
+    
+    if (!item) {
+      throw new Error('队列项不存在');
+    }
+
+    const now = new Date().toISOString();
+    
+    await db.runSync(`
+      UPDATE queue_items 
+      SET status = 'pending',
+          retry_count = 0,
+          last_error = NULL,
+          error_stack = NULL,
+          next_retry_at = NULL,
+          updated_at = ?
+      WHERE id = ?
+    `, [now, queueItemId]);
+
+    await this._addHistory(queueItemId, item.status, 'pending', 'reprocess', 
+      '人工触发重新处理', userId);
+
+    return { success: true, message: '已重新排队处理' };
+  }
+
   async processNext() {
     const now = new Date().toISOString();
     
-    const processingIds = JSON.stringify([...this.processingItems]);
     const item = await db.getSync(`
       SELECT * FROM queue_items 
       WHERE status IN ('pending', 'retry') 
@@ -96,7 +214,8 @@ class QueueService {
         WHERE id = ?
       `, [newRetryCount, error.message, error.stack, now, itemId]);
 
-      await this._addHistory(itemId, 'processing', 'dead_letter', 'dead_letter', `重试${maxRetries}次失败，进入死信队列: ${error.message}`, userId);
+      await this._addHistory(itemId, 'processing', 'dead_letter', 'dead_letter', 
+        `重试${maxRetries}次失败，进入死信队列: ${error.message}`, userId);
     } else {
       const nextRetryAt = new Date(Date.now() + config.queue.retryDelay * (newRetryCount)).toISOString();
       
@@ -111,7 +230,8 @@ class QueueService {
         WHERE id = ?
       `, [newRetryCount, error.message, error.stack, nextRetryAt, now, itemId]);
 
-      await this._addHistory(itemId, 'processing', 'retry', 'retry', `第${newRetryCount}次重试: ${error.message}`, userId);
+      await this._addHistory(itemId, 'processing', 'retry', 'retry', 
+        `第${newRetryCount}次重试: ${error.message}`, userId);
     }
 
     this.processingItems.delete(itemId);
@@ -215,13 +335,25 @@ class QueueService {
     `, [itemId]);
   }
 
+  async getCorrectionHistory(itemId) {
+    return await db.allSync(`
+      SELECT cc.*, u.username as corrected_by_name
+      FROM compensation_corrections cc
+      LEFT JOIN users u ON cc.corrected_by = u.id
+      WHERE cc.queue_item_id = ?
+      ORDER BY cc.created_at DESC
+    `, [itemId]);
+  }
+
   async getFailedItemsWithDetails() {
     const items = await db.allSync(`
       SELECT 
         qi.*,
         wo.order_no,
         wo.repair_type,
-        u.username as created_by_name
+        wo.shift_record,
+        u.username as created_by_name,
+        (SELECT COUNT(*) FROM site_photos sp WHERE sp.work_order_id = qi.work_order_id) as photo_count
       FROM queue_items qi
       LEFT JOIN work_orders wo ON qi.work_order_id = wo.id
       LEFT JOIN users u ON wo.created_by = u.id

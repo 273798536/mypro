@@ -21,7 +21,12 @@ router.get('/report', authenticateToken, requireRole(config.roles.REVIEWER, conf
 
   res.json({
     ...report,
-    records: filteredRecords
+    records: filteredRecords,
+    evidenceSummary: {
+      workOrderCount: new Set(filteredRecords.map(r => r.work_order_id).filter(Boolean)).size,
+      recordsWithShift: filteredRecords.filter(r => r.shift_record).length,
+      totalAmount: report.summary.totalAmount
+    }
   });
 });
 
@@ -59,6 +64,30 @@ router.get('/workorder/:workOrderId', authenticateToken, async (req, res) => {
   const records = await compensationService.getCompensationByWorkOrder(req.params.workOrderId);
   const filtered = filterFieldsByRole(req.user.role, 'compensation_records', records);
   res.json(filtered);
+});
+
+router.get('/inventory', authenticateToken, async (req, res) => {
+  const inventory = await compensationService.getInventorySummary();
+  res.json(inventory);
+});
+
+router.post('/inventory/update', authenticateToken, requireRole(config.roles.SUPERVISOR), async (req, res) => {
+  const { valve_type, caliber, quantity_change } = req.body;
+
+  if (!valve_type || !caliber || quantity_change === undefined) {
+    return res.status(400).json({ error: '阀门类型、口径和数量变动不能为空' });
+  }
+
+  const success = await compensationService.updateInventory(valve_type, caliber, quantity_change);
+
+  if (success) {
+    await createAuditLog(req.user.id, 'update_inventory', 'inventory_summary', null, {
+      valve_type, caliber, quantity_change
+    }, req.ip);
+    res.json({ message: '库存更新成功' });
+  } else {
+    res.status(404).json({ error: '库存记录不存在' });
+  }
 });
 
 module.exports = router;

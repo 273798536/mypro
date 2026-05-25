@@ -8,7 +8,7 @@ const compensationService = require('../services/compensationService');
 const router = express.Router();
 
 router.post('/submit', authenticateToken, requireRole(config.roles.DATA_ENTRY, config.roles.SUPERVISOR), async (req, res) => {
-  const { work_order_id, item_type, payload } = req.body;
+  const { work_order_id, item_type, payload, idempotent, merge_duplicates } = req.body;
 
   if (!work_order_id || !item_type || !payload) {
     return res.status(400).json({ error: '派工单ID、任务类型和载荷不能为空' });
@@ -20,8 +20,23 @@ router.post('/submit', authenticateToken, requireRole(config.roles.DATA_ENTRY, c
   }
 
   try {
-    const itemId = await queueService.enqueue(work_order_id, item_type, payload, req.user.id, req.ip);
-    res.status(201).json({ id: itemId, message: '任务已提交到队列' });
+    const result = await queueService.enqueue(
+      work_order_id, 
+      item_type, 
+      payload, 
+      req.user.id, 
+      req.ip,
+      { 
+        idempotent: idempotent !== false, 
+        mergeDuplicates: merge_duplicates !== false 
+      }
+    );
+    
+    if (typeof result === 'object' && (result.merged || result.duplicate)) {
+      return res.status(200).json(result);
+    }
+    
+    res.status(201).json({ id: result, message: '任务已提交到队列' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -52,9 +67,30 @@ router.get('/items/:status', authenticateToken, async (req, res) => {
   res.json(filtered);
 });
 
+router.get('/item/:id', authenticateToken, async (req, res) => {
+  const item = await db.getSync('SELECT * FROM queue_items WHERE id = ?', [req.params.id]);
+  
+  if (!item) {
+    return res.status(404).json({ error: '队列项不存在' });
+  }
+
+  const itemWithPayload = {
+    ...item,
+    payload: item.payload ? JSON.parse(item.payload) : null
+  };
+  
+  const filtered = filterFieldsByRole(req.user.role, 'queue_items', itemWithPayload);
+  res.json(filtered);
+});
+
 router.get('/item/:id/history', authenticateToken, async (req, res) => {
   const history = await queueService.getItemHistory(req.params.id);
   res.json(history);
+});
+
+router.get('/item/:id/corrections', authenticateToken, requireRole(config.roles.REVIEWER, config.roles.SUPERVISOR), async (req, res) => {
+  const corrections = await queueService.getCorrectionHistory(req.params.id);
+  res.json(corrections);
 });
 
 router.post('/item/:id/manual', authenticateToken, requireRole(config.roles.REVIEWER, config.roles.SUPERVISOR), async (req, res) => {
@@ -71,6 +107,39 @@ router.post('/item/:id/manual', authenticateToken, requireRole(config.roles.REVI
     res.json({ message: '已标记为人工处理' });
   } else {
     res.status(404).json({ error: '队列项不存在' });
+  }
+});
+
+router.post('/item/:id/correct', authenticateToken, requireRole(config.roles.REVIEWER, config.roles.SUPERVISOR), async (req, res) => {
+  const { payload, correction_note } = req.body;
+  
+  if (!payload) {
+    return res.status(400).json({ error: '修正后的载荷不能为空' });
+  }
+
+  if (!correction_note) {
+    return res.status(400).json({ error: '修正说明不能为空' });
+  }
+
+  try {
+    const result = await queueService.correctAndRetry(
+      req.params.id, 
+      payload, 
+      correction_note, 
+      req.user.id
+    );
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post('/item/:id/reprocess', authenticateToken, requireRole(config.roles.REVIEWER, config.roles.SUPERVISOR), async (req, res) => {
+  try {
+    const result = await queueService.reprocess(req.params.id, req.user.id);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -109,7 +178,7 @@ router.post('/item/:id/process', authenticateToken, requireRole(config.roles.SUP
       payload: JSON.parse(item.payload)
     };
 
-    compensationService.validateAndProcess(parsedItem);
+    await compensationService.validateAndProcess(parsedItem);
     const records = await compensationService.createCompensationRecords(
       item.id,
       parsedItem.payload.workOrderId,

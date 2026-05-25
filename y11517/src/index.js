@@ -44,7 +44,7 @@ app.use((err, req, res, next) => {
 async function queueHandler(item) {
   console.log(`处理队列项: ${item.id}, 类型: ${item.item_type}`);
   
-  compensationService.validateAndProcess(item);
+  await compensationService.validateAndProcess(item);
   
   const records = await compensationService.createCompensationRecords(
     item.id,
