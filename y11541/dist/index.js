@@ -103,10 +103,10 @@ program
 program
     .command('fix')
     .description('修复记录')
-    .requiredOption('-i, --id <recordId>', '记录ID')
+    .option('-i, --id <recordId>', '记录ID（修改字段时必需）')
     .option('-f, --field <field>', '字段名')
     .option('-v, --value <value>', '新值')
-    .option('-d, --dirty-id <dirtyId>', '脏记录ID（标记单个脏问题为已修复')
+    .option('-d, --dirty-id <dirtyId>', '脏记录ID（标记单个脏问题为已修复）')
     .option('-r, --reason <reason>', '修改原因', '手动修复')
     .action(async (options) => {
     await requirePermission('fix');
@@ -116,7 +116,11 @@ program
         return;
     }
     if (!options.field || !options.value) {
-        console.error(chalk_1.default.red('请指定字段名和新值'));
+        console.error(chalk_1.default.red('请指定字段名(-f)和新值(-v)，或使用-d指定脏记录ID'));
+        process.exit(1);
+    }
+    if (!options.id) {
+        console.error(chalk_1.default.red('修改字段时必需指定记录ID(-i)'));
         process.exit(1);
     }
     try {

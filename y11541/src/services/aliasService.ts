@@ -162,8 +162,11 @@ export async function getAllRenamedMaterials(): Promise<Array<{
       material_id,
       platform,
       COUNT(DISTINCT material_name) as name_count,
-      GROUP_CONCAT(DISTINCT material_name, ' | ') as names
-    FROM material_records
+      GROUP_CONCAT(material_name, ' | ') as names
+    FROM (
+      SELECT DISTINCT material_id, platform, material_name
+      FROM material_records
+    )
     GROUP BY material_id, platform
     HAVING name_count > 1
     ORDER BY name_count DESC`

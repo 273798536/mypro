@@ -4,9 +4,12 @@ import { MaterialRecord } from '../types';
 
 export async function exportCleanRecords(filePath: string): Promise<void> {
   const records = await all<MaterialRecord>(
-    `SELECT * FROM material_records 
-     WHERE status IN ('fixed', 'approved', 'imported')
-     ORDER BY record_date, material_id`
+    `SELECT mr.* FROM material_records mr
+     LEFT JOIN dirty_records dr ON mr.id = dr.record_id AND dr.fixed = 0
+     WHERE dr.id IS NULL 
+       AND mr.status IN ('pending', 'fixed', 'approved', 'imported')
+     GROUP BY mr.id
+     ORDER BY mr.record_date, mr.material_id`
   );
   
   const csvWriter = createObjectCsvWriter({

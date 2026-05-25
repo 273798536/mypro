@@ -6,9 +6,12 @@ exports.exportFixedRecords = exportFixedRecords;
 const csv_writer_1 = require("csv-writer");
 const database_1 = require("../db/database");
 async function exportCleanRecords(filePath) {
-    const records = await (0, database_1.all)(`SELECT * FROM material_records 
-     WHERE status IN ('fixed', 'approved', 'imported')
-     ORDER BY record_date, material_id`);
+    const records = await (0, database_1.all)(`SELECT mr.* FROM material_records mr
+     LEFT JOIN dirty_records dr ON mr.id = dr.record_id AND dr.fixed = 0
+     WHERE dr.id IS NULL 
+       AND mr.status IN ('pending', 'fixed', 'approved', 'imported')
+     GROUP BY mr.id
+     ORDER BY mr.record_date, mr.material_id`);
     const csvWriter = (0, csv_writer_1.createObjectCsvWriter)({
         path: filePath,
         header: [
