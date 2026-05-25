@@ -48,13 +48,13 @@ def init(workspace):
         click.echo(click.style(msg, fg='red'))
 
 
-@main.command()
+@main.command(name='import')
 @click.argument('source_type', type=click.Choice(['schedule', 'leave', 'forecast']))
 @click.argument('file_path', type=click.Path(exists=True))
 @click.option('--operator', '-o', default='system', help='操作人')
 @click.option('--force', '-f', is_flag=True, help='强制覆盖重复导入')
 @pass_workspace
-def import_(workspace, source_type, file_path, operator, force):
+def import_cmd(workspace, source_type, file_path, operator, force):
     """导入数据: schedule(排班), leave(请假), forecast(预测)"""
     if not is_initialized(workspace):
         click.echo(click.style('错误: 数据库未初始化，请先运行 bsi init', fg='red'))

@@ -154,9 +154,130 @@ def init_database(workspace: Optional[str] = None) -> Tuple[bool, str]:
     ''')
     
     cursor.execute('''
+    CREATE TABLE roles (
+        role_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        role_name TEXT UNIQUE NOT NULL,
+        description TEXT,
+        created_at TIMESTAMP NOT NULL
+    )
+    ''')
+    
+    cursor.execute('''
+    CREATE TABLE permissions (
+        permission_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        permission_name TEXT UNIQUE NOT NULL,
+        resource TEXT NOT NULL,
+        action TEXT NOT NULL,
+        description TEXT,
+        created_at TIMESTAMP NOT NULL
+    )
+    ''')
+    
+    cursor.execute('''
+    CREATE TABLE role_permissions (
+        role_id INTEGER NOT NULL,
+        permission_id INTEGER NOT NULL,
+        created_at TIMESTAMP NOT NULL,
+        PRIMARY KEY (role_id, permission_id),
+        FOREIGN KEY (role_id) REFERENCES roles(role_id),
+        FOREIGN KEY (permission_id) REFERENCES permissions(permission_id)
+    )
+    ''')
+    
+    cursor.execute('''
+    CREATE TABLE users (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        display_name TEXT NOT NULL,
+        role_id INTEGER NOT NULL,
+        branch_id TEXT,
+        is_active BOOLEAN DEFAULT 1,
+        created_at TIMESTAMP NOT NULL,
+        FOREIGN KEY (role_id) REFERENCES roles(role_id)
+    )
+    ''')
+    
+    cursor.execute('''
+    CREATE TABLE audit_logs (
+        audit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        username TEXT NOT NULL,
+        action TEXT NOT NULL,
+        resource TEXT NOT NULL,
+        resource_id TEXT,
+        session_id INTEGER,
+        detail TEXT,
+        ip_address TEXT,
+        success BOOLEAN NOT NULL,
+        error_message TEXT,
+        created_at TIMESTAMP NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        FOREIGN KEY (session_id) REFERENCES import_sessions(id)
+    )
+    ''')
+    
+    cursor.execute('''
     INSERT INTO system_metadata (key, value, updated_at)
     VALUES (?, ?, ?)
-    ''', ('db_version', '1.0', datetime.now().isoformat()))
+    ''', ('db_version', '1.1', datetime.now().isoformat()))
+    
+    default_roles = [
+        ('admin', '系统管理员', datetime.now().isoformat()),
+        ('branch_manager', '支行行长', datetime.now().isoformat()),
+        ('teller_supervisor', '主管', datetime.now().isoformat()),
+        ('viewer', '只读用户', datetime.now().isoformat()),
+    ]
+    cursor.executemany('INSERT INTO roles (role_name, description, created_at) VALUES (?, ?, ?)', default_roles)
+    
+    default_permissions = [
+        ('import_data', 'import', 'create', '导入数据', datetime.now().isoformat()),
+        ('force_import', 'import', 'force', '强制覆盖导入', datetime.now().isoformat()),
+        ('run_inspection', 'inspection', 'run', '运行巡检', datetime.now().isoformat()),
+        ('fix_records', 'records', 'fix', '修正记录', datetime.now().isoformat()),
+        ('export_data', 'export', 'create', '导出数据', datetime.now().isoformat()),
+        ('view_history', 'history', 'view', '查看历史', datetime.now().isoformat()),
+        ('manage_users', 'users', 'manage', '用户管理', datetime.now().isoformat()),
+    ]
+    cursor.executemany('INSERT INTO permissions (permission_name, resource, action, description, created_at) VALUES (?, ?, ?, ?, ?)', default_permissions)
+    
+    admin_perms = [
+        (1, 1, datetime.now().isoformat()),
+        (1, 2, datetime.now().isoformat()),
+        (1, 3, datetime.now().isoformat()),
+        (1, 4, datetime.now().isoformat()),
+        (1, 5, datetime.now().isoformat()),
+        (1, 6, datetime.now().isoformat()),
+        (1, 7, datetime.now().isoformat()),
+    ]
+    manager_perms = [
+        (2, 1, datetime.now().isoformat()),
+        (2, 3, datetime.now().isoformat()),
+        (2, 4, datetime.now().isoformat()),
+        (2, 5, datetime.now().isoformat()),
+        (2, 6, datetime.now().isoformat()),
+    ]
+    supervisor_perms = [
+        (3, 1, datetime.now().isoformat()),
+        (3, 3, datetime.now().isoformat()),
+        (3, 4, datetime.now().isoformat()),
+        (3, 6, datetime.now().isoformat()),
+    ]
+    viewer_perms = [
+        (4, 3, datetime.now().isoformat()),
+        (4, 6, datetime.now().isoformat()),
+    ]
+    cursor.executemany('INSERT INTO role_permissions (role_id, permission_id, created_at) VALUES (?, ?, ?)', 
+                      admin_perms + manager_perms + supervisor_perms + viewer_perms)
+    
+    default_users = [
+        ('system', '系统默认', 1, None, 1, datetime.now().isoformat()),
+        ('admin', '系统管理员', 1, None, 1, datetime.now().isoformat()),
+        ('branch_mgr_001', '朝阳支行行长', 2, 'B001', 1, datetime.now().isoformat()),
+        ('branch_mgr_002', '海淀支行行长', 2, 'B002', 1, datetime.now().isoformat()),
+        ('supervisor_001', '主管-张三', 3, 'B001', 1, datetime.now().isoformat()),
+        ('viewer_001', '只读用户', 4, None, 1, datetime.now().isoformat()),
+    ]
+    cursor.executemany('INSERT INTO users (username, display_name, role_id, branch_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?)', default_users)
     
     conn.commit()
     conn.close()
