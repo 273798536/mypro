@@ -2,6 +2,26 @@
 
 一个完整的后端服务系统，用于智能柜补货业务的台账管理、权限控制、审计追踪和追责追溯。
 
+## 🛠 修复记录 (v1.1)
+
+### 权限闭环修复
+- 修复 [ledger.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/ledger.js) 中所有写接口权限拦截：`POST /`, `PUT /:id`, `POST /:id/submit`, `POST /:id/add-refund`, `POST /:id/add-photo`
+- 修复 [inventory.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/inventory.js) 中 `POST /` 和 `PUT /:id` 权限拦截
+- 修复 [refund.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/refund.js) 中 `POST /` 和 `PUT /:id` 权限拦截
+- 所有写接口仅允许 `data_entry`、`reviewer`、`supervisor` 角色访问，`read_only` 角色无法触发写操作
+
+### 功能补全
+- ✅ 新增 [multer.js](file:///Users/mac/pro/solo/workspaces/y11554/src/config/multer.js) 照片上传配置
+- ✅ 新增 [photo.js](file:///Users/mac/pro/solo/workspaces/y11554/src/routes/photo.js) 照片上传/管理API，支持真实文件上传、去重、审核
+- ✅ 脏记录检测接入主流程：[ledgerService.js](file:///Users/mac/pro/solo/workspaces/y11554/src/services/ledgerService.js#L69-L195) 创建/更新台账时自动检测缺字段、跨日、改名、金额/数量冲突
+- ✅ 自动化检查覆盖5项：[autoCheckService.js](file:///Users/mac/pro/solo/workspaces/y11554/src/services/autoCheckService.js#L214-L316) 历史版本完整性、重复导入、权限拦截、异常保留、导出一致性
+
+### 测试与验证
+- ✅ 新增 [auth.test.js](file:///Users/mac/pro/solo/workspaces/y11554/tests/auth.test.js) 认证接口测试
+- ✅ 新增 [permission.test.js](file:///Users/mac/pro/solo/workspaces/y11554/tests/permission.test.js) 权限控制测试（验证read_only角色被正确拦截）
+- ✅ 新增 [full-flow.test.js](file:///Users/mac/pro/solo/workspaces/y11554/tests/full-flow.test.js) 完整业务流程闭环测试（从建账到结案）
+- ✅ 新增 [verify-installation.js](file:///Users/mac/pro/solo/workspaces/y11554/scripts/verify-installation.js) 安装验证脚本
+
 ## 功能特性
 
 ### 核心业务流程
@@ -73,6 +93,14 @@
 ```bash
 npm install
 ```
+
+### 验证安装
+
+```bash
+npm run verify
+```
+
+该命令会检查所有依赖、源文件、测试文件是否完整。
 
 ### 配置环境变量
 
@@ -247,6 +275,54 @@ POST /api/refund
 Authorization: Bearer <token>
 ```
 
+### 补货照片接口
+
+#### 上传照片（支持批量）
+```
+POST /api/photo/upload
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+表单字段：
+- cabinetId: 柜机ID (必填)
+- photoType: 照片类型 (before_restock/after_restock/compartment_closeup/inventory_list)
+- ledgerId: 关联台账ID
+- compartmentId: 格口ID
+- remark: 备注
+- photos: 照片文件（支持多文件上传，最多20张
+```
+
+#### 获取照片列表
+```
+GET /api/photo?cabinetId=CAB001
+Authorization: Bearer <token>
+```
+
+#### 审核照片（复核员/主管）
+```
+PUT /api/photo/:id/verify
+Authorization: Bearer <token>
+```
+
+#### 关联照片到台账
+```
+PUT /api/photo/:id/link-ledger
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "ledgerId": "60d...
+}
+```
+
+### 库存接口
+
+#### 创建库存记录
+```
+POST /api/inventory
+Authorization: Bearer <token>
+```
+
 #### 添加退款到台账
 ```
 POST /api/ledger/:id/add-refund
@@ -318,7 +394,8 @@ Authorization: Bearer <token>
 ├── src/
 │   ├── app.js                 # 应用入口
 │   ├── config/
-│   │   └── database.js        # 数据库配置
+│   │   ├── database.js        # 数据库配置
+│   │   └── multer.js          # 照片上传配置
 │   ├── middleware/
 │   │   └── auth.js            # 认证授权中间件
 │   ├── models/                # 数据模型
@@ -330,18 +407,26 @@ Authorization: Bearer <token>
 │   │   ├── OperationLog.js   # 操作日志
 │   │   └── DirtyRecord.js    # 脏记录表
 │   ├── services/             # 业务服务
-│   │   ├── ledgerService.js  # 台账服务
+│   │   ├── ledgerService.js  # 台账服务（含脏记录自动检测）
 │   │   ├── auditService.js   # 审计服务
 │   │   ├── dirtyRecordService.js # 脏记录服务
 │   │   ├── exportService.js  # 导出服务
-│   │   └── autoCheckService.js # 自动化检查
+│   │   └── autoCheckService.js # 自动化检查（5项检查）
 │   └── routes/               # API路由
 │       ├── auth.js
-│       ├── ledger.js
-│       ├── inventory.js
-│       ├── refund.js
+│       ├── ledger.js         # 所有写接口已加权限拦截
+│       ├── inventory.js      # 所有写接口已加权限拦截
+│       ├── refund.js         # 所有写接口已加权限拦截
+│       ├── photo.js          # 照片上传（新增）
 │       ├── audit.js
 │       └── export.js
+├── tests/                    # 测试文件
+│   ├── auth.test.js          # 认证接口测试
+│   ├── permission.test.js    # 权限控制测试
+│   └── full-flow.test.js     # 完整业务流程测试
+├── scripts/
+│   └── verify-installation.js # 安装验证脚本
+├── uploads/                  # 照片上传目录
 ├── exports/                  # 导出文件目录
 ├── .env                      # 环境变量
 ├── package.json

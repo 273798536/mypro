@@ -12,10 +12,12 @@ app.use(express.urlencoded({ extended: true }));
 const db = require('./config/database');
 db.connect();
 
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/ledger', require('./routes/ledger'));
 app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/refund', require('./routes/refund'));
+app.use('/api/photo', require('./routes/photo'));
 app.use('/api/audit', require('./routes/audit'));
 app.use('/api/export', require('./routes/export'));
 

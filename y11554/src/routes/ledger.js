@@ -25,7 +25,9 @@ const router = express.Router();
 
 router.use(authenticate, cityDataFilter);
 
-router.post('/', async (req, res) => {
+const WRITE_ROLES = [ROLES.DATA_ENTRY, ROLES.REVIEWER, ROLES.SUPERVISOR];
+
+router.post('/', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const ledger = await createLedger(req.user, req.body, req.ip);
     res.status(201).json(ledger);
@@ -64,7 +66,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const { changeReason, ...updateData } = req.body;
     const ledger = await updateLedger(
@@ -80,7 +82,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.post('/:id/submit', async (req, res) => {
+router.post('/:id/submit', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const ledger = await submitLedger(req.params.id, req.user, req.ip);
     res.json(ledger);
@@ -189,7 +191,7 @@ router.get('/:id/dirty-records', authorize(ROLES.REVIEWER, ROLES.SUPERVISOR), as
   }
 });
 
-router.post('/:id/add-refund', async (req, res) => {
+router.post('/:id/add-refund', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const { refundRecordId } = req.body;
     const ledger = await addRefundToLedger(req.params.id, refundRecordId, req.user);
@@ -199,7 +201,7 @@ router.post('/:id/add-refund', async (req, res) => {
   }
 });
 
-router.post('/:id/add-photo', async (req, res) => {
+router.post('/:id/add-photo', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const { photoId } = req.body;
     const ledger = await addPhotoToLedger(req.params.id, photoId, req.user);

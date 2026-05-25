@@ -4,6 +4,8 @@ const RefundRecord = require('../models/RefundRecord');
 const RestockPhoto = require('../models/RestockPhoto');
 const CabinetInventory = require('../models/CabinetInventory');
 const { logOperation, OPERATION_TYPES } = require('./auditService');
+const { detectMissingFields, detectCrossDate, detectNameChange, detectAmountConflict, detectQuantityConflict, createDirtyRecord } = require('./dirtyRecordService');
+const dayjs = require('dayjs');
 
 const calculateInventoryDiff = (inventoryBefore, inventoryAfter) => {
   const diffs = [];
@@ -64,6 +66,134 @@ const calculateInventoryDiff = (inventoryBefore, inventoryAfter) => {
   };
 };
 
+const detectAndCreateDirtyRecords = async (ledger, data, user, operation) => {
+  const dirtyRecords = [];
+  const today = dayjs().startOf('day');
+
+  const requiredFields = ['cabinetId', 'restockDate', 'inventoryBefore', 'inventoryAfter'];
+  const missingFields = detectMissingFields(data, requiredFields);
+  if (missingFields.length > 0) {
+    const dr = await createDirtyRecord({
+      dirtyType: DIRTY_TYPES.MISSING_FIELD,
+      sourceType: 'ledger',
+      sourceId: ledger._id,
+      sourceNo: ledger.ledgerNo,
+      ledgerId: ledger._id,
+      cabinetId: ledger.cabinetId,
+      originalData: data,
+      missingFields,
+      detectedBy: user._id,
+      remark: `操作[${operation}]缺少必填字段: ${missingFields.join(', ')}`
+    });
+    dirtyRecords.push(dr);
+  }
+
+  if (data.restockDate) {
+    const isCrossDate = detectCrossDate(data.restockDate, today.toDate());
+    if (isCrossDate) {
+      const dr = await createDirtyRecord({
+        dirtyType: DIRTY_TYPES.CROSS_DATE,
+        sourceType: 'ledger',
+        sourceId: ledger._id,
+        sourceNo: ledger.ledgerNo,
+        ledgerId: ledger._id,
+        cabinetId: ledger.cabinetId,
+        originalData: data,
+        crossDateInfo: {
+          originalDate: data.restockDate,
+          detectedDate: today.toDate()
+        },
+        detectedBy: user._id,
+        remark: `操作[${operation}]补货日期跨日`
+      });
+      dirtyRecords.push(dr);
+    }
+  }
+
+  if (data.inventoryBefore && data.inventoryAfter) {
+    const beforeMap = new Map(data.inventoryBefore.map(item => [item.compartmentId, item]));
+    const afterMap = new Map(data.inventoryAfter.map(item => [item.compartmentId, item]));
+
+    for (const [compartmentId, beforeItem] of beforeMap) {
+      const afterItem = afterMap.get(compartmentId);
+      if (afterItem && beforeItem.productName && afterItem.productName) {
+        const nameChanged = detectNameChange(beforeItem.productName, afterItem.productName, beforeItem.productId);
+        if (nameChanged) {
+          const dr = await createDirtyRecord({
+            dirtyType: DIRTY_TYPES.NAME_CHANGED,
+            sourceType: 'ledger',
+            sourceId: ledger._id,
+            sourceNo: ledger.ledgerNo,
+            ledgerId: ledger._id,
+            cabinetId: ledger.cabinetId,
+            originalData: { before: beforeItem, after: afterItem },
+            nameChangeInfo: {
+              oldName: beforeItem.productName,
+              newName: afterItem.productName,
+              productId: beforeItem.productId
+            },
+            detectedBy: user._id,
+            remark: `格口[${compartmentId}]商品名称变更`
+          });
+          dirtyRecords.push(dr);
+        }
+      }
+
+      if (afterItem) {
+        const qtyConflict = detectQuantityConflict(beforeItem.quantity, afterItem.quantity, 10);
+        if (qtyConflict) {
+          const dr = await createDirtyRecord({
+            dirtyType: DIRTY_TYPES.QUANTITY_CONFLICT,
+            sourceType: 'ledger',
+            sourceId: ledger._id,
+            sourceNo: ledger.ledgerNo,
+            ledgerId: ledger._id,
+            cabinetId: ledger.cabinetId,
+            originalData: { before: beforeItem, after: afterItem },
+            conflictFields: [{
+              field: `${compartmentId}.quantity`,
+              oldValue: beforeItem.quantity,
+              newValue: afterItem.quantity
+            }],
+            detectedBy: user._id,
+            remark: `格口[${compartmentId}]数量差异超过阈值`
+          });
+          dirtyRecords.push(dr);
+        }
+      }
+    }
+  }
+
+  if (ledger.totalRefundAmount !== undefined && data.refundRecords) {
+    const calculatedAmount = data.refundRecords.reduce((sum, r) => sum + (r.refundAmount || 0), 0);
+    const amountConflict = detectAmountConflict(ledger.totalRefundAmount, calculatedAmount, 0);
+    if (amountConflict) {
+      const dr = await createDirtyRecord({
+        dirtyType: DIRTY_TYPES.AMOUNT_CONFLICT,
+        sourceType: 'ledger',
+        sourceId: ledger._id,
+        sourceNo: ledger.ledgerNo,
+        ledgerId: ledger._id,
+        cabinetId: ledger.cabinetId,
+        originalData: {
+          ledgerAmount: ledger.totalRefundAmount,
+          calculatedAmount
+        },
+        conflictFields: [{
+          field: 'totalRefundAmount',
+          oldValue: ledger.totalRefundAmount,
+          newValue: calculatedAmount
+        }],
+        detectedBy: user._id,
+        remark: '退款金额汇总冲突'
+      });
+      dirtyRecords.push(dr);
+    }
+  }
+
+  return dirtyRecords;
+};
+
 const createLedger = async (user, data, ip) => {
   const ledger = new Ledger({
     ...data,
@@ -81,6 +211,13 @@ const createLedger = async (user, data, ip) => {
   }
 
   await ledger.save();
+
+  const dirtyRecords = await detectAndCreateDirtyRecords(ledger, data, user, 'create');
+  if (dirtyRecords.length > 0) {
+    ledger.isDirty = true;
+    ledger.dirtyRecordIds = dirtyRecords.map(dr => dr._id);
+    await ledger.save();
+  }
 
   await logOperation({
     operationType: OPERATION_TYPES.CREATE,
@@ -128,6 +265,13 @@ const updateLedger = async (ledgerId, user, updateData, ip, changeReason) => {
   }
 
   await ledger.save();
+
+  const newDirtyRecords = await detectAndCreateDirtyRecords(ledger, updateData, user, 'update');
+  if (newDirtyRecords.length > 0) {
+    ledger.isDirty = true;
+    ledger.dirtyRecordIds = [...new Set([...(ledger.dirtyRecordIds || []), ...newDirtyRecords.map(dr => dr._id)])];
+    await ledger.save();
+  }
 
   await logOperation({
     operationType: OPERATION_TYPES.UPDATE,

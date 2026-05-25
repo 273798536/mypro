@@ -8,7 +8,9 @@ const router = express.Router();
 
 router.use(authenticate, cityDataFilter);
 
-router.post('/', async (req, res) => {
+const WRITE_ROLES = [ROLES.DATA_ENTRY, ROLES.REVIEWER, ROLES.SUPERVISOR];
+
+router.post('/', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const refundNo = `REF${dayjs().format('YYYYMMDD')}${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     
@@ -79,7 +81,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const refund = await RefundRecord.findByIdAndUpdate(
       req.params.id,

@@ -213,9 +213,96 @@ const checkExportConsistency = async (exportType, filters, exportedCount) => {
 
 const runAllChecks = async (ledgerId, context = {}) => {
   const results = [];
+  const ledger = await Ledger.findById(ledgerId);
+
+  if (!ledger) {
+    return {
+      hasIssues: true,
+      checks: [{ hasIssue: true, message: '台账不存在' }],
+      summary: { total: 1, passed: 0, failed: 1 }
+    };
+  }
 
   const historyCheck = await checkRestartHistory(ledgerId);
-  results.push(historyCheck);
+  results.push({
+    ...historyCheck,
+    checkName: '历史版本完整性检查',
+    checkType: CHECK_TYPES.RESTART_HISTORY
+  });
+
+  const duplicateImportCheck = await checkDuplicateImport(
+    'ledger',
+    'ledgerNo',
+    ledger.ledgerNo,
+    ledger.cabinetId
+  );
+  results.push({
+    ...duplicateImportCheck,
+    checkName: '重复导入检查',
+    checkType: CHECK_TYPES.DUPLICATE_IMPORT
+  });
+
+  const permissionCheck = {
+    checkName: '权限拦截检查',
+    checkType: CHECK_TYPES.PERMISSION_INTERCEPT,
+    hasIssue: false,
+    details: {}
+  };
+  const permissionBlockedCount = await OperationLog.countDocuments({
+    targetType: 'ledger',
+    targetId: ledgerId,
+    success: false,
+    errorMessage: /权限拦截/
+  });
+  permissionCheck.details = { permissionBlockedCount };
+  if (permissionBlockedCount > 0) {
+    permissionCheck.hasIssue = true;
+    permissionCheck.message = `检测到 ${permissionBlockedCount} 次权限拦截`;
+  } else {
+    permissionCheck.message = '无权限拦截记录，权限控制正常';
+  }
+  results.push(permissionCheck);
+
+  const exceptionCheck = {
+    checkName: '异常保留检查',
+    checkType: CHECK_TYPES.EXCEPTION_RETAIN,
+    hasIssue: false,
+    details: {}
+  };
+  const dirtyCount = ledger.dirtyRecordIds?.length || 0;
+  const pendingDirtyCount = await DirtyRecord.countDocuments({
+    ledgerId,
+    processStatus: 'pending'
+  });
+  exceptionCheck.details = { totalDirtyRecords: dirtyCount, pendingDirtyRecords: pendingDirtyCount };
+  if (pendingDirtyCount > 0) {
+    exceptionCheck.hasIssue = true;
+    exceptionCheck.message = `存在 ${pendingDirtyCount} 条待处理脏记录`;
+  } else if (dirtyCount > 0) {
+    exceptionCheck.message = `存在 ${dirtyCount} 条脏记录，均已处理`;
+  } else {
+    exceptionCheck.message = '无脏记录，数据正常';
+  }
+  results.push(exceptionCheck);
+
+  const exportCheck = {
+    checkName: '导出一致性检查',
+    checkType: CHECK_TYPES.EXPORT_CONSISTENCY,
+    hasIssue: false,
+    details: {}
+  };
+  const recentExports = await OperationLog.find({
+    operationType: 'export',
+    targetType: 'ledger',
+    targetId: ledgerId
+  }).sort({ createdAt: -1 }).limit(5);
+  exportCheck.details = { recentExportCount: recentExports.length };
+  if (recentExports.length === 0) {
+    exportCheck.message = '暂无导出记录';
+  } else {
+    exportCheck.message = `有 ${recentExports.length} 次导出记录，导出操作已记录`;
+  }
+  results.push(exportCheck);
 
   return {
     hasIssues: results.some(r => r.hasIssue),

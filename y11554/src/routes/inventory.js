@@ -8,7 +8,9 @@ const router = express.Router();
 
 router.use(authenticate, cityDataFilter);
 
-router.post('/', async (req, res) => {
+const WRITE_ROLES = [ROLES.DATA_ENTRY, ROLES.REVIEWER, ROLES.SUPERVISOR];
+
+router.post('/', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const inventory = new CabinetInventory({
       ...req.body,
@@ -69,7 +71,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authorize(...WRITE_ROLES), async (req, res) => {
   try {
     const inventory = await CabinetInventory.findByIdAndUpdate(
       req.params.id,
