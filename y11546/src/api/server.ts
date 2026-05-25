@@ -201,6 +201,38 @@ export function createApiServer(workDir?: string) {
     }
   });
 
+  app.post('/api/failed-records/:id/replay', async (req, res) => {
+    try {
+      const { operator } = req.body;
+      const result = await importService.replayFailedRecord(req.params.id, operator || 'api_user');
+      res.json({
+        success: result.success,
+        message: result.message,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.post('/api/batches/:id/replay', async (req, res) => {
+    try {
+      const { operator } = req.body;
+      const result = await importService.replayBatchFailedRecords(req.params.id, operator || 'api_user');
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
   app.get('/api/tasks', async (req, res) => {
     try {
       const { status } = req.query;
@@ -231,6 +263,64 @@ export function createApiServer(workDir?: string) {
       res.json({
         success: true,
         data: result,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.post('/api/tasks/:id/manual', async (req, res) => {
+    try {
+      const { operator } = req.body;
+      await importService.markTaskAsManual(req.params.id, operator || 'api_user');
+      res.json({
+        success: true,
+        message: '已标记为人工处理',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.post('/api/tasks/:id/permanent', async (req, res) => {
+    try {
+      const { operator, reason } = req.body;
+      if (!reason) {
+        return res.status(400).json({
+          error: '缺少原因说明',
+        });
+      }
+      await importService.markTaskAsPermanentFailed(req.params.id, operator || 'api_user', reason);
+      res.json({
+        success: true,
+        message: '已标记为永久失败',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.get('/api/tasks/:id', async (req, res) => {
+    try {
+      const task = await importService.getTaskStatus(req.params.id);
+      if (!task) {
+        return res.status(404).json({
+          success: false,
+          error: '任务不存在',
+        });
+      }
+      res.json({
+        success: true,
+        data: task,
       });
     } catch (error: any) {
       res.status(500).json({

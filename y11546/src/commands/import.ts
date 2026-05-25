@@ -30,7 +30,7 @@ export async function importCommand(filePath: string, options: ImportOptions): P
       options.remark
     );
 
-    console.log(chalk.green('✓ 导入完成!'));
+    console.log(chalk.green('导入完成!'));
     console.log('');
 
     const summaryTable = new Table({
@@ -42,9 +42,22 @@ export async function importCommand(filePath: string, options: ImportOptions): P
     summaryTable.push(['失败', result.failedCount.toString()]);
     console.log(summaryTable.toString());
 
+    if (strategy === 'overwrite' || result.createdCount > 0 || result.updatedCount > 0 || result.ignoredCount > 0 || result.overwrittenCount > 0) {
+      console.log('');
+      const detailTable = new Table({
+        head: ['处理类型', '数量'],
+        colWidths: [20, 15],
+      });
+      if (result.createdCount > 0) detailTable.push(['新增', result.createdCount.toString()]);
+      if (result.updatedCount > 0) detailTable.push(['更新', result.updatedCount.toString()]);
+      if (result.ignoredCount > 0) detailTable.push(['忽略(已存在)', result.ignoredCount.toString()]);
+      if (result.overwrittenCount > 0) detailTable.push(['覆盖(旧数据)', result.overwrittenCount.toString()]);
+      if (detailTable.length > 0) console.log(detailTable.toString());
+    }
+
     if (result.diffs.length > 0) {
       console.log('');
-      console.log(chalk.yellow('⚠ 数据变更:'));
+      console.log(chalk.yellow('数据变更:'));
       const diffTable = new Table({
         head: ['行号', '物料编码', '变更字段'],
         colWidths: [10, 20, 50],
@@ -67,7 +80,7 @@ export async function importCommand(filePath: string, options: ImportOptions): P
 
     return result.failedCount > 0 ? 2 : 0;
   } catch (error: any) {
-    console.error(chalk.red('✗ 导入失败:'), error.message);
+    console.error(chalk.red('导入失败:'), error.message);
     return 1;
   }
 }

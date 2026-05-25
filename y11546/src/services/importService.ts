@@ -15,6 +15,18 @@ import {
 import { MaterialDAO, BatchDAO, HistoryDAO, AuditLogDAO, FailedRecordDAO, AsyncTaskDAO } from '../db/dao';
 import { diffService } from './diffService';
 
+export interface ImportResult {
+  batchId: string;
+  totalCount: number;
+  successCount: number;
+  failedCount: number;
+  createdCount: number;
+  updatedCount: number;
+  ignoredCount: number;
+  overwrittenCount: number;
+  diffs: any[];
+}
+
 export class ImportService {
   private materialDAO: MaterialDAO;
   private batchDAO: BatchDAO;
@@ -153,16 +165,13 @@ export class ImportService {
     strategy: ImportStrategy,
     operator: string,
     remark?: string
-  ): Promise<{
-    batchId: string;
-    totalCount: number;
-    successCount: number;
-    failedCount: number;
-    diffs: any[];
-  }> {
+  ): Promise<ImportResult> {
     const fileHash = this.calculateFileHash(filePath);
     const fileName = filePath.split('/').pop() || 'unknown';
     const now = dayjs().toISOString();
+
+    const records = this.parseCSV(filePath);
+    const totalCount = records.length;
 
     const existingBatch = await this.batchDAO.findByFileHash(fileHash);
 
@@ -170,8 +179,12 @@ export class ImportService {
       return {
         batchId: existingBatch.id,
         totalCount: existingBatch.total_count,
-        successCount: existingBatch.success_count,
-        failedCount: existingBatch.failed_count,
+        successCount: existingBatch.total_count,
+        failedCount: 0,
+        createdCount: 0,
+        updatedCount: 0,
+        ignoredCount: existingBatch.total_count,
+        overwrittenCount: 0,
         diffs: [],
       };
     }
@@ -181,7 +194,7 @@ export class ImportService {
       file_name: fileName,
       file_hash: fileHash,
       strategy: strategy,
-      total_count: 0,
+      total_count: totalCount,
       success_count: 0,
       failed_count: 0,
       status: 'processing',
@@ -190,16 +203,19 @@ export class ImportService {
       remark: remark,
     });
 
-    const records = this.parseCSV(filePath);
-    const totalCount = records.length;
     let successCount = 0;
     let failedCount = 0;
+    let createdCount = 0;
+    let updatedCount = 0;
+    let ignoredCount = 0;
+    let overwrittenCount = 0;
     const diffs: any[] = [];
 
     const existingData = await this.materialDAO.findAll(sourceType);
     const existingMap = new Map(existingData.map((d) => [d.material_code, d]));
 
     if (strategy === 'overwrite') {
+      overwrittenCount = existingData.length;
       for (const item of existingData) {
         await this.historyDAO.saveHistory(
           item.material_code,
@@ -210,6 +226,8 @@ export class ImportService {
           batchId
         );
       }
+      await this.materialDAO.deleteByBatchId(sourceType, batchId);
+      existingMap.clear();
     }
 
     for (let i = 0; i < records.length; i++) {
@@ -238,6 +256,7 @@ export class ImportService {
         const existing = existingMap.get(data.material_code);
 
         if (existing && strategy === 'ignore') {
+          ignoredCount++;
           successCount++;
           continue;
         }
@@ -274,6 +293,9 @@ export class ImportService {
                 original_line_no: lineNo,
               });
             }
+            updatedCount++;
+          } else {
+            ignoredCount++;
           }
         } else {
           await this.historyDAO.saveHistory(
@@ -294,6 +316,7 @@ export class ImportService {
             operate_time: now,
             original_line_no: lineNo,
           });
+          createdCount++;
         }
 
         await this.insertData(sourceType, data);
@@ -314,13 +337,23 @@ export class ImportService {
       }
     }
 
-    await this.batchDAO.updateBatchStats(batchId, successCount, failedCount, 'success');
+    await this.batchDAO.updateBatchStats(batchId, totalCount, successCount, failedCount, 'success');
+    await this.batchDAO.updateBatchDetailStats(batchId, {
+      created: createdCount,
+      updated: updatedCount,
+      ignored: ignoredCount,
+      overwritten: overwrittenCount,
+    });
 
     return {
       batchId,
       totalCount,
       successCount,
       failedCount,
+      createdCount,
+      updatedCount,
+      ignoredCount,
+      overwrittenCount,
       diffs,
     };
   }
@@ -355,6 +388,110 @@ export class ImportService {
     });
   }
 
+  async replayFailedRecord(recordId: string, operator: string): Promise<{ success: boolean; message: string }> {
+    const record = await this.failedRecordDAO.findById(recordId);
+    if (!record) {
+      return { success: false, message: '失败记录不存在' };
+    }
+
+    if (record.status === 'fixed') {
+      return { success: false, message: '该记录已标记为已修复' };
+    }
+
+    try {
+      const rawData = JSON.parse(record.raw_data);
+      const now = dayjs().toISOString();
+      const sourceType = record.source_type as DataSourceType;
+      const lineNo = record.original_line_no;
+
+      const validation = this.validateRecord(sourceType, rawData, lineNo);
+      if (!validation.valid) {
+        return {
+          success: false,
+          message: '验证失败: ' + validation.errors.join('; '),
+        };
+      }
+
+      const batchId = record.batch_id;
+      const data = this.convertToSourceData(sourceType, rawData, batchId, lineNo);
+      const existing = await this.materialDAO.findByMaterialCode(sourceType, data.material_code);
+
+      if (existing.length > 0) {
+        const changes = diffService.compareObjects(existing[0], data);
+        if (changes.length > 0) {
+          await this.historyDAO.saveHistory(
+            data.material_code,
+            sourceType,
+            existing[0],
+            'update',
+            operator,
+            batchId
+          );
+
+          for (const change of changes) {
+            await this.auditLogDAO.createLog({
+              batch_id: batchId,
+              source_type: sourceType,
+              action: 'update',
+              material_code: data.material_code,
+              field_name: change.field,
+              old_value: String(change.old_value ?? ''),
+              new_value: String(change.new_value ?? ''),
+              operator: operator,
+              operate_time: now,
+              original_line_no: lineNo,
+            });
+          }
+        }
+      } else {
+        await this.historyDAO.saveHistory(
+          data.material_code,
+          sourceType,
+          data,
+          'create',
+          operator,
+          batchId
+        );
+
+        await this.auditLogDAO.createLog({
+          batch_id: batchId,
+          source_type: sourceType,
+          action: 'create',
+          material_code: data.material_code,
+          operator: operator,
+          operate_time: now,
+          original_line_no: lineNo,
+        });
+      }
+
+      await this.insertData(sourceType, data);
+      await this.failedRecordDAO.updateStatus(recordId, 'fixed', operator);
+
+      return { success: true, message: '重放成功' };
+    } catch (error: any) {
+      return { success: false, message: '重放失败: ' + error.message };
+    }
+  }
+
+  async replayBatchFailedRecords(batchId: string, operator: string): Promise<{ total: number; success: number; failed: number }> {
+    const records = await this.failedRecordDAO.findByBatchId(batchId);
+    const pendingRecords = records.filter((r) => r.status === 'pending');
+
+    let success = 0;
+    let failed = 0;
+
+    for (const record of pendingRecords) {
+      const result = await this.replayFailedRecord(record.id!, operator);
+      if (result.success) {
+        success++;
+      } else {
+        failed++;
+      }
+    }
+
+    return { total: pendingRecords.length, success, failed };
+  }
+
   async processRetryableTasks(operator: string): Promise<{ processed: number; success: number; failed: number }> {
     const retryable = await this.asyncTaskDAO.findRetryable();
     let success = 0;
@@ -365,6 +502,32 @@ export class ImportService {
 
       try {
         const newRetryCount = task.retry_count + 1;
+
+        if (task.batch_id) {
+          const batch = await this.batchDAO.findById(task.batch_id);
+          if (batch) {
+            const replayResult = await this.replayBatchFailedRecords(task.batch_id, operator);
+
+            if (replayResult.failed === 0 && replayResult.success > 0) {
+              await this.asyncTaskDAO.updateStatus(task.id, 'success');
+              success++;
+            } else if (newRetryCount >= task.max_retries) {
+              await this.asyncTaskDAO.updateStatus(task.id, 'permanent_failed', '已达到最大重试次数，部分记录仍无法导入', newRetryCount);
+              failed++;
+            } else {
+              const nextRetry = dayjs().add(newRetryCount * 5, 'minute').toISOString();
+              await this.asyncTaskDAO.updateStatus(
+                task.id,
+                'retry_waiting',
+                `仍有 ${replayResult.failed} 条记录失败`,
+                newRetryCount,
+                nextRetry
+              );
+              failed++;
+            }
+            continue;
+          }
+        }
 
         if (newRetryCount >= task.max_retries) {
           await this.asyncTaskDAO.updateStatus(task.id, 'permanent_failed', '已达到最大重试次数', newRetryCount);
@@ -381,7 +544,12 @@ export class ImportService {
           success++;
         }
       } catch (error: any) {
-        await this.asyncTaskDAO.updateStatus(task.id, 'retry_waiting', error.message, task.retry_count);
+        const newRetryCount = task.retry_count + 1;
+        if (newRetryCount >= task.max_retries) {
+          await this.asyncTaskDAO.updateStatus(task.id, 'permanent_failed', error.message, newRetryCount);
+        } else {
+          await this.asyncTaskDAO.updateStatus(task.id, 'retry_waiting', error.message, newRetryCount);
+        }
         failed++;
       }
     }
@@ -399,6 +567,10 @@ export class ImportService {
 
   async markTaskAsPermanentFailed(taskId: string, operator: string, reason: string): Promise<void> {
     await this.asyncTaskDAO.updateStatus(taskId, 'permanent_failed', reason);
+  }
+
+  async getTaskStatus(taskId: string): Promise<any | null> {
+    return this.asyncTaskDAO.findById(taskId);
   }
 }
 

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import Table from 'cli-table3';
-import { FailedRecordDAO } from '../db/dao';
+import { FailedRecordDAO, AsyncTaskDAO } from '../db/dao';
 import { importService } from '../services/importService';
 
 interface FixOptions {
@@ -8,6 +8,11 @@ interface FixOptions {
   batch?: string;
   id?: string;
   ignore?: boolean;
+  replay?: boolean;
+  replayBatch?: string;
+  manual?: string;
+  permanent?: string;
+  reason?: string;
   workDir?: string;
   operator?: string;
 }
@@ -15,6 +20,7 @@ interface FixOptions {
 export async function fixCommand(options: FixOptions): Promise<number> {
   try {
     const failedRecordDAO = new FailedRecordDAO(options.workDir);
+    const asyncTaskDAO = new AsyncTaskDAO(options.workDir);
     const operator = options.operator || process.env.USER || 'unknown';
 
     if (options.list) {
@@ -53,9 +59,50 @@ export async function fixCommand(options: FixOptions): Promise<number> {
       return 0;
     }
 
+    if (options.replay) {
+      if (options.id) {
+        const result = await importService.replayFailedRecord(options.id, operator);
+        if (result.success) {
+          console.log(chalk.green('重放成功: ' + result.message));
+          return 0;
+        } else {
+          console.log(chalk.red('重放失败: ' + result.message));
+          return 1;
+        }
+      } else {
+        console.log(chalk.red('请指定要重放的失败记录 ID: --replay --id <id>'));
+        return 1;
+      }
+    }
+
+    if (options.replayBatch) {
+      const result = await importService.replayBatchFailedRecords(options.replayBatch, operator);
+      console.log(chalk.blue(`批次 ${options.replayBatch} 重放结果:`));
+      console.log(chalk.green(`  总数: ${result.total}`));
+      console.log(chalk.green(`  成功: ${result.success}`));
+      console.log(chalk.red(`  失败: ${result.failed}`));
+      return result.failed > 0 ? 1 : 0;
+    }
+
+    if (options.manual) {
+      await importService.markTaskAsManual(options.manual, operator);
+      console.log(chalk.green('已标记任务 ' + options.manual + ' 为人工处理'));
+      return 0;
+    }
+
+    if (options.permanent) {
+      if (!options.reason) {
+        console.log(chalk.red('请指定标记为永久失败的原因: --permanent <taskId> --reason <原因>'));
+        return 1;
+      }
+      await importService.markTaskAsPermanentFailed(options.permanent, operator, options.reason);
+      console.log(chalk.green('已标记任务 ' + options.permanent + ' 为永久失败'));
+      return 0;
+    }
+
     if (options.id && options.ignore) {
       await failedRecordDAO.updateStatus(options.id, 'ignored');
-      console.log(chalk.green(`✓ 已标记记录 ${options.id} 为忽略`));
+      console.log(chalk.green('已标记记录 ' + options.id + ' 为忽略'));
       return 0;
     }
 
@@ -69,18 +116,18 @@ export async function fixCommand(options: FixOptions): Promise<number> {
       console.log(chalk.blue('原始数据:'));
       console.log(JSON.stringify(JSON.parse(record.raw_data), null, 2));
       console.log('');
-      console.log(chalk.yellow('请修正后重新导入对应的数据行'));
+      console.log(chalk.yellow('请修正后重新导入对应的数据行，或使用 --replay --id <id> 重放'));
 
       return 0;
     }
 
     console.log(chalk.blue('处理可重试任务...'));
     const result = await importService.processRetryableTasks(operator);
-    console.log(chalk.green(`✓ 已处理 ${result.processed} 个任务, 成功 ${result.success}, 失败 ${result.failed}`));
+    console.log(chalk.green('已处理 ' + result.processed + ' 个任务, 成功 ' + result.success + ', 失败 ' + result.failed));
 
     return result.failed > 0 ? 1 : 0;
   } catch (error: any) {
-    console.error(chalk.red('✗ 处理失败:'), error.message);
+    console.error(chalk.red('处理失败:'), error.message);
     return 1;
   }
 }

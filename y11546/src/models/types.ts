@@ -103,6 +103,10 @@ export interface ImportBatch {
   total_count: number;
   success_count: number;
   failed_count: number;
+  created_count?: number;
+  updated_count?: number;
+  ignored_count?: number;
+  overwritten_count?: number;
   status: TaskStatus;
   operator: string;
   import_time: string;

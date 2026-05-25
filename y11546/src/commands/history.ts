@@ -74,8 +74,8 @@ export async function historyCommand(options: HistoryOptions): Promise<number> {
       }
 
       const table = new Table({
-        head: ['批次ID', '类型', '文件名', '策略', '总数/成功/失败', '操作人', '时间'],
-        colWidths: [12, 18, 20, 10, 16, 10, 20],
+        head: ['批次ID', '类型', '文件名', '策略', '总数/成功/失败', '新增/更新/忽略', '操作人', '时间'],
+        colWidths: [10, 16, 18, 10, 14, 16, 10, 18],
         wordWrap: true,
       });
 
@@ -86,14 +86,16 @@ export async function historyCommand(options: HistoryOptions): Promise<number> {
             : batch.status === 'processing'
             ? chalk.blue
             : chalk.red;
+        const detailCounts = (batch as any);
         table.push([
-          batch.id.slice(0, 10),
+          batch.id.slice(0, 8),
           batch.source_type,
           batch.file_name,
           batch.strategy,
           `${batch.total_count}/${batch.success_count}/${batch.failed_count}`,
+          `${detailCounts.created_count || 0}/${detailCounts.updated_count || 0}/${detailCounts.ignored_count || 0}`,
           batch.operator,
-          dayjs(batch.import_time).format('YYYY-MM-DD HH:mm'),
+          dayjs(batch.import_time).format('MM-DD HH:mm'),
         ]);
       }
       console.log(table.toString());

@@ -235,10 +235,28 @@ export class BatchDAO {
     return id;
   }
 
-  async updateBatchStats(batchId: string, successCount: number, failedCount: number, status: TaskStatus): Promise<void> {
+  async updateBatchStats(batchId: string, totalCount: number, successCount: number, failedCount: number, status: TaskStatus): Promise<void> {
     await this.db.run(`
-      UPDATE import_batches SET success_count = ?, failed_count = ?, status = ? WHERE id = ?
-    `, [successCount, failedCount, status, batchId]);
+      UPDATE import_batches SET total_count = ?, success_count = ?, failed_count = ?, status = ? WHERE id = ?
+    `, [totalCount, successCount, failedCount, status, batchId]);
+  }
+
+  async updateBatchDetailStats(batchId: string, stats: {
+    created?: number;
+    updated?: number;
+    ignored?: number;
+    overwritten?: number;
+  }): Promise<void> {
+    const fields: string[] = [];
+    const values: any[] = [];
+    if (stats.created !== undefined) { fields.push('created_count = ?'); values.push(stats.created); }
+    if (stats.updated !== undefined) { fields.push('updated_count = ?'); values.push(stats.updated); }
+    if (stats.ignored !== undefined) { fields.push('ignored_count = ?'); values.push(stats.ignored); }
+    if (stats.overwritten !== undefined) { fields.push('overwritten_count = ?'); values.push(stats.overwritten); }
+    if (fields.length > 0) {
+      values.push(batchId);
+      await this.db.run(`UPDATE import_batches SET ${fields.join(', ')} WHERE id = ?`, values);
+    }
   }
 
   async findByFileHash(fileHash: string): Promise<ImportBatch | null> {

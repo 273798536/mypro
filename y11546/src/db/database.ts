@@ -216,6 +216,25 @@ export class DatabaseManager {
     `;
 
     this.db.exec(sql);
+
+    this.addColumnIfNotExists('import_batches', 'created_count', 'INTEGER DEFAULT 0');
+    this.addColumnIfNotExists('import_batches', 'updated_count', 'INTEGER DEFAULT 0');
+    this.addColumnIfNotExists('import_batches', 'ignored_count', 'INTEGER DEFAULT 0');
+    this.addColumnIfNotExists('import_batches', 'overwritten_count', 'INTEGER DEFAULT 0');
+  }
+
+  private addColumnIfNotExists(table: string, column: string, definition: string): void {
+    this.db.all(`PRAGMA table_info(${table})`, (err, rows: any[]) => {
+      if (err) return;
+      const columns = rows.map((r) => r.name);
+      if (!columns.includes(column)) {
+        try {
+          this.db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+        } catch (e) {
+          console.error(`Failed to add column ${column} to ${table}:`, e);
+        }
+      }
+    });
   }
 
   prepare(sql: string): sqlite3.Statement {

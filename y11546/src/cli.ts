@@ -56,6 +56,11 @@ program
   .option('-b, --batch <batch_id>', '指定批次ID查看失败记录')
   .option('-i, --id <record_id>', '查看指定失败记录详情')
   .option('--ignore', '标记记录为忽略(需配合--id使用)')
+  .option('--replay', '重放指定失败记录(需配合--id使用)')
+  .option('--replay-batch <batch_id>', '重放指定批次的所有失败记录')
+  .option('--manual <task_id>', '标记任务为人工处理')
+  .option('--permanent <task_id>', '标记任务为永久失败(需配合--reason使用)')
+  .option('--reason <text>', '永久失败的原因说明')
   .option('-o, --operator <name>', '操作人', process.env.USER || 'unknown')
   .option('--work-dir <dir>', '工作目录', process.cwd())
   .action(async (options) => {
