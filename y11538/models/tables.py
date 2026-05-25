@@ -22,10 +22,10 @@ class Registration(Base):
     
     id = Column(Integer, primary_key=True)
     batch_id = Column(String(64), nullable=False)
-    employee_id = Column(String(64), nullable=False)
-    employee_name = Column(String(128), nullable=False)
+    employee_id = Column(String(64))
+    employee_name = Column(String(128))
     department = Column(String(128))
-    training_course = Column(String(256), nullable=False)
+    training_course = Column(String(256))
     training_date = Column(String(32))
     registration_time = Column(DateTime)
     amount = Column(Float, default=0)

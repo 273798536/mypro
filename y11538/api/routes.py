@@ -23,14 +23,48 @@ def add_registration():
     batch_id = data.get('batch_id', 'default')
     
     is_valid, errors = validate_data('registration', data)
-    if not is_valid:
-        save_dirty_record(batch_id, 'registration', 'MISSING_FIELD', data, '; '.join(errors))
-        return jsonify({'error': '数据验证失败', 'errors': errors}), 400
-    
-    existing_id = check_idempotency('registration', data)
     session = get_session()
     
     try:
+        if not is_valid:
+            save_dirty_record(batch_id, 'registration', 'MISSING_FIELD', data, '; '.join(errors))
+            
+            if data.get('employee_id') and data.get('training_course'):
+                existing_reg = session.query(Registration).filter_by(
+                    batch_id=batch_id,
+                    employee_id=data['employee_id'],
+                    training_course=data['training_course']
+                ).first()
+                
+                if not existing_reg:
+                    reg = Registration(
+                        batch_id=batch_id,
+                        employee_id=data.get('employee_id'),
+                        employee_name=data.get('employee_name'),
+                        department=data.get('department'),
+                        training_course=data['training_course'],
+                        training_date=data.get('training_date'),
+                        registration_time=parse_datetime(data['registration_time']) if data.get('registration_time') else None,
+                        amount=data.get('amount', 0),
+                        status='pending_fix',
+                        raw_data=data
+                    )
+                    session.add(reg)
+                    session.flush()
+                    save_idempotency_key('registration', data, reg.id)
+                    session.commit()
+                    
+                    return jsonify({
+                        'message': '报名信息已录入（待修复）',
+                        'id': reg.id,
+                        'status': 'pending_fix',
+                        'errors': errors
+                    }), 202
+            
+            return jsonify({'error': '数据验证失败', 'errors': errors}), 400
+        
+        existing_id = check_idempotency('registration', data)
+        
         if existing_id:
             reg = session.query(Registration).filter_by(id=existing_id).first()
             if reg:
@@ -100,16 +134,52 @@ def add_sign():
     batch_id = data.get('batch_id', 'default')
     
     is_valid, errors = validate_data('sign', data)
-    if not is_valid:
-        save_dirty_record(batch_id, 'sign', 'MISSING_FIELD', data, '; '.join(errors))
-        return jsonify({'error': '数据验证失败', 'errors': errors}), 400
-    
-    existing_id = check_idempotency('sign', data)
     session = get_session()
     anomalies = []
     is_update = False
     
     try:
+        if not is_valid:
+            save_dirty_record(batch_id, 'sign', 'MISSING_FIELD', data, '; '.join(errors))
+            
+            if data.get('sign_id'):
+                existing_sign = session.query(SignRecord).filter_by(
+                    batch_id=batch_id,
+                    sign_id=data['sign_id']
+                ).first()
+                
+                if not existing_sign:
+                    sign = SignRecord(
+                        batch_id=batch_id,
+                        sign_id=data['sign_id'],
+                        employee_id=data.get('employee_id'),
+                        employee_name=data.get('employee_name'),
+                        training_course=data.get('training_course'),
+                        sign_time=parse_datetime(data['sign_time']) if data.get('sign_time') else None,
+                        sign_type='pending_fix',
+                        qr_code=data.get('qr_code'),
+                        location=data.get('location'),
+                        device_info=data.get('device_info'),
+                        is_proxy=data.get('is_proxy', False),
+                        is_makeup=data.get('is_makeup', False),
+                        raw_data=data
+                    )
+                    session.add(sign)
+                    session.flush()
+                    save_idempotency_key('sign', data, sign.id)
+                    session.commit()
+                    
+                    return jsonify({
+                        'message': '签到记录已录入（待修复）',
+                        'id': sign.id,
+                        'status': 'pending_fix',
+                        'errors': errors
+                    }), 202
+            
+            return jsonify({'error': '数据验证失败', 'errors': errors}), 400
+        
+        existing_id = check_idempotency('sign', data)
+        
         existing_sign = None
         existing_sign_by_id = None
         
@@ -215,14 +285,46 @@ def add_homework():
     batch_id = data.get('batch_id', 'default')
     
     is_valid, errors = validate_data('homework', data)
-    if not is_valid:
-        save_dirty_record(batch_id, 'homework', 'MISSING_FIELD', data, '; '.join(errors))
-        return jsonify({'error': '数据验证失败', 'errors': errors}), 400
-    
-    existing_id = check_idempotency('homework', data)
     session = get_session()
     
     try:
+        if not is_valid:
+            save_dirty_record(batch_id, 'homework', 'MISSING_FIELD', data, '; '.join(errors))
+            
+            if data.get('homework_id'):
+                existing_hw = session.query(Homework).filter_by(
+                    batch_id=batch_id,
+                    homework_id=data['homework_id']
+                ).first()
+                
+                if not existing_hw:
+                    hw = Homework(
+                        batch_id=batch_id,
+                        homework_id=data['homework_id'],
+                        employee_id=data.get('employee_id'),
+                        employee_name=data.get('employee_name'),
+                        training_course=data.get('training_course'),
+                        submit_time=parse_datetime(data['submit_time']) if data.get('submit_time') else None,
+                        score=data.get('score'),
+                        status='pending_fix',
+                        raw_data=data
+                    )
+                    session.add(hw)
+                    session.flush()
+                    save_idempotency_key('homework', data, hw.id)
+                    session.commit()
+                    
+                    return jsonify({
+                        'message': '作业记录已录入（待修复）',
+                        'id': hw.id,
+                        'status': 'pending_fix',
+                        'errors': errors
+                    }), 202
+            
+            return jsonify({'error': '数据验证失败', 'errors': errors}), 400
+        
+        existing_id = check_idempotency('homework', data)
+        
         if existing_id:
             hw = session.query(Homework).filter_by(id=existing_id).first()
             if hw:
@@ -291,16 +393,48 @@ def add_refund():
     batch_id = data.get('batch_id', 'default')
     
     is_valid, errors = validate_data('refund', data)
-    if not is_valid:
-        save_dirty_record(batch_id, 'refund', 'MISSING_FIELD', data, '; '.join(errors))
-        return jsonify({'error': '数据验证失败', 'errors': errors}), 400
-    
-    existing_id = check_idempotency('refund', data)
     session = get_session()
     anomalies = []
     is_update = False
     
     try:
+        if not is_valid:
+            save_dirty_record(batch_id, 'refund', 'MISSING_FIELD', data, '; '.join(errors))
+            
+            if data.get('refund_id'):
+                existing_refund = session.query(Refund).filter_by(
+                    batch_id=batch_id,
+                    refund_id=data['refund_id']
+                ).first()
+                
+                if not existing_refund:
+                    refund = Refund(
+                        batch_id=batch_id,
+                        refund_id=data['refund_id'],
+                        employee_id=data.get('employee_id'),
+                        employee_name=data.get('employee_name'),
+                        training_course=data.get('training_course'),
+                        refund_amount=data.get('refund_amount', 0),
+                        refund_time=parse_datetime(data['refund_time']) if data.get('refund_time') else None,
+                        refund_reason=data.get('refund_reason'),
+                        raw_data=data
+                    )
+                    session.add(refund)
+                    session.flush()
+                    save_idempotency_key('refund', data, refund.id)
+                    session.commit()
+                    
+                    return jsonify({
+                        'message': '退款记录已录入（待修复）',
+                        'id': refund.id,
+                        'status': 'pending_fix',
+                        'errors': errors
+                    }), 202
+            
+            return jsonify({'error': '数据验证失败', 'errors': errors}), 400
+        
+        existing_id = check_idempotency('refund', data)
+        
         existing_refund = None
         existing_refund_by_id = None
         
