@@ -5,6 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import Table from 'cli-table3';
 import {
   getCurrentUser,
+  getAppointments,
+  getLocations,
+  getReviews,
+  getPriceAdjustments,
   addAppointment,
   addLocation,
   addReview,
@@ -29,13 +33,15 @@ import {
   checkLocation,
   checkReview,
   checkPriceAdjustment,
-  detectDuplicates,
+  detectDuplicateRecords,
   detectNameChanges,
   detectAmountConflicts,
+  detectQuantityConflicts,
+  detectMergeConflicts,
   getSourceTypeLabel,
   getDirtyTypeLabel,
 } from '../utils/dirtyChecker';
-import { SourceType } from '../types';
+import { SourceType, AppointmentRecord } from '../types';
 import { requirePermission } from './login';
 import { compareObjects, formatDiff } from '../utils/diff';
 
@@ -83,6 +89,9 @@ export async function handleImport(filePath: string, options: { type?: string; a
     if (stats) allStats.push(stats);
   }
 
+  console.log(chalk.yellow('\n🔍 正在进行跨批次一致性检查...'));
+  const crossBatchDirtyCount = await detectAndStoreCrossBatchIssues(batchId);
+
   addOperationLog(
     'import_batch',
     user,
@@ -104,6 +113,16 @@ export async function handleImport(filePath: string, options: { type?: string; a
       chalk.yellow(String(s.dirty)),
     ]);
   });
+
+  if (crossBatchDirtyCount > 0) {
+    summaryTable.push([
+      chalk.magenta('跨批次问题'),
+      chalk.magenta('-'),
+      '-',
+      '-',
+      chalk.magenta(String(crossBatchDirtyCount)),
+    ]);
+  }
 
   console.log(summaryTable.toString());
 }
@@ -143,7 +162,6 @@ async function importSingleFile(
         const checkResult = checkAppointment(normalized, row, fileName);
 
         if (checkResult.isValid) {
-          const beforeData = { ...normalized };
           const record = addAppointment(normalized);
           successCount++;
           addOperationLog('import_appointment', getCurrentUser()!, {
@@ -263,4 +281,157 @@ async function importSingleFile(
   console.log(`  总计: ${result.records.length} | 成功: ${chalk.green(String(successCount))} | 脏记录: ${chalk.yellow(String(dirtyCount))}`);
 
   return { sourceType, fileName, total: result.records.length, success: successCount, dirty: dirtyCount };
+}
+
+async function detectAndStoreCrossBatchIssues(batchId: string): Promise<number> {
+  let crossBatchDirtyCount = 0;
+
+  const appointments = getAppointments();
+  const priceAdjustments = getPriceAdjustments();
+
+  const duplicateAppointments = detectDuplicateRecords(appointments);
+  for (const dup of duplicateAppointments) {
+    const existingDirty = (await import('../utils/database')).getDirtyRecords();
+    const alreadyExists = existingDirty.some(
+      d => d.dirtyType === 'duplicate' &&
+           d.originalData?.orderNo === dup.orderNo &&
+           d.status === 'dirty'
+    );
+    if (!alreadyExists) {
+      addDirtyRecord({
+        recordId: uuidv4(),
+        sourceType: 'appointment',
+        dirtyType: 'duplicate',
+        description: `订单号 ${dup.orderNo} 存在 ${dup.count} 条重复记录`,
+        originalData: {
+          orderNo: dup.orderNo,
+          duplicateCount: dup.count,
+          records: dup.records.map(r => ({
+            row: r.rawRow,
+            file: r.sourceFile,
+            status: r.status,
+            date: r.appointmentDate,
+          })),
+        },
+        suggestedFix: {
+          action: '合并或删除重复记录',
+          keepRecord: dup.records[0]?.id,
+          removeRecords: dup.records.slice(1).map(r => r.id),
+        },
+        sourceFile: '跨批次检测',
+        rawRow: undefined,
+      });
+      crossBatchDirtyCount++;
+    }
+  }
+
+  const nameChanges = detectNameChanges(appointments);
+  for (const nc of nameChanges) {
+    const existingDirty = (await import('../utils/database')).getDirtyRecords();
+    const alreadyExists = existingDirty.some(
+      d => d.dirtyType === 'name_changed' &&
+           d.originalData?.orderNo === nc.orderNo &&
+           d.status === 'dirty'
+    );
+    if (!alreadyExists) {
+      addDirtyRecord({
+        recordId: uuidv4(),
+        sourceType: 'appointment',
+        dirtyType: 'name_changed',
+        description: `订单号 ${nc.orderNo} 客户姓名不一致: ${nc.names.join(' vs ')}`,
+        originalData: { orderNo: nc.orderNo, names: nc.names },
+        suggestedFix: {
+          action: '确认正确的客户姓名',
+          suggestion: nc.names[0],
+        },
+        sourceFile: '跨批次检测',
+        rawRow: undefined,
+      });
+      crossBatchDirtyCount++;
+    }
+  }
+
+  const amountConflicts = detectAmountConflicts(priceAdjustments);
+  for (const ac of amountConflicts) {
+    const existingDirty = (await import('../utils/database')).getDirtyRecords();
+    const alreadyExists = existingDirty.some(
+      d => d.dirtyType === 'amount_conflict' &&
+           d.originalData?.orderNo === ac.orderNo &&
+           d.status === 'dirty'
+    );
+    if (!alreadyExists) {
+      addDirtyRecord({
+        recordId: uuidv4(),
+        sourceType: 'price_adjustment',
+        dirtyType: 'amount_conflict',
+        description: `订单号 ${ac.orderNo} 金额不一致`,
+        originalData: { orderNo: ac.orderNo, amounts: ac.amounts },
+        suggestedFix: {
+          action: '确认正确的金额',
+          amounts: ac.amounts,
+        },
+        sourceFile: '跨批次检测',
+        rawRow: undefined,
+      });
+      crossBatchDirtyCount++;
+    }
+  }
+
+  const quantityConflicts = detectQuantityConflicts(appointments);
+  for (const qc of quantityConflicts) {
+    const existingDirty = (await import('../utils/database')).getDirtyRecords();
+    const alreadyExists = existingDirty.some(
+      d => d.dirtyType === 'quantity_conflict' &&
+           d.originalData?.orderNo === qc.orderNo &&
+           d.status === 'dirty'
+    );
+    if (!alreadyExists) {
+      addDirtyRecord({
+        recordId: uuidv4(),
+        sourceType: 'appointment',
+        dirtyType: 'quantity_conflict',
+        description: `订单号 ${qc.orderNo} 存在 ${qc.count} 条记录，家电类型: ${qc.types.join(', ')}`,
+        originalData: { orderNo: qc.orderNo, count: qc.count, types: qc.types },
+        suggestedFix: {
+          action: '确认是否为多台家电安装或重复录入',
+        },
+        sourceFile: '跨批次检测',
+        rawRow: undefined,
+      });
+      crossBatchDirtyCount++;
+    }
+  }
+
+  const mergeConflicts = detectMergeConflicts(appointments);
+  for (const mc of mergeConflicts) {
+    const existingDirty = (await import('../utils/database')).getDirtyRecords();
+    const alreadyExists = existingDirty.some(
+      d => d.dirtyType === 'merge_conflict' &&
+           d.originalData?.orderNo === mc.orderNo &&
+           d.status === 'dirty'
+    );
+    if (!alreadyExists) {
+      addDirtyRecord({
+        recordId: uuidv4(),
+        sourceType: 'appointment',
+        dirtyType: 'merge_conflict',
+        description: `订单号 ${mc.orderNo} 存在 ${mc.count} 条记录，状态: ${mc.statuses.join(', ')}，可能需要合并改约/二次上门`,
+        originalData: { orderNo: mc.orderNo, count: mc.count, statuses: mc.statuses, dates: mc.dates },
+        suggestedFix: {
+          action: '确认是否为改约或二次上门，决定是否合并',
+          statuses: mc.statuses,
+          dates: mc.dates,
+        },
+        sourceFile: '跨批次检测',
+        rawRow: undefined,
+      });
+      crossBatchDirtyCount++;
+    }
+  }
+
+  if (crossBatchDirtyCount > 0) {
+    console.log(chalk.yellow(`⚠️  发现 ${crossBatchDirtyCount} 个跨批次问题，已记录到脏记录`));
+  }
+
+  return crossBatchDirtyCount;
 }

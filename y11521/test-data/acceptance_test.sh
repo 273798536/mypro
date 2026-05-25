@@ -3,14 +3,15 @@
 set -e
 
 echo "========================================"
-echo "家电安装回访巡检工具 - 验收测试"
+echo "家电安装回访巡检工具 - 验收测试 v2"
 echo "========================================"
 echo ""
 
 echo "📋 测试步骤:"
 echo "  1. 正常链路测试"
-echo "  2. 重复提交和坏数据测试"
-echo "  3. 重启后历史查询验证"
+echo "  2. 重复提交和坏数据测试 (含重复、改名、数量冲突、合并冲突)"
+echo "  3. 权限字段过滤测试"
+echo "  4. 重启后历史查询验证"
 echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -60,25 +61,21 @@ echo "1.8 生成报告..."
 $CLI report
 echo ""
 
-echo "1.9 导出数据..."
-$CLI export --format csv --output ./test-exports
-echo ""
-
 echo "========================================"
 echo "测试 2: 重复提交和坏数据测试"
 echo "========================================"
 echo ""
 
-echo "2.1 导入含脏数据的预约单..."
+echo "2.1 导入含脏数据的预约单 (含重复、改名、数量冲突、合并冲突)..."
 $CLI import "$SCRIPT_DIR/预约单_含脏数据.csv"
 echo ""
 
-echo "2.2 再次巡检，检查脏记录..."
+echo "2.2 再次巡检，检查各类脏记录..."
 $CLI check
 echo ""
 
-echo "2.3 查看操作历史..."
-$CLI history --limit 10
+echo "2.3 生成详细报告 (含失败清单和处理结果追溯)..."
+$CLI report --detail
 echo ""
 
 echo "2.4 导出失败清单..."
@@ -86,27 +83,40 @@ $CLI export-dirty ./test-exports/failed_records.csv
 echo ""
 
 echo "========================================"
-echo "测试 3: 重启后历史查询验证"
+echo "测试 3: 权限字段过滤测试"
 echo "========================================"
 echo ""
 
-echo "3.1 登出..."
-$CLI logout
+echo "3.1 切换到录入员账号..."
+$CLI login entry01 entry123
 echo ""
 
-echo "3.2 重新登录..."
+echo "3.2 录入员查看巡检报告 (敏感字段应被隐藏)..."
+$CLI check 2>&1 | head -60
+echo ""
+
+echo "3.3 切换到只读账号..."
+$CLI login viewer01 viewer123
+echo ""
+
+echo "3.4 只读账号查看报告 (手机号和金额应被隐藏)..."
+$CLI report 2>&1 | head -80
+echo ""
+
+echo "========================================"
+echo "测试 4: 重启后历史查询验证"
+echo "========================================"
+echo ""
+
+echo "4.1 重新登录主管..."
 $CLI login admin admin123
 echo ""
 
-echo "3.3 验证导入历史..."
-$CLI history --limit 20
+echo "4.2 查看操作历史 (含差异)..."
+$CLI history --limit 20 --diff 2>&1 | head -80
 echo ""
 
-echo "3.4 验证脏记录..."
-$CLI check --status dirty
-echo ""
-
-echo "3.5 重新生成报告..."
+echo "4.3 最终报告..."
 $CLI report --detail
 echo ""
 
@@ -116,14 +126,17 @@ echo "========================================"
 echo ""
 echo "📊 关键验证点:"
 echo "  - 预约单、师傅定位、用户评价、手工改价均已建账"
-echo "  - 脏记录已识别并分类（缺字段、跨日等）"
+echo "  - 脏记录已识别并分类（缺字段、跨日、改名、金额冲突、数量冲突、重复、合并冲突）"
 echo "  - 差评原因缺失已标记"
 echo "  - 原始行号和来源文件可追溯"
-echo "  - 操作历史完整记录"
-echo "  - 失败清单可导出"
+echo "  - 操作历史完整记录（含前后差异）"
+echo "  - 失败清单可导出（带来源和行号）"
+echo "  - 权限字段过滤生效（不同角色看到不同字段）"
+echo "  - fix流程只有实际修改才标记fixed"
 echo ""
-echo "🔐 权限测试建议:"
-echo "  - 使用 entry01 登录测试导入权限"
-echo "  - 使用 review01 登录测试复核权限"
-echo "  - 使用 viewer01 登录测试只读权限"
+echo "🔐 权限验证:"
+echo "  - admin (主管): 全部字段可见可编辑"
+echo "  - entry01 (录入员): 金额字段隐藏，部分字段可编辑"
+echo "  - review01 (复核员): 状态和差评原因可编辑"
+echo "  - viewer01 (只读): 手机号、金额等敏感字段隐藏"
 echo ""

@@ -10,6 +10,9 @@ exports.checkPriceAdjustment = checkPriceAdjustment;
 exports.detectDuplicates = detectDuplicates;
 exports.detectNameChanges = detectNameChanges;
 exports.detectAmountConflicts = detectAmountConflicts;
+exports.detectQuantityConflicts = detectQuantityConflicts;
+exports.detectMergeConflicts = detectMergeConflicts;
+exports.detectDuplicateRecords = detectDuplicateRecords;
 exports.getDirtyTypeLabel = getDirtyTypeLabel;
 exports.getSourceTypeLabel = getSourceTypeLabel;
 const dayjs_1 = __importDefault(require("dayjs"));
@@ -192,6 +195,57 @@ function detectAmountConflicts(records) {
         return amounts.some((a) => a.original !== first.original || a.adjusted !== first.adjusted);
     })
         .map(([orderNo, amounts]) => ({ orderNo, amounts }));
+}
+function detectQuantityConflicts(records) {
+    const recordMap = new Map();
+    records.forEach((r) => {
+        if (r.orderNo) {
+            const existing = recordMap.get(r.orderNo) || { count: 0, types: new Set() };
+            existing.count++;
+            if (r.applianceType)
+                existing.types.add(r.applianceType);
+            recordMap.set(r.orderNo, existing);
+        }
+    });
+    return Array.from(recordMap.entries())
+        .filter(([, info]) => info.count > 1 && info.types.size > 1)
+        .map(([orderNo, info]) => ({ orderNo, count: info.count, types: Array.from(info.types) }));
+}
+function detectMergeConflicts(records) {
+    const recordMap = new Map();
+    records.forEach((r) => {
+        if (r.orderNo) {
+            const existing = recordMap.get(r.orderNo) || { count: 0, statuses: new Set(), dates: new Set() };
+            existing.count++;
+            if (r.status)
+                existing.statuses.add(r.status);
+            if (r.appointmentDate)
+                existing.dates.add(r.appointmentDate);
+            recordMap.set(r.orderNo, existing);
+        }
+    });
+    return Array.from(recordMap.entries())
+        .filter(([, info]) => info.count > 1 && (info.statuses.size > 1 || info.dates.size > 1))
+        .map(([orderNo, info]) => ({
+        orderNo,
+        count: info.count,
+        statuses: Array.from(info.statuses),
+        dates: Array.from(info.dates),
+    }));
+}
+function detectDuplicateRecords(records) {
+    const groups = new Map();
+    records.forEach((r) => {
+        const key = String(r.orderNo || '');
+        if (key) {
+            const existing = groups.get(key) || [];
+            existing.push(r);
+            groups.set(key, existing);
+        }
+    });
+    return Array.from(groups.entries())
+        .filter(([, group]) => group.length > 1)
+        .map(([orderNo, records]) => ({ orderNo, count: records.length, records }));
 }
 function getDirtyTypeLabel(type) {
     const labels = {

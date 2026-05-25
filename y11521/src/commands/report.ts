@@ -12,7 +12,15 @@ import {
 } from '../utils/database';
 import { getSourceTypeLabel, getDirtyTypeLabel } from '../utils/dirtyChecker';
 import { requirePermission } from './login';
-import { SourceType, DirtyType } from '../types';
+import { canViewField, maskDataByRole } from '../config/permissions';
+import { SourceType, DirtyType, Role } from '../types';
+
+const roleLabels: Record<Role, string> = {
+  entry: '录入员',
+  review: '复核员',
+  supervisor: '主管',
+  readonly: '只读',
+};
 
 export async function handleReport(options: { type?: string; detail?: boolean }): Promise<void> {
   requirePermission('report');
@@ -20,6 +28,7 @@ export async function handleReport(options: { type?: string; detail?: boolean })
   const user = getCurrentUser()!;
 
   console.log(chalk.blue('=== 巡检报告 ===\n'));
+  console.log(chalk.gray(`当前用户: ${user.name} (${roleLabels[user.role]})`));
 
   const appointments = getAppointments();
   const locations = getLocations();
@@ -40,54 +49,63 @@ export async function handleReport(options: { type?: string; detail?: boolean })
   summaryTable.push(['脏记录', chalk.yellow(String(dirtyRecords.length))]);
   console.log(summaryTable.toString());
 
-  console.log(`\n${chalk.cyan('📋 用户评价分析')}`);
-  const goodReviews = reviews.filter((r) => r.rating >= 4).length;
-  const neutralReviews = reviews.filter((r) => r.rating === 3).length;
-  const badReviews = reviews.filter((r) => r.rating <= 2).length;
-  const badWithReason = reviews.filter((r) => r.rating <= 2 && r.badReason).length;
+  if (canViewField(user.role, 'rating') || canViewField(user.role, 'badReason')) {
+    console.log(`\n${chalk.cyan('📋 用户评价分析')}`);
+    const goodReviews = reviews.filter((r) => r.rating >= 4).length;
+    const neutralReviews = reviews.filter((r) => r.rating === 3).length;
+    const badReviews = reviews.filter((r) => r.rating <= 2).length;
+    const badWithReason = reviews.filter((r) => r.rating <= 2 && r.badReason).length;
 
-  const reviewTable = new Table({
-    head: ['评价类型', '数量', '占比'],
-    colWidths: [15, 10, 15],
-  });
-  reviewTable.push([
-    chalk.green('好评(4-5星)'),
-    String(goodReviews),
-    `${((goodReviews / reviews.length) * 100).toFixed(1)}%`,
-  ]);
-  reviewTable.push([
-    chalk.yellow('中评(3星)'),
-    String(neutralReviews),
-    `${((neutralReviews / reviews.length) * 100).toFixed(1)}%`,
-  ]);
-  reviewTable.push([
-    chalk.red('差评(1-2星)'),
-    String(badReviews),
-    `${((badReviews / reviews.length) * 100).toFixed(1)}%`,
-  ]);
-  reviewTable.push([
-    chalk.magenta('差评有原因'),
-    String(badWithReason),
-    badReviews > 0 ? `${((badWithReason / badReviews) * 100).toFixed(1)}%` : 'N/A',
-  ]);
-  console.log(reviewTable.toString());
-
-  console.log(`\n${chalk.cyan('⚠️  差评原因缺失清单')}`);
-  const missingBadReason = reviews.filter((r) => r.rating <= 2 && !r.badReason);
-  if (missingBadReason.length > 0) {
-    const missingTable = new Table({
-      head: ['订单号', '评分', '评价内容', '原始行号'],
-      colWidths: [15, 8, 30, 10],
+    const reviewTable = new Table({
+      head: ['评价类型', '数量', '占比'],
+      colWidths: [15, 10, 15],
     });
-    missingBadReason.slice(0, 10).forEach((r) => {
-      missingTable.push([r.orderNo, String(r.rating), r.reviewContent.slice(0, 28), String(r.rawRow || '-')]);
-    });
-    console.log(missingTable.toString());
-    if (missingBadReason.length > 10) {
-      console.log(chalk.gray(`... 还有 ${missingBadReason.length - 10} 条`));
+    reviewTable.push([
+      chalk.green('好评(4-5星)'),
+      String(goodReviews),
+      `${((goodReviews / Math.max(reviews.length, 1)) * 100).toFixed(1)}%`,
+    ]);
+    reviewTable.push([
+      chalk.yellow('中评(3星)'),
+      String(neutralReviews),
+      `${((neutralReviews / Math.max(reviews.length, 1)) * 100).toFixed(1)}%`,
+    ]);
+    reviewTable.push([
+      chalk.red('差评(1-2星)'),
+      String(badReviews),
+      `${((badReviews / Math.max(reviews.length, 1)) * 100).toFixed(1)}%`,
+    ]);
+    if (canViewField(user.role, 'badReason')) {
+      reviewTable.push([
+        chalk.magenta('差评有原因'),
+        String(badWithReason),
+        badReviews > 0 ? `${((badWithReason / Math.max(badReviews, 1)) * 100).toFixed(1)}%` : 'N/A',
+      ]);
     }
-  } else {
-    console.log(chalk.green('✅ 所有差评都有原因说明'));
+    console.log(reviewTable.toString());
+
+    if (canViewField(user.role, 'badReason')) {
+      console.log(`\n${chalk.cyan('⚠️  差评原因缺失清单')}`);
+      const missingBadReason = reviews.filter((r) => r.rating <= 2 && !r.badReason);
+      if (missingBadReason.length > 0) {
+        const missingTable = new Table({
+          head: ['订单号', '评分', '评价内容', '原始行号'],
+          colWidths: [15, 8, 30, 10],
+        });
+        missingBadReason.slice(0, 10).forEach((r) => {
+          const orderNo = canViewField(user.role, 'orderNo') ? r.orderNo : '******';
+          const rating = canViewField(user.role, 'rating') ? String(r.rating) : '***';
+          const content = canViewField(user.role, 'reviewContent') ? r.reviewContent.slice(0, 28) : '******';
+          missingTable.push([orderNo, rating, content, String(r.rawRow || '-')]);
+        });
+        console.log(missingTable.toString());
+        if (missingBadReason.length > 10) {
+          console.log(chalk.gray(`... 还有 ${missingBadReason.length - 10} 条`));
+        }
+      } else {
+        console.log(chalk.green('✅ 所有差评都有原因说明'));
+      }
+    }
   }
 
   console.log(`\n${chalk.cyan('🔍 脏记录分类统计')}`);
@@ -130,22 +148,53 @@ export async function handleReport(options: { type?: string; detail?: boolean })
   console.log(importTable.toString());
 
   if (options.detail) {
-    console.log(`\n${chalk.cyan('📋 失败清单 (带原始行号)')}`);
+    console.log(`\n${chalk.cyan('📋 失败清单 (带原始行号和来源)')}`);
     const failedRecords = dirtyRecords.filter((r) => r.status !== 'approved');
     const failedTable = new Table({
-      head: ['ID', '原始文件', '行号', '问题类型', '状态'],
-      colWidths: [12, 20, 8, 12, 10],
+      head: ['ID', '原始文件', '行号', '问题类型', '状态', '订单号'],
+      colWidths: [12, 20, 8, 12, 10, 15],
     });
     failedRecords.slice(0, 20).forEach((r) => {
+      const orderNo = canViewField(user.role, 'orderNo')
+        ? (r.originalData?.orderNo || '-').toString().slice(0, 12)
+        : '******';
       failedTable.push([
         r.id.slice(0, 10),
         r.sourceFile || '-',
         String(r.rawRow || '-'),
         getDirtyTypeLabel(r.dirtyType),
         r.status,
+        orderNo,
       ]);
     });
     console.log(failedTable.toString());
+
+    if (failedRecords.length > 20) {
+      console.log(chalk.gray(`... 还有 ${failedRecords.length - 20} 条待处理记录`));
+      console.log(chalk.gray('使用 hai export-dirty <file> 导出完整失败清单'));
+    }
+
+    console.log(`\n${chalk.cyan('📋 处理结果追溯')}`);
+    const processedRecords = dirtyRecords.filter((r) => r.status === 'fixed' || r.status === 'approved' || r.status === 'rejected');
+    if (processedRecords.length > 0) {
+      const processedTable = new Table({
+        head: ['ID', '问题类型', '状态', '处理人', '处理说明', '处理时间'],
+        colWidths: [12, 12, 10, 12, 20, 20],
+      });
+      processedRecords.slice(0, 10).forEach((r) => {
+        processedTable.push([
+          r.id.slice(0, 10),
+          getDirtyTypeLabel(r.dirtyType),
+          r.status,
+          r.fixedBy ? r.fixedBy.slice(0, 8) : '-',
+          (r.fixNote || '-').slice(0, 18),
+          r.fixedAt ? r.fixedAt.slice(0, 16).replace('T', ' ') : '-',
+        ]);
+      });
+      console.log(processedTable.toString());
+    } else {
+      console.log(chalk.green('暂无处理记录'));
+    }
   }
 
   addOperationLog('generate_report', user, {});

@@ -1,40 +1,40 @@
 {
   "users": [
     {
-      "id": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "id": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "username": "admin",
       "password": "admin123",
       "role": "supervisor",
       "name": "系统管理员",
       "department": "售后部",
-      "createdAt": "2026-05-24T09:26:23.822Z"
+      "createdAt": "2026-05-25T12:24:38.977Z"
     },
     {
-      "id": "1c9dda1b-5c4a-487d-818e-24b501fdf268",
+      "id": "0125df78-94da-4a92-a5b2-1f9eabed3125",
       "username": "entry01",
       "password": "entry123",
       "role": "entry",
       "name": "录入员小张",
       "department": "售后部",
-      "createdAt": "2026-05-24T09:26:23.823Z"
+      "createdAt": "2026-05-25T12:24:38.978Z"
     },
     {
-      "id": "6ede5c09-a201-4869-a936-8c553924af87",
+      "id": "3fcebdfd-7f71-4cdc-bebf-3a16ec78e098",
       "username": "review01",
       "password": "review123",
       "role": "review",
       "name": "复核员小李",
       "department": "售后部",
-      "createdAt": "2026-05-24T09:26:23.823Z"
+      "createdAt": "2026-05-25T12:24:38.978Z"
     },
     {
-      "id": "8441733d-e967-45e1-82d9-ba20fde559a6",
+      "id": "a68414db-83c1-4426-bdd7-28d9dc28b005",
       "username": "viewer01",
       "password": "viewer123",
       "role": "readonly",
       "name": "查看员小王",
       "department": "售后部",
-      "createdAt": "2026-05-24T09:26:23.823Z"
+      "createdAt": "2026-05-25T12:24:38.978Z"
     }
   ],
   "appointments": [
@@ -51,7 +51,7 @@
       "status": "待上门",
       "rawRow": 2,
       "sourceFile": "预约单_正常.csv",
-      "id": "cdf35f01-3139-407f-ac71-375ef533daef",
+      "id": "cfae1238-fe9b-4276-bb99-30f4551ceb94",
       "source": "appointment"
     },
     {
@@ -67,7 +67,7 @@
       "status": "待上门",
       "rawRow": 3,
       "sourceFile": "预约单_正常.csv",
-      "id": "d6e3a875-4632-4e8e-8aa4-09318561d018",
+      "id": "61c5689e-bb3f-4548-aefb-d9139a72f513",
       "source": "appointment"
     },
     {
@@ -83,7 +83,7 @@
       "status": "待上门",
       "rawRow": 4,
       "sourceFile": "预约单_正常.csv",
-      "id": "a4f9a51d-6334-4231-bc9c-1e998e9dc305",
+      "id": "9a85a66a-5d97-4c97-929d-c2204a3ecaf9",
       "source": "appointment"
     },
     {
@@ -99,7 +99,7 @@
       "status": "待上门",
       "rawRow": 5,
       "sourceFile": "预约单_正常.csv",
-      "id": "600caa17-4608-48ec-b8ba-da7df0d7ae07",
+      "id": "90a6a329-41b0-47a6-938f-5693f22983b0",
       "source": "appointment"
     },
     {
@@ -115,7 +115,7 @@
       "status": "待上门",
       "rawRow": 6,
       "sourceFile": "预约单_正常.csv",
-      "id": "b59bb7d1-656d-43c1-9a87-893c7e7b05dd",
+      "id": "0057b3cf-f655-4be7-b9ec-4f023bc53604",
       "source": "appointment"
     },
     {
@@ -131,7 +131,7 @@
       "status": "待上门",
       "rawRow": 2,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "6bea7be1-17f2-42a6-a9e3-6ee9eda301b4",
+      "id": "d9f11f56-0527-42ca-870b-c19ad708b81c",
       "source": "appointment"
     },
     {
@@ -147,7 +147,87 @@
       "status": "待上门",
       "rawRow": 9,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "835e7020-11f7-4993-96b6-3d4d5e3765d7",
+      "id": "11bc240e-fe40-4afc-b243-2cce10f53703",
+      "source": "appointment"
+    },
+    {
+      "orderNo": "ORD002",
+      "customerName": "李四改名了",
+      "phone": "13800138002",
+      "address": "北京市海淀区XX小区2号楼202",
+      "applianceType": "洗衣机",
+      "appointmentDate": "2024-01-15",
+      "appointmentTime": "14:00-17:00",
+      "technicianId": "T002",
+      "technicianName": "王师傅",
+      "status": "待上门",
+      "rawRow": 10,
+      "sourceFile": "预约单_含脏数据.csv",
+      "id": "7ff80541-cec1-4427-8903-35c1ead587e8",
+      "source": "appointment"
+    },
+    {
+      "orderNo": "ORD013",
+      "customerName": "多台家电",
+      "phone": "13800138013",
+      "address": "北京市朝阳区XX小区13号楼1301",
+      "applianceType": "空调",
+      "appointmentDate": "2024-01-21",
+      "appointmentTime": "09:00-12:00",
+      "technicianId": "T001",
+      "technicianName": "李师傅",
+      "status": "待上门",
+      "rawRow": 11,
+      "sourceFile": "预约单_含脏数据.csv",
+      "id": "0f36f323-8f79-43a6-9f1f-24dff69de3ee",
+      "source": "appointment"
+    },
+    {
+      "orderNo": "ORD013",
+      "customerName": "多台家电",
+      "phone": "13800138013",
+      "address": "北京市朝阳区XX小区13号楼1301",
+      "applianceType": "洗衣机",
+      "appointmentDate": "2024-01-21",
+      "appointmentTime": "14:00-17:00",
+      "technicianId": "T002",
+      "technicianName": "王师傅",
+      "status": "待上门",
+      "rawRow": 12,
+      "sourceFile": "预约单_含脏数据.csv",
+      "id": "5ff1d42a-9df7-4a84-9ba5-b79128ba753e",
+      "source": "appointment"
+    },
+    {
+      "orderNo": "ORD014",
+      "customerName": "改约测试",
+      "phone": "13800138014",
+      "address": "北京市海淀区XX小区14号楼1401",
+      "applianceType": "冰箱",
+      "appointmentDate": "2024-01-22",
+      "appointmentTime": "09:00-12:00",
+      "technicianId": "T001",
+      "technicianName": "李师傅",
+      "status": "已改约",
+      "rawRow": 13,
+      "sourceFile": "预约单_含脏数据.csv",
+      "id": "816f3a11-c232-43bc-b625-1d0111b32d59",
+      "source": "appointment"
+    },
+    {
+      "orderNo": "ORD014",
+      "customerName": "改约测试",
+      "phone": "13800138014",
+      "address": "北京市海淀区XX小区14号楼1401",
+      "applianceType": "冰箱",
+      "appointmentDate": "2024-01-23",
+      "appointmentTime": "09:00-12:00",
+      "technicianId": "T001",
+      "technicianName": "李师傅",
+      "status": "待上门",
+      "rawRow": 14,
+      "sourceFile": "预约单_含脏数据.csv",
+      "id": "c96d470a-86d5-496c-8727-f1b3f96161fb",
       "source": "appointment"
     }
   ],
@@ -163,7 +243,7 @@
       "longitude": 116.4,
       "rawRow": 2,
       "sourceFile": "师傅定位.csv",
-      "id": "950947af-39c0-4fba-80ac-127904701cf3",
+      "id": "56ff814b-06d3-4ed2-a218-f8a4cc89d7f5",
       "source": "location"
     },
     {
@@ -177,7 +257,7 @@
       "longitude": 116.3,
       "rawRow": 3,
       "sourceFile": "师傅定位.csv",
-      "id": "6272ff65-4c4e-411f-a8bb-2eebf5552f63",
+      "id": "7302aed0-9690-4067-8eeb-43de901d9303",
       "source": "location"
     },
     {
@@ -190,7 +270,7 @@
       "longitude": 116.42,
       "rawRow": 5,
       "sourceFile": "师傅定位.csv",
-      "id": "9816076c-4b12-4b8c-8f8f-60ea1fb2a637",
+      "id": "53c1e33f-84d9-4259-964b-0144efdeff78",
       "source": "location"
     }
   ],
@@ -205,7 +285,7 @@
       "technicianName": "李师傅",
       "rawRow": 2,
       "sourceFile": "用户评价.csv",
-      "id": "7b23a822-4aee-4d86-8d65-c079805076c6",
+      "id": "c12813af-052e-48b5-8aa3-639ea5d63d00",
       "source": "review"
     },
     {
@@ -218,7 +298,7 @@
       "technicianName": "王师傅",
       "rawRow": 3,
       "sourceFile": "用户评价.csv",
-      "id": "eec2ab7e-fed0-4638-9982-ffeddbe19013",
+      "id": "d6e86cdc-5278-4438-abd8-774410782834",
       "source": "review"
     },
     {
@@ -232,7 +312,7 @@
       "technicianName": "张师傅",
       "rawRow": 5,
       "sourceFile": "用户评价.csv",
-      "id": "4c1a79d7-2205-4f09-8552-45ef8c8350c5",
+      "id": "ca28f76e-3499-4509-96bb-98fabe7600e5",
       "source": "review"
     },
     {
@@ -245,7 +325,7 @@
       "technicianName": "王师傅",
       "rawRow": 6,
       "sourceFile": "用户评价.csv",
-      "id": "35ea56c2-dfc3-4f56-b4fc-0b7645b78ecb",
+      "id": "f0497c9d-f38f-49d3-8a23-9ce8c400766a",
       "source": "review"
     },
     {
@@ -258,7 +338,7 @@
       "technicianName": "王师傅",
       "rawRow": 8,
       "sourceFile": "用户评价.csv",
-      "id": "2bd234dc-18dc-4fbf-95b1-47ddb806d834",
+      "id": "434e8748-9565-41dd-afc0-7bbd1e0494f8",
       "source": "review"
     }
   ],
@@ -272,7 +352,7 @@
       "adjustmentDate": "2024-01-15",
       "rawRow": 2,
       "sourceFile": "手工改价表.csv",
-      "id": "803d133e-6fc2-4372-9fb0-b33aeb1eef22",
+      "id": "370412fd-5dff-446f-aca9-147ad1d609e1",
       "source": "price_adjustment"
     },
     {
@@ -284,7 +364,7 @@
       "adjustmentDate": "2024-01-15",
       "rawRow": 3,
       "sourceFile": "手工改价表.csv",
-      "id": "c72e7166-877c-4b01-ac90-ad3857eed01e",
+      "id": "fac9a7f1-cd84-40e6-8643-209dd7b03871",
       "source": "price_adjustment"
     },
     {
@@ -296,7 +376,7 @@
       "adjustmentDate": "2024-01-16",
       "rawRow": 5,
       "sourceFile": "手工改价表.csv",
-      "id": "e42d9d6b-c96c-43a5-a861-3a50bd35cc98",
+      "id": "7f306b2d-f44f-41fc-838f-baf5212fe303",
       "source": "price_adjustment"
     },
     {
@@ -308,13 +388,13 @@
       "adjustmentDate": "2024-01-17",
       "rawRow": 6,
       "sourceFile": "手工改价表.csv",
-      "id": "10a41522-45ea-4391-93a5-c85c65a7e3bf",
+      "id": "3ded9771-449b-428e-a2a2-3b4da5556587",
       "source": "price_adjustment"
     }
   ],
   "dirtyRecords": [
     {
-      "recordId": "d340670b-7fd9-4ec9-b468-0faf0b86a92e",
+      "recordId": "2f50ad88-2dd0-47d2-80a8-d122bd505e20",
       "sourceType": "location",
       "dirtyType": "cross_day",
       "description": "签到与签退不在同一天",
@@ -332,12 +412,12 @@
       },
       "rawRow": 4,
       "sourceFile": "师傅定位.csv",
-      "id": "6fea0c1d-ea80-4100-a218-5ac649dc9d12",
+      "id": "f445689d-a529-4ed3-aa98-386f0acc7e63",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.131Z"
+      "createdAt": "2026-05-25T12:24:42.294Z"
     },
     {
-      "recordId": "9b86b09f-96af-45ea-8e46-f26cd95d13af",
+      "recordId": "21463a00-c682-46a9-b2fb-8d81bb2b9681",
       "sourceType": "location",
       "dirtyType": "cross_day",
       "description": "签到时间晚于签退时间",
@@ -358,12 +438,12 @@
       },
       "rawRow": 6,
       "sourceFile": "师傅定位.csv",
-      "id": "6142e620-166e-4409-95cd-5e30eed41463",
+      "id": "8dbddfcf-dd77-4e5f-a182-91b30f8539a2",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.131Z"
+      "createdAt": "2026-05-25T12:24:42.301Z"
     },
     {
-      "recordId": "6ca77c06-5161-4648-b2fd-a8a4f2771262",
+      "recordId": "74b08fc5-3adc-4163-a060-481ab61a2c68",
       "sourceType": "review",
       "dirtyType": "missing_field",
       "description": "差评必须填写差评原因",
@@ -383,12 +463,12 @@
       },
       "rawRow": 4,
       "sourceFile": "用户评价.csv",
-      "id": "ad293953-f549-4aca-8b74-fe456a994e1b",
+      "id": "f602b00b-4231-45f4-9c8c-da190417505f",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.246Z"
+      "createdAt": "2026-05-25T12:24:43.594Z"
     },
     {
-      "recordId": "f7158839-b04c-4138-8ffb-2288d2e1b18e",
+      "recordId": "af90fbad-2a13-45d6-8bd6-0148b19fd049",
       "sourceType": "review",
       "dirtyType": "missing_field",
       "description": "差评必须填写差评原因",
@@ -408,12 +488,12 @@
       },
       "rawRow": 7,
       "sourceFile": "用户评价.csv",
-      "id": "86ebb2a4-6ebb-427d-bc95-78e4a5c011fe",
+      "id": "7713c49f-0674-4f5e-be2f-0a805a90388a",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.247Z"
+      "createdAt": "2026-05-25T12:24:43.602Z"
     },
     {
-      "recordId": "80b8edd0-d31f-492f-9245-53bafa45574c",
+      "recordId": "cfb3c651-0565-4dd1-b4ef-0cf61bb72b43",
       "sourceType": "price_adjustment",
       "dirtyType": "amount_conflict",
       "description": "金额不能为负数",
@@ -429,12 +509,12 @@
       },
       "rawRow": 4,
       "sourceFile": "手工改价表.csv",
-      "id": "fd9e2138-5516-4255-98e9-988136be3c77",
+      "id": "bc07aba8-da06-440b-bd9c-a2d157778734",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.354Z"
+      "createdAt": "2026-05-25T12:24:44.474Z"
     },
     {
-      "recordId": "9f63286f-ba19-4a57-89ec-c511541b6e35",
+      "recordId": "82ae79aa-2ac1-403b-a723-fc40c5504fef",
       "sourceType": "appointment",
       "dirtyType": "missing_field",
       "description": "缺少必填字段: customerName",
@@ -457,12 +537,12 @@
       },
       "rawRow": 3,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "1e924644-a4db-43cc-85b0-875d847d2679",
+      "id": "0d46bdaa-ce14-4d3b-ba96-e32102180c3a",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.780Z"
+      "createdAt": "2026-05-25T12:24:46.313Z"
     },
     {
-      "recordId": "ec89c3f3-e5f3-405d-a090-45d90908c462",
+      "recordId": "a7fbf017-6662-487a-81f3-70ff1cd45498",
       "sourceType": "appointment",
       "dirtyType": "missing_field",
       "description": "手机号格式无效",
@@ -485,12 +565,12 @@
       },
       "rawRow": 4,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "e61f446b-a346-4c49-83d2-f5089fa7343d",
+      "id": "9837152a-e4cc-4d93-8386-fcd36c5b8ea5",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.780Z"
+      "createdAt": "2026-05-25T12:24:46.316Z"
     },
     {
-      "recordId": "a8590122-f79d-4d1f-a977-bd1102af84d7",
+      "recordId": "f309f1ff-4b63-4c78-ac07-15274fa8960c",
       "sourceType": "appointment",
       "dirtyType": "missing_field",
       "description": "缺少必填字段: address",
@@ -513,12 +593,12 @@
       },
       "rawRow": 5,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "7f8e2c52-e56c-4b66-9d1a-a0510af934e3",
+      "id": "06ee7813-d057-45a7-9f42-85d55f31bbde",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.781Z"
+      "createdAt": "2026-05-25T12:24:46.317Z"
     },
     {
-      "recordId": "889c64a8-b6cb-49c2-9340-18da628c72a3",
+      "recordId": "eb30e0b3-664b-4cf3-ab92-066c0422d0f7",
       "sourceType": "appointment",
       "dirtyType": "missing_field",
       "description": "缺少必填字段: applianceType",
@@ -541,12 +621,12 @@
       },
       "rawRow": 6,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "d68ebbc5-cf03-4ad9-aeea-994cf62f2c5c",
+      "id": "5deaa7fb-7381-47ff-9532-8b7051dea055",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.781Z"
+      "createdAt": "2026-05-25T12:24:46.318Z"
     },
     {
-      "recordId": "5f4c05c3-7aee-4749-baad-7f2b555c5d5a",
+      "recordId": "86b7ca22-b997-45dd-90d6-fffc3d64533f",
       "sourceType": "appointment",
       "dirtyType": "missing_field",
       "description": "缺少必填字段: appointmentTime",
@@ -569,12 +649,12 @@
       },
       "rawRow": 7,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "a8d27436-3535-46cb-94d9-6be8a6515e03",
+      "id": "4fa90aa6-25b9-4676-9e6c-b80966d64f5d",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.781Z"
+      "createdAt": "2026-05-25T12:24:46.319Z"
     },
     {
-      "recordId": "ff9127ad-0d83-4a3c-b6d6-2760b3475465",
+      "recordId": "d7802ff1-d4a3-46e0-a09c-574658d7f556",
       "sourceType": "appointment",
       "dirtyType": "missing_field",
       "description": "缺少必填字段: appointmentDate",
@@ -597,120 +677,481 @@
       },
       "rawRow": 8,
       "sourceFile": "预约单_含脏数据.csv",
-      "id": "e32e4b1d-701b-4c2d-a4e9-67745b525e5a",
+      "id": "9b5e3af9-45d6-4869-8aca-608c092e26b9",
       "status": "dirty",
-      "createdAt": "2026-05-24T09:26:24.782Z"
+      "createdAt": "2026-05-25T12:24:46.322Z"
+    },
+    {
+      "recordId": "c6a529ed-6fa9-406f-ad46-95d70753898d",
+      "sourceType": "appointment",
+      "dirtyType": "duplicate",
+      "description": "订单号 ORD001 存在 2 条重复记录",
+      "originalData": {
+        "orderNo": "ORD001",
+        "duplicateCount": 2,
+        "records": [
+          {
+            "row": 2,
+            "file": "预约单_正常.csv",
+            "status": "待上门",
+            "date": "2024-01-15"
+          },
+          {
+            "row": 9,
+            "file": "预约单_含脏数据.csv",
+            "status": "待上门",
+            "date": "2024-01-15"
+          }
+        ]
+      },
+      "suggestedFix": {
+        "action": "合并或删除重复记录",
+        "keepRecord": "cfae1238-fe9b-4276-bb99-30f4551ceb94",
+        "removeRecords": [
+          "11bc240e-fe40-4afc-b243-2cce10f53703"
+        ]
+      },
+      "sourceFile": "跨批次检测",
+      "id": "27f1d2b3-df99-4463-9255-74eb87eb87c2",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.345Z"
+    },
+    {
+      "recordId": "8fa3b19c-8215-4389-8241-f3b24498dd60",
+      "sourceType": "appointment",
+      "dirtyType": "duplicate",
+      "description": "订单号 ORD002 存在 2 条重复记录",
+      "originalData": {
+        "orderNo": "ORD002",
+        "duplicateCount": 2,
+        "records": [
+          {
+            "row": 3,
+            "file": "预约单_正常.csv",
+            "status": "待上门",
+            "date": "2024-01-15"
+          },
+          {
+            "row": 10,
+            "file": "预约单_含脏数据.csv",
+            "status": "待上门",
+            "date": "2024-01-15"
+          }
+        ]
+      },
+      "suggestedFix": {
+        "action": "合并或删除重复记录",
+        "keepRecord": "61c5689e-bb3f-4548-aefb-d9139a72f513",
+        "removeRecords": [
+          "7ff80541-cec1-4427-8903-35c1ead587e8"
+        ]
+      },
+      "sourceFile": "跨批次检测",
+      "id": "5ec573bb-f83d-4d4a-956a-56ea5e52b6fd",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.348Z"
+    },
+    {
+      "recordId": "4c2a2787-1f9c-4c8b-b942-961597d1d0fe",
+      "sourceType": "appointment",
+      "dirtyType": "duplicate",
+      "description": "订单号 ORD013 存在 2 条重复记录",
+      "originalData": {
+        "orderNo": "ORD013",
+        "duplicateCount": 2,
+        "records": [
+          {
+            "row": 11,
+            "file": "预约单_含脏数据.csv",
+            "status": "待上门",
+            "date": "2024-01-21"
+          },
+          {
+            "row": 12,
+            "file": "预约单_含脏数据.csv",
+            "status": "待上门",
+            "date": "2024-01-21"
+          }
+        ]
+      },
+      "suggestedFix": {
+        "action": "合并或删除重复记录",
+        "keepRecord": "0f36f323-8f79-43a6-9f1f-24dff69de3ee",
+        "removeRecords": [
+          "5ff1d42a-9df7-4a84-9ba5-b79128ba753e"
+        ]
+      },
+      "sourceFile": "跨批次检测",
+      "id": "46324772-85fd-4bb6-ad40-be572a6c8efa",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.351Z"
+    },
+    {
+      "recordId": "2380b0cb-a3b7-4dfb-b3d6-dfc42ff01ffa",
+      "sourceType": "appointment",
+      "dirtyType": "duplicate",
+      "description": "订单号 ORD014 存在 2 条重复记录",
+      "originalData": {
+        "orderNo": "ORD014",
+        "duplicateCount": 2,
+        "records": [
+          {
+            "row": 13,
+            "file": "预约单_含脏数据.csv",
+            "status": "已改约",
+            "date": "2024-01-22"
+          },
+          {
+            "row": 14,
+            "file": "预约单_含脏数据.csv",
+            "status": "待上门",
+            "date": "2024-01-23"
+          }
+        ]
+      },
+      "suggestedFix": {
+        "action": "合并或删除重复记录",
+        "keepRecord": "816f3a11-c232-43bc-b625-1d0111b32d59",
+        "removeRecords": [
+          "c96d470a-86d5-496c-8727-f1b3f96161fb"
+        ]
+      },
+      "sourceFile": "跨批次检测",
+      "id": "326fca86-0449-4fc2-bdff-f9c7a835438e",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.354Z"
+    },
+    {
+      "recordId": "78533305-3564-48a7-b656-34dc199e20ad",
+      "sourceType": "appointment",
+      "dirtyType": "name_changed",
+      "description": "订单号 ORD002 客户姓名不一致: 李四 vs 李四改名了",
+      "originalData": {
+        "orderNo": "ORD002",
+        "names": [
+          "李四",
+          "李四改名了"
+        ]
+      },
+      "suggestedFix": {
+        "action": "确认正确的客户姓名",
+        "suggestion": "李四"
+      },
+      "sourceFile": "跨批次检测",
+      "id": "d4ead944-8664-40bf-88b7-b8be2f0b7e9a",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.356Z"
+    },
+    {
+      "recordId": "28fca849-a528-4949-80b8-11446fef263b",
+      "sourceType": "appointment",
+      "dirtyType": "quantity_conflict",
+      "description": "订单号 ORD013 存在 2 条记录，家电类型: 空调, 洗衣机",
+      "originalData": {
+        "orderNo": "ORD013",
+        "count": 2,
+        "types": [
+          "空调",
+          "洗衣机"
+        ]
+      },
+      "suggestedFix": {
+        "action": "确认是否为多台家电安装或重复录入"
+      },
+      "sourceFile": "跨批次检测",
+      "id": "8f190b53-445b-489f-a9f6-18c0c76cf38c",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.367Z"
+    },
+    {
+      "recordId": "287d0425-b737-4e6f-909f-d1f262b63edb",
+      "sourceType": "appointment",
+      "dirtyType": "merge_conflict",
+      "description": "订单号 ORD014 存在 2 条记录，状态: 已改约, 待上门，可能需要合并改约/二次上门",
+      "originalData": {
+        "orderNo": "ORD014",
+        "count": 2,
+        "statuses": [
+          "已改约",
+          "待上门"
+        ],
+        "dates": [
+          "2024-01-22",
+          "2024-01-23"
+        ]
+      },
+      "suggestedFix": {
+        "action": "确认是否为改约或二次上门，决定是否合并",
+        "statuses": [
+          "已改约",
+          "待上门"
+        ],
+        "dates": [
+          "2024-01-22",
+          "2024-01-23"
+        ]
+      },
+      "sourceFile": "跨批次检测",
+      "id": "164e7730-0767-4b7c-a284-fe3b3bf4610f",
+      "status": "dirty",
+      "createdAt": "2026-05-25T12:24:46.374Z"
     }
   ],
   "importHistory": [
     {
       "fileName": "预约单_正常.csv",
       "sourceType": "appointment",
-      "importedBy": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "importedBy": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "totalRecords": 5,
       "successCount": 5,
       "dirtyCount": 0,
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90",
       "isArchive": false,
-      "id": "b4e46a93-7f9a-4dd9-8291-f0fed75f18eb",
-      "importedAt": "2026-05-24T09:26:24.019Z"
+      "id": "cfb07cc1-228d-47c0-89ad-b9e26cd99f6b",
+      "importedAt": "2026-05-25T12:24:41.239Z"
     },
     {
       "fileName": "师傅定位.csv",
       "sourceType": "location",
-      "importedBy": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "importedBy": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "totalRecords": 5,
       "successCount": 3,
       "dirtyCount": 2,
-      "batchId": "b3e6dce6-c853-4275-b94a-73902c6cda47",
+      "batchId": "e4bac2fe-14ce-4cb9-a816-10710449f32f",
       "isArchive": false,
-      "id": "ef17c239-d388-48f7-b434-70c2a0480408",
-      "importedAt": "2026-05-24T09:26:24.132Z"
+      "id": "29b1a29d-a03e-4c98-b57c-06cb6ecbcd69",
+      "importedAt": "2026-05-25T12:24:42.302Z"
     },
     {
       "fileName": "用户评价.csv",
       "sourceType": "review",
-      "importedBy": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "importedBy": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "totalRecords": 7,
       "successCount": 5,
       "dirtyCount": 2,
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7",
       "isArchive": false,
-      "id": "9242bbb0-d643-49e5-9a92-90422431695f",
-      "importedAt": "2026-05-24T09:26:24.248Z"
+      "id": "0d9a0e15-37d0-4cd8-a1e8-e51fff26f1a8",
+      "importedAt": "2026-05-25T12:24:43.605Z"
     },
     {
       "fileName": "手工改价表.csv",
       "sourceType": "price_adjustment",
-      "importedBy": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "importedBy": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "totalRecords": 5,
       "successCount": 4,
       "dirtyCount": 1,
-      "batchId": "7cb94c3b-8931-438e-ba19-c35a8dd3b7e4",
+      "batchId": "7489a545-6153-4d15-8f4a-0a58076cee29",
       "isArchive": false,
-      "id": "c7126983-bf7e-41ef-9825-8853a0928be3",
-      "importedAt": "2026-05-24T09:26:24.356Z"
+      "id": "9ea69151-fbc8-4f81-9372-031df4d71b63",
+      "importedAt": "2026-05-25T12:24:44.477Z"
     },
     {
       "fileName": "预约单_含脏数据.csv",
       "sourceType": "appointment",
-      "importedBy": "1de54014-8d3a-4bdc-9646-1e0f42519009",
-      "totalRecords": 8,
-      "successCount": 2,
+      "importedBy": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "totalRecords": 13,
+      "successCount": 7,
       "dirtyCount": 6,
-      "batchId": "4b6de0d2-ddb1-41bd-9532-0621dcd701e2",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096",
       "isArchive": false,
-      "id": "da79c2c6-19cb-4215-98a0-699006eed4ba",
-      "importedAt": "2026-05-24T09:26:24.783Z"
+      "id": "e73224fa-727a-433d-93d8-9037c8788ed1",
+      "importedAt": "2026-05-25T12:24:46.343Z"
     }
   ],
   "operationLogs": [
     {
-      "id": "f72e3d98-a1bd-47f4-b076-39aae39d4bb3",
+      "id": "3b8b1906-6557-4319-a409-a888a1750656",
       "operation": "generate_report",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:25.632Z"
+      "timestamp": "2026-05-25T12:24:49.994Z"
     },
     {
-      "id": "5af618eb-5f48-46b1-aa11-153e150204c8",
+      "id": "3577e14c-304d-4fa3-bc52-0a9551603ca9",
+      "operation": "generate_report",
+      "userId": "a68414db-83c1-4426-bdd7-28d9dc28b005",
+      "userName": "查看员小王",
+      "role": "readonly",
+      "timestamp": "2026-05-25T12:24:49.028Z"
+    },
+    {
+      "id": "029e18f1-3684-49cd-be83-5303d48352e5",
       "operation": "check_records",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
-      "userName": "系统管理员",
-      "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:25.522Z"
+      "userId": "0125df78-94da-4a92-a5b2-1f9eabed3125",
+      "userName": "录入员小张",
+      "role": "entry",
+      "timestamp": "2026-05-25T12:24:48.472Z"
     },
     {
-      "id": "a4debfe4-617d-4f21-8869-82c990517783",
+      "id": "2c29d5ae-3946-4bb8-b0c0-c7f0a2f63592",
       "operation": "export_dirty_records",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:25.110Z"
+      "timestamp": "2026-05-25T12:24:47.864Z"
     },
     {
-      "id": "5f1ce3c2-271b-4814-a841-30244f5611f8",
+      "id": "3aa37481-d003-409c-bf5d-ad2f6479a664",
+      "operation": "generate_report",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "userName": "系统管理员",
+      "role": "supervisor",
+      "timestamp": "2026-05-25T12:24:47.370Z"
+    },
+    {
+      "id": "c653df70-9ca7-4776-bab2-3f9369b049bc",
       "operation": "check_records",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.886Z"
+      "timestamp": "2026-05-25T12:24:46.910Z"
     },
     {
-      "id": "8f0c5b43-a7ac-46a6-bad0-eb2cded23299",
+      "id": "be469ee7-a5b0-4ce4-9664-b8942e520c39",
       "operation": "import_batch",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.783Z",
-      "batchId": "4b6de0d2-ddb1-41bd-9532-0621dcd701e2"
+      "timestamp": "2026-05-25T12:24:46.377Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
     },
     {
-      "id": "8f6f286c-9408-467a-9087-98987c09c28a",
+      "id": "3b8ba4e3-8c34-4ec7-acc7-e77967ee1433",
       "operation": "import_appointment",
-      "recordId": "835e7020-11f7-4993-96b6-3d4d5e3765d7",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "c96d470a-86d5-496c-8727-f1b3f96161fb",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "userName": "系统管理员",
+      "role": "supervisor",
+      "afterData": {
+        "orderNo": "ORD014",
+        "customerName": "改约测试",
+        "phone": "13800138014",
+        "address": "北京市海淀区XX小区14号楼1401",
+        "applianceType": "冰箱",
+        "appointmentDate": "2024-01-23",
+        "appointmentTime": "09:00-12:00",
+        "technicianId": "T001",
+        "technicianName": "李师傅",
+        "status": "待上门",
+        "rawRow": 14,
+        "sourceFile": "预约单_含脏数据.csv",
+        "id": "c96d470a-86d5-496c-8727-f1b3f96161fb",
+        "source": "appointment"
+      },
+      "timestamp": "2026-05-25T12:24:46.341Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
+    },
+    {
+      "id": "eafb35df-c023-418b-b918-d9a5ca3b8dc5",
+      "operation": "import_appointment",
+      "recordId": "816f3a11-c232-43bc-b625-1d0111b32d59",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "userName": "系统管理员",
+      "role": "supervisor",
+      "afterData": {
+        "orderNo": "ORD014",
+        "customerName": "改约测试",
+        "phone": "13800138014",
+        "address": "北京市海淀区XX小区14号楼1401",
+        "applianceType": "冰箱",
+        "appointmentDate": "2024-01-22",
+        "appointmentTime": "09:00-12:00",
+        "technicianId": "T001",
+        "technicianName": "李师傅",
+        "status": "已改约",
+        "rawRow": 13,
+        "sourceFile": "预约单_含脏数据.csv",
+        "id": "816f3a11-c232-43bc-b625-1d0111b32d59",
+        "source": "appointment"
+      },
+      "timestamp": "2026-05-25T12:24:46.339Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
+    },
+    {
+      "id": "7de66c44-fb65-46fe-9199-0b015d481b11",
+      "operation": "import_appointment",
+      "recordId": "5ff1d42a-9df7-4a84-9ba5-b79128ba753e",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "userName": "系统管理员",
+      "role": "supervisor",
+      "afterData": {
+        "orderNo": "ORD013",
+        "customerName": "多台家电",
+        "phone": "13800138013",
+        "address": "北京市朝阳区XX小区13号楼1301",
+        "applianceType": "洗衣机",
+        "appointmentDate": "2024-01-21",
+        "appointmentTime": "14:00-17:00",
+        "technicianId": "T002",
+        "technicianName": "王师傅",
+        "status": "待上门",
+        "rawRow": 12,
+        "sourceFile": "预约单_含脏数据.csv",
+        "id": "5ff1d42a-9df7-4a84-9ba5-b79128ba753e",
+        "source": "appointment"
+      },
+      "timestamp": "2026-05-25T12:24:46.337Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
+    },
+    {
+      "id": "4ac87684-e849-42f2-902a-5ca3d850249b",
+      "operation": "import_appointment",
+      "recordId": "0f36f323-8f79-43a6-9f1f-24dff69de3ee",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "userName": "系统管理员",
+      "role": "supervisor",
+      "afterData": {
+        "orderNo": "ORD013",
+        "customerName": "多台家电",
+        "phone": "13800138013",
+        "address": "北京市朝阳区XX小区13号楼1301",
+        "applianceType": "空调",
+        "appointmentDate": "2024-01-21",
+        "appointmentTime": "09:00-12:00",
+        "technicianId": "T001",
+        "technicianName": "李师傅",
+        "status": "待上门",
+        "rawRow": 11,
+        "sourceFile": "预约单_含脏数据.csv",
+        "id": "0f36f323-8f79-43a6-9f1f-24dff69de3ee",
+        "source": "appointment"
+      },
+      "timestamp": "2026-05-25T12:24:46.333Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
+    },
+    {
+      "id": "deb2524f-6ef9-46db-914d-48974d83fa6e",
+      "operation": "import_appointment",
+      "recordId": "7ff80541-cec1-4427-8903-35c1ead587e8",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
+      "userName": "系统管理员",
+      "role": "supervisor",
+      "afterData": {
+        "orderNo": "ORD002",
+        "customerName": "李四改名了",
+        "phone": "13800138002",
+        "address": "北京市海淀区XX小区2号楼202",
+        "applianceType": "洗衣机",
+        "appointmentDate": "2024-01-15",
+        "appointmentTime": "14:00-17:00",
+        "technicianId": "T002",
+        "technicianName": "王师傅",
+        "status": "待上门",
+        "rawRow": 10,
+        "sourceFile": "预约单_含脏数据.csv",
+        "id": "7ff80541-cec1-4427-8903-35c1ead587e8",
+        "source": "appointment"
+      },
+      "timestamp": "2026-05-25T12:24:46.328Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
+    },
+    {
+      "id": "8a8bfd5b-53ff-403f-8df7-3af603fd3980",
+      "operation": "import_appointment",
+      "recordId": "11bc240e-fe40-4afc-b243-2cce10f53703",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -726,17 +1167,17 @@
         "status": "待上门",
         "rawRow": 9,
         "sourceFile": "预约单_含脏数据.csv",
-        "id": "835e7020-11f7-4993-96b6-3d4d5e3765d7",
+        "id": "11bc240e-fe40-4afc-b243-2cce10f53703",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.782Z",
-      "batchId": "4b6de0d2-ddb1-41bd-9532-0621dcd701e2"
+      "timestamp": "2026-05-25T12:24:46.325Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
     },
     {
-      "id": "4a20c14f-c8ea-4f41-ab22-e4f5cae9a582",
+      "id": "d1143dbe-b4b3-4cd0-aa2f-f73f43dfa070",
       "operation": "import_appointment",
-      "recordId": "6bea7be1-17f2-42a6-a9e3-6ee9eda301b4",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "d9f11f56-0527-42ca-870b-c19ad708b81c",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -752,50 +1193,42 @@
         "status": "待上门",
         "rawRow": 2,
         "sourceFile": "预约单_含脏数据.csv",
-        "id": "6bea7be1-17f2-42a6-a9e3-6ee9eda301b4",
+        "id": "d9f11f56-0527-42ca-870b-c19ad708b81c",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.779Z",
-      "batchId": "4b6de0d2-ddb1-41bd-9532-0621dcd701e2"
+      "timestamp": "2026-05-25T12:24:46.312Z",
+      "batchId": "73a2c85a-1b8a-4245-9cee-995c6c962096"
     },
     {
-      "id": "a3a28060-62b7-401e-b359-6267e6e58a80",
-      "operation": "export_data",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
-      "userName": "系统管理员",
-      "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.673Z"
-    },
-    {
-      "id": "e48a3dd4-5641-44e0-a6cf-f25f735d6c88",
+      "id": "39fd2b96-67d1-486e-a93b-ad2eea032e90",
       "operation": "generate_report",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.569Z"
+      "timestamp": "2026-05-25T12:24:45.699Z"
     },
     {
-      "id": "cfbbf7a3-ab32-4c5d-9976-6d979253a2a2",
+      "id": "26b124b2-a506-4010-b6d7-4537e65f16aa",
       "operation": "check_records",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.462Z"
+      "timestamp": "2026-05-25T12:24:45.022Z"
     },
     {
-      "id": "95d25119-7958-44a8-b6f6-e1e4c4e2384f",
+      "id": "8edfa519-7b2c-4b81-a6cc-f9d745c1038c",
       "operation": "import_batch",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.356Z",
-      "batchId": "7cb94c3b-8931-438e-ba19-c35a8dd3b7e4"
+      "timestamp": "2026-05-25T12:24:44.484Z",
+      "batchId": "7489a545-6153-4d15-8f4a-0a58076cee29"
     },
     {
-      "id": "de159b29-7a78-45e8-9678-e84aaadd35fc",
+      "id": "c2be322f-b391-444a-8011-b358aca487fd",
       "operation": "import_price_adjustment",
-      "recordId": "10a41522-45ea-4391-93a5-c85c65a7e3bf",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "3ded9771-449b-428e-a2a2-3b4da5556587",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -807,17 +1240,17 @@
         "adjustmentDate": "2024-01-17",
         "rawRow": 6,
         "sourceFile": "手工改价表.csv",
-        "id": "10a41522-45ea-4391-93a5-c85c65a7e3bf",
+        "id": "3ded9771-449b-428e-a2a2-3b4da5556587",
         "source": "price_adjustment"
       },
-      "timestamp": "2026-05-24T09:26:24.355Z",
-      "batchId": "7cb94c3b-8931-438e-ba19-c35a8dd3b7e4"
+      "timestamp": "2026-05-25T12:24:44.477Z",
+      "batchId": "7489a545-6153-4d15-8f4a-0a58076cee29"
     },
     {
-      "id": "5f0ba6ba-2ea7-4057-bba3-100bc2bb64f7",
+      "id": "1b6f050f-e82c-43ed-ba09-becba76a4911",
       "operation": "import_price_adjustment",
-      "recordId": "e42d9d6b-c96c-43a5-a861-3a50bd35cc98",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "7f306b2d-f44f-41fc-838f-baf5212fe303",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -829,17 +1262,17 @@
         "adjustmentDate": "2024-01-16",
         "rawRow": 5,
         "sourceFile": "手工改价表.csv",
-        "id": "e42d9d6b-c96c-43a5-a861-3a50bd35cc98",
+        "id": "7f306b2d-f44f-41fc-838f-baf5212fe303",
         "source": "price_adjustment"
       },
-      "timestamp": "2026-05-24T09:26:24.355Z",
-      "batchId": "7cb94c3b-8931-438e-ba19-c35a8dd3b7e4"
+      "timestamp": "2026-05-25T12:24:44.476Z",
+      "batchId": "7489a545-6153-4d15-8f4a-0a58076cee29"
     },
     {
-      "id": "26a9cc20-1dad-47a8-ab8c-710ce3610352",
+      "id": "9fff1e7a-5662-4a5c-a66a-118a0d780796",
       "operation": "import_price_adjustment",
-      "recordId": "c72e7166-877c-4b01-ac90-ad3857eed01e",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "fac9a7f1-cd84-40e6-8643-209dd7b03871",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -851,17 +1284,17 @@
         "adjustmentDate": "2024-01-15",
         "rawRow": 3,
         "sourceFile": "手工改价表.csv",
-        "id": "c72e7166-877c-4b01-ac90-ad3857eed01e",
+        "id": "fac9a7f1-cd84-40e6-8643-209dd7b03871",
         "source": "price_adjustment"
       },
-      "timestamp": "2026-05-24T09:26:24.354Z",
-      "batchId": "7cb94c3b-8931-438e-ba19-c35a8dd3b7e4"
+      "timestamp": "2026-05-25T12:24:44.473Z",
+      "batchId": "7489a545-6153-4d15-8f4a-0a58076cee29"
     },
     {
-      "id": "923e5826-dd04-459a-8d6f-f0ddf3b9cb21",
+      "id": "24c34112-42af-4f57-9045-59fed2695835",
       "operation": "import_price_adjustment",
-      "recordId": "803d133e-6fc2-4372-9fb0-b33aeb1eef22",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "370412fd-5dff-446f-aca9-147ad1d609e1",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -873,26 +1306,26 @@
         "adjustmentDate": "2024-01-15",
         "rawRow": 2,
         "sourceFile": "手工改价表.csv",
-        "id": "803d133e-6fc2-4372-9fb0-b33aeb1eef22",
+        "id": "370412fd-5dff-446f-aca9-147ad1d609e1",
         "source": "price_adjustment"
       },
-      "timestamp": "2026-05-24T09:26:24.353Z",
-      "batchId": "7cb94c3b-8931-438e-ba19-c35a8dd3b7e4"
+      "timestamp": "2026-05-25T12:24:44.469Z",
+      "batchId": "7489a545-6153-4d15-8f4a-0a58076cee29"
     },
     {
-      "id": "0d8470eb-3a17-49e3-8ca4-6ed4d834ee5c",
+      "id": "9f53e057-8c09-4d6e-b6d9-7c02e9705469",
       "operation": "import_batch",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.249Z",
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f"
+      "timestamp": "2026-05-25T12:24:43.608Z",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7"
     },
     {
-      "id": "efd9678f-b908-46f5-9507-1b05cb334811",
+      "id": "5835af18-674e-4ae0-b50f-8ff4254ab487",
       "operation": "import_review",
-      "recordId": "2bd234dc-18dc-4fbf-95b1-47ddb806d834",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "434e8748-9565-41dd-afc0-7bbd1e0494f8",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -905,17 +1338,17 @@
         "technicianName": "王师傅",
         "rawRow": 8,
         "sourceFile": "用户评价.csv",
-        "id": "2bd234dc-18dc-4fbf-95b1-47ddb806d834",
+        "id": "434e8748-9565-41dd-afc0-7bbd1e0494f8",
         "source": "review"
       },
-      "timestamp": "2026-05-24T09:26:24.248Z",
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f"
+      "timestamp": "2026-05-25T12:24:43.604Z",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7"
     },
     {
-      "id": "af7d469a-2f8d-46d0-b177-217edb4da65f",
+      "id": "07b4ca1c-0090-455a-a1ea-b4d5f50b3946",
       "operation": "import_review",
-      "recordId": "35ea56c2-dfc3-4f56-b4fc-0b7645b78ecb",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "f0497c9d-f38f-49d3-8a23-9ce8c400766a",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -928,17 +1361,17 @@
         "technicianName": "王师傅",
         "rawRow": 6,
         "sourceFile": "用户评价.csv",
-        "id": "35ea56c2-dfc3-4f56-b4fc-0b7645b78ecb",
+        "id": "f0497c9d-f38f-49d3-8a23-9ce8c400766a",
         "source": "review"
       },
-      "timestamp": "2026-05-24T09:26:24.247Z",
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f"
+      "timestamp": "2026-05-25T12:24:43.601Z",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7"
     },
     {
-      "id": "ae001fc7-6bca-47b1-8b78-8e9ef2da1527",
+      "id": "64532ff7-8abf-4f48-999e-c92bbfa11dfe",
       "operation": "import_review",
-      "recordId": "4c1a79d7-2205-4f09-8552-45ef8c8350c5",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "ca28f76e-3499-4509-96bb-98fabe7600e5",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -952,17 +1385,17 @@
         "technicianName": "张师傅",
         "rawRow": 5,
         "sourceFile": "用户评价.csv",
-        "id": "4c1a79d7-2205-4f09-8552-45ef8c8350c5",
+        "id": "ca28f76e-3499-4509-96bb-98fabe7600e5",
         "source": "review"
       },
-      "timestamp": "2026-05-24T09:26:24.247Z",
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f"
+      "timestamp": "2026-05-25T12:24:43.597Z",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7"
     },
     {
-      "id": "5f1cfd9d-5894-4d50-982f-d74efe85cb57",
+      "id": "840e0dea-e6e1-4b11-b78c-a6593891336b",
       "operation": "import_review",
-      "recordId": "eec2ab7e-fed0-4638-9982-ffeddbe19013",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "d6e86cdc-5278-4438-abd8-774410782834",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -975,17 +1408,17 @@
         "technicianName": "王师傅",
         "rawRow": 3,
         "sourceFile": "用户评价.csv",
-        "id": "eec2ab7e-fed0-4638-9982-ffeddbe19013",
+        "id": "d6e86cdc-5278-4438-abd8-774410782834",
         "source": "review"
       },
-      "timestamp": "2026-05-24T09:26:24.245Z",
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f"
+      "timestamp": "2026-05-25T12:24:43.594Z",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7"
     },
     {
-      "id": "bdfff37f-adb5-436a-b30e-f21caebca9c7",
+      "id": "01fcfc2a-3633-4605-b81d-e9e6ddc6d24c",
       "operation": "import_review",
-      "recordId": "7b23a822-4aee-4d86-8d65-c079805076c6",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "c12813af-052e-48b5-8aa3-639ea5d63d00",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -998,26 +1431,26 @@
         "technicianName": "李师傅",
         "rawRow": 2,
         "sourceFile": "用户评价.csv",
-        "id": "7b23a822-4aee-4d86-8d65-c079805076c6",
+        "id": "c12813af-052e-48b5-8aa3-639ea5d63d00",
         "source": "review"
       },
-      "timestamp": "2026-05-24T09:26:24.244Z",
-      "batchId": "be98d8e7-7d33-47bc-96ea-3decc987f20f"
+      "timestamp": "2026-05-25T12:24:43.591Z",
+      "batchId": "508d014e-8cf6-4b89-996d-21964c8f42f7"
     },
     {
-      "id": "34fbb2b3-e51a-44e5-8a13-207b05432657",
+      "id": "9cad1401-ad79-4170-bb72-7d3881fe3060",
       "operation": "import_batch",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.132Z",
-      "batchId": "b3e6dce6-c853-4275-b94a-73902c6cda47"
+      "timestamp": "2026-05-25T12:24:42.305Z",
+      "batchId": "e4bac2fe-14ce-4cb9-a816-10710449f32f"
     },
     {
-      "id": "6468925e-ae0b-4300-a24c-f55ce68a93da",
+      "id": "55609a2c-0f04-4660-b896-914acd4a9808",
       "operation": "import_location",
-      "recordId": "9816076c-4b12-4b8c-8f8f-60ea1fb2a637",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "53c1e33f-84d9-4259-964b-0144efdeff78",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1030,17 +1463,17 @@
         "longitude": 116.42,
         "rawRow": 5,
         "sourceFile": "师傅定位.csv",
-        "id": "9816076c-4b12-4b8c-8f8f-60ea1fb2a637",
+        "id": "53c1e33f-84d9-4259-964b-0144efdeff78",
         "source": "location"
       },
-      "timestamp": "2026-05-24T09:26:24.131Z",
-      "batchId": "b3e6dce6-c853-4275-b94a-73902c6cda47"
+      "timestamp": "2026-05-25T12:24:42.298Z",
+      "batchId": "e4bac2fe-14ce-4cb9-a816-10710449f32f"
     },
     {
-      "id": "77befca0-564a-49bc-a912-2c8a3840666c",
+      "id": "2177231b-1475-46d8-8ec0-9f0fc98a8f9e",
       "operation": "import_location",
-      "recordId": "6272ff65-4c4e-411f-a8bb-2eebf5552f63",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "7302aed0-9690-4067-8eeb-43de901d9303",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1054,17 +1487,17 @@
         "longitude": 116.3,
         "rawRow": 3,
         "sourceFile": "师傅定位.csv",
-        "id": "6272ff65-4c4e-411f-a8bb-2eebf5552f63",
+        "id": "7302aed0-9690-4067-8eeb-43de901d9303",
         "source": "location"
       },
-      "timestamp": "2026-05-24T09:26:24.130Z",
-      "batchId": "b3e6dce6-c853-4275-b94a-73902c6cda47"
+      "timestamp": "2026-05-25T12:24:42.293Z",
+      "batchId": "e4bac2fe-14ce-4cb9-a816-10710449f32f"
     },
     {
-      "id": "18b505c9-50a0-4edb-9d88-418e8758dbf7",
+      "id": "393228b6-e11b-4d61-8662-1246d2e01356",
       "operation": "import_location",
-      "recordId": "950947af-39c0-4fba-80ac-127904701cf3",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "56ff814b-06d3-4ed2-a218-f8a4cc89d7f5",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1078,26 +1511,26 @@
         "longitude": 116.4,
         "rawRow": 2,
         "sourceFile": "师傅定位.csv",
-        "id": "950947af-39c0-4fba-80ac-127904701cf3",
+        "id": "56ff814b-06d3-4ed2-a218-f8a4cc89d7f5",
         "source": "location"
       },
-      "timestamp": "2026-05-24T09:26:24.129Z",
-      "batchId": "b3e6dce6-c853-4275-b94a-73902c6cda47"
+      "timestamp": "2026-05-25T12:24:42.291Z",
+      "batchId": "e4bac2fe-14ce-4cb9-a816-10710449f32f"
     },
     {
-      "id": "efa63d7f-146d-42d2-b118-e7a537691b24",
+      "id": "9063679a-f145-4ca3-bad4-0f8392bd2de9",
       "operation": "import_batch",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
-      "timestamp": "2026-05-24T09:26:24.020Z",
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e"
+      "timestamp": "2026-05-25T12:24:41.241Z",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90"
     },
     {
-      "id": "82dfc849-1c09-4008-b309-6f89c618f5bd",
+      "id": "b0e999b4-1c86-457c-ab34-092fcbce93b7",
       "operation": "import_appointment",
-      "recordId": "b59bb7d1-656d-43c1-9a87-893c7e7b05dd",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "0057b3cf-f655-4be7-b9ec-4f023bc53604",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1113,17 +1546,17 @@
         "status": "待上门",
         "rawRow": 6,
         "sourceFile": "预约单_正常.csv",
-        "id": "b59bb7d1-656d-43c1-9a87-893c7e7b05dd",
+        "id": "0057b3cf-f655-4be7-b9ec-4f023bc53604",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.019Z",
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e"
+      "timestamp": "2026-05-25T12:24:41.238Z",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90"
     },
     {
-      "id": "06fbb93c-464e-49fd-8702-e04d122806b5",
+      "id": "3e77dbb3-993b-40ec-82d9-c8ece9ee0b57",
       "operation": "import_appointment",
-      "recordId": "600caa17-4608-48ec-b8ba-da7df0d7ae07",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "90a6a329-41b0-47a6-938f-5693f22983b0",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1139,17 +1572,17 @@
         "status": "待上门",
         "rawRow": 5,
         "sourceFile": "预约单_正常.csv",
-        "id": "600caa17-4608-48ec-b8ba-da7df0d7ae07",
+        "id": "90a6a329-41b0-47a6-938f-5693f22983b0",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.019Z",
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e"
+      "timestamp": "2026-05-25T12:24:41.236Z",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90"
     },
     {
-      "id": "cd189537-2575-4574-88ee-ac0befe56837",
+      "id": "faa8c646-8ef7-463f-9ae9-59eab2bd93d7",
       "operation": "import_appointment",
-      "recordId": "a4f9a51d-6334-4231-bc9c-1e998e9dc305",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "9a85a66a-5d97-4c97-929d-c2204a3ecaf9",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1165,17 +1598,17 @@
         "status": "待上门",
         "rawRow": 4,
         "sourceFile": "预约单_正常.csv",
-        "id": "a4f9a51d-6334-4231-bc9c-1e998e9dc305",
+        "id": "9a85a66a-5d97-4c97-929d-c2204a3ecaf9",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.019Z",
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e"
+      "timestamp": "2026-05-25T12:24:41.235Z",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90"
     },
     {
-      "id": "80ad9632-734a-480f-9886-9c06e72ad860",
+      "id": "6c24b354-1db9-49df-afae-7737a4bf2f3a",
       "operation": "import_appointment",
-      "recordId": "d6e3a875-4632-4e8e-8aa4-09318561d018",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "61c5689e-bb3f-4548-aefb-d9139a72f513",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1191,17 +1624,17 @@
         "status": "待上门",
         "rawRow": 3,
         "sourceFile": "预约单_正常.csv",
-        "id": "d6e3a875-4632-4e8e-8aa4-09318561d018",
+        "id": "61c5689e-bb3f-4548-aefb-d9139a72f513",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.019Z",
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e"
+      "timestamp": "2026-05-25T12:24:41.226Z",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90"
     },
     {
-      "id": "8446e5d8-7d58-4599-8ace-ddf4c6ccc759",
+      "id": "3efbac8a-82a7-47b3-a87e-4c68fd8b96c8",
       "operation": "import_appointment",
-      "recordId": "cdf35f01-3139-407f-ac71-375ef533daef",
-      "userId": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+      "recordId": "cfae1238-fe9b-4276-bb99-30f4551ceb94",
+      "userId": "f7d32a1f-ef1b-4895-9748-ede979846e44",
       "userName": "系统管理员",
       "role": "supervisor",
       "afterData": {
@@ -1217,22 +1650,22 @@
         "status": "待上门",
         "rawRow": 2,
         "sourceFile": "预约单_正常.csv",
-        "id": "cdf35f01-3139-407f-ac71-375ef533daef",
+        "id": "cfae1238-fe9b-4276-bb99-30f4551ceb94",
         "source": "appointment"
       },
-      "timestamp": "2026-05-24T09:26:24.018Z",
-      "batchId": "0c0dbe87-1b08-4d7c-847b-ae6e5d7ac29e"
+      "timestamp": "2026-05-25T12:24:41.044Z",
+      "batchId": "31cd85bc-01fc-4611-a649-745a1ead5c90"
     }
   ],
   "initialized": true,
-  "initializedAt": "2026-05-24T09:26:23.823Z",
+  "initializedAt": "2026-05-25T12:24:38.978Z",
   "currentUser": {
-    "id": "1de54014-8d3a-4bdc-9646-1e0f42519009",
+    "id": "f7d32a1f-ef1b-4895-9748-ede979846e44",
     "username": "admin",
     "password": "admin123",
     "role": "supervisor",
     "name": "系统管理员",
     "department": "售后部",
-    "createdAt": "2026-05-24T09:26:23.822Z"
+    "createdAt": "2026-05-25T12:24:38.977Z"
   }
 }

@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -46,6 +79,8 @@ async function handleImport(filePath, options) {
         if (stats)
             allStats.push(stats);
     }
+    console.log(chalk_1.default.yellow('\n🔍 正在进行跨批次一致性检查...'));
+    const crossBatchDirtyCount = await detectAndStoreCrossBatchIssues(batchId);
     (0, database_1.addOperationLog)('import_batch', user, { batchId });
     console.log(chalk_1.default.green('\n=== 导入完成 ==='));
     const summaryTable = new cli_table3_1.default({
@@ -61,6 +96,15 @@ async function handleImport(filePath, options) {
             chalk_1.default.yellow(String(s.dirty)),
         ]);
     });
+    if (crossBatchDirtyCount > 0) {
+        summaryTable.push([
+            chalk_1.default.magenta('跨批次问题'),
+            chalk_1.default.magenta('-'),
+            '-',
+            '-',
+            chalk_1.default.magenta(String(crossBatchDirtyCount)),
+        ]);
+    }
     console.log(summaryTable.toString());
 }
 async function importSingleFile(filePath, batchId, forceType) {
@@ -87,7 +131,6 @@ async function importSingleFile(filePath, batchId, forceType) {
                 const normalized = (0, importer_1.normalizeAppointment)(data, row, fileName);
                 const checkResult = (0, dirtyChecker_1.checkAppointment)(normalized, row, fileName);
                 if (checkResult.isValid) {
-                    const beforeData = { ...normalized };
                     const record = (0, database_1.addAppointment)(normalized);
                     successCount++;
                     (0, database_1.addOperationLog)('import_appointment', (0, database_1.getCurrentUser)(), {
@@ -209,5 +252,139 @@ async function importSingleFile(filePath, batchId, forceType) {
     });
     console.log(`  总计: ${result.records.length} | 成功: ${chalk_1.default.green(String(successCount))} | 脏记录: ${chalk_1.default.yellow(String(dirtyCount))}`);
     return { sourceType, fileName, total: result.records.length, success: successCount, dirty: dirtyCount };
+}
+async function detectAndStoreCrossBatchIssues(batchId) {
+    let crossBatchDirtyCount = 0;
+    const appointments = (0, database_1.getAppointments)();
+    const priceAdjustments = (0, database_1.getPriceAdjustments)();
+    const duplicateAppointments = (0, dirtyChecker_1.detectDuplicateRecords)(appointments);
+    for (const dup of duplicateAppointments) {
+        const existingDirty = (await Promise.resolve().then(() => __importStar(require('../utils/database')))).getDirtyRecords();
+        const alreadyExists = existingDirty.some(d => d.dirtyType === 'duplicate' &&
+            d.originalData?.orderNo === dup.orderNo &&
+            d.status === 'dirty');
+        if (!alreadyExists) {
+            (0, database_1.addDirtyRecord)({
+                recordId: (0, uuid_1.v4)(),
+                sourceType: 'appointment',
+                dirtyType: 'duplicate',
+                description: `订单号 ${dup.orderNo} 存在 ${dup.count} 条重复记录`,
+                originalData: {
+                    orderNo: dup.orderNo,
+                    duplicateCount: dup.count,
+                    records: dup.records.map(r => ({
+                        row: r.rawRow,
+                        file: r.sourceFile,
+                        status: r.status,
+                        date: r.appointmentDate,
+                    })),
+                },
+                suggestedFix: {
+                    action: '合并或删除重复记录',
+                    keepRecord: dup.records[0]?.id,
+                    removeRecords: dup.records.slice(1).map(r => r.id),
+                },
+                sourceFile: '跨批次检测',
+                rawRow: undefined,
+            });
+            crossBatchDirtyCount++;
+        }
+    }
+    const nameChanges = (0, dirtyChecker_1.detectNameChanges)(appointments);
+    for (const nc of nameChanges) {
+        const existingDirty = (await Promise.resolve().then(() => __importStar(require('../utils/database')))).getDirtyRecords();
+        const alreadyExists = existingDirty.some(d => d.dirtyType === 'name_changed' &&
+            d.originalData?.orderNo === nc.orderNo &&
+            d.status === 'dirty');
+        if (!alreadyExists) {
+            (0, database_1.addDirtyRecord)({
+                recordId: (0, uuid_1.v4)(),
+                sourceType: 'appointment',
+                dirtyType: 'name_changed',
+                description: `订单号 ${nc.orderNo} 客户姓名不一致: ${nc.names.join(' vs ')}`,
+                originalData: { orderNo: nc.orderNo, names: nc.names },
+                suggestedFix: {
+                    action: '确认正确的客户姓名',
+                    suggestion: nc.names[0],
+                },
+                sourceFile: '跨批次检测',
+                rawRow: undefined,
+            });
+            crossBatchDirtyCount++;
+        }
+    }
+    const amountConflicts = (0, dirtyChecker_1.detectAmountConflicts)(priceAdjustments);
+    for (const ac of amountConflicts) {
+        const existingDirty = (await Promise.resolve().then(() => __importStar(require('../utils/database')))).getDirtyRecords();
+        const alreadyExists = existingDirty.some(d => d.dirtyType === 'amount_conflict' &&
+            d.originalData?.orderNo === ac.orderNo &&
+            d.status === 'dirty');
+        if (!alreadyExists) {
+            (0, database_1.addDirtyRecord)({
+                recordId: (0, uuid_1.v4)(),
+                sourceType: 'price_adjustment',
+                dirtyType: 'amount_conflict',
+                description: `订单号 ${ac.orderNo} 金额不一致`,
+                originalData: { orderNo: ac.orderNo, amounts: ac.amounts },
+                suggestedFix: {
+                    action: '确认正确的金额',
+                    amounts: ac.amounts,
+                },
+                sourceFile: '跨批次检测',
+                rawRow: undefined,
+            });
+            crossBatchDirtyCount++;
+        }
+    }
+    const quantityConflicts = (0, dirtyChecker_1.detectQuantityConflicts)(appointments);
+    for (const qc of quantityConflicts) {
+        const existingDirty = (await Promise.resolve().then(() => __importStar(require('../utils/database')))).getDirtyRecords();
+        const alreadyExists = existingDirty.some(d => d.dirtyType === 'quantity_conflict' &&
+            d.originalData?.orderNo === qc.orderNo &&
+            d.status === 'dirty');
+        if (!alreadyExists) {
+            (0, database_1.addDirtyRecord)({
+                recordId: (0, uuid_1.v4)(),
+                sourceType: 'appointment',
+                dirtyType: 'quantity_conflict',
+                description: `订单号 ${qc.orderNo} 存在 ${qc.count} 条记录，家电类型: ${qc.types.join(', ')}`,
+                originalData: { orderNo: qc.orderNo, count: qc.count, types: qc.types },
+                suggestedFix: {
+                    action: '确认是否为多台家电安装或重复录入',
+                },
+                sourceFile: '跨批次检测',
+                rawRow: undefined,
+            });
+            crossBatchDirtyCount++;
+        }
+    }
+    const mergeConflicts = (0, dirtyChecker_1.detectMergeConflicts)(appointments);
+    for (const mc of mergeConflicts) {
+        const existingDirty = (await Promise.resolve().then(() => __importStar(require('../utils/database')))).getDirtyRecords();
+        const alreadyExists = existingDirty.some(d => d.dirtyType === 'merge_conflict' &&
+            d.originalData?.orderNo === mc.orderNo &&
+            d.status === 'dirty');
+        if (!alreadyExists) {
+            (0, database_1.addDirtyRecord)({
+                recordId: (0, uuid_1.v4)(),
+                sourceType: 'appointment',
+                dirtyType: 'merge_conflict',
+                description: `订单号 ${mc.orderNo} 存在 ${mc.count} 条记录，状态: ${mc.statuses.join(', ')}，可能需要合并改约/二次上门`,
+                originalData: { orderNo: mc.orderNo, count: mc.count, statuses: mc.statuses, dates: mc.dates },
+                suggestedFix: {
+                    action: '确认是否为改约或二次上门，决定是否合并',
+                    statuses: mc.statuses,
+                    dates: mc.dates,
+                },
+                sourceFile: '跨批次检测',
+                rawRow: undefined,
+            });
+            crossBatchDirtyCount++;
+        }
+    }
+    if (crossBatchDirtyCount > 0) {
+        console.log(chalk_1.default.yellow(`⚠️  发现 ${crossBatchDirtyCount} 个跨批次问题，已记录到脏记录`));
+    }
+    return crossBatchDirtyCount;
 }
 //# sourceMappingURL=import.js.map

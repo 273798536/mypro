@@ -9,10 +9,18 @@ const cli_table3_1 = __importDefault(require("cli-table3"));
 const database_1 = require("../utils/database");
 const dirtyChecker_1 = require("../utils/dirtyChecker");
 const login_1 = require("./login");
+const permissions_1 = require("../config/permissions");
+const roleLabels = {
+    entry: '录入员',
+    review: '复核员',
+    supervisor: '主管',
+    readonly: '只读',
+};
 async function handleCheck(options) {
     (0, login_1.requirePermission)('view');
     const user = (0, database_1.getCurrentUser)();
     console.log(chalk_1.default.blue('=== 数据巡检 ===\n'));
+    console.log(chalk_1.default.gray(`当前用户: ${user.name} (${roleLabels[user.role]})`));
     const dirtyRecords = (0, database_1.getDirtyRecords)();
     let filtered = dirtyRecords;
     if (options.type) {
@@ -50,10 +58,10 @@ async function handleCheck(options) {
         sourceTable.push([(0, dirtyChecker_1.getSourceTypeLabel)(type), String(count)]);
     });
     console.log(sourceTable.toString());
-    console.log(`\n${chalk_1.default.cyan('📋 脏记录明细')}`);
+    console.log(`\n${chalk_1.default.cyan('📋 脏记录明细 (按角色权限过滤显示)')}`);
     const detailTable = new cli_table3_1.default({
-        head: ['ID', '行号', '数据源', '问题类型', '状态', '描述'],
-        colWidths: [10, 8, 12, 12, 10, 30],
+        head: ['ID', '行号', '数据源', '问题类型', '状态', '订单号', '描述'],
+        colWidths: [10, 8, 12, 12, 10, 12, 28],
     });
     filtered.slice(0, 20).forEach((r) => {
         const statusColor = r.status === 'dirty'
@@ -65,55 +73,99 @@ async function handleCheck(options) {
                     : r.status === 'rejected'
                         ? chalk_1.default.red
                         : chalk_1.default.gray;
+        const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo')
+            ? (r.originalData?.orderNo || '-').toString().slice(0, 10)
+            : '******';
         detailTable.push([
             r.id.slice(0, 8),
             String(r.rawRow || '-'),
             (0, dirtyChecker_1.getSourceTypeLabel)(r.sourceType),
             (0, dirtyChecker_1.getDirtyTypeLabel)(r.dirtyType),
             statusColor(r.status),
-            r.description.slice(0, 28),
+            orderNo,
+            r.description.slice(0, 26),
         ]);
     });
     console.log(detailTable.toString());
     if (filtered.length > 20) {
         console.log(chalk_1.default.gray(`... 还有 ${filtered.length - 20} 条记录，使用 hai check --detail 查看全部`));
     }
-    console.log(`\n${chalk_1.default.cyan('🔍 重复检测')}`);
+    console.log(`\n${chalk_1.default.cyan('🔍 重复检测 (跨源订单号)')}`);
     const appointments = (0, database_1.getAppointments)();
-    const duplicates = (0, dirtyChecker_1.detectDuplicates)(appointments);
+    const locations = (0, database_1.getLocations)();
+    const reviews = (0, database_1.getReviews)();
+    const priceAdjustments = (0, database_1.getPriceAdjustments)();
+    const allRecords = [
+        ...appointments.map(a => ({ orderNo: a.orderNo, source: '预约单', rawRow: a.rawRow, data: a })),
+        ...locations.map(l => ({ orderNo: l.orderNo, source: '师傅定位', rawRow: l.rawRow, data: l })),
+        ...reviews.map(r => ({ orderNo: r.orderNo, source: '用户评价', rawRow: r.rawRow, data: r })),
+        ...priceAdjustments.map(p => ({ orderNo: p.orderNo, source: '手工改价', rawRow: p.rawRow, data: p })),
+    ];
+    const duplicates = (0, dirtyChecker_1.detectDuplicates)(allRecords);
     if (duplicates.length > 0) {
-        console.log(chalk_1.default.yellow(`发现 ${duplicates.length} 组重复订单:`));
+        console.log(chalk_1.default.yellow(`发现 ${duplicates.length} 组订单号在多源中出现:`));
         duplicates.slice(0, 5).forEach((group) => {
-            console.log(`  订单号 ${group[0].orderNo}: ${group.length} 条重复`);
+            const sources = [...new Set(group.map(g => g.source))];
+            const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo')
+                ? group[0].orderNo
+                : '******';
+            console.log(`  订单号 ${orderNo}: 出现于 ${sources.join(', ')}`);
         });
     }
     else {
-        console.log(chalk_1.default.green('未发现重复记录'));
+        console.log(chalk_1.default.green('未发现跨源重复订单号'));
     }
     console.log(`\n${chalk_1.default.cyan('🔍 客户改名检测')}`);
     const nameChanges = (0, dirtyChecker_1.detectNameChanges)(appointments);
     if (nameChanges.length > 0) {
         console.log(chalk_1.default.yellow(`发现 ${nameChanges.length} 个客户姓名不一致:`));
         nameChanges.slice(0, 5).forEach((item) => {
-            console.log(`  订单号 ${item.orderNo}: ${item.names.join(' vs ')}`);
+            const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo') ? item.orderNo : '******';
+            const names = item.names.map(n => (0, permissions_1.canViewField)(user.role, 'customerName') ? n : '******');
+            console.log(`  订单号 ${orderNo}: ${names.join(' vs ')}`);
         });
     }
     else {
         console.log(chalk_1.default.green('未发现客户改名情况'));
     }
     console.log(`\n${chalk_1.default.cyan('🔍 金额冲突检测')}`);
-    const priceAdjustments = (0, database_1.getPriceAdjustments)();
     const amountConflicts = (0, dirtyChecker_1.detectAmountConflicts)(priceAdjustments);
     if (amountConflicts.length > 0) {
         console.log(chalk_1.default.yellow(`发现 ${amountConflicts.length} 组金额冲突:`));
         amountConflicts.slice(0, 5).forEach((item) => {
-            console.log(`  订单号 ${item.orderNo}: 有多组不同金额`);
+            const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo') ? item.orderNo : '******';
+            console.log(`  订单号 ${orderNo}: 有多组不同金额`);
         });
     }
     else {
         console.log(chalk_1.default.green('未发现金额冲突'));
     }
+    console.log(`\n${chalk_1.default.cyan('🔍 数量冲突检测 (同一订单多台家电)')}`);
+    const quantityConflicts = (0, dirtyChecker_1.detectQuantityConflicts)(appointments);
+    if (quantityConflicts.length > 0) {
+        console.log(chalk_1.default.yellow(`发现 ${quantityConflicts.length} 组数量冲突:`));
+        quantityConflicts.slice(0, 5).forEach((item) => {
+            const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo') ? item.orderNo : '******';
+            console.log(`  订单号 ${orderNo}: ${item.count} 条记录, 家电类型: ${item.types.join(', ')}`);
+        });
+    }
+    else {
+        console.log(chalk_1.default.green('未发现数量冲突'));
+    }
+    console.log(`\n${chalk_1.default.cyan('🔍 改约/二次上门合并检测')}`);
+    const mergeConflicts = (0, dirtyChecker_1.detectMergeConflicts)(appointments);
+    if (mergeConflicts.length > 0) {
+        console.log(chalk_1.default.yellow(`发现 ${mergeConflicts.length} 组可能需要合并的改约/二次上门:`));
+        mergeConflicts.slice(0, 5).forEach((item) => {
+            const orderNo = (0, permissions_1.canViewField)(user.role, 'orderNo') ? item.orderNo : '******';
+            console.log(`  订单号 ${orderNo}: ${item.count} 条记录, 状态: ${item.statuses.join(', ')}`);
+        });
+    }
+    else {
+        console.log(chalk_1.default.green('未发现改约/二次上门合并问题'));
+    }
     (0, database_1.addOperationLog)('check_records', user, {});
     console.log(`\n${chalk_1.default.gray('使用 hai fix <dirtyId> 修复脏记录')}`);
+    console.log(`${chalk_1.default.gray('使用 hai report --detail 查看失败清单')}`);
 }
 //# sourceMappingURL=check.js.map

@@ -243,6 +243,63 @@ export function detectAmountConflicts(
     .map(([orderNo, amounts]) => ({ orderNo, amounts }));
 }
 
+export function detectQuantityConflicts(
+  records: Array<{ orderNo?: string; applianceType?: string; status?: string }>
+): Array<{ orderNo: string; count: number; types: string[] }> {
+  const recordMap = new Map<string, { count: number; types: Set<string> }>();
+  records.forEach((r) => {
+    if (r.orderNo) {
+      const existing = recordMap.get(r.orderNo) || { count: 0, types: new Set() };
+      existing.count++;
+      if (r.applianceType) existing.types.add(r.applianceType);
+      recordMap.set(r.orderNo, existing);
+    }
+  });
+  return Array.from(recordMap.entries())
+    .filter(([, info]) => info.count > 1 && info.types.size > 1)
+    .map(([orderNo, info]) => ({ orderNo, count: info.count, types: Array.from(info.types) }));
+}
+
+export function detectMergeConflicts(
+  records: Array<{ orderNo?: string; status?: string; appointmentDate?: string }>
+): Array<{ orderNo: string; count: number; statuses: string[]; dates: string[] }> {
+  const recordMap = new Map<string, { count: number; statuses: Set<string>; dates: Set<string> }>();
+  records.forEach((r) => {
+    if (r.orderNo) {
+      const existing = recordMap.get(r.orderNo) || { count: 0, statuses: new Set(), dates: new Set() };
+      existing.count++;
+      if (r.status) existing.statuses.add(r.status);
+      if (r.appointmentDate) existing.dates.add(r.appointmentDate);
+      recordMap.set(r.orderNo, existing);
+    }
+  });
+  return Array.from(recordMap.entries())
+    .filter(([, info]) => info.count > 1 && (info.statuses.size > 1 || info.dates.size > 1))
+    .map(([orderNo, info]) => ({
+      orderNo,
+      count: info.count,
+      statuses: Array.from(info.statuses),
+      dates: Array.from(info.dates),
+    }));
+}
+
+export function detectDuplicateRecords<T extends { orderNo?: string }>(
+  records: T[]
+): Array<{ orderNo: string; count: number; records: T[] }> {
+  const groups = new Map<string, T[]>();
+  records.forEach((r) => {
+    const key = String(r.orderNo || '');
+    if (key) {
+      const existing = groups.get(key) || [];
+      existing.push(r);
+      groups.set(key, existing);
+    }
+  });
+  return Array.from(groups.entries())
+    .filter(([, group]) => group.length > 1)
+    .map(([orderNo, records]) => ({ orderNo, count: records.length, records }));
+}
+
 export function getDirtyTypeLabel(type: DirtyType): string {
   const labels: Record<DirtyType, string> = {
     missing_field: '缺字段',
