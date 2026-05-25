@@ -1,17 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getOne, getAll, runQuery } from '../config/database';
-import { QueueItem, QueueStatus, RecordType, DirtyType } from '../types';
+import { QueueItem, QueueStatus, RecordType, DirtyType, InspectionRecord, CalibrationCertificate, RepairQuote } from '../types';
 import { detectDirtyRecord, DirtyRecordContext } from './dirtyDetector';
-import { addMinutes, formatISO } from 'date-fns';
+import { addMinutes, formatISO, isAfter, parseISO } from 'date-fns';
+import { logDiff } from './diffService';
+import { createInspectionRecord, createCalibrationCertificate, createRepairQuote, getInspectionRecord, getCalibrationCertificate, getRepairQuote, updateInspectionRecord, updateCalibrationCertificate, updateRepairQuote, checkCalibrationStatus } from './recordService';
 
 const MAX_RETRIES = parseInt(process.env.MAX_RETRY_COUNT || '3');
 const RETRY_INTERVAL_MINUTES = 1;
 
-export const createQueueItem = async (
+export const submitToQueue = async (
   recordType: RecordType,
-  recordId: string,
   rawData: any,
-  externalReceiptId?: string
+  externalReceiptId?: string,
+  operator: string = 'system'
 ): Promise<QueueItem> => {
   const id = uuidv4();
   const now = formatISO(new Date());
@@ -22,19 +24,88 @@ export const createQueueItem = async (
   };
 
   const dirtyCheck = detectDirtyRecord(rawData, recordType, context);
-  const initialStatus: QueueStatus = dirtyCheck.isDirty ? 'manual_intervention' : 'pending';
+  
+  let recordId = '';
+  let initialStatus: QueueStatus = 'pending';
+  let errorMessage: string | undefined;
+
+  try {
+    switch (recordType) {
+      case 'inspection':
+        const inspection = await createInspectionRecord(
+          {
+            deviceId: rawData.deviceId,
+            deviceName: rawData.deviceName,
+            department: rawData.department || '',
+            inspectionDate: rawData.inspectionDate,
+            inspector: rawData.inspector || '',
+            result: rawData.result || 'pending',
+            remarks: rawData.remarks,
+          },
+          operator
+        );
+        recordId = inspection.id;
+        break;
+      case 'calibration':
+        const calibration = await createCalibrationCertificate(
+          {
+            deviceId: rawData.deviceId,
+            deviceName: rawData.deviceName,
+            certificateNo: rawData.certificateNo,
+            calibrationDate: rawData.calibrationDate,
+            validUntil: rawData.validUntil,
+            calibrationOrg: rawData.calibrationOrg,
+            status: rawData.status || 'valid',
+            certificateFile: rawData.certificateFile,
+          },
+          operator
+        );
+        recordId = calibration.id;
+        break;
+      case 'repair':
+        const repair = await createRepairQuote(
+          {
+            deviceId: rawData.deviceId,
+            deviceName: rawData.deviceName,
+            quoteNo: rawData.quoteNo,
+            repairDate: rawData.repairDate,
+            description: rawData.description,
+            amount: rawData.amount,
+            quantity: rawData.quantity,
+            status: rawData.status || 'pending',
+            serviceRemarks: rawData.serviceRemarks,
+            manualOpinion: rawData.manualOpinion,
+          },
+          operator
+        );
+        recordId = repair.id;
+        break;
+    }
+
+    if (dirtyCheck.isDirty) {
+      initialStatus = 'manual_intervention';
+    }
+  } catch (error) {
+    initialStatus = 'manual_intervention';
+    errorMessage = error instanceof Error ? error.message : '业务表写入失败，需要人工处理';
+  }
+
+  if (dirtyCheck.isDirty) {
+    initialStatus = 'manual_intervention';
+  }
 
   const queueItem: QueueItem = {
     id,
     recordType,
-    recordId,
+    recordId: recordId || 'pending',
     externalReceiptId,
     status: initialStatus,
     retryCount: 0,
     maxRetries: MAX_RETRIES,
     dirtyType: dirtyCheck.type,
-    dirtyDetails: dirtyCheck.details,
+    dirtyDetails: dirtyCheck.details || errorMessage || '',
     rawData: JSON.stringify(rawData),
+    errorMessage: errorMessage || (dirtyCheck.isDirty ? dirtyCheck.details : undefined),
     createdAt: now,
     updatedAt: now,
   };
@@ -42,8 +113,8 @@ export const createQueueItem = async (
   await runQuery(
     `INSERT INTO queue_items (
       id, recordType, recordId, externalReceiptId, status, retryCount, maxRetries,
-      dirtyType, dirtyDetails, rawData, createdAt, updatedAt
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      dirtyType, dirtyDetails, rawData, errorMessage, createdAt, updatedAt
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       queueItem.id,
       queueItem.recordType,
@@ -55,9 +126,21 @@ export const createQueueItem = async (
       queueItem.dirtyType,
       queueItem.dirtyDetails,
       queueItem.rawData,
+      queueItem.errorMessage || null,
       queueItem.createdAt,
       queueItem.updatedAt,
     ]
+  );
+
+  await logDiff(
+    id,
+    recordType,
+    recordId || 'pending',
+    'submit',
+    null,
+    { rawData, queueStatus: initialStatus, dirtyType: dirtyCheck.type },
+    operator,
+    `提交回执: ${initialStatus === 'pending' ? '待处理' : '需要人工干预'}`
   );
 
   return queueItem;
@@ -105,8 +188,10 @@ export const getAllQueueItems = async (): Promise<QueueItem[]> => {
 export const updateQueueStatus = async (
   id: string,
   status: QueueStatus,
-  errorMessage?: string
+  errorMessage?: string,
+  operator: string = 'system'
 ): Promise<void> => {
+  const beforeItem = await getQueueItem(id);
   const now = formatISO(new Date());
   const updates: string[] = ['status = ?', 'updatedAt = ?'];
   const params: any[] = [status, now, id];
@@ -120,12 +205,26 @@ export const updateQueueStatus = async (
     `UPDATE queue_items SET ${updates.join(', ')} WHERE id = ?`,
     params
   );
+
+  if (beforeItem) {
+    await logDiff(
+      id,
+      beforeItem.recordType,
+      beforeItem.recordId,
+      'status_change',
+      { status: beforeItem.status, retryCount: beforeItem.retryCount },
+      { status, retryCount: beforeItem.retryCount, errorMessage },
+      operator,
+      `状态变更: ${beforeItem.status} → ${status}`
+    );
+  }
 };
 
-export const retryQueueItem = async (id: string): Promise<QueueItem | null> => {
+export const retryQueueItem = async (id: string, operator: string = 'system'): Promise<QueueItem | null> => {
   const item = await getQueueItem(id);
   if (!item) return null;
 
+  const beforeState = { status: item.status, retryCount: item.retryCount };
   const newRetryCount = item.retryCount + 1;
   const now = formatISO(new Date());
 
@@ -145,7 +244,103 @@ export const retryQueueItem = async (id: string): Promise<QueueItem | null> => {
     [newStatus, newRetryCount, nextRetryAt || null, now, id]
   );
 
+  await logDiff(
+    id,
+    item.recordType,
+    item.recordId,
+    'retry',
+    beforeState,
+    { status: newStatus, retryCount: newRetryCount, nextRetryAt },
+    operator,
+    `重试第 ${newRetryCount}/${item.maxRetries} 次${newStatus === 'dead_letter' ? ' - 已达到最大重试次数，进入死信' : ''}`
+  );
+
+  if (newStatus === 'retrying') {
+    const rawData = JSON.parse(item.rawData);
+    const success = await attemptRecordCreation(item, rawData);
+    
+    if (success) {
+      await compensateAndClose(id, operator);
+    }
+  }
+
   return getQueueItem(id);
+};
+
+const attemptRecordCreation = async (item: QueueItem, rawData: any): Promise<boolean> => {
+  const now = formatISO(new Date());
+  try {
+    let recordId = item.recordId;
+
+    if (recordId === 'pending') {
+      switch (item.recordType) {
+        case 'inspection':
+          const inspection = await createInspectionRecord(
+            {
+              deviceId: rawData.deviceId,
+              deviceName: rawData.deviceName,
+              department: rawData.department || '',
+              inspectionDate: rawData.inspectionDate,
+              inspector: rawData.inspector || '',
+              result: rawData.result || 'pending',
+              remarks: rawData.remarks,
+            },
+            'retry'
+          );
+          recordId = inspection.id;
+          break;
+        case 'calibration':
+          const calibration = await createCalibrationCertificate(
+            {
+              deviceId: rawData.deviceId,
+              deviceName: rawData.deviceName,
+              certificateNo: rawData.certificateNo,
+              calibrationDate: rawData.calibrationDate,
+              validUntil: rawData.validUntil,
+              calibrationOrg: rawData.calibrationOrg,
+              status: rawData.status || 'valid',
+              certificateFile: rawData.certificateFile,
+            },
+            'retry'
+          );
+          recordId = calibration.id;
+          break;
+        case 'repair':
+          const repair = await createRepairQuote(
+            {
+              deviceId: rawData.deviceId,
+              deviceName: rawData.deviceName,
+              quoteNo: rawData.quoteNo,
+              repairDate: rawData.repairDate,
+              description: rawData.description,
+              amount: rawData.amount,
+              quantity: rawData.quantity,
+              status: rawData.status || 'pending',
+              serviceRemarks: rawData.serviceRemarks,
+              manualOpinion: rawData.manualOpinion,
+            },
+            'retry'
+          );
+          recordId = repair.id;
+          break;
+      }
+
+      if (recordId !== item.recordId) {
+        await runQuery(
+          `UPDATE queue_items SET recordId = ?, updatedAt = ? WHERE id = ?`,
+          [recordId, now, item.id]
+        );
+      }
+    }
+
+    return true;
+  } catch (error) {
+    await runQuery(
+      `UPDATE queue_items SET errorMessage = ?, updatedAt = ? WHERE id = ?`,
+      [error instanceof Error ? error.message : '重试失败', now, item.id]
+    );
+    return false;
+  }
 };
 
 export const assignToManual = async (
@@ -153,87 +348,245 @@ export const assignToManual = async (
   assignee: string,
   remarks?: string
 ): Promise<void> => {
+  const item = await getQueueItem(id);
+  if (!item) return;
+
+  const beforeState = { status: item.status, assignee: item.assignee };
   const now = formatISO(new Date());
+  
   await runQuery(
     `UPDATE queue_items SET 
       status = 'manual_intervention', assignee = ?, updatedAt = ?
      WHERE id = ?`,
     [assignee, now, id]
   );
+
+  await logDiff(
+    id,
+    item.recordType,
+    item.recordId,
+    'assign',
+    beforeState,
+    { status: 'manual_intervention', assignee, remarks },
+    assignee,
+    remarks || '分配人工处理'
+  );
 };
 
-export const compensateAndClose = async (id: string): Promise<void> => {
+export const compensateAndClose = async (id: string, operator: string = 'system'): Promise<void> => {
+  const item = await getQueueItem(id);
+  if (!item) return;
+
+  const beforeState = { status: item.status, processedAt: item.processedAt };
   const now = formatISO(new Date());
+  
   await runQuery(
     `UPDATE queue_items SET 
       status = 'compensated', processedAt = ?, updatedAt = ?
      WHERE id = ?`,
     [now, now, id]
   );
+
+  await logDiff(
+    id,
+    item.recordType,
+    item.recordId,
+    'compensate',
+    beforeState,
+    { status: 'compensated', processedAt: now },
+    operator,
+    '补偿入账，记录已同步'
+  );
 };
 
-export const closeQueueItem = async (id: string): Promise<void> => {
+export const closeQueueItem = async (id: string, operator: string = 'system'): Promise<void> => {
+  const item = await getQueueItem(id);
+  if (!item) return;
+
+  const beforeState = { status: item.status, processedAt: item.processedAt };
   const now = formatISO(new Date());
+  
   await runQuery(
     `UPDATE queue_items SET 
       status = 'closed', processedAt = ?, updatedAt = ?
      WHERE id = ?`,
     [now, now, id]
   );
+
+  await logDiff(
+    id,
+    item.recordType,
+    item.recordId,
+    'close',
+    beforeState,
+    { status: 'closed', processedAt: now },
+    operator,
+    '关闭队列项'
+  );
 };
 
-export const processPendingItems = async (): Promise<{ processed: number; failed: number }> => {
+export const fixAndCompensate = async (
+  id: string,
+  recordData: any,
+  operator: string
+): Promise<{ queueItem: QueueItem | null; record: any }> => {
+  const item = await getQueueItem(id);
+  if (!item) return { queueItem: null, record: null };
+
+  const rawData = JSON.parse(item.rawData);
+  const mergedData = { ...rawData, ...recordData };
+  
+  let updatedRecord: any = null;
+
+  try {
+    switch (item.recordType) {
+      case 'inspection':
+        if (item.recordId && item.recordId !== 'pending') {
+          updatedRecord = await updateInspectionRecord(item.recordId, recordData, operator, id);
+        } else {
+          updatedRecord = await createInspectionRecord(mergedData, operator, id);
+          await runQuery(`UPDATE queue_items SET recordId = ? WHERE id = ?`, [updatedRecord.id, id]);
+        }
+        break;
+      case 'calibration':
+        if (item.recordId && item.recordId !== 'pending') {
+          updatedRecord = await updateCalibrationCertificate(item.recordId, recordData, operator, id);
+        } else {
+          updatedRecord = await createCalibrationCertificate(mergedData, operator, id);
+          await runQuery(`UPDATE queue_items SET recordId = ? WHERE id = ?`, [updatedRecord.id, id]);
+        }
+        break;
+      case 'repair':
+        if (item.recordId && item.recordId !== 'pending') {
+          updatedRecord = await updateRepairQuote(item.recordId, recordData, operator, id);
+        } else {
+          updatedRecord = await createRepairQuote(mergedData, operator, id);
+          await runQuery(`UPDATE queue_items SET recordId = ? WHERE id = ?`, [updatedRecord.id, id]);
+        }
+        break;
+    }
+
+    await compensateAndClose(id, operator);
+  } catch (error) {
+    await logDiff(
+      id,
+      item.recordType,
+      item.recordId,
+      'fix_failed',
+      rawData,
+      recordData,
+      operator,
+      `修正失败: ${error instanceof Error ? error.message : '未知错误'}`
+    );
+    throw error;
+  }
+
+  return { queueItem: await getQueueItem(id), record: updatedRecord };
+};
+
+export const processPendingItems = async (operator: string = 'system'): Promise<{ processed: number; failed: number; compensated: number }> => {
   const pendingItems = await getQueueItemsByStatus('pending');
   let processed = 0;
   let failed = 0;
+  let compensated = 0;
 
   for (const item of pendingItems) {
     try {
-      await updateQueueStatus(item.id, 'processing');
+      await updateQueueStatus(item.id, 'processing', undefined, operator);
       
-      const success = await processRecord(item);
+      const rawData = JSON.parse(item.rawData);
+      const success = await attemptRecordCreation(item, rawData);
       
       if (success) {
-        await compensateAndClose(item.id);
+        await compensateAndClose(item.id, operator);
         processed++;
+        compensated++;
       } else {
-        await retryQueueItem(item.id);
+        await retryQueueItem(item.id, operator);
         failed++;
       }
     } catch (error) {
-      await updateQueueStatus(item.id, 'retrying', error instanceof Error ? error.message : '未知错误');
+      await updateQueueStatus(item.id, 'manual_intervention', error instanceof Error ? error.message : '未知错误', operator);
       failed++;
     }
   }
 
-  return { processed, failed };
+  return { processed, failed, compensated };
 };
 
-const processRecord = async (item: QueueItem): Promise<boolean> => {
-  const rawData = JSON.parse(item.rawData);
-  
-  switch (item.recordType) {
-    case 'inspection':
-      return await processInspection(rawData, item.recordId);
-    case 'calibration':
-      return await processCalibration(rawData, item.recordId);
-    case 'repair':
-      return await processRepair(rawData, item.recordId);
-    default:
-      return false;
+export const checkAndUpdateCalibrationStatus = async (): Promise<{ updated: number }> => {
+  const calibrations = await getAll<any>(
+    `SELECT * FROM calibration_certificates WHERE status = 'valid' AND isDeleted = 0`
+  );
+
+  const now = new Date();
+  let updated = 0;
+
+  for (const cert of calibrations) {
+    try {
+      const validUntil = parseISO(cert.validUntil);
+      if (isAfter(now, validUntil)) {
+        await updateCalibrationCertificate(
+          cert.id,
+          { status: 'expired' },
+          'system',
+          undefined
+        );
+        updated++;
+      }
+    } catch (e) {
+    }
   }
+
+  return { updated };
 };
 
-const processInspection = async (data: any, recordId: string): Promise<boolean> => {
-  return true;
-};
+export const disableDeviceRecords = async (
+  deviceId: string,
+  operator: string
+): Promise<{ calibrations: number; inspections: number; repairs: number }> => {
+  const now = formatISO(new Date());
+  let calibrations = 0;
+  let inspections = 0;
+  let repairs = 0;
 
-const processCalibration = async (data: any, recordId: string): Promise<boolean> => {
-  return true;
-};
+  const certs = await getAll<any>(
+    `SELECT * FROM calibration_certificates WHERE deviceId = ? AND status = 'valid' AND isDeleted = 0`,
+    [deviceId]
+  );
 
-const processRepair = async (data: any, recordId: string): Promise<boolean> => {
-  return true;
+  for (const cert of certs) {
+    await updateCalibrationCertificate(cert.id, { status: 'disabled' }, operator, undefined);
+    calibrations++;
+  }
+
+  const queueItems = await getAll<any>(
+    `SELECT * FROM queue_items WHERE recordId IN (
+      SELECT id FROM calibration_certificates WHERE deviceId = ?
+    ) OR recordId IN (
+      SELECT id FROM inspection_records WHERE deviceId = ?
+    ) OR recordId IN (
+      SELECT id FROM repair_quotes WHERE deviceId = ?
+    )`,
+    [deviceId, deviceId, deviceId]
+  );
+
+  for (const item of queueItems) {
+    if (item.status === 'pending' || item.status === 'retrying') {
+      await logDiff(
+        item.id,
+        item.recordType,
+        item.recordId,
+        'disable_device',
+        { deviceId, status: item.status },
+        { deviceId, status: 'manual_intervention', reason: '设备停用' },
+        operator,
+        `设备 ${deviceId} 已停用，相关记录需要处理`
+      );
+    }
+  }
+
+  return { calibrations, inspections, repairs };
 };
 
 export const getDeadLetterItems = async (): Promise<QueueItem[]> => {
@@ -262,9 +615,17 @@ export const getQueueStatistics = async () => {
      WHERE DATE(createdAt) = DATE('now')`
   );
 
+  const retryStats = await getOne<{ avg: number; max: number }>(
+    `SELECT AVG(retryCount) as avg, MAX(retryCount) as max FROM queue_items WHERE retryCount > 0`
+  );
+
   return {
     byStatus: statusCounts.reduce((acc, item) => ({ ...acc, [item.status]: item.count }), {}),
     byDirtyType: dirtyTypeCounts.reduce((acc, item) => ({ ...acc, [item.dirtyType]: item.count }), {}),
     todayCount: todayCount?.count || 0,
+    retryStats: {
+      averageRetries: retryStats?.avg || 0,
+      maxRetries: retryStats?.max || 0,
+    },
   };
 };

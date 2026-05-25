@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import {
-  createQueueItem,
+  submitToQueue,
   getQueueItem,
   getAllQueueItems,
   getQueueItemsByStatus,
@@ -13,18 +13,12 @@ import {
   getDeadLetterItems,
   getManualInterventionItems,
   getQueueStatistics,
+  fixAndCompensate,
+  checkAndUpdateCalibrationStatus,
+  disableDeviceRecords,
 } from '../services/queueService';
 import { getDiffLogsByQueueId } from '../services/diffService';
-import {
-  createInspectionRecord,
-  createCalibrationCertificate,
-  createRepairQuote,
-  updateInspectionRecord,
-  updateCalibrationCertificate,
-  updateRepairQuote,
-  getRecordByIdAndType,
-} from '../services/recordService';
-import { RecordType } from '../types';
+import { getRecordByIdAndType } from '../services/recordService';
 
 const router = Router();
 
@@ -33,35 +27,19 @@ router.post('/submit', async (req: Request, res: Response) => {
     const { recordType, data, externalReceiptId } = req.body;
     const operator = req.headers['x-operator'] || 'system';
 
-    let recordId = '';
-    
-    switch (recordType as RecordType) {
-      case 'inspection':
-        const inspection = await createInspectionRecord(data, String(operator));
-        recordId = inspection.id;
-        break;
-      case 'calibration':
-        const calibration = await createCalibrationCertificate(data, String(operator));
-        recordId = calibration.id;
-        break;
-      case 'repair':
-        const repair = await createRepairQuote(data, String(operator));
-        recordId = repair.id;
-        break;
-      default:
-        return res.status(400).json({ error: '无效的记录类型' });
-    }
-
-    const queueItem = await createQueueItem(
-      recordType as RecordType,
-      recordId,
+    const queueItem = await submitToQueue(
+      recordType,
       data,
-      externalReceiptId
+      externalReceiptId,
+      String(operator)
     );
 
     res.status(201).json({
       success: true,
       data: queueItem,
+      message: queueItem.status === 'pending' 
+        ? '已提交，待处理' 
+        : '已提交，需要人工干预',
     });
   } catch (error) {
     res.status(500).json({
@@ -136,7 +114,9 @@ router.get('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: '队列项不存在' });
     }
 
-    const record = await getRecordByIdAndType(item.recordType, item.recordId);
+    const record = item.recordId && item.recordId !== 'pending' 
+      ? await getRecordByIdAndType(item.recordType, item.recordId) 
+      : null;
     const diffLogs = await getDiffLogsByQueueId(item.id);
 
     res.json({
@@ -157,11 +137,16 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 router.post('/:id/retry', async (req: Request, res: Response) => {
   try {
-    const item = await retryQueueItem(req.params.id);
+    const operator = req.headers['x-operator'] || 'system';
+    const item = await retryQueueItem(req.params.id, String(operator));
     if (!item) {
       return res.status(404).json({ success: false, error: '队列项不存在' });
     }
-    res.json({ success: true, data: item });
+    res.json({ 
+      success: true, 
+      data: item,
+      message: item.status === 'dead_letter' ? '已达到最大重试次数，进入死信' : '重试成功'
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -195,48 +180,19 @@ router.post('/:id/fix', async (req: Request, res: Response) => {
     const queueId = req.params.id;
     const operatorName = operator || req.headers['x-operator'] || 'system';
 
-    const queueItem = await getQueueItem(queueId);
-    if (!queueItem) {
+    const result = await fixAndCompensate(queueId, recordData, String(operatorName));
+
+    if (!result.queueItem) {
       return res.status(404).json({ success: false, error: '队列项不存在' });
     }
-
-    let updatedRecord;
-    switch (queueItem.recordType) {
-      case 'inspection':
-        updatedRecord = await updateInspectionRecord(
-          queueItem.recordId,
-          recordData,
-          String(operatorName),
-          queueId
-        );
-        break;
-      case 'calibration':
-        updatedRecord = await updateCalibrationCertificate(
-          queueItem.recordId,
-          recordData,
-          String(operatorName),
-          queueId
-        );
-        break;
-      case 'repair':
-        updatedRecord = await updateRepairQuote(
-          queueItem.recordId,
-          recordData,
-          String(operatorName),
-          queueId
-        );
-        break;
-    }
-
-    await compensateAndClose(queueId);
-    const updatedQueueItem = await getQueueItem(queueId);
 
     res.json({
       success: true,
       data: {
-        queueItem: updatedQueueItem,
-        record: updatedRecord,
+        queueItem: result.queueItem,
+        record: result.record,
       },
+      message: '记录已修正并补偿入账',
     });
   } catch (error) {
     res.status(500).json({
@@ -248,7 +204,8 @@ router.post('/:id/fix', async (req: Request, res: Response) => {
 
 router.post('/:id/compensate', async (req: Request, res: Response) => {
   try {
-    await compensateAndClose(req.params.id);
+    const operator = req.headers['x-operator'] || 'system';
+    await compensateAndClose(req.params.id, String(operator));
     const item = await getQueueItem(req.params.id);
     res.json({ success: true, data: item });
   } catch (error) {
@@ -261,7 +218,8 @@ router.post('/:id/compensate', async (req: Request, res: Response) => {
 
 router.post('/:id/close', async (req: Request, res: Response) => {
   try {
-    await closeQueueItem(req.params.id);
+    const operator = req.headers['x-operator'] || 'system';
+    await closeQueueItem(req.params.id, String(operator));
     const item = await getQueueItem(req.params.id);
     res.json({ success: true, data: item });
   } catch (error) {
@@ -274,8 +232,42 @@ router.post('/:id/close', async (req: Request, res: Response) => {
 
 router.post('/process', async (req: Request, res: Response) => {
   try {
-    const result = await processPendingItems();
+    const operator = req.headers['x-operator'] || 'system';
+    const result = await processPendingItems(String(operator));
     res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : '未知错误',
+    });
+  }
+});
+
+router.post('/check-calibration', async (req: Request, res: Response) => {
+  try {
+    const result = await checkAndUpdateCalibrationStatus();
+    res.json({ 
+      success: true, 
+      data: result,
+      message: `已检查并更新 ${result.updated} 条过期证书`
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : '未知错误',
+    });
+  }
+});
+
+router.post('/disable-device/:deviceId', async (req: Request, res: Response) => {
+  try {
+    const operator = req.headers['x-operator'] || 'system';
+    const result = await disableDeviceRecords(req.params.deviceId, String(operator));
+    res.json({ 
+      success: true, 
+      data: result,
+      message: `设备 ${req.params.deviceId} 已停用，已更新 ${result.calibrations} 条证书状态`
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

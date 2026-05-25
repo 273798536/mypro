@@ -1,6 +1,7 @@
 import express from 'express';
 import queueRoutes from './routes/queue';
 import exportRoutes from './routes/export';
+import { checkAndUpdateCalibrationStatus } from './services/queueService';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,17 @@ app.get('/health', (req, res) => {
 
 app.use('/api/queue', queueRoutes);
 app.use('/api/export', exportRoutes);
+
+setInterval(async () => {
+  try {
+    const result = await checkAndUpdateCalibrationStatus();
+    if (result.updated > 0) {
+      console.log(`[定时任务] 已自动更新 ${result.updated} 条过期证书状态`);
+    }
+  } catch (error) {
+    console.error('[定时任务] 证书状态检查失败:', error);
+  }
+}, 60 * 60 * 1000);
 
 app.listen(PORT, () => {
   console.log(`
@@ -37,11 +49,16 @@ app.listen(PORT, () => {
 ║   POST /api/queue/:id/compensate          - 补偿入账       ║
 ║   POST /api/queue/:id/close               - 关闭           ║
 ║   POST /api/queue/process                 - 批量处理       ║
+║   POST /api/queue/check-calibration       - 检查证书过期   ║
+║   POST /api/queue/disable-device/:id      - 停用设备       ║
 ║                                                            ║
 ║   GET  /api/export/records                - 统一记录查询   ║
 ║   GET  /api/export/csv                    - CSV导出        ║
 ║   GET  /api/export/json                   - JSON导出       ║
 ║   GET  /api/export/nurse-report           - 护士长报告     ║
+║                                                            ║
+║   后台任务:                                                ║
+║   • 每小时自动检查并更新过期证书状态                        ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
   `);
