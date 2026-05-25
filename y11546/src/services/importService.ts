@@ -14,6 +14,8 @@ import {
 } from '../models/types';
 import { MaterialDAO, BatchDAO, HistoryDAO, AuditLogDAO, FailedRecordDAO, AsyncTaskDAO } from '../db/dao';
 import { diffService } from './diffService';
+import { permissionService } from './permissionService';
+import { BatchFreezeDAO, OperationLockDAO } from '../db/securityDAO';
 
 export interface ImportResult {
   batchId: string;
@@ -166,203 +168,233 @@ export class ImportService {
     operator: string,
     remark?: string
   ): Promise<ImportResult> {
-    const fileHash = this.calculateFileHash(filePath);
-    const fileName = filePath.split('/').pop() || 'unknown';
-    const now = dayjs().toISOString();
-
-    const records = this.parseCSV(filePath);
-    const totalCount = records.length;
-
-    const existingBatch = await this.batchDAO.findByFileHash(fileHash);
-
-    if (existingBatch && strategy === 'ignore') {
-      return {
-        batchId: existingBatch.id,
-        totalCount: existingBatch.total_count,
-        successCount: existingBatch.total_count,
-        failedCount: 0,
-        createdCount: 0,
-        updatedCount: 0,
-        ignoredCount: existingBatch.total_count,
-        overwrittenCount: 0,
-        diffs: [],
-      };
+    const permissionAction = strategy === 'overwrite' ? 'overwrite' : 'import';
+    const permissionCheck = await permissionService.checkUserPermission(operator, permissionAction);
+    if (!permissionCheck.allowed) {
+      throw new Error(`权限不足: ${permissionCheck.reason || '用户 ' + operator + ' 没有 ' + permissionAction + ' 权限'}`);
     }
 
-    const batchId = await this.batchDAO.createBatch({
-      source_type: sourceType,
-      file_name: fileName,
-      file_hash: fileHash,
-      strategy: strategy,
-      total_count: totalCount,
-      success_count: 0,
-      failed_count: 0,
-      status: 'processing',
-      operator: operator,
-      import_time: now,
-      remark: remark,
-    });
+    const lockDAO = new OperationLockDAO();
+    let lockId: string | null = null;
 
-    let successCount = 0;
-    let failedCount = 0;
-    let createdCount = 0;
-    let updatedCount = 0;
-    let ignoredCount = 0;
-    let overwrittenCount = 0;
-    const diffs: any[] = [];
-
-    const existingData = await this.materialDAO.findAll(sourceType);
-    const existingMap = new Map(existingData.map((d) => [d.material_code, d]));
-
-    if (strategy === 'overwrite') {
-      overwrittenCount = existingData.length;
-      for (const item of existingData) {
-        await this.historyDAO.saveHistory(
-          item.material_code,
-          sourceType,
-          item,
-          'delete',
-          operator,
-          batchId
-        );
+    try {
+      lockId = await lockDAO.acquireLock('import', sourceType, operator, 'import', 600);
+      if (!lockId) {
+        throw new Error(`资源被锁定: ${sourceType} 正在被其他操作占用，请稍后重试`);
       }
-      await this.materialDAO.deleteAllBySourceType(sourceType);
-      existingMap.clear();
-    }
 
-    for (let i = 0; i < records.length; i++) {
-      const lineNo = i + 2;
-      const record = records[i];
+      const fileHash = this.calculateFileHash(filePath);
+      const fileName = filePath.split('/').pop() || 'unknown';
+      const now = dayjs().toISOString();
 
-      try {
-        const validation = this.validateRecord(sourceType, record, lineNo);
-        if (!validation.valid) {
+      const records = this.parseCSV(filePath);
+      const totalCount = records.length;
+
+      const existingBatch = await this.batchDAO.findByFileHash(fileHash);
+
+      if (existingBatch && strategy === 'ignore') {
+        return {
+          batchId: existingBatch.id,
+          totalCount: existingBatch.total_count,
+          successCount: existingBatch.total_count,
+          failedCount: 0,
+          createdCount: 0,
+          updatedCount: 0,
+          ignoredCount: existingBatch.total_count,
+          overwrittenCount: 0,
+          diffs: [],
+        };
+      }
+
+      if (existingBatch) {
+        const freezeDAO = new BatchFreezeDAO();
+        const isFrozen = await freezeDAO.isBatchFrozen(existingBatch.id);
+        if (isFrozen) {
+          throw new Error(`批次已冻结: ${existingBatch.id} 不能覆盖或追加，请先解冻`);
+        }
+      }
+
+      const batchId = await this.batchDAO.createBatch({
+        source_type: sourceType,
+        file_name: fileName,
+        file_hash: fileHash,
+        strategy: strategy,
+        total_count: totalCount,
+        success_count: 0,
+        failed_count: 0,
+        status: 'processing',
+        operator: operator,
+        import_time: now,
+        remark: remark,
+      });
+
+      let successCount = 0;
+      let failedCount = 0;
+      let createdCount = 0;
+      let updatedCount = 0;
+      let ignoredCount = 0;
+      let overwrittenCount = 0;
+      const diffs: any[] = [];
+
+      const existingData = await this.materialDAO.findAll(sourceType);
+      const existingMap = new Map(existingData.map((d) => [d.material_code, d]));
+
+      if (strategy === 'overwrite') {
+        overwrittenCount = existingData.length;
+        for (const item of existingData) {
+          await this.historyDAO.saveHistory(
+            item.material_code,
+            sourceType,
+            item,
+            'delete',
+            operator,
+            batchId
+          );
+        }
+        await this.materialDAO.deleteAllBySourceType(sourceType);
+        existingMap.clear();
+      }
+
+      for (let i = 0; i < records.length; i++) {
+        const lineNo = i + 2;
+        const record = records[i];
+
+        try {
+          const validation = this.validateRecord(sourceType, record, lineNo);
+          if (!validation.valid) {
+            await this.failedRecordDAO.create({
+              batch_id: batchId,
+              source_type: sourceType,
+              original_line_no: lineNo,
+              material_code: record.material_code || '',
+              error_type: 'validation_error',
+              error_message: validation.errors.join('; '),
+              raw_data: JSON.stringify(record),
+              status: 'pending',
+              created_at: now,
+            });
+            failedCount++;
+            continue;
+          }
+
+          const data = this.convertToSourceData(sourceType, record, batchId, lineNo);
+          const existing = existingMap.get(data.material_code);
+
+          if (existing && strategy === 'ignore') {
+            ignoredCount++;
+            successCount++;
+            continue;
+          }
+
+          if (existing) {
+            const changes = diffService.compareObjects(existing, data);
+            if (changes.length > 0) {
+              diffs.push({
+                material_code: data.material_code,
+                original_line_no: lineNo,
+                changes,
+              });
+
+              await this.historyDAO.saveHistory(
+                data.material_code,
+                sourceType,
+                existing,
+                'update',
+                operator,
+                batchId
+              );
+
+              for (const change of changes) {
+                await this.auditLogDAO.createLog({
+                  batch_id: batchId,
+                  source_type: sourceType,
+                  action: 'update',
+                  material_code: data.material_code,
+                  field_name: change.field,
+                  old_value: String(change.old_value ?? ''),
+                  new_value: String(change.new_value ?? ''),
+                  operator: operator,
+                  operate_time: now,
+                  original_line_no: lineNo,
+                });
+              }
+              await this.materialDAO.deleteByMaterialCode(sourceType, data.material_code);
+              await this.insertData(sourceType, data);
+              updatedCount++;
+            } else {
+              ignoredCount++;
+            }
+          } else {
+            await this.historyDAO.saveHistory(
+              data.material_code,
+              sourceType,
+              data,
+              'create',
+              operator,
+              batchId
+            );
+
+            await this.auditLogDAO.createLog({
+              batch_id: batchId,
+              source_type: sourceType,
+              action: 'create',
+              material_code: data.material_code,
+              operator: operator,
+              operate_time: now,
+              original_line_no: lineNo,
+            });
+            await this.insertData(sourceType, data);
+            createdCount++;
+          }
+
+          successCount++;
+        } catch (error: any) {
           await this.failedRecordDAO.create({
             batch_id: batchId,
             source_type: sourceType,
             original_line_no: lineNo,
             material_code: record.material_code || '',
-            error_type: 'validation_error',
-            error_message: validation.errors.join('; '),
+            error_type: 'import_error',
+            error_message: error.message || '未知错误',
             raw_data: JSON.stringify(record),
             status: 'pending',
             created_at: now,
           });
           failedCount++;
-          continue;
         }
+      }
 
-        const data = this.convertToSourceData(sourceType, record, batchId, lineNo);
-        const existing = existingMap.get(data.material_code);
+      const finalStatus = failedCount > 0 ? 'partial_success' : 'success';
+      await this.batchDAO.updateBatchStats(batchId, totalCount, successCount, failedCount, finalStatus);
+      await this.batchDAO.updateBatchDetailStats(batchId, {
+        created: createdCount,
+        updated: updatedCount,
+        ignored: ignoredCount,
+        overwritten: overwrittenCount,
+      });
 
-        if (existing && strategy === 'ignore') {
-          ignoredCount++;
-          successCount++;
-          continue;
-        }
+      if (failedCount > 0) {
+        await this.createAsyncTask('import_retry', operator, batchId, 3);
+      }
 
-        if (existing) {
-          const changes = diffService.compareObjects(existing, data);
-          if (changes.length > 0) {
-            diffs.push({
-              material_code: data.material_code,
-              original_line_no: lineNo,
-              changes,
-            });
-
-            await this.historyDAO.saveHistory(
-              data.material_code,
-              sourceType,
-              existing,
-              'update',
-              operator,
-              batchId
-            );
-
-            for (const change of changes) {
-              await this.auditLogDAO.createLog({
-                batch_id: batchId,
-                source_type: sourceType,
-                action: 'update',
-                material_code: data.material_code,
-                field_name: change.field,
-                old_value: String(change.old_value ?? ''),
-                new_value: String(change.new_value ?? ''),
-                operator: operator,
-                operate_time: now,
-                original_line_no: lineNo,
-              });
-            }
-            await this.materialDAO.deleteByMaterialCode(sourceType, data.material_code);
-            await this.insertData(sourceType, data);
-            updatedCount++;
-          } else {
-            ignoredCount++;
-          }
-        } else {
-          await this.historyDAO.saveHistory(
-            data.material_code,
-            sourceType,
-            data,
-            'create',
-            operator,
-            batchId
-          );
-
-          await this.auditLogDAO.createLog({
-            batch_id: batchId,
-            source_type: sourceType,
-            action: 'create',
-            material_code: data.material_code,
-            operator: operator,
-            operate_time: now,
-            original_line_no: lineNo,
-          });
-          await this.insertData(sourceType, data);
-          createdCount++;
-        }
-
-        successCount++;
-      } catch (error: any) {
-        await this.failedRecordDAO.create({
-          batch_id: batchId,
-          source_type: sourceType,
-          original_line_no: lineNo,
-          material_code: record.material_code || '',
-          error_type: 'import_error',
-          error_message: error.message || '未知错误',
-          raw_data: JSON.stringify(record),
-          status: 'pending',
-          created_at: now,
-        });
-        failedCount++;
+      return {
+        batchId,
+        totalCount,
+        successCount,
+        failedCount,
+        createdCount,
+        updatedCount,
+        ignoredCount,
+        overwrittenCount,
+        diffs,
+      };
+    } catch (error: any) {
+      throw error;
+    } finally {
+      if (lockId) {
+        await lockDAO.releaseLock(lockId);
       }
     }
-
-    const finalStatus = failedCount > 0 ? 'partial_success' : 'success';
-    await this.batchDAO.updateBatchStats(batchId, totalCount, successCount, failedCount, finalStatus);
-    await this.batchDAO.updateBatchDetailStats(batchId, {
-      created: createdCount,
-      updated: updatedCount,
-      ignored: ignoredCount,
-      overwritten: overwrittenCount,
-    });
-
-    if (failedCount > 0) {
-      await this.createAsyncTask('import_retry', operator, batchId, 3);
-    }
-
-    return {
-      batchId,
-      totalCount,
-      successCount,
-      failedCount,
-      createdCount,
-      updatedCount,
-      ignoredCount,
-      overwrittenCount,
-      diffs,
-    };
   }
 
   private async insertData(sourceType: DataSourceType, data: SourceData): Promise<string> {

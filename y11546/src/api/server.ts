@@ -3,6 +3,8 @@ import { importService } from '../services/importService';
 import { checkService } from '../services/checkService';
 import { exportService } from '../services/exportService';
 import { BatchDAO, HistoryDAO, AuditLogDAO, FailedRecordDAO, AsyncTaskDAO } from '../db/dao';
+import { UserDAO, BatchFreezeDAO, OperationLockDAO } from '../db/securityDAO';
+import { permissionService } from '../services/permissionService';
 
 export function createApiServer(workDir?: string) {
   const app = express();
@@ -361,6 +363,209 @@ export function createApiServer(workDir?: string) {
       res.json({
         success: true,
         output_path: output,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.get('/api/users', async (req, res) => {
+    try {
+      const userDAO = new UserDAO(workDir);
+      const users = await userDAO.findAll();
+      res.json({
+        success: true,
+        data: users,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.post('/api/users', async (req, res) => {
+    try {
+      const { username, role, operator } = req.body;
+      if (!username || !role) {
+        return res.status(400).json({
+          error: '缺少必要参数: username, role',
+        });
+      }
+
+      const permissionCheck = await permissionService.checkUserPermission(operator || 'api_user', 'manage_users');
+      if (!permissionCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          error: permissionCheck.reason || '权限不足',
+        });
+      }
+
+      const userDAO = new UserDAO(workDir);
+      const existing = await userDAO.findByUsername(username);
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          error: '用户已存在',
+        });
+      }
+
+      const id = await userDAO.createUser(username, role);
+      res.json({
+        success: true,
+        data: { id, username, role },
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.delete('/api/users/:username', async (req, res) => {
+    try {
+      const { operator } = req.body;
+      const permissionCheck = await permissionService.checkUserPermission(operator || 'api_user', 'manage_users');
+      if (!permissionCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          error: permissionCheck.reason || '权限不足',
+        });
+      }
+
+      const userDAO = new UserDAO(workDir);
+      const user = await userDAO.findByUsername(req.params.username);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: '用户不存在',
+        });
+      }
+
+      await userDAO.deactivate(user.id!);
+      res.json({
+        success: true,
+        message: '用户已禁用',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.get('/api/freezes', async (req, res) => {
+    try {
+      const freezeDAO = new BatchFreezeDAO(workDir);
+      const freezes = await freezeDAO.findActiveFreezes();
+      res.json({
+        success: true,
+        data: freezes,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.post('/api/batches/:id/freeze', async (req, res) => {
+    try {
+      const { operator, reason } = req.body;
+      const permissionCheck = await permissionService.checkUserPermission(operator || 'api_user', 'freeze');
+      if (!permissionCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          error: permissionCheck.reason || '权限不足',
+        });
+      }
+
+      const freezeDAO = new BatchFreezeDAO(workDir);
+      const isFrozen = await freezeDAO.isBatchFrozen(req.params.id);
+      if (isFrozen) {
+        return res.json({
+          success: true,
+          message: '批次已被冻结',
+        });
+      }
+
+      const id = await freezeDAO.freezeBatch(req.params.id, operator || 'api_user', reason);
+      res.json({
+        success: true,
+        data: { id, batch_id: req.params.id },
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.post('/api/batches/:id/unfreeze', async (req, res) => {
+    try {
+      const { operator } = req.body;
+      const permissionCheck = await permissionService.checkUserPermission(operator || 'api_user', 'unfreeze');
+      if (!permissionCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          error: permissionCheck.reason || '权限不足',
+        });
+      }
+
+      const freezeDAO = new BatchFreezeDAO(workDir);
+      await freezeDAO.unfreezeBatch(req.params.id, operator || 'api_user');
+      res.json({
+        success: true,
+        message: '批次已解冻',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.get('/api/locks', async (req, res) => {
+    try {
+      const lockDAO = new OperationLockDAO(workDir);
+      const locks = await lockDAO.findAllActive();
+      res.json({
+        success: true,
+        data: locks,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  });
+
+  app.delete('/api/locks/:id', async (req, res) => {
+    try {
+      const { operator } = req.body;
+      const permissionCheck = await permissionService.checkUserPermission(operator || 'api_user', 'manage_users');
+      if (!permissionCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          error: '权限不足: 只有管理员可以释放锁',
+        });
+      }
+
+      const lockDAO = new OperationLockDAO(workDir);
+      await lockDAO.releaseLock(req.params.id);
+      res.json({
+        success: true,
+        message: '锁已释放',
       });
     } catch (error: any) {
       res.status(500).json({

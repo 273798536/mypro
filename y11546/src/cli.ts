@@ -8,6 +8,7 @@ import { fixCommand } from './commands/fix';
 import { reportCommand } from './commands/report';
 import { historyCommand } from './commands/history';
 import { exportCommand } from './commands/export';
+import { userCommand, freezeCommand, lockCommand } from './commands/security';
 
 const program = new Command();
 
@@ -107,6 +108,46 @@ program
   .option('--work-dir <dir>', '工作目录', process.cwd())
   .action(async (options) => {
     const exitCode = await exportCommand(options);
+    process.exit(exitCode);
+  });
+
+program
+  .command('user')
+  .description('用户管理')
+  .option('-l, --list', '列出所有用户')
+  .option('-a, --add <username>', '添加用户')
+  .option('-r, --remove <username>', '禁用用户')
+  .option('--role <role>', '用户角色: admin|manager|operator|viewer')
+  .option('-o, --operator <name>', '操作人', process.env.USER || 'admin')
+  .option('--work-dir <dir>', '工作目录', process.cwd())
+  .action(async (options) => {
+    const exitCode = await userCommand(options);
+    process.exit(exitCode);
+  });
+
+program
+  .command('freeze')
+  .description('批次冻结管理')
+  .option('-l, --list', '列出已冻结的批次')
+  .option('-f, --freeze <batch_id>', '冻结批次')
+  .option('-u, --unfreeze <batch_id>', '解冻批次')
+  .option('--reason <text>', '冻结原因')
+  .option('-o, --operator <name>', '操作人', process.env.USER || 'admin')
+  .option('--work-dir <dir>', '工作目录', process.cwd())
+  .action(async (options) => {
+    const exitCode = await freezeCommand(options);
+    process.exit(exitCode);
+  });
+
+program
+  .command('lock')
+  .description('锁管理')
+  .option('-l, --list', '列出活跃锁')
+  .option('-r, --release <lock_id>', '释放锁')
+  .option('-o, --operator <name>', '操作人', process.env.USER || 'admin')
+  .option('--work-dir <dir>', '工作目录', process.cwd())
+  .action(async (options) => {
+    const exitCode = await lockCommand(options);
     process.exit(exitCode);
   });
 

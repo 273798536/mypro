@@ -213,6 +213,41 @@ export class DatabaseManager {
       );
       CREATE INDEX IF NOT EXISTS idx_history_code ON material_history(material_code);
       CREATE INDEX IF NOT EXISTS idx_history_time ON material_history(changed_at);
+
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        username TEXT NOT NULL UNIQUE,
+        display_name TEXT,
+        role TEXT NOT NULL DEFAULT 'viewer',
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS batch_freezes (
+        id TEXT PRIMARY KEY,
+        batch_id TEXT NOT NULL,
+        frozen_by TEXT NOT NULL,
+        frozen_at TEXT NOT NULL,
+        reason TEXT,
+        unfrozen_by TEXT,
+        unfrozen_at TEXT,
+        is_active INTEGER NOT NULL DEFAULT 1
+      );
+      CREATE INDEX IF NOT EXISTS idx_freeze_batch ON batch_freezes(batch_id);
+      CREATE INDEX IF NOT EXISTS idx_freeze_active ON batch_freezes(is_active);
+
+      CREATE TABLE IF NOT EXISTS operation_locks (
+        id TEXT PRIMARY KEY,
+        resource_type TEXT NOT NULL,
+        resource_id TEXT NOT NULL,
+        locked_by TEXT NOT NULL,
+        locked_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        operation TEXT NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_lock_resource ON operation_locks(resource_type, resource_id);
+      CREATE INDEX IF NOT EXISTS idx_lock_expires ON operation_locks(expires_at);
     `;
 
     this.db.exec(sql);
@@ -221,6 +256,21 @@ export class DatabaseManager {
     this.addColumnIfNotExists('import_batches', 'updated_count', 'INTEGER DEFAULT 0');
     this.addColumnIfNotExists('import_batches', 'ignored_count', 'INTEGER DEFAULT 0');
     this.addColumnIfNotExists('import_batches', 'overwritten_count', 'INTEGER DEFAULT 0');
+
+    this.initDefaultAdmin();
+  }
+
+  private initDefaultAdmin(): void {
+    const now = new Date().toISOString();
+    this.db.get("SELECT id FROM users WHERE username = 'admin'", (err, row: any) => {
+      if (!err && !row) {
+        const adminId = uuidv4();
+        this.db.run(
+          'INSERT INTO users (id, username, display_name, role, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+          [adminId, 'admin', '系统管理员', 'admin', 1, now]
+        );
+      }
+    });
   }
 
   private addColumnIfNotExists(table: string, column: string, definition: string): void {

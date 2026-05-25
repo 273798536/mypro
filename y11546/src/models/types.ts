@@ -220,3 +220,85 @@ export interface ReportData {
     borrow_exceed_stock: number;
   };
 }
+
+export type UserRole = 'admin' | 'manager' | 'operator' | 'viewer';
+export type PermissionAction = 'import' | 'overwrite' | 'delete' | 'check' | 'fix' | 'freeze' | 'unfreeze' | 'export' | 'manage_users';
+
+export interface User {
+  id: string;
+  username: string;
+  display_name?: string;
+  role: UserRole;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface BatchFreeze {
+  id: string;
+  batch_id: string;
+  frozen_by: string;
+  frozen_at: string;
+  reason?: string;
+  unfrozen_by?: string;
+  unfrozen_at?: string;
+  is_active: boolean;
+}
+
+export interface OperationLock {
+  id: string;
+  resource_type: string;
+  resource_id: string;
+  locked_by: string;
+  locked_at: string;
+  expires_at: string;
+  operation: string;
+}
+
+export interface RolePermission {
+  role: UserRole;
+  action: PermissionAction;
+  allowed: boolean;
+}
+
+export const ROLE_PERMISSIONS: RolePermission[] = [
+  { role: 'admin', action: 'import', allowed: true },
+  { role: 'admin', action: 'overwrite', allowed: true },
+  { role: 'admin', action: 'delete', allowed: true },
+  { role: 'admin', action: 'check', allowed: true },
+  { role: 'admin', action: 'fix', allowed: true },
+  { role: 'admin', action: 'freeze', allowed: true },
+  { role: 'admin', action: 'unfreeze', allowed: true },
+  { role: 'admin', action: 'export', allowed: true },
+  { role: 'admin', action: 'manage_users', allowed: true },
+
+  { role: 'manager', action: 'import', allowed: true },
+  { role: 'manager', action: 'overwrite', allowed: true },
+  { role: 'manager', action: 'delete', allowed: false },
+  { role: 'manager', action: 'check', allowed: true },
+  { role: 'manager', action: 'fix', allowed: true },
+  { role: 'manager', action: 'freeze', allowed: true },
+  { role: 'manager', action: 'unfreeze', allowed: false },
+  { role: 'manager', action: 'export', allowed: true },
+  { role: 'manager', action: 'manage_users', allowed: false },
+
+  { role: 'operator', action: 'import', allowed: true },
+  { role: 'operator', action: 'overwrite', allowed: false },
+  { role: 'operator', action: 'delete', allowed: false },
+  { role: 'operator', action: 'check', allowed: true },
+  { role: 'operator', action: 'fix', allowed: false },
+  { role: 'operator', action: 'freeze', allowed: false },
+  { role: 'operator', action: 'unfreeze', allowed: false },
+  { role: 'operator', action: 'export', allowed: true },
+  { role: 'operator', action: 'manage_users', allowed: false },
+
+  { role: 'viewer', action: 'import', allowed: false },
+  { role: 'viewer', action: 'overwrite', allowed: false },
+  { role: 'viewer', action: 'delete', allowed: false },
+  { role: 'viewer', action: 'check', allowed: true },
+  { role: 'viewer', action: 'fix', allowed: false },
+  { role: 'viewer', action: 'freeze', allowed: false },
+  { role: 'viewer', action: 'unfreeze', allowed: false },
+  { role: 'viewer', action: 'export', allowed: true },
+  { role: 'viewer', action: 'manage_users', allowed: false },
+];
