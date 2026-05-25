@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Float, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -45,8 +45,8 @@ class WorkOrder(Base):
     __tablename__ = "work_orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    batch_id = Column(Integer, ForeignKey("batches.id"), nullable=False)
-    order_no = Column(String, unique=True, index=True, nullable=False)
+    batch_id = Column(Integer, ForeignKey("batches.id"), nullable=False, index=True)
+    order_no = Column(String, index=True, nullable=False)
     external_order_no = Column(String, index=True)
     road_section = Column(String, index=True)
     pole_number = Column(String)

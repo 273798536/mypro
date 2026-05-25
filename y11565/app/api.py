@@ -285,6 +285,37 @@ def mark_task_manual(task_id: str, message: Optional[str] = None, db: Session = 
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@app.post("/tasks/run-once")
+def run_tasks_once():
+    from app.services.scheduler_service import run_once
+    run_once()
+    return {"status": "completed", "message": "待执行任务已处理完成"}
+
+
+@app.post("/tasks/{task_id}/execute")
+def execute_specific_task(task_id: str, db: Session = Depends(get_db)):
+    from app.services.scheduler_service import _default_task_handler
+    
+    task = task_service.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    
+    if task.status not in [TaskStatus.PENDING.value, TaskStatus.WAITING_RETRY.value]:
+        raise HTTPException(status_code=400, detail=f"任务状态 {task.status} 不能执行")
+    
+    task_service.update_task_status(db, task_id, TaskStatus.RUNNING, progress=0, message="开始执行")
+    
+    try:
+        result = _default_task_handler(task, db)
+        task_service.update_task_status(db, task_id, TaskStatus.SUCCESS, progress=100, message="执行成功", result_data=result)
+        return {"status": "success", "task_id": task_id, "result": result}
+    except Exception as e:
+        import traceback
+        error_tb = traceback.format_exc()
+        task_service.mark_task_failed(db, task_id, str(e), error_tb)
+        return {"status": "failed", "task_id": task_id, "error": str(e)}
+
+
 @app.get("/change-logs", response_model=List[ChangeLog])
 def list_all_change_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return change_log_service.get_all_change_logs(db, skip, limit)

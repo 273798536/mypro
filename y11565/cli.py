@@ -469,6 +469,70 @@ def task_retry(task_id, reset_retries):
         db.close()
 
 
+@task.command("run-once")
+def task_run_once():
+    """立即执行一次待处理任务"""
+    from app.services.scheduler_service import run_once
+    click.echo("开始执行待处理任务...")
+    run_once()
+    click.echo("任务执行完成")
+    sys.exit(0)
+
+
+@task.command("worker")
+@click.option("--interval", default=30, type=int, help="轮询间隔秒数")
+def task_worker(interval):
+    """启动任务工作进程，持续处理待执行任务"""
+    from app.services.scheduler_service import start_scheduler, stop_scheduler
+    import signal
+    
+    click.echo(f"启动任务调度器，每 {interval} 秒检查一次待执行任务")
+    click.echo("按 Ctrl+C 停止...")
+    
+    scheduler = start_scheduler(interval_seconds=interval)
+    
+    try:
+        signal.pause()
+    except (KeyboardInterrupt, SystemExit):
+        click.echo("\n正在停止调度器...")
+        stop_scheduler()
+        click.echo("调度器已停止")
+    
+    sys.exit(0)
+
+
+@task.command("show")
+@click.argument("task_id")
+def task_show(task_id):
+    """显示任务详情"""
+    db = get_db()
+    try:
+        task = task_service.get_task(db, task_id)
+        if not task:
+            click.echo(f"错误: 任务 {task_id} 不存在", err=True)
+            sys.exit(1)
+        
+        click.echo(f"任务ID: {task.task_id}")
+        click.echo(f"任务类型: {task.task_type}")
+        click.echo(f"状态: {task.status}")
+        click.echo(f"进度: {task.progress}%")
+        click.echo(f"消息: {task.message or '-'}")
+        click.echo(f"重试次数: {task.retry_count}/{task.max_retries}")
+        if task.error_message:
+            click.echo(f"错误信息: {task.error_message}")
+        if task.result_data:
+            click.echo(f"结果: {task.result_data}")
+        click.echo(f"创建时间: {task.created_at}")
+        if task.started_at:
+            click.echo(f"开始时间: {task.started_at}")
+        if task.completed_at:
+            click.echo(f"完成时间: {task.completed_at}")
+        
+        sys.exit(0)
+    finally:
+        db.close()
+
+
 @cli.command("api")
 @click.option("--host", default="0.0.0.0", help="监听地址")
 @click.option("--port", default=8000, type=int, help="监听端口")
