@@ -55,18 +55,15 @@ DeadLetterModel.init(
       type: DataTypes.UUID,
       allowNull: false,
       unique: true,
-      index: true,
     },
     batchId: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      index: true,
     },
     failedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
-      index: true,
     },
     lastError: {
       type: DataTypes.TEXT,
@@ -83,7 +80,6 @@ DeadLetterModel.init(
     retryCategory: {
       type: DataTypes.ENUM(...Object.values(RetryCategory)),
       allowNull: false,
-      index: true,
     },
     canBeRecovered: {
       type: DataTypes.BOOLEAN,
@@ -98,7 +94,6 @@ DeadLetterModel.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      index: true,
     },
     recoveredAt: {
       type: DataTypes.DATE,

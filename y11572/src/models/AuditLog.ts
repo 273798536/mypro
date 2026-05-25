@@ -50,17 +50,14 @@ AuditLogModel.init(
     ticketId: {
       type: DataTypes.UUID,
       allowNull: true,
-      index: true,
     },
     batchId: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      index: true,
     },
     action: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      index: true,
     },
     fieldName: {
       type: DataTypes.STRING(100),

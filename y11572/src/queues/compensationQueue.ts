@@ -117,7 +117,7 @@ const setupQueueProcessors = (): void => {
           metadata: { category, attempt: retryCount + 1 },
         });
 
-        const result = await executeCompensationLogic(ticket.dataValues);
+        const result = await executeCompensationLogic(ticket);
 
         if (result.success) {
           await ticket.update({
@@ -179,7 +179,7 @@ const setupQueueProcessors = (): void => {
         const ticket = await CompensationTicketModel.findByPk(ticketId);
         if (ticket) {
           if (retryCount + 1 >= ticket.maxRetries) {
-            await moveToDeadLetter(ticket.dataValues, category, errorMessage, operator);
+            await moveToDeadLetter(ticket, category, errorMessage, operator);
           } else {
             await ticket.update({
               status: TicketStatus.RETRYING,
@@ -214,15 +214,50 @@ const setupQueueProcessors = (): void => {
   });
 };
 
+const failureCounter: Record<string, number> = {};
+
 const executeCompensationLogic = async (
   ticket: CompensationTicketModel
 ): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string }> => {
   try {
-    const { data } = ticket;
+    const { data, id, retryCount } = ticket;
     const amounts = data.compensationAmounts;
     const totalAmount = amounts.reduce((sum, a) => sum + a.amount, 0);
 
     await new Promise((resolve) => setTimeout(resolve, 500));
+
+    if (config.queue.simulateFailure) {
+      const currentFailures = failureCounter[id] || 0;
+      const maxFailures = config.queue.simulateFailureCount;
+
+      if (currentFailures < maxFailures) {
+        failureCounter[id] = currentFailures + 1;
+
+        const errorTypes = [
+          { error: '外部支付系统连接超时', category: RetryCategory.NETWORK_ERROR },
+          { error: '数据库事务死锁，需重试', category: RetryCategory.SYSTEM_ERROR },
+          { error: '第三方接口限流，请稍后重试', category: RetryCategory.NETWORK_ERROR },
+        ];
+        const errorInfo = errorTypes[currentFailures % errorTypes.length];
+
+        logger.warn(`[模拟失败] 工单 ${id} 第 ${currentFailures + 1}/${maxFailures} 次失败: ${errorInfo.error}`, {
+          ticketId: id,
+          retryCount,
+          simulated: true,
+        });
+
+        return {
+          success: false,
+          error: errorInfo.error,
+        };
+      }
+
+      delete failureCounter[id];
+      logger.info(`[模拟成功] 工单 ${id} 第 ${retryCount + 1} 次尝试成功，结束模拟失败`, {
+        ticketId: id,
+        totalFailures: maxFailures,
+      });
+    }
 
     return {
       success: true,
@@ -282,7 +317,7 @@ const moveToDeadLetter = async (
     recoverySuggestion: canBeRecovered
       ? getRecoverySuggestion(category)
       : '业务错误，无法自动恢复，请人工核实',
-    originalMessage: ticket.data,
+    originalMessage: ticket.data as unknown as Record<string, unknown>,
   });
 
   await AuditLogModel.create({

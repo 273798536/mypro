@@ -74,7 +74,7 @@ export const createExport = async (
   const exportRecord = await ExportRecordModel.create({
     batchId,
     exportType,
-    filters: filter,
+    filters: filter as unknown as Record<string, unknown>,
     fileName,
     filePath,
     frozenUntil,
@@ -116,13 +116,14 @@ const executeExport = async (
       where.isFrozen = filter.isFrozen;
     }
     if (filter.dateFrom || filter.dateTo) {
-      where.createdAt = {};
+      const dateConditions: Record<string, unknown> = {};
       if (filter.dateFrom) {
-        (where.createdAt as Record<string, unknown>)[Op.gte] = filter.dateFrom;
+        dateConditions[Op.gte as unknown as string] = filter.dateFrom;
       }
       if (filter.dateTo) {
-        (where.createdAt as Record<string, unknown>)[Op.lte] = filter.dateTo;
+        dateConditions[Op.lte as unknown as string] = filter.dateTo;
       }
+      where.createdAt = dateConditions;
     }
 
     const tickets = await CompensationTicketModel.findAll({

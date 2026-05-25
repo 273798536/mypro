@@ -21,7 +21,7 @@ import {
 } from '../services/manualService';
 import { getOperatorFromRequest } from '../middleware/operatorMiddleware';
 import { AppError } from '../middleware/errorHandler';
-import { TicketStatus, IdempotencyMode } from '../types';
+import { TicketStatus, IdempotencyMode, RetryCategory } from '../types';
 
 const router = Router();
 
@@ -169,7 +169,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     const filter = {
       status: status ? (status as string).split(',') as TicketStatus[] : undefined,
       batchId: batchId as string | undefined,
-      retryCategory: retryCategory as string | undefined,
+      retryCategory: retryCategory as RetryCategory | undefined,
       isFrozen: isFrozen !== undefined ? isFrozen === 'true' : undefined,
       dateFrom: dateFrom ? new Date(dateFrom as string) : undefined,
       dateTo: dateTo ? new Date(dateTo as string) : undefined,

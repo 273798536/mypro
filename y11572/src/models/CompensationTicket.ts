@@ -63,7 +63,6 @@ CompensationTicketModel.init(
     batchId: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      index: true,
     },
     ticketNo: {
       type: DataTypes.STRING(50),
@@ -74,7 +73,6 @@ CompensationTicketModel.init(
       type: DataTypes.ENUM(...Object.values(TicketStatus)),
       allowNull: false,
       defaultValue: TicketStatus.PENDING,
-      index: true,
     },
     data: {
       type: DataTypes.JSONB,
@@ -97,18 +95,15 @@ CompensationTicketModel.init(
     nextRetryAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      index: true,
     },
     retryCategory: {
       type: DataTypes.ENUM(...Object.values(RetryCategory)),
       allowNull: true,
-      index: true,
     },
     isFrozen: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      index: true,
     },
     frozenAt: {
       type: DataTypes.DATE,
@@ -146,7 +141,6 @@ CompensationTicketModel.init(
     idempotencyKey: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      index: true,
     },
     idempotencyMode: {
       type: DataTypes.ENUM(...Object.values(IdempotencyMode)),

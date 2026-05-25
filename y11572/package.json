@@ -9,6 +9,12 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "migrate": "ts-node src/database/migrate.ts",
     "seed": "ts-node src/database/seed.ts",
+    "seed:force": "ts-node src/database/seed.ts --force",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "quickstart": "bash scripts/start.sh",
+    "verify": "bash scripts/verify-flow.sh",
     "lint": "eslint src/**/*.ts",
     "test": "jest"
   },

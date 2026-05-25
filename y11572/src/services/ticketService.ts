@@ -341,13 +341,14 @@ export const getTicketList = async (
     where.isFrozen = filter.isFrozen;
   }
   if (filter.dateFrom || filter.dateTo) {
-    where.createdAt = {};
+    const dateConditions: Record<string, unknown> = {};
     if (filter.dateFrom) {
-      (where.createdAt as Record<string, unknown>)[Op.gte] = filter.dateFrom;
+      dateConditions[Op.gte as unknown as string] = filter.dateFrom;
     }
     if (filter.dateTo) {
-      (where.createdAt as Record<string, unknown>)[Op.lte] = filter.dateTo;
+      dateConditions[Op.lte as unknown as string] = filter.dateTo;
     }
+    where.createdAt = dateConditions;
   }
 
   const { count, rows } = await CompensationTicketModel.findAndCountAll({

@@ -83,9 +83,9 @@ export const unfreezeTicket = async (
     await ticket.update(
       {
         isFrozen: false,
-        frozenAt: null,
-        frozenBy: null,
-        frozenReason: null,
+        frozenAt: null as unknown as undefined,
+        frozenBy: null as unknown as undefined,
+        frozenReason: null as unknown as undefined,
       },
       { transaction }
     );

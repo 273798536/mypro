@@ -55,7 +55,6 @@ ExportRecordModel.init(
     batchId: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      index: true,
     },
     exportType: {
       type: DataTypes.STRING(50),
@@ -65,7 +64,6 @@ ExportRecordModel.init(
       type: DataTypes.ENUM('pending', 'processing', 'completed', 'failed'),
       allowNull: false,
       defaultValue: 'pending',
-      index: true,
     },
     filters: {
       type: DataTypes.JSONB,
@@ -87,7 +85,6 @@ ExportRecordModel.init(
     frozenUntil: {
       type: DataTypes.DATE,
       allowNull: false,
-      index: true,
     },
     exportedBy: {
       type: DataTypes.JSONB,

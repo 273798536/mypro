@@ -46,7 +46,6 @@ RetryRecordModel.init(
     ticketId: {
       type: DataTypes.UUID,
       allowNull: false,
-      index: true,
       references: {
         model: 'compensation_tickets',
         key: 'id',
@@ -65,7 +64,6 @@ RetryRecordModel.init(
     category: {
       type: DataTypes.ENUM(...Object.values(RetryCategory)),
       allowNull: false,
-      index: true,
     },
     errorMessage: {
       type: DataTypes.TEXT,

@@ -40,7 +40,6 @@ StatusHistoryModel.init(
     ticketId: {
       type: DataTypes.UUID,
       allowNull: false,
-      index: true,
       references: {
         model: 'compensation_tickets',
         key: 'id',
@@ -54,7 +53,6 @@ StatusHistoryModel.init(
     toStatus: {
       type: DataTypes.ENUM(...Object.values(TicketStatus)),
       allowNull: false,
-      index: true,
     },
     changedAt: {
       type: DataTypes.DATE,

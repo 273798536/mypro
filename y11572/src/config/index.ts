@@ -31,6 +31,8 @@ export const config = {
     retryAttempts: parseInt(process.env.QUEUE_RETRY_ATTEMPTS || '3', 10),
     retryDelay: parseInt(process.env.QUEUE_RETRY_DELAY || '5000', 10),
     deadlineHours: parseInt(process.env.QUEUE_DEADLINE_HOURS || '24', 10),
+    simulateFailure: process.env.QUEUE_SIMULATE_FAILURE === 'true',
+    simulateFailureCount: parseInt(process.env.QUEUE_SIMULATE_FAILURE_COUNT || '2', 10),
   },
 
   logging: {
