@@ -394,6 +394,58 @@ yargs(hideBin(process.argv))
 
         const results: any[] = [];
         let hasError = false;
+        const context: Record<string, string> = {};
+
+        const resolvePlaceholders = (obj: any): any => {
+          if (typeof obj === 'string') {
+            let result = obj;
+            for (const [key, value] of Object.entries(context)) {
+              result = result.replace(`{${key}}`, value);
+            }
+            return result;
+          }
+          if (Array.isArray(obj)) {
+            return obj.map(resolvePlaceholders);
+          }
+          if (obj && typeof obj === 'object') {
+            const resolved: any = {};
+            for (const [key, value] of Object.entries(obj)) {
+              resolved[key] = resolvePlaceholders(value);
+            }
+            return resolved;
+          }
+          return obj;
+        };
+
+        const captureIds = (result: any, cmd: any) => {
+          if (cmd.description?.includes('巡检记录') && result?.data?.id) {
+            context.inspectionId = result.data.id;
+          }
+          if (cmd.description?.includes('校准证书') && result?.data?.id) {
+            context.certificateId = result.data.id;
+          }
+          if (cmd.description?.includes('维修报价') && result?.data?.id) {
+            context.quoteId = result.data.id;
+          }
+          if (cmd.description?.includes('二次确认单') && result?.data?.id) {
+            context.confirmId = result.data.id;
+          }
+          if (cmd.description?.includes('获取') && Array.isArray(result?.data) && result.data.length > 0) {
+            const latest = result.data[result.data.length - 1];
+            if (latest.recordNo?.startsWith('INSP-FLOW')) {
+              context.inspectionId = latest.id;
+            }
+            if (latest.certificateNo?.startsWith('CERT-FLOW')) {
+              context.certificateId = latest.id;
+            }
+            if (latest.quoteNo?.startsWith('QUOTE-FLOW')) {
+              context.quoteId = latest.id;
+            }
+            if (latest.confirmNo?.startsWith('CONF-FLOW')) {
+              context.confirmId = latest.id;
+            }
+          }
+        };
 
         for (let i = 0; i < commands.length; i++) {
           const cmd = commands[i];
@@ -404,16 +456,23 @@ yargs(hideBin(process.argv))
           try {
             let result: any;
             if (cmd.type === 'http') {
-              const requestData = typeof cmd.content === 'string' ? JSON.parse(cmd.content) : cmd.content;
+              let requestData = typeof cmd.content === 'string' ? JSON.parse(cmd.content) : cmd.content;
+              requestData = resolvePlaceholders(requestData);
               result = await client.request(requestData);
+              if (!result.success) {
+                throw new Error(result.error || '请求失败');
+              }
+              captureIds(result, cmd);
             } else if (cmd.type === 'script') {
+              result = { executed: true, content: cmd.content };
+            } else if (cmd.type === 'db') {
               result = { executed: true };
             }
 
             const duration = Date.now() - startTime;
             console.log(`  ✓ 成功 (${duration}ms)`);
             if (cmd.verbose) {
-              console.log('  结果:', JSON.stringify(result).substring(0, 200));
+              console.log('  结果:', JSON.stringify(result).substring(0, 300));
             }
 
             results.push({ index: i + 1, success: true, duration, result });

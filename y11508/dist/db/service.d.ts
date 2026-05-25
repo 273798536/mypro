@@ -30,7 +30,10 @@ export declare class DatabaseService {
     createCalibrationCertificate(data: Partial<CalibrationCertificateEntity>): Promise<CalibrationCertificateEntity>;
     updateCalibrationCertificateStatus(id: string, status: RecordStatus, changedBy: string, reason: string): Promise<CalibrationCertificateEntity | null>;
     createMaintenanceQuote(data: Partial<MaintenanceQuoteEntity>): Promise<MaintenanceQuoteEntity>;
+    updateMaintenanceQuoteStatus(id: string, status: RecordStatus, changedBy: string, reason: string): Promise<MaintenanceQuoteEntity | null>;
+    updateMaintenanceQuoteApproval(id: string, approvalStatus: 'pending' | 'approved' | 'rejected', changedBy: string, reason: string): Promise<MaintenanceQuoteEntity | null>;
     createSecondaryConfirm(data: Partial<SecondaryConfirmEntity>): Promise<SecondaryConfirmEntity>;
+    updateSecondaryConfirmStatus(id: string, status: RecordStatus, changedBy: string, reason: string): Promise<SecondaryConfirmEntity | null>;
     createImportFailure(source: ImportSource, rowNumber: number, rawData: string, errorMessage: string, importedBy: string): Promise<ImportFailureEntity>;
     createUser(username: string, role: Role, department: string): Promise<UserEntity>;
     findUserByUsername(username: string): Promise<UserEntity | null>;

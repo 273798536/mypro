@@ -648,8 +648,8 @@ export const rolePermissions: Record<Role, {
 };
 
 export const statusTransitions: Record<RecordStatus, RecordStatus[]> = {
-  [RecordStatus.DRAFT]: [RecordStatus.SUBMITTED],
-  [RecordStatus.SUBMITTED]: [RecordStatus.REVIEWED, RecordStatus.REJECTED],
+  [RecordStatus.DRAFT]: [RecordStatus.SUBMITTED, RecordStatus.CONFIRMED],
+  [RecordStatus.SUBMITTED]: [RecordStatus.REVIEWED, RecordStatus.REJECTED, RecordStatus.CONFIRMED],
   [RecordStatus.REVIEWED]: [RecordStatus.CONFIRMED, RecordStatus.REJECTED],
   [RecordStatus.REJECTED]: [RecordStatus.DRAFT, RecordStatus.SUBMITTED],
   [RecordStatus.CONFIRMED]: []

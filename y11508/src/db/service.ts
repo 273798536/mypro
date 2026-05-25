@@ -137,6 +137,32 @@ export class DatabaseService {
     return this.maintenanceRepo.save(quote);
   }
 
+  async updateMaintenanceQuoteStatus(id: string, status: RecordStatus, changedBy: string, reason: string): Promise<MaintenanceQuoteEntity | null> {
+    const quote = await this.maintenanceRepo.findOne({ where: { id } });
+    if (!quote) return null;
+
+    const oldStatus = quote.status;
+    quote.status = status;
+    await this.maintenanceRepo.save(quote);
+
+    await this.createStatusLog('maintenance', id, oldStatus, status, changedBy, reason);
+
+    return quote;
+  }
+
+  async updateMaintenanceQuoteApproval(id: string, approvalStatus: 'pending' | 'approved' | 'rejected', changedBy: string, reason: string): Promise<MaintenanceQuoteEntity | null> {
+    const quote = await this.maintenanceRepo.findOne({ where: { id } });
+    if (!quote) return null;
+
+    const oldStatus = quote.approvalStatus;
+    quote.approvalStatus = approvalStatus;
+    await this.maintenanceRepo.save(quote);
+
+    await this.createStatusLog('maintenance_approval', id, oldStatus, approvalStatus, changedBy, reason);
+
+    return quote;
+  }
+
   async createSecondaryConfirm(data: Partial<SecondaryConfirmEntity>): Promise<SecondaryConfirmEntity> {
     const confirm = this.secondaryConfirmRepo.create({
       id: uuidv4(),
@@ -144,6 +170,19 @@ export class DatabaseService {
       status: data.status || RecordStatus.DRAFT
     });
     return this.secondaryConfirmRepo.save(confirm);
+  }
+
+  async updateSecondaryConfirmStatus(id: string, status: RecordStatus, changedBy: string, reason: string): Promise<SecondaryConfirmEntity | null> {
+    const confirm = await this.secondaryConfirmRepo.findOne({ where: { id } });
+    if (!confirm) return null;
+
+    const oldStatus = confirm.status;
+    confirm.status = status;
+    await this.secondaryConfirmRepo.save(confirm);
+
+    await this.createStatusLog('secondary_confirm', id, oldStatus, status, changedBy, reason);
+
+    return confirm;
   }
 
   async createImportFailure(

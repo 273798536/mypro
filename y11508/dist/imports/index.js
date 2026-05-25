@@ -154,40 +154,50 @@ class DataImportService {
         });
     }
     async importFromCSV(filePath, source, importedBy, requiredFields, createRecord) {
+        const rawRows = [];
         const results = [];
         const errors = [];
-        let rowNumber = 0;
         return new Promise((resolve, reject) => {
             fs_1.default.createReadStream(filePath)
                 .pipe((0, csv_parser_1.default)())
-                .on('data', async (data) => {
-                rowNumber++;
+                .on('data', (data) => {
+                rawRows.push({
+                    rowNum: rawRows.length + 1,
+                    data: { ...data }
+                });
+            })
+                .on('end', async () => {
                 try {
-                    const fieldError = this.validateRequiredFields(data, requiredFields);
-                    if (fieldError) {
-                        throw new Error(fieldError);
+                    for (const { rowNum, data } of rawRows) {
+                        try {
+                            const fieldError = this.validateRequiredFields(data, requiredFields);
+                            if (fieldError) {
+                                throw new Error(fieldError);
+                            }
+                            const record = await createRecord(data, rowNum, importedBy);
+                            results.push(record);
+                        }
+                        catch (error) {
+                            errors.push({
+                                row: rowNum,
+                                error: error.message,
+                                data
+                            });
+                            await this.dbService.createImportFailure(source, rowNum, JSON.stringify(data), error.message, importedBy);
+                        }
                     }
-                    const record = await createRecord(data, rowNumber, importedBy);
-                    results.push(record);
+                    resolve({
+                        success: errors.length === 0,
+                        total: rawRows.length,
+                        imported: results.length,
+                        failed: errors.length,
+                        records: results,
+                        errors
+                    });
                 }
                 catch (error) {
-                    errors.push({
-                        row: rowNumber,
-                        error: error.message,
-                        data
-                    });
-                    await this.dbService.createImportFailure(source, rowNumber, JSON.stringify(data), error.message, importedBy);
+                    reject(error);
                 }
-            })
-                .on('end', () => {
-                resolve({
-                    success: errors.length === 0,
-                    total: rowNumber,
-                    imported: results.length,
-                    failed: errors.length,
-                    records: results,
-                    errors
-                });
             })
                 .on('error', (error) => {
                 reject(error);

@@ -1,0 +1,315 @@
+[
+  {
+    "type": "http",
+    "description": "步骤1: 获取设备列表",
+    "content": {
+      "method": "GET",
+      "url": "/devices"
+    },
+    "verbose": true,
+    "delay": 200
+  },
+  {
+    "type": "http",
+    "description": "步骤2: 创建巡检记录 (DRAFT)",
+    "content": {
+      "method": "POST",
+      "url": "/inspections",
+      "data": {
+        "recordNo": "INSP-FLOW-001",
+        "deviceCode": "ECG-0014",
+        "inspector": "张三",
+        "inspectionDate": "2024-01-20T00:00:00.000Z",
+        "inspectionItems": {
+          "外观": "正常",
+          "功能": "良好",
+          "清洁度": "达标"
+        },
+        "conclusion": "合格",
+        "remarks": "流程测试-创建巡检"
+      }
+    },
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤3: 获取刚创建的巡检记录ID",
+    "content": {
+      "method": "GET",
+      "url": "/inspections"
+    },
+    "verbose": false,
+    "delay": 200
+  },
+  {
+    "type": "http",
+    "description": "步骤4: 提交巡检记录 (DRAFT -> SUBMITTED)",
+    "content": {
+      "method": "PUT",
+      "url": "/inspections/{inspectionId}/status",
+      "data": {
+        "status": "submitted",
+        "reason": "巡检记录完成，提交复核"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤5: 创建校准证书 (DRAFT)",
+    "content": {
+      "method": "POST",
+      "url": "/certificates",
+      "data": {
+        "certificateNo": "CERT-FLOW-001",
+        "deviceCode": "ECG-0014",
+        "calibrationAgency": "市计量所",
+        "calibrationDate": "2024-01-15T00:00:00.000Z",
+        "expiryDate": "2025-01-15T00:00:00.000Z",
+        "calibrationItems": ["示值误差", "重复性", "稳定性"],
+        "conclusion": "pass",
+        "fileUrl": "/uploads/cert-flow-001.pdf"
+      }
+    },
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤6: 提交校准证书 (DRAFT -> SUBMITTED)",
+    "content": {
+      "method": "PUT",
+      "url": "/certificates/{certificateId}/status",
+      "data": {
+        "status": "submitted",
+        "reason": "校准证书完成，提交复核"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤7: 创建维修报价 (DRAFT)",
+    "content": {
+      "method": "POST",
+      "url": "/quotes",
+      "data": {
+        "quoteNo": "QUOTE-FLOW-001",
+        "deviceCode": "ECG-0014",
+        "vendor": "原厂维修服务商",
+        "quoteDate": "2024-01-18T00:00:00.000Z",
+        "estimatedCost": 2500,
+        "maintenanceItems": ["更换传感器", "校准调试", "清洁保养"]
+      }
+    },
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤8: 提交维修报价 (DRAFT -> SUBMITTED)",
+    "content": {
+      "method": "PUT",
+      "url": "/quotes/{quoteId}/status",
+      "data": {
+        "status": "submitted",
+        "reason": "维修报价完成，提交审批"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤9: 审批维修报价 (pending -> approved)",
+    "content": {
+      "method": "PUT",
+      "url": "/quotes/{quoteId}/approval",
+      "data": {
+        "approvalStatus": "approved",
+        "reason": "报价合理，同意维修"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤10: 复核巡检记录 (SUBMITTED -> REVIEWED)",
+    "content": {
+      "method": "PUT",
+      "url": "/inspections/{inspectionId}/status",
+      "data": {
+        "status": "reviewed",
+        "reason": "复核通过，数据真实有效"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤11: 确认巡检记录 (REVIEWED -> CONFIRMED)",
+    "content": {
+      "method": "PUT",
+      "url": "/inspections/{inspectionId}/status",
+      "data": {
+        "status": "confirmed",
+        "reason": "主管确认，归档"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤12: 复核校准证书 (SUBMITTED -> REVIEWED)",
+    "content": {
+      "method": "PUT",
+      "url": "/certificates/{certificateId}/status",
+      "data": {
+        "status": "reviewed",
+        "reason": "复核通过，证书有效"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤13: 确认校准证书 (REVIEWED -> CONFIRMED)",
+    "content": {
+      "method": "PUT",
+      "url": "/certificates/{certificateId}/status",
+      "data": {
+        "status": "confirmed",
+        "reason": "主管确认，归档"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤14: 确认维修报价 (SUBMITTED -> CONFIRMED)",
+    "content": {
+      "method": "PUT",
+      "url": "/quotes/{quoteId}/status",
+      "data": {
+        "status": "confirmed",
+        "reason": "主管确认，安排维修"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤15: 创建二次确认单",
+    "content": {
+      "method": "POST",
+      "url": "/confirms",
+      "data": {
+        "confirmNo": "CONF-FLOW-001",
+        "relatedRecordType": "inspection",
+        "relatedRecordId": "{inspectionId}",
+        "deviceCode": "ECG-0014",
+        "confirmer": "李护士长",
+        "confirmDate": "2024-01-22T00:00:00.000Z",
+        "confirmContent": "已复核巡检记录，设备状态正常"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤16: 确认二次确认单 (DRAFT -> CONFIRMED)",
+    "content": {
+      "method": "PUT",
+      "url": "/confirms/{confirmId}/status",
+      "data": {
+        "status": "confirmed",
+        "reason": "确认无误"
+      }
+    },
+    "dynamic": true,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤17: 执行状态联动检查",
+    "content": {
+      "method": "POST",
+      "url": "/status-check"
+    },
+    "verbose": true,
+    "delay": 500
+  },
+  {
+    "type": "http",
+    "description": "步骤18: 执行对账检查",
+    "content": {
+      "method": "GET",
+      "url": "/reconciliation"
+    },
+    "verbose": false,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤19: 获取仪表盘统计",
+    "content": {
+      "method": "GET",
+      "url": "/dashboard"
+    },
+    "verbose": true,
+    "delay": 200
+  },
+  {
+    "type": "http",
+    "description": "步骤20: 查看状态变更审计日志",
+    "content": {
+      "method": "GET",
+      "url": "/status-logs"
+    },
+    "verbose": false,
+    "delay": 200
+  },
+  {
+    "type": "http",
+    "description": "步骤21: 导出巡检报表",
+    "content": {
+      "method": "GET",
+      "url": "/export/inspections"
+    },
+    "verbose": false,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤22: 导出校准证书报表",
+    "content": {
+      "method": "GET",
+      "url": "/export/certificates"
+    },
+    "verbose": false,
+    "delay": 300
+  },
+  {
+    "type": "http",
+    "description": "步骤23: 导出对账报告",
+    "content": {
+      "method": "GET",
+      "url": "/export/reconciliation"
+    },
+    "verbose": false,
+    "delay": 300
+  },
+  {
+    "type": "script",
+    "description": "完整流程结束 - 从创建到导出闭环完成",
+    "content": "echo '流程完成: 创建巡检->创建证书->创建报价->审批->复核->确认->对账->导出'",
+    "verbose": true
+  }
+]

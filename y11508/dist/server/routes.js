@@ -35,10 +35,12 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createApiRouter = createApiRouter;
 const express_1 = require("express");
+const validator_1 = require("../utils/validator");
 const middleware_1 = require("./middleware");
 const types_1 = require("../types");
 function createApiRouter(dbService, statusEngine, importService, reportService) {
     const router = (0, express_1.Router)();
+    const validator = new validator_1.DataValidator(dbService);
     router.use(middleware_1.authMiddleware);
     router.get('/devices', (0, middleware_1.requirePermission)('devices', 'view'), async (req, res) => {
         const devices = await dbService.getDevices();
@@ -78,14 +80,25 @@ function createApiRouter(dbService, statusEngine, importService, reportService) 
         res.json({ success: true, data: filtered });
     });
     router.post('/inspections', (0, middleware_1.requirePermission)('inspectionRecords', 'create'), async (req, res) => {
+        const validation = await validator.validateInspectionRecord(req.body);
+        if (!validation.valid) {
+            return res.status(400).json({
+                success: false,
+                error: '数据校验失败',
+                validationErrors: validation.errors
+            });
+        }
         const record = await dbService.createInspectionRecord({
-            ...req.body,
+            ...validation.data,
             createdBy: req.user.username
         });
         res.json({ success: true, data: record });
     });
     router.put('/inspections/:id/status', async (req, res) => {
         const { status, reason } = req.body;
+        if (!status || !reason) {
+            return res.status(400).json({ success: false, error: '缺少状态或原因' });
+        }
         const record = await dbService.getInspectionRepository().findOne({ where: { id: req.params.id } });
         if (!record) {
             return res.status(404).json({ success: false, error: '记录不存在' });
@@ -102,11 +115,34 @@ function createApiRouter(dbService, statusEngine, importService, reportService) 
         res.json({ success: true, data: filtered });
     });
     router.post('/certificates', (0, middleware_1.requirePermission)('calibrationCertificates', 'create'), async (req, res) => {
+        const validation = await validator.validateCalibrationCertificate(req.body);
+        if (!validation.valid) {
+            return res.status(400).json({
+                success: false,
+                error: '数据校验失败',
+                validationErrors: validation.errors
+            });
+        }
         const cert = await dbService.createCalibrationCertificate({
-            ...req.body,
+            ...validation.data,
             createdBy: req.user.username
         });
         res.json({ success: true, data: cert });
+    });
+    router.put('/certificates/:id/status', async (req, res) => {
+        const { status, reason } = req.body;
+        if (!status || !reason) {
+            return res.status(400).json({ success: false, error: '缺少状态或原因' });
+        }
+        const cert = await dbService.getCalibrationRepository().findOne({ where: { id: req.params.id } });
+        if (!cert) {
+            return res.status(404).json({ success: false, error: '校准证书不存在' });
+        }
+        if (!(0, middleware_1.checkStatusTransition)(cert.status, status, req.user.role)) {
+            return res.status(403).json({ success: false, error: '无权进行此状态变更' });
+        }
+        const updated = await dbService.updateCalibrationCertificateStatus(req.params.id, status, req.user.username, reason);
+        res.json({ success: true, data: updated });
     });
     router.get('/quotes', (0, middleware_1.requirePermission)('maintenanceQuotes', 'view'), async (req, res) => {
         const quotes = await dbService.getMaintenanceQuotes();
@@ -114,11 +150,48 @@ function createApiRouter(dbService, statusEngine, importService, reportService) 
         res.json({ success: true, data: filtered });
     });
     router.post('/quotes', (0, middleware_1.requirePermission)('maintenanceQuotes', 'create'), async (req, res) => {
+        const validation = await validator.validateMaintenanceQuote(req.body);
+        if (!validation.valid) {
+            return res.status(400).json({
+                success: false,
+                error: '数据校验失败',
+                validationErrors: validation.errors
+            });
+        }
         const quote = await dbService.createMaintenanceQuote({
-            ...req.body,
+            ...validation.data,
             createdBy: req.user.username
         });
         res.json({ success: true, data: quote });
+    });
+    router.put('/quotes/:id/status', async (req, res) => {
+        const { status, reason } = req.body;
+        if (!status || !reason) {
+            return res.status(400).json({ success: false, error: '缺少状态或原因' });
+        }
+        const quote = await dbService.getMaintenanceRepository().findOne({ where: { id: req.params.id } });
+        if (!quote) {
+            return res.status(404).json({ success: false, error: '维修报价不存在' });
+        }
+        if (!(0, middleware_1.checkStatusTransition)(quote.status, status, req.user.role)) {
+            return res.status(403).json({ success: false, error: '无权进行此状态变更' });
+        }
+        const updated = await dbService.updateMaintenanceQuoteStatus(req.params.id, status, req.user.username, reason);
+        res.json({ success: true, data: updated });
+    });
+    router.put('/quotes/:id/approval', (0, middleware_1.requirePermission)('maintenanceQuotes', 'edit'), async (req, res) => {
+        const { approvalStatus, reason } = req.body;
+        if (!approvalStatus || !reason) {
+            return res.status(400).json({ success: false, error: '缺少审批状态或原因' });
+        }
+        if (!['pending', 'approved', 'rejected'].includes(approvalStatus)) {
+            return res.status(400).json({ success: false, error: '无效的审批状态' });
+        }
+        const updated = await dbService.updateMaintenanceQuoteApproval(req.params.id, approvalStatus, req.user.username, reason);
+        if (!updated) {
+            return res.status(404).json({ success: false, error: '维修报价不存在' });
+        }
+        res.json({ success: true, data: updated });
     });
     router.get('/confirms', (0, middleware_1.requirePermission)('secondaryConfirms', 'view'), async (req, res) => {
         const confirms = await dbService.getSecondaryConfirms();
@@ -126,11 +199,34 @@ function createApiRouter(dbService, statusEngine, importService, reportService) 
         res.json({ success: true, data: filtered });
     });
     router.post('/confirms', (0, middleware_1.requirePermission)('secondaryConfirms', 'create'), async (req, res) => {
+        const validation = await validator.validateSecondaryConfirm(req.body);
+        if (!validation.valid) {
+            return res.status(400).json({
+                success: false,
+                error: '数据校验失败',
+                validationErrors: validation.errors
+            });
+        }
         const confirm = await dbService.createSecondaryConfirm({
-            ...req.body,
+            ...validation.data,
             createdBy: req.user.username
         });
         res.json({ success: true, data: confirm });
+    });
+    router.put('/confirms/:id/status', async (req, res) => {
+        const { status, reason } = req.body;
+        if (!status || !reason) {
+            return res.status(400).json({ success: false, error: '缺少状态或原因' });
+        }
+        const confirm = await dbService.getSecondaryConfirmRepository().findOne({ where: { id: req.params.id } });
+        if (!confirm) {
+            return res.status(404).json({ success: false, error: '二次确认单不存在' });
+        }
+        if (!(0, middleware_1.checkStatusTransition)(confirm.status, status, req.user.role)) {
+            return res.status(403).json({ success: false, error: '无权进行此状态变更' });
+        }
+        const updated = await dbService.updateSecondaryConfirmStatus(req.params.id, status, req.user.username, reason);
+        res.json({ success: true, data: updated });
     });
     router.get('/dashboard', async (req, res) => {
         const stats = await reportService.getDashboardStats();

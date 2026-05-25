@@ -3,6 +3,7 @@ import { DatabaseService } from '../db/service';
 import { StatusLinkEngine } from '../engine/status-link';
 import { DataImportService } from '../imports';
 import { ReportService } from '../reports';
+import { DataValidator } from '../utils/validator';
 import { authMiddleware, AuthRequest, requirePermission, filterResponse, checkStatusTransition } from './middleware';
 import { ImportSource, RecordStatus, DeviceStatus } from '../types';
 
@@ -13,6 +14,7 @@ export function createApiRouter(
   reportService: ReportService
 ): Router {
   const router = Router();
+  const validator = new DataValidator(dbService);
 
   router.use(authMiddleware);
 
@@ -73,8 +75,17 @@ export function createApiRouter(
   router.post('/inspections',
     requirePermission('inspectionRecords', 'create'),
     async (req: AuthRequest, res) => {
+      const validation = await validator.validateInspectionRecord(req.body);
+      if (!validation.valid) {
+        return res.status(400).json({
+          success: false,
+          error: '数据校验失败',
+          validationErrors: validation.errors
+        });
+      }
+
       const record = await dbService.createInspectionRecord({
-        ...req.body,
+        ...validation.data,
         createdBy: req.user!.username
       });
       res.json({ success: true, data: record });
@@ -84,8 +95,11 @@ export function createApiRouter(
   router.put('/inspections/:id/status',
     async (req: AuthRequest, res) => {
       const { status, reason } = req.body;
-      const record = await dbService.getInspectionRepository().findOne({ where: { id: req.params.id } });
+      if (!status || !reason) {
+        return res.status(400).json({ success: false, error: '缺少状态或原因' });
+      }
 
+      const record = await dbService.getInspectionRepository().findOne({ where: { id: req.params.id } });
       if (!record) {
         return res.status(404).json({ success: false, error: '记录不存在' });
       }
@@ -117,11 +131,47 @@ export function createApiRouter(
   router.post('/certificates',
     requirePermission('calibrationCertificates', 'create'),
     async (req: AuthRequest, res) => {
+      const validation = await validator.validateCalibrationCertificate(req.body);
+      if (!validation.valid) {
+        return res.status(400).json({
+          success: false,
+          error: '数据校验失败',
+          validationErrors: validation.errors
+        });
+      }
+
       const cert = await dbService.createCalibrationCertificate({
-        ...req.body,
+        ...validation.data,
         createdBy: req.user!.username
       });
       res.json({ success: true, data: cert });
+    }
+  );
+
+  router.put('/certificates/:id/status',
+    async (req: AuthRequest, res) => {
+      const { status, reason } = req.body;
+      if (!status || !reason) {
+        return res.status(400).json({ success: false, error: '缺少状态或原因' });
+      }
+
+      const cert = await dbService.getCalibrationRepository().findOne({ where: { id: req.params.id } });
+      if (!cert) {
+        return res.status(404).json({ success: false, error: '校准证书不存在' });
+      }
+
+      if (!checkStatusTransition(cert.status, status, req.user!.role)) {
+        return res.status(403).json({ success: false, error: '无权进行此状态变更' });
+      }
+
+      const updated = await dbService.updateCalibrationCertificateStatus(
+        req.params.id,
+        status as RecordStatus,
+        req.user!.username,
+        reason
+      );
+
+      res.json({ success: true, data: updated });
     }
   );
 
@@ -137,11 +187,74 @@ export function createApiRouter(
   router.post('/quotes',
     requirePermission('maintenanceQuotes', 'create'),
     async (req: AuthRequest, res) => {
+      const validation = await validator.validateMaintenanceQuote(req.body);
+      if (!validation.valid) {
+        return res.status(400).json({
+          success: false,
+          error: '数据校验失败',
+          validationErrors: validation.errors
+        });
+      }
+
       const quote = await dbService.createMaintenanceQuote({
-        ...req.body,
+        ...validation.data,
         createdBy: req.user!.username
       });
       res.json({ success: true, data: quote });
+    }
+  );
+
+  router.put('/quotes/:id/status',
+    async (req: AuthRequest, res) => {
+      const { status, reason } = req.body;
+      if (!status || !reason) {
+        return res.status(400).json({ success: false, error: '缺少状态或原因' });
+      }
+
+      const quote = await dbService.getMaintenanceRepository().findOne({ where: { id: req.params.id } });
+      if (!quote) {
+        return res.status(404).json({ success: false, error: '维修报价不存在' });
+      }
+
+      if (!checkStatusTransition(quote.status, status, req.user!.role)) {
+        return res.status(403).json({ success: false, error: '无权进行此状态变更' });
+      }
+
+      const updated = await dbService.updateMaintenanceQuoteStatus(
+        req.params.id,
+        status as RecordStatus,
+        req.user!.username,
+        reason
+      );
+
+      res.json({ success: true, data: updated });
+    }
+  );
+
+  router.put('/quotes/:id/approval',
+    requirePermission('maintenanceQuotes', 'edit'),
+    async (req: AuthRequest, res) => {
+      const { approvalStatus, reason } = req.body;
+      if (!approvalStatus || !reason) {
+        return res.status(400).json({ success: false, error: '缺少审批状态或原因' });
+      }
+
+      if (!['pending', 'approved', 'rejected'].includes(approvalStatus)) {
+        return res.status(400).json({ success: false, error: '无效的审批状态' });
+      }
+
+      const updated = await dbService.updateMaintenanceQuoteApproval(
+        req.params.id,
+        approvalStatus as 'pending' | 'approved' | 'rejected',
+        req.user!.username,
+        reason
+      );
+
+      if (!updated) {
+        return res.status(404).json({ success: false, error: '维修报价不存在' });
+      }
+
+      res.json({ success: true, data: updated });
     }
   );
 
@@ -157,11 +270,47 @@ export function createApiRouter(
   router.post('/confirms',
     requirePermission('secondaryConfirms', 'create'),
     async (req: AuthRequest, res) => {
+      const validation = await validator.validateSecondaryConfirm(req.body);
+      if (!validation.valid) {
+        return res.status(400).json({
+          success: false,
+          error: '数据校验失败',
+          validationErrors: validation.errors
+        });
+      }
+
       const confirm = await dbService.createSecondaryConfirm({
-        ...req.body,
+        ...validation.data,
         createdBy: req.user!.username
       });
       res.json({ success: true, data: confirm });
+    }
+  );
+
+  router.put('/confirms/:id/status',
+    async (req: AuthRequest, res) => {
+      const { status, reason } = req.body;
+      if (!status || !reason) {
+        return res.status(400).json({ success: false, error: '缺少状态或原因' });
+      }
+
+      const confirm = await dbService.getSecondaryConfirmRepository().findOne({ where: { id: req.params.id } });
+      if (!confirm) {
+        return res.status(404).json({ success: false, error: '二次确认单不存在' });
+      }
+
+      if (!checkStatusTransition(confirm.status, status, req.user!.role)) {
+        return res.status(403).json({ success: false, error: '无权进行此状态变更' });
+      }
+
+      const updated = await dbService.updateSecondaryConfirmStatus(
+        req.params.id,
+        status as RecordStatus,
+        req.user!.username,
+        reason
+      );
+
+      res.json({ success: true, data: updated });
     }
   );
 
