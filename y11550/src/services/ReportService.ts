@@ -210,42 +210,58 @@ export class ReportService {
     return filePath;
   }
 
-  async verifyExportConsistency(receiptId: string, exportHash: string): Promise<boolean> {
-    const receipt = await this.receiptRepository.findOne({
-      where: { id: receiptId },
-      relations: ['exceptions']
-    });
+  async verifyExportConsistency(receiptIds: string[], exportHash: string): Promise<{
+    isConsistent: boolean;
+    currentHash: string;
+    expectedHash: string;
+  }> {
+    const receipts = await this.receiptRepository
+      .createQueryBuilder('receipt')
+      .leftJoinAndSelect('receipt.exceptions', 'exceptions')
+      .where('receipt.id IN (:...ids)', { ids: receiptIds })
+      .orderBy('receipt.createdAt', 'DESC')
+      .getMany();
 
-    if (!receipt) return false;
+    if (receipts.length === 0) {
+      return { isConsistent: false, currentHash: '', expectedHash: exportHash };
+    }
 
-    const currentHash = this.generateDataHash([{
-      id: receipt.id,
-      batchNo: receipt.batchNo,
-      cabinetId: receipt.cabinetId,
-      cabinetName: receipt.cabinetName,
-      city: receipt.city,
-      status: receipt.status,
-      statusLabel: STATUS_LABELS[receipt.status],
-      isFrozen: receipt.isFrozen,
-      frozenAt: receipt.frozenAt,
-      frozenBy: receipt.frozenBy,
-      freezeReason: receipt.freezeReason,
-      manualReason: receipt.manualReason,
-      totalStockBefore: receipt.totalStockBefore,
-      totalRestockAmount: receipt.totalRestockAmount,
-      totalStockAfter: receipt.totalStockAfter,
-      totalRefundAmount: receipt.totalRefundAmount,
-      exceptionCount: receipt.exceptionCount,
-      hasUnresolvedExceptions: receipt.hasUnresolvedExceptions,
-      previousStatus: receipt.previousStatus,
-      statusChangedAt: receipt.statusChangedAt,
-      statusChangeReason: receipt.statusChangeReason,
-      createdByName: receipt.createdByName,
-      createdAt: receipt.createdAt,
-      settledAt: receipt.settledAt
-    }]);
+    const validReceipts = receipts.filter(r => this.isValidReceiptForSummary(r));
 
-    return currentHash === exportHash;
+    const data = validReceipts.map(r => ({
+      id: r.id,
+      batchNo: r.batchNo,
+      cabinetId: r.cabinetId,
+      cabinetName: r.cabinetName,
+      city: r.city,
+      status: r.status,
+      statusLabel: STATUS_LABELS[r.status],
+      isFrozen: r.isFrozen,
+      frozenAt: r.frozenAt,
+      frozenBy: r.frozenBy,
+      freezeReason: r.freezeReason,
+      manualReason: r.manualReason,
+      totalStockBefore: r.totalStockBefore,
+      totalRestockAmount: r.totalRestockAmount,
+      totalStockAfter: r.totalStockAfter,
+      totalRefundAmount: r.totalRefundAmount,
+      exceptionCount: r.exceptionCount,
+      hasUnresolvedExceptions: r.hasUnresolvedExceptions,
+      previousStatus: r.previousStatus,
+      statusChangedAt: r.statusChangedAt,
+      statusChangeReason: r.statusChangeReason,
+      createdByName: r.createdByName,
+      createdAt: r.createdAt,
+      settledAt: r.settledAt
+    }));
+
+    const currentHash = this.generateDataHash(data);
+
+    return {
+      isConsistent: currentHash === exportHash,
+      currentHash,
+      expectedHash: exportHash
+    };
   }
 
   private async getFilteredReceipts(filter: ReportFilter, withRelations = false): Promise<Receipt[]> {

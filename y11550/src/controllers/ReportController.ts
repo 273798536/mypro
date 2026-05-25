@@ -132,15 +132,25 @@ export class ReportController {
 
   verifyExportConsistency = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { receiptId, exportHash } = req.body;
+      const { receiptIds, exportHash } = req.body;
 
-      const isConsistent = await this.reportService.verifyExportConsistency(receiptId, exportHash);
+      if (!Array.isArray(receiptIds) || receiptIds.length === 0) {
+        res.status(400).json({
+          success: false,
+          error: 'receiptIds 必须是非空数组'
+        });
+        return;
+      }
+
+      const result = await this.reportService.verifyExportConsistency(receiptIds, exportHash);
 
       res.json({
         success: true,
         data: {
-          isConsistent,
-          receiptId
+          isConsistent: result.isConsistent,
+          currentHash: result.currentHash,
+          expectedHash: result.expectedHash,
+          receiptIds
         }
       });
     } catch (error: any) {

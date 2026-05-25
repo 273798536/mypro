@@ -2,6 +2,7 @@ import { Repository, EntityManager } from 'typeorm';
 import { Receipt, StockSnapshot, RefundRecord, FailedRecord, AuditLog, ExceptionRecord } from '../entities';
 import { DataSource, ExceptionType, ReceiptStatus } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import { STATUS_LABELS } from './StateMachineService';
 
 export interface CheckResult {
   checkName: string;
@@ -314,27 +315,39 @@ export class AutoCheckService {
   async verifyExportConsistency(receiptId: string, exportHash: string): Promise<boolean> {
     const receipt = await this.receiptRepository.findOne({
       where: { id: receiptId },
-      relations: ['stockSnapshots', 'exceptions']
+      relations: ['exceptions']
     });
 
     if (!receipt) return false;
 
     const crypto = require('crypto');
     const currentHash = crypto.createHash('sha256');
-    currentHash.update(JSON.stringify({
+    currentHash.update(JSON.stringify([{
       id: receipt.id,
       batchNo: receipt.batchNo,
+      cabinetId: receipt.cabinetId,
+      cabinetName: receipt.cabinetName,
+      city: receipt.city,
       status: receipt.status,
+      statusLabel: STATUS_LABELS[receipt.status],
       isFrozen: receipt.isFrozen,
+      frozenAt: receipt.frozenAt,
+      frozenBy: receipt.frozenBy,
+      freezeReason: receipt.freezeReason,
+      manualReason: receipt.manualReason,
       totalStockBefore: receipt.totalStockBefore,
       totalRestockAmount: receipt.totalRestockAmount,
       totalStockAfter: receipt.totalStockAfter,
+      totalRefundAmount: receipt.totalRefundAmount,
       exceptionCount: receipt.exceptionCount,
-      stockSnapshots: receipt.stockSnapshots?.map(s => ({
-        slotId: s.slotId,
-        afterStock: s.afterStock
-      }))
-    }));
+      hasUnresolvedExceptions: receipt.hasUnresolvedExceptions,
+      previousStatus: receipt.previousStatus,
+      statusChangedAt: receipt.statusChangedAt,
+      statusChangeReason: receipt.statusChangeReason,
+      createdByName: receipt.createdByName,
+      createdAt: receipt.createdAt,
+      settledAt: receipt.settledAt
+    }]));
 
     const currentHashStr = currentHash.digest('hex');
 
