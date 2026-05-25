@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { AuditDetectionService } from '../services/audit-detection.service';
 import { AuditService } from '../services/audit.service';
 import { ExportService } from '../services/export.service';
+import { AuditActionType } from '../types';
 
 const overruleSchema = z.object({
   reason: z.string().min(5, '改判理由至少5个字符'),
@@ -157,7 +158,7 @@ export async function getAuditLogs(req: Request, res: Response) {
   try {
     const batchId = req.query.batchId as string;
     const userId = req.query.userId as string;
-    const action = req.query.action as string;
+    const action = req.query.action as AuditActionType | undefined;
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 50;
 
