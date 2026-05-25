@@ -104,6 +104,8 @@ def can_perform_action(username, action, record_owner=None):
         return role_config.get('can_generate_report', False)
     elif action == 'view_history':
         return role_config.get('can_view_history', False)
+    elif action == 'view_issues':
+        return role_config.get('can_view_issues', False)
     
     return False
 

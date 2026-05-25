@@ -2,7 +2,7 @@ import click
 import sys
 from tabulate import tabulate
 
-from .database import init_db, get_db_path
+from .database import init_db, get_db_path, get_connection
 from .permissions import can_perform_action, get_user_role, get_role_name, list_users
 from .importer import import_file, get_import_sessions, get_session_records, track_batch_stores
 from .checker import check_session, get_record_issues, get_issue_summary, ISSUE_TYPES
@@ -18,6 +18,23 @@ class Context:
 
 
 pass_context = click.make_pass_decorator(Context, ensure=True)
+
+
+def get_record_owner(issue_id):
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT s.imported_by
+                FROM record_issues ri
+                JOIN raw_records r ON ri.record_id = r.id
+                JOIN import_sessions s ON r.session_id = s.id
+                WHERE ri.id = ?
+            """, (issue_id,))
+            row = cursor.fetchone()
+            return row['imported_by'] if row else None
+    except Exception:
+        return None
 
 
 @click.group()
@@ -40,7 +57,7 @@ def init(ctx):
         click.echo(f"  {user['username']} ({get_role_name(user['role'])})")
 
 
-@cli.command()
+@cli.command('import')
 @click.argument('file_path')
 @click.option('--type', '-t', 'source_type', default='auto', 
               type=click.Choice(['auto', 'sample_label', 'temperature', 'complaint', 'supplement']),
@@ -106,7 +123,8 @@ def check(ctx, session_id):
 @pass_context
 def fix(ctx, issue_id, value, note):
     """修正单个问题"""
-    if not can_perform_action(ctx.username, 'fix'):
+    record_owner = get_record_owner(issue_id)
+    if not can_perform_action(ctx.username, 'fix', record_owner):
         click.echo(f"错误: 用户 {ctx.username} 没有修正权限", err=True)
         sys.exit(1)
     
@@ -351,6 +369,10 @@ def track(ctx, batch_no, output_path):
 @pass_context
 def list_issues(ctx, session, status):
     """列出问题清单"""
+    if not can_perform_action(ctx.username, 'view_issues'):
+        click.echo(f"错误: 用户 {ctx.username} 没有查看问题权限", err=True)
+        sys.exit(1)
+    
     issues = get_record_issues(session_id=session, status=status)
     click.echo(f"问题清单 ({len(issues)}条):")
     table_data = []
