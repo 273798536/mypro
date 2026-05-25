@@ -175,6 +175,194 @@ def test_duplicate_detection(token):
         print("(由于幂等键相同，应该返回已存在的记录，而非新建)")
 
 
+def test_status_machine_validation(token):
+    print("\n=== 测试状态机合法性校验 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = requests.get(f"{BASE_URL}/reimbursements?status=draft&page_size=1", headers=headers)
+    if response.status_code != 200 or not response.json()['items']:
+        print("没有草稿状态的报销单，跳过状态机测试")
+        return
+    
+    reimb_id = response.json()['items'][0]['id']
+    print(f"测试报销单ID: {reimb_id}")
+    
+    illegal_transitions = [
+        ("paid", "草稿直接改为已付款"),
+        ("approved", "草稿直接改为审批通过"),
+    ]
+    
+    for status, desc in illegal_transitions:
+        response = requests.post(
+            f"{BASE_URL}/reimbursements/{reimb_id}/status",
+            json={
+                "status": status,
+                "reason": "非法跳转测试",
+                "change_reason": "测试非法跳转"
+            },
+            headers=headers
+        )
+        
+        if response.status_code == 403:
+            print(f"  ✓ {desc}: 正确被拒绝 - {response.json()['detail'][:50]}...")
+        else:
+            print(f"  ✗ {desc}: 错误! 状态码={response.status_code}, 应该被拒绝")
+
+
+def test_role_permission_validation():
+    print("\n=== 测试角色权限控制 ===")
+    
+    employee_token = get_token("employee", "employee123")
+    if not employee_token:
+        print("员工账号登录失败，跳过权限测试")
+        return
+    
+    headers = {"Authorization": f"Bearer {employee_token}"}
+    
+    response = requests.get(f"{BASE_URL}/reimbursements?status=draft&page_size=1", headers=headers)
+    if response.status_code != 200 or not response.json()['items']:
+        print("没有草稿状态的报销单，跳过权限测试")
+        return
+    
+    reimb_id = response.json()['items'][0]['id']
+    
+    illegal_actions = [
+        ("second_confirm", "普通员工尝试二次确认"),
+        ("approved", "普通员工尝试审批通过"),
+    ]
+    
+    for status, desc in illegal_actions:
+        response = requests.post(
+            f"{BASE_URL}/reimbursements/{reimb_id}/status",
+            json={
+                "status": status,
+                "reason": "越权测试",
+                "change_reason": "测试越权操作"
+            },
+            headers=headers
+        )
+        
+        if response.status_code == 403:
+            print(f"  ✓ {desc}: 正确被拒绝 - {response.json()['detail'][:50]}...")
+        else:
+            print(f"  ✗ {desc}: 错误! 状态码={response.status_code}, 应该被拒绝")
+
+
+def test_fix_interfaces(token):
+    print("\n=== 测试失败修正接口 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    print("\n1. 测试批次详情接口 GET /batches/{id}")
+    batch_response = requests.get(f"{BASE_URL}/batches", headers=headers)
+    if batch_response.status_code == 200 and batch_response.json():
+        batch_id = batch_response.json()[0]['id']
+        response = requests.get(f"{BASE_URL}/batches/{batch_id}", headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            print(f"  ✓ 批次详情获取成功: {data['batch_number']}, 包含 {len(data['reimbursements'])} 笔报销单")
+        else:
+            print(f"  ✗ 批次详情获取失败: {response.text}")
+    
+    print("\n2. 测试发票列表接口 GET /invoices?is_duplicate=false")
+    response = requests.get(f"{BASE_URL}/invoices?is_duplicate=false&page_size=3", headers=headers)
+    if response.status_code == 200:
+        invoices = response.json()
+        print(f"  ✓ 获取到 {len(invoices)} 条发票记录")
+        if invoices:
+            inv_id = invoices[0]['id']
+            
+            print(f"\n3. 测试发票详情接口 GET /invoices/{inv_id}")
+            response = requests.get(f"{BASE_URL}/invoices/{inv_id}", headers=headers)
+            if response.status_code == 200:
+                print(f"  ✓ 发票详情获取成功: 发票号={response.json()['invoice_number']}")
+            
+            print(f"\n4. 测试发票更新接口 PUT /invoices/{inv_id}")
+            response = requests.put(
+                f"{BASE_URL}/invoices/{inv_id}",
+                json={"category": "办公", "expense_type": "office"},
+                headers=headers
+            )
+            if response.status_code == 200:
+                print(f"  ✓ 发票更新成功: 新类别={response.json()['category']}")
+            else:
+                print(f"  ✗ 发票更新失败: {response.text}")
+    
+    print("\n5. 测试证据列表接口 GET /evidences")
+    response = requests.get(f"{BASE_URL}/evidences?page_size=3", headers=headers)
+    if response.status_code == 200:
+        evidences = response.json()
+        print(f"  ✓ 获取到 {len(evidences)} 条证据记录")
+        if evidences:
+            ev_id = evidences[0]['id']
+            
+            print(f"\n6. 测试证据详情接口 GET /evidences/{ev_id}")
+            response = requests.get(f"{BASE_URL}/evidences/{ev_id}", headers=headers)
+            if response.status_code == 200:
+                print(f"  ✓ 证据详情获取成功: 文件名={response.json()['file_name']}")
+            
+            print(f"\n7. 测试证据更新接口 PUT /evidences/{ev_id}")
+            response = requests.put(
+                f"{BASE_URL}/evidences/{ev_id}",
+                json={"ocr_text": "人工校正后的文本内容"},
+                headers=headers
+            )
+            if response.status_code == 200:
+                print(f"  ✓ 证据更新成功")
+            else:
+                print(f"  ✗ 证据更新失败: {response.text}")
+    
+    print("\n8. 测试状态流转查询接口 GET /status-transitions")
+    response = requests.get(f"{BASE_URL}/status-transitions", headers=headers)
+    if response.status_code == 200:
+        transitions = response.json()
+        print(f"  ✓ 获取到 {len(transitions)} 个状态的流转规则")
+        for from_status, to_list in list(transitions.items())[:3]:
+            to_statuses = [t['status'] for t in to_list]
+            print(f"      {from_status} → {', '.join(to_statuses)}")
+
+
+def test_duplicate_invoice_fix(token):
+    print("\n=== 测试重复发票修正流程 ===")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    print("1. 先添加一张已存在的发票，触发重复检测")
+    response = requests.get(f"{BASE_URL}/reimbursements?status=draft&page_size=1", headers=headers)
+    if response.status_code != 200 or not response.json()['items']:
+        print("没有草稿状态的报销单，跳过重复测试")
+        return
+    
+    reimb_id = response.json()['items'][0]['id']
+    
+    response = requests.post(
+        f"{BASE_URL}/reimbursements/{reimb_id}/invoices",
+        json={
+            "invoice_number": "12345678",
+            "invoice_code": "3100123456",
+            "total_amount": 1698.11,
+            "tax_amount": 101.89,
+            "amount_with_tax": 1800.00,
+            "category": "住宿",
+            "expense_type": "hotel"
+        },
+        headers=headers
+    )
+    
+    if response.status_code == 200:
+        data = response.json()
+        print(f"  ✓ 发票添加成功: 重复标记={data['is_duplicate']}")
+        
+        if data['is_duplicate']:
+            print("\n2. 人工确认非重复，清除标记")
+            response = requests.put(
+                f"{BASE_URL}/invoices/{data['id']}",
+                json={"is_duplicate": False},
+                headers=headers
+            )
+            if response.status_code == 200:
+                print(f"  ✓ 重复标记已清除: is_duplicate={response.json()['is_duplicate']}")
+                print(f"    (审计日志已记录修正操作)")
+
+
 def main():
     print("财务报销稽核系统 API 测试")
     print("=" * 50)
@@ -198,6 +386,11 @@ def main():
     
     test_finance_dashboard(token)
     test_duplicate_detection(token)
+    
+    test_status_machine_validation(token)
+    test_role_permission_validation()
+    test_fix_interfaces(token)
+    test_duplicate_invoice_fix(token)
     
     print("\n" + "=" * 50)
     print("测试完成!")

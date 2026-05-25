@@ -40,6 +40,32 @@
 - **敏感字段**: 访问统计和脱敏处理
 - **异常监控**: 待二次确认、重复发票/付款数量
 
+### 状态流转规则（非法跳转将被拒绝）
+
+| 当前状态 | 允许转换到 | 说明 |
+|---------|-----------|------|
+| draft (草稿) | submitted, audit_only | 只能提交或转入只读审计 |
+| submitted (已提交) | draft, rejected, second_confirm, approved | 可撤回、驳回、二次确认或直接审批 |
+| rejected (已驳回) | draft, submitted | 修改后可重提或回到草稿 |
+| second_confirm (二次确认) | submitted, rejected, approved | 复核后可退回到提交、驳回或通过 |
+| audit_only (只读审计) | draft | 审计完成后回到草稿 |
+| approved (审批通过) | rejected, paid | 付款前仍可驳回或标记已付款 |
+| paid (已付款) | - | 终态，不可变更 |
+
+### 角色权限矩阵（状态变更权限）
+
+| 目标状态 | employee | manager | finance | auditor | admin |
+|---------|----------|---------|---------|---------|-------|
+| draft | ✅ | ✅ | ✅ | ❌ | ✅ |
+| submitted | ✅ | ✅ | ✅ | ❌ | ✅ |
+| rejected | ❌ | ✅ | ✅ | ❌ | ✅ |
+| second_confirm | ❌ | ❌ | ✅ | ❌ | ✅ |
+| audit_only | ❌ | ❌ | ❌ | ✅ | ✅ |
+| approved | ❌ | ❌ | ✅ | ❌ | ✅ |
+| paid | ❌ | ❌ | ✅ | ❌ | ✅ |
+
+> **注意**: 即使角色有权限，也必须遵守状态流转规则。例如：普通员工(employee)虽然有权限改为submitted，但不能直接从draft改为approved（流转规则不允许）。
+
 ## 快速开始
 
 ### 1. 安装依赖
@@ -133,57 +159,190 @@ curl -X POST "http://localhost:8000/export" \
 ## 失败场景与修正方式
 
 ### 场景1: 发票PDF解析失败
-**现象**: 上传后字段为空或乱码
-**修正**:
+**现象**: 上传后字段为空或乱码，parsed_content 中包含 parse_error
+
+**完整可跟跑修正步骤**:
 ```bash
-# 1. 查看证据解析结果
-GET /evidences/{id}
+# 1. 列出所有证据，找到解析失败的证据ID
+GET /evidences?evidence_type=invoice_pdf
 
-# 2. 手动更新发票信息
-PUT /invoices/{id}
+# 2. 查看具体证据的解析结果
+GET /evidences/{evidence_id}
+# 响应示例: { "id": 1, "file_name": "invoice.pdf", "parsed_content": { "parse_error": "..." } }
 
-# 3. 重新关联到报销单
-POST /reimbursements/{id}/invoices
+# 3. 人工校正证据内容
+PUT /evidences/{evidence_id}
+{
+  "ocr_text": "人工校正后的发票文本...",
+  "parsed_content": {
+    "invoice_number": "12345678",
+    "invoice_code": "3100123456",
+    "total_amount": 1800.0,
+    "manual_fixed": true
+  }
+}
+
+# 4. 列出该报销单下的所有发票
+GET /invoices?reimbursement_id={reimbursement_id}
+
+# 5. 手动更新发票信息
+PUT /invoices/{invoice_id}
+{
+  "invoice_number": "12345678",
+  "invoice_code": "3100123456",
+  "total_amount": 1698.11,
+  "tax_amount": 101.89,
+  "amount_with_tax": 1800.0,
+  "category": "住宿",
+  "expense_type": "hotel"
+}
+
+# 6. 如缺少发票，重新添加到报销单（仅限draft或rejected状态）
+POST /reimbursements/{reimbursement_id}/invoices
+{
+  "invoice_number": "12345678",
+  "invoice_code": "3100123456",
+  "total_amount": 1698.11,
+  "tax_amount": 101.89,
+  "amount_with_tax": 1800.0,
+  "category": "住宿",
+  "expense_type": "hotel"
+}
 ```
 
 ### 场景2: 批次导入部分失败
-**现象**: 批次结果中 failed_count > 0
-**修正**:
+**现象**: 批次结果中 failed_count > 0，failed_items 列出具体错误
+
+**完整可跟跑修正步骤**:
 ```bash
-# 1. 查看失败条目
-GET /batches/{id}
+# 1. 列出所有批次，找到失败的批次
+GET /batches
 
-# 2. 修正失败数据后单独导入
+# 2. 查看批次详情和失败条目
+GET /batches/{batch_id}
+# 响应示例: { "failed_items": [ { "index": 2, "error": "...", "reimbursement_no": "..." } ] }
+
+# 3. 查看状态流转规则，确认当前状态可执行的操作
+GET /status-transitions
+
+# 4. 方案A: 修正失败数据后单独导入
 POST /reimbursements
+{
+  "purpose": "修正后的报销用途",
+  "total_amount": 5680.50,
+  ...
+}
 
-# 3. 或重新以append策略导入整个批次
-POST /batches/import  (strategy: append)
+# 5. 方案B: 重新以append策略导入整个批次（忽略已成功的，只导入失败的）
+POST /batches/import
+{
+  "batch_name": "重新导入-修正版",
+  "strategy": "append",
+  "reimbursements": [ ... ]
+}
+
+# 6. 方案C: 用overwrite策略覆盖整个批次（谨慎使用）
+POST /batches/import
+{
+  "batch_name": "覆盖导入-修正版",
+  "strategy": "overwrite",
+  "reimbursements": [ ... ]
+}
 ```
 
 ### 场景3: 异步任务永久失败
-**现象**: 任务状态为 permanent_failed
-**修正**:
+**现象**: 任务状态为 permanent_failed，error_message 包含具体错误
+
+**完整可跟跑修正步骤**:
 ```bash
-# 1. 查看错误详情
+# 1. 列出所有永久失败的任务
+GET /tasks?status=permanent_failed
+
+# 2. 查看任务错误详情
 GET /tasks/{task_id}
+# 响应示例: { "error_message": "数据库连接超时", "retry_count": 3 }
 
-# 2. 人工修正数据后重试
+# 3. 人工修正相关数据（根据错误信息）
+# 例如：修正发票数据、补充缺失字段等
+PUT /invoices/{invoice_id}
+{ "total_amount": 1800.0 }
+
+# 4. 重置任务状态为pending，重新执行
 POST /tasks/{task_id}/retry
+# 响应: { "status": "pending", "retry_count": 0 }
 
-# 3. 任务重置为pending状态重新处理
+# 5. 等待处理完成后轮询状态
+GET /tasks/{task_id}
 ```
 
 ### 场景4: 重复报销检测
-**现象**: 发票标记为 is_duplicate=true
-**修正**:
-```bash
-# 1. 查看重复来源
-GET /invoices?duplicate_of={invoice_id}
+**现象**: 发票标记为 is_duplicate=true，关联了 duplicate_of
 
-# 2. 确认是否为真重复
-#    - 是: 保留标记，拒绝报销
-#    - 否: 手动清除重复标记
-PUT /invoices/{id}  {is_duplicate: false}
+**完整可跟跑修正步骤**:
+```bash
+# 1. 列出所有重复发票
+GET /invoices?is_duplicate=true
+
+# 2. 查看重复来源（哪张发票判定为原始发票）
+GET /invoices?duplicate_of={original_invoice_id}
+
+# 3. 查看原始发票详情
+GET /invoices/{original_invoice_id}
+
+# 4. 查看被标记为重复的发票详情
+GET /invoices/{duplicate_invoice_id}
+
+# 5. 对比两张发票，确认是否为真重复
+#    - 真重复: 保留标记，状态变更为rejected驳回报销
+POST /reimbursements/{reimbursement_id}/status
+{
+  "status": "rejected",
+  "reason": "发票重复报销",
+  "change_reason": "发票号码12345678已在另一笔报销中使用"
+}
+
+#    - 假重复（如发票号码相同但实际是不同单据）: 手动清除重复标记
+PUT /invoices/{duplicate_invoice_id}
+{
+  "is_duplicate": false
+}
+# 审计日志会自动记录此修正操作，包含操作人和原因
+
+# 6. 清除标记后，将报销单从rejected状态重新提交
+POST /reimbursements/{reimbursement_id}/status
+{
+  "status": "submitted",
+  "reason": "已核实非重复发票",
+  "change_reason": "财务核实后确认发票唯一"
+}
+```
+
+### 场景5: 状态流转异常（如草稿想直接审批）
+**现象**: 状态变更接口返回403，提示不允许转换
+
+**完整可跟跑修正步骤**:
+```bash
+# 1. 查看当前状态允许的流转路径
+GET /status-transitions
+# 响应示例: { "draft": [ { "status": "submitted", "allowed_roles": ["employee", "finance"] } ] }
+
+# 2. 确认当前登录用户的角色权限
+GET /users/me
+# 响应: { "role": "employee", "username": "..." }
+
+# 3. 按合法路径逐步流转
+#    草稿 → 提交 → 二次确认 → 审批通过 → 已付款
+
+# 4. 如需要财务审批，切换财务账号操作
+curl -X POST /token -d "username=finance&password=finance123"
+
+# 5. 使用财务账号执行审批操作
+POST /reimbursements/{id}/status
+{
+  "status": "approved",
+  "reason": "审批通过",
+  "change_reason": "财务经理审批同意报销"
+}
 ```
 
 ## 报表变化说明

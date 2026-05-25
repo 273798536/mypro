@@ -242,6 +242,28 @@ class ReimbursementUpdate(BaseModel):
     traveler_names: Optional[List[str]] = None
 
 
+class InvoiceUpdate(BaseModel):
+    invoice_number: Optional[str] = None
+    invoice_code: Optional[str] = None
+    invoice_date: Optional[datetime] = None
+    seller_name: Optional[str] = None
+    seller_tax_no: Optional[str] = None
+    buyer_name: Optional[str] = None
+    buyer_tax_no: Optional[str] = None
+    total_amount: Optional[float] = None
+    tax_amount: Optional[float] = None
+    amount_with_tax: Optional[float] = None
+    category: Optional[str] = None
+    expense_type: Optional[str] = None
+    is_duplicate: Optional[bool] = None
+
+
+class EvidenceUpdate(BaseModel):
+    evidence_type: Optional[EvidenceType] = None
+    parsed_content: Optional[Dict[str, Any]] = None
+    ocr_text: Optional[str] = None
+
+
 class ReimbursementResponse(ReimbursementBase):
     id: int
     batch_id: Optional[int] = None
@@ -257,6 +279,14 @@ class ReimbursementResponse(ReimbursementBase):
     invoices: List[InvoiceResponse] = []
     travel_applications: List[TravelApplicationResponse] = []
     payment_flows: List[PaymentFlowResponse] = []
+    evidences: List[EvidenceResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class BatchDetailResponse(BatchResponse):
+    reimbursements: List[ReimbursementResponse] = []
     evidences: List[EvidenceResponse] = []
 
     class Config:

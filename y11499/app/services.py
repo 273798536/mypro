@@ -2,10 +2,95 @@ import hashlib
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Set
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 from . import models, schemas
+
+
+VALID_TRANSITIONS: Dict[models.ReimbursementStatus, Set[models.ReimbursementStatus]] = {
+    models.ReimbursementStatus.DRAFT: {
+        models.ReimbursementStatus.SUBMITTED,
+        models.ReimbursementStatus.AUDIT_ONLY,
+    },
+    models.ReimbursementStatus.SUBMITTED: {
+        models.ReimbursementStatus.REJECTED,
+        models.ReimbursementStatus.SECOND_CONFIRM,
+        models.ReimbursementStatus.APPROVED,
+        models.ReimbursementStatus.DRAFT,
+    },
+    models.ReimbursementStatus.REJECTED: {
+        models.ReimbursementStatus.SUBMITTED,
+        models.ReimbursementStatus.DRAFT,
+    },
+    models.ReimbursementStatus.SECOND_CONFIRM: {
+        models.ReimbursementStatus.APPROVED,
+        models.ReimbursementStatus.REJECTED,
+        models.ReimbursementStatus.SUBMITTED,
+    },
+    models.ReimbursementStatus.AUDIT_ONLY: {
+        models.ReimbursementStatus.DRAFT,
+    },
+    models.ReimbursementStatus.APPROVED: {
+        models.ReimbursementStatus.PAID,
+        models.ReimbursementStatus.REJECTED,
+    },
+    models.ReimbursementStatus.PAID: set(),
+}
+
+
+STATUS_PERMISSIONS: Dict[models.ReimbursementStatus, List[models.UserRole]] = {
+    models.ReimbursementStatus.DRAFT: [
+        models.UserRole.EMPLOYEE,
+        models.UserRole.MANAGER,
+        models.UserRole.FINANCE,
+        models.UserRole.ADMIN,
+    ],
+    models.ReimbursementStatus.SUBMITTED: [
+        models.UserRole.EMPLOYEE,
+        models.UserRole.MANAGER,
+        models.UserRole.FINANCE,
+        models.UserRole.ADMIN,
+    ],
+    models.ReimbursementStatus.REJECTED: [
+        models.UserRole.MANAGER,
+        models.UserRole.FINANCE,
+        models.UserRole.ADMIN,
+    ],
+    models.ReimbursementStatus.SECOND_CONFIRM: [
+        models.UserRole.FINANCE,
+        models.UserRole.ADMIN,
+    ],
+    models.ReimbursementStatus.AUDIT_ONLY: [
+        models.UserRole.AUDITOR,
+        models.UserRole.ADMIN,
+    ],
+    models.ReimbursementStatus.APPROVED: [
+        models.UserRole.FINANCE,
+        models.UserRole.ADMIN,
+    ],
+    models.ReimbursementStatus.PAID: [
+        models.UserRole.FINANCE,
+        models.UserRole.ADMIN,
+    ],
+}
+
+
+def validate_status_transition(
+    current_status: models.ReimbursementStatus,
+    target_status: models.ReimbursementStatus,
+    user_role: models.UserRole,
+) -> Tuple[bool, Optional[str]]:
+    allowed_next = VALID_TRANSITIONS.get(current_status, set())
+    if target_status not in allowed_next:
+        valid_next = [s.value for s in allowed_next]
+        return False, f"状态 {current_status.value} 不允许转换为 {target_status.value}，合法的下一状态为: {', '.join(valid_next) if valid_next else '无'}"
+    
+    allowed_roles = STATUS_PERMISSIONS.get(target_status, [])
+    if user_role not in allowed_roles:
+        return False, f"角色 {user_role.value} 无权将状态变更为 {target_status.value}，需要的角色为: {', '.join(r.value for r in allowed_roles)}"
+    
+    return True, None
 
 
 def generate_idempotency_key(data: Dict[str, Any]) -> str:
@@ -343,6 +428,7 @@ def change_reimbursement_status(
     reimbursement_id: int,
     new_status: schemas.ReimbursementStatus,
     actor_id: int,
+    user_role: models.UserRole,
     reason: Optional[str] = None,
     change_reason: Optional[str] = None
 ) -> models.Reimbursement:
@@ -354,8 +440,13 @@ def change_reimbursement_status(
         raise ValueError(f"Reimbursement {reimbursement_id} not found")
     
     old_status = reimbursement.status
-    old_values = {"status": old_status}
-    new_values = {"status": new_status}
+    
+    is_valid, error_msg = validate_status_transition(old_status, new_status, user_role)
+    if not is_valid:
+        raise PermissionError(error_msg)
+    
+    old_values = {"status": old_status.value}
+    new_values = {"status": new_status.value}
     
     reimbursement.status = new_status
     
@@ -371,13 +462,15 @@ def change_reimbursement_status(
     elif new_status == schemas.ReimbursementStatus.APPROVED:
         reimbursement.approved_at = datetime.now()
         new_values["approved_at"] = reimbursement.approved_at.isoformat()
+    elif new_status == schemas.ReimbursementStatus.PAID:
+        new_values["paid_at"] = datetime.now().isoformat()
     
     db.commit()
     db.refresh(reimbursement)
     
     log_audit(
         db, reimbursement_id, actor_id,
-        action=f"status_change:{old_status}->{new_status}",
+        action=f"status_change:{old_status.value}->{new_status.value}",
         old_values=old_values,
         new_values=new_values,
         change_reason=change_reason

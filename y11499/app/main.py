@@ -272,11 +272,14 @@ def change_status(
     try:
         reimb = services.change_reimbursement_status(
             db, reimbursement_id, status_change.status,
-            current_user.id, status_change.reason, status_change.change_reason
+            current_user.id, current_user.role,
+            status_change.reason, status_change.change_reason
         )
         return reimb
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 
 @app.get("/reimbursements/{reimbursement_id}/audit-logs", response_model=List[schemas.AuditLogResponse], tags=["审计"])
@@ -498,3 +501,280 @@ def list_tasks(
     if status:
         query = query.filter(models.AsyncTask.status == status)
     return query.order_by(models.AsyncTask.created_at.desc()).all()
+
+
+@app.get("/batches/{batch_id}", response_model=schemas.BatchDetailResponse, tags=["批次处理"])
+def get_batch_detail(
+    batch_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    batch = db.query(models.Batch).filter(models.Batch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="批次不存在")
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        if batch.creator_id != current_user.id:
+            raise HTTPException(status_code=403, detail="无权访问此批次")
+    
+    return batch
+
+
+@app.get("/invoices", response_model=List[schemas.InvoiceResponse], tags=["发票管理"])
+def list_invoices(
+    duplicate_of: Optional[int] = None,
+    is_duplicate: Optional[bool] = None,
+    reimbursement_id: Optional[int] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    query = db.query(models.Invoice)
+    
+    if duplicate_of is not None:
+        query = query.filter(models.Invoice.duplicate_of == duplicate_of)
+    if is_duplicate is not None:
+        query = query.filter(models.Invoice.is_duplicate == is_duplicate)
+    if reimbursement_id is not None:
+        query = query.filter(models.Invoice.reimbursement_id == reimbursement_id)
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        query = query.join(models.Reimbursement).filter(
+            models.Reimbursement.creator_id == current_user.id
+        )
+    
+    return query.offset((page - 1) * page_size).limit(page_size).all()
+
+
+@app.get("/invoices/{invoice_id}", response_model=schemas.InvoiceResponse, tags=["发票管理"])
+def get_invoice(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="发票不存在")
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        reimb = db.query(models.Reimbursement).filter(
+            models.Reimbursement.id == invoice.reimbursement_id
+        ).first()
+        if not reimb or reimb.creator_id != current_user.id:
+            raise HTTPException(status_code=403, detail="无权访问此发票")
+    
+    return invoice
+
+
+@app.put("/invoices/{invoice_id}", response_model=schemas.InvoiceResponse, tags=["发票管理"])
+def update_invoice(
+    invoice_id: int,
+    update_data: schemas.InvoiceUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.require_role([models.UserRole.FINANCE, models.UserRole.ADMIN]))
+):
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="发票不存在")
+    
+    old_values = {}
+    new_values = {}
+    
+    for field, value in update_data.dict(exclude_unset=True).items():
+        old_val = getattr(invoice, field)
+        if old_val != value:
+            old_values[field] = str(old_val)
+            new_values[field] = str(value)
+            setattr(invoice, field, value)
+    
+    if update_data.is_duplicate == False:
+        invoice.duplicate_of = None
+        new_values["duplicate_of"] = None
+    
+    db.commit()
+    db.refresh(invoice)
+    
+    if old_values:
+        services.log_audit(
+            db, invoice.reimbursement_id, current_user.id,
+            action="update_invoice",
+            old_values={"invoice_id": invoice_id, **old_values},
+            new_values={"invoice_id": invoice_id, **new_values},
+            change_reason="修正发票信息"
+        )
+    
+    return invoice
+
+
+@app.post("/reimbursements/{reimbursement_id}/invoices", response_model=schemas.InvoiceResponse, tags=["发票管理"])
+def add_invoice_to_reimbursement(
+    reimbursement_id: int,
+    invoice_data: schemas.InvoiceCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    reimb = db.query(models.Reimbursement).filter(
+        models.Reimbursement.id == reimbursement_id
+    ).first()
+    if not reimb:
+        raise HTTPException(status_code=404, detail="报销单不存在")
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN]:
+        if reimb.creator_id != current_user.id:
+            raise HTTPException(status_code=403, detail="无权修改此报销单")
+    
+    if reimb.status not in [models.ReimbursementStatus.DRAFT, models.ReimbursementStatus.REJECTED]:
+        raise HTTPException(status_code=400, detail="只能在草稿或驳回状态添加发票")
+    
+    duplicate_of = services.detect_duplicate_invoice(db, invoice_data)
+    invoice = models.Invoice(
+        reimbursement_id=reimbursement_id,
+        **invoice_data.dict(),
+        is_duplicate=duplicate_of is not None,
+        duplicate_of=duplicate_of.id if duplicate_of else None
+    )
+    db.add(invoice)
+    db.commit()
+    db.refresh(invoice)
+    
+    services.log_audit(
+        db, reimbursement_id, current_user.id,
+        action="add_invoice",
+        new_values={"invoice_id": invoice.id, "invoice_number": invoice.invoice_number},
+        change_reason="补充发票信息"
+    )
+    
+    return invoice
+
+
+@app.get("/evidences", response_model=List[schemas.EvidenceResponse], tags=["证据管理"])
+def list_evidences(
+    evidence_type: Optional[schemas.EvidenceType] = None,
+    reimbursement_id: Optional[int] = None,
+    batch_id: Optional[int] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    query = db.query(models.Evidence)
+    
+    if evidence_type:
+        query = query.filter(models.Evidence.evidence_type == evidence_type)
+    if reimbursement_id:
+        query = query.filter(models.Evidence.reimbursement_id == reimbursement_id)
+    if batch_id:
+        query = query.filter(models.Evidence.batch_id == batch_id)
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        query = query.outerjoin(models.Reimbursement).outerjoin(models.Batch).filter(
+            (models.Reimbursement.creator_id == current_user.id) |
+            (models.Batch.creator_id == current_user.id)
+        )
+    
+    return query.offset((page - 1) * page_size).limit(page_size).all()
+
+
+@app.get("/evidences/{evidence_id}", response_model=schemas.EvidenceResponse, tags=["证据管理"])
+def get_evidence(
+    evidence_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    evidence = db.query(models.Evidence).filter(models.Evidence.id == evidence_id).first()
+    if not evidence:
+        raise HTTPException(status_code=404, detail="证据不存在")
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        if evidence.reimbursement_id:
+            reimb = db.query(models.Reimbursement).filter(
+                models.Reimbursement.id == evidence.reimbursement_id
+            ).first()
+            if not reimb or reimb.creator_id != current_user.id:
+                raise HTTPException(status_code=403, detail="无权访问此证据")
+        elif evidence.batch_id:
+            batch = db.query(models.Batch).filter(
+                models.Batch.id == evidence.batch_id
+            ).first()
+            if not batch or batch.creator_id != current_user.id:
+                raise HTTPException(status_code=403, detail="无权访问此证据")
+    
+    return evidence
+
+
+@app.put("/evidences/{evidence_id}", response_model=schemas.EvidenceResponse, tags=["证据管理"])
+def update_evidence(
+    evidence_id: int,
+    update_data: schemas.EvidenceUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.require_role([models.UserRole.FINANCE, models.UserRole.ADMIN]))
+):
+    evidence = db.query(models.Evidence).filter(models.Evidence.id == evidence_id).first()
+    if not evidence:
+        raise HTTPException(status_code=404, detail="证据不存在")
+    
+    old_values = {}
+    new_values = {}
+    
+    for field, value in update_data.dict(exclude_unset=True).items():
+        old_val = getattr(evidence, field)
+        if old_val != value:
+            old_values[field] = str(old_val)
+            new_values[field] = str(value)
+            setattr(evidence, field, value)
+    
+    db.commit()
+    db.refresh(evidence)
+    
+    if old_values:
+        services.log_audit(
+            db, evidence.reimbursement_id, current_user.id,
+            action="update_evidence",
+            old_values={"evidence_id": evidence_id, **old_values},
+            new_values={"evidence_id": evidence_id, **new_values},
+            change_reason="修正证据解析结果"
+        )
+    
+    return evidence
+
+
+@app.get("/payment-flows", response_model=List[schemas.PaymentFlowResponse], tags=["付款流水"])
+def list_payment_flows(
+    is_duplicate: Optional[bool] = None,
+    reimbursement_id: Optional[int] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    query = db.query(models.PaymentFlow)
+    
+    if is_duplicate is not None:
+        query = query.filter(models.PaymentFlow.is_duplicate == is_duplicate)
+    if reimbursement_id is not None:
+        query = query.filter(models.PaymentFlow.reimbursement_id == reimbursement_id)
+    
+    if current_user.role not in [models.UserRole.FINANCE, models.UserRole.ADMIN, models.UserRole.AUDITOR]:
+        query = query.join(models.Reimbursement).filter(
+            models.Reimbursement.creator_id == current_user.id
+        )
+    
+    return query.offset((page - 1) * page_size).limit(page_size).all()
+
+
+@app.get("/status-transitions", tags=["系统配置"])
+def get_valid_status_transitions(
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    transitions = {}
+    for from_status, to_statuses in services.VALID_TRANSITIONS.items():
+        transitions[from_status.value] = [
+            {
+                "status": s.value,
+                "allowed_roles": [r.value for r in services.STATUS_PERMISSIONS.get(s, [])],
+                "can_transition": current_user.role in services.STATUS_PERMISSIONS.get(s, [])
+            }
+            for s in to_statuses
+        ]
+    return transitions
