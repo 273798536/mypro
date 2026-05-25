@@ -226,7 +226,7 @@ export class ImportService {
           batchId
         );
       }
-      await this.materialDAO.deleteByBatchId(sourceType, batchId);
+      await this.materialDAO.deleteAllBySourceType(sourceType);
       existingMap.clear();
     }
 
@@ -293,6 +293,8 @@ export class ImportService {
                 original_line_no: lineNo,
               });
             }
+            await this.materialDAO.deleteByMaterialCode(sourceType, data.material_code);
+            await this.insertData(sourceType, data);
             updatedCount++;
           } else {
             ignoredCount++;
@@ -316,10 +318,10 @@ export class ImportService {
             operate_time: now,
             original_line_no: lineNo,
           });
+          await this.insertData(sourceType, data);
           createdCount++;
         }
 
-        await this.insertData(sourceType, data);
         successCount++;
       } catch (error: any) {
         await this.failedRecordDAO.create({
@@ -337,13 +339,18 @@ export class ImportService {
       }
     }
 
-    await this.batchDAO.updateBatchStats(batchId, totalCount, successCount, failedCount, 'success');
+    const finalStatus = failedCount > 0 ? 'partial_success' : 'success';
+    await this.batchDAO.updateBatchStats(batchId, totalCount, successCount, failedCount, finalStatus);
     await this.batchDAO.updateBatchDetailStats(batchId, {
       created: createdCount,
       updated: updatedCount,
       ignored: ignoredCount,
       overwritten: overwrittenCount,
     });
+
+    if (failedCount > 0) {
+      await this.createAsyncTask('import_retry', operator, batchId, 3);
+    }
 
     return {
       batchId,
@@ -508,7 +515,11 @@ export class ImportService {
           if (batch) {
             const replayResult = await this.replayBatchFailedRecords(task.batch_id, operator);
 
-            if (replayResult.failed === 0 && replayResult.success > 0) {
+            if (replayResult.success > 0) {
+              await this.batchDAO.incrementBatchStats(task.batch_id, replayResult.success, replayResult.success);
+            }
+
+            if (replayResult.failed === 0) {
               await this.asyncTaskDAO.updateStatus(task.id, 'success');
               success++;
             } else if (newRetryCount >= task.max_retries) {

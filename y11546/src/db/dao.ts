@@ -202,6 +202,20 @@ export class MaterialDAO {
       DELETE FROM ${tableName} WHERE source_batch_id = ?
     `, [batchId]);
   }
+
+  async deleteAllBySourceType(sourceType: DataSourceType): Promise<void> {
+    const tableName = this.getTableName(sourceType);
+    await this.db.run(`
+      DELETE FROM ${tableName}
+    `);
+  }
+
+  async deleteByMaterialCode(sourceType: DataSourceType, materialCode: string): Promise<void> {
+    const tableName = this.getTableName(sourceType);
+    await this.db.run(`
+      DELETE FROM ${tableName} WHERE material_code = ?
+    `, [materialCode]);
+  }
 }
 
 export class BatchDAO {
@@ -257,6 +271,15 @@ export class BatchDAO {
       values.push(batchId);
       await this.db.run(`UPDATE import_batches SET ${fields.join(', ')} WHERE id = ?`, values);
     }
+  }
+
+  async incrementBatchStats(batchId: string, successIncrement: number, failedDecrement: number): Promise<void> {
+    const batch = await this.findById(batchId);
+    if (!batch) return;
+    const newSuccess = batch.success_count + successIncrement;
+    const newFailed = Math.max(0, batch.failed_count - failedDecrement);
+    const newStatus = newFailed === 0 ? 'success' : 'partial_success';
+    await this.updateBatchStats(batchId, batch.total_count, newSuccess, newFailed, newStatus as TaskStatus);
   }
 
   async findByFileHash(fileHash: string): Promise<ImportBatch | null> {
@@ -570,8 +593,10 @@ export class AsyncTaskDAO {
     const now = dayjs().toISOString();
     return this.db.all<AsyncTask>(`
       SELECT * FROM async_tasks
-      WHERE status = 'retry_waiting' AND next_retry_at <= ?
-      ORDER BY next_retry_at ASC
+      WHERE status = 'pending' OR (status = 'retry_waiting' AND next_retry_at <= ?)
+      ORDER BY 
+        CASE WHEN status = 'pending' THEN 0 ELSE 1 END,
+        next_retry_at ASC
     `, [now]);
   }
 

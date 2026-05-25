@@ -10,6 +10,8 @@ interface FixOptions {
   ignore?: boolean;
   replay?: boolean;
   replayBatch?: string;
+  retryAll?: boolean;
+  createTask?: boolean;
   manual?: string;
   permanent?: string;
   reason?: string;
@@ -77,10 +79,23 @@ export async function fixCommand(options: FixOptions): Promise<number> {
 
     if (options.replayBatch) {
       const result = await importService.replayBatchFailedRecords(options.replayBatch, operator);
-      console.log(chalk.blue(`批次 ${options.replayBatch} 重放结果:`));
-      console.log(chalk.green(`  总数: ${result.total}`));
-      console.log(chalk.green(`  成功: ${result.success}`));
-      console.log(chalk.red(`  失败: ${result.failed}`));
+      console.log(chalk.blue('批次 ' + options.replayBatch + ' 重放结果:'));
+      console.log(chalk.green('  总数: ' + result.total));
+      console.log(chalk.green('  成功: ' + result.success));
+      console.log(chalk.red('  失败: ' + result.failed));
+      return result.failed > 0 ? 1 : 0;
+    }
+
+    if (options.createTask && options.batch) {
+      const taskId = await importService.createAsyncTask('import_retry', operator, options.batch, 3);
+      console.log(chalk.green('已创建异步任务 ' + taskId + ' 用于处理批次 ' + options.batch));
+      return 0;
+    }
+
+    if (options.retryAll) {
+      console.log(chalk.blue('处理可重试任务...'));
+      const result = await importService.processRetryableTasks(operator);
+      console.log(chalk.green('已处理 ' + result.processed + ' 个任务, 成功 ' + result.success + ', 失败 ' + result.failed));
       return result.failed > 0 ? 1 : 0;
     }
 
@@ -121,11 +136,16 @@ export async function fixCommand(options: FixOptions): Promise<number> {
       return 0;
     }
 
-    console.log(chalk.blue('处理可重试任务...'));
-    const result = await importService.processRetryableTasks(operator);
-    console.log(chalk.green('已处理 ' + result.processed + ' 个任务, 成功 ' + result.success + ', 失败 ' + result.failed));
+    console.log(chalk.yellow('请指定操作:'));
+    console.log('  ema fix --list                    列出待处理的失败记录');
+    console.log('  ema fix --retry-all               处理所有可重试的异步任务');
+    console.log('  ema fix --replay --id <id>        重放指定失败记录');
+    console.log('  ema fix --replay-batch <batchId>  重放批次所有失败记录');
+    console.log('  ema fix --create-task --batch <batchId>  为失败批次创建异步任务');
+    console.log('  ema fix --manual <taskId>         标记任务为人工处理');
+    console.log('  ema fix --permanent <taskId> --reason <原因>  标记任务为永久失败');
 
-    return result.failed > 0 ? 1 : 0;
+    return 0;
   } catch (error: any) {
     console.error(chalk.red('处理失败:'), error.message);
     return 1;

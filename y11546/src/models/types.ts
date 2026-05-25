@@ -2,7 +2,7 @@ export type DataSourceType = 'material_list' | 'logistics_receipt' | 'on_site_bo
 
 export type ImportStrategy = 'ignore' | 'overwrite' | 'append';
 
-export type TaskStatus = 'pending' | 'processing' | 'success' | 'retry_waiting' | 'manual_waiting' | 'permanent_failed';
+export type TaskStatus = 'pending' | 'processing' | 'success' | 'partial_success' | 'retry_waiting' | 'manual_waiting' | 'permanent_failed';
 
 export type DiffType = 'added' | 'removed' | 'modified' | 'unchanged';
 

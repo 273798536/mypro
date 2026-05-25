@@ -58,6 +58,8 @@ program
   .option('--ignore', '标记记录为忽略(需配合--id使用)')
   .option('--replay', '重放指定失败记录(需配合--id使用)')
   .option('--replay-batch <batch_id>', '重放指定批次的所有失败记录')
+  .option('--retry-all', '处理所有可重试的异步任务')
+  .option('--create-task', '为失败批次创建异步任务(需配合--batch使用)')
   .option('--manual <task_id>', '标记任务为人工处理')
   .option('--permanent <task_id>', '标记任务为永久失败(需配合--reason使用)')
   .option('--reason <text>', '永久失败的原因说明')

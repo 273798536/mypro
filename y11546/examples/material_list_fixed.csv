@@ -1,0 +1,4 @@
+material_code,material_name,specification,quantity,unit,warehouse,location,batch_no,responsible_person,department,remark
+MAT001,易拉宝,80*200cm,10,个,A仓库,A-01,BATCH2024001,张三,市场部,正常数据
+MAT003,促销台,100*50cm,2,个,A仓库,A-03,BATCH2024003,王五,市场部,已修复的缺失物料编码数据
+MAT004,前台桌,180*60*110cm,1,个,A仓库,A-04,BATCH2024004,赵六,市场部,已修复的缺失数量数据
