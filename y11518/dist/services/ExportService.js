@@ -41,6 +41,7 @@ const Reconciliation_1 = require("../entities/Reconciliation");
 const DirtyRecord_1 = require("../entities/DirtyRecord");
 const AuditService_1 = require("./AuditService");
 const uuid_1 = require("uuid");
+const typeorm_1 = require("typeorm");
 const XLSX = __importStar(require("xlsx"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
@@ -69,7 +70,7 @@ class ExportService {
         });
         const where = {};
         if (workOrderNos && workOrderNos.length > 0) {
-            where.orderNo = workOrderNos;
+            where.orderNo = (0, typeorm_1.In)(workOrderNos);
         }
         const workOrders = await data_source_1.AppDataSource.getRepository(WorkOrder_1.WorkOrder).find({
             where,
@@ -145,11 +146,15 @@ class ExportService {
         });
         const where = {};
         if (startDate || endDate) {
-            where.operationTime = {};
-            if (startDate)
-                where.operationTime.$gte = startDate;
-            if (endDate)
-                where.operationTime.$lte = endDate;
+            if (startDate && endDate) {
+                where.operationTime = (0, typeorm_1.Between)(startDate, endDate);
+            }
+            else if (startDate) {
+                where.operationTime = (0, typeorm_1.MoreThanOrEqual)(startDate);
+            }
+            else if (endDate) {
+                where.operationTime = (0, typeorm_1.LessThanOrEqual)(endDate);
+            }
         }
         const inventories = await data_source_1.AppDataSource.getRepository(ValveInventory_1.ValveInventory).find({
             where,

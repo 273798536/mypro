@@ -7,6 +7,7 @@ import { SupplierBill } from "../entities/SupplierBill";
 import { DirtyRecord } from "../entities/DirtyRecord";
 import { AuditService } from "./AuditService";
 import { v4 as uuidv4 } from "uuid";
+import { In, MoreThanOrEqual, LessThanOrEqual, Between } from "typeorm";
 import * as XLSX from "xlsx";
 import * as fs from "fs";
 import * as path from "path";
@@ -49,7 +50,7 @@ export class ExportService {
 
     const where: any = {};
     if (workOrderNos && workOrderNos.length > 0) {
-      where.orderNo = workOrderNos;
+      where.orderNo = In(workOrderNos);
     }
 
     const workOrders = await AppDataSource.getRepository(WorkOrder).find({
@@ -152,9 +153,13 @@ export class ExportService {
 
     const where: any = {};
     if (startDate || endDate) {
-      where.operationTime = {};
-      if (startDate) where.operationTime.$gte = startDate;
-      if (endDate) where.operationTime.$lte = endDate;
+      if (startDate && endDate) {
+        where.operationTime = Between(startDate, endDate);
+      } else if (startDate) {
+        where.operationTime = MoreThanOrEqual(startDate);
+      } else if (endDate) {
+        where.operationTime = LessThanOrEqual(endDate);
+      }
     }
 
     const inventories = await AppDataSource.getRepository(
