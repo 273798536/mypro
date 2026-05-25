@@ -1,0 +1,31 @@
+import { BaseEntity } from './BaseEntity';
+import { RepairOrder } from './RepairOrder';
+import { PartScan } from './PartScan';
+import { ReceiptPhoto } from './ReceiptPhoto';
+import { ExternalReceipt } from './ExternalReceipt';
+import { ChangeHistory } from './ChangeHistory';
+import { LedgerStatus, DataQuality } from '../types/enums';
+export declare class Ledger extends BaseEntity {
+    ledgerNo: string;
+    status: LedgerStatus;
+    dataQuality: DataQuality;
+    repairOrderId?: string;
+    repairOrder?: RepairOrder;
+    engineerId?: string;
+    engineerName?: string;
+    submitTime?: Date;
+    confirmTime?: Date;
+    auditTime?: Date;
+    rejectReason?: string;
+    rejectBy?: string;
+    confirmBy?: string;
+    auditBy?: string;
+    changeReason?: string;
+    version: number;
+    metadata?: Record<string, any>;
+    dataHash?: string;
+    partScans: PartScan[];
+    receiptPhotos: ReceiptPhoto[];
+    externalReceipts: ExternalReceipt[];
+    changeHistories: ChangeHistory[];
+}

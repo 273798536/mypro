@@ -17,10 +17,10 @@ export const authHeaders = (role: UserRole, userId: string = 'test-user', userNa
   'x-user-role': role,
 });
 
-export const engineerHeaders = authHeaders(UserRole.ENGINEER, 'ENG001', '张工程师');
-export const managerHeaders = authHeaders(UserRole.SERVICE_MANAGER, 'MGR001', '李经理');
-export const auditorHeaders = authHeaders(UserRole.AUDITOR, 'AUD001', '王审计');
-export const adminHeaders = authHeaders(UserRole.ADMIN, 'ADM001', '赵管理员');
+export const engineerHeaders = authHeaders(UserRole.ENGINEER, 'ENG001', 'ZhangEngineer');
+export const managerHeaders = authHeaders(UserRole.SERVICE_MANAGER, 'MGR001', 'LiManager');
+export const auditorHeaders = authHeaders(UserRole.AUDITOR, 'AUD001', 'WangAuditor');
+export const adminHeaders = authHeaders(UserRole.ADMIN, 'ADM001', 'ZhaoAdmin');
 
 export const createTestLedger = async (
   app: express.Express,
@@ -31,18 +31,18 @@ export const createTestLedger = async (
     .set(engineerHeaders)
     .send({
       engineerId: 'ENG001',
-      engineerName: '张工程师',
+      engineerName: 'ZhangEngineer',
       partScans: [
         {
           partCode: 'PART001',
-          partName: '测试备件',
+          partName: 'TestPart',
           quantity: 2,
         },
       ],
       receiptPhotos: [
         {
           photoUrl: 'https://example.com/photo1.jpg',
-          description: '客户签收照',
+          description: 'CustomerReceiptPhoto',
         },
       ],
       ...data,

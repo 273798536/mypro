@@ -4,10 +4,12 @@ import { PartScan } from '../entities/PartScan';
 import { ReceiptPhoto } from '../entities/ReceiptPhoto';
 import { ExternalReceipt } from '../entities/ExternalReceipt';
 import { RepairOrder } from '../entities/RepairOrder';
+import { FailedRecord } from '../entities/FailedRecord';
 import { LedgerStatus, DataQuality, ChangeAction, UserRole } from '../types/enums';
 import { generateLedgerNo, generateDataHash } from '../utils/hash';
-import { validateLedgerData, ValidationResult } from '../utils/validation';
+import { validateLedgerData, validatePartScan, validateReceiptPhoto, validateExternalReceipt, ValidationResult } from '../utils/validation';
 import { ChangeHistoryService } from './ChangeHistoryService';
+import { FailedRecordService } from './FailedRecordService';
 import { hasChanges } from '../utils/diff';
 
 export interface CreateLedgerDto {
@@ -53,11 +55,89 @@ export class LedgerService {
   private repository: Repository<Ledger>;
   private repairOrderRepository: Repository<RepairOrder>;
   private changeHistoryService: ChangeHistoryService;
+  private failedRecordService: FailedRecordService;
 
   constructor(private dataSource: DataSource) {
     this.repository = dataSource.getRepository(Ledger);
     this.repairOrderRepository = dataSource.getRepository(RepairOrder);
     this.changeHistoryService = new ChangeHistoryService(dataSource);
+    this.failedRecordService = new FailedRecordService(dataSource);
+  }
+
+  private async autoRecordFailedData(
+    manager: any,
+    rawData: Record<string, any>,
+    errors: Array<{ field: string; message: string }>,
+    sourceType: string,
+    operator?: { id: string; name: string }
+  ): Promise<void> {
+    try {
+      const failedRecord = manager.create(FailedRecord, {
+        recordType: sourceType,
+        rawData,
+        errorMessage: errors.map(e => `${e.field}: ${e.message}`).join('; '),
+        errorDetails: { errors },
+        sourceSystem: 'ledger-auto-validate',
+        createdBy: operator?.id,
+        updatedBy: operator?.id,
+      });
+      await manager.save(failedRecord);
+    } catch (e) {
+    }
+  }
+
+  private validatePartScans(
+    partScans: Array<Partial<PartScan>>
+  ): { valid: Array<Partial<PartScan>>; invalid: Array<{ data: Partial<PartScan>; errors: any[] }> } {
+    const valid: Array<Partial<PartScan>> = [];
+    const invalid: Array<{ data: Partial<PartScan>; errors: any[] }> = [];
+
+    partScans.forEach((scan, index) => {
+      const result = validatePartScan(scan);
+      if (result.isValid) {
+        valid.push(scan);
+      } else {
+        invalid.push({ data: scan, errors: [...result.errors, ...result.warnings] });
+      }
+    });
+
+    return { valid, invalid };
+  }
+
+  private validateReceiptPhotos(
+    receiptPhotos: Array<Partial<ReceiptPhoto>>
+  ): { valid: Array<Partial<ReceiptPhoto>>; invalid: Array<{ data: Partial<ReceiptPhoto>; errors: any[] }> } {
+    const valid: Array<Partial<ReceiptPhoto>> = [];
+    const invalid: Array<{ data: Partial<ReceiptPhoto>; errors: any[] }> = [];
+
+    receiptPhotos.forEach((photo) => {
+      const result = validateReceiptPhoto(photo);
+      if (result.isValid) {
+        valid.push(photo);
+      } else {
+        invalid.push({ data: photo, errors: [...result.errors, ...result.warnings] });
+      }
+    });
+
+    return { valid, invalid };
+  }
+
+  private validateExternalReceipts(
+    externalReceipts: Array<Partial<ExternalReceipt>>
+  ): { valid: Array<Partial<ExternalReceipt>>; invalid: Array<{ data: Partial<ExternalReceipt>; errors: any[] }> } {
+    const valid: Array<Partial<ExternalReceipt>> = [];
+    const invalid: Array<{ data: Partial<ExternalReceipt>; errors: any[] }> = [];
+
+    externalReceipts.forEach((receipt) => {
+      const result = validateExternalReceipt(receipt);
+      if (result.isValid) {
+        valid.push(receipt);
+      } else {
+        invalid.push({ data: receipt, errors: [...result.errors, ...result.warnings] });
+      }
+    });
+
+    return { valid, invalid };
   }
 
   async createDraft(
@@ -82,24 +162,85 @@ export class LedgerService {
       const validation = validateLedgerData(ledgerData);
       ledgerData.dataQuality = validation.quality;
 
+      let hasInvalidData = false;
+      if (validation.quality === DataQuality.INVALID) {
+        hasInvalidData = true;
+        await this.autoRecordFailedData(
+          manager,
+          ledgerData,
+          validation.errors.map(e => ({ field: e.field, message: e.message })),
+          'ledger-base',
+          operator
+        );
+      }
+
       const ledger = manager.create(Ledger, ledgerData);
 
       if (dto.partScans && dto.partScans.length > 0) {
-        ledger.partScans = dto.partScans.map((scan) =>
-          manager.create(PartScan, scan)
-        );
+        const { valid, invalid } = this.validatePartScans(dto.partScans);
+        if (invalid.length > 0) {
+          hasInvalidData = true;
+          for (const item of invalid) {
+            await this.autoRecordFailedData(
+              manager,
+              item.data as Record<string, any>,
+              item.errors.map(e => ({ field: e.field, message: e.message })),
+              'part-scan',
+              operator
+            );
+          }
+        }
+        if (valid.length > 0) {
+          ledger.partScans = valid.map((scan) =>
+            manager.create(PartScan, scan)
+          );
+        }
       }
 
       if (dto.receiptPhotos && dto.receiptPhotos.length > 0) {
-        ledger.receiptPhotos = dto.receiptPhotos.map((photo) =>
-          manager.create(ReceiptPhoto, photo)
-        );
+        const { valid, invalid } = this.validateReceiptPhotos(dto.receiptPhotos);
+        if (invalid.length > 0) {
+          hasInvalidData = true;
+          for (const item of invalid) {
+            await this.autoRecordFailedData(
+              manager,
+              item.data as Record<string, any>,
+              item.errors.map(e => ({ field: e.field, message: e.message })),
+              'receipt-photo',
+              operator
+            );
+          }
+        }
+        if (valid.length > 0) {
+          ledger.receiptPhotos = valid.map((photo) =>
+            manager.create(ReceiptPhoto, photo)
+          );
+        }
       }
 
       if (dto.externalReceipts && dto.externalReceipts.length > 0) {
-        ledger.externalReceipts = dto.externalReceipts.map((receipt) =>
-          manager.create(ExternalReceipt, receipt)
-        );
+        const { valid, invalid } = this.validateExternalReceipts(dto.externalReceipts);
+        if (invalid.length > 0) {
+          hasInvalidData = true;
+          for (const item of invalid) {
+            await this.autoRecordFailedData(
+              manager,
+              item.data as Record<string, any>,
+              item.errors.map(e => ({ field: e.field, message: e.message })),
+              'external-receipt',
+              operator
+            );
+          }
+        }
+        if (valid.length > 0) {
+          ledger.externalReceipts = valid.map((receipt) =>
+            manager.create(ExternalReceipt, receipt)
+          );
+        }
+      }
+
+      if (hasInvalidData && ledgerData.dataQuality === DataQuality.VALID) {
+        ledger.dataQuality = DataQuality.SUSPICIOUS;
       }
 
       ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
@@ -119,6 +260,7 @@ export class LedgerService {
           operatorName: operator.name,
           operatorRole: operator.role,
           version: 1,
+          metadata: { hasInvalidData, dataQuality: savedLedger.dataQuality }
         }
       );
 
@@ -138,11 +280,11 @@ export class LedgerService {
       });
 
       if (!ledger) {
-        throw new Error('台账不存在');
+        throw new Error('Ledger not found');
       }
 
       if (ledger.status !== LedgerStatus.DRAFT && ledger.status !== LedgerStatus.REJECTED) {
-        throw new Error('只能编辑草稿或被驳回的台账');
+        throw new Error('Can only edit draft or rejected ledgers');
       }
 
       const beforeData = this.serializeLedger(ledger);
@@ -155,29 +297,86 @@ export class LedgerService {
       ledger.updatedBy = operator.id;
       ledger.version += 1;
 
+      let hasInvalidData = false;
+
       if (dto.partScans !== undefined) {
+        const { valid, invalid } = this.validatePartScans(dto.partScans);
+        if (invalid.length > 0) {
+          hasInvalidData = true;
+          for (const item of invalid) {
+            await this.autoRecordFailedData(
+              manager,
+              item.data as Record<string, any>,
+              item.errors.map(e => ({ field: e.field, message: e.message })),
+              'part-scan',
+              operator
+            );
+          }
+        }
         await manager.delete(PartScan, { ledgerId: ledger.id });
-        ledger.partScans = dto.partScans.map((scan) =>
-          manager.create(PartScan, { ...scan, ledgerId: ledger.id })
-        );
+        if (valid.length > 0) {
+          ledger.partScans = valid.map((scan) =>
+            manager.create(PartScan, { ...scan, ledgerId: ledger.id })
+          );
+        } else {
+          ledger.partScans = [];
+        }
       }
 
       if (dto.receiptPhotos !== undefined) {
+        const { valid, invalid } = this.validateReceiptPhotos(dto.receiptPhotos);
+        if (invalid.length > 0) {
+          hasInvalidData = true;
+          for (const item of invalid) {
+            await this.autoRecordFailedData(
+              manager,
+              item.data as Record<string, any>,
+              item.errors.map(e => ({ field: e.field, message: e.message })),
+              'receipt-photo',
+              operator
+            );
+          }
+        }
         await manager.delete(ReceiptPhoto, { ledgerId: ledger.id });
-        ledger.receiptPhotos = dto.receiptPhotos.map((photo) =>
-          manager.create(ReceiptPhoto, { ...photo, ledgerId: ledger.id })
-        );
+        if (valid.length > 0) {
+          ledger.receiptPhotos = valid.map((photo) =>
+            manager.create(ReceiptPhoto, { ...photo, ledgerId: ledger.id })
+          );
+        } else {
+          ledger.receiptPhotos = [];
+        }
       }
 
       if (dto.externalReceipts !== undefined) {
+        const { valid, invalid } = this.validateExternalReceipts(dto.externalReceipts);
+        if (invalid.length > 0) {
+          hasInvalidData = true;
+          for (const item of invalid) {
+            await this.autoRecordFailedData(
+              manager,
+              item.data as Record<string, any>,
+              item.errors.map(e => ({ field: e.field, message: e.message })),
+              'external-receipt',
+              operator
+            );
+          }
+        }
         await manager.delete(ExternalReceipt, { ledgerId: ledger.id });
-        ledger.externalReceipts = dto.externalReceipts.map((receipt) =>
-          manager.create(ExternalReceipt, { ...receipt, ledgerId: ledger.id })
-        );
+        if (valid.length > 0) {
+          ledger.externalReceipts = valid.map((receipt) =>
+            manager.create(ExternalReceipt, { ...receipt, ledgerId: ledger.id })
+          );
+        } else {
+          ledger.externalReceipts = [];
+        }
       }
 
       const validation = validateLedgerData(this.serializeLedger(ledger));
       ledger.dataQuality = validation.quality;
+
+      if (hasInvalidData && ledger.dataQuality === DataQuality.VALID) {
+        ledger.dataQuality = DataQuality.SUSPICIOUS;
+      }
 
       ledger.dataHash = generateDataHash(this.serializeLedger(ledger));
 
@@ -198,6 +397,7 @@ export class LedgerService {
             operatorName: operator.name,
             operatorRole: operator.role,
             version: savedLedger.version,
+            metadata: { hasInvalidData, dataQuality: savedLedger.dataQuality }
           }
         );
       }
@@ -218,16 +418,16 @@ export class LedgerService {
       });
 
       if (!ledger) {
-        throw new Error('台账不存在');
+        throw new Error('Ledger not found');
       }
 
       if (ledger.status !== LedgerStatus.DRAFT && ledger.status !== LedgerStatus.REJECTED) {
-        throw new Error('只能提交草稿或被驳回的台账');
+        throw new Error('Can only submit draft or rejected ledgers');
       }
 
       const validation = validateLedgerData(this.serializeLedger(ledger));
       if (!validation.isValid) {
-        throw new Error(`数据验证失败: ${validation.errors.map(e => e.message).join(', ')}`);
+        throw new Error(`Data validation failed: ${validation.errors.map(e => e.message).join(', ')}`);
       }
 
       const beforeData = this.serializeLedger(ledger);
@@ -275,11 +475,11 @@ export class LedgerService {
       });
 
       if (!ledger) {
-        throw new Error('台账不存在');
+        throw new Error('Ledger not found');
       }
 
       if (ledger.status !== LedgerStatus.SUBMITTED) {
-        throw new Error('只能驳回已提交的台账');
+        throw new Error('Can only reject submitted ledgers');
       }
 
       const beforeData = this.serializeLedger(ledger);
@@ -326,11 +526,11 @@ export class LedgerService {
       });
 
       if (!ledger) {
-        throw new Error('台账不存在');
+        throw new Error('Ledger not found');
       }
 
       if (ledger.status !== LedgerStatus.SUBMITTED) {
-        throw new Error('只能确认已提交的台账');
+        throw new Error('Can only confirm submitted ledgers');
       }
 
       const beforeData = this.serializeLedger(ledger);
@@ -377,11 +577,11 @@ export class LedgerService {
       });
 
       if (!ledger) {
-        throw new Error('台账不存在');
+        throw new Error('Ledger not found');
       }
 
       if (ledger.status !== LedgerStatus.CONFIRMED) {
-        throw new Error('只能审计已确认的台账');
+        throw new Error('Can only audit confirmed ledgers');
       }
 
       const beforeData = this.serializeLedger(ledger);
@@ -488,10 +688,26 @@ export class LedgerService {
 
   async getStatistics(): Promise<{
     total: number;
+    validTotal: number;
+    invalidTotal: number;
     byStatus: Record<LedgerStatus, number>;
     byQuality: Record<DataQuality, number>;
   }> {
     const total = await this.repository.count({ where: { isDeleted: false } });
+
+    const validTotal = await this.repository.count({
+      where: {
+        isDeleted: false,
+        dataQuality: DataQuality.VALID
+      }
+    });
+
+    const invalidTotal = await this.repository.count({
+      where: {
+        isDeleted: false,
+        dataQuality: DataQuality.INVALID
+      }
+    });
 
     const byStatus: Record<string, number> = {};
     const statusResults = await this.repository
@@ -499,6 +715,7 @@ export class LedgerService {
       .select('ledger.status', 'status')
       .addSelect('COUNT(*)', 'count')
       .where('ledger.isDeleted = :isDeleted', { isDeleted: false })
+      .andWhere('ledger.data_quality != :invalidQuality', { invalidQuality: DataQuality.INVALID })
       .groupBy('ledger.status')
       .getRawMany();
 
@@ -521,6 +738,8 @@ export class LedgerService {
 
     return {
       total,
+      validTotal,
+      invalidTotal,
       byStatus: byStatus as Record<LedgerStatus, number>,
       byQuality: byQuality as Record<DataQuality, number>,
     };
@@ -529,7 +748,7 @@ export class LedgerService {
   async validateLedger(id: string): Promise<ValidationResult> {
     const ledger = await this.getById(id, { includeRelations: true });
     if (!ledger) {
-      throw new Error('台账不存在');
+      throw new Error('Ledger not found');
     }
     return validateLedgerData(this.serializeLedger(ledger));
   }

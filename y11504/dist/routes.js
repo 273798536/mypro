@@ -1,0 +1,48 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createRoutes = void 0;
+const express_1 = require("express");
+const LedgerController_1 = require("./controllers/LedgerController");
+const FailedRecordController_1 = require("./controllers/FailedRecordController");
+const auth_1 = require("./middleware/auth");
+const dataConsistency_1 = require("./middleware/dataConsistency");
+const enums_1 = require("./types/enums");
+const createRoutes = (dataSource) => {
+    const router = (0, express_1.Router)();
+    const ledgerController = new LedgerController_1.LedgerController(dataSource);
+    const failedRecordController = new FailedRecordController_1.FailedRecordController(dataSource);
+    const dataConsistencyMiddleware = new dataConsistency_1.DataConsistencyMiddleware(dataSource);
+    router.use(auth_1.authenticate);
+    router.use(dataConsistency_1.addVersionHeader);
+    router.get('/health', (req, res) => {
+        res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    });
+    const ledgerRouter = (0, express_1.Router)();
+    ledgerRouter.post('/', (0, auth_1.requirePermission)('ledger:create'), ledgerController.createDraft);
+    ledgerRouter.get('/', (0, auth_1.requirePermission)('ledger:list'), ledgerController.list);
+    ledgerRouter.get('/statistics', (0, auth_1.requirePermission)('stats:read'), ledgerController.getStatistics);
+    ledgerRouter.get('/no/:ledgerNo', (0, auth_1.requirePermission)('ledger:read'), dataConsistencyMiddleware.verifyLedgerHash, ledgerController.getByLedgerNo);
+    ledgerRouter.get('/export', (0, auth_1.requirePermission)('ledger:export'), ledgerController.exportLedgers);
+    ledgerRouter.get('/:id', (0, auth_1.requirePermission)('ledger:read'), dataConsistencyMiddleware.verifyLedgerHash, ledgerController.getById);
+    ledgerRouter.put('/:id', (0, auth_1.requirePermission)('ledger:update'), ledgerController.updateDraft);
+    ledgerRouter.post('/:id/submit', (0, auth_1.requirePermission)('ledger:submit'), ledgerController.submit);
+    ledgerRouter.post('/:id/reject', (0, auth_1.requireRole)(enums_1.UserRole.SERVICE_MANAGER, enums_1.UserRole.ADMIN), ledgerController.reject);
+    ledgerRouter.post('/:id/confirm', (0, auth_1.requireRole)(enums_1.UserRole.SERVICE_MANAGER, enums_1.UserRole.ADMIN), ledgerController.confirm);
+    ledgerRouter.post('/:id/audit', (0, auth_1.requireRole)(enums_1.UserRole.AUDITOR, enums_1.UserRole.ADMIN), ledgerController.audit);
+    ledgerRouter.get('/:id/history', (0, auth_1.requirePermission)('history:read'), ledgerController.getChangeHistory);
+    ledgerRouter.get('/:id/compare', (0, auth_1.requirePermission)('history:compare'), ledgerController.compareVersions);
+    ledgerRouter.get('/:id/export', (0, auth_1.requirePermission)('ledger:export'), ledgerController.exportLedger);
+    ledgerRouter.get('/:id/validate', (0, auth_1.requirePermission)('ledger:read'), ledgerController.validate);
+    router.use('/ledgers', ledgerRouter);
+    const failedRouter = (0, express_1.Router)();
+    failedRouter.post('/', (0, auth_1.requirePermission)('failed:create'), failedRecordController.create);
+    failedRouter.get('/', (0, auth_1.requirePermission)('failed:read'), failedRecordController.list);
+    failedRouter.get('/statistics', (0, auth_1.requirePermission)('stats:read'), failedRecordController.getStatistics);
+    failedRouter.get('/:id', (0, auth_1.requirePermission)('failed:read'), failedRecordController.getById);
+    failedRouter.post('/:id/resolve', (0, auth_1.requirePermission)('failed:update'), failedRecordController.markResolved);
+    failedRouter.post('/:id/retry', (0, auth_1.requirePermission)('failed:update'), failedRecordController.retry);
+    router.use('/failed-records', failedRouter);
+    return router;
+};
+exports.createRoutes = createRoutes;
+//# sourceMappingURL=routes.js.map

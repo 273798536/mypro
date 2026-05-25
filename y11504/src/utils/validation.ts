@@ -34,7 +34,7 @@ export const validateLedgerData = (data: Record<string, any>): ValidationResult 
     if (!data[field]) {
       errors.push({
         field,
-        message: `${field} 是必填字段`,
+        message: `${field} is required`,
         code: 'REQUIRED_FIELD',
         severity: 'error',
       });
@@ -44,7 +44,7 @@ export const validateLedgerData = (data: Record<string, any>): ValidationResult 
   if (data.engineerId && !/^[A-Za-z0-9]{3,20}$/.test(data.engineerId)) {
     warnings.push({
       field: 'engineerId',
-      message: '工程师ID格式可能不正确',
+      message: 'Engineer ID format may be incorrect',
       code: 'FORMAT_WARNING',
       severity: 'warning',
     });
@@ -55,7 +55,7 @@ export const validateLedgerData = (data: Record<string, any>): ValidationResult 
       if (!scan.partCode) {
         errors.push({
           field: `partScans[${index}].partCode`,
-          message: `备件扫码记录第 ${index + 1} 条缺少备件编码`,
+          message: `Part scan ${index + 1} missing part code`,
           code: 'REQUIRED_FIELD',
           severity: 'error',
         });
@@ -63,7 +63,7 @@ export const validateLedgerData = (data: Record<string, any>): ValidationResult 
       if (scan.quantity !== undefined && (typeof scan.quantity !== 'number' || scan.quantity <= 0)) {
         errors.push({
           field: `partScans[${index}].quantity`,
-          message: `备件扫码记录第 ${index + 1} 条数量必须大于0`,
+          message: `Part scan ${index + 1} quantity must be greater than 0`,
           code: 'INVALID_VALUE',
           severity: 'error',
         });
@@ -76,7 +76,7 @@ export const validateLedgerData = (data: Record<string, any>): ValidationResult 
       if (!photo.photoUrl) {
         warnings.push({
           field: `receiptPhotos[${index}].photoUrl`,
-          message: `签收照第 ${index + 1} 条缺少照片链接`,
+          message: `Receipt photo ${index + 1} missing photo URL`,
           code: 'MISSING_PHOTO',
           severity: 'warning',
         });
@@ -106,7 +106,7 @@ export const validateRepairOrder = (data: Record<string, any>): ValidationResult
   if (!data.orderNo) {
     errors.push({
       field: 'orderNo',
-      message: '维修单号是必填字段',
+      message: 'Order number is required',
       code: 'REQUIRED_FIELD',
       severity: 'error',
     });
@@ -115,7 +115,7 @@ export const validateRepairOrder = (data: Record<string, any>): ValidationResult
   if (data.customerPhone && !/^1[3-9]\d{9}$/.test(data.customerPhone)) {
     warnings.push({
       field: 'customerPhone',
-      message: '客户手机号格式可能不正确',
+      message: 'Customer phone format may be incorrect',
       code: 'FORMAT_WARNING',
       severity: 'warning',
     });
@@ -143,7 +143,7 @@ export const validatePartScan = (data: Record<string, any>): ValidationResult =>
   if (!data.partCode) {
     errors.push({
       field: 'partCode',
-      message: '备件编码是必填字段',
+      message: 'Part code is required',
       code: 'REQUIRED_FIELD',
       severity: 'error',
     });
@@ -152,7 +152,81 @@ export const validatePartScan = (data: Record<string, any>): ValidationResult =>
   if (data.quantity !== undefined && (typeof data.quantity !== 'number' || data.quantity <= 0)) {
     errors.push({
       field: 'quantity',
-      message: '数量必须大于0',
+      message: 'Quantity must be greater than 0',
+      code: 'INVALID_VALUE',
+      severity: 'error',
+    });
+  }
+
+  let quality = DataQuality.VALID;
+  if (errors.length > 0) {
+    quality = DataQuality.INVALID;
+  } else if (warnings.length > 0) {
+    quality = DataQuality.SUSPICIOUS;
+  }
+
+  return {
+    isValid: errors.length === 0,
+    quality,
+    errors,
+    warnings,
+  };
+};
+
+export const validateReceiptPhoto = (data: Record<string, any>): ValidationResult => {
+  const errors: ValidationError[] = [];
+  const warnings: ValidationError[] = [];
+
+  if (!data.photoUrl) {
+    errors.push({
+      field: 'photoUrl',
+      message: 'Photo URL is required',
+      code: 'REQUIRED_FIELD',
+      severity: 'error',
+    });
+  }
+
+  if (data.photoUrl && !/^https?:\/\/.+/.test(data.photoUrl)) {
+    warnings.push({
+      field: 'photoUrl',
+      message: 'Photo URL format may be incorrect',
+      code: 'FORMAT_WARNING',
+      severity: 'warning',
+    });
+  }
+
+  let quality = DataQuality.VALID;
+  if (errors.length > 0) {
+    quality = DataQuality.INVALID;
+  } else if (warnings.length > 0) {
+    quality = DataQuality.SUSPICIOUS;
+  }
+
+  return {
+    isValid: errors.length === 0,
+    quality,
+    errors,
+    warnings,
+  };
+};
+
+export const validateExternalReceipt = (data: Record<string, any>): ValidationResult => {
+  const errors: ValidationError[] = [];
+  const warnings: ValidationError[] = [];
+
+  if (!data.receiptNo && !data.content) {
+    warnings.push({
+      field: 'receiptNo/content',
+      message: 'At least one of receipt number or content is required',
+      code: 'MISSING_CONTENT',
+      severity: 'warning',
+    });
+  }
+
+  if (data.source && !['internal', 'external'].includes(data.source)) {
+    errors.push({
+      field: 'source',
+      message: 'Source type must be internal or external',
       code: 'INVALID_VALUE',
       severity: 'error',
     });
