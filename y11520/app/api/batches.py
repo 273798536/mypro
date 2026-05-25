@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -9,13 +9,16 @@ from app.core.security import (
     get_current_active_user, allow_entry, allow_review,
     allow_manager, allow_all_roles
 )
-from app.models.enums import RecordStatus
+from app.models.enums import RecordStatus, UserRole
 from app.models.models import User, Batch, DirtyRecord
 from app.schemas.schemas import (
     BatchCreate, BatchUpdate, BatchResponse, BatchDetailResponse,
     BatchDataUpload, BatchStatusChange, BatchReview,
     BatchFreeze, BatchUnfreeze, DirtyRecordResponse,
-    DirtyRecordResolve, BatchListResponse, SummaryStats
+    DirtyRecordResolve, BatchListResponse, SummaryStats,
+    BatchListResponseManager, BatchListResponseReadOnly,
+    BatchResponseManager, BatchResponseReadOnly,
+    BatchDetailResponseEntry, BatchDetailResponseReadOnly
 )
 from app.services.state_machine import StateMachine, StateTransitionError
 from app.services.data_processor import DataProcessor
@@ -24,7 +27,31 @@ from app.services.export_service import ExportService
 router = APIRouter(prefix="/batches", tags=["批次管理"])
 
 
-@router.get("", response_model=BatchListResponse, dependencies=[Depends(allow_all_roles)])
+def get_batch_list_response_model(user_role: UserRole):
+    if user_role == UserRole.MANAGER:
+        return BatchListResponseManager
+    elif user_role == UserRole.READONLY:
+        return BatchListResponseReadOnly
+    return BatchListResponse
+
+
+def get_batch_response_model(user_role: UserRole):
+    if user_role == UserRole.MANAGER:
+        return BatchResponseManager
+    elif user_role == UserRole.READONLY:
+        return BatchResponseReadOnly
+    return BatchResponse
+
+
+def get_batch_detail_response_model(user_role: UserRole):
+    if user_role == UserRole.MANAGER or user_role == UserRole.REVIEW:
+        return BatchDetailResponse
+    elif user_role == UserRole.ENTRY:
+        return BatchDetailResponseEntry
+    return BatchDetailResponseReadOnly
+
+
+@router.get("", dependencies=[Depends(allow_all_roles)])
 async def list_batches(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -44,6 +71,23 @@ async def list_batches(
         (page - 1) * page_size
     ).limit(page_size).all()
     
+    response_model = get_batch_list_response_model(current_user.role)
+    
+    if current_user.role == UserRole.MANAGER:
+        return BatchListResponseManager(
+            items=[BatchResponseManager.model_validate(item) for item in items],
+            total=total,
+            page=page,
+            page_size=page_size
+        )
+    elif current_user.role == UserRole.READONLY:
+        return BatchListResponseReadOnly(
+            items=[BatchResponseReadOnly.model_validate(item) for item in items],
+            total=total,
+            page=page,
+            page_size=page_size
+        )
+    
     return BatchListResponse(
         items=items,
         total=total,
@@ -52,7 +96,7 @@ async def list_batches(
     )
 
 
-@router.post("", response_model=BatchResponse, dependencies=[Depends(allow_entry)])
+@router.post("", dependencies=[Depends(allow_entry)])
 async def create_batch(
     batch_in: BatchCreate,
     db: Session = Depends(get_db),
@@ -75,21 +119,26 @@ async def create_batch(
     db.add(batch)
     db.commit()
     db.refresh(batch)
-    return batch
+    
+    response_model = get_batch_response_model(current_user.role)
+    return response_model.model_validate(batch)
 
 
-@router.get("/{batch_id}", response_model=BatchDetailResponse, dependencies=[Depends(allow_all_roles)])
+@router.get("/{batch_id}", dependencies=[Depends(allow_all_roles)])
 async def get_batch(
     batch_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     batch = db.query(Batch).filter(Batch.id == batch_id).first()
     if not batch:
         raise HTTPException(status_code=404, detail="批次不存在")
-    return batch
+    
+    response_model = get_batch_detail_response_model(current_user.role)
+    return response_model.model_validate(batch)
 
 
-@router.put("/{batch_id}", response_model=BatchResponse, dependencies=[Depends(allow_entry)])
+@router.put("/{batch_id}", dependencies=[Depends(allow_entry)])
 async def update_batch(
     batch_id: int,
     batch_in: BatchUpdate,
@@ -112,10 +161,12 @@ async def update_batch(
     
     db.commit()
     db.refresh(batch)
-    return batch
+    
+    response_model = get_batch_response_model(current_user.role)
+    return response_model.model_validate(batch)
 
 
-@router.post("/{batch_id}/upload", response_model=BatchDetailResponse, dependencies=[Depends(allow_entry)])
+@router.post("/{batch_id}/upload", dependencies=[Depends(allow_entry)])
 async def upload_batch_data(
     batch_id: int,
     data_in: BatchDataUpload,
@@ -147,13 +198,16 @@ async def upload_batch_data(
         processor.process_external_receipts(data_in.external_receipts)
     
     processor.run_all_checks()
+    processor.recalculate_batch_summary(batch_id)
     
     db.commit()
     db.refresh(batch)
-    return batch
+    
+    response_model = get_batch_detail_response_model(current_user.role)
+    return response_model.model_validate(batch)
 
 
-@router.post("/{batch_id}/submit", response_model=BatchResponse, dependencies=[Depends(allow_entry)])
+@router.post("/{batch_id}/submit", dependencies=[Depends(allow_entry)])
 async def submit_for_review(
     batch_id: int,
     status_change: BatchStatusChange,
@@ -170,12 +224,14 @@ async def submit_for_review(
         )
         db.commit()
         db.refresh(batch)
-        return batch
+        
+        response_model = get_batch_response_model(current_user.role)
+        return response_model.model_validate(batch)
     except StateTransitionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{batch_id}/review", response_model=BatchResponse, dependencies=[Depends(allow_review)])
+@router.post("/{batch_id}/review", dependencies=[Depends(allow_review)])
 async def review_batch(
     batch_id: int,
     review_in: BatchReview,
@@ -193,12 +249,14 @@ async def review_batch(
         )
         db.commit()
         db.refresh(batch)
-        return batch
+        
+        response_model = get_batch_response_model(current_user.role)
+        return response_model.model_validate(batch)
     except StateTransitionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{batch_id}/freeze", response_model=BatchResponse, dependencies=[Depends(allow_manager)])
+@router.post("/{batch_id}/freeze", dependencies=[Depends(allow_manager)])
 async def freeze_batch(
     batch_id: int,
     freeze_in: BatchFreeze,
@@ -216,12 +274,12 @@ async def freeze_batch(
         )
         db.commit()
         db.refresh(batch)
-        return batch
+        return BatchResponseManager.model_validate(batch)
     except StateTransitionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{batch_id}/unfreeze", response_model=BatchResponse, dependencies=[Depends(allow_manager)])
+@router.post("/{batch_id}/unfreeze", dependencies=[Depends(allow_manager)])
 async def unfreeze_batch(
     batch_id: int,
     unfreeze_in: BatchUnfreeze,
@@ -240,12 +298,12 @@ async def unfreeze_batch(
         )
         db.commit()
         db.refresh(batch)
-        return batch
+        return BatchResponseManager.model_validate(batch)
     except StateTransitionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{batch_id}/settle", response_model=BatchResponse, dependencies=[Depends(allow_manager)])
+@router.post("/{batch_id}/settle", dependencies=[Depends(allow_manager)])
 async def settle_batch(
     batch_id: int,
     status_change: BatchStatusChange,
@@ -260,12 +318,12 @@ async def settle_batch(
         batch = StateMachine.settle(db, batch, current_user, status_change.manual_reason)
         db.commit()
         db.refresh(batch)
-        return batch
+        return BatchResponseManager.model_validate(batch)
     except StateTransitionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{batch_id}/archive", response_model=BatchResponse, dependencies=[Depends(allow_manager)])
+@router.post("/{batch_id}/archive", dependencies=[Depends(allow_manager)])
 async def archive_batch(
     batch_id: int,
     status_change: BatchStatusChange,
@@ -280,7 +338,7 @@ async def archive_batch(
         batch = StateMachine.archive(db, batch, current_user, status_change.manual_reason)
         db.commit()
         db.refresh(batch)
-        return batch
+        return BatchResponseManager.model_validate(batch)
     except StateTransitionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -317,9 +375,38 @@ async def resolve_dirty_record(
     dirty_record.resolved_by = current_user.id
     dirty_record.resolved_at = datetime.utcnow()
     dirty_record.handling_opinion = resolve_in.handling_opinion
+    
     if resolve_in.corrected_value:
         dirty_record.corrected_value = resolve_in.corrected_value
+        
+        if resolve_in.apply_correction and dirty_record.target_model and dirty_record.target_record_id:
+            processor = DataProcessor(db, dirty_record.batch_id)
+            processor.apply_correction_to_target(dirty_record)
+    
+    processor = DataProcessor(db, dirty_record.batch_id)
+    processor.recalculate_batch_summary(dirty_record.batch_id)
     
     db.commit()
     db.refresh(dirty_record)
     return dirty_record
+
+
+@router.post("/{batch_id}/recalculate", dependencies=[Depends(allow_review)])
+async def recalculate_summary(
+    batch_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    batch = db.query(Batch).filter(Batch.id == batch_id).first()
+    if not batch:
+        raise HTTPException(status_code=404, detail="批次不存在")
+    
+    processor = DataProcessor(db, batch_id)
+    summary = processor.recalculate_batch_summary(batch_id)
+    
+    db.commit()
+    
+    return {
+        "message": "汇总已重新计算",
+        "summary": summary
+    }

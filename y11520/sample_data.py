@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""样例数据生成脚本"""
+"""样例数据生成脚本 - 更新版"""
 
 import json
 from datetime import datetime, timedelta
@@ -25,6 +25,7 @@ def get_sample_appointment_orders():
             "customer_phone": "13800138001",
             "address": "上海市浦东新区xxx路xxx号",
             "product_name": "智能空调",
+            "quantity": 2,
             "appointment_time": today.strftime("%Y-%m-%dT09:00:00"),
             "technician_id": "TECH001",
             "technician_name": "李师傅",
@@ -32,7 +33,7 @@ def get_sample_appointment_orders():
             "is_rescheduled": False,
             "reschedule_count": 0,
             "is_second_visit": False,
-            "amount": 150.0,
+            "amount": 300.0,
             "raw_data": {"source": "内部系统A"}
         },
         {
@@ -41,6 +42,7 @@ def get_sample_appointment_orders():
             "customer_phone": "13800138002",
             "address": "杭州市西湖区xxx路xxx号",
             "product_name": "智能冰箱",
+            "quantity": 1,
             "appointment_time": today.strftime("%Y-%m-%dT14:00:00"),
             "technician_id": "TECH002",
             "technician_name": "王师傅",
@@ -57,6 +59,7 @@ def get_sample_appointment_orders():
             "customer_phone": "13800138003",
             "address": "南京市鼓楼区xxx路xxx号",
             "product_name": "洗衣机",
+            "quantity": 3,
             "appointment_time": yesterday.strftime("%Y-%m-%dT10:00:00"),
             "technician_id": "TECH001",
             "technician_name": "李师傅",
@@ -73,6 +76,7 @@ def get_sample_appointment_orders():
             "customer_phone": "",
             "address": "苏州市工业园区xxx路xxx号",
             "product_name": "油烟机",
+            "quantity": 1,
             "appointment_time": today.strftime("%Y-%m-%dT16:00:00"),
             "technician_id": "TECH003",
             "technician_name": "张师傅",
@@ -81,6 +85,23 @@ def get_sample_appointment_orders():
             "reschedule_count": 0,
             "is_second_visit": False,
             "amount": 80.0,
+            "raw_data": {"source": "内部系统A"}
+        },
+        {
+            "order_no": "APPT-20240524-005",
+            "customer_name": "钱七",
+            "customer_phone": "13800138005",
+            "address": "宁波市海曙区xxx路xxx号",
+            "product_name": "热水器",
+            "quantity": 2,
+            "appointment_time": today.strftime("%Y-%m-%dT11:00:00"),
+            "technician_id": "TECH004",
+            "technician_name": "陈师傅",
+            "status": "completed",
+            "is_rescheduled": False,
+            "reschedule_count": 0,
+            "is_second_visit": False,
+            "amount": 150.0,
             "raw_data": {"source": "内部系统A"}
         }
     ]
@@ -174,7 +195,8 @@ def get_sample_external_receipts():
             "receipt_no": "EXT-20240524-001",
             "order_no": "APPT-20240524-001",
             "receipt_type": "安装费",
-            "amount": 150.0,
+            "quantity": 2,
+            "amount": 300.0,
             "receipt_time": today.strftime("%Y-%m-%dT12:00:00"),
             "handler": "财务A",
             "status": "已结算",
@@ -182,18 +204,9 @@ def get_sample_external_receipts():
         },
         {
             "receipt_no": "EXT-20240524-002",
-            "order_no": "APPT-20240524-001",
-            "receipt_type": "配件费",
-            "amount": 150.0,
-            "receipt_time": today.strftime("%Y-%m-%dT12:00:00"),
-            "handler": "财务A",
-            "status": "已结算",
-            "raw_data": {"system": "财务系统X"}
-        },
-        {
-            "receipt_no": "EXT-20240524-003",
             "order_no": "APPT-20240524-002",
             "receipt_type": "安装费",
+            "quantity": 1,
             "amount": 200.0,
             "receipt_time": today.strftime("%Y-%m-%dT18:00:00"),
             "handler": "财务B",
@@ -201,14 +214,26 @@ def get_sample_external_receipts():
             "raw_data": {"system": "财务系统Y"}
         },
         {
-            "receipt_no": "EXT-20240524-004",
+            "receipt_no": "EXT-20240524-003",
             "order_no": "APPT-20240524-002",
             "receipt_type": "二次上门费",
+            "quantity": 3,
             "amount": 250.0,
             "receipt_time": today.strftime("%Y-%m-%dT18:00:00"),
             "handler": "财务B",
             "status": "待确认",
-            "raw_data": {"system": "财务系统Y", "note": "同一订单金额不一致"}
+            "raw_data": {"system": "财务系统Y", "note": "同一订单数量不一致(1 vs 3)"}
+        },
+        {
+            "receipt_no": "EXT-20240524-004",
+            "order_no": "APPT-20240524-005",
+            "receipt_type": "安装费",
+            "quantity": 1,
+            "amount": 150.0,
+            "receipt_time": today.strftime("%Y-%m-%dT13:00:00"),
+            "handler": "财务A",
+            "status": "已结算",
+            "raw_data": {"system": "财务系统X", "note": "预约单数量2 vs 回执数量1"}
         }
     ]
 
@@ -242,7 +267,8 @@ def print_sample_data():
     print("5. TECH001: 同一师傅出现'李师傅'和'李大明'两个姓名")
     print("6. APPT-20240524-002: 差评原因未找到")
     print("7. APPT-20240524-003: 差评原因未找到")
-    print("8. APPT-20240524-002: 同一订单金额冲突（200 vs 250）")
+    print("8. APPT-20240524-002: 同一订单回执数量冲突（1 vs 3）")
+    print("9. APPT-20240524-005: 预约单数量与回执数量不一致（2 vs 1）")
     print()
 
 

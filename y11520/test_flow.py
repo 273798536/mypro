@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""主流程测试脚本"""
+"""主流程测试脚本 - 更新版"""
 
 import requests
 import json
@@ -45,7 +45,7 @@ class APIClient:
 
 def test_main_flow():
     print("\n" + "=" * 70)
-    print("家电安装回访异常回执状态机 - 主流程测试")
+    print("家电安装回访异常回执状态机 - 主流程测试（更新版）")
     print("=" * 70)
     
     today = datetime.now()
@@ -71,9 +71,10 @@ def test_main_flow():
     batch_id = batch["id"]
     print(f"✅ 批次创建成功: {batch['batch_no']} (ID: {batch_id})")
     print(f"   当前状态: {batch['status']}")
+    print(f"   返回字段: {list(batch.keys())}")
     
     print("\n" + "-" * 50)
-    print("步骤 3: 上传预约单、师傅定位、用户评价数据")
+    print("步骤 3: 上传预约单、师傅定位、用户评价、外部回执数据")
     print("-" * 50)
     upload_data = {
         "appointment_orders": [
@@ -83,6 +84,7 @@ def test_main_flow():
                 "customer_phone": "13800000001",
                 "address": "测试地址1",
                 "product_name": "智能空调",
+                "quantity": 2,
                 "appointment_time": today.strftime("%Y-%m-%dT09:00:00"),
                 "technician_id": "TEST-TECH-001",
                 "technician_name": "测试师傅A",
@@ -90,7 +92,7 @@ def test_main_flow():
                 "is_rescheduled": True,
                 "reschedule_count": 1,
                 "is_second_visit": True,
-                "amount": 150.0
+                "amount": 300.0
             },
             {
                 "order_no": f"TEST-ORDER-{int(time.time())}-2",
@@ -98,11 +100,25 @@ def test_main_flow():
                 "customer_phone": "13800000002",
                 "address": "测试地址2",
                 "product_name": "冰箱",
+                "quantity": 1,
                 "appointment_time": today.strftime("%Y-%m-%dT14:00:00"),
                 "technician_id": "TEST-TECH-002",
                 "technician_name": "测试师傅B",
                 "status": "completed",
                 "amount": 200.0
+            },
+            {
+                "order_no": f"TEST-ORDER-{int(time.time())}-3",
+                "customer_name": "测试客户3",
+                "customer_phone": "13800000003",
+                "address": "测试地址3",
+                "product_name": "洗衣机",
+                "quantity": 3,
+                "appointment_time": today.strftime("%Y-%m-%dT10:00:00"),
+                "technician_id": "TEST-TECH-003",
+                "technician_name": "测试师傅C",
+                "status": "completed",
+                "amount": 150.0
             }
         ],
         "technician_locations": [
@@ -122,21 +138,49 @@ def test_main_flow():
                 "order_no": f"TEST-ORDER-{int(time.time())}-1",
                 "customer_name": "测试客户1",
                 "rating": 1,
-                "review_content": "服务很差",
+                "review_content": "服务很差，需要重新上门",
                 "review_time": today.strftime("%Y-%m-%dT11:00:00"),
                 "has_quality_issue": True,
                 "bad_review_found": False
+            },
+            {
+                "order_no": f"TEST-ORDER-{int(time.time())}-3",
+                "customer_name": "测试客户3",
+                "rating": 2,
+                "review_content": "师傅迟到了",
+                "review_time": today.strftime("%Y-%m-%dT12:00:00"),
+                "bad_review_found": False
             }
         ],
-        "external_receipts": []
+        "external_receipts": [
+            {
+                "receipt_no": f"TEST-RECEIPT-{int(time.time())}-1",
+                "order_no": f"TEST-ORDER-{int(time.time())}-1",
+                "receipt_type": "安装费",
+                "quantity": 2,
+                "amount": 300.0,
+                "receipt_time": today.strftime("%Y-%m-%dT12:00:00"),
+                "status": "已结算"
+            },
+            {
+                "receipt_no": f"TEST-RECEIPT-{int(time.time())}-2",
+                "order_no": f"TEST-ORDER-{int(time.time())}-3",
+                "receipt_type": "安装费",
+                "quantity": 1,
+                "amount": 150.0,
+                "receipt_time": today.strftime("%Y-%m-%dT13:00:00"),
+                "status": "已结算"
+            }
+        ]
     }
     response = client.post(f"/batches/{batch_id}/upload", json=upload_data)
     result = response.json()
     print(f"✅ 数据上传成功")
-    print(f"   预约单: {len(result['appointment_orders'])} 条")
-    print(f"   脏记录: {len(result['dirty_records'])} 条")
-    for dirty in result['dirty_records']:
-        print(f"     - {dirty['dirty_type']}: {dirty['handling_opinion']}")
+    print(f"   预约单: {len(result.get('appointment_orders', []))} 条")
+    print(f"   脏记录: {len(result.get('dirty_records', []))} 条")
+    for dirty in result.get('dirty_records', []):
+        print(f"     - {dirty['dirty_type']}: {dirty.get('handling_opinion', '')}")
+        print(f"       target_model: {dirty.get('target_model')}, target_record_id: {dirty.get('target_record_id')}")
     
     print("\n" + "-" * 50)
     print("步骤 4: 提交复核")
@@ -178,8 +222,8 @@ def test_main_flow():
     batch = response.json()
     print(f"✅ 冻结成功")
     print(f"   当前状态: {batch['status']}")
-    print(f"   冻结前状态: {batch['status_before_freeze']}")
-    print(f"   冻结原因: {batch['freeze_reason']}")
+    print(f"   冻结前状态: {batch.get('status_before_freeze')}")
+    print(f"   冻结原因: {batch.get('freeze_reason')}")
     
     print("\n" + "-" * 50)
     print("步骤 7: 解冻并退回修改")
@@ -197,47 +241,92 @@ def test_main_flow():
     print(f"   当前状态: {batch['status']}")
     
     print("\n" + "-" * 50)
-    print("步骤 8: 录入用户重新处理脏记录后再次提交")
+    print("步骤 8: 复核用户处理脏记录（回写修正值）")
     print("-" * 50)
-    client.login("entry", "entry123")
+    client.login("reviewer", "reviewer123")
     
-    response = client.get(f"/batches/{batch_id}/dirty-records")
+    response = client.get(f"/batches/{batch_id}/dirty-records", params={"resolved": "false"})
     dirty_records = response.json()
     print(f"   待处理脏记录: {len(dirty_records)} 条")
     
-    client.login("reviewer", "reviewer123")
     for dirty in dirty_records:
-        if not dirty["is_resolved"]:
+        if not dirty["is_resolved"] and dirty.get("field_name") == "bad_review_reason":
+            print(f"\n   处理脏记录 {dirty['id']}: {dirty['dirty_type']}")
+            resolve_data = {
+                "handling_opinion": "差评原因已核实：安装位置不合适导致异响",
+                "corrected_value": "安装位置不合适导致异响",
+                "apply_correction": True
+            }
             response = client.patch(
                 f"/batches/dirty-records/{dirty['id']}/resolve",
-                json={
-                    "handling_opinion": "已核实，情况属实，按正常流程处理",
-                    "corrected_value": "已确认"
-                }
+                json=resolve_data
             )
             if response.status_code == 200:
-                print(f"   ✅ 脏记录 {dirty['id']} 已处理")
+                result = response.json()
+                print(f"   ✅ 已处理: is_applied={result.get('is_applied')}")
     
+    for dirty in dirty_records:
+        if not dirty["is_resolved"] and dirty.get("field_name") == "customer_name":
+            print(f"\n   处理脏记录 {dirty['id']}: 缺失客户姓名")
+            resolve_data = {
+                "handling_opinion": "客户姓名已补全",
+                "corrected_value": "新客户名",
+                "apply_correction": True
+            }
+            response = client.patch(
+                f"/batches/dirty-records/{dirty['id']}/resolve",
+                json=resolve_data
+            )
+            if response.status_code == 200:
+                result = response.json()
+                print(f"   ✅ 已处理: is_applied={result.get('is_applied')}")
+    
+    print("\n" + "-" * 50)
+    print("步骤 9: 查看批次详情验证修正值已回写")
+    print("-" * 50)
+    response = client.get(f"/batches/{batch_id}")
+    batch_detail = response.json()
+    
+    print(f"   用户评价:")
+    for review in batch_detail.get('user_reviews', []):
+        if review.get('rating') and review['rating'] <= 2:
+            print(f"     - 订单 {review['order_no']}: bad_review_reason='{review.get('bad_review_reason', 'N/A')}', bad_review_found={review.get('bad_review_found')}")
+    
+    print(f"   预约单:")
+    for order in batch_detail.get('appointment_orders', []):
+        if not order.get('customer_name'):
+            print(f"     - 订单 {order['order_no']}: customer_name='{order.get('customer_name', 'N/A')}'")
+    
+    print("\n" + "-" * 50)
+    print("步骤 10: 查看汇总统计（验证重新计算）")
+    print("-" * 50)
+    response = client.get(f"/batches/{batch_id}/recalculate", json={})
+    if response.status_code == 200:
+        summary = response.json().get('summary', {})
+        print(f"✅ 汇总已重新计算:")
+        print(f"   总订单: {summary.get('total_orders')}")
+        print(f"   总数量: {summary.get('total_quantity')}")
+        print(f"   差评原因未找到: {summary.get('bad_review_not_found_count')}")
+        print(f"   数量冲突: {summary.get('quantity_conflict_count')}")
+    
+    print("\n" + "-" * 50)
+    print("步骤 11: 录入用户重新提交，复核通过后主管结算")
+    print("-" * 50)
     client.login("entry", "entry123")
     response = client.post(f"/batches/{batch_id}/submit", json={"manual_reason": "脏记录已处理，重新提交"})
     batch = response.json()
-    print(f"✅ 重新提交成功")
-    print(f"   当前状态: {batch['status']}")
+    print(f"✅ 重新提交成功，状态: {batch['status']}")
     
-    print("\n" + "-" * 50)
-    print("步骤 9: 复核通过后主管结算")
-    print("-" * 50)
     client.login("reviewer", "reviewer123")
     client.post(f"/batches/{batch_id}/review", json={"result": "approved", "comment": "复核通过"})
     
     client.login("manager", "manager123")
     response = client.post(f"/batches/{batch_id}/settle", json={"manual_reason": "正常结算"})
     batch = response.json()
-    print(f"✅ 结算完成")
-    print(f"   当前状态: {batch['status']}")
+    print(f"✅ 结算完成，状态: {batch['status']}")
     
     print("\n" + "-" * 50)
-    print("步骤 10: 查看统计和导出")
+    print("步骤 12: 查看统计和导出")
     print("-" * 50)
     response = client.get("/export/stats")
     stats = response.json()
@@ -246,11 +335,67 @@ def test_main_flow():
     print(f"   已冻结: {stats['frozen_count']}")
     print(f"   已结算: {stats['settled_count']}")
     print(f"   总订单: {stats['total_orders']}")
+    print(f"   总数量: {stats['total_quantity']}")
     print(f"   差评原因未找到: {stats['bad_review_not_found_count']}")
+    print(f"   数量冲突: {stats['quantity_conflict_count']}")
     
     print("\n" + "=" * 70)
     print("✅ 主流程测试完成!")
     print("=" * 70)
+
+
+def test_role_based_fields():
+    print("\n" + "=" * 70)
+    print("角色字段可见性测试")
+    print("=" * 70)
+    
+    client = APIClient()
+    
+    print("\n" + "-" * 50)
+    print("测试1: 只读用户查看批次列表")
+    print("-" * 50)
+    client.login("readonly", "readonly123")
+    response = client.get("/batches")
+    if response.status_code == 200:
+        result = response.json()
+        items = result.get('items', [])
+        if items:
+            fields = list(items[0].keys())
+            print(f"   可见字段: {fields}")
+            print(f"   包含 freeze_reason: {'freeze_reason' in fields} (应该是 False)")
+            print(f"   包含 created_by: {'created_by' in fields} (应该是 False)")
+    
+    print("\n" + "-" * 50)
+    print("测试2: 录入用户查看批次详情")
+    print("-" * 50)
+    client.login("entry", "entry123")
+    
+    response = client.post("/batches", json={
+        "batch_no": f"FIELD-TEST-{int(time.time())}",
+        "name": "字段测试批次",
+        "region": "华北区"
+    })
+    batch_id = response.json()['id']
+    
+    response = client.get(f"/batches/{batch_id}")
+    if response.status_code == 200:
+        result = response.json()
+        print(f"   顶层字段: {list(result.keys())}")
+        print(f"   包含 freeze_reason: {'freeze_reason' in result} (应该是 False)")
+        print(f"   包含 status_logs: {'status_logs' in result} (应该是 False)")
+    
+    print("\n" + "-" * 50)
+    print("测试3: 主管查看批次详情")
+    print("-" * 50)
+    client.login("manager", "manager123")
+    response = client.get(f"/batches/{batch_id}")
+    if response.status_code == 200:
+        result = response.json()
+        print(f"   顶层字段: {list(result.keys())}")
+        print(f"   包含 freeze_reason: {'freeze_reason' in result} (应该是 True)")
+        print(f"   包含 status_logs: {'status_logs' in result} (应该是 True)")
+    
+    print("\n✅ 角色字段可见性测试完成")
 
 
 def test_idempotency():
@@ -311,6 +456,7 @@ if __name__ == "__main__":
     
     try:
         test_main_flow()
+        test_role_based_fields()
         test_idempotency()
         test_role_permissions()
     except requests.exceptions.ConnectionError:

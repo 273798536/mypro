@@ -5,9 +5,11 @@
 ## 功能特性
 
 - **状态追踪**: 批次创建 → 提交复核 → 复核改判 → 冻结结算 → 撤回归档
-- **多源数据接收入**: 预约单、师傅定位、用户评价、外部回执
+- **多源数据接入**: 预约单、师傅定位、用户评价、外部回执
 - **脏记录处理**: 自动识别缺字段、跨日、改名、金额/数量冲突
-- **权限控制**: 录入、复核、主管、只读查看四级权限
+- **修正值回写**: 处理脏记录时可将修正值回写到原始记录
+- **重新汇总**: 脏记录处理后自动重新计算统计数据
+- **权限控制**: 录入、复核、主管、只读查看四级权限，可见字段不同
 - **数据持久化**: SQLite 数据库，重启后数据不丢失
 - **导出汇总**: 区域售后重点关注冻结前后状态、人工理由
 
@@ -30,10 +32,10 @@ python init_db.py
 
 | 用户名 | 密码 | 角色 | 权限说明 |
 |--------|------|------|---------|
-| manager | manager123 | 主管 | 所有权限，包括冻结、结算、归档 |
-| reviewer | reviewer123 | 复核 | 复核、处理脏记录 |
-| entry | entry123 | 录入 | 创建批次、上传数据、提交复核 |
-| readonly | readonly123 | 只读 | 只能查看，不能操作 |
+| manager | manager123 | 主管 | 所有权限，包括冻结、结算、归档，查看所有字段 |
+| reviewer | reviewer123 | 复核 | 复核、处理脏记录、回写修正值 |
+| entry | entry123 | 录入 | 创建批次、上传数据、提交复核，部分字段可见 |
+| readonly | readonly123 | 只读 | 只能查看基本信息，敏感字段隐藏 |
 
 ### 3. 启动服务
 
@@ -51,6 +53,39 @@ uvicorn app.main:app --reload
 # 查看样例数据结构
 python sample_data.py
 ```
+
+## 角色字段可见性说明
+
+### 批次列表可见字段
+
+| 字段 | 只读 | 录入 | 复核 | 主管 |
+|------|------|------|------|------|
+| id | ✓ | ✓ | ✓ | ✓ |
+| batch_no | ✓ | ✓ | ✓ | ✓ |
+| name | ✓ | ✓ | ✓ | ✓ |
+| region | ✓ | ✓ | ✓ | ✓ |
+| status | ✓ | ✓ | ✓ | ✓ |
+| created_at | ✓ | ✓ | ✓ | ✓ |
+| created_by | ✗ | ✓ | ✓ | ✓ |
+| updated_at | ✗ | ✓ | ✓ | ✓ |
+| remark | ✗ | ✓ | ✓ | ✓ |
+| freeze_reason | ✗ | ✗ | ✗ | ✓ |
+| freeze_time | ✗ | ✗ | ✗ | ✓ |
+| unfreeze_reason | ✗ | ✗ | ✗ | ✓ |
+| unfreeze_time | ✗ | ✗ | ✗ | ✓ |
+| status_before_freeze | ✗ | ✗ | ✗ | ✓ |
+
+### 批次详情可见字段
+
+| 字段/子资源 | 只读 | 录入 | 复核 | 主管 |
+|------------|------|------|------|------|
+| appointment_orders | ✓(精简) | ✓ | ✓ | ✓ |
+| technician_locations | ✗ | ✓ | ✓ | ✓ |
+| user_reviews | ✓(精简) | ✓ | ✓ | ✓ |
+| external_receipts | ✗ | ✓ | ✓ | ✓ |
+| dirty_records | ✗ | ✓ | ✓ | ✓ |
+| status_logs | ✗ | ✗ | ✗ | ✓ |
+| 冻结相关字段 | ✗ | ✗ | ✗ | ✓ |
 
 ## 主流程操作指南
 
@@ -115,6 +150,47 @@ python sample_data.py
 python test_flow.py
 ```
 
+## 脏记录处理流程
+
+### 自动检测的脏记录类型
+
+| 类型 | 说明 | 检测逻辑 |
+|------|------|---------|
+| MISSING_FIELD | 缺少必填字段 | 检查 order_no、customer_name、appointment_time 等必填字段 |
+| CROSS_DAY | 跨日数据 | 记录日期与批次创建日期不同 |
+| NAME_CHANGED | 师傅姓名不一致 | 同一 technician_id 出现不同姓名 |
+| AMOUNT_CONFLICT | 金额冲突 | 同一订单出现多笔不同金额的回执 |
+| QUANTITY_CONFLICT | 数量冲突 | 同一订单预约单数量与回执数量不一致 |
+| OTHER | 其他问题 | 改约和二次上门同时标记、差评原因未找到 |
+
+### 处理脏记录并回写修正值
+
+```bash
+# 1. 查看待处理的脏记录
+GET /api/v1/batches/{batch_id}/dirty-records?resolved=false
+
+# 2. 处理脏记录（回写修正值到原始记录）
+PATCH /api/v1/batches/dirty-records/{record_id}/resolve
+{
+  "handling_opinion": "差评原因已核实",
+  "corrected_value": "安装位置不合适导致异响",
+  "apply_correction": true  # 关键：将修正值回写到原始记录
+}
+
+# 3. 重新计算汇总统计
+POST /api/v1/batches/{batch_id}/recalculate
+```
+
+### 修正值回写说明
+
+- 脏记录包含 `target_model` 和 `target_record_id` 字段，指向原始记录
+- 处理时设置 `apply_correction: true` 会自动将 `corrected_value` 回写到原始记录
+- 支持的回写目标：
+  - `AppointmentOrder`: customer_name、customer_phone、address 等字段
+  - `UserReview`: bad_review_reason、bad_review_found 等字段
+  - `ExternalReceipt`: quantity、amount 等字段
+  - `TechnicianLocation`: technician_name 等字段
+
 ## 制造异常场景测试
 
 ### 场景 1: 改约和二次上门未合并
@@ -141,6 +217,10 @@ python test_flow.py
 
 同一订单上传多笔不同金额的回执，系统会标记 `AMOUNT_CONFLICT`。
 
+### 场景 7: 数量冲突
+
+同一订单预约单数量与回执数量不一致，系统会标记 `QUANTITY_CONFLICT`。
+
 ## 状态流转图
 
 ```
@@ -166,9 +246,9 @@ python test_flow.py
 - `POST /api/v1/auth/users` - 创建用户（仅主管）
 
 ### 批次管理
-- `GET /api/v1/batches` - 批次列表
+- `GET /api/v1/batches` - 批次列表（按角色返回不同字段）
 - `POST /api/v1/batches` - 创建批次（录入+）
-- `GET /api/v1/batches/{id}` - 批次详情
+- `GET /api/v1/batches/{id}` - 批次详情（按角色返回不同字段）
 - `PUT /api/v1/batches/{id}` - 编辑批次（录入+）
 - `POST /api/v1/batches/{id}/upload` - 上传数据（录入+）
 - `POST /api/v1/batches/{id}/submit` - 提交复核（录入+）
@@ -177,10 +257,11 @@ python test_flow.py
 - `POST /api/v1/batches/{id}/unfreeze` - 解冻（主管）
 - `POST /api/v1/batches/{id}/settle` - 结算（主管）
 - `POST /api/v1/batches/{id}/archive` - 归档（主管）
+- `POST /api/v1/batches/{id}/recalculate` - 重新计算汇总（复核+）
 
 ### 脏记录
 - `GET /api/v1/batches/{id}/dirty-records` - 脏记录列表
-- `PATCH /api/v1/batches/dirty-records/{id}/resolve` - 处理脏记录（复核+）
+- `PATCH /api/v1/batches/dirty-records/{id}/resolve` - 处理脏记录（可回写修正值）
 
 ### 导出汇总
 - `GET /api/v1/export/stats` - 统计数据
@@ -212,11 +293,22 @@ python test_flow.py
 - 解冻可选择目标状态
 - 冻结期间不能进行其他操作
 
+### 5. 脏记录处理测试
+- 自动检测各类脏记录
+- 修正值回写到原始记录
+- 处理后重新汇总统计
+
+### 6. 字段可见性测试
+- 只读用户：仅能看到基本信息
+- 录入用户：能看到业务数据但看不到冻结信息
+- 主管：能看到所有信息包括状态日志
+
 ## 权限矩阵
 
 | 操作 | 只读 | 录入 | 复核 | 主管 |
 |------|------|------|------|------|
-| 查看批次 | ✓ | ✓ | ✓ | ✓ |
+| 查看批次（基本信息） | ✓ | ✓ | ✓ | ✓ |
+| 查看批次（敏感字段） | ✗ | ✗ | ✗ | ✓ |
 | 查看统计 | ✓ | ✓ | ✓ | ✓ |
 | 下载导出 | ✓ | ✓ | ✓ | ✓ |
 | 创建批次 | ✗ | ✓ | ✓ | ✓ |
@@ -224,6 +316,8 @@ python test_flow.py
 | 提交复核 | ✗ | ✓ | ✓ | ✓ |
 | 复核操作 | ✗ | ✗ | ✓ | ✓ |
 | 处理脏记录 | ✗ | ✗ | ✓ | ✓ |
+| 回写修正值 | ✗ | ✗ | ✓ | ✓ |
+| 重新汇总 | ✗ | ✗ | ✓ | ✓ |
 | 冻结/解冻 | ✗ | ✗ | ✗ | ✓ |
 | 结算 | ✗ | ✗ | ✗ | ✓ |
 | 归档 | ✗ | ✗ | ✗ | ✓ |
@@ -242,16 +336,16 @@ python test_flow.py
 │   │   └── security.py         # 认证和权限
 │   ├── models/
 │   │   ├── enums.py            # 枚举定义
-│   │   └── models.py           # 数据模型
+│   │   └── models.py           # 数据模型（含数量字段、汇总缓存）
 │   ├── schemas/
-│   │   └── schemas.py          # Pydantic 模型
+│   │   └── schemas.py          # Pydantic 模型（含角色专属响应模型）
 │   ├── services/
 │   │   ├── state_machine.py    # 状态机
-│   │   ├── data_processor.py   # 数据处理和脏记录
+│   │   ├── data_processor.py   # 数据处理、脏记录检测、修正值回写、重新汇总
 │   │   └── export_service.py   # 导出服务
 │   └── api/
 │       ├── auth.py             # 认证接口
-│       ├── batches.py          # 批次接口
+│       ├── batches.py          # 批次接口（含角色字段控制）
 │       └── export.py           # 导出接口
 ├── init_db.py                  # 初始化脚本
 ├── sample_data.py              # 样例数据
@@ -264,13 +358,32 @@ python test_flow.py
 
 所有数据存储在 `app.db` SQLite 文件中，包含：
 - 用户表（users）
-- 批次表（batches）
-- 预约单表（appointment_orders）
+- 批次表（batches）- 含 summary_cache 汇总缓存
+- 预约单表（appointment_orders）- 含 quantity 数量字段
 - 师傅定位表（technician_locations）
 - 用户评价表（user_reviews）
-- 外部回执表（external_receipts）
-- 脏记录表（dirty_records）
+- 外部回执表（external_receipts）- 含 quantity 数量字段
+- 脏记录表（dirty_records）- 含 target_model、target_record_id、is_applied
 - 状态变更日志（status_logs）
 - 复核记录表（review_records）
 
 **重启服务或服务器后，所有历史数据均可查询。**
+
+## 更新日志
+
+### v2.0 (当前版本)
+
+新增功能：
+- 脏记录修正值回写到原始记录
+- 数量冲突检测（QUANTITY_CONFLICT）
+- 批次汇总缓存与重新计算
+- 按角色控制可见字段（只读/录入/复核/主管）
+- 新增 `/recalculate` 端点
+
+### v1.0
+
+初始版本：
+- 基础状态机
+- 四级权限控制
+- 脏记录自动检测
+- Excel 导出
