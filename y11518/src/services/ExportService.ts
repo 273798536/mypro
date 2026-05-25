@@ -5,11 +5,19 @@ import { MaterialUsage } from "../entities/MaterialUsage";
 import { Reconciliation } from "../entities/Reconciliation";
 import { SupplierBill } from "../entities/SupplierBill";
 import { DirtyRecord } from "../entities/DirtyRecord";
+import { AuditService } from "./AuditService";
+import { v4 as uuidv4 } from "uuid";
 import * as XLSX from "xlsx";
 import * as fs from "fs";
 import * as path from "path";
 
 export class ExportService {
+  private auditService: AuditService;
+
+  constructor() {
+    this.auditService = new AuditService();
+  }
+
   private ensureExportDir(): string {
     const exportDir = path.join(process.cwd(), "exports");
     if (!fs.existsSync(exportDir)) {
@@ -18,7 +26,27 @@ export class ExportService {
     return exportDir;
   }
 
-  async exportWorkOrders(workOrderNos?: string[]): Promise<string> {
+  async exportWorkOrders(workOrderNos?: string[], operator: string = "system"): Promise<string> {
+    const operationId = uuidv4();
+
+    await this.auditService.createSnapshot(
+      "before_export",
+      "system",
+      "export_workorders",
+      {
+        exportType: "workorders",
+        workOrderNos: workOrderNos || [],
+        timestamp: new Date().toISOString(),
+      },
+      undefined,
+      {
+        operationId,
+        operationName: "export_workorders",
+        operator,
+        remark: "开始导出工单数据",
+      }
+    );
+
     const where: any = {};
     if (workOrderNos && workOrderNos.length > 0) {
       where.orderNo = workOrderNos;
@@ -73,10 +101,55 @@ export class ExportService {
     const filepath = path.join(exportDir, filename);
     XLSX.writeFile(wb, filepath);
 
+    await this.auditService.createSnapshot(
+      "after_export",
+      "system",
+      "export_workorders",
+      {
+        exportType: "workorders",
+        filename,
+        filepath,
+        recordCount: workOrders.length,
+        materialCount: materialRows.length,
+      },
+      {
+        exportType: "workorders",
+        workOrderNos: workOrderNos || [],
+        timestamp: new Date().toISOString(),
+      },
+      {
+        operationId,
+        operationName: "export_workorders",
+        operator,
+        remark: `导出工单完成，共${workOrders.length}条记录`,
+      }
+    );
+
     return filepath;
   }
 
-  async exportInventory(startDate?: Date, endDate?: Date): Promise<string> {
+  async exportInventory(startDate?: Date, endDate?: Date, operator: string = "system"): Promise<string> {
+    const operationId = uuidv4();
+
+    await this.auditService.createSnapshot(
+      "before_export",
+      "system",
+      "export_inventory",
+      {
+        exportType: "inventory",
+        startDate: startDate?.toISOString() || null,
+        endDate: endDate?.toISOString() || null,
+        timestamp: new Date().toISOString(),
+      },
+      undefined,
+      {
+        operationId,
+        operationName: "export_inventory",
+        operator,
+        remark: "开始导出库存数据",
+      }
+    );
+
     const where: any = {};
     if (startDate || endDate) {
       where.operationTime = {};
@@ -118,10 +191,54 @@ export class ExportService {
     const filepath = path.join(exportDir, filename);
     XLSX.writeFile(wb, filepath);
 
+    await this.auditService.createSnapshot(
+      "after_export",
+      "system",
+      "export_inventory",
+      {
+        exportType: "inventory",
+        filename,
+        filepath,
+        recordCount: inventories.length,
+      },
+      {
+        exportType: "inventory",
+        startDate: startDate?.toISOString() || null,
+        endDate: endDate?.toISOString() || null,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        operationId,
+        operationName: "export_inventory",
+        operator,
+        remark: `导出库存完成，共${inventories.length}条记录`,
+      }
+    );
+
     return filepath;
   }
 
-  async exportReconciliation(workOrderNo?: string): Promise<string> {
+  async exportReconciliation(workOrderNo?: string, operator: string = "system"): Promise<string> {
+    const operationId = uuidv4();
+
+    await this.auditService.createSnapshot(
+      "before_export",
+      "system",
+      "export_reconciliation",
+      {
+        exportType: "reconciliation",
+        workOrderNo: workOrderNo || null,
+        timestamp: new Date().toISOString(),
+      },
+      undefined,
+      {
+        operationId,
+        operationName: "export_reconciliation",
+        operator,
+        remark: "开始导出对账数据",
+      }
+    );
+
     const where: any = {};
     if (workOrderNo) {
       where.workOrderNo = workOrderNo;
@@ -180,10 +297,53 @@ export class ExportService {
     const filepath = path.join(exportDir, filename);
     XLSX.writeFile(wb, filepath);
 
+    await this.auditService.createSnapshot(
+      "after_export",
+      "system",
+      "export_reconciliation",
+      {
+        exportType: "reconciliation",
+        filename,
+        filepath,
+        recordCount: reconciliations.length,
+        detailCount: detailRows.length,
+      },
+      {
+        exportType: "reconciliation",
+        workOrderNo: workOrderNo || null,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        operationId,
+        operationName: "export_reconciliation",
+        operator,
+        remark: `导出对账完成，共${reconciliations.length}条记录`,
+      }
+    );
+
     return filepath;
   }
 
-  async exportDirtyRecords(): Promise<string> {
+  async exportDirtyRecords(operator: string = "system"): Promise<string> {
+    const operationId = uuidv4();
+
+    await this.auditService.createSnapshot(
+      "before_export",
+      "system",
+      "export_dirty_records",
+      {
+        exportType: "dirty_records",
+        timestamp: new Date().toISOString(),
+      },
+      undefined,
+      {
+        operationId,
+        operationName: "export_dirty_records",
+        operator,
+        remark: "开始导出异常记录",
+      }
+    );
+
     const dirtyRecords = await AppDataSource.getRepository(DirtyRecord).find({
       order: { createdAt: "DESC" },
     });
@@ -209,6 +369,28 @@ export class ExportService {
     const filename = `异常记录_${new Date().toISOString().slice(0, 10)}.xlsx`;
     const filepath = path.join(exportDir, filename);
     XLSX.writeFile(wb, filepath);
+
+    await this.auditService.createSnapshot(
+      "after_export",
+      "system",
+      "export_dirty_records",
+      {
+        exportType: "dirty_records",
+        filename,
+        filepath,
+        recordCount: dirtyRecords.length,
+      },
+      {
+        exportType: "dirty_records",
+        timestamp: new Date().toISOString(),
+      },
+      {
+        operationId,
+        operationName: "export_dirty_records",
+        operator,
+        remark: `导出异常记录完成，共${dirtyRecords.length}条记录`,
+      }
+    );
 
     return filepath;
   }

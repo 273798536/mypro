@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { AppDataSource } from "../data-source";
 import { AuditService } from "../services/AuditService";
 import { WorkOrder } from "../entities/WorkOrder";
+import { AuditSnapshot } from "../entities/AuditSnapshot";
 
 async function diffCheck() {
   await AppDataSource.initialize();
@@ -9,14 +10,46 @@ async function diffCheck() {
 
   const auditService = new AuditService();
   const workOrderRepo = AppDataSource.getRepository(WorkOrder);
+  const snapshotRepo = AppDataSource.getRepository(AuditSnapshot);
 
-  const workOrders = await workOrderRepo.find({ take: 3 });
+  console.log("=== 1. 审计快照汇总 ===");
+  const allSnapshots = await snapshotRepo.find();
+  console.log(`总快照数量: ${allSnapshots.length}`);
+
+  const typeCounts: Record<string, number> = {};
+  const targetCounts: Record<string, number> = {};
+  for (const s of allSnapshots) {
+    typeCounts[s.snapshotType] = (typeCounts[s.snapshotType] || 0) + 1;
+    targetCounts[s.targetType] = (targetCounts[s.targetType] || 0) + 1;
+  }
+  console.log("按快照类型统计:");
+  for (const [type, count] of Object.entries(typeCounts)) {
+    console.log(`  ${type}: ${count}`);
+  }
+  console.log("按目标类型统计:");
+  for (const [type, count] of Object.entries(targetCounts)) {
+    console.log(`  ${type}: ${count}`);
+  }
+
+  console.log("\n=== 2. 工单快照检查 ===");
+  const workOrders = await workOrderRepo.find({ take: 5 });
 
   for (const wo of workOrders) {
-    console.log(`工单: ${wo.orderNo}`);
+    console.log(`\n工单: ${wo.orderNo}`);
     const history = await auditService.getSnapshotHistory("work_order", wo.id);
 
     console.log(`  快照数量: ${history.snapshots.length}`);
+
+    if (history.snapshots.length > 0) {
+      console.log("  快照列表:");
+      for (const s of history.snapshots) {
+        console.log(
+          `    - ${s.snapshotType} @ ${s.createdAt?.toLocaleString()}${
+            s.operationName ? ` (${s.operationName})` : ""
+          }`
+        );
+      }
+    }
 
     if (history.changeSummary.length > 0) {
       console.log("  变更字段:");
@@ -29,8 +62,6 @@ async function diffCheck() {
 
     if (history.snapshots.length >= 2) {
       const latest = history.snapshots[0];
-      const previous = history.snapshots[1];
-
       if (latest.diff && latest.diff.length > 0) {
         console.log("  最后一次变更差异:");
         latest.diff.forEach((d: any) => {
@@ -40,11 +71,40 @@ async function diffCheck() {
         });
       }
     }
-
-    console.log("");
   }
 
-  console.log("差异检查完成!");
+  console.log("\n=== 3. 导出快照检查 ===");
+  const exportSnapshots = await snapshotRepo.find({
+    where: [{ snapshotType: "before_export" }, { snapshotType: "after_export" }],
+    order: { createdAt: "DESC" },
+  });
+  console.log(`导出操作快照: ${exportSnapshots.length}`);
+  for (const s of exportSnapshots.slice(0, 5)) {
+    console.log(
+      `  - ${s.snapshotType}: ${s.operationName || "export"} @ ${s.createdAt?.toLocaleString()}`
+    );
+    if (s.data?.filename) console.log(`    文件: ${s.data.filename}`);
+    if (s.data?.recordCount) console.log(`    记录数: ${s.data.recordCount}`);
+  }
+
+  console.log("\n=== 4. 对账快照检查 ===");
+  const reconcileSnapshots = await snapshotRepo.find({
+    where: [
+      { snapshotType: "before_reconcile" },
+      { snapshotType: "after_reconcile" },
+      { snapshotType: "before_rereconcile" },
+      { snapshotType: "after_rereconcile" },
+    ],
+    order: { createdAt: "DESC" },
+  });
+  console.log(`对账操作快照: ${reconcileSnapshots.length}`);
+  for (const s of reconcileSnapshots.slice(0, 5)) {
+    console.log(
+      `  - ${s.snapshotType}: ${s.operationName || "reconcile"} @ ${s.createdAt?.toLocaleString()}`
+    );
+  }
+
+  console.log("\n差异检查完成!");
   process.exit(0);
 }
 

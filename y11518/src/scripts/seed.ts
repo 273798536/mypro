@@ -8,6 +8,8 @@ import { BillItem } from "../entities/BillItem";
 import { SitePhoto, PhotoType } from "../entities/SitePhoto";
 import { ApprovalEmail } from "../entities/ApprovalEmail";
 import { DirtyRecordService } from "../services/DirtyRecordService";
+import { AuditService } from "../services/AuditService";
+import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 
 const MATERIALS = [
@@ -33,8 +35,10 @@ async function seed() {
   const sitePhotoRepo = AppDataSource.getRepository(SitePhoto);
   const approvalEmailRepo = AppDataSource.getRepository(ApprovalEmail);
   const dirtyRecordService = new DirtyRecordService();
+  const auditService = new AuditService();
 
   for (let i = 1; i <= 5; i++) {
+    const operationId = uuidv4();
     const isNightShift = i <= 2;
     const reportDate = isNightShift
       ? moment().subtract(i, "days").hour(23).minute(30)
@@ -62,9 +66,24 @@ async function seed() {
     workOrder.approver = "王主管";
     workOrder.approvalTime = moment(completeDate).add(1, "day").toDate();
     workOrder.approvalRemark = "同意";
+    workOrder.rawData = { ...workOrder };
 
     const savedWO = await workOrderRepo.save(workOrder);
     console.log(`创建工单: ${savedWO.orderNo} (${isNightShift ? "夜间抢修" : "常规抢修"})`);
+
+    await auditService.createSnapshot(
+      "after_create",
+      "work_order",
+      savedWO.id,
+      savedWO,
+      undefined,
+      {
+        operationId,
+        operationName: "seed_workorder",
+        operator: "seed_script",
+        remark: `造数创建工单${savedWO.orderNo}`,
+      }
+    );
 
     const materialsCount = 2 + Math.floor(Math.random() * 3);
     const selectedMaterials = MATERIALS.slice(0, materialsCount);
@@ -87,11 +106,45 @@ async function seed() {
       usage.totalAmount = amount;
       usage.usageTime = completeDate.toDate();
       usage.remark = isNightShift ? "夜间抢修用料" : "抢修用料";
-      await materialUsageRepo.save(usage);
-      await dirtyRecordService.validateMaterialUsage(usage);
+      usage.rawData = { ...usage };
+      const savedUsage = await materialUsageRepo.save(usage);
+
+      await auditService.createSnapshot(
+        "after_create",
+        "material_usage",
+        savedUsage.id,
+        savedUsage,
+        undefined,
+        {
+          operationId,
+          operationName: "seed_material_usage",
+          operator: "seed_script",
+          remark: `造数创建材料使用记录 ${mat.code} x${qty}`,
+        }
+      );
+
+      await dirtyRecordService.validateMaterialUsage(savedUsage);
     }
 
+    const beforeWO = { ...savedWO };
     await workOrderRepo.update(savedWO.id, { materialTotalAmount: totalAmount });
+    const updatedWO = await workOrderRepo.findOne({ where: { id: savedWO.id } });
+
+    if (updatedWO) {
+      await auditService.createSnapshot(
+        "after_update",
+        "work_order",
+        updatedWO.id,
+        updatedWO,
+        beforeWO,
+        {
+          operationId,
+          operationName: "seed_workorder_update_total",
+          operator: "seed_script",
+          remark: `更新工单${savedWO.orderNo}材料总金额: ${totalAmount}`,
+        }
+      );
+    }
 
     if (isNightShift) {
       console.log(`  [夜间补录] 工单${savedWO.orderNo}现场用料，库存次日补录`);
@@ -117,12 +170,28 @@ async function seed() {
       inv.operator = isNightShift ? "补录员" : "仓管员";
       inv.workOrderNo = savedWO.orderNo;
       inv.remark = isNightShift ? "夜间抢修用料次日补录" : "抢修出库";
+      inv.rawData = { ...inv };
       if (isNightShift) {
         inv.isBackfilled = true;
         inv.backfillTime = new Date();
       }
-      await inventoryRepo.save(inv);
-      await dirtyRecordService.validateInventory(inv);
+      const savedInv = await inventoryRepo.save(inv);
+
+      await auditService.createSnapshot(
+        "after_create",
+        "inventory",
+        savedInv.id,
+        savedInv,
+        undefined,
+        {
+          operationId,
+          operationName: "seed_inventory",
+          operator: "seed_script",
+          remark: `造数创建库存记录 ${mat.code} x${qty} ${isNightShift ? "(补录)" : ""}`,
+        }
+      );
+
+      await dirtyRecordService.validateInventory(savedInv);
     }
 
     const bill = new SupplierBill();
@@ -156,7 +225,38 @@ async function seed() {
     }
     bill.totalAmount = billTotal;
     bill.items = billItems;
-    await billRepo.save(bill);
+    bill.rawData = { ...bill };
+    const savedBill = await billRepo.save(bill);
+
+    await auditService.createSnapshot(
+      "after_create",
+      "supplier_bill",
+      savedBill.id,
+      savedBill,
+      undefined,
+      {
+        operationId,
+        operationName: "seed_supplier_bill",
+        operator: "seed_script",
+        remark: `造数创建供应商账单 ${savedBill.billNo}`,
+      }
+    );
+
+    for (const item of savedBill.items || []) {
+      await auditService.createSnapshot(
+        "after_create",
+        "bill_item",
+        item.id,
+        item,
+        undefined,
+        {
+          operationId,
+          operationName: "seed_bill_item",
+          operator: "seed_script",
+          remark: `造数创建账单明细 ${item.materialCode}`,
+        }
+      );
+    }
 
     await dirtyRecordService.validateWorkOrder(savedWO);
 
@@ -175,7 +275,21 @@ async function seed() {
       photo.longitude = 121.4737 + Math.random() * 0.1;
       photo.description = `${["抢修前", "抢修中", "抢修后", "材料使用"][p]}照片`;
       photo.rawData = { ...photo };
-      await sitePhotoRepo.save(photo);
+      const savedPhoto = await sitePhotoRepo.save(photo);
+
+      await auditService.createSnapshot(
+        "after_create",
+        "site_photo",
+        savedPhoto.id,
+        savedPhoto,
+        undefined,
+        {
+          operationId,
+          operationName: "seed_site_photo",
+          operator: "seed_script",
+          remark: `造数创建现场照片 ${photoTypes[p]}`,
+        }
+      );
     }
     console.log(`  [现场照片] 上传${isNightShift ? "夜间" : ""}抢修照片4张`);
 
@@ -206,7 +320,21 @@ ${isNightShift ? "注：此为夜间抢修工单，已先用料后补录。" : "
     email.approvalTime = moment(completeDate).add(30, "minutes").toDate();
     email.approver = "王主管";
     email.rawData = { ...email };
-    await approvalEmailRepo.save(email);
+    const savedEmail = await approvalEmailRepo.save(email);
+
+    await auditService.createSnapshot(
+      "after_create",
+      "approval_email",
+      savedEmail.id,
+      savedEmail,
+      undefined,
+      {
+        operationId,
+        operationName: "seed_approval_email",
+        operator: "seed_script",
+        remark: `造数创建审批邮件 ${savedWO.orderNo}`,
+      }
+    );
     console.log(`  [审批邮件] 发送审批邮件1封，状态: 已批准`);
   }
 

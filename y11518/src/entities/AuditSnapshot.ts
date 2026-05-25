@@ -18,6 +18,7 @@ export type SnapshotType =
   | "before_rereconcile"
   | "after_rereconcile"
   | "before_export"
+  | "after_export"
   | "custom";
 
 export type TargetType =
