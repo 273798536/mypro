@@ -218,14 +218,54 @@ class MaterialService {
         return { totalCost, records: allCosts };
     }
     async getMergedView(materialId, batchId) {
-        const materials = await this.getByMaterialId(materialId, batchId);
         const allMappings = await this.mappingRepository.find({
             where: { canonicalMaterialId: materialId }
+        });
+        const platformMaterialIds = allMappings.map(m => m.platformMaterialId);
+        let allMaterials = [];
+        if (batchId) {
+            const mainMaterials = await this.materialRepository.find({
+                where: { materialId, batchId }
+            });
+            allMaterials.push(...mainMaterials);
+            const aliasMaterials = await this.materialRepository.find({
+                where: { originalMaterialId: materialId, batchId }
+            });
+            allMaterials.push(...aliasMaterials);
+            for (const pid of platformMaterialIds) {
+                const mappedMaterials = await this.materialRepository.find({
+                    where: { materialId: pid, batchId }
+                });
+                allMaterials.push(...mappedMaterials);
+            }
+        }
+        else {
+            const mainMaterials = await this.materialRepository.find({
+                where: { materialId }
+            });
+            allMaterials.push(...mainMaterials);
+            const aliasMaterials = await this.materialRepository.find({
+                where: { originalMaterialId: materialId }
+            });
+            allMaterials.push(...aliasMaterials);
+            for (const pid of platformMaterialIds) {
+                const mappedMaterials = await this.materialRepository.find({
+                    where: { materialId: pid }
+                });
+                allMaterials.push(...mappedMaterials);
+            }
+        }
+        const seen = new Set();
+        allMaterials = allMaterials.filter(m => {
+            if (seen.has(m.id))
+                return false;
+            seen.add(m.id);
+            return true;
         });
         const allCosts = [];
         const allAudits = [];
         const allRemarks = [];
-        for (const material of materials) {
+        for (const material of allMaterials) {
             const costs = await this.costRepository.find({
                 where: { materialRecordId: material.id }
             });
@@ -246,7 +286,12 @@ class MaterialService {
         const totalClicks = allCosts.reduce((sum, c) => sum + c.clicks, 0);
         return {
             materialId,
-            aliases: materials.map(m => ({ name: m.name, platform: m.platform, batchId: m.batchId })),
+            aliases: allMaterials.map(m => ({
+                materialId: m.materialId,
+                name: m.name,
+                platform: m.platform,
+                batchId: m.batchId
+            })),
             mappings: allMappings.map(m => ({
                 platform: m.platform,
                 platformMaterialId: m.platformMaterialId,
