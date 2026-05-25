@@ -123,7 +123,28 @@ async def list_tasks(
 ):
     repo = DataRepository(db)
     tasks = repo.list_tasks(skip=skip, limit=limit)
-    return {"total": len(tasks), "tasks": tasks}
+
+    task_list = []
+    for task in tasks:
+        task_dict = {
+            "task_id": task.task_id,
+            "record_type": task.record_type.value,
+            "source_type": task.source_type.value,
+            "source_file": task.source_file,
+            "status": task.status.value,
+            "total_count": task.total_count,
+            "success_count": task.success_count,
+            "duplicate_count": task.duplicate_count,
+            "error_count": task.error_count,
+            "retry_times": task.retry_times,
+            "error_message": task.error_message,
+            "created_at": task.created_at,
+            "updated_at": task.updated_at,
+            "completed_at": task.completed_at,
+        }
+        task_list.append(task_dict)
+
+    return {"total": len(task_list), "tasks": task_list}
 
 
 @app.get("/api/tasks/{task_id}", response_model=schemas.TaskResponse, tags=["任务管理"])
@@ -132,7 +153,49 @@ async def get_task(task_id: str, db: Session = Depends(get_db)):
     task = repo.get_task_by_id(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
-    return task
+
+    from .repository import safe_json_loads
+    task_dict = {
+        "task_id": task.task_id,
+        "record_type": task.record_type.value,
+        "source_type": task.source_type.value,
+        "source_file": task.source_file,
+        "status": task.status.value,
+        "total_count": task.total_count,
+        "success_count": task.success_count,
+        "duplicate_count": task.duplicate_count,
+        "error_count": task.error_count,
+        "retry_times": task.retry_times,
+        "error_message": task.error_message,
+        "created_at": task.created_at,
+        "updated_at": task.updated_at,
+        "completed_at": task.completed_at,
+        "pending_records": [],
+    }
+
+    for pr in task.pending_records:
+        try:
+            raw_data = safe_json_loads(pr.raw_data) if isinstance(pr.raw_data, str) else pr.raw_data
+        except Exception:
+            raw_data = {}
+        pr_dict = {
+            "id": pr.id,
+            "task_id": pr.task_id,
+            "source_file": pr.source_file,
+            "source_row_number": pr.source_row_number,
+            "record_type": pr.record_type.value,
+            "raw_data": raw_data,
+            "status": pr.status.value,
+            "retry_times": pr.retry_times,
+            "max_retry_times": pr.max_retry_times,
+            "error_message": pr.error_message,
+            "created_at": pr.created_at,
+            "updated_at": pr.updated_at,
+            "processed_at": pr.processed_at,
+        }
+        task_dict["pending_records"].append(pr_dict)
+
+    return task_dict
 
 
 @app.get("/api/tasks/{task_id}/logs", response_model=List[schemas.ProcessingLogResponse], tags=["任务管理"])

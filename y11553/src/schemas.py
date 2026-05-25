@@ -51,7 +51,47 @@ class ImportRequest(BaseModel):
     records: List[Dict[str, Any]]
 
 
+class PendingRecordResponse(BaseModel):
+    id: int
+    task_id: int
+    source_file: Optional[str]
+    source_row_number: int
+    record_type: str
+    raw_data: Dict[str, Any]
+    status: str
+    retry_times: int
+    max_retry_times: int
+    error_message: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    processed_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class TaskResponse(BaseModel):
+    task_id: str
+    record_type: str
+    source_type: str
+    source_file: Optional[str]
+    status: str
+    total_count: int
+    success_count: int
+    duplicate_count: int
+    error_count: int
+    retry_times: int
+    error_message: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    completed_at: Optional[datetime] = None
+    pending_records: List[PendingRecordResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class TaskListItemResponse(BaseModel):
     task_id: str
     record_type: str
     source_type: str
@@ -73,7 +113,7 @@ class TaskResponse(BaseModel):
 
 class TaskListResponse(BaseModel):
     total: int
-    tasks: List[TaskResponse]
+    tasks: List[TaskListItemResponse]
 
 
 class ProcessingLogResponse(BaseModel):

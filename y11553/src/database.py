@@ -52,7 +52,7 @@ def _create_pending_records_table(engine):
 
 
 def _fix_dirty_data(db):
-    from .models import ImportTask, TaskStatus
+    from .models import ImportTask, TaskStatus, PendingRecord, PendingRecordStatus
 
     dirty_tasks = db.query(ImportTask).filter(
         ImportTask.status == TaskStatus.PROCESSING,
@@ -66,14 +66,26 @@ def _fix_dirty_data(db):
             task.status = TaskStatus.PERMANENT_FAILED
     db.commit()
 
+    inconsistent_tasks = db.query(ImportTask).filter(
+        ImportTask.status == TaskStatus.COMPLETED,
+        (ImportTask.error_count > 0) | (ImportTask.success_count + ImportTask.duplicate_count + ImportTask.error_count != ImportTask.total_count)
+    ).all()
+
+    for task in inconsistent_tasks:
+        has_pending = db.query(PendingRecord).filter(PendingRecord.task_id == task.id).first()
+        if not has_pending:
+            if task.error_count > 0:
+                task.status = TaskStatus.WAITING_MANUAL
+            else:
+                task.total_count = task.success_count + task.duplicate_count + task.error_count
+    db.commit()
+
 
 def _migrate_pending_records(db):
     from .models import ImportTask, PendingRecord, PendingRecordStatus, InventoryRecord, ReplenishmentPhoto, RefundRecord, PriceAdjustment, RecordType, TaskStatus
     from .repository import safe_json_dumps, safe_json_loads
 
-    tasks_without_pending = db.query(ImportTask).filter(
-        ~ImportTask.pending_records.any()
-    ).all()
+    all_tasks = db.query(ImportTask).all()
 
     record_type_map = {
         RecordType.INVENTORY: InventoryRecord,
@@ -82,44 +94,79 @@ def _migrate_pending_records(db):
         RecordType.PRICE_ADJUSTMENT: PriceAdjustment,
     }
 
-    for task in tasks_without_pending:
+    for task in all_tasks:
+        existing_pending = db.query(PendingRecord).filter(PendingRecord.task_id == task.id).count()
+        if existing_pending > 0:
+            continue
+
         model = record_type_map.get(task.record_type)
         if not model:
             continue
 
         records = db.query(model).filter(model.task_id == task.id).order_by(model.source_row_number).all()
 
-        for idx, record in enumerate(records):
-            try:
-                raw_data = safe_json_loads(record.raw_data) if hasattr(record, 'raw_data') and record.raw_data else {}
-            except Exception:
-                raw_data = {}
+        if records:
+            for idx, record in enumerate(records):
+                try:
+                    raw_data = safe_json_loads(record.raw_data) if hasattr(record, 'raw_data') and record.raw_data else {}
+                except Exception:
+                    raw_data = {}
 
-            if task.status == TaskStatus.COMPLETED:
-                if hasattr(record, 'is_duplicate') and record.is_duplicate:
-                    pending_status = PendingRecordStatus.DUPLICATE
+                if task.status == TaskStatus.COMPLETED:
+                    if hasattr(record, 'is_duplicate') and record.is_duplicate:
+                        pending_status = PendingRecordStatus.DUPLICATE
+                    else:
+                        pending_status = PendingRecordStatus.SUCCESS
+                elif task.status in [TaskStatus.WAITING_RETRY, TaskStatus.WAITING_MANUAL, TaskStatus.PERMANENT_FAILED, TaskStatus.PROCESSING]:
+                    if hasattr(record, 'is_duplicate') and record.is_duplicate:
+                        pending_status = PendingRecordStatus.DUPLICATE
+                    else:
+                        pending_status = PendingRecordStatus.WAITING_RETRY
+                        task.status = TaskStatus.WAITING_RETRY
                 else:
-                    pending_status = PendingRecordStatus.SUCCESS
-            elif task.status in [TaskStatus.WAITING_RETRY, TaskStatus.WAITING_MANUAL, TaskStatus.PERMANENT_FAILED, TaskStatus.PROCESSING]:
-                if hasattr(record, 'is_duplicate') and record.is_duplicate:
-                    pending_status = PendingRecordStatus.DUPLICATE
-                else:
-                    pending_status = PendingRecordStatus.WAITING_RETRY
-                    task.status = TaskStatus.WAITING_RETRY
-            else:
-                pending_status = PendingRecordStatus.PENDING
+                    pending_status = PendingRecordStatus.PENDING
 
-            pending = PendingRecord(
-                task_id=task.id,
-                source_file=task.source_file,
-                source_row_number=record.source_row_number or (idx + 1),
-                record_type=task.record_type,
-                raw_data=safe_json_dumps(raw_data),
-                fingerprint=record.fingerprint if hasattr(record, 'fingerprint') else '',
-                status=pending_status,
-                processed_at=record.created_at if hasattr(record, 'created_at') else None,
-            )
-            db.add(pending)
+                pending = PendingRecord(
+                    task_id=task.id,
+                    source_file=task.source_file,
+                    source_row_number=record.source_row_number or (idx + 1),
+                    record_type=task.record_type,
+                    raw_data=safe_json_dumps(raw_data),
+                    fingerprint=record.fingerprint if hasattr(record, 'fingerprint') else '',
+                    status=pending_status,
+                    processed_at=record.created_at if hasattr(record, 'created_at') else None,
+                )
+                db.add(pending)
+        else:
+            expected_count = max(task.total_count, task.success_count + task.duplicate_count + task.error_count)
+            if expected_count <= 0:
+                expected_count = 1
+
+            for i in range(expected_count):
+                pending_status = PendingRecordStatus.WAITING_MANUAL
+                if task.error_count > 0 and i == 0:
+                    pending_status = PendingRecordStatus.WAITING_MANUAL
+                elif task.status == TaskStatus.COMPLETED:
+                    if i < task.success_count:
+                        pending_status = PendingRecordStatus.SUCCESS
+                    elif i < task.success_count + task.duplicate_count:
+                        pending_status = PendingRecordStatus.DUPLICATE
+                    else:
+                        pending_status = PendingRecordStatus.PERMANENT_FAILED
+
+                pending = PendingRecord(
+                    task_id=task.id,
+                    source_file=task.source_file,
+                    source_row_number=i + 1,
+                    record_type=task.record_type,
+                    raw_data='{}',
+                    fingerprint='',
+                    status=pending_status,
+                )
+                db.add(pending)
+
+            if task.status == TaskStatus.COMPLETED and task.error_count > 0:
+                task.status = TaskStatus.WAITING_MANUAL
     db.commit()
 
 

@@ -115,8 +115,44 @@ def task_detail(task_id):
         click.echo(f"成功: {task.success_count}")
         click.echo(f"重复: {task.duplicate_count}")
         click.echo(f"错误: {task.error_count}")
+        calc_total = task.success_count + task.duplicate_count + task.error_count
+        ok = "✅" if calc_total == task.total_count else "❌"
+        click.echo(f"计数守恒: {calc_total} == {task.total_count} {ok}")
         if task.error_message:
             click.echo(f"错误信息: {task.error_message[:200]}...")
+        click.echo("-" * 60)
+        click.echo("行级处理状态:")
+        from src.repository import safe_json_loads
+        pending_counts = {}
+        for pr in task.pending_records:
+            st = pr.status.value
+            pending_counts[st] = pending_counts.get(st, 0) + 1
+            status_color = {
+                "success": "green",
+                "duplicate": "yellow",
+                "waiting_manual": "red",
+                "waiting_retry": "yellow",
+                "permanent_failed": "red",
+                "pending": "white",
+                "processing": "blue",
+                "error": "red",
+            }.get(st, "white")
+            err_msg = f" - {pr.error_message}" if pr.error_message else ""
+            click.echo(f"  行{pr.source_row_number}: {click.style(st, fg=status_color)}{err_msg}")
+        click.echo("-" * 60)
+        click.echo("状态汇总:")
+        for st, cnt in sorted(pending_counts.items()):
+            status_color = {
+                "success": "green",
+                "duplicate": "yellow",
+                "waiting_manual": "red",
+                "waiting_retry": "yellow",
+                "permanent_failed": "red",
+                "pending": "white",
+                "processing": "blue",
+                "error": "red",
+            }.get(st, "white")
+            click.echo(f"  {click.style(st, fg=status_color)}: {cnt}")
         click.echo("=" * 60)
     finally:
         db.close()

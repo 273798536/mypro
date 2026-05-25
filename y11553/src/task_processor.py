@@ -18,6 +18,7 @@ from .models import (
 )
 from .config import MAX_RETRY_TIMES
 from .duplicate_detector import generate_fingerprint
+from .validator import validate_record, is_validation_error, ValidationError
 
 
 class TaskProcessor:
@@ -63,9 +64,9 @@ class TaskProcessor:
             repo.add_log(task, f"开始处理任务，当前重试次数: {task.retry_times}")
 
             pending_records = repo.get_pending_records(task.id)
+            total_records_count = len(pending_records)
 
-            pending_count = sum(1 for r in pending_records if r.status in [PendingRecordStatus.PENDING, PendingRecordStatus.WAITING_RETRY])
-            if pending_count == 0:
+            if total_records_count == 0:
                 self._finalize_task(task, repo)
                 return
 
@@ -74,7 +75,15 @@ class TaskProcessor:
             error_count = 0
 
             for record in pending_records:
-                if record.status not in [PendingRecordStatus.PENDING, PendingRecordStatus.WAITING_RETRY]:
+                if record.status in [PendingRecordStatus.SUCCESS, PendingRecordStatus.DUPLICATE]:
+                    if record.status == PendingRecordStatus.SUCCESS:
+                        success_count += 1
+                    else:
+                        duplicate_count += 1
+                    continue
+
+                if record.status not in [PendingRecordStatus.PENDING, PendingRecordStatus.WAITING_RETRY, PendingRecordStatus.PROCESSING]:
+                    error_count += 1
                     continue
 
                 result = self._process_single_record(task, repo, record)
@@ -86,27 +95,39 @@ class TaskProcessor:
                 elif result == ProcessingResult.ERROR:
                     error_count += 1
 
-            repo.increment_task_counts(task, success=success_count, duplicate=duplicate_count, error=error_count)
+            current_success = sum(1 for r in pending_records if r.status == PendingRecordStatus.SUCCESS)
+            current_duplicate = sum(1 for r in pending_records if r.status == PendingRecordStatus.DUPLICATE)
+            current_waiting_retry = sum(1 for r in pending_records if r.status == PendingRecordStatus.WAITING_RETRY)
+            current_waiting_manual = sum(1 for r in pending_records if r.status == PendingRecordStatus.WAITING_MANUAL)
+            current_permanent_failed = sum(1 for r in pending_records if r.status == PendingRecordStatus.PERMANENT_FAILED)
+            current_processing = sum(1 for r in pending_records if r.status == PendingRecordStatus.PROCESSING)
+            current_pending = sum(1 for r in pending_records if r.status == PendingRecordStatus.PENDING)
 
-            pending_records_after = repo.get_pending_records(task.id)
-            waiting_retry_count = sum(1 for r in pending_records_after if r.status == PendingRecordStatus.WAITING_RETRY)
-            waiting_manual_count = sum(1 for r in pending_records_after if r.status == PendingRecordStatus.WAITING_MANUAL)
-            permanent_failed_count = sum(1 for r in pending_records_after if r.status == PendingRecordStatus.PERMANENT_FAILED)
+            expected_total = current_success + current_duplicate + current_waiting_retry + current_waiting_manual + current_permanent_failed + current_processing + current_pending
+            if expected_total != total_records_count:
+                repo.add_log(task, f"计数警告: 状态汇总({expected_total}) != 总数({total_records_count})", level="warning")
 
-            if waiting_manual_count > 0:
-                repo.update_task_status(task, TaskStatus.WAITING_MANUAL, f"有 {waiting_manual_count} 条记录等待人工处理")
-                repo.add_log(task, f"任务部分完成，{waiting_manual_count} 条记录等待人工处理")
-            elif permanent_failed_count > 0 and waiting_retry_count == 0:
-                repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, f"有 {permanent_failed_count} 条记录永久失败")
-                repo.add_log(task, f"任务完成，{permanent_failed_count} 条记录永久失败", level="warning")
-            elif waiting_retry_count > 0:
+            task.success_count = current_success
+            task.duplicate_count = current_duplicate
+            task.error_count = current_waiting_manual + current_permanent_failed + current_processing
+            task.total_count = total_records_count
+            repo.safe_commit()
+            repo.db.refresh(task)
+
+            if current_waiting_manual > 0:
+                repo.update_task_status(task, TaskStatus.WAITING_MANUAL, f"有 {current_waiting_manual} 条记录等待人工处理")
+                repo.add_log(task, f"任务部分完成，{current_waiting_manual} 条记录等待人工处理, {current_permanent_failed} 条永久失败, {current_waiting_retry} 条等待重试")
+            elif current_permanent_failed > 0 and current_waiting_retry == 0 and current_pending == 0:
+                repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, f"有 {current_permanent_failed} 条记录永久失败")
+                repo.add_log(task, f"任务完成，{current_permanent_failed} 条记录永久失败", level="warning")
+            elif current_waiting_retry > 0 or current_pending > 0 or current_processing > 0:
                 task.retry_times += 1
                 if task.retry_times >= task.max_retry_times:
-                    repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, f"有 {waiting_retry_count} 条记录重试失败")
-                    repo.add_log(task, f"任务永久失败，{waiting_retry_count} 条记录达到最大重试次数", level="error")
+                    repo.update_task_status(task, TaskStatus.PERMANENT_FAILED, f"有 {current_waiting_retry + current_pending} 条记录重试失败")
+                    repo.add_log(task, f"任务永久失败，{current_waiting_retry + current_pending} 条记录达到最大重试次数", level="error")
                 else:
-                    repo.update_task_status(task, TaskStatus.WAITING_RETRY, f"有 {waiting_retry_count} 条记录等待重试")
-                    repo.add_log(task, f"任务部分完成，{waiting_retry_count} 条记录等待重试 ({task.retry_times}/{task.max_retry_times})", level="warning")
+                    repo.update_task_status(task, TaskStatus.WAITING_RETRY, f"有 {current_waiting_retry + current_pending} 条记录等待重试")
+                    repo.add_log(task, f"任务部分完成，{current_waiting_retry + current_pending} 条记录等待重试 ({task.retry_times}/{task.max_retry_times})", level="warning")
             else:
                 self._finalize_task(task, repo)
 
@@ -142,6 +163,10 @@ class TaskProcessor:
             repo.update_pending_record_status(record, PendingRecordStatus.PERMANENT_FAILED, f"JSON解析失败: {str(e)}")
             repo.add_log(task, f"第{record.source_row_number}行原始数据解析失败: {str(e)}", level="error")
             return ProcessingResult.ERROR
+
+        is_valid, validation_error = validate_record(data, record.record_type)
+        if not is_valid and validation_error:
+            return self._handle_validation_error(task, repo, record, data, validation_error)
 
         processor_map = {
             RecordType.INVENTORY: self._process_inventory,
@@ -327,6 +352,14 @@ class TaskProcessor:
                 level="error",
                 raw_data=safe_json_dumps(data),
             )
+        elif is_validation_error(e):
+            repo.update_pending_record_status(record, PendingRecordStatus.WAITING_MANUAL, error_msg)
+            repo.add_log(
+                task,
+                f"第{record.source_row_number}行数据校验失败，需要人工处理: {str(e)}",
+                level="warning",
+                raw_data=safe_json_dumps(data),
+            )
         elif self._is_manual_required_error(e):
             repo.update_pending_record_status(record, PendingRecordStatus.WAITING_MANUAL, error_msg)
             repo.add_log(
@@ -344,6 +377,19 @@ class TaskProcessor:
                 raw_data=safe_json_dumps(data),
             )
 
+        return ProcessingResult.ERROR
+
+    def _handle_validation_error(
+        self, task: ImportTask, repo: DataRepository, record: PendingRecord, data: Dict[str, Any], e: ValidationError
+    ) -> ProcessingResult:
+        error_msg = str(e)
+        repo.update_pending_record_status(record, PendingRecordStatus.WAITING_MANUAL, error_msg)
+        repo.add_log(
+            task,
+            f"第{record.source_row_number}行数据校验失败，需要人工处理: {error_msg}",
+            level="warning",
+            raw_data=safe_json_dumps(data),
+        )
         return ProcessingResult.ERROR
 
     @staticmethod
