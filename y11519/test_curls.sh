@@ -336,7 +336,7 @@ curl -s -X POST "$BASE_URL/api/role-view/" \
 sleep 1
 
 echo ""
-echo "=== 19. 测试权限边界 - 操作员尝试查看其他站点数据 ==="
+echo "=== 19. 测试权限边界 - 站点负责人尝试修改其他站点数据 ==="
 echo ""
 echo "创建其他站点数据:"
 OTHER_LEDGER=$(curl -s -X POST "$BASE_URL/api/ledgers/" \
@@ -359,9 +359,41 @@ echo "其他站点台账ID: $OTHER_LEDGER_ID"
 sleep 1
 
 echo ""
-echo "站点负责人尝试查看其他站点数据（应返回403）:"
+echo "站点负责人查看其他站点数据（应返回403）:"
 curl -s "$BASE_URL/api/ledgers/$OTHER_LEDGER_ID" \
   -H "Authorization: Bearer $MANAGER_TOKEN" | python3 -m json.tool
+sleep 1
+
+echo ""
+echo "站点负责人更新其他站点数据（应返回403）:"
+curl -s -X PUT "$BASE_URL/api/ledgers/$OTHER_LEDGER_ID" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MANAGER_TOKEN" \
+  -d '{
+    "material_name": "越权修改",
+    "operator": "site_manager_01",
+    "change_reason": "测试越权修改"
+  }' | python3 -m json.tool
+sleep 1
+
+echo ""
+echo "站点负责人状态流转其他站点数据（应返回403）:"
+curl -s -X POST "$BASE_URL/api/ledgers/status-transition" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MANAGER_TOKEN" \
+  -d "{
+    \"ledger_id\": $OTHER_LEDGER_ID,
+    \"to_status\": \"已提交\",
+    \"operator\": \"site_manager_01\",
+    \"role\": \"站点负责人\",
+    \"reason\": \"测试越权流转\"
+  }" | python3 -m json.tool
+sleep 1
+
+echo ""
+echo "验证其他站点台账数据未被修改（用操作员Token查看）:"
+curl -s "$BASE_URL/api/ledgers/$OTHER_LEDGER_ID" \
+  -H "Authorization: Bearer $OPERATOR_TOKEN" | python3 -c "import sys, json; d=json.load(sys.stdin); print(f'材料名: {d[\"material_name\"]}, 状态: {d[\"status\"]}')"
 sleep 1
 
 echo ""
@@ -387,4 +419,4 @@ echo "1. 导出后台账状态是否变为'已导出'"
 echo "2. 导出后状态历史是否包含导出记录"
 echo "3. 失败任务是否被正确处理"
 echo "4. 调度器是否正常运行"
-echo "5. 权限边界是否生效（403/401）"
+echo "5. 权限边界是否生效（查看/更新/流转均返回403）"

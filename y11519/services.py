@@ -55,14 +55,27 @@ class MaterialLedgerService:
         return result.scalars().all()
 
     @staticmethod
+    def check_site_permission(ledger: MaterialLedger, user_role: str, user_site: Optional[str]) -> bool:
+        if user_role == Role.ADMIN.value or user_role == Role.AUDITOR.value:
+            return True
+        if user_role == Role.SITE_MANAGER.value and user_site:
+            return ledger.site_name == user_site
+        return True
+
+    @staticmethod
     async def update_ledger(
         db: AsyncSession,
         ledger_id: int,
-        update_data: MaterialLedgerUpdate
+        update_data: MaterialLedgerUpdate,
+        user_role: Optional[str] = None,
+        user_site: Optional[str] = None
     ) -> Optional[MaterialLedger]:
         ledger = await MaterialLedgerService.get_ledger(db, ledger_id)
         if not ledger:
             return None
+
+        if user_role and not MaterialLedgerService.check_site_permission(ledger, user_role, user_site):
+            raise PermissionError("无权修改其他站点数据")
 
         update_dict = update_data.model_dump(exclude_unset=True, exclude={"change_reason"})
         change_reason = update_data.change_reason
@@ -89,11 +102,16 @@ class MaterialLedgerService:
     @staticmethod
     async def transition_status(
         db: AsyncSession,
-        transition: StatusTransition
+        transition: StatusTransition,
+        user_role: Optional[str] = None,
+        user_site: Optional[str] = None
     ) -> Optional[MaterialLedger]:
         ledger = await MaterialLedgerService.get_ledger(db, transition.ledger_id)
         if not ledger:
             return None
+
+        if user_role and not MaterialLedgerService.check_site_permission(ledger, user_role, user_site):
+            raise PermissionError("无权修改其他站点数据")
 
         status_history = StatusHistory(
             ledger_id=ledger.id,

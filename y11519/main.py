@@ -102,10 +102,23 @@ async def update_ledger(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(require_roles(Role.OPERATOR, Role.ADMIN))
 ):
-    update_data.operator = current_user["username"]
-    ledger = await MaterialLedgerService.update_ledger(db, ledger_id, update_data)
+    ledger = await MaterialLedgerService.get_ledger(db, ledger_id)
     if not ledger:
         raise HTTPException(status_code=404, detail="台账记录不存在")
+
+    user_role = current_user.get("role")
+    user_site = current_user.get("site_name")
+    if user_role == Role.SITE_MANAGER.value and user_site and ledger.site_name != user_site:
+        raise HTTPException(status_code=403, detail="无权修改其他站点数据")
+
+    update_data.operator = current_user["username"]
+    try:
+        ledger = await MaterialLedgerService.update_ledger(
+            db, ledger_id, update_data,
+            user_role=user_role, user_site=user_site
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     return ledger
 
 
@@ -115,11 +128,24 @@ async def status_transition(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(require_roles(Role.OPERATOR, Role.SITE_MANAGER, Role.AUDITOR, Role.ADMIN))
 ):
-    transition.operator = current_user["username"]
-    transition.role = Role(current_user["role"])
-    ledger = await MaterialLedgerService.transition_status(db, transition)
+    ledger = await MaterialLedgerService.get_ledger(db, transition.ledger_id)
     if not ledger:
         raise HTTPException(status_code=404, detail="台账记录不存在")
+
+    user_role = current_user.get("role")
+    user_site = current_user.get("site_name")
+    if user_role == Role.SITE_MANAGER.value and user_site and ledger.site_name != user_site:
+        raise HTTPException(status_code=403, detail="无权修改其他站点数据")
+
+    transition.operator = current_user["username"]
+    transition.role = Role(current_user["role"])
+    try:
+        ledger = await MaterialLedgerService.transition_status(
+            db, transition,
+            user_role=user_role, user_site=user_site
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     return ledger
 
 
