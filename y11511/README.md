@@ -17,6 +17,11 @@
 
 ## 安装
 
+### 环境要求
+- Python 3.9 或更高版本（推荐 Python 3.9+）
+
+### 安装依赖
+
 ```bash
 pip install click pandas openpyxl rich
 ```
@@ -27,24 +32,40 @@ pip install click pandas openpyxl rich
 poetry install
 ```
 
+### 安装 CLI 命令（推荐）
+
+```bash
+# 以可编辑模式安装，安装后可直接使用 lib-inspect 命令
+python3 -m pip install -e .
+```
+
+**注意**：如果安装后提示 `lib-inspect` 不在 PATH 中，请添加以下到 PATH：
+```bash
+# macOS / Linux
+export PATH="$HOME/.local/bin:$PATH"
+# 或者如果使用系统 Python
+export PATH="$HOME/Library/Python/3.9/bin:$PATH"
+```
+
 ## 运行方式
 
 ```bash
-# 使用模块方式运行（推荐）
-python3 -m lib_inspect.cli <command> [options]
-
-# 安装后可直接运行
-pip install -e .
+# 方式一：安装后直接使用 lib-inspect 命令（推荐）
 lib-inspect <command> [options]
+
+# 方式二：使用模块方式运行（无需安装）
+python3 -m lib_inspect.cli <command> [options]
 ```
 
 ## 快速开始
 
-### 运行方式
-
 ### 1. 初始化
 
 ```bash
+# 方式一
+lib-inspect init
+
+# 方式二
 python3 -m lib_inspect.cli init
 ```
 
@@ -53,16 +74,16 @@ python3 -m lib_inspect.cli init
 支持四种数据源，支持分批次补传：
 
 ```bash
-# 导入借阅申请
+# 方式一：lib-inspect 命令
+lib-inspect import examples/借阅申请.csv --source 借阅申请 --operator 李老师
+lib-inspect import examples/快递单.csv --source 快递单 --operator 李老师
+lib-inspect import examples/读者赔偿记录.csv --source 读者赔偿记录 --operator 李老师
+lib-inspect import examples/客服备注.csv --source 客服备注 --operator 张老师
+
+# 方式二：python3 -m lib_inspect.cli 模块方式
 python3 -m lib_inspect.cli import examples/借阅申请.csv --source 借阅申请 --operator 李老师
-
-# 导入快递单
 python3 -m lib_inspect.cli import examples/快递单.csv --source 快递单 --operator 李老师
-
-# 导入赔偿记录
 python3 -m lib_inspect.cli import examples/读者赔偿记录.csv --source 读者赔偿记录 --operator 李老师
-
-# 导入客服备注
 python3 -m lib_inspect.cli import examples/客服备注.csv --source 客服备注 --operator 张老师
 ```
 
@@ -70,6 +91,8 @@ python3 -m lib_inspect.cli import examples/客服备注.csv --source 客服备�
 
 ```bash
 # 列出所有记录，显示完整ID
+lib-inspect list
+# 或
 python3 -m lib_inspect.cli list
 ```
 
@@ -81,9 +104,13 @@ python3 -m lib_inspect.cli list
 
 ```bash
 # 自动查找并合并所有相关多源记录
+lib-inspect merge <主记录ID> --auto --operator 王老师
+# 或
 python3 -m lib_inspect.cli merge <主记录ID> --auto --operator 王老师
 
 # 手动指定要合并的记录
+lib-inspect merge <主记录ID> --merge-ids <记录ID1> --merge-ids <记录ID2> --operator 王老师
+# 或
 python3 -m lib_inspect.cli merge <主记录ID> --merge-ids <记录ID1> --merge-ids <记录ID2> --operator 王老师
 ```
 
@@ -98,12 +125,18 @@ python3 -m lib_inspect.cli merge <主记录ID> --merge-ids <记录ID1> --merge-i
 
 ```bash
 # 校验所有记录
+lib-inspect check
+# 或
 python3 -m lib_inspect.cli check
 
 # 自动修复可修复问题（如费用计算错误）
+lib-inspect check --fix-auto
+# 或
 python3 -m lib_inspect.cli check --fix-auto
 
 # 检查指定记录
+lib-inspect check --record-id <记录ID>
+# 或
 python3 -m lib_inspect.cli check --record-id <记录ID>
 ```
 
@@ -112,6 +145,8 @@ python3 -m lib_inspect.cli check --record-id <记录ID>
 ### 6. 查看记录详情
 
 ```bash
+lib-inspect detail <记录ID>
+# 或
 python3 -m lib_inspect.cli detail <记录ID>
 ```
 
@@ -119,9 +154,13 @@ python3 -m lib_inspect.cli detail <记录ID>
 
 ```bash
 # 修改字段（必须提供操作人和原因）
+lib-inspect fix <记录ID> --field overdue_fee --value 15.0 --operator 王老师 --reason "逾期天数重新计算"
+# 或
 python3 -m lib_inspect.cli fix <记录ID> --field overdue_fee --value 15.0 --operator 王老师 --reason "逾期天数重新计算"
 
 # 修改日期
+lib-inspect fix <记录ID> --field due_date --value 2024-03-15 --operator 王老师 --reason "续借一个月"
+# 或
 python3 -m lib_inspect.cli fix <记录ID> --field due_date --value 2024-03-15 --operator 王老师 --reason "续借一个月"
 ```
 
@@ -131,12 +170,18 @@ python3 -m lib_inspect.cli fix <记录ID> --field due_date --value 2024-03-15 --
 
 ```bash
 # 基础重算
+lib-inspect recalc --operator 王老师 --reason "费用重新汇总"
+# 或
 python3 -m lib_inspect.cli recalc --operator 王老师 --reason "费用重新汇总"
 
 # 自定义逾期费率（默认 0.5 元/天）
+lib-inspect recalc --operator 王老师 --reason "费用重新汇总" --overdue-rate 0.3
+# 或
 python3 -m lib_inspect.cli recalc --operator 王老师 --reason "费用重新汇总" --overdue-rate 0.3
 
 # 自定义基础借阅周期（默认 30 天）
+lib-inspect recalc --operator 王老师 --reason "费用重新汇总" --base-loan-period 60
+# 或
 python3 -m lib_inspect.cli recalc --operator 王老师 --reason "费用重新汇总" --base-loan-period 60
 ```
 
@@ -151,12 +196,18 @@ python3 -m lib_inspect.cli recalc --operator 王老师 --reason "费用重新汇
 
 ```bash
 # 汇总报表
+lib-inspect report
+# 或
 python3 -m lib_inspect.cli report
 
 # 显示失败记录
+lib-inspect report --show-failed
+# 或
 python3 -m lib_inspect.cli report --show-failed
 
 # 显示重复记录
+lib-inspect report --show-duplicates
+# 或
 python3 -m lib_inspect.cli report --show-duplicates
 ```
 
@@ -164,9 +215,13 @@ python3 -m lib_inspect.cli report --show-duplicates
 
 ```bash
 # 所有变更历史
+lib-inspect history
+# 或
 python3 -m lib_inspect.cli history
 
 # 指定记录的变更历史
+lib-inspect history --record-id <记录ID>
+# 或
 python3 -m lib_inspect.cli history --record-id <记录ID>
 ```
 
@@ -174,19 +229,27 @@ python3 -m lib_inspect.cli history --record-id <记录ID>
 
 ```bash
 # 导出为 Excel（默认）
+lib-inspect export
+# 或
 python3 -m lib_inspect.cli export
 
 # 导出为 CSV
+lib-inspect export --format csv
+# 或
 python3 -m lib_inspect.cli export --format csv
 
 # 包含失败记录一起导出
+lib-inspect export --include-failed
+# 或
 python3 -m lib_inspect.cli export --include-failed
 
 # 指定输出文件名
+lib-inspect export --output 2024年2月馆际借阅汇总.xlsx
+# 或
 python3 -m lib_inspect.cli export --output 2024年2月馆际借阅汇总.xlsx
 ```
 
-### 11. 查看操作日志
+### 12. 查看操作日志
 
 ```bash
 # 查看当前月操作日志
