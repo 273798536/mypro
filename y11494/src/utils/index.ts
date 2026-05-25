@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { runQuery, getOne } from '../config/database';
+import { runQuery, getOne, getAll } from '../config/database';
 import { DocumentStatus } from '../types';
 import dayjs from 'dayjs';
 
@@ -104,6 +104,42 @@ export const createDirtyRecord = async (
   await runQuery(
     'INSERT INTO dirty_records (document_id, project_id, dirty_type, field_name, original_value, current_value, description) VALUES (?, ?, ?, ?, ?, ?, ?)',
     [documentId, projectId, dirtyType, fieldName || null, originalValue || null, currentValue || null, description]
+  );
+};
+
+export const syncDirtyRecords = async (
+  documentId: number,
+  currentIssues: { type: string; field?: string; description: string }[],
+  handlerId: number,
+  handlerName: string
+): Promise<void> => {
+  const unresolvedRecords = await getAll(
+    'SELECT id, dirty_type, field_name FROM dirty_records WHERE document_id = ? AND is_resolved = 0',
+    [documentId]
+  );
+  const currentIssueKeys = new Set(
+    currentIssues.map(issue => `${issue.type}:${issue.field || ''}`)
+  );
+  for (const record of unresolvedRecords) {
+    const recordKey = `${record.dirty_type}:${record.field_name || ''}`;
+    if (!currentIssueKeys.has(recordKey)) {
+      await runQuery(
+        'UPDATE dirty_records SET is_resolved = 1, handler_id = ?, handler_name = ?, handling_opinion = ?, handled_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [handlerId, handlerName, '字段已修正，问题自动解决', record.id]
+      );
+    }
+  }
+};
+
+export const resolveAllDirtyRecords = async (
+  documentId: number,
+  handlerId: number,
+  handlerName: string,
+  opinion: string
+): Promise<void> => {
+  await runQuery(
+    'UPDATE dirty_records SET is_resolved = 1, handler_id = ?, handler_name = ?, handling_opinion = ?, handled_at = CURRENT_TIMESTAMP WHERE document_id = ? AND is_resolved = 0',
+    [handlerId, handlerName, opinion, documentId]
   );
 };
 

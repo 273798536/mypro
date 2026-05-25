@@ -13,6 +13,8 @@ import {
   recordStatusTransition,
   detectDirtyRecord,
   createDirtyRecord,
+  syncDirtyRecords,
+  resolveAllDirtyRecords,
   validateStatusTransition,
   generateDocumentNo
 } from '../utils';
@@ -107,14 +109,16 @@ router.post('/upload', requireRoles(UserRole.MANAGER, UserRole.DATA_ENTRY, UserR
       [parseInt(projectId), documentType, docNo, 1, title, req.file.originalname, req.file.path, req.file.size, fileHash, amount || null, quantity || null, supplierName || null, effectiveDate || null, expiryDate || null, pageCount || null, DocumentStatus.DRAFT, 0, user.userId]
     );
     const document = await getOne('SELECT * FROM documents WHERE id = ?', [result.lastID]);
-    const dirtyIssues = await detectDirtyRecord(document);
-    if (dirtyIssues.length > 0) {
+    const dirtyIssues = detectDirtyRecord(document);
+    const hasDirty = dirtyIssues.length > 0;
+    if (hasDirty) {
       await runQuery('UPDATE documents SET is_dirty = 1 WHERE id = ?', [result.lastID]);
       for (const issue of dirtyIssues) {
         await createDirtyRecord(result.lastID as number, parseInt(projectId), issue.type, issue.field, undefined, undefined, issue.description);
       }
     }
-    res.status(201).json({ data: document, message: '文档上传成功' });
+    const finalDocument = await getOne('SELECT * FROM documents WHERE id = ?', [result.lastID]);
+    res.status(201).json({ data: finalDocument, message: '文档上传成功' });
   } catch (error) {
     console.error('文档上传失败:', error);
     res.status(500).json({ message: '文档上传失败' });
@@ -162,15 +166,17 @@ router.put('/:id', requireRoles(UserRole.MANAGER, UserRole.REVIEWER, UserRole.DA
     params.push(documentId);
     await runQuery(`UPDATE documents SET ${updates.join(', ')} WHERE id = ?`, params);
     const updatedDocument = await getOne('SELECT * FROM documents WHERE id = ?', [documentId]);
-    const dirtyIssues = await detectDirtyRecord(updatedDocument);
+    const dirtyIssues = detectDirtyRecord(updatedDocument);
     const hasDirty = dirtyIssues.length > 0;
     await runQuery('UPDATE documents SET is_dirty = ? WHERE id = ?', [hasDirty ? 1 : 0, documentId]);
+    await syncDirtyRecords(documentId, dirtyIssues, user.userId, user.name);
     if (hasDirty) {
       for (const issue of dirtyIssues) {
         await createDirtyRecord(documentId, document.project_id, issue.type, issue.field, undefined, undefined, issue.description);
       }
     }
-    res.json({ data: updatedDocument, message: '文档更新成功' });
+    const finalDocument = await getOne('SELECT * FROM documents WHERE id = ?', [documentId]);
+    res.json({ data: finalDocument, message: '文档更新成功' });
   } catch (error) {
     console.error('更新文档失败:', error);
     res.status(500).json({ message: '更新文档失败' });
@@ -225,9 +231,11 @@ router.post('/:id/new-version', requireRoles(UserRole.MANAGER, UserRole.REVIEWER
     );
     await recordChange(result.lastID as number, oldDocument.project_id, user.userId, user.name, 'version', String(oldDocument.version), String(newVersion), changeReason || '创建新版本');
     const newDocument = await getOne('SELECT * FROM documents WHERE id = ?', [result.lastID]);
-    const dirtyIssues = await detectDirtyRecord(newDocument);
-    if (dirtyIssues.length > 0) {
-      await runQuery('UPDATE documents SET is_dirty = 1 WHERE id = ?', [result.lastID]);
+    const dirtyIssues = detectDirtyRecord(newDocument);
+    const hasDirty = dirtyIssues.length > 0;
+    await runQuery('UPDATE documents SET is_dirty = ? WHERE id = ?', [hasDirty ? 1 : 0, result.lastID]);
+    await resolveAllDirtyRecords(documentId, user.userId, user.name, '创建新版本，旧版本问题已在新版本中处理');
+    if (hasDirty) {
       for (const issue of dirtyIssues) {
         await createDirtyRecord(result.lastID as number, oldDocument.project_id, issue.type, issue.field, undefined, undefined, issue.description);
       }
