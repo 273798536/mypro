@@ -190,3 +190,29 @@ async def resolve_failed_record(
         raise HTTPException(status_code=404, detail="失败记录不存在")
     
     return DataResponse(success=True, message="标记为已解决")
+
+
+@router.post("/{queue_id}/close", response_model=DataResponse)
+async def close_queue_item(
+    queue_id: int,
+    close_note: str = Query(..., description="关闭原因"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    _: bool = Depends(allow_supervisor)
+) -> Any:
+    from datetime import datetime
+    
+    queue_item = db.query(CompensationQueue).filter(CompensationQueue.id == queue_id).first()
+    if not queue_item:
+        raise HTTPException(status_code=404, detail="队列项不存在")
+    
+    if queue_item.status == QueueStatus.CLOSED:
+        return DataResponse(success=True, message="队列项已关闭")
+    
+    queue_service = CompensationQueueService(db)
+    result = queue_service.manual_handle(queue_id, current_user, "skip", close_note)
+    
+    if not result["success"]:
+        raise HTTPException(status_code=400, detail=result.get("error", "关闭失败"))
+    
+    return DataResponse(success=True, message="队列项已关闭")

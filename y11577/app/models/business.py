@@ -117,6 +117,8 @@ class CompensationQueue(BaseModel):
     process_logs = Column(JSONType, default=list)
     handled_by = Column(Integer, nullable=True)
     handled_at = Column(DateTime, nullable=True)
+    compensated_at = Column(DateTime, nullable=True)
+    closed_at = Column(DateTime, nullable=True)
     source_ids = Column(JSONType, default=list)
     version = Column(Integer, default=1, nullable=False)
 

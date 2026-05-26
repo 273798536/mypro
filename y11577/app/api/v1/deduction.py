@@ -21,6 +21,7 @@ from app.schemas.business import (
 from app.schemas.common import DataResponse, ListResponse
 from app.services.idempotent_service import IdempotentService
 from app.services.queue_service import CompensationQueueService
+from app.services.change_history_service import ChangeHistoryService
 
 router = APIRouter()
 allow_data_entry = RoleChecker(["data_entry", "reviewer", "supervisor"])
@@ -174,13 +175,24 @@ async def update_deduction(
         if deduction.created_by != current_user.id:
             raise HTTPException(status_code=403, detail="无权限修改此记录")
     
+    old_data = {c.name: getattr(deduction, c.name) for c in deduction.__table__.columns}
+    
     update_data = deduction_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(deduction, field, value)
     
     deduction.updated_by = current_user.id
-    db.commit()
-    db.refresh(deduction)
+    db.flush()
+    
+    ChangeHistoryService.record_changes(
+        db=db,
+        business_type="deduction",
+        business_id=deduction_id,
+        old_obj=old_data,
+        new_data=update_data,
+        operator=current_user,
+        change_reason="修改扣款明细"
+    )
     
     if deduction.status == "pending":
         queue_service = CompensationQueueService(db)

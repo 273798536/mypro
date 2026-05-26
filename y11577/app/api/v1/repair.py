@@ -21,6 +21,7 @@ from app.schemas.business import (
 from app.schemas.common import DataResponse, ListResponse
 from app.services.idempotent_service import IdempotentService
 from app.services.queue_service import CompensationQueueService
+from app.services.change_history_service import ChangeHistoryService
 
 router = APIRouter()
 allow_data_entry = RoleChecker(["data_entry", "reviewer", "supervisor"])
@@ -171,13 +172,24 @@ async def update_repair(
         if repair.created_by != current_user.id:
             raise HTTPException(status_code=403, detail="无权限修改此记录")
     
+    old_data = {c.name: getattr(repair, c.name) for c in repair.__table__.columns}
+    
     update_data = repair_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(repair, field, value)
     
     repair.updated_by = current_user.id
-    db.commit()
-    db.refresh(repair)
+    db.flush()
+    
+    ChangeHistoryService.record_changes(
+        db=db,
+        business_type="repair",
+        business_id=repair_id,
+        old_obj=old_data,
+        new_data=update_data,
+        operator=current_user,
+        change_reason="修改返修记录"
+    )
     
     if repair.status == "pending":
         queue_service = CompensationQueueService(db)

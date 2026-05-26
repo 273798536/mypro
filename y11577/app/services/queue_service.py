@@ -270,7 +270,18 @@ class CompensationQueueService:
         queue_item.last_error = None
         queue_item.error_code = None
         self._add_process_log(queue_item, "success", result.get("message", "处理成功"))
+        self.db.flush()
+        
+        self._post_success_compensation(queue_item)
         self.db.commit()
+
+    def _post_success_compensation(self, queue_item: CompensationQueue):
+        self._add_process_log(queue_item, "compensation", "补偿入账完成")
+        
+        queue_item.status = QueueStatus.CLOSED
+        queue_item.compensated_at = datetime.utcnow()
+        queue_item.closed_at = datetime.utcnow()
+        self._add_process_log(queue_item, "closed", "流程已关闭")
 
     def _mark_failed(self, queue_item: CompensationQueue, error: str, error_code: Optional[str] = None):
         queue_item.last_error = error
