@@ -8,7 +8,7 @@ import { In, LessThanOrEqual, Not, IsNull } from 'typeorm';
 
 interface SubmitCompensationData {
   businessKey?: string;
-  dataSource: DataSource;
+  dataSource: DataSource | string;
   sourceId?: string;
   customerId: string;
   customerName?: string;
@@ -27,7 +27,7 @@ export class CompensationService {
   validateRecord(data: SubmitCompensationData): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.dataSource && !Object.values(DataSource).includes(data.dataSource)) {
+    if (!data.dataSource || !Object.values(DataSource).includes(data.dataSource as DataSource)) {
       errors.push('无效的数据源');
     }
     if (!data.customerId) {

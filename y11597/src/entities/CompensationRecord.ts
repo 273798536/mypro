@@ -10,11 +10,8 @@ export class CompensationRecord {
   @Column({ unique: true })
   businessKey!: string;
 
-  @Column({
-    type: 'simple-enum',
-    enum: DataSource
-  })
-  dataSource!: DataSource;
+  @Column({ type: 'varchar' })
+  dataSource!: DataSource | string;
 
   @Column({ type: 'text', nullable: true })
   sourceId?: string;

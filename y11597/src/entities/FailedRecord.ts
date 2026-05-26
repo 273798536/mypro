@@ -12,11 +12,8 @@ export class FailedRecord {
   @Column()
   businessKey!: string;
 
-  @Column({
-    type: 'simple-enum',
-    enum: DataSource
-  })
-  dataSource!: DataSource;
+  @Column({ type: 'varchar' })
+  dataSource!: DataSource | string;
 
   @Column({
     type: 'simple-enum',
