@@ -1,0 +1,11 @@
+指标,数值
+generated_at,2026-05-26T10:16:26.525Z
+total_cases,3
+unhandled_count,3
+corrected_count,0
+need_manual_count,0
+total_anomalies,4
+unresolved_anomalies,4
+total_corrections,0
+total_rollbacks,0
+rollback_amount_sum,0

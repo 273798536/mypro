@@ -1,0 +1,15 @@
+{
+  "name": "merchant-split-arbitration-api",
+  "version": "1.0.0",
+  "description": "商户分账异常仲裁API - 处理商户分账投诉的创建/查询/推进/修正/导出",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^11.3.0",
+    "csv-writer": "^1.6.0"
+  }
+}
