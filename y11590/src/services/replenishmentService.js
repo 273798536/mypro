@@ -165,20 +165,22 @@ class ReplenishmentService {
       throw new ValidationError('回补数量不能为负数');
     }
 
-    if (replenishQty > task.shortage_qty) {
-      throw new ValidationError(`回补数量不能超过缺货数量: ${task.shortage_qty}`);
+    const remainingQty = task.shortage_qty - task.replenish_qty;
+    if (replenishQty > remainingQty) {
+      throw new ValidationError(`回补数量不能超过剩余缺货数量: ${remainingQty}`);
     }
 
+    const totalReplenished = task.replenish_qty + replenishQty;
     let newStatus;
-    if (replenishQty === 0) {
+    if (replenishQty === 0 && task.replenish_qty === 0) {
       newStatus = REPLENISHMENT_STATUS.FAILED;
-    } else if (isPartial || replenishQty < task.shortage_qty) {
+    } else if (isPartial || totalReplenished < task.shortage_qty) {
       newStatus = REPLENISHMENT_STATUS.PARTIAL;
     } else {
       newStatus = REPLENISHMENT_STATUS.COMPLETED;
     }
 
-    if (!isValidStatusTransition(REPLENISHMENT_STATUS_TRANSITIONS, task.status, newStatus)) {
+    if (task.status !== newStatus && !isValidStatusTransition(REPLENISHMENT_STATUS_TRANSITIONS, task.status, newStatus)) {
       throw new StateTransitionError(`无法从 ${task.status} 转换到 ${newStatus}`);
     }
 

@@ -71,7 +71,7 @@ class AppealService {
           [reviewComment || '申诉改判', appeal.wave_item_id]
         );
 
-        await performanceService.recalculatePerformance(appeal.wave_id, operator);
+        await performanceService.recalculatePerformance(appeal.wave_id, operator, null, true);
       }
 
       await historyService.recordOperation(appeal.wave_id, OPERATION_TYPE.REVIEW_APPEAL, operator, {

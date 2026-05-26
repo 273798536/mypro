@@ -233,7 +233,7 @@ describe('状态机与业务规则测试', () => {
         });
 
       expect(res2.status).toBe(400);
-      expect(res2.body.error.code).toBe('STATE_TRANSITION_ERROR');
+      expect(res2.body.error.code).toBe('VALIDATION_ERROR');
     });
   });
 

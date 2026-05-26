@@ -102,6 +102,7 @@ const createTables = async () => {
       occupied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       released_at DATETIME,
       released_by TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (wave_id) REFERENCES waves(id) ON DELETE CASCADE
     )`,
 

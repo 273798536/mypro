@@ -35,13 +35,15 @@ class PerformanceService {
     return perfId;
   }
 
-  async recalculatePerformance(waveId, operator, idempotentKey = null) {
+  async recalculatePerformance(waveId, operator, idempotentKey = null, skipTransaction = false) {
     const wave = await getAsync(`SELECT * FROM waves WHERE id = ?`, [waveId]);
     if (!wave) {
       throw new NotFoundError('波次不存在');
     }
 
-    await beginTransaction();
+    if (!skipTransaction) {
+      await beginTransaction();
+    }
 
     try {
       await runAsync(
@@ -91,11 +93,15 @@ class PerformanceService {
         }
       });
 
-      await commit();
+      if (!skipTransaction) {
+        await commit();
+      }
 
       return await this.getWavePerformance(waveId);
     } catch (err) {
-      await rollback();
+      if (!skipTransaction) {
+        await rollback();
+      }
       throw err;
     }
   }
