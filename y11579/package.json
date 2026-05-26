@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
+    "prestart": "npm run build",
     "start": "node dist/server.js",
     "init-db": "ts-node src/scripts/initDB.ts",
     "seed": "ts-node src/scripts/seedData.ts",
+    "typecheck": "tsc --noEmit",
     "test": "jest"
   },
   "dependencies": {

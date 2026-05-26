@@ -39,7 +39,7 @@ export class ExportService {
     }
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return Buffer.from(buffer);
   }
 
   static async exportLedgersReport(
@@ -98,7 +98,7 @@ export class ExportService {
     }
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return Buffer.from(buffer);
   }
 
   private static applyRoleView(ledger: Ledger, options: ExportOptions): Ledger {

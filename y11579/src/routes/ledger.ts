@@ -2,15 +2,20 @@ import { Router, Response } from 'express';
 import { LedgerService } from '../services/ledgerService';
 import { ExportService } from '../services/exportService';
 import { AsyncTaskService } from '../services/asyncTaskService';
-import { authenticate, AuthRequest } from '../middleware/auth';
-import { BatchStrategy, LedgerStatus, ProcessResult } from '../types';
+import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
+import { BatchStrategy, LedgerStatus, ProcessResult, Role } from '../types';
 import { LedgerRepository } from '../db/repositories';
 
 const router = Router();
 
 router.use(authenticate);
 
-router.post('/', async (req: AuthRequest, res: Response) => {
+const canWrite = requireRole(Role.FACTORY_OWNER, Role.ACCOUNTANT, Role.OPERATOR);
+const canApprove = requireRole(Role.FACTORY_OWNER, Role.ACCOUNTANT);
+const canAudit = requireRole(Role.FACTORY_OWNER, Role.AUDITOR);
+const canAll = requireRole(Role.FACTORY_OWNER, Role.ACCOUNTANT, Role.AUDITOR, Role.OPERATOR);
+
+router.post('/', canWrite, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.createLedger(
       req.body,
@@ -23,7 +28,7 @@ router.post('/', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/batch', async (req: AuthRequest, res: Response) => {
+router.post('/batch', canWrite, async (req: AuthRequest, res: Response) => {
   try {
     const { data, strategy } = req.body;
     const result = await LedgerService.processBatch(
@@ -38,7 +43,7 @@ router.post('/batch', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/', async (req: AuthRequest, res: Response) => {
+router.get('/', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const { status, page = '1', limit = '20' } = req.query;
     const ledgers = await LedgerRepository.findAll({
@@ -56,7 +61,7 @@ router.get('/', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/:id', async (req: AuthRequest, res: Response) => {
+router.get('/:id', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.getFullLedger(req.params.id);
     if (!ledger) {
@@ -69,7 +74,7 @@ router.get('/:id', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/submit', async (req: AuthRequest, res: Response) => {
+router.post('/:id/submit', canWrite, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.submit(
       req.params.id,
@@ -82,7 +87,7 @@ router.post('/:id/submit', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/reject', async (req: AuthRequest, res: Response) => {
+router.post('/:id/reject', canApprove, async (req: AuthRequest, res: Response) => {
   try {
     const { reason } = req.body;
     const ledger = await LedgerService.reject(
@@ -97,7 +102,7 @@ router.post('/:id/reject', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/confirm', async (req: AuthRequest, res: Response) => {
+router.post('/:id/confirm', canApprove, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.confirm(
       req.params.id,
@@ -110,7 +115,7 @@ router.post('/:id/confirm', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/audit', async (req: AuthRequest, res: Response) => {
+router.post('/:id/audit', canAudit, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.setAuditMode(
       req.params.id,
@@ -123,7 +128,7 @@ router.post('/:id/audit', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/result', async (req: AuthRequest, res: Response) => {
+router.post('/:id/result', canApprove, async (req: AuthRequest, res: Response) => {
   try {
     const { result, message } = req.body;
     const ledger = await LedgerService.setProcessResult(
@@ -139,7 +144,7 @@ router.post('/:id/result', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/:id/history', async (req: AuthRequest, res: Response) => {
+router.get('/:id/history', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const history = await LedgerService.getChangeHistory(req.params.id);
     res.json(history);
@@ -157,7 +162,7 @@ router.get('/:id/snapshots', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/:id/diff/:action', async (req: AuthRequest, res: Response) => {
+router.get('/:id/diff/:action', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const diff = await LedgerService.getBeforeAfterSnapshots(
       req.params.id,
@@ -169,7 +174,7 @@ router.get('/:id/diff/:action', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/handover', async (req: AuthRequest, res: Response) => {
+router.post('/:id/handover', canWrite, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.addHandoverPaper(
       req.params.id,
@@ -183,7 +188,7 @@ router.post('/:id/handover', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/:id/sms-evidence', async (req: AuthRequest, res: Response) => {
+router.post('/:id/sms-evidence', canWrite, async (req: AuthRequest, res: Response) => {
   try {
     const ledger = await LedgerService.addSmsEvidence(
       req.params.id,
@@ -197,7 +202,7 @@ router.post('/:id/sms-evidence', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/:id/export', async (req: AuthRequest, res: Response) => {
+router.get('/:id/export', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const { maskSensitive = 'false', includeHistory = 'false' } = req.query;
     const buffer = await ExportService.exportLedgerToExcel(req.params.id, {
@@ -214,7 +219,7 @@ router.get('/:id/export', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/export/report', async (req: AuthRequest, res: Response) => {
+router.get('/export/report', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const { includeFailures = 'false' } = req.query;
     const ledgers = await LedgerRepository.findAll();
@@ -232,7 +237,7 @@ router.get('/export/report', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/async/process', async (req: AuthRequest, res: Response) => {
+router.post('/async/process', canWrite, async (req: AuthRequest, res: Response) => {
   try {
     const { data, strategy } = req.body;
     const task = await AsyncTaskService.createTask('batch_process', {
@@ -247,7 +252,7 @@ router.post('/async/process', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.get('/async/tasks/:id', async (req: AuthRequest, res: Response) => {
+router.get('/async/tasks/:id', canAll, async (req: AuthRequest, res: Response) => {
   try {
     const task = await AsyncTaskService.getTaskById(req.params.id);
     if (!task) {
@@ -260,7 +265,7 @@ router.get('/async/tasks/:id', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/async/tasks/:id/retry', async (req: AuthRequest, res: Response) => {
+router.post('/async/tasks/:id/retry', canApprove, async (req: AuthRequest, res: Response) => {
   try {
     const task = await AsyncTaskService.retryTask(req.params.id);
     res.json(task);
