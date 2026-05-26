@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryParamsSchema = exports.exportRequestSchema = exports.inventoryDiffReasonSchema = exports.inventoryDifferenceSchema = exports.attachmentSchema = exports.freezeBatchSchema = exports.batchOperatorSchema = exports.addTicketsToBatchSchema = exports.createBatchSchema = exports.archiveTicketSchema = exports.settleTicketSchema = exports.unfreezeTicketSchema = exports.freezeTicketSchema = exports.compensationReviewSchema = exports.compensationRequestSchema = exports.reassignTicketSchema = exports.createTicketSchema = exports.compensationRuleSchema = exports.slaRuleSchema = exports.sessionSummarySchema = void 0;
+exports.operationsReportSchema = exports.reportOptionsSchema = exports.overrideTicketSchema = exports.reviewTicketSchema = exports.queryParamsSchema = exports.exportRequestSchema = exports.unarchiveTicketSchema = exports.inventoryDiffReasonSchema = exports.inventoryDifferenceSchema = exports.attachmentSchema = exports.freezeBatchSchema = exports.batchOperatorSchema = exports.addTicketsToBatchSchema = exports.createBatchSchema = exports.archiveTicketSchema = exports.settleTicketSchema = exports.unfreezeTicketSchema = exports.freezeTicketSchema = exports.compensationReviewSchema = exports.compensationRequestSchema = exports.reassignTicketSchema = exports.createTicketSchema = exports.compensationRuleSchema = exports.slaRuleSchema = exports.sessionSummarySchema = void 0;
 exports.validateSchema = validateSchema;
 const Joi = __importStar(require("joi"));
 const types_1 = require("../types");
@@ -66,7 +66,6 @@ exports.createTicketSchema = Joi.object({
     createdBy: Joi.string().required().trim().min(1).max(100)
 });
 exports.reassignTicketSchema = Joi.object({
-    ticketId: Joi.string().required().trim().min(1).max(100),
     toAgentId: Joi.string().required().trim().min(1).max(100),
     assignmentType: Joi.string().valid(...Object.values(types_1.AssignmentType)).required(),
     reason: Joi.string().trim().max(1000).optional(),
@@ -141,6 +140,10 @@ exports.inventoryDifferenceSchema = Joi.object({
 exports.inventoryDiffReasonSchema = Joi.object({
     reason: Joi.string().required().trim().min(1).max(1000)
 });
+exports.unarchiveTicketSchema = Joi.object({
+    reason: Joi.string().required().trim().min(1).max(1000),
+    operatorId: Joi.string().required().trim().min(1).max(100)
+});
 exports.exportRequestSchema = Joi.object({
     requestedBy: Joi.string().required().trim().min(1).max(100)
 });
@@ -152,6 +155,36 @@ exports.queryParamsSchema = Joi.object({
     offset: Joi.number().integer().min(0).default(0),
     productId: Joi.string().trim().max(100).optional(),
     hasDifference: Joi.boolean().optional()
+});
+exports.reviewTicketSchema = Joi.object({
+    reviewResult: Joi.string().valid('approved', 'rejected', 'escalated').required(),
+    reviewComments: Joi.string().required().trim().min(1).max(2000),
+    operatorId: Joi.string().required().trim().min(1).max(100)
+});
+exports.overrideTicketSchema = Joi.object({
+    toStatus: Joi.string().valid(...Object.values(types_1.TicketStatus)).required(),
+    overrideReason: Joi.string().required().trim().min(1).max(2000),
+    newCompensation: Joi.number().min(0).max(100000).optional(),
+    operatorId: Joi.string().required().trim().min(1).max(100)
+});
+exports.reportOptionsSchema = Joi.object({
+    includeTicketDetails: Joi.boolean().optional().default(true),
+    includeInventory: Joi.boolean().optional().default(true),
+    includeTimeouts: Joi.boolean().optional().default(true),
+    includeAssignments: Joi.boolean().optional().default(true),
+    includeTransitions: Joi.boolean().optional().default(true),
+    includeCompensation: Joi.boolean().optional().default(true),
+    includeResponsibility: Joi.boolean().optional().default(true),
+    requestedBy: Joi.string().required().trim().min(1).max(100),
+    operatorId: Joi.string().required().trim().min(1).max(100)
+});
+exports.operationsReportSchema = Joi.object({
+    startDate: Joi.string().trim().optional(),
+    endDate: Joi.string().trim().optional(),
+    status: Joi.string().trim().optional(),
+    includeTicketDetails: Joi.boolean().optional().default(false),
+    requestedBy: Joi.string().required().trim().min(1).max(100),
+    operatorId: Joi.string().required().trim().min(1).max(100)
 });
 function validateSchema(schema, data) {
     const { error } = schema.validate(data, { abortEarly: false });
@@ -184,6 +217,10 @@ exports.default = {
     inventoryDiffReasonSchema: exports.inventoryDiffReasonSchema,
     exportRequestSchema: exports.exportRequestSchema,
     queryParamsSchema: exports.queryParamsSchema,
+    reviewTicketSchema: exports.reviewTicketSchema,
+    overrideTicketSchema: exports.overrideTicketSchema,
+    reportOptionsSchema: exports.reportOptionsSchema,
+    operationsReportSchema: exports.operationsReportSchema,
     validateSchema
 };
 //# sourceMappingURL=schemas.js.map

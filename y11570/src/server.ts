@@ -5,7 +5,9 @@ import TicketStateMachine from './state-machine/TicketStateMachine';
 import BatchService from './services/BatchService';
 import ExportService from './services/ExportService';
 import OperationsViewService from './services/OperationsViewService';
+import ReportService from './services/ReportService';
 import { AssignmentType, FrozenType, BatchStatus, TicketStatus } from './types';
+import { Permission, checkPermission, getRoleForOperator, getPermissionsForOperator, DEFAULT_ROLE_FOR_OPERATOR, Role, ROLE_PERMISSIONS } from './auth/roles';
 import {
     slaRuleSchema,
     compensationRuleSchema,
@@ -17,6 +19,7 @@ import {
     unfreezeTicketSchema,
     settleTicketSchema,
     archiveTicketSchema,
+    unarchiveTicketSchema,
     createBatchSchema,
     addTicketsToBatchSchema,
     batchOperatorSchema,
@@ -26,6 +29,10 @@ import {
     inventoryDiffReasonSchema,
     exportRequestSchema,
     queryParamsSchema,
+    reviewTicketSchema,
+    overrideTicketSchema,
+    reportOptionsSchema,
+    operationsReportSchema,
     validateSchema
 } from './validation/schemas';
 
@@ -34,12 +41,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/exports', express.static(path.join(__dirname, '../exports')));
+app.use('/reports', express.static(path.join(__dirname, '../reports')));
 
 const dao = new TicketDao();
 const stateMachine = new TicketStateMachine(dao);
 const batchService = new BatchService(dao, stateMachine);
 const exportService = new ExportService(dao);
 const operationsViewService = new OperationsViewService(dao);
+const reportService = new ReportService(dao, stateMachine, batchService, operationsViewService);
 
 function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -75,10 +84,38 @@ function validateQuery(schema: any) {
     };
 }
 
+function requirePermission(permission: Permission) {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const operatorId = req.body.operatorId || req.query.operatorId as string;
+        if (!operatorId) {
+            return res.status(401).json({
+                error: 'AUTH_REQUIRED',
+                message: '缺少操作人ID，无法进行权限校验'
+            });
+        }
+
+        const check = checkPermission(operatorId, permission);
+        if (!check.allowed) {
+            return res.status(403).json({
+                error: 'PERMISSION_DENIED',
+                message: check.message,
+                operatorId,
+                role: getRoleForOperator(operatorId),
+                requiredPermission: permission
+            });
+        }
+        next();
+    };
+}
+
+function getOperatorId(req: Request): string {
+    return req.body.operatorId || req.query.operatorId as string || 'anonymous';
+}
+
 async function handleWithFailedRecord(
     req: Request,
     res: Response,
-    recordType: 'ticket' | 'batch' | 'export' | 'reassign' | 'compensation_request' | 'compensation_review' | 'freeze' | 'unfreeze' | 'settle' | 'archive' | 'inventory_diff',
+    recordType: 'ticket' | 'batch' | 'export' | 'reassign' | 'compensation_request' | 'compensation_review' | 'freeze' | 'unfreeze' | 'settle' | 'archive' | 'unarchive' | 'inventory_diff' | 'review' | 'override',
     handler: () => Promise<any>
 ) {
     try {
@@ -200,7 +237,7 @@ app.get('/api/tickets/:id/consistency', asyncHandler(async (req, res) => {
     res.json(result);
 }));
 
-app.post('/api/tickets/:id/reassign', validateRequest(reassignTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/reassign', validateRequest(reassignTicketSchema), requirePermission(Permission.TICKET_REASSIGN), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'reassign', async () => {
         const { toAgentId, assignmentType, reason, operatorId, slaRuleId } = req.body;
         const slaRule = slaRuleId ? await dao.getSLARuleById(slaRuleId) : undefined;
@@ -245,7 +282,7 @@ app.post('/api/tickets/:id/compensation/review', validateRequest(compensationRev
     });
 }));
 
-app.post('/api/tickets/:id/freeze', validateRequest(freezeTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/freeze', validateRequest(freezeTicketSchema), requirePermission(Permission.TICKET_FREEZE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'freeze', async () => {
         const { frozenType, reason, operatorId } = req.body;
         const ticket = await stateMachine.freezeTicket(
@@ -258,7 +295,7 @@ app.post('/api/tickets/:id/freeze', validateRequest(freezeTicketSchema), asyncHa
     });
 }));
 
-app.post('/api/tickets/:id/unfreeze', validateRequest(unfreezeTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/unfreeze', validateRequest(unfreezeTicketSchema), requirePermission(Permission.TICKET_UNFREEZE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'unfreeze', async () => {
         const { reason, operatorId } = req.body;
         const ticket = await stateMachine.unfreezeTicket(
@@ -270,7 +307,7 @@ app.post('/api/tickets/:id/unfreeze', validateRequest(unfreezeTicketSchema), asy
     });
 }));
 
-app.post('/api/tickets/:id/settle', validateRequest(settleTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/settle', validateRequest(settleTicketSchema), requirePermission(Permission.TICKET_SETTLE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'settle', async () => {
         const { reason, operatorId } = req.body;
         const ticket = await stateMachine.settleTicket(
@@ -282,12 +319,51 @@ app.post('/api/tickets/:id/settle', validateRequest(settleTicketSchema), asyncHa
     });
 }));
 
-app.post('/api/tickets/:id/archive', validateRequest(archiveTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/archive', validateRequest(archiveTicketSchema), requirePermission(Permission.TICKET_ARCHIVE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'archive', async () => {
         const { reason, operatorId } = req.body;
         const ticket = await stateMachine.archiveTicket(
             req.params.id,
             reason.trim(),
+            operatorId.trim()
+        );
+        res.json(ticket);
+    });
+}));
+
+app.post('/api/tickets/:id/unarchive', validateRequest(unarchiveTicketSchema), requirePermission(Permission.TICKET_UNARCHIVE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'unarchive', async () => {
+        const { reason, operatorId } = req.body;
+        const ticket = await stateMachine.unarchiveTicket(
+            req.params.id,
+            reason.trim(),
+            operatorId.trim()
+        );
+        res.json(ticket);
+    });
+}));
+
+app.post('/api/tickets/:id/review', validateRequest(reviewTicketSchema), requirePermission(Permission.TICKET_REVIEW), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'review', async () => {
+        const { reviewResult, reviewComments, operatorId } = req.body;
+        const ticket = await stateMachine.reviewTicket(
+            req.params.id,
+            reviewResult as 'approved' | 'rejected' | 'escalated',
+            reviewComments.trim(),
+            operatorId.trim()
+        );
+        res.json(ticket);
+    });
+}));
+
+app.post('/api/tickets/:id/override', validateRequest(overrideTicketSchema), requirePermission(Permission.TICKET_OVERRIDE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'override', async () => {
+        const { toStatus, overrideReason, newCompensation, operatorId } = req.body;
+        const ticket = await stateMachine.overrideTicket(
+            req.params.id,
+            toStatus as TicketStatus,
+            overrideReason.trim(),
+            newCompensation,
             operatorId.trim()
         );
         res.json(ticket);
@@ -468,6 +544,65 @@ app.get('/api/exports/:id/status', asyncHandler(async (req, res) => {
     res.json(status);
 }));
 
+app.post('/api/reports/tickets/:ticketId', validateRequest(reportOptionsSchema), requirePermission(Permission.REPORT_CREATE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'export', async () => {
+        const { requestedBy, ...options } = req.body;
+        const report = await reportService.generateTicketReport(
+            req.params.ticketId,
+            options,
+            requestedBy.trim()
+        );
+        res.status(201).json(report);
+    });
+}));
+
+app.post('/api/reports/batches/:batchId', validateRequest(reportOptionsSchema), requirePermission(Permission.REPORT_CREATE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'export', async () => {
+        const { requestedBy, ...options } = req.body;
+        const report = await reportService.generateBatchReport(
+            req.params.batchId,
+            options,
+            requestedBy.trim()
+        );
+        res.status(201).json(report);
+    });
+}));
+
+app.post('/api/reports/operations', validateRequest(operationsReportSchema), requirePermission(Permission.REPORT_CREATE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'export', async () => {
+        const { requestedBy, startDate, endDate, status, includeTicketDetails } = req.body;
+        const report = await reportService.generateOperationsReport(
+            { startDate, endDate, status },
+            { includeTicketDetails },
+            requestedBy.trim()
+        );
+        res.status(201).json(report);
+    });
+}));
+
+app.get('/api/reports', asyncHandler(async (req, res) => {
+    const reports = await reportService.listReports();
+    res.json(reports);
+}));
+
+app.get('/api/auth/roles', (req, res) => {
+    const operatorId = req.query.operatorId as string;
+    if (operatorId) {
+        res.json({
+            operatorId,
+            role: getRoleForOperator(operatorId),
+            permissions: getPermissionsForOperator(operatorId)
+        });
+    } else {
+        res.json({
+            defaultRoles: Object.keys(DEFAULT_ROLE_FOR_OPERATOR),
+            roles: Object.values(Role),
+            permissions: Object.values(Permission),
+            rolePermissions: ROLE_PERMISSIONS
+        });
+    }
+});
+
 app.get('/api/operations/frozen-tickets', asyncHandler(async (req, res) => {
     const { batchId } = req.query;
     const comparison = await operationsViewService.getFrozenTicketsComparison(
@@ -529,6 +664,16 @@ app.listen(PORT, () => {
     console.log(`  盘点差异: POST /api/inventory-differences, GET /api/inventory-differences`);
     console.log(`  责任计算: GET /api/tickets/:id/responsibility`);
     console.log(`  导出差异: POST /api/exports/inventory-differences`);
+    console.log(`  工单转派: POST /api/tickets/:id/reassign (权限校验)`);
+    console.log(`  工单解冻: POST /api/tickets/:id/unfreeze (权限校验)`);
+    console.log(`  工单归档: POST /api/tickets/:id/archive (权限校验)`);
+    console.log(`  取消归档: POST /api/tickets/:id/unarchive (权限校验)`);
+    console.log(`  工单复核: POST /api/tickets/:id/review (权限校验)`);
+    console.log(`  工单改判: POST /api/tickets/:id/override (权限校验)`);
+    console.log(`  工单报告: POST /api/reports/tickets/:ticketId (Markdown)`);
+    console.log(`  批次报告: POST /api/reports/batches/:batchId (Markdown)`);
+    console.log(`  运营报告: POST /api/reports/operations (Markdown)`);
+    console.log(`  权限查询: GET /api/auth/roles?operatorId=xxx`);
 });
 
 export default app;

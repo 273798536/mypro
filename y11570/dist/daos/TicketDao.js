@@ -58,6 +58,11 @@ class TicketDao {
         const sql = 'UPDATE tickets SET total_compensation = total_compensation + ?, updated_at = ? WHERE id = ?';
         await this.db.run(sql, [amount, now, id]);
     }
+    async updateTicketCompensation(id, amount) {
+        const now = new Date().toISOString();
+        const sql = 'UPDATE tickets SET total_compensation = ?, updated_at = ? WHERE id = ?';
+        await this.db.run(sql, [amount, now, id]);
+    }
     async freezeTicket(id, frozenType, reason, frozenBy) {
         const now = new Date().toISOString();
         const sql = `

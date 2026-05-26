@@ -28,5 +28,8 @@ export declare class TicketStateMachine {
     private findCompensationStuckStep;
     private calculateInventoryResponsibility;
     private generateResponsibilitySummary;
+    unarchiveTicket(ticketId: string, reason: string, operatorId: string): Promise<Ticket>;
+    reviewTicket(ticketId: string, reviewResult: 'approved' | 'rejected' | 'escalated', reviewComments: string, operatorId: string): Promise<Ticket>;
+    overrideTicket(ticketId: string, toStatus: TicketStatus, overrideReason: string, newCompensation?: number, operatorId?: string): Promise<Ticket>;
 }
 export default TicketStateMachine;

@@ -85,6 +85,12 @@ export class TicketDao {
         await this.db.run(sql, [amount, now, id]);
     }
 
+    async updateTicketCompensation(id: string, amount: number): Promise<void> {
+        const now = new Date().toISOString();
+        const sql = 'UPDATE tickets SET total_compensation = ?, updated_at = ? WHERE id = ?';
+        await this.db.run(sql, [amount, now, id]);
+    }
+
     async freezeTicket(id: string, frozenType: string, reason: string, frozenBy: string): Promise<void> {
         const now = new Date().toISOString();
         const sql = `

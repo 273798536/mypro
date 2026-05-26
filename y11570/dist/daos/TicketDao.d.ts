@@ -8,6 +8,7 @@ export declare class TicketDao {
     updateTicketStatus(id: string, status: TicketStatus, statusBeforeFrozen?: TicketStatus): Promise<void>;
     updateTicketAgent(id: string, agentId: string | undefined): Promise<void>;
     addTotalCompensation(id: string, amount: number): Promise<void>;
+    updateTicketCompensation(id: string, amount: number): Promise<void>;
     freezeTicket(id: string, frozenType: string, reason: string, frozenBy: string): Promise<void>;
     unfreezeTicket(id: string): Promise<void>;
     settleTicket(id: string): Promise<void>;

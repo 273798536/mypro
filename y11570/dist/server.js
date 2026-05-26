@@ -43,16 +43,20 @@ const TicketStateMachine_1 = __importDefault(require("./state-machine/TicketStat
 const BatchService_1 = __importDefault(require("./services/BatchService"));
 const ExportService_1 = __importDefault(require("./services/ExportService"));
 const OperationsViewService_1 = __importDefault(require("./services/OperationsViewService"));
+const ReportService_1 = __importDefault(require("./services/ReportService"));
+const roles_1 = require("./auth/roles");
 const schemas_1 = require("./validation/schemas");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 app.use(express_1.default.json());
 app.use('/exports', express_1.default.static(path.join(__dirname, '../exports')));
+app.use('/reports', express_1.default.static(path.join(__dirname, '../reports')));
 const dao = new TicketDao_1.default();
 const stateMachine = new TicketStateMachine_1.default(dao);
 const batchService = new BatchService_1.default(dao, stateMachine);
 const exportService = new ExportService_1.default(dao);
 const operationsViewService = new OperationsViewService_1.default(dao);
+const reportService = new ReportService_1.default(dao, stateMachine, batchService, operationsViewService);
 function asyncHandler(fn) {
     return (req, res, next) => {
         Promise.resolve(fn(req, res, next)).catch(next);
@@ -83,6 +87,31 @@ function validateQuery(schema) {
         }
         next();
     };
+}
+function requirePermission(permission) {
+    return (req, res, next) => {
+        const operatorId = req.body.operatorId || req.query.operatorId;
+        if (!operatorId) {
+            return res.status(401).json({
+                error: 'AUTH_REQUIRED',
+                message: '缺少操作人ID，无法进行权限校验'
+            });
+        }
+        const check = (0, roles_1.checkPermission)(operatorId, permission);
+        if (!check.allowed) {
+            return res.status(403).json({
+                error: 'PERMISSION_DENIED',
+                message: check.message,
+                operatorId,
+                role: (0, roles_1.getRoleForOperator)(operatorId),
+                requiredPermission: permission
+            });
+        }
+        next();
+    };
+}
+function getOperatorId(req) {
+    return req.body.operatorId || req.query.operatorId || 'anonymous';
 }
 async function handleWithFailedRecord(req, res, recordType, handler) {
     try {
@@ -189,7 +218,7 @@ app.get('/api/tickets/:id/consistency', asyncHandler(async (req, res) => {
     const result = await operationsViewService.verifyDataConsistency(req.params.id);
     res.json(result);
 }));
-app.post('/api/tickets/:id/reassign', validateRequest(schemas_1.reassignTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/reassign', validateRequest(schemas_1.reassignTicketSchema), requirePermission(roles_1.Permission.TICKET_REASSIGN), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'reassign', async () => {
         const { toAgentId, assignmentType, reason, operatorId, slaRuleId } = req.body;
         const slaRule = slaRuleId ? await dao.getSLARuleById(slaRuleId) : undefined;
@@ -211,31 +240,52 @@ app.post('/api/tickets/:id/compensation/review', validateRequest(schemas_1.compe
         res.json(ticket);
     });
 }));
-app.post('/api/tickets/:id/freeze', validateRequest(schemas_1.freezeTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/freeze', validateRequest(schemas_1.freezeTicketSchema), requirePermission(roles_1.Permission.TICKET_FREEZE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'freeze', async () => {
         const { frozenType, reason, operatorId } = req.body;
         const ticket = await stateMachine.freezeTicket(req.params.id, frozenType, reason.trim(), operatorId.trim());
         res.json(ticket);
     });
 }));
-app.post('/api/tickets/:id/unfreeze', validateRequest(schemas_1.unfreezeTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/unfreeze', validateRequest(schemas_1.unfreezeTicketSchema), requirePermission(roles_1.Permission.TICKET_UNFREEZE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'unfreeze', async () => {
         const { reason, operatorId } = req.body;
         const ticket = await stateMachine.unfreezeTicket(req.params.id, reason.trim(), operatorId.trim());
         res.json(ticket);
     });
 }));
-app.post('/api/tickets/:id/settle', validateRequest(schemas_1.settleTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/settle', validateRequest(schemas_1.settleTicketSchema), requirePermission(roles_1.Permission.TICKET_SETTLE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'settle', async () => {
         const { reason, operatorId } = req.body;
         const ticket = await stateMachine.settleTicket(req.params.id, reason.trim(), operatorId.trim());
         res.json(ticket);
     });
 }));
-app.post('/api/tickets/:id/archive', validateRequest(schemas_1.archiveTicketSchema), asyncHandler(async (req, res) => {
+app.post('/api/tickets/:id/archive', validateRequest(schemas_1.archiveTicketSchema), requirePermission(roles_1.Permission.TICKET_ARCHIVE), asyncHandler(async (req, res) => {
     await handleWithFailedRecord(req, res, 'archive', async () => {
         const { reason, operatorId } = req.body;
         const ticket = await stateMachine.archiveTicket(req.params.id, reason.trim(), operatorId.trim());
+        res.json(ticket);
+    });
+}));
+app.post('/api/tickets/:id/unarchive', validateRequest(schemas_1.unarchiveTicketSchema), requirePermission(roles_1.Permission.TICKET_UNARCHIVE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'unarchive', async () => {
+        const { reason, operatorId } = req.body;
+        const ticket = await stateMachine.unarchiveTicket(req.params.id, reason.trim(), operatorId.trim());
+        res.json(ticket);
+    });
+}));
+app.post('/api/tickets/:id/review', validateRequest(schemas_1.reviewTicketSchema), requirePermission(roles_1.Permission.TICKET_REVIEW), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'review', async () => {
+        const { reviewResult, reviewComments, operatorId } = req.body;
+        const ticket = await stateMachine.reviewTicket(req.params.id, reviewResult, reviewComments.trim(), operatorId.trim());
+        res.json(ticket);
+    });
+}));
+app.post('/api/tickets/:id/override', validateRequest(schemas_1.overrideTicketSchema), requirePermission(roles_1.Permission.TICKET_OVERRIDE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'override', async () => {
+        const { toStatus, overrideReason, newCompensation, operatorId } = req.body;
+        const ticket = await stateMachine.overrideTicket(req.params.id, toStatus, overrideReason.trim(), newCompensation, operatorId.trim());
         res.json(ticket);
     });
 }));
@@ -372,6 +422,49 @@ app.get('/api/exports/:id/status', asyncHandler(async (req, res) => {
     }
     res.json(status);
 }));
+app.post('/api/reports/tickets/:ticketId', validateRequest(schemas_1.reportOptionsSchema), requirePermission(roles_1.Permission.REPORT_CREATE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'export', async () => {
+        const { requestedBy, ...options } = req.body;
+        const report = await reportService.generateTicketReport(req.params.ticketId, options, requestedBy.trim());
+        res.status(201).json(report);
+    });
+}));
+app.post('/api/reports/batches/:batchId', validateRequest(schemas_1.reportOptionsSchema), requirePermission(roles_1.Permission.REPORT_CREATE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'export', async () => {
+        const { requestedBy, ...options } = req.body;
+        const report = await reportService.generateBatchReport(req.params.batchId, options, requestedBy.trim());
+        res.status(201).json(report);
+    });
+}));
+app.post('/api/reports/operations', validateRequest(schemas_1.operationsReportSchema), requirePermission(roles_1.Permission.REPORT_CREATE), asyncHandler(async (req, res) => {
+    await handleWithFailedRecord(req, res, 'export', async () => {
+        const { requestedBy, startDate, endDate, status, includeTicketDetails } = req.body;
+        const report = await reportService.generateOperationsReport({ startDate, endDate, status }, { includeTicketDetails }, requestedBy.trim());
+        res.status(201).json(report);
+    });
+}));
+app.get('/api/reports', asyncHandler(async (req, res) => {
+    const reports = await reportService.listReports();
+    res.json(reports);
+}));
+app.get('/api/auth/roles', (req, res) => {
+    const operatorId = req.query.operatorId;
+    if (operatorId) {
+        res.json({
+            operatorId,
+            role: (0, roles_1.getRoleForOperator)(operatorId),
+            permissions: (0, roles_1.getPermissionsForOperator)(operatorId)
+        });
+    }
+    else {
+        res.json({
+            defaultRoles: Object.keys(roles_1.DEFAULT_ROLE_FOR_OPERATOR),
+            roles: Object.values(roles_1.Role),
+            permissions: Object.values(roles_1.Permission),
+            rolePermissions: roles_1.ROLE_PERMISSIONS
+        });
+    }
+});
 app.get('/api/operations/frozen-tickets', asyncHandler(async (req, res) => {
     const { batchId } = req.query;
     const comparison = await operationsViewService.getFrozenTicketsComparison(batchId);
@@ -418,6 +511,16 @@ app.listen(PORT, () => {
     console.log(`  盘点差异: POST /api/inventory-differences, GET /api/inventory-differences`);
     console.log(`  责任计算: GET /api/tickets/:id/responsibility`);
     console.log(`  导出差异: POST /api/exports/inventory-differences`);
+    console.log(`  工单转派: POST /api/tickets/:id/reassign (权限校验)`);
+    console.log(`  工单解冻: POST /api/tickets/:id/unfreeze (权限校验)`);
+    console.log(`  工单归档: POST /api/tickets/:id/archive (权限校验)`);
+    console.log(`  取消归档: POST /api/tickets/:id/unarchive (权限校验)`);
+    console.log(`  工单复核: POST /api/tickets/:id/review (权限校验)`);
+    console.log(`  工单改判: POST /api/tickets/:id/override (权限校验)`);
+    console.log(`  工单报告: POST /api/reports/tickets/:ticketId (Markdown)`);
+    console.log(`  批次报告: POST /api/reports/batches/:batchId (Markdown)`);
+    console.log(`  运营报告: POST /api/reports/operations (Markdown)`);
+    console.log(`  权限查询: GET /api/auth/roles?operatorId=xxx`);
 });
 exports.default = app;
 //# sourceMappingURL=server.js.map

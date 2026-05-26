@@ -34,7 +34,6 @@ export const createTicketSchema = Joi.object({
 });
 
 export const reassignTicketSchema = Joi.object({
-  ticketId: Joi.string().required().trim().min(1).max(100),
   toAgentId: Joi.string().required().trim().min(1).max(100),
   assignmentType: Joi.string().valid(...Object.values(AssignmentType)).required(),
   reason: Joi.string().trim().max(1000).optional(),
@@ -123,6 +122,11 @@ export const inventoryDiffReasonSchema = Joi.object({
   reason: Joi.string().required().trim().min(1).max(1000)
 });
 
+export const unarchiveTicketSchema = Joi.object({
+  reason: Joi.string().required().trim().min(1).max(1000),
+  operatorId: Joi.string().required().trim().min(1).max(100)
+});
+
 export const exportRequestSchema = Joi.object({
   requestedBy: Joi.string().required().trim().min(1).max(100)
 });
@@ -135,6 +139,40 @@ export const queryParamsSchema = Joi.object({
   offset: Joi.number().integer().min(0).default(0),
   productId: Joi.string().trim().max(100).optional(),
   hasDifference: Joi.boolean().optional()
+});
+
+export const reviewTicketSchema = Joi.object({
+  reviewResult: Joi.string().valid('approved', 'rejected', 'escalated').required(),
+  reviewComments: Joi.string().required().trim().min(1).max(2000),
+  operatorId: Joi.string().required().trim().min(1).max(100)
+});
+
+export const overrideTicketSchema = Joi.object({
+  toStatus: Joi.string().valid(...Object.values(TicketStatus)).required(),
+  overrideReason: Joi.string().required().trim().min(1).max(2000),
+  newCompensation: Joi.number().min(0).max(100000).optional(),
+  operatorId: Joi.string().required().trim().min(1).max(100)
+});
+
+export const reportOptionsSchema = Joi.object({
+  includeTicketDetails: Joi.boolean().optional().default(true),
+  includeInventory: Joi.boolean().optional().default(true),
+  includeTimeouts: Joi.boolean().optional().default(true),
+  includeAssignments: Joi.boolean().optional().default(true),
+  includeTransitions: Joi.boolean().optional().default(true),
+  includeCompensation: Joi.boolean().optional().default(true),
+  includeResponsibility: Joi.boolean().optional().default(true),
+  requestedBy: Joi.string().required().trim().min(1).max(100),
+  operatorId: Joi.string().required().trim().min(1).max(100)
+});
+
+export const operationsReportSchema = Joi.object({
+  startDate: Joi.string().trim().optional(),
+  endDate: Joi.string().trim().optional(),
+  status: Joi.string().trim().optional(),
+  includeTicketDetails: Joi.boolean().optional().default(false),
+  requestedBy: Joi.string().required().trim().min(1).max(100),
+  operatorId: Joi.string().required().trim().min(1).max(100)
 });
 
 export function validateSchema(schema: Joi.ObjectSchema, data: any): { valid: boolean; errors?: string[] } {
@@ -169,5 +207,9 @@ export default {
   inventoryDiffReasonSchema,
   exportRequestSchema,
   queryParamsSchema,
+  reviewTicketSchema,
+  overrideTicketSchema,
+  reportOptionsSchema,
+  operationsReportSchema,
   validateSchema
 };

@@ -308,8 +308,8 @@ class TicketStateMachine {
         if (!ticket) {
             throw new Error(`Ticket ${ticketId} not found`);
         }
-        if (ticket.status !== types_1.TicketStatus.SETTLED) {
-            throw new Error('Only settled tickets can be archived');
+        if (ticket.status !== types_1.TicketStatus.SETTLED && ticket.status !== types_1.TicketStatus.CLOSED) {
+            throw new Error('Only settled or closed tickets can be archived');
         }
         await this.dao.archiveTicket(ticketId);
         await this.dao.createStateTransition({
@@ -561,6 +561,79 @@ class TicketStateMachine {
                 : null
         };
     }
+    async unarchiveTicket(ticketId, reason, operatorId) {
+        const ticket = await this.dao.getTicketById(ticketId);
+        if (!ticket) {
+            throw new Error(`工单不存在: ${ticketId}`);
+        }
+        if (ticket.status !== types_1.TicketStatus.ARCHIVED) {
+            throw new Error('只能取消归档已归档的工单');
+        }
+        await this.dao.createAuditLog({
+            entityType: 'ticket',
+            entityId: ticketId,
+            action: 'unarchive',
+            oldValue: ticket.status,
+            newValue: types_1.TicketStatus.SETTLED,
+            operatorId,
+            createdAt: new Date()
+        });
+        return this.transition(ticketId, types_1.TicketStatus.SETTLED, `工单已取消归档: ${reason}`, operatorId, undefined, { unarchiveReason: reason });
+    }
+    async reviewTicket(ticketId, reviewResult, reviewComments, operatorId) {
+        const ticket = await this.dao.getTicketById(ticketId);
+        if (!ticket) {
+            throw new Error(`工单不存在: ${ticketId}`);
+        }
+        await this.dao.createAuditLog({
+            entityType: 'ticket',
+            entityId: ticketId,
+            action: 'review',
+            oldValue: ticket.status,
+            newValue: reviewResult,
+            operatorId,
+            createdAt: new Date()
+        });
+        await this.dao.createStateTransition({
+            ticketId,
+            fromStatus: ticket.status,
+            toStatus: ticket.status,
+            reason: `复核结果: ${reviewResult}, 评论: ${reviewComments}`,
+            operatorId,
+            manual: true,
+            metadata: { reviewResult, reviewComments },
+            createdAt: new Date()
+        });
+        const updatedTicket = await this.dao.getTicketById(ticketId);
+        if (!updatedTicket) {
+            throw new Error(`获取更新后工单失败: ${ticketId}`);
+        }
+        return updatedTicket;
+    }
+    async overrideTicket(ticketId, toStatus, overrideReason, newCompensation, operatorId) {
+        const ticket = await this.dao.getTicketById(ticketId);
+        if (!ticket) {
+            throw new Error(`工单不存在: ${ticketId}`);
+        }
+        const operator = operatorId || 'SYSTEM_OVERRIDE';
+        if (newCompensation !== undefined) {
+            await this.dao.updateTicketCompensation(ticketId, newCompensation);
+        }
+        await this.dao.createAuditLog({
+            entityType: 'ticket',
+            entityId: ticketId,
+            action: 'override',
+            oldValue: `${ticket.status}|${ticket.totalCompensation || 0}`,
+            newValue: `${toStatus}|${newCompensation !== undefined ? newCompensation : ticket.totalCompensation || 0}`,
+            operatorId: operator,
+            createdAt: new Date()
+        });
+        return this.transition(ticketId, toStatus, `人工改判: ${overrideReason}`, operator, undefined, {
+            overrideReason,
+            newCompensation,
+            previousCompensation: ticket.totalCompensation || 0
+        });
+    }
 }
 exports.TicketStateMachine = TicketStateMachine;
 TicketStateMachine.VALID_TRANSITIONS = new Map([
@@ -571,10 +644,10 @@ TicketStateMachine.VALID_TRANSITIONS = new Map([
     [types_1.TicketStatus.COMPENSATION_APPROVING, [types_1.TicketStatus.COMPENSATION_APPROVED, types_1.TicketStatus.COMPENSATION_REJECTED, types_1.TicketStatus.FROZEN]],
     [types_1.TicketStatus.COMPENSATION_APPROVED, [types_1.TicketStatus.PROCESSING, types_1.TicketStatus.SETTLED, types_1.TicketStatus.FROZEN]],
     [types_1.TicketStatus.COMPENSATION_REJECTED, [types_1.TicketStatus.PROCESSING, types_1.TicketStatus.ESCALATED, types_1.TicketStatus.FROZEN, types_1.TicketStatus.CLOSED]],
-    [types_1.TicketStatus.FROZEN, [types_1.TicketStatus.FROZEN]],
-    [types_1.TicketStatus.SETTLED, [types_1.TicketStatus.ARCHIVED, types_1.TicketStatus.FROZEN]],
-    [types_1.TicketStatus.ARCHIVED, [types_1.TicketStatus.FROZEN]],
-    [types_1.TicketStatus.CLOSED, [types_1.TicketStatus.FROZEN]]
+    [types_1.TicketStatus.FROZEN, [types_1.TicketStatus.CREATED, types_1.TicketStatus.ASSIGNED, types_1.TicketStatus.PROCESSING, types_1.TicketStatus.ESCALATED, types_1.TicketStatus.COMPENSATION_APPROVING, types_1.TicketStatus.COMPENSATION_APPROVED, types_1.TicketStatus.COMPENSATION_REJECTED, types_1.TicketStatus.SETTLED, types_1.TicketStatus.CLOSED, types_1.TicketStatus.ARCHIVED]],
+    [types_1.TicketStatus.SETTLED, [types_1.TicketStatus.ARCHIVED, types_1.TicketStatus.FROZEN, types_1.TicketStatus.PROCESSING]],
+    [types_1.TicketStatus.ARCHIVED, [types_1.TicketStatus.FROZEN, types_1.TicketStatus.SETTLED]],
+    [types_1.TicketStatus.CLOSED, [types_1.TicketStatus.FROZEN, types_1.TicketStatus.PROCESSING]]
 ]);
 exports.default = TicketStateMachine;
 //# sourceMappingURL=TicketStateMachine.js.map

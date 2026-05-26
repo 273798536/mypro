@@ -99,6 +99,7 @@ export interface AssignmentRecord {
   toAgentId: string;
   assignmentType: AssignmentType;
   reason?: string;
+  assignedBy?: string;
   assignedAt: Date;
   expectedCompleteTime?: Date;
 }
@@ -173,6 +174,8 @@ export interface StateTransition {
   operatorName?: string;
   manual: boolean;
   metadata?: Record<string, any>;
+  reviewResult?: string;
+  reviewComments?: string;
   createdAt: Date;
 }
 

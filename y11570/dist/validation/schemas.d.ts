@@ -17,8 +17,13 @@ export declare const freezeBatchSchema: Joi.ObjectSchema<any>;
 export declare const attachmentSchema: Joi.ObjectSchema<any>;
 export declare const inventoryDifferenceSchema: Joi.ObjectSchema<any>;
 export declare const inventoryDiffReasonSchema: Joi.ObjectSchema<any>;
+export declare const unarchiveTicketSchema: Joi.ObjectSchema<any>;
 export declare const exportRequestSchema: Joi.ObjectSchema<any>;
 export declare const queryParamsSchema: Joi.ObjectSchema<any>;
+export declare const reviewTicketSchema: Joi.ObjectSchema<any>;
+export declare const overrideTicketSchema: Joi.ObjectSchema<any>;
+export declare const reportOptionsSchema: Joi.ObjectSchema<any>;
+export declare const operationsReportSchema: Joi.ObjectSchema<any>;
 export declare function validateSchema(schema: Joi.ObjectSchema, data: any): {
     valid: boolean;
     errors?: string[];
@@ -44,6 +49,10 @@ declare const _default: {
     inventoryDiffReasonSchema: Joi.ObjectSchema<any>;
     exportRequestSchema: Joi.ObjectSchema<any>;
     queryParamsSchema: Joi.ObjectSchema<any>;
+    reviewTicketSchema: Joi.ObjectSchema<any>;
+    overrideTicketSchema: Joi.ObjectSchema<any>;
+    reportOptionsSchema: Joi.ObjectSchema<any>;
+    operationsReportSchema: Joi.ObjectSchema<any>;
     validateSchema: typeof validateSchema;
 };
 export default _default;

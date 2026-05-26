@@ -28,10 +28,10 @@ export class TicketStateMachine {
         [TicketStatus.COMPENSATION_APPROVING, [TicketStatus.COMPENSATION_APPROVED, TicketStatus.COMPENSATION_REJECTED, TicketStatus.FROZEN]],
         [TicketStatus.COMPENSATION_APPROVED, [TicketStatus.PROCESSING, TicketStatus.SETTLED, TicketStatus.FROZEN]],
         [TicketStatus.COMPENSATION_REJECTED, [TicketStatus.PROCESSING, TicketStatus.ESCALATED, TicketStatus.FROZEN, TicketStatus.CLOSED]],
-        [TicketStatus.FROZEN, [TicketStatus.FROZEN]],
-        [TicketStatus.SETTLED, [TicketStatus.ARCHIVED, TicketStatus.FROZEN]],
-        [TicketStatus.ARCHIVED, [TicketStatus.FROZEN]],
-        [TicketStatus.CLOSED, [TicketStatus.FROZEN]]
+        [TicketStatus.FROZEN, [TicketStatus.CREATED, TicketStatus.ASSIGNED, TicketStatus.PROCESSING, TicketStatus.ESCALATED, TicketStatus.COMPENSATION_APPROVING, TicketStatus.COMPENSATION_APPROVED, TicketStatus.COMPENSATION_REJECTED, TicketStatus.SETTLED, TicketStatus.CLOSED, TicketStatus.ARCHIVED]],
+        [TicketStatus.SETTLED, [TicketStatus.ARCHIVED, TicketStatus.FROZEN, TicketStatus.PROCESSING]],
+        [TicketStatus.ARCHIVED, [TicketStatus.FROZEN, TicketStatus.SETTLED]],
+        [TicketStatus.CLOSED, [TicketStatus.FROZEN, TicketStatus.PROCESSING]]
     ]);
 
     private dao: TicketDao;
@@ -480,8 +480,8 @@ export class TicketStateMachine {
             throw new Error(`Ticket ${ticketId} not found`);
         }
 
-        if (ticket.status !== TicketStatus.SETTLED) {
-            throw new Error('Only settled tickets can be archived');
+        if (ticket.status !== TicketStatus.SETTLED && ticket.status !== TicketStatus.CLOSED) {
+            throw new Error('Only settled or closed tickets can be archived');
         }
 
         await this.dao.archiveTicket(ticketId);
@@ -771,6 +771,122 @@ export class TicketStateMachine {
                 ? detail.assignmentResponsibility.bottleneckAgents[0].agentId
                 : null
         };
+    }
+
+    async unarchiveTicket(
+        ticketId: string,
+        reason: string,
+        operatorId: string
+    ): Promise<Ticket> {
+        const ticket = await this.dao.getTicketById(ticketId);
+        if (!ticket) {
+            throw new Error(`工单不存在: ${ticketId}`);
+        }
+
+        if (ticket.status !== TicketStatus.ARCHIVED) {
+            throw new Error('只能取消归档已归档的工单');
+        }
+
+        await this.dao.createAuditLog({
+            entityType: 'ticket',
+            entityId: ticketId,
+            action: 'unarchive',
+            oldValue: ticket.status,
+            newValue: TicketStatus.SETTLED,
+            operatorId,
+            createdAt: new Date()
+        });
+
+        return this.transition(
+            ticketId,
+            TicketStatus.SETTLED,
+            `工单已取消归档: ${reason}`,
+            operatorId,
+            undefined,
+            { unarchiveReason: reason }
+        );
+    }
+
+    async reviewTicket(
+        ticketId: string,
+        reviewResult: 'approved' | 'rejected' | 'escalated',
+        reviewComments: string,
+        operatorId: string
+    ): Promise<Ticket> {
+        const ticket = await this.dao.getTicketById(ticketId);
+        if (!ticket) {
+            throw new Error(`工单不存在: ${ticketId}`);
+        }
+
+        await this.dao.createAuditLog({
+            entityType: 'ticket',
+            entityId: ticketId,
+            action: 'review',
+            oldValue: ticket.status,
+            newValue: reviewResult,
+            operatorId,
+            createdAt: new Date()
+        });
+
+        await this.dao.createStateTransition({
+            ticketId,
+            fromStatus: ticket.status,
+            toStatus: ticket.status,
+            reason: `复核结果: ${reviewResult}, 评论: ${reviewComments}`,
+            operatorId,
+            manual: true,
+            metadata: { reviewResult, reviewComments },
+            createdAt: new Date()
+        });
+
+        const updatedTicket = await this.dao.getTicketById(ticketId);
+        if (!updatedTicket) {
+            throw new Error(`获取更新后工单失败: ${ticketId}`);
+        }
+
+        return updatedTicket;
+    }
+
+    async overrideTicket(
+        ticketId: string,
+        toStatus: TicketStatus,
+        overrideReason: string,
+        newCompensation?: number,
+        operatorId?: string
+    ): Promise<Ticket> {
+        const ticket = await this.dao.getTicketById(ticketId);
+        if (!ticket) {
+            throw new Error(`工单不存在: ${ticketId}`);
+        }
+
+        const operator = operatorId || 'SYSTEM_OVERRIDE';
+
+        if (newCompensation !== undefined) {
+            await this.dao.updateTicketCompensation(ticketId, newCompensation);
+        }
+
+        await this.dao.createAuditLog({
+            entityType: 'ticket',
+            entityId: ticketId,
+            action: 'override',
+            oldValue: `${ticket.status}|${ticket.totalCompensation || 0}`,
+            newValue: `${toStatus}|${newCompensation !== undefined ? newCompensation : ticket.totalCompensation || 0}`,
+            operatorId: operator,
+            createdAt: new Date()
+        });
+
+        return this.transition(
+            ticketId,
+            toStatus,
+            `人工改判: ${overrideReason}`,
+            operator,
+            undefined,
+            {
+                overrideReason,
+                newCompensation,
+                previousCompensation: ticket.totalCompensation || 0
+            }
+        );
     }
 }
 
