@@ -116,6 +116,8 @@ def import_recharge_data(
                 operator=str(row_dict.get("operator", "")),
                 original_row=original_row,
                 is_dirty=False,
+                is_cross_store=bool(row_dict.get("is_cross_store", False)),
+                is_revoked=bool(row_dict.get("is_revoked", False)),
             )
             db.add(record)
         else:
@@ -134,6 +136,8 @@ def import_recharge_data(
                 original_row=original_row,
                 is_dirty=True,
                 dirty_type=dirty_type,
+                is_cross_store=bool(row_dict.get("is_cross_store", False)),
+                is_revoked=bool(row_dict.get("is_revoked", False)),
             )
             db.add(record)
 
@@ -225,6 +229,8 @@ def import_refund_data(
                 reviewer=str(row_dict.get("reviewer", "")),
                 original_row=original_row,
                 is_dirty=False,
+                is_cross_store=bool(row_dict.get("is_cross_store", False)),
+                is_revoked=bool(row_dict.get("is_revoked", False)),
             )
             db.add(record)
         else:
@@ -243,6 +249,8 @@ def import_refund_data(
                 original_row=original_row,
                 is_dirty=True,
                 dirty_type=dirty_type,
+                is_cross_store=bool(row_dict.get("is_cross_store", False)),
+                is_revoked=bool(row_dict.get("is_revoked", False)),
             )
             db.add(record)
 

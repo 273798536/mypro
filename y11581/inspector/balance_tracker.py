@@ -187,8 +187,8 @@ def build_balance_history_from_records(db: Session, batch_id: int = None) -> Lis
             "transaction_id": f"R{r.id}",
             "amount": r.recharge_amount + (r.bonus_amount or 0),
             "transaction_time": tx_time,
-            "is_cross_store": False,
-            "is_revoked": False,
+            "is_cross_store": r.is_cross_store or False,
+            "is_revoked": r.is_revoked or False,
             "source_batch_id": r.batch_id,
         })
 
@@ -203,8 +203,8 @@ def build_balance_history_from_records(db: Session, batch_id: int = None) -> Lis
             "transaction_id": f"F{r.id}",
             "amount": -r.refund_amount,
             "transaction_time": tx_time,
-            "is_cross_store": False,
-            "is_revoked": False,
+            "is_cross_store": r.is_cross_store or False,
+            "is_revoked": r.is_revoked or False,
             "source_batch_id": r.batch_id,
         })
 

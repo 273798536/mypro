@@ -122,6 +122,18 @@ def check_recharge_record(row: Dict, existing_member_names: Dict[str, List[str]]
         fix_suggestion = "充值金额必须为非负数字"
         return is_dirty, dirty_type, dirty_reason, fix_suggestion
 
+    business_date = row.get("business_date")
+    if business_date:
+        business_dt = parse_datetime(business_date)
+        if business_dt:
+            has_cross, cross_reason = check_cross_date(tx_time, business_dt)
+            if has_cross:
+                is_dirty = True
+                dirty_type = DirtyType.CROSS_DATE
+                dirty_reason = cross_reason
+                fix_suggestion = "请核实交易日期与业务日期是否一致"
+                return is_dirty, dirty_type, dirty_reason, fix_suggestion
+
     if existing_member_names:
         member_id = str(row.get("member_id", ""))
         if member_id in existing_member_names:
@@ -150,6 +162,26 @@ def check_refund_record(row: Dict, existing_recharges: Dict[str, float] = None) 
         dirty_reason = f"缺少必填字段: {', '.join(missing)}"
         fix_suggestion = f"请补充以下字段: {', '.join(missing)}"
         return is_dirty, dirty_type, dirty_reason, fix_suggestion
+
+    tx_time = parse_datetime(row.get("transaction_time"))
+    if tx_time is None:
+        is_dirty = True
+        dirty_type = DirtyType.INVALID_FORMAT
+        dirty_reason = f"交易时间格式无效: {row.get('transaction_time')}"
+        fix_suggestion = "请使用 YYYY-MM-DD HH:MM:SS 格式"
+        return is_dirty, dirty_type, dirty_reason, fix_suggestion
+
+    business_date = row.get("business_date")
+    if business_date:
+        business_dt = parse_datetime(business_date)
+        if business_dt:
+            has_cross, cross_reason = check_cross_date(tx_time, business_dt)
+            if has_cross:
+                is_dirty = True
+                dirty_type = DirtyType.CROSS_DATE
+                dirty_reason = cross_reason
+                fix_suggestion = "请核实交易日期与业务日期是否一致"
+                return is_dirty, dirty_type, dirty_reason, fix_suggestion
 
     refund_amount = row.get("refund_amount")
     if not isinstance(refund_amount, (int, float)) or refund_amount < 0:

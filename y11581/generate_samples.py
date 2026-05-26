@@ -21,6 +21,8 @@ def generate_recharge_data():
             "payment_method": random.choice(["微信", "支付宝", "现金", "银行卡"]),
             "transaction_time": (datetime(2024, 1, 1) + timedelta(days=random.randint(0, 30), hours=random.randint(9, 21))).strftime("%Y-%m-%d %H:%M:%S"),
             "operator": f"营业员{random.choice(['A', 'B', 'C'])}",
+            "is_cross_store": False,
+            "is_revoked": False,
         }
         for i in range(1, 11)
     ]
@@ -36,6 +38,8 @@ def generate_recharge_data():
             "payment_method": "微信",
             "transaction_time": "2024-01-15 10:30:00",
             "operator": "营业员A",
+            "is_cross_store": False,
+            "is_revoked": False,
         },
         {
             "member_id": "M005",
@@ -47,6 +51,8 @@ def generate_recharge_data():
             "payment_method": "支付宝",
             "transaction_time": "2024-01-16 14:20:00",
             "operator": "营业员B",
+            "is_cross_store": False,
+            "is_revoked": False,
         },
         {
             "member_id": "M011",
@@ -58,6 +64,8 @@ def generate_recharge_data():
             "payment_method": "现金",
             "transaction_time": "2024-01-17 09:15:00",
             "operator": "营业员C",
+            "is_cross_store": False,
+            "is_revoked": False,
         },
         {
             "member_id": "M012",
@@ -69,6 +77,48 @@ def generate_recharge_data():
             "payment_method": "微信",
             "transaction_time": "invalid_date",
             "operator": "营业员A",
+            "is_cross_store": False,
+            "is_revoked": False,
+        },
+        {
+            "member_id": "M013",
+            "member_name": "跨日记录",
+            "store_id": "S01",
+            "store_name": "门店1",
+            "recharge_amount": 800,
+            "bonus_amount": 80,
+            "payment_method": "支付宝",
+            "transaction_time": "2024-01-31 23:55:00",
+            "operator": "营业员B",
+            "business_date": "2024-02-01",
+            "is_cross_store": False,
+            "is_revoked": False,
+        },
+        {
+            "member_id": "M014",
+            "member_name": "跨店消费会员",
+            "store_id": "S02",
+            "store_name": "门店2",
+            "recharge_amount": 1000,
+            "bonus_amount": 100,
+            "payment_method": "微信",
+            "transaction_time": "2024-01-20 10:00:00",
+            "operator": "营业员A",
+            "is_cross_store": True,
+            "is_revoked": False,
+        },
+        {
+            "member_id": "M015",
+            "member_name": "撤销交易会员",
+            "store_id": "S01",
+            "store_name": "门店1",
+            "recharge_amount": 500,
+            "bonus_amount": 50,
+            "payment_method": "现金",
+            "transaction_time": "2024-01-25 15:30:00",
+            "operator": "营业员C",
+            "is_cross_store": False,
+            "is_revoked": True,
         },
     ]
 
@@ -92,6 +142,8 @@ def generate_refund_data():
             "transaction_time": (datetime(2024, 1, 1) + timedelta(days=random.randint(0, 30), hours=random.randint(9, 21))).strftime("%Y-%m-%d %H:%M:%S"),
             "operator": f"营业员{random.choice(['A', 'B', 'C'])}",
             "reviewer": f"主管{random.choice(['X', 'Y'])}",
+            "is_cross_store": False,
+            "is_revoked": False,
         }
         for i in range(1, 6)
     ]
@@ -107,6 +159,8 @@ def generate_refund_data():
             "transaction_time": "2024-01-20 16:00:00",
             "operator": "营业员A",
             "reviewer": "主管X",
+            "is_cross_store": False,
+            "is_revoked": False,
         },
         {
             "member_id": "",
@@ -118,6 +172,21 @@ def generate_refund_data():
             "transaction_time": "2024-01-21 11:30:00",
             "operator": "营业员B",
             "reviewer": "",
+            "is_cross_store": False,
+            "is_revoked": False,
+        },
+        {
+            "member_id": "M010",
+            "member_name": "跨店退款",
+            "store_id": "S03",
+            "store_name": "门店3",
+            "refund_amount": 150,
+            "refund_reason": "储值退款",
+            "transaction_time": "2024-01-28 14:00:00",
+            "operator": "营业员C",
+            "reviewer": "主管Y",
+            "is_cross_store": True,
+            "is_revoked": False,
         },
     ]
 

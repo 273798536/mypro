@@ -286,6 +286,7 @@ def fix(ctx: Context, record_id: int, field, data: str):
 
     record.fixed_data = json.dumps(fixed_data, ensure_ascii=False)
     record.is_fixed = True
+    record.is_dirty = False
     record.fixed_by = ctx.current_user
     record.fixed_at = datetime.utcnow()
 
@@ -399,7 +400,7 @@ def history(ctx: Context, member_id: str, build: bool):
             flags.append("撤销")
 
         table_data.append([
-            r.id, tx_time, r.store_name,
+            r.id, tx_type, r.store_name,
             f"{r.amount:+.2f}", f"{r.balance_before:.2f}", f"{r.balance_after:.2f}",
             ",".join(flags) or "-",
             r.transaction_time.strftime("%Y-%m-%d %H:%M")

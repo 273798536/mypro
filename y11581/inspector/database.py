@@ -126,6 +126,8 @@ class RechargeRecord(Base):
     is_dirty = Column(Boolean, default=False)
     dirty_type = Column(String)
     is_fixed = Column(Boolean, default=False)
+    is_cross_store = Column(Boolean, default=False)
+    is_revoked = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -146,6 +148,8 @@ class RefundRecord(Base):
     is_dirty = Column(Boolean, default=False)
     dirty_type = Column(String)
     is_fixed = Column(Boolean, default=False)
+    is_cross_store = Column(Boolean, default=False)
+    is_revoked = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
