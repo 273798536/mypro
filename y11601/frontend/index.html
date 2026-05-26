@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>期权保证金预警系统</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◈</span>
+      <h1>期权保证金预警</h1>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-tab="dashboard">概览</button>
+      <button class="nav-btn" data-tab="margin">保证金</button>
+      <button class="nav-btn" data-tab="notifications">通知</button>
+      <button class="nav-btn" data-tab="positions">持仓</button>
+      <button class="nav-btn" data-tab="contracts">合约</button>
+      <button class="nav-btn" data-tab="quotes">行情</button>
+      <button class="nav-btn" data-tab="audit">审计</button>
+    </nav>
+    <div class="actions">
+      <button class="btn btn-primary" id="recalcBtn">重算保证金</button>
+      <button class="btn" id="exportBtn">导出CSV</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="tab-content" id="tab-dashboard">
+      <div class="stats-row">
+        <div class="stat-card stat-safe">
+          <div class="stat-label">安全持仓</div>
+          <div class="stat-value" id="stat-safe">0</div>
+        </div>
+        <div class="stat-card stat-warning">
+          <div class="stat-label">警戒持仓</div>
+          <div class="stat-value" id="stat-warning">0</div>
+        </div>
+        <div class="stat-card stat-danger">
+          <div class="stat-label">危险持仓</div>
+          <div class="stat-value" id="stat-danger">0</div>
+        </div>
+        <div class="stat-card stat-critical">
+          <div class="stat-label">紧急持仓</div>
+          <div class="stat-value" id="stat-critical">0</div>
+        </div>
+        <div class="stat-card stat-jump">
+          <div class="stat-label">IV跳变</div>
+          <div class="stat-value" id="stat-jump">0</div>
+        </div>
+        <div class="stat-card stat-dup">
+          <div class="stat-label">重复通知</div>
+          <div class="stat-value" id="stat-dup">0</div>
+        </div>
+      </div>
+
+      <div class="alert-banner" id="alertBanner" style="display:none;"></div>
+
+      <div class="panel">
+        <h2>风险分层概览</h2>
+        <div class="table-wrap">
+          <table class="data-table" id="overviewTable">
+            <thead>
+              <tr>
+                <th>账户</th>
+                <th>合约</th>
+                <th>方向</th>
+                <th>所需保证金</th>
+                <th>可用保证金</th>
+                <th>比例</th>
+                <th>风险等级</th>
+                <th>异常标记</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-content hidden" id="tab-margin">
+      <div class="panel">
+        <h2>保证金明细</h2>
+        <div class="toolbar">
+          <input type="text" placeholder="按账户搜索..." id="marginSearch" class="input">
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="marginTable">
+            <thead>
+              <tr>
+                <th>账户</th>
+                <th>合约</th>
+                <th>标的</th>
+                <th>类型</th>
+                <th>方向</th>
+                <th>数量</th>
+                <th>所需</th>
+                <th>可用</th>
+                <th>比例</th>
+                <th>风险</th>
+                <th>IV跳变</th>
+                <th>组合抵扣</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-content hidden" id="tab-notifications">
+      <div class="panel">
+        <h2>追加保证金通知</h2>
+        <div class="toolbar">
+          <button class="btn btn-sm" id="genNotifBtn">生成通知</button>
+          <select id="notifFilter" class="input">
+            <option value="">全部状态</option>
+            <option value="PENDING">待发送</option>
+            <option value="SENT">已发送</option>
+            <option value="ACKNOWLEDGED">已确认</option>
+            <option value="RESOLVED">已解决</option>
+            <option value="CANCELLED">已取消</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="notifTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>账户</th>
+                <th>合约</th>
+                <th>缺口</th>
+                <th>状态</th>
+                <th>重复</th>
+                <th>备注</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-content hidden" id="tab-positions">
+      <div class="panel">
+        <h2>账户持仓</h2>
+        <div class="toolbar">
+          <button class="btn btn-sm btn-primary" id="addPosBtn">+ 新增持仓</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="posTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>账户</th>
+                <th>合约</th>
+                <th>方向</th>
+                <th>数量</th>
+                <th>开仓价</th>
+                <th>来源</th>
+                <th>备注</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-content hidden" id="tab-contracts">
+      <div class="panel">
+        <h2>期权合约</h2>
+        <div class="toolbar">
+          <button class="btn btn-sm btn-primary" id="addContractBtn">+ 新增合约</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="contractTable">
+            <thead>
+              <tr>
+                <th>代码</th>
+                <th>标的</th>
+                <th>类型</th>
+                <th>行权价</th>
+                <th>到期日</th>
+                <th>乘数</th>
+                <th>校验</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-content hidden" id="tab-quotes">
+      <div class="panel">
+        <h2>行情快照</h2>
+        <div class="toolbar">
+          <button class="btn btn-sm btn-primary" id="addQuoteBtn">+ 录入行情</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="quoteTable">
+            <thead>
+              <tr>
+                <th>合约</th>
+                <th>价格</th>
+                <th>IV</th>
+                <th>Delta</th>
+                <th>Gamma</th>
+                <th>Vega</th>
+                <th>Theta</th>
+                <th>现货价</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-content hidden" id="tab-audit">
+      <div class="panel">
+        <h2>审计日志</h2>
+        <div class="table-wrap">
+          <table class="data-table" id="auditTable">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>类型</th>
+                <th>动作</th>
+                <th>操作人</th>
+                <th>详情</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">新增</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" style="display:none;"></div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
