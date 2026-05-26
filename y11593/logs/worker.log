@@ -1,0 +1,21 @@
+2026-05-26 15:11:13,719 - worker - INFO - 任务处理Worker已启动
+2026-05-26 15:15:19,553 - worker - INFO - 任务处理Worker已停止
+2026-05-26 15:20:06,416 - worker - INFO - 任务处理Worker已启动
+2026-05-26 15:20:11,438 - worker - INFO - 任务处理Worker已停止
+2026-05-26 15:27:36,398 - worker - INFO - 任务处理Worker已启动
+2026-05-26 15:40:09,628 - worker - INFO - 任务处理Worker已启动
+2026-05-26 15:42:22,643 - worker - INFO - 任务处理Worker已启动
+2026-05-26 15:42:27,668 - worker - INFO - 任务处理Worker已停止
+2026-05-26 16:08:14,988 - worker - INFO - 任务处理Worker已启动
+2026-05-26 16:26:26,319 - worker - INFO - 任务处理Worker已启动
+2026-05-26 16:35:30,779 - worker - INFO - 任务处理Worker已启动
+2026-05-26 16:37:55,969 - worker - INFO - 开始执行任务: TASKB6B4123CE0844313 - 回放波次-WAVE20260526001
+2026-05-26 16:37:55,995 - worker - INFO - 任务完成: TASKB6B4123CE0844313 - 状态: completed
+2026-05-26 16:39:56,100 - worker - INFO - 开始执行任务: TASK4D1EFF62F9AB4375 - 导出报表-full_replay_detail
+2026-05-26 16:39:56,131 - worker - INFO - 任务完成: TASK4D1EFF62F9AB4375 - 状态: completed
+2026-05-26 16:47:33,894 - worker - INFO - 任务处理Worker已启动
+2026-05-26 16:47:38,905 - worker - INFO - 任务处理Worker已停止
+2026-05-26 16:50:42,769 - worker - INFO - 任务处理Worker已启动
+2026-05-26 16:51:53,962 - worker - INFO - 任务处理Worker已启动
+2026-05-26 16:51:58,965 - worker - INFO - 任务处理Worker已停止
+2026-05-26 16:53:14,077 - worker - INFO - 任务处理Worker已启动

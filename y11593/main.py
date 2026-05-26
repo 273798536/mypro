@@ -1,12 +1,23 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Query, Request
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Query, Request, Body
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel
 from datetime import datetime
 import os
 import json
 
 from database import get_db, WaveOrder, PickDifference, ReviewScan, TempSupplement, ShiftRecord, ImportSource, AsyncTask
+
+class CorrectExceptionRequest(BaseModel):
+    corrected_data: Dict[str, Any]
+    reason: str
+    operator: str = "system"
+
+class ReplayWaveRequest(BaseModel):
+    operator: str = "system"
+    reason: str = ""
+    include_inventory: bool = True
 from services import (
     ImportService, AsyncTaskService, ReplayService, ReconciliationService,
     ExportService, ExceptionService
@@ -20,34 +31,43 @@ app = FastAPI(title="仓内波次拣货验收回放链路API", version="1.0.0")
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = datetime.utcnow()
+    
+    content_type = request.headers.get('content-type', '')
+    is_file_upload = content_type.startswith('multipart/form-data')
+    
+    if is_file_upload:
+        body_str = '[FILE UPLOAD]'
+    else:
+        body_str = ''
+    
     response = await call_next(request)
     
-    from database import OperationLog
-    db = next(get_db())
-    
-    body = await request.body()
-    body_str = body.decode('utf-8') if body else ''
-    
-    log = OperationLog(
-        log_id=generate_id('LOG'),
-        operation_type='http_request',
-        operator=request.headers.get('X-Operator', 'api'),
-        module='api',
-        action=request.method,
-        request_info=json.dumps({
-            'url': str(request.url),
-            'method': request.method,
-            'headers': dict(request.headers),
-            'body': body_str[:1000]
-        }, ensure_ascii=False),
-        response_info=json.dumps({
-            'status_code': response.status_code
-        }, ensure_ascii=False),
-        ip_address=request.client.host if request.client else ''
-    )
-    db.add(log)
-    db.commit()
-    db.close()
+    try:
+        from database import OperationLog
+        db = next(get_db())
+        
+        log = OperationLog(
+            log_id=generate_id('LOG'),
+            operation_type='http_request',
+            operator=request.headers.get('X-Operator', 'api'),
+            module='api',
+            action=request.method,
+            request_info=json.dumps({
+                'url': str(request.url),
+                'method': request.method,
+                'headers': {k: v for k, v in request.headers.items() if k.lower() not in ['content-type']},
+                'body': body_str[:1000]
+            }, ensure_ascii=False),
+            response_info=json.dumps({
+                'status_code': response.status_code
+            }, ensure_ascii=False),
+            ip_address=request.client.host if request.client else ''
+        )
+        db.add(log)
+        db.commit()
+        db.close()
+    except Exception as e:
+        logger.error(f"Failed to log request: {e}")
     
     return response
 
@@ -256,12 +276,17 @@ def list_shift_records(
     }
 
 @app.post("/api/replay/wave/{wave_no}")
-def replay_wave(wave_no: str, operator: str = "system", reason: str = "", db: Session = Depends(get_db)):
+def replay_wave(wave_no: str, request: ReplayWaveRequest, db: Session = Depends(get_db)):
     task_service = AsyncTaskService(db)
     task = task_service.create_task(
         task_type='replay_wave',
         task_name=f'回放波次-{wave_no}',
-        payload={'wave_no': wave_no, 'operator': operator, 'reason': reason},
+        payload={
+            'wave_no': wave_no,
+            'operator': request.operator,
+            'reason': request.reason,
+            'include_inventory': request.include_inventory
+        },
         priority=1
     )
     return {"code": 0, "message": "success", "data": {"task_id": task.task_id}}
@@ -271,6 +296,73 @@ def get_replay_history(wave_no: str, db: Session = Depends(get_db)):
     replay_service = ReplayService(db)
     history = replay_service.get_wave_history(wave_no)
     return {"code": 0, "message": "success", "data": history}
+
+@app.get("/api/replay/detail/{replay_id}")
+def get_replay_detail(replay_id: str, db: Session = Depends(get_db)):
+    replay_service = ReplayService(db)
+    try:
+        detail = replay_service.get_replay_detail(replay_id)
+        return {"code": 0, "message": "success", "data": detail}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+@app.get("/api/inventory/snapshots")
+def list_inventory_snapshots(
+    wave_no: Optional[str] = None,
+    replay_id: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    from database import InventorySnapshot
+    query = db.query(InventorySnapshot)
+    if wave_no:
+        query = query.filter(InventorySnapshot.wave_no == wave_no)
+    if replay_id:
+        query = query.filter(InventorySnapshot.replay_id == replay_id)
+    
+    total = query.count()
+    items = query.order_by(InventorySnapshot.created_at.desc()).offset((page-1)*page_size).limit(page_size).all()
+    
+    return {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "items": [model_to_dict(item) for item in items]
+        }
+    }
+
+@app.get("/api/step-diffs")
+def list_step_diffs(
+    wave_no: Optional[str] = None,
+    replay_id: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    from database import StepDiffRecord
+    query = db.query(StepDiffRecord)
+    if wave_no:
+        query = query.filter(StepDiffRecord.wave_no == wave_no)
+    if replay_id:
+        query = query.filter(StepDiffRecord.replay_id == replay_id)
+    
+    total = query.count()
+    items = query.order_by(StepDiffRecord.step_order.asc()).offset((page-1)*page_size).limit(page_size).all()
+    
+    return {
+        "code": 0,
+        "message": "success",
+        "data": {
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "items": [model_to_dict(item) for item in items]
+        }
+    }
 
 @app.post("/api/reconciliation/{wave_no}")
 def reconcile_wave(wave_no: str, db: Session = Depends(get_db)):
@@ -284,10 +376,17 @@ def reconcile_wave(wave_no: str, db: Session = Depends(get_db)):
     return {"code": 0, "message": "success", "data": {"task_id": task.task_id}}
 
 @app.post("/api/export/{report_type}")
-def export_report(report_type: str, wave_no: Optional[str] = None, db: Session = Depends(get_db)):
+def export_report(
+    report_type: str,
+    wave_no: Optional[str] = None,
+    replay_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     params = {}
     if wave_no:
         params['wave_no'] = wave_no
+    if replay_id:
+        params['replay_id'] = replay_id
     
     task_service = AsyncTaskService(db)
     task = task_service.create_task(
@@ -384,13 +483,16 @@ def get_exception_detail(exception_id: str, db: Session = Depends(get_db)):
 @app.post("/api/exceptions/{exception_id}/correct")
 def correct_exception(
     exception_id: str,
-    corrected_data: dict,
-    reason: str,
-    operator: str = "system",
+    request: CorrectExceptionRequest,
     db: Session = Depends(get_db)
 ):
     exception_service = ExceptionService(db)
-    result = exception_service.correct_exception(exception_id, corrected_data, reason, operator)
+    result = exception_service.correct_exception(
+        exception_id,
+        request.corrected_data,
+        request.reason,
+        request.operator
+    )
     return {"code": 0, "message": "success", "data": result}
 
 @app.get("/api/import-sources")

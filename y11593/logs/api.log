@@ -1,0 +1,4 @@
+2026-05-26 15:42:24,573 - api - ERROR - Failed to log request: (sqlite3.OperationalError) attempt to write a readonly database
+[SQL: INSERT INTO operation_logs (log_id, operation_type, operator, module, action, request_info, response_info, ip_address, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: ('LOG27458AE49B20425B', 'http_request', 'api', 'api', 'GET', '"{\\"url\\": \\"http://localhost:8000/\\", \\"method\\": \\"GET\\", \\"headers\\": {\\"host\\": \\"localhost:8000\\", \\"user-agent\\": \\"curl/8.7.1\\", \\"accept\\": \\"*/*\\"}, \\"body\\": \\"\\"}"', '"{\\"status_code\\": 200}"', '127.0.0.1', '2026-05-26 07:42:24.571500')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

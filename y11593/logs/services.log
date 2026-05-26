@@ -1,0 +1,2 @@
+2026-05-26 16:37:55,974 - services - INFO - 开始回放波次 WAVE20260526001, replay_id=RPC8B5BA081C0B467E, operator=test_user, reason=缺货拆单导致绩效变形，需要回放追踪库存变化
+2026-05-26 16:37:55,992 - services - INFO - 波次回放完成: replay_id=RPC8B5BA081C0B467E, 步骤数=3, 库存快照数=2

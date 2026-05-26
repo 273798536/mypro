@@ -3,7 +3,8 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from database import (
     WaveOrder, PickDifference, ReviewScan, TempSupplement, ShiftRecord,
-    ImportSource, AsyncTask, ReplayRecord, ExceptionRecord, PerformanceSnapshot, OperationLog
+    ImportSource, AsyncTask, ReplayRecord, ExceptionRecord, PerformanceSnapshot, OperationLog,
+    InventorySnapshot, StepDiffRecord
 )
 from utils import (
     generate_unique_hash, generate_id, parse_datetime, safe_int, safe_str,
@@ -477,9 +478,10 @@ class AsyncTaskService:
         wave_no = payload.get('wave_no')
         operator = payload.get('operator', 'system')
         reason = payload.get('reason', '')
+        include_inventory = payload.get('include_inventory', True)
         
         replay_service = ReplayService(self.db)
-        result = replay_service.replay_wave(wave_no, operator, reason)
+        result = replay_service.replay_wave(wave_no, operator, reason, include_inventory)
         return result
     
     def _reconciliation_task(self, payload: Dict) -> Dict:
@@ -509,16 +511,142 @@ class AsyncTaskService:
         self.db.commit()
         return manual_tasks
 
-class ReplayService:
+class InventoryService:
     def __init__(self, db: Session):
         self.db = db
     
-    def replay_wave(self, wave_no: str, operator: str, reason: str) -> Dict:
+    def _calculate_inventory(self, wave_no: str, sku_code: str, warehouse: str) -> Dict:
+        waves = self.db.query(WaveOrder).filter(
+            WaveOrder.wave_no == wave_no,
+            WaveOrder.sku_code == sku_code,
+            WaveOrder.warehouse == warehouse,
+            WaveOrder.is_duplicate == False
+        ).all()
+        
+        total_plan = sum(w.plan_qty for w in waves)
+        total_pick = sum(w.pick_qty for w in waves)
+        total_shortage = sum(w.shortage_qty for w in waves)
+        
+        supplements = self.db.query(TempSupplement).filter(
+            TempSupplement.wave_no == wave_no,
+            TempSupplement.sku_code == sku_code,
+            TempSupplement.is_duplicate == False
+        ).all()
+        total_supplement = sum(s.supplement_qty for s in supplements)
+        
+        base_available = 1000
+        reserved = total_plan
+        occupied = total_pick
+        available = base_available - reserved + total_supplement
+        
+        return {
+            'available_qty': available,
+            'reserved_qty': reserved,
+            'occupied_qty': occupied,
+            'base_available': base_available,
+            'total_plan': total_plan,
+            'total_pick': total_pick,
+            'total_shortage': total_shortage,
+            'total_supplement': total_supplement
+        }
+    
+    def snapshot_inventory(self, wave_no: str, replay_id: str, operator: str, reason: str) -> List[Dict]:
+        waves = self.db.query(WaveOrder).filter(
+            WaveOrder.wave_no == wave_no,
+            WaveOrder.is_duplicate == False
+        ).all()
+        
+        sku_warehouse_pairs = set()
+        for w in waves:
+            sku_warehouse_pairs.add((w.sku_code, w.warehouse))
+        
+        snapshots = []
+        for sku_code, warehouse in sku_warehouse_pairs:
+            before_inv = self._calculate_inventory(wave_no, sku_code, warehouse)
+            
+            after_available = before_inv['available_qty']
+            after_reserved = before_inv['reserved_qty']
+            after_occupied = before_inv['occupied_qty']
+            
+            if '缺货' in reason or 'shortage' in reason.lower():
+                after_reserved = max(0, after_reserved - before_inv['total_shortage'])
+                after_available = before_inv['base_available'] - after_reserved + before_inv['total_supplement']
+            
+            snapshot = InventorySnapshot(
+                snapshot_id=generate_id('IS'),
+                wave_no=wave_no,
+                sku_code=sku_code,
+                warehouse=warehouse,
+                before_available_qty=before_inv['available_qty'],
+                before_reserved_qty=before_inv['reserved_qty'],
+                before_occupied_qty=before_inv['occupied_qty'],
+                after_available_qty=after_available,
+                after_reserved_qty=after_reserved,
+                after_occupied_qty=after_occupied,
+                change_reason=reason,
+                operator=operator,
+                replay_id=replay_id
+            )
+            self.db.add(snapshot)
+            snapshots.append({
+                'sku_code': sku_code,
+                'warehouse': warehouse,
+                'before': before_inv,
+                'after': {
+                    'available_qty': after_available,
+                    'reserved_qty': after_reserved,
+                    'occupied_qty': after_occupied
+                }
+            })
+        
+        return snapshots
+
+class StepDiffService:
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def record_step_diff(self, wave_no: str, replay_id: str, step_name: str, step_order: int,
+                        before_state: Dict, after_state: Dict, reason: str, operator: str) -> Dict:
+        diff = calculate_diff(before_state, after_state)
+        
+        step_diff = StepDiffRecord(
+            diff_id=generate_id('SD'),
+            wave_no=wave_no,
+            step_name=step_name,
+            step_order=step_order,
+            before_state=json.dumps(before_state, ensure_ascii=False),
+            after_state=json.dumps(after_state, ensure_ascii=False),
+            diff_summary=json.dumps(diff, ensure_ascii=False),
+            change_reason=reason,
+            operator=operator,
+            replay_id=replay_id
+        )
+        self.db.add(step_diff)
+        
+        return {
+            'diff_id': step_diff.diff_id,
+            'step_name': step_name,
+            'diff_count': len(diff),
+            'diff_details': diff
+        }
+
+class ReplayService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.inventory_service = InventoryService(db)
+        self.step_diff_service = StepDiffService(db)
+    
+    def replay_wave(self, wave_no: str, operator: str, reason: str, include_inventory: bool = True) -> Dict:
+        replay_id = generate_id('RP')
+        logger.info(f"开始回放波次 {wave_no}, replay_id={replay_id}, operator={operator}, reason={reason}")
+        
+        steps = []
+        
         before_waves = self.db.query(WaveOrder).filter(
             WaveOrder.wave_no == wave_no,
             WaveOrder.is_duplicate == False
         ).all()
-        before_data = [model_to_dict(w) for w in before_waves]
+        before_wave_data = [model_to_dict(w) for w in before_waves]
         
         before_pick = self.db.query(PickDifference).filter(
             PickDifference.wave_no == wave_no,
@@ -532,12 +660,21 @@ class ReplayService:
         ).all()
         before_review_data = [model_to_dict(r) for r in before_review]
         
+        before_supplement = self.db.query(TempSupplement).filter(
+            TempSupplement.wave_no == wave_no,
+            TempSupplement.is_duplicate == False
+        ).all()
+        before_supplement_data = [model_to_dict(s) for s in before_supplement]
+        
         before_state = {
-            'wave_orders': before_data,
+            'wave_orders': before_wave_data,
             'pick_differences': before_pick_data,
-            'review_scans': before_review_data
+            'review_scans': before_review_data,
+            'temp_supplements': before_supplement_data
         }
         
+        step1_before = {'wave_orders': before_wave_data}
+        step1_after = {'wave_orders': before_wave_data}
         for wave in before_waves:
             if wave.is_split and wave.parent_wave_no:
                 original_wave = self.db.query(WaveOrder).filter(
@@ -554,32 +691,71 @@ class ReplayService:
                         operator=operator
                     )
                     self.db.add(snapshot)
+        step1_diff = self.step_diff_service.record_step_diff(
+            wave_no, replay_id, '拆单绩效处理', 1,
+            step1_before, step1_after, reason, operator
+        )
+        steps.append(step1_diff)
+        
+        inventory_snapshots = []
+        if include_inventory:
+            inventory_snapshots = self.inventory_service.snapshot_inventory(
+                wave_no, replay_id, operator, reason
+            )
+            step2_diff = self.step_diff_service.record_step_diff(
+                wave_no, replay_id, '库存占用调整', 2,
+                {'inventory_count': len(set([s['sku_code'] for s in inventory_snapshots]))},
+                {'inventory_count': len(inventory_snapshots), 'adjusted': True},
+                reason, operator
+            )
+            steps.append(step2_diff)
         
         after_waves = self.db.query(WaveOrder).filter(
             WaveOrder.wave_no == wave_no,
             WaveOrder.is_duplicate == False
         ).all()
-        after_data = [model_to_dict(w) for w in after_waves]
+        after_wave_data = [model_to_dict(w) for w in after_waves]
         
-        diff_summary = calculate_wave_diff(before_data, after_data)
+        wave_diff = calculate_wave_diff(before_wave_data, after_wave_data)
+        
+        after_state = {
+            'wave_orders': after_wave_data,
+            'pick_differences': before_pick_data,
+            'review_scans': before_review_data,
+            'temp_supplements': before_supplement_data,
+            'inventory_snapshots': inventory_snapshots
+        }
         
         replay = ReplayRecord(
-            replay_id=generate_id('RP'),
+            replay_id=replay_id,
             replay_type='wave_replay',
             wave_no=wave_no,
             before_state=json.dumps(before_state, ensure_ascii=False),
-            after_state=json.dumps({'wave_orders': after_data}, ensure_ascii=False),
-            diff_summary=json.dumps(diff_summary, ensure_ascii=False),
+            after_state=json.dumps(after_state, ensure_ascii=False),
+            diff_summary=json.dumps(wave_diff, ensure_ascii=False),
             operator=operator,
             reason=reason
         )
         self.db.add(replay)
+        
+        step3_diff = self.step_diff_service.record_step_diff(
+            wave_no, replay_id, '波次状态更新', 3,
+            {'wave_count': len(before_wave_data)},
+            {'wave_count': len(after_wave_data), 'diff_count': wave_diff.get('modified_count', 0)},
+            reason, operator
+        )
+        steps.append(step3_diff)
+        
         self.db.commit()
         
+        logger.info(f"波次回放完成: replay_id={replay_id}, 步骤数={len(steps)}, 库存快照数={len(inventory_snapshots)}")
+        
         return {
-            'replay_id': replay.replay_id,
+            'replay_id': replay_id,
             'wave_no': wave_no,
-            'diff_summary': diff_summary
+            'diff_summary': wave_diff,
+            'steps': steps,
+            'inventory_snapshots': inventory_snapshots
         }
     
     def get_wave_history(self, wave_no: str) -> List[Dict]:
@@ -587,7 +763,43 @@ class ReplayService:
             ReplayRecord.wave_no == wave_no
         ).order_by(ReplayRecord.operate_time.desc()).all()
         
-        return [model_to_dict(r) for r in replays]
+        result = []
+        for replay in replays:
+            replay_dict = model_to_dict(replay)
+            step_diffs = self.db.query(StepDiffRecord).filter(
+                StepDiffRecord.replay_id == replay.replay_id
+            ).order_by(StepDiffRecord.step_order.asc()).all()
+            replay_dict['step_diffs'] = [model_to_dict(s) for s in step_diffs]
+            
+            inventory_snapshots = self.db.query(InventorySnapshot).filter(
+                InventorySnapshot.replay_id == replay.replay_id
+            ).all()
+            replay_dict['inventory_snapshots'] = [model_to_dict(i) for i in inventory_snapshots]
+            
+            result.append(replay_dict)
+        
+        return result
+    
+    def get_replay_detail(self, replay_id: str) -> Dict:
+        replay = self.db.query(ReplayRecord).filter(
+            ReplayRecord.replay_id == replay_id
+        ).first()
+        if not replay:
+            raise ValueError(f"回放记录不存在: {replay_id}")
+        
+        result = model_to_dict(replay)
+        
+        step_diffs = self.db.query(StepDiffRecord).filter(
+            StepDiffRecord.replay_id == replay_id
+        ).order_by(StepDiffRecord.step_order.asc()).all()
+        result['step_diffs'] = [model_to_dict(s) for s in step_diffs]
+        
+        inventory_snapshots = self.db.query(InventorySnapshot).filter(
+            InventorySnapshot.replay_id == replay_id
+        ).all()
+        result['inventory_snapshots'] = [model_to_dict(i) for i in inventory_snapshots]
+        
+        return result
 
 class ReconciliationService:
     def __init__(self, db: Session):
@@ -710,13 +922,20 @@ class ExportService:
             result = self._export_exception_records(filepath, params)
         elif report_type == 'replay_history':
             result = self._export_replay_history(filepath, params)
+        elif report_type == 'inventory_snapshots':
+            result = self._export_inventory_snapshots(filepath, params)
+        elif report_type == 'step_diffs':
+            result = self._export_step_diffs(filepath, params)
+        elif report_type == 'full_replay_detail':
+            result = self._export_full_replay_detail(filepath, params)
         else:
             raise ValueError(f"未知报表类型: {report_type}")
         
         return {
             'filepath': filepath,
             'filename': filename,
-            'row_count': result.get('row_count', 0)
+            'row_count': result.get('row_count', 0),
+            'sheets': result.get('sheets', [])
         }
     
     def _export_wave_orders(self, filepath: str, params: Dict) -> Dict:
@@ -880,6 +1099,151 @@ class ExportService:
         df.to_excel(filepath, index=False)
         
         return {'row_count': len(data)}
+    
+    def _export_inventory_snapshots(self, filepath: str, params: Dict) -> Dict:
+        query = self.db.query(InventorySnapshot)
+        
+        if params.get('wave_no'):
+            query = query.filter(InventorySnapshot.wave_no == params['wave_no'])
+        if params.get('replay_id'):
+            query = query.filter(InventorySnapshot.replay_id == params['replay_id'])
+        
+        snapshots = query.all()
+        
+        data = []
+        for s in snapshots:
+            data.append({
+                '快照ID': s.snapshot_id,
+                '回放单号': s.replay_id,
+                '波次号': s.wave_no,
+                '商品编码': s.sku_code,
+                '仓库': s.warehouse,
+                '调整前可用库存': s.before_available_qty,
+                '调整前预留库存': s.before_reserved_qty,
+                '调整前占用库存': s.before_occupied_qty,
+                '调整后可用库存': s.after_available_qty,
+                '调整后预留库存': s.after_reserved_qty,
+                '调整后占用库存': s.after_occupied_qty,
+                '库存变化原因': s.change_reason,
+                '操作人': s.operator,
+                '创建时间': s.created_at
+            })
+        
+        df = pd.DataFrame(data)
+        df.to_excel(filepath, index=False)
+        
+        return {'row_count': len(data)}
+    
+    def _export_step_diffs(self, filepath: str, params: Dict) -> Dict:
+        query = self.db.query(StepDiffRecord)
+        
+        if params.get('wave_no'):
+            query = query.filter(StepDiffRecord.wave_no == params['wave_no'])
+        if params.get('replay_id'):
+            query = query.filter(StepDiffRecord.replay_id == params['replay_id'])
+        
+        step_diffs = query.order_by(StepDiffRecord.step_order.asc()).all()
+        
+        data = []
+        for s in step_diffs:
+            diff_summary = json.loads(s.diff_summary) if s.diff_summary else {}
+            data.append({
+                '差异ID': s.diff_id,
+                '回放单号': s.replay_id,
+                '波次号': s.wave_no,
+                '步骤名称': s.step_name,
+                '步骤顺序': s.step_order,
+                '差异数量': len(diff_summary),
+                '变化原因': s.change_reason,
+                '操作人': s.operator,
+                '创建时间': s.created_at,
+                '差异详情': json.dumps(diff_summary, ensure_ascii=False)
+            })
+        
+        df = pd.DataFrame(data)
+        df.to_excel(filepath, index=False)
+        
+        return {'row_count': len(data)}
+    
+    def _export_full_replay_detail(self, filepath: str, params: Dict) -> Dict:
+        wave_no = params.get('wave_no')
+        replay_id = params.get('replay_id')
+        
+        replay_query = self.db.query(ReplayRecord)
+        if wave_no:
+            replay_query = replay_query.filter(ReplayRecord.wave_no == wave_no)
+        if replay_id:
+            replay_query = replay_query.filter(ReplayRecord.replay_id == replay_id)
+        
+        replays = replay_query.all()
+        
+        if not replays:
+            return {'row_count': 0, 'sheets': []}
+        
+        replay_data = []
+        step_diff_data = []
+        inventory_data = []
+        
+        for r in replays:
+            diff_summary = json.loads(r.diff_summary) if r.diff_summary else {}
+            replay_data.append({
+                '回放单号': r.replay_id,
+                '波次号': r.wave_no,
+                '操作人': r.operator,
+                '操作时间': r.operate_time,
+                '原因': r.reason,
+                '新增数量': diff_summary.get('added_count', 0),
+                '删除数量': diff_summary.get('removed_count', 0),
+                '修改数量': diff_summary.get('modified_count', 0)
+            })
+            
+            step_diffs = self.db.query(StepDiffRecord).filter(
+                StepDiffRecord.replay_id == r.replay_id
+            ).order_by(StepDiffRecord.step_order.asc()).all()
+            
+            for s in step_diffs:
+                diff = json.loads(s.diff_summary) if s.diff_summary else {}
+                step_diff_data.append({
+                    '回放单号': r.replay_id,
+                    '波次号': r.wave_no,
+                    '步骤名称': s.step_name,
+                    '步骤顺序': s.step_order,
+                    '差异数量': len(diff),
+                    '变化原因': s.change_reason,
+                    '与回放原因一致': '是' if s.change_reason == r.reason else '否',
+                    '操作人': s.operator
+                })
+            
+            inventories = self.db.query(InventorySnapshot).filter(
+                InventorySnapshot.replay_id == r.replay_id
+            ).all()
+            
+            for inv in inventories:
+                inventory_data.append({
+                    '回放单号': r.replay_id,
+                    '波次号': r.wave_no,
+                    '商品编码': inv.sku_code,
+                    '仓库': inv.warehouse,
+                    '库存变化原因': inv.change_reason,
+                    '与回放原因一致': '是' if inv.change_reason == r.reason else '否',
+                    '调整前可用': inv.before_available_qty,
+                    '调整后可用': inv.after_available_qty,
+                    '调整前预留': inv.before_reserved_qty,
+                    '调整后预留': inv.after_reserved_qty,
+                    '调整前占用': inv.before_occupied_qty,
+                    '调整后占用': inv.after_occupied_qty,
+                    '操作人': inv.operator
+                })
+        
+        with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
+            pd.DataFrame(replay_data).to_excel(writer, sheet_name='回放记录', index=False)
+            pd.DataFrame(step_diff_data).to_excel(writer, sheet_name='步骤差异', index=False)
+            pd.DataFrame(inventory_data).to_excel(writer, sheet_name='库存快照', index=False)
+        
+        return {
+            'row_count': len(replay_data),
+            'sheets': ['回放记录', '步骤差异', '库存快照']
+        }
 
 class ExceptionService:
     def __init__(self, db: Session):

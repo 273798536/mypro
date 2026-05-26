@@ -48,13 +48,23 @@ def import_file(file_type, file_path):
 @click.argument('wave_no')
 @click.option('--operator', default='cli', help='操作人')
 @click.option('--reason', default='', help='原因')
-def replay_wave(wave_no, operator, reason):
+@click.option('--include-inventory/--no-inventory', default=True, help='是否包含库存占用追踪')
+def replay_wave(wave_no, operator, reason, include_inventory):
     """回放波次单"""
     url = f"{BASE_URL}/api/replay/wave/{wave_no}"
-    params = {'operator': operator, 'reason': reason}
-    response = requests.post(url, params=params)
+    payload = {
+        'operator': operator,
+        'reason': reason,
+        'include_inventory': include_inventory
+    }
+    response = requests.post(url, json=payload)
     result = response.json()
     click.echo(json.dumps(result, ensure_ascii=False, indent=2))
+    
+    if result.get('code') == 0:
+        task_id = result['data']['task_id']
+        click.echo(f"\n任务已提交，任务ID: {task_id}")
+        click.echo("使用 'python cli.py get-task {task_id}' 查看任务状态")
 
 @cli.command()
 @click.argument('wave_no')
@@ -66,14 +76,21 @@ def reconcile_wave(wave_no):
     click.echo(json.dumps(result, ensure_ascii=False, indent=2))
 
 @cli.command()
-@click.argument('report_type', type=click.Choice(['wave_orders', 'pick_differences', 'review_scans', 'exception_records', 'replay_history']))
+@click.argument('report_type', type=click.Choice([
+    'wave_orders', 'pick_differences', 'review_scans', 
+    'exception_records', 'replay_history',
+    'inventory_snapshots', 'step_diffs', 'full_replay_detail'
+]))
 @click.option('--wave_no', help='波次号过滤')
-def export_report(report_type, wave_no):
+@click.option('--replay_id', help='回放ID过滤')
+def export_report(report_type, wave_no, replay_id):
     """导出报表"""
     url = f"{BASE_URL}/api/export/{report_type}"
     params = {}
     if wave_no:
         params['wave_no'] = wave_no
+    if replay_id:
+        params['replay_id'] = replay_id
     
     response = requests.post(url, params=params)
     result = response.json()
@@ -81,15 +98,33 @@ def export_report(report_type, wave_no):
     
     if result.get('code') == 0:
         task_id = result['data']['task_id']
-        click.echo(f"等待任务完成...")
+        click.echo(f"\n等待任务完成...")
         for i in range(30):
             time.sleep(1)
             task_resp = requests.get(f"{BASE_URL}/api/tasks/{task_id}")
             task_data = task_resp.json()
             if task_data['data']['status'] == 'completed':
                 click.echo("任务完成！")
+                if task_data['data'].get('result'):
+                    try:
+                        task_result = json.loads(task_data['data']['result'])
+                        if task_result.get('sheets'):
+                            click.echo(f"导出工作表: {', '.join(task_result['sheets'])}")
+                        click.echo(f"导出文件名: {task_result.get('filename', 'N/A')}")
+                        click.echo(f"导出行数: {task_result.get('row_count', 0)}")
+                    except:
+                        pass
                 break
             click.echo(f"任务状态: {task_data['data']['status']}")
+
+@cli.command()
+@click.argument('task_id')
+def get_task(task_id):
+    """查看任务详情"""
+    url = f"{BASE_URL}/api/tasks/{task_id}"
+    response = requests.get(url)
+    result = response.json()
+    click.echo(json.dumps(result, ensure_ascii=False, indent=2))
 
 @cli.command()
 def resume_tasks():

@@ -223,6 +223,41 @@ class PerformanceSnapshot(Base):
     operator = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class InventorySnapshot(Base):
+    __tablename__ = "inventory_snapshots"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    snapshot_id = Column(String, unique=True, index=True)
+    wave_no = Column(String, index=True)
+    sku_code = Column(String, index=True)
+    warehouse = Column(String, index=True)
+    before_available_qty = Column(Integer, default=0)
+    before_reserved_qty = Column(Integer, default=0)
+    before_occupied_qty = Column(Integer, default=0)
+    after_available_qty = Column(Integer, default=0)
+    after_reserved_qty = Column(Integer, default=0)
+    after_occupied_qty = Column(Integer, default=0)
+    change_reason = Column(String)
+    operator = Column(String)
+    replay_id = Column(String, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class StepDiffRecord(Base):
+    __tablename__ = "step_diff_records"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    diff_id = Column(String, unique=True, index=True)
+    wave_no = Column(String, index=True)
+    step_name = Column(String, index=True)
+    step_order = Column(Integer, default=0)
+    before_state = Column(JSON)
+    after_state = Column(JSON)
+    diff_summary = Column(JSON)
+    change_reason = Column(String)
+    operator = Column(String)
+    replay_id = Column(String, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 class OperationLog(Base):
     __tablename__ = "operation_logs"
     
