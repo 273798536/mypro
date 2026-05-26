@@ -108,10 +108,11 @@ export const rejectReceipt = async (req: Request, res: Response, next: NextFunct
 export const manualModify = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { confirmedAmount, deductionAmount, manualReason } = req.body;
+    const { confirmedAmount, abnormalAmount, deductionAmount, manualReason } = req.body;
     const operator = getOperator(req);
     const receipt = await reconciliationService.manualModify(id, operator, {
       confirmedAmount,
+      abnormalAmount,
       deductionAmount,
       manualReason
     });

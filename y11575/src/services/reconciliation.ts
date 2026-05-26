@@ -220,6 +220,7 @@ export class ReconciliationService {
     operator: Operator,
     modifications: {
       confirmedAmount?: number;
+      abnormalAmount?: number;
       deductionAmount?: number;
       manualReason: string;
     }
@@ -241,6 +242,7 @@ export class ReconciliationService {
       modifications.manualReason,
       {
         confirmedAmount: modifications.confirmedAmount,
+        abnormalAmount: modifications.abnormalAmount,
         deductionAmount: modifications.deductionAmount,
         manualReason: modifications.manualReason,
         isManualModified: true

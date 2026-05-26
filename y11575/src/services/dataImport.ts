@@ -29,6 +29,7 @@ export interface ParsedRecord {
   deductionAmount: number;
   customerServiceNotes?: string;
   sourceType: DataSourceType;
+  rawData: Record<string, any>;
 }
 
 export interface ParseOptions {
@@ -37,48 +38,48 @@ export interface ParseOptions {
 }
 
 interface ColumnMapping {
-  batchNo: number;
-  semiProductCode?: number;
-  semiProductName?: number;
-  supplierId?: number;
-  supplierName?: number;
-  quantity?: number;
-  abnormalAmount?: number;
-  deductionAmount?: number;
-  customerServiceNotes?: number;
+  batchNo: string;
+  semiProductCode?: string;
+  semiProductName?: string;
+  supplierId?: string;
+  supplierName?: string;
+  quantity?: string;
+  abnormalAmount?: string;
+  deductionAmount?: string;
+  customerServiceNotes?: string;
 }
 
 const COLUMN_MAPPINGS: Record<DataSourceType, ColumnMapping> = {
   [DataSourceType.DELIVERY_NOTE]: {
-    batchNo: 0,
-    semiProductCode: 1,
-    semiProductName: 2,
-    supplierId: 3,
-    supplierName: 4,
-    quantity: 5,
-    abnormalAmount: 6,
-    deductionAmount: 7,
-    customerServiceNotes: 8
+    batchNo: '批次号',
+    semiProductCode: '半成品编码',
+    semiProductName: '半成品名称',
+    supplierId: '供应商ID',
+    supplierName: '供应商名称',
+    quantity: '数量',
+    abnormalAmount: '异常金额',
+    deductionAmount: '扣款金额',
+    customerServiceNotes: '客服备注'
   },
   [DataSourceType.REPAIR_RECORD]: {
-    batchNo: 0,
-    quantity: 4,
-    abnormalAmount: 5,
-    customerServiceNotes: 3
+    batchNo: '批次号',
+    quantity: '返修数量',
+    abnormalAmount: '返修费用',
+    customerServiceNotes: '返修原因'
   },
   [DataSourceType.DEDUCTION_DETAIL]: {
-    batchNo: 0,
-    deductionAmount: 4,
-    customerServiceNotes: 5
+    batchNo: '批次号',
+    deductionAmount: '扣款金额',
+    customerServiceNotes: '扣款原因'
   },
   [DataSourceType.STORE_HANDOVER]: {
-    batchNo: 0,
-    quantity: 1,
-    customerServiceNotes: 2
+    batchNo: '批次号',
+    quantity: '数量',
+    customerServiceNotes: '备注'
   },
   [DataSourceType.CUSTOMER_SERVICE_NOTE]: {
-    batchNo: 0,
-    customerServiceNotes: 1
+    batchNo: '批次号',
+    customerServiceNotes: '备注'
   }
 };
 
@@ -143,7 +144,7 @@ export class DataImportService {
 
     for (let i = 0; i < records.length; i++) {
       const record = records[i];
-      const lineNumber = options.skipHeader ? i + 2 : i + 1;
+      const lineNumber = i + 1;
 
       try {
         const receipt = await this.processRecord(
@@ -162,7 +163,7 @@ export class DataImportService {
           sourceFile,
           lineNumber,
           fieldName: 'system',
-          originalValue: JSON.stringify(record),
+          originalValue: JSON.stringify(record.rawData),
           errorMessage: error.message,
           errorCode: 'PROCESS_ERROR'
         });
@@ -199,16 +200,14 @@ export class DataImportService {
     const workbook = XLSX.readFile(filePath);
     const sheetName = options.sheetName || workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<string, any>[];
 
-    const startRow = options.skipHeader ? 1 : 0;
-
-    for (let i = startRow; i < jsonData.length; i++) {
+    for (let i = 0; i < jsonData.length; i++) {
       const row = jsonData[i];
       const lineNumber = i + 1;
 
       try {
-        const record = this.parseRow(row, sourceFile, lineNumber, sourceType);
+        const record = this.parseRowFromObject(row, sourceFile, lineNumber, sourceType);
         records.push(record);
       } catch (error: any) {
         errors.push({
@@ -240,10 +239,8 @@ export class DataImportService {
         .pipe(csv())
         .on('data', (row: Record<string, any>) => {
           lineNumber++;
-          if (options.skipHeader && lineNumber === 1) return;
-
           try {
-            const record = this.parseRow(Object.values(row), sourceFile, lineNumber, sourceType);
+            const record = this.parseRowFromObject(row, sourceFile, lineNumber, sourceType);
             records.push(record);
           } catch (error: any) {
             errors.push({
@@ -263,14 +260,19 @@ export class DataImportService {
     });
   }
 
-  private parseRow(row: any[], sourceFile: string, lineNumber: number, sourceType: DataSourceType): ParsedRecord {
+  private parseRowFromObject(
+    row: Record<string, any>,
+    sourceFile: string,
+    lineNumber: number,
+    sourceType: DataSourceType
+  ): ParsedRecord {
     const mapping = COLUMN_MAPPINGS[sourceType] || COLUMN_MAPPINGS[DataSourceType.DELIVERY_NOTE];
     
-    const getValue = (index: number | undefined, fieldName: string, required: boolean = false, defaultValue: any = ''): any => {
-      if (index === undefined) return defaultValue;
-      const value = row[index];
+    const getValue = (columnName: string | undefined, fieldName: string, required: boolean = false, defaultValue: any = ''): any => {
+      if (columnName === undefined) return defaultValue;
+      const value = row[columnName];
       if (required && (value === undefined || value === null || value === '')) {
-        const error: any = new Error(`字段 ${fieldName} 不能为空`);
+        const error: any = new Error(`字段 ${fieldName} (${columnName}) 不能为空`);
         error.fieldName = fieldName;
         error.originalValue = value;
         error.code = 'MISSING_REQUIRED';
@@ -302,8 +304,9 @@ export class DataImportService {
         quantity: parseNumber(getValue(mapping.quantity, '数量', false, 0), '数量'),
         abnormalAmount: parseNumber(getValue(mapping.abnormalAmount, '异常金额', false, 0), '异常金额'),
         deductionAmount: parseNumber(getValue(mapping.deductionAmount, '扣款金额', false, 0), '扣款金额'),
-        customerServiceNotes: mapping.customerServiceNotes !== undefined && row[mapping.customerServiceNotes] ? String(row[mapping.customerServiceNotes]) : undefined,
-        sourceType
+        customerServiceNotes: mapping.customerServiceNotes && row[mapping.customerServiceNotes] ? String(row[mapping.customerServiceNotes]) : undefined,
+        sourceType,
+        rawData: { ...row }
       };
       return record;
     } catch (error: any) {
@@ -391,26 +394,15 @@ export class DataImportService {
       });
     }
 
-    const fieldsToMap = [
-      { fieldName: 'batchNo', originalValue: record.batchNo },
-      { fieldName: 'semiProductCode', originalValue: record.semiProductCode },
-      { fieldName: 'semiProductName', originalValue: record.semiProductName },
-      { fieldName: 'supplierId', originalValue: record.supplierId },
-      { fieldName: 'supplierName', originalValue: record.supplierName },
-      { fieldName: 'quantity', originalValue: String(record.quantity) },
-      { fieldName: 'abnormalAmount', originalValue: String(record.abnormalAmount) },
-      { fieldName: 'deductionAmount', originalValue: String(record.deductionAmount) }
-    ];
-
-    for (const field of fieldsToMap) {
+    for (const [fieldName, originalValue] of Object.entries(record.rawData)) {
       await this.evidenceModel.create({
         receiptId: receipt.id,
         sourceType,
         sourceFile,
         originalLineNumber: lineNumber,
-        originalValue: field.originalValue,
-        parsedValue: field.originalValue,
-        fieldName: field.fieldName,
+        originalValue: String(originalValue ?? ''),
+        parsedValue: String(originalValue ?? ''),
+        fieldName,
         importBatchId
       });
     }
