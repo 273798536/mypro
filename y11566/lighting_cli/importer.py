@@ -284,6 +284,11 @@ class DataImporter:
             
             if not row_data.get('location') and row_data.get('road_section'):
                 row_data['location'] = row_data['road_section']
+                auto_fill_note = '[自动填充: location from road_section]'
+                if row_data.get('description'):
+                    row_data['description'] = auto_fill_note + ' ' + row_data['description']
+                else:
+                    row_data['description'] = auto_fill_note
             
             rows.append(row_data)
         return rows

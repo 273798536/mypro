@@ -32,22 +32,82 @@ echo "------------------------"
 $PY_CMD import approval_email sample_data/approval_emails.csv --strategy append
 echo ""
 
-echo "步骤 6: 导入坏数据（触发三类失败）"
+echo "步骤 6: 导入坏数据 - hotline_bad_data.csv（触发 3 条人工失败）"
 echo "------------------------"
-$PY_CMD import hotline sample_data/three_error_types.csv --strategy ignore
+$PY_CMD import hotline sample_data/hotline_bad_data.csv --strategy ignore
 echo ""
 
-echo "步骤 7: 校验所有数据 - 验证三类失败分类"
+echo "步骤 7: 校验 - 验证 3 条坏数据全部进入失败清单"
 echo "------------------------"
 $PY_CMD check
 echo ""
 
-echo "步骤 8: 查看导入批次历史"
+echo "步骤 8: 修正 3 条人工失败数据"
+echo "------------------------"
+python3 << 'PYTHON_SCRIPT'
+import sys
+sys.path.insert(0, '.')
+from lighting_cli.database import Database
+from lighting_cli.config import load_config
+from lighting_cli.fixer import DataFixer
+from lighting_cli.checker import DataChecker
+
+config = load_config()
+db = Database()
+session = db.get_session()
+
+checker = DataChecker(session, config)
+fixer = DataFixer(session, config)
+
+manual_wos = checker.get_failed_work_orders(error_category='manual')
+print(f"找到 {len(manual_wos)} 条待人工处理的工单:")
+for wo in manual_wos:
+    print(f"  - 工单ID: {wo.id}, 原始行号: {wo.original_line_number}, 错误: {wo.check_error}")
+print()
+
+fix_mapping = {
+    '缺少必填字段: location': ('location', '人民路_008'),
+    '缺少必填字段: issue_type': ('issue_type', 'lighting_failure'),
+    '无效的严重级别': ('severity', 'high'),
+}
+
+for wo in manual_wos:
+    errors = wo.check_error or ''
+    for err_key, (field, value) in fix_mapping.items():
+        if err_key in errors:
+            print(f"修正工单 {wo.id}: {field} = {value}")
+            fixer.fix_work_order(
+                wo.id, 
+                {field: value}, 
+                fixed_by='demo_script',
+                reason='演示脚本自动修正坏数据'
+            )
+
+session.close()
+PYTHON_SCRIPT
+echo ""
+
+echo "步骤 9: 重新校验 - 验证 3 条修正后全部通过"
+echo "------------------------"
+$PY_CMD check
+echo ""
+
+echo "步骤 10: 导入三类失败数据 - three_error_types.csv"
+echo "------------------------"
+$PY_CMD import hotline sample_data/three_error_types.csv --strategy ignore
+echo ""
+
+echo "步骤 11: 校验 - 验证三类失败分类"
+echo "------------------------"
+$PY_CMD check
+echo ""
+
+echo "步骤 12: 查看导入批次历史"
 echo "------------------------"
 $PY_CMD history --batches
 echo ""
 
-echo "步骤 9: 自动重试可重试失败任务"
+echo "步骤 13: 自动重试可重试失败任务"
 echo "------------------------"
 python3 << 'PYTHON_SCRIPT'
 import sys
@@ -77,68 +137,11 @@ print("模拟重试完成！")
 session.close()
 PYTHON_SCRIPT
 
-# 重新校验
+# 重新校验 - 验证三类失败可同时存在
 $PY_CMD check
 echo ""
 
-echo "步骤 10: 动态获取并修正待人工处理的工单"
-echo "------------------------"
-python3 << 'PYTHON_SCRIPT'
-import sys
-sys.path.insert(0, '.')
-from lighting_cli.database import Database
-from lighting_cli.config import load_config
-from lighting_cli.fixer import DataFixer
-from lighting_cli.checker import DataChecker
-
-config = load_config()
-db = Database()
-session = db.get_session()
-
-checker = DataChecker(session, config)
-fixer = DataFixer(session, config)
-
-manual_wos = checker.get_failed_work_orders(error_category='manual')
-
-print(f"找到 {len(manual_wos)} 条待人工处理的工单:")
-for wo in manual_wos:
-    print(f"  - 工单ID: {wo.id}, 位置: {wo.location}, 错误: {wo.check_error}")
-print()
-
-for wo in manual_wos:
-    errors = wo.check_error or ''
-    fixes = {}
-    
-    if '缺少必填字段: location' in errors:
-        fixes['location'] = f'修正路_{wo.pole_number or "000"}'
-        print(f"修正工单 {wo.id}: 补充 location = {fixes['location']}")
-    
-    if '缺少必填字段: issue_type' in errors:
-        fixes['issue_type'] = 'lighting_failure'
-        print(f"修正工单 {wo.id}: 补充 issue_type = {fixes['issue_type']}")
-    
-    if '无效的严重级别' in errors:
-        fixes['severity'] = 'high'
-        print(f"修正工单 {wo.id}: 修正 severity = {fixes['severity']}")
-    
-    if fixes:
-        fixer.fix_work_order(
-            wo.id, 
-            fixes, 
-            fixed_by='demo_script',
-            reason='演示脚本自动修正坏数据'
-        )
-
-session.close()
-PYTHON_SCRIPT
-echo ""
-
-echo "步骤 11: 重新校验数据"
-echo "------------------------"
-$PY_CMD check
-echo ""
-
-echo "步骤 12: 查看工单变更历史"
+echo "步骤 14: 查看工单变更历史"
 echo "------------------------"
 python3 << 'PYTHON_SCRIPT'
 import sys
@@ -167,12 +170,12 @@ session.close()
 PYTHON_SCRIPT
 echo ""
 
-echo "步骤 13: 生成巡检报告"
+echo "步骤 15: 生成巡检报告"
 echo "------------------------"
 $PY_CMD report --format txt
 echo ""
 
-echo "步骤 14: 导出数据为CSV"
+echo "步骤 16: 导出数据为CSV"
 echo "------------------------"
 $PY_CMD export --format csv
 echo ""
@@ -193,12 +196,20 @@ echo "   fact_id = MD5(location + road_section + pole_number + issue_type)"
 echo "   ✅ 同一位置+同一故障 → 同一事实（跨源合并）"
 echo "   ✅ 同一位置+不同故障 → 不同事实（独立工单）"
 echo ""
-echo "2. 三类失败分类（可验证）："
+echo "2. 坏数据人工处理闭环（可复现）："
+echo "   ✅ 导入 hotline_bad_data.csv → 3 条全部失败（原始行号 1/2/3）"
+echo "   ✅ 行1: 故障地点+路段为空 → 缺少必填字段: location → 人工修正"
+echo "   ✅ 行2: 故障类型为空 → 缺少必填字段: issue_type → 人工修正"
+echo "   ✅ 行3: 严重级别无效 → 无效的严重级别: invalid → 人工修正"
+echo "   ✅ 修正后重新校验 → 3 条全部通过"
+echo "   ✅ 与 README 中『缺少必填字段转人工』的验证说明一致"
+echo ""
+echo "3. 三类失败分类（可验证）："
 echo "   ✅ retryable: [EXTERNAL_PENDING]/[TIMEOUT] 标记 → 自动重试"
 echo "   ✅ manual: 缺少必填字段/无效值 → 待人工修正"
 echo "   ✅ permanent: 安全风险/数据损坏 → 永久失败"
 echo ""
-echo "3. 审计追踪：所有变更记录在 history 中可查"
+echo "4. 审计追踪：所有变更记录在 history 中可查"
 echo ""
-echo "4. 报告格式：原始行号 + 失败清单 + 修正指引"
+echo "5. 报告格式：原始行号 + 失败清单 + 修正指引"
 echo ""
