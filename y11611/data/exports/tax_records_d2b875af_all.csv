@@ -1,0 +1,24 @@
+TAX_YEAR,CATEGORY,AMOUNT_USD,COST_BASIS_USD,PROCEEDS_USD,GAIN_LOSS_USD,HOLDING_PERIOD,IS_FINALIZED,TX_ID,NOTES
+2024,expense,0.00,,,,,false,028686bb-ceee-4bb0-a85f-3d488a600a07,Expense to 0xCoNtRaCt0449525-9388-4f32-8c5c-1677cf
+2024,gas_fee,14.12,,,,,false,2d93f9d4-a575-4704-b77b-a097a669ed88,Gas fee for 0xa0e885012f834f29a4ed28639ecc3368
+2024,income,5152.37,,,,,false,2d93f9d4-a575-4704-b77b-a097a669ed88,Income from 0xDa0c7aBcDeFgHiJkLmNoPqRsTuVwXyZaSdFgHjKl
+2024,gas_fee,2.78,,,,,false,7f4745fb-a193-4da0-8bfa-7f03ea3ca1a7,Gas fee for 0xcf1323f3f79c4962b0f3eee5224ae7d0
+2024,expense,315.43,,,,,false,7f4745fb-a193-4da0-8bfa-7f03ea3ca1a7,Expense to 0xSeRvIcE1234567890PrOvIdErAaBcDeFgHiJkLmN
+2024,capital_gain,6.29,309.14,315.43,6.29,short_term,false,7f4745fb-a193-4da0-8bfa-7f03ea3ca1a7,FIFO disposal of 0.15 ETH
+2024,expense,0.00,,,,,false,b9cebfa4-c408-4e95-a857-b876a896a87d,Expense to 0xCoNtRaCt1e0f209-307b-4d41-b3bb-bcbfe4
+2024,capital_gain,0.00,0.00,0.00,0.00,short_term,false,b9cebfa4-c408-4e95-a857-b876a896a87d,FIFO disposal of 0 ETH
+2024,gas_fee,0.00,,,,,false,b36669e9-3fd3-4722-8388-7bf77560e522,Gas fee for 0x1e6a2142815043cf89a30697821b6cc7
+2024,income,5000.00,,,,,false,b36669e9-3fd3-4722-8388-7bf77560e522,Income from 0xAbCdEfGhIjKlMnOpQrStUvWxYz1234567890aBcD
+2024,expense,0.00,,,,,false,63a6cca9-55fc-4e7d-90ae-f4a91e10233a,Expense to 0xCoNtRaCt266aef3-a681-45be-a41c-fdac9c
+2024,capital_gain,0.00,0.00,0.00,0.00,short_term,false,63a6cca9-55fc-4e7d-90ae-f4a91e10233a,FIFO disposal of 0 ETH
+2024,gas_fee,0.00,,,,,false,441a2d69-3b0e-42fc-8dfb-cdb6da7dfdbf,Gas fee for 0xcaf2399efe894109a9a5768d16be67ae
+2024,expense,250.00,,,,,false,441a2d69-3b0e-42fc-8dfb-cdb6da7dfdbf,Expense to 0xNoDeSeRvEr9876543210AbCdEfGhIjKlMnOpQrS
+2024,capital_gain,0.00,250.00,250.00,0.00,short_term,false,441a2d69-3b0e-42fc-8dfb-cdb6da7dfdbf,FIFO disposal of 250 USDC
+2024,expense,0.00,,,,,false,34ef1d2d-f4f4-4f70-84c8-29970eb060a9,Expense to 0xCoNtRaCt32865f8-e43b-4588-899f-9d40d4
+2024,capital_gain,0.00,0.00,0.00,0.00,short_term,false,34ef1d2d-f4f4-4f70-84c8-29970eb060a9,FIFO disposal of 0 ETH
+2024,gas_fee,7.28,,,,,false,96accda7-2948-48bf-9e59-ce6f1a1a0b73,Gas fee for 0x6451f43965c448cd9c11daf123a9220b
+2024,income,2726.68,,,,,false,96accda7-2948-48bf-9e59-ce6f1a1a0b73,Income from 0xFeDcBa9876543210ZyXwVuTsRqPoNmLkJiHgFeD
+2024,expense,0.00,,,,,false,2de473e9-b4b2-44ea-a849-2e935eeec64b,Expense to 0xCoNtRaCt488843d-f7fc-4d14-b969-3a11a0
+2024,capital_gain,0.00,0.00,0.00,0.00,short_term,false,2de473e9-b4b2-44ea-a849-2e935eeec64b,FIFO disposal of 0 ETH
+2024,gas_fee,0.00,,,,,false,1320f987-ad6d-4c02-8f32-ff43d7074ebb,Gas fee for 0x83a5976a72c8449399298a788f53be6a
+2024,income,8000.00,,,,,false,1320f987-ad6d-4c02-8f32-ff43d7074ebb,Income from 0x111122223333444455556666777788889999AaAa

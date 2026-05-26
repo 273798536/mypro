@@ -1,0 +1,42 @@
+{
+  "name": "crypto-tax-ledger",
+  "version": "1.0.0",
+  "description": "加密钱包税务流水服务 - 链上收入整理与税务计算",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "ts-node src/cli.ts",
+    "seed": "ts-node src/cli.ts seed",
+    "process": "ts-node src/cli.ts process",
+    "report": "ts-node src/cli.ts report",
+    "check": "ts-node src/cli.ts check",
+    "list": "ts-node src/cli.ts list",
+    "export": "ts-node src/cli.ts export",
+    "prices": "ts-node src/cli.ts prices",
+    "merge": "ts-node src/cli.ts merge",
+    "clear": "ts-node src/cli.ts clear",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "crypto",
+    "tax",
+    "ledger",
+    "web3",
+    "accounting"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "csv-writer": "^1.6.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  }
+}

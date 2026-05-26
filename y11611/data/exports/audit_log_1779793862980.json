@@ -1,0 +1,748 @@
+[
+  {
+    "id": "b1ddb82f-e6a0-40f2-a180-b571a0f285cb",
+    "entityType": "tax_record",
+    "entityId": "397a6213-164a-4049-b364-92112ac6f8f7",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "8ee0f7c4-30c2-40db-bae6-3ec8f284ba96",
+    "entityType": "tax_record",
+    "entityId": "74ddda60-09f4-41e1-8833-4f7212876082",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "e40a5e2e-a3c7-463e-a4ca-23a2ac998b23",
+    "entityType": "tax_record",
+    "entityId": "749447aa-4207-4723-879e-b6e6912ef3e0",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "4ca8c234-8747-45fa-ac2d-30822305ba5d",
+    "entityType": "tax_record",
+    "entityId": "edfdaf8c-70b1-45de-aa40-32348b237906",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "2c1d4764-e847-4b69-b6dd-dd49d233f6de",
+    "entityType": "tax_record",
+    "entityId": "7d7aaec8-7396-492c-a803-871296f66231",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "ec4157aa-2e93-459c-b56a-016e4d9064e5",
+    "entityType": "tax_record",
+    "entityId": "d47e6537-6dfb-4635-af34-84eb6c219482",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "66ab701b-db18-4c95-87dc-834583cfd10f",
+    "entityType": "tax_record",
+    "entityId": "dbf7269f-7037-4ebf-83c2-f233855e2a5f",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "f803bcc7-e60e-4d17-84ce-fe9011205864",
+    "entityType": "tax_record",
+    "entityId": "bda76cb4-7aa7-4ebc-88ae-f10dda91b41f",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "4d589e84-a09f-4a9f-82ae-27f347f4f6dc",
+    "entityType": "tax_record",
+    "entityId": "b2c255ac-91ba-4f86-b2bb-e5dbf6b3820a",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "3edeeacb-b503-44f2-b5b3-0daab43e07bb",
+    "entityType": "tax_record",
+    "entityId": "8b34c83d-dfe8-4ffa-81b2-751fba817502",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "d28f1d36-06be-4132-b031-bd33cfbe919d",
+    "entityType": "tax_record",
+    "entityId": "07fbd6ff-7c1e-4c23-9f0f-1093a516a482",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "fe721547-ddb2-4cd7-bcdb-8695424e204a",
+    "entityType": "tax_record",
+    "entityId": "6468f498-9dd6-4048-9606-af78ef6d3fc3",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "9013ae46-0533-4d05-8f99-c9a711b38578",
+    "entityType": "tax_record",
+    "entityId": "882a60af-003a-4b6e-bac2-249277279117",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "6a49113b-f366-4b6d-a4b2-16728545ff74",
+    "entityType": "tax_record",
+    "entityId": "27a40484-a647-476c-ae28-a9abd2ae1377",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "3035d84b-2792-4420-b2a9-eecfd760b683",
+    "entityType": "tax_record",
+    "entityId": "7f47b87f-0cb9-48e3-9362-bc7b2c993e2e",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "3a868035-2d3c-4a46-b0f1-3be3c4c3d0cd",
+    "entityType": "tax_record",
+    "entityId": "56ad726e-6c0e-48d8-b2f2-64136432edac",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "394a9332-3f2a-4cc4-982b-8834bae69c26",
+    "entityType": "tax_record",
+    "entityId": "91737f7d-6d8c-44a0-9487-39bf371a7b46",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "e2055df4-81a9-4315-89a2-8e415deaa2fd",
+    "entityType": "tax_record",
+    "entityId": "78944d97-e069-480b-8b9f-4be40edd745d",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "ad19ddb9-80ad-4b82-b9d7-7b87128d1410",
+    "entityType": "tax_record",
+    "entityId": "11dfcabb-c292-4f79-8c82-0225938ab31e",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "2e1a6f50-9346-4f10-87b2-6936c573c68e",
+    "entityType": "tax_record",
+    "entityId": "7b3425b2-bd73-4f69-b418-69ce72b25a39",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "8dc56486-7a4c-47fa-a295-88d68d257006",
+    "entityType": "tax_record",
+    "entityId": "fbebc8f2-1708-4d28-adef-7bc56a962892",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "0bfe5a7d-ad49-4238-97e9-5d4d25cdbf24",
+    "entityType": "tax_record",
+    "entityId": "7034426d-e49c-45a3-afd9-6999ac27f88f",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "80a3db3b-d439-434e-b9f0-919a753e7f25",
+    "entityType": "tax_record",
+    "entityId": "f7550fe5-158c-4fb6-9e4d-0cedc5f1da0d",
+    "action": "create",
+    "reason": "auto_calculate",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.135Z"
+  },
+  {
+    "id": "01e0da7e-1ba4-4db9-b565-5178d2967e10",
+    "entityType": "transaction",
+    "entityId": "24925154-26f5-44e3-835f-c5ac99a3ebc0",
+    "action": "update",
+    "field": "isBridge",
+    "oldValue": false,
+    "newValue": true,
+    "reason": "auto_detected_bridge_transaction",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "0563721c-c278-447a-9969-a7e66c3eef73",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "update",
+    "field": "warnings",
+    "oldValue": [],
+    "newValue": [
+      "bridge_duplicate"
+    ],
+    "reason": "bridge_duplicate_detected",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "5f826858-4970-49cf-86c8-6c7e432a161f",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "update",
+    "field": "bridgePairId",
+    "newValue": "75916549-73a1-4a12-995e-ff03cac372f2_8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "reason": "bridge_duplicate_detected",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "b1e75bea-66c8-4a13-a837-041abc20ca95",
+    "entityType": "transaction",
+    "entityId": "8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "action": "update",
+    "field": "warnings",
+    "oldValue": [],
+    "newValue": [
+      "bridge_duplicate"
+    ],
+    "reason": "bridge_duplicate_detected",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "771c9c4e-95eb-402c-851f-1406df2bfa50",
+    "entityType": "transaction",
+    "entityId": "8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "action": "update",
+    "field": "bridgePairId",
+    "newValue": "75916549-73a1-4a12-995e-ff03cac372f2_8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "reason": "bridge_duplicate_detected",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "9e75de40-f60f-4930-95b7-b1ede29e1e1f",
+    "entityType": "transaction",
+    "entityId": "b36669e9-3fd3-4722-8388-7bf77560e522",
+    "action": "update",
+    "field": "priceUsdAtTime",
+    "newValue": 1,
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "b865eb0e-88e3-40b6-a546-0d22d0543fb2",
+    "entityType": "transaction",
+    "entityId": "b36669e9-3fd3-4722-8388-7bf77560e522",
+    "action": "update",
+    "field": "priceSource",
+    "newValue": "stablecoin_assumption",
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "03124e89-319b-485f-aabb-8dfa155ebbbf",
+    "entityType": "transaction",
+    "entityId": "1320f987-ad6d-4c02-8f32-ff43d7074ebb",
+    "action": "update",
+    "field": "priceUsdAtTime",
+    "newValue": 1,
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "b0f041a2-7dbd-4102-92ba-bdb9801f6f1e",
+    "entityType": "transaction",
+    "entityId": "1320f987-ad6d-4c02-8f32-ff43d7074ebb",
+    "action": "update",
+    "field": "priceSource",
+    "newValue": "stablecoin_assumption",
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "90c9a086-a2f5-4faf-b0ae-f5327c26107d",
+    "entityType": "transaction",
+    "entityId": "441a2d69-3b0e-42fc-8dfb-cdb6da7dfdbf",
+    "action": "update",
+    "field": "priceUsdAtTime",
+    "newValue": 1,
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "f0bd7393-ec1f-491d-85fc-c60132fe5ee8",
+    "entityType": "transaction",
+    "entityId": "441a2d69-3b0e-42fc-8dfb-cdb6da7dfdbf",
+    "action": "update",
+    "field": "priceSource",
+    "newValue": "stablecoin_assumption",
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "ca2604c2-a7f8-4fa4-b265-b51d382097c6",
+    "entityType": "transaction",
+    "entityId": "4c823ac0-7874-4b13-a756-37592c0ad21b",
+    "action": "update",
+    "field": "priceUsdAtTime",
+    "newValue": 1,
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "4b827180-f4db-455d-933b-9327c0fa5e3f",
+    "entityType": "transaction",
+    "entityId": "4c823ac0-7874-4b13-a756-37592c0ad21b",
+    "action": "update",
+    "field": "priceSource",
+    "newValue": "stablecoin_assumption",
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "eef4a1db-2b94-4506-a326-7b159248bc29",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "update",
+    "field": "priceUsdAtTime",
+    "newValue": 1,
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "0e20708d-91e3-4a4a-b62a-7f7682edce78",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "update",
+    "field": "priceSource",
+    "newValue": "stablecoin_assumption",
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "e0e43e0e-0f0c-46d3-9ba3-6f1c84fa7585",
+    "entityType": "transaction",
+    "entityId": "8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "action": "update",
+    "field": "priceUsdAtTime",
+    "newValue": 1,
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "61b429fc-dcf0-4c4f-b4db-cdcd6f529235",
+    "entityType": "transaction",
+    "entityId": "8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "action": "update",
+    "field": "priceSource",
+    "newValue": "stablecoin_assumption",
+    "reason": "price_filled",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "2a1bf478-f8c6-4c9c-8622-171ed94ac055",
+    "entityType": "transaction",
+    "entityId": "028686bb-ceee-4bb0-a85f-3d488a600a07",
+    "action": "update",
+    "field": "type",
+    "oldValue": "gas",
+    "newValue": "expense",
+    "reason": "auto_classified_income_expense",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "1bfa9156-a106-4ee6-a251-ca3b65798c08",
+    "entityType": "transaction",
+    "entityId": "b9cebfa4-c408-4e95-a857-b876a896a87d",
+    "action": "update",
+    "field": "type",
+    "oldValue": "gas",
+    "newValue": "expense",
+    "reason": "auto_classified_income_expense",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "d4fa4e04-eb78-4b01-a047-0d26b25461c6",
+    "entityType": "transaction",
+    "entityId": "63a6cca9-55fc-4e7d-90ae-f4a91e10233a",
+    "action": "update",
+    "field": "type",
+    "oldValue": "gas",
+    "newValue": "expense",
+    "reason": "auto_classified_income_expense",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "a044fe26-6707-43fb-bc56-2adf2485f099",
+    "entityType": "transaction",
+    "entityId": "34ef1d2d-f4f4-4f70-84c8-29970eb060a9",
+    "action": "update",
+    "field": "type",
+    "oldValue": "gas",
+    "newValue": "expense",
+    "reason": "auto_classified_income_expense",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "d09de5e5-a293-4c05-869b-93afa4b1318f",
+    "entityType": "transaction",
+    "entityId": "2de473e9-b4b2-44ea-a849-2e935eeec64b",
+    "action": "update",
+    "field": "type",
+    "oldValue": "gas",
+    "newValue": "expense",
+    "reason": "auto_classified_income_expense",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.129Z"
+  },
+  {
+    "id": "9747fbd5-f6cb-4adc-9187-9fbfbc1cf9a6",
+    "entityType": "transaction",
+    "entityId": "4c823ac0-7874-4b13-a756-37592c0ad21b",
+    "action": "update",
+    "field": "isInternal",
+    "oldValue": false,
+    "newValue": true,
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "226d4547-d817-4dfe-abd0-598f759c4348",
+    "entityType": "transaction",
+    "entityId": "4c823ac0-7874-4b13-a756-37592c0ad21b",
+    "action": "update",
+    "field": "type",
+    "oldValue": "transfer",
+    "newValue": "internal_transfer",
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "38d8326b-b607-4396-b95d-52c13ee8895d",
+    "entityType": "transaction",
+    "entityId": "d3997cc9-20ed-4333-bee4-a53c1b7163f9",
+    "action": "update",
+    "field": "isInternal",
+    "oldValue": false,
+    "newValue": true,
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "7de2347f-54ce-468d-b58a-137b3cf72f85",
+    "entityType": "transaction",
+    "entityId": "d3997cc9-20ed-4333-bee4-a53c1b7163f9",
+    "action": "update",
+    "field": "type",
+    "oldValue": "transfer",
+    "newValue": "internal_transfer",
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "3f0cb41a-e196-43a3-a5ff-3cdd876751d8",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "update",
+    "field": "isInternal",
+    "oldValue": false,
+    "newValue": true,
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "db8ae1c6-46ee-45f6-adee-7c5d966f3cac",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "update",
+    "field": "type",
+    "oldValue": "bridge",
+    "newValue": "internal_transfer",
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "c64345b7-b0dc-40dd-a902-7262e38e40ec",
+    "entityType": "transaction",
+    "entityId": "24925154-26f5-44e3-835f-c5ac99a3ebc0",
+    "action": "update",
+    "field": "isInternal",
+    "oldValue": false,
+    "newValue": true,
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "bc88e3af-9e42-4199-bde4-996e65f327a9",
+    "entityType": "transaction",
+    "entityId": "24925154-26f5-44e3-835f-c5ac99a3ebc0",
+    "action": "update",
+    "field": "type",
+    "oldValue": "exchange_withdraw",
+    "newValue": "internal_transfer",
+    "reason": "auto_detected_internal_transfer",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:10:15.128Z"
+  },
+  {
+    "id": "9c6cd2cb-45b4-4ed9-97a0-b7bac76f97d0",
+    "entityType": "transaction",
+    "entityId": "2d93f9d4-a575-4704-b77b-a097a669ed88",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "5dba313a-efc7-475f-b805-b63f2ea44a2b",
+    "entityType": "transaction",
+    "entityId": "b36669e9-3fd3-4722-8388-7bf77560e522",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "ea4bb922-a80c-41f3-b052-42a31d8bc1fe",
+    "entityType": "transaction",
+    "entityId": "96accda7-2948-48bf-9e59-ce6f1a1a0b73",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "d17c49d9-2148-459f-bd64-ad0d72a4458f",
+    "entityType": "transaction",
+    "entityId": "1320f987-ad6d-4c02-8f32-ff43d7074ebb",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "ca0dad15-21b5-4984-8fc9-7e06a4608988",
+    "entityType": "transaction",
+    "entityId": "7f4745fb-a193-4da0-8bfa-7f03ea3ca1a7",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "9c01d168-f2e3-443e-b9df-579da0d8c71c",
+    "entityType": "transaction",
+    "entityId": "441a2d69-3b0e-42fc-8dfb-cdb6da7dfdbf",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "3de705a7-8a5c-4dda-a0fd-8a0458951b54",
+    "entityType": "transaction",
+    "entityId": "4c823ac0-7874-4b13-a756-37592c0ad21b",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "c12a51e8-0fab-4bf0-a41b-88674f248c17",
+    "entityType": "transaction",
+    "entityId": "d3997cc9-20ed-4333-bee4-a53c1b7163f9",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "b53fdf4a-5a5c-4e61-b8dc-9d1309d6e4cc",
+    "entityType": "transaction",
+    "entityId": "75916549-73a1-4a12-995e-ff03cac372f2",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "c9f39638-d635-4600-8575-5e2aaa5265e1",
+    "entityType": "transaction",
+    "entityId": "8fb3e74f-81cc-4519-82a7-6fc2e3645157",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "b6c719e3-32fb-46b6-b2e0-f86e530f38a6",
+    "entityType": "transaction",
+    "entityId": "24925154-26f5-44e3-835f-c5ac99a3ebc0",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "4e65c4fc-d207-4e0a-a789-3755b5f36824",
+    "entityType": "transaction",
+    "entityId": "028686bb-ceee-4bb0-a85f-3d488a600a07",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "f2f20dca-cce5-4a10-81be-7f5b063e7bd4",
+    "entityType": "transaction",
+    "entityId": "b9cebfa4-c408-4e95-a857-b876a896a87d",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "feb13b29-c216-4091-8bbd-acea89aa536d",
+    "entityType": "transaction",
+    "entityId": "63a6cca9-55fc-4e7d-90ae-f4a91e10233a",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "fd8619a2-a28e-453c-9ec2-235bfd517af5",
+    "entityType": "transaction",
+    "entityId": "34ef1d2d-f4f4-4f70-84c8-29970eb060a9",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "db4299c3-fca5-455e-897f-737dae162f7f",
+    "entityType": "transaction",
+    "entityId": "2de473e9-b4b2-44ea-a849-2e935eeec64b",
+    "action": "create",
+    "reason": "import",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.250Z"
+  },
+  {
+    "id": "fcf8791c-ece5-4c48-a2cb-a2d5047dabbb",
+    "entityType": "address",
+    "entityId": "e1c42337-fce5-4010-8c78-a90732c66543",
+    "action": "create",
+    "reason": "create",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "id": "c3cbd80a-b74a-48d3-87b7-52acbb30f9cc",
+    "entityType": "address",
+    "entityId": "96919298-72cb-4096-ac4d-84a0f66b4ce8",
+    "action": "create",
+    "reason": "create",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "id": "83c02a16-53c4-4954-b531-3ae03f8608ea",
+    "entityType": "address",
+    "entityId": "a8b45a33-783d-442a-837a-9c6f83519fa1",
+    "action": "create",
+    "reason": "create",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "id": "593daef7-9598-4f9e-b984-9f1c187987c8",
+    "entityType": "address",
+    "entityId": "bf234d83-09a8-472c-8c3a-09d076bc46aa",
+    "action": "create",
+    "reason": "create",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "id": "6e16b3d7-8ed5-4d8b-9bea-80cac5425037",
+    "entityType": "address",
+    "entityId": "a8ed039d-62d0-44af-86bb-2e9a42603763",
+    "action": "create",
+    "reason": "create",
+    "operator": "system",
+    "timestamp": "2026-05-26T11:04:00.169Z"
+  }
+]

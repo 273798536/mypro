@@ -1,0 +1,53 @@
+[
+  {
+    "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f5bB12",
+    "chain": "ethereum",
+    "ownerId": "d2b875af-7e97-416e-9917-c95e66e85010",
+    "label": "主钱包",
+    "isExchange": false,
+    "id": "e1c42337-fce5-4010-8c78-a90732c66543",
+    "createdAt": "2026-05-26T11:04:00.169Z",
+    "updatedAt": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "address": "0x8A9c4d3e6f8a3b5c9d7e2f1a3b5c9d7e2f1a3b5c",
+    "chain": "ethereum",
+    "ownerId": "d2b875af-7e97-416e-9917-c95e66e85010",
+    "label": "备用钱包",
+    "isExchange": false,
+    "id": "96919298-72cb-4096-ac4d-84a0f66b4ce8",
+    "createdAt": "2026-05-26T11:04:00.169Z",
+    "updatedAt": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "address": "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+    "chain": "polygon",
+    "ownerId": "d2b875af-7e97-416e-9917-c95e66e85010",
+    "label": "Polygon热钱包",
+    "isExchange": false,
+    "id": "a8b45a33-783d-442a-837a-9c6f83519fa1",
+    "createdAt": "2026-05-26T11:04:00.169Z",
+    "updatedAt": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "address": "BNB1xQpYzMnKpLqRsTwVzXuYpAsDfGhJkL",
+    "chain": "bsc",
+    "ownerId": "d2b875af-7e97-416e-9917-c95e66e85010",
+    "label": "BSC钱包",
+    "isExchange": false,
+    "id": "bf234d83-09a8-472c-8c3a-09d076bc46aa",
+    "createdAt": "2026-05-26T11:04:00.169Z",
+    "updatedAt": "2026-05-26T11:04:00.169Z"
+  },
+  {
+    "address": "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1",
+    "chain": "ethereum",
+    "ownerId": "d2b875af-7e97-416e-9917-c95e66e85010",
+    "label": "Binance Deposit",
+    "isExchange": true,
+    "exchangeName": "Binance",
+    "id": "a8ed039d-62d0-44af-86bb-2e9a42603763",
+    "createdAt": "2026-05-26T11:04:00.169Z",
+    "updatedAt": "2026-05-26T11:04:00.169Z"
+  }
+]
