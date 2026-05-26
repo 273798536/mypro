@@ -11,6 +11,7 @@ export interface CheckReport {
   errorCount: number;
   warningCount: number;
   infoCount: number;
+  autoResolvedCount: number;
   results: CheckResult[];
 }
 
@@ -25,27 +26,84 @@ export class DataChecker {
 
   async runAllChecks(batchId?: string): Promise<CheckReport> {
     const contracts = await this.store.getContracts();
+    const newBatchId = batchId || uuidv4();
+    
+    const allOldUnresolved = await this.store.getCheckResults();
+    const oldUnresolved = allOldUnresolved.filter(r => !r.resolved && r.severity !== 'info');
+    
     const results: CheckResult[] = [];
 
     for (const contract of contracts) {
-      const contractResults = await this.checkContract(contract, batchId || uuidv4());
+      const contractResults = await this.checkContract(contract, newBatchId);
       results.push(...contractResults);
     }
+
+    const autoResolvedCount = await this.markFixedIssuesAsResolved(oldUnresolved, results);
 
     const errorCount = results.filter(r => r.severity === 'error').length;
     const warningCount = results.filter(r => r.severity === 'warning').length;
     const infoCount = results.filter(r => r.severity === 'info').length;
 
     return {
-      batchId: batchId || uuidv4(),
+      batchId: newBatchId,
       checkedAt: dayjs().toISOString(),
       checkedBy: this.user,
       totalChecks: results.length,
       errorCount,
       warningCount,
       infoCount,
+      autoResolvedCount,
       results,
     };
+  }
+
+  private getIssueFingerprint(result: CheckResult): string {
+    return [
+      result.contractNo,
+      result.checkType,
+      result.sourceField || '',
+      result.entityType || '',
+      result.entityId || '',
+      result.originalLineNo || '',
+    ].join('||');
+  }
+
+  private async markFixedIssuesAsResolved(
+    oldUnresolved: CheckResult[],
+    newResults: CheckResult[]
+  ): Promise<number> {
+    const newFingerprints = new Set(
+      newResults
+        .filter(r => r.severity !== 'info')
+        .map(r => this.getIssueFingerprint(r))
+    );
+
+    const store = await this.store.load();
+    let autoResolved = 0;
+    const now = dayjs().toISOString();
+
+    for (const oldResult of oldUnresolved) {
+      const fingerprint = this.getIssueFingerprint(oldResult);
+      if (!newFingerprints.has(fingerprint)) {
+        const idx = store.checkResults.findIndex(r => r.id === oldResult.id);
+        if (idx !== -1 && !store.checkResults[idx].resolved) {
+          store.checkResults[idx] = {
+            ...store.checkResults[idx],
+            resolved: true,
+            resolvedAt: now,
+            resolvedBy: this.user,
+            resolution: '重新校验后问题已自动解决（数据已修正）',
+          };
+          autoResolved++;
+        }
+      }
+    }
+
+    if (autoResolved > 0) {
+      await this.store.save(store);
+    }
+
+    return autoResolved;
   }
 
   private async checkContract(contract: Contract, batchId: string): Promise<CheckResult[]> {

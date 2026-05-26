@@ -103,8 +103,8 @@ program
         console.log(JSON.stringify(report, null, 2));
       } else {
         const summaryTable = new Table({
-          head: ['检查批次', '检查时间', '操作人', '总数', '错误', '警告', '信息'],
-          colWidths: [20, 25, 15, 10, 10, 10, 10],
+          head: ['检查批次', '检查时间', '操作人', '总数', '错误', '警告', '信息', '自动解决'],
+          colWidths: [20, 25, 15, 10, 10, 10, 10, 10],
         });
         summaryTable.push([
           report.batchId,
@@ -114,6 +114,7 @@ program
           chalk.red(report.errorCount.toString()),
           chalk.yellow(report.warningCount.toString()),
           chalk.blue(report.infoCount.toString()),
+          chalk.green((report.autoResolvedCount || 0).toString()),
         ]);
         console.log(summaryTable.toString());
 
@@ -238,6 +239,7 @@ program
   .command('report')
   .description('生成巡检报告')
   .option('-b, --batch <id>', '指定批次ID')
+  .option('--latest', '只显示最新批次的结果')
   .action(async (options) => {
     const opts = program.opts();
     try {
@@ -245,16 +247,25 @@ program
       const checker = new DataChecker(opts.workspace, opts.user);
 
       const contracts = await store.getContracts();
-      const errors = await checker.getChecksBySeverity('error', options.batch);
-      const warnings = await checker.getChecksBySeverity('warning', options.batch);
-      const batches = await store.getImportBatches();
+      const allBatches = await store.getImportBatches();
+      
+      let targetBatchId = options.batch;
+      if (options.latest && !targetBatchId) {
+        targetBatchId = allBatches[allBatches.length - 1]?.id;
+      }
+
+      const errors = await checker.getChecksBySeverity('error', targetBatchId);
+      const warnings = await checker.getChecksBySeverity('warning', targetBatchId);
+      const allChecks = await store.getCheckResults(targetBatchId);
+      const resolvedCount = allChecks.filter(c => c.resolved).length;
 
       if (opts.format === 'json') {
         console.log(JSON.stringify({
           contractCount: contracts.length,
           errorCount: errors.length,
           warningCount: warnings.length,
-          batchCount: batches.length,
+          resolvedCount,
+          batchCount: allBatches.length,
           errors,
           warnings,
         }, null, 2));
@@ -269,7 +280,8 @@ program
           ['合同总数', contracts.length],
           ['错误数', chalk.red(errors.length.toString())],
           ['警告数', chalk.yellow(warnings.length.toString())],
-          ['导入批次总数', batches.length]
+          ['已自动解决', chalk.green(resolvedCount.toString())],
+          ['导入批次总数', allBatches.length]
         );
         console.log(summaryTable.toString());
 
@@ -359,6 +371,8 @@ program
   .requiredOption('-t, --type <type>', '导出类型: check|contract|history|full')
   .option('-o, --output <dir>', '输出目录', './exports')
   .option('-c, --contract <no>', '合同编号(用于contract类型)')
+  .option('-b, --batch <id>', '批次ID(用于check类型)')
+  .option('--latest', '只导出最新批次数据(用于check类型)')
   .option('--format <format>', '文件格式: json|csv', 'json')
   .option('--raw', '包含原始数据')
   .action(async (options) => {
@@ -370,12 +384,19 @@ program
       let filePath: string;
 
       switch (options.type) {
-        case 'check':
+        case 'check': {
+          let targetBatchId = options.batch;
+          if (options.latest && !targetBatchId) {
+            const store = new DataStoreManager(opts.workspace);
+            const allBatches = await store.getImportBatches();
+            targetBatchId = allBatches[allBatches.length - 1]?.id;
+          }
           filePath = await exporter.exportCheckReport({
             format: options.format,
             outputDir,
-          });
+          }, targetBatchId);
           break;
+        }
         case 'contract':
           if (!options.contract) {
             console.error(chalk.red('✗ 请指定合同编号 -c'));
