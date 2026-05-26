@@ -1,0 +1,2 @@
+[console_scripts]
+invoice-finance = invoice_finance.cli:cli

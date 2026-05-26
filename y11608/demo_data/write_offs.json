@@ -1,0 +1,11 @@
+[
+  {
+    "id": "wo_001",
+    "source": "write_off_apply",
+    "apply_no": "WO202605001",
+    "invoice_id": "inv_001",
+    "amount": 30000.0,
+    "apply_date": "2026-05-23",
+    "created_by": "officer_zhang"
+  }
+]

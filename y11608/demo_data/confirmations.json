@@ -1,0 +1,45 @@
+[
+  {
+    "id": "conf_001",
+    "source": "buyer_confirm",
+    "invoice_id": "inv_001",
+    "buyer_name": "甲公司",
+    "confirmed_amount": 100000.0,
+    "status": "confirmed",
+    "confirmed_at": "2026-05-26T18:35:21.871279",
+    "created_by": "buyer_api"
+  },
+  {
+    "id": "conf_002",
+    "source": "buyer_confirm",
+    "invoice_id": "inv_002",
+    "buyer_name": "甲公司",
+    "confirmed_amount": 250000.0,
+    "status": "revoked",
+    "confirmed_at": "2026-05-25T18:35:21.871280",
+    "revoked_at": "2026-05-26T18:35:21.871283",
+    "revoker": "jia_manager",
+    "revocation_reason": "货物存在质量争议",
+    "created_by": "buyer_api"
+  },
+  {
+    "id": "conf_003",
+    "source": "buyer_confirm",
+    "invoice_id": "inv_004",
+    "buyer_name": "丙公司",
+    "confirmed_amount": 80000.0,
+    "status": "confirmed",
+    "confirmed_at": "2026-05-26T18:35:21.871284",
+    "created_by": "buyer_api"
+  },
+  {
+    "id": "conf_004",
+    "source": "buyer_confirm",
+    "invoice_id": "inv_005",
+    "buyer_name": "丁公司",
+    "confirmed_amount": 150000.0,
+    "status": "confirmed",
+    "confirmed_at": "2026-05-26T18:35:21.871285",
+    "created_by": "buyer_api"
+  }
+]

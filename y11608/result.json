@@ -1,0 +1,143 @@
+{
+  "report_type": "invoice_finance_occupation",
+  "generated_at": "2026-05-26T18:35:37.119630",
+  "summary": {
+    "total_invoices": 5,
+    "total_amount": 680000.0,
+    "unprocessed": {
+      "count": 0,
+      "amount": 0.0
+    },
+    "corrected": {
+      "count": 2,
+      "amount": 230000.0
+    },
+    "need_manual": {
+      "count": 2,
+      "amount": 350000.0
+    },
+    "normal": {
+      "count": 1,
+      "amount": 100000.0
+    },
+    "total_risk_alerts": 3,
+    "risk_breakdown": {
+      "buyer_revoked": 1,
+      "duplicate_pledge": 1,
+      "invoice_invalid": 1
+    }
+  },
+  "details": [
+    {
+      "invoice_id": "inv_001",
+      "invoice_no": "INV202605001",
+      "invoice_amount": 100000.0,
+      "occupied_amount": 100000.0,
+      "available_amount": 0.0,
+      "status": "normal",
+      "notes": [
+        "部分回款: 已回50000.00, 未回50000.00"
+      ],
+      "risk_alerts": [],
+      "corrections": []
+    },
+    {
+      "invoice_id": "inv_002",
+      "invoice_no": "INV202605002",
+      "invoice_amount": 250000.0,
+      "occupied_amount": 0.0,
+      "available_amount": 250000.0,
+      "status": "need_manual",
+      "notes": [
+        "存在高风险，需人工确认"
+      ],
+      "risk_alerts": [
+        {
+          "alert_id": "alert_ffd0d248",
+          "risk_type": "buyer_revoked",
+          "severity": "high",
+          "message": "买方已撤销确认：撤销人=jia_manager，原因=货物存在质量争议",
+          "details": {
+            "revoked_at": "2026-05-26T18:35:21.871283",
+            "revoker": "jia_manager",
+            "reason": "货物存在质量争议"
+          }
+        }
+      ],
+      "corrections": []
+    },
+    {
+      "invoice_id": "inv_003",
+      "invoice_no": "INV202605001",
+      "invoice_amount": 100000.0,
+      "occupied_amount": 0.0,
+      "available_amount": 100000.0,
+      "status": "need_manual",
+      "notes": [
+        "存在高风险，需人工确认"
+      ],
+      "risk_alerts": [
+        {
+          "alert_id": "alert_08b74a45",
+          "risk_type": "duplicate_pledge",
+          "severity": "high",
+          "message": "发票重复质押警告：该发票号码已在 1 笔业务中使用",
+          "details": {
+            "duplicate_invoice_ids": [
+              "inv_001"
+            ],
+            "invoice_no": "INV202605001"
+          }
+        }
+      ],
+      "corrections": []
+    },
+    {
+      "invoice_id": "inv_004",
+      "invoice_no": "INV202605003",
+      "invoice_amount": 80000.0,
+      "occupied_amount": 80000.0,
+      "available_amount": 0.0,
+      "status": "corrected",
+      "notes": [
+        "系统自动修正了部分问题"
+      ],
+      "risk_alerts": [
+        {
+          "alert_id": "alert_98e8e570",
+          "risk_type": "invoice_invalid",
+          "severity": "medium",
+          "message": "发票尚未完成验真",
+          "details": {
+            "status": "pending"
+          }
+        }
+      ],
+      "corrections": []
+    },
+    {
+      "invoice_id": "inv_005",
+      "invoice_no": "INV202605004",
+      "invoice_amount": 150000.0,
+      "occupied_amount": 150000.0,
+      "available_amount": 0.0,
+      "status": "corrected",
+      "notes": [
+        "存在1条修正记录"
+      ],
+      "risk_alerts": [],
+      "corrections": [
+        {
+          "trace_id": "trace_001",
+          "field_name": "amount",
+          "old_value": "160000.0",
+          "new_value": "150000.0",
+          "operator": "wang_wu",
+          "operated_at": "2026-05-26T18:35:21.871277",
+          "reason": "发票金额录入错误，实际为15万",
+          "source": "manual_correction"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "inv_001",
+    "source": "invoice_system",
+    "invoice_no": "INV202605001",
+    "invoice_code": "001100100111",
+    "amount": 100000.0,
+    "invoice_date": "2026-04-26",
+    "buyer_name": "甲公司",
+    "seller_name": "乙公司",
+    "status": "verified",
+    "verified_at": "2026-05-26T18:35:21.871249",
+    "verified_by": "zhang_san",
+    "created_by": "system"
+  },
+  {
+    "id": "inv_002",
+    "source": "invoice_system",
+    "invoice_no": "INV202605002",
+    "invoice_code": "001100100111",
+    "amount": 250000.0,
+    "invoice_date": "2026-05-01",
+    "buyer_name": "甲公司",
+    "seller_name": "乙公司",
+    "status": "verified",
+    "verified_at": "2026-05-26T18:35:21.871270",
+    "verified_by": "zhang_san",
+    "created_by": "system"
+  },
+  {
+    "id": "inv_003",
+    "source": "invoice_system",
+    "invoice_no": "INV202605001",
+    "invoice_code": "001100100111",
+    "amount": 100000.0,
+    "invoice_date": "2026-04-26",
+    "buyer_name": "甲公司",
+    "seller_name": "乙公司",
+    "status": "verified",
+    "verified_at": "2026-05-26T18:35:21.871273",
+    "verified_by": "li_si",
+    "created_by": "system"
+  },
+  {
+    "id": "inv_004",
+    "source": "invoice_system",
+    "invoice_no": "INV202605003",
+    "invoice_code": "001100100111",
+    "amount": 80000.0,
+    "invoice_date": "2026-05-06",
+    "buyer_name": "丙公司",
+    "seller_name": "乙公司",
+    "status": "pending",
+    "created_by": "system"
+  },
+  {
+    "id": "inv_005",
+    "source": "invoice_system",
+    "invoice_no": "INV202605004",
+    "invoice_code": "001100100111",
+    "amount": 150000.0,
+    "invoice_date": "2026-05-11",
+    "buyer_name": "丁公司",
+    "seller_name": "乙公司",
+    "status": "verified",
+    "verified_at": "2026-05-26T18:35:21.871276",
+    "verified_by": "zhang_san",
+    "created_by": "system",
+    "corrections": [
+      {
+        "trace_id": "trace_001",
+        "field_name": "amount",
+        "old_value": 160000.0,
+        "new_value": 150000.0,
+        "operator": "wang_wu",
+        "operated_at": "2026-05-26T18:35:21.871277",
+        "reason": "发票金额录入错误，实际为15万",
+        "source": "manual_correction"
+      }
+    ]
+  }
+]
