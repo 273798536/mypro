@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: petty-cash-audit
+Version: 0.1.0
+Summary: 备用金报销抽检 CLI - 规则扫描 / 风险打分 / 报告输出
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.1.0
+Requires-Dist: rich>=13.0.0

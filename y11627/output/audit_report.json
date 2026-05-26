@@ -1,0 +1,185 @@
+{
+  "summary": {
+    "reimbursement_count": 8,
+    "invoice_count": 9,
+    "loan_count": 6,
+    "project_count": 3,
+    "approver_count": 3,
+    "risk_score": 100.0
+  },
+  "sample_ids": [
+    "BX202401005",
+    "BX202401004",
+    "BX202401001",
+    "BX202401006",
+    "BX202401007"
+  ],
+  "total_findings": 9,
+  "by_status": {
+    "unhandled": 9,
+    "corrected": 0,
+    "manual_review": 0
+  },
+  "findings": [
+    {
+      "rule_id": "R001",
+      "rule_name": "同票据重复",
+      "severity": "高",
+      "description": "票据号 FP2024001 在 2 张报销单中重复出现，涉及报销单: BX202401005, BX202401001",
+      "status": "未处理",
+      "sources": [
+        "invoices.csv:invoices:L2",
+        "invoices.csv:invoices:L6"
+      ],
+      "data_refs": {
+        "invoice_no": "FP2024001",
+        "duplicate_count": 2,
+        "reimburse_ids": [
+          "BX202401005",
+          "BX202401001"
+        ]
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R002",
+      "rule_name": "借款未核销",
+      "severity": "高",
+      "description": "借款人 张三 的借款 JK2024001 (金额 ¥5,000.00) 至今未核销，对应报销单 BX202401001",
+      "status": "未处理",
+      "sources": [
+        "loans.csv:loans:L2"
+      ],
+      "data_refs": {
+        "loan_id": "JK2024001",
+        "borrower": "张三",
+        "amount": 5000.0,
+        "reimburse_id": "BX202401001"
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R002",
+      "rule_name": "借款未核销",
+      "severity": "高",
+      "description": "借款人 赵六 的借款 JK2024004 (金额 ¥2,500.00) 至今未核销，对应报销单 BX202401004",
+      "status": "未处理",
+      "sources": [
+        "loans.csv:loans:L5"
+      ],
+      "data_refs": {
+        "loan_id": "JK2024004",
+        "borrower": "赵六",
+        "amount": 2500.0,
+        "reimburse_id": "BX202401004"
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R002",
+      "rule_name": "借款未核销",
+      "severity": "高",
+      "description": "借款人 周八 的借款 JK2024006 (金额 ¥10,000.00) 至今未核销，对应报销单 BX202401007",
+      "status": "未处理",
+      "sources": [
+        "loans.csv:loans:L7"
+      ],
+      "data_refs": {
+        "loan_id": "JK2024006",
+        "borrower": "周八",
+        "amount": 10000.0,
+        "reimburse_id": "BX202401007"
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R003",
+      "rule_name": "审批人越权",
+      "severity": "严重",
+      "description": "报销单 BX202401003 金额 ¥15,000.00 超出审批人 李经理 (级别 1) 的审批权限 ¥5,000.00",
+      "status": "未处理",
+      "sources": [
+        "reimbursements.csv:reimbursements:L4",
+        "approvers.csv:approvers:L2"
+      ],
+      "data_refs": {
+        "reimburse_id": "BX202401003",
+        "approver": "李经理",
+        "approver_level": 1,
+        "amount": 15000.0,
+        "max_amount": 5000.0,
+        "overage": 10000.0
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R003",
+      "rule_name": "审批人越权",
+      "severity": "严重",
+      "description": "报销单 BX202401007 金额 ¥9,800.00 超出审批人 李经理 (级别 1) 的审批权限 ¥5,000.00",
+      "status": "未处理",
+      "sources": [
+        "reimbursements.csv:reimbursements:L8",
+        "approvers.csv:approvers:L2"
+      ],
+      "data_refs": {
+        "reimburse_id": "BX202401007",
+        "approver": "李经理",
+        "approver_level": 1,
+        "amount": 9800.0,
+        "max_amount": 5000.0,
+        "overage": 4800.0
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R004",
+      "rule_name": "票据金额与报销单金额不一致",
+      "severity": "中",
+      "description": "报销单 BX202401005 票据合计 ¥7,500.00 与报销金额 ¥4,200.00 不一致",
+      "status": "未处理",
+      "sources": [
+        "reimbursements.csv:reimbursements:L6",
+        "invoices.csv:invoices:L6",
+        "invoices.csv:invoices:L7"
+      ],
+      "data_refs": {
+        "reimburse_id": "BX202401005",
+        "invoice_total": 7500.0,
+        "reimburse_amount": 4200.0,
+        "diff": 3300.0
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R005",
+      "rule_name": "报销单无对应票据",
+      "severity": "中",
+      "description": "报销单 BX202401004 未找到对应票据",
+      "status": "未处理",
+      "sources": [
+        "reimbursements.csv:reimbursements:L5"
+      ],
+      "data_refs": {
+        "reimburse_id": "BX202401004",
+        "amount": 2500.0
+      },
+      "correction_note": ""
+    },
+    {
+      "rule_id": "R006",
+      "rule_name": "项目编码不存在",
+      "severity": "中",
+      "description": "报销单 BX202401006 引用的项目编码 PRJ-004 未在项目清单中登记",
+      "status": "未处理",
+      "sources": [
+        "reimbursements.csv:reimbursements:L7"
+      ],
+      "data_refs": {
+        "reimburse_id": "BX202401006",
+        "project_code": "PRJ-004"
+      },
+      "correction_note": ""
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+[console_scripts]
+pcaudit = petty_cash_audit.cli:main

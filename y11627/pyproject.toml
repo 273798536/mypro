@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "petty-cash-audit"
+version = "0.1.0"
+description = "备用金报销抽检 CLI - 规则扫描 / 风险打分 / 报告输出"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+pcaudit = "petty_cash_audit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
