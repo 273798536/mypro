@@ -110,18 +110,31 @@ router.post(
   }
 );
 
-router.get(
-  '/:id',
+router.post(
+  '/trigger-process',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const item = await retryQueueService.getById(req.params.id);
-      if (!item) {
-        throw new AppError('重试项不存在', 404);
-      }
+      const result = await retryQueueService.processPendingItems();
 
       res.json({
         success: true,
-        data: item,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  '/statistics/summary',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const stats = await retryQueueService.getStatistics();
+
+      res.json({
+        success: true,
+        data: stats,
       });
     } catch (error) {
       next(error);
@@ -246,30 +259,17 @@ router.post(
 );
 
 router.get(
-  '/statistics/summary',
+  '/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const stats = await retryQueueService.getStatistics();
+      const item = await retryQueueService.getById(req.params.id);
+      if (!item) {
+        throw new AppError('重试项不存在', 404);
+      }
 
       res.json({
         success: true,
-        data: stats,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-router.post(
-  '/trigger-process',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await retryQueueService.processPendingItems();
-
-      res.json({
-        success: true,
-        data: result,
+        data: item,
       });
     } catch (error) {
       next(error);

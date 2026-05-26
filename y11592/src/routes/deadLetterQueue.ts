@@ -49,17 +49,14 @@ router.get(
 );
 
 router.get(
-  '/:id',
+  '/statistics/summary',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const item = await deadLetterQueueService.getById(req.params.id);
-      if (!item) {
-        throw new AppError('死信项不存在', 404);
-      }
+      const stats = await deadLetterQueueService.getStatistics();
 
       res.json({
         success: true,
-        data: item,
+        data: stats,
       });
     } catch (error) {
       next(error);
@@ -113,14 +110,17 @@ router.post(
 );
 
 router.get(
-  '/statistics/summary',
+  '/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const stats = await deadLetterQueueService.getStatistics();
+      const item = await deadLetterQueueService.getById(req.params.id);
+      if (!item) {
+        throw new AppError('死信项不存在', 404);
+      }
 
       res.json({
         success: true,
-        data: stats,
+        data: item,
       });
     } catch (error) {
       next(error);
