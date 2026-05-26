@@ -250,8 +250,8 @@ async function updateDraft(orderId, data, operator) {
     throw new Error('变更单不存在');
   }
 
-  if (changeOrder.status !== 'DRAFT') {
-    throw new Error('只有草稿状态可以编辑');
+  if (changeOrder.status !== 'DRAFT' && changeOrder.status !== 'REJECTED') {
+    throw new Error(`当前状态 ${changeOrder.status} 不允许编辑，只有草稿(DRAFT)或已驳回(REJECTED)状态可以编辑`);
   }
 
   const beforeData = changeOrder.toJSON();

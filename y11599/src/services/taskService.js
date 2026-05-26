@@ -151,9 +151,14 @@ async function importChangeOrders(items, batchId, batchStrategy = BATCH_STRATEGI
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     try {
-      const existing = await ChangeOrder.findOne({
-        where: { orderNo: item.orderNo }
-      });
+      const hasOrderNo = !!item.orderNo;
+      let existing = null;
+
+      if (hasOrderNo) {
+        existing = await ChangeOrder.findOne({
+          where: { orderNo: item.orderNo }
+        });
+      }
 
       if (existing) {
         if (batchStrategy === BATCH_STRATEGIES.IGNORE) {
@@ -212,7 +217,7 @@ async function importChangeOrders(items, batchId, batchStrategy = BATCH_STRATEGI
       }
     } catch (error) {
       results.failed.push({
-        orderNo: item.orderNo,
+        orderNo: item.orderNo || `item-${i}`,
         error: error.message
       });
     }
@@ -231,13 +236,17 @@ async function importReferenceRecords(items, batchId, batchStrategy = BATCH_STRA
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     try {
+      const hasRecordNo = !!item.recordNo;
       const recordNo = item.recordNo || generateRecordNo('REF');
       
-      const existing = await ReferenceRecord.findOne({
-        where: { recordNo: item.recordNo }
-      });
+      let existing = null;
+      if (hasRecordNo) {
+        existing = await ReferenceRecord.findOne({
+          where: { recordNo: item.recordNo }
+        });
+      }
 
-      if (existing && item.recordNo) {
+      if (existing) {
         if (batchStrategy === BATCH_STRATEGIES.IGNORE) {
           results.skipped.push({
             recordNo: item.recordNo,
@@ -280,7 +289,7 @@ async function importReferenceRecords(items, batchId, batchStrategy = BATCH_STRA
       }
     } catch (error) {
       results.failed.push({
-        recordNo: item.recordNo,
+        recordNo: item.recordNo || `item-${i}`,
         error: error.message
       });
     }
@@ -433,7 +442,20 @@ async function processTask(taskId) {
       skippedCount: results.skipped.length
     });
 
-    await completeTask(taskId, results);
+    if (results.failed.length === 0) {
+      await completeTask(taskId, results);
+    } else if (results.success.length === 0 && results.skipped.length === 0) {
+      await markTaskFailedPermanent(
+        taskId,
+        new Error(`全部 ${results.failed.length} 条记录处理失败`),
+        '所有条目处理失败'
+      );
+    } else {
+      await completeTask(taskId, {
+        ...results,
+        warning: `部分失败：成功 ${results.success.length} 条，失败 ${results.failed.length} 条`
+      });
+    }
 
     return { success: true, results };
   } catch (error) {
