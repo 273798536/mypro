@@ -1,0 +1,338 @@
+{
+  "enterprises": [
+    {
+      "enterprise_code": "ENT001",
+      "name": "上海华瑞新能源科技有限公司",
+      "credit_code": "91310000MA1FL0001A",
+      "account_id": "ACCT-001",
+      "initial_balance": 50000.0000
+    },
+    {
+      "enterprise_code": "ENT002",
+      "name": "苏州绿源环保材料股份有限公司",
+      "credit_code": "91320500MA2FL0002B",
+      "account_id": "ACCT-002",
+      "initial_balance": 32000.0000
+    },
+    {
+      "enterprise_code": "ENT003",
+      "name": "杭州清源节能设备有限公司",
+      "credit_code": "91330100MA3FL0003C",
+      "account_id": "ACCT-003",
+      "initial_balance": 18500.0000
+    }
+  ],
+  "readings": [
+    {
+      "enterprise_code": "ENT001",
+      "reading_date": "2025-04-01",
+      "energy_type": "electricity",
+      "value": 12500.5000,
+      "unit": "kWh",
+      "source": "smart_meter_01"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "reading_date": "2025-04-15",
+      "energy_type": "electricity",
+      "value": 8300.2500,
+      "unit": "kWh",
+      "source": "smart_meter_01"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "reading_date": "2025-04-30",
+      "energy_type": "electricity",
+      "value": 15200.0000,
+      "unit": "kWh",
+      "source": "smart_meter_01"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "reading_date": "2025-05-02",
+      "energy_type": "electricity",
+      "value": 15200.0000,
+      "unit": "kWh",
+      "source": "smart_meter_01"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "reading_date": "2025-04-10",
+      "energy_type": "gas",
+      "value": 3200.0000,
+      "unit": "m³",
+      "source": "gas_meter_02"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "reading_date": "2025-04-25",
+      "energy_type": "gas",
+      "value": 4100.5000,
+      "unit": "m³",
+      "source": "gas_meter_02"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "reading_date": "2025-04-05",
+      "energy_type": "steam",
+      "value": 850.7500,
+      "unit": "ton",
+      "source": "steam_meter_03"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "reading_date": "2025-04-20",
+      "energy_type": "steam",
+      "value": 920.3000,
+      "unit": "ton",
+      "source": "steam_meter_03"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "reading_date": "2025-04-30",
+      "energy_type": "steam",
+      "value": 880.0000,
+      "unit": "ton",
+      "source": "steam_meter_03"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "reading_date": "2025-04-30",
+      "energy_type": "steam",
+      "value": 880.0000,
+      "unit": "ton",
+      "source": "steam_meter_03"
+    }
+  ],
+  "credits": [
+    {
+      "enterprise_code": "ENT001",
+      "transaction_no": "TXN20250401001",
+      "credit_type": "carbon_credit",
+      "amount": 15000.0000,
+      "direction": "in",
+      "transaction_date": "2025-04-05",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "transaction_no": "TXN20250401001",
+      "credit_type": "carbon_credit",
+      "amount": 15000.0000,
+      "direction": "in",
+      "transaction_date": "2025-04-05",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "transaction_no": "TXN20250415002",
+      "credit_type": "carbon_offset",
+      "amount": 8500.0000,
+      "direction": "out",
+      "transaction_date": "2025-04-15",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "transaction_no": "TXN20250410003",
+      "credit_type": "carbon_credit",
+      "amount": 12000.0000,
+      "direction": "in",
+      "transaction_date": "2025-04-10",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "transaction_no": "TXN20250425004",
+      "credit_type": "carbon_offset",
+      "amount": 5600.0000,
+      "direction": "out",
+      "transaction_date": "2025-04-25",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "transaction_no": "TXN20250405005",
+      "credit_type": "carbon_credit",
+      "amount": 6800.0000,
+      "direction": "in",
+      "transaction_date": "2025-04-05",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "transaction_no": "TXN20250420006",
+      "credit_type": "carbon_credit",
+      "amount": 4200.0000,
+      "direction": "in",
+      "transaction_date": "2025-04-20",
+      "source": "carbon_exchange"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "transaction_no": "TXN20250428007",
+      "credit_type": "carbon_offset",
+      "amount": 3100.0000,
+      "direction": "out",
+      "transaction_date": "2025-04-28",
+      "source": "carbon_exchange"
+    }
+  ],
+  "invoices": [
+    {
+      "enterprise_code": "ENT001",
+      "invoice_no": "INV20250405001",
+      "amount": 15000.0000,
+      "issue_date": "2025-04-05",
+      "is_red_flush": false,
+      "tax_amount": 900.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "invoice_no": "INV20250415002",
+      "amount": 8500.0000,
+      "issue_date": "2025-04-15",
+      "is_red_flush": false,
+      "tax_amount": 510.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "invoice_no": "INV20250420003",
+      "amount": 5000.0000,
+      "issue_date": "2025-04-20",
+      "is_red_flush": false,
+      "tax_amount": 300.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "invoice_no": "INV20250422004",
+      "amount": -5000.0000,
+      "issue_date": "2025-04-22",
+      "is_red_flush": true,
+      "original_invoice_no": "INV20250420003",
+      "tax_amount": -300.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "invoice_no": "INV20250410005",
+      "amount": 12000.0000,
+      "issue_date": "2025-04-10",
+      "is_red_flush": false,
+      "tax_amount": 720.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "invoice_no": "INV20250425006",
+      "amount": 5600.0000,
+      "issue_date": "2025-04-25",
+      "is_red_flush": false,
+      "tax_amount": 336.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "invoice_no": "INV20250405007",
+      "amount": 6800.0000,
+      "issue_date": "2025-04-05",
+      "is_red_flush": false,
+      "tax_amount": 408.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "invoice_no": "INV20250420008",
+      "amount": 4200.0000,
+      "issue_date": "2025-04-20",
+      "is_red_flush": false,
+      "tax_amount": 252.0000,
+      "source": "invoice_system"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "invoice_no": "INV20250428009",
+      "amount": 3100.0000,
+      "issue_date": "2025-04-28",
+      "is_red_flush": false,
+      "tax_amount": 186.0000,
+      "source": "invoice_system"
+    }
+  ],
+  "receipts": [
+    {
+      "enterprise_code": "ENT001",
+      "receipt_no": "RCP20250405001",
+      "amount": 15000.0000,
+      "receipt_date": "2025-04-05",
+      "source": "payment_gateway"
+    },
+    {
+      "enterprise_code": "ENT001",
+      "receipt_no": "RCP20250415002",
+      "amount": 8500.0000,
+      "receipt_date": "2025-04-15",
+      "source": "payment_gateway"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "receipt_no": "RCP20250410003",
+      "amount": 12000.0000,
+      "receipt_date": "2025-04-10",
+      "source": "payment_gateway"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "receipt_no": "RCP20250405004",
+      "amount": 6800.0000,
+      "receipt_date": "2025-04-05",
+      "source": "payment_gateway"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "receipt_no": "RCP20250420005",
+      "amount": 4200.0000,
+      "receipt_date": "2025-04-20",
+      "source": "payment_gateway"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "receipt_no": "RCP20250428006",
+      "amount": 3100.0000,
+      "receipt_date": "2025-04-28",
+      "source": "payment_gateway"
+    }
+  ],
+  "clearing": [
+    {
+      "enterprise_code": "ENT001",
+      "period": "2025-04",
+      "opening_balance": 50000.0000,
+      "total_in": 15000.0000,
+      "total_out": 8500.0000,
+      "closing_balance": 56500.0000,
+      "remark": "企业申报值，未考虑红冲"
+    },
+    {
+      "enterprise_code": "ENT002",
+      "period": "2025-04",
+      "opening_balance": 32000.0000,
+      "total_in": 12000.0000,
+      "total_out": 5600.0000,
+      "closing_balance": 38400.0000,
+      "remark": "企业申报值"
+    },
+    {
+      "enterprise_code": "ENT003",
+      "period": "2025-04",
+      "opening_balance": 18500.0000,
+      "total_in": 11000.0000,
+      "total_out": 3100.0000,
+      "closing_balance": 26400.0000,
+      "remark": "企业申报值"
+    }
+  ]
+}

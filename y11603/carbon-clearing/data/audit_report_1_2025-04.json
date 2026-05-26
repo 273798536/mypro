@@ -1,0 +1,93 @@
+{
+  "reconciliation_id": 1,
+  "period": "2025-04",
+  "generated_at": "2026-05-26T18:01:43.178715",
+  "summary": {
+    "total_enterprises": 3,
+    "anomalies_found": 4,
+    "critical_open": 1,
+    "warning_open": 3,
+    "resolved": 0,
+    "status": "completed"
+  },
+  "items": [
+    {
+      "enterprise_code": "ENT001",
+      "enterprise_name": "上海华瑞新能源科技有限公司",
+      "opening_balance": 50000.0,
+      "period_in": 30000.0,
+      "period_out": 8500.0,
+      "red_flush_adjustment": -5000.0,
+      "calculated_closing": 66500.0,
+      "reported_closing": 56500.0,
+      "balance_diff": 10000.0,
+      "cross_month_readings": 0,
+      "duplicate_credits": 0,
+      "red_flush_unapplied": 0,
+      "receipts_unverified": 0,
+      "has_anomaly": true
+    },
+    {
+      "enterprise_code": "ENT002",
+      "enterprise_name": "苏州绿源环保材料股份有限公司",
+      "opening_balance": 32000.0,
+      "period_in": 12000.0,
+      "period_out": 5600.0,
+      "red_flush_adjustment": 0.0,
+      "calculated_closing": 38400.0,
+      "reported_closing": 38400.0,
+      "balance_diff": 0.0,
+      "cross_month_readings": 0,
+      "duplicate_credits": 0,
+      "red_flush_unapplied": 0,
+      "receipts_unverified": 0,
+      "has_anomaly": false
+    },
+    {
+      "enterprise_code": "ENT003",
+      "enterprise_name": "杭州清源节能设备有限公司",
+      "opening_balance": 18500.0,
+      "period_in": 11000.0,
+      "period_out": 3100.0,
+      "red_flush_adjustment": 0.0,
+      "calculated_closing": 26400.0,
+      "reported_closing": 26400.0,
+      "balance_diff": 0.0,
+      "cross_month_readings": 2,
+      "duplicate_credits": 0,
+      "red_flush_unapplied": 0,
+      "receipts_unverified": 0,
+      "has_anomaly": true
+    }
+  ],
+  "anomalies": [
+    {
+      "id": 1,
+      "type": "DUPLICATE_CREDIT",
+      "severity": "critical",
+      "description": "积分流水重复：流水号TXN20250401001，金额15000.0000，日期2025-04-05",
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "type": "CROSS_MONTH_READING",
+      "severity": "warning",
+      "description": "跨月读数未调整：日期2025-04-30，类型steam，值880.0000，备注：同日存在多条读数，可能跨月归集异常，共2条",
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "type": "CROSS_MONTH_READING",
+      "severity": "warning",
+      "description": "跨月读数未调整：日期2025-04-30，类型steam，值880.0000，备注：同日存在多条读数，可能跨月归集异常，共2条",
+      "status": "open"
+    },
+    {
+      "id": 4,
+      "type": "BALANCE_MISMATCH",
+      "severity": "warning",
+      "description": "余额差异：计算值66500.0000，申报值56500.0000，差额10000.0000",
+      "status": "open"
+    }
+  ]
+}
