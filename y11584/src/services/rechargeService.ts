@@ -4,6 +4,7 @@ import db from '../database';
 import { RecordStatus, RoleType, RecordType } from '../database/schema';
 import { logAuditTrail } from './auditService';
 import { saveFailedRecord } from './failedRecordService';
+import { validateStateTransition, ActionType } from './stateMachine';
 
 export interface RechargeRecordInput {
   orderNo: string;
@@ -136,7 +137,7 @@ function checkDuplicateOrder(orderNo: string): Promise<boolean> {
 
 export async function updateRechargeStatus(
   id: string,
-  action: 'submit' | 'reject' | 'confirm' | 'audit',
+  action: ActionType,
   operator: { id: string; name: string; role: RoleType },
   changeReason: string,
   reviewRemark?: string
@@ -144,6 +145,11 @@ export async function updateRechargeStatus(
   const record = await getRechargeById(id);
   if (!record) {
     throw new Error('记录不存在');
+  }
+
+  const validation = validateStateTransition(action, record.status as RecordStatus, operator.role);
+  if (!validation.valid) {
+    throw new Error(validation.error || '状态流转校验失败');
   }
 
   const transitions: Record<string, RecordStatus> = {
@@ -156,10 +162,6 @@ export async function updateRechargeStatus(
   const newStatus = transitions[action];
   if (!newStatus) {
     throw new Error('无效的操作');
-  }
-
-  if (record.status === RecordStatus.AUDITED) {
-    throw new Error('已审计记录不可修改');
   }
 
   const now = Date.now();

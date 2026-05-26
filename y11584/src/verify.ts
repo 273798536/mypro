@@ -6,6 +6,12 @@ import { getAuditTrailsByRecord } from './services/auditService';
 import { getFailedRecords } from './services/failedRecordService';
 import { RecordType } from './database/schema';
 
+const staffOperator = {
+  id: 'staff-001',
+  name: '门店员工',
+  role: RoleType.STORE_STAFF
+};
+
 async function verify() {
   console.log('=== 门店会员储值权限追责台账 API 功能验证 ===\n');
 
@@ -132,6 +138,80 @@ async function verify() {
       console.log('   ✗ 应该抛出错误');
     } catch (e: any) {
       console.log('   ✓ 正确拒绝:', e.message);
+    }
+
+    console.log('\n11. 测试状态机校验 - 草稿不能直接审计（必须经过提交、确认）');
+    const draftRecharge = await createRechargeRecord({
+      orderNo: 'R-DRAFT-TEST-' + Date.now(),
+      storeId: 'store-001',
+      storeName: '朝阳门店',
+      memberId: 'member-003',
+      memberPhone: '13800138003',
+      amount: 800,
+      beforeBalance: 200,
+      afterBalance: 1000,
+      operatorId: 'op-001',
+      operatorName: '张三'
+    }, testOperator);
+    try {
+      await updateRechargeStatus(draftRecharge.id, 'audit', auditorOperator, '尝试直接审计草稿记录');
+      console.log('   ✗ 应该抛出错误');
+    } catch (e: any) {
+      console.log('   ✓ 正确拒绝:', e.message);
+    }
+
+    console.log('\n12. 测试状态机校验 - 门店经理不能执行财务确认');
+    const submittedRecharge = await createRechargeRecord({
+      orderNo: 'R-SUBMIT-TEST-' + Date.now(),
+      storeId: 'store-001',
+      storeName: '朝阳门店',
+      memberId: 'member-004',
+      memberPhone: '13800138004',
+      amount: 600,
+      beforeBalance: 400,
+      afterBalance: 1000,
+      operatorId: 'op-001',
+      operatorName: '张三'
+    }, testOperator);
+    await updateRechargeStatus(submittedRecharge.id, 'submit', testOperator, '提交审核');
+    try {
+      await updateRechargeStatus(submittedRecharge.id, 'confirm', testOperator, '门店经理尝试确认');
+      console.log('   ✗ 应该抛出错误');
+    } catch (e: any) {
+      console.log('   ✓ 正确拒绝:', e.message);
+    }
+
+    console.log('\n13. 测试状态机校验 - 门店员工可以提交草稿');
+    const staffRecharge = await createRechargeRecord({
+      orderNo: 'R-STAFF-TEST-' + Date.now(),
+      storeId: 'store-001',
+      storeName: '朝阳门店',
+      memberId: 'member-005',
+      memberPhone: '13800138005',
+      amount: 300,
+      beforeBalance: 700,
+      afterBalance: 1000,
+      operatorId: 'op-002',
+      operatorName: '李四'
+    }, staffOperator);
+    try {
+      await updateRechargeStatus(staffRecharge.id, 'submit', staffOperator, '门店员工提交');
+      const afterSubmit = await getRechargeById(staffRecharge.id);
+      console.log('   ✓ 员工提交成功, 状态:', afterSubmit.status);
+    } catch (e: any) {
+      console.log('   ✗ 员工应该可以提交:', e.message);
+      process.exit(1);
+    }
+
+    console.log('\n14. 测试状态机校验 - 财务确认后才能审计');
+    await updateRechargeStatus(submittedRecharge.id, 'confirm', financeOperator, '财务确认');
+    try {
+      await updateRechargeStatus(submittedRecharge.id, 'audit', auditorOperator, '最终审计');
+      const afterAudit = await getRechargeById(submittedRecharge.id);
+      console.log('   ✓ 确认后可审计, 状态:', afterAudit.status);
+    } catch (e: any) {
+      console.log('   ✗ 确认后应该可以审计:', e.message);
+      process.exit(1);
     }
 
     console.log('\n=== 所有验证通过! ===');

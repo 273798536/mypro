@@ -13,6 +13,7 @@ const database_1 = __importDefault(require("../database"));
 const schema_1 = require("../database/schema");
 const auditService_1 = require("./auditService");
 const failedRecordService_1 = require("./failedRecordService");
+const stateMachine_1 = require("./stateMachine");
 const receiptSchema = joi_1.default.object({
     receiptNo: joi_1.default.string().required(),
     relatedRecordId: joi_1.default.string().required(),
@@ -109,6 +110,10 @@ async function updateReceiptStatus(id, action, operator, changeReason) {
     if (!record) {
         throw new Error('记录不存在');
     }
+    const validation = (0, stateMachine_1.validateStateTransition)(action, record.status, operator.role);
+    if (!validation.valid) {
+        throw new Error(validation.error || '状态流转校验失败');
+    }
     const transitions = {
         submit: schema_1.RecordStatus.SUBMITTED,
         reject: schema_1.RecordStatus.REJECTED,
@@ -118,9 +123,6 @@ async function updateReceiptStatus(id, action, operator, changeReason) {
     const newStatus = transitions[action];
     if (!newStatus) {
         throw new Error('无效的操作');
-    }
-    if (record.status === schema_1.RecordStatus.AUDITED) {
-        throw new Error('已审计记录不可修改');
     }
     const now = Date.now();
     const newVersion = record.version + 1;
