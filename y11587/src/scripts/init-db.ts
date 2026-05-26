@@ -12,6 +12,13 @@ async function initDatabase() {
     console.log("✓ 创建数据目录: data/");
   }
 
+  // 删除旧数据库文件
+  const dbPath = path.join(dataDir, "legal_contract.db");
+  if (fs.existsSync(dbPath)) {
+    fs.unlinkSync(dbPath);
+    console.log("✓ 清除旧数据库文件");
+  }
+
   const uploadsDir = path.join(process.cwd(), "uploads");
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });

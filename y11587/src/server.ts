@@ -7,6 +7,7 @@ import retryQueueRoutes from "./routes/retry-queue.routes";
 import receiptRoutes from "./routes/receipt.routes";
 import dirtyDataRoutes from "./routes/dirty-data.routes";
 import reportRoutes from "./routes/report.routes";
+import contractEntitiesRoutes from "./routes/contract-entities.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +32,7 @@ app.use("/api/retry-queue", retryQueueRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/dirty-data", dirtyDataRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api", contractEntitiesRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
@@ -64,11 +66,17 @@ async function startServer() {
 ║   健康检查: http://localhost:${PORT}/health                  ║
 ║                                                            ║
 ║   API文档:                                                  ║
-║     - 合同管理    POST /api/contracts                       ║
-║     - 重试队列    POST /api/retry-queue/enqueue             ║
-║     - 外部回执    POST /api/receipts/submit                 ║
-║     - 脏数据      GET  /api/dirty-data                      ║
-║     - 报表        GET  /api/reports/business                ║
+║     - 合同管理      POST /api/contracts                     ║
+║     - 验收邮件      POST /api/acceptance-emails             ║
+║     - 客服备注      POST /api/customer-remarks              ║
+║     - 人工意见      POST /api/manual-opinions               ║
+║     - 补充协议      POST /api/supplementary-agreements      ║
+║     - 重试队列      POST /api/retry-queue/enqueue           ║
+║     - 死信处理      GET  /api/retry-queue/dead-letter       ║
+║     - 外部回执      POST /api/receipts/submit               ║
+║     - 补偿查询      GET  /api/receipts/compensation         ║
+║     - 脏数据        GET  /api/dirty-data                    ║
+║     - 报表          GET  /api/reports/business              ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
       `);

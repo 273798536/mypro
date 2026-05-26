@@ -1,0 +1,2 @@
+死信ID,任务类型,合同ID,重试分类,重试次数,最终错误,状态,是否复活,创建时间
+b5d1ac6a-f9ed-47be-81e8-35d5555e992b,EMAIL_REMINDER,,SYSTEM_ERROR,2,SYSTEM_ERROR: 邮件服务暂时不可用 - 第二次重试,PENDING,否,2026-05-26T05:54:10.000Z

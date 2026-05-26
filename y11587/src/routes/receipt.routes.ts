@@ -62,42 +62,6 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/:id", async (req: Request, res: Response) => {
-  try {
-    const receipt = await receiptRepo.findOneBy({ id: req.params.id });
-    if (!receipt) {
-      return res.status(404).json({ success: false, error: "回执不存在" });
-    }
-    res.json({ success: true, data: receipt });
-  } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-router.post("/:id/verify", async (req: Request, res: Response) => {
-  try {
-    const receipt = await externalReceiptService.verifyReceipt(
-      req.params.id,
-      req.headers["x-operator"] as string || "system"
-    );
-    res.json({ success: true, data: receipt });
-  } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-router.post("/:id/close", async (req: Request, res: Response) => {
-  try {
-    const receipt = await externalReceiptService.closeReceipt(
-      req.params.id,
-      req.headers["x-operator"] as string || "system"
-    );
-    res.json({ success: true, data: receipt });
-  } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
 router.post("/compensation", async (req: Request, res: Response) => {
   try {
     const { compensationType, amount, contractId, paymentNodeId, retryQueueId, externalReceiptId, reason, currency } =
@@ -199,6 +163,42 @@ router.post("/compensation/:id/complete", async (req: Request, res: Response) =>
       req.headers["x-operator"] as string || "system"
     );
     res.json({ success: true, data: compensation });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const receipt = await receiptRepo.findOneBy({ id: req.params.id });
+    if (!receipt) {
+      return res.status(404).json({ success: false, error: "回执不存在" });
+    }
+    res.json({ success: true, data: receipt });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+router.post("/:id/verify", async (req: Request, res: Response) => {
+  try {
+    const receipt = await externalReceiptService.verifyReceipt(
+      req.params.id,
+      req.headers["x-operator"] as string || "system"
+    );
+    res.json({ success: true, data: receipt });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+router.post("/:id/close", async (req: Request, res: Response) => {
+  try {
+    const receipt = await externalReceiptService.closeReceipt(
+      req.params.id,
+      req.headers["x-operator"] as string || "system"
+    );
+    res.json({ success: true, data: receipt });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
   }

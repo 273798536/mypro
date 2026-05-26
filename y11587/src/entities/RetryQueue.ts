@@ -70,13 +70,13 @@ export class RetryQueue {
   maxRetries: number;
 
   @Column({ type: "datetime", nullable: true })
-  nextRetryAt: string;
+  nextRetryAt?: string;
 
   @Column({ type: "integer", default: 60 })
   retryInterval: number;
 
   @Column({ type: "text", nullable: true })
-  lastError: string;
+  lastError?: string;
 
   @Column({ type: "text", nullable: true })
   errorStack?: string;

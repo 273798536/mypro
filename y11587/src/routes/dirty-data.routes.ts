@@ -67,7 +67,7 @@ router.post("/validate/contract", async (req: Request, res: Response) => {
       for (const issue of result.issues) {
         await dirtyDataService.recordDirtyData(
           issue.sourceTable,
-          issue.sourceRecordId,
+          issue.sourceRecordId ?? null,
           JSON.parse(issue.originalData),
           issue.dirtyType as DirtyType,
           issue.fieldIssues ? JSON.parse(issue.fieldIssues) : undefined,
@@ -99,7 +99,7 @@ router.post("/validate/payment-node", async (req: Request, res: Response) => {
       for (const issue of result.issues) {
         await dirtyDataService.recordDirtyData(
           issue.sourceTable,
-          issue.sourceRecordId,
+          issue.sourceRecordId ?? null,
           JSON.parse(issue.originalData),
           issue.dirtyType as DirtyType,
           issue.fieldIssues ? JSON.parse(issue.fieldIssues) : undefined,

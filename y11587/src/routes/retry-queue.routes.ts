@@ -69,6 +69,66 @@ router.get("/stats", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/dead-letter", async (req: Request, res: Response) => {
+  try {
+    const { status, page = 1, limit = 20 } = req.query;
+    const where: any = {};
+    if (status) where.status = status;
+
+    const [items, total] = await deadLetterRepo.findAndCount({
+      where,
+      order: { createdAt: "DESC" },
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
+    });
+
+    res.json({
+      success: true,
+      data: {
+        items,
+        total,
+        page: Number(page),
+        limit: Number(limit),
+      },
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+router.post("/dead-letter/:id/resurrect", async (req: Request, res: Response) => {
+  try {
+    const { newMaxRetries } = req.body;
+    const item = await retryQueueService.resurrectDeadLetter(
+      req.params.id,
+      req.headers["x-operator"] as string || "unknown",
+      newMaxRetries
+    );
+    res.json({ success: true, data: item });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+router.post("/dead-letter/:id/resolve", async (req: Request, res: Response) => {
+  try {
+    const { resolution, remark } = req.body;
+    const deadLetter = await deadLetterRepo.findOneBy({ id: req.params.id });
+    if (!deadLetter) {
+      return res.status(404).json({ success: false, error: "死信记录不存在" });
+    }
+    deadLetter.status = "RESOLVED";
+    deadLetter.resolvedBy = req.headers["x-operator"] as string || "unknown";
+    deadLetter.resolvedAt = new Date().toISOString();
+    deadLetter.resolveRemark = remark;
+    deadLetter.resolution = resolution;
+    await deadLetterRepo.save(deadLetter);
+    res.json({ success: true, data: deadLetter });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const item = await retryQueueRepo.findOneBy({ id: req.params.id, isDeleted: false });
@@ -130,70 +190,10 @@ router.post("/:id/retry", async (req: Request, res: Response) => {
     }
     item.status = "PENDING";
     item.retryCount = 0;
-    item.nextRetryAt = null;
-    item.lastError = null;
+    item.nextRetryAt = undefined;
+    item.lastError = undefined;
     await retryQueueRepo.save(item);
     res.json({ success: true, data: item });
-  } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-router.get("/dead-letter", async (req: Request, res: Response) => {
-  try {
-    const { status, page = 1, limit = 20 } = req.query;
-    const where: any = {};
-    if (status) where.status = status;
-
-    const [items, total] = await deadLetterRepo.findAndCount({
-      where,
-      order: { createdAt: "DESC" },
-      skip: (Number(page) - 1) * Number(limit),
-      take: Number(limit),
-    });
-
-    res.json({
-      success: true,
-      data: {
-        items,
-        total,
-        page: Number(page),
-        limit: Number(limit),
-      },
-    });
-  } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-router.post("/dead-letter/:id/resurrect", async (req: Request, res: Response) => {
-  try {
-    const { newMaxRetries } = req.body;
-    const item = await retryQueueService.resurrectDeadLetter(
-      req.params.id,
-      req.headers["x-operator"] as string || "unknown",
-      newMaxRetries
-    );
-    res.json({ success: true, data: item });
-  } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-router.post("/dead-letter/:id/resolve", async (req: Request, res: Response) => {
-  try {
-    const { resolution, remark } = req.body;
-    const deadLetter = await deadLetterRepo.findOneBy({ id: req.params.id });
-    if (!deadLetter) {
-      return res.status(404).json({ success: false, error: "死信记录不存在" });
-    }
-    deadLetter.status = "RESOLVED";
-    deadLetter.resolvedBy = req.headers["x-operator"] as string || "unknown";
-    deadLetter.resolvedAt = new Date().toISOString();
-    deadLetter.resolveRemark = remark;
-    deadLetter.resolution = resolution;
-    await deadLetterRepo.save(deadLetter);
-    res.json({ success: true, data: deadLetter });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
   }
