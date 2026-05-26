@@ -16,6 +16,7 @@ export interface StatusTransitionParams {
   metadata?: Record<string, unknown>;
   auditAction?: string;
   auditMetadata?: Record<string, unknown>;
+  transaction?: Transaction;
 }
 
 export const transitionStatus = async (
@@ -23,7 +24,9 @@ export const transitionStatus = async (
 ): Promise<boolean> => {
   const { ticketId, toStatus, operator, reason, metadata, auditAction, auditMetadata } = params;
 
-  const transaction: Transaction = await sequelize.transaction();
+  const externalTx = params.transaction;
+  const isExternal = !!externalTx;
+  const transaction = externalTx || await sequelize.transaction();
 
   try {
     const ticket = await CompensationTicketModel.findByPk(ticketId, {
@@ -32,7 +35,7 @@ export const transitionStatus = async (
     });
 
     if (!ticket) {
-      await transaction.rollback();
+      if (!isExternal) await transaction.rollback();
       logger.warn(`Status transition failed: ticket ${ticketId} not found`);
       return false;
     }
@@ -40,7 +43,7 @@ export const transitionStatus = async (
     const fromStatus = ticket.status;
 
     if (!isValidStatusTransition(fromStatus, toStatus)) {
-      await transaction.rollback();
+      if (!isExternal) await transaction.rollback();
       logger.warn(
         `Invalid status transition: ${fromStatus} -> ${toStatus} for ticket ${ticketId}`
       );
@@ -78,7 +81,9 @@ export const transitionStatus = async (
       );
     }
 
-    await transaction.commit();
+    if (!isExternal) {
+      await transaction.commit();
+    }
 
     logger.info(`Status transition: ${fromStatus} -> ${toStatus} for ticket ${ticketId}`, {
       operator: operator.id,
@@ -87,7 +92,7 @@ export const transitionStatus = async (
 
     return true;
   } catch (error) {
-    await transaction.rollback();
+    if (!isExternal) await transaction.rollback();
     logger.error('Status transition error:', error);
     throw error;
   }

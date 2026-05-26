@@ -33,10 +33,18 @@ app.use(errorHandler);
 const startServer = async (): Promise<void> => {
   try {
     logger.info('Starting compensation queue API server...');
+    logger.info(`Database target: ${config.database.host}:${config.database.port}/${config.database.name}`);
+    logger.info(`Redis target: ${config.redis.host}:${config.redis.port}`);
 
     const dbConnected = await testConnection();
     if (!dbConnected) {
-      throw new Error('Failed to connect to database');
+      logger.error(
+        'Failed to connect to PostgreSQL. ' +
+        `Please ensure PostgreSQL is running at ${config.database.host}:${config.database.port} ` +
+        `and database "${config.database.name}" exists. ` +
+        'Run "docker-compose up -d" or start PostgreSQL manually.'
+      );
+      process.exit(1);
     }
 
     setupAssociations();

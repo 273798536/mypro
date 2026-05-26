@@ -165,6 +165,7 @@ export const manualOverride = async (
       reason: `人工改判: ${reason}`,
       auditAction: 'MANUAL_OVERRIDE',
       auditMetadata: { originalStatus: ticket.status, updatedData },
+      transaction,
     });
 
     if (!success) {
