@@ -11,8 +11,17 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./warehouse_ledger.db"
     
     SENSITIVE_FIELDS: List[str] = [
-        "user_phone", "user_id_card", "actual_amount", "cost_price"
+        "拣货员", "复核员", "绩效影响", "库存影响", "处理意见", "创建人"
     ]
+    
+    EXPORT_COLUMN_TO_FIELD_MAP: dict = {
+        "拣货员": "picker_name",
+        "复核员": "reviewer_name",
+        "绩效影响": "performance_impact",
+        "库存影响": "inventory_impact",
+        "处理意见": "handle_opinion",
+        "创建人": "created_by"
+    }
     
     class Config:
         case_sensitive = True

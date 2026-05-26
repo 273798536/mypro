@@ -5,7 +5,7 @@ import hashlib
 import json
 
 from app.models.ledger import LedgerRecord, DirtyRecord, DIRTY_RECORD_TYPES
-from app.models.source_data import WaveOrder, PickDifference, ReviewScan
+from app.models.source_data import WaveOrder, PickDifference, ReviewScan, RefundFlow, StockSplitRecord, InventoryDifference
 
 
 class DirtyRecordDetector:
@@ -19,6 +19,7 @@ class DirtyRecordDetector:
         self._check_missing_fields(ledger)
         self._check_cross_day(ledger)
         self._check_name_consistency(ledger)
+        self._check_diff_qty_consistency(ledger)
         self._check_amount_conflict(ledger)
         self._check_qty_conflict(ledger)
         self._check_duplicate(ledger)
@@ -87,7 +88,7 @@ class DirtyRecordDetector:
                     }
                 })
 
-    def _check_amount_conflict(self, ledger: LedgerRecord):
+    def _check_diff_qty_consistency(self, ledger: LedgerRecord):
         if not ledger.wave_no or not ledger.sku_code:
             return
             
@@ -96,28 +97,120 @@ class DirtyRecordDetector:
             PickDifference.sku_code == ledger.sku_code
         ).first()
         
-        if pick_diff:
-            sources = []
-            if pick_diff.diff_qty != ledger.diff_qty:
-                sources.append({
-                    "source": "pick_diff",
-                    "field": "diff_qty",
-                    "value": pick_diff.diff_qty
-                })
-                sources.append({
-                    "source": "ledger",
-                    "field": "diff_qty",
-                    "value": ledger.diff_qty
-                })
-                
+        if pick_diff and pick_diff.diff_qty != ledger.diff_qty:
+            sources = [
+                {"source": "pick_diff", "field": "diff_qty", "value": pick_diff.diff_qty},
+                {"source": "ledger", "field": "diff_qty", "value": ledger.diff_qty}
+            ]
+            self.issues.append({
+                "type": "qty_conflict",
+                "field_name": "diff_qty",
+                "original_value": str(pick_diff.diff_qty),
+                "current_value": str(ledger.diff_qty),
+                "error_message": f"差异数量不一致: 拣货差异表中是 {pick_diff.diff_qty}，台账中是 {ledger.diff_qty}",
+                "source_data": {"conflict_sources": sources}
+            })
+
+    def _check_amount_conflict(self, ledger: LedgerRecord):
+        if not ledger.wave_no or not ledger.sku_code:
+            return
+            
+        issues_found = False
+        
+        refund = self.db.query(RefundFlow).filter(
+            RefundFlow.wave_no == ledger.wave_no,
+            RefundFlow.sku_code == ledger.sku_code
+        ).first()
+        
+        split_record = self.db.query(StockSplitRecord).filter(
+            StockSplitRecord.original_wave_no == ledger.wave_no,
+            StockSplitRecord.sku_code == ledger.sku_code
+        ).first()
+        
+        inventory_diff = self.db.query(InventoryDifference).filter(
+            InventoryDifference.related_wave_no == ledger.wave_no,
+            InventoryDifference.sku_code == ledger.sku_code
+        ).first()
+        
+        if refund and refund.refund_amount is not None:
+            if ledger.inventory_impact is None or ledger.inventory_impact == 0:
                 self.issues.append({
-                    "type": "qty_conflict",
-                    "field_name": "diff_qty",
-                    "original_value": str(pick_diff.diff_qty),
-                    "current_value": str(ledger.diff_qty),
-                    "error_message": f"差异数量冲突: 拣货差异表中是 {pick_diff.diff_qty}，台账中是 {ledger.diff_qty}",
-                    "source_data": {"conflict_sources": sources}
+                    "type": "amount_conflict",
+                    "field_name": "inventory_impact",
+                    "original_value": str(refund.refund_amount),
+                    "current_value": str(ledger.inventory_impact or 0),
+                    "error_message": f"退款金额 {refund.refund_amount} 存在，但台账库存影响为 0，可能漏记",
+                    "source_data": {
+                        "refund_no": refund.refund_no,
+                        "refund_amount": float(refund.refund_amount),
+                        "refund_type": refund.refund_type
+                    }
                 })
+                issues_found = True
+        
+        if split_record and split_record.inventory_deviation is not None:
+            if ledger.inventory_impact is None or ledger.inventory_impact == 0:
+                self.issues.append({
+                    "type": "amount_conflict",
+                    "field_name": "inventory_impact",
+                    "original_value": str(split_record.inventory_deviation),
+                    "current_value": str(ledger.inventory_impact or 0),
+                    "error_message": f"缺货拆单库存偏差 {split_record.inventory_deviation} 存在，但台账库存影响为 0，可能漏记",
+                    "source_data": {
+                        "split_no": split_record.split_no,
+                        "inventory_deviation": float(split_record.inventory_deviation),
+                        "split_reason": split_record.split_reason
+                    }
+                })
+                issues_found = True
+        
+        if inventory_diff and inventory_diff.diff_qty != 0:
+            estimated_impact = abs(inventory_diff.diff_qty) * 10
+            if ledger.inventory_impact is None or ledger.inventory_impact == 0:
+                self.issues.append({
+                    "type": "amount_conflict",
+                    "field_name": "inventory_impact",
+                    "original_value": f"预估 {estimated_impact}",
+                    "current_value": str(ledger.inventory_impact or 0),
+                    "error_message": f"盘点差异 {inventory_diff.diff_qty} 存在，但台账库存影响为 0，可能漏记",
+                    "source_data": {
+                        "check_no": inventory_diff.check_no,
+                        "diff_qty": inventory_diff.diff_qty,
+                        "diff_type": inventory_diff.diff_type
+                    }
+                })
+                issues_found = True
+        
+        if ledger.inventory_impact is not None and ledger.inventory_impact != 0:
+            has_source = refund is not None or split_record is not None or inventory_diff is not None
+            if not has_source:
+                self.issues.append({
+                    "type": "amount_conflict",
+                    "field_name": "inventory_impact",
+                    "original_value": str(ledger.inventory_impact),
+                    "current_value": str(ledger.inventory_impact),
+                    "error_message": f"台账库存影响 {ledger.inventory_impact} 无对应来源记录（退款/拆单/盘点差异）",
+                    "source_data": {
+                        "has_refund": refund is not None,
+                        "has_split": split_record is not None,
+                        "has_inventory_diff": inventory_diff is not None
+                    }
+                })
+                issues_found = True
+        
+        if ledger.performance_impact is not None and ledger.performance_impact != 0:
+            if split_record is None or split_record.performance_deviation is None:
+                self.issues.append({
+                    "type": "amount_conflict",
+                    "field_name": "performance_impact",
+                    "original_value": str(ledger.performance_impact),
+                    "current_value": str(ledger.performance_impact),
+                    "error_message": f"台账绩效影响 {ledger.performance_impact} 无对应拆单记录",
+                    "source_data": {
+                        "has_split": split_record is not None
+                    }
+                })
+                issues_found = True
 
     def _check_qty_conflict(self, ledger: LedgerRecord):
         if ledger.pick_qty and ledger.actual_pick_qty:

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 
 from app.database import get_db
@@ -8,21 +8,48 @@ from app.core.security import get_current_user, require_permission
 from app.core.export_service import ExportService
 from app.models.user import User
 from app.schemas.common import ResponseModel, PaginatedResponse
+from app.schemas.export import ExportRequest
 
 router = APIRouter(prefix="/export", tags=["导出管理"])
 
 
 @router.post("/excel", response_model=ResponseModel)
 def export_excel(
-    ledger_ids: List[int],
-    mask_sensitive: bool = True,
-    include_history: bool = False,
+    request: ExportRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_permission("export"))
 ):
     try:
         service = ExportService(db, current_user)
-        result = service.export_to_excel(ledger_ids, mask_sensitive, include_history)
+        result = service.export_to_excel(request.ledger_ids, request.mask_sensitive, request.include_history)
+        return ResponseModel(data=result)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/json", response_model=ResponseModel)
+def export_json(
+    request: ExportRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("export"))
+):
+    try:
+        service = ExportService(db, current_user)
+        result = service.export_to_json(request.ledger_ids, request.mask_sensitive)
+        return ResponseModel(data=result)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/csv", response_model=ResponseModel)
+def export_csv(
+    request: ExportRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("export"))
+):
+    try:
+        service = ExportService(db, current_user)
+        result = service.export_to_csv(request.ledger_ids, request.mask_sensitive)
         return ResponseModel(data=result)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
