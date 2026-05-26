@@ -39,6 +39,34 @@ router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
   }
 });
 
+router.get('/failed', authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    if (req.user!.role === UserRole.READ_ONLY || req.user!.role === UserRole.DATA_ENTRY) {
+      return res.status(403).json({ message: '权限不足' });
+    }
+
+    const { isResolved, page = '1', pageSize = '20' } = req.query;
+
+    const isResolvedBool = isResolved === undefined ? undefined : isResolved === 'true';
+
+    const { records, total } = await compensationService.getFailedRecords(
+      isResolvedBool,
+      parseInt(page as string),
+      parseInt(pageSize as string)
+    );
+
+    res.json({
+      records,
+      total,
+      page: parseInt(page as string),
+      pageSize: parseInt(pageSize as string)
+    });
+  } catch (error) {
+    console.error('获取失败记录失败:', error);
+    res.status(500).json({ message: '获取失败记录失败', error: (error as Error).message });
+  }
+});
+
 router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const record = await compensationService.getRecordById(req.params.id);
@@ -279,34 +307,6 @@ router.post('/:id/recover', authenticate, async (req: AuthRequest, res: Response
   } catch (error) {
     console.error('恢复死信失败:', error);
     res.status(500).json({ message: '恢复死信失败', error: (error as Error).message });
-  }
-});
-
-router.get('/failed', authenticate, async (req: AuthRequest, res: Response) => {
-  try {
-    if (req.user!.role === UserRole.READ_ONLY || req.user!.role === UserRole.DATA_ENTRY) {
-      return res.status(403).json({ message: '权限不足' });
-    }
-
-    const { isResolved, page = '1', pageSize = '20' } = req.query;
-
-    const isResolvedBool = isResolved === undefined ? undefined : isResolved === 'true';
-
-    const { records, total } = await compensationService.getFailedRecords(
-      isResolvedBool,
-      parseInt(page as string),
-      parseInt(pageSize as string)
-    );
-
-    res.json({
-      records,
-      total,
-      page: parseInt(page as string),
-      pageSize: parseInt(pageSize as string)
-    });
-  } catch (error) {
-    console.error('获取失败记录失败:', error);
-    res.status(500).json({ message: '获取失败记录失败', error: (error as Error).message });
   }
 });
 
