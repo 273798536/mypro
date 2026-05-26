@@ -211,19 +211,109 @@ def approve_compensation(ticket_id, approval_id):
         return jsonify({'error': 'Approval not found'}), 404
     
     data = request.get_json()
-    approved_amount = data.get('approved_amount', approval.requested_amount)
+    approved_amount = float(data.get('approved_amount', approval.requested_amount))
     note = data.get('note')
+    create_new_version = data.get('create_version', True)
     
-    CompensationApproval.update(
-        approval_id,
-        approval_status='approved',
-        approved_amount=float(approved_amount),
+    if create_new_version:
+        latest = CompensationApproval.get_latest_by_ticket_id(ticket_id)
+        new_version = latest.version + 1 if latest else 1
+        
+        new_approval = CompensationApproval.create(
+            ticket_id=ticket_id,
+            compensation_type=approval.compensation_type,
+            requested_amount=approval.requested_amount,
+            approved_amount=approved_amount,
+            approval_status='approved',
+            sla_rule_id=approval.sla_rule_id,
+            calculation_basis=approval.calculation_basis,
+            applicant=approval.applicant,
+            approver=g.api_key[:8],
+            approved_at=datetime.now().isoformat(),
+            approval_note=note,
+            version=new_version,
+            is_revised=1,
+            original_approval_id=approval_id,
+            revision_note=data.get('revision_note', note)
+        )
+        
+        return jsonify({
+            'new_version': new_approval.to_dict(),
+            'original_version': approval.to_dict(),
+            'version_diff': {
+                'from_version': approval.version,
+                'to_version': new_version,
+                'approved_amount_changed': abs(approval.approved_amount - approved_amount) > 0.01,
+                'original_approved': approval.approved_amount,
+                'new_approved': approved_amount,
+                'amount_diff': round(abs(approval.approved_amount - approved_amount), 2)
+            }
+        })
+    else:
+        CompensationApproval.update(
+            approval_id,
+            approval_status='approved',
+            approved_amount=approved_amount,
+            approver=g.api_key[:8],
+            approved_at=datetime.now().isoformat(),
+            approval_note=note
+        )
+        
+        return jsonify(CompensationApproval.get_by_id(approval_id).to_dict())
+
+@app.route('/api/v1/tickets/<int:ticket_id>/compensation/<int:approval_id>/revise', methods=['POST'])
+@require_auth(['admin'])
+def revise_compensation(ticket_id, approval_id):
+    approval = CompensationApproval.get_by_id(approval_id)
+    if not approval or approval.ticket_id != ticket_id:
+        return jsonify({'error': 'Approval not found'}), 404
+    
+    data = request.get_json()
+    
+    if 'approved_amount' not in data:
+        return jsonify({'error': 'approved_amount is required for revision'}), 400
+    
+    new_approved_amount = float(data['approved_amount'])
+    revision_note = data.get('revision_note', '')
+    calculation_basis = data.get('calculation_basis', approval.calculation_basis)
+    
+    latest = CompensationApproval.get_latest_by_ticket_id(ticket_id)
+    new_version = latest.version + 1 if latest else 1
+    
+    new_approval = CompensationApproval.create(
+        ticket_id=ticket_id,
+        compensation_type=approval.compensation_type,
+        requested_amount=approval.requested_amount,
+        approved_amount=new_approved_amount,
+        approval_status='revised',
+        sla_rule_id=approval.sla_rule_id,
+        calculation_basis=calculation_basis,
+        applicant=approval.applicant,
         approver=g.api_key[:8],
         approved_at=datetime.now().isoformat(),
-        approval_note=note
+        approval_note=data.get('approval_note', ''),
+        version=new_version,
+        is_revised=1,
+        original_approval_id=approval_id,
+        revision_note=revision_note
     )
     
-    return jsonify(CompensationApproval.get_by_id(approval_id).to_dict())
+    return jsonify({
+        'success': True,
+        'message': 'Compensation revised, original evidence preserved',
+        'new_version': new_approval.to_dict(),
+        'original_version': approval.to_dict(),
+        'revision_chain': {
+            'from_id': approval_id,
+            'to_id': new_approval.id,
+            'from_version': approval.version,
+            'to_version': new_version,
+            'original_approved': approval.approved_amount,
+            'revised_approved': new_approved_amount,
+            'amount_change': round(new_approved_amount - approval.approved_amount, 2),
+            'revision_note': revision_note
+        }
+    })
 
 @app.route('/api/v1/tickets/<int:ticket_id>/supplements', methods=['GET'])
 @require_auth()

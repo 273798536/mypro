@@ -22,7 +22,46 @@ def get_db_connection():
         conn.close()
 
 
+def migrate_database():
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute("PRAGMA table_info(import_sources)")
+            columns = [col[1] for col in cursor.fetchall()]
+            if 'warning_rows' not in columns:
+                cursor.execute("ALTER TABLE import_sources ADD COLUMN warning_rows INTEGER DEFAULT 0")
+        except Exception:
+            pass
+        
+        try:
+            cursor.execute("PRAGMA table_info(import_raw_data)")
+            columns = [col[1] for col in cursor.fetchall()]
+            if 'parse_error_type' not in columns:
+                cursor.execute("ALTER TABLE import_raw_data ADD COLUMN parse_error_type TEXT")
+            if 'parse_warnings' not in columns:
+                cursor.execute("ALTER TABLE import_raw_data ADD COLUMN parse_warnings TEXT")
+            if 'parse_suggestions' not in columns:
+                cursor.execute("ALTER TABLE import_raw_data ADD COLUMN parse_suggestions TEXT")
+        except Exception:
+            pass
+        
+        try:
+            cursor.execute("PRAGMA table_info(compensation_approvals)")
+            columns = [col[1] for col in cursor.fetchall()]
+            if 'is_revised' not in columns:
+                cursor.execute("ALTER TABLE compensation_approvals ADD COLUMN is_revised INTEGER DEFAULT 0")
+            if 'original_approval_id' not in columns:
+                cursor.execute("ALTER TABLE compensation_approvals ADD COLUMN original_approval_id INTEGER")
+            if 'revision_note' not in columns:
+                cursor.execute("ALTER TABLE compensation_approvals ADD COLUMN revision_note TEXT")
+        except Exception:
+            pass
+
+
 def init_database():
+    migrate_database()
+    
     with get_db_connection() as conn:
         cursor = conn.cursor()
         
@@ -37,6 +76,7 @@ def init_database():
                 imported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 total_rows INTEGER DEFAULT 0,
                 success_rows INTEGER DEFAULT 0,
+                warning_rows INTEGER DEFAULT 0,
                 failed_rows INTEGER DEFAULT 0,
                 remark TEXT,
                 UNIQUE(source_file_hash)
@@ -50,6 +90,9 @@ def init_database():
                 parse_status TEXT DEFAULT 'pending',
                 parsed_result TEXT,
                 parse_error TEXT,
+                parse_error_type TEXT,
+                parse_warnings TEXT,
+                parse_suggestions TEXT,
                 parsed_at TIMESTAMP,
                 FOREIGN KEY (import_source_id) REFERENCES import_sources(id),
                 UNIQUE(import_source_id, source_line_number)
@@ -137,6 +180,7 @@ def init_database():
                 version INTEGER DEFAULT 1,
                 is_revised INTEGER DEFAULT 0,
                 original_approval_id INTEGER,
+                revision_note TEXT,
                 FOREIGN KEY (ticket_id) REFERENCES tickets(id),
                 FOREIGN KEY (sla_rule_id) REFERENCES sla_rules(id),
                 FOREIGN KEY (original_approval_id) REFERENCES compensation_approvals(id)
