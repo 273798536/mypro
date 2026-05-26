@@ -110,21 +110,28 @@ API文档: http://localhost:8000/docs
 - `POST /api/v1/batches/{id}/supplement` - 补充协议
 
 ### 文件上传
-- `POST /api/v1/batches/{id}/upload/contract-pdf` - 上传合同PDF
+- `POST /api/v1/batches/{id}/upload/contract-pdf` - 上传合同PDF（自动解析合同编号、金额）
 - `POST /api/v1/batches/{id}/contracts/{cid}/upload/payment-excel` - 上传付款节点Excel
-- `POST /api/v1/batches/{id}/contracts/{cid}/upload/acceptance-email` - 上传验收邮件
-- `POST /api/v1/batches/{id}/contracts/{cid}/upload/price-change` - 上传改价表
+- `POST /api/v1/batches/{id}/contracts/{cid}/upload/acceptance-email` - 上传验收邮件（自动识别验收结果）
+- `POST /api/v1/batches/{id}/contracts/{cid}/upload/price-change` - 上传手工改价表（已修复openpyxl读取问题）
 - `POST /api/v1/batches/{id}/upload/archive` - 上传历史压缩包
+  - **参数**: `duplicate_strategy` (ignore/overwrite/append) - 重复数据处理策略
+  - **参数**: `async_mode` (true/false) - 是否异步处理
+  - **支持**: PDF合同、付款节点Excel、改价表Excel、验收邮件EML
 
 ### 审计与报告
 - `GET /api/v1/batches/{id}/audit-logs` - 批次审计日志
 - `GET /api/v1/contracts/{id}/audit-logs` - 合同审计日志
-- `POST /api/v1/export` - 导出Excel报告
+- `POST /api/v1/export` - 导出Excel报告（合同汇总+冻结变更双sheet）
 
 ### 任务管理
-- `GET /api/v1/tasks/{id}` - 任务状态
-- `POST /api/v1/tasks/{id}/retry` - 重试任务
-- `POST /api/v1/tasks/resume-stalled` - 恢复挂起任务
+- `GET /api/v1/tasks/{id}` - 查询任务状态与进度
+- `POST /api/v1/tasks/{id}/retry` - 重试失败任务
+  - **失败类型**:
+    - `retry` - 等待自动重试（如：网络超时）
+    - `manual` - 需人工介入（如：重试耗尽）
+    - `failed` - 永久失败（如：文件损坏）
+- `POST /api/v1/tasks/resume-stalled` - 恢复超时挂起任务（断点续跑）
 
 ## 数据模型
 

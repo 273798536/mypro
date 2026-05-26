@@ -293,13 +293,23 @@ def upload_archive(
     batch_id: int,
     file: UploadFile = File(...),
     duplicate_strategy: DuplicateStrategy = Form(DuplicateStrategy.APPEND),
+    async_mode: bool = Form(False),
     db: Session = Depends(get_db),
     current_user: str = Depends(get_current_user)
 ):
     file_service = FileService(db)
     content = file.file.read()
-    result = file_service.process_zip_archive(batch_id, content, file.filename, current_user, duplicate_strategy)
-    return result
+    
+    if async_mode:
+        task_id = file_service.async_import_archive(
+            batch_id, content, file.filename, current_user, duplicate_strategy
+        )
+        return {"task_id": task_id, "mode": "async", "message": "Import task started"}
+    else:
+        result = file_service.process_zip_archive(
+            batch_id, content, file.filename, current_user, duplicate_strategy
+        )
+        return result
 
 
 @router.get("/contracts/{contract_id}/versions")
