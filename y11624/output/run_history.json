@@ -1,0 +1,28 @@
+[
+  {
+    "run_id": "20260526_200124_456efbae",
+    "timestamp": "2026-05-26T20:01:24.731188",
+    "input_dir": "/Users/mac/pro/solo/workspaces/y11624/sample_data",
+    "output_dir": "/Users/mac/pro/solo/workspaces/y11624/output",
+    "anomalies_count": {
+      "errors": 2,
+      "warnings": 11,
+      "total": 13
+    },
+    "adjustments_applied": 2,
+    "status": "completed"
+  },
+  {
+    "run_id": "20260526_200143_4d41fc2f",
+    "timestamp": "2026-05-26T20:01:44.092983",
+    "input_dir": "/Users/mac/pro/solo/workspaces/y11624/sample_data",
+    "output_dir": "/Users/mac/pro/solo/workspaces/y11624/output",
+    "anomalies_count": {
+      "errors": 1,
+      "warnings": 11,
+      "total": 12
+    },
+    "adjustments_applied": 0,
+    "status": "completed"
+  }
+]

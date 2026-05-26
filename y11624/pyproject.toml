@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "financial-checker"
+version = "1.0.0"
+description = "财报勾稽检查CLI工具 - 自动验证财务报表勾稽关系"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Financial Checker Team"}
+]
+dependencies = [
+    "pandas>=1.3.0",
+    "openpyxl>=3.0.0",
+    "click>=8.0.0",
+    "rich>=10.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+fin-check = "financial_checker.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["financial_checker*"]

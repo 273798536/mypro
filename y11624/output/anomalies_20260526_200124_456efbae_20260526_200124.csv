@@ -1,0 +1,14 @@
+﻿异常ID,类型,严重程度,消息,涉及科目,详细信息,时间戳
+ae_unbalanced_200124,assets_liabilities_equity_unbalanced,error,"资产负债表不平: 资产 297000.00, 负债+权益 295000.00, 差额 2000.00",,"{""total_assets"": 297000.0, ""total_liabilities"": 35000.0, ""total_equity"": 260000.0, ""difference"": 2000.0, ""suggestion"": ""请检查资产、负债、权益类科目余额""}",2026-05-26T20:01:24.723959
+ni_reconcile_200124,net_income_reconciliation_failed,warning,"净利润与未分配利润变动不一致: 净利润 408000.00, 未分配利润变动 30000.00, 差额 378000.00",4104,"{""net_income"": 408000.0, ""total_expenses"": 0, ""current_net_profit"": 408000.0, ""retained_earnings_change"": 30000.0, ""difference"": 378000.0, ""suggestion"": ""请检查利润分配、以前年度损益调整等科目""}",2026-05-26T20:01:24.724022
+cf_unbalanced_200124,cash_flow_unbalanced,error,"现金流量表与货币资金变动不一致: 现金流量净额 75000.00, 货币资金变动 20000.00, 差额 55000.00","1001, 1002","{""cash_end_balance"": 80000.0, ""cash_opening_balance"": 60000.0, ""cash_change"": 20000.0, ""net_cash_flow"": 75000.0, ""difference"": 55000.0, ""suggestion"": ""请检查现金流量表编制是否正确""}",2026-05-26T20:01:24.724073
+map_missing_102_200124,missing_mapping,warning,科目 102 缺少映射配置,102,"{""account_code"": ""102"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718533
+map_missing_301_200124,missing_mapping,warning,科目 301 缺少映射配置,301,"{""account_code"": ""301"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718540
+map_missing_201_200124,missing_mapping,warning,科目 201 缺少映射配置,201,"{""account_code"": ""201"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718545
+map_missing_6001_200124,missing_mapping,warning,科目 6001 缺少映射配置,6001,"{""account_code"": ""6001"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718550
+map_missing_6601_200124,missing_mapping,warning,科目 6601 缺少映射配置,6601,"{""account_code"": ""6601"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718554
+map_missing_101_200124,missing_mapping,warning,科目 101 缺少映射配置,101,"{""account_code"": ""101"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718558
+map_missing_6602_200124,missing_mapping,warning,科目 6602 缺少映射配置,6602,"{""account_code"": ""6602"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718562
+map_missing_6603_200124,missing_mapping,warning,科目 6603 缺少映射配置,6603,"{""account_code"": ""6603"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718566
+map_missing_6401_200124,missing_mapping,warning,科目 6401 缺少映射配置,6401,"{""account_code"": ""6401"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718570
+map_missing_6051_200124,missing_mapping,warning,科目 6051 缺少映射配置,6051,"{""account_code"": ""6051"", ""suggestion"": ""请在科目映射表中添加该科目的映射关系""}",2026-05-26T20:01:24.718574

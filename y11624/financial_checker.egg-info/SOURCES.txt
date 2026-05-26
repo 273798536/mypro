@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+financial_checker/__init__.py
+financial_checker/adjustment_manager.py
+financial_checker/cli.py
+financial_checker/config.py
+financial_checker/mapping_manager.py
+financial_checker/models.py
+financial_checker/parser.py
+financial_checker/report_generator.py
+financial_checker/rule_engine.py
+financial_checker.egg-info/PKG-INFO
+financial_checker.egg-info/SOURCES.txt
+financial_checker.egg-info/dependency_links.txt
+financial_checker.egg-info/entry_points.txt
+financial_checker.egg-info/requires.txt
+financial_checker.egg-info/top_level.txt
