@@ -27,17 +27,6 @@ router.get('/', requirePermission('canRead', 'acceptanceEmail'), (req, res) => {
   });
 });
 
-router.get('/:id', requirePermission('canRead', 'acceptanceEmail'), (req, res) => {
-  const email = getAcceptanceEmail(req.params.id);
-  if (!email) {
-    return res.status(404).json({ success: false, error: '验收邮件不存在', code: 'NOT_FOUND' });
-  }
-  res.json({
-    success: true,
-    data: filterFields(req.userRole, 'acceptanceEmail', email)
-  });
-});
-
 router.post('/:id/review', requirePermission('canReview', 'acceptanceEmail'), (req, res) => {
   const { result, reviewNotes } = req.body;
   const reviewResult = reviewAcceptanceEmail(req.params.id, result, reviewNotes, req.user.id);
@@ -47,6 +36,17 @@ router.post('/:id/review', requirePermission('canReview', 'acceptanceEmail'), (r
   }
   
   res.json(reviewResult);
+});
+
+router.get('/:id', requirePermission('canRead', 'acceptanceEmail'), (req, res) => {
+  const email = getAcceptanceEmail(req.params.id);
+  if (!email) {
+    return res.status(404).json({ success: false, error: '验收邮件不存在', code: 'NOT_FOUND' });
+  }
+  res.json({
+    success: true,
+    data: filterFields(req.userRole, 'acceptanceEmail', email)
+  });
 });
 
 module.exports = router;

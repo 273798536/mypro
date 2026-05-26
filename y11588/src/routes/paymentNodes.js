@@ -27,6 +27,14 @@ router.get('/', requirePermission('canRead', 'paymentNode'), (req, res) => {
   });
 });
 
+router.get('/progress/:contractId', requirePermission('canRead', 'paymentNode'), (req, res) => {
+  const progress = calculateContractProgress(req.params.contractId);
+  res.json({
+    success: true,
+    data: progress
+  });
+});
+
 router.get('/:id', requirePermission('canRead', 'paymentNode'), (req, res) => {
   const node = getPaymentNode(req.params.id);
   if (!node) {
@@ -56,14 +64,6 @@ router.post('/:id/status', requirePermission('canUpdate', 'paymentNode'), (req, 
     return res.status(400).json(result);
   }
   res.json(result);
-});
-
-router.get('/progress/:contractId', requirePermission('canRead', 'paymentNode'), (req, res) => {
-  const progress = calculateContractProgress(req.params.contractId);
-  res.json({
-    success: true,
-    data: progress
-  });
 });
 
 module.exports = router;

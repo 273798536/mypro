@@ -27,17 +27,6 @@ router.get('/', requirePermission('canRead', 'confirmation'), (req, res) => {
   });
 });
 
-router.get('/:id', requirePermission('canRead', 'confirmation'), (req, res) => {
-  const confirmation = getConfirmation(req.params.id);
-  if (!confirmation) {
-    return res.status(404).json({ success: false, error: '确认单不存在', code: 'NOT_FOUND' });
-  }
-  res.json({
-    success: true,
-    data: filterFields(req.userRole, 'confirmation', confirmation)
-  });
-});
-
 router.post('/:id/approve', requirePermission('canApprove', 'confirmation'), (req, res) => {
   const { approvalNotes } = req.body;
   const result = approveConfirmation(req.params.id, approvalNotes || '', req.user.id);
@@ -47,6 +36,17 @@ router.post('/:id/approve', requirePermission('canApprove', 'confirmation'), (re
   }
   
   res.json(result);
+});
+
+router.get('/:id', requirePermission('canRead', 'confirmation'), (req, res) => {
+  const confirmation = getConfirmation(req.params.id);
+  if (!confirmation) {
+    return res.status(404).json({ success: false, error: '确认单不存在', code: 'NOT_FOUND' });
+  }
+  res.json({
+    success: true,
+    data: filterFields(req.userRole, 'confirmation', confirmation)
+  });
 });
 
 module.exports = router;

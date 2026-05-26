@@ -17,11 +17,11 @@
       "version": 1,
       "parentContractId": null,
       "isSupplement": false,
-      "createdAt": "2026-05-26T06:23:47.465Z",
+      "createdAt": "2026-05-26T06:49:32.117Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.827Z",
+      "updatedAt": "2026-05-26T06:49:32.153Z",
       "updatedBy": "admin",
-      "frozenAt": "2026-05-26T06:23:47.827Z",
+      "frozenAt": "2026-05-26T06:49:32.153Z",
       "frozenBy": "admin",
       "completedAt": null,
       "notes": "",
@@ -38,15 +38,15 @@
       "currency": "CNY",
       "pdfHash": "sha256-supp-789",
       "pdfUrl": "",
-      "effectiveDate": "2026-05-26T06:23:47.638Z",
+      "effectiveDate": "2026-05-26T06:49:32.145Z",
       "expiryDate": "",
       "status": "active",
       "version": 1,
       "parentContractId": "CT-2024-FRAME-001",
       "isSupplement": true,
-      "createdAt": "2026-05-26T06:23:47.638Z",
+      "createdAt": "2026-05-26T06:49:32.145Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.638Z",
+      "updatedAt": "2026-05-26T06:49:32.145Z",
       "updatedBy": "operator",
       "frozenAt": null,
       "frozenBy": null,
@@ -56,8 +56,8 @@
     }
   },
   "paymentNodes": {
-    "PN-1779776627644-irfk": {
-      "id": "PN-1779776627644-irfk",
+    "PN-1779778172146-lvvb": {
+      "id": "PN-1779778172146-lvvb",
       "idempotencyKey": "demo-node-001",
       "contractId": "CT-2024-FRAME-001",
       "nodeName": "第一期：需求验收",
@@ -70,14 +70,14 @@
       "description": "",
       "batchId": "BATCH-2024-Q1",
       "sequence": 1,
-      "createdAt": "2026-05-26T06:23:47.644Z",
+      "createdAt": "2026-05-26T06:49:32.146Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.760Z",
+      "updatedAt": "2026-05-26T06:49:32.153Z",
       "updatedBy": "admin",
       "customFields": {}
     },
-    "PN-1779776627649-u9hx": {
-      "id": "PN-1779776627649-u9hx",
+    "PN-1779778172147-dnv7": {
+      "id": "PN-1779778172147-dnv7",
       "idempotencyKey": "demo-node-002",
       "contractId": "CT-2024-FRAME-001",
       "nodeName": "第二期：开发交付",
@@ -90,14 +90,14 @@
       "description": "",
       "batchId": "BATCH-2024-Q2",
       "sequence": 2,
-      "createdAt": "2026-05-26T06:23:47.649Z",
+      "createdAt": "2026-05-26T06:49:32.147Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.649Z",
+      "updatedAt": "2026-05-26T06:49:32.147Z",
       "updatedBy": "operator",
       "customFields": {}
     },
-    "PN-1779776627668-6ixz": {
-      "id": "PN-1779776627668-6ixz",
+    "PN-1779778172147-ohun": {
+      "id": "PN-1779778172147-ohun",
       "idempotencyKey": "demo-node-003",
       "contractId": "CT-2024-FRAME-001",
       "nodeName": "第三期：运维验收",
@@ -110,19 +110,19 @@
       "description": "",
       "batchId": "BATCH-2024-Q4",
       "sequence": 3,
-      "createdAt": "2026-05-26T06:23:47.668Z",
+      "createdAt": "2026-05-26T06:49:32.147Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.668Z",
+      "updatedAt": "2026-05-26T06:49:32.147Z",
       "updatedBy": "operator",
       "customFields": {}
     }
   },
   "acceptanceEmails": {
-    "AE-1779776627719": {
-      "id": "AE-1779776627719",
+    "AE-1779778172148": {
+      "id": "AE-1779778172148",
       "idempotencyKey": "demo-email-001",
       "contractId": "CT-2024-FRAME-001",
-      "paymentNodeId": "PN-1779776627644-irfk",
+      "paymentNodeId": "PN-1779778172146-lvvb",
       "emailSubject": "【验收确认】2024框架协议 - 需求调研阶段验收通过",
       "emailFrom": "project-manager@party-a.com",
       "emailTo": "delivery@party-b.com",
@@ -134,21 +134,21 @@
       "acceptanceResult": "pass",
       "reviewNotes": "验收材料齐全，符合要求",
       "reviewedBy": "reviewer",
-      "reviewedAt": "2026-05-26T06:23:47.728Z",
+      "reviewedAt": "2026-05-26T06:49:32.149Z",
       "status": "approved",
-      "createdAt": "2026-05-26T06:23:47.719Z",
+      "createdAt": "2026-05-26T06:49:32.148Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.728Z",
+      "updatedAt": "2026-05-26T06:49:32.149Z",
       "updatedBy": "reviewer",
       "customFields": {}
     }
   },
   "confirmations": {
-    "CF-1779776627736": {
-      "id": "CF-1779776627736",
+    "CF-1779778172150": {
+      "id": "CF-1779778172150",
       "idempotencyKey": "demo-confirm-001",
       "contractId": "CT-2024-FRAME-001",
-      "paymentNodeId": "PN-1779776627644-irfk",
+      "paymentNodeId": "PN-1779778172146-lvvb",
       "confirmationType": "adjustment",
       "confirmingParty": "甲方科技有限公司",
       "confirmedBy": "财务总监-王某",
@@ -167,24 +167,24 @@
       "adjustedDueDate": "2024-03-15",
       "status": "approved",
       "approvedBy": "admin",
-      "approvedAt": "2026-05-26T06:23:47.742Z",
+      "approvedAt": "2026-05-26T06:49:32.151Z",
       "approvalNotes": "情况属实，同意按调整后金额付款",
-      "createdAt": "2026-05-26T06:23:47.736Z",
+      "createdAt": "2026-05-26T06:49:32.150Z",
       "createdBy": "operator",
-      "updatedAt": "2026-05-26T06:23:47.742Z",
+      "updatedAt": "2026-05-26T06:49:32.151Z",
       "updatedBy": "admin",
       "customFields": {}
     }
   },
   "versionHistory": [
     {
-      "id": "8bff59c4-8292-43e9-a613-5f4a4e9f0872",
+      "id": "b621b7c5-144f-4d3c-b677-c1db84e4feb7",
       "entityType": "contract",
       "entityId": "CT-2024-FRAME-001",
       "version": 1,
       "action": "create",
       "changedBy": "operator",
-      "changedAt": "2026-05-26T06:23:47.465Z",
+      "changedAt": "2026-05-26T06:49:32.117Z",
       "snapshot": {
         "id": "CT-2024-FRAME-001",
         "idempotencyKey": "demo-contract-001",
@@ -202,9 +202,9 @@
         "version": 1,
         "parentContractId": null,
         "isSupplement": false,
-        "createdAt": "2026-05-26T06:23:47.465Z",
+        "createdAt": "2026-05-26T06:49:32.117Z",
         "createdBy": "operator",
-        "updatedAt": "2026-05-26T06:23:47.465Z",
+        "updatedAt": "2026-05-26T06:49:32.117Z",
         "updatedBy": "operator",
         "frozenAt": null,
         "frozenBy": null,
@@ -214,13 +214,13 @@
       }
     },
     {
-      "id": "b1d2fbd1-1228-4635-9bab-283455714826",
+      "id": "bd02c1ab-b578-4c7b-be09-3930e4fbf17a",
       "entityType": "contract",
       "entityId": "CT-2024-SUPP-001",
       "version": 1,
       "action": "create",
       "changedBy": "operator",
-      "changedAt": "2026-05-26T06:23:47.638Z",
+      "changedAt": "2026-05-26T06:49:32.145Z",
       "snapshot": {
         "id": "CT-2024-SUPP-001",
         "idempotencyKey": "demo-supp-001",
@@ -232,15 +232,15 @@
         "currency": "CNY",
         "pdfHash": "sha256-supp-789",
         "pdfUrl": "",
-        "effectiveDate": "2026-05-26T06:23:47.638Z",
+        "effectiveDate": "2026-05-26T06:49:32.145Z",
         "expiryDate": "",
         "status": "active",
         "version": 1,
         "parentContractId": "CT-2024-FRAME-001",
         "isSupplement": true,
-        "createdAt": "2026-05-26T06:23:47.638Z",
+        "createdAt": "2026-05-26T06:49:32.145Z",
         "createdBy": "operator",
-        "updatedAt": "2026-05-26T06:23:47.638Z",
+        "updatedAt": "2026-05-26T06:49:32.145Z",
         "updatedBy": "operator",
         "frozenAt": null,
         "frozenBy": null,
@@ -250,69 +250,69 @@
       }
     },
     {
-      "id": "8864e5bd-ede3-4232-865a-289aa9248ed6",
+      "id": "f36de924-637a-47bd-b3f4-856db9ab4d4e",
       "entityType": "paymentNode",
-      "entityId": "PN-1779776627644-irfk",
+      "entityId": "PN-1779778172146-lvvb",
       "version": 0,
       "action": "status_change",
       "changedBy": "operator",
-      "changedAt": "2026-05-26T06:23:47.719Z",
+      "changedAt": "2026-05-26T06:49:32.149Z",
       "snapshot": {
-        "nodeId": "PN-1779776627644-irfk",
+        "nodeId": "PN-1779778172146-lvvb",
         "oldStatus": "pending",
         "newStatus": "accepted",
         "notes": "通过验收邮件触发"
       }
     },
     {
-      "id": "8b22bb97-cb22-43ed-aee7-53abec75143a",
+      "id": "719e6fe7-0ab8-44ef-916a-5f695094c68c",
       "entityType": "paymentNode",
-      "entityId": "PN-1779776627644-irfk",
+      "entityId": "PN-1779778172146-lvvb",
       "version": 0,
       "action": "status_change",
       "changedBy": "reviewer",
-      "changedAt": "2026-05-26T06:23:47.728Z",
+      "changedAt": "2026-05-26T06:49:32.149Z",
       "snapshot": {
-        "nodeId": "PN-1779776627644-irfk",
+        "nodeId": "PN-1779778172146-lvvb",
         "oldStatus": "accepted",
         "newStatus": "accepted",
         "notes": "验收邮件复核通过"
       }
     },
     {
-      "id": "fd3f1b0c-68b8-42b4-9b86-07493aae71b0",
+      "id": "aec6d52f-e04c-48e4-adae-59c5d68da80e",
       "entityType": "acceptanceEmail",
-      "entityId": "AE-1779776627719",
+      "entityId": "AE-1779778172148",
       "action": "review",
       "changedBy": "reviewer",
-      "changedAt": "2026-05-26T06:23:47.728Z",
+      "changedAt": "2026-05-26T06:49:32.149Z",
       "snapshot": {
         "result": "pass",
         "reviewNotes": "验收材料齐全，符合要求"
       }
     },
     {
-      "id": "9b9eec9e-9981-4901-88a9-26ddd9adbba1",
+      "id": "f16f183c-daf3-4c27-9f13-4adba41fae01",
       "entityType": "paymentNode",
-      "entityId": "PN-1779776627644-irfk",
+      "entityId": "PN-1779778172146-lvvb",
       "version": 0,
       "action": "status_change",
       "changedBy": "admin",
-      "changedAt": "2026-05-26T06:23:47.742Z",
+      "changedAt": "2026-05-26T06:49:32.151Z",
       "snapshot": {
-        "nodeId": "PN-1779776627644-irfk",
+        "nodeId": "PN-1779778172146-lvvb",
         "oldStatus": "accepted",
         "newStatus": "confirmed",
         "notes": "二次确认单审批通过"
       }
     },
     {
-      "id": "1b5a6a82-48b8-4434-b330-3c069cb30c3c",
+      "id": "f6255487-4483-4d5a-a9bf-d71218f91362",
       "entityType": "confirmation",
-      "entityId": "CF-1779776627736",
+      "entityId": "CF-1779778172150",
       "action": "approve",
       "changedBy": "admin",
-      "changedAt": "2026-05-26T06:23:47.742Z",
+      "changedAt": "2026-05-26T06:49:32.151Z",
       "snapshot": {
         "approvalNotes": "情况属实，同意按调整后金额付款",
         "adjustments": [
@@ -325,28 +325,28 @@
       }
     },
     {
-      "id": "d8a94a7d-f635-4dfd-b94a-44dd1b2e3e3a",
+      "id": "b6014eb8-0d5f-45d9-8b7c-03c7a2603be9",
       "entityType": "paymentNode",
-      "entityId": "PN-1779776627644-irfk",
+      "entityId": "PN-1779778172146-lvvb",
       "version": 0,
       "action": "status_change",
       "changedBy": "admin",
-      "changedAt": "2026-05-26T06:23:47.760Z",
+      "changedAt": "2026-05-26T06:49:32.153Z",
       "snapshot": {
-        "nodeId": "PN-1779776627644-irfk",
+        "nodeId": "PN-1779778172146-lvvb",
         "oldStatus": "confirmed",
         "newStatus": "paid",
         "notes": "财务已付款"
       }
     },
     {
-      "id": "f56705ce-9ab1-433c-92d6-f9bf3dbb814a",
+      "id": "6be6d834-4318-4c5e-b9f2-2c9f5e477974",
       "entityType": "contract",
       "entityId": "CT-2024-FRAME-001",
       "version": 1,
       "action": "freeze",
       "changedBy": "admin",
-      "changedAt": "2026-05-26T06:23:47.827Z",
+      "changedAt": "2026-05-26T06:49:32.153Z",
       "snapshot": {
         "id": "CT-2024-FRAME-001",
         "idempotencyKey": "demo-contract-001",
@@ -364,11 +364,11 @@
         "version": 1,
         "parentContractId": null,
         "isSupplement": false,
-        "createdAt": "2026-05-26T06:23:47.465Z",
+        "createdAt": "2026-05-26T06:49:32.117Z",
         "createdBy": "operator",
-        "updatedAt": "2026-05-26T06:23:47.827Z",
+        "updatedAt": "2026-05-26T06:49:32.153Z",
         "updatedBy": "admin",
-        "frozenAt": "2026-05-26T06:23:47.827Z",
+        "frozenAt": "2026-05-26T06:49:32.153Z",
         "frozenBy": "admin",
         "completedAt": null,
         "notes": "",
@@ -378,65 +378,52 @@
   ],
   "failedRecords": [
     {
-      "id": "FAIL-1779776627677-cn2t4j",
+      "id": "FAIL-1779778172148-vwbbrc",
       "entityType": "paymentNode",
       "rawData": "{\"idempotencyKey\":\"demo-bad-node-001\",\"contractId\":\"CT-2024-FRAME-001\",\"nodeName\":\"坏数据测试\",\"dueAmount\":-100,\"dueDate\":\"2024-12-01\"}",
       "error": "付款金额必须是正数",
       "errorCode": "INVALID_AMOUNT",
       "reportedBy": "operator",
-      "reportedAt": "2026-05-26T06:23:47.677Z",
+      "reportedAt": "2026-05-26T06:49:32.148Z",
       "resolved": false,
       "resolvedAt": null,
       "resolvedBy": null,
       "resolutionNotes": ""
     },
     {
-      "id": "FAIL-1779776627834-175c64",
+      "id": "FAIL-1779778172154-ohz16k",
       "entityType": "paymentNode",
       "rawData": "{\"idempotencyKey\":\"demo-frozen-node-001\",\"contractId\":\"CT-2024-FRAME-001\",\"nodeName\":\"试图在冻结后新增\",\"dueAmount\":100000,\"dueDate\":\"2024-12-01\"}",
       "error": "合同已冻结，无法新增付款节点",
       "errorCode": "CONTRACT_FROZEN",
       "reportedBy": "operator",
-      "reportedAt": "2026-05-26T06:23:47.834Z",
+      "reportedAt": "2026-05-26T06:49:32.154Z",
       "resolved": false,
       "resolvedAt": null,
       "resolvedBy": null,
       "resolutionNotes": ""
     },
     {
-      "id": "FAIL-1779776627841-uzh087",
+      "id": "FAIL-1779778172154-ucasyt",
       "entityType": "contract",
       "rawData": "{\"contractId\":\"CT-2024-FRAME-001\",\"action\":\"update\"}",
       "error": "合同已冻结，无法修改",
       "errorCode": "CONTRACT_FROZEN",
       "reportedBy": "operator",
-      "reportedAt": "2026-05-26T06:23:47.841Z",
+      "reportedAt": "2026-05-26T06:49:32.154Z",
       "resolved": false,
       "resolvedAt": null,
       "resolvedBy": null,
       "resolutionNotes": ""
     },
     {
-      "id": "FAIL-1779776627844-m1y9lj",
+      "id": "FAIL-1779778172156-4d89b2",
       "entityType": "confirmation",
-      "rawData": "{\"confirmationId\":\"CF-1779776627736\"}",
+      "rawData": "{\"confirmationId\":\"CF-1779778172150\"}",
       "error": "合同已冻结，无法审批确认单",
       "errorCode": "CONTRACT_FROZEN",
       "reportedBy": "admin",
-      "reportedAt": "2026-05-26T06:23:47.844Z",
-      "resolved": false,
-      "resolvedAt": null,
-      "resolvedBy": null,
-      "resolutionNotes": ""
-    },
-    {
-      "id": "FAIL-1779776699088-nlmrfg",
-      "entityType": "contract",
-      "rawData": "{\"contractId\":\"CT-2024-FRAME-001\",\"action\":\"freeze\"}",
-      "error": "[object Object]",
-      "errorCode": "INSUFFICIENT_PERMISSION",
-      "reportedBy": "viewer",
-      "reportedAt": "2026-05-26T06:24:59.090Z",
+      "reportedAt": "2026-05-26T06:49:32.156Z",
       "resolved": false,
       "resolvedAt": null,
       "resolvedBy": null,
@@ -466,6 +453,6 @@
     }
   },
   "_meta": {
-    "lastUpdated": "2026-05-26T06:24:59.091Z"
+    "lastUpdated": "2026-05-26T06:49:32.156Z"
   }
 }
