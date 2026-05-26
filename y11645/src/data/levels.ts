@@ -1,0 +1,111 @@
+import { LevelConfig } from '../types';
+
+export const LEVELS: LevelConfig[] = [
+  {
+    id: 1,
+    name: '新手入门',
+    description: '熟悉行李牌信息，掌握基础分拣逻辑',
+    difficulty: 1,
+    duration: 180,
+    baggageCount: 15,
+    spawnInterval: 3000,
+    focusAreas: ['认识行李牌', '基础分拣', '登机口识别'],
+    unlocked: true,
+    config: {
+      oversizedRate: 0.1,
+      transferRate: 0.2,
+      delayedRate: 0.05,
+      urgentTransferRate: 0.3,
+    },
+  },
+  {
+    id: 2,
+    name: '超规识别',
+    description: '重点练习超规行李的识别与分流',
+    difficulty: 2,
+    duration: 240,
+    baggageCount: 20,
+    spawnInterval: 2500,
+    focusAreas: ['超规件判断', '超规通道使用'],
+    unlocked: true,
+    config: {
+      oversizedRate: 0.25,
+      transferRate: 0.15,
+      delayedRate: 0.05,
+      urgentTransferRate: 0.3,
+    },
+  },
+  {
+    id: 3,
+    name: '转机压力',
+    description: '掌握转机时间判断，合理使用加急通道',
+    difficulty: 3,
+    duration: 300,
+    baggageCount: 25,
+    spawnInterval: 2200,
+    focusAreas: ['转机时间判断', '加急通道使用', '时间压力应对'],
+    unlocked: true,
+    config: {
+      oversizedRate: 0.1,
+      transferRate: 0.4,
+      delayedRate: 0.05,
+      urgentTransferRate: 0.5,
+    },
+  },
+  {
+    id: 4,
+    name: '延误应对',
+    description: '学习延误航班的特殊处理流程',
+    difficulty: 3,
+    duration: 300,
+    baggageCount: 25,
+    spawnInterval: 2200,
+    focusAreas: ['延误航班识别', '延误通道使用'],
+    unlocked: true,
+    config: {
+      oversizedRate: 0.1,
+      transferRate: 0.2,
+      delayedRate: 0.25,
+      urgentTransferRate: 0.3,
+    },
+  },
+  {
+    id: 5,
+    name: '综合挑战',
+    description: '全场景混合，高时间压力下的综合能力考核',
+    difficulty: 5,
+    duration: 360,
+    baggageCount: 35,
+    spawnInterval: 1800,
+    focusAreas: ['全场景混合', '高效决策', '压力应对'],
+    unlocked: true,
+    config: {
+      oversizedRate: 0.15,
+      transferRate: 0.3,
+      delayedRate: 0.15,
+      urgentTransferRate: 0.4,
+    },
+  },
+];
+
+export const GATES = ['A', 'B', 'C', 'D'] as const;
+
+export const DESTINATIONS = [
+  { city: '北京', code: 'PEK' },
+  { city: '上海', code: 'SHA' },
+  { city: '广州', code: 'CAN' },
+  { city: '深圳', code: 'SZX' },
+  { city: '成都', code: 'CTU' },
+  { city: '杭州', code: 'HGH' },
+  { city: '西安', code: 'XIY' },
+  { city: '重庆', code: 'CKG' },
+  { city: '南京', code: 'NKG' },
+  { city: '武汉', code: 'WUH' },
+  { city: '香港', code: 'HKG' },
+  { city: '东京', code: 'NRT' },
+  { city: '首尔', code: 'ICN' },
+  { city: '新加坡', code: 'SIN' },
+  { city: '曼谷', code: 'BKK' },
+];
+
+export const AIRLINES = ['CA', 'MU', 'CZ', 'HU', '3U', 'ZH', 'MF', 'SC'];
