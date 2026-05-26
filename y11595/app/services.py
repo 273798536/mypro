@@ -112,12 +112,19 @@ def update_batch_stats(db: Session, batch: Batch):
 def import_records(db: Session, batch: Batch, record_type: RecordType,
                    records_data: List[Dict[str, Any]], source_file: str,
                    imported_by: str, sheet_name: Optional[str] = None) -> ImportResult:
-    if batch.status not in [BatchStatus.DRAFT, BatchStatus.IMPORTING]:
+    if batch.status == BatchStatus.FROZEN:
+        raise StateTransitionError("Cannot import records: batch is frozen")
+    if batch.status in [BatchStatus.SETTLED, BatchStatus.ARCHIVED]:
         raise StateTransitionError(f"Cannot import records in status: {batch.status.value}")
     
     sm = BatchStateMachine(db, batch, imported_by)
     if batch.status == BatchStatus.DRAFT:
         sm.transition_to(BatchStatus.IMPORTING, reason=f"Start importing {record_type.value}")
+    elif batch.status == BatchStatus.WITHDRAWN:
+        sm.transition_to(BatchStatus.DRAFT, reason="Resubmit for import")
+        sm.transition_to(BatchStatus.IMPORTING, reason=f"Start importing {record_type.value}")
+    elif batch.status != BatchStatus.IMPORTING:
+        sm.transition_to(BatchStatus.IMPORTING, reason=f"Additional import: {record_type.value}")
     
     import_source = ImportSource(
         batch_id=batch.id,

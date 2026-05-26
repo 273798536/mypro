@@ -20,19 +20,19 @@ from app.services import (
     get_export_summary, export_records
 )
 from app.state_machine import StateTransitionError
+from app.auth import require_permission, require_batch_status_allowed, get_user_role, USERS_DB
 
 router = APIRouter(prefix="/api/v1", tags=["kb-receipt"])
-
-DEFAULT_OPERATOR = "system_admin"
 
 
 @router.post("/batches", response_model=BatchResponse, status_code=status.HTTP_201_CREATED)
 def create_new_batch(
     batch_data: BatchCreate,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("create_batch")),
+    db: Session = Depends(get_db)
 ):
     """创建新批次"""
+    operator, user_role = auth
     try:
         batch = create_batch(db, batch_data, operator)
         return batch
@@ -44,12 +44,13 @@ def create_new_batch(
 def get_batches_list(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    status: Optional[BatchStatus] = Query(None),
+    status_filter: Optional[BatchStatus] = Query(None, alias="status"),
+    operator: str = Query("admin", description="操作人用户名"),
     db: Session = Depends(get_db)
 ):
     """获取批次列表"""
     skip = (page - 1) * page_size
-    batches, total = list_batches(db, skip=skip, limit=page_size, status=status)
+    batches, total = list_batches(db, skip=skip, limit=page_size, status=status_filter)
     
     items = []
     for b in batches:
@@ -81,6 +82,7 @@ def get_batches_list(
 @router.get("/batches/{batch_id}")
 def get_batch_detail(
     batch_id: int,
+    operator: str = Query("admin", description="操作人用户名"),
     db: Session = Depends(get_db)
 ):
     """获取批次详情"""
@@ -126,15 +128,18 @@ def import_batch_records(
     sheet_name: Optional[str] = Form(None, description="Sheet名称"),
     file: UploadFile = File(None, description="上传的文件(可选，也可直接传JSON数据)"),
     json_data: Optional[str] = Form(None, description="JSON格式的记录数据"),
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("import_records")),
+    db: Session = Depends(get_db)
 ):
     """导入记录数据
     
     支持两种方式:
     1. 上传Excel/CSV文件
     2. 直接传JSON格式的记录数据数组
+    
+    支持多次导入不同类型数据（变更单、审核意见、客服引用记录）形成闭环
     """
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -157,6 +162,8 @@ def import_batch_records(
             
             records_data = df.where(pd.notnull(df), None).to_dict('records')
             source_file = file.filename
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"File parse error: {str(e)}")
     elif json_data:
@@ -194,16 +201,18 @@ def get_batch_records(
     batch_id: int,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=500),
-    status: Optional[RecordStatus] = Query(None),
+    status_filter: Optional[RecordStatus] = Query(None, alias="status"),
+    auth: tuple = Depends(require_permission("view_records")),
     db: Session = Depends(get_db)
 ):
     """获取批次记录列表"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
     
     skip = (page - 1) * page_size
-    records, total = list_records(db, batch_id=batch_id, status=status, skip=skip, limit=page_size)
+    records, total = list_records(db, batch_id=batch_id, status=status_filter, skip=skip, limit=page_size)
     
     items = []
     for r in records:
@@ -249,6 +258,7 @@ def get_batch_records(
 @router.get("/records/{record_id}", response_model=RecordDetailResponse)
 def get_record_detail(
     record_id: int,
+    operator: str = Query("admin", description="操作人用户名"),
     db: Session = Depends(get_db)
 ):
     """获取记录详情（包含原始数据）"""
@@ -262,10 +272,11 @@ def get_record_detail(
 def correct_single_record(
     record_id: int,
     correction: RecordCorrectionRequest,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("correct_record")),
+    db: Session = Depends(get_db)
 ):
     """人工改判单条记录"""
+    operator, user_role = auth
     record = get_record(db, record_id)
     if not record:
         raise HTTPException(status_code=404, detail="Record not found")
@@ -290,10 +301,11 @@ def correct_single_record(
 def review_single_batch(
     batch_id: int,
     review_data: BatchReviewRequest,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("review_batch")),
+    db: Session = Depends(get_db)
 ):
     """复核批次"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -316,10 +328,11 @@ def review_single_batch(
 def freeze_single_batch(
     batch_id: int,
     freeze_data: FreezeRequest,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("freeze_batch")),
+    db: Session = Depends(get_db)
 ):
     """冻结批次"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -334,10 +347,11 @@ def freeze_single_batch(
 @router.post("/batches/{batch_id}/unfreeze", response_model=BatchResponse)
 def unfreeze_single_batch(
     batch_id: int,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("unfreeze_batch")),
+    db: Session = Depends(get_db)
 ):
     """解冻批次"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -353,10 +367,11 @@ def unfreeze_single_batch(
 def withdraw_single_batch(
     batch_id: int,
     withdraw_data: WithdrawRequest,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("withdraw_batch")),
+    db: Session = Depends(get_db)
 ):
     """撤回归档"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -371,10 +386,11 @@ def withdraw_single_batch(
 @router.post("/batches/{batch_id}/resubmit", response_model=BatchResponse)
 def resubmit_single_batch(
     batch_id: int,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("resubmit_batch")),
+    db: Session = Depends(get_db)
 ):
     """撤回后重新提交"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -389,10 +405,11 @@ def resubmit_single_batch(
 @router.post("/batches/{batch_id}/settle", response_model=BatchResponse)
 def settle_single_batch(
     batch_id: int,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("settle_batch")),
+    db: Session = Depends(get_db)
 ):
     """结算批次"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -407,10 +424,11 @@ def settle_single_batch(
 @router.post("/batches/{batch_id}/archive", response_model=BatchResponse)
 def archive_single_batch(
     batch_id: int,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("archive_batch")),
+    db: Session = Depends(get_db)
 ):
     """归档批次"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -428,10 +446,11 @@ def upload_batch_attachment(
     file: UploadFile = File(...),
     attachment_type: str = Form("general"),
     description: Optional[str] = Form(None),
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("upload_attachment")),
+    db: Session = Depends(get_db)
 ):
     """上传批次附件（短信截图等）"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -460,10 +479,11 @@ def upload_record_attachment(
     file: UploadFile = File(...),
     attachment_type: str = Form("general"),
     description: Optional[str] = Form(None),
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("upload_attachment")),
+    db: Session = Depends(get_db)
 ):
     """上传单条记录附件"""
+    operator, user_role = auth
     record = get_record(db, record_id)
     if not record:
         raise HTTPException(status_code=404, detail="Record not found")
@@ -491,9 +511,11 @@ def get_batch_audit_logs(
     batch_id: int,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
+    auth: tuple = Depends(require_permission("view_audit_logs")),
     db: Session = Depends(get_db)
 ):
     """获取批次审计日志"""
+    operator, user_role = auth
     batch = get_batch(db, batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -528,10 +550,11 @@ def get_batch_audit_logs(
 @router.get("/batches/{batch_id}/export/summary", response_model=ExportSummary)
 def get_batch_export_summary(
     batch_id: int,
-    db: Session = Depends(get_db),
-    operator: str = Query(DEFAULT_OPERATOR, description="操作人")
+    auth: tuple = Depends(require_permission("export_summary")),
+    db: Session = Depends(get_db)
 ):
     """导出汇总信息"""
+    operator, user_role = auth
     try:
         summary = get_export_summary(db, batch_id, operator)
         return summary
@@ -543,6 +566,7 @@ def get_batch_export_summary(
 def export_batch_records(
     batch_id: int,
     format: str = Query("json", description="导出格式: json/csv"),
+    operator: str = Query("admin", description="操作人用户名"),
     db: Session = Depends(get_db)
 ):
     """导出详细记录"""
@@ -579,6 +603,19 @@ def export_batch_records(
         "record_count": len(records),
         "records": records
     }
+
+
+@router.get("/users")
+def list_users():
+    """获取可用用户列表（用于权限测试）"""
+    users = []
+    for username, info in USERS_DB.items():
+        users.append({
+            "username": username,
+            "role": info["role"].value,
+            "full_name": info["full_name"]
+        })
+    return {"users": users, "note": "Use ?operator=username in API calls"}
 
 
 @router.get("/health")

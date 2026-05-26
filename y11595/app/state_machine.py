@@ -13,7 +13,7 @@ class BatchStateMachine:
     VALID_TRANSITIONS = {
         BatchStatus.DRAFT: [BatchStatus.IMPORTING, BatchStatus.WITHDRAWN],
         BatchStatus.IMPORTING: [BatchStatus.IMPORTED, BatchStatus.DRAFT, BatchStatus.FROZEN],
-        BatchStatus.IMPORTED: [BatchStatus.REVIEWING, BatchStatus.FROZEN, BatchStatus.WITHDRAWN],
+        BatchStatus.IMPORTED: [BatchStatus.REVIEWING, BatchStatus.IMPORTING, BatchStatus.FROZEN, BatchStatus.WITHDRAWN],
         BatchStatus.REVIEWING: [BatchStatus.APPROVED, BatchStatus.REJECTED, BatchStatus.FROZEN, BatchStatus.IMPORTED],
         BatchStatus.APPROVED: [BatchStatus.SETTLED, BatchStatus.FROZEN, BatchStatus.REVIEWING],
         BatchStatus.REJECTED: [BatchStatus.IMPORTED, BatchStatus.FROZEN, BatchStatus.ARCHIVED],
