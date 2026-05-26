@@ -852,10 +852,15 @@ class ImportService:
                         import_source.parse_result = {"parse_metadata": parse_result.metadata}
 
             if parsed_data and isinstance(parsed_data, dict):
+                ci = None
                 if 'contract_info' in parsed_data and isinstance(parsed_data['contract_info'], dict):
+                    ci = parsed_data['contract_info']
+                elif any(k in parsed_data for k in ('contract_name', 'party_a', 'party_b', 'total_amount')):
+                    ci = parsed_data
+
+                if ci:
                     contract = ContractService.get_contract(db, contract_id)
                     if contract:
-                        ci = parsed_data['contract_info']
                         updated = False
                         if ci.get('contract_name') and not contract.contract_name:
                             contract.contract_name = ci['contract_name']

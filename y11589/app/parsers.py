@@ -254,11 +254,17 @@ class PDFParser(BaseParser):
                     amount_str = amount_match.group(1).replace('¥', '').replace('￥', '').replace(',', '').strip()
                     amount = float(amount_str) if amount_str else None
 
-                    node_name = line.split('：')[0].split(':')[0].strip()
-                    for kw in node_keywords:
-                        if kw in line:
-                            node_name = kw
-                            break
+                    colon_match = re.match(r'^[\d\.、\s]*([^：:：]+)[：:]', line)
+                    if colon_match:
+                        node_name = colon_match.group(1).strip()
+                        if len(node_name) > 50:
+                            node_name = node_name[:50]
+                    else:
+                        node_name = line.split('：')[0].split(':')[0].strip()
+                        for kw in node_keywords:
+                            if kw in line:
+                                node_name = kw
+                                break
 
                     milestone_match = re.search(r'(?:完成|通过|交付|验收|签订)[^，。；]*', line)
                     milestone = milestone_match.group(0) if milestone_match else None
@@ -692,13 +698,21 @@ class ParserFactory:
     def get_parser(file_type: str, file_name: str) -> Optional[BaseParser]:
         ext = os.path.splitext(file_name)[1].lower()
 
-        if file_type == "合同PDF" or ext == '.pdf':
-            return PDFParser()
-        elif file_type == "验收邮件" or ext in ['.eml', '.mbox']:
-            return EmailParser()
-        elif file_type == "历史压缩包" or ext in ['.zip', '.tar', '.tar.gz', '.tgz']:
+        if ext in ['.zip', '.tar', '.tar.gz', '.tgz']:
             return ZipParser()
-        elif file_type in ["付款记录", "人工补录"] or ext in ['.json', '.txt', '.csv']:
+        elif ext in ['.eml', '.mbox']:
+            return EmailParser()
+        elif ext == '.pdf':
+            return PDFParser()
+        elif ext in ['.json', '.txt', '.csv']:
+            return TextParser()
+        elif file_type == "合同PDF":
+            return PDFParser()
+        elif file_type == "验收邮件":
+            return EmailParser()
+        elif file_type == "历史压缩包":
+            return ZipParser()
+        elif file_type in ["付款记录", "人工补录"]:
             return TextParser()
         else:
             return TextParser()
