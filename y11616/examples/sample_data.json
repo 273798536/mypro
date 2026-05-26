@@ -1,0 +1,166 @@
+{
+  "accounts": [
+    {
+      "account_id": "A001",
+      "agent_name": "张三代理"
+    },
+    {
+      "account_id": "A002",
+      "agent_name": "李四代理"
+    },
+    {
+      "account_id": "A003",
+      "agent_name": "王五代理"
+    },
+    {
+      "account_id": "A004",
+      "agent_name": "赵六代理"
+    }
+  ],
+  "referrals": [
+    {
+      "account_id": "A001",
+      "inviter_id": null,
+      "week": "2024-W01",
+      "effective_from": "2024-W01"
+    },
+    {
+      "account_id": "A002",
+      "inviter_id": "A001",
+      "week": "2024-W01",
+      "effective_from": "2024-W01"
+    },
+    {
+      "account_id": "A003",
+      "inviter_id": "A002",
+      "week": "2024-W01",
+      "effective_from": "2024-W01"
+    },
+    {
+      "account_id": "A004",
+      "inviter_id": "A001",
+      "week": "2024-W01",
+      "effective_from": "2024-W01"
+    },
+    {
+      "account_id": "A004",
+      "inviter_id": "A002",
+      "week": "2024-W02",
+      "effective_from": "2024-W02"
+    }
+  ],
+  "volumes": [
+    {
+      "account_id": "A001",
+      "week": "2024-W01",
+      "trade_amount": 500000,
+      "fee_amount": 1500,
+      "trade_count": 150
+    },
+    {
+      "account_id": "A002",
+      "week": "2024-W01",
+      "trade_amount": 300000,
+      "fee_amount": 900,
+      "trade_count": 90
+    },
+    {
+      "account_id": "A003",
+      "week": "2024-W01",
+      "trade_amount": 100000,
+      "fee_amount": 300,
+      "trade_count": 45
+    },
+    {
+      "account_id": "A004",
+      "week": "2024-W01",
+      "trade_amount": 800000,
+      "fee_amount": 2400,
+      "trade_count": 200
+    },
+    {
+      "account_id": "A001",
+      "week": "2024-W02",
+      "trade_amount": 600000,
+      "fee_amount": 1800,
+      "trade_count": 180
+    },
+    {
+      "account_id": "A002",
+      "week": "2024-W02",
+      "trade_amount": 350000,
+      "fee_amount": 1050,
+      "trade_count": 105
+    },
+    {
+      "account_id": "A003",
+      "week": "2024-W02",
+      "trade_amount": 150000,
+      "fee_amount": 450,
+      "trade_count": 60
+    },
+    {
+      "account_id": "A004",
+      "week": "2024-W02",
+      "trade_amount": 900000,
+      "fee_amount": 2700,
+      "trade_count": 220
+    }
+  ],
+  "tiers": [
+    {
+      "tier_id": "T1_2024W01",
+      "tier_name": "普通档",
+      "week": "2024-W01",
+      "volume_min": 0,
+      "volume_max": 200000,
+      "fee_rate": 0.003,
+      "rebate_rate": 0.2
+    },
+    {
+      "tier_id": "T2_2024W01",
+      "tier_name": "白银档",
+      "week": "2024-W01",
+      "volume_min": 200000,
+      "volume_max": 500000,
+      "fee_rate": 0.003,
+      "rebate_rate": 0.25
+    },
+    {
+      "tier_id": "T3_2024W01",
+      "tier_name": "黄金档",
+      "week": "2024-W01",
+      "volume_min": 500000,
+      "volume_max": 999999999,
+      "fee_rate": 0.003,
+      "rebate_rate": 0.3
+    },
+    {
+      "tier_id": "T1_2024W02",
+      "tier_name": "普通档",
+      "week": "2024-W02",
+      "volume_min": 0,
+      "volume_max": 200000,
+      "fee_rate": 0.003,
+      "rebate_rate": 0.22
+    },
+    {
+      "tier_id": "T2_2024W02",
+      "tier_name": "白银档",
+      "week": "2024-W02",
+      "volume_min": 200000,
+      "volume_max": 500000,
+      "fee_rate": 0.003,
+      "rebate_rate": 0.28
+    },
+    {
+      "tier_id": "T3_2024W02",
+      "tier_name": "黄金档",
+      "week": "2024-W02",
+      "volume_min": 500000,
+      "volume_max": 999999999,
+      "fee_rate": 0.003,
+      "rebate_rate": 0.32
+    }
+  ]
+}
