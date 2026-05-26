@@ -357,10 +357,15 @@ class PlaybackService:
             verdict['risk_level'] = 'medium'
 
         if sla_result.get('sla_rule'):
-            verdict['recommended_compensation'] = self._calculate_expected_compensation(
-                ticket, 
-                SlaRule.get_by_id(ticket.sla_rule_id) or SlaRule()
-            )
+            sla_rule = None
+            if ticket.sla_rule_id:
+                sla_rule = SlaRule.get_by_id(ticket.sla_rule_id)
+            if not sla_rule:
+                sla_rule = SlaRule.match_rule(ticket.ticket_type, ticket.priority_level)
+            if sla_rule:
+                verdict['recommended_compensation'] = self._calculate_expected_compensation(
+                    ticket, sla_rule
+                )
 
         if transfer_result.get('responsible_handler'):
             verdict['responsibility'] = transfer_result['responsible_handler']
