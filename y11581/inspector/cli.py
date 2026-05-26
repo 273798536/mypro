@@ -480,11 +480,11 @@ def generate_summary_report(ctx: Context):
     total_records = ctx.db.query(RawRecord).count()
     dirty_records = ctx.db.query(RawRecord).filter(RawRecord.is_dirty == True).count()
     fixed_records = ctx.db.query(RawRecord).filter(RawRecord.is_fixed == True).count()
-    pending_fix = dirty_records - fixed_records
+    pending_fix = dirty_records
 
     click.echo(f"\n导入批次总数: {total_batches}")
     click.echo(f"记录总数: {total_records}")
-    click.echo(f"脏记录总数: {dirty_records}")
+    click.echo(f"脏记录累计: {dirty_records + fixed_records}")
     click.echo(f"  - 已修正: {fixed_records}")
     click.echo(f"  - 待处理: {pending_fix}")
 
@@ -581,7 +581,18 @@ def generate_batch_report(ctx: Context, batch_id: int):
     click.echo(f"导入时间: {batch.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
     click.echo(f"记录总数: {batch.total_rows}")
     click.echo(f"有效记录: {batch.valid_rows}")
-    click.echo(f"脏记录数: {batch.dirty_rows}")
+    click.echo(f"原始脏记录数: {batch.dirty_rows}")
+
+    current_dirty = ctx.db.query(RawRecord).filter(
+        RawRecord.batch_id == batch_id,
+        RawRecord.is_dirty == True
+    ).count()
+    current_fixed = ctx.db.query(RawRecord).filter(
+        RawRecord.batch_id == batch_id,
+        RawRecord.is_fixed == True
+    ).count()
+    click.echo(f"当前脏记录数: {current_dirty}")
+    click.echo(f"已修正: {current_fixed}")
 
     dirty_records = ctx.db.query(RawRecord).filter(
         RawRecord.batch_id == batch_id,
