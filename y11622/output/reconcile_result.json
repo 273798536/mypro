@@ -1,0 +1,441 @@
+{
+  "summary": {
+    "report_date": "2024-01-16",
+    "generated_at": "2026-05-26T19:44:07.657492",
+    "trades": {
+      "total": 3,
+      "matched": 2,
+      "unmatched": 1,
+      "match_rate": 0.6666666666666666
+    },
+    "cash_flows": {
+      "total": 11,
+      "matched": 2,
+      "unmatched": 9,
+      "match_rate": 0.18181818181818182
+    },
+    "amounts": {
+      "total_trade_amount": 208100.0,
+      "total_fee_amount": 2736.05
+    },
+    "discrepancies": {
+      "total": 8,
+      "by_type": {
+        "T+1日期错位": 3,
+        "费用归类错误": 1,
+        "部分成交": 1,
+        "金额不符": 1,
+        "无法匹配": 1,
+        "缺失成交记录": 1
+      },
+      "by_severity": {
+        "中": 5,
+        "低": 1,
+        "高": 2
+      }
+    },
+    "matches": {
+      "total": 2,
+      "by_type": {
+        "完全匹配": 1,
+        "部分匹配": 1
+      }
+    }
+  },
+  "trades": {
+    "T001": {
+      "trade_id": "T001",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-16",
+      "security_code": "000001",
+      "security_name": "平安银行",
+      "side": "BUY",
+      "quantity": 1000.0,
+      "price": 10.5,
+      "gross_amount": 10500.0,
+      "fees": {
+        "印花税": 10.5,
+        "佣金": 5.25,
+        "过户费": 1.0
+      },
+      "total_fees": 16.75,
+      "net_amount": 10516.75
+    },
+    "T002": {
+      "trade_id": "T002",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-16",
+      "security_code": "600036",
+      "security_name": "招商银行",
+      "side": "SELL",
+      "quantity": 500.0,
+      "price": 35.2,
+      "gross_amount": 17600.0,
+      "fees": {
+        "印花税": 0.0,
+        "佣金": 8.8,
+        "过户费": 0.5
+      },
+      "total_fees": 9.3,
+      "net_amount": 17590.7
+    },
+    "T003": {
+      "trade_id": "T003",
+      "trade_date": "2024-01-16",
+      "settlement_date": "2024-01-17",
+      "security_code": "600519",
+      "security_name": "贵州茅台",
+      "side": "BUY",
+      "quantity": 100.0,
+      "price": 1800.0,
+      "gross_amount": 180000.0,
+      "fees": {
+        "印花税": 1800.0,
+        "佣金": 900.0,
+        "过户费": 10.0
+      },
+      "total_fees": 2710.0,
+      "net_amount": 182710.0
+    }
+  },
+  "cash_flows": {
+    "CF001": {
+      "flow_id": "CF001",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-16",
+      "security_code": "000001",
+      "amount": 10516.75,
+      "fee_code": null,
+      "fee_name": null,
+      "direction": "支出"
+    },
+    "CF002": {
+      "flow_id": "CF002",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-16",
+      "security_code": "000001",
+      "amount": 10.5,
+      "fee_code": "F001",
+      "fee_name": "印花税",
+      "direction": "支出"
+    },
+    "CF003": {
+      "flow_id": "CF003",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-16",
+      "security_code": "000001",
+      "amount": 5.25,
+      "fee_code": "F002",
+      "fee_name": "佣金",
+      "direction": "支出"
+    },
+    "CF004": {
+      "flow_id": "CF004",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-16",
+      "security_code": "000001",
+      "amount": 1.0,
+      "fee_code": "F003",
+      "fee_name": "过户费",
+      "direction": "支出"
+    },
+    "CF005": {
+      "flow_id": "CF005",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-17",
+      "security_code": "600036",
+      "amount": 17590.7,
+      "fee_code": null,
+      "fee_name": null,
+      "direction": "收入"
+    },
+    "CF006": {
+      "flow_id": "CF006",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-17",
+      "security_code": "600036",
+      "amount": 8.8,
+      "fee_code": "F002",
+      "fee_name": "佣金",
+      "direction": "支出"
+    },
+    "CF007": {
+      "flow_id": "CF007",
+      "trade_date": "2024-01-15",
+      "settlement_date": "2024-01-17",
+      "security_code": "600036",
+      "amount": 0.5,
+      "fee_code": "F003",
+      "fee_name": "过户费",
+      "direction": "支出"
+    },
+    "CF008": {
+      "flow_id": "CF008",
+      "trade_date": "2024-01-16",
+      "settlement_date": "2024-01-17",
+      "security_code": "600519",
+      "amount": 91355.0,
+      "fee_code": null,
+      "fee_name": null,
+      "direction": "支出"
+    },
+    "CF009": {
+      "flow_id": "CF009",
+      "trade_date": "2024-01-16",
+      "settlement_date": "2024-01-17",
+      "security_code": "600519",
+      "amount": 1800.0,
+      "fee_code": "F002",
+      "fee_name": "印花税",
+      "direction": "支出"
+    },
+    "CF010": {
+      "flow_id": "CF010",
+      "trade_date": "2024-01-16",
+      "settlement_date": "2024-01-17",
+      "security_code": "600519",
+      "amount": 900.0,
+      "fee_code": "F002",
+      "fee_name": "佣金",
+      "direction": "支出"
+    },
+    "CF011": {
+      "flow_id": "CF011",
+      "trade_date": "2024-01-16",
+      "settlement_date": "2024-01-17",
+      "security_code": "600519",
+      "amount": 10.0,
+      "fee_code": "F003",
+      "fee_name": "过户费",
+      "direction": "支出"
+    }
+  },
+  "matches": [
+    {
+      "match_id": "match-bd23e04c",
+      "trade_id": "T001",
+      "flow_ids": [
+        "CF001"
+      ],
+      "match_type": "完全匹配",
+      "match_score": 1.0,
+      "discrepancies": [],
+      "matched_at": "2026-05-26T19:44:07.656241"
+    },
+    {
+      "match_id": "match-43225934",
+      "trade_id": "T002",
+      "flow_ids": [
+        "CF005"
+      ],
+      "match_type": "部分匹配",
+      "match_score": 0.7200000000000001,
+      "discrepancies": [
+        {
+          "discrepancy_id": "disc-amt-069aea49",
+          "type": "金额不符",
+          "severity": "低",
+          "description": "金额小幅偏差: 预期17609.30, 实际17590.70, 差异率0.11%",
+          "trade_ids": [
+            "T002"
+          ],
+          "flow_ids": [
+            "CF005"
+          ],
+          "expected_value": -17609.3,
+          "actual_value": 17590.7,
+          "resolved": false,
+          "resolution_note": null
+        }
+      ],
+      "matched_at": "2026-05-26T19:44:07.656289"
+    }
+  ],
+  "discrepancies": [
+    {
+      "discrepancy_id": "disc-t1-a7f95075",
+      "type": "T+1日期错位",
+      "severity": "中",
+      "description": "流水[CF005]交收日期错位: 预期2024-01-16, 实际2024-01-17",
+      "trade_ids": [],
+      "flow_ids": [
+        "CF005"
+      ],
+      "expected_value": "2024-01-16",
+      "actual_value": "2024-01-17",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-t1-69ce81da",
+      "type": "T+1日期错位",
+      "severity": "中",
+      "description": "流水[CF006]交收日期错位: 预期2024-01-16, 实际2024-01-17",
+      "trade_ids": [],
+      "flow_ids": [
+        "CF006"
+      ],
+      "expected_value": "2024-01-16",
+      "actual_value": "2024-01-17",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-t1-4dd5cdef",
+      "type": "T+1日期错位",
+      "severity": "中",
+      "description": "流水[CF007]交收日期错位: 预期2024-01-16, 实际2024-01-17",
+      "trade_ids": [],
+      "flow_ids": [
+        "CF007"
+      ],
+      "expected_value": "2024-01-16",
+      "actual_value": "2024-01-17",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-fee-7c076ded",
+      "type": "费用归类错误",
+      "severity": "中",
+      "description": "费用归类错误: 流水[CF009]费用[印花税]应属于[交易税费], 当前分类[券商费用]",
+      "trade_ids": [],
+      "flow_ids": [
+        "CF009"
+      ],
+      "expected_value": "交易税费",
+      "actual_value": "券商费用",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-partial-f649fdf8",
+      "type": "部分成交",
+      "severity": "中",
+      "description": "疑似部分成交: 流水[CF008]金额91355.00约为成交[T003]预期182710.00的50.0%",
+      "trade_ids": [
+        "T003"
+      ],
+      "flow_ids": [
+        "CF008"
+      ],
+      "expected_value": 182710.0,
+      "actual_value": 91355.0,
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-amt-069aea49",
+      "type": "金额不符",
+      "severity": "低",
+      "description": "金额小幅偏差: 预期17609.30, 实际17590.70, 差异率0.11%",
+      "trade_ids": [
+        "T002"
+      ],
+      "flow_ids": [
+        "CF005"
+      ],
+      "expected_value": -17609.3,
+      "actual_value": 17590.7,
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-unmatch-f1d84001",
+      "type": "无法匹配",
+      "severity": "高",
+      "description": "成交[T003]无法匹配, 最佳得分0.10",
+      "trade_ids": [
+        "T003"
+      ],
+      "flow_ids": [
+        "CF008"
+      ],
+      "expected_value": null,
+      "actual_value": null,
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "discrepancy_id": "disc-extra-94dcc3cc",
+      "type": "缺失成交记录",
+      "severity": "高",
+      "description": "资金流水[CF008]无对应成交记录, 金额91355.00",
+      "trade_ids": [],
+      "flow_ids": [
+        "CF008"
+      ],
+      "expected_value": null,
+      "actual_value": 91355.0,
+      "resolved": false,
+      "resolution_note": null
+    }
+  ],
+  "securities": {
+    "000001": {
+      "code": "000001",
+      "name": "平安银行",
+      "type": "股票"
+    },
+    "600036": {
+      "code": "600036",
+      "name": "招商银行",
+      "type": "股票"
+    },
+    "600519": {
+      "code": "600519",
+      "name": "贵州茅台",
+      "type": "股票"
+    }
+  },
+  "fee_items": {
+    "F001": {
+      "fee_code": "F001",
+      "fee_name": "印花税",
+      "category": "交易税费"
+    },
+    "F002": {
+      "fee_code": "F002",
+      "fee_name": "佣金",
+      "category": "券商费用"
+    },
+    "F003": {
+      "fee_code": "F003",
+      "fee_name": "过户费",
+      "category": "登记结算费"
+    },
+    "F004": {
+      "fee_code": "F004",
+      "fee_name": "经手费",
+      "category": "交易所费用"
+    },
+    "F005": {
+      "fee_code": "F005",
+      "fee_name": "证管费",
+      "category": "监管费用"
+    }
+  },
+  "calendar": {
+    "2024-01-12": {
+      "trade_date": "2024-01-12",
+      "is_trading_day": true,
+      "settlement_day": "2024-01-15"
+    },
+    "2024-01-15": {
+      "trade_date": "2024-01-15",
+      "is_trading_day": true,
+      "settlement_day": "2024-01-16"
+    },
+    "2024-01-16": {
+      "trade_date": "2024-01-16",
+      "is_trading_day": true,
+      "settlement_day": "2024-01-17"
+    },
+    "2024-01-17": {
+      "trade_date": "2024-01-17",
+      "is_trading_day": true,
+      "settlement_day": "2024-01-18"
+    }
+  },
+  "corrections": []
+}

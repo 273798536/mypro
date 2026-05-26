@@ -1,0 +1,2 @@
+[console_scripts]
+broker-reconcile = broker_reconcile.cli:cli
