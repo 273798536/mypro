@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const sequelize = require('./config/database');
 const { checkAndCreateIdempotent, markIdempotentFailed } = require('./middlewares/idempotent');
+const { AsyncTask } = require('./models');
+const taskService = require('./services/taskService');
 
 const changeOrdersRoutes = require('./routes/changeOrders');
 const referenceRecordsRoutes = require('./routes/referenceRecords');
@@ -64,6 +66,44 @@ app.use((req, res) => {
   });
 });
 
+async function recoverPendingTasks() {
+  try {
+    const pendingTasks = await AsyncTask.findAll({
+      where: {
+        status: ['PENDING', 'PROCESSING']
+      }
+    });
+
+    if (pendingTasks.length === 0) {
+      console.log('No pending tasks to recover.');
+      return;
+    }
+
+    console.log(`Recovering ${pendingTasks.length} pending tasks...`);
+
+    for (const task of pendingTasks) {
+      if (task.status === 'PROCESSING') {
+        console.log(`Task ${task.taskId} was in PROCESSING state, resetting to PENDING...`);
+        await task.update({ status: 'PENDING' });
+      }
+
+      setImmediate(async () => {
+        try {
+          console.log(`Starting recovered task: ${task.taskId} (${task.taskType})`);
+          await taskService.processTask(task.taskId);
+          console.log(`Recovered task completed: ${task.taskId}`);
+        } catch (error) {
+          console.error(`Recovered task failed: ${task.taskId}`, error.message);
+        }
+      });
+    }
+
+    console.log(`${pendingTasks.length} tasks scheduled for recovery.`);
+  } catch (error) {
+    console.error('Failed to recover pending tasks:', error);
+  }
+}
+
 async function startServer() {
   try {
     await sequelize.authenticate();
@@ -71,6 +111,8 @@ async function startServer() {
 
     await sequelize.sync({ alter: false });
     console.log('Database synchronized.');
+
+    await recoverPendingTasks();
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

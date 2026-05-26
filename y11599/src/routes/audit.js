@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 const auditService = require('../services/auditService');
 const { ChangeOrder, ReferenceRecord, sequelize } = require('../models');
 
@@ -157,7 +158,7 @@ router.get('/sensitive-stats', async (req, res) => {
     const sensitiveChangeOrders = await ChangeOrder.count({
       where: {
         ...where,
-        sensitiveFields: { [sequelize.Op.ne]: [] }
+        sensitiveFields: { [Op.ne]: [] }
       }
     });
 

@@ -432,6 +432,22 @@ async function runTests() {
   }
   console.log();
 
+  // Test 14: Sensitive fields statistics (fixed Op.ne bug)
+  console.log('【14】敏感字段统计');
+  try {
+    const sensitiveResp = await request('GET', '/api/audit/sensitive-stats');
+    assert(sensitiveResp.status === 200, '查询敏感字段统计成功');
+    const sensitiveData = sensitiveResp.data?.data;
+    assert(sensitiveData != null, '返回敏感字段统计数据');
+    assert(typeof sensitiveData.totalChangeOrders === 'number', '有变更单总数');
+    assert(typeof sensitiveData.sensitiveChangeOrders === 'number', '有敏感变更单数');
+    assert(typeof sensitiveData.sensitiveRatio === 'string', '有敏感比例');
+    assert(Array.isArray(sensitiveData.topSensitiveFields), '敏感字段列表为数组');
+  } catch (e) {
+    assert(false, '敏感字段统计测试失败', e.message);
+  }
+  console.log();
+
   // Summary
   console.log('==========================================');
   console.log('测试结果汇总');
