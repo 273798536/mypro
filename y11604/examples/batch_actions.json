@@ -1,0 +1,41 @@
+[
+  {
+    "action": "create_contract",
+    "data": {
+      "contract_no": "HT2024004",
+      "vin": "LSVAM4183GC000004",
+      "customer_name": "赵六",
+      "customer_phone": "13800138004",
+      "total_amount": 180000,
+      "down_payment_amount": 70000,
+      "balance_amount": 110000,
+      "status": "active",
+      "signed_at": "2024-04-01",
+      "remark": "批量导入测试-日产天籁"
+    }
+  },
+  {
+    "action": "record_down_payment",
+    "data": {
+      "contract_no": "HT2024004",
+      "transaction_no": "DP2024004",
+      "amount": 70000,
+      "paid_at": "2024-04-02",
+      "payer": "赵六",
+      "payment_method": "支付宝",
+      "status": "paid"
+    }
+  },
+  {
+    "action": "create_balance_plan",
+    "data": {
+      "contract_no": "HT2024004",
+      "plan_no": "BP2024004",
+      "total_balance": 110000,
+      "installment_count": 36,
+      "first_payment_date": "2024-05-01",
+      "monthly_amount": 3250,
+      "status": "pending"
+    }
+  }
+]

@@ -1,0 +1,155 @@
+{
+  "contracts": [
+    {
+      "contract_no": "HT2024001",
+      "vin": "LSVAM4183GC000001",
+      "customer_name": "张三",
+      "customer_phone": "13800138001",
+      "total_amount": 150000,
+      "down_payment_amount": 50000,
+      "balance_amount": 100000,
+      "status": "active",
+      "signed_at": "2024-01-15",
+      "remark": "正常合同-大众朗逸",
+      "down_payments": [
+        {
+          "transaction_no": "DP2024001",
+          "amount": 50000,
+          "paid_at": "2024-01-16",
+          "payer": "张三",
+          "payment_method": "银行转账",
+          "status": "paid"
+        }
+      ],
+      "balance_plans": [
+        {
+          "plan_no": "BP2024001",
+          "total_balance": 100000,
+          "installment_count": 36,
+          "first_payment_date": "2024-02-15",
+          "monthly_amount": 2960,
+          "status": "pending"
+        }
+      ],
+      "gps_orders": [
+        {
+          "order_no": "GPS2024001",
+          "type": "install",
+          "status": "completed",
+          "scheduled_at": "2024-01-20",
+          "completed_at": "2024-01-20",
+          "technician": "李师傅",
+          "device_no": "GPSDEV001"
+        }
+      ],
+      "deliveries": [
+        {
+          "delivery_no": "DL2024001",
+          "delivered_at": "2024-01-25",
+          "down_payment_verified": true,
+          "gps_installed": true,
+          "balance_verified": false,
+          "delivered_by": "王销售",
+          "received_by": "张三"
+        }
+      ]
+    },
+    {
+      "contract_no": "HT2024002",
+      "vin": "LSVAM4183GC000002",
+      "customer_name": "李四",
+      "customer_phone": "13800138002",
+      "total_amount": 200000,
+      "down_payment_amount": 60000,
+      "balance_amount": 140000,
+      "status": "active",
+      "signed_at": "2024-02-01",
+      "remark": "尾款晚到账测试-本田雅阁",
+      "down_payments": [
+        {
+          "transaction_no": "DP2024002",
+          "amount": 60000,
+          "paid_at": "2024-02-02",
+          "payer": "李四",
+          "payment_method": "刷卡",
+          "status": "paid"
+        }
+      ],
+      "balance_plans": [
+        {
+          "plan_no": "BP2024002",
+          "total_balance": 140000,
+          "installment_count": 24,
+          "first_payment_date": "2024-03-01",
+          "monthly_amount": 6000,
+          "status": "settled",
+          "actual_settled_at": "2024-03-10",
+          "actual_settled_amount": 140000
+        }
+      ],
+      "gps_orders": [
+        {
+          "order_no": "GPS2024002",
+          "type": "install",
+          "status": "completed",
+          "scheduled_at": "2024-02-05",
+          "completed_at": "2024-02-05",
+          "technician": "李师傅",
+          "device_no": "GPSDEV002"
+        }
+      ],
+      "deliveries": [
+        {
+          "delivery_no": "DL2024002",
+          "delivered_at": "2024-02-10",
+          "down_payment_verified": true,
+          "gps_installed": true,
+          "balance_verified": true,
+          "delivered_by": "王销售",
+          "received_by": "李四"
+        }
+      ]
+    },
+    {
+      "contract_no": "HT2024003",
+      "vin": "LSVAM4183GC000003",
+      "customer_name": "王五",
+      "customer_phone": "13800138003",
+      "total_amount": 120000,
+      "down_payment_amount": 40000,
+      "balance_amount": 80000,
+      "status": "cancelled",
+      "signed_at": "2024-03-01",
+      "remark": "退订测试-丰田卡罗拉",
+      "down_payments": [
+        {
+          "transaction_no": "DP2024003",
+          "amount": 40000,
+          "paid_at": "2024-03-02",
+          "payer": "王五",
+          "payment_method": "微信",
+          "status": "paid"
+        }
+      ],
+      "gps_orders": [
+        {
+          "order_no": "GPS2024003",
+          "type": "install",
+          "status": "pending",
+          "scheduled_at": "2024-03-10"
+        }
+      ],
+      "refunds": [
+        {
+          "refund_no": "RF2024001",
+          "amount": 40000,
+          "refund_type": "full",
+          "reason": "客户个人原因退订",
+          "status": "completed",
+          "refunded_at": "2024-03-08",
+          "recipient": "王五"
+        }
+      ]
+    }
+  ]
+}
