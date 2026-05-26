@@ -16,6 +16,7 @@ from .models import (
 )
 from .schemas import (
     ContractCreate, ContractUpdate, PaymentNodeCreate, PaymentNodeUpdate,
+    AcceptanceEmailCreate, SupplementalAgreementCreate,
     StatusTransitionRequest, ManualJudgmentCreate
 )
 from .config import settings
@@ -905,9 +906,11 @@ class ImportService:
                         email_data['contract_id'] = contract_id
                         email_data['original_line_no'] = idx + 1
                         email_data['original_value'] = email_data.copy()
-                        email = AcceptanceEmail(**email_data)
+                        email_create = AcceptanceEmailCreate(**email_data)
+                        email = AcceptanceEmail(**email_create.model_dump())
                         email.source_file_id = import_source_id
                         db.add(email)
+                        db.flush()
                         results["emails"].append({"id": email.id, "subject": email.email_subject})
                         success_count += 1
                     except Exception as e:
@@ -933,9 +936,11 @@ class ImportService:
                         sa_data['contract_id'] = contract_id
                         sa_data['original_line_no'] = idx + 1
                         sa_data['original_value'] = sa_data.copy()
-                        sa = SupplementalAgreement(**sa_data)
+                        sa_create = SupplementalAgreementCreate(**sa_data)
+                        sa = SupplementalAgreement(**sa_create.model_dump())
                         sa.source_file_id = import_source_id
                         db.add(sa)
+                        db.flush()
                         results["supplemental_agreements"].append({"id": sa.id, "name": sa.agreement_name})
                         success_count += 1
                     except Exception as e:

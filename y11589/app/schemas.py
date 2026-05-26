@@ -1,8 +1,45 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, date
+import re
 import enum
 from .models import ContractStatus, ChangeType, RoleType, SourceFileType, ImportStatus
+
+
+def _parse_flexible_date(v: Any) -> Optional[datetime]:
+    if v is None or v == "":
+        return None
+    if isinstance(v, datetime):
+        return v
+    if isinstance(v, date):
+        return datetime(v.year, v.month, v.day)
+    if isinstance(v, str):
+        v = v.strip()
+        if not v:
+            return None
+        try:
+            v = re.sub(r'[年]', '-', v)
+            v = re.sub(r'[月]', '-', v)
+            v = re.sub(r'[日号]', '', v)
+            v = v.replace('/', '-').replace('\\', '-')
+            if re.match(r'^\d{4}-\d{1,2}-\d{1,2}$', v):
+                return datetime.strptime(v, '%Y-%m-%d')
+            if re.match(r'^\d{4}-\d{1,2}-\d{1,2}\s+\d{1,2}:\d{2}:\d{2}$', v):
+                return datetime.strptime(v, '%Y-%m-%d %H:%M:%S')
+            if re.match(r'^\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{2}:\d{2}', v):
+                return datetime.fromisoformat(v)
+            try:
+                return datetime.fromisoformat(v)
+            except:
+                pass
+            try:
+                from email.utils import parsedate_to_datetime
+                return parsedate_to_datetime(v)
+            except:
+                pass
+        except:
+            pass
+    return None
 
 
 class ContractBase(BaseModel):
@@ -16,6 +53,11 @@ class ContractBase(BaseModel):
     expiry_date: Optional[datetime] = None
     remarks: Optional[str] = None
     extra_data: Optional[Dict[str, Any]] = None
+
+    @field_validator('sign_date', 'effective_date', 'expiry_date', mode='before')
+    @classmethod
+    def parse_date_fields(cls, v):
+        return _parse_flexible_date(v)
 
 
 class ContractCreate(ContractBase):
@@ -34,6 +76,11 @@ class ContractUpdate(BaseModel):
     remarks: Optional[str] = None
     updated_by: str
     updated_by_role: RoleType
+
+    @field_validator('sign_date', 'effective_date', 'expiry_date', mode='before')
+    @classmethod
+    def parse_date_fields(cls, v):
+        return _parse_flexible_date(v)
 
 
 class ContractResponse(ContractBase):
@@ -65,6 +112,11 @@ class PaymentNodeBase(BaseModel):
     dispute_reason: Optional[str] = None
     remarks: Optional[str] = None
 
+    @field_validator('planned_date', 'actual_date', mode='before')
+    @classmethod
+    def parse_date_fields(cls, v):
+        return _parse_flexible_date(v)
+
 
 class PaymentNodeCreate(PaymentNodeBase):
     contract_id: int
@@ -87,6 +139,11 @@ class PaymentNodeUpdate(BaseModel):
     updated_by: str
     updated_by_role: RoleType
     change_reason: str
+
+    @field_validator('planned_date', 'actual_date', mode='before')
+    @classmethod
+    def parse_date_fields(cls, v):
+        return _parse_flexible_date(v)
 
 
 class PaymentNodeResponse(PaymentNodeBase):
@@ -114,6 +171,11 @@ class AcceptanceEmailBase(BaseModel):
     acceptance_date: Optional[datetime] = None
     remarks: Optional[str] = None
     attachments: Optional[List[str]] = None
+
+    @field_validator('send_date', 'acceptance_date', mode='before')
+    @classmethod
+    def parse_date_fields(cls, v):
+        return _parse_flexible_date(v)
 
 
 class AcceptanceEmailCreate(AcceptanceEmailBase):
@@ -148,6 +210,11 @@ class SupplementalAgreementBase(BaseModel):
     original_content: Optional[str] = None
     new_content: Optional[str] = None
     remarks: Optional[str] = None
+
+    @field_validator('sign_date', 'effective_date', mode='before')
+    @classmethod
+    def parse_date_fields(cls, v):
+        return _parse_flexible_date(v)
 
 
 class SupplementalAgreementCreate(SupplementalAgreementBase):
