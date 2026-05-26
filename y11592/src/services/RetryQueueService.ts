@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import sequelize from '../database/connection';
 import { config } from '../config';
 import { RetryQueue, DeadLetterQueue } from '../models';
 import {
@@ -130,9 +131,7 @@ class RetryQueueService {
         nextAttemptAt: {
           [Op.lte]: new Date(),
         },
-        attemptCount: {
-          [Op.lt]: config.retry.maxAttempts,
-        },
+        [Op.and]: sequelize.literal('"attemptCount" < "maxAttempts"'),
       },
       limit: 100,
     });
@@ -203,7 +202,7 @@ class RetryQueueService {
       const nextAttemptAt = new Date();
       nextAttemptAt.setMinutes(nextAttemptAt.getMinutes() + nextDelay);
 
-      if (item.attemptCount >= config.retry.maxAttempts) {
+      if (item.attemptCount >= item.maxAttempts) {
         await this.moveToDeadLetter(item, error);
       } else {
         await item.update({
@@ -238,9 +237,10 @@ class RetryQueueService {
       sourceId: item.sourceId,
       sourceData: item.sourceData,
       attemptCount: item.attemptCount,
+      maxAttempts: item.maxAttempts,
       lastError: error.message,
       errorStack: error.stack,
-      deadLetterReason: `超过最大重试次数 (${config.retry.maxAttempts})`,
+      deadLetterReason: `超过最大重试次数 (${item.maxAttempts})`,
       idempotencyKey: item.idempotencyKey,
       idempotencyStrategy: item.idempotencyStrategy,
       submittedBy: item.submittedBy,

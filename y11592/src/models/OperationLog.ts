@@ -9,7 +9,7 @@ class OperationLog extends Model {
   public operationType!: OperationType;
   public oldValues?: Record<string, any>;
   public newValues?: Record<string, any>;
-  public changedFields?: string[];
+  public changedFields?: string[] | string;
   public previousStatus?: RetryStatus;
   public newStatus?: RetryStatus;
   public operatorId!: string;
@@ -58,8 +58,24 @@ OperationLog.init(
       allowNull: true,
     },
     changedFields: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+      type: DataTypes.TEXT,
       allowNull: true,
+      get() {
+        const raw = this.getDataValue('changedFields');
+        if (!raw) return undefined;
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return raw;
+        }
+      },
+      set(val: string[] | string | undefined) {
+        if (Array.isArray(val)) {
+          this.setDataValue('changedFields', JSON.stringify(val));
+        } else {
+          this.setDataValue('changedFields', val as any);
+        }
+      },
     },
     previousStatus: {
       type: DataTypes.STRING(50),

@@ -9,6 +9,7 @@ class DeadLetterQueue extends Model {
   public sourceId!: string;
   public sourceData!: Record<string, any>;
   public attemptCount!: number;
+  public maxAttempts!: number;
   public lastError?: string;
   public errorStack?: string;
   public deadLetterReason!: string;
@@ -57,6 +58,11 @@ DeadLetterQueue.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    maxAttempts: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 5,
     },
     lastError: {
       type: DataTypes.TEXT,

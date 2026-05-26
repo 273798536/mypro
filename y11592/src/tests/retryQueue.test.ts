@@ -3,6 +3,13 @@ import { retryQueueService, operationLogService } from '../services';
 import { RetryQueue, OperationLog, DeadLetterQueue, WaveOrder } from '../models';
 import { config } from '../config';
 
+const resetNextAttemptAt = async () => {
+  await RetryQueue.update(
+    { nextAttemptAt: new Date() },
+    { where: { status: { [require('sequelize').Op.in]: [RetryStatus.PENDING, RetryStatus.FAILED] } } }
+  );
+};
+
 describe('重试队列测试', () => {
   const createTestWaveOrder = (waveNo: string) => ({
     waveNo,
@@ -75,6 +82,7 @@ describe('重试队列测试', () => {
       const pendingBefore = await RetryQueue.count({ where: { status: RetryStatus.PENDING } });
       expect(pendingBefore).toBe(1);
 
+      await resetNextAttemptAt();
       const result = await retryQueueService.processPendingItems();
       expect(result.processed).toBe(1);
       expect(result.success).toBe(1);
@@ -103,6 +111,7 @@ describe('重试队列测试', () => {
           maxAttempts: 3,
         });
 
+        await resetNextAttemptAt();
         await retryQueueService.processPendingItems();
 
         const record = await RetryQueue.findOne({ where: { sourceId: 'WAVE-001' } });
@@ -150,6 +159,84 @@ describe('重试队列测试', () => {
         require('../services/DataProcessingService').dataProcessingService.processData = originalProcessData;
       }
     });
+
+    it('maxAttempts=1 的项首次失败应立即进入死信', async () => {
+      const originalProcessData = require('../services/DataProcessingService').dataProcessingService.processData;
+      require('../services/DataProcessingService').dataProcessingService.processData = jest.fn().mockRejectedValue(new Error('模拟处理失败'));
+
+      try {
+        await retryQueueService.submit({
+          sourceType: DataSourceType.WAVE_ORDER,
+          sourceId: 'WAVE-MAX1',
+          sourceData: createTestWaveOrder('WAVE-MAX1'),
+          idempotencyStrategy: IdempotencyStrategy.IGNORE,
+          submittedBy: 'user-001',
+          batchId: 'BATCH-MAX1',
+          maxAttempts: 1,
+        });
+
+        await resetNextAttemptAt();
+        await retryQueueService.processPendingItems();
+
+        const deadLetter = await DeadLetterQueue.findOne({
+          where: { sourceId: 'WAVE-MAX1' },
+        });
+        expect(deadLetter).not.toBeNull();
+        expect(deadLetter!.attemptCount).toBe(1);
+        expect(deadLetter!.maxAttempts).toBe(1);
+
+        const retryRecord = await RetryQueue.findOne({
+          where: { sourceId: 'WAVE-MAX1' },
+        });
+        expect(retryRecord!.status).toBe(RetryStatus.DEAD_LETTER);
+      } finally {
+        require('../services/DataProcessingService').dataProcessingService.processData = originalProcessData;
+      }
+    });
+
+    it('不同 maxAttempts 的项应独立处理', async () => {
+      const originalProcessData = require('../services/DataProcessingService').dataProcessingService.processData;
+      require('../services/DataProcessingService').dataProcessingService.processData = jest.fn().mockRejectedValue(new Error('模拟处理失败'));
+
+      try {
+        await retryQueueService.submit({
+          sourceType: DataSourceType.WAVE_ORDER,
+          sourceId: 'WAVE-MAX3',
+          sourceData: createTestWaveOrder('WAVE-MAX3'),
+          idempotencyStrategy: IdempotencyStrategy.IGNORE,
+          submittedBy: 'user-001',
+          batchId: 'BATCH-MIX',
+          maxAttempts: 3,
+        });
+
+        await retryQueueService.submit({
+          sourceType: DataSourceType.WAVE_ORDER,
+          sourceId: 'WAVE-MAX1-MIX',
+          sourceData: createTestWaveOrder('WAVE-MAX1-MIX'),
+          idempotencyStrategy: IdempotencyStrategy.IGNORE,
+          submittedBy: 'user-001',
+          batchId: 'BATCH-MIX',
+          maxAttempts: 1,
+        });
+
+        await resetNextAttemptAt();
+        await retryQueueService.processPendingItems();
+
+        const deadMax1 = await RetryQueue.findOne({
+          where: { sourceId: 'WAVE-MAX1-MIX' },
+        });
+        expect(deadMax1!.status).toBe(RetryStatus.DEAD_LETTER);
+
+        const retryMax3 = await RetryQueue.findOne({
+          where: { sourceId: 'WAVE-MAX3' },
+        });
+        expect(retryMax3!.status).toBe(RetryStatus.FAILED);
+        expect(retryMax3!.attemptCount).toBe(1);
+        expect(retryMax3!.maxAttempts).toBe(3);
+      } finally {
+        require('../services/DataProcessingService').dataProcessingService.processData = originalProcessData;
+      }
+    });
   });
 
   describe('取消操作', () => {
@@ -190,6 +277,7 @@ describe('重试队列测试', () => {
         batchId: 'BATCH-001',
       });
 
+      await resetNextAttemptAt();
       await retryQueueService.processPendingItems();
 
       await expect(

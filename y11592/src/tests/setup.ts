@@ -3,8 +3,8 @@ import sequelize from '../database/connection';
 
 beforeAll(async () => {
   process.env.NODE_ENV = 'test';
-  await sequelize.sync({ force: true });
   await initModels();
+  await sequelize.sync({ force: true });
 });
 
 afterAll(async () => {
