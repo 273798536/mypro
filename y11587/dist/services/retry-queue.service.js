@@ -40,7 +40,7 @@ class RetryQueueService {
                 {
                     status: "RETRYING",
                     isDeleted: false,
-                    nextRetryAt: (0, typeorm_1.MoreThanOrEqual)(now),
+                    nextRetryAt: (0, typeorm_1.LessThanOrEqual)(now),
                 },
             ],
             order: { createdAt: "ASC" },

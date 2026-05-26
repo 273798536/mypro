@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "worker": "ts-node src/scripts/worker.ts",
     "init-db": "ts-node src/scripts/init-db.ts",
     "seed-data": "ts-node src/scripts/seed-data.ts",
     "trigger-bad-data": "ts-node src/scripts/trigger-bad-data.ts",

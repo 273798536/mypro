@@ -13,8 +13,11 @@ const receipt_routes_1 = __importDefault(require("./routes/receipt.routes"));
 const dirty_data_routes_1 = __importDefault(require("./routes/dirty-data.routes"));
 const report_routes_1 = __importDefault(require("./routes/report.routes"));
 const contract_entities_routes_1 = __importDefault(require("./routes/contract-entities.routes"));
+const queue_worker_service_1 = require("./services/queue-worker.service");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
+const ENABLE_WORKER = process.env.ENABLE_WORKER !== "false";
+let queueWorker = null;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -25,6 +28,7 @@ app.get("/health", (req, res) => {
             status: "ok",
             timestamp: new Date().toISOString(),
             service: "法务合同履约重试补偿队列服务",
+            worker: queueWorker?.getStatus() || null,
         },
     });
 });
@@ -34,6 +38,32 @@ app.use("/api/receipts", receipt_routes_1.default);
 app.use("/api/dirty-data", dirty_data_routes_1.default);
 app.use("/api/reports", report_routes_1.default);
 app.use("/api", contract_entities_routes_1.default);
+app.post("/api/worker/start", (req, res) => {
+    try {
+        if (!queueWorker) {
+            queueWorker = new queue_worker_service_1.QueueWorker(5000);
+        }
+        queueWorker.start();
+        res.json({ success: true, data: queueWorker.getStatus() });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+app.post("/api/worker/stop", (req, res) => {
+    try {
+        if (queueWorker) {
+            queueWorker.stop();
+        }
+        res.json({ success: true, data: queueWorker?.getStatus() || { isRunning: false } });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+app.get("/api/worker/status", (req, res) => {
+    res.json({ success: true, data: queueWorker?.getStatus() || { isRunning: false } });
+});
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -64,6 +94,7 @@ async function startServer() {
 ║                                                            ║
 ║   API文档:                                                  ║
 ║     - 合同管理      POST /api/contracts                     ║
+║     - 异常照片      POST /api/contracts/:id/photo           ║
 ║     - 验收邮件      POST /api/acceptance-emails             ║
 ║     - 客服备注      POST /api/customer-remarks              ║
 ║     - 人工意见      POST /api/manual-opinions               ║
@@ -74,9 +105,15 @@ async function startServer() {
 ║     - 补偿查询      GET  /api/receipts/compensation         ║
 ║     - 脏数据        GET  /api/dirty-data                    ║
 ║     - 报表          GET  /api/reports/business              ║
+║     - Worker控制    POST /api/worker/start                  ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
       `);
+            if (ENABLE_WORKER) {
+                queueWorker = new queue_worker_service_1.QueueWorker(5000);
+                queueWorker.start();
+                console.log("✓ 队列Worker已自动启动");
+            }
         });
     }
     catch (error) {

@@ -18,6 +18,7 @@ const DirtyRecord_1 = require("./entities/DirtyRecord");
 const OperationTrace_1 = require("./entities/OperationTrace");
 const ExternalReceipt_1 = require("./entities/ExternalReceipt");
 const CompensationRecord_1 = require("./entities/CompensationRecord");
+const ExceptionPhoto_1 = require("./entities/ExceptionPhoto");
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "sqlite",
     database: "./data/legal_contract.db",
@@ -39,6 +40,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
         OperationTrace_1.OperationTrace,
         ExternalReceipt_1.ExternalReceipt,
         CompensationRecord_1.CompensationRecord,
+        ExceptionPhoto_1.ExceptionPhoto,
     ],
     migrations: [],
     subscribers: [],

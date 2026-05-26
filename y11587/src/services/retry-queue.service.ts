@@ -1,4 +1,4 @@
-import { Repository, MoreThanOrEqual, IsNull } from "typeorm";
+import { Repository, LessThanOrEqual, IsNull } from "typeorm";
 import { AppDataSource } from "../data-source";
 import {
   RetryQueue,
@@ -83,7 +83,7 @@ export class RetryQueueService {
         {
           status: "RETRYING" as QueueStatus,
           isDeleted: false,
-          nextRetryAt: MoreThanOrEqual(now),
+          nextRetryAt: LessThanOrEqual(now),
         },
       ],
       order: { createdAt: "ASC" },

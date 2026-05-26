@@ -38,6 +38,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const contract_service_1 = require("../services/contract.service");
+const data_source_1 = require("../data-source");
+const ExceptionPhoto_1 = require("../entities/ExceptionPhoto");
 const multer_1 = __importDefault(require("multer"));
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
@@ -57,6 +59,20 @@ const storage = multer_1.default.diskStorage({
     },
 });
 const upload = (0, multer_1.default)({ storage });
+const photoStorage = multer_1.default.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = path.join(process.cwd(), "uploads", "photos");
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, `photo-${uniqueSuffix}${path.extname(file.originalname)}`);
+    },
+});
+const photoUpload = (0, multer_1.default)({ storage: photoStorage });
 router.post("/", async (req, res) => {
     try {
         const contract = await contractService.createContract(req.body, req.headers["x-operator"]);
@@ -167,6 +183,82 @@ router.post("/:id/upload-pdf", upload.single("pdf"), async (req, res) => {
             success: true,
             data: { contract, filePath: req.file.path },
         });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+const photoRepo = data_source_1.AppDataSource.getRepository(ExceptionPhoto_1.ExceptionPhoto);
+router.post("/:id/photos", photoUpload.single("photo"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: "未上传照片" });
+        }
+        const { category, description, location, takenAt, paymentNodeId, retryQueueId, receiptId } = req.body;
+        const photo = {
+            contractId: req.params.id,
+            paymentNodeId,
+            retryQueueId,
+            receiptId,
+            category: category || "OTHER",
+            filePath: req.file.path,
+            fileName: req.file.originalname,
+            fileSize: req.file.size,
+            mimeType: req.file.mimetype,
+            description,
+            location,
+            takenAt,
+            uploadedBy: req.headers["x-operator"] || "system",
+        };
+        const saved = await photoRepo.save(photo);
+        res.json({ success: true, data: saved });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+router.get("/:id/photos", async (req, res) => {
+    try {
+        const { category, page = 1, limit = 20 } = req.query;
+        const where = { contractId: req.params.id, isDeleted: false };
+        if (category)
+            where.category = category;
+        const [items, total] = await photoRepo.findAndCount({
+            where,
+            order: { createdAt: "DESC" },
+            skip: (Number(page) - 1) * Number(limit),
+            take: Number(limit),
+        });
+        res.json({
+            success: true,
+            data: { items, total, page: Number(page), limit: Number(limit) },
+        });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+router.get("/photos/:photoId", async (req, res) => {
+    try {
+        const photo = await photoRepo.findOneBy({ id: req.params.photoId, isDeleted: false });
+        if (!photo) {
+            return res.status(404).json({ success: false, error: "照片不存在" });
+        }
+        res.json({ success: true, data: photo });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+router.delete("/photos/:photoId", async (req, res) => {
+    try {
+        const photo = await photoRepo.findOneBy({ id: req.params.photoId, isDeleted: false });
+        if (!photo) {
+            return res.status(404).json({ success: false, error: "照片不存在" });
+        }
+        photo.isDeleted = true;
+        await photoRepo.save(photo);
+        res.json({ success: true });
     }
     catch (error) {
         res.status(400).json({ success: false, error: error.message });

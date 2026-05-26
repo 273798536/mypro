@@ -15,6 +15,7 @@ import { DirtyRecord } from "./entities/DirtyRecord";
 import { OperationTrace } from "./entities/OperationTrace";
 import { ExternalReceipt } from "./entities/ExternalReceipt";
 import { CompensationRecord } from "./entities/CompensationRecord";
+import { ExceptionPhoto } from "./entities/ExceptionPhoto";
 
 export const AppDataSource = new DataSource({
   type: "sqlite",
@@ -37,6 +38,7 @@ export const AppDataSource = new DataSource({
     OperationTrace,
     ExternalReceipt,
     CompensationRecord,
+    ExceptionPhoto,
   ],
   migrations: [],
   subscribers: [],
