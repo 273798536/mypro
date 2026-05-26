@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Participant {
+  id              String   @id @default(cuid())
+  userId          String
+  userName        String
+  userPhone       String
+  orderNo         String   @unique
+  tierId          String
+  tierName        String
+  payChannel      String
+  payAmount       Float
+  earlyBirdDiscount Float @default(0)
+  giftValue       Float    @default(0)
+  giftShipped     Boolean  @default(false)
+  status          String   @default("pending")
+  refundAmount    Float?
+  feeAmount       Float?
+  actualRefund    Float?
+  anomalies       String?
+  version         Int      @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  batchItems      BatchItem[]
+}
+
+model Tier {
+  id          String   @id @default(cuid())
+  name        String
+  price       Float
+  giftValue   Float    @default(0)
+  description String?
+  
+  createdAt   DateTime @default(now())
+}
+
+model ChannelConfig {
+  id        String  @id @default(cuid())
+  channel   String  @unique
+  feeRate   Float
+  fixedFee  Float   @default(0)
+  createdAt DateTime @default(now())
+}
+
+model RefundRule {
+  id                 String  @id @default(cuid())
+  name               String  @unique
+  deductFee          Boolean @default(true)
+  giftDeductRate     Float   @default(1)
+  earlyBirdHandling  String  @default("full_refund")
+  customEarlyBirdRate Float  @default(0)
+  createdAt          DateTime @default(now())
+}
+
+model RefundBatch {
+  id               String        @id @default(cuid())
+  name             String
+  status           String        @default("draft")
+  ruleId           String?
+  totalAmount      Float         @default(0)
+  totalFee         Float         @default(0)
+  totalActualRefund Float        @default(0)
+  frozenAt         DateTime?
+  frozenBy         String?
+  executedAt       DateTime?
+  createdBy        String
+  createdAt        DateTime      @default(now())
+  
+  items            BatchItem[]
+  exportRecords    ExportRecord[]
+}
+
+model BatchItem {
+  id                    String  @id @default(cuid())
+  batchId               String
+  participantId         String
+  snapshotRefundAmount  Float
+  snapshotFeeAmount     Float
+  snapshotActualRefund  Float
+  
+  batch                 RefundBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  participant           Participant @relation(fields: [participantId], references: [id])
+  
+  @@unique([batchId, participantId])
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  entityType     String
+  entityId       String
+  action         String
+  beforeSnapshot String?
+  afterSnapshot  String?
+  operator       String
+  reason         String?
+  timestamp      DateTime @default(now())
+  
+  @@index([entityType, entityId])
+}
+
+model ExportRecord {
+  id        String   @id @default(cuid())
+  type      String
+  batchId   String?
+  filters   String?
+  filePath  String
+  fileSize  Int
+  createdBy String
+  createdAt DateTime @default(now())
+  
+  batch     RefundBatch? @relation(fields: [batchId], references: [id])
+}
