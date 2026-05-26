@@ -59,22 +59,31 @@ async def create_repair(
                 business_id=repair.id
             )
         
-        filtered_data = apply_field_filter(repair, role_context, REPAIR_FIELD_CONFIG)
+        filtered_data = apply_field_filter(
+            repair, role_context, REPAIR_FIELD_CONFIG,
+            schema_class=RepairRecordSchema
+        )
         
+        db.commit()
         return DataResponse(
             success=True,
             data=filtered_data,
             message=f"返修记录{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
-        IdempotentService.save_failed_record(
-            db=db,
-            business_type="repair",
-            idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
-            raw_data=repair_in.model_dump(),
-            error_type="CREATE_ERROR",
-            error_message=str(e)
-        )
+        db.rollback()
+        try:
+            IdempotentService.save_failed_record(
+                db=db,
+                business_type="repair",
+                idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
+                raw_data=repair_in.model_dump(),
+                error_type="CREATE_ERROR",
+                error_message=str(e)
+            )
+            db.commit()
+        except:
+            pass
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -111,7 +120,10 @@ async def get_repairs(
         .limit(page_size)\
         .all()
     
-    filtered_data = apply_field_filter(repairs, role_context, REPAIR_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        repairs, role_context, REPAIR_FIELD_CONFIG,
+        schema_class=RepairRecordSchema
+    )
     
     return ListResponse(
         success=True,
@@ -134,7 +146,10 @@ async def get_repair(
         raise HTTPException(status_code=404, detail="返修记录不存在")
     
     role_context = get_user_role_context(current_user, db)
-    filtered_data = apply_field_filter(repair, role_context, REPAIR_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        repair, role_context, REPAIR_FIELD_CONFIG,
+        schema_class=RepairRecordSchema
+    )
     
     return DataResponse(success=True, data=filtered_data)
 
@@ -150,6 +165,11 @@ async def update_repair(
     repair = db.query(RepairRecord).filter(RepairRecord.id == repair_id).first()
     if not repair:
         raise HTTPException(status_code=404, detail="返修记录不存在")
+    
+    role_context = get_user_role_context(current_user, db)
+    if role_context["is_data_entry"] and not role_context["is_reviewer"] and not role_context["is_supervisor"]:
+        if repair.created_by != current_user.id:
+            raise HTTPException(status_code=403, detail="无权限修改此记录")
     
     update_data = repair_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -167,7 +187,9 @@ async def update_repair(
             business_id=repair.id
         )
     
-    role_context = get_user_role_context(current_user, db)
-    filtered_data = apply_field_filter(repair, role_context, REPAIR_FIELD_CONFIG)
-    
+    filtered_data = apply_field_filter(
+        repair, role_context, REPAIR_FIELD_CONFIG,
+        schema_class=RepairRecordSchema
+    )
+    db.commit()
     return DataResponse(success=True, data=filtered_data, message="更新成功")

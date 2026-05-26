@@ -61,22 +61,31 @@ async def create_delivery(
                 business_id=delivery.id
             )
         
-        filtered_data = apply_field_filter(delivery, role_context, DELIVERY_FIELD_CONFIG)
+        filtered_data = apply_field_filter(
+            delivery, role_context, DELIVERY_FIELD_CONFIG, 
+            schema_class=OutsourceDeliverySchema
+        )
         
+        db.commit()
         return DataResponse(
             success=True,
             data=filtered_data,
             message=f"外协送货单{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
-        IdempotentService.save_failed_record(
-            db=db,
-            business_type="delivery",
-            idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
-            raw_data=delivery_in.model_dump(),
-            error_type="CREATE_ERROR",
-            error_message=str(e)
-        )
+        db.rollback()
+        try:
+            IdempotentService.save_failed_record(
+                db=db,
+                business_type="delivery",
+                idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
+                raw_data=delivery_in.model_dump(),
+                error_type="CREATE_ERROR",
+                error_message=str(e)
+            )
+            db.commit()
+        except:
+            pass
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -113,7 +122,10 @@ async def get_deliveries(
         .limit(page_size)\
         .all()
     
-    filtered_data = apply_field_filter(deliveries, role_context, DELIVERY_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        deliveries, role_context, DELIVERY_FIELD_CONFIG,
+        schema_class=OutsourceDeliverySchema
+    )
     
     return ListResponse(
         success=True,
@@ -140,7 +152,10 @@ async def get_delivery(
         if delivery.created_by != current_user.id:
             raise HTTPException(status_code=403, detail="无权限查看此记录")
     
-    filtered_data = apply_field_filter(delivery, role_context, DELIVERY_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        delivery, role_context, DELIVERY_FIELD_CONFIG,
+        schema_class=OutsourceDeliverySchema
+    )
     return DataResponse(success=True, data=filtered_data)
 
 
@@ -177,7 +192,11 @@ async def update_delivery(
             business_id=delivery.id
         )
     
-    filtered_data = apply_field_filter(delivery, role_context, DELIVERY_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        delivery, role_context, DELIVERY_FIELD_CONFIG,
+        schema_class=OutsourceDeliverySchema
+    )
+    db.commit()
     return DataResponse(success=True, data=filtered_data, message="更新成功")
 
 

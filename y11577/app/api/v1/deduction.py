@@ -59,22 +59,31 @@ async def create_deduction(
                 business_id=deduction.id
             )
         
-        filtered_data = apply_field_filter(deduction, role_context, DEDUCTION_FIELD_CONFIG)
+        filtered_data = apply_field_filter(
+            deduction, role_context, DEDUCTION_FIELD_CONFIG,
+            schema_class=DeductionDetailSchema
+        )
         
+        db.commit()
         return DataResponse(
             success=True,
             data=filtered_data,
             message=f"扣款明细{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
-        IdempotentService.save_failed_record(
-            db=db,
-            business_type="deduction",
-            idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
-            raw_data=deduction_in.model_dump(),
-            error_type="CREATE_ERROR",
-            error_message=str(e)
-        )
+        db.rollback()
+        try:
+            IdempotentService.save_failed_record(
+                db=db,
+                business_type="deduction",
+                idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
+                raw_data=deduction_in.model_dump(),
+                error_type="CREATE_ERROR",
+                error_message=str(e)
+            )
+            db.commit()
+        except:
+            pass
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -114,7 +123,10 @@ async def get_deductions(
         .limit(page_size)\
         .all()
     
-    filtered_data = apply_field_filter(deductions, role_context, DEDUCTION_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        deductions, role_context, DEDUCTION_FIELD_CONFIG,
+        schema_class=DeductionDetailSchema
+    )
     
     return ListResponse(
         success=True,
@@ -137,7 +149,10 @@ async def get_deduction(
         raise HTTPException(status_code=404, detail="扣款明细不存在")
     
     role_context = get_user_role_context(current_user, db)
-    filtered_data = apply_field_filter(deduction, role_context, DEDUCTION_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        deduction, role_context, DEDUCTION_FIELD_CONFIG,
+        schema_class=DeductionDetailSchema
+    )
     
     return DataResponse(success=True, data=filtered_data)
 
@@ -153,6 +168,11 @@ async def update_deduction(
     deduction = db.query(DeductionDetail).filter(DeductionDetail.id == deduction_id).first()
     if not deduction:
         raise HTTPException(status_code=404, detail="扣款明细不存在")
+    
+    role_context = get_user_role_context(current_user, db)
+    if role_context["is_data_entry"] and not role_context["is_reviewer"] and not role_context["is_supervisor"]:
+        if deduction.created_by != current_user.id:
+            raise HTTPException(status_code=403, detail="无权限修改此记录")
     
     update_data = deduction_in.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -170,7 +190,9 @@ async def update_deduction(
             business_id=deduction.id
         )
     
-    role_context = get_user_role_context(current_user, db)
-    filtered_data = apply_field_filter(deduction, role_context, DEDUCTION_FIELD_CONFIG)
-    
+    filtered_data = apply_field_filter(
+        deduction, role_context, DEDUCTION_FIELD_CONFIG,
+        schema_class=DeductionDetailSchema
+    )
+    db.commit()
     return DataResponse(success=True, data=filtered_data, message="更新成功")

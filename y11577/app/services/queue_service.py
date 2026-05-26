@@ -40,11 +40,25 @@ class CompensationQueueService:
     ) -> CompensationQueue:
         existing = self.db.query(CompensationQueue).filter(
             CompensationQueue.business_type == business_type,
-            CompensationQueue.business_key == business_key,
-            CompensationQueue.status.in_([QueueStatus.PENDING, QueueStatus.PROCESSING, QueueStatus.FAILED])
+            CompensationQueue.business_key == business_key
+        ).filter(
+            CompensationQueue.status.in_([
+                QueueStatus.PENDING,
+                QueueStatus.PROCESSING,
+                QueueStatus.FAILED,
+                QueueStatus.SUCCESS,
+                QueueStatus.MANUAL_HANDLING
+            ])
         ).first()
 
         if existing:
+            if existing.status == QueueStatus.SUCCESS:
+                existing.status = QueueStatus.PENDING
+                existing.retry_count = 0
+                existing.next_retry_at = datetime.utcnow()
+                self._add_process_log(existing, "re_enqueue", "数据更新，重新入队处理")
+                self.db.flush()
+                self.db.refresh(existing)
             return existing
 
         queue_item = CompensationQueue(
@@ -58,7 +72,7 @@ class CompensationQueueService:
             source_ids=source_ids or []
         )
         self.db.add(queue_item)
-        self.db.commit()
+        self.db.flush()
         self.db.refresh(queue_item)
         return queue_item
 
@@ -76,11 +90,11 @@ class CompensationQueueService:
             return {"success": False, "error": "队列项不存在"}
 
         if queue_item.status == QueueStatus.SUCCESS:
-            return {"success": True, "message": "已处理成功"}
+            return {"success": True, "message": "已处理成功，跳过重复处理"}
 
         queue_item.status = QueueStatus.PROCESSING
         queue_item.retry_count += 1
-        self.db.commit()
+        self.db.flush()
 
         try:
             result = self._process_business_item(queue_item)
@@ -200,7 +214,7 @@ class CompensationQueueService:
             SettlementSummary.supplier_code == supplier_code,
             SettlementSummary.summary_date == summary_date,
             SettlementSummary.product_code == product_code
-        ).first()
+        ).with_for_update().first()
 
         if not summary:
             summary = SettlementSummary(
@@ -218,22 +232,28 @@ class CompensationQueueService:
             )
             self.db.add(summary)
         else:
-            summary.delivery_amount += delivery_amount
-            summary.repair_amount += repair_amount
-            summary.deduction_amount += deduction_amount
-            summary.final_amount = summary.delivery_amount + summary.repair_amount - summary.deduction_amount
-            
-            if source_type and source_id:
-                source_ids = summary.source_ids or {}
-                if source_type not in source_ids:
-                    source_ids[source_type] = []
-                if source_id not in source_ids[source_type]:
-                    source_ids[source_type].append(source_id)
-                summary.source_ids = source_ids
-            
-            summary.version += 1
+            source_ids = summary.source_ids or {}
+            already_processed = False
 
-        self.db.commit()
+            if source_type and source_id:
+                if source_type in source_ids and source_id in source_ids[source_type]:
+                    already_processed = True
+                else:
+                    if source_type not in source_ids:
+                        source_ids[source_type] = []
+                    source_ids[source_type].append(source_id)
+
+            if not already_processed:
+                summary.delivery_amount += delivery_amount
+                summary.repair_amount += repair_amount
+                summary.deduction_amount += deduction_amount
+                summary.final_amount = summary.delivery_amount + summary.repair_amount - summary.deduction_amount
+                summary.source_ids = source_ids
+                summary.version += 1
+            else:
+                summary.source_ids = source_ids
+
+        self.db.flush()
 
     def _mark_success(self, queue_item: CompensationQueue, result: Dict[str, Any]):
         queue_item.status = QueueStatus.SUCCESS

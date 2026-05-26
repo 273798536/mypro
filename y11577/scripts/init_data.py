@@ -8,8 +8,12 @@ from app.models.auth import User, Role, Permission
 from app.core.security import get_password_hash
 
 
-def init_roles_and_permissions():
-    db = SessionLocal()
+def init_roles_and_permissions(db=None):
+    if db is None:
+        db = SessionLocal()
+        own_db = True
+    else:
+        own_db = False
     try:
         permissions = [
             {"name": "查看数据", "code": "view", "description": "查看业务数据"},
@@ -26,7 +30,7 @@ def init_roles_and_permissions():
                 perm = Permission(**perm_data)
                 db.add(perm)
         
-        db.commit()
+        db.flush()
         
         roles = [
             {
@@ -71,8 +75,29 @@ def init_roles_and_permissions():
             role_perms = [all_perms[code] for code in role_data["permissions"] if code in all_perms]
             role.permissions = role_perms
         
-        db.commit()
+        db.flush()
         
+        if own_db:
+            db.commit()
+            print("初始化权限完成！")
+        
+    except Exception as e:
+        if own_db:
+            db.rollback()
+        print(f"初始化失败: {e}")
+        raise
+    finally:
+        if own_db:
+            db.close()
+
+
+def create_test_user(db=None):
+    if db is None:
+        db = SessionLocal()
+        own_db = True
+    else:
+        own_db = False
+    try:
         users = [
             {
                 "username": "admin",
@@ -121,19 +146,23 @@ def init_roles_and_permissions():
             user_roles = [all_roles[code] for code in user_data["roles"] if code in all_roles]
             user.roles = user_roles
         
-        db.commit()
-        print("初始化数据完成！")
-        print("创建的用户:")
-        for user_data in users:
-            print(f"  用户名: {user_data['username']}, 密码: {user_data['password']}, 角色: {user_data['roles']}")
+        if own_db:
+            db.commit()
+            print("初始化用户完成！")
+            print("创建的用户:")
+            for user_data in users:
+                print(f"  用户名: {user_data['username']}, 密码: {user_data['password']}, 角色: {user_data['roles']}")
         
     except Exception as e:
-        db.rollback()
+        if own_db:
+            db.rollback()
         print(f"初始化失败: {e}")
         raise
     finally:
-        db.close()
+        if own_db:
+            db.close()
 
 
 if __name__ == "__main__":
     init_roles_and_permissions()
+    create_test_user()

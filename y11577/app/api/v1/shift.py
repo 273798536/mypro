@@ -50,22 +50,31 @@ async def create_shift(
             user_id=current_user.id
         )
         
-        filtered_data = apply_field_filter(shift, role_context, SHIFT_FIELD_CONFIG)
+        filtered_data = apply_field_filter(
+            shift, role_context, SHIFT_FIELD_CONFIG,
+            schema_class=ShiftRecordSchema
+        )
         
+        db.commit()
         return DataResponse(
             success=True,
             data=filtered_data,
             message=f"班次记录{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
-        IdempotentService.save_failed_record(
-            db=db,
-            business_type="shift",
-            idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
-            raw_data=shift_in.model_dump(),
-            error_type="CREATE_ERROR",
-            error_message=str(e)
-        )
+        db.rollback()
+        try:
+            IdempotentService.save_failed_record(
+                db=db,
+                business_type="shift",
+                idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
+                raw_data=shift_in.model_dump(),
+                error_type="CREATE_ERROR",
+                error_message=str(e)
+            )
+            db.commit()
+        except:
+            pass
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -105,7 +114,10 @@ async def get_shifts(
         .limit(page_size)\
         .all()
     
-    filtered_data = apply_field_filter(shifts, role_context, SHIFT_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        shifts, role_context, SHIFT_FIELD_CONFIG,
+        schema_class=ShiftRecordSchema
+    )
     
     return ListResponse(
         success=True,
@@ -128,6 +140,9 @@ async def get_shift(
         raise HTTPException(status_code=404, detail="班次记录不存在")
     
     role_context = get_user_role_context(current_user, db)
-    filtered_data = apply_field_filter(shift, role_context, SHIFT_FIELD_CONFIG)
+    filtered_data = apply_field_filter(
+        shift, role_context, SHIFT_FIELD_CONFIG,
+        schema_class=ShiftRecordSchema
+    )
     
     return DataResponse(success=True, data=filtered_data)

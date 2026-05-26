@@ -38,6 +38,9 @@ class OutsourceDeliveryUpdate(BaseModel):
 
 
 class OutsourceDelivery(OutsourceDeliveryBase, BusinessBase):
+    unit_price: Optional[Decimal] = None
+    total_amount: Optional[Decimal] = None
+    idempotent_key: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -71,6 +74,8 @@ class RepairRecordUpdate(BaseModel):
 
 
 class RepairRecord(RepairRecordBase, BusinessBase):
+    repair_cost: Optional[Decimal] = None
+    idempotent_key: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -101,6 +106,8 @@ class DeductionDetailUpdate(BaseModel):
 
 
 class DeductionDetail(DeductionDetailBase, BusinessBase):
+    deduction_amount: Optional[Decimal] = None
+    idempotent_key: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -124,6 +131,7 @@ class ShiftRecordCreate(ShiftRecordBase):
 
 
 class ShiftRecord(ShiftRecordBase, BusinessBase):
+    idempotent_key: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -221,6 +229,7 @@ class TemporarySupplementUpdate(BaseModel):
 
 
 class TemporarySupplement(TemporarySupplementBase, BusinessBase):
+    idempotent_key: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 

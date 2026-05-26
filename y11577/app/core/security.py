@@ -222,13 +222,30 @@ SUPPLEMENT_FIELD_CONFIG = {
 }
 
 
-def apply_field_filter(data, role_context, field_config):
+def apply_field_filter(data, role_context, field_config, schema_class=None):
     if isinstance(data, list):
-        return [apply_field_filter(item, role_context, field_config) for item in data]
-    elif hasattr(data, '__dict__'):
-        data_dict = data.__dict__
-        filtered = filter_fields_by_role(data_dict, role_context, field_config)
-        return filtered
-    elif isinstance(data, dict):
-        return filter_fields_by_role(data, role_context, field_config)
-    return data
+        return [apply_field_filter(item, role_context, field_config, schema_class) for item in data]
+    
+    if schema_class is not None:
+        if hasattr(data, '__dict__'):
+            data_obj = schema_class.model_validate(data)
+            data_dict = data_obj.model_dump(mode='json')
+        elif isinstance(data, dict):
+            data_obj = schema_class.model_validate(data)
+            data_dict = data_obj.model_dump(mode='json')
+        else:
+            return data
+    else:
+        if hasattr(data, '__dict__'):
+            data_dict = {k: v for k, v in data.__dict__.items() if not k.startswith('_')}
+        elif isinstance(data, dict):
+            data_dict = data
+        else:
+            return data
+    
+    filtered = filter_fields_by_role(data_dict, role_context, field_config)
+    
+    if schema_class is not None:
+        return schema_class.model_validate(filtered)
+    
+    return filtered

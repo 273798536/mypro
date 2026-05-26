@@ -7,7 +7,8 @@ from app.database import get_db
 from app.core.security import (
     get_current_active_user,
     RoleChecker,
-    get_user_role_context
+    get_user_role_context,
+    apply_field_filter
 )
 from app.models.auth import User
 from app.models.business import TemporarySupplement
@@ -49,6 +50,8 @@ async def create_supplement(
     _: bool = Depends(allow_data_entry)
 ) -> Any:
     try:
+        role_context = get_user_role_context(current_user, db)
+        
         idempotent_key = IdempotentService.generate_supplement_key(
             supplement_type=supplement_in.supplement_type,
             supplement_date=str(supplement_in.supplement_date),
@@ -64,20 +67,31 @@ async def create_supplement(
             user_id=current_user.id
         )
         
+        filtered_data = apply_field_filter(
+            supplement, role_context, SUPPLEMENT_FIELD_CONFIG,
+            schema_class=TemporarySupplementSchema
+        )
+        
+        db.commit()
         return DataResponse(
             success=True,
-            data=supplement,
+            data=filtered_data,
             message=f"临时补录单{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
-        IdempotentService.save_failed_record(
-            db=db,
-            business_type="supplement",
-            idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
-            raw_data=supplement_in.model_dump(),
-            error_type="CREATE_ERROR",
-            error_message=str(e)
-        )
+        db.rollback()
+        try:
+            IdempotentService.save_failed_record(
+                db=db,
+                business_type="supplement",
+                idempotent_key=idempotent_key if 'idempotent_key' in locals() else "UNKNOWN",
+                raw_data=supplement_in.model_dump(),
+                error_type="CREATE_ERROR",
+                error_message=str(e)
+            )
+            db.commit()
+        except:
+            pass
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -117,9 +131,14 @@ async def get_supplements(
         .limit(page_size)\
         .all()
     
+    filtered_data = apply_field_filter(
+        supplements, role_context, SUPPLEMENT_FIELD_CONFIG,
+        schema_class=TemporarySupplementSchema
+    )
+    
     return ListResponse(
         success=True,
-        data=supplements,
+        data=filtered_data,
         total=total,
         page=page,
         page_size=page_size,
@@ -137,7 +156,17 @@ async def get_supplement(
     if not supplement:
         raise HTTPException(status_code=404, detail="临时补录单不存在")
     
-    return DataResponse(success=True, data=supplement)
+    role_context = get_user_role_context(current_user, db)
+    if role_context["is_data_entry"] and not role_context["is_reviewer"] and not role_context["is_supervisor"]:
+        if supplement.created_by != current_user.id:
+            raise HTTPException(status_code=403, detail="无权限查看此记录")
+    
+    filtered_data = apply_field_filter(
+        supplement, role_context, SUPPLEMENT_FIELD_CONFIG,
+        schema_class=TemporarySupplementSchema
+    )
+    
+    return DataResponse(success=True, data=filtered_data)
 
 
 @router.put("/{supplement_id}", response_model=DataResponse[TemporarySupplementSchema])
@@ -165,7 +194,12 @@ async def update_supplement(
     db.commit()
     db.refresh(supplement)
     
-    return DataResponse(success=True, data=supplement, message="更新成功")
+    filtered_data = apply_field_filter(
+        supplement, role_context, SUPPLEMENT_FIELD_CONFIG,
+        schema_class=TemporarySupplementSchema
+    )
+    db.commit()
+    return DataResponse(success=True, data=filtered_data, message="更新成功")
 
 
 @router.post("/{supplement_id}/review", response_model=DataResponse)
