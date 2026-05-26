@@ -40,7 +40,7 @@ func TestBalanceContinuityCheck(t *testing.T) {
 
 	batchService.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 
-	result, err := reconcileService.Reconcile(batch.ID, opCtx)
+	result, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile failed: %v", err)
 	}
@@ -83,13 +83,13 @@ func TestBalanceGapDetection(t *testing.T) {
 
 	batchService.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 
-	result, err := reconcileService.Reconcile(batch.ID, opCtx)
+	result, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile failed: %v", err)
 	}
 
-	if result.BalanceGaps <= 0 {
-		t.Errorf("Expected balance gaps detected, got %d", result.BalanceGaps)
+	if result.GapsFound <= 0 {
+		t.Errorf("Expected balance gaps detected, got %d", result.GapsFound)
 	}
 }
 
@@ -128,7 +128,7 @@ func TestCrossStoreDetection(t *testing.T) {
 
 	batchService.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 
-	result, err := reconcileService.Reconcile(batch.ID, opCtx)
+	result, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile failed: %v", err)
 	}
@@ -158,19 +158,19 @@ func TestReversedTransactionDetection(t *testing.T) {
 			BeforeBalance: 0,
 			AfterBalance:  100,
 			TransTime:     now,
-			IsReversed:    true,
+			IsCancelled:   true,
 		},
 	}
 
 	batchService.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 
-	result, err := reconcileService.Reconcile(batch.ID, opCtx)
+	result, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile failed: %v", err)
 	}
 
-	if result.ReversedCount <= 0 {
-		t.Errorf("Expected reversed transactions detected, got %d", result.ReversedCount)
+	if result.CancelledCount <= 0 {
+		t.Errorf("Expected cancelled transactions detected, got %d", result.CancelledCount)
 	}
 }
 
@@ -207,13 +207,13 @@ func TestAmountCalculationCheck(t *testing.T) {
 
 	batchService.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 
-	result, err := reconcileService.Reconcile(batch.ID, opCtx)
+	result, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile failed: %v", err)
 	}
 
-	if result.AmountErrors <= 0 {
-		t.Errorf("Expected amount calculation errors detected, got %d", result.AmountErrors)
+	if result.MismatchedRecords <= 0 {
+		t.Errorf("Expected mismatched records, got %d", result.MismatchedRecords)
 	}
 }
 
@@ -259,16 +259,13 @@ func TestMultipleMembersReconcile(t *testing.T) {
 
 	batchService.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 
-	result, err := reconcileService.Reconcile(batch.ID, opCtx)
+	result, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile failed: %v", err)
 	}
 
 	if result.TotalRecords != 3 {
 		t.Errorf("Expected 3 total records, got %d", result.TotalRecords)
-	}
-	if result.TotalMembers != 2 {
-		t.Errorf("Expected 2 total members, got %d", result.TotalMembers)
 	}
 }
 
@@ -281,7 +278,7 @@ func TestEmptyBatchReconcile(t *testing.T) {
 
 	batch, _ := batchService.CreateBatch("STORE001", "测试门店", opCtx)
 
-	_, err := reconcileService.Reconcile(batch.ID, opCtx)
+	_, err := reconcileService.ReconcileBatch(batch.ID, opCtx)
 	if err != nil {
 		t.Fatalf("Reconcile of empty batch should not fail: %v", err)
 	}

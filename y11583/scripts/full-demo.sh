@@ -109,7 +109,13 @@ echo ""
 
 sleep 1
 
-echo "Step 10: 重新审核并通过"
+echo "Step 10: 重新提交并审核通过"
+curl -s -X POST "http://localhost:8080/api/v1/batches/$BATCH_ID/submit" \
+  -H "Content-Type: application/json" \
+  -H "X-Operator-ID: MANAGER_OP" \
+  -H "X-Operator-Name: 财务主管" \
+  -d '{"reason": "重新提交审核"}' | jq .
+echo ""
 curl -s -X POST "http://localhost:8080/api/v1/batches/$BATCH_ID/review" \
   -H "Content-Type: application/json" \
   -H "X-Operator-ID: MANAGER_OP" \

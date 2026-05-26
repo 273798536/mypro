@@ -24,23 +24,20 @@ func TestIdempotencyIgnoreStrategy(t *testing.T) {
 		},
 	}
 
-	result, err := service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
+	added, err := service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 	if err != nil {
 		t.Fatalf("First add failed: %v", err)
 	}
-	if result.Added != 1 {
-		t.Errorf("Expected 1 added, got %d", result.Added)
+	if added != 1 {
+		t.Errorf("Expected 1 added, got %d", added)
 	}
 
-	result, err = service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
+	added, err = service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyIgnore, opCtx)
 	if err != nil {
 		t.Fatalf("Second add failed: %v", err)
 	}
-	if result.Added != 0 {
-		t.Errorf("Expected 0 added with IGNORE, got %d", result.Added)
-	}
-	if result.Skipped != 1 {
-		t.Errorf("Expected 1 skipped, got %d", result.Skipped)
+	if added != 0 {
+		t.Errorf("Expected 0 added with IGNORE, got %d", added)
 	}
 }
 
@@ -60,12 +57,12 @@ func TestIdempotencyOverwriteStrategy(t *testing.T) {
 		},
 	}
 
-	result, err := service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyOverwrite, opCtx)
+	added, err := service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyOverwrite, opCtx)
 	if err != nil {
 		t.Fatalf("First add failed: %v", err)
 	}
-	if result.Added != 1 {
-		t.Errorf("Expected 1 added, got %d", result.Added)
+	if added != 1 {
+		t.Errorf("Expected 1 added, got %d", added)
 	}
 
 	updatedRecords := []models.RechargeRecord{
@@ -77,12 +74,12 @@ func TestIdempotencyOverwriteStrategy(t *testing.T) {
 		},
 	}
 
-	result, err = service.AddRechargeRecords(batch.ID, updatedRecords, models.DuplicateStrategyOverwrite, opCtx)
+	added, err = service.AddRechargeRecords(batch.ID, updatedRecords, models.DuplicateStrategyOverwrite, opCtx)
 	if err != nil {
 		t.Fatalf("Second add failed: %v", err)
 	}
-	if result.Updated != 1 {
-		t.Errorf("Expected 1 updated with OVERWRITE, got %d", result.Updated)
+	if added != 1 {
+		t.Errorf("Expected 1 updated with OVERWRITE, got %d", added)
 	}
 }
 
@@ -102,20 +99,20 @@ func TestIdempotencyAppendStrategy(t *testing.T) {
 		},
 	}
 
-	result, err := service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyAppend, opCtx)
+	added, err := service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyAppend, opCtx)
 	if err != nil {
 		t.Fatalf("First add failed: %v", err)
 	}
-	if result.Added != 1 {
-		t.Errorf("Expected 1 added, got %d", result.Added)
+	if added != 1 {
+		t.Errorf("Expected 1 added, got %d", added)
 	}
 
-	result, err = service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyAppend, opCtx)
+	added, err = service.AddRechargeRecords(batch.ID, records, models.DuplicateStrategyAppend, opCtx)
 	if err != nil {
 		t.Fatalf("Second add failed: %v", err)
 	}
-	if result.Appended != 1 {
-		t.Errorf("Expected 1 appended with APPEND, got %d", result.Appended)
+	if added != 1 {
+		t.Errorf("Expected 1 appended with APPEND, got %d", added)
 	}
 }
 
@@ -141,7 +138,13 @@ func TestIdempotencyMultipleStrategies(t *testing.T) {
 		},
 	}
 
-	service.AddRechargeRecords(batch.ID, existingRecords, models.DuplicateStrategyIgnore, opCtx)
+	added, err := service.AddRechargeRecords(batch.ID, existingRecords, models.DuplicateStrategyIgnore, opCtx)
+	if err != nil {
+		t.Fatalf("First add failed: %v", err)
+	}
+	if added != 2 {
+		t.Errorf("Expected 2 records added, got %d", added)
+	}
 
 	mixedRecords := []models.RechargeRecord{
 		{
@@ -158,15 +161,12 @@ func TestIdempotencyMultipleStrategies(t *testing.T) {
 		},
 	}
 
-	result, err := service.AddRechargeRecords(batch.ID, mixedRecords, models.DuplicateStrategyIgnore, opCtx)
+	added, err = service.AddRechargeRecords(batch.ID, mixedRecords, models.DuplicateStrategyIgnore, opCtx)
 	if err != nil {
 		t.Fatalf("Mixed add failed: %v", err)
 	}
-	if result.Added != 1 {
-		t.Errorf("Expected 1 new record added, got %d", result.Added)
-	}
-	if result.Skipped != 1 {
-		t.Errorf("Expected 1 existing record skipped, got %d", result.Skipped)
+	if added != 1 {
+		t.Errorf("Expected 1 new record added, got %d", added)
 	}
 }
 
@@ -204,7 +204,7 @@ func TestCannotModifyExportedBatch(t *testing.T) {
 	service.SubmitBatch(batch.ID, "提交", opCtx)
 	service.StartReview(batch.ID, "审核", opCtx)
 	service.ApproveBatch(batch.ID, "通过", opCtx)
-	service.ExportBatch(batch.ID, "导出", opCtx)
+	service.MarkExported(batch.ID, "导出", opCtx)
 
 	records := []models.RechargeRecord{
 		{

@@ -104,7 +104,9 @@ func TestInvalidStatusTransitions(t *testing.T) {
 
 	batch, _ := service.CreateBatch("STORE001", "测试门店", opCtx)
 
-	service.ApproveBatch(batch.ID, "测试", opCtx)
+	service.SubmitBatch(batch.ID, "提交", opCtx)
+	service.StartReview(batch.ID, "审核", opCtx)
+	service.ApproveBatch(batch.ID, "通过", opCtx)
 
 	err := service.SubmitBatch(batch.ID, "尝试从APPROVED回到SUBMITTED", opCtx)
 	if err == nil {
@@ -235,7 +237,7 @@ func TestListBatches(t *testing.T) {
 		service.CreateBatch("STORE001", "测试门店", opCtx)
 	}
 
-	batches, total, err := service.ListBatches("", "", 1, 10)
+	batches, total, err := service.ListBatches("", models.BatchStatus(""), 1, 10)
 	if err != nil {
 		t.Fatalf("ListBatches failed: %v", err)
 	}

@@ -193,7 +193,7 @@ var listCmd = &cobra.Command{
 		initDB()
 
 		batchService := service.NewBatchService(database.GetDB())
-		batches, total, err := batchService.ListBatches(storeID, "", 1, 100)
+		batches, total, err := batchService.ListBatches(storeID, models.BatchStatus(""), 1, 100)
 		if err != nil {
 			fmt.Printf("查询失败: %v\n", err)
 			os.Exit(1)

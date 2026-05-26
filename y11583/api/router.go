@@ -27,7 +27,6 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 	handoverRepo := repository.NewHandoverRepository(db)
 	balanceHistoryRepo := repository.NewBalanceHistoryRepository(db)
 	reconciliationRepo := repository.NewReconciliationRepository(db)
-	auditRepo := repository.NewAuditLogRepository(db)
 
 	batchService := service.NewBatchService(db)
 	reconcileService := service.NewReconcileService(db)
