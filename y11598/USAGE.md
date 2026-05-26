@@ -124,6 +124,30 @@ npm run export
 }
 ```
 
+### 1.5 审批邮件导入样例
+
+**请求地址**: `POST /api/approval-emails/batch`
+
+**请求体**:
+```json
+{
+  "operator": "system",
+  "emails": [
+    {
+      "change_order_id": "uuid-here",
+      "order_no": "CO202405001",
+      "email_from": "manager@company.com",
+      "email_to": "content_team@company.com",
+      "email_cc": "review@company.com",
+      "subject": "[审批通过] CO202405001 - 退款政策更新",
+      "content": "变更单 CO202405001 已审批通过，请及时发布。",
+      "send_time": "2024-05-01T15:00:00Z",
+      "approval_result": "approved"
+    }
+  ]
+}
+```
+
 ---
 
 ## 二、失败路径（脏数据类型）
@@ -284,11 +308,15 @@ GET /api/supplier-statements/:id
 - `POST /api/audit-opinions/batch` - 批量导入审核意见
 - `POST /api/agent-quotes/batch` - 批量导入客服引用
 - `POST /api/supplier-statements/batch` - 批量导入对账单
+- `POST /api/approval-emails/batch` - 批量导入审批邮件
 
 **数据查询（读）**:
 - `GET /api/change-orders` - 查询变更单列表
 - `GET /api/change-orders/:id` - 变更单详情
-- `GET /api/export/order-detail/:orderNo` - 全链路详情
+- `GET /api/approval-emails` - 查询审批邮件列表
+- `GET /api/approval-emails/:id` - 审批邮件详情
+- `GET /api/approval-emails/order-no/:orderNo` - 按变更单查询审批邮件
+- `GET /api/export/order-detail/:orderNo` - 全链路详情（含审批邮件）
 
 **对账**:
 - `POST /api/reconcile/all` - 全量对账

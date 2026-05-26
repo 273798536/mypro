@@ -2,12 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const { createObjectCsvWriter } = require('csv-writer');
 const config = require('../config');
-const { getChangeOrders, getChangeOrderById } = require('../models/changeOrder');
+const { getChangeOrders, getChangeOrderById, getChangeOrderByNo } = require('../models/changeOrder');
 const { getAuditOpinionsByOrderNo } = require('../models/auditOpinion');
 const { getAgentQuotesByKbId } = require('../models/agentQuote');
 const { getSupplierStatements } = require('../models/supplierStatement');
 const { getDirtyRecords } = require('../models/dirtyRecord');
 const { getAuditTrails } = require('../models/auditTrail');
+const { getApprovalEmailsByOrderNo } = require('../models/approvalEmail');
 const { createAuditTrail, ACTION_TYPES, ACTION_STATUSES } = require('../models/auditTrail');
 
 function ensureExportDir() {
@@ -228,10 +229,12 @@ function getFullOrderDetail(orderNo) {
 
   const opinions = getAuditOpinionsByOrderNo(orderNo);
   const quotes = order.kb_article_id ? getAgentQuotesByKbId(order.kb_article_id) : [];
+  const approvalEmails = getApprovalEmailsByOrderNo(orderNo);
 
   return {
     change_order: order,
     audit_opinions: opinions,
+    approval_emails: approvalEmails,
     agent_quotes: quotes,
     quote_count: quotes.length,
   };

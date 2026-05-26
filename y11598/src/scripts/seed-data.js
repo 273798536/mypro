@@ -10,6 +10,9 @@ const {
 const {
   batchCreateSupplierStatements,
 } = require('../models/supplierStatement');
+const {
+  batchCreateApprovalEmails,
+} = require('../models/approvalEmail');
 const { createAuditTrail, ACTION_TYPES, ACTION_STATUSES } = require('../models/auditTrail');
 
 const dayjs = require('dayjs');
@@ -38,6 +41,7 @@ function generateSeedData() {
   const auditOpinions = [];
   const agentQuotes = [];
   const supplierStatements = [];
+  const approvalEmails = [];
 
   for (let i = 1; i <= 5; i++) {
     const kb = kbArticles[i % kbArticles.length];
@@ -64,6 +68,20 @@ function generateSeedData() {
       opinion: i % 3 === 0 ? '审核通过，内容准确' : '需要补充细节',
       result: i % 3 === 0 ? 'pass' : 'reject',
       audit_time: now.subtract(i, 'day').add(2, 'hour').toISOString(),
+    });
+
+    approvalEmails.push({
+      change_order_id: `temp-${i}`,
+      order_no: orderNo,
+      email_from: 'manager@company.com',
+      email_to: 'content_team@company.com',
+      email_cc: 'review@company.com',
+      subject: i % 3 === 0 ? `[审批通过] ${orderNo} - ${kb.title}` : `[审批驳回] ${orderNo} - ${kb.title}`,
+      content: i % 3 === 0 
+        ? `变更单 ${orderNo} 已审批通过，请及时发布。内容：${kb.title} 版本更新。`
+        : `变更单 ${orderNo} 需要补充细节，请修改后重新提交。`,
+      send_time: now.subtract(i, 'day').add(3, 'hour').toISOString(),
+      approval_result: i % 3 === 0 ? 'approved' : 'rejected',
     });
   }
 
@@ -152,7 +170,7 @@ function generateSeedData() {
     statement_date: now.toISOString(),
   });
 
-  return { changeOrders, auditOpinions, agentQuotes, supplierStatements };
+  return { changeOrders, auditOpinions, agentQuotes, supplierStatements, approvalEmails };
 }
 
 function runSeed() {
@@ -176,6 +194,12 @@ function runSeed() {
   const stmtIds = batchCreateSupplierStatements(data.supplierStatements);
   console.log(`创建供应商对账单: ${stmtIds.length} 条`);
 
+  data.approvalEmails.forEach((email, idx) => {
+    email.change_order_id = orderIds[idx] || email.change_order_id;
+  });
+  const emailIds = batchCreateApprovalEmails(data.approvalEmails);
+  console.log(`创建审批邮件: ${emailIds.length} 条`);
+
   const durationMs = Date.now() - startTime;
 
   createAuditTrail({
@@ -184,12 +208,12 @@ function runSeed() {
     operator: 'system',
     status: ACTION_STATUSES.SUCCESS,
     detail: '批量造数完成',
-    record_count: orderIds.length + opinionIds.length + quoteIds.length + stmtIds.length,
+    record_count: orderIds.length + opinionIds.length + quoteIds.length + stmtIds.length + emailIds.length,
     duration_ms: durationMs,
   });
 
   console.log(`造数完成，耗时 ${durationMs}ms`);
-  console.log(`总计: ${orderIds.length + opinionIds.length + quoteIds.length + stmtIds.length} 条记录`);
+  console.log(`总计: ${orderIds.length + opinionIds.length + quoteIds.length + stmtIds.length + emailIds.length} 条记录`);
 }
 
 if (require.main === module) {

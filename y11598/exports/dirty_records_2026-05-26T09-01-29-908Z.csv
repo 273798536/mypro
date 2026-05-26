@@ -1,0 +1,6 @@
+ID,来源表,来源ID,脏数据类型,字段名,期望值,实际值,描述,严重程度,处理状态,处理人,处理意见,处理时间,创建时间
+a7955ef0-390d-4171-8d71-c3af812ba448,change_orders,4cca1c13-098d-45a0-8828-1d3884f62ea1,missing_field,submitter,non-empty,null,缺少必填字段: submitter,high,pending,,,,2026-05-26T08:56:17.313Z
+67056ec0-1605-4796-a9bb-88004a1fe665,supplier_statements,59fa74da-9b2e-41bb-a58a-bf11bd830771,quantity_conflict,quantity,10,50,数量冲突: 对账单数量(50) != 实际引用次数(10),high,pending,,,,2026-05-26T08:56:17.312Z
+26e17dd2-6dd5-4c9b-b0c9-6ef344e4583f,supplier_statements,59fa74da-9b2e-41bb-a58a-bf11bd830771,amount_conflict,amount,100,500,金额冲突: 对账单金额(500) != 计算金额(100),high,pending,,,,2026-05-26T08:56:17.312Z
+1cd6e279-c160-4b6b-8e01-8840238a6156,supplier_statements,c7d3d1f5-8582-4b79-b530-987a8ba69722,name_change,kb_article_title,,物流配送时效,kb_article_id 对应的 kb_article_title 发生变化: 物流配送时效,medium,pending,,,,2026-05-26T08:56:17.312Z
+2f42e236-946d-4a62-b869-2b414121d30d,supplier_statements,1fa1dbc8-75a1-4427-b3e0-0b68acc0d886,name_change,supplier_name,,知识库供应商A,supplier_id 对应的 supplier_name 发生变化: 知识库供应商A,medium,pending,,,,2026-05-26T08:56:17.312Z
