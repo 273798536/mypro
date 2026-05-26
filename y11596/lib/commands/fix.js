@@ -34,14 +34,14 @@ const fixCommand = new Command('fix')
   .option('--list', '列出所有问题项')
   .option('--all', '批量改判所有问题项')
   .action((options) => {
-    const user = getCurrentUser();
-    assertPermission('fix', options, user);
-
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));
       process.exit(1);
     }
+
+    const user = getCurrentUser(root);
+    assertPermission('fix', options, user);
 
     const paths = getWorkspacePaths(root);
     const latestCheck = readJson(path.join(paths.check, 'latest.json'));

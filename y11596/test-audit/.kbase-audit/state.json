@@ -10,14 +10,14 @@
     "mpk0xsevxeuachg02"
   ],
   "lastCheck": {
-    "checkId": "mpk0xvnsul5ioqalk",
-    "timestamp": "2026-05-24T17:01:12.712Z",
+    "checkId": "mpmh9aijydi0cr67c",
+    "timestamp": "2026-05-26T10:13:31.387Z",
     "summary": {
       "totalRecords": 22,
       "checkedRecords": 22,
-      "passed": 22,
-      "failed": 0,
-      "warnings": 0,
+      "passed": 17,
+      "failed": 4,
+      "warnings": 1,
       "issues": [
         {
           "type": "warning",
@@ -67,9 +67,9 @@
     }
   },
   "lastExport": {
-    "exportId": "mpmfxoot08g89z7s5",
-    "timestamp": "2026-05-26T09:36:30.269Z",
-    "outputDir": "/Users/mac/pro/solo/workspaces/y11596/test-audit/exports/mpmfxoot08g89z7s5"
+    "exportId": "mpmha99iowakrrg4t",
+    "timestamp": "2026-05-26T10:14:16.422Z",
+    "outputDir": "./readonly-export"
   },
   "importStats": {
     "change_order": {

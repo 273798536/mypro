@@ -22,7 +22,7 @@ roleCommand
   .description('列出所有角色和用户')
   .action(() => {
     const root = getWorkspaceRoot();
-    const user = getCurrentUser();
+    const user = getCurrentUser(root);
     assertPermission('role', { list: true }, user);
 
     const config = getRoleConfig(root);
@@ -36,7 +36,7 @@ roleCommand
   .requiredOption('-r, --role <role>', `角色: ${Object.values(ROLES).join(', ')}`)
   .action((options) => {
     const root = getWorkspaceRoot();
-    const user = getCurrentUser();
+    const user = getCurrentUser(root);
     assertPermission('role', {}, user);
 
     if (user.role !== ROLES.ADMIN) {
@@ -58,7 +58,8 @@ roleCommand
   .command('whoami')
   .description('显示当前用户信息')
   .action(() => {
-    const user = getCurrentUser();
+    const root = getWorkspaceRoot();
+    const user = getCurrentUser(root);
     console.log(chalk.cyan('👤 当前用户:'));
     console.log(`  用户名: ${chalk.white(user.username)}`);
     console.log(`  角色: ${chalk.white(user.role)}`);

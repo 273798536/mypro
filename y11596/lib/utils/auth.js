@@ -35,6 +35,7 @@ const PERMISSIONS = {
     'fix.view',
     'history.view',
     'export.view',
+    'export.create',
     'queue.view'
   ]
 };
@@ -82,7 +83,7 @@ const SENSITIVE_FIELDS = [
   'email'
 ];
 
-function getCurrentUser() {
+function getCurrentUser(root) {
   const envUser = process.env.KBASE_AUDIT_USER;
   const envRole = process.env.KBASE_AUDIT_ROLE;
   
@@ -95,6 +96,22 @@ function getCurrentUser() {
   }
 
   const systemUser = os.userInfo().username;
+
+  if (root) {
+    try {
+      const assignedRole = getUserRole(root, systemUser);
+      if (assignedRole) {
+        return {
+          username: systemUser,
+          role: assignedRole,
+          source: 'config'
+        };
+      }
+    } catch (e) {
+      // 如果读取配置失败，使用默认角色
+    }
+  }
+
   return {
     username: systemUser,
     role: ROLES.OPERATOR,

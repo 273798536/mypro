@@ -30,14 +30,14 @@ const reportCommand = new Command('report')
   .option('--show-failures', '显示失败清单')
   .option('--show-source', '显示来源信息')
   .action((options) => {
-    const user = getCurrentUser();
-    assertPermission('report', options, user);
-
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));
       process.exit(1);
     }
+
+    const user = getCurrentUser(root);
+    assertPermission('report', options, user);
 
     const paths = getWorkspacePaths(root);
 

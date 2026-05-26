@@ -35,14 +35,14 @@ const exportCommand = new Command('export')
   .option('-o, --output <path>', '输出目录')
   .option('--include-source', '包含原始源文件')
   .action((options) => {
-    const user = getCurrentUser();
-    assertPermission('export', options, user);
-
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));
       process.exit(1);
     }
+
+    const user = getCurrentUser(root);
+    assertPermission('export', options, user);
 
     const state = readState(root);
     const paths = getWorkspacePaths(root);

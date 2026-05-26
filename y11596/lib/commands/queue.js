@@ -31,7 +31,7 @@ queueCommand
   .description('查看队列状态')
   .action(() => {
     const root = getWorkspaceRoot();
-    const user = getCurrentUser();
+    const user = getCurrentUser(root);
     assertPermission('queue-deadletter', {}, user);
 
     const stats = getRetryQueueStats(root);
@@ -45,7 +45,7 @@ queueCommand
   .option('--all', '处理所有待重试项', true)
   .action((options) => {
     const root = getWorkspaceRoot();
-    const user = getCurrentUser();
+    const user = getCurrentUser(root);
     assertPermission('queue-retry', {}, user);
 
     if (options.dryRun) {
@@ -73,7 +73,7 @@ queueCommand
   .option('--reason <text>', '移动原因')
   .action((options) => {
     const root = getWorkspaceRoot();
-    const user = getCurrentUser();
+    const user = getCurrentUser(root);
     assertPermission('queue-deadletter', options, user);
 
     if (options.move) {
@@ -107,7 +107,7 @@ queueCommand
   .description('清理已完成的重试项')
   .action(() => {
     const root = getWorkspaceRoot();
-    const user = getCurrentUser();
+    const user = getCurrentUser(root);
     assertPermission('queue-retry', {}, user);
 
     const count = clearCompletedRetryItems(root);

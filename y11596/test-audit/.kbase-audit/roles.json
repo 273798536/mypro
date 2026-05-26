@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "roles": {
+    "admin": {
+      "name": "管理员",
+      "description": "拥有所有权限，可管理用户角色",
+      "permissions": [
+        "*"
+      ]
+    },
+    "operator": {
+      "name": "运营人员",
+      "description": "可导入、检查、改判、导出数据",
+      "permissions": [
+        "import.view",
+        "import.create",
+        "check.view",
+        "check.run",
+        "report.view",
+        "report.create",
+        "fix.view",
+        "fix.create",
+        "history.view",
+        "export.view",
+        "export.create",
+        "queue.view",
+        "queue.manage"
+      ]
+    },
+    "readonly": {
+      "name": "只读账号",
+      "description": "仅可查看数据，不能修改，敏感字段脱敏",
+      "permissions": [
+        "import.view",
+        "check.view",
+        "check.run",
+        "report.view",
+        "report.create",
+        "fix.view",
+        "history.view",
+        "export.view",
+        "export.create",
+        "queue.view"
+      ]
+    }
+  },
+  "userRoles": {
+    "tuotuo": {
+      "role": "operator",
+      "assignedAt": "2026-05-26T10:15:38.219Z",
+      "assignedBy": "admin_user"
+    }
+  }
+}

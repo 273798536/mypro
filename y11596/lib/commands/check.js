@@ -33,14 +33,14 @@ const checkCommand = new Command('check')
   .option('-t, --type <type>', '指定数据类型检查')
   .option('--strict', '严格模式')
   .action((options) => {
-    const user = getCurrentUser();
-    assertPermission('check', options, user);
-
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));
       process.exit(1);
     }
+
+    const user = getCurrentUser(root);
+    assertPermission('check', options, user);
 
     const state = readState(root);
     const paths = getWorkspacePaths(root);
