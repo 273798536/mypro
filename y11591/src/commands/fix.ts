@@ -147,6 +147,7 @@ async function handleManualFix(
     reason
   );
 
+  await db.updateFactData(record.id, newData);
   await db.clearValidationErrors(record.id);
   await db.updateFactStatus(record.id, 'fixed');
 
@@ -185,17 +186,35 @@ async function handleSplitShortage(
       const actualPickQty = wave.data.planQty + pickDiff.data.diffQty;
 
       if (actualPickQty >= 0 && actualPickQty < wave.data.planQty) {
+        const newPickDiffData = {
+          ...pickDiff.data,
+          isSplit: true,
+          splitFromWave: waveNo,
+          actualPickQty,
+          shortageQty,
+        };
+        const newWaveData = {
+          ...wave.data,
+          originalPlanQty: wave.data.planQty,
+          actualPlanQty: actualPickQty,
+          isSplit: true,
+          shortageQty,
+        };
+
         await db.addFixRecord(
           pickDiff.id,
           pickDiff.factKey,
           'split_shortage',
           { ...pickDiff.data },
-          { ...pickDiff.data, isSplit: true, splitFromWave: waveNo },
+          newPickDiffData,
           operator,
           `缺货拆单: 计划${wave.data.planQty}, 实际拣货${actualPickQty}, 缺货${shortageQty}`
         );
 
+        await db.updateFactData(pickDiff.id, newPickDiffData);
+        await db.updateFactData(wave.id, newWaveData);
         await db.updateFactStatus(pickDiff.id, 'fixed');
+        await db.updateFactStatus(wave.id, 'fixed');
 
         splitDetails.push({
           orderNo: wave.orderNo,

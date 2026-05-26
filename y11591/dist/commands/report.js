@@ -87,7 +87,7 @@ async function report(workspacePath, options = {}) {
                 detail.waveNo,
                 detail.originalRowNumber.toString(),
                 sourceTypeNames[detail.sourceType] || detail.sourceType,
-                detail.factKey.substring(0, 28) + '...',
+                (0, utils_1.safeTruncate)(detail.factKey, 28),
                 detail.status,
                 detail.errorCount.toString(),
                 detail.fixCount.toString(),
@@ -144,10 +144,19 @@ function generateWaveSummary(waveNo, records) {
     const customerNotes = records.filter((r) => r.sourceType === 'customer_note');
     const orderSet = new Set(waveRecords.map((r) => r.orderNo));
     const skuSet = new Set(waveRecords.map((r) => r.skuCode));
-    const planQty = waveRecords.reduce((sum, r) => sum + (r.data.planQty || 0), 0);
-    const pickQty = pickDiffRecords.reduce((sum, r) => sum + (r.data.pickQty || 0), 0);
+    const planQty = waveRecords.reduce((sum, r) => {
+        const qty = r.data.actualPlanQty !== undefined ? r.data.actualPlanQty : (r.data.planQty || 0);
+        return sum + qty;
+    }, 0);
+    const pickQty = pickDiffRecords.reduce((sum, r) => {
+        const qty = r.data.actualPickQty !== undefined ? r.data.actualPickQty : (r.data.pickQty || 0);
+        return sum + qty;
+    }, 0);
     const reviewQty = reviewScanRecords.reduce((sum, r) => sum + (r.data.reviewQty || 0), 0);
-    const diffQty = pickDiffRecords.reduce((sum, r) => sum + Math.abs(r.data.diffQty || 0), 0);
+    const diffQty = pickDiffRecords.reduce((sum, r) => {
+        const shortage = r.data.shortageQty !== undefined ? r.data.shortageQty : Math.abs(r.data.diffQty || 0);
+        return sum + shortage;
+    }, 0);
     const exceptionCount = reviewScanRecords.filter((r) => r.data.isException).length;
     const hasInvalid = records.some((r) => r.status === 'invalid');
     return {

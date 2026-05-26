@@ -106,6 +106,7 @@ async function handleManualFix(db, factKey, field, value, reason, operator) {
     }
     newData[field] = parsedValue;
     await db.addFixRecord(record.id, factKey, 'manual_correct', oldData, newData, operator, reason);
+    await db.updateFactData(record.id, newData);
     await db.clearValidationErrors(record.id);
     await db.updateFactStatus(record.id, 'fixed');
     (0, utils_1.logSuccess)(`已修正记录: ${factKey}`);
@@ -130,8 +131,25 @@ async function handleSplitShortage(db, workspacePath, waveNo, operator) {
             const shortageQty = Math.abs(pickDiff.data.diffQty);
             const actualPickQty = wave.data.planQty + pickDiff.data.diffQty;
             if (actualPickQty >= 0 && actualPickQty < wave.data.planQty) {
-                await db.addFixRecord(pickDiff.id, pickDiff.factKey, 'split_shortage', { ...pickDiff.data }, { ...pickDiff.data, isSplit: true, splitFromWave: waveNo }, operator, `缺货拆单: 计划${wave.data.planQty}, 实际拣货${actualPickQty}, 缺货${shortageQty}`);
+                const newPickDiffData = {
+                    ...pickDiff.data,
+                    isSplit: true,
+                    splitFromWave: waveNo,
+                    actualPickQty,
+                    shortageQty,
+                };
+                const newWaveData = {
+                    ...wave.data,
+                    originalPlanQty: wave.data.planQty,
+                    actualPlanQty: actualPickQty,
+                    isSplit: true,
+                    shortageQty,
+                };
+                await db.addFixRecord(pickDiff.id, pickDiff.factKey, 'split_shortage', { ...pickDiff.data }, newPickDiffData, operator, `缺货拆单: 计划${wave.data.planQty}, 实际拣货${actualPickQty}, 缺货${shortageQty}`);
+                await db.updateFactData(pickDiff.id, newPickDiffData);
+                await db.updateFactData(wave.id, newWaveData);
                 await db.updateFactStatus(pickDiff.id, 'fixed');
+                await db.updateFactStatus(wave.id, 'fixed');
                 splitDetails.push({
                     orderNo: wave.orderNo,
                     skuCode: wave.skuCode,

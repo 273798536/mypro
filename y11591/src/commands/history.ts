@@ -1,7 +1,7 @@
 import path from 'path';
 import Table from 'cli-table3';
 import { DatabaseManager } from '../database';
-import { logWarning, logInfo, formatDate } from '../utils';
+import { logSuccess, logWarning, logInfo, formatDate, safeTruncate } from '../utils';
 
 export interface HistoryOptions {
   wave?: string;
@@ -109,7 +109,7 @@ export async function history(workspacePath: string, options: HistoryOptions = {
         batchTable.push([
           formatDate(batch.importedAt),
           sourceTypeNames[batch.sourceType] || batch.sourceType,
-          batch.fileName.substring(0, 18),
+          safeTruncate(batch.fileName, 18),
           batch.totalRecords.toString(),
           batch.successCount.toString(),
           batch.updateCount.toString(),
@@ -139,10 +139,10 @@ export async function history(workspacePath: string, options: HistoryOptions = {
       for (const fix of fixRecords.slice(0, 20)) {
         fixTable.push([
           formatDate(fix.createdAt),
-          fix.factKey.length > 28 ? fix.factKey.substring(0, 28) + '...' : fix.factKey,
+          safeTruncate(fix.factKey, 28),
           typeNames[fix.fixType] || fix.fixType,
-          fix.operator,
-          fix.reason.length > 30 ? fix.reason.substring(0, 30) + '...' : fix.reason,
+          fix.operator || '-',
+          safeTruncate(fix.reason, 30),
         ]);
       }
       console.log(fixTable.toString());

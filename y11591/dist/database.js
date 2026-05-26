@@ -152,6 +152,9 @@ class DatabaseManager {
     async updateFactStatus(factId, status) {
         await this.db.run('UPDATE fact_records SET status = ?, updated_at = ? WHERE id = ?', status, new Date().toISOString(), factId);
     }
+    async updateFactData(factId, data) {
+        await this.db.run('UPDATE fact_records SET data = ?, updated_at = ? WHERE id = ?', JSON.stringify(data), new Date().toISOString(), factId);
+    }
     async addValidationError(error) {
         const id = (0, uuid_1.v4)();
         await this.db.run(`INSERT INTO validation_errors 
@@ -171,8 +174,16 @@ class DatabaseManager {
         sql += ' ORDER BY created_at DESC';
         const rows = await this.db.all(sql, ...params);
         return rows.map((r) => ({
-            ...r,
+            id: r.id,
+            factId: r.fact_id,
+            factKey: r.fact_key,
+            sourceType: r.source_type,
+            originalRowNumber: r.original_row_number,
+            errorCode: r.error_code,
+            errorMessage: r.error_message,
+            field: r.field,
             value: r.value ? JSON.parse(r.value) : undefined,
+            createdAt: r.created_at,
         }));
     }
     async addFixRecord(factId, factKey, fixType, oldData, newData, operator, reason) {
@@ -203,9 +214,15 @@ class DatabaseManager {
         sql += ' ORDER BY created_at DESC';
         const rows = await this.db.all(sql, ...params);
         return rows.map((r) => ({
-            ...r,
+            id: r.id,
+            factId: r.fact_id,
+            factKey: r.fact_key,
+            fixType: r.fix_type,
             oldData: JSON.parse(r.old_data),
             newData: JSON.parse(r.new_data),
+            operator: r.operator,
+            reason: r.reason,
+            createdAt: r.created_at,
         }));
     }
     async createImportBatch(sourceType, fileName, totalRecords, successCount, updateCount, failCount, operator) {

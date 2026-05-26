@@ -99,7 +99,7 @@ async function history(workspacePath, options = {}) {
                 batchTable.push([
                     (0, utils_1.formatDate)(batch.importedAt),
                     sourceTypeNames[batch.sourceType] || batch.sourceType,
-                    batch.fileName.substring(0, 18),
+                    (0, utils_1.safeTruncate)(batch.fileName, 18),
                     batch.totalRecords.toString(),
                     batch.successCount.toString(),
                     batch.updateCount.toString(),
@@ -128,10 +128,10 @@ async function history(workspacePath, options = {}) {
             for (const fix of fixRecords.slice(0, 20)) {
                 fixTable.push([
                     (0, utils_1.formatDate)(fix.createdAt),
-                    fix.factKey.substring(0, 28) + '...',
+                    (0, utils_1.safeTruncate)(fix.factKey, 28),
                     typeNames[fix.fixType] || fix.fixType,
-                    fix.operator,
-                    fix.reason.substring(0, 30),
+                    fix.operator || '-',
+                    (0, utils_1.safeTruncate)(fix.reason, 30),
                 ]);
             }
             console.log(fixTable.toString());

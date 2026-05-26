@@ -211,6 +211,15 @@ export class DatabaseManager {
     );
   }
 
+  async updateFactData(factId: string, data: Record<string, any>): Promise<void> {
+    await this.db.run(
+      'UPDATE fact_records SET data = ?, updated_at = ? WHERE id = ?',
+      JSON.stringify(data),
+      new Date().toISOString(),
+      factId
+    );
+  }
+
   async addValidationError(error: Omit<ValidationError, 'id' | 'createdAt'>): Promise<void> {
     const id = uuidv4();
     await this.db.run(
@@ -244,8 +253,16 @@ export class DatabaseManager {
     sql += ' ORDER BY created_at DESC';
     const rows = await this.db.all(sql, ...params);
     return rows.map((r: any) => ({
-      ...r,
+      id: r.id,
+      factId: r.fact_id,
+      factKey: r.fact_key,
+      sourceType: r.source_type,
+      originalRowNumber: r.original_row_number,
+      errorCode: r.error_code,
+      errorMessage: r.error_message,
+      field: r.field,
       value: r.value ? JSON.parse(r.value) : undefined,
+      createdAt: r.created_at,
     }));
   }
 
@@ -298,9 +315,15 @@ export class DatabaseManager {
     sql += ' ORDER BY created_at DESC';
     const rows = await this.db.all(sql, ...params);
     return rows.map((r: any) => ({
-      ...r,
+      id: r.id,
+      factId: r.fact_id,
+      factKey: r.fact_key,
+      fixType: r.fix_type,
       oldData: JSON.parse(r.old_data),
       newData: JSON.parse(r.new_data),
+      operator: r.operator,
+      reason: r.reason,
+      createdAt: r.created_at,
     }));
   }
 

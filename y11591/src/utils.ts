@@ -64,3 +64,10 @@ export function logWarning(message: string): void {
 export function logInfo(message: string): void {
   console.log(chalk.blue(`ℹ ${message}`));
 }
+
+export function safeTruncate(str: string | undefined | null, maxLength: number, suffix: string = '...'): string {
+  if (str === undefined || str === null) return '-';
+  if (typeof str !== 'string') return String(str);
+  if (str.length <= maxLength) return str;
+  return str.substring(0, maxLength) + suffix;
+}

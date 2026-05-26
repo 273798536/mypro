@@ -13,6 +13,7 @@ exports.logSuccess = logSuccess;
 exports.logError = logError;
 exports.logWarning = logWarning;
 exports.logInfo = logInfo;
+exports.safeTruncate = safeTruncate;
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const chalk_1 = __importDefault(require("chalk"));
@@ -73,4 +74,13 @@ function logWarning(message) {
 }
 function logInfo(message) {
     console.log(chalk_1.default.blue(`ℹ ${message}`));
+}
+function safeTruncate(str, maxLength, suffix = '...') {
+    if (str === undefined || str === null)
+        return '-';
+    if (typeof str !== 'string')
+        return String(str);
+    if (str.length <= maxLength)
+        return str;
+    return str.substring(0, maxLength) + suffix;
 }

@@ -16,6 +16,7 @@ export declare class DatabaseManager {
     getFactRecordsBySource(sourceType: SourceType): Promise<FactRecord[]>;
     getAllFactRecords(status?: RecordStatus): Promise<FactRecord[]>;
     updateFactStatus(factId: string, status: RecordStatus): Promise<void>;
+    updateFactData(factId: string, data: Record<string, any>): Promise<void>;
     addValidationError(error: Omit<ValidationError, 'id' | 'createdAt'>): Promise<void>;
     clearValidationErrors(factId: string): Promise<void>;
     getValidationErrors(factId?: string): Promise<ValidationError[]>;
