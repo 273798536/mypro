@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+}
+
+@layer components {
+  .card {
+    @apply bg-white/95 backdrop-blur-sm rounded-xl shadow-lg;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 bg-medical-primary text-white font-medium rounded-full 
+           hover:bg-medical-dark transition-all duration-200 
+           shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-full
+           hover:bg-gray-200 transition-all duration-200;
+  }
+  
+  .btn-danger {
+    @apply px-5 py-2.5 bg-alert-danger text-white font-medium rounded-full
+           hover:bg-red-700 transition-all duration-200;
+  }
+  
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .score-good {
+    @apply text-alert-success;
+  }
+  
+  .score-bad {
+    @apply text-alert-danger;
+  }
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+}
+
+.drag-over {
+  background-color: rgba(21, 101, 192, 0.1) !important;
+  border: 2px dashed #1565C0 !important;
+}
+
+@keyframes pulse-danger {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-danger {
+  animation: pulse-danger 1s infinite;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
