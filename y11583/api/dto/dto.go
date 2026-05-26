@@ -147,3 +147,36 @@ type ReconciliationResultResponse struct {
 	HistoryContinuous bool    `json:"history_continuous"`
 	Remark            string  `json:"remark"`
 }
+
+type UploadEvidenceRequest struct {
+	EvidenceType string `json:"evidence_type" binding:"required,oneof=SMS PHOTO OTHER"`
+	FileName     string `json:"file_name" binding:"required"`
+	FileType     string `json:"file_type" binding:"required"`
+	FileSize     int64  `json:"file_size"`
+	Description  string `json:"description"`
+	TransNo      string `json:"trans_no"`
+	MemberID     string `json:"member_id"`
+}
+
+type EvidenceResponse struct {
+	ID           string `json:"id"`
+	EvidenceNo   string `json:"evidence_no"`
+	EvidenceType string `json:"evidence_type"`
+	FileName     string `json:"file_name"`
+	FileType     string `json:"file_type"`
+	FileSize     int64  `json:"file_size"`
+	FilePath     string `json:"file_path"`
+	Description  string `json:"description"`
+	TransNo      string `json:"trans_no"`
+	MemberID     string `json:"member_id"`
+	UploaderID   string `json:"uploader_id"`
+	UploaderName string `json:"uploader_name"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
+type EvidenceListResponse struct {
+	Total int64              `json:"total"`
+	Page  int                `json:"page"`
+	Size  int                `json:"size"`
+	Items []EvidenceResponse `json:"items"`
+}
