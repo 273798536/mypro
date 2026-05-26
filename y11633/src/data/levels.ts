@@ -1,0 +1,72 @@
+import type { LevelConfig, GameLevel } from '../types';
+
+export const LEVEL_CONFIGS: Record<GameLevel, LevelConfig> = {
+  easy: {
+    id: 'easy',
+    name: '初级模式',
+    description: '适合新人上手，机器人数量少，订单间隔长',
+    gridSize: 10,
+    robotCount: 2,
+    orderCount: 8,
+    orderInterval: 8000,
+    obstacleCount: 5,
+    chargerCount: 2,
+    shelfCount: 6,
+    initialBattery: 100,
+    batteryDrainRate: 0.3,
+    chargeRate: 3,
+    collisionPenalty: 20,
+    lowBatteryPenalty: 15,
+    timeoutPenalty: 30,
+    orderTimeLimit: { high: 60, medium: 90, low: 120 },
+    orderReward: { high: 100, medium: 70, low: 50 },
+  },
+  medium: {
+    id: 'medium',
+    name: '中级模式',
+    description: '订单频率加快，需要合理规划路线',
+    gridSize: 12,
+    robotCount: 3,
+    orderCount: 15,
+    orderInterval: 5000,
+    obstacleCount: 10,
+    chargerCount: 2,
+    shelfCount: 8,
+    initialBattery: 85,
+    batteryDrainRate: 0.5,
+    chargeRate: 2.5,
+    collisionPenalty: 30,
+    lowBatteryPenalty: 25,
+    timeoutPenalty: 50,
+    orderTimeLimit: { high: 45, medium: 70, low: 100 },
+    orderReward: { high: 150, medium: 100, low: 70 },
+  },
+  hard: {
+    id: 'hard',
+    name: '高级模式',
+    description: '高密度订单，考验多机器人调度能力',
+    gridSize: 12,
+    robotCount: 4,
+    orderCount: 25,
+    orderInterval: 3000,
+    obstacleCount: 15,
+    chargerCount: 3,
+    shelfCount: 10,
+    initialBattery: 70,
+    batteryDrainRate: 0.8,
+    chargeRate: 2,
+    collisionPenalty: 50,
+    lowBatteryPenalty: 40,
+    timeoutPenalty: 80,
+    orderTimeLimit: { high: 30, medium: 50, low: 80 },
+    orderReward: { high: 200, medium: 140, low: 100 },
+  },
+};
+
+export const ITEM_NAMES = [
+  '电子产品', '服装', '食品', '日用品', '图书',
+  '玩具', '家居', '美妆', '运动', '母婴',
+  '汽车用品', '办公用品', '宠物用品', '户外装备', '乐器'
+];
+
+export const SHELF_NAMES = ['A区', 'B区', 'C区', 'D区', 'E区', 'F区', 'G区', 'H区', 'I区', 'J区'];
