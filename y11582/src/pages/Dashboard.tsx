@@ -1,6 +1,7 @@
 
 import { useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import type { LucideIcon } from 'lucide-react';
 import { useTaskStore } from '../store/taskStore';
 import { 
   Users, 
@@ -168,7 +169,7 @@ export function Dashboard() {
 }
 
 function StatCard({ icon: Icon, label, value, color, bgColor }: {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   value: number;
   color: string;

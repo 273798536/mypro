@@ -3,13 +3,35 @@ export type TaskStatus = 'pending' | 'processing' | 'waiting_retry' | 'waiting_m
 
 export type SourceType = 'recharge' | 'refund' | 'store_transfer' | 'supplier_statement';
 
+export type UserRole = 'admin' | 'finance_manager' | 'operator' | 'viewer';
+
+export interface User {
+  id: string;
+  username: string;
+  role: UserRole;
+}
+
+export interface AuthTokenPayload {
+  userId: string;
+  username: string;
+  role: UserRole;
+  iat?: number;
+  exp?: number;
+}
+
+declare module 'express' {
+  interface Request {
+    user?: AuthTokenPayload;
+  }
+}
+
 export interface QueueTask {
   id: string;
   sourceType: SourceType;
   sourceFile: string;
   sourceLine: number;
-  rawData: Record<string, any>;
-  standardData: Record<string, any>;
+  rawData: Record<string, unknown>;
+  standardData: Record<string, unknown>;
   status: TaskStatus;
   retryCount: number;
   maxRetries: number;
@@ -24,9 +46,9 @@ export interface OperationHistory {
   taskId: string;
   operation: string;
   operator: string;
-  beforeState: Record<string, any> | null;
-  afterState: Record<string, any> | null;
-  diff: Record<string, any> | null;
+  beforeState: Record<string, unknown> | null;
+  afterState: Record<string, unknown> | null;
+  diff: Record<string, unknown> | null;
   remark?: string;
   createdAt: string;
 }
@@ -62,8 +84,8 @@ export interface CreateTaskRequest {
   sourceType: SourceType;
   sourceFile: string;
   sourceLine: number;
-  rawData: Record<string, any>;
-  standardData: Record<string, any>;
+  rawData: Record<string, unknown>;
+  standardData: Record<string, unknown>;
 }
 
 export interface ImportResult {
@@ -72,4 +94,18 @@ export interface ImportResult {
   duplicates: number;
   tasks: QueueTask[];
   errors: string[];
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    username: string;
+    role: UserRole;
+  };
 }

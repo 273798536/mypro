@@ -5,13 +5,11 @@ import { useTaskStore } from '../store/taskStore';
 import { StatusBadge, SourceTypeBadge } from '../components/StatusBadge';
 import { 
   ArrowLeft, 
-  RotateCcw, 
   Edit3, 
   CheckCircle, 
   XCircle, 
   FileX,
   Play,
-  Clock,
   FileText
 } from 'lucide-react';
 
@@ -62,7 +60,7 @@ export function TaskDetail() {
         const standardData = JSON.parse(overrideData);
         await useTaskStore.getState().manualOverride(id, standardData, remark);
         setShowOverrideModal(false);
-      } catch (e) {
+      } catch {
         alert('JSON 格式错误');
       }
     }

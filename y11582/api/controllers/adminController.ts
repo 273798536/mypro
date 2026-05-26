@@ -1,6 +1,6 @@
 
-import { Request, Response } from 'express';
-import { queueService } from '../services/queueService';
+import { type Request, type Response } from 'express';
+import { queueService } from '../services/queueService.js';
 
 export const adminController = {
   resumeProcessing(_req: Request, res: Response): void {

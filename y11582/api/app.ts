@@ -8,9 +8,7 @@ import express, {
   type NextFunction,
 } from 'express'
 import cors from 'cors'
-import path from 'path'
 import dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import taskRoutes from './routes/tasks.js'
 import dashboardRoutes from './routes/dashboard.js'
@@ -19,10 +17,6 @@ import importRoutes from './routes/import.js'
 import adminRoutes from './routes/admin.js'
 import { initDatabase } from './db/database.js'
 import { queueService } from './services/queueService.js'
-
-// for esm mode
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 // load env
 dotenv.config()
@@ -54,7 +48,7 @@ app.use('/api/admin', adminRoutes)
  */
 app.use(
   '/api/health',
-  (req: Request, res: Response, next: NextFunction): void => {
+  (_req: Request, res: Response): void => {
     res.status(200).json({
       success: true,
       message: 'ok',
@@ -65,7 +59,8 @@ app.use(
 /**
  * error handler middleware
  */
-app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({
     success: false,
     error: 'Server internal error',

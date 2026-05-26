@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import type { QueueTask, TaskStatus, SourceType, DashboardStats, RetryCategory, OperationHistory, OriginalEvidence } from '../../shared/types';
+import type { QueueTask, TaskStatus, SourceType, DashboardStats, RetryCategory, OperationHistory, OriginalEvidence, CreateTaskRequest } from '../../shared/types';
 import { api } from '../api/client';
 
 interface TaskStore {
@@ -22,15 +22,15 @@ interface TaskStore {
   fetchRetryCategories: () => Promise<void>;
   fetchDeadLetters: () => Promise<void>;
 
-  createTask: (data: any) => Promise<void>;
+  createTask: (data: CreateTaskRequest) => Promise<void>;
   retryTask: (id: string) => Promise<void>;
-  manualOverride: (id: string, standardData: Record<string, any>, remark?: string) => Promise<void>;
+  manualOverride: (id: string, standardData: Record<string, unknown>, remark?: string) => Promise<void>;
   compensate: (id: string, remark?: string) => Promise<void>;
   closeTask: (id: string, remark?: string) => Promise<void>;
   markPermanentFailed: (id: string, remark?: string) => Promise<void>;
   reviveDeadLetter: (id: string) => Promise<void>;
 
-  importJson: (sourceType: SourceType, rows: Record<string, any>[], fileName?: string) => Promise<void>;
+  importJson: (sourceType: SourceType, rows: Array<Record<string, unknown>>, fileName?: string) => Promise<void>;
   resumeProcessing: () => Promise<number>;
   clearError: () => void;
 }

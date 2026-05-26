@@ -1,9 +1,25 @@
 
-import { getDatabase } from '../db/database';
-import type { QueueTask, TaskStatus, SourceType } from '../../shared/types';
+import { getDatabase } from '../db/database.js';
+import type { QueueTask, TaskStatus, SourceType } from '../../shared/types.js';
 import { randomUUID } from 'crypto';
 
-function rowToTask(row: any): QueueTask {
+interface TaskRow {
+  id: string;
+  source_type: string;
+  source_file: string;
+  source_line: number;
+  raw_data: string;
+  standard_data: string;
+  status: string;
+  retry_count: number;
+  max_retries: number;
+  last_error: string | null;
+  created_at: string;
+  updated_at: string;
+  processed_at: string | null;
+}
+
+function rowToTask(row: TaskRow): QueueTask {
   return {
     id: row.id,
     sourceType: row.source_type as SourceType,
@@ -14,10 +30,10 @@ function rowToTask(row: any): QueueTask {
     status: row.status as TaskStatus,
     retryCount: row.retry_count,
     maxRetries: row.max_retries,
-    lastError: row.last_error,
+    lastError: row.last_error ?? undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    processedAt: row.processed_at,
+    processedAt: row.processed_at ?? undefined,
   };
 }
 
@@ -26,8 +42,8 @@ export const taskRepository = {
     sourceType: SourceType;
     sourceFile: string;
     sourceLine: number;
-    rawData: Record<string, any>;
-    standardData: Record<string, any>;
+    rawData: Record<string, unknown>;
+    standardData: Record<string, unknown>;
     maxRetries?: number;
   }): QueueTask {
     const db = getDatabase();
@@ -58,7 +74,7 @@ export const taskRepository = {
 
   findById(id: string): QueueTask | null {
     const db = getDatabase();
-    const row = db.prepare('SELECT * FROM queue_task WHERE id = ?').get(id);
+    const row = db.prepare('SELECT * FROM queue_task WHERE id = ?').get(id) as TaskRow | undefined;
     return row ? rowToTask(row) : null;
   },
 
@@ -67,14 +83,14 @@ export const taskRepository = {
     const row = db.prepare(`
       SELECT * FROM queue_task 
       WHERE source_type = ? AND source_file = ? AND source_line = ?
-    `).get(sourceType, sourceFile, sourceLine);
+    `).get(sourceType, sourceFile, sourceLine) as TaskRow | undefined;
     return row ? rowToTask(row) : null;
   },
 
   findAll(filters?: { status?: TaskStatus; sourceType?: SourceType }): QueueTask[] {
     const db = getDatabase();
     let query = 'SELECT * FROM queue_task WHERE 1=1';
-    const params: any[] = [];
+    const params: Array<string | number> = [];
     
     if (filters?.status) {
       query += ' AND status = ?';
@@ -86,7 +102,7 @@ export const taskRepository = {
     }
     query += ' ORDER BY created_at DESC';
     
-    const rows = db.prepare(query).all(...params);
+    const rows = db.prepare(query).all(...params) as TaskRow[];
     return rows.map(rowToTask);
   },
 
@@ -96,7 +112,7 @@ export const taskRepository = {
       SELECT * FROM queue_task 
       WHERE status IN ('pending', 'waiting_retry')
       ORDER BY created_at ASC
-    `).all();
+    `).all() as TaskRow[];
     return rows.map(rowToTask);
   },
 
@@ -106,7 +122,7 @@ export const taskRepository = {
       SELECT * FROM queue_task 
       WHERE status = 'permanent_failed'
       ORDER BY created_at DESC
-    `).all();
+    `).all() as TaskRow[];
     return rows.map(rowToTask);
   },
 
@@ -115,7 +131,7 @@ export const taskRepository = {
     const now = new Date().toISOString();
     
     let query = 'UPDATE queue_task SET status = ?, updated_at = ?';
-    const params: any[] = [status, now];
+    const params: Array<string | number> = [status, now];
     
     if (lastError !== undefined) {
       query += ', last_error = ?';
@@ -142,7 +158,7 @@ export const taskRepository = {
     `).run(now, id);
   },
 
-  updateStandardData(id: string, standardData: Record<string, any>): void {
+  updateStandardData(id: string, standardData: Record<string, unknown>): void {
     const db = getDatabase();
     const now = new Date().toISOString();
     db.prepare(`
@@ -163,7 +179,7 @@ export const taskRepository = {
       SELECT status, COUNT(*) as count 
       FROM queue_task 
       GROUP BY status
-    `).all() as { status: string; count: number }[];
+    `).all() as Array<{ status: string; count: number }>;
     
     const stats: Record<string, number> = {
       total: 0,
@@ -184,7 +200,7 @@ export const taskRepository = {
     return stats;
   },
 
-  getRetryCategories(): { category: string; count: number; status: TaskStatus }[] {
+  getRetryCategories(): Array<{ category: string; count: number; status: TaskStatus }> {
     const db = getDatabase();
     const rows = db.prepare(`
       SELECT 
@@ -195,7 +211,7 @@ export const taskRepository = {
       WHERE status IN ('waiting_retry', 'waiting_manual', 'permanent_failed')
       GROUP BY source_type, status
       ORDER BY count DESC
-    `).all() as { category: string; status: TaskStatus; count: number }[];
+    `).all() as Array<{ category: string; status: TaskStatus; count: number }>;
     
     return rows;
   },

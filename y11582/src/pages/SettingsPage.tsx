@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useTaskStore } from '../store/taskStore';
-import { Settings, Play, Pause, RefreshCcw, AlertTriangle } from 'lucide-react';
+import { Settings, RefreshCcw, AlertTriangle } from 'lucide-react';
 
 export function SettingsPage() {
   const { resumeProcessing, loading } = useTaskStore();

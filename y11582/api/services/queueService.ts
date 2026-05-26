@@ -146,7 +146,7 @@ class QueueService {
 
   manualOverride(
     taskId: string, 
-    standardData: Record<string, any>, 
+    standardData: Record<string, unknown>, 
     operator: string,
     remark?: string
   ): QueueTask {
@@ -326,7 +326,7 @@ class QueueService {
   importFromCsv(
     sourceType: SourceType,
     fileName: string,
-    rows: Record<string, any>[],
+    rows: Array<Record<string, unknown>>,
     operator: string
   ): ImportResult {
     const result: ImportResult = {
@@ -402,8 +402,8 @@ class QueueService {
       sourceType: SourceType;
       sourceFile: string;
       sourceLine: number;
-      rawData: Record<string, any>;
-      standardData: Record<string, any>;
+      rawData: Record<string, unknown>;
+      standardData: Record<string, unknown>;
       errorMessage: string;
     },
     operator: string
@@ -438,8 +438,8 @@ class QueueService {
     return taskRepository.findById(task.id)!;
   }
 
-  private standardizeData(sourceType: SourceType, rawData: Record<string, any>): { standardData?: Record<string, any>; error?: string } {
-    const standard: Record<string, any> = {};
+  private standardizeData(sourceType: SourceType, rawData: Record<string, unknown>): { standardData?: Record<string, unknown>; error?: string } {
+    const standard: Record<string, unknown> = {};
 
     switch (sourceType) {
       case 'recharge':

@@ -1,9 +1,13 @@
 
-import { Request, Response } from 'express';
-import { queueService } from '../services/queueService';
+import { type Request, type Response } from 'express';
+import { queueService } from '../services/queueService.js';
 import csv from 'csv-parser';
 import { Readable } from 'stream';
-import type { SourceType } from '../../shared/types';
+import type { SourceType } from '../../shared/types.js';
+
+function getOperator(req: Request): string {
+  return req.user?.username || 'import_user';
+}
 
 export const importController = {
   async importCsv(req: Request, res: Response): Promise<void> {
@@ -21,13 +25,13 @@ export const importController = {
         return;
       }
 
-      const rows: Record<string, any>[] = [];
+      const rows: Array<Record<string, unknown>> = [];
       const readable = Readable.from(file.buffer);
       
       await new Promise((resolve, reject) => {
         readable
           .pipe(csv())
-          .on('data', (data) => rows.push(data))
+          .on('data', (data: Record<string, unknown>) => rows.push(data))
           .on('end', resolve)
           .on('error', reject);
       });
@@ -36,7 +40,7 @@ export const importController = {
         sourceType as SourceType,
         file.originalname,
         rows,
-        req.headers['x-operator'] as string || 'import_user'
+        getOperator(req)
       );
 
       res.json(result);
@@ -58,7 +62,7 @@ export const importController = {
         sourceType as SourceType,
         fileName || 'json_import',
         rows,
-        req.headers['x-operator'] as string || 'import_user'
+        getOperator(req)
       );
 
       res.json(result);

@@ -1,17 +1,41 @@
 
-import type { QueueTask, TaskStatus, SourceType, CreateTaskRequest, ImportResult, DashboardStats, RetryCategory, OperationHistory, OriginalEvidence } from '../../shared/types';
+import type { QueueTask, TaskStatus, SourceType, CreateTaskRequest, ImportResult, DashboardStats, RetryCategory, OperationHistory, OriginalEvidence, LoginRequest, LoginResponse, UserRole } from '../../shared/types';
 
 const API_BASE = '/api';
+const TOKEN_KEY = 'auth_token';
+
+export function getAuthToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setAuthToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearAuthToken(): void {
+  localStorage.removeItem(TOKEN_KEY);
+}
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = getAuthToken();
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options?.headers,
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${API_BASE}${url}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'x-operator': 'web_user',
-      ...options?.headers,
-    },
+    headers,
   });
+
+  if (response.status === 401) {
+    clearAuthToken();
+    window.location.href = '/login';
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -22,6 +46,20 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  auth: {
+    login(username: string, password: string): Promise<LoginResponse> {
+      return request<LoginResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ username, password } as LoginRequest),
+      });
+    },
+    logout(): Promise<{ success: boolean; message: string }> {
+      return request<{ success: boolean; message: string }>('/auth/logout', { method: 'POST' });
+    },
+    me(): Promise<{ id: string; username: string; role: UserRole }> {
+      return request<{ id: string; username: string; role: UserRole }>('/auth/me');
+    },
+  },
   tasks: {
     create(data: CreateTaskRequest): Promise<QueueTask> {
       return request<QueueTask>('/tasks', {
@@ -46,15 +84,15 @@ export const api = {
       return request<OperationHistory[]>(`/tasks/${id}/history`);
     },
 
-    getEvidence(id: string): Promise<OriginalEvidence> {
-      return request<OriginalEvidence>(`/tasks/${id}/evidence`);
+    getEvidence(id: string): Promise<OriginalEvidence[]> {
+      return request<OriginalEvidence[]>(`/tasks/${id}/evidence`);
     },
 
     retry(id: string): Promise<QueueTask> {
       return request<QueueTask>(`/tasks/${id}/retry`, { method: 'PUT' });
     },
 
-    manualOverride(id: string, standardData: Record<string, any>, remark?: string): Promise<QueueTask> {
+    manualOverride(id: string, standardData: Record<string, unknown>, remark?: string): Promise<QueueTask> {
       return request<QueueTask>(`/tasks/${id}/manual`, {
         method: 'PUT',
         body: JSON.stringify({ standardData, remark }),
@@ -109,11 +147,15 @@ export const api = {
       formData.append('file', file);
       formData.append('sourceType', sourceType);
 
+      const token = getAuthToken();
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       return fetch(`${API_BASE}/import/csv`, {
         method: 'POST',
-        headers: {
-          'x-operator': 'web_user',
-        },
+        headers,
         body: formData,
       }).then(res => {
         if (!res.ok) throw new Error('Import failed');
@@ -121,7 +163,7 @@ export const api = {
       });
     },
 
-    json(sourceType: SourceType, rows: Record<string, any>[], fileName?: string): Promise<ImportResult> {
+    json(sourceType: SourceType, rows: Array<Record<string, unknown>>, fileName?: string): Promise<ImportResult> {
       return request<ImportResult>('/import/json', {
         method: 'POST',
         body: JSON.stringify({ sourceType, rows, fileName }),

@@ -1,9 +1,19 @@
 
-import { getDatabase } from '../db/database';
-import type { OriginalEvidence } from '../../shared/types';
+import { getDatabase } from '../db/database.js';
+import type { OriginalEvidence } from '../../shared/types.js';
 import { randomUUID, createHash } from 'crypto';
 
-function rowToEvidence(row: any): OriginalEvidence {
+interface EvidenceRow {
+  id: string;
+  task_id: string;
+  file_name: string;
+  file_hash: string;
+  original_content: string;
+  line_number: number;
+  created_at: string;
+}
+
+function rowToEvidence(row: EvidenceRow): OriginalEvidence {
   return {
     id: row.id,
     taskId: row.task_id,
@@ -47,13 +57,13 @@ export const evidenceRepository = {
 
   findById(id: string): OriginalEvidence | null {
     const db = getDatabase();
-    const row = db.prepare('SELECT * FROM original_evidence WHERE id = ?').get(id);
+    const row = db.prepare('SELECT * FROM original_evidence WHERE id = ?').get(id) as EvidenceRow | undefined;
     return row ? rowToEvidence(row) : null;
   },
 
   findByTaskId(taskId: string): OriginalEvidence | null {
     const db = getDatabase();
-    const row = db.prepare('SELECT * FROM original_evidence WHERE task_id = ?').get(taskId);
+    const row = db.prepare('SELECT * FROM original_evidence WHERE task_id = ?').get(taskId) as EvidenceRow | undefined;
     return row ? rowToEvidence(row) : null;
   },
 

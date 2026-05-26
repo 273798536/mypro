@@ -1,6 +1,10 @@
 
-import { Request, Response } from 'express';
-import { queueService } from '../services/queueService';
+import { type Request, type Response } from 'express';
+import { queueService } from '../services/queueService.js';
+
+function getOperator(req: Request): string {
+  return req.user?.username || 'system';
+}
 
 export const deadLetterController = {
   getDeadLetters(_req: Request, res: Response): void {
@@ -12,7 +16,7 @@ export const deadLetterController = {
     try {
       const task = queueService.reviveDeadLetter(
         req.params.id,
-        req.headers['x-operator'] as string || 'api_user'
+        getOperator(req)
       );
       res.json(task);
     } catch (error) {

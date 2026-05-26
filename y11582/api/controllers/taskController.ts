@@ -1,12 +1,16 @@
 
-import { Request, Response } from 'express';
-import { queueService } from '../services/queueService';
-import type { TaskStatus, SourceType } from '../../shared/types';
+import { type Request, type Response } from 'express';
+import { queueService } from '../services/queueService.js';
+import type { TaskStatus, SourceType } from '../../shared/types.js';
+
+function getOperator(req: Request): string {
+  return req.user?.username || 'system';
+}
 
 export const taskController = {
   async createTask(req: Request, res: Response): Promise<void> {
     try {
-      const task = queueService.createTask(req.body, req.headers['x-operator'] as string || 'api_user');
+      const task = queueService.createTask(req.body, getOperator(req));
       res.status(201).json(task);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
@@ -54,7 +58,7 @@ export const taskController = {
     try {
       const task = await queueService.manualRetry(
         req.params.id,
-        req.headers['x-operator'] as string || 'api_user'
+        getOperator(req)
       );
       res.json(task);
     } catch (error) {
@@ -68,7 +72,7 @@ export const taskController = {
       const task = queueService.manualOverride(
         req.params.id,
         standardData,
-        req.headers['x-operator'] as string || 'api_user',
+        getOperator(req),
         remark
       );
       res.json(task);
@@ -82,7 +86,7 @@ export const taskController = {
       const { remark } = req.body;
       const task = queueService.compensate(
         req.params.id,
-        req.headers['x-operator'] as string || 'api_user',
+        getOperator(req),
         remark
       );
       res.json(task);
@@ -96,7 +100,7 @@ export const taskController = {
       const { remark } = req.body;
       const task = queueService.close(
         req.params.id,
-        req.headers['x-operator'] as string || 'api_user',
+        getOperator(req),
         remark
       );
       res.json(task);
@@ -110,7 +114,7 @@ export const taskController = {
       const { remark } = req.body;
       const task = queueService.markPermanentFailed(
         req.params.id,
-        req.headers['x-operator'] as string || 'api_user',
+        getOperator(req),
         remark
       );
       res.json(task);
