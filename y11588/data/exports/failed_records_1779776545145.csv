@@ -1,0 +1,7 @@
+"记录ID","实体类型","错误信息","错误代码","上报人","上报时间","是否已解决"
+"FAIL-1779776545127-5c66ge","acceptanceEmail","合同已冻结，无法新增验收邮件","CONTRACT_FROZEN","admin","2026-05-26T06:22:25.127Z",false
+"FAIL-1779776545109-f46139","contract","合同已冻结，无法修改","CONTRACT_FROZEN","admin","2026-05-26T06:22:25.109Z",false
+"FAIL-1779776545103-jwbl0e","paymentNode","合同已冻结，无法新增付款节点","CONTRACT_FROZEN","admin","2026-05-26T06:22:25.103Z",false
+"FAIL-1779776545047-pjdi7h","paymentNode","关联合同不存在","CONTRACT_NOT_FOUND","admin","2026-05-26T06:22:25.047Z",false
+"FAIL-1779776545011-knijlt","contract","缺少必填字段: contractName","MISSING_REQUIRED_FIELD","admin","2026-05-26T06:22:25.011Z",false
+"FAIL-1779776545004-jxe5mu","contract","缺少幂等键 idempotencyKey","MISSING_IDEMPOTENCY_KEY","admin","2026-05-26T06:22:25.004Z",false

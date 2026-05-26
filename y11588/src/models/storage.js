@@ -58,4 +58,24 @@ function resetCache() {
   dbCache = null;
 }
 
-module.exports = { getDB, persist, resetCache, loadDB, saveDB };
+function addFailedRecord(entityType, rawData, error, userId) {
+  const db = getDB();
+  const record = {
+    id: `FAIL-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+    entityType: entityType,
+    rawData: JSON.stringify(rawData),
+    error: error.message || String(error),
+    errorCode: error.code || 'UNKNOWN_ERROR',
+    reportedBy: userId || 'system',
+    reportedAt: new Date().toISOString(),
+    resolved: false,
+    resolvedAt: null,
+    resolvedBy: null,
+    resolutionNotes: ''
+  };
+  db.failedRecords.push(record);
+  persist();
+  return record;
+}
+
+module.exports = { getDB, persist, resetCache, loadDB, saveDB, addFailedRecord };

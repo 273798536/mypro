@@ -1,0 +1,4 @@
+"记录ID","实体类型","错误信息","错误代码","上报人","上报时间","是否已解决"
+"FAIL-1779776117570-ax0f2n","contract","合同已冻结，无法修改","CONTRACT_FROZEN","admin","2026-05-26T06:15:17.570Z",false
+"FAIL-1779776117517-7x4lss","contract","缺少必填字段: contractName","MISSING_REQUIRED_FIELD","admin","2026-05-26T06:15:17.517Z",false
+"FAIL-1779776117513-jcp6mt","contract","缺少幂等键 idempotencyKey","MISSING_IDEMPOTENCY_KEY","admin","2026-05-26T06:15:17.513Z",false

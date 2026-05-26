@@ -1,7 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
-const { getDB, persist } = require('./storage');
+const { getDB, persist, addFailedRecord } = require('./storage');
 const { getContract, CONTRACT_STATUS } = require('./Contract');
 const { getPaymentNode, NODE_STATUS, updateNodeStatus } = require('./PaymentNode');
+const { checkPermission } = require('../middleware/modelPermission');
 
 const CONFIRMATION_TYPES = {
   SECONDARY: 'secondary',
@@ -9,85 +10,131 @@ const CONFIRMATION_TYPES = {
   ADJUSTMENT: 'adjustment'
 };
 
-function createConfirmation(data, userId) {
+function safeCreate(entityType, data, userId, createFn, requiredFields = []) {
   const db = getDB();
 
   if (!data.idempotencyKey) {
-    return { success: false, error: '缺少幂等键 idempotencyKey', code: 'MISSING_IDEMPOTENCY_KEY' };
+    const err = { message: '缺少幂等键 idempotencyKey', code: 'MISSING_IDEMPOTENCY_KEY' };
+    addFailedRecord(entityType, data, err, userId);
+    return { success: false, ...err };
   }
 
-  const existing = Object.values(db.confirmations).find(c => c.idempotencyKey === data.idempotencyKey);
-  if (existing) {
-    return { success: true, data: existing, isUpdate: true };
-  }
-
-  const required = ['contractId', 'paymentNodeId', 'confirmationType', 'confirmingParty'];
-  for (const field of required) {
+  for (const field of requiredFields) {
     if (!data[field]) {
-      return { success: false, error: `缺少必填字段: ${field}`, code: 'MISSING_REQUIRED_FIELD' };
+      const err = { message: `缺少必填字段: ${field}`, code: 'MISSING_REQUIRED_FIELD' };
+      addFailedRecord(entityType, data, err, userId);
+      return { success: false, ...err };
     }
   }
 
-  if (!Object.values(CONFIRMATION_TYPES).includes(data.confirmationType)) {
-    return { success: false, error: '无效的确认单类型', code: 'INVALID_TYPE' };
+  if (entityType !== 'contract') {
+    const contract = getContract(data.contractId);
+    if (!contract) {
+      const err = { message: '关联合同不存在', code: 'CONTRACT_NOT_FOUND' };
+      addFailedRecord(entityType, data, err, userId);
+      return { success: false, ...err };
+    }
+    if (contract.status === CONTRACT_STATUS.FROZEN) {
+      const err = { message: '合同已冻结，无法操作', code: 'CONTRACT_FROZEN' };
+      addFailedRecord(entityType, data, err, userId);
+      return { success: false, ...err };
+    }
   }
 
-  const contract = getContract(data.contractId);
-  if (!contract) {
-    return { success: false, error: '关联合同不存在', code: 'CONTRACT_NOT_FOUND' };
+  if (data.totalAmount !== undefined && (isNaN(parseFloat(data.totalAmount)) || parseFloat(data.totalAmount) <= 0)) {
+    const err = { message: '合同总金额必须是正数', code: 'INVALID_AMOUNT' };
+    addFailedRecord(entityType, data, err, userId);
+    return { success: false, ...err };
   }
 
-  const paymentNode = getPaymentNode(data.paymentNodeId);
-  if (!paymentNode) {
-    return { success: false, error: '关联付款节点不存在', code: 'PAYMENT_NODE_NOT_FOUND' };
+  if (data.dueAmount !== undefined && (isNaN(parseFloat(data.dueAmount)) || parseFloat(data.dueAmount) <= 0)) {
+    const err = { message: '付款金额必须是正数', code: 'INVALID_AMOUNT' };
+    addFailedRecord(entityType, data, err, userId);
+    return { success: false, ...err };
   }
 
-  const confirmationId = data.confirmationId || `CF-${Date.now()}`;
-  const now = new Date().toISOString();
+  return createFn(data, userId);
+}
 
-  const confirmation = {
-    id: confirmationId,
-    idempotencyKey: data.idempotencyKey,
-    contractId: data.contractId,
-    paymentNodeId: data.paymentNodeId,
-    confirmationType: data.confirmationType,
-    confirmingParty: data.confirmingParty,
-    confirmedBy: data.confirmedBy || '',
-    confirmedAt: data.confirmedAt || now,
-    confirmationContent: data.confirmationContent || '',
-    documentHash: data.documentHash || '',
-    adjustments: data.adjustments || [],
-    originalDueAmount: paymentNode.dueAmount,
-    adjustedDueAmount: data.adjustedDueAmount || paymentNode.dueAmount,
-    adjustedDueDate: data.adjustedDueDate || paymentNode.dueDate,
-    status: 'pending',
-    approvedBy: null,
-    approvedAt: null,
-    approvalNotes: '',
-    createdAt: now,
-    createdBy: userId,
-    updatedAt: now,
-    updatedBy: userId,
-    customFields: data.customFields || {}
-  };
+function createConfirmation(data, userId) {
+  return safeCreate('confirmation', data, userId, (rawData, uid) => {
+    const db = getDB();
 
-  db.confirmations[confirmationId] = confirmation;
-  persist();
+    const existing = Object.values(db.confirmations).find(c => c.idempotencyKey === rawData.idempotencyKey);
+    if (existing) {
+      return { success: true, data: existing, isUpdate: true };
+    }
 
-  return { success: true, data: confirmation, isUpdate: false };
+    if (!Object.values(CONFIRMATION_TYPES).includes(rawData.confirmationType)) {
+      const err = { message: '无效的确认单类型', code: 'INVALID_TYPE' };
+      addFailedRecord('confirmation', rawData, err, uid);
+      return { success: false, ...err };
+    }
+
+    const paymentNode = getPaymentNode(rawData.paymentNodeId);
+    if (!paymentNode) {
+      const err = { message: '关联付款节点不存在', code: 'PAYMENT_NODE_NOT_FOUND' };
+      addFailedRecord('confirmation', rawData, err, uid);
+      return { success: false, ...err };
+    }
+
+    const confirmationId = rawData.confirmationId || `CF-${Date.now()}`;
+    const now = new Date().toISOString();
+
+    const confirmation = {
+      id: confirmationId,
+      idempotencyKey: rawData.idempotencyKey,
+      contractId: rawData.contractId,
+      paymentNodeId: rawData.paymentNodeId,
+      confirmationType: rawData.confirmationType,
+      confirmingParty: rawData.confirmingParty,
+      confirmedBy: rawData.confirmedBy || '',
+      confirmedAt: rawData.confirmedAt || now,
+      confirmationContent: rawData.confirmationContent || '',
+      documentHash: rawData.documentHash || '',
+      adjustments: rawData.adjustments || [],
+      originalDueAmount: paymentNode.dueAmount,
+      adjustedDueAmount: rawData.adjustedDueAmount || paymentNode.dueAmount,
+      adjustedDueDate: rawData.adjustedDueDate || paymentNode.dueDate,
+      status: 'pending',
+      approvedBy: null,
+      approvedAt: null,
+      approvalNotes: '',
+      createdAt: now,
+      createdBy: uid,
+      updatedAt: now,
+      updatedBy: uid,
+      customFields: rawData.customFields || {}
+    };
+
+    db.confirmations[confirmationId] = confirmation;
+    persist();
+
+    return { success: true, data: confirmation, isUpdate: false };
+  }, ['contractId', 'paymentNodeId', 'confirmationType', 'confirmingParty']);
 }
 
 function approveConfirmation(confirmationId, approvalNotes, userId) {
+  const permCheck = checkPermission(userId, 'canApprove', 'confirmation');
+  if (!permCheck.success) {
+    addFailedRecord('confirmation', { confirmationId, approvalNotes }, permCheck, userId);
+    return permCheck;
+  }
+
   const db = getDB();
   const confirmation = db.confirmations[confirmationId];
 
   if (!confirmation) {
-    return { success: false, error: '确认单不存在', code: 'NOT_FOUND' };
+    const err = { message: '确认单不存在', code: 'NOT_FOUND' };
+    addFailedRecord('confirmation', { confirmationId }, err, userId);
+    return { success: false, ...err };
   }
 
   const contract = getContract(confirmation.contractId);
   if (contract && contract.status === CONTRACT_STATUS.FROZEN) {
-    return { success: false, error: '合同已冻结，无法审批确认单', code: 'CONTRACT_FROZEN' };
+    const err = { message: '合同已冻结，无法审批确认单', code: 'CONTRACT_FROZEN' };
+    addFailedRecord('confirmation', { confirmationId }, err, userId);
+    return { success: false, ...err };
   }
 
   const now = new Date().toISOString();
@@ -153,32 +200,13 @@ function listConfirmations(filters = {}) {
   return results.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
-function addFailedRecord(data, error, userId) {
-  const db = getDB();
-  const record = {
-    id: `FAIL-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-    entityType: data.entityType || 'unknown',
-    rawData: JSON.stringify(data),
-    error: error.message || String(error),
-    errorCode: error.code || 'UNKNOWN_ERROR',
-    reportedBy: userId,
-    reportedAt: new Date().toISOString(),
-    resolved: false,
-    resolvedAt: null,
-    resolvedBy: null,
-    resolutionNotes: ''
-  };
-  db.failedRecords.push(record);
-  persist();
-  return record;
-}
-
 function listFailedRecords(filters = {}) {
   const db = getDB();
   let results = [...db.failedRecords];
   
   if (filters.resolved !== undefined) {
-    results = results.filter(r => r.resolved === filters.resolved);
+    const isResolved = filters.resolved === true || filters.resolved === 'true';
+    results = results.filter(r => r.resolved === isResolved);
   }
   if (filters.entityType) {
     results = results.filter(r => r.entityType === filters.entityType);
@@ -194,5 +222,6 @@ module.exports = {
   getConfirmation,
   listConfirmations,
   addFailedRecord,
-  listFailedRecords
+  listFailedRecords,
+  safeCreate
 };

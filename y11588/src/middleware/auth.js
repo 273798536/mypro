@@ -18,10 +18,10 @@ const PERMISSIONS = {
     canFreeze: [],
     canExport: true,
     visibleFields: {
-      contract: ['id', 'contractName', 'contractNumber', 'partyA', 'partyB', 'totalAmount', 'currency', 'status', 'createdAt'],
-      paymentNode: ['id', 'contractId', 'nodeName', 'dueAmount', 'dueDate', 'status', 'sequence'],
-      acceptanceEmail: ['id', 'contractId', 'paymentNodeId', 'emailSubject', 'emailFrom', 'emailDate', 'status'],
-      confirmation: ['id', 'contractId', 'paymentNodeId', 'confirmationType', 'confirmingParty', 'status']
+      contract: ['id', 'contractName', 'contractNumber', 'partyA', 'partyB', 'totalAmount', 'currency', 'status', 'createdAt', 'isSupplement', 'parentContractId', 'idempotencyKey', 'version'],
+      paymentNode: ['id', 'contractId', 'nodeName', 'dueAmount', 'dueDate', 'status', 'sequence', 'batchId', 'idempotencyKey'],
+      acceptanceEmail: ['id', 'contractId', 'paymentNodeId', 'emailSubject', 'emailFrom', 'emailDate', 'status', 'idempotencyKey'],
+      confirmation: ['id', 'contractId', 'paymentNodeId', 'confirmationType', 'confirmingParty', 'status', 'idempotencyKey', 'adjustedDueAmount', 'originalDueAmount']
     }
   },
   [ROLES.REVIEWER]: {

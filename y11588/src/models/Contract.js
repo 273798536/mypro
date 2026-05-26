@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
-const { getDB, persist } = require('./storage');
+const { getDB, persist, addFailedRecord } = require('./storage');
+const { checkPermission } = require('../middleware/modelPermission');
 
 const CONTRACT_STATUS = {
   DRAFT: 'draft',
@@ -10,10 +11,18 @@ const CONTRACT_STATUS = {
 };
 
 function createContract(data, userId) {
+  const permCheck = checkPermission(userId, 'canCreate', 'contract');
+  if (!permCheck.success) {
+    addFailedRecord('contract', data, permCheck, userId);
+    return permCheck;
+  }
+
   const db = getDB();
   
   if (!data.idempotencyKey) {
-    return { success: false, error: '缺少幂等键 idempotencyKey', code: 'MISSING_IDEMPOTENCY_KEY' };
+    const err = { message: '缺少幂等键 idempotencyKey', code: 'MISSING_IDEMPOTENCY_KEY' };
+    addFailedRecord('contract', data, err, userId);
+    return { success: false, ...err };
   }
 
   const existing = Object.values(db.contracts).find(c => c.idempotencyKey === data.idempotencyKey);
@@ -24,14 +33,24 @@ function createContract(data, userId) {
   const contractId = data.contractId || `CT-${Date.now()}`;
   
   if (db.contracts[contractId]) {
-    return { success: false, error: '合同编号已存在', code: 'DUPLICATE_CONTRACT_ID' };
+    const err = { message: '合同编号已存在', code: 'DUPLICATE_CONTRACT_ID' };
+    addFailedRecord('contract', data, err, userId);
+    return { success: false, ...err };
   }
 
   const required = ['contractName', 'partyA', 'partyB', 'totalAmount', 'pdfHash'];
   for (const field of required) {
     if (!data[field]) {
-      return { success: false, error: `缺少必填字段: ${field}`, code: 'MISSING_REQUIRED_FIELD' };
+      const err = { message: `缺少必填字段: ${field}`, code: 'MISSING_REQUIRED_FIELD' };
+      addFailedRecord('contract', data, err, userId);
+      return { success: false, ...err };
     }
+  }
+
+  if (isNaN(parseFloat(data.totalAmount)) || parseFloat(data.totalAmount) <= 0) {
+    const err = { message: '合同总金额必须是正数', code: 'INVALID_AMOUNT' };
+    addFailedRecord('contract', data, err, userId);
+    return { success: false, ...err };
   }
 
   const now = new Date().toISOString();
@@ -86,15 +105,25 @@ function getContract(contractId) {
 }
 
 function updateContract(contractId, data, userId) {
+  const permCheck = checkPermission(userId, 'canUpdate', 'contract');
+  if (!permCheck.success) {
+    addFailedRecord('contract', { contractId, ...data }, permCheck, userId);
+    return permCheck;
+  }
+
   const db = getDB();
   const contract = db.contracts[contractId];
   
   if (!contract) {
-    return { success: false, error: '合同不存在', code: 'NOT_FOUND' };
+    const err = { message: '合同不存在', code: 'NOT_FOUND' };
+    addFailedRecord('contract', { contractId }, err, userId);
+    return { success: false, ...err };
   }
 
   if (contract.status === CONTRACT_STATUS.FROZEN) {
-    return { success: false, error: '合同已冻结，无法修改', code: 'CONTRACT_FROZEN' };
+    const err = { message: '合同已冻结，无法修改', code: 'CONTRACT_FROZEN' };
+    addFailedRecord('contract', { contractId, action: 'update' }, err, userId);
+    return { success: false, ...err };
   }
 
   const oldVersion = contract.version;
@@ -132,11 +161,19 @@ function updateContract(contractId, data, userId) {
 }
 
 function freezeContract(contractId, userId) {
+  const permCheck = checkPermission(userId, 'canFreeze', 'contract');
+  if (!permCheck.success) {
+    addFailedRecord('contract', { contractId, action: 'freeze' }, permCheck, userId);
+    return permCheck;
+  }
+
   const db = getDB();
   const contract = db.contracts[contractId];
   
   if (!contract) {
-    return { success: false, error: '合同不存在', code: 'NOT_FOUND' };
+    const err = { message: '合同不存在', code: 'NOT_FOUND' };
+    addFailedRecord('contract', { contractId }, err, userId);
+    return { success: false, ...err };
   }
 
   if (contract.status === CONTRACT_STATUS.FROZEN) {
@@ -173,7 +210,8 @@ function listContracts(filters = {}) {
     results = results.filter(c => c.status === filters.status);
   }
   if (filters.isSupplement !== undefined) {
-    results = results.filter(c => c.isSupplement === filters.isSupplement);
+    const isSupp = filters.isSupplement === true || filters.isSupplement === 'true';
+    results = results.filter(c => c.isSupplement === isSupp);
   }
   if (filters.parentContractId) {
     results = results.filter(c => c.parentContractId === filters.parentContractId);

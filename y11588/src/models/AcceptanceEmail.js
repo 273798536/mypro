@@ -1,13 +1,22 @@
 const { v4: uuidv4 } = require('uuid');
-const { getDB, persist } = require('./storage');
+const { getDB, persist, addFailedRecord } = require('./storage');
 const { getContract, CONTRACT_STATUS } = require('./Contract');
 const { getPaymentNode, NODE_STATUS, updateNodeStatus } = require('./PaymentNode');
+const { checkPermission } = require('../middleware/modelPermission');
 
 function createAcceptanceEmail(data, userId) {
+  const permCheck = checkPermission(userId, 'canCreate', 'acceptanceEmail');
+  if (!permCheck.success) {
+    addFailedRecord('acceptanceEmail', data, permCheck, userId);
+    return permCheck;
+  }
+
   const db = getDB();
 
   if (!data.idempotencyKey) {
-    return { success: false, error: '缺少幂等键 idempotencyKey', code: 'MISSING_IDEMPOTENCY_KEY' };
+    const err = { message: '缺少幂等键 idempotencyKey', code: 'MISSING_IDEMPOTENCY_KEY' };
+    addFailedRecord('acceptanceEmail', data, err, userId);
+    return { success: false, ...err };
   }
 
   const existing = Object.values(db.acceptanceEmails).find(e => e.idempotencyKey === data.idempotencyKey);
@@ -18,22 +27,30 @@ function createAcceptanceEmail(data, userId) {
   const required = ['contractId', 'paymentNodeId', 'emailSubject', 'emailFrom', 'emailDate'];
   for (const field of required) {
     if (!data[field]) {
-      return { success: false, error: `缺少必填字段: ${field}`, code: 'MISSING_REQUIRED_FIELD' };
+      const err = { message: `缺少必填字段: ${field}`, code: 'MISSING_REQUIRED_FIELD' };
+      addFailedRecord('acceptanceEmail', data, err, userId);
+      return { success: false, ...err };
     }
   }
 
   const contract = getContract(data.contractId);
   if (!contract) {
-    return { success: false, error: '关联合同不存在', code: 'CONTRACT_NOT_FOUND' };
+    const err = { message: '关联合同不存在', code: 'CONTRACT_NOT_FOUND' };
+    addFailedRecord('acceptanceEmail', data, err, userId);
+    return { success: false, ...err };
   }
 
   if (contract.status === CONTRACT_STATUS.FROZEN) {
-    return { success: false, error: '合同已冻结，无法新增验收邮件', code: 'CONTRACT_FROZEN' };
+    const err = { message: '合同已冻结，无法新增验收邮件', code: 'CONTRACT_FROZEN' };
+    addFailedRecord('acceptanceEmail', data, err, userId);
+    return { success: false, ...err };
   }
 
   const paymentNode = getPaymentNode(data.paymentNodeId);
   if (!paymentNode) {
-    return { success: false, error: '关联付款节点不存在', code: 'PAYMENT_NODE_NOT_FOUND' };
+    const err = { message: '关联付款节点不存在', code: 'PAYMENT_NODE_NOT_FOUND' };
+    addFailedRecord('acceptanceEmail', data, err, userId);
+    return { success: false, ...err };
   }
 
   const emailId = data.emailId || `AE-${Date.now()}`;
@@ -80,16 +97,26 @@ function getAcceptanceEmail(emailId) {
 }
 
 function reviewAcceptanceEmail(emailId, result, reviewNotes, userId) {
+  const permCheck = checkPermission(userId, 'canReview', 'acceptanceEmail');
+  if (!permCheck.success) {
+    addFailedRecord('acceptanceEmail', { emailId, result }, permCheck, userId);
+    return permCheck;
+  }
+
   const db = getDB();
   const email = db.acceptanceEmails[emailId];
 
   if (!email) {
-    return { success: false, error: '验收邮件不存在', code: 'NOT_FOUND' };
+    const err = { message: '验收邮件不存在', code: 'NOT_FOUND' };
+    addFailedRecord('acceptanceEmail', { emailId }, err, userId);
+    return { success: false, ...err };
   }
 
   const contract = getContract(email.contractId);
   if (contract && contract.status === CONTRACT_STATUS.FROZEN) {
-    return { success: false, error: '合同已冻结，无法复核', code: 'CONTRACT_FROZEN' };
+    const err = { message: '合同已冻结，无法复核', code: 'CONTRACT_FROZEN' };
+    addFailedRecord('acceptanceEmail', { emailId }, err, userId);
+    return { success: false, ...err };
   }
 
   const now = new Date().toISOString();

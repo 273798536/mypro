@@ -1,0 +1,39 @@
+{
+  "exportTime": "2026-05-26T06:06:01.976Z",
+  "contract": {
+    "id": "CT-TEST-001",
+    "idempotencyKey": "test-ct-001",
+    "contractName": "测试合同A",
+    "contractNumber": "CT-TEST-001",
+    "partyA": "甲方公司",
+    "partyB": "乙方公司",
+    "totalAmount": 1000000,
+    "currency": "CNY",
+    "pdfHash": "hash-test-001",
+    "pdfUrl": "",
+    "effectiveDate": "2026-05-26T06:06:01.943Z",
+    "expiryDate": "",
+    "status": "frozen",
+    "version": 1,
+    "parentContractId": null,
+    "isSupplement": false,
+    "createdAt": "2026-05-26T06:06:01.943Z",
+    "createdBy": "admin",
+    "updatedAt": "2026-05-26T06:06:01.970Z",
+    "updatedBy": "admin",
+    "frozenAt": "2026-05-26T06:06:01.970Z",
+    "frozenBy": "admin",
+    "completedAt": null,
+    "notes": "",
+    "customFields": {}
+  },
+  "progress": {
+    "total": 0,
+    "completed": 0,
+    "percentage": 0
+  },
+  "paymentNodes": [],
+  "acceptanceEmails": [],
+  "confirmations": [],
+  "eventTimeline": []
+}
