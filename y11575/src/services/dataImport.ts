@@ -28,12 +28,69 @@ export interface ParsedRecord {
   abnormalAmount: number;
   deductionAmount: number;
   customerServiceNotes?: string;
+  sourceType: DataSourceType;
 }
 
 export interface ParseOptions {
   skipHeader?: boolean;
   sheetName?: string;
 }
+
+interface ColumnMapping {
+  batchNo: number;
+  semiProductCode?: number;
+  semiProductName?: number;
+  supplierId?: number;
+  supplierName?: number;
+  quantity?: number;
+  abnormalAmount?: number;
+  deductionAmount?: number;
+  customerServiceNotes?: number;
+}
+
+const COLUMN_MAPPINGS: Record<DataSourceType, ColumnMapping> = {
+  [DataSourceType.DELIVERY_NOTE]: {
+    batchNo: 0,
+    semiProductCode: 1,
+    semiProductName: 2,
+    supplierId: 3,
+    supplierName: 4,
+    quantity: 5,
+    abnormalAmount: 6,
+    deductionAmount: 7,
+    customerServiceNotes: 8
+  },
+  [DataSourceType.REPAIR_RECORD]: {
+    batchNo: 0,
+    quantity: 4,
+    abnormalAmount: 5,
+    customerServiceNotes: 3
+  },
+  [DataSourceType.DEDUCTION_DETAIL]: {
+    batchNo: 0,
+    deductionAmount: 4,
+    customerServiceNotes: 5
+  },
+  [DataSourceType.STORE_HANDOVER]: {
+    batchNo: 0,
+    quantity: 1,
+    customerServiceNotes: 2
+  },
+  [DataSourceType.CUSTOMER_SERVICE_NOTE]: {
+    batchNo: 0,
+    customerServiceNotes: 1
+  }
+};
+
+const DEFAULT_VALUES = {
+  semiProductCode: 'UNKNOWN',
+  semiProductName: '未知半成品',
+  supplierId: 'UNKNOWN',
+  supplierName: '未知供应商',
+  quantity: 0,
+  abnormalAmount: 0,
+  deductionAmount: 0
+};
 
 export class DataImportService {
   private receiptModel: ReconciliationReceiptModel;
@@ -62,9 +119,9 @@ export class DataImportService {
 
     try {
       if (fileExt === '.xlsx' || fileExt === '.xls') {
-        ({ records, errors } = this.parseExcel(filePath, sourceFile, options));
+        ({ records, errors } = this.parseExcel(filePath, sourceFile, sourceType, options));
       } else if (fileExt === '.csv') {
-        ({ records, errors } = await this.parseCsv(filePath, sourceFile, options));
+        ({ records, errors } = await this.parseCsv(filePath, sourceFile, sourceType, options));
       } else {
         throw new Error(`不支持的文件格式: ${fileExt}`);
       }
@@ -133,6 +190,7 @@ export class DataImportService {
   private parseExcel(
     filePath: string,
     sourceFile: string,
+    sourceType: DataSourceType,
     options: ParseOptions
   ): { records: ParsedRecord[]; errors: ImportError[] } {
     const records: ParsedRecord[] = [];
@@ -150,7 +208,7 @@ export class DataImportService {
       const lineNumber = i + 1;
 
       try {
-        const record = this.parseRow(row, sourceFile, lineNumber);
+        const record = this.parseRow(row, sourceFile, lineNumber, sourceType);
         records.push(record);
       } catch (error: any) {
         errors.push({
@@ -170,6 +228,7 @@ export class DataImportService {
   private async parseCsv(
     filePath: string,
     sourceFile: string,
+    sourceType: DataSourceType,
     options: ParseOptions
   ): Promise<{ records: ParsedRecord[]; errors: ImportError[] }> {
     return new Promise((resolve, reject) => {
@@ -184,7 +243,7 @@ export class DataImportService {
           if (options.skipHeader && lineNumber === 1) return;
 
           try {
-            const record = this.parseRow(Object.values(row), sourceFile, lineNumber);
+            const record = this.parseRow(Object.values(row), sourceFile, lineNumber, sourceType);
             records.push(record);
           } catch (error: any) {
             errors.push({
@@ -204,8 +263,11 @@ export class DataImportService {
     });
   }
 
-  private parseRow(row: any[], sourceFile: string, lineNumber: number): ParsedRecord {
-    const getValue = (index: number, fieldName: string, required: boolean = true) => {
+  private parseRow(row: any[], sourceFile: string, lineNumber: number, sourceType: DataSourceType): ParsedRecord {
+    const mapping = COLUMN_MAPPINGS[sourceType] || COLUMN_MAPPINGS[DataSourceType.DELIVERY_NOTE];
+    
+    const getValue = (index: number | undefined, fieldName: string, required: boolean = false, defaultValue: any = ''): any => {
+      if (index === undefined) return defaultValue;
       const value = row[index];
       if (required && (value === undefined || value === null || value === '')) {
         const error: any = new Error(`字段 ${fieldName} 不能为空`);
@@ -214,7 +276,7 @@ export class DataImportService {
         error.code = 'MISSING_REQUIRED';
         throw error;
       }
-      return value;
+      return value ?? defaultValue;
     };
 
     const parseNumber = (value: any, fieldName: string): number => {
@@ -231,17 +293,19 @@ export class DataImportService {
     };
 
     try {
-      return {
-        batchNo: String(getValue(0, '批次号')),
-        semiProductCode: String(getValue(1, '半成品编码')),
-        semiProductName: String(getValue(2, '半成品名称')),
-        supplierId: String(getValue(3, '供应商ID')),
-        supplierName: String(getValue(4, '供应商名称')),
-        quantity: parseNumber(getValue(5, '数量'), '数量'),
-        abnormalAmount: parseNumber(getValue(6, '异常金额'), '异常金额'),
-        deductionAmount: parseNumber(getValue(7, '扣款金额'), '扣款金额'),
-        customerServiceNotes: row[8] ? String(row[8]) : undefined
+      const record: ParsedRecord = {
+        batchNo: String(getValue(mapping.batchNo, '批次号', true)),
+        semiProductCode: String(getValue(mapping.semiProductCode, '半成品编码', false, DEFAULT_VALUES.semiProductCode)),
+        semiProductName: String(getValue(mapping.semiProductName, '半成品名称', false, DEFAULT_VALUES.semiProductName)),
+        supplierId: String(getValue(mapping.supplierId, '供应商ID', false, DEFAULT_VALUES.supplierId)),
+        supplierName: String(getValue(mapping.supplierName, '供应商名称', false, DEFAULT_VALUES.supplierName)),
+        quantity: parseNumber(getValue(mapping.quantity, '数量', false, 0), '数量'),
+        abnormalAmount: parseNumber(getValue(mapping.abnormalAmount, '异常金额', false, 0), '异常金额'),
+        deductionAmount: parseNumber(getValue(mapping.deductionAmount, '扣款金额', false, 0), '扣款金额'),
+        customerServiceNotes: mapping.customerServiceNotes !== undefined && row[mapping.customerServiceNotes] ? String(row[mapping.customerServiceNotes]) : undefined,
+        sourceType
       };
+      return record;
     } catch (error: any) {
       logger.error(`行 ${lineNumber} 解析失败:`, error.message);
       throw error;
@@ -262,7 +326,43 @@ export class DataImportService {
     
     if (existingReceipts.length > 0) {
       receipt = existingReceipts[0];
-      logger.warn(`批次 ${record.batchNo} 已存在，将追加证据记录`);
+      logger.warn(`批次 ${record.batchNo} 已存在，将追加证据记录并累加金额`);
+      
+      const updatedAmounts = {
+        quantity: receipt.quantity + record.quantity,
+        abnormalAmount: receipt.abnormalAmount + record.abnormalAmount,
+        deductionAmount: receipt.deductionAmount + record.deductionAmount
+      };
+      
+      const notesParts = [receipt.customerServiceNotes, record.customerServiceNotes].filter(Boolean);
+      const mergedNotes = notesParts.length > 0 ? notesParts.join('; ') : undefined;
+      
+      receipt = await this.receiptModel.updateStatus(
+        receipt.id,
+        receipt.status,
+        operator,
+        `追加${this.getSourceTypeName(sourceType)}数据`,
+        {
+          ...updatedAmounts,
+          customerServiceNotes: mergedNotes || receipt.customerServiceNotes
+        }
+      );
+      
+      await this.transitionModel.create({
+        receiptId: receipt.id,
+        fromStatus: receipt.status,
+        toStatus: receipt.status,
+        operator,
+        reason: `追加${this.getSourceTypeName(sourceType)}数据，累加金额`,
+        metadata: {
+          sourceType,
+          sourceFile,
+          importBatchId,
+          addedQuantity: record.quantity,
+          addedAbnormalAmount: record.abnormalAmount,
+          addedDeductionAmount: record.deductionAmount
+        }
+      });
     } else {
       receipt = await this.receiptModel.create({
         batchNo: record.batchNo,
@@ -342,5 +442,16 @@ export class DataImportService {
     }
 
     logger.info(`已为回执 ${receiptId} 追加 ${Object.keys(data).length} 条证据记录`);
+  }
+
+  private getSourceTypeName(sourceType: DataSourceType): string {
+    const names: Record<DataSourceType, string> = {
+      [DataSourceType.DELIVERY_NOTE]: '送货单',
+      [DataSourceType.REPAIR_RECORD]: '返修记录',
+      [DataSourceType.DEDUCTION_DETAIL]: '扣款明细',
+      [DataSourceType.STORE_HANDOVER]: '门店交接',
+      [DataSourceType.CUSTOMER_SERVICE_NOTE]: '客服备注'
+    };
+    return names[sourceType] || sourceType;
   }
 }

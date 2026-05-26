@@ -143,9 +143,25 @@ export class ReconciliationReceiptModel {
         sql += ', status_before_frozen = ?';
         params.push(additionalUpdates.statusBeforeFrozen);
       }
+      if (additionalUpdates.quantity !== undefined) {
+        sql += ', quantity = ?';
+        params.push(additionalUpdates.quantity);
+      }
+      if (additionalUpdates.abnormalAmount !== undefined) {
+        sql += ', abnormal_amount = ?';
+        params.push(additionalUpdates.abnormalAmount);
+      }
+      if (additionalUpdates.deductionAmount !== undefined) {
+        sql += ', deduction_amount = ?';
+        params.push(additionalUpdates.deductionAmount);
+      }
       if (additionalUpdates.confirmedAmount !== undefined) {
         sql += ', confirmed_amount = ?';
         params.push(additionalUpdates.confirmedAmount);
+      }
+      if (additionalUpdates.customerServiceNotes !== undefined) {
+        sql += ', customer_service_notes = ?';
+        params.push(additionalUpdates.customerServiceNotes);
       }
       if (additionalUpdates.manualReason !== undefined) {
         sql += ', manual_reason = ?';
