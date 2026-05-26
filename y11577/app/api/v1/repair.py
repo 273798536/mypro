@@ -7,7 +7,9 @@ from app.database import get_db
 from app.core.security import (
     get_current_active_user,
     RoleChecker,
-    get_user_role_context
+    get_user_role_context,
+    REPAIR_FIELD_CONFIG,
+    apply_field_filter
 )
 from app.models.auth import User
 from app.models.business import RepairRecord
@@ -33,6 +35,8 @@ async def create_repair(
     _: bool = Depends(allow_data_entry)
 ) -> Any:
     try:
+        role_context = get_user_role_context(current_user, db)
+        
         idempotent_key = IdempotentService.generate_repair_key(
             delivery_id=repair_in.delivery_id,
             batch_no=repair_in.batch_no or str(repair_in.repair_no)
@@ -55,9 +59,11 @@ async def create_repair(
                 business_id=repair.id
             )
         
+        filtered_data = apply_field_filter(repair, role_context, REPAIR_FIELD_CONFIG)
+        
         return DataResponse(
             success=True,
-            data=repair,
+            data=filtered_data,
             message=f"返修记录{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
@@ -105,9 +111,11 @@ async def get_repairs(
         .limit(page_size)\
         .all()
     
+    filtered_data = apply_field_filter(repairs, role_context, REPAIR_FIELD_CONFIG)
+    
     return ListResponse(
         success=True,
-        data=repairs,
+        data=filtered_data,
         total=total,
         page=page,
         page_size=page_size,
@@ -124,7 +132,11 @@ async def get_repair(
     repair = db.query(RepairRecord).filter(RepairRecord.id == repair_id).first()
     if not repair:
         raise HTTPException(status_code=404, detail="返修记录不存在")
-    return DataResponse(success=True, data=repair)
+    
+    role_context = get_user_role_context(current_user, db)
+    filtered_data = apply_field_filter(repair, role_context, REPAIR_FIELD_CONFIG)
+    
+    return DataResponse(success=True, data=filtered_data)
 
 
 @router.put("/{repair_id}", response_model=DataResponse[RepairRecordSchema])
@@ -155,4 +167,7 @@ async def update_repair(
             business_id=repair.id
         )
     
-    return DataResponse(success=True, data=repair, message="更新成功")
+    role_context = get_user_role_context(current_user, db)
+    filtered_data = apply_field_filter(repair, role_context, REPAIR_FIELD_CONFIG)
+    
+    return DataResponse(success=True, data=filtered_data, message="更新成功")

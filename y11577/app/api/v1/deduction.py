@@ -7,7 +7,9 @@ from app.database import get_db
 from app.core.security import (
     get_current_active_user,
     RoleChecker,
-    get_user_role_context
+    get_user_role_context,
+    DEDUCTION_FIELD_CONFIG,
+    apply_field_filter
 )
 from app.models.auth import User
 from app.models.business import DeductionDetail
@@ -33,6 +35,8 @@ async def create_deduction(
     _: bool = Depends(allow_data_entry)
 ) -> Any:
     try:
+        role_context = get_user_role_context(current_user, db)
+        
         idempotent_key = IdempotentService.generate_deduction_key(
             delivery_id=deduction_in.delivery_id or 0,
             deduction_type=deduction_in.deduction_type
@@ -55,9 +59,11 @@ async def create_deduction(
                 business_id=deduction.id
             )
         
+        filtered_data = apply_field_filter(deduction, role_context, DEDUCTION_FIELD_CONFIG)
+        
         return DataResponse(
             success=True,
-            data=deduction,
+            data=filtered_data,
             message=f"扣款明细{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
@@ -108,9 +114,11 @@ async def get_deductions(
         .limit(page_size)\
         .all()
     
+    filtered_data = apply_field_filter(deductions, role_context, DEDUCTION_FIELD_CONFIG)
+    
     return ListResponse(
         success=True,
-        data=deductions,
+        data=filtered_data,
         total=total,
         page=page,
         page_size=page_size,
@@ -127,7 +135,11 @@ async def get_deduction(
     deduction = db.query(DeductionDetail).filter(DeductionDetail.id == deduction_id).first()
     if not deduction:
         raise HTTPException(status_code=404, detail="扣款明细不存在")
-    return DataResponse(success=True, data=deduction)
+    
+    role_context = get_user_role_context(current_user, db)
+    filtered_data = apply_field_filter(deduction, role_context, DEDUCTION_FIELD_CONFIG)
+    
+    return DataResponse(success=True, data=filtered_data)
 
 
 @router.put("/{deduction_id}", response_model=DataResponse[DeductionDetailSchema])
@@ -158,4 +170,7 @@ async def update_deduction(
             business_id=deduction.id
         )
     
-    return DataResponse(success=True, data=deduction, message="更新成功")
+    role_context = get_user_role_context(current_user, db)
+    filtered_data = apply_field_filter(deduction, role_context, DEDUCTION_FIELD_CONFIG)
+    
+    return DataResponse(success=True, data=filtered_data, message="更新成功")

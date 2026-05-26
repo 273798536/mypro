@@ -130,3 +130,105 @@ def filter_fields_by_role(data: dict, role_context: dict, field_config: dict) ->
         result[field] = value
     
     return result
+
+
+DELIVERY_FIELD_CONFIG = {
+    "delivery_no": "all",
+    "supplier_code": "all",
+    "supplier_name": "all",
+    "product_code": "all",
+    "product_name": "all",
+    "delivery_date": "all",
+    "quantity": "all",
+    "unit_price": "review",
+    "total_amount": "review",
+    "batch_no": "all",
+    "work_order_no": "all",
+    "status": "all",
+    "remark": "all",
+    "metadata_": "supervisor",
+    "idempotent_key": "supervisor",
+    "created_at": "all",
+    "updated_at": "all",
+}
+
+REPAIR_FIELD_CONFIG = {
+    "repair_no": "all",
+    "delivery_id": "all",
+    "repair_date": "all",
+    "repair_type": "all",
+    "repair_reason": "all",
+    "repair_quantity": "all",
+    "repair_cost": "review",
+    "responsible_party": "all",
+    "batch_no": "all",
+    "status": "all",
+    "remark": "all",
+    "metadata_": "supervisor",
+    "idempotent_key": "supervisor",
+    "created_at": "all",
+    "updated_at": "all",
+}
+
+DEDUCTION_FIELD_CONFIG = {
+    "deduction_no": "all",
+    "delivery_id": "all",
+    "repair_id": "all",
+    "deduction_type": "all",
+    "deduction_date": "all",
+    "deduction_amount": "review",
+    "deduction_reason": "all",
+    "deduction_basis": "all",
+    "status": "all",
+    "remark": "all",
+    "metadata_": "supervisor",
+    "idempotent_key": "supervisor",
+    "created_at": "all",
+    "updated_at": "all",
+}
+
+SHIFT_FIELD_CONFIG = {
+    "shift_date": "all",
+    "shift_type": "all",
+    "team_code": "all",
+    "team_name": "all",
+    "worker_count": "all",
+    "work_hours": "all",
+    "output_quantity": "all",
+    "product_code": "all",
+    "product_name": "all",
+    "status": "all",
+    "remark": "all",
+    "metadata_": "supervisor",
+    "idempotent_key": "supervisor",
+    "created_at": "all",
+    "updated_at": "all",
+}
+
+SUPPLEMENT_FIELD_CONFIG = {
+    "supplement_no": "all",
+    "supplement_type": "all",
+    "supplement_date": "all",
+    "supplement_reason": "all",
+    "related_order_no": "all",
+    "supplement_content": "review",
+    "amount": "review",
+    "status": "all",
+    "remark": "all",
+    "metadata_": "supervisor",
+    "idempotent_key": "supervisor",
+    "created_at": "all",
+    "updated_at": "all",
+}
+
+
+def apply_field_filter(data, role_context, field_config):
+    if isinstance(data, list):
+        return [apply_field_filter(item, role_context, field_config) for item in data]
+    elif hasattr(data, '__dict__'):
+        data_dict = data.__dict__
+        filtered = filter_fields_by_role(data_dict, role_context, field_config)
+        return filtered
+    elif isinstance(data, dict):
+        return filter_fields_by_role(data, role_context, field_config)
+    return data

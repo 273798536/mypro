@@ -195,6 +195,35 @@ class ManualHandleRequest(BaseModel):
     note: str = Field(..., description="处理说明")
 
 
+class TemporarySupplementBase(BaseModel):
+    supplement_no: str = Field(..., max_length=50, description="补录单号")
+    supplement_type: str = Field(..., max_length=50, description="补录类型")
+    supplement_date: date = Field(..., description="补录日期")
+    supplement_reason: str = Field(..., max_length=500, description="补录原因")
+    related_order_no: Optional[str] = Field(None, max_length=50, description="关联单号")
+    supplement_content: Optional[Dict[str, Any]] = Field(None, description="补录内容")
+    amount: Optional[Decimal] = Field(None, description="金额")
+    status: Optional[str] = Field("pending", max_length=50, description="状态")
+    remark: Optional[str] = Field(None, description="备注")
+    metadata_: Optional[Dict[str, Any]] = Field(None, description="元数据")
+
+
+class TemporarySupplementCreate(TemporarySupplementBase):
+    pass
+
+
+class TemporarySupplementUpdate(BaseModel):
+    supplement_type: Optional[str] = None
+    supplement_reason: Optional[str] = None
+    amount: Optional[Decimal] = None
+    status: Optional[str] = None
+    remark: Optional[str] = None
+
+
+class TemporarySupplement(TemporarySupplementBase, BusinessBase):
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ChangeHistoryItem(AuditFields):
     business_type: str
     business_id: int

@@ -7,8 +7,9 @@ from app.database import get_db
 from app.core.security import (
     get_current_active_user,
     RoleChecker,
-    PermissionChecker,
-    get_user_role_context
+    get_user_role_context,
+    DELIVERY_FIELD_CONFIG,
+    apply_field_filter
 )
 from app.models.auth import User
 from app.models.business import OutsourceDelivery
@@ -60,9 +61,11 @@ async def create_delivery(
                 business_id=delivery.id
             )
         
+        filtered_data = apply_field_filter(delivery, role_context, DELIVERY_FIELD_CONFIG)
+        
         return DataResponse(
             success=True,
-            data=delivery,
+            data=filtered_data,
             message=f"外协送货单{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
@@ -110,9 +113,11 @@ async def get_deliveries(
         .limit(page_size)\
         .all()
     
+    filtered_data = apply_field_filter(deliveries, role_context, DELIVERY_FIELD_CONFIG)
+    
     return ListResponse(
         success=True,
-        data=deliveries,
+        data=filtered_data,
         total=total,
         page=page,
         page_size=page_size,
@@ -135,7 +140,8 @@ async def get_delivery(
         if delivery.created_by != current_user.id:
             raise HTTPException(status_code=403, detail="无权限查看此记录")
     
-    return DataResponse(success=True, data=delivery)
+    filtered_data = apply_field_filter(delivery, role_context, DELIVERY_FIELD_CONFIG)
+    return DataResponse(success=True, data=filtered_data)
 
 
 @router.put("/{delivery_id}", response_model=DataResponse[OutsourceDeliverySchema])
@@ -171,7 +177,8 @@ async def update_delivery(
             business_id=delivery.id
         )
     
-    return DataResponse(success=True, data=delivery, message="更新成功")
+    filtered_data = apply_field_filter(delivery, role_context, DELIVERY_FIELD_CONFIG)
+    return DataResponse(success=True, data=filtered_data, message="更新成功")
 
 
 @router.post("/{delivery_id}/review", response_model=DataResponse)

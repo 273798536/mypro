@@ -1,9 +1,15 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Numeric, Text, Date, DateTime, ForeignKey, Index
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, Numeric, Text, Date, DateTime, ForeignKey, Index, JSON
 from sqlalchemy.orm import relationship
 
+from app.config import settings
 from app.models.base import IdempotentModel, BaseModel
+
+
+JSONType = JSON
+if settings.DATABASE_URL.startswith("postgresql"):
+    from sqlalchemy.dialects.postgresql import JSONB
+    JSONType = JSONB
 
 
 class OutsourceDelivery(IdempotentModel):
@@ -20,6 +26,7 @@ class OutsourceDelivery(IdempotentModel):
     total_amount = Column(Numeric(18, 2), nullable=False)
     batch_no = Column(String(50), nullable=True)
     work_order_no = Column(String(50), nullable=True)
+    metadata_ = Column(JSONType, default=dict)
     
     repair_records = relationship("RepairRecord", back_populates="delivery")
     deduction_details = relationship("DeductionDetail", back_populates="delivery")
@@ -42,6 +49,7 @@ class RepairRecord(IdempotentModel):
     repair_cost = Column(Numeric(18, 2), nullable=False)
     responsible_party = Column(String(50), nullable=False)
     batch_no = Column(String(50), nullable=True)
+    metadata_ = Column(JSONType, default=dict)
     
     delivery = relationship("OutsourceDelivery", back_populates="repair_records")
     deduction_details = relationship("DeductionDetail", back_populates="repair")
@@ -59,6 +67,7 @@ class DeductionDetail(IdempotentModel):
     deduction_amount = Column(Numeric(18, 2), nullable=False)
     deduction_reason = Column(String(500), nullable=False)
     deduction_basis = Column(String(200), nullable=True)
+    metadata_ = Column(JSONType, default=dict)
     
     delivery = relationship("OutsourceDelivery", back_populates="deduction_details")
     repair = relationship("RepairRecord", back_populates="deduction_details")
@@ -77,6 +86,7 @@ class ShiftRecord(IdempotentModel):
     output_quantity = Column(Numeric(18, 4), nullable=False)
     product_code = Column(String(50), nullable=True)
     product_name = Column(String(200), nullable=True)
+    metadata_ = Column(JSONType, default=dict)
 
 
 class TemporarySupplement(IdempotentModel):
@@ -87,8 +97,9 @@ class TemporarySupplement(IdempotentModel):
     supplement_date = Column(Date, nullable=False, index=True)
     supplement_reason = Column(String(500), nullable=False)
     related_order_no = Column(String(50), nullable=True)
-    supplement_content = Column(JSONB, default=dict)
+    supplement_content = Column(JSONType, default=dict)
     amount = Column(Numeric(18, 2), nullable=True)
+    metadata_ = Column(JSONType, default=dict)
 
 
 class CompensationQueue(BaseModel):
@@ -103,10 +114,10 @@ class CompensationQueue(BaseModel):
     next_retry_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     last_error = Column(Text, nullable=True)
     error_code = Column(String(100), nullable=True)
-    process_logs = Column(JSONB, default=list)
+    process_logs = Column(JSONType, default=list)
     handled_by = Column(Integer, nullable=True)
     handled_at = Column(DateTime, nullable=True)
-    source_ids = Column(JSONB, default=list)
+    source_ids = Column(JSONType, default=list)
     version = Column(Integer, default=1, nullable=False)
 
     __table_args__ = (
@@ -139,10 +150,10 @@ class FailedRecord(BaseModel):
 
     business_type = Column(String(50), nullable=False, index=True)
     idempotent_key = Column(String(255), nullable=False, index=True)
-    raw_data = Column(JSONB, nullable=False)
+    raw_data = Column(JSONType, nullable=False)
     error_type = Column(String(100), nullable=False)
     error_message = Column(Text, nullable=False)
-    error_detail = Column(JSONB, nullable=True)
+    error_detail = Column(JSONType, nullable=True)
     is_resolved = Column(String(1), default="N", nullable=False)
     resolved_at = Column(DateTime, nullable=True)
     resolved_by = Column(Integer, nullable=True)
@@ -165,7 +176,7 @@ class SettlementSummary(BaseModel):
     repair_amount = Column(Numeric(18, 2), default=0, nullable=False)
     deduction_amount = Column(Numeric(18, 2), default=0, nullable=False)
     final_amount = Column(Numeric(18, 2), default=0, nullable=False)
-    source_ids = Column(JSONB, default=dict)
+    source_ids = Column(JSONType, default=dict)
     version = Column(Integer, default=1, nullable=False)
 
     __table_args__ = (
@@ -179,8 +190,8 @@ class ChangeHistory(BaseModel):
     business_type = Column(String(50), nullable=False)
     business_id = Column(Integer, nullable=False)
     field_name = Column(String(100), nullable=False)
-    old_value = Column(JSONB, nullable=True)
-    new_value = Column(JSONB, nullable=True)
+    old_value = Column(JSONType, nullable=True)
+    new_value = Column(JSONType, nullable=True)
     change_reason = Column(String(500), nullable=True)
     operator_id = Column(Integer, nullable=False)
     operator_name = Column(String(100), nullable=False)

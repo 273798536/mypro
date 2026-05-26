@@ -2,6 +2,7 @@ from typing import Any, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from datetime import date, datetime
 from decimal import Decimal
 import io
@@ -293,7 +294,7 @@ async def get_dashboard_overview(
     error_groups = db.query(
         CompensationQueue.error_code,
         CompensationQueue.status,
-        db.func.count(CompensationQueue.id)
+        func.count(CompensationQueue.id)
     ).filter(
         CompensationQueue.status.in_([QueueStatus.FAILED, QueueStatus.DEAD_LETTER])
     ).group_by(

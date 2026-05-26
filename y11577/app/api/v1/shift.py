@@ -7,7 +7,9 @@ from app.database import get_db
 from app.core.security import (
     get_current_active_user,
     RoleChecker,
-    get_user_role_context
+    get_user_role_context,
+    SHIFT_FIELD_CONFIG,
+    apply_field_filter
 )
 from app.models.auth import User
 from app.models.business import ShiftRecord
@@ -31,6 +33,8 @@ async def create_shift(
     _: bool = Depends(allow_data_entry)
 ) -> Any:
     try:
+        role_context = get_user_role_context(current_user, db)
+        
         idempotent_key = IdempotentService.generate_shift_key(
             shift_date=str(shift_in.shift_date),
             shift_type=shift_in.shift_type,
@@ -46,9 +50,11 @@ async def create_shift(
             user_id=current_user.id
         )
         
+        filtered_data = apply_field_filter(shift, role_context, SHIFT_FIELD_CONFIG)
+        
         return DataResponse(
             success=True,
-            data=shift,
+            data=filtered_data,
             message=f"班次记录{'创建' if is_new else '更新'}成功"
         )
     except Exception as e:
@@ -99,9 +105,11 @@ async def get_shifts(
         .limit(page_size)\
         .all()
     
+    filtered_data = apply_field_filter(shifts, role_context, SHIFT_FIELD_CONFIG)
+    
     return ListResponse(
         success=True,
-        data=shifts,
+        data=filtered_data,
         total=total,
         page=page,
         page_size=page_size,
@@ -118,4 +126,8 @@ async def get_shift(
     shift = db.query(ShiftRecord).filter(ShiftRecord.id == shift_id).first()
     if not shift:
         raise HTTPException(status_code=404, detail="班次记录不存在")
-    return DataResponse(success=True, data=shift)
+    
+    role_context = get_user_role_context(current_user, db)
+    filtered_data = apply_field_filter(shift, role_context, SHIFT_FIELD_CONFIG)
+    
+    return DataResponse(success=True, data=filtered_data)
