@@ -58,7 +58,7 @@ export function getFailedRecords(options?: {
 
     db.all(sql, params, (err, rows) => {
       if (err) reject(err);
-      else resolve(rows.map(row => ({
+      else resolve((rows as any[]).map(row => ({
         ...row,
         raw_data: JSON.parse(row.raw_data)
       })));

@@ -52,13 +52,37 @@ router.post('/:id/status', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/summary', async (req: Request, res: Response) => {
   try {
-    const record = await getRechargeById(req.params.id);
-    if (!record) {
-      return res.status(404).json({ error: '记录不存在' });
+    const { storeId, startTime, endTime } = req.query;
+    const summary = await getRechargeSummary({
+      storeId: storeId as string,
+      startTime: startTime ? parseInt(startTime as string) : undefined,
+      endTime: endTime ? parseInt(endTime as string) : undefined
+    });
+    res.json(summary);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/export/csv', async (req: Request, res: Response) => {
+  try {
+    const { role, storeId, status, startTime, endTime } = req.query;
+    if (!role) {
+      return res.status(400).json({ error: '缺少角色信息' });
     }
-    res.json(record);
+
+    const csv = await exportRechargeToCSV(role as RoleType, {
+      storeId: storeId as string,
+      status: status as any,
+      startTime: startTime ? parseInt(startTime as string) : undefined,
+      endTime: endTime ? parseInt(endTime as string) : undefined
+    });
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="recharge_records.csv"');
+    res.send('\uFEFF' + csv);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
@@ -94,15 +118,13 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/summary', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const { storeId, startTime, endTime } = req.query;
-    const summary = await getRechargeSummary({
-      storeId: storeId as string,
-      startTime: startTime ? parseInt(startTime as string) : undefined,
-      endTime: endTime ? parseInt(endTime as string) : undefined
-    });
-    res.json(summary);
+    const record = await getRechargeById(req.params.id);
+    if (!record) {
+      return res.status(404).json({ error: '记录不存在' });
+    }
+    res.json(record);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
@@ -112,28 +134,6 @@ router.get('/:id/audit-trails', async (req: Request, res: Response) => {
   try {
     const trails = await getAuditTrailsByRecord(req.params.id, RecordType.RECHARGE);
     res.json(trails);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-router.get('/export/csv', async (req: Request, res: Response) => {
-  try {
-    const { role, storeId, status, startTime, endTime } = req.query;
-    if (!role) {
-      return res.status(400).json({ error: '缺少角色信息' });
-    }
-
-    const csv = await exportRechargeToCSV(role as RoleType, {
-      storeId: storeId as string,
-      status: status as any,
-      startTime: startTime ? parseInt(startTime as string) : undefined,
-      endTime: endTime ? parseInt(endTime as string) : undefined
-    });
-
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="recharge_records.csv"');
-    res.send('\uFEFF' + csv);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }

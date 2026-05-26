@@ -44,13 +44,23 @@ router.post('/:id/status', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/export/csv', async (req: Request, res: Response) => {
   try {
-    const record = await getReceiptById(req.params.id);
-    if (!record) {
-      return res.status(404).json({ error: '记录不存在' });
+    const { role, storeId, status, startTime, endTime } = req.query;
+    if (!role) {
+      return res.status(400).json({ error: '缺少角色信息' });
     }
-    res.json(record);
+
+    const csv = await exportReceiptToCSV(role as RoleType, {
+      storeId: storeId as string,
+      status: status as any,
+      startTime: startTime ? parseInt(startTime as string) : undefined,
+      endTime: endTime ? parseInt(endTime as string) : undefined
+    });
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="external_receipts.csv"');
+    res.send('\uFEFF' + csv);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
@@ -75,32 +85,22 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/:id/audit-trails', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const trails = await getAuditTrailsByRecord(req.params.id, RecordType.RECEIPT);
-    res.json(trails);
+    const record = await getReceiptById(req.params.id);
+    if (!record) {
+      return res.status(404).json({ error: '记录不存在' });
+    }
+    res.json(record);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
 
-router.get('/export/csv', async (req: Request, res: Response) => {
+router.get('/:id/audit-trails', async (req: Request, res: Response) => {
   try {
-    const { role, storeId, status, startTime, endTime } = req.query;
-    if (!role) {
-      return res.status(400).json({ error: '缺少角色信息' });
-    }
-
-    const csv = await exportReceiptToCSV(role as RoleType, {
-      storeId: storeId as string,
-      status: status as any,
-      startTime: startTime ? parseInt(startTime as string) : undefined,
-      endTime: endTime ? parseInt(endTime as string) : undefined
-    });
-
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', 'attachment; filename="external_receipts.csv"');
-    res.send('\uFEFF' + csv);
+    const trails = await getAuditTrailsByRecord(req.params.id, RecordType.RECEIPT);
+    res.json(trails);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
