@@ -1,0 +1,3923 @@
+{
+  "exportType": "full_snapshot",
+  "exportedAt": "2026-05-26T16:43:22.406Z",
+  "data": {
+    "addresses": [
+      {
+        "id": "mpmv56ogx474njnj12a",
+        "address": "0x9e2384103bb808",
+        "label": "正常用户_1",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 50,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_1，共5个地址)"
+          }
+        ],
+        "clusterId": "mpmv5k78sqv9qkxvhg8",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.416Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.416Z",
+        "updatedAt": "2026-05-26T16:42:31.950Z",
+        "metadata": {
+          "twitter_follower": false,
+          "discord_member": false,
+          "region": "US",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56okfi85wrmm626",
+        "address": "0xb6d26c809b3058",
+        "label": "正常用户_2",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 0,
+        "riskLevel": "low",
+        "riskFactors": [],
+        "clusterId": "mpmv5k7esk1ggm9758",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.420Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "updatedAt": "2026-05-26T16:42:31.951Z",
+        "metadata": {
+          "twitter_follower": true,
+          "discord_member": true,
+          "region": "EU",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56omq4vumcgwdn",
+        "address": "0x878ded14239248",
+        "label": "正常用户_3",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 50,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_1，共5个地址)"
+          }
+        ],
+        "clusterId": "mpmv5k7esk1ggm9758",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.422Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.422Z",
+        "updatedAt": "2026-05-26T16:42:31.952Z",
+        "metadata": {
+          "twitter_follower": true,
+          "discord_member": true,
+          "region": "Asia",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56opnc7dlw06ljn",
+        "address": "0xf7c411d6e70468",
+        "label": "正常用户_4",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 50,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_1，共5个地址)"
+          }
+        ],
+        "clusterId": "mpmv5k78sqv9qkxvhg8",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.425Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.425Z",
+        "updatedAt": "2026-05-26T16:42:31.954Z",
+        "metadata": {
+          "twitter_follower": false,
+          "discord_member": true,
+          "region": "US",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56oto2jq0uzuj5b",
+        "address": "0xefe9fc47e32f78",
+        "label": "正常用户_5",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 0,
+        "riskLevel": "low",
+        "riskFactors": [],
+        "clusterId": "mpmv5k78sqv9qkxvhg8",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.429Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.429Z",
+        "updatedAt": "2026-05-26T16:42:31.956Z",
+        "metadata": {
+          "twitter_follower": false,
+          "discord_member": false,
+          "region": "EU",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56ovseesjn821b",
+        "address": "0xa945d80c38c228",
+        "label": "正常用户_6",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 50,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_1，共5个地址)"
+          }
+        ],
+        "clusterId": "mpmv5k5e1mefaw4opp",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.431Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.431Z",
+        "updatedAt": "2026-05-26T16:42:31.958Z",
+        "metadata": {
+          "twitter_follower": true,
+          "discord_member": false,
+          "region": "Asia",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56ozcs36bg8htun",
+        "address": "0x319ba4849de8c",
+        "label": "正常用户_7",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 0,
+        "riskLevel": "low",
+        "riskFactors": [],
+        "clusterId": "mpmv5k78sqv9qkxvhg8",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.435Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.435Z",
+        "updatedAt": "2026-05-26T16:42:31.960Z",
+        "metadata": {
+          "twitter_follower": false,
+          "discord_member": true,
+          "region": "US",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56p2ib705vg6uz",
+        "address": "0x8e40238017819",
+        "label": "正常用户_8",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 50,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_1，共5个地址)"
+          }
+        ],
+        "clusterId": "mpmv5k7esk1ggm9758",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.438Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.438Z",
+        "updatedAt": "2026-05-26T16:42:31.961Z",
+        "metadata": {
+          "twitter_follower": true,
+          "discord_member": true,
+          "region": "EU",
+          "device_type": "mobile"
+        }
+      },
+      {
+        "id": "mpmv56p6675atydeqyi",
+        "address": "0x0d5c9bfe791ad8",
+        "label": "疑似女巫1",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_4，共6个地址)"
+          },
+          {
+            "ruleId": "cluster_suspicious_tasks",
+            "ruleName": "可疑任务模式",
+            "weight": 40,
+            "description": "可疑任务占比88%，疑似机器人刷任务"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k61ql0q30lvavq",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.442Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.442Z",
+        "updatedAt": "2026-05-26T16:42:31.963Z",
+        "metadata": {
+          "ip_hash": "ip_cluster_A",
+          "device": "bot_like_v1"
+        }
+      },
+      {
+        "id": "mpmv56p6w3yp5bh869",
+        "address": "0xfe3943bee3bcd8",
+        "label": "疑似女巫2",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_4，共6个地址)"
+          },
+          {
+            "ruleId": "cluster_suspicious_tasks",
+            "ruleName": "可疑任务模式",
+            "weight": 40,
+            "description": "可疑任务占比50%，疑似机器人刷任务"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k61ql0q30lvavq",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.442Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.442Z",
+        "updatedAt": "2026-05-26T16:42:31.965Z",
+        "metadata": {
+          "ip_hash": "ip_cluster_A",
+          "device": "bot_like_v1"
+        }
+      },
+      {
+        "id": "mpmv56p7yz7uaz6koxh",
+        "address": "0x46d94eb96d54c8",
+        "label": "疑似女巫3",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_4，共6个地址)"
+          },
+          {
+            "ruleId": "cluster_suspicious_tasks",
+            "ruleName": "可疑任务模式",
+            "weight": 40,
+            "description": "可疑任务占比63%，疑似机器人刷任务"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k61ql0q30lvavq",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.443Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.443Z",
+        "updatedAt": "2026-05-26T16:42:31.969Z",
+        "metadata": {
+          "ip_hash": "ip_cluster_A",
+          "device": "bot_like_v1"
+        }
+      },
+      {
+        "id": "mpmv56p71ymdi1tdgcv",
+        "address": "0xa9458e2e413e58",
+        "label": "疑似女巫4",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_4，共6个地址)"
+          },
+          {
+            "ruleId": "cluster_suspicious_tasks",
+            "ruleName": "可疑任务模式",
+            "weight": 40,
+            "description": "可疑任务占比63%，疑似机器人刷任务"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k61ql0q30lvavq",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.443Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.443Z",
+        "updatedAt": "2026-05-26T16:42:31.971Z",
+        "metadata": {
+          "ip_hash": "ip_cluster_A",
+          "device": "bot_like_v1"
+        }
+      },
+      {
+        "id": "mpmv56p7gj11nxc5mbs",
+        "address": "0x0f81f3566e033",
+        "label": "疑似女巫5",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_4，共6个地址)"
+          },
+          {
+            "ruleId": "cluster_suspicious_tasks",
+            "ruleName": "可疑任务模式",
+            "weight": 40,
+            "description": "可疑任务占比88%，疑似机器人刷任务"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k61ql0q30lvavq",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.443Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.443Z",
+        "updatedAt": "2026-05-26T16:42:31.973Z",
+        "metadata": {
+          "ip_hash": "ip_cluster_A",
+          "device": "bot_like_v1"
+        }
+      },
+      {
+        "id": "mpmv56p7uicxn06rn8d",
+        "address": "0x035090f2b000a",
+        "label": "疑似女巫6",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 65,
+        "riskLevel": "medium",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_large",
+            "ruleName": "大集群地址",
+            "weight": 50,
+            "description": "属于大型地址集群(Cluster_4，共6个地址)"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k61ql0q30lvavq",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.443Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.443Z",
+        "updatedAt": "2026-05-26T16:42:31.976Z",
+        "metadata": {
+          "ip_hash": "ip_cluster_A",
+          "device": "bot_like_v1"
+        }
+      },
+      {
+        "id": "mpmv56po19221xboaiwi",
+        "address": "0x5b3ad47f3163a8",
+        "label": "Binance热钱包",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "exchange_address",
+            "ruleName": "交易所地址",
+            "weight": 80,
+            "description": "识别为Binance交易所地址，置信度95%"
+          },
+          {
+            "ruleId": "no_onchain_activity",
+            "ruleName": "无链上活动",
+            "weight": 30,
+            "description": "无任务完成记录"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": null,
+        "isExchange": true,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.460Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.460Z",
+        "updatedAt": "2026-05-26T16:42:31.978Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56po8dikgg6a4ug",
+        "address": "0x0ac9055ce58a7",
+        "label": "Coinbase交易所",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 100,
+        "riskLevel": "high",
+        "riskFactors": [
+          {
+            "ruleId": "exchange_address",
+            "ruleName": "交易所地址",
+            "weight": 80,
+            "description": "识别为Coinbase交易所地址，置信度98%"
+          },
+          {
+            "ruleId": "no_onchain_activity",
+            "ruleName": "无链上活动",
+            "weight": 30,
+            "description": "无任务完成记录"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": null,
+        "isExchange": true,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.460Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.460Z",
+        "updatedAt": "2026-05-26T16:42:31.980Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ppjwfrnb4r9z",
+        "address": "0x152c1174cbf908",
+        "label": "项目早期贡献者",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 0,
+        "riskLevel": "whitelisted",
+        "riskFactors": [
+          {
+            "ruleId": "whitelisted",
+            "ruleName": "白名单保护",
+            "weight": -100,
+            "description": "白名单地址: 项目早期核心贡献者，社区管理员"
+          },
+          {
+            "ruleId": "no_onchain_activity",
+            "ruleName": "无链上活动",
+            "weight": 30,
+            "description": "无链上交互记录"
+          }
+        ],
+        "clusterId": null,
+        "isExchange": false,
+        "isWhitelisted": true,
+        "firstSeen": "2026-05-26T16:42:14.461Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.461Z",
+        "updatedAt": "2026-05-26T16:42:31.982Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pq0auz132jvjli",
+        "address": "0x4c6696652bb258",
+        "label": "新钱包_可能新用户",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 45,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "no_onchain_activity",
+            "ruleName": "无链上活动",
+            "weight": 30,
+            "description": "无链上交互记录"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": "mpmv5k5x9ln03cj9w1f",
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.462Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.462Z",
+        "updatedAt": "2026-05-26T16:42:31.984Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56prv6dg3cfh7a",
+        "address": "0x21612cdfa09048",
+        "label": "无活动地址",
+        "source": "sample_data",
+        "sourceId": null,
+        "riskScore": 45,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "no_onchain_activity",
+            "ruleName": "无链上活动",
+            "weight": 30,
+            "description": "无任务完成记录"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": null,
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:14.463Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:14.463Z",
+        "updatedAt": "2026-05-26T16:42:31.985Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k4rvc7y4e73gdl",
+        "address": "0x1111111111111111111111111111111111111111",
+        "label": "更新后的测试地址",
+        "source": "test",
+        "sourceId": null,
+        "riskScore": 55,
+        "riskLevel": "low",
+        "riskFactors": [
+          {
+            "ruleId": "cluster_suspicious_tasks",
+            "ruleName": "可疑任务模式",
+            "weight": 40,
+            "description": "可疑任务占比100%，疑似机器人刷任务"
+          },
+          {
+            "ruleId": "not_community_member",
+            "ruleName": "非社区成员",
+            "weight": 15,
+            "description": "不在社区贡献名单中"
+          }
+        ],
+        "clusterId": null,
+        "isExchange": false,
+        "isWhitelisted": false,
+        "firstSeen": "2026-05-26T16:42:31.851Z",
+        "lastActive": null,
+        "createdAt": "2026-05-26T16:42:31.851Z",
+        "updatedAt": "2026-05-26T16:42:31.990Z",
+        "metadata": {}
+      }
+    ],
+    "tasks": [
+      {
+        "id": "mpmv56ohjmtrol37v4",
+        "address": "0x9e2384103bb808",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-20T08:28:37.491Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.417Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oizaiqn5pe0k",
+        "address": "0x9e2384103bb808",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-20T10:08:46.139Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.418Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oi709a4padsbb",
+        "address": "0x9e2384103bb808",
+        "taskType": "discord_join",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-24T07:21:04.372Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.418Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oiv3i0foedbts",
+        "address": "0x9e2384103bb808",
+        "taskType": "retweet",
+        "taskName": "retweet",
+        "completedAt": "2026-05-07T18:43:16.465Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.418Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oitp5smcnzz1c",
+        "address": "0x9e2384103bb808",
+        "taskType": "discord_join",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-22T01:10:28.583Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.418Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oju7yuzfl80gd",
+        "address": "0x9e2384103bb808",
+        "taskType": "twitter_follow",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-06T09:48:58.551Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.419Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oktumeisvwp98",
+        "address": "0xb6d26c809b3058",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-29T22:21:40.104Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ok610zhngun8f",
+        "address": "0xb6d26c809b3058",
+        "taskType": "twitter_follow",
+        "taskName": "retweet",
+        "completedAt": "2026-05-19T14:23:10.196Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ok0u7imdxy4xu",
+        "address": "0xb6d26c809b3058",
+        "taskType": "blog_post",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-18T01:20:10.182Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56omixjreazazy",
+        "address": "0x878ded14239248",
+        "taskType": "blog_post",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-18T14:39:42.545Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.422Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56onzchr24g7cj",
+        "address": "0x878ded14239248",
+        "taskType": "retweet",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-15T17:01:09.100Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.423Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56on7fflbgkclsv",
+        "address": "0x878ded14239248",
+        "taskType": "retweet",
+        "taskName": "retweet",
+        "completedAt": "2026-05-15T18:56:21.912Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.423Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56onn3t6cfw78ni",
+        "address": "0x878ded14239248",
+        "taskType": "twitter_follow",
+        "taskName": "blog_post",
+        "completedAt": "2026-04-30T16:13:46.234Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.423Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oo6rgtsf865um",
+        "address": "0x878ded14239248",
+        "taskType": "twitter_follow",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-08T10:28:40.420Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.424Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oo3olrmx8s4ct",
+        "address": "0x878ded14239248",
+        "taskType": "twitter_follow",
+        "taskName": "retweet",
+        "completedAt": "2026-05-16T06:56:05.406Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.424Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oqxn9t0a76brf",
+        "address": "0xf7c411d6e70468",
+        "taskType": "retweet",
+        "taskName": "retweet",
+        "completedAt": "2026-05-02T10:42:22.668Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.426Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oqb17un43lrr",
+        "address": "0xf7c411d6e70468",
+        "taskType": "blog_post",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-13T02:20:53.343Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.426Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oqfueiegrqr6",
+        "address": "0xf7c411d6e70468",
+        "taskType": "blog_post",
+        "taskName": "retweet",
+        "completedAt": "2026-05-21T13:14:05.637Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.426Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oq3ubd61jzayd",
+        "address": "0xf7c411d6e70468",
+        "taskType": "retweet",
+        "taskName": "blog_post",
+        "completedAt": "2026-04-27T21:00:04.999Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.426Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56orvevioalscf",
+        "address": "0xf7c411d6e70468",
+        "taskType": "discord_join",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-24T21:32:59.463Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.427Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ormjon04y252n",
+        "address": "0xf7c411d6e70468",
+        "taskType": "retweet",
+        "taskName": "retweet",
+        "completedAt": "2026-05-10T14:26:01.243Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.427Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56orqwyff53q0w",
+        "address": "0xf7c411d6e70468",
+        "taskType": "twitter_follow",
+        "taskName": "retweet",
+        "completedAt": "2026-05-09T22:53:21.636Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.427Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56otc518etyjteb",
+        "address": "0xefe9fc47e32f78",
+        "taskType": "retweet",
+        "taskName": "retweet",
+        "completedAt": "2026-04-30T03:59:21.850Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.429Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oty535dn30hoo",
+        "address": "0xefe9fc47e32f78",
+        "taskType": "twitter_follow",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-09T20:53:14.231Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.429Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ounz3w7qoqvds",
+        "address": "0xefe9fc47e32f78",
+        "taskType": "blog_post",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-16T03:56:37.537Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.430Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ovc1sijhwe8hn",
+        "address": "0xa945d80c38c228",
+        "taskType": "blog_post",
+        "taskName": "retweet",
+        "completedAt": "2026-05-12T15:30:37.150Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.431Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56owksyb5nzy8d",
+        "address": "0xa945d80c38c228",
+        "taskType": "blog_post",
+        "taskName": "retweet",
+        "completedAt": "2026-05-20T14:57:26.559Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.432Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56owqnzhmib09ul",
+        "address": "0xa945d80c38c228",
+        "taskType": "blog_post",
+        "taskName": "retweet",
+        "completedAt": "2026-05-21T21:44:20.102Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.432Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oxs5khpbvb7c",
+        "address": "0xa945d80c38c228",
+        "taskType": "twitter_follow",
+        "taskName": "retweet",
+        "completedAt": "2026-05-24T16:39:06.514Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.433Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oy2r4dewt7sor",
+        "address": "0xa945d80c38c228",
+        "taskType": "discord_join",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-06T15:32:32.654Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.434Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ozh3hsnsuyt3b",
+        "address": "0x319ba4849de8c",
+        "taskType": "twitter_follow",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-21T06:55:40.085Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.435Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oz3l4hyryzdmm",
+        "address": "0x319ba4849de8c",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-03T00:14:19.929Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.435Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p02n8ur33byvo",
+        "address": "0x319ba4849de8c",
+        "taskType": "twitter_follow",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-25T22:04:02.319Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.436Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p0eu9d0jyz5z7",
+        "address": "0x319ba4849de8c",
+        "taskType": "twitter_follow",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-08T10:47:15.384Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.436Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p2ino7ipgcwx",
+        "address": "0x8e40238017819",
+        "taskType": "discord_join",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-27T20:19:46.267Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.438Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p31tzwp0kn1zt",
+        "address": "0x8e40238017819",
+        "taskType": "twitter_follow",
+        "taskName": "retweet",
+        "completedAt": "2026-05-13T07:08:13.635Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.439Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p3jm379ynb1g",
+        "address": "0x8e40238017819",
+        "taskType": "blog_post",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-29T09:40:16.949Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.439Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p34xh521s68i6",
+        "address": "0x8e40238017819",
+        "taskType": "discord_join",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-29T11:35:40.067Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.439Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p3awd26j9thv",
+        "address": "0x8e40238017819",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-08T23:42:36.795Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.439Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p404221ex6dsp6",
+        "address": "0x8e40238017819",
+        "taskType": "twitter_follow",
+        "taskName": "blog_post",
+        "completedAt": "2026-05-09T08:56:50.085Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.440Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p8ybjwoxoo6k",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-29T18:26:56.206Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.444Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p8opowictlnql",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-05T02:26:20.221Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.444Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p82yhzkugd3hw",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-01T16:08:52.506Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.444Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p8hya57ylm5p6",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-11T09:24:47.501Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.444Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p86kktegtm0h2",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-27T05:48:38.468Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.444Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p8yh0m944ckb",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-09T13:54:08.726Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.444Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p9yy9d5xh63xi",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-19T09:03:01.010Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.445Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p9v7by47tdrxn",
+        "address": "0x0d5c9bfe791ad8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-07T05:01:31.442Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.445Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pa2v42l59twfb",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-04T23:50:41.212Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.446Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pawmin3dsuk3",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-22T04:20:26.182Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.446Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pb1b3k7nm6ntg",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-13T07:50:49.866Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.447Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pbq0pbcyg8zvf",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-06T16:35:29.170Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.447Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pbvgbkkyk6n1i",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-05T11:32:01.001Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.447Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pb1mkbrs3o5zth",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-01T03:27:24.834Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.447Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pctddgopwle29",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-10T03:16:53.831Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.448Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pcuxmpshlqrn",
+        "address": "0xfe3943bee3bcd8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-01T14:44:05.230Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.448Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pcvt2qxtgssk",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-05T04:54:38.658Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.448Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pcwnlah8uargj",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-27T01:57:40.294Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.448Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pcx178m0gmuxq",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-18T20:47:19.294Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.448Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pdto829yhh6no",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-04T03:29:48.225Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.449Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pdr778tu4es38",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-17T09:38:12.975Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.449Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pdhqmdpga5tck",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-01T11:50:25.124Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.449Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pdm3c29m3z1nf",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-17T13:15:32.789Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.449Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56peragz06zxq9g",
+        "address": "0x46d94eb96d54c8",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-17T12:02:09.050Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.450Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pet36ep91phfo",
+        "address": "0xa9458e2e413e58",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-29T19:52:52.431Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.450Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pf042u1gfzjdni",
+        "address": "0xa9458e2e413e58",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-28T02:24:08.476Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.451Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pfaju5rvrgm0a",
+        "address": "0xa9458e2e413e58",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-14T11:09:26.611Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.451Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pg32y8gpt4nn5",
+        "address": "0xa9458e2e413e58",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-17T21:17:47.696Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.452Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pg9c08uuompv",
+        "address": "0xa9458e2e413e58",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-12T20:56:52.197Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.452Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pgru4qgmhr1dc",
+        "address": "0xa9458e2e413e58",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-29T11:55:14.500Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.452Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pgbqi8vz6i4xm",
+        "address": "0xa9458e2e413e58",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-28T14:29:20.190Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.452Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pgg1aqf8aoytk",
+        "address": "0xa9458e2e413e58",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-04T21:08:58.004Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.452Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ph7db6ams4fpo",
+        "address": "0x0f81f3566e033",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-01T19:54:51.882Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.453Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ph9fnenkgx4p5",
+        "address": "0x0f81f3566e033",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-29T14:26:18.510Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.453Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ph7s3w7cupww",
+        "address": "0x0f81f3566e033",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-08T06:50:17.362Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.453Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ph51y5s4epl4",
+        "address": "0x0f81f3566e033",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-22T05:05:42.107Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.453Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pirmzem5kxygj",
+        "address": "0x0f81f3566e033",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-14T16:49:57.802Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.454Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pijfqmszqfw1g",
+        "address": "0x0f81f3566e033",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-14T22:06:11.594Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.454Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pikd3szo0ab8",
+        "address": "0x0f81f3566e033",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-27T20:02:08.594Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.454Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pjimb96lnbpl",
+        "address": "0x0f81f3566e033",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-02T23:54:19.350Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.455Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56plr7rbzj6kgvi",
+        "address": "0x035090f2b000a",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-07T07:35:27.298Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.457Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pln6sznduh9o",
+        "address": "0x035090f2b000a",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-19T23:39:40.456Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.457Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pmx2ccs179gfj",
+        "address": "0x035090f2b000a",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-17T10:11:27.305Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.458Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pmkiyieans3t",
+        "address": "0x035090f2b000a",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-04-30T00:39:57.004Z",
+        "source": "sample_data",
+        "isSuspicious": true,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.458Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pmc1qfu2bfx1l",
+        "address": "0x035090f2b000a",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-05-09T02:06:03.067Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.458Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pn33zbi523q2e",
+        "address": "0x035090f2b000a",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-02T06:29:20.520Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.459Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pnmortvg58rd",
+        "address": "0x035090f2b000a",
+        "taskType": "twitter_follow",
+        "taskName": "twitter_follow",
+        "completedAt": "2026-04-30T23:46:36.216Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.459Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pn67wwijnvevm",
+        "address": "0x035090f2b000a",
+        "taskType": "discord_join",
+        "taskName": "discord_join",
+        "completedAt": "2026-05-08T15:18:21.749Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": "完成时间过于集中",
+        "createdAt": "2026-05-26T16:42:14.459Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pp0148ydcciiq7",
+        "address": "0x152c1174cbf908",
+        "taskType": "blog_post",
+        "taskName": "撰写项目介绍博客",
+        "completedAt": "2026-05-11T18:00:03.644Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.461Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pqjt86syuyfmm",
+        "address": "0x4c6696652bb258",
+        "taskType": "twitter_follow",
+        "taskName": "关注官方推特",
+        "completedAt": "2026-05-19T11:14:33.525Z",
+        "source": "sample_data",
+        "isSuspicious": false,
+        "suspicionReason": null,
+        "createdAt": "2026-05-26T16:42:14.462Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k4zvp2x640a01h",
+        "addressId": "mpmv5k4rvc7y4e73gdl",
+        "address": "0x1111111111111111111111111111111111111111",
+        "taskType": "twitter_follow",
+        "taskName": "关注官方推特",
+        "completedAt": "2026-05-26T16:42:31.859Z",
+        "source": "test",
+        "isSuspicious": true,
+        "suspicionReason": "时间异常",
+        "createdAt": "2026-05-26T16:42:31.859Z",
+        "metadata": {}
+      }
+    ],
+    "interactions": [
+      {
+        "id": "mpmv56ojnkwsnuqstw",
+        "address": "0x9e2384103bb808",
+        "chain": "ethereum",
+        "interactionType": "swap",
+        "contractAddress": "0x8e1ae8d0cdfda8",
+        "txHash": "0x604417590fe958",
+        "blockNumber": null,
+        "timestamp": "2026-05-01T16:56:35.400Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.419Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ojhpne4ilxal7",
+        "address": "0x9e2384103bb808",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0x734828e7e71b18",
+        "txHash": "0xc4852e268238e",
+        "blockNumber": null,
+        "timestamp": "2026-05-26T06:57:10.101Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.419Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ojhzrs1slltqj",
+        "address": "0x9e2384103bb808",
+        "chain": "ethereum",
+        "interactionType": "swap",
+        "contractAddress": "0xe7a677b8e32af8",
+        "txHash": "0x90853c23039758",
+        "blockNumber": null,
+        "timestamp": "2026-04-27T05:20:38.041Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.419Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56okrffbjxposyf",
+        "address": "0x9e2384103bb808",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0xda85cd59ce43e8",
+        "txHash": "0xc0bb79973156f",
+        "blockNumber": null,
+        "timestamp": "2026-04-27T06:15:06.132Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ok8no2xhhcms",
+        "address": "0xb6d26c809b3058",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0x5754afeebb2968",
+        "txHash": "0xc209ba50bf5f18",
+        "blockNumber": null,
+        "timestamp": "2026-05-03T10:52:47.503Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56okgy3duu7ncc7",
+        "address": "0xb6d26c809b3058",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0xe0915c8fdc0ce8",
+        "txHash": "0xebc2ed0366e77",
+        "blockNumber": null,
+        "timestamp": "2026-05-19T05:32:34.429Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56okpqmw83h8tl",
+        "address": "0xb6d26c809b3058",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0x8a741101524498",
+        "txHash": "0xe37b2942ac272",
+        "blockNumber": null,
+        "timestamp": "2026-05-25T20:54:49.734Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ollatirmpafac",
+        "address": "0xb6d26c809b3058",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x1b5369452720f8",
+        "txHash": "0x38b91c688baa9",
+        "blockNumber": null,
+        "timestamp": "2026-05-19T14:19:29.743Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.421Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oodzwtudhuz0m",
+        "address": "0x878ded14239248",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x9e6e337c5f1eb",
+        "txHash": "0x3ac6b17c3365c8",
+        "blockNumber": null,
+        "timestamp": "2026-04-29T11:47:58.059Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.424Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56opy24kz6jkkge",
+        "address": "0x878ded14239248",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0xdda74c31053648",
+        "txHash": "0xd043218166f56",
+        "blockNumber": null,
+        "timestamp": "2026-05-17T01:49:52.562Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.425Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56osomr7geitg5b",
+        "address": "0xf7c411d6e70468",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x3df2588c07d84",
+        "txHash": "0xf6f98dba13fe7",
+        "blockNumber": null,
+        "timestamp": "2026-04-29T05:24:49.841Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.428Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oslqqak651ou",
+        "address": "0xf7c411d6e70468",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0x3a88c25ec04b48",
+        "txHash": "0x3cb91508c2fc8",
+        "blockNumber": null,
+        "timestamp": "2026-05-18T19:50:36.330Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.428Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56osq0f6yf8x5w9",
+        "address": "0xf7c411d6e70468",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0xcdfc1b66ea29a",
+        "txHash": "0x30e2ee45a7a78",
+        "blockNumber": null,
+        "timestamp": "2026-05-04T23:57:55.825Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.428Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oumrxnysswx7",
+        "address": "0xefe9fc47e32f78",
+        "chain": "ethereum",
+        "interactionType": "swap",
+        "contractAddress": "0x57a6fa9b56704",
+        "txHash": "0x62e9b89ddbc0e",
+        "blockNumber": null,
+        "timestamp": "2026-05-26T04:18:54.993Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.430Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oux6p77k1jux",
+        "address": "0xefe9fc47e32f78",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0x1ff47186139e7",
+        "txHash": "0xe68240e41d87b",
+        "blockNumber": null,
+        "timestamp": "2026-05-08T19:10:54.805Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.430Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ou0xsalk0hphje",
+        "address": "0xefe9fc47e32f78",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0xfa2baf5693d5e",
+        "txHash": "0x773da0fde8a008",
+        "blockNumber": null,
+        "timestamp": "2026-05-22T00:50:28.565Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.430Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oyie4bcjstjvp",
+        "address": "0xa945d80c38c228",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x161dd05b69db4",
+        "txHash": "0x1d19ee1fcba7c",
+        "blockNumber": null,
+        "timestamp": "2026-04-29T01:11:16.161Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.434Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oyycb4xuncea",
+        "address": "0xa945d80c38c228",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0x0281cde41a151",
+        "txHash": "0x8ebe883d1b7248",
+        "blockNumber": null,
+        "timestamp": "2026-05-13T10:59:09.327Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.434Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56oy8ttxhdkwv4j",
+        "address": "0xa945d80c38c228",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0xfd94032843cbd",
+        "txHash": "0xdeebdb6455665",
+        "blockNumber": null,
+        "timestamp": "2026-05-15T08:39:11.642Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.434Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ozr4gtprrrmq",
+        "address": "0xa945d80c38c228",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0xb3920166b6529",
+        "txHash": "0x10246c1bd2db9",
+        "blockNumber": null,
+        "timestamp": "2026-05-03T20:23:19.011Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.435Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p0yg6sj6ue7",
+        "address": "0x319ba4849de8c",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0xde7d54859b4378",
+        "txHash": "0x9690591275c63",
+        "blockNumber": null,
+        "timestamp": "2026-05-25T05:45:35.986Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.436Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p1rbmqt0gesce",
+        "address": "0x319ba4849de8c",
+        "chain": "ethereum",
+        "interactionType": "swap",
+        "contractAddress": "0x2a6dacf39d5428",
+        "txHash": "0x9ca9f1a51d0a",
+        "blockNumber": null,
+        "timestamp": "2026-05-07T07:46:57.654Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.437Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p19dkv6kvvszc",
+        "address": "0x319ba4849de8c",
+        "chain": "ethereum",
+        "interactionType": "swap",
+        "contractAddress": "0x0d5d3f1c2731b",
+        "txHash": "0x402a6657a84068",
+        "blockNumber": null,
+        "timestamp": "2026-05-16T11:29:38.889Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.437Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p4lzcblxex3sn",
+        "address": "0x8e40238017819",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0xc58642aa45b5f8",
+        "txHash": "0xff3d5273e3972",
+        "blockNumber": null,
+        "timestamp": "2026-04-27T23:52:33.661Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.440Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p5jbvifm01gtj",
+        "address": "0x8e40238017819",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0xa7fc129a1e801",
+        "txHash": "0x7fdc6475ffb17",
+        "blockNumber": null,
+        "timestamp": "2026-05-17T21:56:50.615Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.441Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p5g9ntv2041st",
+        "address": "0x8e40238017819",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0xa311e3f9b842e8",
+        "txHash": "0x3d694d3f14d86",
+        "blockNumber": null,
+        "timestamp": "2026-05-16T02:48:34.722Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.441Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p5jwrcn80y05i",
+        "address": "0x8e40238017819",
+        "chain": "ethereum",
+        "interactionType": "stake",
+        "contractAddress": "0x0270ecf4eca568",
+        "txHash": "0xb7bd4047189978",
+        "blockNumber": null,
+        "timestamp": "2026-05-14T05:00:53.129Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.441Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p6qg7c7bqbmb",
+        "address": "0x8e40238017819",
+        "chain": "ethereum",
+        "interactionType": "mint",
+        "contractAddress": "0x91c57715781c88",
+        "txHash": "0x69332c097c3da",
+        "blockNumber": null,
+        "timestamp": "2026-05-08T16:47:17.073Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.442Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p9mhv6bjawwm",
+        "address": "0x0d5c9bfe791ad8",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0xdc514c178fbf4",
+        "txHash": "0xcff1c19c8808f",
+        "blockNumber": null,
+        "timestamp": "2026-05-19T18:26:52.114Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.445Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pcpu5kq5qvty",
+        "address": "0xfe3943bee3bcd8",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x7bb0cf03abac2",
+        "txHash": "0xf46480a85bc868",
+        "blockNumber": null,
+        "timestamp": "2026-05-02T21:49:35.348Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.448Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pealeems07p7",
+        "address": "0x46d94eb96d54c8",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x91d128bdd72b58",
+        "txHash": "0xafccdbf818bcf8",
+        "blockNumber": null,
+        "timestamp": "2026-05-04T10:05:20.049Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.450Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ph9b8ctd6aa44",
+        "address": "0xa9458e2e413e58",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x821c6a3c99a49",
+        "txHash": "0xfcafa01976e778",
+        "blockNumber": null,
+        "timestamp": "2026-05-04T10:49:02.064Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.453Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pkjo2y07gqer",
+        "address": "0x0f81f3566e033",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0xd8fbfe748aee4",
+        "txHash": "0x13d4429e8fbe7",
+        "blockNumber": null,
+        "timestamp": "2026-05-10T00:14:54.800Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.456Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pnnbnxhpievql",
+        "address": "0x035090f2b000a",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": "0x4cb44a71939eb8",
+        "txHash": "0xc22da74546028",
+        "blockNumber": null,
+        "timestamp": "2026-05-19T08:54:13.150Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.459Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k52jcf1wzsgcnn",
+        "addressId": "mpmv5k4rvc7y4e73gdl",
+        "address": "0x1111111111111111111111111111111111111111",
+        "chain": "ethereum",
+        "interactionType": "transfer",
+        "contractAddress": null,
+        "txHash": "0xabcdef",
+        "blockNumber": null,
+        "timestamp": "2026-05-26T16:42:31.862Z",
+        "value": null,
+        "gasUsed": null,
+        "source": "test",
+        "createdAt": "2026-05-26T16:42:31.862Z",
+        "metadata": {}
+      }
+    ],
+    "exchangeTags": [
+      {
+        "id": "mpmv56poo8lubah5ezn",
+        "address": "0x5b3ad47f3163a8",
+        "exchangeName": "Binance",
+        "tagType": "hot_wallet",
+        "source": "sample_data",
+        "confidence": 0.95,
+        "taggedAt": "2026-05-26T16:42:14.460Z",
+        "createdAt": "2026-05-26T16:42:14.460Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pokx6ho9xtwzk",
+        "address": "0x0ac9055ce58a7",
+        "exchangeName": "Coinbase",
+        "tagType": "exchange",
+        "source": "sample_data",
+        "confidence": 0.98,
+        "taggedAt": "2026-05-26T16:42:14.460Z",
+        "createdAt": "2026-05-26T16:42:14.460Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k53r498jx4v0m",
+        "address": "0x2222222222222222222222222222222222222222",
+        "exchangeName": "Binance",
+        "tagType": "hot_wallet",
+        "source": "test",
+        "confidence": 0.95,
+        "taggedAt": "2026-05-26T16:42:31.863Z",
+        "createdAt": "2026-05-26T16:42:31.863Z",
+        "metadata": {}
+      }
+    ],
+    "communityLists": [
+      {
+        "id": "mpmv56ok7bln3mk18jx",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0x9e2384103bb808",
+        "contributorLevel": "member",
+        "joinedAt": "2026-05-19T11:53:32.711Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.420Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56olysbi76s2zk",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0xb6d26c809b3058",
+        "contributorLevel": "core",
+        "joinedAt": "2026-05-26T01:58:19.099Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.421Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56op5x2tay0lg2v",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0x878ded14239248",
+        "contributorLevel": "mod",
+        "joinedAt": "2026-05-03T02:21:10.617Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.425Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56osaoqr4cjoisl",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0xf7c411d6e70468",
+        "contributorLevel": "member",
+        "joinedAt": "2026-05-12T14:56:12.024Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.428Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ovc3myx42msvj",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0xefe9fc47e32f78",
+        "contributorLevel": "core",
+        "joinedAt": "2026-05-25T21:56:47.030Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.431Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56ozb533ri2ilm",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0xa945d80c38c228",
+        "contributorLevel": "mod",
+        "joinedAt": "2026-05-03T20:05:06.812Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.435Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p2hdphur1lbuq",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0x319ba4849de8c",
+        "contributorLevel": "member",
+        "joinedAt": "2026-05-03T00:05:05.281Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.438Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56p6dknu6ljl4om",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0x8e40238017819",
+        "contributorLevel": "core",
+        "joinedAt": "2026-05-13T21:51:58.404Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.442Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv56pqj9cc6eg3l6",
+        "listName": "社区核心成员",
+        "listType": "community",
+        "address": "0x152c1174cbf908",
+        "contributorLevel": "admin",
+        "joinedAt": "2026-05-25T12:39:44.016Z",
+        "source": "sample_data",
+        "createdAt": "2026-05-26T16:42:14.462Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k55prdhrog5q4a",
+        "listName": "测试社区",
+        "listType": "community",
+        "address": "0x3333333333333333333333333333333333333333",
+        "contributorLevel": "core",
+        "joinedAt": "2026-05-26T16:42:31.865Z",
+        "source": "test",
+        "createdAt": "2026-05-26T16:42:31.865Z",
+        "metadata": {}
+      }
+    ],
+    "whitelist": [
+      {
+        "id": "mpmv56pp3pvvt1gzmfg",
+        "address": "0x152c1174cbf908",
+        "reason": "项目早期核心贡献者，社区管理员",
+        "addedBy": "admin",
+        "addedAt": "2026-05-26T16:42:14.461Z",
+        "source": "sample_data",
+        "expiresAt": null,
+        "createdAt": "2026-05-26T16:42:14.461Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k57q00tdf1b7n",
+        "address": "0x4444444444444444444444444444444444444444",
+        "reason": "测试白名单",
+        "addedBy": "test",
+        "addedAt": "2026-05-26T16:42:31.867Z",
+        "source": "test",
+        "expiresAt": null,
+        "createdAt": "2026-05-26T16:42:31.867Z",
+        "metadata": {}
+      }
+    ],
+    "clusters": [
+      {
+        "id": "mpmv5k5e1mefaw4opp",
+        "name": "Cluster_1",
+        "addresses": [
+          "0x9e2384103bb808",
+          "0x878ded14239248",
+          "0xf7c411d6e70468",
+          "0xa945d80c38c228",
+          "0x8e40238017819"
+        ],
+        "size": 5,
+        "similarityScore": 0.7,
+        "clusterType": "task_pattern",
+        "notes": "基于task_pattern的地址聚类",
+        "createdAt": "2026-05-26T16:42:31.874Z",
+        "updatedAt": "2026-05-26T16:42:31.874Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k5t4fmhj9zj0dr",
+        "name": "Cluster_2",
+        "addresses": [
+          "0xb6d26c809b3058",
+          "0xefe9fc47e32f78"
+        ],
+        "size": 2,
+        "similarityScore": 0.75,
+        "clusterType": "task_pattern",
+        "notes": "基于task_pattern的地址聚类",
+        "createdAt": "2026-05-26T16:42:31.889Z",
+        "updatedAt": "2026-05-26T16:42:31.889Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k5x9ln03cj9w1f",
+        "name": "Cluster_3",
+        "addresses": [
+          "0x319ba4849de8c",
+          "0x4c6696652bb258"
+        ],
+        "size": 2,
+        "similarityScore": 0.7749999999999999,
+        "clusterType": "task_pattern",
+        "notes": "基于task_pattern的地址聚类",
+        "createdAt": "2026-05-26T16:42:31.893Z",
+        "updatedAt": "2026-05-26T16:42:31.893Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k61ql0q30lvavq",
+        "name": "Cluster_4",
+        "addresses": [
+          "0x0d5c9bfe791ad8",
+          "0xfe3943bee3bcd8",
+          "0x46d94eb96d54c8",
+          "0xa9458e2e413e58",
+          "0x0f81f3566e033",
+          "0x035090f2b000a"
+        ],
+        "size": 6,
+        "similarityScore": 0.9,
+        "clusterType": "merged",
+        "notes": "基于task_pattern, metadata的地址聚类",
+        "createdAt": "2026-05-26T16:42:31.897Z",
+        "updatedAt": "2026-05-26T16:42:31.897Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k78sqv9qkxvhg8",
+        "name": "Cluster_5",
+        "addresses": [
+          "0x9e2384103bb808",
+          "0xf7c411d6e70468",
+          "0xefe9fc47e32f78",
+          "0x319ba4849de8c"
+        ],
+        "size": 4,
+        "similarityScore": 0.75,
+        "clusterType": "metadata",
+        "notes": "基于metadata的地址聚类",
+        "createdAt": "2026-05-26T16:42:31.940Z",
+        "updatedAt": "2026-05-26T16:42:31.940Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7esk1ggm9758",
+        "name": "Cluster_6",
+        "addresses": [
+          "0xb6d26c809b3058",
+          "0x878ded14239248",
+          "0x8e40238017819"
+        ],
+        "size": 3,
+        "similarityScore": 0.75,
+        "clusterType": "metadata",
+        "notes": "基于metadata的地址聚类",
+        "createdAt": "2026-05-26T16:42:31.946Z",
+        "updatedAt": "2026-05-26T16:42:31.946Z",
+        "metadata": {}
+      }
+    ],
+    "reports": [
+      {
+        "id": "mpmv5k8pmjqudat81h",
+        "name": "测试报告",
+        "description": "自动化测试",
+        "totalAddresses": 20,
+        "highRiskCount": 7,
+        "mediumRiskCount": 1,
+        "lowRiskCount": 11,
+        "whitelistedCount": 1,
+        "exchangeCount": 2,
+        "clusterCount": 11,
+        "results": [
+          {
+            "id": "mpmv56ogx474njnj12a",
+            "address": "0x9e2384103bb808",
+            "label": "正常用户_1",
+            "source": "sample_data",
+            "riskScore": 50,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_1，共5个地址)"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k5e1mefaw4opp",
+            "clusterName": "Cluster_1",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源"
+            ],
+            "taskCount": 6,
+            "interactionCount": 4,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56okfi85wrmm626",
+            "address": "0xb6d26c809b3058",
+            "label": "正常用户_2",
+            "source": "sample_data",
+            "riskScore": 0,
+            "riskLevel": "low",
+            "riskFactors": [],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [],
+            "taskCount": 3,
+            "interactionCount": 4,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56omq4vumcgwdn",
+            "address": "0x878ded14239248",
+            "label": "正常用户_3",
+            "source": "sample_data",
+            "riskScore": 50,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_1，共5个地址)"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k5e1mefaw4opp",
+            "clusterName": "Cluster_1",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源"
+            ],
+            "taskCount": 6,
+            "interactionCount": 2,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56opnc7dlw06ljn",
+            "address": "0xf7c411d6e70468",
+            "label": "正常用户_4",
+            "source": "sample_data",
+            "riskScore": 50,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_1，共5个地址)"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k5e1mefaw4opp",
+            "clusterName": "Cluster_1",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源"
+            ],
+            "taskCount": 7,
+            "interactionCount": 3,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56oto2jq0uzuj5b",
+            "address": "0xefe9fc47e32f78",
+            "label": "正常用户_5",
+            "source": "sample_data",
+            "riskScore": 0,
+            "riskLevel": "low",
+            "riskFactors": [],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [],
+            "taskCount": 3,
+            "interactionCount": 3,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56ovseesjn821b",
+            "address": "0xa945d80c38c228",
+            "label": "正常用户_6",
+            "source": "sample_data",
+            "riskScore": 50,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_1，共5个地址)"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k5e1mefaw4opp",
+            "clusterName": "Cluster_1",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源"
+            ],
+            "taskCount": 5,
+            "interactionCount": 4,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56ozcs36bg8htun",
+            "address": "0x319ba4849de8c",
+            "label": "正常用户_7",
+            "source": "sample_data",
+            "riskScore": 0,
+            "riskLevel": "low",
+            "riskFactors": [],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [],
+            "taskCount": 4,
+            "interactionCount": 3,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56p2ib705vg6uz",
+            "address": "0x8e40238017819",
+            "label": "正常用户_8",
+            "source": "sample_data",
+            "riskScore": 50,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_1，共5个地址)"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k5e1mefaw4opp",
+            "clusterName": "Cluster_1",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源"
+            ],
+            "taskCount": 6,
+            "interactionCount": 5,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56p6675atydeqyi",
+            "address": "0x0d5c9bfe791ad8",
+            "label": "疑似女巫1",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_4，共6个地址)"
+              },
+              {
+                "ruleId": "cluster_suspicious_tasks",
+                "ruleName": "可疑任务模式",
+                "weight": 40,
+                "description": "可疑任务占比88%，疑似机器人刷任务"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k61ql0q30lvavq",
+            "clusterName": "Cluster_4",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源",
+              "⚠️ 任务模式异常，疑似机器人"
+            ],
+            "taskCount": 8,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56p6w3yp5bh869",
+            "address": "0xfe3943bee3bcd8",
+            "label": "疑似女巫2",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_4，共6个地址)"
+              },
+              {
+                "ruleId": "cluster_suspicious_tasks",
+                "ruleName": "可疑任务模式",
+                "weight": 40,
+                "description": "可疑任务占比50%，疑似机器人刷任务"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k61ql0q30lvavq",
+            "clusterName": "Cluster_4",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源",
+              "⚠️ 任务模式异常，疑似机器人"
+            ],
+            "taskCount": 8,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56p7yz7uaz6koxh",
+            "address": "0x46d94eb96d54c8",
+            "label": "疑似女巫3",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_4，共6个地址)"
+              },
+              {
+                "ruleId": "cluster_suspicious_tasks",
+                "ruleName": "可疑任务模式",
+                "weight": 40,
+                "description": "可疑任务占比63%，疑似机器人刷任务"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k61ql0q30lvavq",
+            "clusterName": "Cluster_4",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源",
+              "⚠️ 任务模式异常，疑似机器人"
+            ],
+            "taskCount": 8,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56p71ymdi1tdgcv",
+            "address": "0xa9458e2e413e58",
+            "label": "疑似女巫4",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_4，共6个地址)"
+              },
+              {
+                "ruleId": "cluster_suspicious_tasks",
+                "ruleName": "可疑任务模式",
+                "weight": 40,
+                "description": "可疑任务占比63%，疑似机器人刷任务"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k61ql0q30lvavq",
+            "clusterName": "Cluster_4",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源",
+              "⚠️ 任务模式异常，疑似机器人"
+            ],
+            "taskCount": 8,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56p7gj11nxc5mbs",
+            "address": "0x0f81f3566e033",
+            "label": "疑似女巫5",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_4，共6个地址)"
+              },
+              {
+                "ruleId": "cluster_suspicious_tasks",
+                "ruleName": "可疑任务模式",
+                "weight": 40,
+                "description": "可疑任务占比88%，疑似机器人刷任务"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k61ql0q30lvavq",
+            "clusterName": "Cluster_4",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源",
+              "⚠️ 任务模式异常，疑似机器人"
+            ],
+            "taskCount": 8,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56p7uicxn06rn8d",
+            "address": "0x035090f2b000a",
+            "label": "疑似女巫6",
+            "source": "sample_data",
+            "riskScore": 65,
+            "riskLevel": "medium",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_large",
+                "ruleName": "大集群地址",
+                "weight": 50,
+                "description": "属于大型地址集群(Cluster_4，共6个地址)"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": "mpmv5k61ql0q30lvavq",
+            "clusterName": "Cluster_4",
+            "warnings": [
+              "⚠️ 属于大型地址集群，可能多钱包同源"
+            ],
+            "taskCount": 8,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56po19221xboaiwi",
+            "address": "0x5b3ad47f3163a8",
+            "label": "Binance热钱包",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "exchange_address",
+                "ruleName": "交易所地址",
+                "weight": 80,
+                "description": "识别为Binance交易所地址，置信度95%"
+              },
+              {
+                "ruleId": "no_onchain_activity",
+                "ruleName": "无链上活动",
+                "weight": 30,
+                "description": "无任务完成记录"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": true,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [
+              "⚠️ 交易所地址，不建议空投"
+            ],
+            "taskCount": 0,
+            "interactionCount": 0,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56po8dikgg6a4ug",
+            "address": "0x0ac9055ce58a7",
+            "label": "Coinbase交易所",
+            "source": "sample_data",
+            "riskScore": 100,
+            "riskLevel": "high",
+            "riskFactors": [
+              {
+                "ruleId": "exchange_address",
+                "ruleName": "交易所地址",
+                "weight": 80,
+                "description": "识别为Coinbase交易所地址，置信度98%"
+              },
+              {
+                "ruleId": "no_onchain_activity",
+                "ruleName": "无链上活动",
+                "weight": 30,
+                "description": "无任务完成记录"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": true,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [
+              "⚠️ 交易所地址，不建议空投"
+            ],
+            "taskCount": 0,
+            "interactionCount": 0,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56ppjwfrnb4r9z",
+            "address": "0x152c1174cbf908",
+            "label": "项目早期贡献者",
+            "source": "sample_data",
+            "riskScore": 0,
+            "riskLevel": "whitelisted",
+            "riskFactors": [
+              {
+                "ruleId": "whitelisted",
+                "ruleName": "白名单保护",
+                "weight": -100,
+                "description": "白名单地址: 项目早期核心贡献者，社区管理员"
+              },
+              {
+                "ruleId": "no_onchain_activity",
+                "ruleName": "无链上活动",
+                "weight": 30,
+                "description": "无链上交互记录"
+              }
+            ],
+            "isWhitelisted": true,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [
+              "⚠️ 白名单地址，风险评分已归零"
+            ],
+            "taskCount": 1,
+            "interactionCount": 0,
+            "isCommunityMember": true
+          },
+          {
+            "id": "mpmv56pq0auz132jvjli",
+            "address": "0x4c6696652bb258",
+            "label": "新钱包_可能新用户",
+            "source": "sample_data",
+            "riskScore": 45,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "no_onchain_activity",
+                "ruleName": "无链上活动",
+                "weight": 30,
+                "description": "无链上交互记录"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [],
+            "taskCount": 1,
+            "interactionCount": 0,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv56prv6dg3cfh7a",
+            "address": "0x21612cdfa09048",
+            "label": "无活动地址",
+            "source": "sample_data",
+            "riskScore": 45,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "no_onchain_activity",
+                "ruleName": "无链上活动",
+                "weight": 30,
+                "description": "无任务完成记录"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [],
+            "taskCount": 0,
+            "interactionCount": 0,
+            "isCommunityMember": false
+          },
+          {
+            "id": "mpmv5k4rvc7y4e73gdl",
+            "address": "0x1111111111111111111111111111111111111111",
+            "label": "更新后的测试地址",
+            "source": "test",
+            "riskScore": 55,
+            "riskLevel": "low",
+            "riskFactors": [
+              {
+                "ruleId": "cluster_suspicious_tasks",
+                "ruleName": "可疑任务模式",
+                "weight": 40,
+                "description": "可疑任务占比100%，疑似机器人刷任务"
+              },
+              {
+                "ruleId": "not_community_member",
+                "ruleName": "非社区成员",
+                "weight": 15,
+                "description": "不在社区贡献名单中"
+              }
+            ],
+            "isWhitelisted": false,
+            "isExchange": false,
+            "clusterId": null,
+            "clusterName": null,
+            "warnings": [
+              "⚠️ 任务模式异常，疑似机器人"
+            ],
+            "taskCount": 1,
+            "interactionCount": 1,
+            "isCommunityMember": false
+          }
+        ],
+        "filterParams": {
+          "ruleCount": 7,
+          "threshold": 60,
+          "highThreshold": 80
+        },
+        "createdAt": "2026-05-26T16:42:31.993Z",
+        "createdBy": "system"
+      }
+    ],
+    "auditLogs": [
+      {
+        "id": "mpmv6n4z4czleslb0ib",
+        "action": "export",
+        "entityType": "file",
+        "entityId": null,
+        "address": null,
+        "oldValue": null,
+        "newValue": {
+          "file": "addresses_1779813802403.json",
+          "path": "/Users/mac/pro/solo/workspaces/y11625/exports/addresses_1779813802403.json"
+        },
+        "reason": "数据导出",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:43:22.403Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv6n4xsuv8hj7eg8",
+        "action": "export",
+        "entityType": "file",
+        "entityId": null,
+        "address": null,
+        "oldValue": null,
+        "newValue": {
+          "file": "eligible_addresses_1779813802399.json",
+          "path": "/Users/mac/pro/solo/workspaces/y11625/exports/eligible_addresses_1779813802399.json"
+        },
+        "reason": "数据导出",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:43:22.401Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8q9ct5smy0ds",
+        "action": "risk_evaluation_run",
+        "entityType": "filter_report",
+        "entityId": "mpmv5k8pmjqudat81h",
+        "address": null,
+        "oldValue": null,
+        "newValue": {
+          "totalAddresses": 20,
+          "highRiskCount": 7,
+          "reportId": "mpmv5k8pmjqudat81h"
+        },
+        "reason": "执行风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.994Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8npyok3uidc09",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv5k4rvc7y4e73gdl",
+        "address": "0x1111111111111111111111111111111111111111",
+        "oldValue": {
+          "riskScore": 55,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 55,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_suspicious_tasks",
+              "ruleName": "可疑任务模式",
+              "weight": 40,
+              "description": "可疑任务占比100%，疑似机器人刷任务"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.991Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8j2003b4ayloo",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56prv6dg3cfh7a",
+        "address": "0x21612cdfa09048",
+        "oldValue": {
+          "riskScore": 45,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 45,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "no_onchain_activity",
+              "ruleName": "无链上活动",
+              "weight": 30,
+              "description": "无任务完成记录"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.987Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8gxtj337qe53",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56pq0auz132jvjli",
+        "address": "0x4c6696652bb258",
+        "oldValue": {
+          "riskScore": 45,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 45,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "no_onchain_activity",
+              "ruleName": "无链上活动",
+              "weight": 30,
+              "description": "无链上交互记录"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.984Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8fpb0tzwpzysb",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56ppjwfrnb4r9z",
+        "address": "0x152c1174cbf908",
+        "oldValue": {
+          "riskScore": 0,
+          "riskLevel": "whitelisted"
+        },
+        "newValue": {
+          "riskScore": 0,
+          "riskLevel": "whitelisted",
+          "riskFactors": [
+            {
+              "ruleId": "whitelisted",
+              "ruleName": "白名单保护",
+              "weight": -100,
+              "description": "白名单地址: 项目早期核心贡献者，社区管理员"
+            },
+            {
+              "ruleId": "no_onchain_activity",
+              "ruleName": "无链上活动",
+              "weight": 30,
+              "description": "无链上交互记录"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.983Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8dpusijs1qg0d",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56po8dikgg6a4ug",
+        "address": "0x0ac9055ce58a7",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "exchange_address",
+              "ruleName": "交易所地址",
+              "weight": 80,
+              "description": "识别为Coinbase交易所地址，置信度98%"
+            },
+            {
+              "ruleId": "no_onchain_activity",
+              "ruleName": "无链上活动",
+              "weight": 30,
+              "description": "无任务完成记录"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.981Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k8bmnnfu0nhijk",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56po19221xboaiwi",
+        "address": "0x5b3ad47f3163a8",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "exchange_address",
+              "ruleName": "交易所地址",
+              "weight": 80,
+              "description": "识别为Binance交易所地址，置信度95%"
+            },
+            {
+              "ruleId": "no_onchain_activity",
+              "ruleName": "无链上活动",
+              "weight": 30,
+              "description": "无任务完成记录"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.979Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k88zkur57u8nvs",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p7uicxn06rn8d",
+        "address": "0x035090f2b000a",
+        "oldValue": {
+          "riskScore": 65,
+          "riskLevel": "medium"
+        },
+        "newValue": {
+          "riskScore": 65,
+          "riskLevel": "medium",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_4，共6个地址)"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.976Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k86ianeyow514s",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p7gj11nxc5mbs",
+        "address": "0x0f81f3566e033",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_4，共6个地址)"
+            },
+            {
+              "ruleId": "cluster_suspicious_tasks",
+              "ruleName": "可疑任务模式",
+              "weight": 40,
+              "description": "可疑任务占比88%，疑似机器人刷任务"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.974Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k842ukfe6ncaz6",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p71ymdi1tdgcv",
+        "address": "0xa9458e2e413e58",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_4，共6个地址)"
+            },
+            {
+              "ruleId": "cluster_suspicious_tasks",
+              "ruleName": "可疑任务模式",
+              "weight": 40,
+              "description": "可疑任务占比63%，疑似机器人刷任务"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.972Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k82f7vqykie6wr",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p7yz7uaz6koxh",
+        "address": "0x46d94eb96d54c8",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_4，共6个地址)"
+            },
+            {
+              "ruleId": "cluster_suspicious_tasks",
+              "ruleName": "可疑任务模式",
+              "weight": 40,
+              "description": "可疑任务占比63%，疑似机器人刷任务"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.970Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7x6mbiagds02m",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p6w3yp5bh869",
+        "address": "0xfe3943bee3bcd8",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_4，共6个地址)"
+            },
+            {
+              "ruleId": "cluster_suspicious_tasks",
+              "ruleName": "可疑任务模式",
+              "weight": 40,
+              "description": "可疑任务占比50%，疑似机器人刷任务"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.965Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7wrmmqsbqulw",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p6675atydeqyi",
+        "address": "0x0d5c9bfe791ad8",
+        "oldValue": {
+          "riskScore": 100,
+          "riskLevel": "high"
+        },
+        "newValue": {
+          "riskScore": 100,
+          "riskLevel": "high",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_4，共6个地址)"
+            },
+            {
+              "ruleId": "cluster_suspicious_tasks",
+              "ruleName": "可疑任务模式",
+              "weight": 40,
+              "description": "可疑任务占比88%，疑似机器人刷任务"
+            },
+            {
+              "ruleId": "not_community_member",
+              "ruleName": "非社区成员",
+              "weight": 15,
+              "description": "不在社区贡献名单中"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.964Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7u9jiibj7p51n",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56p2ib705vg6uz",
+        "address": "0x8e40238017819",
+        "oldValue": {
+          "riskScore": 50,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 50,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_1，共5个地址)"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.962Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7t07ci4he7q3o4",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56ozcs36bg8htun",
+        "address": "0x319ba4849de8c",
+        "oldValue": {
+          "riskScore": 0,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 0,
+          "riskLevel": "low",
+          "riskFactors": []
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.961Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7rpx0rhwdu8yi",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56ovseesjn821b",
+        "address": "0xa945d80c38c228",
+        "oldValue": {
+          "riskScore": 50,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 50,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_1，共5个地址)"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.959Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7pbzov3aeaz6o",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56oto2jq0uzuj5b",
+        "address": "0xefe9fc47e32f78",
+        "oldValue": {
+          "riskScore": 0,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 0,
+          "riskLevel": "low",
+          "riskFactors": []
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.957Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7mp7g3m3ksqkm",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56opnc7dlw06ljn",
+        "address": "0xf7c411d6e70468",
+        "oldValue": {
+          "riskScore": 50,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 50,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_1，共5个地址)"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.954Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7likqu5c8jj9",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56omq4vumcgwdn",
+        "address": "0x878ded14239248",
+        "oldValue": {
+          "riskScore": 50,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 50,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_1，共5个地址)"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.953Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7kx6510q6402",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56okfi85wrmm626",
+        "address": "0xb6d26c809b3058",
+        "oldValue": {
+          "riskScore": 0,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 0,
+          "riskLevel": "low",
+          "riskFactors": []
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.952Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7jfx4swhc2xw",
+        "action": "risk_evaluate",
+        "entityType": "address",
+        "entityId": "mpmv56ogx474njnj12a",
+        "address": "0x9e2384103bb808",
+        "oldValue": {
+          "riskScore": 50,
+          "riskLevel": "low"
+        },
+        "newValue": {
+          "riskScore": 50,
+          "riskLevel": "low",
+          "riskFactors": [
+            {
+              "ruleId": "cluster_large",
+              "ruleName": "大集群地址",
+              "weight": 50,
+              "description": "属于大型地址集群(Cluster_1，共5个地址)"
+            }
+          ]
+        },
+        "reason": "自动风险评估",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.951Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k7g2yo2xo9ikym",
+        "action": "cluster_run",
+        "entityType": "cluster",
+        "entityId": null,
+        "address": null,
+        "oldValue": null,
+        "newValue": {
+          "clusterCount": 6
+        },
+        "reason": "执行地址聚类分析",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.948Z",
+        "metadata": {}
+      },
+      {
+        "id": "mpmv5k5946b0bjmjzx9",
+        "action": "test_action",
+        "entityType": "address",
+        "entityId": null,
+        "address": "0x1111111111111111111111111111111111111111",
+        "oldValue": null,
+        "newValue": null,
+        "reason": "测试审计",
+        "source": "system",
+        "operator": "cli",
+        "timestamp": "2026-05-26T16:42:31.869Z",
+        "metadata": {}
+      }
+    ]
+  }
+}

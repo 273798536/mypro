@@ -1,0 +1,285 @@
+{
+  "exportType": "addresses",
+  "exportedAt": "2026-05-26T16:43:22.403Z",
+  "count": 7,
+  "filters": {
+    "onlyHighRisk": true,
+    "excludeWhitelist": true
+  },
+  "data": [
+    {
+      "id": "mpmv56p6675atydeqyi",
+      "address": "0x0d5c9bfe791ad8",
+      "label": "疑似女巫1",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "cluster_large",
+          "ruleName": "大集群地址",
+          "weight": 50,
+          "description": "属于大型地址集群(Cluster_4，共6个地址)"
+        },
+        {
+          "ruleId": "cluster_suspicious_tasks",
+          "ruleName": "可疑任务模式",
+          "weight": 40,
+          "description": "可疑任务占比88%，疑似机器人刷任务"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": "mpmv5k61ql0q30lvavq",
+      "isExchange": false,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.442Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.442Z",
+      "updatedAt": "2026-05-26T16:42:31.963Z",
+      "metadata": {
+        "ip_hash": "ip_cluster_A",
+        "device": "bot_like_v1"
+      }
+    },
+    {
+      "id": "mpmv56p6w3yp5bh869",
+      "address": "0xfe3943bee3bcd8",
+      "label": "疑似女巫2",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "cluster_large",
+          "ruleName": "大集群地址",
+          "weight": 50,
+          "description": "属于大型地址集群(Cluster_4，共6个地址)"
+        },
+        {
+          "ruleId": "cluster_suspicious_tasks",
+          "ruleName": "可疑任务模式",
+          "weight": 40,
+          "description": "可疑任务占比50%，疑似机器人刷任务"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": "mpmv5k61ql0q30lvavq",
+      "isExchange": false,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.442Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.442Z",
+      "updatedAt": "2026-05-26T16:42:31.965Z",
+      "metadata": {
+        "ip_hash": "ip_cluster_A",
+        "device": "bot_like_v1"
+      }
+    },
+    {
+      "id": "mpmv56p7yz7uaz6koxh",
+      "address": "0x46d94eb96d54c8",
+      "label": "疑似女巫3",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "cluster_large",
+          "ruleName": "大集群地址",
+          "weight": 50,
+          "description": "属于大型地址集群(Cluster_4，共6个地址)"
+        },
+        {
+          "ruleId": "cluster_suspicious_tasks",
+          "ruleName": "可疑任务模式",
+          "weight": 40,
+          "description": "可疑任务占比63%，疑似机器人刷任务"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": "mpmv5k61ql0q30lvavq",
+      "isExchange": false,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.443Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.443Z",
+      "updatedAt": "2026-05-26T16:42:31.969Z",
+      "metadata": {
+        "ip_hash": "ip_cluster_A",
+        "device": "bot_like_v1"
+      }
+    },
+    {
+      "id": "mpmv56p71ymdi1tdgcv",
+      "address": "0xa9458e2e413e58",
+      "label": "疑似女巫4",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "cluster_large",
+          "ruleName": "大集群地址",
+          "weight": 50,
+          "description": "属于大型地址集群(Cluster_4，共6个地址)"
+        },
+        {
+          "ruleId": "cluster_suspicious_tasks",
+          "ruleName": "可疑任务模式",
+          "weight": 40,
+          "description": "可疑任务占比63%，疑似机器人刷任务"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": "mpmv5k61ql0q30lvavq",
+      "isExchange": false,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.443Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.443Z",
+      "updatedAt": "2026-05-26T16:42:31.971Z",
+      "metadata": {
+        "ip_hash": "ip_cluster_A",
+        "device": "bot_like_v1"
+      }
+    },
+    {
+      "id": "mpmv56p7gj11nxc5mbs",
+      "address": "0x0f81f3566e033",
+      "label": "疑似女巫5",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "cluster_large",
+          "ruleName": "大集群地址",
+          "weight": 50,
+          "description": "属于大型地址集群(Cluster_4，共6个地址)"
+        },
+        {
+          "ruleId": "cluster_suspicious_tasks",
+          "ruleName": "可疑任务模式",
+          "weight": 40,
+          "description": "可疑任务占比88%，疑似机器人刷任务"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": "mpmv5k61ql0q30lvavq",
+      "isExchange": false,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.443Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.443Z",
+      "updatedAt": "2026-05-26T16:42:31.973Z",
+      "metadata": {
+        "ip_hash": "ip_cluster_A",
+        "device": "bot_like_v1"
+      }
+    },
+    {
+      "id": "mpmv56po19221xboaiwi",
+      "address": "0x5b3ad47f3163a8",
+      "label": "Binance热钱包",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "exchange_address",
+          "ruleName": "交易所地址",
+          "weight": 80,
+          "description": "识别为Binance交易所地址，置信度95%"
+        },
+        {
+          "ruleId": "no_onchain_activity",
+          "ruleName": "无链上活动",
+          "weight": 30,
+          "description": "无任务完成记录"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": null,
+      "isExchange": true,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.460Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.460Z",
+      "updatedAt": "2026-05-26T16:42:31.978Z",
+      "metadata": {}
+    },
+    {
+      "id": "mpmv56po8dikgg6a4ug",
+      "address": "0x0ac9055ce58a7",
+      "label": "Coinbase交易所",
+      "source": "sample_data",
+      "sourceId": null,
+      "riskScore": 100,
+      "riskLevel": "high",
+      "riskFactors": [
+        {
+          "ruleId": "exchange_address",
+          "ruleName": "交易所地址",
+          "weight": 80,
+          "description": "识别为Coinbase交易所地址，置信度98%"
+        },
+        {
+          "ruleId": "no_onchain_activity",
+          "ruleName": "无链上活动",
+          "weight": 30,
+          "description": "无任务完成记录"
+        },
+        {
+          "ruleId": "not_community_member",
+          "ruleName": "非社区成员",
+          "weight": 15,
+          "description": "不在社区贡献名单中"
+        }
+      ],
+      "clusterId": null,
+      "isExchange": true,
+      "isWhitelisted": false,
+      "firstSeen": "2026-05-26T16:42:14.460Z",
+      "lastActive": null,
+      "createdAt": "2026-05-26T16:42:14.460Z",
+      "updatedAt": "2026-05-26T16:42:31.980Z",
+      "metadata": {}
+    }
+  ]
+}

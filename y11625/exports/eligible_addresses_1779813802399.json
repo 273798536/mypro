@@ -1,0 +1,104 @@
+{
+  "exportType": "eligible_addresses",
+  "exportedAt": "2026-05-26T16:43:22.399Z",
+  "count": 12,
+  "description": "符合空投条件的地址（低风险或白名单）",
+  "data": [
+    {
+      "address": "0x9e2384103bb808",
+      "label": "正常用户_1",
+      "riskScore": 50,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0xb6d26c809b3058",
+      "label": "正常用户_2",
+      "riskScore": 0,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0x878ded14239248",
+      "label": "正常用户_3",
+      "riskScore": 50,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0xf7c411d6e70468",
+      "label": "正常用户_4",
+      "riskScore": 50,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0xefe9fc47e32f78",
+      "label": "正常用户_5",
+      "riskScore": 0,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0xa945d80c38c228",
+      "label": "正常用户_6",
+      "riskScore": 50,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0x319ba4849de8c",
+      "label": "正常用户_7",
+      "riskScore": 0,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0x8e40238017819",
+      "label": "正常用户_8",
+      "riskScore": 50,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0x152c1174cbf908",
+      "label": "项目早期贡献者",
+      "riskScore": 0,
+      "riskLevel": "whitelisted",
+      "isWhitelisted": true,
+      "isExchange": false
+    },
+    {
+      "address": "0x4c6696652bb258",
+      "label": "新钱包_可能新用户",
+      "riskScore": 45,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0x21612cdfa09048",
+      "label": "无活动地址",
+      "riskScore": 45,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    },
+    {
+      "address": "0x1111111111111111111111111111111111111111",
+      "label": "更新后的测试地址",
+      "riskScore": 55,
+      "riskLevel": "low",
+      "isWhitelisted": false,
+      "isExchange": false
+    }
+  ]
+}

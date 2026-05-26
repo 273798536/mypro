@@ -1,0 +1,24 @@
+{
+  "name": "web3-sybil-filter",
+  "version": "1.0.0",
+  "description": "Web3空投女巫过滤CLI系统",
+  "main": "src/cli.js",
+  "bin": {
+    "sybil-filter": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "commander": "^11.1.0",
+    "inquirer": "^8.2.6",
+    "lowdb": "^1.0.0",
+    "ora": "^5.4.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
