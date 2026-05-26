@@ -1,0 +1,243 @@
+{
+  "summary": {
+    "batch_id": "RECON_20260526_3",
+    "run_date": "2026-05-26",
+    "total_records": 3,
+    "success_count": 0,
+    "failed_count": 0,
+    "pending_count": 0,
+    "paused_count": 1,
+    "review_required_count": 0,
+    "deferred_count": 0,
+    "duplicate_risk_count": 2,
+    "cancelled_count": 0,
+    "total_amount": 4000.0,
+    "success_amount": 0.0,
+    "failed_amount": 0.0,
+    "source_files": [
+      "customer_plans.csv",
+      "bank_returns.csv"
+    ],
+    "generated_at": "2026-05-26T17:25:04.346428"
+  },
+  "records": [
+    {
+      "record_id": "207b987dc3b3f3f3",
+      "bank_return": {
+        "serial_no": "BR202605200001",
+        "customer_id": "C001",
+        "customer_name": "张三",
+        "plan_id": "P001",
+        "deduct_date": "2026-05-21",
+        "return_date": "2026-05-26",
+        "amount": 1000.0,
+        "return_code": "BAL001",
+        "return_msg": "账户余额不足",
+        "source_file": "bank_returns.csv",
+        "created_at": "2026-05-26T17:25:04.148512"
+      },
+      "customer_plan": {
+        "plan_id": "P001",
+        "customer_id": "C001",
+        "customer_name": "张三",
+        "fund_code": "F001",
+        "fund_name": "易方达蓝筹精选混合",
+        "monthly_amount": 1000.0,
+        "deduct_day": 15,
+        "start_date": "2025-01-01",
+        "end_date": null,
+        "status": "正常",
+        "source_file": "customer_plans.csv"
+      },
+      "failure_reason": {
+        "reason_code": "BAL001",
+        "reason_name": "账户余额不足",
+        "category": "余额",
+        "allow_replenish": true,
+        "max_attempts": 3,
+        "description": "客户账户余额不足以支付定投金额",
+        "source_file": "failure_reasons.csv"
+      },
+      "replenish_window": {
+        "window_id": "W001",
+        "plan_id": "P001",
+        "original_deduct_date": "2026-05-21",
+        "window_start": "2026-05-26",
+        "window_end": "2026-06-05",
+        "attempts_made": 0,
+        "last_attempt_date": null,
+        "source_file": "replenish_windows.csv"
+      },
+      "manual_remarks": [],
+      "status": "重复扣款风险",
+      "risks": [
+        "重复扣款风险"
+      ],
+      "audit_trail": [
+        {
+          "timestamp": "2026-05-26T17:25:04.346221",
+          "from_status": "待处理",
+          "to_status": "重复扣款风险",
+          "operator": "system",
+          "reason": "初始状态评估",
+          "source": "state_machine"
+        }
+      ],
+      "scheduled_replenish_date": null,
+      "actual_replenish_date": null,
+      "replenish_attempts": 0,
+      "is_reconciled": false,
+      "created_at": "2026-05-26T17:25:04.343874",
+      "updated_at": "2026-05-26T17:25:04.346322"
+    },
+    {
+      "record_id": "6c69fa36f5e987d8",
+      "bank_return": {
+        "serial_no": "BR202605200002",
+        "customer_id": "C002",
+        "customer_name": "李四",
+        "plan_id": "P002",
+        "deduct_date": "2026-05-21",
+        "return_date": "2026-05-26",
+        "amount": 2000.0,
+        "return_code": "BAL001",
+        "return_msg": "账户余额不足",
+        "source_file": "bank_returns.csv",
+        "created_at": "2026-05-26T17:25:04.259739"
+      },
+      "customer_plan": {
+        "plan_id": "P002",
+        "customer_id": "C002",
+        "customer_name": "李四",
+        "fund_code": "F002",
+        "fund_name": "华夏成长混合",
+        "monthly_amount": 2000.0,
+        "deduct_day": 20,
+        "start_date": "2025-03-01",
+        "end_date": null,
+        "status": "暂停",
+        "source_file": "customer_plans.csv"
+      },
+      "failure_reason": {
+        "reason_code": "BAL001",
+        "reason_name": "账户余额不足",
+        "category": "余额",
+        "allow_replenish": true,
+        "max_attempts": 3,
+        "description": "客户账户余额不足以支付定投金额",
+        "source_file": "failure_reasons.csv"
+      },
+      "replenish_window": {
+        "window_id": "W002",
+        "plan_id": "P002",
+        "original_deduct_date": "2026-05-21",
+        "window_start": "2026-05-26",
+        "window_end": "2026-06-05",
+        "attempts_made": 1,
+        "last_attempt_date": "2026-05-24",
+        "source_file": "replenish_windows.csv"
+      },
+      "manual_remarks": [
+        {
+          "remark_id": "R001",
+          "related_serial_no": "BR202605200002",
+          "operator": "运营小王",
+          "remark_time": "2026-05-26T17:25:04.335149",
+          "content": "客户来电说明已充值，同意补扣",
+          "action": "同意补扣",
+          "source_file": "manual_remarks.csv"
+        }
+      ],
+      "status": "客户暂停",
+      "risks": [
+        "客户暂停"
+      ],
+      "audit_trail": [
+        {
+          "timestamp": "2026-05-26T17:25:04.346349",
+          "from_status": "待处理",
+          "to_status": "客户暂停",
+          "operator": "system",
+          "reason": "初始状态评估",
+          "source": "state_machine"
+        }
+      ],
+      "scheduled_replenish_date": null,
+      "actual_replenish_date": null,
+      "replenish_attempts": 0,
+      "is_reconciled": false,
+      "created_at": "2026-05-26T17:25:04.343916",
+      "updated_at": "2026-05-26T17:25:04.346367"
+    },
+    {
+      "record_id": "f5ace69383ef7bd4",
+      "bank_return": {
+        "serial_no": "BR202605200003",
+        "customer_id": "C001",
+        "customer_name": "张三",
+        "plan_id": "P001",
+        "deduct_date": "2026-05-21",
+        "return_date": "2026-05-26",
+        "amount": 1000.0,
+        "return_code": "BAL001",
+        "return_msg": "账户余额不足",
+        "source_file": "bank_returns.csv",
+        "created_at": "2026-05-26T17:25:04.260532"
+      },
+      "customer_plan": {
+        "plan_id": "P001",
+        "customer_id": "C001",
+        "customer_name": "张三",
+        "fund_code": "F001",
+        "fund_name": "易方达蓝筹精选混合",
+        "monthly_amount": 1000.0,
+        "deduct_day": 15,
+        "start_date": "2025-01-01",
+        "end_date": null,
+        "status": "正常",
+        "source_file": "customer_plans.csv"
+      },
+      "failure_reason": {
+        "reason_code": "BAL001",
+        "reason_name": "账户余额不足",
+        "category": "余额",
+        "allow_replenish": true,
+        "max_attempts": 3,
+        "description": "客户账户余额不足以支付定投金额",
+        "source_file": "failure_reasons.csv"
+      },
+      "replenish_window": {
+        "window_id": "W001",
+        "plan_id": "P001",
+        "original_deduct_date": "2026-05-21",
+        "window_start": "2026-05-26",
+        "window_end": "2026-06-05",
+        "attempts_made": 0,
+        "last_attempt_date": null,
+        "source_file": "replenish_windows.csv"
+      },
+      "manual_remarks": [],
+      "status": "重复扣款风险",
+      "risks": [
+        "重复扣款风险"
+      ],
+      "audit_trail": [
+        {
+          "timestamp": "2026-05-26T17:25:04.346383",
+          "from_status": "待处理",
+          "to_status": "重复扣款风险",
+          "operator": "system",
+          "reason": "初始状态评估",
+          "source": "state_machine"
+        }
+      ],
+      "scheduled_replenish_date": null,
+      "actual_replenish_date": null,
+      "replenish_attempts": 0,
+      "is_reconciled": false,
+      "created_at": "2026-05-26T17:25:04.343927",
+      "updated_at": "2026-05-26T17:25:04.346402"
+    }
+  ],
+  "export_time": "2026-05-26T17:25:04.381151"
+}

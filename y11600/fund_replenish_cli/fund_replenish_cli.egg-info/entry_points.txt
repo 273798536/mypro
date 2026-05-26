@@ -1,0 +1,2 @@
+[console_scripts]
+fund-replenish = fund_replenish_cli.cli:main

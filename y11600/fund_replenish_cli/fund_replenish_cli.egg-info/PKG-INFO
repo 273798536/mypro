@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: fund-replenish-cli
+Version: 1.0.0
+Summary: 基金定投断点补扣 CLI 工具 - 处理银行回盘、客户补扣名单、节假日顺延、幂等补扣、对账导出
+Requires-Python: >=3.9
+Requires-Dist: click>=8.0
+Requires-Dist: pydantic>=2.0
+Requires-Dist: pandas>=2.0
+Requires-Dist: openpyxl>=3.1
+Requires-Dist: rich>=13.0

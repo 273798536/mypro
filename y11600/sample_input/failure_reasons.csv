@@ -1,0 +1,6 @@
+﻿reason_code,reason_name,category,allow_replenish,max_attempts,description
+BAL001,账户余额不足,余额,true,3,客户账户余额不足以支付定投金额
+ACC001,账户已销户,账户,false,0,客户银行账户已销户，无法继续扣款
+ACC002,账户冻结,账户,false,0,客户银行账户被冻结
+SYS001,系统超时,系统,true,3,银行系统处理超时，需重试
+LIM001,超出交易限额,其他,true,2,超出客户设置的交易限额
