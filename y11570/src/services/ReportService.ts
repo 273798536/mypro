@@ -248,7 +248,7 @@ export class ReportService {
       summary: {
         ticketCount: tickets.length,
         batchCount: batches.length,
-        inventoryDiffCount: inventoryDiffResult.summary.totalCount,
+        inventoryDiffCount: inventoryDiffResult.summary.totalRecords,
         totalCompensation,
         timeoutCount: totalTimeouts
       }
@@ -389,11 +389,19 @@ export class ReportService {
         if (responsibility.assignmentResponsibility) {
           lines.push(`### 8.2 转派责任`);
           lines.push('');
-          lines.push(`- 总转派次数: ${responsibility.assignmentResponsibility.totalAssignments || 0}`);
-          lines.push(`- 各坐席转派次数:`);
+          lines.push(`- 总分配次数: ${responsibility.assignmentResponsibility.totalAssignments || 0}`);
+          lines.push(`- 总转派次数: ${responsibility.assignmentResponsibility.totalReassignments || 0}`);
+          lines.push(`- 各坐席分配次数:`);
           if (responsibility.assignmentResponsibility.agentStats) {
             for (const [agent, stats] of Object.entries<any>(responsibility.assignmentResponsibility.agentStats)) {
-              lines.push(`  - ${agent}: ${stats.count} 次转派, ${stats.timeoutCount} 次超时`);
+              lines.push(`  - ${agent}: ${stats.assignments} 次分配, ${stats.timeouts} 次超时, 责任分 ${stats.blameScore}`);
+            }
+          }
+          if (responsibility.assignmentResponsibility.bottleneckAgents?.length > 0) {
+            lines.push('');
+            lines.push(`- **瓶颈坐席:**`);
+            for (const agent of responsibility.assignmentResponsibility.bottleneckAgents) {
+              lines.push(`  - ${agent.agentId}: ${agent.timeouts} 次超时, 责任分 ${agent.blameScore}`);
             }
           }
           lines.push('');
@@ -403,11 +411,18 @@ export class ReportService {
           lines.push(`### 8.3 超时责任`);
           lines.push('');
           lines.push(`- 总超时次数: ${responsibility.timeoutResponsibility.totalTimeouts || 0}`);
-          lines.push(`- 总超时分钟: ${responsibility.timeoutResponsibility.totalTimeoutMinutes || 0}`);
-          if (responsibility.timeoutResponsibility.agentResponsibility) {
+          lines.push(`- 总超时分钟: ${responsibility.timeoutResponsibility.totalDurationMinutes || 0}`);
+          lines.push(`- 总责任分: ${responsibility.timeoutResponsibility.totalBlameScore || 0}`);
+          if (responsibility.timeoutResponsibility.byAgent) {
             lines.push(`- 各坐席超时责任:`);
-            for (const [agent, details] of Object.entries<any>(responsibility.timeoutResponsibility.agentResponsibility)) {
-              lines.push(`  - ${agent}: ${details.timeoutCount} 次, ${details.totalMinutes} 分钟, 责任分 ${details.responsibilityScore}`);
+            for (const [agent, blame] of Object.entries<any>(responsibility.timeoutResponsibility.byAgent)) {
+              lines.push(`  - ${agent}: 责任分 ${blame}`);
+            }
+          }
+          if (responsibility.timeoutResponsibility.byType) {
+            lines.push(`- 各超时类型:`);
+            for (const [type, count] of Object.entries<any>(responsibility.timeoutResponsibility.byType)) {
+              lines.push(`  - ${type}: ${count} 次`);
             }
           }
           lines.push('');
@@ -416,29 +431,39 @@ export class ReportService {
         if (responsibility.inventoryResponsibility) {
           lines.push(`### 8.4 盘点差异责任`);
           lines.push('');
-          lines.push(`- 差异总数: ${responsibility.inventoryResponsibility.totalDifferences || 0}`);
-          lines.push(`- 盘亏总数: ${responsibility.inventoryResponsibility.totalDeficit || 0}`);
-          lines.push(`- 盘盈总数: ${responsibility.inventoryResponsibility.totalSurplus || 0}`);
-          lines.push(`- 未说明原因: ${responsibility.inventoryResponsibility.unexplainedCount || 0}`);
+          lines.push(`- 差异总数: ${responsibility.inventoryResponsibility.totalRecords || 0}`);
+          lines.push(`- 盘亏总数: ${responsibility.inventoryResponsibility.totalMissing || 0}`);
+          lines.push(`- 盘盈总数: ${responsibility.inventoryResponsibility.totalExtra || 0}`);
+          lines.push(`- 净差异: ${responsibility.inventoryResponsibility.netDifference || 0}`);
+          lines.push(`- 未说明原因: ${responsibility.inventoryResponsibility.unresolvedCount || 0}`);
           lines.push('');
         }
 
         if (responsibility.compensationResponsibility) {
-          lines.push(`### 8.5 补偿卡壳步骤`);
+          lines.push(`### 8.5 补偿流程`);
+          lines.push('');
+          lines.push(`- 总申请次数: ${responsibility.compensationResponsibility.totalRequests || 0}`);
+          lines.push(`- 已通过: ${responsibility.compensationResponsibility.approvedCount || 0}`);
+          lines.push(`- 已拒绝: ${responsibility.compensationResponsibility.rejectedCount || 0}`);
+          lines.push(`- 待审批: ${responsibility.compensationResponsibility.pendingCount || 0}`);
+          lines.push(`- 申请总额: ${responsibility.compensationResponsibility.totalRequestedAmount || 0} 元`);
+          lines.push(`- 审批总额: ${responsibility.compensationResponsibility.totalApprovedAmount || 0} 元`);
+          lines.push(`- 通过率: ${responsibility.compensationResponsibility.approvalRate || '0%'}`);
           lines.push('');
           const stuck = responsibility.compensationResponsibility.stuckStep;
-          if (stuck) {
-            lines.push(`- **卡壳步骤**: ${stuck.step}`);
-            lines.push(`- **原因**: ${stuck.reason}`);
-            lines.push(`- **建议**: ${stuck.suggestion}`);
-          } else {
-            lines.push(`- 补偿流程正常，未检测到卡壳`);
+          if (stuck?.stuck) {
+            lines.push(`### 8.6 补偿卡壳步骤`);
+            lines.push('');
+            lines.push(`- **卡壳步骤**: ${stuck.step || '未知'}`);
+            if (stuck.reason) {
+              lines.push(`- **原因**: ${stuck.reason}`);
+            }
+            lines.push('');
           }
-          lines.push('');
         }
 
         if (responsibility.totalCompensation !== undefined) {
-          lines.push(`### 8.6 补偿总额`);
+          lines.push(`### 8.7 补偿总额`);
           lines.push('');
           lines.push(`- **计算补偿**: ${responsibility.totalCompensation} 元`);
           lines.push(`- **已审批**: ${ticket.totalCompensation || 0} 元`);
@@ -446,9 +471,11 @@ export class ReportService {
         }
 
         if (responsibility.summary) {
-          lines.push(`### 8.7 结论摘要`);
+          lines.push(`### 8.8 结论摘要`);
           lines.push('');
           lines.push(`- **主要责任人**: ${responsibility.summary.primaryResponsibleAgent || '未识别'}`);
+          lines.push(`- **涉及坐席数**: ${responsibility.summary.totalAgentsInvolved || 0}`);
+          lines.push(`- **总责任分**: ${responsibility.summary.totalBlameScore || 0}`);
           if (responsibility.summary.warnings?.length > 0) {
             lines.push(`- **警告**: ${responsibility.summary.warnings.join('; ')}`);
           }
@@ -571,7 +598,7 @@ export class ReportService {
     lines.push(`| 超时总数 | ${totals.totalTimeouts} |`);
     lines.push(`| 补偿总额 | ${totals.totalCompensation} 元 |`);
     lines.push(`| 冻结工单数 | ${frozenTickets.length} |`);
-    lines.push(`| 盘点差异数 | ${inventorySummary.totalCount || 0} |`);
+    lines.push(`| 盘点差异数 | ${inventorySummary.totalRecords || 0} |`);
     lines.push(`| 失败记录数 | ${failedRecordsSummary.totalFailed || 0} |`);
     lines.push('');
 
@@ -590,11 +617,11 @@ export class ReportService {
     lines.push('');
     lines.push(`| 指标 | 值 |`);
     lines.push(`| --- | --- |`);
-    lines.push(`| 记录总数 | ${inventorySummary.totalCount || 0} |`);
-    lines.push(`| 盘亏总数 | ${inventorySummary.totalDeficit || 0} |`);
-    lines.push(`| 盘盈总数 | ${inventorySummary.totalSurplus || 0} |`);
+    lines.push(`| 记录总数 | ${inventorySummary.totalRecords || 0} |`);
+    lines.push(`| 盘亏总数 | ${inventorySummary.totalMissing || 0} |`);
+    lines.push(`| 盘盈总数 | ${inventorySummary.totalExtra || 0} |`);
     lines.push(`| 净差异 | ${inventorySummary.netDifference || 0} |`);
-    lines.push(`| 未说明原因 | ${inventorySummary.unexplainedCount || 0} |`);
+    lines.push(`| 未说明原因 | ${inventorySummary.unresolvedCount || 0} |`);
     lines.push('');
 
     lines.push('## 4. 失败记录汇总');
