@@ -1,0 +1,26 @@
+{
+  "contract_info": {
+    "contract_name": "YY平台运维服务合同",
+    "contract_no": "HT-SAMPLE-002"
+  },
+  "payment_nodes": [
+    {
+      "node_name": "首季度运维费",
+      "node_no": "P001",
+      "planned_amount": 90000.0,
+      "planned_date": "2024-03-20",
+      "milestone": "第一季度服务完成"
+    },
+    {
+      "node_name": "第二季度运维费",
+      "node_no": "P002",
+      "planned_amount": 90000.0,
+      "planned_date": "2024-06-20",
+      "milestone": "第二季度服务完成"
+    },
+    {
+      "bad_data": "缺少node_name",
+      "planned_amount": 50000.0
+    }
+  ]
+}

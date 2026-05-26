@@ -270,3 +270,34 @@ class ExportRecord(Base):
     record_count = Column(Integer)
     export_remark = Column(Text)
     related_contract_ids = Column(JSON)
+
+
+class DeadLetterStatus(str, enum.Enum):
+    PENDING = "待重试"
+    RETRYING = "重试中"
+    RESOLVED = "已解决"
+    FAILED = "最终失败"
+
+
+class DeadLetter(Base):
+    __tablename__ = "dead_letters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    import_source_id = Column(Integer, ForeignKey("import_sources.id"))
+    source_type = Column(String(50))
+    source_data = Column(JSON)
+    original_line_no = Column(Integer)
+    error_message = Column(Text)
+    error_type = Column(String(200))
+    stack_trace = Column(Text)
+    status = Column(Enum(DeadLetterStatus), default=DeadLetterStatus.PENDING)
+    retry_count = Column(Integer, default=0)
+    max_retry = Column(Integer, default=3)
+    last_retry_at = Column(DateTime)
+    next_retry_at = Column(DateTime)
+    resolved_at = Column(DateTime)
+    resolved_by = Column(String(100))
+    resolution_note = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    extra_metadata = Column(JSON)

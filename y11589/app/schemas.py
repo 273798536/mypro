@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
+import enum
 from .models import ContractStatus, ChangeType, RoleType, SourceFileType, ImportStatus
 
 
@@ -278,17 +279,7 @@ class ImportRequest(BaseModel):
     upload_by: str
     contract_no: Optional[str] = None
     contract_name: Optional[str] = None
-
-
-class ImportResponse(BaseModel):
-    success: bool
-    import_source_id: int
-    status: ImportStatus
-    message: str
-    parsed_count: int = 0
-    success_count: int = 0
-    failed_count: int = 0
-    errors: Optional[List[str]] = None
+    force_import: bool = False
 
 
 class FreezeRequest(BaseModel):
@@ -331,3 +322,55 @@ class ChangeAnalysisResponse(BaseModel):
     manual_revisions: int
     sensitive_field_changes: List[Dict[str, Any]]
     version_history: List[Dict[str, Any]]
+
+
+class DeadLetterStatus(str, enum.Enum):
+    PENDING = "待重试"
+    RETRYING = "重试中"
+    RESOLVED = "已解决"
+    FAILED = "最终失败"
+
+
+class DeadLetterResponse(BaseModel):
+    id: int
+    import_source_id: int
+    source_type: str
+    source_data: Dict[str, Any]
+    original_line_no: Optional[int] = None
+    error_message: str
+    error_type: str
+    stack_trace: Optional[str] = None
+    status: DeadLetterStatus
+    retry_count: int
+    max_retry: int
+    last_retry_at: Optional[datetime] = None
+    next_retry_at: Optional[datetime] = None
+    resolved_at: Optional[datetime] = None
+    resolved_by: Optional[str] = None
+    resolution_note: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    extra_metadata: Optional[Dict[str, Any]] = None
+
+    class Config:
+        from_attributes = True
+
+
+class DeadLetterRetryResponse(BaseModel):
+    success: bool
+    message: str
+    dead_letter: Optional[DeadLetterResponse] = None
+
+
+class ImportResponse(BaseModel):
+    success: bool
+    import_source_id: int
+    status: ImportStatus
+    message: str
+    is_duplicate: bool = False
+    parsed_count: int = 0
+    success_count: int = 0
+    failed_count: int = 0
+    dead_letter_count: int = 0
+    errors: Optional[List[str]] = None
+    parse_metadata: Optional[Dict[str, Any]] = None

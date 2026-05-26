@@ -1,15 +1,17 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, func
 from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import os
 import json
 import re
+import traceback
 
 from .models import (
     Contract, PaymentNode, AcceptanceEmail, SupplementalAgreement,
     ImportSource, ChangeRecord, AuditLog, ManualJudgment, ExportRecord,
+    DeadLetter, DeadLetterStatus,
     ContractStatus, ChangeType, RoleType, SourceFileType, ImportStatus
 )
 from .schemas import (
@@ -17,6 +19,7 @@ from .schemas import (
     StatusTransitionRequest, ManualJudgmentCreate
 )
 from .config import settings
+from .parsers import ParserFactory, ParseResult
 
 
 class ContractService:
@@ -382,132 +385,6 @@ class AuditService:
         return query.order_by(AuditLog.operate_time.desc()).offset(skip).limit(limit).all()
 
 
-class ImportService:
-    @staticmethod
-    def create_import_source(
-        db: Session,
-        file_name: str,
-        file_type: SourceFileType,
-        file_path: str,
-        file_size: int,
-        upload_by: str,
-        contract_id: Optional[int] = None
-    ) -> ImportSource:
-        file_hash = ImportService._calculate_file_hash(file_path)
-        import_source = ImportSource(
-            contract_id=contract_id,
-            file_name=file_name,
-            file_type=file_type,
-            file_path=file_path,
-            file_hash=file_hash,
-            file_size=file_size,
-            upload_by=upload_by,
-            import_status=ImportStatus.PENDING
-        )
-        db.add(import_source)
-        db.commit()
-        db.refresh(import_source)
-        return import_source
-
-    @staticmethod
-    def _calculate_file_hash(file_path: str) -> str:
-        sha256_hash = hashlib.sha256()
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                for byte_block in iter(lambda: f.read(4096), b""):
-                    sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
-
-    @staticmethod
-    def parse_and_import(
-        db: Session,
-        import_source_id: int,
-        contract_id: int,
-        parsed_data: Dict[str, Any]
-    ) -> Tuple[bool, List[str], Dict]:
-        import_source = db.query(ImportSource).filter(ImportSource.id == import_source_id).first()
-        if not import_source:
-            return False, ["导入源不存在"], {}
-
-        errors = []
-        success_count = 0
-        failed_count = 0
-        parsed_count = 0
-        results = {"payment_nodes": [], "emails": [], "supplemental_agreements": []}
-
-        try:
-            if 'payment_nodes' in parsed_data:
-                parsed_count += len(parsed_data['payment_nodes'])
-                for idx, node_data in enumerate(parsed_data['payment_nodes']):
-                    try:
-                        node_data['contract_id'] = contract_id
-                        node_data['original_line_no'] = idx + 1
-                        node_data['original_value'] = node_data.copy()
-                        node_create = PaymentNodeCreate(**node_data)
-                        node = PaymentNodeService.create_payment_node(db, node_create, import_source_id)
-                        results["payment_nodes"].append({"id": node.id, "name": node.node_name})
-                        success_count += 1
-                    except Exception as e:
-                        errors.append(f"付款节点第{idx+1}行: {str(e)}")
-                        failed_count += 1
-
-            if 'acceptance_emails' in parsed_data:
-                parsed_count += len(parsed_data['acceptance_emails'])
-                for idx, email_data in enumerate(parsed_data['acceptance_emails']):
-                    try:
-                        email_data['contract_id'] = contract_id
-                        email_data['original_line_no'] = idx + 1
-                        email_data['original_value'] = email_data.copy()
-                        email = AcceptanceEmail(**email_data)
-                        email.source_file_id = import_source_id
-                        db.add(email)
-                        results["emails"].append({"id": email.id, "subject": email.email_subject})
-                        success_count += 1
-                    except Exception as e:
-                        errors.append(f"验收邮件第{idx+1}行: {str(e)}")
-                        failed_count += 1
-
-            if 'supplemental_agreements' in parsed_data:
-                parsed_count += len(parsed_data['supplemental_agreements'])
-                for idx, sa_data in enumerate(parsed_data['supplemental_agreements']):
-                    try:
-                        sa_data['contract_id'] = contract_id
-                        sa_data['original_line_no'] = idx + 1
-                        sa_data['original_value'] = sa_data.copy()
-                        sa = SupplementalAgreement(**sa_data)
-                        sa.source_file_id = import_source_id
-                        db.add(sa)
-                        results["supplemental_agreements"].append({"id": sa.id, "name": sa.agreement_name})
-                        success_count += 1
-                    except Exception as e:
-                        errors.append(f"补充协议第{idx+1}行: {str(e)}")
-                        failed_count += 1
-
-            import_source.parsed_count = parsed_count
-            import_source.success_count = success_count
-            import_source.failed_count = failed_count
-            import_source.parse_result = results
-
-            if failed_count == 0:
-                import_source.import_status = ImportStatus.SUCCESS
-            elif success_count > 0:
-                import_source.import_status = ImportStatus.PARTIAL
-                import_source.import_error = "; ".join(errors)
-            else:
-                import_source.import_status = ImportStatus.FAILED
-                import_source.import_error = "; ".join(errors)
-
-            db.commit()
-            return failed_count == 0, errors, results
-
-        except Exception as e:
-            db.rollback()
-            import_source.import_status = ImportStatus.FAILED
-            import_source.import_error = f"导入失败: {str(e)}"
-            db.commit()
-            return False, [f"导入失败: {str(e)}"], {}
-
-
 class ManualJudgmentService:
     @staticmethod
     def create_judgment(db: Session, judgment_data: ManualJudgmentCreate) -> ManualJudgment:
@@ -748,3 +625,379 @@ class RoleViewService:
             "sensitive_field_changes": sensitive_changes,
             "version_history": version_history
         }
+
+
+class DeadLetterService:
+    @staticmethod
+    def create_dead_letter(
+        db: Session,
+        import_source_id: int,
+        source_type: str,
+        source_data: Dict[str, Any],
+        error_message: str,
+        error_type: str,
+        original_line_no: Optional[int] = None,
+        stack_trace: Optional[str] = None,
+        extra_metadata: Optional[Dict] = None
+    ) -> DeadLetter:
+        dead_letter = DeadLetter(
+            import_source_id=import_source_id,
+            source_type=source_type,
+            source_data=source_data,
+            original_line_no=original_line_no,
+            error_message=error_message,
+            error_type=error_type,
+            stack_trace=stack_trace,
+            status=DeadLetterStatus.PENDING,
+            retry_count=0,
+            max_retry=3,
+            next_retry_at=datetime.now() + timedelta(minutes=5),
+            extra_metadata=extra_metadata
+        )
+        db.add(dead_letter)
+        db.flush()
+        return dead_letter
+
+    @staticmethod
+    def get_pending_dead_letters(db: Session, limit: int = 100) -> List[DeadLetter]:
+        return db.query(DeadLetter).filter(
+            DeadLetter.status == DeadLetterStatus.PENDING,
+            DeadLetter.next_retry_at <= datetime.now()
+        ).order_by(DeadLetter.created_at.asc()).limit(limit).all()
+
+    @staticmethod
+    def retry_dead_letter(db: Session, dead_letter_id: int) -> Tuple[bool, str, Optional[DeadLetter]]:
+        dead_letter = db.query(DeadLetter).filter(DeadLetter.id == dead_letter_id).first()
+        if not dead_letter:
+            return False, "死信记录不存在", None
+
+        if dead_letter.status == DeadLetterStatus.RESOLVED:
+            return False, "该记录已解决", None
+
+        if dead_letter.retry_count >= dead_letter.max_retry:
+            dead_letter.status = DeadLetterStatus.FAILED
+            db.commit()
+            return False, "已达到最大重试次数，标记为最终失败", dead_letter
+
+        dead_letter.status = DeadLetterStatus.RETRYING
+        dead_letter.retry_count += 1
+        dead_letter.last_retry_at = datetime.now()
+        db.flush()
+
+        try:
+            success = DeadLetterService._process_source_data(db, dead_letter)
+            if success:
+                dead_letter.status = DeadLetterStatus.RESOLVED
+                dead_letter.resolved_at = datetime.now()
+                dead_letter.resolved_by = "system_retry"
+                dead_letter.resolution_note = "系统自动重试成功"
+                db.commit()
+                return True, "重试成功", dead_letter
+            else:
+                dead_letter.status = DeadLetterStatus.PENDING
+                dead_letter.next_retry_at = datetime.now() + timedelta(minutes=5 * dead_letter.retry_count)
+                db.commit()
+                return False, "重试失败，已排入下次重试", dead_letter
+        except Exception as e:
+            dead_letter.status = DeadLetterStatus.PENDING
+            dead_letter.next_retry_at = datetime.now() + timedelta(minutes=5 * dead_letter.retry_count)
+            dead_letter.error_message = str(e)
+            db.commit()
+            return False, f"重试异常: {str(e)}", dead_letter
+
+    @staticmethod
+    def _process_source_data(db: Session, dead_letter: DeadLetter) -> bool:
+        source_data = dead_letter.source_data
+        if not source_data:
+            return False
+
+        source_type = dead_letter.source_type
+        import_source = db.query(ImportSource).filter(ImportSource.id == dead_letter.import_source_id).first()
+        if not import_source:
+            return False
+
+        try:
+            if source_type == "payment_node":
+                node_data = source_data.copy()
+                node_data['contract_id'] = import_source.contract_id
+                node_data['original_line_no'] = dead_letter.original_line_no
+                node_data['original_value'] = source_data.copy()
+                node_create = PaymentNodeCreate(**node_data)
+                PaymentNodeService.create_payment_node(db, node_create, dead_letter.import_source_id)
+                import_source.success_count += 1
+                import_source.failed_count = max(0, import_source.failed_count - 1)
+                db.commit()
+                return True
+        except Exception as e:
+            raise e
+
+        return False
+
+    @staticmethod
+    def mark_resolved(db: Session, dead_letter_id: int, resolved_by: str, resolution_note: str) -> Tuple[bool, str, Optional[DeadLetter]]:
+        dead_letter = db.query(DeadLetter).filter(DeadLetter.id == dead_letter_id).first()
+        if not dead_letter:
+            return False, "死信记录不存在", None
+
+        dead_letter.status = DeadLetterStatus.RESOLVED
+        dead_letter.resolved_at = datetime.now()
+        dead_letter.resolved_by = resolved_by
+        dead_letter.resolution_note = resolution_note
+        db.commit()
+        db.refresh(dead_letter)
+        return True, "已标记为已解决", dead_letter
+
+    @staticmethod
+    def list_dead_letters(
+        db: Session,
+        status: Optional[DeadLetterStatus] = None,
+        import_source_id: Optional[int] = None,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[DeadLetter]:
+        query = db.query(DeadLetter)
+        if status:
+            query = query.filter(DeadLetter.status == status)
+        if import_source_id:
+            query = query.filter(DeadLetter.import_source_id == import_source_id)
+        return query.order_by(DeadLetter.created_at.desc()).offset(skip).limit(limit).all()
+
+
+class ImportService:
+    @staticmethod
+    def _calculate_file_hash(file_path: str) -> str:
+        sha256_hash = hashlib.sha256()
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+        return sha256_hash.hexdigest()
+
+    @staticmethod
+    def check_duplicate(db: Session, file_hash: str) -> Optional[ImportSource]:
+        return db.query(ImportSource).filter(ImportSource.file_hash == file_hash).first()
+
+    @staticmethod
+    def create_import_source(
+        db: Session,
+        file_name: str,
+        file_type: SourceFileType,
+        file_path: str,
+        file_size: int,
+        upload_by: str,
+        contract_id: Optional[int] = None,
+        force_import: bool = False
+    ) -> Tuple[ImportSource, bool, str]:
+        file_hash = ImportService._calculate_file_hash(file_path)
+
+        existing = ImportService.check_duplicate(db, file_hash)
+        if existing and not force_import:
+            return existing, True, f"文件已存在，检测到重复导入。文件哈希: {file_hash[:16]}..."
+
+        import_source = ImportSource(
+            contract_id=contract_id,
+            file_name=file_name,
+            file_type=file_type,
+            file_path=file_path,
+            file_hash=file_hash,
+            file_size=file_size,
+            upload_by=upload_by,
+            import_status=ImportStatus.PENDING
+        )
+        db.add(import_source)
+        db.commit()
+        db.refresh(import_source)
+        return import_source, False, "创建导入源成功"
+
+    @staticmethod
+    def parse_file(
+        file_path: str,
+        file_name: str,
+        file_type: SourceFileType
+    ) -> ParseResult:
+        return ParserFactory.parse_file(file_path, file_name, file_type.value if hasattr(file_type, 'value') else file_type)
+
+    @staticmethod
+    def parse_and_import(
+        db: Session,
+        import_source_id: int,
+        contract_id: int,
+        parsed_data: Optional[Dict[str, Any]] = None
+    ) -> Tuple[bool, List[str], Dict]:
+        import_source = db.query(ImportSource).filter(ImportSource.id == import_source_id).first()
+        if not import_source:
+            return False, ["导入源不存在"], {}
+
+        errors = []
+        success_count = 0
+        failed_count = 0
+        parsed_count = 0
+        results = {"payment_nodes": [], "emails": [], "supplemental_agreements": []}
+
+        try:
+            if parsed_data is None:
+                parse_result = ImportService.parse_file(
+                    import_source.file_path,
+                    import_source.file_name,
+                    import_source.file_type
+                )
+                if not parse_result.success:
+                    errors.extend(parse_result.errors)
+                parsed_data = parse_result.data
+                if parse_result.metadata:
+                    if import_source.parse_result:
+                        import_source.parse_result = {**(import_source.parse_result or {}), "parse_metadata": parse_result.metadata}
+                    else:
+                        import_source.parse_result = {"parse_metadata": parse_result.metadata}
+
+            if parsed_data and isinstance(parsed_data, dict):
+                if 'contract_info' in parsed_data and isinstance(parsed_data['contract_info'], dict):
+                    contract = ContractService.get_contract(db, contract_id)
+                    if contract:
+                        ci = parsed_data['contract_info']
+                        updated = False
+                        if ci.get('contract_name') and not contract.contract_name:
+                            contract.contract_name = ci['contract_name']
+                            updated = True
+                        if ci.get('party_a') and not contract.party_a:
+                            contract.party_a = ci['party_a']
+                            updated = True
+                        if ci.get('party_b') and not contract.party_b:
+                            contract.party_b = ci['party_b']
+                            updated = True
+                        if ci.get('total_amount') and not contract.total_amount:
+                            contract.total_amount = ci['total_amount']
+                            updated = True
+                        if updated:
+                            db.flush()
+
+            if 'payment_nodes' in parsed_data and isinstance(parsed_data['payment_nodes'], list):
+                parsed_count += len(parsed_data['payment_nodes'])
+                for idx, node_data in enumerate(parsed_data['payment_nodes']):
+                    try:
+                        node_data['contract_id'] = contract_id
+                        node_data['original_line_no'] = idx + 1
+                        node_data['original_value'] = node_data.copy()
+                        node_create = PaymentNodeCreate(**node_data)
+                        node = PaymentNodeService.create_payment_node(db, node_create, import_source_id)
+                        results["payment_nodes"].append({"id": node.id, "name": node.node_name})
+                        success_count += 1
+                    except Exception as e:
+                        err_msg = f"付款节点第{idx+1}行: {str(e)}"
+                        errors.append(err_msg)
+                        failed_count += 1
+                        DeadLetterService.create_dead_letter(
+                            db=db,
+                            import_source_id=import_source_id,
+                            source_type="payment_node",
+                            source_data=node_data,
+                            error_message=str(e),
+                            error_type=type(e).__name__,
+                            original_line_no=idx + 1,
+                            stack_trace=traceback.format_exc(),
+                            extra_metadata={"parse_index": idx}
+                        )
+
+            if 'acceptance_emails' in parsed_data and isinstance(parsed_data['acceptance_emails'], list):
+                parsed_count += len(parsed_data['acceptance_emails'])
+                for idx, email_data in enumerate(parsed_data['acceptance_emails']):
+                    try:
+                        email_data['contract_id'] = contract_id
+                        email_data['original_line_no'] = idx + 1
+                        email_data['original_value'] = email_data.copy()
+                        email = AcceptanceEmail(**email_data)
+                        email.source_file_id = import_source_id
+                        db.add(email)
+                        results["emails"].append({"id": email.id, "subject": email.email_subject})
+                        success_count += 1
+                    except Exception as e:
+                        err_msg = f"验收邮件第{idx+1}行: {str(e)}"
+                        errors.append(err_msg)
+                        failed_count += 1
+                        DeadLetterService.create_dead_letter(
+                            db=db,
+                            import_source_id=import_source_id,
+                            source_type="acceptance_email",
+                            source_data=email_data,
+                            error_message=str(e),
+                            error_type=type(e).__name__,
+                            original_line_no=idx + 1,
+                            stack_trace=traceback.format_exc(),
+                            extra_metadata={"parse_index": idx}
+                        )
+
+            if 'supplemental_agreements' in parsed_data and isinstance(parsed_data['supplemental_agreements'], list):
+                parsed_count += len(parsed_data['supplemental_agreements'])
+                for idx, sa_data in enumerate(parsed_data['supplemental_agreements']):
+                    try:
+                        sa_data['contract_id'] = contract_id
+                        sa_data['original_line_no'] = idx + 1
+                        sa_data['original_value'] = sa_data.copy()
+                        sa = SupplementalAgreement(**sa_data)
+                        sa.source_file_id = import_source_id
+                        db.add(sa)
+                        results["supplemental_agreements"].append({"id": sa.id, "name": sa.agreement_name})
+                        success_count += 1
+                    except Exception as e:
+                        err_msg = f"补充协议第{idx+1}行: {str(e)}"
+                        errors.append(err_msg)
+                        failed_count += 1
+                        DeadLetterService.create_dead_letter(
+                            db=db,
+                            import_source_id=import_source_id,
+                            source_type="supplemental_agreement",
+                            source_data=sa_data,
+                            error_message=str(e),
+                            error_type=type(e).__name__,
+                            original_line_no=idx + 1,
+                            stack_trace=traceback.format_exc(),
+                            extra_metadata={"parse_index": idx}
+                        )
+
+            import_source.parsed_count = parsed_count
+            import_source.success_count = success_count
+            import_source.failed_count = failed_count
+            existing_parse_result = import_source.parse_result or {}
+            existing_parse_result.update(results)
+            import_source.parse_result = existing_parse_result
+
+            if failed_count == 0 and parsed_count > 0:
+                import_source.import_status = ImportStatus.SUCCESS
+            elif success_count > 0:
+                import_source.import_status = ImportStatus.PARTIAL
+                import_source.import_error = "; ".join(errors)
+            elif parsed_count == 0:
+                import_source.import_status = ImportStatus.PARTIAL
+                import_source.import_error = "未解析到有效数据，请检查文件格式或解析规则"
+            else:
+                import_source.import_status = ImportStatus.FAILED
+                import_source.import_error = "; ".join(errors)
+
+            AuditService.create_audit_log(
+                db=db,
+                contract_id=contract_id,
+                action="导入解析完成",
+                action_detail=f"导入文件 {import_source.file_name}: 解析{parsed_count}条, 成功{success_count}条, 失败{failed_count}条",
+                operator=import_source.upload_by or "system",
+                operator_role=RoleType.CONTRACT_MANAGER,
+                after_data={"parsed_count": parsed_count, "success_count": success_count, "failed_count": failed_count}
+            )
+
+            db.commit()
+            return failed_count == 0, errors, results
+
+        except Exception as e:
+            db.rollback()
+            import_source.import_status = ImportStatus.FAILED
+            import_source.import_error = f"导入失败: {str(e)}"
+            DeadLetterService.create_dead_letter(
+                db=db,
+                import_source_id=import_source_id,
+                source_type="import_batch",
+                source_data={"error": str(e), "parsed_data_keys": list(parsed_data.keys()) if parsed_data else []},
+                error_message=str(e),
+                error_type=type(e).__name__,
+                stack_trace=traceback.format_exc()
+            )
+            db.commit()
+            return False, [f"导入失败: {str(e)}"], {}
