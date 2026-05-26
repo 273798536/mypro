@@ -435,7 +435,7 @@ export class CompensationService {
     });
 
     if (!record) {
-      throw new Error(`记录 ${recordId} 不存在');
+      throw new Error(`记录 ${recordId} 不存在`);
     }
 
     return record;
