@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>桥梁振型教学器</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <h1>🌉 桥梁振型教学器</h1>
+      <div class="header-actions">
+        <button id="btn-export-screenshot" class="btn btn-secondary">📸 导出截图</button>
+        <button id="btn-export-report" class="btn btn-secondary">📄 导出报告</button>
+        <button id="btn-import-json" class="btn btn-secondary">📥 导入</button>
+        <button id="btn-export-json" class="btn btn-secondary">📤 导出</button>
+        <button id="btn-clear-history" class="btn btn-danger">🗑 清除历史</button>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <aside class="left-panel">
+        <div class="panel-section">
+          <h2>📐 几何参数</h2>
+          <div class="form-group">
+            <label>节点数量: <span id="nodeCountVal">6</span></label>
+            <input type="range" id="nodeCount" min="3" max="20" value="6" step="1">
+          </div>
+          <div class="form-group">
+            <label>桥梁长度 (m): <span id="bridgeLengthVal">20</span></label>
+            <input type="range" id="bridgeLength" min="5" max="100" value="20" step="1">
+          </div>
+          <div class="form-group">
+            <label>梁截面高度 (m): <span id="beamHeightVal">1.0</span></label>
+            <input type="range" id="beamHeight" min="0.2" max="3.0" value="1.0" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>梁截面宽度 (m): <span id="beamWidthVal">0.5</span></label>
+            <input type="range" id="beamWidth" min="0.1" max="2.0" value="0.5" step="0.1">
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>🔧 支点设置</h2>
+          <p class="hint">在3D视图中拖动红色支点，或点击桥梁下方添加支点</p>
+          <div id="support-list" class="support-list"></div>
+          <button id="btn-add-support" class="btn btn-primary">+ 添加支点</button>
+        </div>
+
+        <div class="panel-section">
+          <h2>⚡ 载荷设置</h2>
+          <p class="hint">在3D视图中拖动黄色载荷箭头</p>
+          <div id="load-list" class="load-list"></div>
+          <button id="btn-add-load" class="btn btn-primary">+ 添加载荷</button>
+        </div>
+
+        <div class="panel-section">
+          <h2>🧱 材料参数</h2>
+          <div class="form-group">
+            <label>弹性模量 E (GPa): <span id="elasticModVal">30</span></label>
+            <input type="range" id="elasticMod" min="1" max="200" value="30" step="1">
+          </div>
+          <div class="form-group">
+            <label>密度 ρ (kg/m³): <span id="densityVal">2500</span></label>
+            <input type="range" id="density" min="500" max="8000" value="2500" step="50">
+          </div>
+          <div class="form-group">
+            <label>泊松比 ν: <span id="poissonVal">0.2</span></label>
+            <input type="range" id="poisson" min="0.1" max="0.49" value="0.2" step="0.01">
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>📊 振型参数</h2>
+          <div class="form-group">
+            <label>振型阶数: <span id="modeNumVal">1</span></label>
+            <input type="range" id="modeNum" min="1" max="10" value="1" step="1">
+          </div>
+          <div class="form-group">
+            <label>变形缩放: <span id="scaleVal">1</span></label>
+            <input type="range" id="scale" min="0.1" max="10" value="1" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>动画速度: <span id="animSpeedVal">1</span></label>
+            <input type="range" id="animSpeed" min="0.1" max="5" value="1" step="0.1">
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="showOriginal" checked> 显示原始轮廓
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="autoCompute" checked> 自动计算
+          </label>
+          <button id="btn-compute" class="btn btn-primary">🔍 手动计算振型</button>
+        </div>
+      </aside>
+
+      <main class="center-panel">
+        <div id="canvas-container"></div>
+        <div id="error-overlay" class="error-overlay hidden">
+          <div class="error-content">
+            <h3 id="error-title">⚠️ 警告</h3>
+            <p id="error-message"></p>
+            <button id="btn-dismiss-error" class="btn btn-primary">知道了</button>
+          </div>
+        </div>
+        <div id="info-tooltip" class="info-tooltip hidden"></div>
+      </main>
+
+      <aside class="right-panel">
+        <div class="panel-section">
+          <h2>📋 数值面板</h2>
+          <div id="value-panel" class="value-panel">
+            <div class="value-item">
+              <span class="label">自振频率 f₁:</span>
+              <span class="value" id="freq1">-- Hz</span>
+            </div>
+            <div class="value-item">
+              <span class="label">自振频率 f₂:</span>
+              <span class="value" id="freq2">-- Hz</span>
+            </div>
+            <div class="value-item">
+              <span class="label">自振频率 f₃:</span>
+              <span class="value" id="freq3">-- Hz</span>
+            </div>
+            <div class="value-item">
+              <span class="label">当前阶频率:</span>
+              <span class="value" id="currentFreq">-- Hz</span>
+            </div>
+            <div class="value-item">
+              <span class="label">最大位移:</span>
+              <span class="value" id="maxDisplacement">-- m</span>
+            </div>
+            <div class="value-item">
+              <span class="label">最大弯矩:</span>
+              <span class="value" id="maxMoment">-- N·m</span>
+            </div>
+            <div class="value-item">
+              <span class="label">最大应力:</span>
+              <span class="value" id="maxStress">-- MPa</span>
+            </div>
+            <div class="value-item">
+              <span class="label">总质量:</span>
+              <span class="value" id="totalMass">-- kg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>📜 历史记录</h2>
+          <div id="history-list" class="history-list"></div>
+        </div>
+
+        <div class="panel-section">
+          <h2>📖 振型说明</h2>
+          <div id="mode-description" class="mode-description">
+            <p>选择振型阶数以查看说明</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
