@@ -1,0 +1,4 @@
+﻿investor_id,investor_name,total_contracts,total_principal_expected,total_principal_actual,total_interest_actual,total_disputed,has_alias,merged_into
+I001,张三,1,100000.0,100000.0,5000.0,0.0,False,
+I002,李四,1,50000.0,50000.0,2750.0,2750.0,True,
+I003,王五,1,80000.0,0.0,0.0,64200.0,False,

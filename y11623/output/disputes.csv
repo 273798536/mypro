@@ -1,0 +1,6 @@
+﻿dispute_id,related_entity_id,related_entity_type,dispute_type,description,evidence,status,created_at,resolved_at,resolution_notes
+D0001,I002_OLD,investor,name_change,投资人[李老四](ID=I002_OLD)与[李四](ID=I002)身份证号一致(320101197803155678)，疑似同一人更名,"['身份证号: 320101197803155678', '涉及姓名: 李四, 李老四']",open,2026-05-26T19:42:05,,建议将李老四归并到李四(I002)
+D0002,V003,voucher,duplicate_voucher,凭证[V003]与[V002]内容hash一致(877cf0590b7c234f)，疑似重复扫描/重复录入,"['重复凭证: V003 (vouchers/C002_receipt_B.jpg)', '原始凭证: V002 (vouchers/C002_receipt_A.jpg)', '内容hash: 877cf0590b7c234f']",open,2026-05-26T19:42:05,,建议标记V003为重复，保留V002作为有效凭证
+D0003,C002,contract,interest_change,合同[C002]载明利率6.00%，应兑付利息3000.00元，实际兑付2750.00元，差额-250.00元，实际利率5.50%,"['合同利率: 6.00%', '应兑付利息: 3000.00', '实际兑付利息: 2750.00', '差额: -250.00', '实际利率: 5.50%']",open,2026-05-26T19:42:05,,需确认是否存在利率调整协议或口头约定
+D0004,R006,repayment,missing_voucher,兑付记录[R006]关联的凭证[V004]状态为无效（文件丢失/引用异常）,"['兑付ID: R006', '凭证ID: V004', '凭证文件引用: vouchers/MISSING_C003.jpg', '凭证备注: 文件不存在，引用丢失']",open,2026-05-26T19:42:05,,需补充有效凭证文件或重新上传
+D0005,R007,repayment,missing_voucher,兑付记录[R007]关联的凭证[V004]状态为无效（文件丢失/引用异常）,"['兑付ID: R007', '凭证ID: V004', '凭证文件引用: vouchers/MISSING_C003.jpg', '凭证备注: 文件不存在，引用丢失']",open,2026-05-26T19:42:05,,需补充有效凭证文件或重新上传

@@ -1,0 +1,5 @@
+﻿voucher_id,contract_id,file_ref,content_hash,upload_date,voucher_type,status,claimed_by,duplicate_of,source,notes
+V001,C001,vouchers/C001_receipt_20200601.jpg,d40bca338483e14c,2020-06-01,receipt,valid,,,bank_receipt_scan,
+V002,C002,vouchers/C002_receipt_A.jpg,877cf0590b7c234f,2020-03-05,receipt,valid,,,investor_submit,
+V003,C002,vouchers/C002_receipt_B.jpg,877cf0590b7c234f,2020-03-06,receipt,duplicate,,V002,investor_submit,同一凭证二次上传，疑似重复
+V004,C003,vouchers/MISSING_C003.jpg,8e33f5f309a7264b,2020-09-10,receipt,invalid,,,unknown,文件不存在，引用丢失

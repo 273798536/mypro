@@ -1,0 +1,4 @@
+﻿contract_id,investor,investor_id,principal_expected,principal_actual,principal_diff,principal_status,interest_expected,interest_actual,interest_diff,interest_status,contract_rate
+C001,张三,I001,100000.0,100000.0,0.0,ok,5000.0,5000.0,0.0,ok,5.00%
+C002,李四,I002,50000.0,50000.0,0.0,ok,3000.0,2750.0,-250.0,mismatch,6.00%
+C003,王五,I003,80000.0,0.0,-80000.0,mismatch,5600.0,0.0,-5600.0,mismatch,7.00%

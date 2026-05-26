@@ -1,0 +1,8 @@
+﻿repayment_id,contract_id,amount,repayment_type,date,voucher_id,status,source,notes
+R001,C001,100000.0,principal,2020-06-01,V001,confirmed,bank_statement_20200601.csv,本金全额兑付
+R002,C001,5000.0,interest,2020-06-01,V001,confirmed,bank_statement_20200601.csv,利息：100000 × 5% = 5000
+R003,C002,50000.0,principal,2020-03-01,V002,confirmed,bank_statement_20200301.csv,本金全额
+R004,C002,2750.0,interest,2020-03-01,V002,confirmed,bank_statement_20200301.csv,利息：50000 × 5.5% = 2750，与合同6%不符
+R005,C002,2750.0,interest,2020-03-02,V003,disputed,manual_entry_20200302.csv,重复录入，同凭证不同扫描件
+R006,C003,60000.0,principal,2020-09-01,V004,disputed,partial_statement_20200901.csv,部分兑付，与合同本金差额20000元，待确认
+R007,C003,4200.0,interest,2020-09-01,V004,disputed,partial_statement_20200901.csv,利息按全额80000×7%=5600计算，但只兑付4200

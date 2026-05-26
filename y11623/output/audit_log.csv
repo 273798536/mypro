@@ -1,0 +1,4 @@
+﻿timestamp,entity_type,entity_id,field,old_value,new_value,operator,reason
+2026-05-26T19:42:05,investor,I002_OLD,merged_into,null,I002,system,身份证号匹配，检测到身份重复
+2026-05-26T19:42:05,voucher,V003,status,valid,duplicate,system,内容hash与V002一致，检测到重复凭证
+2026-05-26T19:42:05,repayment,R005,status,disputed,disputed,system,关联凭证V003被标记为重复
