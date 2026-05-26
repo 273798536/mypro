@@ -346,30 +346,61 @@ def run_full_workflow(data_dir):
         click.echo(f"\n步骤3: 回放波次 {test_wave}")
         click.echo("-" * 40)
         url = f"{BASE_URL}/api/replay/wave/{test_wave}"
-        params = {'operator': 'demo', 'reason': '工作流演示'}
-        response = requests.post(url, params=params)
+        payload = {'operator': 'demo', 'reason': '工作流演示-缺货拆单回放追踪库存变化', 'include_inventory': True}
+        response = requests.post(url, json=payload)
         result = response.json()
+        if result.get('code') != 0:
+            click.echo(f"回放失败: {result.get('message', '未知错误')}")
+            return
         click.echo(f"任务ID: {result['data']['task_id']}")
         
-        time.sleep(2)
+        time.sleep(3)
         task_resp = requests.get(f"{BASE_URL}/api/tasks/{result['data']['task_id']}")
         task_data = task_resp.json()
+        if task_data.get('code') != 0:
+            click.echo(f"获取任务状态失败: {task_data.get('message', '未知错误')}")
+            return
         click.echo(f"任务状态: {task_data['data']['status']}")
         
-        click.echo(f"\n步骤4: 查看回放历史")
-        click.echo("-" * 40)
-        url = f"{BASE_URL}/api/replay/history/{test_wave}"
-        response = requests.get(url)
-        result = response.json()
-        click.echo(f"回放记录数: {len(result['data'])}")
+        if task_data['data']['status'] == 'completed' and task_data['data'].get('result'):
+            task_result = json.loads(task_data['data']['result'])
+            click.echo(f"回放ID: {task_result.get('replay_id', 'N/A')}")
+            click.echo(f"步骤数: {len(task_result.get('steps', []))}")
+            click.echo(f"库存快照数: {len(task_result.get('inventory_snapshots', []))}")
         
-        click.echo(f"\n步骤5: 导出报表")
+        click.echo(f"\n步骤4: 查看回放详情")
         click.echo("-" * 40)
-        url = f"{BASE_URL}/api/export/wave_orders"
+        if task_data['data']['status'] == 'completed' and task_data['data'].get('result'):
+            task_result = json.loads(task_data['data']['result'])
+            replay_id = task_result.get('replay_id')
+            if replay_id:
+                url = f"{BASE_URL}/api/replay/detail/{replay_id}"
+                response = requests.get(url)
+                detail = response.json()
+                if detail.get('code') == 0:
+                    click.echo(f"回放原因: {detail['data'].get('reason', 'N/A')}")
+                    click.echo(f"步骤差异数: {len(detail['data'].get('step_diffs', []))}")
+                    click.echo(f"库存快照数: {len(detail['data'].get('inventory_snapshots', []))}")
+        
+        click.echo(f"\n步骤5: 导出完整回放详情")
+        click.echo("-" * 40)
+        url = f"{BASE_URL}/api/export/full_replay_detail"
         params = {'wave_no': test_wave}
         response = requests.post(url, params=params)
         result = response.json()
+        if result.get('code') != 0:
+            click.echo(f"导出失败: {result.get('message', '未知错误')}")
+            return
         click.echo(f"导出任务ID: {result['data']['task_id']}")
+        
+        time.sleep(3)
+        export_task_resp = requests.get(f"{BASE_URL}/api/tasks/{result['data']['task_id']}")
+        export_task_data = export_task_resp.json()
+        if export_task_data.get('code') == 0 and export_task_data['data'].get('result'):
+            export_result = json.loads(export_task_data['data']['result'])
+            click.echo(f"导出文件名: {export_result.get('filename', 'N/A')}")
+            click.echo(f"导出工作表: {', '.join(export_result.get('sheets', []))}")
+            click.echo(f"导出行数: {export_result.get('row_count', 0)}")
     
     click.echo("\n" + "=" * 60)
     click.echo("工作流演示完成！")
