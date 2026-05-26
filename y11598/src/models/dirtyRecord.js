@@ -22,12 +22,39 @@ const HANDLE_STATUSES = {
   IGNORED: 'ignored',
   FIXED: 'fixed',
   CONFIRMED: 'confirmed',
+  RESOLVED: 'resolved',
+  REOPENED: 'reopened',
 };
 
 function createDirtyRecord(record) {
   const db = getDb();
   const id = generateId();
   const now = new Date().toISOString();
+
+  const existing = db.prepare(`
+    SELECT id, status FROM dirty_records
+    WHERE source_table = ? AND source_id = ? AND dirty_type = ? AND field_name IS ?
+    ORDER BY created_at DESC LIMIT 1
+  `).get(
+    record.source_table,
+    record.source_id,
+    record.dirty_type,
+    record.field_name || null
+  );
+
+  if (existing) {
+    if (existing.status === HANDLE_STATUSES.PENDING) {
+      return existing.id;
+    }
+    if (existing.status === HANDLE_STATUSES.RESOLVED) {
+      db.prepare(`
+        UPDATE dirty_records
+        SET status = ?, updated_at = ?
+        WHERE id = ?
+      `).run(HANDLE_STATUSES.REOPENED, now, existing.id);
+      return existing.id;
+    }
+  }
 
   const stmt = db.prepare(`
     INSERT INTO dirty_records (
@@ -162,6 +189,58 @@ function getDirtyRecordStats(filters = {}) {
   return results;
 }
 
+function resetPendingDirtyRecords(sourceTable = null) {
+  const db = getDb();
+  const now = new Date().toISOString();
+
+  let sql = `
+    UPDATE dirty_records
+    SET status = ?, updated_at = ?
+    WHERE status = ?
+  `;
+  const params = [HANDLE_STATUSES.RESOLVED, now, HANDLE_STATUSES.PENDING];
+
+  if (sourceTable) {
+    sql += ' AND source_table = ?';
+    params.push(sourceTable);
+  }
+
+  const stmt = db.prepare(sql);
+  const result = stmt.run(...params);
+
+  return { updated: result.changes };
+}
+
+function closeResolvedDirtyRecords(sourceTable, sourceId) {
+  const db = getDb();
+  const now = new Date().toISOString();
+
+  const stmt = db.prepare(`
+    UPDATE dirty_records
+    SET status = ?, updated_at = ?
+    WHERE source_table = ? AND source_id = ? AND status = ?
+  `);
+
+  const result = stmt.run(
+    HANDLE_STATUSES.RESOLVED,
+    now,
+    sourceTable,
+    sourceId,
+    HANDLE_STATUSES.PENDING
+  );
+
+  return { updated: result.changes };
+}
+
+function findExistingDirtyRecord(sourceTable, sourceId, dirtyType, fieldName = null) {
+  const db = getDb();
+  return db.prepare(`
+    SELECT * FROM dirty_records
+    WHERE source_table = ? AND source_id = ? AND dirty_type = ? AND field_name IS ?
+    ORDER BY created_at DESC LIMIT 1
+  `).get(sourceTable, sourceId, dirtyType, fieldName);
+}
+
 module.exports = {
   DIRTY_TYPES,
   SEVERITY_LEVELS,
@@ -172,4 +251,7 @@ module.exports = {
   getDirtyRecords,
   handleDirtyRecord,
   getDirtyRecordStats,
+  resetPendingDirtyRecords,
+  closeResolvedDirtyRecords,
+  findExistingDirtyRecord,
 };

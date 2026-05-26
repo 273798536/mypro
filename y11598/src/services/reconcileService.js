@@ -1,5 +1,12 @@
 const { getDb, transaction } = require('../models/db');
-const { DIRTY_TYPES, SEVERITY_LEVELS, createDirtyRecord, batchCreateDirtyRecords } = require('../models/dirtyRecord');
+const {
+  DIRTY_TYPES,
+  SEVERITY_LEVELS,
+  HANDLE_STATUSES,
+  createDirtyRecord,
+  batchCreateDirtyRecords,
+  resetPendingDirtyRecords,
+} = require('../models/dirtyRecord');
 const { getSupplierStatements } = require('../models/supplierStatement');
 const { getAgentQuotes, getQuoteStatsByKbId } = require('../models/agentQuote');
 const { getChangeOrders } = require('../models/changeOrder');
@@ -83,16 +90,18 @@ function checkNameChange(records, idField, nameField, sourceTable) {
 
 function reconcileStatementsWithQuotes(filters = {}) {
   const startTime = Date.now();
-  const dirtyRecords = [];
+  const detectedDirtyRecords = [];
+
+  const resetResult = resetPendingDirtyRecords('supplier_statements');
 
   const statements = getSupplierStatements(filters);
 
   for (const stmt of statements) {
     const requiredFields = ['statement_no', 'supplier_id', 'kb_article_id', 'quantity', 'amount', 'statement_date'];
-    dirtyRecords.push(...checkMissingFields(stmt, requiredFields, 'supplier_statements', stmt.id));
+    detectedDirtyRecords.push(...checkMissingFields(stmt, requiredFields, 'supplier_statements', stmt.id));
 
     if (stmt.period_start && stmt.period_end) {
-      dirtyRecords.push(...checkCrossDate(
+      detectedDirtyRecords.push(...checkCrossDate(
         stmt,
         'statement_date',
         stmt.period_start,
@@ -110,7 +119,7 @@ function reconcileStatementsWithQuotes(filters = {}) {
 
       if (quoteStats) {
         if (stmt.quantity !== quoteStats.quote_count) {
-          dirtyRecords.push({
+          detectedDirtyRecords.push({
             source_table: 'supplier_statements',
             source_id: stmt.id,
             dirty_type: DIRTY_TYPES.QUANTITY_CONFLICT,
@@ -125,7 +134,7 @@ function reconcileStatementsWithQuotes(filters = {}) {
 
         const expectedAmount = quoteStats.quote_count * 10;
         if (Math.abs(stmt.amount - expectedAmount) > 0.01) {
-          dirtyRecords.push({
+          detectedDirtyRecords.push({
             source_table: 'supplier_statements',
             source_id: stmt.id,
             dirty_type: DIRTY_TYPES.AMOUNT_CONFLICT,
@@ -142,14 +151,14 @@ function reconcileStatementsWithQuotes(filters = {}) {
   }
 
   if (statements.length > 0) {
-    dirtyRecords.push(...checkNameChange(statements, 'kb_article_id', 'kb_article_title', 'supplier_statements'));
-    dirtyRecords.push(...checkNameChange(statements, 'supplier_id', 'supplier_name', 'supplier_statements'));
+    detectedDirtyRecords.push(...checkNameChange(statements, 'kb_article_id', 'kb_article_title', 'supplier_statements'));
+    detectedDirtyRecords.push(...checkNameChange(statements, 'supplier_id', 'supplier_name', 'supplier_statements'));
   }
 
   const durationMs = Date.now() - startTime;
 
-  if (dirtyRecords.length > 0) {
-    batchCreateDirtyRecords(dirtyRecords);
+  if (detectedDirtyRecords.length > 0) {
+    batchCreateDirtyRecords(detectedDirtyRecords);
   }
 
   createAuditTrail({
@@ -157,33 +166,36 @@ function reconcileStatementsWithQuotes(filters = {}) {
     action_subtype: 'statements_with_quotes',
     operator: 'system',
     status: ACTION_STATUSES.SUCCESS,
-    detail: `对账完成，检测到 ${dirtyRecords.length} 条脏记录`,
+    detail: `对账完成，重置旧pending: ${resetResult.updated}条，检测到新脏记录: ${detectedDirtyRecords.length}条`,
     record_count: statements.length,
     duration_ms: durationMs,
   });
 
   return {
     total_records: statements.length,
-    dirty_records: dirtyRecords.length,
-    records: dirtyRecords,
+    reset_pending: resetResult.updated,
+    new_dirty_records: detectedDirtyRecords.length,
+    records: detectedDirtyRecords,
   };
 }
 
 function reconcileChangeOrders(filters = {}) {
   const startTime = Date.now();
-  const dirtyRecords = [];
+  const detectedDirtyRecords = [];
+
+  const resetResult = resetPendingDirtyRecords('change_orders');
 
   const orders = getChangeOrders(filters);
 
   for (const order of orders) {
     const requiredFields = ['order_no', 'title', 'submitter', 'submit_time'];
-    dirtyRecords.push(...checkMissingFields(order, requiredFields, 'change_orders', order.id));
+    detectedDirtyRecords.push(...checkMissingFields(order, requiredFields, 'change_orders', order.id));
   }
 
   const durationMs = Date.now() - startTime;
 
-  if (dirtyRecords.length > 0) {
-    batchCreateDirtyRecords(dirtyRecords);
+  if (detectedDirtyRecords.length > 0) {
+    batchCreateDirtyRecords(detectedDirtyRecords);
   }
 
   createAuditTrail({
@@ -191,15 +203,16 @@ function reconcileChangeOrders(filters = {}) {
     action_subtype: 'change_orders',
     operator: 'system',
     status: ACTION_STATUSES.SUCCESS,
-    detail: `变更单对账完成，检测到 ${dirtyRecords.length} 条脏记录`,
+    detail: `变更单对账完成，重置旧pending: ${resetResult.updated}条，检测到新脏记录: ${detectedDirtyRecords.length}条`,
     record_count: orders.length,
     duration_ms: durationMs,
   });
 
   return {
     total_records: orders.length,
-    dirty_records: dirtyRecords.length,
-    records: dirtyRecords,
+    reset_pending: resetResult.updated,
+    new_dirty_records: detectedDirtyRecords.length,
+    records: detectedDirtyRecords,
   };
 }
 
