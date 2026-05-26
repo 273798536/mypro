@@ -1,0 +1,110 @@
+[
+  {
+    "id": "level-001",
+    "name": "初级仓管员考核",
+    "difficulty": "easy",
+    "description": "学习基础危化品仓储知识，掌握常见化学品的摆放规则",
+    "targetScore": 400,
+    "timeLimit": 300,
+    "shelf": {
+      "id": "shelf-001",
+      "name": "标准仓储货架",
+      "rows": 3,
+      "cols": 4,
+      "baseTemperature": 20,
+      "baseHumidity": 50,
+      "slots": [
+        {"id": "slot-0-0", "row": 0, "col": 0, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-0-1", "row": 0, "col": 1, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-0-2", "row": 0, "col": 2, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-0-3", "row": 0, "col": 3, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-1-0", "row": 1, "col": 0, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-1-1", "row": 1, "col": 1, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-1-2", "row": 1, "col": 2, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-1-3", "row": 1, "col": 3, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-2-0", "row": 2, "col": 0, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-2-1", "row": 2, "col": 1, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-2-2", "row": 2, "col": 2, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []},
+        {"id": "slot-2-3", "row": 2, "col": 3, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": []}
+      ]
+    },
+    "availableChemicals": ["chem-001", "chem-004", "chem-006", "chem-009", "chem-010"],
+    "requiredPlacements": 4
+  },
+  {
+    "id": "level-002",
+    "name": "中级仓管员考核",
+    "difficulty": "medium",
+    "description": "掌握复杂危化品配伍规则，处理多品种混放场景",
+    "targetScore": 700,
+    "timeLimit": 420,
+    "shelf": {
+      "id": "shelf-002",
+      "name": "分类仓储货架",
+      "rows": 4,
+      "cols": 4,
+      "baseTemperature": 20,
+      "baseHumidity": 50,
+      "slots": [
+        {"id": "slot-0-0", "row": 0, "col": 0, "chemicalId": null, "temperature": 5, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["refrigerated", "explosive"]},
+        {"id": "slot-0-1", "row": 0, "col": 1, "chemicalId": null, "temperature": 5, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["refrigerated", "explosive"]},
+        {"id": "slot-0-2", "row": 0, "col": 2, "chemicalId": null, "temperature": 5, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["refrigerated", "explosive"]},
+        {"id": "slot-0-3", "row": 0, "col": 3, "chemicalId": null, "temperature": 5, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["refrigerated", "explosive"]},
+        {"id": "slot-1-0", "row": 1, "col": 0, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["flammable"]},
+        {"id": "slot-1-1", "row": 1, "col": 1, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["flammable"]},
+        {"id": "slot-1-2", "row": 1, "col": 2, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["flammable"]},
+        {"id": "slot-1-3", "row": 1, "col": 3, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["flammable"]},
+        {"id": "slot-2-0", "row": 2, "col": 0, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["corrosive", "oxidizer"]},
+        {"id": "slot-2-1", "row": 2, "col": 1, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["corrosive", "oxidizer"]},
+        {"id": "slot-2-2", "row": 2, "col": 2, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["corrosive", "oxidizer"]},
+        {"id": "slot-2-3", "row": 2, "col": 3, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["corrosive", "oxidizer"]},
+        {"id": "slot-3-0", "row": 3, "col": 0, "chemicalId": null, "temperature": 20, "humidity": 45, "restrictedCategories": [], "allowedCategories": ["toxic", "compressed"]},
+        {"id": "slot-3-1", "row": 3, "col": 1, "chemicalId": null, "temperature": 20, "humidity": 45, "restrictedCategories": [], "allowedCategories": ["toxic", "compressed"]},
+        {"id": "slot-3-2", "row": 3, "col": 2, "chemicalId": null, "temperature": 20, "humidity": 45, "restrictedCategories": [], "allowedCategories": ["toxic", "compressed"]},
+        {"id": "slot-3-3", "row": 3, "col": 3, "chemicalId": null, "temperature": 20, "humidity": 45, "restrictedCategories": [], "allowedCategories": ["toxic", "compressed"]}
+      ]
+    },
+    "availableChemicals": ["chem-001", "chem-002", "chem-004", "chem-005", "chem-006", "chem-009", "chem-010", "chem-011"],
+    "requiredPlacements": 6
+  },
+  {
+    "id": "level-003",
+    "name": "高级仓管员考核",
+    "difficulty": "hard",
+    "description": "处理剧毒、爆炸品等高风险化学品，严格执行隔离距离要求",
+    "targetScore": 1000,
+    "timeLimit": 600,
+    "shelf": {
+      "id": "shelf-003",
+      "name": "高危化学品专用货架",
+      "rows": 4,
+      "cols": 5,
+      "baseTemperature": 20,
+      "baseHumidity": 50,
+      "slots": [
+        {"id": "slot-0-0", "row": 0, "col": 0, "chemicalId": null, "temperature": 10, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["explosive"]},
+        {"id": "slot-0-1", "row": 0, "col": 1, "chemicalId": null, "temperature": 10, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["explosive"]},
+        {"id": "slot-0-2", "row": 0, "col": 2, "chemicalId": null, "temperature": 10, "humidity": 50, "restrictedCategories": ["explosive", "toxic"], "allowedCategories": []},
+        {"id": "slot-0-3", "row": 0, "col": 3, "chemicalId": null, "temperature": 10, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["toxic"]},
+        {"id": "slot-0-4", "row": 0, "col": 4, "chemicalId": null, "temperature": 10, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["toxic"]},
+        {"id": "slot-1-0", "row": 1, "col": 0, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["flammable"]},
+        {"id": "slot-1-1", "row": 1, "col": 1, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["flammable"]},
+        {"id": "slot-1-2", "row": 1, "col": 2, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": ["flammable", "oxidizer"], "allowedCategories": []},
+        {"id": "slot-1-3", "row": 1, "col": 3, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["oxidizer"]},
+        {"id": "slot-1-4", "row": 1, "col": 4, "chemicalId": null, "temperature": 20, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["oxidizer"]},
+        {"id": "slot-2-0", "row": 2, "col": 0, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["corrosive"]},
+        {"id": "slot-2-1", "row": 2, "col": 1, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["corrosive"]},
+        {"id": "slot-2-2", "row": 2, "col": 2, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": ["corrosive", "compressed"], "allowedCategories": []},
+        {"id": "slot-2-3", "row": 2, "col": 3, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["compressed"]},
+        {"id": "slot-2-4", "row": 2, "col": 4, "chemicalId": null, "temperature": 25, "humidity": 50, "restrictedCategories": [], "allowedCategories": ["compressed"]},
+        {"id": "slot-3-0", "row": 3, "col": 0, "chemicalId": null, "temperature": -20, "humidity": 30, "restrictedCategories": [], "allowedCategories": ["refrigerated"]},
+        {"id": "slot-3-1", "row": 3, "col": 1, "chemicalId": null, "temperature": -20, "humidity": 30, "restrictedCategories": [], "allowedCategories": ["refrigerated"]},
+        {"id": "slot-3-2", "row": 3, "col": 2, "chemicalId": null, "temperature": -20, "humidity": 30, "restrictedCategories": [], "allowedCategories": ["refrigerated"]},
+        {"id": "slot-3-3", "row": 3, "col": 3, "chemicalId": null, "temperature": -20, "humidity": 30, "restrictedCategories": [], "allowedCategories": ["refrigerated"]},
+        {"id": "slot-3-4", "row": 3, "col": 4, "chemicalId": null, "temperature": -20, "humidity": 30, "restrictedCategories": [], "allowedCategories": ["refrigerated"]}
+      ]
+    },
+    "availableChemicals": ["chem-001", "chem-002", "chem-003", "chem-004", "chem-005", "chem-006", "chem-007", "chem-008", "chem-009", "chem-010", "chem-011", "chem-012"],
+    "requiredPlacements": 8
+  }
+]
