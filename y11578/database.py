@@ -12,6 +12,18 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+class BatchInfo(Base):
+    __tablename__ = "batch_info"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    batch_no = Column(String, unique=True, index=True)
+    is_frozen = Column(Boolean, default=False)
+    freeze_reason = Column(String)
+    frozen_by = Column(String)
+    frozen_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class DeliveryOrder(Base):
     __tablename__ = "delivery_orders"
     
@@ -35,6 +47,11 @@ class DeliveryOrder(Base):
     is_fixed = Column(Boolean, default=False)
     fixed_by = Column(String)
     fixed_at = Column(DateTime)
+    is_withdrawn = Column(Boolean, default=False)
+    withdraw_reason = Column(String)
+    withdrawn_by = Column(String)
+    withdrawn_at = Column(DateTime)
+    import_key = Column(String, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -63,6 +80,11 @@ class RepairRecord(Base):
     is_fixed = Column(Boolean, default=False)
     fixed_by = Column(String)
     fixed_at = Column(DateTime)
+    is_withdrawn = Column(Boolean, default=False)
+    withdraw_reason = Column(String)
+    withdrawn_by = Column(String)
+    withdrawn_at = Column(DateTime)
+    import_key = Column(String, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -90,6 +112,11 @@ class DeductionDetail(Base):
     is_fixed = Column(Boolean, default=False)
     fixed_by = Column(String)
     fixed_at = Column(DateTime)
+    is_withdrawn = Column(Boolean, default=False)
+    withdraw_reason = Column(String)
+    withdrawn_by = Column(String)
+    withdrawn_at = Column(DateTime)
+    import_key = Column(String, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -113,8 +140,24 @@ class RefundFlow(Base):
     is_fixed = Column(Boolean, default=False)
     fixed_by = Column(String)
     fixed_at = Column(DateTime)
+    is_withdrawn = Column(Boolean, default=False)
+    withdraw_reason = Column(String)
+    withdrawn_by = Column(String)
+    withdrawn_at = Column(DateTime)
+    import_key = Column(String, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class CompensationRecord(Base):
+    __tablename__ = "compensation_records"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    compensation_no = Column(String, index=True)
+    batch_no = Column(String, index=True)
+    amount = Column(Float)
+    reason = Column(String)
+    operator = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class ReconciliationResult(Base):
     __tablename__ = "reconciliation_results"
@@ -130,6 +173,7 @@ class ReconciliationResult(Base):
     total_return_qty = Column(Float)
     total_deduction_amount = Column(Float)
     total_refund_amount = Column(Float)
+    total_compensation_amount = Column(Float)
     net_settlement = Column(Float)
     has_discrepancy = Column(Boolean, default=False)
     discrepancy_type = Column(String)

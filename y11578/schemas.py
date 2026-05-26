@@ -3,8 +3,8 @@ from typing import Optional, List
 from datetime import datetime
 
 class DeliveryOrderCreate(BaseModel):
-    order_no: str
-    batch_no: str
+    order_no: Optional[str] = None
+    batch_no: Optional[str] = None
     product_name: Optional[str] = None
     product_code: Optional[str] = None
     quantity: Optional[float] = None
@@ -16,8 +16,8 @@ class DeliveryOrderCreate(BaseModel):
     remark: Optional[str] = None
 
 class RepairRecordCreate(BaseModel):
-    repair_no: str
-    batch_no: str
+    repair_no: Optional[str] = None
+    batch_no: Optional[str] = None
     product_name: Optional[str] = None
     product_code: Optional[str] = None
     repair_type: Optional[str] = None
@@ -31,8 +31,8 @@ class RepairRecordCreate(BaseModel):
     responsible_party: Optional[str] = None
 
 class DeductionDetailCreate(BaseModel):
-    deduction_no: str
-    batch_no: str
+    deduction_no: Optional[str] = None
+    batch_no: Optional[str] = None
     product_name: Optional[str] = None
     product_code: Optional[str] = None
     deduction_type: Optional[str] = None
@@ -45,8 +45,8 @@ class DeductionDetailCreate(BaseModel):
     related_order: Optional[str] = None
 
 class RefundFlowCreate(BaseModel):
-    refund_no: str
-    batch_no: str
+    refund_no: Optional[str] = None
+    batch_no: Optional[str] = None
     related_deduction: Optional[str] = None
     amount: Optional[float] = None
     refund_date: Optional[str] = None
@@ -69,3 +69,20 @@ class ReconciliationRequest(BaseModel):
 class ExportRequest(BaseModel):
     recon_no: str
     format: str = "csv"
+
+class BatchFreezeRequest(BaseModel):
+    batch_no: str
+    freeze_reason: str
+    operator: str = "system"
+
+class RecordWithdrawRequest(BaseModel):
+    id: int
+    table_name: str
+    withdraw_reason: str
+    operator: str = "system"
+
+class CompensationRequest(BaseModel):
+    batch_no: str
+    amount: float
+    reason: str
+    operator: str = "system"
