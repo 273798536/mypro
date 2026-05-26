@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>医院氧气接口抢占 · 呼吸科调度演练</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+  <!-- ====== 顶部栏 ====== -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🫁</span>
+      <div>
+        <h1>医院氧气接口抢占</h1>
+        <p class="subtitle">呼吸科床位与氧气接口调度演练</p>
+      </div>
+    </div>
+    <div class="hud">
+      <div class="hud-item" id="hudTime">
+        <span class="hud-label">游戏时间</span>
+        <span class="hud-value" id="timeValue">00:00</span>
+      </div>
+      <div class="hud-item" id="hudScore">
+        <span class="hud-label">当前得分</span>
+        <span class="hud-value" id="scoreValue">0</span>
+      </div>
+      <div class="hud-item" id="hudLevel">
+        <span class="hud-label">关卡</span>
+        <span class="hud-value" id="levelValue">关卡 1</span>
+      </div>
+      <div class="hud-item" id="hudEvents">
+        <span class="hud-label">待处理事件</span>
+        <span class="hud-value" id="eventsValue">0</span>
+      </div>
+      <div class="hud-item" id="hudErrors">
+        <span class="hud-label">已发生错误</span>
+        <span class="hud-value error" id="errorsValue">0</span>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnStart" class="btn btn-primary">▶ 开始</button>
+      <button id="btnPause" class="btn btn-secondary" disabled>⏸ 暂停</button>
+      <button id="btnReset" class="btn btn-ghost">↻ 重置</button>
+      <select id="levelSelect" class="level-select">
+        <option value="0">关卡 1 · 基础调度</option>
+        <option value="1">关卡 2 · 资源竞争</option>
+        <option value="2">关卡 3 · 急诊危机</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- ====== 主体区域 ====== -->
+  <main class="main">
+    <!-- 左侧：床位与氧气接口 -->
+    <section class="panel panel-left">
+      <div class="panel-header">
+        <h2>床位与氧气接口</h2>
+        <div class="legend">
+          <span class="dot dot-free"></span>空闲
+          <span class="dot dot-occupied"></span>占用
+          <span class="dot dot-locked"></span>锁定
+          <span class="dot dot-error"></span>异常
+        </div>
+      </div>
+      <div class="beds-grid" id="bedsGrid"></div>
+      <div class="panel-header" style="margin-top:16px;">
+        <h2>共享设备</h2>
+      </div>
+      <div class="equipment-list" id="equipmentList"></div>
+    </section>
+
+    <!-- 中间：事件队列 -->
+    <section class="panel panel-center">
+      <div class="panel-header">
+        <h2>事件队列</h2>
+        <div class="queue-controls">
+          <button class="btn btn-tiny" id="btnFilterAll">全部</button>
+          <button class="btn btn-tiny" id="btnFilterPending">待处理</button>
+          <button class="btn btn-tiny" id="btnFilterError">错误</button>
+        </div>
+      </div>
+      <div class="event-queue" id="eventQueue"></div>
+
+      <div class="panel-header" style="margin-top:16px;">
+        <h2>当前患者</h2>
+      </div>
+      <div class="patients-table-wrapper">
+        <table class="patients-table" id="patientsTable">
+          <thead>
+            <tr>
+              <th>编号</th><th>姓名</th><th>等级</th><th>床位</th><th>氧气接口</th><th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="patientsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 右侧：操作与反馈 -->
+    <section class="panel panel-right">
+      <div class="panel-header">
+        <h2>操作面板</h2>
+      </div>
+      <div class="action-panel" id="actionPanel">
+        <p class="hint">请从事件队列中选择一个事件以查看可执行操作</p>
+      </div>
+
+      <div class="panel-header" style="margin-top:16px;">
+        <h2>实时反馈</h2>
+      </div>
+      <div class="feedback-panel" id="feedbackPanel"></div>
+
+      <div class="panel-header" style="margin-top:16px;">
+        <h2>回放日志</h2>
+      </div>
+      <div class="replay-panel" id="replayPanel">
+        <p class="hint">游戏开始后所有操作将在此记录</p>
+      </div>
+
+      <div class="export-area">
+        <button class="btn btn-ghost" id="btnExport">📄 导出占用报告</button>
+        <button class="btn btn-ghost" id="btnViewReplay">📼 查看回放评分</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ====== 模态框：关卡结算 ====== -->
+<div class="modal" id="resultModal">
+  <div class="modal-content">
+    <h2 id="resultTitle">关卡结算</h2>
+    <div class="result-stats" id="resultStats"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnCloseResult">关闭</button>
+      <button class="btn btn-primary" id="btnReplay">重新挑战</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 模态框：回放评分 ====== -->
+<div class="modal" id="replayModal">
+  <div class="modal-content wide">
+    <h2>回放评分明细</h2>
+    <div class="replay-list" id="replayList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnCloseReplay">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 模态框：报告预览 ====== -->
+<div class="modal" id="reportModal">
+  <div class="modal-content wide">
+    <h2>占用报告（含修正痕迹）</h2>
+    <pre class="report-text" id="reportText"></pre>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnCloseReport">关闭</button>
+      <button class="btn btn-primary" id="btnCopyReport">复制到剪贴板</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 通知 ====== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="game.js"></script>
+</body>
+</html>
