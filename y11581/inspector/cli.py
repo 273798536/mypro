@@ -142,7 +142,7 @@ def import_cmd(ctx: Context, source_type: str, filepath: str):
 @cli.command("list")
 @click.option("--source-type", type=click.Choice(["recharge", "refund", "shift", "handover", "all"]), default="all")
 @pass_ctx
-@require_permission("view_all")
+@require_permission("view_list")
 def list_batches(ctx: Context, source_type: str):
     """列出导入批次"""
     query = ctx.db.query(ImportBatch)
@@ -173,7 +173,7 @@ def list_batches(ctx: Context, source_type: str):
 @click.option("--dirty-only", is_flag=True, help="仅显示脏记录")
 @click.option("--source-type", type=click.Choice(["recharge", "refund", "shift", "handover"]))
 @pass_ctx
-@require_permission("view_all")
+@require_permission("view_raw")
 def check(ctx: Context, record_id: int, batch_id: int, dirty_only: bool, source_type: str):
     """检查脏记录"""
     query = ctx.db.query(RawRecord)
@@ -457,9 +457,25 @@ def check_gaps(ctx: Context, gaps: bool, cross_store: bool, revoke: bool):
 @click.argument("report_type", type=click.Choice(["batch", "dirty", "failures", "summary"]), default="summary")
 @click.option("--batch-id", type=int, help="指定批次ID")
 @pass_ctx
-@require_permission("view_all")
 def report(ctx: Context, report_type: str, batch_id: int):
     """生成巡检报告"""
+    if not ctx.current_role:
+        click.echo("请使用 -u <用户名> 指定用户后再执行此命令")
+        raise click.Abort()
+
+    permissions = {
+        "summary": "view_summary",
+        "batch": "view_report",
+        "dirty": "view_report",
+        "failures": "view_failures",
+    }
+
+    required_perm = permissions.get(report_type, "view_all")
+    if not has_permission(ctx.current_role, required_perm):
+        role_config = get_role_config(ctx.current_role)
+        click.echo(f"权限不足: 当前角色[{role_config['name']}]无权限查看此报告")
+        raise click.Abort()
+
     if report_type == "summary":
         generate_summary_report(ctx)
     elif report_type == "dirty":
