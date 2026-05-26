@@ -74,7 +74,7 @@ def process(input_dir, output_dir, run_date, holiday_file, force):
         exporter = ReconciliationExporter(output_dir)
 
     with console.status("[green]构建补扣记录...[/green]"):
-        records = processor.build_records(
+        all_records = processor.build_records(
             data["bank_returns"],
             data["customer_plans"],
             data["failure_reasons"],
@@ -82,10 +82,35 @@ def process(input_dir, output_dir, run_date, holiday_file, force):
             data["manual_remarks"],
         )
 
+        if not force:
+            filtered_records = []
+            skipped = 0
+            for record in all_records:
+                record_key = idempotent_mgr.generate_record_key(record.bank_return)
+                if idempotent_mgr.is_processed(record_key):
+                    skipped += 1
+                else:
+                    filtered_records.append(record)
+            records = filtered_records
+            if skipped > 0:
+                console.print(f"  ℹ 跳过已处理的记录: {skipped} 条 (使用 --force 可强制重新处理)")
+        else:
+            records = all_records
+            console.print(f"  ℹ 已启用 --force，强制处理所有记录")
+
     console.print(f"  ✓ 构建补扣记录: {len(records)} 条")
+
+    if len(records) == 0:
+        console.print("\n[yellow]所有记录均已处理，无新记录需要处理。使用 --force 可强制重新处理。[/yellow]")
+        return
 
     with console.status("[green]处理补扣逻辑...[/green]"):
         records, summary = processor.process_all(run_date_val)
+
+    with console.status("[green]更新幂等状态...[/green]"):
+        for record in records:
+            record_key = idempotent_mgr.generate_record_key(record.bank_return)
+            idempotent_mgr.mark_processed(record_key, "processed")
 
     table = Table(title="处理结果汇总", show_header=True, header_style="bold magenta")
     table.add_column("状态", style="cyan")
@@ -120,7 +145,7 @@ def process(input_dir, output_dir, run_date, holiday_file, force):
 
     eligible_count = len([r for r in records if r.status == ReplenishStatus.ELIGIBLE])
     if eligible_count > 0:
-        console.print(f"\n[yellow]提示: 有 {eligible_count} 条记录可执行补扣，请使用 execute 命令执行[/yellow]")
+        console.print(f"\n[yellow]提示: 有 {eligible_count} 条记录状态为'可补扣'，导出文件中已包含补扣日期安排[/yellow]")
 
 
 @main.command()
@@ -212,9 +237,10 @@ def generate_sample(input_dir):
     console.print("  • replenish_windows.csv - 补扣窗口配置")
     console.print("  • manual_remarks.csv - 人工备注")
     console.print("\n样例包含:")
-    console.print("  ✓ 1条正常记录")
-    console.print("  ✓ 1条边界记录(客户暂停)")
-    console.print("  ✓ 1条坏数据(重复扣款风险)")
+    console.print("  ✓ 1条正常记录(王五-可直接补扣)")
+    console.print("  ✓ 1条边界记录(李四-客户暂停)")
+    console.print("  ✓ 1条坏数据(张三-重复扣款风险)")
+    console.print("  共4条回盘记录，覆盖完整处理链")
 
 
 if __name__ == "__main__":

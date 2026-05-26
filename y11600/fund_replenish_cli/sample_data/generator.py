@@ -25,9 +25,9 @@ def generate_bank_returns(output_path: Path):
             "deduct_date", "return_date", "amount", "return_code", "return_msg"
         ])
         writer.writerow([
-            "BR202605200001", "C001", "张三", "P001",
+            "BR202605200001", "C003", "王五", "P003",
             (today - timedelta(days=5)).isoformat(), today.isoformat(),
-            "1000.00", "BAL001", "账户余额不足"
+            "1500.00", "BAL001", "账户余额不足"
         ])
         writer.writerow([
             "BR202605200002", "C002", "李四", "P002",
@@ -36,6 +36,11 @@ def generate_bank_returns(output_path: Path):
         ])
         writer.writerow([
             "BR202605200003", "C001", "张三", "P001",
+            (today - timedelta(days=5)).isoformat(), today.isoformat(),
+            "1000.00", "BAL001", "账户余额不足"
+        ])
+        writer.writerow([
+            "BR202605200004", "C001", "张三", "P001",
             (today - timedelta(days=5)).isoformat(), today.isoformat(),
             "1000.00", "BAL001", "账户余额不足"
         ])
@@ -57,6 +62,10 @@ def generate_customer_plans(output_path: Path):
         writer.writerow([
             "P002", "C002", "李四", "F002", "华夏成长混合",
             "2000.00", "20", "2025-03-01", "", "暂停"
+        ])
+        writer.writerow([
+            "P003", "C003", "王五", "F003", "嘉实增长混合",
+            "1500.00", "25", "2025-06-01", "", "正常"
         ])
 
 
@@ -102,6 +111,11 @@ def generate_replenish_windows(output_path: Path):
             "W002", "P002", (today - timedelta(days=5)).isoformat(),
             today.isoformat(), (today + timedelta(days=10)).isoformat(),
             "1", (today - timedelta(days=2)).isoformat()
+        ])
+        writer.writerow([
+            "W003", "P003", (today - timedelta(days=5)).isoformat(),
+            today.isoformat(), (today + timedelta(days=10)).isoformat(),
+            "0", ""
         ])
 
 
