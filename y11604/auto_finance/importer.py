@@ -173,7 +173,8 @@ def import_contracts_from_excel(db, file_path: str, source: str = "excel_import"
                     "recipient": str(row.get("退款收款人", "")),
                     "remark": str(row.get("退款备注", "")),
                 }
-                create_refund(db, refund_data, source=source, operator=operator)
+                refund_obj = create_refund(db, refund_data, source=source, operator=operator)
+                cancel_gps_orders_for_contract(db, refund_obj.contract_id, source=source, operator=operator)
 
             db.commit()
         except Exception as e:
@@ -241,7 +242,8 @@ def import_contracts_from_json(db, file_path: str, source: str = "json_import",
             for refund in contract_data.get("refunds", []):
                 refund = _parse_contract_dates(refund)
                 refund["contract_no"] = contract_data["contract_no"]
-                create_refund(db, refund, source=source, operator=operator)
+                refund_obj = create_refund(db, refund, source=source, operator=operator)
+                cancel_gps_orders_for_contract(db, refund_obj.contract_id, source=source, operator=operator)
 
             db.commit()
         except Exception as e:

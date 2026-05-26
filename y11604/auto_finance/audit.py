@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+from sqlalchemy import and_
 from .models import AuditLog
 
 
@@ -64,6 +65,27 @@ def get_entity_history(db, entity_type: str, entity_id: int, limit: int = 100):
         db.query(AuditLog)
         .filter(AuditLog.entity_type == entity_type, AuditLog.entity_id == entity_id)
         .order_by(AuditLog.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def get_contract_full_history(db, contract_ids: List[int], gps_order_ids: List[int] = None, limit: int = 200):
+    from sqlalchemy import or_
+    filters = [
+        and_(AuditLog.entity_type == "Contract", AuditLog.entity_id == cid)
+        for cid in contract_ids
+    ]
+    if gps_order_ids:
+        filters.extend([
+            and_(AuditLog.entity_type == "GpsWorkOrder", AuditLog.entity_id == gid)
+            for gid in gps_order_ids
+        ])
+
+    return (
+        db.query(AuditLog)
+        .filter(or_(*filters))
+        .order_by(AuditLog.created_at.asc())
         .limit(limit)
         .all()
     )

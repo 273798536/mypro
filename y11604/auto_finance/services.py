@@ -316,3 +316,18 @@ def get_contract_versions(db, contract_no: str) -> List[Contract]:
     return db.query(Contract).filter(
         Contract.contract_no == contract_no
     ).order_by(Contract.version.asc()).all()
+
+
+def fix_cancelled_contract_gps_orders(db, source: str = "fix_script", operator: str = None) -> List[GpsWorkOrder]:
+    cancelled_contracts = db.query(Contract).filter(
+        Contract.status == "cancelled",
+        Contract.is_current == True
+    ).all()
+
+    fixed_orders = []
+    for contract in cancelled_contracts:
+        orders = cancel_gps_orders_for_contract(db, contract.id, source=source, operator=operator)
+        fixed_orders.extend(orders)
+
+    db.commit()
+    return fixed_orders

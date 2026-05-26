@@ -18,7 +18,7 @@ from auto_finance.services import (
     create_gps_order, create_delivery, create_refund,
     lock_delivery, get_contract_by_no, get_contract_versions,
     cancel_gps_orders_for_contract, update_balance_settlement,
-    update_gps_order_status
+    update_gps_order_status, fix_cancelled_contract_gps_orders
 )
 from auto_finance.validation import (
     validate_contract, validate_all_contracts,
@@ -446,25 +446,43 @@ def show(contract_no, versions, history):
             console.print(vtable)
 
         if history:
-            logs = get_entity_history(db, "Contract", contract.id)
+            from auto_finance.audit import get_contract_full_history
+            from auto_finance.models import GpsWorkOrder
+
+            all_versions = get_contract_versions(db, contract_no)
+            contract_ids = [v.id for v in all_versions]
+
+            gps_orders = db.query(GpsWorkOrder).filter(
+                GpsWorkOrder.vin.in_([v.vin for v in all_versions])
+            ).all()
+            gps_ids = [o.id for o in gps_orders]
+
+            logs = get_contract_full_history(db, contract_ids, gps_ids)
+
             if logs:
-                htable = Table(title="变更历史")
+                htable = Table(title="变更历史（含所有版本和GPS工单联动）")
                 htable.add_column("时间")
+                htable.add_column("实体")
                 htable.add_column("操作")
                 htable.add_column("字段")
                 htable.add_column("原值")
                 htable.add_column("新值")
                 htable.add_column("来源")
+                htable.add_column("备注")
                 for log in logs:
                     htable.add_row(
                         log.created_at.strftime("%Y-%m-%d %H:%M"),
+                        log.entity_type,
                         log.action,
                         log.field_name or "-",
                         log.old_value or "-",
                         log.new_value or "-",
-                        log.source or "-"
+                        log.source or "-",
+                        (log.remark or "")[:30]
                     )
                 console.print(htable)
+            else:
+                console.print("[yellow]暂无变更历史记录[/yellow]")
 
     finally:
         db.close()
@@ -604,6 +622,44 @@ def batch(file_path, source, operator):
             console.print(f"\n[yellow]失败详情:[/yellow]")
             for err in result.errors:
                 console.print(f"  第{err['row']}个操作: {err['error']}")
+
+    finally:
+        db.close()
+
+
+@cli.command()
+@click.option("--source", default="fix_script", help="数据来源")
+@click.option("--operator", help="操作人")
+@click.option("--dry-run", is_flag=True, help="仅预览，不实际修改")
+def fix_gps(source, operator, dry_run):
+    """修复历史数据：已取消合同的GPS工单未取消问题"""
+    db = get_db_session()
+    try:
+        from auto_finance.validation import validate_all_contracts
+        issues_before = validate_all_contracts(db)
+        gps_issues = [i for i in issues_before if i.issue_type == "gps_not_cancelled"]
+
+        if not gps_issues:
+            console.print("[green]✓ 没有需要修复的GPS工单问题[/green]")
+            return
+
+        console.print(f"发现 {len(gps_issues)} 个合同存在GPS工单未取消问题:")
+        for issue in gps_issues:
+            console.print(f"  - {issue.contract_no}: {issue.message}")
+
+        if dry_run:
+            console.print("[yellow]预览模式，未执行修复[/yellow]")
+            return
+
+        fixed = fix_cancelled_contract_gps_orders(db, source=source, operator=operator)
+        console.print(f"[green]✓ 已修复 {len(fixed)} 个GPS工单[/green]")
+
+        issues_after = validate_all_contracts(db)
+        remaining = [i for i in issues_after if i.issue_type == "gps_not_cancelled"]
+        if remaining:
+            console.print(f"[yellow]仍有 {len(remaining)} 个问题未修复[/yellow]")
+        else:
+            console.print("[green]✓ 所有GPS工单问题已修复[/green]")
 
     finally:
         db.close()
