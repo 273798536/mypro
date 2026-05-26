@@ -1,0 +1,6 @@
+rich>=13.0.0
+click>=8.0.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+fuzzywuzzy>=0.18.0
+python-Levenshtein>=0.21.0
