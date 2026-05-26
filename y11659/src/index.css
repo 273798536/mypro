@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&display=swap');
+
+:root {
+  font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0e2033 0%, #1a3354 50%, #1e3a5f 100%);
+  color: #e8f0f8;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+  
+  .btn-danger {
+    @apply px-6 py-3 bg-danger-500 hover:bg-danger-400 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+  
+  .btn-success {
+    @apply px-6 py-3 bg-success-500 hover:bg-success-400 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+  
+  .btn-warning {
+    @apply px-6 py-3 bg-warning-500 hover:bg-warning-400 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+  
+  .card {
+    @apply bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-xl;
+  }
+  
+  .card-hover {
+    @apply card hover:border-primary-400/50 hover:shadow-glow transition-all duration-300;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-400/30 transition-all;
+  }
+  
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl;
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 动画工具类 */
+.source-watermark {
+  position: relative;
+}
+
+.source-watermark::after {
+  content: attr(data-source);
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
