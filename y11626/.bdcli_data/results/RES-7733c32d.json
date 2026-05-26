@@ -1,0 +1,11 @@
+{
+  "result_id": "RES-7733c32d",
+  "created_at": "2026-05-27T01:05:08.894723",
+  "scenario_name": "rate_up_100bp",
+  "curve_id": "YC-d7ec15d6-rate_up_100bp",
+  "portfolio": {
+    "total_pv": 162315764.87,
+    "total_dv01": 78537.61,
+    "weighted_duration": 4.838569
+  }
+}

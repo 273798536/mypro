@@ -1,0 +1,72 @@
+{
+  "source_id": "SRC-e3cbb716",
+  "saved_at": "2026-05-27T00:58:56.320760",
+  "curve": {
+    "curve_id": "YC-d7ec15d6",
+    "name": "国债收益率曲线",
+    "currency": "CNY",
+    "as_of_date": "2026-05-27",
+    "points": [
+      {
+        "tenor": "1M",
+        "days": 30,
+        "yield_rate": 0.0145
+      },
+      {
+        "tenor": "3M",
+        "days": 91,
+        "yield_rate": 0.0168
+      },
+      {
+        "tenor": "6M",
+        "days": 182,
+        "yield_rate": 0.0192
+      },
+      {
+        "tenor": "1Y",
+        "days": 365,
+        "yield_rate": 0.0215
+      },
+      {
+        "tenor": "2Y",
+        "days": 730,
+        "yield_rate": 0.0238
+      },
+      {
+        "tenor": "3Y",
+        "days": 1095,
+        "yield_rate": 0.0252
+      },
+      {
+        "tenor": "5Y",
+        "days": 1825,
+        "yield_rate": 0.0271
+      },
+      {
+        "tenor": "7Y",
+        "days": 2555,
+        "yield_rate": 0.0285
+      },
+      {
+        "tenor": "10Y",
+        "days": 3650,
+        "yield_rate": 0.0298
+      },
+      {
+        "tenor": "15Y",
+        "days": 5475,
+        "yield_rate": 0.0315
+      },
+      {
+        "tenor": "20Y",
+        "days": 7300,
+        "yield_rate": 0.0328
+      },
+      {
+        "tenor": "30Y",
+        "days": 10950,
+        "yield_rate": 0.0342
+      }
+    ]
+  }
+}

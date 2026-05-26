@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: bond-duration-cli
+Version: 0.1.0
+Summary: 债券久期敏感性分析CLI - 快速定位拖累最大的券
+Requires-Python: >=3.9
+Requires-Dist: click>=8.1
+Requires-Dist: pydantic>=2.0
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: rich>=13.0
+Requires-Dist: matplotlib>=3.7
+Requires-Dist: jinja2>=3.1

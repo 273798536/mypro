@@ -1,0 +1,24 @@
+[project]
+name = "bond-duration-cli"
+version = "0.1.0"
+description = "债券久期敏感性分析CLI - 快速定位拖累最大的券"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1",
+    "pydantic>=2.0",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "rich>=13.0",
+    "matplotlib>=3.7",
+    "jinja2>=3.1",
+]
+
+[project.scripts]
+bdcli = "bond_duration_cli.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["bond_duration_cli*"]
