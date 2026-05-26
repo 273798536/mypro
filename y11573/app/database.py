@@ -98,6 +98,21 @@ def init_database():
                 UNIQUE(import_source_id, source_line_number)
             );
             
+            CREATE TABLE IF NOT EXISTS import_corrections (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                import_raw_id INTEGER NOT NULL,
+                original_content TEXT NOT NULL,
+                corrected_content TEXT NOT NULL,
+                correction_type TEXT NOT NULL,
+                correction_reason TEXT,
+                corrected_fields TEXT,
+                corrected_by TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                applied_at TIMESTAMP,
+                correction_status TEXT DEFAULT 'pending',
+                FOREIGN KEY (import_raw_id) REFERENCES import_raw_data(id)
+            );
+            
             CREATE TABLE IF NOT EXISTS sla_rules (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 rule_code TEXT NOT NULL UNIQUE,
