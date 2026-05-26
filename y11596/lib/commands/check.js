@@ -22,12 +22,20 @@ const {
 
 const { DATA_TYPES, TYPE_CONFIG } = require('../utils/parser');
 
+const {
+  getCurrentUser,
+  assertPermission
+} = require('../utils/auth');
+
 const checkCommand = new Command('check')
   .description('执行巡检检查')
   .option('-b, --batch <batchId>', '指定批次检查')
   .option('-t, --type <type>', '指定数据类型检查')
   .option('--strict', '严格模式')
   .action((options) => {
+    const user = getCurrentUser();
+    assertPermission('check', options, user);
+
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));
@@ -72,6 +80,20 @@ const checkCommand = new Command('check')
     for (const dataType of dataTypes) {
       const dataPath = path.join(paths.parsed, `${dataType}.json`);
       allData[dataType] = readJson(dataPath) || [];
+    }
+
+    const crossCheckResults = performCrossChecks(allData, config);
+    checkResults.crossChecks = crossCheckResults;
+    checkResults.summary.issues.push(...crossCheckResults.issues);
+
+    const recordCrossIssues = {};
+    for (const issue of crossCheckResults.issues) {
+      if (issue.recordId) {
+        if (!recordCrossIssues[issue.recordId]) {
+          recordCrossIssues[issue.recordId] = [];
+        }
+        recordCrossIssues[issue.recordId].push(issue);
+      }
     }
 
     for (const dataType of dataTypes) {
@@ -122,6 +144,31 @@ const checkCommand = new Command('check')
           recordCheck.issues.push(...integrityCheck.issues);
         }
 
+        const crossIssues = recordCrossIssues[record.recordId] || [];
+        if (crossIssues.length > 0) {
+          recordCheck.checks.crossCheck = {
+            passed: false,
+            issues: crossIssues
+          };
+          
+          for (const crossIssue of crossIssues) {
+            if (crossIssue.type === 'error') {
+              recordCheck.status = 'fail';
+            } else if (crossIssue.type === 'warning' && recordCheck.status === 'pass') {
+              recordCheck.status = 'warn';
+            }
+            recordCheck.issues.push(crossIssue);
+            typeResult.issues.push({
+              recordId: record.recordId,
+              rowNumber: record.rowNumber,
+              sourceFile: record.source?.file,
+              type: crossIssue.category || 'cross_check',
+              severity: crossIssue.type,
+              message: crossIssue.message
+            });
+          }
+        }
+
         if (record.previousVersion) {
           const diffs = compareObjects(
             record.previousVersion.parsedData,
@@ -148,10 +195,6 @@ const checkCommand = new Command('check')
       checkResults.summary.failed += typeResult.failed;
       checkResults.summary.warnings += typeResult.warnings;
     }
-
-    const crossCheckResults = performCrossChecks(allData, config);
-    checkResults.crossChecks = crossCheckResults;
-    checkResults.summary.issues.push(...crossCheckResults.issues);
 
     const riskItems = identifyRisks(allData, crossCheckResults);
     checkResults.riskItems = riskItems;

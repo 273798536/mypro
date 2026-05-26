@@ -30,6 +30,13 @@ const {
   validateRecord
 } = require('../utils/parser');
 
+const {
+  getCurrentUser,
+  assertPermission,
+  filterSensitiveRecords,
+  ROLES
+} = require('../utils/auth');
+
 const importCommand = new Command('import')
   .description('导入数据文件')
   .argument('<file>', '要导入的文件路径')
@@ -40,6 +47,9 @@ const importCommand = new Command('import')
   .option('--resubmit', '撤回后重新提交模式')
   .option('--append', '追加模式（不覆盖现有数据）', true)
   .action(async (file, options) => {
+    const user = getCurrentUser();
+    assertPermission('import', options, user);
+
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目，请先在项目目录下操作'));

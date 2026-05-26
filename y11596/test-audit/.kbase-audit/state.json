@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "status": "active",
-  "frozen": false,
+  "frozen": true,
   "currentBatch": "mpk0xsevxeuachg02",
   "batches": [
     "mpk0xdert16kz29zp",
@@ -67,9 +67,9 @@
     }
   },
   "lastExport": {
-    "exportId": "mpk0y4r2drljxm7wm",
-    "timestamp": "2026-05-24T17:01:24.494Z",
-    "outputDir": "/Users/mac/pro/solo/workspaces/y11596/test-audit/exports/mpk0y4r2drljxm7wm"
+    "exportId": "mpmfxoot08g89z7s5",
+    "timestamp": "2026-05-26T09:36:30.269Z",
+    "outputDir": "/Users/mac/pro/solo/workspaces/y11596/test-audit/exports/mpmfxoot08g89z7s5"
   },
   "importStats": {
     "change_order": {
@@ -92,5 +92,8 @@
       "valid": 6,
       "invalid": 0
     }
-  }
+  },
+  "frozenAt": "2026-05-26T09:36:30.268Z",
+  "frozenBy": "user-via-cli",
+  "unfrozenAt": "2026-05-26T09:33:57.608Z"
 }

@@ -1,0 +1,531 @@
+{
+  "checkId": "mpk0xvnsul5ioqalk",
+  "timestamp": "2026-05-24T17:01:12.712Z",
+  "batchId": "mpk0xsevxeuachg02",
+  "strict": false,
+  "summary": {
+    "totalRecords": 22,
+    "checkedRecords": 22,
+    "passed": 22,
+    "failed": 0,
+    "warnings": 0,
+    "issues": [
+      {
+        "type": "warning",
+        "category": "missing_review",
+        "recordId": "CO004",
+        "rowNumber": 5,
+        "sourceFile": "change_orders.csv",
+        "message": "变更单 CO004 缺少审核意见"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT003",
+        "rowNumber": 4,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT004",
+        "rowNumber": 5,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT005",
+        "rowNumber": 6,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT007",
+        "rowNumber": 8,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      }
+    ]
+  },
+  "dataTypeResults": {
+    "change_order": {
+      "dataType": "change_order",
+      "name": "变更单",
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "warnings": 0,
+      "issues": [],
+      "records": [
+        {
+          "recordId": "CO001",
+          "rowNumber": 2,
+          "sourceFile": "change_orders.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CO002",
+          "rowNumber": 3,
+          "sourceFile": "change_orders.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CO003",
+          "rowNumber": 4,
+          "sourceFile": "change_orders.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CO004",
+          "rowNumber": 5,
+          "sourceFile": "change_orders.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CO005",
+          "rowNumber": 6,
+          "sourceFile": "change_orders.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        }
+      ]
+    },
+    "review_opinion": {
+      "dataType": "review_opinion",
+      "name": "审核意见",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "warnings": 0,
+      "issues": [],
+      "records": [
+        {
+          "recordId": "REV001",
+          "rowNumber": 2,
+          "sourceFile": "review_opinions.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "REV002",
+          "rowNumber": 3,
+          "sourceFile": "review_opinions.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "REV003",
+          "rowNumber": 4,
+          "sourceFile": "review_opinions.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "REV004",
+          "rowNumber": 5,
+          "sourceFile": "review_opinions.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        }
+      ]
+    },
+    "citation_record": {
+      "dataType": "citation_record",
+      "name": "客服引用记录",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "warnings": 0,
+      "issues": [],
+      "records": [
+        {
+          "recordId": "CIT001",
+          "rowNumber": 2,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CIT002",
+          "rowNumber": 3,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CIT003",
+          "rowNumber": 4,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CIT004",
+          "rowNumber": 5,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CIT005",
+          "rowNumber": 6,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CIT006",
+          "rowNumber": 7,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "CIT007",
+          "rowNumber": 8,
+          "sourceFile": "citation_records.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        }
+      ]
+    },
+    "scan_detail": {
+      "dataType": "scan_detail",
+      "name": "扫码明细",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "warnings": 0,
+      "issues": [],
+      "records": [
+        {
+          "recordId": "SCAN001",
+          "rowNumber": 2,
+          "sourceFile": "scan_details.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "SCAN002",
+          "rowNumber": 3,
+          "sourceFile": "scan_details.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "SCAN003",
+          "rowNumber": 4,
+          "sourceFile": "scan_details.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "SCAN004",
+          "rowNumber": 5,
+          "sourceFile": "scan_details.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "SCAN005",
+          "rowNumber": 6,
+          "sourceFile": "scan_details.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        },
+        {
+          "recordId": "SCAN006",
+          "rowNumber": 7,
+          "sourceFile": "scan_details.csv",
+          "checks": {
+            "status": {
+              "passed": true
+            },
+            "integrity": {
+              "passed": true,
+              "issues": []
+            }
+          },
+          "status": "pass",
+          "issues": []
+        }
+      ]
+    }
+  },
+  "crossChecks": {
+    "reviewForChange": {
+      "checked": 5,
+      "missingReview": 1,
+      "details": []
+    },
+    "offlineCitation": {
+      "checked": 7,
+      "problematic": 4,
+      "details": []
+    },
+    "scanCoverage": {
+      "totalScans": 6,
+      "withCitations": 6,
+      "withoutCitations": 0
+    },
+    "issues": [
+      {
+        "type": "warning",
+        "category": "missing_review",
+        "recordId": "CO004",
+        "rowNumber": 5,
+        "sourceFile": "change_orders.csv",
+        "message": "变更单 CO004 缺少审核意见"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT003",
+        "rowNumber": 4,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT004",
+        "rowNumber": 5,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT005",
+        "rowNumber": 6,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT007",
+        "rowNumber": 8,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      }
+    ],
+    "totalIssues": 5
+  },
+  "issues": [],
+  "riskItems": [
+    {
+      "level": "high",
+      "type": "repeated_offline_citation",
+      "answerId": "ANS003",
+      "count": 4,
+      "message": "答案 ANS003 下线后仍被引用 4 次，存在错赔风险"
+    }
+  ]
+}

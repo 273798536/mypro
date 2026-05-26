@@ -15,6 +15,13 @@ const {
   ensureDir
 } = require('../utils/file-manager');
 
+const {
+  getCurrentUser,
+  assertPermission,
+  maskSensitiveData,
+  ROLES
+} = require('../utils/auth');
+
 const reportCommand = new Command('report')
   .description('生成巡检报告')
   .option('-c, --check <checkId>', '指定检查ID生成报告')
@@ -23,6 +30,9 @@ const reportCommand = new Command('report')
   .option('--show-failures', '显示失败清单')
   .option('--show-source', '显示来源信息')
   .action((options) => {
+    const user = getCurrentUser();
+    assertPermission('report', options, user);
+
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));

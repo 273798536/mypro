@@ -11,6 +11,8 @@ const fixCommand = require('../lib/commands/fix');
 const reportCommand = require('../lib/commands/report');
 const historyCommand = require('../lib/commands/history');
 const exportCommand = require('../lib/commands/export');
+const queueCommand = require('../lib/commands/queue');
+const roleCommand = require('../lib/commands/role');
 
 const program = new Command();
 
@@ -26,5 +28,7 @@ program.addCommand(fixCommand);
 program.addCommand(reportCommand);
 program.addCommand(historyCommand);
 program.addCommand(exportCommand);
+program.addCommand(queueCommand);
+program.addCommand(roleCommand);
 
 program.parse(process.argv);

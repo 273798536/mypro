@@ -19,6 +19,12 @@ const {
 
 const { DATA_TYPES, TYPE_CONFIG } = require('../utils/parser');
 
+const {
+  getCurrentUser,
+  assertPermission,
+  ROLES
+} = require('../utils/auth');
+
 const fixCommand = new Command('fix')
   .description('人工改判问题项')
   .option('-t, --type <type>', '指定数据类型')
@@ -28,6 +34,9 @@ const fixCommand = new Command('fix')
   .option('--list', '列出所有问题项')
   .option('--all', '批量改判所有问题项')
   .action((options) => {
+    const user = getCurrentUser();
+    assertPermission('fix', options, user);
+
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));

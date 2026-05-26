@@ -1,0 +1,224 @@
+{
+  "reportId": "mpmfphbeuq5onexam",
+  "generatedAt": "2026-05-26T09:30:07.466Z",
+  "checkId": "mpk0xvnsul5ioqalk",
+  "checkTime": "2026-05-24T17:01:12.712Z",
+  "batchId": "mpk0xsevxeuachg02",
+  "summary": {
+    "totalRecords": 22,
+    "checkedRecords": 22,
+    "passed": 22,
+    "failed": 0,
+    "warnings": 0,
+    "issues": [
+      {
+        "type": "warning",
+        "category": "missing_review",
+        "recordId": "CO004",
+        "rowNumber": 5,
+        "sourceFile": "change_orders.csv",
+        "message": "变更单 CO004 缺少审核意见"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT003",
+        "rowNumber": 4,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT004",
+        "rowNumber": 5,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT005",
+        "rowNumber": 6,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      },
+      {
+        "type": "error",
+        "category": "offline_citation",
+        "recordId": "CIT007",
+        "rowNumber": 8,
+        "sourceFile": "citation_records.csv",
+        "answerId": "ANS003",
+        "message": "坐席复制了已下线答案 ANS003"
+      }
+    ],
+    "dataTypes": {
+      "change_order": {
+        "name": "变更单",
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "warnings": 0
+      },
+      "review_opinion": {
+        "name": "审核意见",
+        "total": 4,
+        "passed": 4,
+        "failed": 0,
+        "warnings": 0
+      },
+      "citation_record": {
+        "name": "客服引用记录",
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "warnings": 0
+      },
+      "scan_detail": {
+        "name": "扫码明细",
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "warnings": 0
+      }
+    }
+  },
+  "failureList": [
+    {
+      "category": "offline_citation",
+      "recordId": "CIT003",
+      "rowNumber": 4,
+      "sourceFile": "citation_records.csv",
+      "message": "坐席复制了已下线答案 ANS003",
+      "severity": "error"
+    },
+    {
+      "category": "offline_citation",
+      "recordId": "CIT004",
+      "rowNumber": 5,
+      "sourceFile": "citation_records.csv",
+      "message": "坐席复制了已下线答案 ANS003",
+      "severity": "error"
+    },
+    {
+      "category": "offline_citation",
+      "recordId": "CIT005",
+      "rowNumber": 6,
+      "sourceFile": "citation_records.csv",
+      "message": "坐席复制了已下线答案 ANS003",
+      "severity": "error"
+    },
+    {
+      "category": "offline_citation",
+      "recordId": "CIT007",
+      "rowNumber": 8,
+      "sourceFile": "citation_records.csv",
+      "message": "坐席复制了已下线答案 ANS003",
+      "severity": "error"
+    }
+  ],
+  "warningList": [
+    {
+      "category": "missing_review",
+      "recordId": "CO004",
+      "rowNumber": 5,
+      "sourceFile": "change_orders.csv",
+      "message": "变更单 CO004 缺少审核意见",
+      "severity": "warning"
+    }
+  ],
+  "riskList": [
+    {
+      "level": "high",
+      "type": "repeated_offline_citation",
+      "answerId": "ANS003",
+      "count": 4,
+      "message": "答案 ANS003 下线后仍被引用 4 次，存在错赔风险"
+    }
+  ],
+  "sourceTraces": [],
+  "crossCheckIssues": [
+    {
+      "type": "warning",
+      "category": "missing_review",
+      "recordId": "CO004",
+      "rowNumber": 5,
+      "sourceFile": "change_orders.csv",
+      "message": "变更单 CO004 缺少审核意见"
+    },
+    {
+      "type": "error",
+      "category": "offline_citation",
+      "recordId": "CIT003",
+      "rowNumber": 4,
+      "sourceFile": "citation_records.csv",
+      "answerId": "ANS003",
+      "message": "坐席复制了已下线答案 ANS003"
+    },
+    {
+      "type": "error",
+      "category": "offline_citation",
+      "recordId": "CIT004",
+      "rowNumber": 5,
+      "sourceFile": "citation_records.csv",
+      "answerId": "ANS003",
+      "message": "坐席复制了已下线答案 ANS003"
+    },
+    {
+      "type": "error",
+      "category": "offline_citation",
+      "recordId": "CIT005",
+      "rowNumber": 6,
+      "sourceFile": "citation_records.csv",
+      "answerId": "ANS003",
+      "message": "坐席复制了已下线答案 ANS003"
+    },
+    {
+      "type": "error",
+      "category": "offline_citation",
+      "recordId": "CIT007",
+      "rowNumber": 8,
+      "sourceFile": "citation_records.csv",
+      "answerId": "ANS003",
+      "message": "坐席复制了已下线答案 ANS003"
+    }
+  ],
+  "statistics": {
+    "bySourceFile": [
+      {
+        "source": "citation_records.csv",
+        "errors": 4,
+        "warnings": 0,
+        "records": [
+          4,
+          5,
+          6,
+          8
+        ]
+      },
+      {
+        "source": "change_orders.csv",
+        "errors": 0,
+        "warnings": 1,
+        "records": [
+          5
+        ]
+      }
+    ],
+    "byIssueType": [
+      {
+        "type": "offline_citation",
+        "count": 4
+      },
+      {
+        "type": "missing_review",
+        "count": 1
+      }
+    ],
+    "failureRate": "18.18%"
+  }
+}

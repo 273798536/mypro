@@ -1,0 +1,47 @@
+{
+  "action": "export",
+  "exportId": "mpmfueyi99cj84cj8",
+  "timestamp": "2026-05-26T09:33:57.690Z",
+  "frozen": false,
+  "manifest": {
+    "exportId": "mpmfueyi99cj84cj8",
+    "exportTime": "2026-05-26T09:33:57.690Z",
+    "frozenAt": "2026-05-26T09:31:19.963Z",
+    "frozen": false,
+    "dataTypes": [
+      {
+        "type": "change_order",
+        "name": "变更单",
+        "count": 5,
+        "file": "change_order.json"
+      },
+      {
+        "type": "review_opinion",
+        "name": "审核意见",
+        "count": 4,
+        "file": "review_opinion.json"
+      },
+      {
+        "type": "citation_record",
+        "name": "客服引用记录",
+        "count": 7,
+        "file": "citation_record.json"
+      },
+      {
+        "type": "scan_detail",
+        "name": "扫码明细",
+        "count": 6,
+        "file": "scan_detail.json"
+      }
+    ],
+    "summary": {
+      "totalRecords": 22,
+      "byType": {
+        "change_order": 5,
+        "review_opinion": 4,
+        "citation_record": 7,
+        "scan_detail": 6
+      }
+    }
+  }
+}

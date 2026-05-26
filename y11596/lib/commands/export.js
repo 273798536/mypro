@@ -18,6 +18,14 @@ const {
 
 const { DATA_TYPES, TYPE_CONFIG } = require('../utils/parser');
 
+const {
+  getCurrentUser,
+  assertPermission,
+  maskSensitiveData,
+  filterSensitiveRecords,
+  ROLES
+} = require('../utils/auth');
+
 const exportCommand = new Command('export')
   .description('导出巡检数据（导出前冻结）')
   .option('-f, --format <format>', '导出格式: json|csv|all', 'json')
@@ -27,6 +35,9 @@ const exportCommand = new Command('export')
   .option('-o, --output <path>', '输出目录')
   .option('--include-source', '包含原始源文件')
   .action((options) => {
+    const user = getCurrentUser();
+    assertPermission('export', options, user);
+
     const root = getWorkspaceRoot();
     if (!root) {
       console.log(chalk.red('❌ 未找到巡检项目'));
@@ -81,7 +92,10 @@ const exportCommand = new Command('export')
       if (data.length === 0) continue;
 
       const typeConfig = TYPE_CONFIG[dataType];
-      const exportData = prepareExportData(data, options.includeSource);
+      const filteredData = user.role === ROLES.READONLY 
+        ? filterSensitiveRecords(data, user) 
+        : data;
+      const exportData = prepareExportData(filteredData, options.includeSource, user);
 
       exportManifest.dataTypes.push({
         type: dataType,
@@ -176,32 +190,39 @@ function unfreezeProject(root, state) {
   console.log(chalk.gray('  现在可以继续导入和修改数据'));
 }
 
-function prepareExportData(records, includeSource) {
-  return records.map(record => ({
-    recordId: record.recordId,
-    dataType: record.dataType,
-    importId: record.importId,
-    batchId: record.batchId,
-    rowNumber: record.rowNumber,
-    sourceFile: record.source?.file,
-    sourceRow: record.source?.rowNumber,
-    parsedData: record.parsedData,
-    status: record.status,
-    checkStatus: record.checkStatus,
-    manualOverride: record.manualOverride || false,
-    overrideStatus: record.overrideStatus || null,
-    overrideReason: record.overrideReason || null,
-    overrideTime: record.overrideTime || null,
-    isResubmit: record.isResubmit || false,
-    previousVersion: record.previousVersion ? {
-      recordId: record.previousVersion.recordId,
-      withdrawnAt: record.previousVersion.withdrawnAt,
-      parsedData: record.previousVersion.parsedData
-    } : null,
-    rawData: includeSource ? record.rawData : undefined,
-    source: includeSource ? record.source : undefined,
-    overrideHistory: includeSource ? record.overrideHistory : undefined
-  }));
+function prepareExportData(records, includeSource, user) {
+  return records.map(record => {
+    const exported = {
+      recordId: record.recordId,
+      dataType: record.dataType,
+      importId: record.importId,
+      batchId: record.batchId,
+      rowNumber: record.rowNumber,
+      sourceFile: record.source?.file,
+      sourceRow: record.source?.rowNumber,
+      parsedData: record.parsedData,
+      status: record.status,
+      checkStatus: record.checkStatus,
+      manualOverride: record.manualOverride || false,
+      overrideStatus: record.overrideStatus || null,
+      overrideReason: record.overrideReason || null,
+      overrideTime: record.overrideTime || null,
+      isResubmit: record.isResubmit || false,
+      previousVersion: record.previousVersion ? {
+        recordId: record.previousVersion.recordId,
+        withdrawnAt: record.previousVersion.withdrawnAt,
+        parsedData: record.previousVersion.parsedData
+      } : null
+    };
+
+    if (includeSource) {
+      exported.rawData = record.rawData;
+      exported.source = record.source;
+      exported.overrideHistory = record.overrideHistory;
+    }
+
+    return exported;
+  });
 }
 
 function exportAsCSV(data, outputPath, dataType) {
