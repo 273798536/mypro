@@ -1,0 +1,14 @@
+{
+  "total_actions": 5,
+  "total_corrections": 0,
+  "total_parameter_versions": 0,
+  "actions_by_type": {
+    "audit_started": 1,
+    "data_loaded": 1,
+    "trades_recalculated": 1,
+    "anomalies_detected": 1,
+    "score_calculated": 1
+  },
+  "corrected_fields": {},
+  "parameters_tracked": 0
+}

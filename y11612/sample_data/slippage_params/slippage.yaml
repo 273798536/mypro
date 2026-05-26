@@ -1,0 +1,10 @@
+fixed:
+  buy_bps: 3
+  sell_bps: 3
+model: fixed
+percentage:
+  buy_ratio: 0.0003
+  sell_ratio: 0.0003
+volatility:
+  lookback: 20
+  multiplier: 0.1

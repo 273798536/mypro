@@ -1,0 +1,2671 @@
+[
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 000001.SZ 在 2024-01-15 00:00:00",
+    "trade_index": 25,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-15T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 3449,
+      "price": 9.347195,
+      "amount": 32248.149999999998,
+      "match_method": "市价单-开盘价成交"
+    }
+  },
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 000001.SZ 在 2024-01-17 00:00:00",
+    "trade_index": 28,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-17T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 2705,
+      "price": 9.332799,
+      "amount": 25237.65,
+      "match_method": "市价单-开盘价成交"
+    }
+  },
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 000001.SZ 在 2024-01-18 00:00:00",
+    "trade_index": 29,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-18T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 2244,
+      "price": 9.272781,
+      "amount": 20801.879999999997,
+      "match_method": "限价单-挂单价格成交"
+    }
+  },
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 000001.SZ 在 2024-01-18 00:00:00",
+    "trade_index": 30,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-18T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 8516,
+      "price": 9.287213,
+      "amount": 79113.64,
+      "match_method": "限价单-挂单价格成交"
+    }
+  },
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 000001.SZ 在 2024-01-18 00:00:00",
+    "trade_index": 31,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-18T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 5350,
+      "price": 9.182754,
+      "amount": 49113.0,
+      "match_method": "市价单-开盘价成交"
+    }
+  },
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 600000.SH 在 2024-02-01 00:00:00",
+    "trade_index": 58,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-01T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 3448,
+      "price": 6.541962,
+      "amount": 22549.920000000002,
+      "match_method": "限价单-挂单价格成交"
+    }
+  },
+  {
+    "type": "suspension_trade",
+    "severity": "critical",
+    "message": "停牌期间仍有成交: 600000.SH 在 2024-02-01 00:00:00",
+    "trade_index": 59,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-01T00:00:00",
+    "expected": null,
+    "actual": null,
+    "diff": null,
+    "details": {
+      "volume": 5815,
+      "price": 6.621986,
+      "amount": 38495.3,
+      "match_method": "限价单-挂单价格成交"
+    }
+  },
+  {
+    "type": "price_outside_range",
+    "severity": "warning",
+    "message": "成交价格超出K线范围: 000001.SZ 价格=9.56, 范围=[9.69, 10.04]",
+    "trade_index": 0,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-01T00:00:00",
+    "expected": null,
+    "actual": 9.56,
+    "diff": null,
+    "details": {
+      "kline_low": 9.69,
+      "kline_high": 10.04,
+      "kline_open": 10.0,
+      "kline_close": 9.73,
+      "match_method": "限价单-未成交"
+    }
+  },
+  {
+    "type": "price_outside_range",
+    "severity": "warning",
+    "message": "成交价格超出K线范围: 000001.SZ 价格=9.38, 范围=[9.46, 9.65]",
+    "trade_index": 21,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-11T00:00:00",
+    "expected": null,
+    "actual": 9.38,
+    "diff": null,
+    "details": {
+      "kline_low": 9.46,
+      "kline_high": 9.65,
+      "kline_open": 9.6,
+      "kline_close": 9.53,
+      "match_method": "限价单-未成交"
+    }
+  },
+  {
+    "type": "price_outside_range",
+    "severity": "warning",
+    "message": "成交价格超出K线范围: 000002.SZ 价格=14.64, 范围=[13.68, 14.43]",
+    "trade_index": 38,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-25T00:00:00",
+    "expected": null,
+    "actual": 14.64,
+    "diff": null,
+    "details": {
+      "kline_low": 13.68,
+      "kline_high": 14.43,
+      "kline_open": 13.73,
+      "kline_close": 14.33,
+      "match_method": "限价单-未成交"
+    }
+  },
+  {
+    "type": "price_outside_range",
+    "severity": "warning",
+    "message": "成交价格超出K线范围: 600519.SH 价格=1906.86, 范围=[1830.09, 1896.10]",
+    "trade_index": 69,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": null,
+    "actual": 1906.86,
+    "diff": null,
+    "details": {
+      "kline_low": 1830.09,
+      "kline_high": 1896.1,
+      "kline_open": 1851.56,
+      "kline_close": 1888.08,
+      "match_method": "限价单-未成交"
+    }
+  },
+  {
+    "type": "price_outside_range",
+    "severity": "warning",
+    "message": "成交价格超出K线范围: 600000.SH 价格=7.38, 范围=[7.03, 7.25]",
+    "trade_index": 74,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": null,
+    "actual": 7.38,
+    "diff": null,
+    "details": {
+      "kline_low": 7.03,
+      "kline_high": 7.25,
+      "kline_open": 7.1,
+      "kline_close": 7.2,
+      "match_method": "限价单-未成交"
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第1笔 重算=5.00, 原始=1.05",
+    "trade_index": 1,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-01T00:00:00",
+    "expected": 1.05,
+    "actual": 5.0,
+    "diff": 3.95,
+    "details": {
+      "diff_pct": 5.610795454545455,
+      "amount": 7040.0,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第6笔 重算=14321.07, 原始=15684.64",
+    "trade_index": 6,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-04T00:00:00",
+    "expected": 15684.64,
+    "actual": 14321.06676,
+    "diff": -1363.5732399999997,
+    "details": {
+      "diff_pct": 1.1425740242830904,
+      "amount": 11934222.299999999,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第7笔 重算=69.06, 原始=76.53",
+    "trade_index": 7,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-04T00:00:00",
+    "expected": 76.53,
+    "actual": 69.057468,
+    "diff": -7.472532000000001,
+    "details": {
+      "diff_pct": 1.298489310381319,
+      "amount": 57547.89,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第10笔 重算=61.25, 原始=3.67",
+    "trade_index": 10,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 3.67,
+    "actual": 61.245912000000004,
+    "diff": 57.575912,
+    "details": {
+      "diff_pct": 11.280931599157181,
+      "amount": 51038.26,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第11笔 重算=3659.77, 原始=7.98",
+    "trade_index": 11,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 7.98,
+    "actual": 3659.7680639999994,
+    "diff": 3651.7880639999994,
+    "details": {
+      "diff_pct": 11.973834407447303,
+      "amount": 3049806.7199999997,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第12笔 重算=11.28, 原始=3878.18",
+    "trade_index": 12,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 3878.18,
+    "actual": 11.282319999999999,
+    "diff": -3866.89768,
+    "details": {
+      "diff_pct": 6155.206484228756,
+      "amount": 6282.32,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第13笔 重算=5.00, 原始=66.35",
+    "trade_index": 13,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 66.35,
+    "actual": 5.0,
+    "diff": -61.349999999999994,
+    "details": {
+      "diff_pct": 50.102082482645976,
+      "amount": 12245.0,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第15笔 重算=5.00, 原始=3.45",
+    "trade_index": 15,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-08T00:00:00",
+    "expected": 3.45,
+    "actual": 5.0,
+    "diff": 1.5499999999999998,
+    "details": {
+      "diff_pct": 1.3553690101434066,
+      "amount": 11436.0,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第18笔 重算=1894.20, 原始=947.10",
+    "trade_index": 18,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-10T00:00:00",
+    "expected": 947.1,
+    "actual": 1894.200285,
+    "diff": 947.1002849999999,
+    "details": {
+      "diff_pct": 1.5000002256889111,
+      "amount": 6314000.95,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第20笔 重算=2665.43, 原始=3998.14",
+    "trade_index": 20,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-11T00:00:00",
+    "expected": 3998.14,
+    "actual": 2665.42626,
+    "diff": -1332.7137399999997,
+    "details": {
+      "diff_pct": 1.000000457712906,
+      "amount": 13327131.3,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第22笔 重算=344.64, 原始=516.97",
+    "trade_index": 22,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-11T00:00:00",
+    "expected": 516.97,
+    "actual": 344.644842,
+    "diff": -172.32515800000004,
+    "details": {
+      "diff_pct": 1.0000158830173356,
+      "amount": 1723224.21,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第23笔 重算=9.27, 原始=118.44",
+    "trade_index": 23,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-12T00:00:00",
+    "expected": 118.44,
+    "actual": 9.272160000000001,
+    "diff": -109.16784,
+    "details": {
+      "diff_pct": 23.54744525547445,
+      "amount": 46360.8,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第24笔 重算=113.38, 原始=13.91",
+    "trade_index": 24,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-12T00:00:00",
+    "expected": 13.91,
+    "actual": 113.376504,
+    "diff": 99.466504,
+    "details": {
+      "diff_pct": 10.527737281438842,
+      "amount": 94480.42,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第30笔 重算=94.94, 原始=102.85",
+    "trade_index": 30,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-18T00:00:00",
+    "expected": 102.85,
+    "actual": 94.936368,
+    "diff": -7.913631999999993,
+    "details": {
+      "diff_pct": 1.0002866762292815,
+      "amount": 79113.64,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第31笔 重算=9.82, 原始=15.18",
+    "trade_index": 31,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-18T00:00:00",
+    "expected": 15.18,
+    "actual": 9.822600000000001,
+    "diff": -5.357399999999998,
+    "details": {
+      "diff_pct": 1.0908313481155698,
+      "amount": 49113.0,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第32笔 重算=101.37, 原始=53.45",
+    "trade_index": 32,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-22T00:00:00",
+    "expected": 53.45,
+    "actual": 101.366928,
+    "diff": 47.916928,
+    "details": {
+      "diff_pct": 5.672492472100959,
+      "amount": 84472.44,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第34笔 重算=2165.03, 原始=3329.86",
+    "trade_index": 34,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-22T00:00:00",
+    "expected": 3329.86,
+    "actual": 2165.03056,
+    "diff": -1164.82944,
+    "details": {
+      "diff_pct": 1.0760397211206107,
+      "amount": 10825152.8,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第36笔 重算=16.29, 原始=43.91",
+    "trade_index": 36,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-24T00:00:00",
+    "expected": 43.91,
+    "actual": 16.288,
+    "diff": -27.621999999999996,
+    "details": {
+      "diff_pct": 24.470233876683203,
+      "amount": 11288.0,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第37笔 重算=41.50, 原始=14.28",
+    "trade_index": 37,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-24T00:00:00",
+    "expected": 14.28,
+    "actual": 41.498376,
+    "diff": 27.218376,
+    "details": {
+      "diff_pct": 7.870681782824464,
+      "amount": 34581.98,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第40笔 重算=17.45, 原始=26.41",
+    "trade_index": 40,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-25T00:00:00",
+    "expected": 26.41,
+    "actual": 17.448392,
+    "diff": -8.961608000000002,
+    "details": {
+      "diff_pct": 1.0272130520680647,
+      "amount": 87241.95999999999,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第41笔 重算=30.21, 原始=33.80",
+    "trade_index": 41,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-26T00:00:00",
+    "expected": 33.8,
+    "actual": 30.213372,
+    "diff": -3.5866279999999975,
+    "details": {
+      "diff_pct": 1.4245194478789052,
+      "amount": 25177.81,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第42笔 重算=8.08, 原始=12.15",
+    "trade_index": 42,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-26T00:00:00",
+    "expected": 12.15,
+    "actual": 8.08152,
+    "diff": -4.068480000000001,
+    "details": {
+      "diff_pct": 1.0068600956255755,
+      "amount": 40407.6,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第46笔 重算=2658.99, 原始=12621.94",
+    "trade_index": 46,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 12621.94,
+    "actual": 2658.9878400000002,
+    "diff": -9962.95216,
+    "details": {
+      "diff_pct": 7.493792946416783,
+      "amount": 13294939.200000001,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第47笔 重算=8.43, 原始=188.16",
+    "trade_index": 47,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 188.16,
+    "actual": 8.428650000000001,
+    "diff": -179.73135,
+    "details": {
+      "diff_pct": 524.2044244819389,
+      "amount": 3428.65,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第48笔 重算=5.00, 原始=0.10",
+    "trade_index": 48,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 0.1,
+    "actual": 5.0,
+    "diff": 4.9,
+    "details": {
+      "diff_pct": 2.8877360208529907,
+      "amount": 16968.309999999998,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第49笔 重算=173.68, 原始=2.55",
+    "trade_index": 49,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 2.55,
+    "actual": 173.683872,
+    "diff": 171.133872,
+    "details": {
+      "diff_pct": 11.823817838423132,
+      "amount": 144736.56,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第50笔 重算=11651.03, 原始=4.61",
+    "trade_index": 50,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 4.61,
+    "actual": 11651.025732000002,
+    "diff": 11646.415732000001,
+    "details": {
+      "diff_pct": 11.995251920193768,
+      "amount": 9709188.110000001,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第51笔 重算=5.00, 原始=3866.27",
+    "trade_index": 51,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 3866.27,
+    "actual": 5.0,
+    "diff": -3861.27,
+    "details": {
+      "diff_pct": 59334.777798266645,
+      "amount": 650.76,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第52笔 重算=76.25, 原始=83.10",
+    "trade_index": 52,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-30T00:00:00",
+    "expected": 83.1,
+    "actual": 76.251132,
+    "diff": -6.848867999999996,
+    "details": {
+      "diff_pct": 1.0778386345792212,
+      "amount": 63542.61,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第55笔 重算=86.38, 原始=93.58",
+    "trade_index": 55,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-30T00:00:00",
+    "expected": 93.58,
+    "actual": 86.379516,
+    "diff": -7.200484000000003,
+    "details": {
+      "diff_pct": 1.0003043777184402,
+      "amount": 71982.93,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第59笔 重算=7.70, 原始=11.55",
+    "trade_index": 59,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-01T00:00:00",
+    "expected": 11.55,
+    "actual": 7.699060000000001,
+    "diff": -3.8509399999999996,
+    "details": {
+      "diff_pct": 1.0003662784807494,
+      "amount": 38495.3,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第60笔 重算=12.72, 原始=3721.94",
+    "trade_index": 60,
+    "symbol": "000002.SZ",
+    "datetime": "2024-02-02T00:00:00",
+    "expected": 3721.94,
+    "actual": 12.720624,
+    "diff": -3709.219376,
+    "details": {
+      "diff_pct": 583.1819847831364,
+      "amount": 63603.12,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第61笔 重算=2523.39, 原始=9.69",
+    "trade_index": 61,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-02T00:00:00",
+    "expected": 9.69,
+    "actual": 2523.3900959999996,
+    "diff": 2513.7000959999996,
+    "details": {
+      "diff_pct": 1.9923198557247568,
+      "amount": 12616950.479999999,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第64笔 重算=5.00, 原始=0.73",
+    "trade_index": 64,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-06T00:00:00",
+    "expected": 0.73,
+    "actual": 5.0,
+    "diff": 4.27,
+    "details": {
+      "diff_pct": 17.680280897015468,
+      "amount": 2415.12,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第66笔 重算=82.19, 原始=89.04",
+    "trade_index": 66,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-07T00:00:00",
+    "expected": 89.04,
+    "actual": 82.186776,
+    "diff": -6.8532240000000115,
+    "details": {
+      "diff_pct": 1.0006316344614874,
+      "amount": 68488.98,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第67笔 重算=8076.50, 原始=176.01",
+    "trade_index": 67,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 176.01,
+    "actual": 8076.504719999999,
+    "diff": 7900.494719999999,
+    "details": {
+      "diff_pct": 11.73848588303679,
+      "amount": 6730420.6,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第68笔 重算=152.36, 原始=3930.47",
+    "trade_index": 68,
+    "symbol": "000002.SZ",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 3930.47,
+    "actual": 152.358912,
+    "diff": -3778.1110879999997,
+    "details": {
+      "diff_pct": 297.5692886019034,
+      "amount": 126965.76,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第69笔 重算=4327.05, 原始=157.64",
+    "trade_index": 69,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 157.64,
+    "actual": 4327.046711999999,
+    "diff": 4169.406711999999,
+    "details": {
+      "diff_pct": 11.56282422494911,
+      "amount": 3605872.26,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第70笔 重算=117.34, 原始=8766.89",
+    "trade_index": 70,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 8766.89,
+    "actual": 117.341196,
+    "diff": -8649.548804,
+    "details": {
+      "diff_pct": 147.42561178599203,
+      "amount": 586705.98,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第71笔 重算=2524.05, 原始=4687.63",
+    "trade_index": 71,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 4687.63,
+    "actual": 2524.046592,
+    "diff": -2163.583408,
+    "details": {
+      "diff_pct": 1.7143767590166579,
+      "amount": 12620232.959999999,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第73笔 重算=19.69, 原始=83.90",
+    "trade_index": 73,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": 83.9,
+    "actual": 19.6899,
+    "diff": -64.21010000000001,
+    "details": {
+      "diff_pct": 43.71037243275993,
+      "amount": 14689.9,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第74笔 重算=77.45, 原始=19.39",
+    "trade_index": 74,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": 19.39,
+    "actual": 77.44572,
+    "diff": 58.055719999999994,
+    "details": {
+      "diff_pct": 8.995573157561193,
+      "amount": 64538.1,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第77笔 重算=68.50, 原始=75.34",
+    "trade_index": 77,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-15T00:00:00",
+    "expected": 75.34,
+    "actual": 68.49792000000001,
+    "diff": -6.842079999999996,
+    "details": {
+      "diff_pct": 1.1986489516761962,
+      "amount": 57081.6,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第81笔 重算=5.14, 原始=7.91",
+    "trade_index": 81,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-21T00:00:00",
+    "expected": 7.91,
+    "actual": 5.1405,
+    "diff": -2.7695,
+    "details": {
+      "diff_pct": 1.077521641863632,
+      "amount": 25702.5,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第82笔 重算=64.41, 原始=70.62",
+    "trade_index": 82,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-21T00:00:00",
+    "expected": 70.62,
+    "actual": 64.413,
+    "diff": -6.207000000000008,
+    "details": {
+      "diff_pct": 1.156350426156212,
+      "amount": 53677.5,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第83笔 重算=42.41, 原始=70.49",
+    "trade_index": 83,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 70.49,
+    "actual": 42.411168,
+    "diff": -28.07883199999999,
+    "details": {
+      "diff_pct": 7.944746629001114,
+      "amount": 35342.64,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第84笔 重算=11.17, 原始=44.92",
+    "trade_index": 84,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 44.92,
+    "actual": 11.166642,
+    "diff": -33.753358000000006,
+    "details": {
+      "diff_pct": 6.045390906236629,
+      "amount": 55833.21,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第85笔 重算=66.28, 原始=16.75",
+    "trade_index": 85,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 16.75,
+    "actual": 66.28464,
+    "diff": 49.534639999999996,
+    "details": {
+      "diff_pct": 8.967623268377109,
+      "amount": 55237.2,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第86笔 重算=56.66, 原始=62.60",
+    "trade_index": 86,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-23T00:00:00",
+    "expected": 62.6,
+    "actual": 56.656152,
+    "diff": -5.943848000000003,
+    "details": {
+      "diff_pct": 1.2589308218461437,
+      "amount": 47213.46,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第88笔 重算=53.00, 原始=59.34",
+    "trade_index": 88,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-27T00:00:00",
+    "expected": 59.34,
+    "actual": 52.996320000000004,
+    "diff": -6.343679999999999,
+    "details": {
+      "diff_pct": 1.4364046409260112,
+      "amount": 44163.6,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第92笔 重算=736.26, 原始=1134.90",
+    "trade_index": 92,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-28T00:00:00",
+    "expected": 1134.9,
+    "actual": 736.2617200000001,
+    "diff": -398.63828,
+    "details": {
+      "diff_pct": 1.0828711290327575,
+      "amount": 3681308.6,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第93笔 重算=6.67, 原始=3.81",
+    "trade_index": 93,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 3.81,
+    "actual": 6.66659,
+    "diff": 2.85659,
+    "details": {
+      "diff_pct": 17.140328455108932,
+      "amount": 1666.5900000000001,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第94笔 重算=8666.11, 原始=34.57",
+    "trade_index": 94,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 34.57,
+    "actual": 8666.107596,
+    "diff": 8631.537596,
+    "details": {
+      "diff_pct": 11.952130758197432,
+      "amount": 7221756.33,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第95笔 重算=86.33, 原始=7.98",
+    "trade_index": 95,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 7.98,
+    "actual": 86.33001599999999,
+    "diff": 78.35001599999998,
+    "details": {
+      "diff_pct": 10.890768188899674,
+      "amount": 71941.68,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第96笔 重算=63.82, 原始=9715.54",
+    "trade_index": 96,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 9715.54,
+    "actual": 63.821520000000014,
+    "diff": -9651.718480000001,
+    "details": {
+      "diff_pct": 1814.758121711924,
+      "amount": 53184.600000000006,
+      "direction": -1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第97笔 重算=5.00, 原始=2.17",
+    "trade_index": 97,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 2.17,
+    "actual": 5.0,
+    "diff": 2.83,
+    "details": {
+      "diff_pct": 2.1530212289414745,
+      "amount": 13144.32,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_mismatch",
+    "severity": "warning",
+    "message": "手续费差异: 第98笔 重算=5.41, 原始=88.93",
+    "trade_index": 98,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 88.93,
+    "actual": 5.409454,
+    "diff": -83.52054600000001,
+    "details": {
+      "diff_pct": 30.879473603066042,
+      "amount": 27047.27,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第1笔 重算=2.11, 原始=0.00",
+    "trade_index": 1,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-01T00:00:00",
+    "expected": 0.0,
+    "actual": 2.1119999999999997,
+    "diff": 2.1119999999999997,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 7040.0,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第10笔 重算=15.31, 原始=3.67",
+    "trade_index": 10,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 3.67,
+    "actual": 15.311478,
+    "diff": 11.641478,
+    "details": {
+      "diff_pct": 2.280931599157181,
+      "amount": 51038.26,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第11笔 重算=914.94, 原始=1.84",
+    "trade_index": 11,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 1.84,
+    "actual": 914.9420159999999,
+    "diff": 913.1020159999998,
+    "details": {
+      "diff_pct": 2.9939668307898537,
+      "amount": 3049806.7199999997,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第12笔 重算=1.88, 原始=894.97",
+    "trade_index": 12,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 894.97,
+    "actual": 1.8846959999999997,
+    "diff": -893.0853040000001,
+    "details": {
+      "diff_pct": 1421.5851850908584,
+      "amount": 6282.32,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第13笔 重算=3.67, 原始=15.31",
+    "trade_index": 13,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 15.31,
+    "actual": 3.6734999999999998,
+    "diff": -11.636500000000002,
+    "details": {
+      "diff_pct": 9.50306247447938,
+      "amount": 12245.0,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第18笔 重算=1894.20, 原始=0.00",
+    "trade_index": 18,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-10T00:00:00",
+    "expected": 0.0,
+    "actual": 1894.200285,
+    "diff": 1894.200285,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 6314000.95,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第23笔 重算=13.91, 原始=27.33",
+    "trade_index": 23,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-12T00:00:00",
+    "expected": 27.33,
+    "actual": 13.90824,
+    "diff": -13.421759999999999,
+    "details": {
+      "diff_pct": 2.8950665217166223,
+      "amount": 46360.8,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第24笔 重算=28.34, 原始=13.91",
+    "trade_index": 24,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-12T00:00:00",
+    "expected": 13.91,
+    "actual": 28.344125999999996,
+    "diff": 14.434125999999996,
+    "details": {
+      "diff_pct": 1.5277372814388417,
+      "amount": 94480.42,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第32笔 重算=25.34, 原始=0.00",
+    "trade_index": 32,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-22T00:00:00",
+    "expected": 0.0,
+    "actual": 25.341732,
+    "diff": 25.341732,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 84472.44,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第36笔 重算=3.39, 原始=10.13",
+    "trade_index": 36,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-24T00:00:00",
+    "expected": 10.13,
+    "actual": 3.3863999999999996,
+    "diff": -6.743600000000001,
+    "details": {
+      "diff_pct": 5.97413182140326,
+      "amount": 11288.0,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第37笔 重算=10.37, 原始=3.29",
+    "trade_index": 37,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-24T00:00:00",
+    "expected": 3.29,
+    "actual": 10.374593999999998,
+    "diff": 7.084593999999998,
+    "details": {
+      "diff_pct": 2.0486374695723026,
+      "amount": 34581.98,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第43笔 重算=17.51, 原始=0.00",
+    "trade_index": 43,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-26T00:00:00",
+    "expected": 0.0,
+    "actual": 17.514774,
+    "diff": 17.514774,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 58382.58,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第47笔 重算=1.03, 原始=43.42",
+    "trade_index": 47,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 43.42,
+    "actual": 1.028595,
+    "diff": -42.391405,
+    "details": {
+      "diff_pct": 123.63876452831289,
+      "amount": 3428.65,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第48笔 重算=5.09, 原始=0.00",
+    "trade_index": 48,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 0.0,
+    "actual": 5.0904929999999995,
+    "diff": 5.0904929999999995,
+    "details": {
+      "diff_pct": 3.0000000000000004,
+      "amount": 16968.309999999998,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第49笔 重算=43.42, 原始=0.00",
+    "trade_index": 49,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 0.0,
+    "actual": 43.420967999999995,
+    "diff": 43.420967999999995,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 144736.56,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第50笔 重算=2912.76, 原始=1.06",
+    "trade_index": 50,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 1.06,
+    "actual": 2912.756433,
+    "diff": 2911.696433,
+    "details": {
+      "diff_pct": 2.9989082506302367,
+      "amount": 9709188.110000001,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第51笔 重算=0.20, 原始=3866.27",
+    "trade_index": 51,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 3866.27,
+    "actual": 0.19522799999999998,
+    "diff": -3866.074772,
+    "details": {
+      "diff_pct": 59408.611039400086,
+      "amount": 650.76,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第53笔 重算=1696.38, 原始=0.00",
+    "trade_index": 53,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-30T00:00:00",
+    "expected": 0.0,
+    "actual": 1696.3830419999997,
+    "diff": 1696.3830419999997,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 5654610.14,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第60笔 重算=19.08, 原始=3721.94",
+    "trade_index": 60,
+    "symbol": "000002.SZ",
+    "datetime": "2024-02-02T00:00:00",
+    "expected": 3721.94,
+    "actual": 19.080935999999998,
+    "diff": -3702.859064,
+    "details": {
+      "diff_pct": 582.1819847831365,
+      "amount": 63603.12,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第61笔 重算=3785.09, 原始=0.00",
+    "trade_index": 61,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-02T00:00:00",
+    "expected": 0.0,
+    "actual": 3785.085143999999,
+    "diff": 3785.085143999999,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 12616950.479999999,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第67笔 重算=2019.13, 原始=176.01",
+    "trade_index": 67,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 176.01,
+    "actual": 2019.1261799999997,
+    "diff": 1843.1161799999998,
+    "details": {
+      "diff_pct": 2.7384858830367897,
+      "amount": 6730420.6,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第68笔 重算=38.09, 原始=3930.47",
+    "trade_index": 68,
+    "symbol": "000002.SZ",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 3930.47,
+    "actual": 38.089727999999994,
+    "diff": -3892.380272,
+    "details": {
+      "diff_pct": 306.5692886019034,
+      "amount": 126965.76,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第69笔 重算=1081.76, 原始=36.38",
+    "trade_index": 69,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 36.38,
+    "actual": 1081.7616779999998,
+    "diff": 1045.3816779999997,
+    "details": {
+      "diff_pct": 2.8991090161358066,
+      "amount": 3605872.26,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第70笔 重算=176.01, 原始=2023.13",
+    "trade_index": 70,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 2023.13,
+    "actual": 176.011794,
+    "diff": -1847.118206,
+    "details": {
+      "diff_pct": 31.482859711094136,
+      "amount": 586705.98,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第71笔 重算=3786.07, 原始=1081.76",
+    "trade_index": 71,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 1081.76,
+    "actual": 3786.0698879999995,
+    "diff": 2704.309888,
+    "details": {
+      "diff_pct": 2.142836742056464,
+      "amount": 12620232.959999999,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第73笔 重算=4.41, 原始=19.36",
+    "trade_index": 73,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": 19.36,
+    "actual": 4.406969999999999,
+    "diff": -14.95303,
+    "details": {
+      "diff_pct": 10.179123070953512,
+      "amount": 14689.9,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第74笔 重算=19.36, 原始=4.48",
+    "trade_index": 74,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": 4.48,
+    "actual": 19.36143,
+    "diff": 14.881429999999998,
+    "details": {
+      "diff_pct": 2.3058363974148604,
+      "amount": 64538.1,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第83笔 重算=10.60, 原始=16.27",
+    "trade_index": 83,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 16.27,
+    "actual": 10.602791999999999,
+    "diff": -5.6672080000000005,
+    "details": {
+      "diff_pct": 1.6035044354354968,
+      "amount": 35342.64,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第84笔 重算=16.75, 原始=10.37",
+    "trade_index": 84,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 10.37,
+    "actual": 16.749962999999997,
+    "diff": 6.379962999999998,
+    "details": {
+      "diff_pct": 1.142682464432906,
+      "amount": 55833.21,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第93笔 重算=0.50, 原始=3.81",
+    "trade_index": 93,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 3.81,
+    "actual": 0.49997699999999995,
+    "diff": -3.310023,
+    "details": {
+      "diff_pct": 19.861051608373984,
+      "amount": 1666.5900000000001,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第94笔 重算=2166.53, 原始=0.00",
+    "trade_index": 94,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.0,
+    "actual": 2166.526899,
+    "diff": 2166.526899,
+    "details": {
+      "diff_pct": 2.9999999999999996,
+      "amount": 7221756.33,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第95笔 重算=21.58, 原始=7.98",
+    "trade_index": 95,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 7.98,
+    "actual": 21.582503999999997,
+    "diff": 13.602503999999996,
+    "details": {
+      "diff_pct": 1.8907681888996752,
+      "amount": 71941.68,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第96笔 重算=15.96, 原始=2242.05",
+    "trade_index": 96,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 2242.05,
+    "actual": 15.95538,
+    "diff": -2226.0946200000003,
+    "details": {
+      "diff_pct": 418.5600004512585,
+      "amount": 53184.600000000006,
+      "direction": -1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第97笔 重算=3.94, 原始=0.50",
+    "trade_index": 97,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.5,
+    "actual": 3.9432959999999992,
+    "diff": 3.4432959999999992,
+    "details": {
+      "diff_pct": 2.619607556724121,
+      "amount": 13144.32,
+      "direction": 1
+    }
+  },
+  {
+    "type": "slippage_exceeded",
+    "severity": "warning",
+    "message": "滑点差异: 第98笔 重算=8.11, 原始=20.52",
+    "trade_index": 98,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 20.52,
+    "actual": 8.114181,
+    "diff": -12.405819,
+    "details": {
+      "diff_pct": 4.586717624366526,
+      "amount": 27047.27,
+      "direction": 1
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=22970.00, 使用费率=0.000300, 预期费率=0.001300",
+    "trade_index": 2,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-01T00:00:00",
+    "expected": 0.0013,
+    "actual": 0.0003,
+    "diff": null,
+    "details": {
+      "total_amount": 22970.0,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=13299812.15, 使用费率=0.000300, 预期费率=0.001000",
+    "trade_index": 3,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-02T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0003,
+    "diff": null,
+    "details": {
+      "total_amount": 13299812.15,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=13324215.32, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 4,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-03T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 13324215.32,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=25258437.62, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 6,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-04T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 25258437.619999997,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=25315985.51, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 7,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-04T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 25315985.509999998,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=25380750.84, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 9,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-04T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 25380750.839999996,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=25431789.10, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 10,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 25431789.099999998,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28481595.82, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 11,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28481595.819999997,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28487878.14, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 12,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-05T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28487878.139999997,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28538085.99, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 14,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-08T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28538085.99,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28614035.21, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 17,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-09T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28614035.209999997,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=6561451.15, 使用费率=0.000300, 预期费率=0.000200",
+    "trade_index": 18,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-10T00:00:00",
+    "expected": 0.0002,
+    "actual": 0.0003,
+    "diff": null,
+    "details": {
+      "total_amount": 6561451.15,
+      "direction": 1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28708515.63, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 24,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-12T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28708515.63,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28740763.78, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 25,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-15T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28740763.779999997,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28819877.42, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 30,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-18T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28819877.419999998,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28904349.86, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 32,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-22T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28904349.86,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28945731.59, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 33,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-22T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28945731.59,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28957019.59, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 36,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-24T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28957019.59,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=28991601.57, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 37,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-24T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 28991601.57,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=29011175.25, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 38,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-25T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 29011175.25,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=29060116.91, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 39,
+    "symbol": "600000.SH",
+    "datetime": "2024-01-25T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 29060116.91,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=29085294.72, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 41,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-26T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 29085294.72,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=29166868.12, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 45,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-26T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 29166868.119999997,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=29170296.77, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 47,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 29170296.769999996,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=29315033.33, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 49,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 29315033.329999994,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=39024221.44, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 50,
+    "symbol": "600519.SH",
+    "datetime": "2024-01-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 39024221.44,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=39087764.05, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 52,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-30T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 39087764.05,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=39127021.51, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 54,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-30T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 39127021.51,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=39199004.44, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 55,
+    "symbol": "000002.SZ",
+    "datetime": "2024-01-30T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 39199004.44,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=39229799.96, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 56,
+    "symbol": "000001.SZ",
+    "datetime": "2024-01-31T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 39229799.96,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=39298288.94, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 66,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-07T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 39298288.94,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=46028709.54, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 67,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 46028709.54,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=46155675.30, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 68,
+    "symbol": "000002.SZ",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 46155675.3,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=49761547.56, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 69,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-13T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 49761547.559999995,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=49776237.46, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 73,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 49776237.45999999,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=49840775.56, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 74,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-14T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 49840775.559999995,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=49897857.16, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 77,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-15T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 49897857.16,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=49917644.16, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 78,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-16T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 49917644.16,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60221951.06, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 79,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-16T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60221951.059999995,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60260888.66, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 80,
+    "symbol": "000002.SZ",
+    "datetime": "2024-02-19T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60260888.66,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60314566.16, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 82,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-21T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60314566.16,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60349908.80, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 83,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60349908.8,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60405146.00, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 85,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-22T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60405146.0,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60452359.46, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 86,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-23T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60452359.46,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60496523.06, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 88,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-27T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60496523.06,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60566253.23, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 89,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-27T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60566253.230000004,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60646153.02, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 90,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-27T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60646153.02,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=60647819.61, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 93,
+    "symbol": "600000.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 60647819.61000001,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=67869575.94, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 94,
+    "symbol": "600519.SH",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 67869575.94000001,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=67941517.62, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 95,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 67941517.62000002,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=67994702.22, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 96,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 67994702.22000001,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  },
+  {
+    "type": "fee_tier_mismatch",
+    "severity": "warning",
+    "message": "手续费阶梯不匹配: 累计金额=68082513.10, 使用费率=0.000200, 预期费率=0.001000",
+    "trade_index": 99,
+    "symbol": "000001.SZ",
+    "datetime": "2024-02-29T00:00:00",
+    "expected": 0.001,
+    "actual": 0.0002,
+    "diff": null,
+    "details": {
+      "total_amount": 68082513.10000001,
+      "direction": -1,
+      "tiers": [
+        1000000,
+        5000000
+      ]
+    }
+  }
+]

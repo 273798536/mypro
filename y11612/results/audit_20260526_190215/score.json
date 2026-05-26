@@ -1,0 +1,103 @@
+{
+  "total_score": 370,
+  "max_score": 700,
+  "weighted_score": 42.72727272727272,
+  "grade": "F (严重)",
+  "components": [
+    {
+      "name": "停牌合规",
+      "score": 0,
+      "max_score": 100,
+      "weight": 0.25,
+      "weighted_score": 0.0,
+      "details": {
+        "suspension_trades": 7,
+        "penalty_per_trade": 20,
+        "message": "发现 7 笔停牌期间成交，每笔扣20分"
+      }
+    },
+    {
+      "name": "撮合顺序",
+      "score": 100,
+      "max_score": 100,
+      "weight": 0.2,
+      "weighted_score": 0.2,
+      "details": {
+        "message": "撮合顺序正常"
+      }
+    },
+    {
+      "name": "手续费准确度",
+      "score": 0,
+      "max_score": 100,
+      "weight": 0.2,
+      "weighted_score": 0.0,
+      "details": {
+        "fee_issues": 109,
+        "penalty_per_issue": 5,
+        "message": "发现 109 处手续费异常，每处扣5分"
+      }
+    },
+    {
+      "name": "滑点准确度",
+      "score": 0,
+      "max_score": 100,
+      "weight": 0.15,
+      "weighted_score": 0.0,
+      "details": {
+        "slippage_issues": 35,
+        "penalty_per_issue": 3,
+        "message": "发现 35 处滑点差异，每处扣3分"
+      }
+    },
+    {
+      "name": "价格范围",
+      "score": 75,
+      "max_score": 100,
+      "weight": 0.1,
+      "weighted_score": 0.075,
+      "details": {
+        "price_issues": 5,
+        "penalty_per_issue": 5,
+        "message": "发现 5 笔成交价超出K线范围，每笔扣5分"
+      }
+    },
+    {
+      "name": "数据完整性",
+      "score": 100,
+      "max_score": 100,
+      "weight": 0.1,
+      "weighted_score": 0.1,
+      "details": {
+        "total_trades": 100,
+        "missing_kline": 0,
+        "completeness_ratio": 1.0,
+        "message": "数据完整度 100.0%，0 笔缺少K线数据"
+      }
+    },
+    {
+      "name": "报告一致性",
+      "score": 95,
+      "max_score": 100,
+      "weight": 0.1,
+      "weighted_score": 0.095,
+      "details": {
+        "fee_diff_bps": 0.8131781726115989,
+        "slip_diff_bps": 0.18461118909990248,
+        "recalc_fee_total": 108442.66849199998,
+        "orig_fee_total": 124025.18999999999,
+        "recalc_slip_total": 57487.480724999994,
+        "orig_slip_total": 53949.87,
+        "message": "手续费差异 0.81bps, 滑点差异 0.18bps"
+      }
+    }
+  ],
+  "anomalies_count": {
+    "suspension_trade": 7,
+    "price_outside_range": 5,
+    "fee_mismatch": 57,
+    "slippage_exceeded": 35,
+    "fee_tier_mismatch": 52
+  },
+  "summary": "综合评分: 42.7/100 (F (严重))\n异常总数: 156 (严重: 7, 警告: 149)\n最低分项: 停牌合规 - 0/100\n建议: 存在严重异常（停牌成交/撮合顺序错误），建议立即修正后重新回测"
+}

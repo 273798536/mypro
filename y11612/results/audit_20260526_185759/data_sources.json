@@ -1,0 +1,89 @@
+{
+  "kline": {
+    "name": "kline",
+    "path": "sample_data/kline/kline_data.csv",
+    "file_hash": "418f925ddbb1def4",
+    "load_time": "2026-05-26T18:57:59.151871",
+    "row_count": 176,
+    "columns": [
+      "datetime",
+      "symbol",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "amount"
+    ]
+  },
+  "signals": {
+    "name": "signals",
+    "path": "sample_data/signals/signals.csv",
+    "file_hash": "8a57fbd81d136b4b",
+    "load_time": "2026-05-26T18:57:59.157773",
+    "row_count": 100,
+    "columns": [
+      "datetime",
+      "symbol",
+      "direction",
+      "volume",
+      "price",
+      "order_type"
+    ]
+  },
+  "fee_table": {
+    "name": "fee_table",
+    "path": "sample_data/fee_table/fee.yaml",
+    "file_hash": "e3219240fe3f9eca",
+    "load_time": "2026-05-26T18:57:59.163989",
+    "row_count": 1,
+    "columns": [
+      "commission",
+      "tiers"
+    ]
+  },
+  "suspension": {
+    "name": "suspension",
+    "path": "sample_data/suspension/suspension.csv",
+    "file_hash": "818be17124707468",
+    "load_time": "2026-05-26T18:57:59.173104",
+    "row_count": 2,
+    "columns": [
+      "symbol",
+      "suspend_date",
+      "resume_date",
+      "reason"
+    ]
+  },
+  "slippage_params": {
+    "name": "slippage_params",
+    "path": "sample_data/slippage_params/slippage.yaml",
+    "file_hash": "0106c49042f77d4e",
+    "load_time": "2026-05-26T18:57:59.175249",
+    "row_count": 1,
+    "columns": [
+      "fixed",
+      "model",
+      "percentage",
+      "volatility"
+    ]
+  },
+  "backtest_report": {
+    "name": "backtest_report",
+    "path": "sample_data/backtest_report/backtest.csv",
+    "file_hash": "ec92e1a5b0e15e24",
+    "load_time": "2026-05-26T18:57:59.351244",
+    "row_count": 100,
+    "columns": [
+      "datetime",
+      "symbol",
+      "direction",
+      "volume",
+      "price",
+      "amount",
+      "fee",
+      "slippage",
+      "net_pnl"
+    ]
+  }
+}

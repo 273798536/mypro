@@ -1,0 +1,15 @@
+commission:
+  buy:
+    min_fee: 5
+    rate: 0.0003
+  sell:
+    min_fee: 5
+    rate: 0.0013
+    stamp_duty: 0.001
+tiers:
+- buy_rate: 0.00025
+  sell_rate: 0.0011
+  threshold: 1000000
+- buy_rate: 0.0002
+  sell_rate: 0.001
+  threshold: 5000000

@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/slippage_audit/__init__.py
+src/slippage_audit/anomaly_detector.py
+src/slippage_audit/audit_trail.py
+src/slippage_audit/cli.py
+src/slippage_audit/data_loader.py
+src/slippage_audit/matching_engine.py
+src/slippage_audit/reporting.py
+src/slippage_audit/utils.py
+src/slippage_audit.egg-info/PKG-INFO
+src/slippage_audit.egg-info/SOURCES.txt
+src/slippage_audit.egg-info/dependency_links.txt
+src/slippage_audit.egg-info/entry_points.txt
+src/slippage_audit.egg-info/requires.txt
+src/slippage_audit.egg-info/top_level.txt
+tests/test_basic.py
