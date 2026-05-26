@@ -317,9 +317,10 @@ export class TicketStateMachine {
         }
 
         const newStatus = approved ? TicketStatus.COMPENSATION_APPROVED : TicketStatus.COMPENSATION_REJECTED;
+        const approvalStatus = approved ? ApprovalStatus.APPROVED : ApprovalStatus.REJECTED;
         const finalAmount = approved ? approvedAmount : 0;
 
-        await this.dao.updateCompensationApproval(approvalId, newStatus, finalAmount, operatorId);
+        await this.dao.updateCompensationApproval(approvalId, approvalStatus, finalAmount, operatorId);
 
         if (approved && finalAmount) {
             await this.dao.addTotalCompensation(ticketId, finalAmount);

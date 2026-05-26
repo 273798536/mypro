@@ -201,8 +201,9 @@ class TicketStateMachine {
             throw new Error('Ticket is not in compensation approving status');
         }
         const newStatus = approved ? types_1.TicketStatus.COMPENSATION_APPROVED : types_1.TicketStatus.COMPENSATION_REJECTED;
+        const approvalStatus = approved ? types_1.ApprovalStatus.APPROVED : types_1.ApprovalStatus.REJECTED;
         const finalAmount = approved ? approvedAmount : 0;
-        await this.dao.updateCompensationApproval(approvalId, newStatus, finalAmount, operatorId);
+        await this.dao.updateCompensationApproval(approvalId, approvalStatus, finalAmount, operatorId);
         if (approved && finalAmount) {
             await this.dao.addTotalCompensation(ticketId, finalAmount);
         }
