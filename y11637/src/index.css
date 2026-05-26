@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f7ff 0%, #e6f0ff 50%, #f5f8ff 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply bg-status-error hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-lg border border-gray-100;
+  }
+
+  .zone-frozen {
+    @apply bg-zone-frozen text-white;
+  }
+
+  .zone-chilled {
+    @apply bg-zone-chilled text-white;
+  }
+
+  .zone-ambient {
+    @apply bg-zone-ambient text-white;
+  }
+
+  .zone-frozen-border {
+    @apply border-2 border-zone-frozen;
+  }
+
+  .zone-chilled-border {
+    @apply border-2 border-zone-chilled;
+  }
+
+  .zone-ambient-border {
+    @apply border-2 border-zone-ambient;
+  }
+
+  .cargo-box {
+    @apply cursor-grab active:cursor-grabbing transition-transform duration-200 hover:scale-105;
+  }
+
+  .compartment-slot {
+    @apply border-2 border-dashed border-gray-300 rounded-lg transition-all duration-200;
+  }
+
+  .compartment-slot.drag-over {
+    @apply border-primary-500 bg-primary-50 scale-105;
+  }
+
+  .compartment-slot.invalid {
+    @apply border-status-error bg-red-50 animate-shake;
+  }
+
+  .toast-error {
+    @apply bg-status-error text-white px-4 py-3 rounded-lg shadow-lg;
+  }
+
+  .toast-warning {
+    @apply bg-status-warning text-gray-900 px-4 py-3 rounded-lg shadow-lg;
+  }
+
+  .toast-success {
+    @apply bg-status-success text-white px-4 py-3 rounded-lg shadow-lg;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}

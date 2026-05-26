@@ -1,0 +1,151 @@
+[
+  {
+    "id": "custom-level-1",
+    "name": "自定义关卡-城市配送",
+    "difficulty": "medium",
+    "timeLimit": 240,
+    "source": "培训中心材料库",
+    "version": 1,
+    "lastModified": 1716800000000,
+    "stations": [
+      {
+        "id": "station-1",
+        "name": "超市A",
+        "order": 1
+      },
+      {
+        "id": "station-2",
+        "name": "超市B",
+        "order": 2
+      },
+      {
+        "id": "station-3",
+        "name": "餐厅C",
+        "order": 3
+      }
+    ],
+    "cargoBoxes": [
+      {
+        "id": "cargo-1",
+        "name": "冰淇淋",
+        "zone": "frozen",
+        "weight": 50,
+        "destination": "station-1",
+        "priority": 1
+      },
+      {
+        "id": "cargo-2",
+        "name": "速冻水饺",
+        "zone": "frozen",
+        "weight": 40,
+        "destination": "station-2",
+        "priority": 2
+      },
+      {
+        "id": "cargo-3",
+        "name": "鲜奶",
+        "zone": "chilled",
+        "weight": 60,
+        "destination": "station-1",
+        "priority": 1
+      },
+      {
+        "id": "cargo-4",
+        "name": "酸奶",
+        "zone": "chilled",
+        "weight": 30,
+        "destination": "station-3",
+        "priority": 3
+      },
+      {
+        "id": "cargo-5",
+        "name": "鸡蛋",
+        "zone": "chilled",
+        "weight": 25,
+        "destination": "station-2",
+        "priority": 2
+      },
+      {
+        "id": "cargo-6",
+        "name": "大米",
+        "zone": "ambient",
+        "weight": 100,
+        "destination": "station-2",
+        "priority": 2
+      },
+      {
+        "id": "cargo-7",
+        "name": "食用油",
+        "zone": "ambient",
+        "weight": 80,
+        "destination": "station-3",
+        "priority": 3
+      }
+    ],
+    "compartments": [
+      {
+        "id": "compartment-0-0",
+        "zone": "frozen",
+        "row": 0,
+        "col": 0,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-0-1",
+        "zone": "frozen",
+        "row": 0,
+        "col": 1,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-0-2",
+        "zone": "frozen",
+        "row": 0,
+        "col": 2,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-1-0",
+        "zone": "chilled",
+        "row": 1,
+        "col": 0,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-1-1",
+        "zone": "chilled",
+        "row": 1,
+        "col": 1,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-1-2",
+        "zone": "chilled",
+        "row": 1,
+        "col": 2,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-2-0",
+        "zone": "ambient",
+        "row": 2,
+        "col": 0,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-2-1",
+        "zone": "ambient",
+        "row": 2,
+        "col": 1,
+        "occupiedBy": null
+      },
+      {
+        "id": "compartment-2-2",
+        "zone": "ambient",
+        "row": 2,
+        "col": 2,
+        "occupiedBy": null
+      }
+    ]
+  }
+]
