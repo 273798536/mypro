@@ -27,7 +27,9 @@ def check_missing_fields(row: Dict, required_fields: List[str]) -> Tuple[bool, L
     missing = []
     for field in required_fields:
         value = row.get(field)
-        if value is None or (isinstance(value, str) and value.strip() == ""):
+        if (value is None 
+            or (isinstance(value, str) and value.strip() == "")
+            or (isinstance(value, float) and math.isnan(value))):
             missing.append(field)
     return len(missing) > 0, missing
 

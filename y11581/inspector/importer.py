@@ -78,6 +78,8 @@ def import_recharge_data(
         if name and name not in existing_member_names[mid]:
             existing_member_names[mid].append(name)
 
+    current_batch_names = {}
+
     valid_count = 0
     dirty_count = 0
 
@@ -85,8 +87,16 @@ def import_recharge_data(
         original_row = idx + 2
         row_dict = row.to_dict()
 
+        combined_names = existing_member_names.copy()
+        for mid, names in current_batch_names.items():
+            if mid not in combined_names:
+                combined_names[mid] = []
+            for name in names:
+                if name not in combined_names[mid]:
+                    combined_names[mid].append(name)
+
         is_dirty, dirty_type, dirty_reason, fix_suggestion = check_recharge_record(
-            row_dict, existing_member_names
+            row_dict, combined_names
         )
 
         raw = RawRecord(
@@ -140,6 +150,14 @@ def import_recharge_data(
                 is_revoked=bool(row_dict.get("is_revoked", False)),
             )
             db.add(record)
+
+        member_id = str(row_dict.get("member_id", ""))
+        member_name = str(row_dict.get("member_name", "")).strip()
+        if member_id and member_name and member_name != "nan":
+            if member_id not in current_batch_names:
+                current_batch_names[member_id] = []
+            if member_name not in current_batch_names[member_id]:
+                current_batch_names[member_id].append(member_name)
 
     batch.valid_rows = valid_count
     batch.dirty_rows = dirty_count
