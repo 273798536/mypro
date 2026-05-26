@@ -29,7 +29,7 @@ function generateBatchNo(recordType: string): string {
 
 router.post('/', requirePermission('batch:create'), async (req: AuthRequest, res) => {
   try {
-    const { idempotencyKey, title, recordType, storeId, records } = req.body
+    const { idempotencyKey, title, recordType, storeId, batchDate, records } = req.body
     const user = req.user!
 
     const existing = await prisma.batch.findUnique({ where: { idempotencyKey } })
@@ -42,6 +42,10 @@ router.post('/', requirePermission('batch:create'), async (req: AuthRequest, res
         message: '幂等命中，返回已存在批次'
       })
     }
+
+    const parsedBatchDate = batchDate ? new Date(batchDate) : new Date()
+
+    const processedMemberRecords = new Map<string, { memberName?: string; amount: number; quantity?: number }>()
 
     const batch = await prisma.$transaction(async (tx) => {
       const newBatch = await tx.batch.create({
@@ -59,7 +63,44 @@ router.post('/', requirePermission('batch:create'), async (req: AuthRequest, res
         for (const recordData of records) {
           const recordIdempotencyKey = recordData.idempotencyKey || `${idempotencyKey}-${recordData.memberId || recordData.phone || Math.random()}`
           
-          const validation = validateRecord({ ...recordData, recordType })
+          const existingDbRecord = await tx.record.findFirst({
+            where: {
+              storeId,
+              memberId: recordData.memberId,
+              status: { in: [CONFIG.RECORD_STATUS.VALID, CONFIG.RECORD_STATUS.REVIEWED, CONFIG.RECORD_STATUS.RESOLVED] }
+            },
+            orderBy: { createdAt: 'desc' }
+          })
+
+          const validationContext: any = {
+            batchDate: parsedBatchDate
+          }
+
+          const inBatchRecord = recordData.memberId ? processedMemberRecords.get(recordData.memberId) : undefined
+          let existingRecord: { memberName?: string; amount: number; quantity?: number } | undefined
+          if (existingDbRecord) {
+            existingRecord = {
+              memberName: existingDbRecord.memberName || undefined,
+              amount: parseFloat(existingDbRecord.amount.toString()),
+              quantity: existingDbRecord.quantity ?? undefined
+            }
+          } else if (inBatchRecord) {
+            existingRecord = inBatchRecord
+          }
+
+          if (existingRecord) {
+            validationContext.existingRecord = existingRecord
+          }
+
+          const validation = validateRecord(
+            { 
+              ...recordData, 
+              recordType,
+              storeId,
+              transactionDate: recordData.transactionDate ? new Date(recordData.transactionDate) : undefined
+            },
+            validationContext
+          )
           const status = validation.isValid ? CONFIG.RECORD_STATUS.VALID : CONFIG.RECORD_STATUS.DIRTY
 
           await tx.record.create({
@@ -84,6 +125,14 @@ router.post('/', requirePermission('batch:create'), async (req: AuthRequest, res
               createdBy: user.id
             }
           })
+
+          if (recordData.memberId && status === CONFIG.RECORD_STATUS.VALID && !inBatchRecord) {
+            processedMemberRecords.set(recordData.memberId, {
+              memberName: recordData.memberName,
+              amount: recordData.amount,
+              quantity: recordData.quantity
+            })
+          }
         }
       }
 
@@ -105,7 +154,7 @@ router.post('/', requirePermission('batch:create'), async (req: AuthRequest, res
 router.post('/:batchId/records', requirePermission('record:create'), async (req: AuthRequest, res) => {
   try {
     const { batchId } = req.params
-    const { records } = req.body
+    const { records, batchDate } = req.body
     const user = req.user!
 
     const batch = await prisma.batch.findUnique({ where: { id: batchId } })
@@ -114,15 +163,57 @@ router.post('/:batchId/records', requirePermission('record:create'), async (req:
       return res.status(400).json({ error: '只能在草稿状态添加记录' })
     }
 
-    const results = await Promise.all(records.map(async (recordData: any) => {
+    const parsedBatchDate = batchDate ? new Date(batchDate) : new Date()
+    const processedMemberRecords = new Map<string, { memberName?: string; amount: number; quantity?: number }>()
+
+    const results: any[] = []
+    for (const recordData of records) {
       const recordIdempotencyKey = recordData.idempotencyKey || `${batchId}-${recordData.memberId || recordData.phone || uuidv4()}`
       
       const existing = await prisma.record.findUnique({ where: { idempotencyKey: recordIdempotencyKey } })
       if (existing) {
-        return { id: existing.id, isNew: false, message: '幂等命中，记录已存在' }
+        results.push({ id: existing.id, isNew: false, message: '幂等命中，记录已存在' })
+        continue
       }
 
-      const validation = validateRecord({ ...recordData, recordType: batch.recordType as any })
+      const existingMemberRecord = await prisma.record.findFirst({
+        where: {
+          storeId: batch.storeId,
+          memberId: recordData.memberId,
+          status: { in: [CONFIG.RECORD_STATUS.VALID, CONFIG.RECORD_STATUS.REVIEWED, CONFIG.RECORD_STATUS.RESOLVED] }
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+
+      const validationContext: any = {
+        batchDate: parsedBatchDate
+      }
+
+      const inBatchRecord = recordData.memberId ? processedMemberRecords.get(recordData.memberId) : undefined
+      let existingRecord: { memberName?: string; amount: number; quantity?: number } | undefined
+      if (existingMemberRecord) {
+        existingRecord = {
+          memberName: existingMemberRecord.memberName || undefined,
+          amount: parseFloat(existingMemberRecord.amount.toString()),
+          quantity: existingMemberRecord.quantity ?? undefined
+        }
+      } else if (inBatchRecord) {
+        existingRecord = inBatchRecord
+      }
+
+      if (existingRecord) {
+        validationContext.existingRecord = existingRecord
+      }
+
+      const validation = validateRecord(
+        { 
+          ...recordData, 
+          recordType: batch.recordType as any,
+          storeId: batch.storeId,
+          transactionDate: recordData.transactionDate ? new Date(recordData.transactionDate) : undefined
+        },
+        validationContext
+      )
       const status = validation.isValid ? CONFIG.RECORD_STATUS.VALID : CONFIG.RECORD_STATUS.DIRTY
 
       const record = await prisma.record.create({
@@ -148,8 +239,16 @@ router.post('/:batchId/records', requirePermission('record:create'), async (req:
         }
       })
 
-      return { ...filterFieldsByRole(record, user.role, 'record'), isNew: true }
-    }))
+      if (recordData.memberId && status === CONFIG.RECORD_STATUS.VALID && !inBatchRecord) {
+        processedMemberRecords.set(recordData.memberId, {
+          memberName: recordData.memberName,
+          amount: recordData.amount,
+          quantity: recordData.quantity
+        })
+      }
+
+      results.push({ ...filterFieldsByRole(record, user.role, 'record'), isNew: true })
+    }
 
     await recalculateBatchStats(batchId)
     res.json(results)

@@ -1,6 +1,9 @@
 import { prisma } from '../lib/prisma'
-import { v4 as uuidv4 } from 'uuid'
 import { CONFIG } from '../config'
+import http from 'http'
+import express from 'express'
+import { batchesRouter } from '../routes/batches'
+import { supervisorRouter } from '../routes/supervisor'
 
 const TEST_USERS = {
   dataEntry: { id: 'user-entry-1', username: 'entry001', role: CONFIG.ROLES.DATA_ENTRY, storeId: 'store-001' },
@@ -9,8 +12,33 @@ const TEST_USERS = {
   readOnly: { id: 'user-readonly-1', username: 'readonly001', role: CONFIG.ROLES.READ_ONLY, storeId: 'store-001' }
 }
 
-function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+function getAuthHeaders(user: any) {
+  return {
+    'x-user-id': user.id,
+    'x-username': user.username,
+    'x-role': user.role,
+    'x-store-id': user.storeId,
+    'Content-Type': 'application/json'
+  }
+}
+
+function makeRequest(options: http.RequestOptions, data?: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const req = http.request(options, (res) => {
+      let body = ''
+      res.on('data', (chunk) => { body += chunk })
+      res.on('end', () => {
+        try {
+          resolve({ status: res.statusCode, data: body ? JSON.parse(body) : null })
+        } catch {
+          resolve({ status: res.statusCode, data: body })
+        }
+      })
+    })
+    req.on('error', reject)
+    if (data) req.write(JSON.stringify(data))
+    req.end()
+  })
 }
 
 async function initTestUsers() {
@@ -24,446 +52,434 @@ async function initTestUsers() {
   console.log('✅ 测试用户初始化完成')
 }
 
-async function testNormalFlow() {
-  console.log('\n=== 🧪 测试 1: 正常链路测试 ===')
-  
-  const idempotencyKey = `batch-normal-${Date.now()}`
-  const batchTitle = '充值流水-2026-05-24-001'
-  
-  let batch: any
-  
-  batch = await prisma.batch.create({
-    data: {
-      idempotencyKey,
-      batchNo: `RECHARGE-20260524-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
-      title: batchTitle,
-      recordType: CONFIG.RECORD_TYPES.RECHARGE,
-      storeId: 'store-001',
-      createdBy: TEST_USERS.dataEntry.id
-    }
-  })
-  console.log(`✅ 创建批次: ${batch.batchNo}, 状态: ${batch.status}`)
-  
-  await delay(100)
-  
-  const records = [
-    {
-      idempotencyKey: `rec-${Date.now()}-1`,
-      memberId: 'M001',
-      memberName: '张三',
-      phone: '13800138001',
-      amount: 500,
-      transactionDate: new Date('2026-05-24'),
-      operator: '收银员A'
-    },
-    {
-      idempotencyKey: `rec-${Date.now()}-2`,
-      memberId: 'M002',
-      memberName: '李四',
-      phone: '13800138002',
-      amount: 1000,
-      transactionDate: new Date('2026-05-24'),
-      operator: '收银员A'
-    }
-  ]
-  
-  for (const rec of records) {
-    await prisma.record.create({
-      data: {
-        idempotencyKey: rec.idempotencyKey,
-        batchId: batch.id,
-        recordType: CONFIG.RECORD_TYPES.RECHARGE,
-        storeId: 'store-001',
-        memberId: rec.memberId,
-        memberName: rec.memberName,
-        phone: rec.phone,
-        amount: rec.amount,
-        transactionDate: rec.transactionDate,
-        operator: rec.operator,
-        originalContent: JSON.stringify(rec),
-        rawData: JSON.stringify(rec),
-        source: 'api',
-        status: CONFIG.RECORD_STATUS.VALID,
-        createdBy: TEST_USERS.dataEntry.id
-      }
-    })
-  }
-  console.log('✅ 添加 2 条有效记录')
-  
-  await delay(100)
-  
-  await prisma.statusHistory.create({
-    data: {
-      batchId: batch.id,
-      fromStatus: CONFIG.BATCH_STATUS.DRAFT,
-      toStatus: CONFIG.BATCH_STATUS.SUBMITTED,
-      operatorRole: TEST_USERS.dataEntry.role,
-      operatedBy: TEST_USERS.dataEntry.id
-    }
-  })
-  batch = await prisma.batch.update({
-    where: { id: batch.id },
-    data: { status: CONFIG.BATCH_STATUS.SUBMITTED }
-  })
-  console.log(`✅ 提交批次, 状态: ${batch.status}`)
-  
-  await delay(100)
-  
-  await prisma.statusHistory.create({
-    data: {
-      batchId: batch.id,
-      fromStatus: CONFIG.BATCH_STATUS.SUBMITTED,
-      toStatus: CONFIG.BATCH_STATUS.REVIEWED,
-      reason: '数据核对无误',
-      operatorRole: TEST_USERS.reviewer.role,
-      operatedBy: TEST_USERS.reviewer.id
-    }
-  })
-  batch = await prisma.batch.update({
-    where: { id: batch.id },
-    data: {
-      status: CONFIG.BATCH_STATUS.REVIEWED,
-      reviewedAt: new Date(),
-      reviewedBy: TEST_USERS.reviewer.id
-    }
-  })
-  console.log(`✅ 复核通过, 状态: ${batch.status}`)
-  
-  await delay(100)
-  
-  await prisma.statusHistory.create({
-    data: {
-      batchId: batch.id,
-      fromStatus: CONFIG.BATCH_STATUS.REVIEWED,
-      toStatus: CONFIG.BATCH_STATUS.FROZEN,
-      reason: '待财务确认后结算',
-      operatorRole: TEST_USERS.supervisor.role,
-      operatedBy: TEST_USERS.supervisor.id
-    }
-  })
-  batch = await prisma.batch.update({
-    where: { id: batch.id },
-    data: {
-      status: CONFIG.BATCH_STATUS.FROZEN,
-      frozenAt: new Date(),
-      frozenBy: TEST_USERS.supervisor.id,
-      frozenRemark: '待财务确认后结算'
-    }
-  })
-  console.log(`✅ 冻结批次, 状态: ${batch.status}`)
-  
-  await delay(100)
-  
-  await prisma.statusHistory.create({
-    data: {
-      batchId: batch.id,
-      fromStatus: CONFIG.BATCH_STATUS.FROZEN,
-      toStatus: CONFIG.BATCH_STATUS.SETTLED,
-      reason: '财务审核通过，准予结算',
-      operatorRole: TEST_USERS.supervisor.role,
-      operatedBy: TEST_USERS.supervisor.id
-    }
-  })
-  batch = await prisma.batch.update({
-    where: { id: batch.id },
-    data: {
-      status: CONFIG.BATCH_STATUS.SETTLED,
-      settledAt: new Date(),
-      settledBy: TEST_USERS.supervisor.id,
-      settleRemark: '财务审核通过，准予结算'
-    }
-  })
-  console.log(`✅ 结算完成, 状态: ${batch.status}`)
-  
-  const histories = await prisma.statusHistory.findMany({
-    where: { batchId: batch.id },
-    orderBy: { operatedAt: 'asc' }
-  })
-  
-  console.log(`📋 状态流转历史 (${histories.length} 条):`)
-  histories.forEach((h: any, i: number) => {
-    console.log(`   ${i + 1}. ${h.fromStatus || '初始'} -> ${h.toStatus} | ${h.reason || ''}`)
-  })
-  
-  console.log('🎉 正常链路测试通过!')
-  return batch.id
+async function clearTestData() {
+  await prisma.statusHistory.deleteMany({})
+  await prisma.attachment.deleteMany({})
+  await prisma.record.deleteMany({})
+  await prisma.batch.deleteMany({})
+  console.log('✅ 测试数据清理完成')
 }
 
-async function testIdempotency() {
-  console.log('\n=== 🧪 测试 2: 重复提交幂等性测试 ===')
-  
-  const idempotencyKey = `batch-idempotent-${Date.now()}`
-  const batchTitle = '退款申请-幂等测试'
-  
-  const batchData = {
-    idempotencyKey,
-    batchNo: `REFUND-20260524-IDEM`,
-    title: batchTitle,
-    recordType: CONFIG.RECORD_TYPES.REFUND,
-    storeId: 'store-001',
-    status: CONFIG.BATCH_STATUS.DRAFT,
-    createdBy: TEST_USERS.dataEntry.id
-  }
-  
-  const batch1 = await prisma.batch.upsert({
-    where: { idempotencyKey },
-    update: {},
-    create: batchData as any
-  })
-  console.log(`✅ 第一次创建批次 ID: ${batch1.id}`)
-  
-  const batch2 = await prisma.batch.upsert({
-    where: { idempotencyKey },
-    update: {},
-    create: batchData as any
-  })
-  console.log(`✅ 第二次创建(幂等)批次 ID: ${batch2.id}`)
-  
-  if (batch1.id === batch2.id) {
-    console.log('🎉 幂等性验证通过: 同一 idempotencyKey 返回相同批次')
-  } else {
-    console.log('❌ 幂等性验证失败: 创建了不同批次')
-  }
-  
-  const recKey = `rec-idempotent-${Date.now()}`
-  const recData = {
-    idempotencyKey: recKey,
-    batchId: batch1.id,
-    recordType: CONFIG.RECORD_TYPES.REFUND,
-    storeId: 'store-001',
-    memberId: 'M003',
-    amount: 100,
-    originalContent: JSON.stringify({ test: true }),
-    rawData: JSON.stringify({ test: true }),
-    source: 'api',
-    status: CONFIG.RECORD_STATUS.VALID,
-    createdBy: TEST_USERS.dataEntry.id
-  }
-  
-  const rec1 = await prisma.record.upsert({
-    where: { idempotencyKey: recKey },
-    update: {},
-    create: recData as any
-  })
-  
-  const rec2 = await prisma.record.upsert({
-    where: { idempotencyKey: recKey },
-    update: {},
-    create: recData as any
-  })
-  
-  if (rec1.id === rec2.id) {
-    console.log('🎉 记录幂等性验证通过')
-  } else {
-    console.log('❌ 记录幂等性验证失败')
-  }
-  
-  return batch1.id
+async function testValidatorUnit() {
+  console.log('\n=== 🧪 测试 1: 数据校验单元测试 ===')
+  const { runTests } = require('./validator.test')
+  return runTests()
 }
 
-async function testDirtyData() {
-  console.log('\n=== 🧪 测试 3: 坏数据处理测试 ===')
-  
-  const idempotencyKey = `batch-dirty-${Date.now()}`
-  const batch = await prisma.batch.create({
-    data: {
-      idempotencyKey,
-      batchNo: `RECHARGE-20260524-DIRTY`,
-      title: '脏数据测试批次',
-      recordType: CONFIG.RECORD_TYPES.RECHARGE,
-      storeId: 'store-001',
-      createdBy: TEST_USERS.dataEntry.id
-    }
-  })
-  
-  const dirtyCases = [
-    {
-      name: '缺失字段',
-      data: {
-        idempotencyKey: `dirty-${Date.now()}-1`,
-        memberId: '',
-        amount: 200,
-        transactionDate: null,
-        dirtyType: CONFIG.DIRTY_TYPES.MISSING_FIELDS,
-        dirtyRemark: '缺少必填字段: memberId, transactionDate'
-      }
-    },
-    {
-      name: '跨日交易',
-      data: {
-        idempotencyKey: `dirty-${Date.now()}-2`,
-        memberId: 'M005',
-        amount: 300,
-        transactionDate: new Date('2026-05-20'),
-        dirtyType: CONFIG.DIRTY_TYPES.CROSS_DATE,
-        dirtyRemark: '交易日期与批次日期不一致'
-      }
-    },
-    {
-      name: '金额冲突',
-      data: {
-        idempotencyKey: `dirty-${Date.now()}-3`,
-        memberId: 'M006',
-        amount: 9999,
-        transactionDate: new Date('2026-05-24'),
-        dirtyType: CONFIG.DIRTY_TYPES.AMOUNT_CONFLICT,
-        dirtyRemark: '金额异常'
-      }
-    }
-  ]
-  
-  for (const testCase of dirtyCases) {
-    await prisma.record.create({
-      data: {
-        idempotencyKey: testCase.data.idempotencyKey,
-        batchId: batch.id,
-        recordType: CONFIG.RECORD_TYPES.RECHARGE,
-        storeId: 'store-001',
-        memberId: testCase.data.memberId,
-        amount: testCase.data.amount,
-        transactionDate: testCase.data.transactionDate,
-        originalContent: JSON.stringify(testCase.data),
-        rawData: JSON.stringify(testCase.data),
-        source: 'api',
-        status: CONFIG.RECORD_STATUS.DIRTY,
-        dirtyType: testCase.data.dirtyType,
-        dirtyRemark: testCase.data.dirtyRemark,
-        createdBy: TEST_USERS.dataEntry.id
-      } as any
-    })
-    console.log(`✅ 添加 ${testCase.name} 测试数据`)
-  }
-  
-  await delay(100)
-  
-  const dirtyRecords = await prisma.record.findMany({
-    where: { batchId: batch.id, status: CONFIG.RECORD_STATUS.DIRTY }
-  })
-  
-  console.log(`📋 脏数据统计 (${dirtyRecords.length} 条):`)
-  dirtyRecords.forEach((rec: any) => {
-    console.log(`   - ${rec.dirtyType}: ${rec.dirtyRemark}`)
-  })
-  
-  if (dirtyRecords.length === 3) {
-    console.log('🎉 脏数据分类测试通过')
-  } else {
-    console.log('❌ 脏数据分类测试失败')
-  }
-  
-  const firstDirty = dirtyRecords[0]
-  await prisma.statusHistory.create({
-    data: {
-      recordId: firstDirty.id,
-      fromStatus: CONFIG.RECORD_STATUS.DIRTY,
-      toStatus: CONFIG.RECORD_STATUS.RESOLVED,
-      reason: '已核对原始单据，修正数据',
-      operatorRole: TEST_USERS.reviewer.role,
-      operatedBy: TEST_USERS.reviewer.id
-    }
-  })
-  await prisma.record.update({
-    where: { id: firstDirty.id },
-    data: {
-      status: CONFIG.RECORD_STATUS.RESOLVED,
-      resolvedAt: new Date(),
-      resolvedBy: TEST_USERS.reviewer.id,
-      resolveRemark: '已核对原始单据，修正数据'
-    }
-  })
-  
-  const resolved = await prisma.record.findUnique({ where: { id: firstDirty.id } })
-  console.log(`✅ 脏数据处理后状态: ${resolved?.status}`)
-  
-  return batch.id
-}
-
-async function testRolePermissions() {
-  console.log('\n=== 🧪 测试 4: 权限控制测试 ===')
-  
-  const { hasPermission } = require('../middleware/auth')
-  
-  const testCases = [
-    { role: CONFIG.ROLES.DATA_ENTRY, perm: 'batch:create', expected: true },
-    { role: CONFIG.ROLES.DATA_ENTRY, perm: 'batch:review', expected: false },
-    { role: CONFIG.ROLES.REVIEWER, perm: 'batch:review', expected: true },
-    { role: CONFIG.ROLES.REVIEWER, perm: 'batch:settle', expected: false },
-    { role: CONFIG.ROLES.SUPERVISOR, perm: 'batch:*', expected: true },
-    { role: CONFIG.ROLES.SUPERVISOR, perm: 'export:*', expected: true },
-    { role: CONFIG.ROLES.READ_ONLY, perm: 'batch:view', expected: true },
-    { role: CONFIG.ROLES.READ_ONLY, perm: 'batch:create', expected: false }
-  ]
+async function testApiDirtyDataDetection(port: number) {
+  console.log('\n=== 🧪 测试 2: API 脏数据自动分类测试 ===')
   
   let allPassed = true
-  for (const tc of testCases) {
-    const result = hasPermission(tc.role, tc.perm)
-    const passed = result === tc.expected
-    allPassed = allPassed && passed
-    console.log(`   ${passed ? '✅' : '❌'} ${tc.role} -> ${tc.perm}: ${result} (期望 ${tc.expected})`)
+
+  const batchIdempotencyKey = `dirty-test-${Date.now()}`
+  
+  const createBatchRes = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: '/api/batches',
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    idempotencyKey: batchIdempotencyKey,
+    title: '脏数据自动检测测试批次',
+    recordType: CONFIG.RECORD_TYPES.RECHARGE,
+    storeId: 'store-001',
+    batchDate: '2026-05-24',
+    records: [
+      {
+        idempotencyKey: `${batchIdempotencyKey}-valid`,
+        memberId: 'M100',
+        memberName: '王小明',
+        phone: '13800138100',
+        amount: 500,
+        transactionDate: '2026-05-24',
+        operator: '收银员A'
+      },
+      {
+        idempotencyKey: `${batchIdempotencyKey}-missing`,
+        memberId: '',
+        amount: 300,
+        transactionDate: '2026-05-24',
+        operator: '收银员A'
+      },
+      {
+        idempotencyKey: `${batchIdempotencyKey}-crossdate`,
+        memberId: 'M102',
+        memberName: '张小华',
+        amount: 800,
+        transactionDate: '2026-05-20',
+        operator: '收银员A'
+      }
+    ]
+  })
+
+  if (createBatchRes.status !== 201) {
+    console.log('❌ 创建批次失败', createBatchRes.data)
+    return { passed: false, batchId: '' }
+  }
+
+  const batchId = createBatchRes.data.id
+  console.log(`✅ 创建批次成功: ${batchId}`)
+
+  const batchDetailRes = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}`,
+    method: 'GET',
+    headers: getAuthHeaders(TEST_USERS.supervisor)
+  })
+
+  const records = batchDetailRes.data.records
+  console.log(`📋 批次记录数: ${records.length}`)
+
+  const validRecord = records.find((r: any) => r.memberId === 'M100')
+  if (validRecord && validRecord.status === CONFIG.RECORD_STATUS.VALID) {
+    console.log('✅ 正常数据自动标记为 valid')
+  } else {
+    console.log('❌ 正常数据未正确标记', validRecord?.status)
+    allPassed = false
+  }
+
+  const missingRecord = records.find((r: any) => r.idempotencyKey?.includes('missing'))
+  if (missingRecord && missingRecord.status === CONFIG.RECORD_STATUS.DIRTY && missingRecord.dirtyType === CONFIG.DIRTY_TYPES.MISSING_FIELDS) {
+    console.log(`✅ 缺失字段自动分类: ${missingRecord.dirtyType}`)
+  } else {
+    console.log('❌ 缺失字段未正确分类', missingRecord?.status, missingRecord?.dirtyType)
+    allPassed = false
+  }
+
+  const crossdateRecord = records.find((r: any) => r.memberId === 'M102')
+  if (crossdateRecord && crossdateRecord.status === CONFIG.RECORD_STATUS.DIRTY && crossdateRecord.dirtyType === CONFIG.DIRTY_TYPES.CROSS_DATE) {
+    console.log(`✅ 跨日交易自动分类: ${crossdateRecord.dirtyType}`)
+  } else {
+    console.log('❌ 跨日交易未正确分类', crossdateRecord?.status, crossdateRecord?.dirtyType)
+    allPassed = false
+  }
+
+  console.log('\n--- 测试名称变更检测 ---')
+  const addRecordRes = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}/records`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    batchDate: '2026-05-24',
+    records: [
+      {
+        idempotencyKey: `${batchIdempotencyKey}-namechange`,
+        memberId: 'M100',
+        memberName: '王大明',
+        phone: '13800138100',
+        amount: 500,
+        transactionDate: '2026-05-24',
+        operator: '收银员B'
+      }
+    ]
+  })
+
+  await new Promise(resolve => setTimeout(resolve, 500))
+
+  const batchDetailRes2 = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}`,
+    method: 'GET',
+    headers: getAuthHeaders(TEST_USERS.supervisor)
+  })
+
+  const records2 = batchDetailRes2.data.records
+  const nameChangeRecord = records2.find((r: any) => r.idempotencyKey?.includes('namechange'))
+  
+  if (nameChangeRecord && nameChangeRecord.status === CONFIG.RECORD_STATUS.DIRTY && nameChangeRecord.dirtyType === CONFIG.DIRTY_TYPES.NAME_CHANGED) {
+    console.log(`✅ 会员名称变更自动分类: ${nameChangeRecord.dirtyType}`)
+    console.log(`   备注: ${nameChangeRecord.dirtyRemark}`)
+  } else {
+    console.log('❌ 会员名称变更未正确分类', nameChangeRecord?.status, nameChangeRecord?.dirtyType)
+    allPassed = false
+  }
+
+  console.log('\n--- 测试金额冲突检测 ---')
+  const addRecordRes2 = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}/records`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    batchDate: '2026-05-24',
+    records: [
+      {
+        idempotencyKey: `${batchIdempotencyKey}-amountconflict`,
+        memberId: 'M100',
+        memberName: '王小明',
+        amount: 9999,
+        transactionDate: '2026-05-24',
+        operator: '收银员C'
+      }
+    ]
+  })
+
+  await new Promise(resolve => setTimeout(resolve, 500))
+
+  const batchDetailRes3 = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}`,
+    method: 'GET',
+    headers: getAuthHeaders(TEST_USERS.supervisor)
+  })
+
+  const records3 = batchDetailRes3.data.records
+  const amountConflictRecord = records3.find((r: any) => r.idempotencyKey?.includes('amountconflict'))
+  
+  if (amountConflictRecord && amountConflictRecord.status === CONFIG.RECORD_STATUS.DIRTY && amountConflictRecord.dirtyType === CONFIG.DIRTY_TYPES.AMOUNT_CONFLICT) {
+    console.log(`✅ 金额冲突自动分类: ${amountConflictRecord.dirtyType}`)
+    console.log(`   备注: ${amountConflictRecord.dirtyRemark}`)
+  } else {
+    console.log('❌ 金额冲突未正确分类', amountConflictRecord?.status, amountConflictRecord?.dirtyType)
+    allPassed = false
+  }
+
+  if (allPassed) {
+    console.log('🎉 API 脏数据自动分类测试通过!')
   }
   
-  if (allPassed) {
-    console.log('🎉 权限控制测试通过')
-  } else {
-    console.log('❌ 权限控制测试失败')
-  }
+  return { passed: allPassed, batchId }
 }
 
-async function testHistoryAfterRestart(batchIds: string[]) {
-  console.log('\n=== 🧪 测试 5: 重启后历史查询验证 ===')
+async function testNormalFlow(port: number) {
+  console.log('\n=== 🧪 测试 3: 完整状态流转链路测试 ===')
   
-  console.log('   (模拟服务重启，重新连接数据库...)')
-  await prisma.$disconnect()
-  await delay(500)
-  await prisma.$connect()
-  console.log('   ✅ 数据库重连成功')
+  const idempotencyKey = `normal-flow-${Date.now()}`
   
-  for (const batchId of batchIds) {
-    const batch = await prisma.batch.findUnique({
-      where: { id: batchId },
-      include: { statusHistories: { orderBy: { operatedAt: 'asc' } } }
-    })
-    
-    if (batch) {
-      console.log(`   ✅ 批次 ${batch.batchNo} - 当前状态: ${batch.status}, 历史记录: ${batch.statusHistories.length} 条`)
-    } else {
-      console.log(`   ❌ 批次 ${batchId} 未找到`)
-    }
+  const createBatchRes = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: '/api/batches',
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    idempotencyKey,
+    title: '正常流程测试批次',
+    recordType: CONFIG.RECORD_TYPES.RECHARGE,
+    storeId: 'store-001',
+    batchDate: '2026-05-24',
+    records: [
+      {
+        idempotencyKey: `${idempotencyKey}-r1`,
+        memberId: 'M201',
+        memberName: '赵六六',
+        amount: 1000,
+        transactionDate: '2026-05-24',
+        operator: '收银员A'
+      }
+    ]
+  })
+
+  const batchId = createBatchRes.data.id
+  console.log(`✅ 创建批次，状态: ${createBatchRes.data.status}`)
+
+  await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}/submit`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  })
+  console.log('✅ 提交批次')
+
+  await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}/review`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.reviewer)
+  }, { reason: '数据核对无误' })
+  console.log('✅ 复核通过')
+
+  await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}/freeze`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.supervisor)
+  }, { reason: '待财务确认' })
+  console.log('✅ 冻结批次')
+
+  await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}/settle`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.supervisor)
+  }, { reason: '财务审核通过' })
+  console.log('✅ 完成结算')
+
+  const finalRes = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${batchId}`,
+    method: 'GET',
+    headers: getAuthHeaders(TEST_USERS.supervisor)
+  })
+
+  console.log(`📋 最终状态: ${finalRes.data.status}`)
+  console.log(`📋 状态历史数: ${finalRes.data.statusHistories?.length || 0}`)
+
+  if (finalRes.data.status === CONFIG.BATCH_STATUS.SETTLED) {
+    console.log('🎉 完整状态流转测试通过!')
+    return { passed: true, batchId }
   }
+  return { passed: false, batchId }
+}
+
+async function testIdempotency(port: number) {
+  console.log('\n=== 🧪 测试 4: 幂等性测试 ===')
   
-  const totalBatches = await prisma.batch.count()
-  const totalRecords = await prisma.record.count()
-  const totalHistories = await prisma.statusHistory.count()
+  const idempotencyKey = `idempotent-test-${Date.now()}`
   
-  console.log(`📊 数据汇总: 批次 ${totalBatches}, 记录 ${totalRecords}, 状态历史 ${totalHistories}`)
-  console.log('🎉 历史数据完整，重启验证通过!')
+  const res1 = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: '/api/batches',
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    idempotencyKey,
+    title: '幂等测试批次',
+    recordType: CONFIG.RECORD_TYPES.REFUND,
+    storeId: 'store-001',
+    records: []
+  })
+
+  const res2 = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: '/api/batches',
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    idempotencyKey,
+    title: '幂等测试批次-重复',
+    recordType: CONFIG.RECORD_TYPES.REFUND,
+    storeId: 'store-001',
+    records: []
+  })
+
+  if (res1.data.id === res2.data.id && res2.data.isNew === false) {
+    console.log('🎉 批次幂等性验证通过!')
+    return true
+  }
+  console.log('❌ 幂等性验证失败')
+  return false
+}
+
+async function testRolePermissions(port: number) {
+  console.log('\n=== 🧪 测试 5: 权限控制测试 ===')
+  
+  const batchIdempotencyKey = `perm-test-${Date.now()}`
+  let testBatchId = ''
+  
+  const createRes = await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: '/api/batches',
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  }, {
+    idempotencyKey: batchIdempotencyKey,
+    title: '权限测试批次',
+    recordType: CONFIG.RECORD_TYPES.RECHARGE,
+    storeId: 'store-001',
+    records: []
+  })
+  testBatchId = createRes.data.id
+
+  await makeRequest({
+    hostname: 'localhost',
+    port,
+    path: `/api/batches/${testBatchId}/submit`,
+    method: 'POST',
+    headers: getAuthHeaders(TEST_USERS.dataEntry)
+  })
+
+  const testCases = [
+    { desc: '录入员不能复核', user: TEST_USERS.dataEntry, endpoint: `/api/batches/${testBatchId}/review`, expected: 403 },
+    { desc: '只读用户不能创建', user: TEST_USERS.readOnly, endpoint: '/api/batches', expected: 403 },
+    { desc: '复核员可以复核', user: TEST_USERS.reviewer, endpoint: `/api/batches/${testBatchId}/review`, expected: 200 },
+    { desc: '主管可以冻结', user: TEST_USERS.supervisor, endpoint: `/api/batches/${testBatchId}/freeze`, expected: 200 }
+  ]
+
+  let allPassed = true
+  for (const tc of testCases) {
+    const res = await makeRequest({
+      hostname: 'localhost',
+      port,
+      path: tc.endpoint,
+      method: 'POST',
+      headers: getAuthHeaders(tc.user)
+    }, { reason: '测试' })
+    
+    const passed = res.status === tc.expected
+    allPassed = allPassed && passed
+    console.log(`   ${passed ? '✅' : '❌'} ${tc.desc}: ${res.status} (期望 ${tc.expected})`)
+  }
+
+  if (allPassed) {
+    console.log('🎉 权限控制测试通过!')
+  }
+  return allPassed
 }
 
 async function runAllTests() {
   console.log('🚀 门店会员储值异常回执状态机 - 验收测试开始')
-  console.log('=' .repeat(60))
-  
+  console.log('=' .repeat(65))
+
+  const app = express()
+  app.use(express.json({ limit: '10mb' }))
+  app.use('/api/batches', batchesRouter)
+  app.use('/api/supervisor', supervisorRouter)
+  const server = app.listen(0)
+  const port = (server.address() as any).port
+  console.log(`✅ 测试服务器启动在端口 ${port}`)
+
   try {
+    await prisma.$connect()
+    await clearTestData()
     await initTestUsers()
+
+    const unitTestPassed = await testValidatorUnit()
+    const dirtyTestResult = await testApiDirtyDataDetection(port)
+    const normalFlowResult = await testNormalFlow(port)
+    const idempotentPassed = await testIdempotency(port)
+    const permPassed = await testRolePermissions(port)
+
+    console.log('\n' + '=' .repeat(65))
+    console.log('🏆 验收测试汇总')
+    console.log(`   - ${unitTestPassed ? '✅' : '❌'} 数据校验单元测试`)
+    console.log(`   - ${dirtyTestResult.passed ? '✅' : '❌'} API脏数据自动分类`)
+    console.log(`   - ${normalFlowResult.passed ? '✅' : '❌'} 完整状态流转链路`)
+    console.log(`   - ${idempotentPassed ? '✅' : '❌'} 幂等性处理`)
+    console.log(`   - ${permPassed ? '✅' : '❌'} 四角色权限控制`)
     
-    const normalBatchId = await testNormalFlow()
-    const idempotentBatchId = await testIdempotency()
-    const dirtyBatchId = await testDirtyData()
-    await testRolePermissions()
+    const allPassed = unitTestPassed && dirtyTestResult.passed && normalFlowResult.passed && idempotentPassed && permPassed
     
-    await testHistoryAfterRestart([normalBatchId, idempotentBatchId, dirtyBatchId])
-    
-    console.log('\n' + '=' .repeat(60))
-    console.log('🏆 所有验收测试通过!')
-    console.log('   - ✅ 正常链路: 批次创建->提交->复核->冻结->结算')
-    console.log('   - ✅ 幂等性: 重复请求不重复创建')
-    console.log('   - ✅ 脏数据: 自动分类+人工处理闭环')
-    console.log('   - ✅ 权限控制: 四角色权限隔离')
-    console.log('   - ✅ 重启验证: 状态历史完整可追溯')
+    if (allPassed) {
+      console.log('\n🎉 所有验收测试通过!')
+      console.log('   - ✅ 异常回执/脏数据状态机链路完整')
+      console.log('   - ✅ 5种脏数据类型可自动检测分类')
+      console.log('   - ✅ 状态流转可追溯')
+      console.log('   - ✅ 重复请求不重复创建')
+    } else {
+      console.log('\n❌ 部分测试失败')
+      process.exit(1)
+    }
   } catch (error) {
-    console.error('\n❌ 测试失败:', error)
+    console.error('\n❌ 测试异常:', error)
     process.exit(1)
   } finally {
+    server.close()
     await prisma.$disconnect()
   }
 }

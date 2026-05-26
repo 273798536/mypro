@@ -48,7 +48,8 @@ export function checkCrossDate(transactionDate: Date, batchDate: Date): boolean 
 }
 
 export function checkNameChange(existingName?: string, newName?: string): boolean {
-  return !(!existingName || !newName) ? false : existingName !== newName
+  if (!existingName || !newName) return false
+  return existingName !== newName
 }
 
 export function checkAmountConflict(existingAmount: number, newAmount: number): boolean {
