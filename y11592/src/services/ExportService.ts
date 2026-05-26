@@ -129,7 +129,9 @@ class ExportService {
 
     const waveOrderNos = new Set<string>();
     const waveSourceIds = new Set<string>();
+    const diffNos = new Set<string>();
     const diffSourceIds = new Set<string>();
+    const scanNos = new Set<string>();
     const scanSourceIds = new Set<string>();
 
     for (const item of retryItems) {
@@ -141,8 +143,16 @@ class ExportService {
         }
       } else if (item.sourceType === DataSourceType.PICKING_DIFFERENCE) {
         diffSourceIds.add(item.sourceId);
+        const data = item.sourceData as any;
+        if (data.differenceNo) {
+          diffNos.add(data.differenceNo);
+        }
       } else if (item.sourceType === DataSourceType.REVIEW_SCAN) {
         scanSourceIds.add(item.sourceId);
+        const data = item.sourceData as any;
+        if (data.scanNo) {
+          scanNos.add(data.scanNo);
+        }
       }
     }
 
@@ -151,16 +161,34 @@ class ExportService {
         where: { batchId, waveNo: { [Op.in]: Array.from(waveOrderNos) } },
       }),
       PickingDifference.findAll({
-        where: { batchId },
+        where: {
+          batchId,
+          ...(diffNos.size > 0 ? { differenceNo: { [Op.in]: Array.from(diffNos) } } : {}),
+        },
       }),
       ReviewScan.findAll({
-        where: { batchId },
+        where: {
+          batchId,
+          ...(scanNos.size > 0 ? { scanNo: { [Op.in]: Array.from(scanNos) } } : {}),
+        },
       }),
     ]);
 
     if (waveOrders.length !== waveSourceIds.size) {
       issues.push(
         `波次单数量不一致: 重试成功 ${waveSourceIds.size} 条, 业务表 ${waveOrders.length} 条`
+      );
+    }
+
+    if (pickingDifferences.length !== diffSourceIds.size) {
+      issues.push(
+        `拣货差异数量不一致: 重试成功 ${diffSourceIds.size} 条, 业务表 ${pickingDifferences.length} 条`
+      );
+    }
+
+    if (reviewScans.length !== scanSourceIds.size) {
+      issues.push(
+        `复核扫描数量不一致: 重试成功 ${scanSourceIds.size} 条, 业务表 ${reviewScans.length} 条`
       );
     }
 
