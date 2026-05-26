@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
+import copy
 
 from app.config import settings
 from app.models.business import (
@@ -134,6 +135,8 @@ class CompensationQueueService:
                 product_name=delivery.product_name,
                 summary_date=delivery.delivery_date,
                 delivery_amount=delivery.total_amount,
+                repair_amount=0,
+                deduction_amount=0,
                 source_id=delivery.id,
                 source_type="delivery"
             )
@@ -161,7 +164,9 @@ class CompensationQueueService:
                     product_code=delivery.product_code,
                     product_name=delivery.product_name,
                     summary_date=repair.repair_date,
+                    delivery_amount=0,
                     repair_amount=repair.repair_cost,
+                    deduction_amount=0,
                     source_id=repair.id,
                     source_type="repair"
                 )
@@ -189,6 +194,8 @@ class CompensationQueueService:
                     product_code=delivery.product_code,
                     product_name=delivery.product_name,
                     summary_date=deduction.deduction_date,
+                    delivery_amount=0,
+                    repair_amount=0,
                     deduction_amount=deduction.deduction_amount,
                     source_id=deduction.id,
                     source_type="deduction"
@@ -217,6 +224,9 @@ class CompensationQueueService:
         ).with_for_update().first()
 
         if not summary:
+            new_source_ids = {}
+            if source_type and source_id:
+                new_source_ids[source_type] = [source_id]
             summary = SettlementSummary(
                 summary_date=summary_date,
                 supplier_code=supplier_code,
@@ -227,33 +237,33 @@ class CompensationQueueService:
                 repair_amount=repair_amount,
                 deduction_amount=deduction_amount,
                 final_amount=delivery_amount + repair_amount - deduction_amount,
-                source_ids={source_type: [source_id] if source_id else []},
+                source_ids=new_source_ids,
                 version=1
             )
             self.db.add(summary)
         else:
-            source_ids = summary.source_ids or {}
+            current_source_ids = copy.deepcopy(summary.source_ids) if summary.source_ids else {}
+            
             already_processed = False
-
             if source_type and source_id:
-                if source_type in source_ids and source_id in source_ids[source_type]:
+                if source_type in current_source_ids and source_id in current_source_ids[source_type]:
                     already_processed = True
                 else:
-                    if source_type not in source_ids:
-                        source_ids[source_type] = []
-                    source_ids[source_type].append(source_id)
+                    if source_type not in current_source_ids:
+                        current_source_ids[source_type] = []
+                    current_source_ids[source_type].append(source_id)
 
             if not already_processed:
-                summary.delivery_amount += delivery_amount
-                summary.repair_amount += repair_amount
-                summary.deduction_amount += deduction_amount
+                summary.delivery_amount = summary.delivery_amount + delivery_amount
+                summary.repair_amount = summary.repair_amount + repair_amount
+                summary.deduction_amount = summary.deduction_amount + deduction_amount
                 summary.final_amount = summary.delivery_amount + summary.repair_amount - summary.deduction_amount
-                summary.source_ids = source_ids
                 summary.version += 1
-            else:
-                summary.source_ids = source_ids
+            
+            summary.source_ids = current_source_ids
 
         self.db.flush()
+        self.db.refresh(summary)
 
     def _mark_success(self, queue_item: CompensationQueue, result: Dict[str, Any]):
         queue_item.status = QueueStatus.SUCCESS
