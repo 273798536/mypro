@@ -37,8 +37,19 @@ pip install -r requirements.txt
 
 ### 2. 初始化数据库
 ```bash
+# 首次初始化（自动检测并跳过已存在的数据）
 python scripts/init_db.py
+
+# 重置样例数据（清除旧样例，重新加载）
+python scripts/init_db.py --reset
+
+# 清空所有数据后重新初始化（包括非样例数据）
+python scripts/init_db.py --reset-all
 ```
+
+脚本特点：
+- **幂等性**：重复运行不会报错，已存在的样例数据会自动跳过
+- **参数控制**：通过 `--reset` 或 `--reset-all` 控制数据重置
 
 ### 3. 运行演示流程
 ```bash

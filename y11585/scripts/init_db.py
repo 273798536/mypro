@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import engine, Base, SessionLocal
@@ -12,10 +13,52 @@ def init_database():
     print("数据库表已创建")
 
 
-def load_sample_data():
+def reset_database():
+    db = SessionLocal()
+    try:
+        db.query(PriceChange).delete()
+        db.query(AcceptanceEmail).delete()
+        db.query(PaymentNode).delete()
+        db.query(Contract).delete()
+        db.query(Batch).delete()
+        db.commit()
+        print("已清空所有现有数据")
+    finally:
+        db.close()
+
+
+def load_sample_data(reset_existing=False):
     db = SessionLocal()
     
     try:
+        sample_batches = [
+            "BATCH_20240101_SAMPLE01",
+            "BATCH_20240102_SAMPLE02"
+        ]
+        
+        existing = db.query(Batch).filter(Batch.batch_no.in_(sample_batches)).all()
+        
+        if existing and not reset_existing:
+            print("发现已存在的样例数据，跳过加载")
+            print(f"  - 已存在 {len(existing)} 个样例批次:")
+            for batch in existing:
+                contracts = db.query(Contract).filter(Contract.batch_id == batch.id).count()
+                print(f"    * {batch.batch_no}: {contracts} 份合同")
+            print(f"  - 如需重新加载，请使用 --reset 参数")
+            return
+        
+        if existing and reset_existing:
+            for batch in existing:
+                contracts = db.query(Contract).filter(Contract.batch_id == batch.id).all()
+                for contract in contracts:
+                    db.query(PriceChange).filter(PriceChange.contract_id == contract.id).delete()
+                    db.query(AcceptanceEmail).filter(AcceptanceEmail.contract_id == contract.id).delete()
+                    db.query(PaymentNode).filter(PaymentNode.contract_id == contract.id).delete()
+                    db.delete(contract)
+                db.delete(batch)
+            db.flush()
+            print("已清除现有样例数据")
+        
         batch1 = Batch(
             batch_no="BATCH_20240101_SAMPLE01",
             name="2024年Q1合同履约批次",
@@ -229,11 +272,39 @@ def load_sample_data():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="法务合同履约异常回执状态机 - 数据库初始化"
+    )
+    parser.add_argument(
+        "--reset", 
+        action="store_true", 
+        help="清除现有数据并重新初始化"
+    )
+    parser.add_argument(
+        "--reset-all", 
+        action="store_true", 
+        help="清空所有数据（包括非样例数据）"
+    )
+    
+    args = parser.parse_args()
+    
     print("=" * 50)
     print("法务合同履约异常回执状态机 - 数据库初始化")
     print("=" * 50)
     init_database()
     print()
-    load_sample_data()
+    
+    if args.reset_all:
+        reset_database()
+        print()
+    
+    load_sample_data(reset_existing=args.reset)
     print()
     print("初始化完成！")
+    
+    if args.reset_all:
+        print("  提示: 已清空所有数据")
+    elif args.reset:
+        print("  提示: 已重置样例数据")
+    else:
+        print("  提示: 如需重置数据，请使用 --reset 参数")
