@@ -154,6 +154,8 @@ export interface CheckResult {
   resolvedAt?: string;
   resolvedBy?: string;
   resolution?: string;
+  entityType?: 'Contract' | 'PaymentNode' | 'AcceptanceRecord' | 'RefundRecord';
+  entityId?: string;
 }
 
 export interface FixAction {

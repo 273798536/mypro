@@ -143,18 +143,57 @@ program
 
 program
   .command('fix')
-  .description('修复校验问题')
+  .description('修复校验问题或直接修正数据')
   .option('-i, --id <id>', '检查结果ID')
   .option('-t, --type <type>', '批量修复类型')
   .requiredOption('-r, --reason <text>', '修复原因')
   .option('-v, --value <value>', '新值')
   .option('-b, --batch <id>', '批次ID')
+  .option('--entity-type <type>', '直接修正: 实体类型 PaymentNode|AcceptanceRecord|RefundRecord|Contract')
+  .option('--entity-id <id>', '直接修正: 实体业务ID(如nodeId, acceptanceId等)')
+  .option('--field <field>', '直接修正: 字段名')
+  .option('--field-value <value>', '直接修正: 字段新值')
   .action(async (options) => {
     const opts = program.opts();
     try {
       const fixer = new DataFixer(opts.workspace, opts.user);
 
-      if (options.id) {
+      if (options.entityType && options.entityId && options.field && options.fieldValue !== undefined) {
+        let result: any = null;
+        const parsedValue = isNaN(Number(options.fieldValue)) ? options.fieldValue : Number(options.fieldValue);
+        const updates: any = {};
+        updates[options.field] = parsedValue;
+
+        switch (options.entityType) {
+          case 'PaymentNode':
+            result = await fixer.updatePaymentNodeDirectly(options.entityId, updates, options.reason);
+            break;
+          case 'AcceptanceRecord':
+            result = await fixer.updateAcceptanceRecordDirectly(options.entityId, updates, options.reason);
+            break;
+          case 'RefundRecord':
+            result = await fixer.updateRefundRecordDirectly(options.entityId, updates, options.reason);
+            break;
+          case 'Contract':
+            const storeManager = new DataStoreManager(opts.workspace);
+            result = await storeManager.updateContract(options.entityId, updates, opts.user, options.reason);
+            break;
+          default:
+            console.error(chalk.red('✗ 不支持的实体类型'));
+            process.exit(ExitCodes.VALIDATION_ERROR);
+        }
+
+        if (result) {
+          console.log(chalk.green(`✓ ${options.entityType} 修正成功`));
+          if (opts.format === 'json') {
+            console.log(JSON.stringify(result, null, 2));
+          }
+          process.exit(ExitCodes.SUCCESS);
+        } else {
+          console.error(chalk.red('✗ 未找到该实体或修正失败'));
+          process.exit(ExitCodes.GENERAL_ERROR);
+        }
+      } else if (options.id) {
         const success = await fixer.resolveCheck(options.id, options.reason, options.value);
         if (success) {
           console.log(chalk.green('✓ 修复成功'));
@@ -176,10 +215,16 @@ program
 
         console.log(chalk.yellow('待修复错误清单:'));
         const table = new Table({
-          head: ['ID', '原始行号', '合同编号', '问题'],
-          colWidths: [38, 12, 15, 35],
+          head: ['ID', '原始行号', '合同编号', '实体类型', '问题'],
+          colWidths: [38, 12, 15, 18, 27],
         });
-        failedList.forEach(r => table.push([r.id, r.originalLineNo || '-', r.contractNo, r.message]));
+        failedList.forEach(r => table.push([
+          r.id, 
+          r.originalLineNo || '-', 
+          r.contractNo, 
+          r.entityType || 'Contract',
+          r.message
+        ]));
         console.log(table.toString());
         process.exit(ExitCodes.SUCCESS);
       }

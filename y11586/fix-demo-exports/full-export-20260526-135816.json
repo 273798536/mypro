@@ -1,0 +1,238 @@
+{
+  "导出时间": "2026-05-26T05:58:16.793Z",
+  "合同数量": 1,
+  "付款节点数量": 2,
+  "验收记录数量": 0,
+  "退款记录数量": 0,
+  "导入批次数量": 3,
+  "原始数据": {
+    "contracts": [
+      {
+        "contractNo": "HTFIX001",
+        "contractName": "修正演示合同",
+        "partyA": "甲方公司",
+        "partyB": "乙方公司",
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "totalAmount": 500000,
+        "currency": "CNY",
+        "paymentTerms": [
+          {
+            "termId": "T1",
+            "description": "预付款",
+            "dueDate": "2024-01-15",
+            "amount": 150000
+          },
+          {
+            "termId": "T2",
+            "description": "验收款",
+            "dueDate": "2024-06-30",
+            "amount": 350000
+          }
+        ],
+        "sourceFile": "demo",
+        "originalLineNo": 1,
+        "supplementaryAgreements": [],
+        "status": "active",
+        "id": "22757e12-f604-4a01-8ef3-1efd1aad2176",
+        "createdAt": "2026-05-26T05:58:16.787Z",
+        "updatedAt": "2026-05-26T05:58:16.787Z",
+        "createdBy": "fix_demo_user",
+        "updatedBy": "fix_demo_user",
+        "version": 1,
+        "isDeleted": false
+      }
+    ],
+    "paymentNodes": [
+      {
+        "contractNo": "HTFIX001",
+        "nodeId": "FIXP001",
+        "nodeName": "预付款",
+        "plannedDate": "2024-01-15",
+        "plannedAmount": 150000,
+        "status": "paid",
+        "sourceFile": "",
+        "originalLineNo": 1,
+        "batchId": "5fdb09db-191a-4a8a-84ac-ea96c009c9e0",
+        "id": "3e224bc7-ec03-4fb6-911a-352bf858a2ee",
+        "createdAt": "2026-05-26T05:58:16.788Z",
+        "updatedAt": "2026-05-26T05:58:16.791Z",
+        "createdBy": "fix_demo_user",
+        "updatedBy": "fix_demo_user",
+        "version": 2,
+        "isDeleted": false,
+        "actualDate": "2024-01-12",
+        "actualAmount": 150000
+      },
+      {
+        "contractNo": "HTFIX001",
+        "nodeId": "FIXP002",
+        "nodeName": "验收款",
+        "plannedDate": "2024-06-30",
+        "plannedAmount": 350000,
+        "status": "paid",
+        "sourceFile": "",
+        "originalLineNo": 2,
+        "batchId": "df1360bf-4ecb-4094-8bec-b19d1067bfe6",
+        "id": "8c6c40e0-0cd7-4cba-8e99-5f98a30e6e12",
+        "createdAt": "2026-05-26T05:58:16.788Z",
+        "updatedAt": "2026-05-26T05:58:16.791Z",
+        "createdBy": "fix_demo_user",
+        "updatedBy": "fix_demo_user",
+        "version": 2,
+        "isDeleted": false,
+        "actualAmount": 350000,
+        "actualDate": "2024-07-01"
+      }
+    ],
+    "acceptanceRecords": [],
+    "refundRecords": [],
+    "importBatches": [
+      {
+        "name": "修正演示-合同导入",
+        "source": "contract_pdf",
+        "mode": "overwrite",
+        "fileName": "temp-contract.json",
+        "importedAt": "2026-05-26T05:58:16.786Z",
+        "importedBy": "fix_demo_user",
+        "totalRecords": 1,
+        "successCount": 1,
+        "failedCount": 0,
+        "status": "completed",
+        "retryCount": 0,
+        "id": "5e4447ec-23b8-4b67-b028-b09c4d8293e0"
+      },
+      {
+        "name": "修正演示-第一次导入(含问题)",
+        "source": "payment_node",
+        "mode": "append",
+        "fileName": "temp-payment-nodes.json",
+        "importedAt": "2026-05-26T05:58:16.788Z",
+        "importedBy": "fix_demo_user",
+        "totalRecords": 2,
+        "successCount": 2,
+        "failedCount": 0,
+        "status": "completed",
+        "retryCount": 0,
+        "id": "df1360bf-4ecb-4094-8bec-b19d1067bfe6"
+      },
+      {
+        "name": "修正演示-覆盖导入(修正后)",
+        "source": "payment_node",
+        "mode": "overwrite",
+        "fileName": "temp-payment-nodes-fixed.json",
+        "importedAt": "2026-05-26T05:58:16.791Z",
+        "importedBy": "fix_demo_user",
+        "totalRecords": 1,
+        "successCount": 1,
+        "failedCount": 0,
+        "status": "completed",
+        "retryCount": 0,
+        "id": "5fdb09db-191a-4a8a-84ac-ea96c009c9e0"
+      }
+    ],
+    "statusChangeLogs": [
+      {
+        "id": "e2f8b04e-791b-4d10-a7bc-c4474be95447",
+        "entityId": "3e224bc7-ec03-4fb6-911a-352bf858a2ee",
+        "entityType": "PaymentNode",
+        "field": "actualDate",
+        "newValue": "2024-01-12",
+        "changedAt": "2026-05-26T05:58:16.791Z",
+        "changedBy": "fix_demo_user",
+        "reason": "批量导入覆盖更新付款节点"
+      },
+      {
+        "id": "4084401d-7b2c-4f4e-b65c-191c89edcbbc",
+        "entityId": "3e224bc7-ec03-4fb6-911a-352bf858a2ee",
+        "entityType": "PaymentNode",
+        "field": "actualAmount",
+        "newValue": 150000,
+        "changedAt": "2026-05-26T05:58:16.791Z",
+        "changedBy": "fix_demo_user",
+        "reason": "批量导入覆盖更新付款节点"
+      },
+      {
+        "id": "2d768b59-25a8-4e69-8886-259fb0a06ac5",
+        "entityId": "3e224bc7-ec03-4fb6-911a-352bf858a2ee",
+        "entityType": "PaymentNode",
+        "field": "batchId",
+        "oldValue": "df1360bf-4ecb-4094-8bec-b19d1067bfe6",
+        "newValue": "5fdb09db-191a-4a8a-84ac-ea96c009c9e0",
+        "changedAt": "2026-05-26T05:58:16.791Z",
+        "changedBy": "fix_demo_user",
+        "reason": "批量导入覆盖更新付款节点"
+      },
+      {
+        "id": "6df704f1-b3d7-498d-8ad5-36566841894f",
+        "entityId": "8c6c40e0-0cd7-4cba-8e99-5f98a30e6e12",
+        "entityType": "PaymentNode",
+        "field": "actualAmount",
+        "newValue": 350000,
+        "changedAt": "2026-05-26T05:58:16.791Z",
+        "changedBy": "fix_demo_user",
+        "reason": "补录付款信息"
+      },
+      {
+        "id": "70d6f104-70a5-47e4-b957-adcb02d7d715",
+        "entityId": "8c6c40e0-0cd7-4cba-8e99-5f98a30e6e12",
+        "entityType": "PaymentNode",
+        "field": "actualDate",
+        "newValue": "2024-07-01",
+        "changedAt": "2026-05-26T05:58:16.791Z",
+        "changedBy": "fix_demo_user",
+        "reason": "补录付款信息"
+      },
+      {
+        "id": "55714965-fe9f-407f-b73e-01d246cab1d8",
+        "entityId": "8c6c40e0-0cd7-4cba-8e99-5f98a30e6e12",
+        "entityType": "PaymentNode",
+        "field": "status",
+        "oldValue": "planned",
+        "newValue": "paid",
+        "changedAt": "2026-05-26T05:58:16.791Z",
+        "changedBy": "fix_demo_user",
+        "reason": "补录付款信息"
+      }
+    ],
+    "checkResults": [
+      {
+        "id": "f58fd6ec-4fc2-4667-9776-f8adaa304939",
+        "batchId": "6abf48c6-9b28-454c-887e-edb765cdb895",
+        "contractNo": "HTFIX001",
+        "checkType": "payment_amount",
+        "severity": "warning",
+        "message": "付款节点\"预付款\"状态为已付款但缺少实际金额",
+        "sourceField": "actualAmount",
+        "expectedValue": "应有实际付款金额",
+        "originalLineNo": 1,
+        "resolved": false,
+        "entityType": "PaymentNode",
+        "entityId": "3e224bc7-ec03-4fb6-911a-352bf858a2ee"
+      },
+      {
+        "id": "d16b482a-eb07-47ef-8b3e-97c71c6e4b9e",
+        "batchId": "6abf48c6-9b28-454c-887e-edb765cdb895",
+        "contractNo": "HTFIX001",
+        "checkType": "summary",
+        "severity": "info",
+        "message": "合同净额: 500000 (原500000 - 退款0)",
+        "sourceField": "netAmount",
+        "actualValue": 500000,
+        "resolved": false
+      },
+      {
+        "id": "80e216a0-7044-4456-8261-5df2557403e3",
+        "batchId": "9d3906e1-8007-4d59-b7c0-bcd915d43075",
+        "contractNo": "HTFIX001",
+        "checkType": "summary",
+        "severity": "info",
+        "message": "合同净额: 500000 (原500000 - 退款0)",
+        "sourceField": "netAmount",
+        "actualValue": 500000,
+        "resolved": false
+      }
+    ],
+    "fixActions": []
+  }
+}

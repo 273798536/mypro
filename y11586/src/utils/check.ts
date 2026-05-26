@@ -154,7 +154,9 @@ export class DataChecker {
           'nodeId',
           undefined,
           undefined,
-          node.originalLineNo
+          node.originalLineNo,
+          'PaymentNode',
+          node.id
         ));
       }
 
@@ -165,7 +167,9 @@ export class DataChecker {
           'plannedDate',
           undefined,
           undefined,
-          node.originalLineNo
+          node.originalLineNo,
+          'PaymentNode',
+          node.id
         ));
       }
 
@@ -176,7 +180,9 @@ export class DataChecker {
           'plannedAmount',
           node.plannedAmount,
           '应大于0',
-          node.originalLineNo
+          node.originalLineNo,
+          'PaymentNode',
+          node.id
         ));
       }
 
@@ -187,7 +193,22 @@ export class DataChecker {
           'status',
           node.status,
           '请及时处理',
-          node.originalLineNo
+          node.originalLineNo,
+          'PaymentNode',
+          node.id
+        ));
+      }
+
+      if (node.status === 'paid' && node.actualAmount === undefined) {
+        results.push(this.createWarning(
+          batchId, contract, 'payment_amount',
+          `付款节点"${node.nodeName}"状态为已付款但缺少实际金额`,
+          'actualAmount',
+          node.actualAmount,
+          '应有实际付款金额',
+          node.originalLineNo,
+          'PaymentNode',
+          node.id
         ));
       }
     });
@@ -323,7 +344,9 @@ export class DataChecker {
     sourceField?: string,
     actualValue?: any,
     expectedValue?: any,
-    originalLineNo?: number
+    originalLineNo?: number,
+    entityType?: 'Contract' | 'PaymentNode' | 'AcceptanceRecord' | 'RefundRecord',
+    entityId?: string
   ): CheckResult {
     return {
       id: uuidv4(),
@@ -337,6 +360,8 @@ export class DataChecker {
       actualValue,
       originalLineNo,
       resolved: false,
+      entityType,
+      entityId,
     };
   }
 
@@ -348,7 +373,9 @@ export class DataChecker {
     sourceField?: string,
     actualValue?: any,
     expectedValue?: any,
-    originalLineNo?: number
+    originalLineNo?: number,
+    entityType?: 'Contract' | 'PaymentNode' | 'AcceptanceRecord' | 'RefundRecord',
+    entityId?: string
   ): CheckResult {
     return {
       id: uuidv4(),
@@ -362,6 +389,8 @@ export class DataChecker {
       actualValue,
       originalLineNo,
       resolved: false,
+      entityType,
+      entityId,
     };
   }
 
@@ -372,7 +401,9 @@ export class DataChecker {
     message: string,
     sourceField?: string,
     actualValue?: any,
-    originalLineNo?: number
+    originalLineNo?: number,
+    entityType?: 'Contract' | 'PaymentNode' | 'AcceptanceRecord' | 'RefundRecord',
+    entityId?: string
   ): CheckResult {
     return {
       id: uuidv4(),
@@ -385,6 +416,8 @@ export class DataChecker {
       actualValue,
       originalLineNo,
       resolved: false,
+      entityType,
+      entityId,
     };
   }
 

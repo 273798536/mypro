@@ -128,6 +128,156 @@ export class DataStoreManager {
     return updatedContract;
   }
 
+  async updatePaymentNode(
+    nodeId: string,
+    updates: Partial<PaymentNode>,
+    user: string,
+    reason: string
+  ): Promise<PaymentNode | null> {
+    const store = await this.load();
+    const index = store.paymentNodes.findIndex(n => n.nodeId === nodeId && !n.isDeleted);
+    if (index === -1) return null;
+
+    const oldNode = store.paymentNodes[index];
+    const logs: StatusChangeLog[] = [];
+
+    for (const [key, newValue] of Object.entries(updates)) {
+      const oldValue = (oldNode as any)[key];
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        logs.push({
+          id: uuidv4(),
+          entityId: oldNode.id,
+          entityType: 'PaymentNode',
+          field: key,
+          oldValue,
+          newValue,
+          changedAt: dayjs().toISOString(),
+          changedBy: user,
+          reason,
+        });
+      }
+    }
+
+    const updatedNode: PaymentNode = {
+      ...oldNode,
+      ...updates,
+      updatedAt: dayjs().toISOString(),
+      updatedBy: user,
+      version: oldNode.version + 1,
+    };
+
+    store.paymentNodes[index] = updatedNode;
+    store.statusChangeLogs.push(...logs);
+    await this.save(store);
+
+    return updatedNode;
+  }
+
+  async updateAcceptanceRecord(
+    acceptanceId: string,
+    updates: Partial<AcceptanceRecord>,
+    user: string,
+    reason: string
+  ): Promise<AcceptanceRecord | null> {
+    const store = await this.load();
+    const index = store.acceptanceRecords.findIndex(r => r.acceptanceId === acceptanceId && !r.isDeleted);
+    if (index === -1) return null;
+
+    const oldRecord = store.acceptanceRecords[index];
+    const logs: StatusChangeLog[] = [];
+
+    for (const [key, newValue] of Object.entries(updates)) {
+      const oldValue = (oldRecord as any)[key];
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        logs.push({
+          id: uuidv4(),
+          entityId: oldRecord.id,
+          entityType: 'AcceptanceRecord',
+          field: key,
+          oldValue,
+          newValue,
+          changedAt: dayjs().toISOString(),
+          changedBy: user,
+          reason,
+        });
+      }
+    }
+
+    const updatedRecord: AcceptanceRecord = {
+      ...oldRecord,
+      ...updates,
+      updatedAt: dayjs().toISOString(),
+      updatedBy: user,
+      version: oldRecord.version + 1,
+    };
+
+    store.acceptanceRecords[index] = updatedRecord;
+    store.statusChangeLogs.push(...logs);
+    await this.save(store);
+
+    return updatedRecord;
+  }
+
+  async updateRefundRecord(
+    refundId: string,
+    updates: Partial<RefundRecord>,
+    user: string,
+    reason: string
+  ): Promise<RefundRecord | null> {
+    const store = await this.load();
+    const index = store.refundRecords.findIndex(r => r.refundId === refundId && !r.isDeleted);
+    if (index === -1) return null;
+
+    const oldRecord = store.refundRecords[index];
+    const logs: StatusChangeLog[] = [];
+
+    for (const [key, newValue] of Object.entries(updates)) {
+      const oldValue = (oldRecord as any)[key];
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        logs.push({
+          id: uuidv4(),
+          entityId: oldRecord.id,
+          entityType: 'RefundRecord',
+          field: key,
+          oldValue,
+          newValue,
+          changedAt: dayjs().toISOString(),
+          changedBy: user,
+          reason,
+        });
+      }
+    }
+
+    const updatedRecord: RefundRecord = {
+      ...oldRecord,
+      ...updates,
+      updatedAt: dayjs().toISOString(),
+      updatedBy: user,
+      version: oldRecord.version + 1,
+    };
+
+    store.refundRecords[index] = updatedRecord;
+    store.statusChangeLogs.push(...logs);
+    await this.save(store);
+
+    return updatedRecord;
+  }
+
+  async getPaymentNodeById(nodeId: string): Promise<PaymentNode | null> {
+    const store = await this.load();
+    return store.paymentNodes.find(n => n.nodeId === nodeId && !n.isDeleted) || null;
+  }
+
+  async getAcceptanceRecordById(acceptanceId: string): Promise<AcceptanceRecord | null> {
+    const store = await this.load();
+    return store.acceptanceRecords.find(r => r.acceptanceId === acceptanceId && !r.isDeleted) || null;
+  }
+
+  async getRefundRecordById(refundId: string): Promise<RefundRecord | null> {
+    const store = await this.load();
+    return store.refundRecords.find(r => r.refundId === refundId && !r.isDeleted) || null;
+  }
+
   async addPaymentNode(node: Omit<PaymentNode, keyof BaseEntity>, user: string): Promise<PaymentNode> {
     const store = await this.load();
     const newNode: PaymentNode = {

@@ -35,7 +35,10 @@ export class DataExporter {
       字段: c.sourceField || '-',
       期望值: this.formatValue(c.expectedValue),
       实际值: this.formatValue(c.actualValue),
+      实体类型: c.entityType || '-',
+      实体ID: c.entityId || '-',
       批次ID: c.batchId,
+      检查结果ID: c.id,
     }));
 
     const fileName = `check-report-${dayjs().format('YYYYMMDD-HHmmss')}`;

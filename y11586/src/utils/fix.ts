@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
-import { CheckResult, FixAction } from '../types';
+import { CheckResult, FixAction, PaymentNode, AcceptanceRecord, RefundRecord } from '../types';
 import { DataStoreManager } from './store';
 
 export class DataFixer {
@@ -29,8 +29,7 @@ export class DataFixer {
 
     if (newValue !== undefined && checkResult.sourceField) {
       await this.applyFieldFix(
-        checkResult.contractNo,
-        checkResult.sourceField,
+        checkResult,
         newValue,
         resolution
       );
@@ -59,14 +58,58 @@ export class DataFixer {
   }
 
   private async applyFieldFix(
-    contractNo: string,
-    field: string,
+    checkResult: CheckResult,
     newValue: any,
     reason: string
   ): Promise<void> {
     const updates: any = {};
-    updates[field] = newValue;
-    await this.store.updateContract(contractNo, updates, this.user, reason);
+    updates[checkResult.sourceField!] = newValue;
+
+    if (checkResult.entityType === 'PaymentNode' && checkResult.entityId) {
+      const allNodes = await this.store.getPaymentNodesByContract(checkResult.contractNo);
+      const node = allNodes.find(n => n.id === checkResult.entityId);
+      if (node) {
+        await this.store.updatePaymentNode(node.nodeId, updates, this.user, reason);
+      }
+    } else if (checkResult.entityType === 'AcceptanceRecord' && checkResult.entityId) {
+      const allRecords = await this.store.getAcceptanceRecordsByContract(checkResult.contractNo);
+      const record = allRecords.find(r => r.id === checkResult.entityId);
+      if (record) {
+        await this.store.updateAcceptanceRecord(record.acceptanceId, updates, this.user, reason);
+      }
+    } else if (checkResult.entityType === 'RefundRecord' && checkResult.entityId) {
+      const allRecords = await this.store.getRefundRecordsByContract(checkResult.contractNo);
+      const record = allRecords.find(r => r.id === checkResult.entityId);
+      if (record) {
+        await this.store.updateRefundRecord(record.refundId, updates, this.user, reason);
+      }
+    } else {
+      await this.store.updateContract(checkResult.contractNo, updates, this.user, reason);
+    }
+  }
+
+  async updatePaymentNodeDirectly(
+    nodeId: string,
+    updates: Partial<PaymentNode>,
+    reason: string
+  ): Promise<PaymentNode | null> {
+    return this.store.updatePaymentNode(nodeId, updates, this.user, reason);
+  }
+
+  async updateAcceptanceRecordDirectly(
+    acceptanceId: string,
+    updates: Partial<AcceptanceRecord>,
+    reason: string
+  ): Promise<AcceptanceRecord | null> {
+    return this.store.updateAcceptanceRecord(acceptanceId, updates, this.user, reason);
+  }
+
+  async updateRefundRecordDirectly(
+    refundId: string,
+    updates: Partial<RefundRecord>,
+    reason: string
+  ): Promise<RefundRecord | null> {
+    return this.store.updateRefundRecord(refundId, updates, this.user, reason);
   }
 
   async batchResolve(

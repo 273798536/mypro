@@ -99,6 +99,33 @@ export class ContractComplianceAPI {
     return importer.retryFailedBatches();
   }
 
+  async updatePaymentNode(
+    nodeId: string,
+    updates: any,
+    reason: string
+  ) {
+    const fixer = new DataFixer(this.workspace, this.user);
+    return fixer.updatePaymentNodeDirectly(nodeId, updates, reason);
+  }
+
+  async updateAcceptanceRecord(
+    acceptanceId: string,
+    updates: any,
+    reason: string
+  ) {
+    const fixer = new DataFixer(this.workspace, this.user);
+    return fixer.updateAcceptanceRecordDirectly(acceptanceId, updates, reason);
+  }
+
+  async updateRefundRecord(
+    refundId: string,
+    updates: any,
+    reason: string
+  ) {
+    const fixer = new DataFixer(this.workspace, this.user);
+    return fixer.updateRefundRecordDirectly(refundId, updates, reason);
+  }
+
   async runFullPipeline(
     importFiles: { path: string; source: DataSource; mode: ImportMode }[],
     exportDir: string

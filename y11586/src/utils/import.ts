@@ -320,6 +320,7 @@ export class DataImporter {
     const existing = (await this.store.getPaymentNodesByContract(contractNo))
       .find(n => n.nodeId === nodeId);
 
+    const actualAmountRaw = row.actualAmount ?? row['实际金额'];
     const nodeData: Omit<PaymentNode, keyof any> = {
       contractNo,
       nodeId,
@@ -327,7 +328,7 @@ export class DataImporter {
       plannedDate: row.plannedDate || row['计划日期'] || '',
       actualDate: row.actualDate || row['实际日期'],
       plannedAmount: parseFloat(row.plannedAmount || row['计划金额'] || 0),
-      actualAmount: row.actualAmount ? parseFloat(row.actualAmount) : undefined,
+      actualAmount: actualAmountRaw !== undefined && actualAmountRaw !== '' ? parseFloat(actualAmountRaw) : undefined,
       status: (row.status || row['状态'] || 'planned') as any,
       sourceFile: row.sourceFile || '',
       originalLineNo: lineNo,
@@ -335,7 +336,12 @@ export class DataImporter {
     };
 
     if (existing && mode === 'overwrite') {
-      await this.store.updateImportBatch(batchId, {});
+      await this.store.updatePaymentNode(
+        nodeId,
+        nodeData as any,
+        this.user,
+        '批量导入覆盖更新付款节点'
+      );
     } else if (!existing || mode === 'append') {
       await this.store.addPaymentNode(nodeData as any, this.user);
     }
