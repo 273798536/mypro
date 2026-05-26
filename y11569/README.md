@@ -202,14 +202,23 @@ python cli.py replay list
 - **dead_letter_queue**: 死信队列（支持重新入队）
 - **replay_sessions**: 历史回放会话
 
-## Bug 修复（v1.1）
+## Bug 修复（v1.2）
 
-### 角色视图接口修复
+### 状态链完整性修复
+- **问题 1**: `freeze_work_order` 绕过状态机，草稿工单可直接冻结
+  - **原因**: 缺少 `can_transition` 状态机校验
+  - **修复**: 添加状态机校验，仅 `audit_only` 状态可冻结
+
+- **问题 2**: 冻结记录写成 `frozen → frozen`，审计历史不可信
+  - **原因**: 先修改 `db_wo.status` 再读取 `from_status`
+  - **修复**: 先保存 `old_status` 再修改状态，正确记录前置状态
+
+### 角色视图接口修复（v1.1）
 - **问题**: `GET /api/work-orders/?viewer_role=operator` 返回 500，报 `ResponseValidationError`
 - **原因**: 接口使用 `response_model=List[WorkOrder]`，但角色视图返回裁剪后的 dict
 - **修复**: 移除 `response_model` 约束，动态构建完整数据结构后再裁剪
 
-### 状态流转修复
+### 状态流转修复（v1.1）
 - **问题**: `examples/role_view_demo.py` 第 120 行从 `submitted` 直接转 `audit_only` 抛状态错误
 - **原因**: 违反状态机规则，缺少 `reconfirmed` 中间状态
 - **修复**: 添加正确的状态转换路径 `submitted → reconfirmed → audit_only`
@@ -222,15 +231,16 @@ python cli.py replay list
 │   ├── models.py          # 数据模型（新增重试/死信/回放表）
 │   ├── schemas.py         # Pydantic 模式（新增队列相关模式）
 │   ├── database.py        # 数据库连接
-│   ├── services.py        # 业务逻辑
+│   ├── services.py        # 业务逻辑（已修复状态链）
 │   ├── importer.py        # 导入功能
 │   ├── queue_service.py   # 队列与回放服务（新增）
 │   └── main.py            # FastAPI 应用（新增队列/回放接口）
 ├── examples/
-│   ├── demo_workflow.py          # 完整流程演示
-│   ├── test_edge_cases.py        # 边界情况测试
-│   ├── role_view_demo.py         # 角色视图演示（已修复）
-│   └── test_queue_and_replay.py  # 队列与回放测试（新增）
+│   ├── demo_workflow.py              # 完整流程演示
+│   ├── test_edge_cases.py            # 边界情况测试
+│   ├── role_view_demo.py             # 角色视图演示（已修复）
+│   ├── test_queue_and_replay.py      # 队列与回放测试（新增）
+│   └── test_state_chain_integrity.py # 状态链完整性测试（新增）
 ├── cli.py                 # CLI 工具（新增队列/回放命令）
 ├── requirements.txt       # 依赖
 └── README.md              # 说明文档
@@ -249,4 +259,7 @@ python examples/role_view_demo.py
 
 # 队列与回放功能测试
 python examples/test_queue_and_replay.py
+
+# 状态链完整性验证（核心修复验证）
+python examples/test_state_chain_integrity.py
 ```

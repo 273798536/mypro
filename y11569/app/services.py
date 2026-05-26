@@ -241,6 +241,14 @@ def freeze_work_order(db: Session, work_order_id: int, request: FreezeRequest) -
     if not operator or not has_permission(operator.role, "freeze"):
         raise PermissionError("无权限冻结工单")
     
+    if not can_transition(db_wo.status, WorkOrderStatus.FROZEN):
+        raise WorkOrderStateError(
+            f"无法从 {db_wo.status.value} 状态转换到 frozen 状态，"
+            f"仅 audit_only 状态可冻结"
+        )
+    
+    old_status = db_wo.status
+    
     db_wo.is_frozen = True
     db_wo.frozen_at = datetime.utcnow()
     db_wo.frozen_by = request.operator_id
@@ -248,7 +256,7 @@ def freeze_work_order(db: Session, work_order_id: int, request: FreezeRequest) -
     
     db_transition = StatusTransition(
         work_order_id=db_wo.id,
-        from_status=db_wo.status,
+        from_status=old_status,
         to_status=WorkOrderStatus.FROZEN,
         operator_id=request.operator_id,
         reason=f"冻结: {request.reason}"
