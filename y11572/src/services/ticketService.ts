@@ -17,6 +17,7 @@ import {
 } from '../types';
 import { transitionStatus } from './statusService';
 import { enqueueCompensation } from '../queues/compensationQueue';
+import { isTicketFrozenForExport } from './exportService';
 import logger from '../config/logger';
 
 export interface CreateTicketParams {
@@ -237,6 +238,12 @@ export const submitTicket = async (
     return false;
   }
 
+  const exportFrozen = await isTicketFrozenForExport(ticketId);
+  if (exportFrozen.frozen) {
+    logger.warn(`Cannot submit ticket frozen by export: ${ticketId}, reason: ${exportFrozen.reason}`);
+    return false;
+  }
+
   if (ticket.isFrozen) {
     logger.warn(`Cannot submit frozen ticket: ${ticketId}`);
     return false;
@@ -251,14 +258,18 @@ export const submitTicket = async (
   });
 
   if (success) {
-    await enqueueCompensation({
-      ticketId,
-      batchId: ticket.batchId,
-      ticketNo: ticket.ticketNo,
-      retryCount: 0,
-      category: RetryCategory.SYSTEM_ERROR,
-      operator,
-    });
+    await enqueueCompensation(
+      {
+        ticketId,
+        batchId: ticket.batchId,
+        ticketNo: ticket.ticketNo,
+        retryCount: 0,
+        category: RetryCategory.SYSTEM_ERROR,
+        operator,
+      },
+      undefined,
+      ticket.maxRetries
+    );
   }
 
   return success;
@@ -399,14 +410,18 @@ export const resubmitAfterWithdraw = async (
   });
 
   if (success) {
-    await enqueueCompensation({
-      ticketId,
-      batchId: ticket.batchId,
-      ticketNo: ticket.ticketNo,
-      retryCount: 0,
-      category: RetryCategory.MANUAL_RETRY,
-      operator,
-    });
+    await enqueueCompensation(
+      {
+        ticketId,
+        batchId: ticket.batchId,
+        ticketNo: ticket.ticketNo,
+        retryCount: 0,
+        category: RetryCategory.MANUAL_RETRY,
+        operator,
+      },
+      undefined,
+      ticket.maxRetries
+    );
   }
 
   return success;

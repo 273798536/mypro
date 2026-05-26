@@ -9,6 +9,7 @@ import {
 import { TicketStatus, Operator, RetryCategory } from '../types';
 import { transitionStatus } from './statusService';
 import { enqueueCompensation } from '../queues/compensationQueue';
+import { isTicketFrozenForExport } from './exportService';
 import logger from '../config/logger';
 
 export const freezeTicket = async (
@@ -135,6 +136,12 @@ export const manualOverride = async (
     return false;
   }
 
+  const exportFrozen = await isTicketFrozenForExport(ticketId);
+  if (exportFrozen.frozen) {
+    logger.warn(`Cannot override ticket frozen by export: ${ticketId}, reason: ${exportFrozen.reason}`);
+    return false;
+  }
+
   const transaction: Transaction = await sequelize.transaction();
 
   try {
@@ -237,14 +244,18 @@ export const manualRetry = async (
 
     await transaction.commit();
 
-    await enqueueCompensation({
-      ticketId,
-      batchId: ticket.batchId,
-      ticketNo: ticket.ticketNo,
-      retryCount: ticket.retryCount,
-      category: RetryCategory.MANUAL_RETRY,
-      operator,
-    });
+    await enqueueCompensation(
+      {
+        ticketId,
+        batchId: ticket.batchId,
+        ticketNo: ticket.ticketNo,
+        retryCount: ticket.retryCount,
+        category: RetryCategory.MANUAL_RETRY,
+        operator,
+      },
+      undefined,
+      ticket.maxRetries
+    );
 
     logger.info(`Manual retry initiated for ticket ${ticketId}`, {
       operator: operator.id,

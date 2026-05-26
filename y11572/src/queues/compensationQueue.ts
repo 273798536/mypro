@@ -75,17 +75,37 @@ export const getDeadLetterQueue = (): Queue<CompensationJobData> => {
   return deadLetterQueue;
 };
 
+const classifyError = (error: Error): RetryCategory => {
+  const message = error.message.toLowerCase();
+
+  if (message.includes('timeout') || message.includes('network') || message.includes('connection')) {
+    return RetryCategory.NETWORK_ERROR;
+  }
+  if (message.includes('deadlock') || message.includes('database') || message.includes('system')) {
+    return RetryCategory.SYSTEM_ERROR;
+  }
+  if (message.includes('invalid') || message.includes('format') || message.includes('data')) {
+    return RetryCategory.DATA_ERROR;
+  }
+  if (message.includes('business') || message.includes('policy') || message.includes('reject')) {
+    return RetryCategory.BUSINESS_ERROR;
+  }
+  return RetryCategory.SYSTEM_ERROR;
+};
+
 const setupQueueProcessors = (): void => {
   const queue = getCompensationQueue();
 
   queue.process(
     config.queue.concurrency,
     async (job: Job<CompensationJobData>) => {
-      const { ticketId, retryCount, category, operator } = job.data;
+      const { ticketId, operator } = job.data;
+      const currentAttempt = job.attemptsMade;
 
-      logger.info(`Processing ticket ${ticketId}, attempt ${retryCount + 1}`, {
+      logger.info(`Processing ticket ${ticketId}, attempt ${currentAttempt}`, {
         ticketId,
-        attempt: retryCount + 1,
+        attempt: currentAttempt,
+        jobId: job.id,
       });
 
       try {
@@ -104,7 +124,7 @@ const setupQueueProcessors = (): void => {
 
         await ticket.update({
           status: TicketStatus.PROCESSING,
-          retryCount: retryCount + 1,
+          retryCount: currentAttempt,
           lastRetryAt: new Date(),
         });
 
@@ -113,8 +133,8 @@ const setupQueueProcessors = (): void => {
           fromStatus: ticket.status,
           toStatus: TicketStatus.PROCESSING,
           operator,
-          reason: `开始补偿处理，第 ${retryCount + 1} 次尝试`,
-          metadata: { category, attempt: retryCount + 1 },
+          reason: `开始补偿处理，第 ${currentAttempt} 次尝试`,
+          metadata: { attempt: currentAttempt },
         });
 
         const result = await executeCompensationLogic(ticket);
@@ -136,8 +156,8 @@ const setupQueueProcessors = (): void => {
 
           await RetryRecordModel.create({
             ticketId,
-            attempt: retryCount + 1,
-            category,
+            attempt: currentAttempt,
+            category: RetryCategory.SYSTEM_ERROR,
             errorMessage: '',
             executedBy: operator.id,
             success: true,
@@ -148,28 +168,33 @@ const setupQueueProcessors = (): void => {
             ticketId,
             action: 'COMPENSATE_SUCCESS',
             operator,
-            metadata: { attempt: retryCount + 1 },
+            metadata: { attempt: currentAttempt },
           });
 
-          logger.info(`Ticket ${ticketId} compensated successfully`);
+          logger.info(`Ticket ${ticketId} compensated successfully`, {
+            ticketId,
+            attempt: currentAttempt,
+          });
           return { success: true, ticketId };
         } else {
           throw new Error(result.error || 'Compensation failed');
         }
       } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error';
-        const errorStack = error instanceof Error ? error.stack : undefined;
+        const err = error as Error;
+        const errorMessage = err.message;
+        const errorStack = err.stack;
+        const errorCategory = classifyError(err);
+        const currentAttempt = job.attemptsMade;
 
         logger.error(
-          `Failed to process ticket ${ticketId}, attempt ${retryCount + 1}:`,
-          error
+          `Failed to process ticket ${ticketId}, attempt ${currentAttempt}: ${errorMessage}`,
+          { ticketId, attempt: currentAttempt, category: errorCategory }
         );
 
         await RetryRecordModel.create({
           ticketId,
-          attempt: retryCount + 1,
-          category,
+          attempt: currentAttempt,
+          category: errorCategory,
           errorMessage,
           errorStack,
           executedBy: operator.id,
@@ -178,14 +203,14 @@ const setupQueueProcessors = (): void => {
 
         const ticket = await CompensationTicketModel.findByPk(ticketId);
         if (ticket) {
-          if (retryCount + 1 >= ticket.maxRetries) {
-            await moveToDeadLetter(ticket, category, errorMessage, operator);
+          if (currentAttempt >= ticket.maxRetries) {
+            await moveToDeadLetter(ticket, errorCategory, errorMessage, operator);
           } else {
             await ticket.update({
               status: TicketStatus.RETRYING,
-              retryCategory: category,
+              retryCategory: errorCategory,
               nextRetryAt: new Date(
-                Date.now() + config.queue.retryDelay * Math.pow(2, retryCount)
+                Date.now() + config.queue.retryDelay * Math.pow(2, currentAttempt - 1)
               ),
             });
 
@@ -194,8 +219,12 @@ const setupQueueProcessors = (): void => {
               fromStatus: TicketStatus.PROCESSING,
               toStatus: TicketStatus.RETRYING,
               operator,
-              reason: `处理失败，准备第 ${retryCount + 2} 次重试: ${errorMessage}`,
-              metadata: { error: errorMessage, nextAttempt: retryCount + 2 },
+              reason: `处理失败，准备第 ${currentAttempt + 1} 次重试: ${errorMessage}`,
+              metadata: {
+                error: errorMessage,
+                nextAttempt: currentAttempt + 1,
+                category: errorCategory,
+              },
             });
           }
         }
@@ -351,15 +380,29 @@ const getRecoverySuggestion = (category: RetryCategory): string => {
 
 export const enqueueCompensation = async (
   jobData: CompensationJobData,
-  delay?: number
+  delay?: number,
+  maxRetries?: number
 ): Promise<Job<CompensationJobData>> => {
   const queue = getCompensationQueue();
-  const options: Bull.JobOptions = delay ? { delay } : {};
+  const attempts = maxRetries || config.queue.retryAttempts;
+
+  const options: Bull.JobOptions = {
+    attempts,
+    backoff: {
+      type: 'exponential',
+      delay: config.queue.retryDelay,
+    },
+    removeOnComplete: true,
+    removeOnFail: false,
+    ...(delay ? { delay } : {}),
+  };
+
   const job = await queue.add(jobData, options);
 
   logger.info(`Enqueued compensation job for ticket ${jobData.ticketId}`, {
     jobId: job.id,
     ticketId: jobData.ticketId,
+    attempts,
     delay: delay || 0,
   });
 
@@ -411,14 +454,18 @@ export const recoverFromDeadLetter = async (
     metadata: { deadLetterId, notes },
   });
 
-  await enqueueCompensation({
-    ticketId: ticket.id,
-    batchId: ticket.batchId,
-    ticketNo: ticket.ticketNo,
-    retryCount: 0,
-    category: RetryCategory.MANUAL_RETRY,
-    operator,
-  });
+  await enqueueCompensation(
+    {
+      ticketId: ticket.id,
+      batchId: ticket.batchId,
+      ticketNo: ticket.ticketNo,
+      retryCount: 0,
+      category: RetryCategory.MANUAL_RETRY,
+      operator,
+    },
+    undefined,
+    newRetryCount
+  );
 
   logger.info(`Ticket ${ticket.id} recovered from dead letter queue`, {
     deadLetterId,
