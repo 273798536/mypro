@@ -164,17 +164,33 @@ async function seedData() {
     console.log("\n5. 创建补偿记录...");
     const compensation1 = await externalReceiptService.createCompensation("ERROR_CORRECTION", 5000.0, {
         contractId: contract1.id,
+        externalReceiptId: receipt1.id,
         reason: "付款金额计算错误，需补付差额",
         createdBy: "finance_chen",
         currency: "CNY",
     });
     console.log(`  ✓ 创建补偿记录: ${compensation1.compensationNo}`);
+    console.log("\n6. 为补偿记录创建重试队列任务...");
+    const compTask = await retryQueueService.enqueue("COMPENSATION", {
+        compensationId: compensation1.id,
+        compensationNo: compensation1.compensationNo,
+        receiptId: receipt1.id,
+        receiptNo: receipt1.receiptNo,
+        amount: compensation1.amount,
+    }, {
+        contractId: contract1.id,
+        source: "compensation_create",
+        sourceRef: compensation1.compensationNo,
+        maxRetries: 3,
+        createdBy: "finance_chen",
+    });
+    console.log(`  ✓ 创建补偿处理任务: ${compTask.id.substring(0, 8)}...`);
     console.log("\n=== 样例数据导入完成 ===");
     console.log(`
   统计摘要:
   - 合同: 3 份
   - 付款节点: 4 个
-  - 重试任务: 3 个
+  - 重试任务: 6 个 (3个手动 + 2个回执 + 1个补偿)
   - 外部回执: 2 个
   - 补偿记录: 1 个
 

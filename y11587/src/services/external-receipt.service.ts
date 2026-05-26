@@ -102,18 +102,24 @@ export class ExternalReceiptService {
       verifiedBy
     );
 
-    if (verificationResult.isValid) {
-      await this.retryQueueService.enqueue(
-        "COMPENSATION",
-        { receiptId: saved.id, receiptNo: saved.receiptNo, payload },
-        {
-          contractId: saved.contractId,
-          paymentNodeId: saved.paymentNodeId,
-          source: "receipt_verification",
-          sourceRef: saved.receiptNo,
-          createdBy: verifiedBy,
-        }
-      );
+    if (verificationResult.isValid && saved.receiptType === "PAYMENT_CONFIRMATION") {
+      const hasCompensation = await this.compensationRecordRepo.findOneBy({
+        externalReceiptId: saved.id,
+      });
+
+      if (hasCompensation) {
+        await this.retryQueueService.enqueue(
+          "COMPENSATION",
+          { receiptId: saved.id, receiptNo: saved.receiptNo, payload },
+          {
+            contractId: saved.contractId,
+            paymentNodeId: saved.paymentNodeId,
+            source: "receipt_verification",
+            sourceRef: saved.receiptNo,
+            createdBy: verifiedBy,
+          }
+        );
+      }
     }
 
     return saved;
