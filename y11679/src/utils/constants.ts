@@ -1,0 +1,11 @@
+export const COORDINATE_OFFSET_THRESHOLD = 1;
+export const OVERLAP_THRESHOLD = 0.5;
+export const UNSAVED_WARNING_INTERVAL = 30000;
+export const AUTO_SAVE_INTERVAL = 60000;
+export const POINT_CLOUD_POINT_SIZE = 0.05;
+export const ANNOTATION_BOX_OPACITY = 0.3;
+export const ANNOTATION_BOX_EDGE_OPACITY = 1.0;
+export const CAMERA_FOV = 60;
+export const CAMERA_NEAR = 0.1;
+export const CAMERA_FAR = 10000;
+export const DEFAULT_CAMERA_POSITION: [number, number, number] = [50, 50, 50];
