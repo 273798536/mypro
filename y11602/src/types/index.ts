@@ -6,6 +6,7 @@ export type GuaranteeStatus = 'valid' | 'expiring_soon' | 'expired';
 export type RepaymentStatus = 'normal' | 'overdue' | 'missing';
 export type ReminderType = 'phone' | 'sms' | 'visit';
 export type Severity = 'high' | 'medium' | 'low';
+export type UserRole = 'manager' | 'executive';
 
 export interface Customer {
   id: string;
@@ -81,7 +82,15 @@ export interface Anomaly {
   detectedAt: string;
 }
 
+export interface User {
+  id: string;
+  username: string;
+  role: UserRole;
+  displayName: string;
+}
+
 export interface AppState {
+  currentUser: User | null;
   customers: Customer[];
   repayments: Repayment[];
   guarantees: Guarantee[];
@@ -98,13 +107,17 @@ export interface AppState {
 }
 
 export type AppAction =
+  | { type: 'SET_USER'; payload: User | null }
   | { type: 'SET_CUSTOMERS'; payload: Customer[] }
   | { type: 'ADD_CUSTOMER'; payload: Customer }
   | { type: 'UPDATE_CUSTOMER'; payload: Customer }
   | { type: 'DELETE_CUSTOMER'; payload: string }
   | { type: 'SET_REPAYMENTS'; payload: Repayment[] }
+  | { type: 'ADD_REPAYMENT'; payload: Repayment }
   | { type: 'SET_GUARANTEES'; payload: Guarantee[] }
+  | { type: 'ADD_GUARANTEE'; payload: Guarantee }
   | { type: 'SET_APPROVALS'; payload: Approval[] }
+  | { type: 'ADD_APPROVAL'; payload: Approval }
   | { type: 'SET_REMINDERS'; payload: Reminder[] }
   | { type: 'ADD_REMINDER'; payload: Reminder }
   | { type: 'SET_AUDIT_LOGS'; payload: AuditLog[] }
@@ -112,4 +125,24 @@ export type AppAction =
   | { type: 'SET_SELECTED_CUSTOMER'; payload: string | null }
   | { type: 'SET_FILTERS'; payload: Partial<AppState['filters']> }
   | { type: 'LOAD_SAMPLE_DATA' }
-  | { type: 'CLEAR_ALL_DATA' };
+  | { type: 'CLEAR_ALL_DATA' }
+  | { type: 'IMPORT_MULTI_SOURCE'; payload: {
+      customers: Customer[];
+      repayments: Repayment[];
+      guarantees: Guarantee[];
+      approvals: Approval[];
+    } };
+
+export interface ImportResult<T> {
+  success: boolean;
+  data: T;
+  errors: string[];
+  warnings: string[];
+}
+
+export interface MultiSourceImportData {
+  customers: Customer[];
+  repayments: Repayment[];
+  guarantees: Guarantee[];
+  approvals: Approval[];
+}

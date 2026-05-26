@@ -1,12 +1,18 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import type { AppState, AppAction, Customer } from '../types';
+import type { AppState, AppAction, Customer, User } from '../types';
 import { getAllSampleData } from '../data/sampleData';
 import { calculateLoanStatus } from '../utils/statusMachine';
 import { detectAnomalies } from '../utils/anomalyDetector';
 
 const STORAGE_KEY = 'micro_loan_app_state';
 
+const defaultUsers: User[] = [
+  { id: 'user_001', username: 'manager', role: 'manager', displayName: '张经理' },
+  { id: 'user_002', username: 'executive', role: 'executive', displayName: '李总' }
+];
+
 const initialState: AppState = {
+  currentUser: null,
   customers: [],
   repayments: [],
   guarantees: [],
@@ -38,24 +44,34 @@ function processCustomerAnomalies(customer: Customer, state: AppState): Customer
   };
 }
 
+function processAllCustomers(state: AppState): AppState {
+  return {
+    ...state,
+    customers: state.customers.map(c => processCustomerAnomalies(c, state))
+  };
+}
+
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
+    case 'SET_USER':
+      return { ...state, currentUser: action.payload };
+    
     case 'SET_CUSTOMERS': {
-      const processedCustomers = action.payload.map(c => processCustomerAnomalies(c, state));
-      return { ...state, customers: processedCustomers };
+      const newState = { ...state, customers: action.payload };
+      return processAllCustomers(newState);
     }
     
     case 'ADD_CUSTOMER': {
-      const processed = processCustomerAnomalies(action.payload, state);
-      return { ...state, customers: [...state.customers, processed] };
+      const newState = { ...state, customers: [...state.customers, action.payload] };
+      return processAllCustomers(newState);
     }
     
     case 'UPDATE_CUSTOMER': {
-      const processed = processCustomerAnomalies(action.payload, state);
-      return {
+      const newState = {
         ...state,
-        customers: state.customers.map(c => c.id === action.payload.id ? processed : c)
+        customers: state.customers.map(c => c.id === action.payload.id ? action.payload : c)
       };
+      return processAllCustomers(newState);
     }
     
     case 'DELETE_CUSTOMER':
@@ -71,20 +87,32 @@ function appReducer(state: AppState, action: AppAction): AppState {
     
     case 'SET_REPAYMENTS': {
       const newState = { ...state, repayments: action.payload };
-      newState.customers = state.customers.map(c => processCustomerAnomalies(c, newState));
-      return newState;
+      return processAllCustomers(newState);
+    }
+    
+    case 'ADD_REPAYMENT': {
+      const newState = { ...state, repayments: [...state.repayments, action.payload] };
+      return processAllCustomers(newState);
     }
     
     case 'SET_GUARANTEES': {
       const newState = { ...state, guarantees: action.payload };
-      newState.customers = state.customers.map(c => processCustomerAnomalies(c, newState));
-      return newState;
+      return processAllCustomers(newState);
+    }
+    
+    case 'ADD_GUARANTEE': {
+      const newState = { ...state, guarantees: [...state.guarantees, action.payload] };
+      return processAllCustomers(newState);
     }
     
     case 'SET_APPROVALS': {
       const newState = { ...state, approvals: action.payload };
-      newState.customers = state.customers.map(c => processCustomerAnomalies(c, newState));
-      return newState;
+      return processAllCustomers(newState);
+    }
+    
+    case 'ADD_APPROVAL': {
+      const newState = { ...state, approvals: [...state.approvals, action.payload] };
+      return processAllCustomers(newState);
     }
     
     case 'SET_REMINDERS':
@@ -115,8 +143,19 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return newState;
     }
     
+    case 'IMPORT_MULTI_SOURCE': {
+      const newState = {
+        ...state,
+        customers: [...state.customers, ...action.payload.customers],
+        repayments: [...state.repayments, ...action.payload.repayments],
+        guarantees: [...state.guarantees, ...action.payload.guarantees],
+        approvals: [...state.approvals, ...action.payload.approvals]
+      };
+      return processAllCustomers(newState);
+    }
+    
     case 'CLEAR_ALL_DATA':
-      return { ...initialState };
+      return { ...initialState, currentUser: state.currentUser };
     
     default:
       return state;
@@ -126,6 +165,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
 interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
+  login: (username: string, role?: 'manager' | 'executive') => boolean;
+  logout: () => void;
+  isManager: () => boolean;
+  isExecutive: () => boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -151,8 +194,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [state]);
 
+  const login = (username: string, role?: 'manager' | 'executive'): boolean => {
+    let user = defaultUsers.find(u => u.username === username);
+    
+    if (!user && role) {
+      user = {
+        id: `user_${Date.now()}`,
+        username,
+        role,
+        displayName: role === 'manager' ? `${username}经理` : `${username}总`
+      };
+    }
+    
+    if (!user) return false;
+    
+    dispatch({ type: 'SET_USER', payload: user });
+    return true;
+  };
+
+  const logout = () => {
+    dispatch({ type: 'SET_USER', payload: null });
+  };
+
+  const isManager = () => state.currentUser?.role === 'manager';
+  const isExecutive = () => state.currentUser?.role === 'executive';
+
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
+    <AppContext.Provider value={{ state, dispatch, login, logout, isManager, isExecutive }}>
       {children}
     </AppContext.Provider>
   );

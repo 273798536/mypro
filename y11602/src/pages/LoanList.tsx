@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Download, Plus, AlertCircle } from 'lucide-react';
+import { Search, Filter, Download, Plus, AlertCircle, UserPlus } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import StatusBadge from '../components/common/StatusBadge';
 import { calculateDaysToExpiry, formatDate } from '../utils/dateUtils';
 import { exportCustomerList } from '../utils/export';
 import type { LoanStatus } from '../types';
+import CustomerForm from '../components/features/CustomerForm';
 
 const statusOptions: { value: LoanStatus | 'all'; label: string }[] = [
   { value: 'all', label: '全部状态' },
@@ -17,8 +18,9 @@ const statusOptions: { value: LoanStatus | 'all'; label: string }[] = [
 ];
 
 export default function LoanList() {
-  const { state, dispatch } = useApp();
+  const { state, dispatch, isManager } = useApp();
   const [currentPage, setCurrentPage] = useState(1);
+  const [showSingleForm, setShowSingleForm] = useState(false);
   const pageSize = 10;
   
   const filteredCustomers = useMemo(() => {
@@ -78,10 +80,18 @@ export default function LoanList() {
             <Download size={18} />
             导出清单
           </button>
-          <Link to="/import" className="btn-primary gap-2">
-            <Plus size={18} />
-            导入数据
-          </Link>
+          {isManager() && (
+            <button onClick={() => setShowSingleForm(true)} className="btn-secondary gap-2">
+              <UserPlus size={18} />
+              新增客户
+            </button>
+          )}
+          {isManager() && (
+            <Link to="/import" className="btn-primary gap-2">
+              <Plus size={18} />
+              导入数据
+            </Link>
+          )}
         </div>
       </div>
       
@@ -246,6 +256,10 @@ export default function LoanList() {
             </div>
           )}
         </>
+      )}
+      
+      {showSingleForm && (
+        <CustomerForm onClose={() => setShowSingleForm(false)} />
       )}
     </div>
   );
