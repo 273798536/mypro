@@ -81,13 +81,14 @@ class LedgerStateMachine:
 
     def confirm(self, ledger: LedgerRecord, reason: str = "") -> LedgerRecord:
         ledger.review_time = datetime.utcnow()
-        return self.transition(ledger, "audited", reason=reason)
+        return self.transition(ledger, "confirmed", reason=reason)
 
     def second_confirm(self, ledger: LedgerRecord, reason: str, opinion: str = "") -> LedgerRecord:
         ledger.supervisor_opinion = opinion
         return self.transition(ledger, "second_confirming", reason=reason)
 
     def audit(self, ledger: LedgerRecord, reason: str = "") -> LedgerRecord:
+        ledger.audit_time = datetime.utcnow()
         return self.transition(ledger, "audited", reason=reason)
 
     def mark_exported(self, ledger: LedgerRecord, reason: str = "") -> LedgerRecord:

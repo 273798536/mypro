@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from sqlalchemy import func, case, and_
+from sqlalchemy import func, case
 
 from app.models.ledger import LedgerRecord, StatusHistory, DirtyRecord
 from app.models.user import User
@@ -148,7 +148,7 @@ class ManagerViewService:
         picker_stats = self.db.query(
             LedgerRecord.picker_name,
             func.count(LedgerRecord.id).label('total_records'),
-            func.sum(case([(LedgerRecord.is_dirty, 1)], else_=0)).label('dirty_count'),
+            func.sum(case((LedgerRecord.is_dirty == True, 1), else_=0)).label('dirty_count'),
             func.avg(func.coalesce(LedgerRecord.performance_impact, 0)).label('avg_performance_impact')
         ).filter(
             LedgerRecord.created_at >= start_date,

@@ -185,13 +185,59 @@ class LedgerService:
         if not ledger:
             raise ValueError("台账记录不存在")
 
+        histories = self.db.query(StatusHistory).filter(
+            StatusHistory.ledger_id == ledger_id
+        ).order_by(StatusHistory.operate_time).all()
+        
+        history_list = []
+        for h in histories:
+            history_list.append({
+                "id": h.id,
+                "ledger_no": h.ledger_no,
+                "from_status": h.from_status,
+                "to_status": h.to_status,
+                "operator_name": h.operator_name,
+                "operate_time": h.operate_time.isoformat() if h.operate_time else None,
+                "reason": h.reason,
+                "change_note": h.change_note,
+                "changed_fields": h.changed_fields
+            })
+
+        dirty_list = []
+        for d in ledger.dirty_records:
+            dirty_list.append({
+                "id": d.id,
+                "ledger_no": d.ledger_no,
+                "dirty_type": d.dirty_type,
+                "field_name": d.field_name,
+                "original_value": d.original_value,
+                "current_value": d.current_value,
+                "expected_value": d.expected_value,
+                "error_message": d.error_message,
+                "source_data": d.source_data,
+                "is_resolved": d.is_resolved,
+                "resolved_by": d.resolved_by,
+                "resolved_time": d.resolved_time.isoformat() if d.resolved_time else None,
+                "handle_opinion": d.handle_opinion
+            })
+
+        comment_list = []
+        for c in ledger.comments:
+            comment_list.append({
+                "id": c.id,
+                "ledger_no": c.ledger_no,
+                "user_name": c.user_name,
+                "comment_type": c.comment_type,
+                "content": c.content,
+                "is_important": c.is_important,
+                "created_at": c.created_at.isoformat() if c.created_at else None
+            })
+
         result = {
             "ledger": ledger,
-            "status_histories": self.db.query(StatusHistory).filter(
-                StatusHistory.ledger_id == ledger_id
-            ).order_by(StatusHistory.operate_time).all(),
-            "dirty_records": [d for d in ledger.dirty_records],
-            "comments": [c for c in ledger.comments],
+            "status_histories": history_list,
+            "dirty_records": dirty_list,
+            "comments": comment_list,
             "trace_analysis": self._analyze_trace(ledger)
         }
 

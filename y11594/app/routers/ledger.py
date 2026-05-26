@@ -4,7 +4,7 @@ from typing import Optional, List
 from datetime import datetime
 
 from app.database import get_db
-from app.core.security import get_current_user, require_permission, filter_by_permission
+from app.core.security import get_current_user, require_permission, filter_by_permission, get_visible_fields
 from app.core.state_machine import LedgerStateMachine
 from app.core.ledger_service import LedgerService
 from app.core.dirty_record_detector import DirtyRecordDetector
@@ -76,11 +76,19 @@ def list_ledgers(
     total = query.count()
     records = query.order_by(LedgerRecord.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
     
+    visible_fields = get_visible_fields(current_user)
+    filtered_items = []
+    for r in records:
+        item = LedgerResponse.model_validate(r).model_dump()
+        if visible_fields:
+            item = {k: v for k, v in item.items() if k in visible_fields or k in ["id", "ledger_no", "status", "created_at", "updated_at"]}
+        filtered_items.append(item)
+    
     return ResponseModel(data=PaginatedResponse(
         total=total,
         page=page,
         page_size=page_size,
-        items=[LedgerResponse.model_validate(r).model_dump() for r in records]
+        items=filtered_items
     ))
 
 
@@ -93,6 +101,13 @@ def get_ledger_detail(
     try:
         service = LedgerService(db, current_user)
         result = service.get_ledger_with_trace(ledger_id)
+        
+        visible_fields = get_visible_fields(current_user)
+        if visible_fields and result.get("ledger"):
+            ledger_dict = LedgerResponse.model_validate(result["ledger"]).model_dump()
+            filtered_ledger = {k: v for k, v in ledger_dict.items() if k in visible_fields or k in ["id", "ledger_no", "status", "created_at", "updated_at"]}
+            result["ledger"] = filtered_ledger
+        
         return ResponseModel(data=result)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -185,6 +200,21 @@ def second_confirm(
     
     sm = LedgerStateMachine(db, current_user)
     ledger = sm.second_confirm(ledger, data.reason, data.note or "")
+    return ResponseModel(data={"ledger_no": ledger.ledger_no, "status": ledger.status})
+
+
+@router.post("/audit", response_model=ResponseModel)
+def audit_ledger(
+    data: StatusTransition,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("audit"))
+):
+    ledger = db.query(LedgerRecord).filter(LedgerRecord.id == data.ledger_id).first()
+    if not ledger:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="台账记录不存在")
+    
+    sm = LedgerStateMachine(db, current_user)
+    ledger = sm.audit(ledger, data.reason)
     return ResponseModel(data={"ledger_no": ledger.ledger_no, "status": ledger.status})
 
 

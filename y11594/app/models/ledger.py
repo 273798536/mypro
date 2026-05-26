@@ -9,7 +9,8 @@ LEDGER_STATUS_FLOW = {
     "draft": {"name": "草稿", "next": ["submitted"], "prev": []},
     "submitted": {"name": "已提交", "next": ["reviewing", "rejected"], "prev": ["draft"]},
     "reviewing": {"name": "复核中", "next": ["confirmed", "rejected"], "prev": ["submitted"]},
-    "rejected": {"name": "已驳回", "next": ["draft", "second_confirming"], "prev": ["submitted", "reviewing"]},
+    "confirmed": {"name": "已确认", "next": ["audited", "rejected"], "prev": ["reviewing"]},
+    "rejected": {"name": "已驳回", "next": ["draft", "second_confirming"], "prev": ["submitted", "reviewing", "confirmed"]},
     "second_confirming": {"name": "二次确认中", "next": ["audited", "rejected"], "prev": ["rejected"]},
     "audited": {"name": "已审计", "next": ["exported"], "prev": ["confirmed", "second_confirming"]},
     "exported": {"name": "已导出", "next": [], "prev": ["audited"]}
