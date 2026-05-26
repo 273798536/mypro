@@ -37,6 +37,7 @@ type BatchService struct {
 	balanceHistoryRepo    *repository.BalanceHistoryRepository
 	reconciliationRepo    *repository.ReconciliationRepository
 	auditRepo             *repository.AuditLogRepository
+	evidenceRepo          *repository.EvidenceRepository
 }
 
 func NewBatchService(db *gorm.DB) *BatchService {
