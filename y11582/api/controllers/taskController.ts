@@ -47,10 +47,6 @@ export const taskController = {
 
   getTaskEvidence(req: Request, res: Response): void {
     const evidence = queueService.getTaskEvidence(req.params.id);
-    if (!evidence) {
-      res.status(404).json({ error: 'Evidence not found' });
-      return;
-    }
     res.json(evidence);
   },
 

@@ -208,7 +208,7 @@ export function TaskDetail() {
                   补偿入账
                 </button>
               )}
-              {task.status !== 'closed' && task.status !== 'success' && (
+              {task.status !== 'closed' && (
                 <button
                   onClick={handleClose}
                   disabled={loading}

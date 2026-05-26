@@ -53,7 +53,8 @@ class QueueService {
   }
 
   getTaskEvidence(taskId: string) {
-    return evidenceRepository.findByTaskId(taskId);
+    const evidence = evidenceRepository.findByTaskId(taskId);
+    return evidence ? [evidence] : [];
   }
 
   async processTask(taskId: string, operator: string = 'system'): Promise<QueueTask> {
@@ -186,7 +187,7 @@ class QueueService {
     
     historyRepository.create({
       taskId,
-      operation: 'manual_compensate',
+      operation: 'compensate',
       operator,
       beforeState,
       afterState: { status: updatedTask.status },
@@ -348,28 +349,96 @@ class QueueService {
           continue;
         }
 
-        const standardData = this.standardizeData(sourceType, rawData);
+        const { standardData, error: parseError } = this.standardizeData(sourceType, rawData);
         
+        if (parseError) {
+          const task = this.createFailedTask({
+            sourceType,
+            sourceFile: fileName,
+            sourceLine,
+            rawData,
+            standardData: standardData || {},
+            errorMessage: parseError,
+          }, operator);
+          
+          result.failed++;
+          result.errors.push(`Line ${sourceLine}: ${parseError}`);
+          result.tasks.push(task);
+          continue;
+        }
+
         const task = this.createTask({
           sourceType,
           sourceFile: fileName,
           sourceLine,
           rawData,
-          standardData,
+          standardData: standardData!,
         }, operator);
 
         result.success++;
         result.tasks.push(task);
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const task = this.createFailedTask({
+          sourceType,
+          sourceFile: fileName,
+          sourceLine,
+          rawData,
+          standardData: {},
+          errorMessage,
+        }, operator);
+        
         result.failed++;
-        result.errors.push(`Line ${sourceLine}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        result.errors.push(`Line ${sourceLine}: ${errorMessage}`);
+        result.tasks.push(task);
       }
     }
 
     return result;
   }
 
-  private standardizeData(sourceType: SourceType, rawData: Record<string, any>): Record<string, any> {
+  private createFailedTask(
+    data: {
+      sourceType: SourceType;
+      sourceFile: string;
+      sourceLine: number;
+      rawData: Record<string, any>;
+      standardData: Record<string, any>;
+      errorMessage: string;
+    },
+    operator: string
+  ): QueueTask {
+    const task = taskRepository.create({
+      sourceType: data.sourceType,
+      sourceFile: data.sourceFile,
+      sourceLine: data.sourceLine,
+      rawData: data.rawData,
+      standardData: data.standardData,
+    });
+
+    evidenceRepository.create({
+      taskId: task.id,
+      fileName: data.sourceFile,
+      originalContent: JSON.stringify(data.rawData),
+      lineNumber: data.sourceLine,
+    });
+
+    taskRepository.updateStatus(task.id, 'waiting_manual', data.errorMessage);
+
+    historyRepository.create({
+      taskId: task.id,
+      operation: 'import_failed',
+      operator,
+      beforeState: null,
+      afterState: { status: 'waiting_manual', error: data.errorMessage },
+      diff: historyRepository.calculateDiff(null, { status: 'waiting_manual', error: data.errorMessage }),
+      remark: data.errorMessage,
+    });
+
+    return taskRepository.findById(task.id)!;
+  }
+
+  private standardizeData(sourceType: SourceType, rawData: Record<string, any>): { standardData?: Record<string, any>; error?: string } {
     const standard: Record<string, any> = {};
 
     switch (sourceType) {
@@ -403,10 +472,15 @@ class QueueService {
     }
 
     if (!standard.amount) {
-      throw new Error('Missing required field: amount');
+      return { standardData: standard, error: 'Missing required field: amount' };
     }
 
-    return standard;
+    const amountNum = Number(standard.amount);
+    if (isNaN(amountNum) || amountNum < 0) {
+      return { standardData: standard, error: `Invalid amount: ${standard.amount} (must be non-negative number)` };
+    }
+
+    return { standardData: standard };
   }
 }
 
