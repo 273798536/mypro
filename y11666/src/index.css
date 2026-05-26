@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Genos:wght@400;500;600&display=swap");
+
+:root {
+  --bg: #0b0d12;
+  --panel: rgba(20, 24, 33, 0.78);
+  --panel-strong: rgba(16, 19, 27, 0.92);
+  --border: rgba(120, 170, 210, 0.18);
+  --accent: #4dc4ff;
+  --accent-dim: #2b8fbf;
+  --warn: #ff5a5a;
+  --ok: #6ef2a1;
+  --text: #d6e4ef;
+  --text-dim: #8ca0b0;
+  font-family: "Genos", "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(77, 196, 255, 0.08), transparent 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(110, 242, 161, 0.05), transparent 60%),
+    #070910;
+}
+
+.font-display {
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.glass-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.hud-card {
+  background: linear-gradient(180deg, rgba(20, 26, 36, 0.85), rgba(12, 16, 22, 0.9));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-card.alert {
+  border-color: var(--warn);
+  box-shadow: 0 0 24px rgba(255, 90, 90, 0.4);
+  animation: alert-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes alert-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 90, 90, 0.25); }
+  50% { box-shadow: 0 0 30px rgba(255, 90, 90, 0.6); }
+}
+
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: rgba(25, 30, 40, 0.8);
+  color: var(--text);
+  transition: all 0.18s ease;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pill-btn:hover {
+  background: rgba(40, 50, 65, 0.9);
+  border-color: var(--accent);
+  box-shadow: 0 0 18px rgba(77, 196, 255, 0.25);
+}
+
+.pill-btn.primary {
+  background: linear-gradient(180deg, #1b6fa0, #124a74);
+  border-color: rgba(77, 196, 255, 0.6);
+  color: #e8f6ff;
+}
+
+.pill-btn.warn {
+  background: linear-gradient(180deg, #9a2f2f, #5e1a1a);
+  border-color: rgba(255, 90, 90, 0.6);
+}
+
+.pill-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.scan-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.5;
+}
+
+.moon-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.moon-scroll::-webkit-scrollbar-thumb {
+  background: rgba(77, 196, 255, 0.25);
+  border-radius: 3px;
+}
+.moon-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-row .label {
+  color: var(--text-dim);
+}
+
+.stat-row .value {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.chip.ok { color: var(--ok); border-color: rgba(110, 242, 161, 0.4); }
+.chip.warn { color: var(--warn); border-color: rgba(255, 90, 90, 0.5); }
+.chip.info { color: var(--accent); border-color: rgba(77, 196, 255, 0.5); }
+
+.ring {
+  position: relative;
+  width: 58px;
+  height: 58px;
+}
+
+.ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring .label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.history-item {
+  padding: 8px 10px;
+  border-left: 2px solid rgba(77, 196, 255, 0.4);
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 4px;
+  font-size: 12px;
+  border-radius: 0 6px 6px 0;
+}
+
+.history-item .t {
+  color: var(--text-dim);
+  font-size: 10px;
+}
