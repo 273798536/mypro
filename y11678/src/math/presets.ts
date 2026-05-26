@@ -1,0 +1,208 @@
+import { SurfacePresetTemplate, QuadricEquation, Bounds } from '../types';
+
+export const SURFACE_PRESETS: SurfacePresetTemplate[] = [
+  {
+    name: '椭球面',
+    type: 'ellipsoid',
+    equation: {
+      A: 1 / 4,
+      B: 1 / 9,
+      C: 1,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: 0,
+      J: -1,
+    },
+    bounds: {
+      xMin: -3, xMax: 3,
+      yMin: -4, yMax: 4,
+      zMin: -2, zMax: 2,
+    },
+    sampleDensity: 60,
+    description: '标准椭球面，x²/4 + y²/9 + z² = 1',
+    formula: 'x²/4 + y²/9 + z² = 1',
+  },
+  {
+    name: '单叶双曲面',
+    type: 'hyperboloid_one',
+    equation: {
+      A: 1 / 4,
+      B: 1 / 4,
+      C: -1,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: 0,
+      J: -1,
+    },
+    bounds: {
+      xMin: -5, xMax: 5,
+      yMin: -5, yMax: 5,
+      zMin: -3, zMax: 3,
+    },
+    sampleDensity: 70,
+    description: '单叶双曲面，x²/4 + y²/4 - z² = 1',
+    formula: 'x²/4 + y²/4 - z² = 1',
+  },
+  {
+    name: '双叶双曲面',
+    type: 'hyperboloid_two',
+    equation: {
+      A: 1,
+      B: 1,
+      C: -1,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: 0,
+      J: -1,
+    },
+    bounds: {
+      xMin: -3, xMax: 3,
+      yMin: -3, yMax: 3,
+      zMin: -4, zMax: 4,
+    },
+    sampleDensity: 60,
+    description: '双叶双曲面，x² + y² - z² = -1',
+    formula: 'x² + y² - z² = -1',
+  },
+  {
+    name: '椭圆抛物面',
+    type: 'paraboloid_elliptic',
+    equation: {
+      A: 1,
+      B: 1,
+      C: 0,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: -1,
+      J: 0,
+    },
+    bounds: {
+      xMin: -3, xMax: 3,
+      yMin: -3, yMax: 3,
+      zMin: 0, zMax: 6,
+    },
+    sampleDensity: 60,
+    description: '椭圆抛物面，z = x² + y²',
+    formula: 'z = x² + y²',
+  },
+  {
+    name: '双曲抛物面',
+    type: 'paraboloid_hyperbolic',
+    equation: {
+      A: 1,
+      B: -1,
+      C: 0,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: -1,
+      J: 0,
+    },
+    bounds: {
+      xMin: -4, xMax: 4,
+      yMin: -4, yMax: 4,
+      zMin: -4, zMax: 4,
+    },
+    sampleDensity: 70,
+    description: '双曲抛物面（马鞍面），z = x² - y²',
+    formula: 'z = x² - y²',
+  },
+  {
+    name: '椭圆锥面',
+    type: 'cone',
+    equation: {
+      A: 1,
+      B: 1,
+      C: -1,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: 0,
+      J: 0,
+    },
+    bounds: {
+      xMin: -3, xMax: 3,
+      yMin: -3, yMax: 3,
+      zMin: -3, zMax: 3,
+    },
+    sampleDensity: 50,
+    description: '椭圆锥面，x² + y² = z²',
+    formula: 'x² + y² = z²',
+  },
+  {
+    name: '椭圆柱面',
+    type: 'cylinder_elliptic',
+    equation: {
+      A: 1 / 4,
+      B: 1,
+      C: 0,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: 0,
+      J: -1,
+    },
+    bounds: {
+      xMin: -3, xMax: 3,
+      yMin: -2, yMax: 2,
+      zMin: -3, zMax: 3,
+    },
+    sampleDensity: 60,
+    description: '椭圆柱面，x²/4 + y² = 1',
+    formula: 'x²/4 + y² = 1',
+  },
+  {
+    name: '双曲柱面',
+    type: 'cylinder_hyperbolic',
+    equation: {
+      A: 1,
+      B: -1,
+      C: 0,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+      I: 0,
+      J: -1,
+    },
+    bounds: {
+      xMin: -4, xMax: 4,
+      yMin: -4, yMax: 4,
+      zMin: -2, zMax: 2,
+    },
+    sampleDensity: 60,
+    description: '双曲柱面，x² - y² = 1',
+    formula: 'x² - y² = 1',
+  },
+];
+
+export function getDefaultEquation(): QuadricEquation {
+  return { ...SURFACE_PRESETS[0].equation };
+}
+
+export function getDefaultBounds(): Bounds {
+  return { ...SURFACE_PRESETS[0].bounds };
+}
+
+export function generateId(): string {
+  return `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
