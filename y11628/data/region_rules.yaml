@@ -1,0 +1,44 @@
+regions:
+- region: 华东区
+  allowed_product_lines:
+  - 企业软件
+  - 云服务
+  - 硬件设备
+  payment_requirement_days: 60
+  rate_table: standard
+  cross_region_allowed: true
+  cross_region_penalty: 0.1
+- region: 华南区
+  allowed_product_lines:
+  - 企业软件
+  - 解决方案
+  - 咨询服务
+  payment_requirement_days: 45
+  rate_table: standard
+  cross_region_allowed: false
+  cross_region_penalty: 0.0
+- region: 华北区
+  allowed_product_lines:
+  - 硬件设备
+  - 解决方案
+  - 咨询服务
+  payment_requirement_days: 30
+  rate_table: premium
+  cross_region_allowed: true
+  cross_region_penalty: 0.05
+- region: 西南区
+  allowed_product_lines:
+  - 云服务
+  - 咨询服务
+  payment_requirement_days: 90
+  rate_table: standard
+  cross_region_allowed: true
+  cross_region_penalty: 0.15
+- region: 西北区
+  allowed_product_lines:
+  - 硬件设备
+  - 企业软件
+  payment_requirement_days: 60
+  rate_table: standard
+  cross_region_allowed: false
+  cross_region_penalty: 0.0

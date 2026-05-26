@@ -1,0 +1,4 @@
+order_id,correction_type,field_name,old_value,new_value,reason,corrected_by,corrected_at,source
+ORD0005,region_fix,region,华东,华东区,区域名称模糊匹配: '华东' -> '华东区',auto_fix,2026-05-27T00:54:23.320731,orders.csv
+ORD0025,region_fix,product_line,硬件,硬件设备,产品线名称模糊匹配: '硬件' -> '硬件设备',auto_fix,2026-05-27T00:54:23.320794,orders.csv
+ORD0015,region_fix,region,华南北区,华南区,区域名称录入错误，应为华南区,张三,2026-05-27T00:54:29.914042,
