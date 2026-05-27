@@ -1,0 +1,2 @@
+rule_id,effective_date,expiry_date,min_daily_mileage,min_monthly_days,subsidy_per_km,max_monthly_subsidy,min_charge_ratio
+RULE_2026,2026-01-01,2026-12-31,200,22,0.80,5000,0.8

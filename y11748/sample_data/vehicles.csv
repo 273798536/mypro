@@ -1,0 +1,4 @@
+vehicle_id,plate_number,vehicle_type,battery_capacity,join_date,exit_date
+VH001,粤A12345,比亚迪E6,70,2024-01-15,
+VH002,粤B67890,广汽AION,60,2024-03-20,
+VH003,粤C11111,特斯拉Model3,75,2024-05-10,

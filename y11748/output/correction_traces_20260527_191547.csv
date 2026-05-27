@@ -1,0 +1,5 @@
+﻿车辆ID,修正日期,修正类型,原始值,修正值,修正原因,来源记录
+VH002,2026-04-02,outlier_removal,-200.0,0,里程倒挂数据归零,mileage_reader:mileage.csv
+VH002,2026-04-02,mileage_interpolation,0,175.0,前后日里程插值补全,mileage_processor
+VH002,2026-04-02,operation_day_adjust,0,1,实际里程证明当日营运,operation_system:calendar.csv
+VH003,2026-04-01,operation_day_adjust,0,1,实际里程证明当日营运,operation_system:calendar.csv
