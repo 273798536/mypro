@@ -1,0 +1,79 @@
+{
+  "input_version": "v1.0",
+  "status": "optimal",
+  "total_profit": 13000.0,
+  "products": [
+    {
+      "product_id": "P1",
+      "product_name": "产品A",
+      "production_amount": 200.0,
+      "unit": "piece",
+      "reduced_cost": 30.0,
+      "profit_contribution": 10000.0
+    },
+    {
+      "product_id": "P2",
+      "product_name": "产品B",
+      "production_amount": 100.0,
+      "unit": "piece",
+      "reduced_cost": -10.0,
+      "profit_contribution": 3000.0
+    },
+    {
+      "product_id": "P3",
+      "product_name": "产品C",
+      "production_amount": 0.0,
+      "unit": "piece",
+      "reduced_cost": 0.0,
+      "profit_contribution": 0.0
+    }
+  ],
+  "shadow_prices": [
+    {
+      "constraint_id": "M1",
+      "constraint_name": "原料约束: 原料甲",
+      "shadow_price": -0.0,
+      "allowable_increase": Infinity,
+      "allowable_decrease": Infinity,
+      "current_rhs": 1000.0,
+      "unit": "kg",
+      "description": "影子价格表示每增加1kg 原料甲可增加的利润"
+    },
+    {
+      "constraint_id": "M2",
+      "constraint_name": "原料约束: 原料乙",
+      "shadow_price": -0.0,
+      "allowable_increase": Infinity,
+      "allowable_decrease": Infinity,
+      "current_rhs": 800.0,
+      "unit": "kg",
+      "description": "影子价格表示每增加1kg 原料乙可增加的利润"
+    },
+    {
+      "constraint_id": "C1",
+      "constraint_name": "产能约束: 生产线1",
+      "shadow_price": -0.0,
+      "allowable_increase": Infinity,
+      "allowable_decrease": Infinity,
+      "current_rhs": 500.0,
+      "unit": "hour",
+      "description": "影子价格表示每增加1hour产能可增加的利润"
+    },
+    {
+      "constraint_id": "C2",
+      "constraint_name": "产能约束: 生产线2",
+      "shadow_price": 20.0,
+      "allowable_increase": null,
+      "allowable_decrease": -0.0,
+      "current_rhs": 400.0,
+      "unit": "hour",
+      "description": "影子价格表示每增加1hour产能可增加的利润"
+    }
+  ],
+  "solve_time": 1.0611848831176758,
+  "is_degenerate": true,
+  "messages": [
+    "检测到退化解 - 存在多个基可行解对应相同的最优目标值"
+  ],
+  "created_at": "2026-05-27T14:27:54.519040"
+}

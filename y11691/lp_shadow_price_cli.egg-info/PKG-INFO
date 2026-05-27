@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: lp-shadow-price-cli
+Version: 0.1.0
+Summary: 线性规划影子价格分析CLI工具 - 用于工厂排产优化和敏感性分析
+Requires-Python: >=3.9
+Requires-Dist: pulp>=2.7.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: click>=8.1.0
+Requires-Dist: numpy>=1.24.0

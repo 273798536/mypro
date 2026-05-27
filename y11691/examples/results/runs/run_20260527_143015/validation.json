@@ -1,0 +1,32 @@
+{
+  "issues": [
+    {
+      "type": "needs_human_review",
+      "category": "可行性预警",
+      "message": "仅满足产品 产品A 的最低需求就需要 200.00kg 原料甲，但可用量只有 100.00kg",
+      "details": {
+        "product": "产品A",
+        "material": "原料甲",
+        "required": 200.0,
+        "available": 100.0,
+        "min_demand": 100.0,
+        "usage_per_unit": 2.0
+      },
+      "field": "materials.M1.available"
+    },
+    {
+      "type": "needs_human_review",
+      "category": "可行性预警",
+      "message": "仅满足产品 产品B 的最低需求就需要 150.00kg 原料甲，但可用量只有 100.00kg",
+      "details": {
+        "product": "产品B",
+        "material": "原料甲",
+        "required": 150.0,
+        "available": 100.0,
+        "min_demand": 100.0,
+        "usage_per_unit": 1.5
+      },
+      "field": "materials.M1.available"
+    }
+  ]
+}

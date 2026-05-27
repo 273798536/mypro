@@ -1,0 +1,32 @@
+{
+  "run_20260527_142754": {
+    "version": "v1.0",
+    "description": "示例：工厂生产计划优化",
+    "status": "optimal",
+    "total_profit": 13000.0,
+    "has_errors": false,
+    "issues_count": 0,
+    "created_at": "2026-05-27T14:27:54.519040",
+    "solve_time": 1.0611848831176758
+  },
+  "run_20260527_143015": {
+    "version": "v1.0-infeasible",
+    "description": "测试：不可行方案 - 最低需求超过原料供应",
+    "status": "infeasible",
+    "total_profit": 0.0,
+    "has_errors": true,
+    "issues_count": 2,
+    "created_at": "2026-05-27T14:30:15.793172",
+    "solve_time": 0.15510797500610352
+  },
+  "run_20260527_143103": {
+    "version": "v1.0-errors",
+    "description": "测试：含错误数据的方案 - 验证自动修正",
+    "status": "error",
+    "total_profit": 0.0,
+    "has_errors": true,
+    "issues_count": 2,
+    "created_at": "2026-05-27T14:31:03.361464",
+    "solve_time": 0.15709304809570312
+  }
+}

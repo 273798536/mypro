@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lp-shadow-price-cli"
+version = "0.1.0"
+description = "线性规划影子价格分析CLI工具 - 用于工厂排产优化和敏感性分析"
+requires-python = ">=3.9"
+dependencies = [
+    "pulp>=2.7.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+    "click>=8.1.0",
+    "numpy>=1.24.0",
+]
+
+[project.scripts]
+lp-shadow = "lp_shadow_price.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lp_shadow_price*"]

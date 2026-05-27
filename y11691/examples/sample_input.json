@@ -1,0 +1,140 @@
+{
+  "version": "v1.0",
+  "description": "示例：工厂生产计划优化",
+  "products": [
+    {
+      "id": "P1",
+      "name": "产品A",
+      "profit_per_unit": 50,
+      "unit": "piece",
+      "description": "高端产品"
+    },
+    {
+      "id": "P2",
+      "name": "产品B",
+      "profit_per_unit": 30,
+      "unit": "piece",
+      "description": "中端产品"
+    },
+    {
+      "id": "P3",
+      "name": "产品C",
+      "profit_per_unit": 20,
+      "unit": "piece",
+      "description": "基础产品"
+    }
+  ],
+  "materials": [
+    {
+      "id": "M1",
+      "name": "原料甲",
+      "unit": "kg",
+      "available": 1000,
+      "description": "主要原料"
+    },
+    {
+      "id": "M2",
+      "name": "原料乙",
+      "unit": "kg",
+      "available": 800,
+      "description": "辅助原料"
+    }
+  ],
+  "material_usage": {
+    "P1": [
+      {
+        "material_id": "M1",
+        "amount_per_unit": 2.0
+      },
+      {
+        "material_id": "M2",
+        "amount_per_unit": 1.0
+      }
+    ],
+    "P2": [
+      {
+        "material_id": "M1",
+        "amount_per_unit": 1.0
+      },
+      {
+        "material_id": "M2",
+        "amount_per_unit": 1.5
+      }
+    ],
+    "P3": [
+      {
+        "material_id": "M1",
+        "amount_per_unit": 0.5
+      },
+      {
+        "material_id": "M2",
+        "amount_per_unit": 0.5
+      }
+    ]
+  },
+  "capacity_constraints": [
+    {
+      "id": "C1",
+      "name": "生产线1",
+      "max_capacity": 500,
+      "unit": "hour",
+      "usage_per_unit": {
+        "P1": 2.0,
+        "P2": 1.0,
+        "P3": 0.5
+      },
+      "description": "组装线产能"
+    },
+    {
+      "id": "C2",
+      "name": "生产线2",
+      "max_capacity": 400,
+      "unit": "hour",
+      "usage_per_unit": {
+        "P1": 1.0,
+        "P2": 2.0,
+        "P3": 1.0
+      },
+      "description": "测试线产能"
+    }
+  ],
+  "order_demands": [
+    {
+      "product_id": "P1",
+      "min_demand": 50,
+      "max_demand": 200,
+      "description": "固定订单"
+    },
+    {
+      "product_id": "P2",
+      "min_demand": 100,
+      "max_demand": null,
+      "description": "最低需求"
+    },
+    {
+      "product_id": "P3",
+      "min_demand": 0,
+      "max_demand": 300,
+      "description": "按需生产"
+    }
+  ],
+  "sources": [
+    {
+      "name": "销售部",
+      "file": "订单需求.xlsx",
+      "sheet": "Q2",
+      "note": "2024年Q2预测"
+    },
+    {
+      "name": "采购部",
+      "file": "原料库存.csv",
+      "note": "当前可用库存"
+    },
+    {
+      "name": "生产部",
+      "file": "产能表.xlsx",
+      "note": "设备额定产能"
+    }
+  ],
+  "corrections": []
+}

@@ -1,0 +1,13 @@
+{
+  "input_version": "v1.0-errors",
+  "status": "error",
+  "total_profit": 0.0,
+  "products": [],
+  "shadow_prices": [],
+  "solve_time": 0.15709304809570312,
+  "is_degenerate": false,
+  "messages": [
+    "求解器异常: Pulp: Error while executing /Users/mac/Library/Python/3.9/lib/python/site-packages/pulp/apis/../solverdir/cbc/osx/i64/cbc"
+  ],
+  "created_at": "2026-05-27T14:31:03.361464"
+}

@@ -1,0 +1,24 @@
+{
+  "version": "v1.0-errors",
+  "description": "测试：含错误数据的方案 - 验证自动修正",
+  "products": [
+    {"id": "P1", "name": "产品A", "profit_per_unit": 50, "unit": "piece"},
+    {"id": "P2", "name": "产品B", "profit_per_unit": 30, "unit": "piece"}
+  ],
+  "materials": [
+    {"id": "M1", "name": "原料甲", "unit": "kg", "available": 500}
+  ],
+  "material_usage": {
+    "P1": [{"material_id": "M1", "amount_per_unit": 2.0}],
+    "P2": [{"material_id": "M1", "amount_per_unit": 1.5}]
+  },
+  "capacity_constraints": [],
+  "order_demands": [
+    {"product_id": "P1", "min_demand": -10, "max_demand": 100},
+    {"product_id": "P2", "min_demand": 50, "max_demand": 30}
+  ],
+  "sources": [
+    {"name": "销售部", "file": "订单.xlsx", "note": "录入时有误"}
+  ],
+  "corrections": []
+}

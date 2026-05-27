@@ -1,0 +1,14 @@
+{
+  "input_version": "v1.0-infeasible",
+  "status": "infeasible",
+  "total_profit": 0.0,
+  "products": [],
+  "shadow_prices": [],
+  "solve_time": 0.059252023696899414,
+  "is_degenerate": false,
+  "messages": [
+    "模型不可行 - 约束之间存在冲突，无法找到满足所有条件的解",
+    "建议检查：1) 最低订单需求是否过高 2) 原料/产能是否充足 3) 约束是否自相矛盾"
+  ],
+  "created_at": "2026-05-27T14:28:35.368543"
+}

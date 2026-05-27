@@ -1,0 +1,2 @@
+[console_scripts]
+lp-shadow = lp_shadow_price.cli:main

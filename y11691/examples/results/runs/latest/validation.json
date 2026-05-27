@@ -1,0 +1,24 @@
+{
+  "issues": [
+    {
+      "type": "corrected",
+      "category": "数值修正",
+      "message": "产品 P1 的最小需求为负，已修正为0",
+      "details": {
+        "old_value": -10.0,
+        "new_value": 0.0
+      },
+      "field": "order_demands.P1.min_demand"
+    },
+    {
+      "type": "needs_human_review",
+      "category": "逻辑一致性",
+      "message": "产品 P2 的最大需求小于最小需求",
+      "details": {
+        "min": 50.0,
+        "max": 30.0
+      },
+      "field": "order_demands.P2"
+    }
+  ]
+}
