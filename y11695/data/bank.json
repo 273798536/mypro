@@ -1,0 +1,39 @@
+{
+  "puzzles": [
+    {
+      "id": "PZ-1779864605245-81326",
+      "puzzle": "216708900395020400874360100652090007731004680408072019147800302000007860580041000",
+      "solution": "216708900395020400874360100652090007731004680408072019147800302000007860580041000",
+      "difficulty": "Easy",
+      "score": 0.0,
+      "givens_count": 47,
+      "symmetry": "rotational",
+      "source": "test",
+      "created_at": 1779864605.2455301,
+      "corrections": []
+    },
+    {
+      "id": "PZ-1779864970142-94210",
+      "puzzle": "000003009005801000804090300600000004040925030700000001001030902000107400500200000",
+      "solution": "216453789395871246874692315623718594148925637759364821481536972962187453537249168",
+      "difficulty": "Easy",
+      "score": 0.0,
+      "givens_count": 27,
+      "symmetry": "rotational",
+      "source": "test",
+      "created_at": 1779864970.142292,
+      "corrections": [
+        {
+          "type": "duplicate_detected",
+          "timestamp": 1779865223.296389,
+          "note": "Puzzle matches existing record via canonical hash"
+        },
+        {
+          "type": "duplicate_detected",
+          "timestamp": 1779865561.945371,
+          "note": "Puzzle matches existing record via canonical hash"
+        }
+      ]
+    }
+  ]
+}

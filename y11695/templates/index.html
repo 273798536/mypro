@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数独生成难度控制台</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f1117; color: #e4e4e7; min-height: 100vh; padding: 20px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  header h1 { font-size: 1.5rem; font-weight: 600; }
+  .tag {
+    background: #1e293b; border: 1px solid #334155; padding: 2px 10px;
+    border-radius: 12px; font-size: 0.75rem; color: #94a3b8;
+  }
+  .grid-main {
+    display: grid; grid-template-columns: 380px 1fr; gap: 24px;
+  }
+  @media (max-width: 960px) { .grid-main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: #181b24; border: 1px solid #272935; border-radius: 12px;
+    padding: 20px; margin-bottom: 20px;
+  }
+  .panel h2 { font-size: 0.9rem; font-weight: 600; margin-bottom: 14px; color: #a1a1aa; letter-spacing: 0.05em; text-transform: uppercase; }
+  .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .form-row label { flex: 0 0 80px; font-size: 0.85rem; color: #94a3b8; align-self: center; }
+  .form-row select, .form-row input {
+    flex: 1; background: #0f1117; border: 1px solid #334155; color: #e4e4e7;
+    padding: 6px 10px; border-radius: 6px; font-size: 0.85rem;
+  }
+  button {
+    background: #3b82f6; color: white; border: none; padding: 8px 20px;
+    border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500;
+    transition: background 0.15s;
+  }
+  button:hover { background: #2563eb; }
+  button:disabled { background: #475569; cursor: not-allowed; }
+  .btn-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .btn-secondary { background: #374151; }
+  .btn-secondary:hover { background: #4b5563; }
+  .btn-danger { background: #dc2626; }
+  .btn-danger:hover { background: #b91c1c; }
+
+  .board-wrap { display: flex; justify-content: center; padding: 20px 0; }
+  .board {
+    display: grid; grid-template-columns: repeat(9, 1fr);
+    width: min(360px, 90vw); aspect-ratio: 1;
+    border: 2px solid #52525b; border-radius: 6px; overflow: hidden;
+    background: #18181b;
+  }
+  .cell {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 500;
+    background: #18181b; border: 1px solid #3f3f46;
+    position: relative;
+  }
+  .cell.given { background: #27272a; color: #fafafa; font-weight: 700; }
+  .cell.filled { color: #60a5fa; }
+  .cell.highlight { background: #1e3a5f !important; }
+  .cell.border-r { border-right: 2px solid #52525b; }
+  .cell.border-b { border-bottom: 2px solid #52525b; }
+  .cell.empty { color: #52525b; }
+
+  .info-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px;
+  }
+  .info-item { background: #0f1117; border-radius: 6px; padding: 10px; }
+  .info-item .label { font-size: 0.7rem; color: #71717a; text-transform: uppercase; }
+  .info-item .value { font-size: 1.1rem; font-weight: 600; margin-top: 2px; }
+  .diff-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+  }
+  .diff-Easy { background: #166534; color: #86efac; }
+  .diff-Medium { background: #854d0e; color: #fde047; }
+  .diff-Hard { background: #92400e; color: #fb923c; }
+  .diff-Expert { background: #7f1d1d; color: #fca5a5; }
+  .diff-Master { background: #581c87; color: #d8b4fe; }
+
+  .warnings, .errors {
+    background: #1c1917; border: 1px solid #78350f; border-radius: 6px;
+    padding: 10px 14px; margin-top: 14px; font-size: 0.85rem;
+  }
+  .errors { border-color: #7f1d1d; background: #1c0b0b; }
+  .warnings p, .errors p { color: #fbbf24; margin: 2px 0; }
+  .errors p { color: #fca5a5; }
+
+  .chart-container { position: relative; height: 220px; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .chart-row { grid-template-columns: 1fr; } }
+
+  .steps-list {
+    max-height: 350px; overflow-y: auto; border: 1px solid #272935;
+    border-radius: 6px; margin-top: 10px;
+  }
+  .step-item {
+    padding: 8px 12px; border-bottom: 1px solid #272935; font-size: 0.85rem;
+    cursor: pointer; transition: background 0.1s;
+  }
+  .step-item:hover { background: #1e293b; }
+  .step-item.active { background: #1e3a5f; }
+  .step-num { color: #71717a; font-weight: 600; margin-right: 8px; }
+  .step-tech { font-weight: 600; margin-right: 8px; }
+  .step-desc { color: #a1a1aa; }
+
+  .bank-table {
+    width: 100%; border-collapse: collapse; font-size: 0.85rem;
+  }
+  .bank-table th, .bank-table td {
+    text-align: left; padding: 8px 10px; border-bottom: 1px solid #272935;
+  }
+  .bank-table th { color: #71717a; font-weight: 500; font-size: 0.75rem; text-transform: uppercase; }
+  .bank-table tr:hover { background: #1e293b; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab {
+    padding: 6px 14px; background: #272935; border-radius: 6px;
+    font-size: 0.85rem; cursor: pointer; color: #a1a1aa;
+  }
+  .tab.active { background: #3b82f6; color: white; }
+
+  .hidden { display: none !important; }
+
+  .loading {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid #3b82f6; border-top-color: transparent;
+    border-radius: 50%; animation: spin 0.6s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .puzzle-input {
+    width: 100%; background: #0f1117; border: 1px solid #334155; color: #e4e4e7;
+    padding: 8px 10px; border-radius: 6px; font-family: monospace; font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>数独生成难度控制台</h1>
+    <span class="tag">v1.0</span>
+    <span class="tag" id="status-tag">就绪</span>
+  </header>
+
+  <div class="grid-main">
+    <div>
+      <div class="panel">
+        <h2>生成控制</h2>
+        <div class="form-row">
+          <label>难度档</label>
+          <select id="difficulty">
+            <option value="Any">任意</option>
+            <option value="Easy">简单</option>
+            <option value="Medium" selected>中等</option>
+            <option value="Hard">困难</option>
+            <option value="Expert">专家</option>
+            <option value="Master">大师</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>对称性</label>
+          <select id="symmetry">
+            <option value="rotational" selected>旋转对称</option>
+            <option value="horizontal">水平镜像</option>
+            <option value="vertical">垂直镜像</option>
+            <option value="none">无</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>最少提示</label>
+          <input type="number" id="min-givens" value="24" min="17" max="45">
+        </div>
+        <div class="form-row">
+          <label>最多提示</label>
+          <input type="number" id="max-givens" value="40" min="17" max="60">
+        </div>
+        <div class="form-row">
+          <label>种子</label>
+          <input type="number" id="seed" placeholder="留空随机">
+        </div>
+        <div class="btn-row">
+          <button id="btn-generate">生成题目</button>
+          <button id="btn-verify" class="btn-secondary">校验唯一解</button>
+          <button id="btn-solve" class="btn-secondary">求解</button>
+          <button id="btn-steps" class="btn-secondary">解题步骤</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>棋盘</h2>
+        <div class="board-wrap">
+          <div class="board" id="board"></div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><div class="label">难度</div><div class="value"><span class="diff-badge" id="info-diff">-</span></div></div>
+          <div class="info-item"><div class="label">评分</div><div class="value" id="info-score">-</div></div>
+          <div class="info-item"><div class="label">提示数</div><div class="value" id="info-givens">-</div></div>
+          <div class="info-item"><div class="label">对称性</div><div class="value" id="info-sym">-</div></div>
+        </div>
+        <div id="warnings-area"></div>
+      </div>
+
+      <div class="panel">
+        <h2>粘贴或输入题目</h2>
+        <textarea class="puzzle-input" id="puzzle-input" rows="3" placeholder="粘贴81位字符串（0或.表示空格）"></textarea>
+        <div class="btn-row">
+          <button id="btn-load-puzzle" class="btn-secondary">加载题目</button>
+          <button id="btn-clear-board" class="btn-danger">清空</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>图表分析</h2>
+        <div class="chart-row">
+          <div><div class="chart-container"><canvas id="chart-techniques"></canvas></div></div>
+          <div><div class="chart-container"><canvas id="chart-difficulty"></canvas></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>解题步骤</h2>
+        <div id="steps-empty" style="color:#71717a; font-size:0.85rem;">生成题目后点击"解题步骤"</div>
+        <div id="steps-list" class="steps-list hidden"></div>
+      </div>
+
+      <div class="panel">
+        <h2>题库管理</h2>
+        <div class="tabs">
+          <div class="tab active" data-tab="list">题目列表</div>
+          <div class="tab" data-tab="stats">统计</div>
+          <div class="tab" data-tab="dupes">重复检测</div>
+        </div>
+        <div id="tab-list">
+          <button id="btn-refresh-bank" class="btn-secondary" style="margin-bottom:10px;">刷新题库</button>
+          <button id="btn-export-json" class="btn-secondary" style="margin-bottom:10px;">导出 JSON</button>
+          <button id="btn-export-csv" class="btn-secondary" style="margin-bottom:10px;">导出 CSV</button>
+          <div id="bank-table-wrap"><div style="color:#71717a;font-size:0.85rem;">点击刷新加载题库</div></div>
+        </div>
+        <div id="tab-stats" class="hidden"></div>
+        <div id="tab-dupes" class="hidden"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPuzzle = null;
+let currentSolution = null;
+let currentSteps = null;
+let techChart = null;
+let diffChart = null;
+let highlightedCells = new Set();
+
+function renderBoard(grid, solution) {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const v = grid[r][c];
+      const key = `${r}-${c}`;
+      if (v !== 0) {
+        cell.classList.add('given');
+        cell.textContent = v;
+      } else if (solution && solution[r][c] !== 0) {
+        cell.classList.add('filled');
+        cell.textContent = solution[r][c];
+      } else {
+        cell.classList.add('empty');
+        cell.textContent = '';
+      }
+      if (c === 2 || c === 5) cell.classList.add('border-r');
+      if (r === 2 || r === 5) cell.classList.add('border-b');
+      if (highlightedCells.has(key)) cell.classList.add('highlight');
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      board.appendChild(cell);
+    }
+  }
+}
+
+function clearHighlights() {
+  highlightedCells.clear();
+}
+
+function highlightCells(cells) {
+  clearHighlights();
+  cells.forEach(([r, c]) => highlightedCells.add(`${r}-${c}`));
+  if (currentPuzzle) renderBoard(currentPuzzle, currentSolution);
+}
+
+function showWarnings(warnings) {
+  const area = document.getElementById('warnings-area');
+  if (!warnings || warnings.length === 0) {
+    area.innerHTML = '';
+    return;
+  }
+  area.innerHTML = '<div class="warnings">' +
+    warnings.map(w => `<p>⚠ ${w}</p>`).join('') + '</div>';
+}
+
+function showError(msg) {
+  const area = document.getElementById('warnings-area');
+  area.innerHTML = '<div class="errors"><p>✗ ' + msg + '</p></div>';
+}
+
+function setStatus(text, ok = true) {
+  const tag = document.getElementById('status-tag');
+  tag.textContent = text;
+  tag.style.background = ok ? '#166534' : '#7f1d1d';
+  tag.style.color = ok ? '#86efac' : '#fca5a5';
+  tag.style.borderColor = ok ? '#15803d' : '#b91c1c';
+}
+
+function initCharts() {
+  const techCtx = document.getElementById('chart-techniques').getContext('2d');
+  techChart = new Chart(techCtx, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: '使用次数',
+        data: [],
+        backgroundColor: '#3b82f6',
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { title: { display: true, text: '技巧使用分布', color: '#a1a1aa' }, legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#71717a' }, grid: { color: '#272935' } },
+        y: { ticks: { color: '#71717a' }, grid: { color: '#272935' }, beginAtZero: true }
+      }
+    }
+  });
+
+  const diffCtx = document.getElementById('chart-difficulty').getContext('2d');
+  diffChart = new Chart(diffCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Easy', 'Medium', 'Hard', 'Expert', 'Master'],
+      datasets: [{
+        data: [0, 0, 0, 0, 0],
+        backgroundColor: ['#166534', '#854d0e', '#92400e', '#7f1d1d', '#581c87'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { title: { display: true, text: '题库难度分布', color: '#a1a1aa' } }
+    }
+  });
+}
+
+function updateTechChart(techniqueCounts) {
+  const labels = Object.keys(techniqueCounts);
+  const data = Object.values(techniqueCounts);
+  techChart.data.labels = labels;
+  techChart.data.datasets[0].data = data;
+  techChart.update();
+}
+
+function updateDiffChart(stats) {
+  const byDiff = stats.by_difficulty || {};
+  diffChart.data.datasets[0].data = [
+    byDiff.Easy || 0, byDiff.Medium || 0, byDiff.Hard || 0,
+    byDiff.Expert || 0, byDiff.Master || 0
+  ];
+  diffChart.update();
+}
+
+async function generatePuzzle() {
+  setStatus('生成中...');
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span>生成中';
+
+  const body = {
+    difficulty: document.getElementById('difficulty').value,
+    symmetry: document.getElementById('symmetry').value,
+    min_givens: parseInt(document.getElementById('min-givens').value),
+    max_givens: parseInt(document.getElementById('max-givens').value),
+  };
+  const seed = document.getElementById('seed').value;
+  if (seed) body.seed = parseInt(seed);
+
+  try {
+    const resp = await fetch('/api/generate?save=true', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+
+    if (!data.success) {
+      showError(data.error || '生成失败');
+      setStatus('生成失败', false);
+      return;
+    }
+
+    currentPuzzle = data.puzzle;
+    currentSolution = data.solution;
+    currentSteps = null;
+    clearHighlights();
+    renderBoard(currentPuzzle, null);
+
+    document.getElementById('info-diff').textContent = data.difficulty;
+    document.getElementById('info-diff').className = 'diff-badge diff-' + data.difficulty;
+    document.getElementById('info-score').textContent = data.score.toFixed(1);
+    document.getElementById('info-givens').textContent = data.givens_count;
+    document.getElementById('info-sym').textContent = data.symmetry_used;
+
+    showWarnings(data.warnings || []);
+
+    if (data.duplicate) {
+      const area = document.getElementById('warnings-area');
+      area.innerHTML = (area.innerHTML || '') + '<div class="warnings"><p>⚠ 该题目与题库中已有题目重复</p></div>';
+    }
+
+    setStatus('生成成功');
+    refreshBank();
+  } catch (e) {
+    showError('请求失败: ' + e.message);
+    setStatus('错误', false);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '生成题目';
+  }
+}
+
+async function verifyPuzzle() {
+  if (!currentPuzzle) { showError('请先生成或加载题目'); return; }
+  setStatus('校验中...');
+  try {
+    const resp = await fetch('/api/verify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grid: currentPuzzle })
+    });
+    const data = await resp.json();
+    if (!data.unique) {
+      if (data.solution_count > 1) {
+        showError(`非唯一解！发现 ${data.solution_count} 个解，此题目无效`);
+      } else if (data.solution_count === 0) {
+        showError('无解！此题目无效');
+      }
+      setStatus('校验失败', false);
+    } else {
+      showWarnings([]);
+      setStatus('唯一解 ✓');
+    }
+  } catch (e) {
+    showError('请求失败: ' + e.message);
+  }
+}
+
+async function solvePuzzle() {
+  if (!currentPuzzle) { showError('请先生成或加载题目'); return; }
+  try {
+    const resp = await fetch('/api/solve', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grid: currentPuzzle })
+    });
+    const data = await resp.json();
+    if (data.solved) {
+      currentSolution = data.solution;
+      renderBoard(currentPuzzle, currentSolution);
+      setStatus('已求解');
+    } else {
+      showError(data.reason || '求解失败');
+    }
+  } catch (e) {
+    showError('请求失败: ' + e.message);
+  }
+}
+
+async function showSteps() {
+  if (!currentPuzzle) { showError('请先生成或加载题目'); return; }
+  setStatus('分析步骤中...');
+  try {
+    const resp = await fetch('/api/steps', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ grid: currentPuzzle })
+    });
+    const data = await resp.json();
+    currentSteps = data.steps;
+    updateTechChart(data.technique_counts || {});
+    renderSteps(data.steps);
+    setStatus('步骤分析完成');
+  } catch (e) {
+    showError('请求失败: ' + e.message);
+  }
+}
+
+function renderSteps(steps) {
+  const list = document.getElementById('steps-list');
+  const empty = document.getElementById('steps-empty');
+  if (!steps || steps.length === 0) {
+    empty.textContent = '无步骤';
+    empty.classList.remove('hidden');
+    list.classList.add('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  list.classList.remove('hidden');
+  list.innerHTML = '';
+  steps.forEach((step, i) => {
+    const item = document.createElement('div');
+    item.className = 'step-item';
+    item.innerHTML = `<span class="step-num">${i + 1}.</span><span class="step-tech">[${step.technique}]</span><span class="step-desc">${step.description}</span>`;
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+      const cells = step.cells_affected || [];
+      highlightCells(cells.map(([r, c]) => [r - 1, c - 1]));
+    });
+    list.appendChild(item);
+  });
+}
+
+function loadPuzzleInput() {
+  const raw = document.getElementById('puzzle-input').value.trim().replace(/\./g, '0').replace(/[^0-9]/g, '');
+  if (raw.length !== 81) {
+    showError('需要81位数字（0或.表示空格）');
+    return;
+  }
+  const grid = [];
+  for (let r = 0; r < 9; r++) {
+    const row = [];
+    for (let c = 0; c < 9; c++) {
+      row.push(parseInt(raw[r * 9 + c]));
+    }
+    grid.push(row);
+  }
+  currentPuzzle = grid;
+  currentSolution = null;
+  currentSteps = null;
+  clearHighlights();
+  renderBoard(grid, null);
+  document.getElementById('info-diff').textContent = '-';
+  document.getElementById('info-score').textContent = '-';
+  document.getElementById('info-givens').textContent = grid.flat().filter(v => v !== 0).length;
+  showWarnings([]);
+  setStatus('题目已加载');
+}
+
+function clearBoard() {
+  currentPuzzle = null;
+  currentSolution = null;
+  currentSteps = null;
+  clearHighlights();
+  renderBoard(Array(9).fill().map(() => Array(9).fill(0)), null);
+  document.getElementById('info-diff').textContent = '-';
+  document.getElementById('info-score').textContent = '-';
+  document.getElementById('info-givens').textContent = '-';
+  document.getElementById('warnings-area').innerHTML = '';
+  document.getElementById('puzzle-input').value = '';
+  document.getElementById('steps-list').classList.add('hidden');
+  document.getElementById('steps-empty').textContent = '生成题目后点击"解题步骤"';
+  document.getElementById('steps-empty').classList.remove('hidden');
+  setStatus('就绪');
+}
+
+async function refreshBank() {
+  try {
+    const [listResp, statsResp, dupesResp] = await Promise.all([
+      fetch('/api/bank'), fetch('/api/bank/stats'), fetch('/api/bank/duplicates')
+    ]);
+    const [listData, statsData, dupesData] = await Promise.all([
+      listResp.json(), statsResp.json(), dupesResp.json()
+    ]);
+    renderBankList(listData.puzzles || []);
+    renderBankStats(statsData);
+    renderBankDupes(dupesData);
+    updateDiffChart(statsData);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function renderBankList(puzzles) {
+  const wrap = document.getElementById('bank-table-wrap');
+  if (!puzzles.length) {
+    wrap.innerHTML = '<div style="color:#71717a;font-size:0.85rem;">题库为空</div>';
+    return;
+  }
+  let html = '<table class="bank-table"><thead><tr><th>ID</th><th>难度</th><th>评分</th><th>提示</th><th>对称</th><th>修正</th><th></th></tr></thead><tbody>';
+  puzzles.forEach(p => {
+    html += `<tr>
+      <td style="font-size:0.75rem;font-family:monospace;">${p.id}</td>
+      <td><span class="diff-badge diff-${p.difficulty}">${p.difficulty}</span></td>
+      <td>${p.score.toFixed(1)}</td>
+      <td>${p.givens_count}</td>
+      <td>${p.symmetry}</td>
+      <td>${(p.corrections || []).length}</td>
+      <td><button class="btn-secondary" style="padding:2px 8px;font-size:0.75rem;" onclick="loadBankPuzzle('${p.id}')">加载</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderBankStats(stats) {
+  const el = document.getElementById('tab-stats');
+  el.innerHTML = `<div class="info-grid">
+    <div class="info-item"><div class="label">总题数</div><div class="value">${stats.total}</div></div>
+    <div class="info-item"><div class="label">含修正</div><div class="value">${stats.with_corrections}</div></div>
+    <div class="info-item"><div class="label">平均评分</div><div class="value">${stats.avg_score}</div></div>
+    <div class="info-item"><div class="label">平均提示</div><div class="value">${stats.avg_givens}</div></div>
+  </div>`;
+}
+
+function renderBankDupes(data) {
+  const el = document.getElementById('tab-dupes');
+  if (!data.duplicate_groups) {
+    el.innerHTML = '<div style="color:#71717a;font-size:0.85rem;">未发现重复</div>';
+    return;
+  }
+  let html = `<div style="margin-bottom:10px;color:#fbbf24;">发现 ${data.duplicate_groups} 组重复</div>`;
+  (data.groups || []).forEach(g => {
+    html += `<div style="margin-bottom:10px;padding:8px;background:#1c1917;border-radius:6px;">
+      <div style="font-size:0.75rem;color:#71717a;">Hash: ${g.canonical_hash}</div>`;
+    g.records.forEach(r => {
+      html += `<div style="font-size:0.8rem;margin:4px 0;">${r.id} — ${r.difficulty} (${r.score.toFixed(1)})</div>`;
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function loadBankPuzzle(id) {
+  fetch('/api/bank').then(r => r.json()).then(data => {
+    const p = (data.puzzles || []).find(x => x.id === id);
+    if (!p) return;
+    const grid = [];
+    for (let r = 0; r < 9; r++) {
+      const row = [];
+      for (let c = 0; c < 9; c++) {
+        row.push(parseInt(p.puzzle[r * 9 + c]));
+      }
+      grid.push(row);
+    }
+    const solGrid = [];
+    for (let r = 0; r < 9; r++) {
+      const row = [];
+      for (let c = 0; c < 9; c++) {
+        row.push(parseInt(p.solution[r * 9 + c]));
+      }
+      solGrid.push(row);
+    }
+    currentPuzzle = grid;
+    currentSolution = solGrid;
+    currentSteps = null;
+    clearHighlights();
+    renderBoard(grid, null);
+    document.getElementById('info-diff').textContent = p.difficulty;
+    document.getElementById('info-diff').className = 'diff-badge diff-' + p.difficulty;
+    document.getElementById('info-score').textContent = p.score.toFixed(1);
+    document.getElementById('info-givens').textContent = p.givens_count;
+    document.getElementById('info-sym').textContent = p.symmetry;
+    setStatus('已从题库加载');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+async function exportBank(format) {
+  window.open(`/api/bank/export?format=${format}`, '_blank');
+}
+
+document.getElementById('btn-generate').addEventListener('click', generatePuzzle);
+document.getElementById('btn-verify').addEventListener('click', verifyPuzzle);
+document.getElementById('btn-solve').addEventListener('click', solvePuzzle);
+document.getElementById('btn-steps').addEventListener('click', showSteps);
+document.getElementById('btn-load-puzzle').addEventListener('click', loadPuzzleInput);
+document.getElementById('btn-clear-board').addEventListener('click', clearBoard);
+document.getElementById('btn-refresh-bank').addEventListener('click', refreshBank);
+document.getElementById('btn-export-json').addEventListener('click', () => exportBank('json'));
+document.getElementById('btn-export-csv').addEventListener('click', () => exportBank('csv'));
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const name = tab.dataset.tab;
+    document.getElementById('tab-list').classList.toggle('hidden', name !== 'list');
+    document.getElementById('tab-stats').classList.toggle('hidden', name !== 'stats');
+    document.getElementById('tab-dupes').classList.toggle('hidden', name !== 'dupes');
+  });
+});
+
+window.loadBankPuzzle = loadBankPuzzle;
+
+initCharts();
+renderBoard(Array(9).fill().map(() => Array(9).fill(0)), null);
+refreshBank();
+</script>
+</body>
+</html>
