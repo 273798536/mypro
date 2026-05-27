@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graph-audit"
+version = "0.1.0"
+description = "图论最短路审计CLI - 物流线路数据审计工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "networkx>=3.1",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+graph-audit = "graph_audit.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["graph_audit*"]

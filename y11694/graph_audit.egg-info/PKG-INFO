@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: graph-audit
+Version: 0.1.0
+Summary: 图论最短路审计CLI - 物流线路数据审计工具
+Requires-Python: >=3.9
+Requires-Dist: click>=8.1.0
+Requires-Dist: networkx>=3.1
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: rich>=13.0.0

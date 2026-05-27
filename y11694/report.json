@@ -1,0 +1,993 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-27T14:54:13.416478",
+    "version": "0.1.0"
+  },
+  "graph_summary": {
+    "total_nodes": 10,
+    "total_edges": 16,
+    "forbidden_edges": 2,
+    "connected_components": 1,
+    "negative_edges": [
+      "N04->N02(-1.0)",
+      "N05->N03(-2.0)"
+    ],
+    "isolated_nodes": [],
+    "nodes_missing_from_edges": [],
+    "edges_with_missing_nodes": [],
+    "duplicate_edges": []
+  },
+  "parse_issues": [
+    {
+      "type": "negative_weight",
+      "severity": "warning",
+      "edge": "N04->N02",
+      "weight": -1.0,
+      "message": "边 N04->N02 权重为负 (-1.0)"
+    },
+    {
+      "type": "negative_weight",
+      "severity": "warning",
+      "edge": "N05->N03",
+      "weight": -2.0,
+      "message": "边 N05->N03 权重为负 (-2.0)"
+    },
+    {
+      "type": "forbidden_edge_info",
+      "severity": "info",
+      "edge": "N02->N05",
+      "message": "边 N02->N05 已被禁行: 道路施工"
+    },
+    {
+      "type": "forbidden_edge_info",
+      "severity": "info",
+      "edge": "N07->N09",
+      "message": "边 N07->N09 已被禁行: 交通管制"
+    }
+  ],
+  "audit_results": [
+    {
+      "query": {
+        "source": "N01",
+        "target": "N10"
+      },
+      "baseline_result": {
+        "source": "N01",
+        "target": "N10",
+        "path": [
+          "N01",
+          "N03",
+          "N04",
+          "N05",
+          "N08",
+          "N10"
+        ],
+        "path_str": "N01 -> N03 -> N04 -> N05 -> N08 -> N10",
+        "total_weight": 10.0,
+        "edge_count": 5,
+        "is_valid": true,
+        "error_message": "",
+        "algorithm": "Bellman-Ford",
+        "has_negative_cycle": false,
+        "negative_cycle_path": [],
+        "has_isolated_nodes": false,
+        "used_forbidden_edges": []
+      },
+      "audit_findings": [
+        {
+          "type": "negative_edges_exist",
+          "severity": "info",
+          "message": "图中存在 2 条负权边，已使用 Bellman-Ford 算法",
+          "edge": null,
+          "node": null,
+          "details": {
+            "negative_edges": [
+              "N04->N02(-1.0)",
+              "N05->N03(-2.0)"
+            ]
+          }
+        },
+        {
+          "type": "critical_edge",
+          "severity": "critical",
+          "message": "关键边检测: 移除 N08->N10 将导致路径中断或权重大幅增加",
+          "edge": "N08->N10",
+          "node": null,
+          "details": {
+            "edge": "N08->N10",
+            "edge_index": 4,
+            "removed": true,
+            "new_path": "无路径",
+            "new_weight": null,
+            "weight_diff": null,
+            "impact": "critical",
+            "message": "移除边 N08->N10 后，N01 到 N10 无可达路径"
+          }
+        }
+      ],
+      "edge_sensitivity": [
+        {
+          "edge": "N01->N03",
+          "edge_index": 0,
+          "removed": true,
+          "new_path": "N01 -> N02 -> N04 -> N05 -> N08 -> N10",
+          "new_weight": 13.0,
+          "weight_diff": 3.0,
+          "impact": "high",
+          "message": "移除边 N01->N03 后，路径变为 N01 -> N02 -> N04 -> N05 -> N08 -> N10，权重增加 3.00"
+        },
+        {
+          "edge": "N03->N04",
+          "edge_index": 1,
+          "removed": true,
+          "new_path": "N01 -> N02 -> N04 -> N05 -> N08 -> N10",
+          "new_weight": 13.0,
+          "weight_diff": 3.0,
+          "impact": "high",
+          "message": "移除边 N03->N04 后，路径变为 N01 -> N02 -> N04 -> N05 -> N08 -> N10，权重增加 3.00"
+        },
+        {
+          "edge": "N04->N05",
+          "edge_index": 2,
+          "removed": true,
+          "new_path": "N01 -> N03 -> N04 -> N07 -> N08 -> N10",
+          "new_weight": 11.0,
+          "weight_diff": 1.0,
+          "impact": "high",
+          "message": "移除边 N04->N05 后，路径变为 N01 -> N03 -> N04 -> N07 -> N08 -> N10，权重增加 1.00"
+        },
+        {
+          "edge": "N05->N08",
+          "edge_index": 3,
+          "removed": true,
+          "new_path": "N01 -> N03 -> N04 -> N07 -> N08 -> N10",
+          "new_weight": 11.0,
+          "weight_diff": 1.0,
+          "impact": "high",
+          "message": "移除边 N05->N08 后，路径变为 N01 -> N03 -> N04 -> N07 -> N08 -> N10，权重增加 1.00"
+        },
+        {
+          "edge": "N08->N10",
+          "edge_index": 4,
+          "removed": true,
+          "new_path": "无路径",
+          "new_weight": null,
+          "weight_diff": null,
+          "impact": "critical",
+          "message": "移除边 N08->N10 后，N01 到 N10 无可达路径"
+        }
+      ],
+      "edge_explanations": [
+        {
+          "index": 0,
+          "edge": "N01->N03",
+          "weight": 3.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "高速",
+            "distance_km": 30.0
+          },
+          "from_node": "N01",
+          "to_node": "N03",
+          "cumulative_weight": 3.0
+        },
+        {
+          "index": 1,
+          "edge": "N03->N04",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 10.0
+          },
+          "from_node": "N03",
+          "to_node": "N04",
+          "cumulative_weight": 4.0
+        },
+        {
+          "index": 2,
+          "edge": "N04->N05",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "国道",
+            "distance_km": 10.0
+          },
+          "from_node": "N04",
+          "to_node": "N05",
+          "cumulative_weight": 5.0
+        },
+        {
+          "index": 3,
+          "edge": "N05->N08",
+          "weight": 2.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 20.0
+          },
+          "from_node": "N05",
+          "to_node": "N08",
+          "cumulative_weight": 7.0
+        },
+        {
+          "index": 4,
+          "edge": "N08->N10",
+          "weight": 3.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "国道",
+            "distance_km": 30.0
+          },
+          "from_node": "N08",
+          "to_node": "N10",
+          "cumulative_weight": 10.0
+        }
+      ],
+      "forbidden_comparison": {
+        "path_changed": false,
+        "weight_diff": 0.0,
+        "forbidden_edges_used": [],
+        "path_with_forbidden": {
+          "source": "N01",
+          "target": "N10",
+          "path": [
+            "N01",
+            "N03",
+            "N04",
+            "N05",
+            "N08",
+            "N10"
+          ],
+          "path_str": "N01 -> N03 -> N04 -> N05 -> N08 -> N10",
+          "total_weight": 10.0,
+          "edge_count": 5,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        },
+        "path_without_forbidden": {
+          "source": "N01",
+          "target": "N10",
+          "path": [
+            "N01",
+            "N03",
+            "N04",
+            "N05",
+            "N08",
+            "N10"
+          ],
+          "path_str": "N01 -> N03 -> N04 -> N05 -> N08 -> N10",
+          "total_weight": 10.0,
+          "edge_count": 5,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford(忽略禁行)",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        }
+      },
+      "has_critical_issues": true,
+      "has_warnings": false
+    },
+    {
+      "query": {
+        "source": "N01",
+        "target": "N08"
+      },
+      "baseline_result": {
+        "source": "N01",
+        "target": "N08",
+        "path": [
+          "N01",
+          "N03",
+          "N04",
+          "N05",
+          "N08"
+        ],
+        "path_str": "N01 -> N03 -> N04 -> N05 -> N08",
+        "total_weight": 7.0,
+        "edge_count": 4,
+        "is_valid": true,
+        "error_message": "",
+        "algorithm": "Bellman-Ford",
+        "has_negative_cycle": false,
+        "negative_cycle_path": [],
+        "has_isolated_nodes": false,
+        "used_forbidden_edges": []
+      },
+      "audit_findings": [
+        {
+          "type": "negative_edges_exist",
+          "severity": "info",
+          "message": "图中存在 2 条负权边，已使用 Bellman-Ford 算法",
+          "edge": null,
+          "node": null,
+          "details": {
+            "negative_edges": [
+              "N04->N02(-1.0)",
+              "N05->N03(-2.0)"
+            ]
+          }
+        }
+      ],
+      "edge_sensitivity": [
+        {
+          "edge": "N01->N03",
+          "edge_index": 0,
+          "removed": true,
+          "new_path": "N01 -> N02 -> N04 -> N05 -> N08",
+          "new_weight": 10.0,
+          "weight_diff": 3.0,
+          "impact": "high",
+          "message": "移除边 N01->N03 后，路径变为 N01 -> N02 -> N04 -> N05 -> N08，权重增加 3.00"
+        },
+        {
+          "edge": "N03->N04",
+          "edge_index": 1,
+          "removed": true,
+          "new_path": "N01 -> N02 -> N04 -> N05 -> N08",
+          "new_weight": 10.0,
+          "weight_diff": 3.0,
+          "impact": "high",
+          "message": "移除边 N03->N04 后，路径变为 N01 -> N02 -> N04 -> N05 -> N08，权重增加 3.00"
+        },
+        {
+          "edge": "N04->N05",
+          "edge_index": 2,
+          "removed": true,
+          "new_path": "N01 -> N03 -> N04 -> N07 -> N08",
+          "new_weight": 8.0,
+          "weight_diff": 1.0,
+          "impact": "high",
+          "message": "移除边 N04->N05 后，路径变为 N01 -> N03 -> N04 -> N07 -> N08，权重增加 1.00"
+        },
+        {
+          "edge": "N05->N08",
+          "edge_index": 3,
+          "removed": true,
+          "new_path": "N01 -> N03 -> N04 -> N07 -> N08",
+          "new_weight": 8.0,
+          "weight_diff": 1.0,
+          "impact": "high",
+          "message": "移除边 N05->N08 后，路径变为 N01 -> N03 -> N04 -> N07 -> N08，权重增加 1.00"
+        }
+      ],
+      "edge_explanations": [
+        {
+          "index": 0,
+          "edge": "N01->N03",
+          "weight": 3.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "高速",
+            "distance_km": 30.0
+          },
+          "from_node": "N01",
+          "to_node": "N03",
+          "cumulative_weight": 3.0
+        },
+        {
+          "index": 1,
+          "edge": "N03->N04",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 10.0
+          },
+          "from_node": "N03",
+          "to_node": "N04",
+          "cumulative_weight": 4.0
+        },
+        {
+          "index": 2,
+          "edge": "N04->N05",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "国道",
+            "distance_km": 10.0
+          },
+          "from_node": "N04",
+          "to_node": "N05",
+          "cumulative_weight": 5.0
+        },
+        {
+          "index": 3,
+          "edge": "N05->N08",
+          "weight": 2.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 20.0
+          },
+          "from_node": "N05",
+          "to_node": "N08",
+          "cumulative_weight": 7.0
+        }
+      ],
+      "forbidden_comparison": {
+        "path_changed": false,
+        "weight_diff": 0.0,
+        "forbidden_edges_used": [],
+        "path_with_forbidden": {
+          "source": "N01",
+          "target": "N08",
+          "path": [
+            "N01",
+            "N03",
+            "N04",
+            "N05",
+            "N08"
+          ],
+          "path_str": "N01 -> N03 -> N04 -> N05 -> N08",
+          "total_weight": 7.0,
+          "edge_count": 4,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        },
+        "path_without_forbidden": {
+          "source": "N01",
+          "target": "N08",
+          "path": [
+            "N01",
+            "N03",
+            "N04",
+            "N05",
+            "N08"
+          ],
+          "path_str": "N01 -> N03 -> N04 -> N05 -> N08",
+          "total_weight": 7.0,
+          "edge_count": 4,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford(忽略禁行)",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        }
+      },
+      "has_critical_issues": false,
+      "has_warnings": false
+    },
+    {
+      "query": {
+        "source": "N03",
+        "target": "N10"
+      },
+      "baseline_result": {
+        "source": "N03",
+        "target": "N10",
+        "path": [
+          "N03",
+          "N04",
+          "N05",
+          "N08",
+          "N10"
+        ],
+        "path_str": "N03 -> N04 -> N05 -> N08 -> N10",
+        "total_weight": 7.0,
+        "edge_count": 4,
+        "is_valid": true,
+        "error_message": "",
+        "algorithm": "Bellman-Ford",
+        "has_negative_cycle": false,
+        "negative_cycle_path": [],
+        "has_isolated_nodes": false,
+        "used_forbidden_edges": []
+      },
+      "audit_findings": [
+        {
+          "type": "negative_edges_exist",
+          "severity": "info",
+          "message": "图中存在 2 条负权边，已使用 Bellman-Ford 算法",
+          "edge": null,
+          "node": null,
+          "details": {
+            "negative_edges": [
+              "N04->N02(-1.0)",
+              "N05->N03(-2.0)"
+            ]
+          }
+        },
+        {
+          "type": "critical_edge",
+          "severity": "critical",
+          "message": "关键边检测: 移除 N03->N04 将导致路径中断或权重大幅增加",
+          "edge": "N03->N04",
+          "node": null,
+          "details": {
+            "edge": "N03->N04",
+            "edge_index": 0,
+            "removed": true,
+            "new_path": "N03 -> N06 -> N07 -> N08 -> N10",
+            "new_weight": 12.0,
+            "weight_diff": 5.0,
+            "impact": "critical",
+            "message": "移除边 N03->N04 后，路径变为 N03 -> N06 -> N07 -> N08 -> N10，权重增加 5.00"
+          }
+        },
+        {
+          "type": "critical_edge",
+          "severity": "critical",
+          "message": "关键边检测: 移除 N08->N10 将导致路径中断或权重大幅增加",
+          "edge": "N08->N10",
+          "node": null,
+          "details": {
+            "edge": "N08->N10",
+            "edge_index": 3,
+            "removed": true,
+            "new_path": "无路径",
+            "new_weight": null,
+            "weight_diff": null,
+            "impact": "critical",
+            "message": "移除边 N08->N10 后，N03 到 N10 无可达路径"
+          }
+        }
+      ],
+      "edge_sensitivity": [
+        {
+          "edge": "N03->N04",
+          "edge_index": 0,
+          "removed": true,
+          "new_path": "N03 -> N06 -> N07 -> N08 -> N10",
+          "new_weight": 12.0,
+          "weight_diff": 5.0,
+          "impact": "critical",
+          "message": "移除边 N03->N04 后，路径变为 N03 -> N06 -> N07 -> N08 -> N10，权重增加 5.00"
+        },
+        {
+          "edge": "N04->N05",
+          "edge_index": 1,
+          "removed": true,
+          "new_path": "N03 -> N04 -> N07 -> N08 -> N10",
+          "new_weight": 8.0,
+          "weight_diff": 1.0,
+          "impact": "high",
+          "message": "移除边 N04->N05 后，路径变为 N03 -> N04 -> N07 -> N08 -> N10，权重增加 1.00"
+        },
+        {
+          "edge": "N05->N08",
+          "edge_index": 2,
+          "removed": true,
+          "new_path": "N03 -> N04 -> N07 -> N08 -> N10",
+          "new_weight": 8.0,
+          "weight_diff": 1.0,
+          "impact": "high",
+          "message": "移除边 N05->N08 后，路径变为 N03 -> N04 -> N07 -> N08 -> N10，权重增加 1.00"
+        },
+        {
+          "edge": "N08->N10",
+          "edge_index": 3,
+          "removed": true,
+          "new_path": "无路径",
+          "new_weight": null,
+          "weight_diff": null,
+          "impact": "critical",
+          "message": "移除边 N08->N10 后，N03 到 N10 无可达路径"
+        }
+      ],
+      "edge_explanations": [
+        {
+          "index": 0,
+          "edge": "N03->N04",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 10.0
+          },
+          "from_node": "N03",
+          "to_node": "N04",
+          "cumulative_weight": 1.0
+        },
+        {
+          "index": 1,
+          "edge": "N04->N05",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "国道",
+            "distance_km": 10.0
+          },
+          "from_node": "N04",
+          "to_node": "N05",
+          "cumulative_weight": 2.0
+        },
+        {
+          "index": 2,
+          "edge": "N05->N08",
+          "weight": 2.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 20.0
+          },
+          "from_node": "N05",
+          "to_node": "N08",
+          "cumulative_weight": 4.0
+        },
+        {
+          "index": 3,
+          "edge": "N08->N10",
+          "weight": 3.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "国道",
+            "distance_km": 30.0
+          },
+          "from_node": "N08",
+          "to_node": "N10",
+          "cumulative_weight": 7.0
+        }
+      ],
+      "forbidden_comparison": {
+        "path_changed": false,
+        "weight_diff": 0.0,
+        "forbidden_edges_used": [],
+        "path_with_forbidden": {
+          "source": "N03",
+          "target": "N10",
+          "path": [
+            "N03",
+            "N04",
+            "N05",
+            "N08",
+            "N10"
+          ],
+          "path_str": "N03 -> N04 -> N05 -> N08 -> N10",
+          "total_weight": 7.0,
+          "edge_count": 4,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        },
+        "path_without_forbidden": {
+          "source": "N03",
+          "target": "N10",
+          "path": [
+            "N03",
+            "N04",
+            "N05",
+            "N08",
+            "N10"
+          ],
+          "path_str": "N03 -> N04 -> N05 -> N08 -> N10",
+          "total_weight": 7.0,
+          "edge_count": 4,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford(忽略禁行)",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        }
+      },
+      "has_critical_issues": true,
+      "has_warnings": false
+    },
+    {
+      "query": {
+        "source": "N02",
+        "target": "N09"
+      },
+      "baseline_result": {
+        "source": "N02",
+        "target": "N09",
+        "path": [],
+        "path_str": "无路径",
+        "total_weight": Infinity,
+        "edge_count": 0,
+        "is_valid": false,
+        "error_message": "终点 N09 是孤立点（无入边）",
+        "algorithm": "Bellman-Ford",
+        "has_negative_cycle": false,
+        "negative_cycle_path": [],
+        "has_isolated_nodes": true,
+        "used_forbidden_edges": []
+      },
+      "audit_findings": [
+        {
+          "type": "isolated_node",
+          "severity": "warning",
+          "message": "终点 N09 是孤立点（无入边）",
+          "edge": null,
+          "node": null,
+          "details": {
+            "error": "终点 N09 是孤立点（无入边）"
+          }
+        }
+      ],
+      "edge_sensitivity": [],
+      "edge_explanations": [],
+      "forbidden_comparison": null,
+      "has_critical_issues": false,
+      "has_warnings": true
+    },
+    {
+      "query": {
+        "source": "N01",
+        "target": "N05"
+      },
+      "baseline_result": {
+        "source": "N01",
+        "target": "N05",
+        "path": [
+          "N01",
+          "N03",
+          "N04",
+          "N05"
+        ],
+        "path_str": "N01 -> N03 -> N04 -> N05",
+        "total_weight": 5.0,
+        "edge_count": 3,
+        "is_valid": true,
+        "error_message": "",
+        "algorithm": "Bellman-Ford",
+        "has_negative_cycle": false,
+        "negative_cycle_path": [],
+        "has_isolated_nodes": false,
+        "used_forbidden_edges": []
+      },
+      "audit_findings": [
+        {
+          "type": "negative_edges_exist",
+          "severity": "info",
+          "message": "图中存在 2 条负权边，已使用 Bellman-Ford 算法",
+          "edge": null,
+          "node": null,
+          "details": {
+            "negative_edges": [
+              "N04->N02(-1.0)",
+              "N05->N03(-2.0)"
+            ]
+          }
+        },
+        {
+          "type": "critical_edge",
+          "severity": "critical",
+          "message": "关键边检测: 移除 N01->N03 将导致路径中断或权重大幅增加",
+          "edge": "N01->N03",
+          "node": null,
+          "details": {
+            "edge": "N01->N03",
+            "edge_index": 0,
+            "removed": true,
+            "new_path": "N01 -> N02 -> N04 -> N05",
+            "new_weight": 8.0,
+            "weight_diff": 3.0,
+            "impact": "critical",
+            "message": "移除边 N01->N03 后，路径变为 N01 -> N02 -> N04 -> N05，权重增加 3.00"
+          }
+        },
+        {
+          "type": "critical_edge",
+          "severity": "critical",
+          "message": "关键边检测: 移除 N03->N04 将导致路径中断或权重大幅增加",
+          "edge": "N03->N04",
+          "node": null,
+          "details": {
+            "edge": "N03->N04",
+            "edge_index": 1,
+            "removed": true,
+            "new_path": "N01 -> N02 -> N04 -> N05",
+            "new_weight": 8.0,
+            "weight_diff": 3.0,
+            "impact": "critical",
+            "message": "移除边 N03->N04 后，路径变为 N01 -> N02 -> N04 -> N05，权重增加 3.00"
+          }
+        },
+        {
+          "type": "critical_edge",
+          "severity": "critical",
+          "message": "关键边检测: 移除 N04->N05 将导致路径中断或权重大幅增加",
+          "edge": "N04->N05",
+          "node": null,
+          "details": {
+            "edge": "N04->N05",
+            "edge_index": 2,
+            "removed": true,
+            "new_path": "无路径",
+            "new_weight": null,
+            "weight_diff": null,
+            "impact": "critical",
+            "message": "移除边 N04->N05 后，N01 到 N05 无可达路径"
+          }
+        }
+      ],
+      "edge_sensitivity": [
+        {
+          "edge": "N01->N03",
+          "edge_index": 0,
+          "removed": true,
+          "new_path": "N01 -> N02 -> N04 -> N05",
+          "new_weight": 8.0,
+          "weight_diff": 3.0,
+          "impact": "critical",
+          "message": "移除边 N01->N03 后，路径变为 N01 -> N02 -> N04 -> N05，权重增加 3.00"
+        },
+        {
+          "edge": "N03->N04",
+          "edge_index": 1,
+          "removed": true,
+          "new_path": "N01 -> N02 -> N04 -> N05",
+          "new_weight": 8.0,
+          "weight_diff": 3.0,
+          "impact": "critical",
+          "message": "移除边 N03->N04 后，路径变为 N01 -> N02 -> N04 -> N05，权重增加 3.00"
+        },
+        {
+          "edge": "N04->N05",
+          "edge_index": 2,
+          "removed": true,
+          "new_path": "无路径",
+          "new_weight": null,
+          "weight_diff": null,
+          "impact": "critical",
+          "message": "移除边 N04->N05 后，N01 到 N05 无可达路径"
+        }
+      ],
+      "edge_explanations": [
+        {
+          "index": 0,
+          "edge": "N01->N03",
+          "weight": 3.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "高速",
+            "distance_km": 30.0
+          },
+          "from_node": "N01",
+          "to_node": "N03",
+          "cumulative_weight": 3.0
+        },
+        {
+          "index": 1,
+          "edge": "N03->N04",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "省道",
+            "distance_km": 10.0
+          },
+          "from_node": "N03",
+          "to_node": "N04",
+          "cumulative_weight": 4.0
+        },
+        {
+          "index": 2,
+          "edge": "N04->N05",
+          "weight": 1.0,
+          "source_file": "examples/edges.csv",
+          "is_forbidden": false,
+          "forbidden_reason": "",
+          "is_negative": false,
+          "attributes": {
+            "road_type": "国道",
+            "distance_km": 10.0
+          },
+          "from_node": "N04",
+          "to_node": "N05",
+          "cumulative_weight": 5.0
+        }
+      ],
+      "forbidden_comparison": {
+        "path_changed": false,
+        "weight_diff": 0.0,
+        "forbidden_edges_used": [],
+        "path_with_forbidden": {
+          "source": "N01",
+          "target": "N05",
+          "path": [
+            "N01",
+            "N03",
+            "N04",
+            "N05"
+          ],
+          "path_str": "N01 -> N03 -> N04 -> N05",
+          "total_weight": 5.0,
+          "edge_count": 3,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        },
+        "path_without_forbidden": {
+          "source": "N01",
+          "target": "N05",
+          "path": [
+            "N01",
+            "N03",
+            "N04",
+            "N05"
+          ],
+          "path_str": "N01 -> N03 -> N04 -> N05",
+          "total_weight": 5.0,
+          "edge_count": 3,
+          "is_valid": true,
+          "error_message": "",
+          "algorithm": "Bellman-Ford(忽略禁行)",
+          "has_negative_cycle": false,
+          "negative_cycle_path": [],
+          "has_isolated_nodes": false,
+          "used_forbidden_edges": []
+        }
+      },
+      "has_critical_issues": true,
+      "has_warnings": false
+    }
+  ],
+  "summary": {
+    "total_queries": 5,
+    "successful_queries": 4,
+    "failed_queries": 1,
+    "queries_with_critical_issues": 3,
+    "queries_with_warnings": 1
+  }
+}

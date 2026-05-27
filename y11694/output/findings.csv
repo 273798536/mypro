@@ -1,0 +1,12 @@
+﻿source,target,finding_type,severity,message,edge,node
+N01,N10,negative_edges_exist,info,图中存在 2 条负权边，已使用 Bellman-Ford 算法,,
+N01,N10,critical_edge,critical,关键边检测: 移除 N08->N10 将导致路径中断或权重大幅增加,N08->N10,
+N01,N08,negative_edges_exist,info,图中存在 2 条负权边，已使用 Bellman-Ford 算法,,
+N03,N10,negative_edges_exist,info,图中存在 2 条负权边，已使用 Bellman-Ford 算法,,
+N03,N10,critical_edge,critical,关键边检测: 移除 N03->N04 将导致路径中断或权重大幅增加,N03->N04,
+N03,N10,critical_edge,critical,关键边检测: 移除 N08->N10 将导致路径中断或权重大幅增加,N08->N10,
+N02,N09,isolated_node,warning,终点 N09 是孤立点（无入边）,,
+N01,N05,negative_edges_exist,info,图中存在 2 条负权边，已使用 Bellman-Ford 算法,,
+N01,N05,critical_edge,critical,关键边检测: 移除 N01->N03 将导致路径中断或权重大幅增加,N01->N03,
+N01,N05,critical_edge,critical,关键边检测: 移除 N03->N04 将导致路径中断或权重大幅增加,N03->N04,
+N01,N05,critical_edge,critical,关键边检测: 移除 N04->N05 将导致路径中断或权重大幅增加,N04->N05,

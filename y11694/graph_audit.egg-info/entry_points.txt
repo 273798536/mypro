@@ -1,0 +1,2 @@
+[console_scripts]
+graph-audit = graph_audit.cli:cli
