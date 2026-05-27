@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私募投资者适当性管理系统</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="header">
+  <div style="display:flex;align-items:center;">
+    <h1>私募投资者适当性管理系统</h1>
+    <span class="sub">本地版 · v1.0</span>
+  </div>
+  <div style="font-size:13px;"><span id="currentTime"></span></div>
+</div>
+<div class="layout">
+  <div class="sidebar">
+    <div class="nav-item active" onclick="switchPage('dashboard')">📊 仪表盘</div>
+    <div class="nav-item" onclick="switchPage('investors')">👤 投资者档案</div>
+    <div class="nav-item" onclick="switchPage('products')">📦 产品管理</div>
+    <div class="nav-item" onclick="switchPage('assessments')">📋 风险测评</div>
+    <div class="nav-item" onclick="switchPage('docs')">📄 证明材料</div>
+    <div class="nav-item" onclick="switchPage('cooling')">⏳ 冷静期</div>
+    <div class="nav-item" onclick="switchPage('check')">✓ 适当性校验</div>
+    <div class="nav-item" onclick="switchPage('reports')">📑 报告管理</div>
+  </div>
+  <div class="main">
+
+    <div id="page-dashboard" class="page active">
+      <div class="card">
+        <div class="card-header"><h3>数据概览</h3></div>
+        <div class="card-body"><div class="stat-grid" id="statGrid"></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card"><div class="card-header"><h3>⚠️ 即将过期的风险测评</h3></div>
+          <div class="card-body" id="expiringList"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><div class="card-header"><h3>📄 未核实的证明材料</h3></div>
+          <div class="card-body" id="unverifiedDocs"><div class="empty-state">加载中...</div></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+        <div class="card"><div class="card-header"><h3>⏳ 进行中的冷静期</h3></div>
+          <div class="card-body" id="activeCooling"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><div class="card-header"><h3>📋 最近报告</h3></div>
+          <div class="card-body" id="recentReports"><div class="empty-state">加载中...</div></div></div>
+      </div>
+    </div>
+
+    <div id="page-investors" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>投资者列表</h3>
+          <button class="btn btn-primary" onclick="showModal('investorModal')">+ 新增投资者</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>姓名/名称</th><th>类型</th><th>证件类型</th><th>证件号</th><th>联系方式</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="investorTable"><tr><td colspan="8" class="empty-state">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" id="investorDetailCard" style="display:none;">
+        <div class="card-header flex-between">
+          <h3 id="investorDetailTitle">投资者详情</h3>
+          <button class="btn btn-sm" onclick="document.getElementById('investorDetailCard').style.display='none'">关闭</button>
+        </div>
+        <div class="card-body" id="investorDetailBody"></div>
+      </div>
+    </div>
+
+    <div id="page-products" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>产品列表</h3>
+          <button class="btn btn-primary" onclick="showModal('productModal')">+ 新增产品</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>产品代码</th><th>产品名称</th><th>风险等级</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="productTable"><tr><td colspan="6" class="empty-state">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-assessments" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>风险测评管理</h3>
+          <button class="btn btn-primary" onclick="showModal('assessmentModal')">+ 新增测评</button>
+        </div>
+        <div class="card-body">
+          <div class="filter-bar" style="margin-bottom:12px;">
+            <span>选择投资者：</span>
+            <select id="assessInvestorFilter"><option value="">全部</option></select>
+            <button class="btn btn-sm" onclick="loadAssessments()">刷新</button>
+          </div>
+          <table>
+            <thead><tr><th>ID</th><th>投资者</th><th>风险等级</th><th>分数</th><th>测评日期</th><th>有效期至</th><th>来源</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="assessmentTable"><tr><td colspan="9" class="empty-state">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-docs" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>证明材料管理</h3>
+          <button class="btn btn-primary" onclick="showModal('docModal')">+ 新增材料</button>
+        </div>
+        <div class="card-body">
+          <div class="filter-bar" style="margin-bottom:12px;">
+            <span>投资者：</span><select id="docInvestorFilter"><option value="">全部</option></select>
+            <span>核实状态：</span>
+            <select id="docVerifiedFilter"><option value="">全部</option><option value="0">未核实</option><option value="1">已核实</option></select>
+            <button class="btn btn-sm" onclick="loadDocs()">刷新</button>
+          </div>
+          <table>
+            <thead><tr><th>ID</th><th>投资者</th><th>材料类型</th><th>文件名</th><th>说明</th><th>来源</th><th>核实状态</th><th>核实人</th><th>核实时间</th><th>操作</th></tr></thead>
+            <tbody id="docTable"><tr><td colspan="10" class="empty-state">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-cooling" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>冷静期管理</h3>
+          <button class="btn btn-primary" onclick="showModal('coolingModal')">+ 新增冷静期</button>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>ID</th><th>投资者</th><th>产品</th><th>起始日期</th><th>结束日期</th><th>状态</th><th>剩余天数</th><th>操作</th></tr></thead>
+            <tbody id="coolingTable"><tr><td colspan="8" class="empty-state">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-check" class="page">
+      <div class="card">
+        <div class="card-header"><h3>适当性匹配校验</h3></div>
+        <div class="card-body">
+          <div class="alert-box alert-info">
+            选择投资者和产品后，系统将自动检查风险测评有效期、证明材料完整性、冷静期状态和风险等级匹配度。异常情况会用醒目标识，不会混入正常结果。
+          </div>
+          <div class="inline-form" style="margin-bottom:16px;">
+            <span>投资者：</span><select id="checkInvestor"><option value="">请选择</option></select>
+            <span>产品：</span><select id="checkProduct"><option value="">请选择</option></select>
+            <button class="btn btn-primary" onclick="runCheck()">开始校验</button>
+          </div>
+          <div id="checkResult"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-reports" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>适当性报告列表</h3>
+          <div><button class="btn btn-primary" onclick="showModal('genReportModal')">+ 生成报告</button></div>
+        </div>
+        <div class="card-body">
+          <div class="filter-bar" style="margin-bottom:12px;">
+            <span>状态：</span>
+            <select id="reportStatusFilter" onchange="loadReports()">
+              <option value="">全部</option><option value="待处理">待处理</option>
+              <option value="通过">通过</option><option value="待人工确认">待人工确认</option>
+              <option value="已修正">已修正</option><option value="不通过">不通过</option>
+            </select>
+            <button class="btn btn-sm" onclick="loadReports()">刷新</button>
+          </div>
+          <table>
+            <thead><tr><th>ID</th><th>投资者</th><th>产品</th><th>匹配等级</th><th>风险</th><th>材料</th><th>冷静期</th><th>总体结论</th><th>操作人</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="reportTable"><tr><td colspan="11" class="empty-state">加载中...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" id="reportDetailCard" style="display:none;">
+        <div class="card-header flex-between">
+          <h3 id="reportDetailTitle">报告详情</h3>
+          <button class="btn btn-sm" onclick="document.getElementById('reportDetailCard').style.display='none'">关闭</button>
+        </div>
+        <div class="card-body" id="reportDetailBody"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="investorModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>新增投资者</h3><button class="close-btn" onclick="hideModal('investorModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>姓名/名称</label><input id="invName" placeholder="如：张三"></div>
+      <div class="form-row"><label>投资者类型</label>
+        <select id="invType"><option value="自然人">自然人</option><option value="机构">机构</option></select></div>
+      <div class="form-row"><label>证件类型</label>
+        <select id="invIdType"><option value="身份证">身份证</option><option value="统一社会信用代码">统一社会信用代码</option><option value="其他">其他</option></select></div>
+      <div class="form-row"><label>证件号</label><input id="invIdNum" placeholder="证件号码"></div>
+      <div class="form-row"><label>联系电话</label><input id="invPhone" placeholder="手机号"></div>
+      <div class="form-row"><label>联系地址</label><input id="invContact" placeholder="地址"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('investorModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveInvestor()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="productModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>新增产品</h3><button class="close-btn" onclick="hideModal('productModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>产品代码</label><input id="prdCode" placeholder="如：PRD001"></div>
+      <div class="form-row"><label>产品名称</label><input id="prdName" placeholder="产品名称"></div>
+      <div class="form-row"><label>风险等级</label>
+        <select id="prdRisk">
+          <option value="1">R1-低风险</option><option value="2">R2-中低风险</option>
+          <option value="3">R3-中风险</option><option value="4">R4-中高风险</option>
+          <option value="5">R5-高风险</option>
+        </select></div>
+      <div class="form-row"><label>状态</label>
+        <select id="prdStatus"><option value="在售">在售</option><option value="售罄">售罄</option><option value="停售">停售</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('productModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveProduct()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="assessmentModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>新增风险测评</h3><button class="close-btn" onclick="hideModal('assessmentModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>投资者</label><select id="assessInvestor"></select></div>
+      <div class="form-row"><label>风险等级</label>
+        <select id="assessLevel">
+          <option value="1">C1-保守型</option><option value="2">C2-稳健型</option>
+          <option value="3">C3-平衡型</option><option value="4">C4-进取型</option>
+          <option value="5">C5-专业型</option>
+        </select></div>
+      <div class="form-row"><label>测评分数</label><input id="assessScore" type="number" min="0" max="100" placeholder="0-100"></div>
+      <div class="form-row"><label>测评日期</label><input id="assessDate" type="datetime-local"></div>
+      <div class="form-row"><label>有效期至</label><input id="assessExpiry" type="datetime-local" placeholder="默认一年后"></div>
+      <div class="form-row"><label>测评来源</label>
+        <select id="assessSource"><option value="线上测评">线上测评</option><option value="线下问卷">线下问卷</option><option value="补充测评">补充测评</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('assessmentModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveAssessment()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="docModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>新增证明材料</h3><button class="close-btn" onclick="hideModal('docModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>投资者</label><select id="docInvestor"></select></div>
+      <div class="form-row"><label>材料类型</label>
+        <select id="docType">
+          <option value="身份证明">身份证明</option><option value="资产证明">资产证明</option>
+          <option value="收入证明">收入证明</option><option value="投资经验">投资经验证明</option>
+          <option value="营业执照">营业执照</option><option value="其他">其他</option>
+        </select></div>
+      <div class="form-row"><label>文件名称</label><input id="docName" placeholder="如：身份证正反面.pdf"></div>
+      <div class="form-row"><label>材料说明</label><input id="docDesc" placeholder="简要说明"></div>
+      <div class="form-row"><label>来源</label>
+        <select id="docSource"><option value="投资者上传">投资者上传</option><option value="柜台提交">柜台提交</option><option value="邮寄">邮寄</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('docModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveDoc()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="coolingModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>新增冷静期</h3><button class="close-btn" onclick="hideModal('coolingModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>投资者</label><select id="cpInvestor"></select></div>
+      <div class="form-row"><label>产品</label><select id="cpProduct"></select></div>
+      <div class="form-row"><label>起始日期</label><input id="cpStart" type="datetime-local"></div>
+      <div class="form-row"><label>结束日期</label><input id="cpEnd" type="datetime-local" placeholder="默认22天后"></div>
+      <div class="form-row"><label>状态</label>
+        <select id="cpStatus"><option value="进行中">进行中</option><option value="已完成">已完成</option><option value="已取消">已取消</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('coolingModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveCooling()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="genReportModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>生成适当性报告</h3><button class="close-btn" onclick="hideModal('genReportModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>投资者</label><select id="grInvestor"></select></div>
+      <div class="form-row"><label>产品</label><select id="grProduct"></select></div>
+      <div class="form-row"><label>操作人</label><input id="grOperator" value="系统管理员"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('genReportModal')">取消</button>
+      <button class="btn btn-primary" onclick="genReport()">生成报告</button>
+    </div>
+  </div>
+</div>
+
+<div id="statusModal" class="modal-mask">
+  <div class="modal">
+    <div class="modal-header"><h3>变更报告状态</h3><button class="close-btn" onclick="hideModal('statusModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>新状态</label>
+        <select id="newStatus">
+          <option value="通过">通过</option><option value="不通过">不通过</option>
+          <option value="待人工确认">待人工确认</option><option value="已修正">已修正</option>
+        </select></div>
+      <div class="form-row"><label>修正原因/说明</label><textarea id="statusReason" placeholder="请说明变更原因..."></textarea></div>
+      <div class="form-row"><label>操作人</label><input id="statusOperator" value="系统管理员"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="hideModal('statusModal')">取消</button>
+      <button class="btn btn-primary" onclick="confirmStatusChange()">确认变更</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
