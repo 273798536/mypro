@@ -1,0 +1,93 @@
+{
+  "record_id": "110e1117",
+  "generated_at": "2026-05-27T15:59:17.169499",
+  "student_id": "S001",
+  "data_source": "sample_S001",
+  "summary": "✓ 拟合成功 | 周期 T = 0.8366 s | 阻尼系数 γ = 0.148264 s⁻¹ | 拟合优度 R² = 0.7197 | 检测到 7 个异常点",
+  "fit_results": {
+    "period": 0.8365845241829866,
+    "frequency": 1.1953364795704366,
+    "gamma": 0.14826396755676555,
+    "omega": 7.510520605572739,
+    "amplitude": 0.10113905632541122,
+    "damping_ratio": 0.019740837598761798,
+    "quality_factor": 25.32820593343828,
+    "r_squared": 0.7197071242339985,
+    "fit_success": true,
+    "fit_message": "警告：拟合优度 R²=0.7197 较低，请检查数据质量"
+  },
+  "anomalies": [
+    {
+      "index": 49,
+      "time_before": 2.462311557788945,
+      "time_after": 2.562814070351759,
+      "gap": 0.10050251256281406,
+      "expected_gap": 0.05025125628140703,
+      "estimated_missing_count": 1
+    },
+    {
+      "index": 27,
+      "value": -0.11277970184556967,
+      "lower_bound": -0.08642145193886466,
+      "upper_bound": 0.1845221171229222,
+      "type": "IQR_outlier"
+    },
+    {
+      "index": 27,
+      "residual": -0.10175987735102245,
+      "z_score": 4.026896684008312,
+      "threshold": 3.0,
+      "type": "residual_outlier"
+    },
+    {
+      "index": 119,
+      "residual": 0.09475279298933291,
+      "z_score": 3.7496085669705943,
+      "threshold": 3.0,
+      "type": "residual_outlier"
+    },
+    {
+      "index": 148,
+      "residual": -0.08445040969629361,
+      "z_score": 3.341917105462502,
+      "threshold": 3.0,
+      "type": "residual_outlier"
+    },
+    {
+      "index": 185,
+      "residual": 0.11561910102506401,
+      "z_score": 4.575341349123336,
+      "threshold": 3.0,
+      "type": "residual_outlier"
+    },
+    {
+      "index": 185,
+      "value": 0.1779945482089919,
+      "local_deviation": 3.2547984144626496,
+      "type": "amplitude_spike"
+    }
+  ],
+  "anomaly_summary": {
+    "total": 7,
+    "by_type": {
+      "unknown": 1,
+      "IQR_outlier": 1,
+      "residual_outlier": 4,
+      "amplitude_spike": 1
+    },
+    "severity": "warning",
+    "message": "检测到 7 个异常点，请留意"
+  },
+  "period_peak_estimate": {
+    "period": 0.2525447751578405,
+    "std": 0.10459839578715323,
+    "message": "通过峰值检测得到周期: T = 0.2525 ± 0.1046 (基于 39 个周期间隔)"
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": []
+  },
+  "plot_filename": "plot_110e1117.png",
+  "corrections": []
+}

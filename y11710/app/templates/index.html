@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弹簧振子实验拟合</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>弹簧振子实验拟合系统</h1>
+            <p class="subtitle">批量处理学生实验数据 · 自动周期阻尼估计 · 异常检测</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="panel">
+                <h2>1. 数据导入</h2>
+                <div class="input-section">
+                    <div class="btn-group">
+                        <button id="btn-sample" class="btn btn-secondary">加载样例数据</button>
+                        <label class="btn btn-primary">
+                            上传文件
+                            <input type="file" id="file-input" accept=".csv,.txt,.json" style="display: none;">
+                        </label>
+                    </div>
+                    <div class="hint">支持 CSV / TXT / JSON 格式，包含时间和位移列</div>
+                </div>
+
+                <div id="data-preview" class="hidden">
+                    <h3>数据预览</h3>
+                    <div class="preview-info">
+                        <span id="preview-source"></span>
+                        <span id="preview-count"></span>
+                    </div>
+                    <div id="preview-warnings" class="warnings"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>2. 分析结果</h2>
+                <button id="btn-analyze" class="btn btn-primary btn-block" disabled>开始分析</button>
+                
+                <div id="analysis-results" class="hidden">
+                    <div class="result-summary" id="result-summary"></div>
+                    
+                    <div class="fit-params">
+                        <h3>拟合参数</h3>
+                        <div class="param-grid">
+                            <div class="param-item">
+                                <span class="param-label">周期 T</span>
+                                <span class="param-value" id="param-period">-</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">频率 f</span>
+                                <span class="param-value" id="param-frequency">-</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">阻尼系数 γ</span>
+                                <span class="param-value" id="param-gamma">-</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">阻尼比 ζ</span>
+                                <span class="param-value" id="param-zeta">-</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">振幅 A</span>
+                                <span class="param-value" id="param-amplitude">-</span>
+                            </div>
+                            <div class="param-item">
+                                <span class="param-label">R²</span>
+                                <span class="param-value" id="param-r2">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="anomaly-section">
+                        <h3>异常检测</h3>
+                        <div id="anomaly-summary"></div>
+                        <div id="anomaly-list" class="anomaly-list"></div>
+                    </div>
+
+                    <div class="fit-message" id="fit-message"></div>
+                </div>
+            </div>
+
+            <div class="panel panel-wide">
+                <h2>3. 拟合图表</h2>
+                <div id="chart-container" class="chart-container">
+                    <div class="chart-placeholder">上传数据并分析后显示图表</div>
+                    <img id="fit-chart" class="hidden" alt="拟合曲线图">
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>4. 导出报告</h2>
+                <div id="export-section" class="hidden">
+                    <div class="btn-group">
+                        <button id="btn-export-json" class="btn btn-secondary">导出 JSON</button>
+                        <button id="btn-export-txt" class="btn btn-secondary">导出文本</button>
+                        <button id="btn-export-png" class="btn btn-secondary">导出图片</button>
+                    </div>
+                    <div class="record-id">记录编号: <span id="current-record-id">-</span></div>
+                </div>
+            </div>
+
+            <div class="panel panel-wide">
+                <h2>5. 批改历史</h2>
+                <div id="history-list" class="history-list">
+                    <div class="history-placeholder">暂无批改记录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
