@@ -1,0 +1,122 @@
+{
+  "orders": [
+    {
+      "id": "ORD_001_NORMAL",
+      "customerName": "张三",
+      "idCard": "110101199001011234",
+      "roomNo": "8203",
+      "checkInDate": "2026-05-20",
+      "checkOutDate": "2026-05-22",
+      "depositAmount": 1000,
+      "channel": "ctrip",
+      "source": "check_in_import",
+      "createdAt": "2026-05-20T09:00:00.000Z"
+    },
+    {
+      "id": "ORD_002_BOUNDARY",
+      "customerName": "李四",
+      "idCard": "110101199203055678",
+      "roomNo": "7501",
+      "checkInDate": "2026-05-18",
+      "checkOutDate": "2026-05-22",
+      "depositAmount": 2000,
+      "channel": "meituan",
+      "source": "check_in_import",
+      "createdAt": "2026-05-18T14:30:00.000Z",
+      "lateCheckout": {
+        "hours": 3,
+        "feePerHour": 200,
+        "totalFee": 600,
+        "recordedAt": "2026-05-22T14:00:00.000Z"
+      }
+    },
+    {
+      "id": "ORD_003_BAD",
+      "customerName": "王五",
+      "idCard": "110101198812129012",
+      "roomNo": "6305",
+      "checkInDate": "2026-05-19",
+      "checkOutDate": "2026-05-21",
+      "depositAmount": 500,
+      "channel": "direct",
+      "source": "check_in_import",
+      "createdAt": "2026-05-19T11:00:00.000Z"
+    }
+  ],
+  "depositFlows": [
+    {
+      "id": "DF_001_NORMAL",
+      "orderId": "ORD_001_NORMAL",
+      "amount": 1000,
+      "type": "pre_authorize",
+      "channel": "ctrip",
+      "channelRef": "CTRIP_PA_20260520_001",
+      "timestamp": "2026-05-20T09:05:00.000Z"
+    },
+    {
+      "id": "DF_002_BOUNDARY",
+      "orderId": "ORD_002_BOUNDARY",
+      "amount": 2000,
+      "type": "pre_authorize",
+      "channel": "meituan",
+      "channelRef": "MT_PA_20260518_007",
+      "timestamp": "2026-05-18T14:35:00.000Z"
+    },
+    {
+      "id": "DF_003_BAD",
+      "orderId": "ORD_003_BAD",
+      "amount": 500,
+      "type": "pre_authorize",
+      "channel": "direct",
+      "channelRef": "DIRECT_20260519_CASH",
+      "timestamp": "2026-05-19T11:05:00.000Z"
+    },
+    {
+      "id": "DF_004_BAD_DUP",
+      "orderId": "ORD_003_BAD",
+      "amount": 500,
+      "type": "pre_authorize",
+      "channel": "direct",
+      "channelRef": "DIRECT_20260519_CASH",
+      "timestamp": "2026-05-19T11:07:00.000Z",
+      "note": "duplicate record - same channelRef as DF_003_BAD"
+    }
+  ],
+  "damageReports": [
+    {
+      "id": "DMG_002_BOUNDARY",
+      "orderId": "ORD_002_BOUNDARY",
+      "amount": 350,
+      "description": "房间地毯被红酒污染，需专业清洗",
+      "reportedBy": "客房部-刘经理",
+      "reportedTime": "2026-05-22T12:30:00.000Z",
+      "status": "pending",
+      "evidence": ["photo_20260522_123001.jpg", "photo_20260522_123015.jpg"]
+    },
+    {
+      "id": "DMG_003_BAD",
+      "orderId": "ORD_003_BAD",
+      "amount": 800,
+      "description": "电视机屏幕碎裂，遥控器丢失",
+      "reportedBy": "客房部-王主管",
+      "reportedTime": "2026-05-21T10:00:00.000Z",
+      "status": "pending",
+      "evidence": ["photo_20260521_100001.jpg"],
+      "note": "客损金额超过押金500，存在缺口300元"
+    }
+  ],
+  "channelReceipts": [
+    {
+      "id": "REC_001_NORMAL",
+      "orderId": "ORD_001_NORMAL",
+      "channel": "ctrip",
+      "channelRef": "CTRIP_PA_20260520_001",
+      "receiptTime": "2026-05-22T10:30:00.000Z",
+      "status": "confirmed",
+      "rawResponse": "{\"code\":\"0\",\"msg\":\"success\",\"releaseAmount\":1000}"
+    }
+  ],
+  "releaseRecords": [],
+  "alerts": [],
+  "auditLogs": []
+}
