@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>矩阵分块乘法校验报告</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 20px; background: #f5f5f5; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { color: #333; border-bottom: 3px solid #4a90d9; padding-bottom: 10px; }
+  h2 { color: #555; margin-top: 30px; }
+  .card { background: white; border-radius: 8px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+  .stat { text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+  .stat-number { font-size: 2em; font-weight: bold; color: #4a90d9; }
+  .stat-label { color: #666; font-size: 0.9em; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 500; }
+  .badge-correct { background: #d4edda; color: #155724; }
+  .badge-incorrect { background: #f8d7da; color: #721c24; }
+  .badge-skipped { background: #fff3cd; color: #856404; }
+  .badge-mismatch { background: #f8d7da; color: #721c24; }
+  .category-unprocessed { border-left: 4px solid #ffc107; }
+  .category-corrected { border-left: 4px solid #28a745; }
+  .category-needs-review { border-left: 4px solid #dc3545; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f8f9fa; font-weight: 600; }
+  .trace-item { background: #f8f9fa; padding: 10px; margin: 8px 0; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+  .error-detail { color: #dc3545; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>矩阵分块乘法校验报告</h1>
+  
+  <div class="card">
+    <h2>基本信息</h2>
+    <table>
+      <tr><th>生成时间</th><td>2026-05-27T14:33:16.465806</td></tr>
+      <tr><th>分块大小</th><td>2</td></tr>
+      <tr><th>矩阵A</th><td>[6, 6]</td></tr>
+      <tr><th>矩阵B</th><td>[6, 6]</td></tr>
+      <tr><th>输出C</th><td>[6, 6]</td></tr>
+      <tr><th>误差阈值</th><td>1.00e-06</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>摘要</h2>
+    <div class="summary-grid">
+      <div class="stat">
+        <div class="stat-number">9</div>
+        <div class="stat-label">总分块数</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">27</div>
+        <div class="stat-label">总步骤数</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">100.0%</div>
+        <div class="stat-label">完成率</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">0</div>
+        <div class="stat-label">需人工确认</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card category-corrected">
+    <h2>【已修正/已验证】 (9)</h2>
+    <table><tr><th>分块</th><th>状态</th><th>信息</th><th>误差</th></tr>
+            <tr>
+              <td>C(0,0)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(0,1)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(0,2)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(1,0)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(1,1)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(1,2)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(2,0)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(2,1)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr>
+            <tr>
+              <td>C(2,2)</td>
+              <td><span class="badge badge-correct">correct</span></td>
+              <td>正确</td>
+              <td>0.00e+00</td>
+            </tr></table>
+  </div>
+
+  <div class="card category-unprocessed">
+    <h2>【未处理】 (0)</h2>
+    <p style="color:#999;">无</p>
+  </div>
+
+  <div class="card category-needs-review">
+    <h2>【需要人工确认】 (0)</h2>
+    <p style="color:#999;">无</p>
+  </div>
+
+  
+  
+  <div class="card"><h2>修正痕迹</h2>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,0)
+              <br>步骤: 1
+              <br>A块: (0, 0), B块: (0, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,0)
+              <br>步骤: 2
+              <br>A块: (0, 1), B块: (1, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,0)
+              <br>步骤: 3
+              <br>A块: (0, 2), B块: (2, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,1)
+              <br>步骤: 4
+              <br>A块: (0, 0), B块: (0, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,1)
+              <br>步骤: 5
+              <br>A块: (0, 1), B块: (1, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,1)
+              <br>步骤: 6
+              <br>A块: (0, 2), B块: (2, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,2)
+              <br>步骤: 7
+              <br>A块: (0, 0), B块: (0, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,2)
+              <br>步骤: 8
+              <br>A块: (0, 1), B块: (1, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(0,2)
+              <br>步骤: 9
+              <br>A块: (0, 2), B块: (2, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,0)
+              <br>步骤: 10
+              <br>A块: (1, 0), B块: (0, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,0)
+              <br>步骤: 11
+              <br>A块: (1, 1), B块: (1, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,0)
+              <br>步骤: 12
+              <br>A块: (1, 2), B块: (2, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,1)
+              <br>步骤: 13
+              <br>A块: (1, 0), B块: (0, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,1)
+              <br>步骤: 14
+              <br>A块: (1, 1), B块: (1, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,1)
+              <br>步骤: 15
+              <br>A块: (1, 2), B块: (2, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,2)
+              <br>步骤: 16
+              <br>A块: (1, 0), B块: (0, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,2)
+              <br>步骤: 17
+              <br>A块: (1, 1), B块: (1, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(1,2)
+              <br>步骤: 18
+              <br>A块: (1, 2), B块: (2, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,0)
+              <br>步骤: 19
+              <br>A块: (2, 0), B块: (0, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,0)
+              <br>步骤: 20
+              <br>A块: (2, 1), B块: (1, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,0)
+              <br>步骤: 21
+              <br>A块: (2, 2), B块: (2, 0)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,1)
+              <br>步骤: 22
+              <br>A块: (2, 0), B块: (0, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,1)
+              <br>步骤: 23
+              <br>A块: (2, 1), B块: (1, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,1)
+              <br>步骤: 24
+              <br>A块: (2, 2), B块: (2, 1)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,2)
+              <br>步骤: 25
+              <br>A块: (2, 0), B块: (0, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,2)
+              <br>步骤: 26
+              <br>A块: (2, 1), B块: (1, 2)
+            </div>
+            <div class="trace-item">
+              ✓ [2026-05-27T14:33:16.465806] <strong>step_applied</strong> @ C(2,2)
+              <br>步骤: 27
+              <br>A块: (2, 2), B块: (2, 2)
+            </div></div>
+
+</div>
+</body>
+</html>

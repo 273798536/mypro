@@ -1,0 +1,249 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-27T14:27:48.244923",
+    "block_size": 2,
+    "matrix_a_shape": [
+      6,
+      6
+    ],
+    "matrix_b_shape": [
+      6,
+      6
+    ],
+    "output_shape": [
+      6,
+      6
+    ],
+    "error_threshold": 1e-06,
+    "source_file": "test_steps.txt",
+    "student_name": "测试学生",
+    "assignment": "作业1"
+  },
+  "summary": {
+    "total_blocks": 9,
+    "total_steps": 0,
+    "by_category": {
+      "unprocessed": 0,
+      "corrected": 0,
+      "needs_review": 0,
+      "": 9
+    },
+    "status_counts": {
+      "pending": 9
+    },
+    "error_summary": {
+      "total_categories": 0,
+      "by_severity": {
+        "error": 0,
+        "warning": 0,
+        "info": 0
+      },
+      "by_category": {},
+      "total_affected_blocks": 0,
+      "suggestions_count": 0
+    },
+    "completion_rate": {
+      "percentage": 0.0,
+      "completed": 0,
+      "total": 9,
+      "description": "0/9 分块已处理 (0.0%)"
+    }
+  },
+  "unprocessed": [],
+  "corrected": [],
+  "needs_review": [],
+  "error_categories": [],
+  "suggestions": [],
+  "traces": [],
+  "raw_data": {
+    "C(0,0)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          0.9875345529179343,
+          1.755760054526124
+        ],
+        [
+          0.9441564396206106,
+          2.3408217821419663
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(0,1)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          1.4059334018902294,
+          1.6890526388159623
+        ],
+        [
+          0.9987493080787521,
+          2.1686756619043535
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(0,2)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          1.2211366008974176,
+          1.6453389514538215
+        ],
+        [
+          1.6286469451551486,
+          1.4513912386525933
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(1,0)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          0.6621415934254566,
+          0.9805916286884283
+        ],
+        [
+          0.7246802319765465,
+          0.9218766438335299
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(1,1)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          1.1083163641416356,
+          1.3103784374896799
+        ],
+        [
+          1.2459263804366245,
+          1.3504544326725907
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(1,2)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          0.8376100910086565,
+          1.0143945648638037
+        ],
+        [
+          1.08963176317389,
+          1.189580050636484
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(2,0)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          0.8193547834896564,
+          1.4675054087367485
+        ],
+        [
+          1.2830756281059992,
+          2.0116966894698844
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(2,1)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          1.2487715706405826,
+          1.2336789258815952
+        ],
+        [
+          1.4673947907697347,
+          1.759066564819574
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    },
+    "C(2,2)": {
+      "expected_shape": [
+        2,
+        2
+      ],
+      "expected_preview": [
+        [
+          0.7135575408842736,
+          1.3108813470232425
+        ],
+        [
+          1.126889367848432,
+          1.4411234684739935
+        ]
+      ],
+      "student_shape": null,
+      "student_preview": null,
+      "error": null,
+      "status": "pending",
+      "trace_count": 0
+    }
+  }
+}
