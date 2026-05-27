@@ -1,0 +1,25 @@
+{
+  "analyzed_files": {
+    "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/test_data/test_normal.wav": {
+      "timestamp": "20260527_150923",
+      "dominant_freq": 882.86,
+      "peaks_count": 3,
+      "report_path": "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/results/test_normal_report.json",
+      "has_anomalies": false
+    },
+    "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/test_data/test_silent.wav": {
+      "timestamp": "20260527_150932",
+      "dominant_freq": 882.86,
+      "peaks_count": 2,
+      "report_path": "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/results/test_silent_report.json",
+      "has_anomalies": false
+    },
+    "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/test_data/test_lowfreq.wav": {
+      "timestamp": "20260527_150940",
+      "dominant_freq": 64.6,
+      "peaks_count": 3,
+      "report_path": "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/results/test_lowfreq_report.json",
+      "has_anomalies": true
+    }
+  }
+}

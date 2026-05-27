@@ -1,0 +1,145 @@
+{
+  "meta": {
+    "tool_name": "FFT音频峰值分析工具",
+    "tool_version": "1.0.0",
+    "timestamp": "20260527_150940",
+    "source_file": "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/test_data/test_lowfreq.wav",
+    "source_basename": "test_lowfreq.wav"
+  },
+  "input": {
+    "sample_rate": 44100,
+    "duration_sec": 3.0,
+    "channels": 1,
+    "samples_count": 132300
+  },
+  "analysis": {
+    "window_type": "hann",
+    "nfft": 2048,
+    "dominant_frequency_hz": 64.6,
+    "dominant_magnitude_db": -8.97,
+    "noise_floor_db": -129.65,
+    "snr_db": 120.68,
+    "peaks_detected": 3,
+    "peaks": [
+      {
+        "frequency_hz": 64.6,
+        "magnitude_db": -8.97,
+        "is_harmonic": false,
+        "harmonic_of": null
+      },
+      {
+        "frequency_hz": 172.27,
+        "magnitude_db": -9.41,
+        "is_harmonic": false,
+        "harmonic_of": null
+      },
+      {
+        "frequency_hz": 129.2,
+        "magnitude_db": -9.75,
+        "is_harmonic": true,
+        "harmonic_of": 64.6
+      }
+    ],
+    "noise_buckets": [
+      {
+        "name": "sub_bass",
+        "range_hz": [
+          20,
+          60
+        ],
+        "avg_db": -23.41,
+        "max_db": -12.57,
+        "min_db": -34.24,
+        "peak_count": 1,
+        "energy_ratio": 0.1244
+      },
+      {
+        "name": "bass",
+        "range_hz": [
+          60,
+          250
+        ],
+        "avg_db": -18.55,
+        "max_db": -8.97,
+        "min_db": -42.94,
+        "peak_count": 4,
+        "energy_ratio": 0.8692
+      },
+      {
+        "name": "low_mid",
+        "range_hz": [
+          250,
+          500
+        ],
+        "avg_db": -72.7,
+        "max_db": -51.53,
+        "min_db": -87.22,
+        "peak_count": 6,
+        "energy_ratio": 0.003
+      },
+      {
+        "name": "mid",
+        "range_hz": [
+          500,
+          2000
+        ],
+        "avg_db": -114.89,
+        "max_db": -88.37,
+        "min_db": -147.39,
+        "peak_count": 34,
+        "energy_ratio": 0.0001
+      },
+      {
+        "name": "high_mid",
+        "range_hz": [
+          2000,
+          4000
+        ],
+        "avg_db": -132.83,
+        "max_db": -115.53,
+        "min_db": -160.79,
+        "peak_count": 46,
+        "energy_ratio": 0.0
+      },
+      {
+        "name": "presence",
+        "range_hz": [
+          4000,
+          6000
+        ],
+        "avg_db": -131.12,
+        "max_db": -115.38,
+        "min_db": -158.12,
+        "peak_count": 46,
+        "energy_ratio": 0.0
+      },
+      {
+        "name": "brilliance",
+        "range_hz": [
+          6000,
+          20000
+        ],
+        "avg_db": -131.75,
+        "max_db": -114.91,
+        "min_db": -168.58,
+        "peak_count": 325,
+        "energy_ratio": 0.0001
+      }
+    ]
+  },
+  "leakage": {
+    "detected": true,
+    "ratio": 0.3333,
+    "threshold": 1.8,
+    "details": "主峰-3dB宽度 1 个bin（预期约 3 个），能量集中度 17.40%（预期约 35%）。检测到频谱泄漏，信号未与窗口对齐或噪声较强。",
+    "recommended_window": "blackman"
+  },
+  "anomalies": [
+    "检测到频谱泄漏（宽度比 0.33），建议改用 'blackman' 窗口"
+  ],
+  "corrections": [
+    "窗口函数建议: 'hann' → 'blackman'"
+  ],
+  "warnings": [],
+  "silent_segments": []
+}

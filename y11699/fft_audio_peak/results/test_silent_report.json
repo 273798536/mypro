@@ -1,0 +1,146 @@
+{
+  "meta": {
+    "tool_name": "FFT音频峰值分析工具",
+    "tool_version": "1.0.0",
+    "timestamp": "20260527_150932",
+    "source_file": "/Users/mac/pro/solo/workspaces/y11699/fft_audio_peak/test_data/test_silent.wav",
+    "source_basename": "test_silent.wav"
+  },
+  "input": {
+    "sample_rate": 44100,
+    "duration_sec": 3.0,
+    "channels": 1,
+    "samples_count": 132300
+  },
+  "analysis": {
+    "window_type": "hann",
+    "nfft": 2048,
+    "dominant_frequency_hz": 882.86,
+    "dominant_magnitude_db": -6.65,
+    "noise_floor_db": -61.17,
+    "snr_db": 54.52,
+    "peaks_detected": 2,
+    "peaks": [
+      {
+        "frequency_hz": 882.86,
+        "magnitude_db": -6.65,
+        "is_harmonic": false,
+        "harmonic_of": null
+      },
+      {
+        "frequency_hz": 430.66,
+        "magnitude_db": -7.6,
+        "is_harmonic": false,
+        "harmonic_of": null
+      }
+    ],
+    "noise_buckets": [
+      {
+        "name": "sub_bass",
+        "range_hz": [
+          20,
+          60
+        ],
+        "avg_db": -57.28,
+        "max_db": -56.48,
+        "min_db": -58.08,
+        "peak_count": 1,
+        "energy_ratio": 0.001
+      },
+      {
+        "name": "bass",
+        "range_hz": [
+          60,
+          250
+        ],
+        "avg_db": -60.9,
+        "max_db": -54.26,
+        "min_db": -68.91,
+        "peak_count": 4,
+        "energy_ratio": 0.0033
+      },
+      {
+        "name": "low_mid",
+        "range_hz": [
+          250,
+          500
+        ],
+        "avg_db": -40.84,
+        "max_db": -7.6,
+        "min_db": -70.53,
+        "peak_count": 6,
+        "energy_ratio": 0.3461
+      },
+      {
+        "name": "mid",
+        "range_hz": [
+          500,
+          2000
+        ],
+        "avg_db": -58.93,
+        "max_db": -6.65,
+        "min_db": -74.29,
+        "peak_count": 34,
+        "energy_ratio": 0.3555
+      },
+      {
+        "name": "high_mid",
+        "range_hz": [
+          2000,
+          4000
+        ],
+        "avg_db": -62.01,
+        "max_db": -52.82,
+        "min_db": -78.03,
+        "peak_count": 46,
+        "energy_ratio": 0.0307
+      },
+      {
+        "name": "presence",
+        "range_hz": [
+          4000,
+          6000
+        ],
+        "avg_db": -62.48,
+        "max_db": -51.67,
+        "min_db": -87.31,
+        "peak_count": 46,
+        "energy_ratio": 0.0297
+      },
+      {
+        "name": "brilliance",
+        "range_hz": [
+          6000,
+          20000
+        ],
+        "avg_db": -62.23,
+        "max_db": -52.05,
+        "min_db": -82.96,
+        "peak_count": 325,
+        "energy_ratio": 0.2068
+      }
+    ]
+  },
+  "leakage": {
+    "detected": false,
+    "ratio": 0.3333,
+    "threshold": 1.8,
+    "details": "主峰-3dB宽度 1 个bin（预期约 3 个），能量集中度 47.55%（预期约 35%）。窗口泄漏在可接受范围内。",
+    "recommended_window": "hann"
+  },
+  "anomalies": [],
+  "corrections": [],
+  "warnings": [
+    "检测到 2 段静音，总时长 0.80s (26.7%)。静音段将从峰值分析中排除。"
+  ],
+  "silent_segments": [
+    {
+      "start": 1.0,
+      "end": 1.5
+    },
+    {
+      "start": 2.2,
+      "end": 2.5
+    }
+  ]
+}
