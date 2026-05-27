@@ -1,0 +1,70 @@
+{
+  "description": "浮力密度判定测试样例数据",
+  "generated_at": "2026-05-27",
+  "total_samples": 5,
+  "categories": {
+    "normal": 5,
+    "critical": 3,
+    "unit_error": 3,
+    "missing_volume": 3,
+    "inconsistent": 3,
+    "format_error": 3
+  },
+  "records": [
+    {
+      "sample_id": "S001",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "正常样例-木块浮水"
+    },
+    {
+      "sample_id": "S002",
+      "mass": "27",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "下沉",
+      "source": "正常样例-铝块沉水"
+    },
+    {
+      "sample_id": "S003",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "悬浮",
+      "source": "正常样例-密度等于水"
+    },
+    {
+      "sample_id": "S004",
+      "mass": "0.05",
+      "mass_unit": "kg",
+      "volume": "100",
+      "volume_unit": "cm³",
+      "liquid_density": "0.8",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "正常样例-酒精中漂浮"
+    },
+    {
+      "sample_id": "S005",
+      "mass": "100",
+      "mass_unit": "g",
+      "volume": "50",
+      "volume_unit": "mL",
+      "liquid_density": "13.6",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "正常样例-铅块浮水银"
+    }
+  ]
+}

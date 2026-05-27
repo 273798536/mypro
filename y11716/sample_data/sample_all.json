@@ -1,0 +1,235 @@
+{
+  "description": "浮力密度判定测试样例数据",
+  "generated_at": "2026-05-27",
+  "total_samples": 20,
+  "categories": {
+    "normal": 5,
+    "critical": 3,
+    "unit_error": 3,
+    "missing_volume": 3,
+    "inconsistent": 3,
+    "format_error": 3
+  },
+  "records": [
+    {
+      "sample_id": "S001",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "正常样例-木块浮水"
+    },
+    {
+      "sample_id": "S002",
+      "mass": "27",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "下沉",
+      "source": "正常样例-铝块沉水"
+    },
+    {
+      "sample_id": "S003",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "悬浮",
+      "source": "正常样例-密度等于水"
+    },
+    {
+      "sample_id": "S004",
+      "mass": "0.05",
+      "mass_unit": "kg",
+      "volume": "100",
+      "volume_unit": "cm³",
+      "liquid_density": "0.8",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "正常样例-酒精中漂浮"
+    },
+    {
+      "sample_id": "S005",
+      "mass": "100",
+      "mass_unit": "g",
+      "volume": "50",
+      "volume_unit": "mL",
+      "liquid_density": "13.6",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "正常样例-铅块浮水银"
+    },
+    {
+      "sample_id": "C001",
+      "mass": "9.9",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "临界样例-接近悬浮（略轻）"
+    },
+    {
+      "sample_id": "C002",
+      "mass": "10.1",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "下沉",
+      "source": "临界样例-接近悬浮（略重）"
+    },
+    {
+      "sample_id": "C003",
+      "mass": "995",
+      "mass_unit": "kg",
+      "volume": "1",
+      "volume_unit": "m³",
+      "liquid_density": "1000",
+      "liquid_density_unit": "kg/m³",
+      "observed_state": "漂浮/悬浮",
+      "source": "临界样例-大单位接近悬浮"
+    },
+    {
+      "sample_id": "U001",
+      "mass": "10",
+      "mass_unit": "克",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-中文单位"
+    },
+    {
+      "sample_id": "U002",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "立方厘米",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-中文体积单位"
+    },
+    {
+      "sample_id": "U003",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm^3",
+      "observed_state": "漂浮",
+      "source": "错误样例-密度单位格式"
+    },
+    {
+      "sample_id": "M001",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-体积值缺失"
+    },
+    {
+      "sample_id": "M002",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-体积单位缺失"
+    },
+    {
+      "sample_id": "M003",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "",
+      "volume_unit": "",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-体积完全缺失"
+    },
+    {
+      "sample_id": "I001",
+      "mass": "50",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-密度2.5应下沉却记漂浮"
+    },
+    {
+      "sample_id": "I002",
+      "mass": "5",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "下沉",
+      "source": "错误样例-密度0.25应漂浮却记下沉"
+    },
+    {
+      "sample_id": "I003",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "10",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "上浮",
+      "source": "特殊样例-悬浮却记上浮"
+    },
+    {
+      "sample_id": "F001",
+      "mass": "abc",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-质量非数字"
+    },
+    {
+      "sample_id": "F002",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "-5",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "漂浮",
+      "source": "错误样例-体积为负"
+    },
+    {
+      "sample_id": "F003",
+      "mass": "10",
+      "mass_unit": "g",
+      "volume": "20",
+      "volume_unit": "cm³",
+      "liquid_density": "1.0",
+      "liquid_density_unit": "g/cm³",
+      "observed_state": "浮起来了",
+      "source": "错误样例-状态描述无效"
+    }
+  ]
+}

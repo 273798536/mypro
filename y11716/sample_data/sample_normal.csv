@@ -1,0 +1,6 @@
+﻿sample_id,mass,mass_unit,volume,volume_unit,liquid_density,liquid_density_unit,observed_state,source
+S001,10,g,20,cm³,1.0,g/cm³,漂浮,正常样例-木块浮水
+S002,27,g,10,cm³,1.0,g/cm³,下沉,正常样例-铝块沉水
+S003,10,g,10,cm³,1.0,g/cm³,悬浮,正常样例-密度等于水
+S004,0.05,kg,100,cm³,0.8,g/cm³,漂浮,正常样例-酒精中漂浮
+S005,100,g,50,mL,13.6,g/cm³,漂浮,正常样例-铅块浮水银
