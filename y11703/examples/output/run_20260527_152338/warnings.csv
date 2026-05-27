@@ -1,0 +1,4 @@
+﻿sku_id,warning_type,severity,message,details
+SKU002,promotion_peak,warning,SKU SKU002: 检测到 2 个促销峰值，已从需求分布中排除,"{""peaks"": [{""date"": ""2024-01-11"", ""value"": 120.0, ""z_score"": 3.8992562537023696, ""vs_mean_ratio"": 3.6978131212723655}, {""date"": ""2024-01-12"", ""value"": 115.0, ""z_score"": 3.6765647580045555, ""vs_mean_ratio"": 3.543737574552684}]}"
+SKU003,new_product,warning,SKU SKU003: 历史数据仅 4 天，不足7天，可能为新品，结果仅供参考,"{""days_of_history"": 4, ""minimum_required"": 7}"
+SKU003,insufficient_data,warning,SKU SKU003: 历史数据 4 天，建议至少30天以获得更可靠的计算结果,"{""days_of_history"": 4, ""recommended"": 30}"

@@ -1,0 +1,2 @@
+[console_scripts]
+safety-stock = safety_stock_opt.cli:main

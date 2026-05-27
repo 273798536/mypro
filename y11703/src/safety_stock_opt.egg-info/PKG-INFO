@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: safety-stock-opt
+Version: 0.1.0
+Summary: 库存安全水位优化API CLI - 基于销量波动的智能安全库存计算
+Author: Retail Supply Chain Team
+Requires-Python: >=3.9
+Requires-Dist: click>=8.1.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: rich>=13.0.0

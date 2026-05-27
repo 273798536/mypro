@@ -1,0 +1,5 @@
+﻿sku_id,final_safety_stock,reorder_point,order_up_to_level,has_warnings,warning_count,manual_override
+SKU001,14.01,130.08,130.08,False,0,False
+SKU002,22.28,394.48,248.26,True,1,False
+SKU003,14.32,93.07,93.07,True,2,False
+SKU004,75.0,611.45,477.34,False,0,True

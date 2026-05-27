@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safety-stock-opt"
+version = "0.1.0"
+description = "库存安全水位优化API CLI - 基于销量波动的智能安全库存计算"
+requires-python = ">=3.9"
+authors = [
+    {name = "Retail Supply Chain Team"}
+]
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+safety-stock = "safety_stock_opt.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -1,0 +1,12 @@
+{
+  "total_skus": 4,
+  "successful_calculations": 4,
+  "failed_calculations": 0,
+  "warnings_count": {
+    "promotion_peak": 1,
+    "new_product": 1,
+    "insufficient_data": 1
+  },
+  "output_directory": "examples/output/run_20260527_152338",
+  "timestamp": "2026-05-27T15:23:38.705265"
+}
