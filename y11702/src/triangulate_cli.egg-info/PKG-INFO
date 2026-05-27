@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: triangulate-cli
+Version: 0.1.0
+Summary: 三角测量定位CLI工具 - 用于无线电测向定位计算
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.0.0
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: matplotlib>=3.4.0
+Requires-Dist: scipy>=1.7.0
+Requires-Dist: pydantic>=1.9.0

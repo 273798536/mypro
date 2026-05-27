@@ -1,0 +1,2 @@
+[console_scripts]
+triangulate = triangulate_cli.cli:cli

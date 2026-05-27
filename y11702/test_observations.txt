@@ -1,0 +1,21 @@
+# 三角测量定位示例输入文件
+# 格式说明:
+# - 使用 [section] 标记区域
+# - 以 # 开头的行为注释
+# - 观测数据格式: 测站ID, X坐标, Y坐标, 方位角[单位], [误差], [备注]
+#   支持的角度单位: deg/°, rad, grad, mil/mils
+
+[metadata]
+coord_system = cartesian
+description = 示例观测数据
+
+[map]
+name = 测试区域
+bounds = 0, 1000, 0, 1000
+
+[observations]
+# 格式: 测站ID, X, Y, 方位角, 误差, 备注
+A, 100, 100, 45deg, 2, 北侧测站
+B, 900, 100, 135°, 2, 东北侧测站
+C, 500, 900, 270deg, 3, 南侧测站
+D, 200, 500, 80deg, 2, 西侧测站

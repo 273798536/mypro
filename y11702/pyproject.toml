@@ -1,0 +1,23 @@
+[project]
+name = "triangulate-cli"
+version = "0.1.0"
+description = "三角测量定位CLI工具 - 用于无线电测向定位计算"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.0.0",
+    "numpy>=1.21.0",
+    "matplotlib>=3.4.0",
+    "scipy>=1.7.0",
+    "pydantic>=1.9.0",
+]
+
+[project.scripts]
+triangulate = "triangulate_cli.cli:cli"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
