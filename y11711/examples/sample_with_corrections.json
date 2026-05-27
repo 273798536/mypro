@@ -1,0 +1,80 @@
+{
+  "frame_rate": {
+    "value": 29.97,
+    "source": "auto_correction",
+    "confidence": 0.8,
+    "status": "corrected",
+    "raw_value": 30,
+    "correction_history": [
+      {
+        "timestamp": "2024-05-15T14:30:00",
+        "correction_type": "frame_rate_adjustment",
+        "old_value": 30,
+        "new_value": 29.97,
+        "reason": "检测到NTSC视频标准帧率",
+        "source": "auto_correction"
+      }
+    ]
+  },
+  "scale": {
+    "value": 0.0098,
+    "source": "manual_correction",
+    "confidence": 0.9,
+    "status": "corrected",
+    "raw_value": 0.01,
+    "correction_history": [
+      {
+        "timestamp": "2024-05-15T14:35:00",
+        "correction_type": "scale_recalibration",
+        "old_value": 0.01,
+        "new_value": 0.0098,
+        "reason": "重新测量参考物，实际102像素=1米",
+        "source": "manual_correction",
+        "author": "李教练"
+      }
+    ],
+    "notes": ["需要再次确认比例尺"]
+  },
+  "release_height": {
+    "value": 1.85,
+    "source": "release_height",
+    "confidence": 0.9,
+    "status": "raw"
+  },
+  "landing_point": {
+    "value": 15.2,
+    "source": "landing_point",
+    "confidence": 0.85,
+    "status": "raw"
+  },
+  "training_report": {
+    "athlete": "张三",
+    "date": "2024-05-15",
+    "training_type": "铅球训练",
+    "air_resistance_enabled": false,
+    "estimated_speed": 12.5,
+    "notes": "常规训练，天气晴，风速2m/s"
+  },
+  "trajectory": [
+    {"frame": 0, "t": 0.0, "x": 0.0, "y": 1.85},
+    {"frame": 3, "t": 0.1001, "x": 0.95, "y": 2.38},
+    {"frame": 6, "t": 0.2002, "x": 1.92, "y": 2.80},
+    {"frame": 9, "t": 0.3003, "x": 2.88, "y": 3.10},
+    {"frame": 12, "t": 0.4004, "x": 3.85, "y": 3.28},
+    {"frame": 15, "t": 0.5005, "x": 4.78, "y": 3.35},
+    {"frame": 18, "t": 0.6006, "x": 5.72, "y": 3.30},
+    {"frame": 21, "t": 0.7007, "x": 6.65, "y": 3.15},
+    {"frame": 24, "t": 0.8008, "x": 7.58, "y": 2.88},
+    {"frame": 27, "t": 0.9009, "x": 8.52, "y": 2.50},
+    {"frame": 30, "t": 1.0010, "x": 9.45, "y": 2.02},
+    {"frame": 33, "t": 1.1011, "x": 10.38, "y": 1.42},
+    {"frame": 36, "t": 1.2012, "x": 11.30, "y": 0.72},
+    {"frame": 39, "t": 1.3013, "x": 12.22, "y": 0.0}
+  ],
+  "metadata": {
+    "video_filename": "shotput_001.mp4",
+    "camera_position": "侧后方，距离约5米",
+    "lens": "50mm",
+    "resolution": "1920x1080"
+  }
+}
