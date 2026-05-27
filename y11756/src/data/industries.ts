@@ -1,0 +1,88 @@
+import { Industry } from '../types/game.types';
+
+export const INDUSTRY_BASE_DATA: Omit<Industry, 'currentPrice' | 'priceHistory' | 'dailyChange'>[] = [
+  {
+    id: 'tech',
+    name: '科技成长',
+    icon: '💻',
+    description: '半导体、人工智能、云计算等高成长科技赛道',
+    basePE: 45,
+    basePB: 6.5,
+    volatility: 0.28,
+    beta: 1.4,
+  },
+  {
+    id: 'consumption',
+    name: '消费白马',
+    icon: '🛒',
+    description: '食品饮料、家电、医药等稳定消费板块',
+    basePE: 28,
+    basePB: 4.2,
+    volatility: 0.15,
+    beta: 0.8,
+  },
+  {
+    id: 'finance',
+    name: '金融地产',
+    icon: '🏦',
+    description: '银行、保险、地产等低估值蓝筹',
+    basePE: 12,
+    basePB: 1.1,
+    volatility: 0.18,
+    beta: 1.0,
+  },
+  {
+    id: 'energy',
+    name: '能源资源',
+    icon: '⚡',
+    description: '石油、煤炭、有色金属等周期品种',
+    basePE: 15,
+    basePB: 1.8,
+    volatility: 0.25,
+    beta: 1.2,
+  },
+  {
+    id: 'medicine',
+    name: '医药生物',
+    icon: '💊',
+    description: '创新药、医疗器械、医疗服务',
+    basePE: 35,
+    basePB: 5.2,
+    volatility: 0.22,
+    beta: 1.1,
+  },
+  {
+    id: 'newenergy',
+    name: '新能源',
+    icon: '🔋',
+    description: '光伏、风电、新能源车等绿色能源',
+    basePE: 38,
+    basePB: 5.8,
+    volatility: 0.30,
+    beta: 1.5,
+  },
+  {
+    id: 'military',
+    name: '军工航天',
+    icon: '🚀',
+    description: '国防军工、卫星导航、航空航天',
+    basePE: 55,
+    basePB: 4.5,
+    volatility: 0.26,
+    beta: 1.3,
+  },
+  {
+    id: 'agriculture',
+    name: '农业养殖',
+    icon: '🌾',
+    description: '种植业、养殖业、农产品加工',
+    basePE: 22,
+    basePB: 3.0,
+    volatility: 0.20,
+    beta: 0.9,
+  },
+];
+
+export const getIndustryById = (id: string) => {
+  return INDUSTRY_BASE_DATA.find(i => i.id === id);
+};
