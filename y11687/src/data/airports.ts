@@ -1,0 +1,98 @@
+import { Waypoint } from '../types';
+
+export const airports: Waypoint[] = [
+  {
+    id: 'pek',
+    name: '北京首都国际机场',
+    lat: 40.0799,
+    lng: 116.6031,
+    alt: 35,
+    type: 'airport',
+    iataCode: 'PEK',
+  },
+  {
+    id: 'sha',
+    name: '上海虹桥国际机场',
+    lat: 31.1979,
+    lng: 121.3363,
+    alt: 4,
+    type: 'airport',
+    iataCode: 'SHA',
+  },
+  {
+    id: 'pvg',
+    name: '上海浦东国际机场',
+    lat: 31.1433,
+    lng: 121.8058,
+    alt: 4,
+    type: 'airport',
+    iataCode: 'PVG',
+  },
+  {
+    id: 'can',
+    name: '广州白云国际机场',
+    lat: 23.3924,
+    lng: 113.2988,
+    alt: 35,
+    type: 'airport',
+    iataCode: 'CAN',
+  },
+  {
+    id: 'ctu',
+    name: '成都双流国际机场',
+    lat: 30.5785,
+    lng: 103.9472,
+    alt: 508,
+    type: 'airport',
+    iataCode: 'CTU',
+  },
+  {
+    id: 'nkg',
+    name: '南京禄口国际机场',
+    lat: 31.7420,
+    lng: 118.8620,
+    alt: 15,
+    type: 'airport',
+    iataCode: 'NKG',
+  },
+  {
+    id: 'hgh',
+    name: '杭州萧山国际机场',
+    lat: 30.2363,
+    lng: 120.4347,
+    alt: 13,
+    type: 'airport',
+    iataCode: 'HGH',
+  },
+  {
+    id: 'wuh',
+    name: '武汉天河国际机场',
+    lat: 30.7838,
+    lng: 114.2082,
+    alt: 35,
+    type: 'airport',
+    iataCode: 'WUH',
+  },
+  {
+    id: 'tsn',
+    name: '天津滨海国际机场',
+    lat: 39.1247,
+    lng: 117.3480,
+    alt: 3,
+    type: 'airport',
+    iataCode: 'TSN',
+  },
+  {
+    id: 'sjw',
+    name: '石家庄正定国际机场',
+    lat: 38.2781,
+    lng: 114.6942,
+    alt: 72,
+    type: 'airport',
+    iataCode: 'SJW',
+  },
+];
+
+export const getAirportById = (id: string): Waypoint | undefined => {
+  return airports.find(airport => airport.id === id);
+};
