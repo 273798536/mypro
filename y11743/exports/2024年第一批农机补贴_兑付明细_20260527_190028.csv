@@ -1,0 +1,4 @@
+id,farmer_name,id_card,village,invoice_number,invoice_date,machine_model,machine_name,invoice_amount,subsidy_amount,status,issue_flags,issue_detail,remark,source_file
+1,张三,330101199001010001,东村,INV2024001,2024-03-15,DF-804,东风804拖拉机,128000.0,32000.0,pending,error:资格过期,[error] 资格过期: 农户 张三 资格已于 2025-12-31 过期(147天前),正常兑付,manual
+2,李四,330101198505050002,西村,INV2024002,2024-04-10,DF-804,东风804拖拉机,128000.0,32000.0,pending,error:照片机型不符;error:资格过期,[error] 照片机型不符: 照片机型 DF-904 与发票机型 DF-804 不一致(发票号: INV2024002); [error] 资格过期: 农户 李四 资格已于 2024-05-31 过期(726天前),李四资格已过期,manual
+3,王五,330101199212120003,南村,INV2024003,2024-05-20,JD-6E1404,约翰迪尔6E-1404,285000.0,58000.0,pending,error:资格过期,[error] 资格过期: 农户 王五 资格已于 2026-02-28 过期(88天前),王五照片机型不符,manual

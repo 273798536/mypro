@@ -1,0 +1,4 @@
+invoice_number,invoice_date,machine_model,machine_name,amount,farmer_id,dealer
+INV2024001,2024-03-15,DF-804,东风804拖拉机,128000,1,东风农机销售有限公司
+INV2024002,2024-04-10,DF-804,东风804拖拉机,128000,2,东风农机销售有限公司
+INV2024003,2024-05-20,JD-6E1404,约翰迪尔6E-1404,285000,3,约翰迪尔授权经销商

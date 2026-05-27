@@ -1,0 +1,4 @@
+photo_hash,farmer_id,invoice_id,machine_model,photo_date,inspector
+PHOTO001,1,1,DF-804,2024-03-20,刘检验
+PHOTO002,2,2,DF-904,2024-04-15,陈检验
+PHOTO003,3,3,JD-6E1404,2024-05-25,刘检验
