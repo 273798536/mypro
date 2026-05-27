@@ -1,0 +1,25 @@
+类型: balance_discrepancy
+数量: 3
+----------------------------------------
+
+[1] 张大爷 2024-03 账户余额差异145.50元
+    patient: 张大爷
+    period: 2024-03
+    expected: 1329.0
+    actual: 1474.5
+    difference: 145.5
+
+[2] 李奶奶 2024-03 账户余额差异80.00元
+    patient: 李奶奶
+    period: 2024-03
+    expected: 1180.0
+    actual: 1100.0
+    difference: 80.0
+
+[3] 王爷爷 2024-03 账户余额差异80.00元
+    patient: 王爷爷
+    period: 2024-03
+    expected: 1770.0
+    actual: 1850.0
+    difference: 80.0
+

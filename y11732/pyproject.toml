@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "yibao-account-cli"
+version = "0.1.0"
+description = "医保个人账户划拨 CLI 工具 - 理清门诊报销和自费扣款流程"
+authors = ["医保窗口团队"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+pandas = "^2.2.0"
+openpyxl = "^3.1.2"
+python-dateutil = "^2.8.2"
+rich = "^13.7.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+yibao = "yibao_account.cli:main"

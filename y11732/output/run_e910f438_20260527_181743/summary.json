@@ -1,0 +1,17 @@
+{
+  "run_id": "e910f438",
+  "run_time": "2026-05-27T18:17:43.160502",
+  "input_dir": "./sample_data",
+  "output_dir": "./output",
+  "statistics": {
+    "total_records": 24,
+    "pending": 22,
+    "verified": 0,
+    "corrected": 0,
+    "needs_review": 0,
+    "cross_month": 1,
+    "duplicate": 1
+  },
+  "warning_count": 5,
+  "ledger_count": 4
+}
