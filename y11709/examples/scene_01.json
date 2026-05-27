@@ -1,0 +1,102 @@
+[
+  {
+    "id": "player_01",
+    "vertices": [
+      [
+        0,
+        0
+      ],
+      [
+        20,
+        0
+      ],
+      [
+        20,
+        30
+      ],
+      [
+        0,
+        30
+      ]
+    ],
+    "collision_layer": "player",
+    "scale": 1.0,
+    "scene_id": "scene_01",
+    "exception_note": ""
+  },
+  {
+    "id": "obstacle_01",
+    "vertices": [
+      [
+        50,
+        10
+      ],
+      [
+        80,
+        10
+      ],
+      [
+        80,
+        40
+      ],
+      [
+        50,
+        40
+      ]
+    ],
+    "collision_layer": "obstacle",
+    "scale": 1.0,
+    "scene_id": "scene_01",
+    "exception_note": ""
+  },
+  {
+    "id": "obstacle_02",
+    "vertices": [
+      [
+        10,
+        40
+      ],
+      [
+        30,
+        40
+      ],
+      [
+        30,
+        60
+      ],
+      [
+        10,
+        60
+      ]
+    ],
+    "collision_layer": "obstacle",
+    "scale": 1.0,
+    "scene_id": "scene_01",
+    "exception_note": ""
+  },
+  {
+    "id": "trigger_01",
+    "vertices": [
+      [
+        15,
+        15
+      ],
+      [
+        25,
+        15
+      ],
+      [
+        25,
+        25
+      ],
+      [
+        15,
+        25
+      ]
+    ],
+    "collision_layer": "trigger",
+    "scale": 1.0,
+    "scene_id": "scene_01",
+    "exception_note": ""
+  }
+]

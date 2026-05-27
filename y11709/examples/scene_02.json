@@ -1,0 +1,52 @@
+[
+  {
+    "id": "enemy_01",
+    "vertices": [
+      [
+        100,
+        0
+      ],
+      [
+        130,
+        0
+      ],
+      [
+        130,
+        30
+      ],
+      [
+        100,
+        30
+      ]
+    ],
+    "collision_layer": "enemy",
+    "scale": 1.0,
+    "scene_id": "scene_02",
+    "exception_note": ""
+  },
+  {
+    "id": "self_intersect_01",
+    "vertices": [
+      [
+        0,
+        0
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        0,
+        20
+      ],
+      [
+        20,
+        0
+      ]
+    ],
+    "collision_layer": "default",
+    "scale": 1.0,
+    "scene_id": "scene_02",
+    "exception_note": ""
+  }
+]

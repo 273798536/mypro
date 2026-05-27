@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: collision-checker
+Version: 0.1.0
+Summary: 几何碰撞批量检测CLI工具
+Author: Game Art Team
+Requires-Python: >=3.9
+Requires-Dist: click>=8.0
+Requires-Dist: shapely>=2.0
+Requires-Dist: svgwrite>=1.4

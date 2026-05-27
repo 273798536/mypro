@@ -1,0 +1,7 @@
+id,collision_layer,scale,scene_id,exception_note,source_file,is_valid,issues
+player_01,player,1.0,scene_01,,scene_01.json,True,
+obstacle_01,obstacle,1.0,scene_01,,scene_01.json,True,
+obstacle_02,obstacle,1.0,scene_01,,scene_01.json,True,
+trigger_01,trigger,1.0,scene_01,,scene_01.json,True,
+enemy_01,enemy,1.0,scene_02,,scene_02.json,True,
+self_intersect_01,default,1.0,scene_02,,scene_02.json,False,自交多边形: Self-intersection[10 10]

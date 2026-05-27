@@ -1,0 +1,15 @@
+pyproject.toml
+collision_checker/__init__.py
+collision_checker/cli.py
+collision_checker/collision.py
+collision_checker/config.py
+collision_checker/geometry.py
+collision_checker/io.py
+collision_checker/report.py
+collision_checker/visualization.py
+collision_checker.egg-info/PKG-INFO
+collision_checker.egg-info/SOURCES.txt
+collision_checker.egg-info/dependency_links.txt
+collision_checker.egg-info/entry_points.txt
+collision_checker.egg-info/requires.txt
+collision_checker.egg-info/top_level.txt

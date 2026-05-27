@@ -1,0 +1,2 @@
+polygon_id,issue,source_file
+self_intersect_01,自交多边形: Self-intersection[10 10],scene_02.json

@@ -1,0 +1,2 @@
+[console_scripts]
+collision-checker = collision_checker.cli:main

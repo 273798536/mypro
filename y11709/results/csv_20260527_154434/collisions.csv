@@ -1,0 +1,16 @@
+polygon_a_id,polygon_b_id,is_colliding,overlap_area,collision_depth,is_exception,exception_reason
+player_01,obstacle_01,False,0.0,0.0,False,
+player_01,obstacle_02,False,0.0,0.0,False,
+player_01,trigger_01,True,50.0,5.0,True,预设例外对
+player_01,enemy_01,False,0.0,0.0,False,
+player_01,self_intersect_01,False,0.0,0.0,False,
+obstacle_01,obstacle_02,False,0.0,0.0,False,
+obstacle_01,trigger_01,False,0.0,0.0,False,
+obstacle_01,enemy_01,False,0.0,0.0,False,
+obstacle_01,self_intersect_01,False,0.0,0.0,False,
+obstacle_02,trigger_01,False,0.0,0.0,False,
+obstacle_02,enemy_01,False,0.0,0.0,False,
+obstacle_02,self_intersect_01,False,0.0,0.0,False,
+trigger_01,enemy_01,False,0.0,0.0,False,
+trigger_01,self_intersect_01,False,0.0,0.0,False,
+enemy_01,self_intersect_01,False,0.0,0.0,False,

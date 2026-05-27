@@ -1,0 +1,357 @@
+{
+  "summary": {
+    "timestamp": "2026-05-27T15:44:34.468725",
+    "total_polygons": 6,
+    "valid_polygons": 5,
+    "invalid_polygons": 1,
+    "total_collision_pairs": 0,
+    "exception_collision_pairs": 1,
+    "total_pairs_checked": 15,
+    "issues": [
+      {
+        "polygon_id": "self_intersect_01",
+        "issue": "自交多边形: Self-intersection[10 10]",
+        "source": "scene_02.json"
+      }
+    ],
+    "scenes": {
+      "scene_01": {
+        "polygons": 4,
+        "collisions": 0,
+        "exceptions": 1
+      },
+      "scene_02": {
+        "polygons": 2,
+        "collisions": 0,
+        "exceptions": 0
+      }
+    }
+  },
+  "polygons": [
+    {
+      "id": "player_01",
+      "vertices": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          20.0,
+          0.0
+        ],
+        [
+          20.0,
+          30.0
+        ],
+        [
+          0.0,
+          30.0
+        ]
+      ],
+      "collision_layer": "player",
+      "scale": 1.0,
+      "scene_id": "scene_01",
+      "exception_note": "",
+      "source_file": "scene_01.json",
+      "issues": [],
+      "is_valid": true
+    },
+    {
+      "id": "obstacle_01",
+      "vertices": [
+        [
+          50.0,
+          10.0
+        ],
+        [
+          80.0,
+          10.0
+        ],
+        [
+          80.0,
+          40.0
+        ],
+        [
+          50.0,
+          40.0
+        ]
+      ],
+      "collision_layer": "obstacle",
+      "scale": 1.0,
+      "scene_id": "scene_01",
+      "exception_note": "",
+      "source_file": "scene_01.json",
+      "issues": [],
+      "is_valid": true
+    },
+    {
+      "id": "obstacle_02",
+      "vertices": [
+        [
+          10.0,
+          40.0
+        ],
+        [
+          30.0,
+          40.0
+        ],
+        [
+          30.0,
+          60.0
+        ],
+        [
+          10.0,
+          60.0
+        ]
+      ],
+      "collision_layer": "obstacle",
+      "scale": 1.0,
+      "scene_id": "scene_01",
+      "exception_note": "",
+      "source_file": "scene_01.json",
+      "issues": [],
+      "is_valid": true
+    },
+    {
+      "id": "trigger_01",
+      "vertices": [
+        [
+          15.0,
+          15.0
+        ],
+        [
+          25.0,
+          15.0
+        ],
+        [
+          25.0,
+          25.0
+        ],
+        [
+          15.0,
+          25.0
+        ]
+      ],
+      "collision_layer": "trigger",
+      "scale": 1.0,
+      "scene_id": "scene_01",
+      "exception_note": "",
+      "source_file": "scene_01.json",
+      "issues": [],
+      "is_valid": true
+    },
+    {
+      "id": "enemy_01",
+      "vertices": [
+        [
+          100.0,
+          0.0
+        ],
+        [
+          130.0,
+          0.0
+        ],
+        [
+          130.0,
+          30.0
+        ],
+        [
+          100.0,
+          30.0
+        ]
+      ],
+      "collision_layer": "enemy",
+      "scale": 1.0,
+      "scene_id": "scene_02",
+      "exception_note": "",
+      "source_file": "scene_02.json",
+      "issues": [],
+      "is_valid": true
+    },
+    {
+      "id": "self_intersect_01",
+      "vertices": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          20.0,
+          20.0
+        ],
+        [
+          0.0,
+          20.0
+        ],
+        [
+          20.0,
+          0.0
+        ]
+      ],
+      "collision_layer": "default",
+      "scale": 1.0,
+      "scene_id": "scene_02",
+      "exception_note": "",
+      "source_file": "scene_02.json",
+      "issues": [
+        "自交多边形: Self-intersection[10 10]"
+      ],
+      "is_valid": false
+    }
+  ],
+  "collisions": [
+    {
+      "polygon_a_id": "player_01",
+      "polygon_b_id": "obstacle_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "player_01",
+      "polygon_b_id": "obstacle_02",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "player_01",
+      "polygon_b_id": "trigger_01",
+      "is_colliding": true,
+      "overlap_area": 50.0,
+      "collision_depth": 5.0,
+      "collision_normal": [
+        -1.0,
+        0.0
+      ],
+      "is_exception": true,
+      "exception_reason": "预设例外对"
+    },
+    {
+      "polygon_a_id": "player_01",
+      "polygon_b_id": "enemy_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "player_01",
+      "polygon_b_id": "self_intersect_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_01",
+      "polygon_b_id": "obstacle_02",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_01",
+      "polygon_b_id": "trigger_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_01",
+      "polygon_b_id": "enemy_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_01",
+      "polygon_b_id": "self_intersect_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_02",
+      "polygon_b_id": "trigger_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_02",
+      "polygon_b_id": "enemy_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "obstacle_02",
+      "polygon_b_id": "self_intersect_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "trigger_01",
+      "polygon_b_id": "enemy_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "trigger_01",
+      "polygon_b_id": "self_intersect_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    },
+    {
+      "polygon_a_id": "enemy_01",
+      "polygon_b_id": "self_intersect_01",
+      "is_colliding": false,
+      "overlap_area": 0.0,
+      "collision_depth": 0.0,
+      "collision_normal": null,
+      "is_exception": false,
+      "exception_reason": ""
+    }
+  ]
+}
