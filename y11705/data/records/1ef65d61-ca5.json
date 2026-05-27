@@ -1,0 +1,18 @@
+{
+  "id": "1ef65d61-ca5",
+  "fractal_type": "sierpinski",
+  "params": {
+    "depth": 10.0
+  },
+  "color_scheme": "forest",
+  "width": 1024,
+  "height": 1024,
+  "student_note": "边界记录4: Sierpinski最大递归深度10，生成1024x1024图像",
+  "image_path": "data/images/1ef65d61-ca5.png",
+  "created_at": "2026-05-27T15:32:36.207379",
+  "validation_messages": [],
+  "render_time_ms": 4831.687927246094,
+  "parent_id": null,
+  "revision": 1,
+  "source": "sample_boundary"
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分形图案生成器 - 数学社</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f23; color: #e0e0e0; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 30px 0; border-bottom: 1px solid #333; margin-bottom: 30px; }
+        h1 { font-size: 2.5em; background: linear-gradient(90deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #888; margin-top: 10px; }
+        .main-grid { display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px; }
+        .panel { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a4e; }
+        .panel h2 { font-size: 1.2em; margin-bottom: 15px; color: #667eea; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; font-size: 0.9em; }
+        input, select, textarea { width: 100%; padding: 8px 12px; background: #0f0f23; border: 1px solid #333; border-radius: 6px; color: #e0e0e0; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; }
+        button { width: 100%; padding: 12px; background: linear-gradient(90deg, #667eea, #764ba2); border: none; border-radius: 6px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        #canvas-container { text-align: center; min-height: 400px; display: flex; align-items: center; justify-content: center; }
+        #fractal-canvas { max-width: 100%; max-height: 600px; border-radius: 8px; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2); }
+        .loading { display: none; text-align: center; }
+        .spinner { border: 3px solid #333; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .messages { margin-top: 15px; }
+        .message { padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.9em; }
+        .message.info { background: rgba(102, 126, 234, 0.2); border-left: 3px solid #667eea; }
+        .message.warning { background: rgba(255, 193, 7, 0.2); border-left: 3px solid #ffc107; }
+        .message.error { background: rgba(244, 67, 54, 0.2); border-left: 3px solid #f44336; }
+        .preset-item { padding: 10px; background: #0f0f23; border-radius: 6px; margin-bottom: 8px; cursor: pointer; transition: background 0.2s; }
+        .preset-item:hover { background: #252545; }
+        .preset-name { font-weight: 600; color: #667eea; }
+        .preset-desc { font-size: 0.8em; color: #888; margin-top: 3px; }
+        .stats { display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
+        .stat-item { flex: 1; min-width: 100px; text-align: center; padding: 10px; background: #0f0f23; border-radius: 6px; }
+        .stat-value { font-size: 1.5em; font-weight: 700; color: #667eea; }
+        .stat-label { font-size: 0.8em; color: #888; }
+        .result-info { margin-top: 15px; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 6px; font-size: 0.9em; }
+        .nav-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .nav-btn { flex: 1; padding: 10px; background: #1a1a2e; border: 1px solid #333; border-radius: 6px; color: #aaa; text-decoration: none; text-align: center; font-size: 0.9em; transition: all 0.2s; }
+        .nav-btn:hover { background: #252545; color: #667eea; border-color: #667eea; }
+        .nav-btn.active { background: linear-gradient(90deg, #667eea, #764ba2); color: white; border-color: transparent; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>分形图案生成器</h1>
+            <p class="subtitle">数学社课堂工具 · 探索无限复杂的几何之美</p>
+            <div class="stats">
+                <div class="stat-item"><div class="stat-value">{{ stats.total_records }}</div><div class="stat-label">总作品</div></div>
+                <div class="stat-item"><div class="stat-value">{{ fractal_types|length }}</div><div class="stat-label">分形类型</div></div>
+                <div class="stat-item"><div class="stat-value">{{ color_schemes|length }}</div><div class="stat-label">配色方案</div></div>
+            </div>
+        </header>
+
+        <div class="nav-buttons">
+            <a href="/" class="nav-btn active">生成器</a>
+            <a href="/gallery" class="nav-btn">作品展示</a>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel">
+                <h2>分形参数</h2>
+                <div class="form-group">
+                    <label>分形类型</label>
+                    <select id="fractal-type">
+                        {% for ft in fractal_types %}
+                        <option value="{{ ft }}">{{ ft }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>迭代次数</label>
+                    <input type="number" id="max-iter" value="100" min="1" max="10000">
+                </div>
+                <div class="form-group">
+                    <label>缩放倍数</label>
+                    <input type="number" id="zoom" value="1.0" step="0.1" min="0.1">
+                </div>
+                <div class="form-group">
+                    <label>中心点 X</label>
+                    <input type="number" id="center-x" value="-0.5" step="0.0001">
+                </div>
+                <div class="form-group">
+                    <label>中心点 Y</label>
+                    <input type="number" id="center-y" value="0.0" step="0.0001">
+                </div>
+                <div class="form-group">
+                    <label>颜色方案</label>
+                    <select id="color-scheme">
+                        {% for key, name in color_schemes.items() %}
+                        <option value="{{ key }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>图像宽度</label>
+                    <input type="number" id="width" value="800" min="100" max="4096">
+                </div>
+                <div class="form-group">
+                    <label>图像高度</label>
+                    <input type="number" id="height" value="600" min="100" max="4096">
+                </div>
+                <div class="form-group">
+                    <label>学生备注</label>
+                    <textarea id="note" rows="3" placeholder="记录你的创作思路..."></textarea>
+                </div>
+                <button id="generate-btn">生成分形</button>
+                <div id="messages" class="messages"></div>
+            </div>
+
+            <div class="panel">
+                <h2>预览</h2>
+                <div id="canvas-container">
+                    <div id="placeholder" style="color: #666; font-size: 1.1em;">
+                        调整参数后点击"生成分形"按钮开始创作
+                    </div>
+                    <img id="fractal-canvas" style="display: none;" alt="分形图案">
+                    <div id="loading" class="loading">
+                        <div class="spinner"></div>
+                        <p>正在生成分形...</p>
+                    </div>
+                </div>
+                <div id="result-info" class="result-info" style="display: none;"></div>
+            </div>
+
+            <div class="panel">
+                <h2>快速预设</h2>
+                <div id="presets-list">
+                    {% for preset in presets %}
+                    <div class="preset-item" onclick="loadPreset('{{ preset.name }}')">
+                        <div class="preset-name">{{ preset.name }}</div>
+                        <div class="preset-desc">{{ preset.description }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRecordId = null;
+
+        async function generateFractal() {
+            const btn = document.getElementById('generate-btn');
+            const canvas = document.getElementById('fractal-canvas');
+            const placeholder = document.getElementById('placeholder');
+            const loading = document.getElementById('loading');
+            const messages = document.getElementById('messages');
+            const resultInfo = document.getElementById('result-info');
+
+            btn.disabled = true;
+            canvas.style.display = 'none';
+            placeholder.style.display = 'none';
+            loading.style.display = 'block';
+            messages.innerHTML = '';
+            resultInfo.style.display = 'none';
+
+            const params = {
+                max_iter: parseInt(document.getElementById('max-iter').value),
+                zoom: parseFloat(document.getElementById('zoom').value),
+                center_x: parseFloat(document.getElementById('center-x').value),
+                center_y: parseFloat(document.getElementById('center-y').value),
+            };
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fractal_type: document.getElementById('fractal-type').value,
+                        params: params,
+                        color_scheme: document.getElementById('color-scheme').value,
+                        width: parseInt(document.getElementById('width').value),
+                        height: parseInt(document.getElementById('height').value),
+                        note: document.getElementById('note').value,
+                        auto_safe: true,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    canvas.src = data.image_url + '?t=' + Date.now();
+                    canvas.style.display = 'block';
+                    currentRecordId = data.record_id;
+
+                    data.validation_messages.forEach(msg => {
+                        const div = document.createElement('div');
+                        div.className = `message ${msg.severity}`;
+                        div.textContent = msg.message;
+                        if (msg.suggestion) {
+                            div.textContent += ` (建议: ${msg.suggestion})`;
+                        }
+                        messages.appendChild(div);
+                    });
+
+                    resultInfo.innerHTML = `
+                        <strong>✓ 生成成功!</strong><br>
+                        渲染时间: ${data.render_time_ms.toFixed(2)} ms<br>
+                        记录ID: <a href="/record/${data.record_id}" style="color: #667eea;">${data.record_id}</a>
+                    `;
+                    resultInfo.style.display = 'block';
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'message error';
+                    div.textContent = data.error;
+                    messages.appendChild(div);
+                    placeholder.style.display = 'block';
+                    placeholder.textContent = '生成失败，请检查参数';
+                }
+            } catch (error) {
+                const div = document.createElement('div');
+                div.className = 'message error';
+                div.textContent = '网络错误: ' + error.message;
+                messages.appendChild(div);
+                placeholder.style.display = 'block';
+                placeholder.textContent = '生成失败';
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function loadPreset(name) {
+            fetch('/api/presets')
+                .then(r => r.json())
+                .then(presets => {
+                    const preset = presets.find(p => p.name === name);
+                    if (preset) {
+                        document.getElementById('fractal-type').value = preset.fractal_type;
+                        document.getElementById('color-scheme').value = preset.color_scheme;
+                        if (preset.params.max_iter) document.getElementById('max-iter').value = preset.params.max_iter;
+                        if (preset.params.zoom) document.getElementById('zoom').value = preset.params.zoom;
+                        if (preset.params.center_x !== undefined) document.getElementById('center-x').value = preset.params.center_x;
+                        if (preset.params.center_y !== undefined) document.getElementById('center-y').value = preset.params.center_y;
+                        document.getElementById('note').value = '使用预设: ' + name;
+                    }
+                });
+        }
+
+        document.getElementById('generate-btn').addEventListener('click', generateFractal);
+    </script>
+</body>
+</html>

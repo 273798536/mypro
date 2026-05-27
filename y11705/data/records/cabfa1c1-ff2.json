@@ -1,0 +1,58 @@
+{
+  "id": "cabfa1c1-ff2",
+  "fractal_type": "mandelbrot",
+  "params": {
+    "max_iter": 200,
+    "zoom": 1.0,
+    "center_x": -0.5,
+    "center_y": 0.0,
+    "escape_radius": 2.0
+  },
+  "color_scheme": "rainbow",
+  "width": 800,
+  "height": 600,
+  "student_note": "坏数据3: 迭代次数超过最大值(50000>10000)，应该被自动限制",
+  "image_path": "data/images/cabfa1c1-ff2.png",
+  "created_at": "2026-05-27T15:32:36.747473",
+  "validation_messages": [
+    {
+      "severity": "warning",
+      "field": "max_iter",
+      "message": "参数 'max_iter' = 50000.0 高于最大值 10000",
+      "code": "ABOVE_MAX",
+      "suggestion": "已自动调整为 10000"
+    },
+    {
+      "severity": "warning",
+      "field": "max_iter",
+      "message": "迭代次数 50000 可能导致严重卡顿",
+      "code": "PERF_DANGER",
+      "suggestion": "建议降低迭代次数，或使用小尺寸预览"
+    },
+    {
+      "severity": "info",
+      "field": "center_x",
+      "message": "使用默认值: -0.5",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    },
+    {
+      "severity": "info",
+      "field": "center_y",
+      "message": "使用默认值: 0.0",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    },
+    {
+      "severity": "info",
+      "field": "escape_radius",
+      "message": "使用默认值: 2.0",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    }
+  ],
+  "render_time_ms": 314.69082832336426,
+  "parent_id": null,
+  "revision": 1,
+  "source": "sample_bad"
+}

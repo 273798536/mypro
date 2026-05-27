@@ -1,0 +1,37 @@
+{
+  "id": "9d9fe05c-bb6",
+  "fractal_type": "mandelbrot",
+  "params": {
+    "max_iter": 500,
+    "zoom": 1.0,
+    "center_x": -0.5,
+    "center_y": 0.0,
+    "escape_radius": 2.0
+  },
+  "color_scheme": "inferno",
+  "width": 800,
+  "height": 600,
+  "student_note": "边界记录1: 迭代次数1000，接近性能警告阈值(2000)，会触发性能警告但仍能正常生成",
+  "image_path": "data/images/9d9fe05c-bb6.png",
+  "created_at": "2026-05-27T15:32:29.653198",
+  "validation_messages": [
+    {
+      "severity": "info",
+      "field": "max_iter",
+      "message": "迭代次数 1000 可能较慢",
+      "code": "PERF_WARNING",
+      "suggestion": "如需更快渲染可降低迭代次数"
+    },
+    {
+      "severity": "info",
+      "field": "escape_radius",
+      "message": "使用默认值: 2.0",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    }
+  ],
+  "render_time_ms": 1026.8681049346924,
+  "parent_id": null,
+  "revision": 1,
+  "source": "sample_boundary"
+}

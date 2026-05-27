@@ -1,0 +1,51 @@
+{
+  "id": "f41b69e7-1c6",
+  "fractal_type": "mandelbrot",
+  "params": {
+    "max_iter": 1,
+    "zoom": 1.0,
+    "center_x": -0.5,
+    "center_y": 0.0,
+    "escape_radius": 2.0
+  },
+  "color_scheme": "rainbow",
+  "width": 800,
+  "height": 600,
+  "student_note": "坏数据2: 迭代次数为负数，应该被自动修正",
+  "image_path": "data/images/f41b69e7-1c6.png",
+  "created_at": "2026-05-27T15:32:36.419689",
+  "validation_messages": [
+    {
+      "severity": "warning",
+      "field": "max_iter",
+      "message": "参数 'max_iter' = -50.0 低于最小值 1",
+      "code": "BELOW_MIN",
+      "suggestion": "已自动调整为 1"
+    },
+    {
+      "severity": "info",
+      "field": "center_x",
+      "message": "使用默认值: -0.5",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    },
+    {
+      "severity": "info",
+      "field": "center_y",
+      "message": "使用默认值: 0.0",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    },
+    {
+      "severity": "info",
+      "field": "escape_radius",
+      "message": "使用默认值: 2.0",
+      "code": "DEFAULT_USED",
+      "suggestion": null
+    }
+  ],
+  "render_time_ms": 197.18122482299805,
+  "parent_id": null,
+  "revision": 1,
+  "source": "sample_bad"
+}
