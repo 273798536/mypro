@@ -1,0 +1,32 @@
+export const GAME_CONFIG = {
+  MAX_ROUNDS: 12,
+  INITIAL_CASH: 1000000,
+  INITIAL_INVENTORY: 100,
+  BASE_EXCHANGE_RATE: 7.0,
+  VOLATILITY: 0.05,
+  OVER_HEDGING_PENALTY_RATE: 0.1,
+  FORWARD_CONTRACT_FEE_RATE: 0.005,
+  INVENTORY_HOLDING_COST_PER_UNIT: 50,
+  ORDER_CANCEL_PENALTY_RATE: 0.1,
+  MAX_ORDERS_PER_ROUND: 3,
+  MIN_ORDER_AMOUNT: 10,
+  MAX_ORDER_AMOUNT: 50,
+  ORDER_PRICE_MIN: 100,
+  ORDER_PRICE_MAX: 300,
+  OVER_HEDGING_THRESHOLD: 1.2,
+  FORWARD_RATE_SPREAD: 0.02,
+} as const;
+
+export const STORAGE_KEYS = {
+  CURRENT_GAME: 'fx_game_current',
+  HISTORY_LIST: 'fx_game_history',
+  GAME_DETAIL_PREFIX: 'fx_game_detail_',
+} as const;
+
+export const ROUTES = {
+  HOME: '/',
+  GAME: '/game',
+  REPORT: '/report',
+  HISTORY: '/history',
+  HISTORY_DETAIL: '/history/:id',
+} as const;
