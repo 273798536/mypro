@@ -90,11 +90,13 @@
       "description": "房间地毯被红酒污染，需专业清洗",
       "reportedBy": "客房部-刘经理",
       "reportedTime": "2026-05-22T12:30:00.000Z",
-      "status": "pending",
+      "status": "deducted",
       "evidence": [
         "photo_20260522_123001.jpg",
         "photo_20260522_123015.jpg"
-      ]
+      ],
+      "deductedAt": "2026-05-27T16:26:55.874Z",
+      "deductedFrom": "deposit"
     },
     {
       "id": "DMG_003_BAD",
@@ -121,98 +123,91 @@
       "rawResponse": "{\"code\":\"0\",\"msg\":\"success\",\"releaseAmount\":1000}"
     },
     {
-      "id": "REC_1779880155757_3tpz6k",
-      "orderId": "ORD_001_NORMAL",
-      "channel": "ctrip",
-      "channelRef": "CTRIP_PA_20260520_001",
-      "receiptTime": "2026-05-27T11:09:15.757Z",
+      "id": "REC_1779899215875_st1szl",
+      "orderId": "ORD_002_BOUNDARY",
+      "channel": "meituan",
+      "channelRef": "MT_PA_20260518_007",
+      "receiptTime": "2026-05-27T16:26:55.875Z",
       "status": "confirmed",
-      "rawResponse": "{\"code\":\"0\",\"msg\":\"ok\",\"amount\":1000}"
+      "rawResponse": "{\"code\":\"0\",\"msg\":\"success\",\"releaseAmount\":1050}"
     }
   ],
   "releaseRecords": [
     {
-      "id": "REL_1779880155757_g8kh4p",
+      "id": "REL_1779899215874_jwboo5",
       "depositFlowId": "DF_001_NORMAL",
       "orderId": "ORD_001_NORMAL",
       "amount": 1000,
       "status": "completed",
       "lockedBy": "system",
-      "lockedAt": "2026-05-27T11:09:15.757Z",
-      "lockId": "LOCK_1779880155757_0qjvd5",
+      "lockedAt": "2026-05-27T16:26:55.874Z",
+      "lockId": "LOCK_1779899215874_c11gxa",
       "releaseHistory": [
         {
           "action": "lock",
-          "timestamp": "2026-05-27T11:09:15.757Z",
+          "timestamp": "2026-05-27T16:26:55.874Z",
           "by": "system"
         },
         {
           "action": "process",
-          "timestamp": "2026-05-27T11:09:15.757Z",
+          "timestamp": "2026-05-27T16:26:55.874Z",
           "releaseAmount": 1000,
           "source": "queue_processor"
         },
         {
           "action": "complete",
-          "timestamp": "2026-05-27T11:09:15.757Z",
-          "channelReceipt": {
-            "orderId": "ORD_001_NORMAL",
-            "channel": "ctrip",
-            "channelRef": "CTRIP_PA_20260520_001",
-            "receiptTime": "2026-05-27T11:09:15.757Z",
-            "status": "confirmed",
-            "rawResponse": "{\"code\":\"0\",\"msg\":\"ok\",\"amount\":1000}"
-          }
+          "timestamp": "2026-05-27T16:26:55.874Z",
+          "channelReceipt": null
         }
       ],
-      "completedAt": "2026-05-27T11:09:15.757Z",
-      "channelReceipt": {
-        "orderId": "ORD_001_NORMAL",
-        "channel": "ctrip",
-        "channelRef": "CTRIP_PA_20260520_001",
-        "receiptTime": "2026-05-27T11:09:15.757Z",
-        "status": "confirmed",
-        "rawResponse": "{\"code\":\"0\",\"msg\":\"ok\",\"amount\":1000}"
-      }
+      "completedAt": "2026-05-27T16:26:55.874Z",
+      "channelReceipt": null
+    },
+    {
+      "id": "REL_1779899215875_0j7jac",
+      "depositFlowId": "DF_002_BOUNDARY",
+      "orderId": "ORD_002_BOUNDARY",
+      "amount": 1050,
+      "status": "completed",
+      "lockedBy": "system",
+      "lockedAt": "2026-05-27T16:26:55.875Z",
+      "lockId": "LOCK_1779899215875_rubvqd",
+      "releaseHistory": [
+        {
+          "action": "lock",
+          "timestamp": "2026-05-27T16:26:55.875Z",
+          "by": "system"
+        },
+        {
+          "action": "process",
+          "timestamp": "2026-05-27T16:26:55.875Z",
+          "releaseAmount": 1050,
+          "source": "queue_processor"
+        },
+        {
+          "action": "complete",
+          "timestamp": "2026-05-27T16:26:55.875Z",
+          "channelReceipt": null
+        }
+      ],
+      "completedAt": "2026-05-27T16:26:55.875Z",
+      "channelReceipt": null
     }
   ],
   "alerts": [
     {
-      "id": "ALT_1779880155755_s0irlm",
-      "type": "damage_not_deducted",
-      "orderId": "ORD_002_BOUNDARY",
-      "severity": "medium",
-      "message": "订单 ORD_002_BOUNDARY 存在待处理客损单 DMG_002_BOUNDARY（¥350），释放前需确认抵扣",
-      "damageId": "DMG_002_BOUNDARY",
-      "damageAmount": 350,
-      "timestamp": "2026-05-27T11:09:15.755Z",
-      "resolved": false
-    },
-    {
-      "id": "ALT_1779880155755_2oi4k0",
+      "id": "ALT_1779899215873_92owg6",
       "type": "damage_not_deducted",
       "orderId": "ORD_003_BAD",
       "severity": "medium",
       "message": "订单 ORD_003_BAD 存在待处理客损单 DMG_003_BAD（¥800），释放前需确认抵扣",
       "damageId": "DMG_003_BAD",
       "damageAmount": 800,
-      "timestamp": "2026-05-27T11:09:15.755Z",
+      "timestamp": "2026-05-27T16:26:55.873Z",
       "resolved": false
     },
     {
-      "id": "ALT_1779880155755_r3rgik",
-      "type": "channel_receipt_delayed",
-      "orderId": "ORD_002_BOUNDARY",
-      "severity": "medium",
-      "message": "订单 ORD_002_BOUNDARY（meituan）退房已超过 131 小时，渠道回执仍未收到",
-      "channel": "meituan",
-      "channelRef": "MT_PA_20260518_007",
-      "hoursSinceCheckout": 131,
-      "timestamp": "2026-05-27T11:09:15.755Z",
-      "resolved": false
-    },
-    {
-      "id": "ALT_1779880155755_ipwgj1",
+      "id": "ALT_1779899215874_4fdhf5",
       "type": "duplicate_release",
       "orderId": "ORD_003_BAD",
       "severity": "high",
@@ -222,11 +217,11 @@
         "DF_003_BAD",
         "DF_004_BAD_DUP"
       ],
-      "timestamp": "2026-05-27T11:09:15.755Z",
+      "timestamp": "2026-05-27T16:26:55.874Z",
       "resolved": false
     },
     {
-      "id": "ALT_1779880155755_ylm9an",
+      "id": "ALT_1779899215874_v17fmc",
       "type": "deposit_shortage",
       "orderId": "ORD_003_BAD",
       "severity": "high",
@@ -235,13 +230,40 @@
       "damageAmount": 800,
       "depositAmount": 500,
       "shortage": 300,
-      "timestamp": "2026-05-27T11:09:15.755Z",
+      "timestamp": "2026-05-27T16:26:55.874Z",
       "resolved": false
+    },
+    {
+      "id": "ALT_1779899215873_3lwxud",
+      "type": "damage_not_deducted",
+      "orderId": "ORD_002_BOUNDARY",
+      "severity": "medium",
+      "message": "订单 ORD_002_BOUNDARY 存在待处理客损单 DMG_002_BOUNDARY（¥350），释放前需确认抵扣",
+      "damageId": "DMG_002_BOUNDARY",
+      "damageAmount": 350,
+      "timestamp": "2026-05-27T16:26:55.873Z",
+      "resolved": true,
+      "resolvedAt": "2026-05-27T16:26:55.875Z",
+      "autoResolved": true
+    },
+    {
+      "id": "ALT_1779899215874_2vzhgj",
+      "type": "channel_receipt_delayed",
+      "orderId": "ORD_002_BOUNDARY",
+      "severity": "medium",
+      "message": "订单 ORD_002_BOUNDARY（meituan）退房已超过 136 小时，渠道回执仍未收到",
+      "channel": "meituan",
+      "channelRef": "MT_PA_20260518_007",
+      "hoursSinceCheckout": 136,
+      "timestamp": "2026-05-27T16:26:55.874Z",
+      "resolved": true,
+      "resolvedAt": "2026-05-27T16:26:55.875Z",
+      "autoResolved": true
     }
   ],
   "auditLogs": [
     {
-      "id": "AUD_1779880155755_o7wh5g",
+      "id": "AUD_1779899215872_sgh058",
       "entityType": "import",
       "entityId": "batch",
       "action": "import_samples",
@@ -265,10 +287,10 @@
           "REC_001_NORMAL"
         ]
       },
-      "timestamp": "2026-05-27T11:09:15.755Z"
+      "timestamp": "2026-05-27T16:26:55.872Z"
     },
     {
-      "id": "AUD_1779880155755_7mfadz",
+      "id": "AUD_1779899215874_5m6nim",
       "entityType": "alerts",
       "entityId": "batch",
       "action": "detect",
@@ -276,47 +298,87 @@
         "newCount": 5,
         "autoResolvedCount": 0
       },
-      "timestamp": "2026-05-27T11:09:15.755Z"
+      "timestamp": "2026-05-27T16:26:55.874Z"
     },
     {
-      "id": "AUD_1779880155757_bxoqpo",
+      "id": "AUD_1779899215874_rgtom4",
       "entityType": "release",
-      "entityId": "LOCK_1779880155757_0qjvd5",
+      "entityId": "LOCK_1779899215874_c11gxa",
       "action": "lock",
       "details": {
         "depositFlowId": "DF_001_NORMAL"
       },
-      "timestamp": "2026-05-27T11:09:15.757Z"
+      "timestamp": "2026-05-27T16:26:55.874Z"
     },
     {
-      "id": "AUD_1779880155757_54nbwp",
+      "id": "AUD_1779899215874_2eox70",
       "entityType": "release",
-      "entityId": "REL_1779880155757_g8kh4p",
+      "entityId": "REL_1779899215874_jwboo5",
       "action": "process",
       "details": {
         "orderId": "ORD_001_NORMAL",
         "amount": 1000
       },
-      "timestamp": "2026-05-27T11:09:15.757Z"
+      "timestamp": "2026-05-27T16:26:55.874Z"
     },
     {
-      "id": "AUD_1779880155757_e7vift",
+      "id": "AUD_1779899215874_pwrrxw",
       "entityType": "release",
-      "entityId": "REL_1779880155757_g8kh4p",
+      "entityId": "REL_1779899215874_jwboo5",
       "action": "complete",
       "details": {},
-      "timestamp": "2026-05-27T11:09:15.757Z"
+      "timestamp": "2026-05-27T16:26:55.874Z"
     },
     {
-      "id": "AUD_1779880155757_n4vat9",
+      "id": "AUD_1779899215874_ysplea",
+      "entityType": "damage",
+      "entityId": "DMG_002_BOUNDARY",
+      "action": "deduct",
+      "details": {
+        "orderId": "ORD_002_BOUNDARY",
+        "amount": 350
+      },
+      "timestamp": "2026-05-27T16:26:55.874Z"
+    },
+    {
+      "id": "AUD_1779899215875_2rdnfk",
+      "entityType": "release",
+      "entityId": "LOCK_1779899215875_rubvqd",
+      "action": "lock",
+      "details": {
+        "depositFlowId": "DF_002_BOUNDARY"
+      },
+      "timestamp": "2026-05-27T16:26:55.875Z"
+    },
+    {
+      "id": "AUD_1779899215875_w61h4r",
+      "entityType": "release",
+      "entityId": "REL_1779899215875_0j7jac",
+      "action": "process",
+      "details": {
+        "orderId": "ORD_002_BOUNDARY",
+        "amount": 1050
+      },
+      "timestamp": "2026-05-27T16:26:55.875Z"
+    },
+    {
+      "id": "AUD_1779899215875_7aojx9",
+      "entityType": "release",
+      "entityId": "REL_1779899215875_0j7jac",
+      "action": "complete",
+      "details": {},
+      "timestamp": "2026-05-27T16:26:55.875Z"
+    },
+    {
+      "id": "AUD_1779899215875_t1fxwp",
       "entityType": "alerts",
       "entityId": "batch",
       "action": "detect",
       "details": {
-        "newCount": 5,
-        "autoResolvedCount": 0
+        "newCount": 3,
+        "autoResolvedCount": 2
       },
-      "timestamp": "2026-05-27T11:09:15.757Z"
+      "timestamp": "2026-05-27T16:26:55.875Z"
     }
   ]
 }
