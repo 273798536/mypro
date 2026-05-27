@@ -1,0 +1,186 @@
+import type {
+  PaymentReceipt,
+  Invoice,
+  SellerAccount,
+  FactoringContract,
+  FeeConfig,
+} from '@/types';
+
+export const samplePayments: PaymentReceipt[] = [
+  {
+    id: 'pay-001',
+    receiptNo: 'HK20240501001',
+    receiptDate: '2024-05-01',
+    totalAmount: 500000,
+    payer: '华润医药集团',
+    source: '银行转账-合同BL2024001',
+    status: 'pending',
+  },
+  {
+    id: 'pay-002',
+    receiptNo: 'HK20240502002',
+    receiptDate: '2024-05-02',
+    totalAmount: 350000,
+    payer: '国药控股股份',
+    source: '银行转账-合同BL2024002',
+    status: 'pending',
+  },
+  {
+    id: 'pay-003',
+    receiptNo: 'HK20240503003',
+    receiptDate: '2024-05-03',
+    totalAmount: 800000,
+    payer: '上药控股有限公司',
+    source: '银行转账-多笔合并',
+    status: 'pending',
+  },
+  {
+    id: 'pay-004',
+    receiptNo: 'HK20240504004',
+    receiptDate: '2024-05-04',
+    totalAmount: 220000,
+    payer: '南京医药股份',
+    source: '银行转账-争议款项',
+    status: 'pending',
+  },
+];
+
+export const sampleInvoices: Invoice[] = [
+  {
+    id: 'inv-001',
+    invoiceNo: 'FP2024040001',
+    sellerId: 'sel-001',
+    sellerName: '北京医药科技有限公司',
+    invoiceAmount: 200000,
+    remainAmount: 200000,
+    contractNo: 'BL2024001',
+    status: 'normal',
+    issueDate: '2024-04-10',
+  },
+  {
+    id: 'inv-002',
+    invoiceNo: 'FP2024040002',
+    sellerId: 'sel-001',
+    sellerName: '北京医药科技有限公司',
+    invoiceAmount: 300000,
+    remainAmount: 300000,
+    contractNo: 'BL2024001',
+    status: 'normal',
+    issueDate: '2024-04-15',
+  },
+  {
+    id: 'inv-003',
+    invoiceNo: 'FP2024040003',
+    sellerId: 'sel-002',
+    sellerName: '上海医疗器械有限公司',
+    invoiceAmount: 350000,
+    remainAmount: 350000,
+    contractNo: 'BL2024002',
+    status: 'normal',
+    issueDate: '2024-04-12',
+  },
+  {
+    id: 'inv-004',
+    invoiceNo: 'FP2024040004',
+    sellerId: 'sel-003',
+    sellerName: '广州健康产业集团',
+    invoiceAmount: 450000,
+    remainAmount: 450000,
+    contractNo: 'BL2024003',
+    status: 'normal',
+    issueDate: '2024-04-08',
+  },
+  {
+    id: 'inv-005',
+    invoiceNo: 'FP2024040005',
+    sellerId: 'sel-003',
+    sellerName: '广州健康产业集团',
+    invoiceAmount: 350000,
+    remainAmount: 350000,
+    contractNo: 'BL2024003',
+    status: 'normal',
+    issueDate: '2024-04-18',
+  },
+  {
+    id: 'inv-006',
+    invoiceNo: 'FP2024040006',
+    sellerId: 'sel-004',
+    sellerName: '深圳生物科技有限公司',
+    invoiceAmount: 220000,
+    remainAmount: 220000,
+    contractNo: 'BL2024004',
+    status: 'disputed',
+    issueDate: '2024-04-20',
+  },
+];
+
+export const sampleSellers: SellerAccount[] = [
+  {
+    id: 'sel-001',
+    sellerName: '北京医药科技有限公司',
+    accountNo: '6222020000000000001',
+    bankName: '中国工商银行北京分行',
+  },
+  {
+    id: 'sel-002',
+    sellerName: '上海医疗器械有限公司',
+    accountNo: '6222020000000000002',
+    bankName: '中国建设银行上海分行',
+  },
+  {
+    id: 'sel-003',
+    sellerName: '广州健康产业集团',
+    accountNo: '6222020000000000003',
+    bankName: '中国银行广州分行',
+  },
+  {
+    id: 'sel-004',
+    sellerName: '深圳生物科技有限公司',
+    accountNo: '6222020000000000004',
+    bankName: '招商银行深圳分行',
+  },
+];
+
+export const sampleContracts: FactoringContract[] = [
+  {
+    id: 'con-001',
+    contractNo: 'BL2024001',
+    sellerId: 'sel-001',
+    factoringRate: 0.01,
+    startDate: '2024-01-01',
+    endDate: '2024-12-31',
+  },
+  {
+    id: 'con-002',
+    contractNo: 'BL2024002',
+    sellerId: 'sel-002',
+    factoringRate: 0.012,
+    startDate: '2024-01-01',
+    endDate: '2024-12-31',
+  },
+  {
+    id: 'con-003',
+    contractNo: 'BL2024003',
+    sellerId: 'sel-003',
+    factoringRate: 0.008,
+    startDate: '2024-01-01',
+    endDate: '2024-12-31',
+  },
+  {
+    id: 'con-004',
+    contractNo: 'BL2024004',
+    sellerId: 'sel-004',
+    factoringRate: 0.015,
+    startDate: '2024-01-01',
+    endDate: '2024-12-31',
+  },
+];
+
+export const sampleFees: FeeConfig[] = [
+  {
+    id: 'fee-001',
+    name: '保理手续费',
+    rate: 0.01,
+    type: 'deduct_inner',
+  },
+];
