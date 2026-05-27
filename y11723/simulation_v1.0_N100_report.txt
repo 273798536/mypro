@@ -1,0 +1,105 @@
+================================================================================
+电磁感应模拟实验报告
+================================================================================
+生成时间: 2026-05-27 16:39:34
+生成位置: /Users/mac/pro/solo/workspaces/y11723/report_exporter.py:20 (函数: export_text_report)
+
+--------------------------------------------------------------------------------
+一、实验参数
+--------------------------------------------------------------------------------
+  磁铁速度 (v): 1.0 m/s
+  线圈匝数 (N): 100 匝
+  磁场强度 (B): 0.5 T
+  时间步长 (Δt): 0.01 s
+  总时间 (T): 2.0 s
+  线圈半径: 0.05 m
+  磁铁长度: 0.1 m
+
+--------------------------------------------------------------------------------
+二、参数验证结果
+--------------------------------------------------------------------------------
+  验证状态: ✓ 通过
+
+  警告信息:
+    1. [WARNING] validate_time_step (L110): 时间步长相对于磁铁速度过粗: Δt=0.01 s，推荐值≈0.002000 s。这可能导致无法准确捕捉电流峰值。
+
+--------------------------------------------------------------------------------
+三、物理原理
+--------------------------------------------------------------------------------
+  法拉第电磁感应定律:
+    ε = -N · dΦ/dt
+    其中 ε 为感应电动势，N 为线圈匝数，Φ 为磁通量
+
+  磁通量计算:
+    Φ = ∫ B·dA
+    其中 B 为磁感应强度，dA 为面积元
+
+  感应电流:
+    I = ε / R
+    其中 R 为线圈电阻（本模拟中假设 R = 10 Ω）
+
+--------------------------------------------------------------------------------
+四、实验结果分析
+--------------------------------------------------------------------------------
+  最大磁通量: |Φ|_max = 3.170057 Wb
+    发生时间: t = 0.0201 s
+
+  最大感应电动势: |ε|_max = 49.904247 V
+    发生时间: t = 0.1005 s
+
+  最大感应电流: |I|_max = 4.990425 A
+    发生时间: t = 0.1005 s
+
+  电流方向变化分析:
+    检测到 1 次电流方向变化
+      第1次: t ≈ 0.0201 s 附近
+
+--------------------------------------------------------------------------------
+五、计算追踪记录（前20条）
+--------------------------------------------------------------------------------
+  1. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.500000
+     说明: 磁场计算: x=-0.0500, t=0.0000, 磁铁中心=-0.0500
+  2. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.489899
+     说明: 磁场计算: x=-0.0490, t=0.0000, 磁铁中心=-0.0500
+  3. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.479798
+     说明: 磁场计算: x=-0.0480, t=0.0000, 磁铁中心=-0.0500
+  4. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.469697
+     说明: 磁场计算: x=-0.0470, t=0.0000, 磁铁中心=-0.0500
+  5. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.459596
+     说明: 磁场计算: x=-0.0460, t=0.0000, 磁铁中心=-0.0500
+  6. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.449495
+     说明: 磁场计算: x=-0.0449, t=0.0000, 磁铁中心=-0.0500
+  7. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.439394
+     说明: 磁场计算: x=-0.0439, t=0.0000, 磁铁中心=-0.0500
+  8. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.429293
+     说明: 磁场计算: x=-0.0429, t=0.0000, 磁铁中心=-0.0500
+  9. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.419192
+     说明: 磁场计算: x=-0.0419, t=0.0000, 磁铁中心=-0.0500
+  10. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.409091
+     说明: 磁场计算: x=-0.0409, t=0.0000, 磁铁中心=-0.0500
+  11. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.398990
+     说明: 磁场计算: x=-0.0399, t=0.0000, 磁铁中心=-0.0500
+  12. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.388889
+     说明: 磁场计算: x=-0.0389, t=0.0000, 磁铁中心=-0.0500
+  13. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.378788
+     说明: 磁场计算: x=-0.0379, t=0.0000, 磁铁中心=-0.0500
+  14. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.368687
+     说明: 磁场计算: x=-0.0369, t=0.0000, 磁铁中心=-0.0500
+  15. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.358586
+     说明: 磁场计算: x=-0.0359, t=0.0000, 磁铁中心=-0.0500
+  16. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.348485
+     说明: 磁场计算: x=-0.0348, t=0.0000, 磁铁中心=-0.0500
+  17. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.338384
+     说明: 磁场计算: x=-0.0338, t=0.0000, 磁铁中心=-0.0500
+  18. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.328283
+     说明: 磁场计算: x=-0.0328, t=0.0000, 磁铁中心=-0.0500
+  19. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.318182
+     说明: 磁场计算: x=-0.0318, t=0.0000, 磁铁中心=-0.0500
+  20. [/Users/mac/pro/solo/workspaces/y11723/physics_core.py:67] magnetic_field_at_position: B(x,t) = -0.308081
+     说明: 磁场计算: x=-0.0308, t=0.0000, 磁铁中心=-0.0500
+
+  ... 省略 60981 条记录
+
+================================================================================
+报告结束
+================================================================================
