@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #E2E8F0;
+  background-color: #0A1628;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1280px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0A1628 0%, #0F1F38 50%, #0A1628 100%);
+}
+
+@layer components {
+  .industrial-panel {
+    @apply bg-industrial-panel border border-industrial-border rounded-lg shadow-lg;
+    background: linear-gradient(180deg, rgba(15, 31, 56, 0.9) 0%, rgba(10, 22, 40, 0.95) 100%);
+    backdrop-filter: blur(10px);
+  }
+
+  .industrial-btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 border;
+    @apply hover:shadow-lg active:scale-95;
+  }
+
+  .industrial-btn-primary {
+    @apply industrial-btn bg-industrial-blue border-industrial-blue text-white;
+    @apply hover:bg-blue-600;
+  }
+
+  .industrial-btn-danger {
+    @apply industrial-btn bg-industrial-red border-industrial-red text-white;
+    @apply hover:bg-red-600;
+  }
+
+  .industrial-btn-secondary {
+    @apply industrial-btn bg-transparent border-industrial-border text-industrial-text;
+    @apply hover:bg-industrial-border/30;
+  }
+
+  .status-indicator {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .status-online {
+    @apply status-indicator bg-industrial-green animate-pulse;
+  }
+
+  .status-warning {
+    @apply status-indicator bg-industrial-orange animate-pulse;
+  }
+
+  .status-offline {
+    @apply status-indicator bg-industrial-red animate-pulse;
+  }
+
+  .data-value {
+    @apply font-mono font-semibold text-lg;
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+  }
+
+  .glow-red {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A1628;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E3A5F;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563EB;
+}
