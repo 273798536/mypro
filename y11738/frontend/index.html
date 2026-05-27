@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加油卡企业分摊分析工具</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/echarts/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .app-container { min-height: 100vh; background: #f0f2f5; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .main-content { padding: 20px; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #303133; display: flex; align-items: center; justify-content: space-between; }
+        .stat-card { text-align: center; padding: 20px; border-radius: 8px; }
+        .stat-value { font-size: 28px; font-weight: bold; margin: 8px 0; }
+        .stat-label { color: #909399; font-size: 14px; }
+        .anomaly-item { padding: 12px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid; }
+        .anomaly-error { background: #fef0f0; border-color: #f56c6c; }
+        .anomaly-warning { background: #fdf6ec; border-color: #e6a23c; }
+        .anomaly-info { background: #ecf5ff; border-color: #409eff; }
+        .chart-container { height: 300px; width: 100%; }
+        .action-bar { margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .filter-bar { margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .audit-log-item { padding: 12px; border-bottom: 1px solid #ebeef5; }
+        .audit-log-item:last-child { border-bottom: none; }
+        .log-time { color: #909399; font-size: 12px; }
+        .log-content { margin-top: 4px; }
+        .el-table .anomaly-row { background: #fef0f0 !important; }
+        .el-table .pending-row { background: #fdf6ec !important; }
+        .upload-area { border: 2px dashed #dcdfe6; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .upload-area:hover { border-color: #409eff; background: #ecf5ff; }
+        .upload-icon { font-size: 48px; color: #c0c4cc; margin-bottom: 12px; }
+        .conflict-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .conflict-error { background: #f56c6c; }
+        .conflict-warning { background: #e6a23c; }
+        .conflict-info { background: #909399; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="app-container">
+        <div class="header">
+            <h1>⛽ 加油卡企业分摊分析工具</h1>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <el-select v-model="currentPeriod" placeholder="选择会计期间" style="width: 150px;">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option v-for="p in periods" :key="p" :label="p" :value="p"></el-option>
+                </el-select>
+                <span style="opacity: 0.8;">{{ currentUser }}</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <el-tabs v-model="activeTab">
+                <el-tab-pane label="📊 数据概览" name="dashboard">
+                    <dashboard-view :period="currentPeriod"></dashboard-view>
+                </el-tab-pane>
+                <el-tab-pane label="📋 加油流水" name="records">
+                    <records-view :period="currentPeriod" @refresh="loadPeriods"></records-view>
+                </el-tab-pane>
+                <el-tab-pane label="⚠️ 异常处理" name="anomalies">
+                    <anomalies-view :period="currentPeriod"></anomalies-view>
+                </el-tab-pane>
+                <el-tab-pane label="💰 项目分摊" name="allocation">
+                    <allocation-view :period="currentPeriod"></allocation-view>
+                </el-tab-pane>
+                <el-tab-pane label="✅ 司机确认" name="confirmation">
+                    <confirmation-view :period="currentPeriod"></confirmation-view>
+                </el-tab-pane>
+                <el-tab-pane label="📁 基础数据" name="masterdata">
+                    <masterdata-view></masterdata-view>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+    </div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:5001/api';
+
+const app = Vue.createApp({
+    data() {
+        return {
+            activeTab: 'dashboard',
+            currentPeriod: '',
+            currentUser: '管理员',
+            periods: []
+        }
+    },
+    mounted() {
+        this.loadPeriods();
+    },
+    methods: {
+        loadPeriods() {
+            const now = new Date();
+            for (let i = 0; i < 12; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const period = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (!this.periods.includes(period)) {
+                    this.periods.push(period);
+                }
+            }
+        }
+    }
+});
+
+app.component('dashboard-view', {
+    props: ['period'],
+    template: `
+        <div>
+            <el-row :gutter="20">
+                <el-col :span="6">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="stat-label">总记录数</div>
+                        <div class="stat-value">{{ dashboard.overview.total_records }}</div>
+                        <div class="stat-label" style="color: rgba(255,255,255,0.8);">条</div>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                        <div class="stat-label">总金额</div>
+                        <div class="stat-value">¥{{ formatNumber(dashboard.overview.total_amount) }}</div>
+                        <div class="stat-label" style="color: rgba(255,255,255,0.8);">元</div>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #e65100;">
+                        <div class="stat-label">异常记录</div>
+                        <div class="stat-value" style="color: #e65100;">{{ dashboard.overview.anomaly_count }}</div>
+                        <div class="stat-label" style="color: rgba(230,81,0,0.7);">错误:{{ dashboard.overview.error_count }} 警告:{{ dashboard.overview.warning_count }}</div>
+                    </div>
+                </el-col>
+                <el-col :span="6">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #00695c;">
+                        <div class="stat-label">处理进度</div>
+                        <div class="stat-value" style="color: #00695c;">{{ getProgress() }}%</div>
+                        <div class="stat-label" style="color: rgba(0,105,92,0.7);">已分摊:{{ dashboard.overview.allocated_count }} 待处理:{{ dashboard.overview.pending_count }}</div>
+                    </div>
+                </el-col>
+            </el-row>
+
+            <el-row :gutter="20" style="margin-top: 20px;">
+                <el-col :span="12">
+                    <div class="card">
+                        <div class="card-title">📈 每日消费趋势</div>
+                        <div ref="dailyChart" class="chart-container"></div>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="card">
+                        <div class="card-title">⛽ 油品消费分布</div>
+                        <div ref="fuelChart" class="chart-container"></div>
+                    </div>
+                </el-col>
+            </el-row>
+
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-title">
+                    <span>🏢 项目分摊汇总</span>
+                    <el-button type="primary" size="small" @click="exportProjectSummary">导出Excel</el-button>
+                </div>
+                <el-table :data="dashboard.project_summary" style="width: 100%;" border>
+                    <el-table-column prop="project_code" label="项目编码" width="120"></el-table-column>
+                    <el-table-column prop="project_name" label="项目名称"></el-table-column>
+                    <el-table-column prop="record_count" label="记录数" width="100" align="right"></el-table-column>
+                    <el-table-column prop="total_amount" label="分摊金额(元)" width="150" align="right">
+                        <template #default="{ row }">
+                            <span style="font-weight: 600;">{{ formatNumber(row.total_amount) }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="占比" width="150">
+                        <template #default="{ row }">
+                            <el-progress :percentage="getPercentage(row.total_amount)" :stroke-width="12"></el-progress>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+    `,
+    data() {
+        return {
+            dashboard: {
+                overview: { total_records: 0, total_amount: 0, anomaly_count: 0, error_count: 0, warning_count: 0, allocated_count: 0, confirmed_count: 0, pending_count: 0 },
+                project_summary: [],
+                fuel_type_stats: [],
+                daily_stats: []
+            }
+        }
+    },
+    mounted() { this.loadData(); },
+    watch: { period() { this.loadData(); } },
+    methods: {
+        async loadData() {
+            try {
+                const params = this.period ? { period: this.period } : {};
+                const res = await axios.get(`${API_BASE}/dashboard`, { params });
+                this.dashboard = res.data;
+                this.$nextTick(() => {
+                    this.renderDailyChart();
+                    this.renderFuelChart();
+                });
+            } catch (e) { console.error('加载概览数据失败', e); }
+        },
+        renderDailyChart() {
+            if (!this.$refs.dailyChart) return;
+            const chart = echarts.init(this.$refs.dailyChart);
+            chart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: this.dashboard.daily_stats.map(d => d.date) },
+                yAxis: { type: 'value', name: '金额(元)' },
+                series: [{
+                    data: this.dashboard.daily_stats.map(d => d.amount),
+                    type: 'line', smooth: true,
+                    areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(102, 126, 234, 0.5)' }, { offset: 1, color: 'rgba(102, 126, 234, 0.05)' }]) },
+                    lineStyle: { color: '#667eea', width: 3 },
+                    itemStyle: { color: '#667eea' }
+                }]
+            });
+        },
+        renderFuelChart() {
+            if (!this.$refs.fuelChart) return;
+            const chart = echarts.init(this.$refs.fuelChart);
+            chart.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: ¥{c} ({d}%)' },
+                legend: { bottom: 10 },
+                series: [{
+                    type: 'pie', radius: ['40%', '70%'],
+                    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: true, formatter: '{b}\n{d}%' },
+                    data: this.dashboard.fuel_type_stats.map(f => ({ name: f.fuel_type, value: f.amount }))
+                }]
+            });
+        },
+        formatNumber(n) { return Number(n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
+        getProgress() {
+            const total = this.dashboard.overview.total_records;
+            if (total === 0) return 0;
+            return Math.round((this.dashboard.overview.allocated_count + this.dashboard.overview.confirmed_count) / total * 100);
+        },
+        getPercentage(amount) {
+            const total = this.dashboard.project_summary.reduce((sum, p) => sum + p.total_amount, 0);
+            if (total === 0) return 0;
+            return Math.round(amount / total * 100);
+        },
+        exportProjectSummary() {
+            const params = this.period ? { period: this.period } : {};
+            window.open(`${API_BASE}/export/project-summary?${new URLSearchParams(params)}`);
+        }
+    }
+});
+
+app.component('records-view', {
+    props: ['period'],
+    emits: ['refresh'],
+    template: `
+        <div>
+            <div class="card">
+                <div class="card-title"><span>📤 导入加油流水</span></div>
+                <div class="upload-area" @click="$refs.fileInput.click()">
+                    <input ref="fileInput" type="file" accept=".xlsx,.xls,.csv" style="display: none;" @change="handleFileUpload">
+                    <div class="upload-icon">📁</div>
+                    <div style="font-size: 16px; color: #606266; margin-bottom: 8px;">点击或拖拽文件到此处上传</div>
+                    <div style="font-size: 12px; color: #909399;">支持 Excel (.xlsx, .xls) 和 CSV 格式</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>📋 加油流水记录</span>
+                    <div>
+                        <el-button type="success" size="small" @click="exportRecords">导出Excel</el-button>
+                        <el-button type="primary" size="small" @click="autoAllocate">一键自动分摊</el-button>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <el-input v-model="searchText" placeholder="搜索车牌/司机/卡号" style="width: 200px;" clearable @input="loadRecords(1)"></el-input>
+                    <el-select v-model="filterStatus" placeholder="状态筛选" style="width: 150px;" clearable @change="loadRecords(1)">
+                        <el-option label="待处理" value="pending"></el-option>
+                        <el-option label="异常" value="anomaly"></el-option>
+                        <el-option label="已分摊" value="allocated"></el-option>
+                        <el-option label="已确认" value="confirmed"></el-option>
+                    </el-select>
+                    <el-switch v-model="filterAnomaly" active-text="仅显示异常" @change="loadRecords(1)"></el-switch>
+                </div>
+
+                <el-table :data="records" style="width: 100%;" border @row-click="showDetail" :row-class-name="tableRowClassName">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" label="ID" width="60"></el-table-column>
+                    <el-table-column prop="transaction_date" label="交易时间" width="160"></el-table-column>
+                    <el-table-column prop="plate_number" label="车牌号" width="120">
+                        <template #default="{ row }"><span :style="{ color: hasPlateAnomaly(row) ? '#f56c6c' : '' }">{{ row.plate_number || '-' }}</span></template>
+                    </el-table-column>
+                    <el-table-column prop="driver_name" label="司机" width="100"></el-table-column>
+                    <el-table-column prop="fuel_type" label="油品" width="80"></el-table-column>
+                    <el-table-column prop="quantity" label="数量(升)" width="100" align="right"></el-table-column>
+                    <el-table-column prop="total_amount" label="金额(元)" width="110" align="right">
+                        <template #default="{ row }"><span style="font-weight: 600;">{{ row.total_amount.toFixed(2) }}</span></template>
+                    </el-table-column>
+                    <el-table-column prop="project_name" label="项目" width="150">
+                        <template #default="{ row }">
+                            <el-tag v-if="row.project_name" type="success" size="small">{{ row.project_name }}</el-tag>
+                            <el-tag v-else type="info" size="small">未分摊</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="状态" width="100">
+                        <template #default="{ row }"><el-tag :type="getStatusType(row.status)" size="small">{{ getStatusText(row.status) }}</el-tag></template>
+                    </el-table-column>
+                    <el-table-column label="异常" width="80" align="center">
+                        <template #default="{ row }">
+                            <el-badge v-if="row.anomaly_count > 0" :value="row.anomaly_count" :type="row.anomaly_types.includes('plate_unauthorized') || row.anomaly_types.includes('fuel_unauthorized') ? 'danger' : 'warning'"></el-badge>
+                            <span v-else>-</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="150" fixed="right">
+                        <template #default="{ row }">
+                            <el-button size="small" type="primary" @click.stop="editRecord(row)">编辑</el-button>
+                            <el-button size="small" @click.stop="showDetail(row)">详情</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <el-pagination style="margin-top: 16px; text-align: right;"
+                    @size-change="handleSizeChange" @current-change="loadRecords"
+                    :current-page="pagination.page" :page-sizes="[20, 50, 100]" :page-size="pagination.per_page"
+                    layout="total, sizes, prev, pager, next, jumper" :total="pagination.total">
+                </el-pagination>
+            </div>
+
+            <el-dialog v-model="detailVisible" title="记录详情" width="900px">
+                <el-descriptions v-if="currentRecord" :column="2" border>
+                    <el-descriptions-item label="交易时间">{{ currentRecord.transaction_date }}</el-descriptions-item>
+                    <el-descriptions-item label="卡号">{{ currentRecord.card_number || '-' }}</el-descriptions-item>
+                    <el-descriptions-item label="车牌号">{{ currentRecord.plate_number || '-' }}</el-descriptions-item>
+                    <el-descriptions-item label="司机">{{ currentRecord.driver_name || '-' }}</el-descriptions-item>
+                    <el-descriptions-item label="油品">{{ currentRecord.fuel_type || '-' }}</el-descriptions-item>
+                    <el-descriptions-item label="单价">{{ currentRecord.unit_price }} 元/升</el-descriptions-item>
+                    <el-descriptions-item label="数量">{{ currentRecord.quantity }} 升</el-descriptions-item>
+                    <el-descriptions-item label="金额"><span style="font-weight: 600; color: #f56c6c;">{{ currentRecord.total_amount.toFixed(2) }} 元</span></el-descriptions-item>
+                    <el-descriptions-item label="加油站">{{ currentRecord.station_name || '-' }}</el-descriptions-item>
+                    <el-descriptions-item label="项目">{{ currentRecord.project_name || '未分摊' }}</el-descriptions-item>
+                    <el-descriptions-item label="备注" :span="2">{{ currentRecord.remark || '-' }}</el-descriptions-item>
+                </el-descriptions>
+
+                <div style="margin-top: 20px;" v-if="currentRecord && currentRecord.anomalies && currentRecord.anomalies.length > 0">
+                    <h4 style="margin-bottom: 12px; color: #f56c6c;">⚠️ 异常信息</h4>
+                    <div v-for="a in currentRecord.anomalies" :key="a.id" :class="['anomaly-item', 'anomaly-' + a.severity]">
+                        <div style="font-weight: 600; margin-bottom: 4px;">
+                            <span class="conflict-indicator" :class="'conflict-' + a.severity"></span>
+                            {{ getAnomalyTypeText(a.type) }}
+                            <el-tag size="small" style="margin-left: 8px;" :type="a.severity === 'error' ? 'danger' : a.severity === 'warning' ? 'warning' : 'info'">
+                                {{ a.severity === 'error' ? '错误' : a.severity === 'warning' ? '警告' : '提示' }}
+                            </el-tag>
+                            <el-tag v-if="a.is_resolved" size="small" type="success" style="margin-left: 4px;">已处理</el-tag>
+                        </div>
+                        <div style="color: #606266;">{{ a.description }}</div>
+                        <div v-if="a.suggestion" style="color: #909399; font-size: 12px; margin-top: 4px;">💡 {{ a.suggestion }}</div>
+                        <el-button v-if="!a.is_resolved" size="small" type="success" style="margin-top: 8px;" @click="resolveAnomaly(a)">标记已处理</el-button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;" v-if="currentRecord">
+                    <h4 style="margin-bottom: 12px;">📝 修改痕迹</h4>
+                    <div v-if="currentRecord.audit_logs && currentRecord.audit_logs.length > 0">
+                        <div v-for="log in currentRecord.audit_logs" :key="log.id" class="audit-log-item">
+                            <div class="log-time">{{ log.created_at }} · {{ log.operator }} ({{ log.operator_role }})</div>
+                            <div class="log-content">{{ getActionText(log.action) }}<span v-if="log.field_name">「{{ log.field_name }}」</span><span v-if="log.old_value">从 "{{ log.old_value }}"</span><span v-if="log.new_value"> 改为 "{{ log.new_value }}"</span><span v-if="log.remark"> - {{ log.remark }}</span></div>
+                        </div>
+                    </div>
+                    <div v-else style="color: #909399;">暂无修改记录</div>
+                </div>
+            </el-dialog>
+
+            <el-dialog v-model="editVisible" title="编辑记录" width="600px">
+                <el-form v-if="editForm" :model="editForm" label-width="100px">
+                    <el-form-item label="车牌号"><el-input v-model="editForm.plate_number"></el-input></el-form-item>
+                    <el-form-item label="司机"><el-input v-model="editForm.driver_name"></el-input></el-form-item>
+                    <el-form-item label="油品"><el-input v-model="editForm.fuel_type"></el-input></el-form-item>
+                    <el-form-item label="数量(升)"><el-input-number v-model="editForm.quantity" :precision="2" :min="0" style="width: 100%;"></el-input-number></el-form-item>
+                    <el-form-item label="单价(元)"><el-input-number v-model="editForm.unit_price" :precision="2" :min="0" style="width: 100%;"></el-input-number></el-form-item>
+                    <el-form-item label="金额(元)"><el-input-number v-model="editForm.total_amount" :precision="2" :min="0" style="width: 100%;"></el-input-number></el-form-item>
+                    <el-form-item label="项目">
+                        <el-select v-model="editForm.project_id" style="width: 100%;" filterable>
+                            <el-option v-for="p in projects" :key="p.id" :label="p.project_name" :value="p.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="备注"><el-input v-model="editForm.remark" type="textarea" :rows="2"></el-input></el-form-item>
+                </el-form>
+                <template #footer>
+                    <el-button @click="editVisible = false">取消</el-button>
+                    <el-button type="primary" @click="saveEdit">保存</el-button>
+                </template>
+            </el-dialog>
+        </div>
+    `,
+    data() {
+        return {
+            records: [], pagination: { page: 1, per_page: 50, total: 0 }, searchText: '', filterStatus: '', filterAnomaly: false,
+            detailVisible: false, editVisible: false, currentRecord: null, editForm: null, projects: []
+        }
+    },
+    mounted() { this.loadRecords(1); this.loadProjects(); },
+    watch: { period() { this.loadRecords(1); } },
+    methods: {
+        async loadRecords(page) {
+            try {
+                const params = { page, per_page: this.pagination.per_page, period: this.period || undefined, status: this.filterStatus || undefined, has_anomaly: this.filterAnomaly ? 'true' : undefined, search: this.searchText || undefined };
+                const res = await axios.get(`${API_BASE}/fuel-records`, { params });
+                this.records = res.data.records;
+                this.pagination.total = res.data.total;
+                this.pagination.page = page;
+            } catch (e) { ElementPlus.ElMessage.error('加载记录失败'); }
+        },
+        async loadProjects() {
+            try { const res = await axios.get(`${API_BASE}/projects`); this.projects = res.data; } catch (e) {}
+        },
+        async handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            const loading = ElementPlus.ElLoading.service({ text: '正在导入数据...' });
+            try {
+                const res = await axios.post(`${API_BASE}/upload`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+                ElementPlus.ElMessage.success(res.data.message);
+                this.loadRecords(1);
+                this.$emit('refresh');
+            } catch (e) { ElementPlus.ElMessage.error(e.response?.data?.error || '导入失败'); }
+            finally { loading.close(); event.target.value = ''; }
+        },
+        async showDetail(row) {
+            try { const res = await axios.get(`${API_BASE}/fuel-records/${row.id}`); this.currentRecord = res.data; this.detailVisible = true; } catch (e) {}
+        },
+        editRecord(row) { this.editForm = { ...row }; this.editVisible = true; },
+        async saveEdit() {
+            try {
+                await axios.put(`${API_BASE}/fuel-records/${this.editForm.id}`, { ...this.editForm, operator: '管理员' });
+                ElementPlus.ElMessage.success('保存成功');
+                this.editVisible = false;
+                this.loadRecords(this.pagination.page);
+            } catch (e) { ElementPlus.ElMessage.error('保存失败'); }
+        },
+        async resolveAnomaly(anomaly) {
+            try {
+                await axios.post(`${API_BASE}/anomalies/resolve/${anomaly.id}`, { operator: '管理员', note: '人工确认处理' });
+                ElementPlus.ElMessage.success('已标记为已处理');
+                this.showDetail(this.currentRecord);
+                this.loadRecords(this.pagination.page);
+            } catch (e) { ElementPlus.ElMessage.error('操作失败'); }
+        },
+        async autoAllocate() {
+            try {
+                await ElementPlus.ElMessageBox.confirm('确定要对所有未分摊记录执行自动分摊吗？', '确认', { type: 'warning' });
+                const res = await axios.post(`${API_BASE}/allocate/auto`, { operator: '管理员' });
+                ElementPlus.ElMessage.success(`成功分摊 ${res.data.success.length} 条记录`);
+                this.loadRecords(this.pagination.page);
+            } catch (e) { if (e !== 'cancel') ElementPlus.ElMessage.error('分摊失败'); }
+        },
+        exportRecords() {
+            const params = this.period ? { period: this.period } : {};
+            window.open(`${API_BASE}/export/fuel-records?${new URLSearchParams(params)}`);
+        },
+        handleSizeChange(val) { this.pagination.per_page = val; this.loadRecords(1); },
+        tableRowClassName({ row }) { if (row.anomaly_count > 0) return 'anomaly-row'; if (row.status === 'pending') return 'pending-row'; return ''; },
+        hasPlateAnomaly(row) { return row.anomaly_types && (row.anomaly_types.includes('plate_unauthorized') || row.anomaly_types.includes('plate_missing')); },
+        getStatusType(status) { const map = { pending: 'info', anomaly: 'danger', allocated: 'primary', confirmed: 'success' }; return map[status] || 'info'; },
+        getStatusText(status) { const map = { pending: '待处理', anomaly: '异常', allocated: '已分摊', confirmed: '已确认' }; return map[status] || status; },
+        getAnomalyTypeText(type) { const map = { plate_missing: '车牌缺失', plate_unauthorized: '车牌未授权', fuel_missing: '油品缺失', fuel_unauthorized: '油品未授权', fuel_vehicle_mismatch: '车辆油品不匹配', project_inactive: '项目未激活', project_before_start: '早于项目开始', project_after_end: '晚于项目结束', quantity_zero: '数量为0', amount_zero: '金额为0', amount_mismatch: '金额不匹配', quantity_abnormal: '数量异常', price_abnormal: '单价异常', driver_missing: '司机缺失', driver_mismatch: '司机不匹配' }; return map[type] || type; },
+        getActionText(action) { const map = { import: '导入', edit: '编辑', anomaly_detected: '检测到异常', anomaly_resolved: '异常处理', auto_allocate: '自动分摊', manual_allocate: '手动分摊', driver_confirm: '司机确认' }; return map[action] || action; }
+    }
+});
+
+app.component('anomalies-view', {
+    props: ['period'],
+    template: `
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <span>⚠️ 异常记录处理</span>
+                    <el-button type="success" size="small" @click="exportAnomalies">导出异常报告</el-button>
+                </div>
+                <el-row :gutter="20" style="margin-bottom: 20px;">
+                    <el-col :span="8"><div class="stat-card" style="background: #fef0f0; border: 1px solid #fbc4c4;"><div style="font-size: 14px; color: #f56c6c;">错误</div><div style="font-size: 32px; font-weight: bold; color: #f56c6c;">{{ errorCount }}</div></div></el-col>
+                    <el-col :span="8"><div class="stat-card" style="background: #fdf6ec; border: 1px solid #f5dab1;"><div style="font-size: 14px; color: #e6a23c;">警告</div><div style="font-size: 32px; font-weight: bold; color: #e6a23c;">{{ warningCount }}</div></div></el-col>
+                    <el-col :span="8"><div class="stat-card" style="background: #ecf5ff; border: 1px solid #b3d8ff;"><div style="font-size: 14px; color: #409eff;">提示</div><div style="font-size: 32px; font-weight: bold; color: #409eff;">{{ infoCount }}</div></div></el-col>
+                </el-row>
+                <el-table :data="anomalies" style="width: 100%;" border>
+                    <el-table-column prop="id" label="异常ID" width="80"></el-table-column>
+                    <el-table-column label="交易时间" width="160"><template #default="{ row }">{{ row.record?.transaction_date || '-' }}</template></el-table-column>
+                    <el-table-column label="车牌号" width="120"><template #default="{ row }">{{ row.record?.plate_number || '-' }}</template></el-table-column>
+                    <el-table-column label="司机" width="100"><template #default="{ row }">{{ row.record?.driver_name || '-' }}</template></el-table-column>
+                    <el-table-column label="金额" width="100" align="right"><template #default="{ row }">{{ row.record?.total_amount?.toFixed(2) || '-' }}</template></el-table-column>
+                    <el-table-column prop="anomaly_type" label="异常类型" width="140"><template #default="{ row }">{{ getAnomalyTypeText(row.anomaly_type) }}</template></el-table-column>
+                    <el-table-column prop="severity" label="严重程度" width="100">
+                        <template #default="{ row }"><el-tag :type="row.severity === 'error' ? 'danger' : row.severity === 'warning' ? 'warning' : 'info'" size="small">{{ row.severity === 'error' ? '错误' : row.severity === 'warning' ? '警告' : '提示' }}</el-tag></template>
+                    </el-table-column>
+                    <el-table-column prop="description" label="异常描述" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="处理状态" width="100">
+                        <template #default="{ row }"><el-tag :type="row.is_resolved ? 'success' : 'warning'" size="small">{{ row.is_resolved ? '已处理' : '待处理' }}</el-tag></template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="150" fixed="right">
+                        <template #default="{ row }">
+                            <el-button v-if="!row.is_resolved" size="small" type="success" @click="resolveAnomaly(row)">标记已处理</el-button>
+                            <el-button size="small" @click="viewRecord(row)">查看记录</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+    `,
+    data() { return { anomalies: [], errorCount: 0, warningCount: 0, infoCount: 0 }; },
+    mounted() { this.loadAnomalies(); },
+    watch: { period() { this.loadAnomalies(); } },
+    methods: {
+        async loadAnomalies() {
+            try {
+                const params = { has_anomaly: 'true', per_page: 1000, period: this.period || undefined };
+                const res = await axios.get(`${API_BASE}/fuel-records`, { params });
+                this.anomalies = []; this.errorCount = 0; this.warningCount = 0; this.infoCount = 0;
+                for (const record of res.data.records) {
+                    const detail = await axios.get(`${API_BASE}/fuel-records/${record.id}`);
+                    for (const anomaly of detail.data.anomalies) {
+                        if (!anomaly.is_resolved) {
+                            this.anomalies.push({ ...anomaly, record: detail.data });
+                            if (anomaly.severity === 'error') this.errorCount++;
+                            else if (anomaly.severity === 'warning') this.warningCount++;
+                            else this.infoCount++;
+                        }
+                    }
+                }
+            } catch (e) { console.error('加载异常失败', e); }
+        },
+        async resolveAnomaly(anomaly) {
+            try {
+                await axios.post(`${API_BASE}/anomalies/resolve/${anomaly.id}`, { operator: '管理员', note: '人工确认处理' });
+                ElementPlus.ElMessage.success('已标记为已处理');
+                this.loadAnomalies();
+            } catch (e) { ElementPlus.ElMessage.error('操作失败'); }
+        },
+        viewRecord(anomaly) { ElementPlus.ElMessage.info(`查看记录 #${anomaly.fuel_record_id}`); },
+        exportAnomalies() { const params = this.period ? { period: this.period } : {}; window.open(`${API_BASE}/export/anomaly-report?${new URLSearchParams(params)}`); },
+        getAnomalyTypeText(type) { const map = { plate_missing: '车牌缺失', plate_unauthorized: '车牌未授权', fuel_missing: '油品缺失', fuel_unauthorized: '油品未授权', fuel_vehicle_mismatch: '车辆油品不匹配', project_inactive: '项目未激活', project_before_start: '早于项目开始', project_after_end: '晚于项目结束', quantity_zero: '数量为0', amount_zero: '金额为0', amount_mismatch: '金额不匹配', quantity_abnormal: '数量异常', price_abnormal: '单价异常', driver_missing: '司机缺失', driver_mismatch: '司机不匹配' }; return map[type] || type; }
+    }
+});
+
+app.component('allocation-view', {
+    props: ['period'],
+    template: `
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <span>💰 项目分摊管理</span>
+                    <div>
+                        <el-button type="success" size="small" @click="exportAllocation">导出分摊报告</el-button>
+                        <el-button type="primary" size="small" @click="autoAllocate">执行自动分摊</el-button>
+                    </div>
+                </div>
+                <el-row :gutter="20" style="margin-bottom: 20px;">
+                    <el-col :span="8"><div class="stat-card" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #00695c;"><div style="font-size: 14px;">已分摊金额</div><div style="font-size: 28px; font-weight: bold;">¥{{ formatNumber(totalAllocated) }}</div></div></el-col>
+                    <el-col :span="8"><div class="stat-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #e65100;"><div style="font-size: 14px;">未分摊金额</div><div style="font-size: 28px; font-weight: bold;">¥{{ formatNumber(totalUnallocated) }}</div></div></el-col>
+                    <el-col :span="8"><div class="stat-card" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); color: #1565c0;"><div style="font-size: 14px;">项目数</div><div style="font-size: 28px; font-weight: bold;">{{ allocationSummary.length }}</div></div></el-col>
+                </el-row>
+                <el-table :data="allocationSummary" style="width: 100%;" border>
+                    <el-table-column prop="project_code" label="项目编码" width="120"></el-table-column>
+                    <el-table-column prop="project_name" label="项目名称"></el-table-column>
+                    <el-table-column prop="record_count" label="记录数" width="100" align="right"></el-table-column>
+                    <el-table-column prop="total_amount" label="分摊金额(元)" width="150" align="right"><template #default="{ row }"><span style="font-weight: 600;">{{ formatNumber(row.total_amount) }}</span></template></el-table-column>
+                    <el-table-column label="占比" width="200"><template #default="{ row }"><el-progress :percentage="getPercentage(row.total_amount)" :stroke-width="12"></el-progress></template></el-table-column>
+                </el-table>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <span>📋 未分摊记录</span>
+                    <el-button type="primary" size="small" @click="batchAllocate">批量分摊选中</el-button>
+                </div>
+                <el-table :data="unallocatedRecords" style="width: 100%;" border @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
+                    <el-table-column prop="id" label="ID" width="60"></el-table-column>
+                    <el-table-column prop="transaction_date" label="交易时间" width="160"></el-table-column>
+                    <el-table-column prop="plate_number" label="车牌号" width="120"></el-table-column>
+                    <el-table-column prop="driver_name" label="司机" width="100"></el-table-column>
+                    <el-table-column prop="fuel_type" label="油品" width="80"></el-table-column>
+                    <el-table-column prop="total_amount" label="金额(元)" width="110" align="right"><template #default="{ row }">{{ row.total_amount.toFixed(2) }}</template></el-table-column>
+                    <el-table-column label="操作" width="150"><template #default="{ row }"><el-button size="small" type="primary" @click="manualAllocate(row)">手动分摊</el-button></template></el-table-column>
+                </el-table>
+            </div>
+            <el-dialog v-model="allocateDialogVisible" title="手动分摊" width="500px">
+                <el-form :model="allocateForm" label-width="100px">
+                    <el-form-item label="选择项目">
+                        <el-select v-model="allocateForm.project_id" style="width: 100%;" filterable>
+                            <el-option v-for="p in projects" :key="p.id" :label="p.project_code + ' - ' + p.project_name" :value="p.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="分摊金额"><el-input-number v-model="allocateForm.amount" :precision="2" :min="0" style="width: 100%;"></el-input-number></el-form-item>
+                </el-form>
+                <template #footer>
+                    <el-button @click="allocateDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="confirmAllocate">确认分摊</el-button>
+                </template>
+            </el-dialog>
+        </div>
+    `,
+    data() { return { allocationSummary: [], unallocatedRecords: [], selectedRecords: [], projects: [], allocateDialogVisible: false, allocateForm: { record_id: null, project_id: null, amount: 0 }, allocateBatchMode: false }; },
+    computed: { totalAllocated() { return this.allocationSummary.reduce((sum, p) => sum + p.total_amount, 0); }, totalUnallocated() { return this.unallocatedRecords.reduce((sum, r) => sum + r.total_amount, 0); } },
+    mounted() { this.loadData(); this.loadProjects(); },
+    watch: { period() { this.loadData(); } },
+    methods: {
+        async loadData() { await Promise.all([this.loadAllocationSummary(), this.loadUnallocatedRecords()]); },
+        async loadAllocationSummary() { try { const params = this.period ? { period: this.period } : {}; const res = await axios.get(`${API_BASE}/allocation-summary`, { params }); this.allocationSummary = res.data; } catch (e) {} },
+        async loadUnallocatedRecords() { try { const params = { status: 'pending', per_page: 1000, period: this.period || undefined }; const res = await axios.get(`${API_BASE}/fuel-records`, { params }); this.unallocatedRecords = res.data.records; } catch (e) {} },
+        async loadProjects() { try { const res = await axios.get(`${API_BASE}/projects`); this.projects = res.data; } catch (e) {} },
+        async autoAllocate() {
+            try {
+                await ElementPlus.ElMessageBox.confirm('确定要对所有未分摊记录执行自动分摊吗？', '确认', { type: 'warning' });
+                const res = await axios.post(`${API_BASE}/allocate/auto`, { operator: '管理员' });
+                ElementPlus.ElMessage.success(`成功分摊 ${res.data.success.length} 条记录`);
+                this.loadData();
+            } catch (e) { if (e !== 'cancel') ElementPlus.ElMessage.error('分摊失败'); }
+        },
+        manualAllocate(row) { this.allocateBatchMode = false; this.allocateForm = { record_id: row.id, project_id: null, amount: row.total_amount }; this.allocateDialogVisible = true; },
+        batchAllocate() { if (this.selectedRecords.length === 0) { ElementPlus.ElMessage.warning('请先选择要分摊的记录'); return; } this.allocateBatchMode = true; this.allocateForm = { record_ids: this.selectedRecords.map(r => r.id), project_id: null, amount: 0 }; this.allocateDialogVisible = true; },
+        async confirmAllocate() {
+            if (!this.allocateForm.project_id) { ElementPlus.ElMessage.warning('请选择项目'); return; }
+            try {
+                if (this.allocateBatchMode) {
+                    for (const id of this.allocateForm.record_ids) { await axios.post(`${API_BASE}/allocate/manual`, { fuel_record_id: id, project_id: this.allocateForm.project_id, operator: '管理员' }); }
+                    ElementPlus.ElMessage.success(`成功分摊 ${this.allocateForm.record_ids.length} 条记录`);
+                } else {
+                    await axios.post(`${API_BASE}/allocate/manual`, { fuel_record_id: this.allocateForm.record_id, project_id: this.allocateForm.project_id, amount: this.allocateForm.amount, operator: '管理员' });
+                    ElementPlus.ElMessage.success('分摊成功');
+                }
+                this.allocateDialogVisible = false;
+                this.loadData();
+            } catch (e) { ElementPlus.ElMessage.error('分摊失败'); }
+        },
+        exportAllocation() { const params = this.period ? { period: this.period } : {}; window.open(`${API_BASE}/export/allocation-report?${new URLSearchParams(params)}`); },
+        handleSelectionChange(records) { this.selectedRecords = records; },
+        formatNumber(n) { return Number(n || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
+        getPercentage(amount) { const total = this.totalAllocated; if (total === 0) return 0; return Math.round(amount / total * 100); }
+    }
+});
+
+app.component('confirmation-view', {
+    props: ['period'],
+    template: `
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <span>✅ 司机确认管理</span>
+                    <div>
+                        <el-button type="warning" size="small" @click="createConfirmations">批量生成确认任务</el-button>
+                        <el-select v-model="filterDriver" placeholder="筛选司机" style="width: 150px; margin-left: 12px;" clearable @change="loadConfirmations">
+                            <el-option v-for="d in drivers" :key="d.id" :label="d.name" :value="d.id"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <el-row :gutter="20" style="margin-bottom: 20px;">
+                    <el-col :span="8"><div class="stat-card" style="background: #fdf6ec; border: 1px solid #f5dab1;"><div style="font-size: 14px; color: #e6a23c;">待确认</div><div style="font-size: 32px; font-weight: bold; color: #e6a23c;">{{ pendingCount }}</div></div></el-col>
+                    <el-col :span="8"><div class="stat-card" style="background: #f0f9eb; border: 1px solid #c2e7b0;"><div style="font-size: 14px; color: #67c23a;">已确认</div><div style="font-size: 32px; font-weight: bold; color: #67c23a;">{{ confirmedCount }}</div></div></el-col>
+                    <el-col :span="8"><div class="stat-card" style="background: #fef0f0; border: 1px solid #fbc4c4;"><div style="font-size: 14px; color: #f56c6c;">有异议</div><div style="font-size: 32px; font-weight: bold; color: #f56c6c;">{{ disputedCount }}</div></div></el-col>
+                </el-row>
+                <el-table :data="confirmations" style="width: 100%;" border>
+                    <el-table-column prop="confirmation_id" label="任务ID" width="80"></el-table-column>
+                    <el-table-column prop="transaction_date" label="交易时间" width="160"></el-table-column>
+                    <el-table-column prop="plate_number" label="车牌号" width="120"></el-table-column>
+                    <el-table-column prop="driver_name" label="司机" width="100"></el-table-column>
+                    <el-table-column prop="fuel_type" label="油品" width="80"></el-table-column>
+                    <el-table-column prop="quantity" label="数量(升)" width="100" align="right"></el-table-column>
+                    <el-table-column prop="total_amount" label="金额(元)" width="110" align="right"><template #default="{ row }">{{ row.total_amount.toFixed(2) }}</template></el-table-column>
+                    <el-table-column prop="station_name" label="加油站" show-overflow-tooltip></el-table-column>
+                    <el-table-column prop="created_at" label="创建时间" width="160"></el-table-column>
+                    <el-table-column label="操作" width="150">
+                        <template #default="{ row }">
+                            <el-button size="small" type="success" @click="confirmRecord(row, true)">确认</el-button>
+                            <el-button size="small" type="danger" @click="confirmRecord(row, false)">异议</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-empty v-if="confirmations.length === 0" description="暂无待确认记录"></el-empty>
+            </div>
+        </div>
+    `,
+    data() { return { confirmations: [], drivers: [], filterDriver: null, pendingCount: 0, confirmedCount: 0, disputedCount: 0 }; },
+    mounted() { this.loadConfirmations(); this.loadDrivers(); },
+    methods: {
+        async loadConfirmations() { try { const params = this.filterDriver ? { driver_id: this.filterDriver } : {}; const res = await axios.get(`${API_BASE}/driver-confirmations`, { params }); this.confirmations = res.data; this.pendingCount = this.confirmations.length; } catch (e) {} },
+        async loadDrivers() { try { const res = await axios.get(`${API_BASE}/drivers`); this.drivers = res.data; } catch (e) {} },
+        async createConfirmations() {
+            try {
+                const res = await axios.get(`${API_BASE}/fuel-records?status=pending&per_page=1000`);
+                const recordIds = res.data.records.map(r => r.id);
+                if (recordIds.length === 0) { ElementPlus.ElMessage.info('没有需要确认的记录'); return; }
+                const result = await axios.post(`${API_BASE}/driver-confirmations/create`, { record_ids: recordIds });
+                ElementPlus.ElMessage.success(`成功创建 ${result.data.success.length} 个确认任务`);
+                this.loadConfirmations();
+            } catch (e) { ElementPlus.ElMessage.error('创建确认任务失败'); }
+        },
+        async confirmRecord(row, confirmed) {
+            try {
+                const { value: formValues } = await ElementPlus.ElMessageBox({ title: confirmed ? '确认记录' : '提交异议', message: confirmed ? '请确认该笔加油记录是否正确' : '请填写异议说明', showInput: true, inputPlaceholder: '备注说明（可选）', confirmButtonText: '确定', cancelButtonText: '取消', type: confirmed ? 'success' : 'warning' });
+                await axios.post(`${API_BASE}/driver-confirmations/${row.confirmation_id}/confirm`, { driver_id: 1, confirmed, driver_remark: formValues || '' });
+                ElementPlus.ElMessage.success(confirmed ? '已确认' : '已提交异议');
+                this.loadConfirmations();
+            } catch (e) { if (e !== 'cancel') ElementPlus.ElMessage.error('操作失败'); }
+        }
+    }
+});
+
+app.component('masterdata-view', {
+    template: `
+        <div>
+            <el-tabs v-model="activeTab">
+                <el-tab-pane label="🏢 项目管理" name="projects">
+                    <div class="card">
+                        <div class="card-title"><span>🏢 项目列表</span><el-button type="primary" size="small" @click="showProjectDialog">新增项目</el-button></div>
+                        <el-table :data="projects" style="width: 100%;" border>
+                            <el-table-column prop="project_code" label="项目编码" width="120"></el-table-column>
+                            <el-table-column prop="project_name" label="项目名称"></el-table-column>
+                            <el-table-column prop="department" label="部门" width="120"></el-table-column>
+                            <el-table-column prop="start_date" label="开始日期" width="120"></el-table-column>
+                            <el-table-column prop="end_date" label="结束日期" width="120"></el-table-column>
+                            <el-table-column prop="budget" label="预算(元)" width="120" align="right"><template #default="{ row }">{{ row.budget ? row.budget.toFixed(2) : '-' }}</template></el-table-column>
+                        </el-table>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane label="🚗 车辆管理" name="vehicles">
+                    <div class="card">
+                        <div class="card-title"><span>🚗 车辆列表</span><el-button type="primary" size="small" @click="showVehicleDialog">新增车辆</el-button></div>
+                        <el-table :data="vehicles" style="width: 100%;" border>
+                            <el-table-column prop="plate_number" label="车牌号" width="120"></el-table-column>
+                            <el-table-column prop="vehicle_type" label="车型" width="120"></el-table-column>
+                            <el-table-column prop="driver_name" label="默认司机" width="120"></el-table-column>
+                            <el-table-column prop="default_project_name" label="默认项目"></el-table-column>
+                            <el-table-column prop="allowed_fuel_types" label="允许油品" width="150"></el-table-column>
+                        </el-table>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane label="👤 司机管理" name="drivers">
+                    <div class="card">
+                        <div class="card-title"><span>👤 司机列表</span><el-button type="primary" size="small" @click="showDriverDialog">新增司机</el-button></div>
+                        <el-table :data="drivers" style="width: 100%;" border>
+                            <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+                            <el-table-column prop="employee_id" label="工号" width="120"></el-table-column>
+                            <el-table-column prop="phone" label="电话" width="150"></el-table-column>
+                        </el-table>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
+
+            <el-dialog v-model="projectDialogVisible" title="新增项目" width="500px">
+                <el-form :model="projectForm" label-width="100px">
+                    <el-form-item label="项目编码"><el-input v-model="projectForm.project_code"></el-input></el-form-item>
+                    <el-form-item label="项目名称"><el-input v-model="projectForm.project_name"></el-input></el-form-item>
+                    <el-form-item label="部门"><el-input v-model="projectForm.department"></el-input></el-form-item>
+                    <el-form-item label="开始日期"><el-date-picker v-model="projectForm.start_date" type="date" style="width: 100%;"></el-date-picker></el-form-item>
+                    <el-form-item label="结束日期"><el-date-picker v-model="projectForm.end_date" type="date" style="width: 100%;"></el-date-picker></el-form-item>
+                    <el-form-item label="预算"><el-input-number v-model="projectForm.budget" :precision="2" :min="0" style="width: 100%;"></el-input-number></el-form-item>
+                </el-form>
+                <template #footer><el-button @click="projectDialogVisible = false">取消</el-button><el-button type="primary" @click="saveProject">保存</el-button></template>
+            </el-dialog>
+
+            <el-dialog v-model="vehicleDialogVisible" title="新增车辆" width="500px">
+                <el-form :model="vehicleForm" label-width="100px">
+                    <el-form-item label="车牌号"><el-input v-model="vehicleForm.plate_number"></el-input></el-form-item>
+                    <el-form-item label="车型"><el-input v-model="vehicleForm.vehicle_type"></el-input></el-form-item>
+                    <el-form-item label="默认司机">
+                        <el-select v-model="vehicleForm.driver_id" style="width: 100%;" filterable>
+                            <el-option v-for="d in drivers" :key="d.id" :label="d.name" :value="d.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="默认项目">
+                        <el-select v-model="vehicleForm.default_project_id" style="width: 100%;" filterable>
+                            <el-option v-for="p in projects" :key="p.id" :label="p.project_name" :value="p.id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="允许油品"><el-input v-model="vehicleForm.allowed_fuel_types" placeholder="如: [\"92#\", \"95#\"]"></el-input></el-form-item>
+                </el-form>
+                <template #footer><el-button @click="vehicleDialogVisible = false">取消</el-button><el-button type="primary" @click="saveVehicle">保存</el-button></template>
+            </el-dialog>
+
+            <el-dialog v-model="driverDialogVisible" title="新增司机" width="500px">
+                <el-form :model="driverForm" label-width="100px">
+                    <el-form-item label="姓名"><el-input v-model="driverForm.name"></el-input></el-form-item>
+                    <el-form-item label="工号"><el-input v-model="driverForm.employee_id"></el-input></el-form-item>
+                    <el-form-item label="电话"><el-input v-model="driverForm.phone"></el-input></el-form-item>
+                </el-form>
+                <template #footer><el-button @click="driverDialogVisible = false">取消</el-button><el-button type="primary" @click="saveDriver">保存</el-button></template>
+            </el-dialog>
+        </div>
+    `,
+    data() { return { activeTab: 'projects', projects: [], vehicles: [], drivers: [], projectDialogVisible: false, vehicleDialogVisible: false, driverDialogVisible: false, projectForm: {}, vehicleForm: {}, driverForm: {} }; },
+    mounted() { this.loadData(); },
+    methods: {
+        async loadData() { await Promise.all([this.loadProjects(), this.loadVehicles(), this.loadDrivers()]); },
+        async loadProjects() { try { const res = await axios.get(`${API_BASE}/projects`); this.projects = res.data; } catch (e) {} },
+        async loadVehicles() { try { const res = await axios.get(`${API_BASE}/vehicles`); this.vehicles = res.data; } catch (e) {} },
+        async loadDrivers() { try { const res = await axios.get(`${API_BASE}/drivers`); this.drivers = res.data; } catch (e) {} },
+        showProjectDialog() { this.projectForm = { project_code: '', project_name: '', department: '', start_date: null, end_date: null, budget: 0 }; this.projectDialogVisible = true; },
+        showVehicleDialog() { this.vehicleForm = { plate_number: '', vehicle_type: '', driver_id: null, default_project_id: null, allowed_fuel_types: '' }; this.vehicleDialogVisible = true; },
+        showDriverDialog() { this.driverForm = { name: '', employee_id: '', phone: '' }; this.driverDialogVisible = true; },
+        async saveProject() { try { await axios.post(`${API_BASE}/projects`, this.projectForm); ElementPlus.ElMessage.success('保存成功'); this.projectDialogVisible = false; this.loadProjects(); } catch (e) { ElementPlus.ElMessage.error('保存失败'); } },
+        async saveVehicle() { try { await axios.post(`${API_BASE}/vehicles`, this.vehicleForm); ElementPlus.ElMessage.success('保存成功'); this.vehicleDialogVisible = false; this.loadVehicles(); } catch (e) { ElementPlus.ElMessage.error('保存失败'); } },
+        async saveDriver() { try { await axios.post(`${API_BASE}/drivers`, this.driverForm); ElementPlus.ElMessage.success('保存成功'); this.driverDialogVisible = false; this.loadDrivers(); } catch (e) { ElementPlus.ElMessage.error('保存失败'); } }
+    }
+});
+
+app.use(ElementPlus);
+app.mount('#app');
+</script>
+</body>
+</html>
