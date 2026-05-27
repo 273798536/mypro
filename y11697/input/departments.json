@@ -1,0 +1,18 @@
+[
+  {
+    "id": "dept1",
+    "name": "内科",
+    "requiredSkills": [
+      "general"
+    ],
+    "source": "departments.json"
+  },
+  {
+    "id": "dept2",
+    "name": "外科",
+    "requiredSkills": [
+      "general"
+    ],
+    "source": "departments.json"
+  }
+]

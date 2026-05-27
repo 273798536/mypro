@@ -1,0 +1,800 @@
+{
+  "id": "99b6ad85-cf65-4969-a575-10a54bbbc205",
+  "version": 1,
+  "name": "第一周排班",
+  "startDate": "2024-01-01",
+  "endDate": "2024-01-07",
+  "entries": [
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-01",
+      "shiftType": "night",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.567Z"
+    },
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-02",
+      "shiftType": "night",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.547Z"
+    },
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-03",
+      "shiftType": "off",
+      "departmentId": "",
+      "isLocked": false,
+      "source": "initialization"
+    },
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-04",
+      "shiftType": "off",
+      "departmentId": "",
+      "isLocked": false,
+      "source": "initialization"
+    },
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-05",
+      "shiftType": "off",
+      "departmentId": "",
+      "isLocked": false,
+      "source": "initialization"
+    },
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-06",
+      "shiftType": "night",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.513Z"
+    },
+    {
+      "doctorId": "doc1",
+      "date": "2024-01-07",
+      "shiftType": "night",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.432Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-01",
+      "shiftType": "morning",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.515Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-02",
+      "shiftType": "night",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.499Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-03",
+      "shiftType": "morning",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.485Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-04",
+      "shiftType": "afternoon",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.410Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-05",
+      "shiftType": "night",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.509Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-06",
+      "shiftType": "morning",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.596Z"
+    },
+    {
+      "doctorId": "doc2",
+      "date": "2024-01-07",
+      "shiftType": "off",
+      "departmentId": "",
+      "isLocked": false,
+      "source": "initialization"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-01",
+      "shiftType": "morning",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.909Z"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-02",
+      "shiftType": "morning",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.868Z"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-03",
+      "shiftType": "morning",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.598Z"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-04",
+      "shiftType": "morning",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.559Z"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-05",
+      "shiftType": "night",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.587Z"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-06",
+      "shiftType": "morning",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.649Z"
+    },
+    {
+      "doctorId": "doc3",
+      "date": "2024-01-07",
+      "shiftType": "morning",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.643Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-01",
+      "shiftType": "afternoon",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.574Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-02",
+      "shiftType": "morning",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.557Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-03",
+      "shiftType": "night",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.505Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-04",
+      "shiftType": "night",
+      "departmentId": "dept2",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.494Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-05",
+      "shiftType": "afternoon",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.549Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-06",
+      "shiftType": "afternoon",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.404Z"
+    },
+    {
+      "doctorId": "doc4",
+      "date": "2024-01-07",
+      "shiftType": "morning",
+      "departmentId": "dept1",
+      "isLocked": false,
+      "source": "solver_assignment",
+      "assignedAt": "2026-05-27T06:54:57.524Z"
+    }
+  ],
+  "violations": [
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-01",
+      "shiftType": "night",
+      "message": "内科 2024-01-01 夜班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-02",
+      "shiftType": "afternoon",
+      "message": "内科 2024-01-02 午班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-03",
+      "shiftType": "afternoon",
+      "message": "内科 2024-01-03 午班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept2",
+      "date": "2024-01-03",
+      "shiftType": "night",
+      "message": "外科 2024-01-03 夜班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-04",
+      "shiftType": "morning",
+      "message": "内科 2024-01-04 早班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-04",
+      "shiftType": "night",
+      "message": "内科 2024-01-04 夜班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-05",
+      "shiftType": "morning",
+      "message": "内科 2024-01-05 早班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept2",
+      "date": "2024-01-05",
+      "shiftType": "morning",
+      "message": "外科 2024-01-05 早班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-06",
+      "shiftType": "night",
+      "message": "内科 2024-01-06 夜班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept1",
+      "date": "2024-01-07",
+      "shiftType": "afternoon",
+      "message": "内科 2024-01-07 午班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "department_coverage",
+      "severity": "error",
+      "departmentId": "dept2",
+      "date": "2024-01-07",
+      "shiftType": "night",
+      "message": "外科 2024-01-07 夜班 缺 1 人",
+      "details": {
+        "required": 1,
+        "assigned": 0,
+        "shortage": 1,
+        "assignedDoctors": []
+      },
+      "source": "shift-requirements.json"
+    },
+    {
+      "type": "consecutive_shifts",
+      "severity": "warning",
+      "doctorId": "doc2",
+      "date": "2024-01-06",
+      "message": "李医生 连续上班超过 5 天（从 2024-01-01 开始）",
+      "details": {
+        "consecutiveCount": 6,
+        "maxAllowed": 5,
+        "streakStart": "2024-01-01",
+        "streakEnd": "2024-01-06"
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "consecutive_shifts",
+      "severity": "warning",
+      "doctorId": "doc3",
+      "date": "2024-01-06",
+      "message": "王医生 连续上班超过 5 天（从 2024-01-01 开始）",
+      "details": {
+        "consecutiveCount": 6,
+        "maxAllowed": 5,
+        "streakStart": "2024-01-01",
+        "streakEnd": "2024-01-06"
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "consecutive_shifts",
+      "severity": "warning",
+      "doctorId": "doc4",
+      "date": "2024-01-06",
+      "message": "赵医生 连续上班超过 5 天（从 2024-01-01 开始）",
+      "details": {
+        "consecutiveCount": 6,
+        "maxAllowed": 5,
+        "streakStart": "2024-01-01",
+        "streakEnd": "2024-01-06"
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "fatigue_hours",
+      "severity": "warning",
+      "doctorId": "doc2",
+      "message": "李医生 本周工作 48 小时，超过限制 40 小时",
+      "details": {
+        "hours": 48,
+        "limit": 40,
+        "overtime": 8
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "fatigue_hours",
+      "severity": "warning",
+      "doctorId": "doc3",
+      "message": "王医生 本周工作 56 小时，超过限制 36 小时",
+      "details": {
+        "hours": 56,
+        "limit": 36,
+        "overtime": 20
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "fatigue_hours",
+      "severity": "warning",
+      "doctorId": "doc4",
+      "message": "赵医生 本周工作 56 小时，超过限制 40 小时",
+      "details": {
+        "hours": 56,
+        "limit": 40,
+        "overtime": 16
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc1",
+      "date": "2024-01-01",
+      "shiftType": "night",
+      "message": "张医生 夜班后第 1 天（2024-01-01）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-01",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc1",
+      "date": "2024-01-02",
+      "shiftType": "night",
+      "message": "张医生 夜班后第 1 天（2024-01-02）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-02",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc1",
+      "date": "2024-01-06",
+      "shiftType": "night",
+      "message": "张医生 夜班后第 1 天（2024-01-06）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-06",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc1",
+      "date": "2024-01-07",
+      "shiftType": "night",
+      "message": "张医生 夜班后第 1 天（2024-01-07）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-07",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc2",
+      "date": "2024-01-02",
+      "shiftType": "night",
+      "message": "李医生 夜班后第 1 天（2024-01-02）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-02",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc2",
+      "date": "2024-01-05",
+      "shiftType": "night",
+      "message": "李医生 夜班后第 1 天（2024-01-05）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-05",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc3",
+      "date": "2024-01-05",
+      "shiftType": "night",
+      "message": "王医生 夜班后第 1 天（2024-01-05）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-05",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc4",
+      "date": "2024-01-03",
+      "shiftType": "night",
+      "message": "赵医生 夜班后第 1 天（2024-01-03）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-03",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    },
+    {
+      "type": "night_recovery",
+      "severity": "warning",
+      "doctorId": "doc4",
+      "date": "2024-01-04",
+      "shiftType": "night",
+      "message": "赵医生 夜班后第 1 天（2024-01-04）没有足够休息",
+      "details": {
+        "nightShiftDate": "2024-01-04",
+        "recoveryDay": 1,
+        "requiredRecoveryDays": 1
+      },
+      "source": "fatigue_rules"
+    }
+  ],
+  "score": {
+    "totalScore": 0,
+    "coverageScore": 68.57142857142857,
+    "fatigueScore": 25,
+    "preferenceScore": 32.142857142857146,
+    "breakdown": [
+      {
+        "category": "科室覆盖",
+        "score": 68.57142857142857,
+        "maxScore": 100,
+        "items": [
+          {
+            "description": "2024-01-01 morning dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-01 afternoon dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-01 morning dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-01 night dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-02 morning dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-02 night dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-02 morning dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-02 night dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-03 morning dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-03 night dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-03 morning dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-04 afternoon dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-04 morning dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-04 night dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-05 afternoon dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-05 night dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-05 night dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-06 morning dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-06 afternoon dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-06 morning dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-06 night dept2: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-07 morning dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-07 night dept1: 满员",
+            "points": 1
+          },
+          {
+            "description": "2024-01-07 morning dept2: 满员",
+            "points": 1
+          }
+        ],
+        "weight": 0.5
+      },
+      {
+        "category": "疲劳管理",
+        "score": 25,
+        "maxScore": 100,
+        "items": [
+          {
+            "description": "张医生 2023-12-31: 32小时 (≤40小时)",
+            "points": 1
+          }
+        ],
+        "weight": 0.3
+      },
+      {
+        "category": "偏好满足",
+        "score": 32.142857142857146,
+        "maxScore": 100,
+        "items": [
+          {
+            "description": "王医生 2024-01-01: morning (偏好)",
+            "points": 2
+          },
+          {
+            "description": "王医生 2024-01-02: morning (偏好)",
+            "points": 2
+          },
+          {
+            "description": "王医生 2024-01-03: morning (偏好)",
+            "points": 2
+          },
+          {
+            "description": "王医生 2024-01-04: morning (偏好)",
+            "points": 2
+          },
+          {
+            "description": "王医生 2024-01-06: morning (偏好)",
+            "points": 2
+          },
+          {
+            "description": "王医生 2024-01-07: morning (偏好)",
+            "points": 2
+          }
+        ],
+        "weight": 0.2
+      }
+    ]
+  },
+  "createdAt": "2026-05-27T06:54:58.083Z",
+  "updatedAt": "2026-05-27T06:54:58.083Z",
+  "source": "solver",
+  "auditTrail": [
+    {
+      "timestamp": "2026-05-27T06:54:58.083Z",
+      "action": "schedule_created",
+      "changes": [
+        {
+          "field": "entries",
+          "newValue": 28
+        }
+      ],
+      "source": "solver"
+    }
+  ]
+}

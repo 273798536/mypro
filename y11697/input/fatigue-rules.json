@@ -1,0 +1,8 @@
+{
+  "maxConsecutiveShifts": 5,
+  "maxConsecutiveNights": 2,
+  "minHoursBetweenShifts": 12,
+  "nightShiftRecoveryDays": 1,
+  "weeklyHourLimit": 40,
+  "source": "fatigue-rules.json"
+}

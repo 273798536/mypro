@@ -1,0 +1,247 @@
+[
+  {
+    "date": "2024-01-01",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-01",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-01",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-01",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-01",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-02",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-02",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-02",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-02",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-02",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-03",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-03",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-03",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-03",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-03",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-04",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-04",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-04",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-04",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-04",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-05",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-05",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-05",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-05",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-05",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-06",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-06",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-06",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-06",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-06",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-07",
+    "shiftType": "morning",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-07",
+    "shiftType": "afternoon",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-07",
+    "shiftType": "night",
+    "departmentId": "dept1",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-07",
+    "shiftType": "morning",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  },
+  {
+    "date": "2024-01-07",
+    "shiftType": "night",
+    "departmentId": "dept2",
+    "requiredDoctors": 1,
+    "source": "shift-requirements.json"
+  }
+]

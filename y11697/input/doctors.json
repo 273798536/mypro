@@ -1,0 +1,62 @@
+[
+  {
+    "id": "doc1",
+    "name": "张医生",
+    "departments": [
+      "dept1",
+      "dept2"
+    ],
+    "skills": [
+      "general"
+    ],
+    "maxWeeklyHours": 40,
+    "source": "doctors.json"
+  },
+  {
+    "id": "doc2",
+    "name": "李医生",
+    "departments": [
+      "dept1"
+    ],
+    "skills": [
+      "general"
+    ],
+    "maxWeeklyHours": 40,
+    "source": "doctors.json"
+  },
+  {
+    "id": "doc3",
+    "name": "王医生",
+    "departments": [
+      "dept2"
+    ],
+    "skills": [
+      "specialist"
+    ],
+    "maxWeeklyHours": 36,
+    "preferences": {
+      "preferredShifts": [
+        "morning"
+      ]
+    },
+    "source": "doctors.json"
+  },
+  {
+    "id": "doc4",
+    "name": "赵医生",
+    "departments": [
+      "dept1",
+      "dept2"
+    ],
+    "skills": [
+      "general"
+    ],
+    "maxWeeklyHours": 40,
+    "preferences": {
+      "avoidedShifts": [
+        "night"
+      ]
+    },
+    "source": "doctors.json"
+  }
+]

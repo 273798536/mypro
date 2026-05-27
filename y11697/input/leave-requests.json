@@ -1,0 +1,11 @@
+[
+  {
+    "id": "leave1",
+    "doctorId": "doc1",
+    "startDate": "2024-01-03",
+    "endDate": "2024-01-05",
+    "type": "vacation",
+    "reason": "年假",
+    "source": "leave-requests.json"
+  }
+]
