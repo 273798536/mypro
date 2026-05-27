@@ -1,0 +1,122 @@
+import type { Level } from './types';
+
+export const LEVELS: Level[] = [
+  {
+    id: 'l1',
+    name: '第一关：初识弹弓',
+    description: '利用一颗行星的引力将探测器甩向目标轨道，体验最基础的引力弹弓。',
+    difficulty: 1,
+    planets: [
+      {
+        id: 'p1',
+        name: '蓝巨星',
+        mass: 1600,
+        radius: 55,
+        x: 180,
+        y: 180,
+        color: '#4dabf7',
+        influence: 240,
+      },
+    ],
+    target: {
+      centerX: 520,
+      centerY: 320,
+      radius: 90,
+      tolerance: 14,
+      requiredSpeedRange: [35, 85],
+    },
+    start: { x: -220, y: 260, vx: 55, vy: -12 },
+    fuelBudget: 100,
+    timeLimit: 60,
+  },
+  {
+    id: 'l2',
+    name: '第二关：双行星接力',
+    description: '依次利用两颗行星的引力弹弓，精确控制每次飞越的角度。',
+    difficulty: 2,
+    planets: [
+      {
+        id: 'p1',
+        name: '褐星',
+        mass: 1400,
+        radius: 50,
+        x: 120,
+        y: 120,
+        color: '#ff922b',
+        influence: 220,
+      },
+      {
+        id: 'p2',
+        name: '紫行星',
+        mass: 2000,
+        radius: 65,
+        x: 440,
+        y: 340,
+        color: '#9775fa',
+        influence: 260,
+      },
+    ],
+    target: {
+      centerX: 720,
+      centerY: 120,
+      radius: 85,
+      tolerance: 16,
+      requiredSpeedRange: [40, 90],
+    },
+    start: { x: -280, y: 360, vx: 50, vy: -18 },
+    fuelBudget: 80,
+    timeLimit: 70,
+  },
+  {
+    id: 'l3',
+    name: '第三关：三体挑战',
+    description: '三颗行星相互交叠的引力场，需要更细腻的点火时机。',
+    difficulty: 3,
+    planets: [
+      {
+        id: 'p1',
+        name: '红星',
+        mass: 1800,
+        radius: 58,
+        x: 80,
+        y: 200,
+        color: '#ff6b6b',
+        influence: 230,
+      },
+      {
+        id: 'p2',
+        name: '绿行星',
+        mass: 1500,
+        radius: 52,
+        x: 340,
+        y: 80,
+        color: '#51cf66',
+        influence: 210,
+      },
+      {
+        id: 'p3',
+        name: '深蓝',
+        mass: 2200,
+        radius: 70,
+        x: 560,
+        y: 320,
+        color: '#1c7ed6',
+        influence: 270,
+      },
+    ],
+    target: {
+      centerX: 820,
+      centerY: 160,
+      radius: 95,
+      tolerance: 18,
+      requiredSpeedRange: [45, 100],
+    },
+    start: { x: -320, y: 280, vx: 48, vy: -10 },
+    fuelBudget: 70,
+    timeLimit: 90,
+  },
+];
+
+export function getLevel(id: string): Level | undefined {
+  return LEVELS.find((l) => l.id === id);
+}
