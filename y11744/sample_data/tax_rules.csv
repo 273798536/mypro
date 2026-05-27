@@ -1,0 +1,5 @@
+﻿rule_id,tax_type,income_min,income_max,tax_rate,quick_deduction,effective_date,expire_date,description
+TAX001,individual,0,4000,0.20,0,2024-01-01,,劳务报酬20%税率
+TAX002,individual,4000,20000,0.20,0,2024-01-01,,劳务报酬20%税率(减20%费用)
+TAX003,individual,20000,50000,0.30,2000,2024-01-01,,劳务报酬30%税率
+TAX004,individual,50000,,0.40,7000,2024-01-01,,劳务报酬40%税率

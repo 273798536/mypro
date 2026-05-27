@@ -1,0 +1,4 @@
+﻿reward_id,streamer_id,reward_time,amount,gift_name,sender_id,room_id,settlement_period,is_refunded,refund_id
+R001,S001,2025-05-01 20:30:00,1000.00,火箭,U001,ROOM001,202505,false,
+R002,S001,2025-05-02 21:00:00,500.00,飞机,U002,ROOM001,202505,false,
+R003,S002,2025-05-03 19:00:00,2000.00,超级火箭,U003,ROOM002,202505,false,

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "live-reward-tax-cli"
+version = "0.1.0"
+description = "直播打赏税费归集CLI - 处理主播打赏收入、平台分成、退款和个税预扣"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+lrt = "live_reward_tax.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]

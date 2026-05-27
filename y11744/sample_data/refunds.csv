@@ -1,0 +1,2 @@
+﻿refund_id,reward_id,streamer_id,refund_time,refund_amount,reason,original_settlement_period,refund_processed_period,is_cross_period
+REF001,R001,S001,2025-05-15 10:00:00,100.00,用户投诉,202505,202505,false

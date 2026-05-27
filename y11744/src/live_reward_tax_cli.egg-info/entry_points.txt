@@ -1,0 +1,2 @@
+[console_scripts]
+lrt = live_reward_tax.cli:cli
