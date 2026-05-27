@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "source": "样例-指数增长数据",
+    "model_name": "exponential",
+    "model_display": "指数模型",
+    "model_formula": "y = a*exp(b*x) + c",
+    "generated_at": "2026-05-27T15:45:57.132280"
+  },
+  "fit_statistics": {
+    "r_squared": 0.9993959787563843,
+    "adjusted_r_squared": 0.9991371125091204,
+    "rmse": 0.07267722530438084,
+    "n_params": 3,
+    "n_samples": 11
+  },
+  "parameters": [
+    {
+      "name": "a (振幅)",
+      "value": 0.5576892334197829,
+      "std_error": 0.04552122784667299
+    },
+    {
+      "name": "b (速率)",
+      "value": 0.28930667565247825,
+      "std_error": 0.007742589830673506
+    },
+    {
+      "name": "c (偏移)",
+      "value": -0.051328004629458523,
+      "std_error": 0.0900010368100858
+    }
+  ],
+  "residual_statistics": {
+    "mean": -4.231991878146279e-09,
+    "std": 0.07622451695969013,
+    "skewness": -0.20254244072337413,
+    "kurtosis": -1.1354462290530913
+  },
+  "structural_diagnostics": {
+    "has_trend": false,
+    "trend_slope": 0.00046803957278019573,
+    "has_heteroscedasticity": false,
+    "heteroscedasticity_pvalue": 1.0,
+    "has_autocorrelation": false,
+    "autocorrelation_lag1": -0.09323312059463951
+  },
+  "outliers": [],
+  "critical_checks": {
+    "is_overfitting": true,
+    "overfit_warning": "R² 过高(0.999396)，可能存在过拟合或数据过度平滑",
+    "has_unit_mix": false,
+    "unit_mix_warning": "",
+    "outlier_dominance": false,
+    "outlier_dominance_ratio": 0.0
+  },
+  "warnings": [],
+  "critical_issues": [
+    "过拟合警告: R² 过高(0.999396)，可能存在过拟合或数据过度平滑"
+  ]
+}

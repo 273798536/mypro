@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "source": "inline",
+    "model_name": "quadratic",
+    "model_display": "二次多项式",
+    "model_formula": "y = a*x^2 + b*x + c",
+    "generated_at": "2026-05-27T15:47:06.183034"
+  },
+  "fit_statistics": {
+    "r_squared": 0.9999358658049656,
+    "adjusted_r_squared": 0.9999037987074484,
+    "rmse": 0.25892551871614566,
+    "n_params": 3,
+    "n_samples": 10
+  },
+  "parameters": [
+    {
+      "name": "a (二次项)",
+      "value": 1.0015151515151548,
+      "std_error": 0.013468164459129782
+    },
+    {
+      "name": "b (一次项)",
+      "value": -0.04939393939404758,
+      "std_error": 0.15201741976131578
+    },
+    {
+      "name": "c (常数项)",
+      "value": 0.21333333333379975,
+      "std_error": 0.36398976740841354
+    }
+  ],
+  "residual_statistics": {
+    "mean": 2.575717417130363e-15,
+    "std": 0.2729314611611923,
+    "skewness": 0.3071824429151407,
+    "kurtosis": -0.9811057843246034
+  },
+  "structural_diagnostics": {
+    "has_trend": false,
+    "trend_slope": 7.245988321142939e-14,
+    "has_heteroscedasticity": false,
+    "heteroscedasticity_pvalue": 1.0,
+    "has_autocorrelation": true,
+    "autocorrelation_lag1": -0.48983662332968225
+  },
+  "outliers": [],
+  "critical_checks": {
+    "is_overfitting": true,
+    "overfit_warning": "R² 过高(0.999936)，可能存在过拟合或数据过度平滑",
+    "has_unit_mix": false,
+    "unit_mix_warning": "",
+    "outlier_dominance": false,
+    "outlier_dominance_ratio": 0.0
+  },
+  "warnings": [
+    "残差存在自相关(lag1=-0.4898)，观测可能不独立"
+  ],
+  "critical_issues": [
+    "过拟合警告: R² 过高(0.999936)，可能存在过拟合或数据过度平滑"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "source": "样例-边界异常数据",
+    "model_name": "quadratic",
+    "model_display": "二次多项式",
+    "model_formula": "y = a*x^2 + b*x + c",
+    "generated_at": "2026-05-27T15:45:52.177494"
+  },
+  "fit_statistics": {
+    "r_squared": 0.9676491976610435,
+    "adjusted_r_squared": 0.9588262515686008,
+    "rmse": 13.601771217871057,
+    "n_params": 3,
+    "n_samples": 15
+  },
+  "parameters": [
+    {
+      "name": "a (二次项)",
+      "value": 0.9876680672268634,
+      "std_error": 0.23676683125078588
+    },
+    {
+      "name": "b (一次项)",
+      "value": 0.992596638657634,
+      "std_error": 3.8957559744869683
+    },
+    {
+      "name": "c (常数项)",
+      "value": -3.3540000000073364,
+      "std_error": 13.545602890612104
+    }
+  ],
+  "residual_statistics": {
+    "mean": -7.777600785630056e-12,
+    "std": 14.079170795260389,
+    "skewness": 3.0991707462197713,
+    "kurtosis": 8.463144601915005
+  },
+  "structural_diagnostics": {
+    "has_trend": false,
+    "trend_slope": -1.7343491722142192e-12,
+    "has_heteroscedasticity": true,
+    "heteroscedasticity_pvalue": 1.4074821877096966e-05,
+    "has_autocorrelation": false,
+    "autocorrelation_lag1": -0.14632324907331484
+  },
+  "outliers": [
+    {
+      "index": 11,
+      "x": 12.0,
+      "y": 200.0,
+      "residual": 49.21863865544742,
+      "std_residual": 3.8657598171991583,
+      "cooks_distance": 0.14077774386632733,
+      "severity": "moderate"
+    }
+  ],
+  "critical_checks": {
+    "is_overfitting": false,
+    "overfit_warning": "",
+    "has_unit_mix": false,
+    "unit_mix_warning": "",
+    "outlier_dominance": false,
+    "outlier_dominance_ratio": 0.06666666666666667
+  },
+  "warnings": [
+    "残差存在异方差性(p=0.0000)，方差估计可能不准"
+  ],
+  "critical_issues": []
+}

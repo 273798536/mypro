@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "source": "样例-正常线性数据",
+    "model_name": "linear",
+    "model_display": "线性模型",
+    "model_formula": "y = a*x + b",
+    "generated_at": "2026-05-27T15:45:49.632405"
+  },
+  "fit_statistics": {
+    "r_squared": 0.9989206627282444,
+    "adjusted_r_squared": 0.9987936818727438,
+    "rmse": 0.36966969609440015,
+    "n_params": 2,
+    "n_samples": 20
+  },
+  "parameters": [
+    {
+      "name": "a (斜率)",
+      "value": 1.950315789475757,
+      "std_error": 0.015110602211187351
+    },
+    {
+      "name": "b (截距)",
+      "value": 1.4356842105294447,
+      "std_error": 0.18101214965809925
+    }
+  ],
+  "residual_statistics": {
+    "mean": -2.489362049828969e-11,
+    "std": 0.37927310561475236,
+    "skewness": 0.19431687406588116,
+    "kurtosis": -0.6491936569381975
+  },
+  "structural_diagnostics": {
+    "has_trend": false,
+    "trend_slope": -2.072900810900807e-12,
+    "has_heteroscedasticity": false,
+    "heteroscedasticity_pvalue": 0.13532735006805674,
+    "has_autocorrelation": false,
+    "autocorrelation_lag1": -0.027968255215385707
+  },
+  "outliers": [],
+  "critical_checks": {
+    "is_overfitting": false,
+    "overfit_warning": "",
+    "has_unit_mix": false,
+    "unit_mix_warning": "",
+    "outlier_dominance": false,
+    "outlier_dominance_ratio": 0.0
+  },
+  "warnings": [],
+  "critical_issues": []
+}
