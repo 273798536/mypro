@@ -1,0 +1,281 @@
+[
+  {
+    "timestamp": "2026-05-28T00:10:48.358860",
+    "action": "load_event",
+    "target": "E100",
+    "old_value": null,
+    "new_value": "100米跑",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.358918",
+    "action": "load_event",
+    "target": "E200",
+    "old_value": null,
+    "new_value": "200米跑",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.358924",
+    "action": "load_event",
+    "target": "E400",
+    "old_value": null,
+    "new_value": "跳远",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.358927",
+    "action": "load_event",
+    "target": "E500",
+    "old_value": null,
+    "new_value": "铅球",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359004",
+    "action": "load_score",
+    "target": "A001/E100",
+    "old_value": null,
+    "new_value": "85.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359013",
+    "action": "load_score",
+    "target": "A001/E200",
+    "old_value": null,
+    "new_value": "78.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359017",
+    "action": "load_score",
+    "target": "A001/E400",
+    "old_value": null,
+    "new_value": "42.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359022",
+    "action": "load_score",
+    "target": "A001/E500",
+    "old_value": null,
+    "new_value": "35.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359027",
+    "action": "load_score",
+    "target": "A002/E100",
+    "old_value": null,
+    "new_value": "92.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359032",
+    "action": "load_score",
+    "target": "A002/E200",
+    "old_value": null,
+    "new_value": "88.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359053",
+    "action": "load_score",
+    "target": "A002/E400",
+    "old_value": null,
+    "new_value": "0.0",
+    "source": "seed_dirty",
+    "reason": "adjusted"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359057",
+    "action": "load_score",
+    "target": "A002/E500",
+    "old_value": null,
+    "new_value": "45.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359062",
+    "action": "load_score",
+    "target": "A003/E100",
+    "old_value": null,
+    "new_value": "78.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359066",
+    "action": "load_score",
+    "target": "A003/E200",
+    "old_value": null,
+    "new_value": "72.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359071",
+    "action": "load_score",
+    "target": "A003/E400",
+    "old_value": null,
+    "new_value": "38.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359075",
+    "action": "load_score",
+    "target": "A003/E999",
+    "old_value": null,
+    "new_value": "50.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359079",
+    "action": "load_score",
+    "target": "A004/E100",
+    "old_value": null,
+    "new_value": "88.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359145",
+    "action": "load_score",
+    "target": "A004/E200",
+    "old_value": null,
+    "new_value": "82.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359166",
+    "action": "load_score",
+    "target": "A004/E400",
+    "old_value": null,
+    "new_value": "-5.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359171",
+    "action": "load_score",
+    "target": "A004/E500",
+    "old_value": null,
+    "new_value": "120.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359176",
+    "action": "load_score",
+    "target": "A005/E100",
+    "old_value": null,
+    "new_value": "88.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359182",
+    "action": "load_score",
+    "target": "A005/E200",
+    "old_value": null,
+    "new_value": "82.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359186",
+    "action": "load_score",
+    "target": "A005/E400",
+    "old_value": null,
+    "new_value": "44.0",
+    "source": "seed_dirty",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359201",
+    "action": "load_score",
+    "target": "A005/E500",
+    "old_value": null,
+    "new_value": "0.0",
+    "source": "seed_dirty",
+    "reason": "adjusted"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359510",
+    "action": "load_tie_rule",
+    "target": "TR01",
+    "old_value": null,
+    "new_value": "gold_first",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359522",
+    "action": "load_tie_rule",
+    "target": "TR02",
+    "old_value": null,
+    "new_value": "gold_first",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359526",
+    "action": "load_tie_rule",
+    "target": "TR03",
+    "old_value": null,
+    "new_value": "alphabetical",
+    "source": "seed_dirty",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.359550",
+    "action": "load_withdrawal",
+    "target": "A002/E400",
+    "old_value": null,
+    "new_value": "average",
+    "source": "seed_dirty",
+    "reason": "伤病"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.360052",
+    "action": "load_appeal",
+    "target": "AP001",
+    "old_value": null,
+    "new_value": "pending",
+    "source": "seed_dirty",
+    "reason": "刘洋铅球成绩录入有误，应为 40 分"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.360066",
+    "action": "load_appeal",
+    "target": "AP002",
+    "old_value": null,
+    "new_value": "pending",
+    "source": "seed_dirty",
+    "reason": "李娜100米起跑犯规争议"
+  },
+  {
+    "timestamp": "2026-05-28T00:10:48.360076",
+    "action": "compute_ranking",
+    "target": "start",
+    "old_value": null,
+    "new_value": null,
+    "source": "engine",
+    "reason": ""
+  }
+]

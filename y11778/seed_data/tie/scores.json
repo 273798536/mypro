@@ -1,0 +1,98 @@
+[
+  {
+    "athlete_id": "A001",
+    "athlete_name": "张伟",
+    "event_id": "E100",
+    "score": 90.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A001",
+    "athlete_name": "张伟",
+    "event_id": "E200",
+    "score": 40.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A002",
+    "athlete_name": "李娜",
+    "event_id": "E100",
+    "score": 80.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A002",
+    "athlete_name": "李娜",
+    "event_id": "E200",
+    "score": 50.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A003",
+    "athlete_name": "王强",
+    "event_id": "E100",
+    "score": 85.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A003",
+    "athlete_name": "王强",
+    "event_id": "E200",
+    "score": 45.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A004",
+    "athlete_name": "刘洋",
+    "event_id": "E100",
+    "score": 80.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  },
+  {
+    "athlete_id": "A004",
+    "athlete_name": "刘洋",
+    "event_id": "E200",
+    "score": 50.0,
+    "is_withdrawal": false,
+    "withdrawal_reason": null,
+    "source": "seed_tie",
+    "raw_score": null,
+    "adjusted": false,
+    "adjustment_reason": null
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "event_id": "E100",
+    "name": "100米跑",
+    "weight": 1.0,
+    "max_score": 100,
+    "is_team": false,
+    "source": "seed_tie"
+  },
+  {
+    "event_id": "E200",
+    "name": "跳远",
+    "weight": 1.0,
+    "max_score": 50,
+    "is_team": false,
+    "source": "seed_tie"
+  }
+]

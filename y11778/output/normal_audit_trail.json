@@ -1,0 +1,425 @@
+[
+  {
+    "timestamp": "2026-05-28T00:07:45.233093",
+    "action": "load_event",
+    "target": "E100",
+    "old_value": null,
+    "new_value": "100米跑",
+    "source": "seed_normal",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233126",
+    "action": "load_event",
+    "target": "E200",
+    "old_value": null,
+    "new_value": "200米跑",
+    "source": "seed_normal",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233131",
+    "action": "load_event",
+    "target": "E400",
+    "old_value": null,
+    "new_value": "跳远",
+    "source": "seed_normal",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233134",
+    "action": "load_event",
+    "target": "E500",
+    "old_value": null,
+    "new_value": "铅球",
+    "source": "seed_normal",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233235",
+    "action": "load_score",
+    "target": "A001/E100",
+    "old_value": null,
+    "new_value": "52.4",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233243",
+    "action": "load_score",
+    "target": "A001/E200",
+    "old_value": null,
+    "new_value": "54.8",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233248",
+    "action": "load_score",
+    "target": "A001/E400",
+    "old_value": null,
+    "new_value": "45.4",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233253",
+    "action": "load_score",
+    "target": "A001/E500",
+    "old_value": null,
+    "new_value": "43.1",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233258",
+    "action": "load_score",
+    "target": "A002/E100",
+    "old_value": null,
+    "new_value": "81.9",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233262",
+    "action": "load_score",
+    "target": "A002/E200",
+    "old_value": null,
+    "new_value": "68.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233267",
+    "action": "load_score",
+    "target": "A002/E400",
+    "old_value": null,
+    "new_value": "45.3",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233272",
+    "action": "load_score",
+    "target": "A002/E500",
+    "old_value": null,
+    "new_value": "46.8",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233276",
+    "action": "load_score",
+    "target": "A003/E100",
+    "old_value": null,
+    "new_value": "86.3",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233280",
+    "action": "load_score",
+    "target": "A003/E200",
+    "old_value": null,
+    "new_value": "67.6",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233285",
+    "action": "load_score",
+    "target": "A003/E400",
+    "old_value": null,
+    "new_value": "41.9",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233289",
+    "action": "load_score",
+    "target": "A003/E500",
+    "old_value": null,
+    "new_value": "44.8",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233294",
+    "action": "load_score",
+    "target": "A004/E100",
+    "old_value": null,
+    "new_value": "83.2",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233299",
+    "action": "load_score",
+    "target": "A004/E200",
+    "old_value": null,
+    "new_value": "47.5",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233303",
+    "action": "load_score",
+    "target": "A004/E400",
+    "old_value": null,
+    "new_value": "42.4",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233308",
+    "action": "load_score",
+    "target": "A004/E500",
+    "old_value": null,
+    "new_value": "44.6",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233312",
+    "action": "load_score",
+    "target": "A005/E100",
+    "old_value": null,
+    "new_value": "42.2",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233317",
+    "action": "load_score",
+    "target": "A005/E200",
+    "old_value": null,
+    "new_value": "46.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233321",
+    "action": "load_score",
+    "target": "A005/E400",
+    "old_value": null,
+    "new_value": "42.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233326",
+    "action": "load_score",
+    "target": "A005/E500",
+    "old_value": null,
+    "new_value": "41.1",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233330",
+    "action": "load_score",
+    "target": "A006/E100",
+    "old_value": null,
+    "new_value": "51.2",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233335",
+    "action": "load_score",
+    "target": "A006/E200",
+    "old_value": null,
+    "new_value": "69.3",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233339",
+    "action": "load_score",
+    "target": "A006/E400",
+    "old_value": null,
+    "new_value": "43.1",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233344",
+    "action": "load_score",
+    "target": "A006/E500",
+    "old_value": null,
+    "new_value": "47.0",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233348",
+    "action": "load_score",
+    "target": "A007/E100",
+    "old_value": null,
+    "new_value": "84.4",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233353",
+    "action": "load_score",
+    "target": "A007/E200",
+    "old_value": null,
+    "new_value": "86.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233357",
+    "action": "load_score",
+    "target": "A007/E400",
+    "old_value": null,
+    "new_value": "41.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233362",
+    "action": "load_score",
+    "target": "A007/E500",
+    "old_value": null,
+    "new_value": "41.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233367",
+    "action": "load_score",
+    "target": "A008/E100",
+    "old_value": null,
+    "new_value": "64.0",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233372",
+    "action": "load_score",
+    "target": "A008/E200",
+    "old_value": null,
+    "new_value": "77.9",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233376",
+    "action": "load_score",
+    "target": "A008/E400",
+    "old_value": null,
+    "new_value": "41.0",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233380",
+    "action": "load_score",
+    "target": "A008/E500",
+    "old_value": null,
+    "new_value": "46.2",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233385",
+    "action": "load_score",
+    "target": "A009/E100",
+    "old_value": null,
+    "new_value": "42.2",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233389",
+    "action": "load_score",
+    "target": "A009/E200",
+    "old_value": null,
+    "new_value": "54.1",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233394",
+    "action": "load_score",
+    "target": "A009/E400",
+    "old_value": null,
+    "new_value": "46.4",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233398",
+    "action": "load_score",
+    "target": "A009/E500",
+    "old_value": null,
+    "new_value": "46.8",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233403",
+    "action": "load_score",
+    "target": "A010/E100",
+    "old_value": null,
+    "new_value": "87.7",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233407",
+    "action": "load_score",
+    "target": "A010/E200",
+    "old_value": null,
+    "new_value": "82.0",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233412",
+    "action": "load_score",
+    "target": "A010/E400",
+    "old_value": null,
+    "new_value": "41.4",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233416",
+    "action": "load_score",
+    "target": "A010/E500",
+    "old_value": null,
+    "new_value": "44.6",
+    "source": "seed_normal",
+    "reason": "original"
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233460",
+    "action": "load_tie_rule",
+    "target": "TR01",
+    "old_value": null,
+    "new_value": "gold_first",
+    "source": "seed_normal",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233467",
+    "action": "load_tie_rule",
+    "target": "TR02",
+    "old_value": null,
+    "new_value": "alphabetical",
+    "source": "seed_normal",
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-28T00:07:45.233482",
+    "action": "compute_ranking",
+    "target": "start",
+    "old_value": null,
+    "new_value": null,
+    "source": "engine",
+    "reason": ""
+  }
+]

@@ -1,0 +1,500 @@
+{
+  "title": "赛事排名",
+  "generated_at": "2026-05-28T00:07:53.374867",
+  "total_athletes": 5,
+  "total_events": 4,
+  "tie_rules_applied": [
+    {
+      "rule_id": "TR01",
+      "strategy": "gold_first",
+      "description": "按最高单项"
+    },
+    {
+      "rule_id": "TR02",
+      "strategy": "gold_first",
+      "description": "按最高单项（重复）"
+    },
+    {
+      "rule_id": "TR03",
+      "strategy": "alphabetical",
+      "description": "100米按姓名"
+    }
+  ],
+  "event_weights": {
+    "E100": 1.0,
+    "E200": 2.0,
+    "E400": 0.0,
+    "E500": -0.5
+  },
+  "entries": [
+    {
+      "rank": 1,
+      "athlete_id": "A003",
+      "athlete_name": "王强",
+      "total_score": 238.0,
+      "weighted_score": 272.0,
+      "event_scores": {
+        "E100": 78.0,
+        "E200": 72.0,
+        "E400": 38.0,
+        "E999": 50.0
+      },
+      "is_tied": false,
+      "tie_strategy_used": null,
+      "tie_break_detail": null,
+      "is_withdrawal_affected": false,
+      "withdrawal_events": [],
+      "appeal_ids": [],
+      "explanation": "第1名 王强，加权总分 272.0"
+    },
+    {
+      "rank": 2,
+      "athlete_id": "A005",
+      "athlete_name": "陈晨",
+      "total_score": 214.0,
+      "weighted_score": 252.0,
+      "event_scores": {
+        "E100": 88.0,
+        "E200": 82.0,
+        "E400": 44.0,
+        "E500": 0.0
+      },
+      "is_tied": false,
+      "tie_strategy_used": null,
+      "tie_break_detail": null,
+      "is_withdrawal_affected": false,
+      "withdrawal_events": [],
+      "appeal_ids": [],
+      "explanation": "第2名 陈晨，加权总分 252.0"
+    },
+    {
+      "rank": 3,
+      "athlete_id": "A002",
+      "athlete_name": "李娜",
+      "total_score": 225.0,
+      "weighted_score": 245.5,
+      "event_scores": {
+        "E100": 92.0,
+        "E200": 88.0,
+        "E400": 0.0,
+        "E500": 45.0
+      },
+      "is_tied": false,
+      "tie_strategy_used": null,
+      "tie_break_detail": null,
+      "is_withdrawal_affected": true,
+      "withdrawal_events": [
+        "E400"
+      ],
+      "appeal_ids": [
+        "AP002"
+      ],
+      "explanation": "第3名 李娜，加权总分 245.5；[弃权影响] 弃权项目：E400；[申诉中] 申诉编号：AP002"
+    },
+    {
+      "rank": 4,
+      "athlete_id": "A001",
+      "athlete_name": "张伟",
+      "total_score": 240.0,
+      "weighted_score": 223.5,
+      "event_scores": {
+        "E100": 85.0,
+        "E200": 78.0,
+        "E400": 42.0,
+        "E500": 35.0
+      },
+      "is_tied": false,
+      "tie_strategy_used": null,
+      "tie_break_detail": null,
+      "is_withdrawal_affected": false,
+      "withdrawal_events": [],
+      "appeal_ids": [],
+      "explanation": "第4名 张伟，加权总分 223.5"
+    },
+    {
+      "rank": 5,
+      "athlete_id": "A004",
+      "athlete_name": "刘洋",
+      "total_score": 285.0,
+      "weighted_score": 192.0,
+      "event_scores": {
+        "E100": 88.0,
+        "E200": 82.0,
+        "E400": -5.0,
+        "E500": 120.0
+      },
+      "is_tied": false,
+      "tie_strategy_used": null,
+      "tie_break_detail": null,
+      "is_withdrawal_affected": false,
+      "withdrawal_events": [],
+      "appeal_ids": [
+        "AP001"
+      ],
+      "explanation": "第5名 刘洋，加权总分 192.0；[申诉中] 申诉编号：AP001"
+    }
+  ],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "弃权计分",
+      "message": "有 1 条弃权记录使用「平均分」策略，可能虚高排名",
+      "athlete_id": null,
+      "event_id": null,
+      "detail": "A002/E400"
+    },
+    {
+      "severity": "info",
+      "category": "弃权计分",
+      "message": "选手 李娜 在项目 E400 弃权，得分调整为 0.0",
+      "athlete_id": "A002",
+      "event_id": "E400",
+      "detail": null
+    },
+    {
+      "severity": "error",
+      "category": "同分规则",
+      "message": "全局 存在重复的同分策略",
+      "athlete_id": null,
+      "event_id": null,
+      "detail": "['gold_first', 'gold_first']"
+    },
+    {
+      "severity": "warning",
+      "category": "同分规则",
+      "message": "全局 有多条同分规则优先级相同，顺序不确定",
+      "athlete_id": null,
+      "event_id": null,
+      "detail": "[('TR01', 10), ('TR02', 10)]"
+    },
+    {
+      "severity": "info",
+      "category": "同分规则",
+      "message": "同时存在全局同分规则和项目专属规则，项目规则优先",
+      "athlete_id": null,
+      "event_id": null,
+      "detail": "全局: ['TR01', 'TR02']; 项目: ['E100']"
+    },
+    {
+      "severity": "error",
+      "category": "项目权重",
+      "message": "以下项目权重 ≤ 0，将导致该项目成绩无效：E400, E500",
+      "athlete_id": null,
+      "event_id": null,
+      "detail": "权重 ≤ 0 的项目得分乘以权重后为 0 或负值"
+    },
+    {
+      "severity": "error",
+      "category": "脏数据",
+      "message": "选手 王强 的项目 E999 不在项目列表中",
+      "athlete_id": "A003",
+      "event_id": "E999",
+      "detail": null
+    },
+    {
+      "severity": "warning",
+      "category": "脏数据",
+      "message": "选手 刘洋 在项目 E400 的成绩为负数 (-5.0)",
+      "athlete_id": "A004",
+      "event_id": "E400",
+      "detail": null
+    },
+    {
+      "severity": "warning",
+      "category": "脏数据",
+      "message": "选手 刘洋 成绩 120.0 超过项目 E500 满分 50",
+      "athlete_id": "A004",
+      "event_id": "E500",
+      "detail": null
+    },
+    {
+      "severity": "warning",
+      "category": "申诉",
+      "message": "有 2 条待处理申诉，排名可能后续变动",
+      "athlete_id": null,
+      "event_id": null,
+      "detail": "AP001; AP002"
+    }
+  ],
+  "audit_trail": [
+    {
+      "timestamp": "2026-05-28T00:07:53.368282",
+      "action": "load_event",
+      "target": "E100",
+      "old_value": null,
+      "new_value": "100米跑",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368290",
+      "action": "load_event",
+      "target": "E200",
+      "old_value": null,
+      "new_value": "200米跑",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368293",
+      "action": "load_event",
+      "target": "E400",
+      "old_value": null,
+      "new_value": "跳远",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368297",
+      "action": "load_event",
+      "target": "E500",
+      "old_value": null,
+      "new_value": "铅球",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368349",
+      "action": "load_score",
+      "target": "A001/E100",
+      "old_value": null,
+      "new_value": "85.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368355",
+      "action": "load_score",
+      "target": "A001/E200",
+      "old_value": null,
+      "new_value": "78.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368359",
+      "action": "load_score",
+      "target": "A001/E400",
+      "old_value": null,
+      "new_value": "42.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368363",
+      "action": "load_score",
+      "target": "A001/E500",
+      "old_value": null,
+      "new_value": "35.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368368",
+      "action": "load_score",
+      "target": "A002/E100",
+      "old_value": null,
+      "new_value": "92.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368372",
+      "action": "load_score",
+      "target": "A002/E200",
+      "old_value": null,
+      "new_value": "88.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368384",
+      "action": "load_score",
+      "target": "A002/E400",
+      "old_value": null,
+      "new_value": "0.0",
+      "source": "seed_dirty",
+      "reason": "adjusted"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368389",
+      "action": "load_score",
+      "target": "A002/E500",
+      "old_value": null,
+      "new_value": "45.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368393",
+      "action": "load_score",
+      "target": "A003/E100",
+      "old_value": null,
+      "new_value": "78.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368398",
+      "action": "load_score",
+      "target": "A003/E200",
+      "old_value": null,
+      "new_value": "72.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368402",
+      "action": "load_score",
+      "target": "A003/E400",
+      "old_value": null,
+      "new_value": "38.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368406",
+      "action": "load_score",
+      "target": "A003/E999",
+      "old_value": null,
+      "new_value": "50.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368410",
+      "action": "load_score",
+      "target": "A004/E100",
+      "old_value": null,
+      "new_value": "88.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368414",
+      "action": "load_score",
+      "target": "A004/E200",
+      "old_value": null,
+      "new_value": "82.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368419",
+      "action": "load_score",
+      "target": "A004/E400",
+      "old_value": null,
+      "new_value": "-5.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368428",
+      "action": "load_score",
+      "target": "A004/E500",
+      "old_value": null,
+      "new_value": "120.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368433",
+      "action": "load_score",
+      "target": "A005/E100",
+      "old_value": null,
+      "new_value": "88.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368437",
+      "action": "load_score",
+      "target": "A005/E200",
+      "old_value": null,
+      "new_value": "82.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368441",
+      "action": "load_score",
+      "target": "A005/E400",
+      "old_value": null,
+      "new_value": "44.0",
+      "source": "seed_dirty",
+      "reason": "original"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368448",
+      "action": "load_score",
+      "target": "A005/E500",
+      "old_value": null,
+      "new_value": "0.0",
+      "source": "seed_dirty",
+      "reason": "adjusted"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368471",
+      "action": "load_tie_rule",
+      "target": "TR01",
+      "old_value": null,
+      "new_value": "gold_first",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368476",
+      "action": "load_tie_rule",
+      "target": "TR02",
+      "old_value": null,
+      "new_value": "gold_first",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368569",
+      "action": "load_tie_rule",
+      "target": "TR03",
+      "old_value": null,
+      "new_value": "alphabetical",
+      "source": "seed_dirty",
+      "reason": ""
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368602",
+      "action": "load_withdrawal",
+      "target": "A002/E400",
+      "old_value": null,
+      "new_value": "average",
+      "source": "seed_dirty",
+      "reason": "伤病"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368624",
+      "action": "load_appeal",
+      "target": "AP001",
+      "old_value": null,
+      "new_value": "pending",
+      "source": "seed_dirty",
+      "reason": "刘洋铅球成绩录入有误，应为 40 分"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368628",
+      "action": "load_appeal",
+      "target": "AP002",
+      "old_value": null,
+      "new_value": "pending",
+      "source": "seed_dirty",
+      "reason": "李娜100米起跑犯规争议"
+    },
+    {
+      "timestamp": "2026-05-28T00:07:53.368634",
+      "action": "compute_ranking",
+      "target": "start",
+      "old_value": null,
+      "new_value": null,
+      "source": "engine",
+      "reason": ""
+    }
+  ]
+}

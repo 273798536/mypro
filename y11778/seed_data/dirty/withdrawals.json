@@ -1,0 +1,10 @@
+[
+  {
+    "athlete_id": "A002",
+    "event_id": "E400",
+    "reason": "伤病",
+    "score_policy": "average",
+    "source": "seed_dirty",
+    "timestamp": "2026-05-28T00:10:39.479741"
+  }
+]

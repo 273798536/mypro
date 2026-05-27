@@ -1,0 +1,29 @@
+[
+  {
+    "rule_id": "TR01",
+    "event_id": null,
+    "strategy": "gold_first",
+    "priority": 10,
+    "description": "按最高单项",
+    "source": "seed_dirty",
+    "is_active": true
+  },
+  {
+    "rule_id": "TR02",
+    "event_id": null,
+    "strategy": "gold_first",
+    "priority": 10,
+    "description": "按最高单项（重复）",
+    "source": "seed_dirty",
+    "is_active": true
+  },
+  {
+    "rule_id": "TR03",
+    "event_id": "E100",
+    "strategy": "alphabetical",
+    "priority": 8,
+    "description": "100米按姓名",
+    "source": "seed_dirty",
+    "is_active": true
+  }
+]

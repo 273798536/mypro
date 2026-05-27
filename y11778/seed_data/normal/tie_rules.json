@@ -1,0 +1,20 @@
+[
+  {
+    "rule_id": "TR01",
+    "event_id": null,
+    "strategy": "gold_first",
+    "priority": 10,
+    "description": "同分时按最高单项成绩排序",
+    "source": "seed_normal",
+    "is_active": true
+  },
+  {
+    "rule_id": "TR02",
+    "event_id": null,
+    "strategy": "alphabetical",
+    "priority": 5,
+    "description": "最高单项相同时按姓名排序",
+    "source": "seed_normal",
+    "is_active": true
+  }
+]

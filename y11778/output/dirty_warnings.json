@@ -1,0 +1,82 @@
+[
+  {
+    "severity": "warning",
+    "category": "弃权计分",
+    "message": "有 1 条弃权记录使用「平均分」策略，可能虚高排名",
+    "athlete_id": null,
+    "event_id": null,
+    "detail": "A002/E400"
+  },
+  {
+    "severity": "info",
+    "category": "弃权计分",
+    "message": "选手 李娜 在项目 E400 弃权，得分调整为 0.0",
+    "athlete_id": "A002",
+    "event_id": "E400",
+    "detail": null
+  },
+  {
+    "severity": "error",
+    "category": "同分规则",
+    "message": "全局 存在重复的同分策略",
+    "athlete_id": null,
+    "event_id": null,
+    "detail": "['gold_first', 'gold_first']"
+  },
+  {
+    "severity": "warning",
+    "category": "同分规则",
+    "message": "全局 有多条同分规则优先级相同，顺序不确定",
+    "athlete_id": null,
+    "event_id": null,
+    "detail": "[('TR01', 10), ('TR02', 10)]"
+  },
+  {
+    "severity": "info",
+    "category": "同分规则",
+    "message": "同时存在全局同分规则和项目专属规则，项目规则优先",
+    "athlete_id": null,
+    "event_id": null,
+    "detail": "全局: ['TR01', 'TR02']; 项目: ['E100']"
+  },
+  {
+    "severity": "error",
+    "category": "项目权重",
+    "message": "以下项目权重 ≤ 0，将导致该项目成绩无效：E400, E500",
+    "athlete_id": null,
+    "event_id": null,
+    "detail": "权重 ≤ 0 的项目得分乘以权重后为 0 或负值"
+  },
+  {
+    "severity": "error",
+    "category": "脏数据",
+    "message": "选手 王强 的项目 E999 不在项目列表中",
+    "athlete_id": "A003",
+    "event_id": "E999",
+    "detail": null
+  },
+  {
+    "severity": "warning",
+    "category": "脏数据",
+    "message": "选手 刘洋 在项目 E400 的成绩为负数 (-5.0)",
+    "athlete_id": "A004",
+    "event_id": "E400",
+    "detail": null
+  },
+  {
+    "severity": "warning",
+    "category": "脏数据",
+    "message": "选手 刘洋 成绩 120.0 超过项目 E500 满分 50",
+    "athlete_id": "A004",
+    "event_id": "E500",
+    "detail": null
+  },
+  {
+    "severity": "warning",
+    "category": "申诉",
+    "message": "有 2 条待处理申诉，排名可能后续变动",
+    "athlete_id": null,
+    "event_id": null,
+    "detail": "AP001; AP002"
+  }
+]

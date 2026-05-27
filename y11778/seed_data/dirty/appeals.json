@@ -1,0 +1,24 @@
+[
+  {
+    "appeal_id": "AP001",
+    "athlete_id": "A004",
+    "event_id": "E400",
+    "description": "刘洋铅球成绩录入有误，应为 40 分",
+    "status": "pending",
+    "submitted_at": "2026-05-28T00:10:39.479786",
+    "resolved_at": null,
+    "resolution": null,
+    "source": "seed_dirty"
+  },
+  {
+    "appeal_id": "AP002",
+    "athlete_id": "A002",
+    "event_id": "E100",
+    "description": "李娜100米起跑犯规争议",
+    "status": "pending",
+    "submitted_at": "2026-05-28T00:10:39.479792",
+    "resolved_at": null,
+    "resolution": null,
+    "source": "seed_dirty"
+  }
+]
