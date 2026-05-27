@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.eggs/
+build/
+dist/
+*.db
+*.sqlite
+exports/
+test_exports/
+.DS_Store

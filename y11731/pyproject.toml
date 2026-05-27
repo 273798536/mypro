@@ -1,0 +1,19 @@
+[project]
+name = "redemption-queue"
+version = "0.1.0"
+description = "银行理财赎回排队服务 - 开放日校验、份额锁定、顺延状态、撤单回滚、报告导出"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+]
+
+[project.scripts]
+rq = "redemption_queue.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

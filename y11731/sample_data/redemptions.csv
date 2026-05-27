@@ -1,0 +1,4 @@
+order_no,product_code,customer_id,amount,apply_date,source
+ORD-101,P001,C001,10000.0000,2026-05-28,客户赎回单
+ORD-102,P002,C002,10000.0000,2026-05-27,客户赎回单
+ORD-103,P001,C003,5000.0000,2026-05-27,客户赎回单
