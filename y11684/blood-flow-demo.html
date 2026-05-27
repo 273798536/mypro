@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>血流速度管道演示 - 生物物理实验</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", sans-serif; background: #0a0e27; color: #e0e6f0; overflow: hidden; }
+  #app { display: flex; height: 100vh; }
+  #canvas-container { flex: 1; position: relative; }
+  #canvas-container canvas { display: block; }
+  #sidebar { width: 380px; background: #121629; border-left: 1px solid #2a2f4a; overflow-y: auto; padding: 16px; }
+  #sidebar::-webkit-scrollbar { width: 6px; }
+  #sidebar::-webkit-scrollbar-track { background: #121629; }
+  #sidebar::-webkit-scrollbar-thumb { background: #3a3f5a; border-radius: 3px; }
+
+  .section { background: #1a1f38; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .section-title { font-size: 13px; color: #6fb3ff; margin-bottom: 10px; font-weight: 600; letter-spacing: 0.5px; }
+  .row { margin-bottom: 10px; }
+  .row label { display: block; font-size: 12px; color: #8b95b0; margin-bottom: 4px; }
+  .row .slider-wrap { display: flex; align-items: center; gap: 8px; }
+  .row input[type="range"] { flex: 1; accent-color: #4a9eff; height: 4px; }
+  .row .val { width: 68px; text-align: right; font-size: 12px; color: #6fb3ff; font-family: monospace; }
+  .row .val.warn { color: #ff6b6b; }
+
+  .info-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 4px; }
+  .badge-normal { background: #1e4a2a; color: #4ade80; }
+  .badge-warning { background: #4a3a1e; color: #fbbf24; }
+  .badge-danger { background: #4a1e2a; color: #f87171; }
+
+  .samples { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .sample-btn { padding: 8px 4px; border-radius: 6px; border: 1px solid #2a2f4a; background: #1a1f38; color: #c0cbe0; cursor: pointer; font-size: 11px; text-align: center; transition: all 0.15s; }
+  .sample-btn:hover { border-color: #4a9eff; background: #1e2444; }
+  .sample-btn.normal { border-color: #2a5a3a; }
+  .sample-btn.warning { border-color: #5a4a2a; }
+  .sample-btn.danger { border-color: #5a2a3a; }
+
+  .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+  .btn-primary { background: #4a9eff; color: #fff; }
+  .btn-primary:hover { background: #6fb3ff; }
+  .btn-secondary { background: #2a3050; color: #c0cbe0; }
+  .btn-secondary:hover { background: #3a4060; }
+
+  .legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; }
+  .legend-bar { flex: 1; height: 10px; border-radius: 3px; background: linear-gradient(to right, #3b82f6, #22c55e, #eab308, #ef4444); }
+  .legend-label { font-size: 10px; color: #6b7591; }
+
+  #tooltip { position: absolute; background: rgba(20, 25, 50, 0.95); border: 1px solid #4a9eff; border-radius: 6px; padding: 8px 12px; font-size: 12px; pointer-events: none; display: none; z-index: 100; min-width: 180px; }
+  #tooltip .t-title { color: #6fb3ff; font-weight: 600; margin-bottom: 4px; }
+  #tooltip .t-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 2px; }
+  #tooltip .t-label { color: #8b95b0; }
+  #tooltip .t-val { color: #e0e6f0; font-family: monospace; }
+
+  #status-bar { position: absolute; bottom: 10px; left: 10px; right: 10px; display: flex; gap: 8px; pointer-events: none; }
+  .status-msg { background: rgba(20, 25, 50, 0.9); border-radius: 6px; padding: 6px 12px; font-size: 11px; border-left: 3px solid; pointer-events: auto; }
+  .status-msg.info { border-color: #4a9eff; }
+  .status-msg.warning { border-color: #fbbf24; }
+  .status-msg.danger { border-color: #f87171; }
+
+  #topbar { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+  #topbar .title { font-size: 16px; font-weight: 600; color: #6fb3ff; pointer-events: auto; }
+  #topbar .title .subtitle { font-size: 11px; color: #6b7591; font-weight: 400; margin-left: 8px; }
+  #topbar .controls { pointer-events: auto; display: flex; gap: 8px; }
+
+  .check-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #c0cbe0; margin-bottom: 6px; }
+  .check-row input { accent-color: #4a9eff; }
+
+  .trace-log { max-height: 80px; overflow-y: auto; background: #0d1024; border-radius: 4px; padding: 6px 8px; font-size: 10px; font-family: monospace; margin-top: 6px; }
+  .trace-log .log-line { margin-bottom: 2px; color: #6b7591; }
+  .trace-log .log-line.correction { color: #fbbf24; }
+  .trace-log .log-line.accepted { color: #4ade80; }
+
+  .divider { height: 1px; background: #2a2f4a; margin: 10px 0; }
+
+  select { background: #0d1024; border: 1px solid #2a2f4a; color: #e0e6f0; padding: 4px 8px; border-radius: 4px; font-size: 12px; width: 100%; }
+  select:focus { outline: none; border-color: #4a9eff; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-container">
+    <div id="topbar">
+      <div class="title">血流速度管道演示 <span class="subtitle">生物物理 · 狭窄血管流体实验</span></div>
+      <div class="controls">
+        <button class="btn btn-secondary" onclick="resetCamera()">重置视角</button>
+        <button class="btn btn-primary" onclick="exportScreenshot()">导出截图</button>
+      </div>
+    </div>
+    <div id="tooltip"></div>
+    <div id="status-bar"></div>
+  </div>
+  <div id="sidebar">
+    <div class="section">
+      <div class="section-title">实验参数</div>
+      <div class="row">
+        <label>管径 D (mm)</label>
+        <div class="slider-wrap">
+          <input type="range" id="diameter" min="1" max="30" step="0.1" value="10">
+          <span class="val" id="diameter-val">10.0</span>
+        </div>
+      </div>
+      <div class="row">
+        <label>流速 v (cm/s)</label>
+        <div class="slider-wrap">
+          <input type="range" id="velocity" min="0" max="200" step="0.5" value="30">
+          <span class="val" id="velocity-val">30.0</span>
+        </div>
+      </div>
+      <div class="row">
+        <label>黏度 η (mPa·s)</label>
+        <div class="slider-wrap">
+          <input type="range" id="viscosity" min="1" max="10" step="0.1" value="3.5">
+          <span class="val" id="viscosity-val">3.5</span>
+        </div>
+      </div>
+      <div class="row">
+        <label>狭窄程度 (%)</label>
+        <div class="slider-wrap">
+          <input type="range" id="stenosis" min="0" max="90" step="1" value="40">
+          <span class="val" id="stenosis-val">40</span>
+        </div>
+      </div>
+      <div class="row">
+        <label>狭窄位置</label>
+        <div class="slider-wrap">
+          <input type="range" id="stenosisPos" min="10" max="90" step="1" value="50">
+          <span class="val" id="stenosisPos-val">50</span>
+        </div>
+      </div>
+      <div class="row">
+        <label>压力采样数</label>
+        <div class="slider-wrap">
+          <input type="range" id="samples" min="10" max="200" step="10" value="80">
+          <span class="val" id="samples-val">80</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">显示选项</div>
+      <div class="check-row"><input type="checkbox" id="showParticles" checked> 粒子流</div>
+      <div class="check-row"><input type="checkbox" id="showHeatmap" checked> 压力热图</div>
+      <div class="check-row"><input type="checkbox" id="showVelocity" checked> 速度标注</div>
+      <div class="check-row"><input type="checkbox" id="showLabels"> 管径标注</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">样例数据</div>
+      <div class="samples">
+        <button class="sample-btn normal" onclick="loadSample('normal')">正常记录</button>
+        <button class="sample-btn warning" onclick="loadSample('boundary')">边界记录</button>
+        <button class="sample-btn danger" onclick="loadSample('bad')">异常数据</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">压力/速度图例</div>
+      <div class="legend">
+        <span class="legend-label">低</span>
+        <div class="legend-bar"></div>
+        <span class="legend-label">高</span>
+      </div>
+      <div style="margin-top:8px; font-size:11px; color:#8b95b0;">
+        蓝色=低压/低速 → 红色=高压/高速
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">参数保护 & 修正追踪</div>
+      <div id="protection-info" style="font-size:11px; color:#8b95b0; line-height:1.6;">
+        当前状态：<span id="param-status" class="info-badge badge-normal">正常</span>
+      </div>
+      <div class="trace-log" id="trace-log">
+        <div class="log-line">[初始化] 系统就绪，等待参数输入...</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">实验报告</div>
+      <div style="font-size:11px; color:#8b95b0; line-height:1.8;">
+        材料来源：生物物理实验室<br>
+        采样参数：管径、流速、黏度、压力采样、狭窄位置<br>
+        数据修正痕迹保留于追踪日志
+      </div>
+      <div style="margin-top:10px;">
+        <button class="btn btn-secondary" style="width:100%;" onclick="exportReport()">生成实验报告</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  const container = document.getElementById('canvas-container');
+  const tooltip = document.getElementById('tooltip');
+  const statusBar = document.getElementById('status-bar');
+  const traceLog = document.getElementById('trace-log');
+  const paramStatus = document.getElementById('param-status');
+
+  let scene, camera, renderer, raycaster, mouse;
+  let pipeGroup, particleGroup, heatmapMesh, labelSprites = [];
+  let particles = [], particleVelocities = [];
+  let animationId;
+  let pipeParams = { diameter: 10, velocity: 30, viscosity: 3.5, stenosis: 40, stenosisPos: 50, samples: 80 };
+  let showOptions = { particles: true, heatmap: true, velocity: true, labels: false };
+  let hoveredObject = null;
+
+  function init(){
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0e27);
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera = new THREE.PerspectiveCamera(50, w/h, 0.1, 1000);
+    camera.position.set(0, 12, 25);
+    camera.lookAt(0, 0, 0);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
+    const ambient = new THREE.AmbientLight(0x404060, 0.6);
+    scene.add(ambient);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(10, 20, 15);
+    scene.add(dirLight);
+
+    const fillLight = new THREE.DirectionalLight(0x6fb3ff, 0.3);
+    fillLight.position.set(-10, 5, -10);
+    scene.add(fillLight);
+
+    const gridHelper = new THREE.GridHelper(40, 40, 0x2a2f4a, 0x1a1f38);
+    gridHelper.position.y = -8;
+    scene.add(gridHelper);
+
+    pipeGroup = new THREE.Group();
+    particleGroup = new THREE.Group();
+    scene.add(pipeGroup);
+    scene.add(particleGroup);
+
+    buildPipe();
+    buildParticles();
+    addEventListeners();
+    animate();
+  }
+
+  function validateParams(params){
+    const issues = [];
+    const warnings = [];
+    const corrected = { ...params };
+
+    if (params.diameter <= 0.5) {
+      issues.push('管径接近零，血管塌陷，无法正常计算');
+      corrected.diameter = Math.max(0.5, params.diameter);
+    }
+    if (params.diameter > 25) {
+      warnings.push('管径超出正常生理范围，结果仅供参考');
+    }
+
+    if (params.velocity > 150) {
+      issues.push('流速过高，超过生理极限（>150cm/s），可能产生湍流');
+      corrected.velocity = Math.min(200, params.velocity);
+    }
+    if (params.velocity < 1) {
+      warnings.push('流速过低，接近停滞状态');
+    }
+
+    if (params.viscosity > 8) {
+      warnings.push('黏度过高，接近病理状态');
+    }
+
+    if (params.stenosis > 85) {
+      issues.push('狭窄程度过高，血管近乎完全阻塞');
+      corrected.stenosis = Math.min(85, params.stenosis);
+    }
+
+    return { issues, warnings, corrected, original: params };
+  }
+
+  function logTrace(msg, type='info'){
+    const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+    const cls = type === 'correction' ? 'correction' : (type === 'accepted' ? 'accepted' : '');
+    const line = document.createElement('div');
+    line.className = 'log-line ' + cls;
+    line.textContent = `[${time}] ${msg}`;
+    traceLog.appendChild(line);
+    traceLog.scrollTop = traceLog.scrollHeight;
+  }
+
+  function showStatus(msg, type='info'){
+    const el = document.createElement('div');
+    el.className = 'status-msg ' + type;
+    el.textContent = msg;
+    statusBar.appendChild(el);
+    setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 4000);
+  }
+
+  function updateParamStatus(issues, warnings){
+    if (issues.length > 0) {
+      paramStatus.textContent = '异常';
+      paramStatus.className = 'info-badge badge-danger';
+    } else if (warnings.length > 0) {
+      paramStatus.textContent = '警告';
+      paramStatus.className = 'info-badge badge-warning';
+    } else {
+      paramStatus.textContent = '正常';
+      paramStatus.className = 'info-badge badge-normal';
+    }
+  }
+
+  function buildPipe(){
+    while(pipeGroup.children.length > 0){
+      pipeGroup.remove(pipeGroup.children[0]);
+    }
+    labelSprites = [];
+
+    const validation = validateParams(pipeParams);
+    updateParamStatus(validation.issues, validation.warnings);
+
+    validation.issues.forEach(i => {
+      showStatus('⚠️ ' + i, 'danger');
+      logTrace('修正: ' + i, 'correction');
+    });
+    validation.warnings.forEach(w => {
+      showStatus(w, 'warning');
+      logTrace('警告: ' + w, 'info');
+    });
+
+    const params = validation.corrected;
+
+    const pipeLength = 30;
+    const segments = 120;
+    const baseRadius = params.diameter / 20;
+
+    const points = [];
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      const x = t * pipeLength - pipeLength / 2;
+      let r = baseRadius;
+
+      const stenosisCenter = (params.stenosisPos / 100) * pipeLength - pipeLength / 2;
+      const stenosisWidth = 2.5;
+      const dist = Math.abs(x - stenosisCenter);
+      if (dist < stenosisWidth) {
+        const factor = Math.cos((dist / stenosisWidth) * Math.PI / 2);
+        r = baseRadius * (1 - (params.stenosis / 100) * factor);
+      }
+
+      points.push(new THREE.Vector3(x, 0, 0));
+    }
+
+    const tubeGeom = new THREE.TubeGeometry(
+      new THREE.CatmullRomCurve3(points),
+      80, baseRadius * 0.15, 16, false
+    );
+    const tubeMat = new THREE.MeshPhongMaterial({
+      color: 0x8b2a3a, transparent: true, opacity: 0.15,
+      side: THREE.DoubleSide, shininess: 30
+    });
+    const tube = new THREE.Mesh(tubeGeom, tubeMat);
+    tube.userData = { type: 'vessel', name: '血管壁' };
+    pipeGroup.add(tube);
+
+    const wallGeom = new THREE.TubeGeometry(
+      new THREE.CatmullRomCurve3(points),
+      80, baseRadius, 16, true
+    );
+    const wallMat = new THREE.MeshPhongMaterial({
+      color: 0x6b4a8b, transparent: true, opacity: 0.08,
+      side: THREE.DoubleSide
+    });
+    const wall = new THREE.Mesh(wallGeom, wallMat);
+    pipeGroup.add(wall);
+
+    buildHeatmap(params, points, baseRadius, pipeLength);
+    buildPressureMarkers(params, pipeLength);
+
+    if (showOptions.labels) {
+      addDiameterLabels(params, pipeLength);
+    }
+  }
+
+  function buildHeatmap(params, points, baseRadius, pipeLength){
+    if (heatmapMesh) {
+      pipeGroup.remove(heatmapMesh);
+      heatmapMesh = null;
+    }
+    if (!showOptions.heatmap) return;
+
+    const segments = 120;
+    const ringGeom = new THREE.RingGeometry(0.02, baseRadius * 0.98, 32);
+    const ringMat = new THREE.MeshBasicMaterial({
+      transparent: true, opacity: 0.6, side: THREE.DoubleSide,
+      vertexColors: false
+    });
+
+    const heatGroup = new THREE.Group();
+    const sampleCount = params.samples;
+    for (let i = 0; i < sampleCount; i++) {
+      const t = i / (sampleCount - 1);
+      const x = t * pipeLength - pipeLength / 2;
+
+      const pressure = computePressure(params, t);
+      const color = pressureToColor(pressure);
+
+      const stenosisCenter = (params.stenosisPos / 100) * pipeLength - pipeLength / 2;
+      const stenosisWidth = 2.5;
+      const dist = Math.abs(x - stenosisCenter);
+      let r = baseRadius;
+      if (dist < stenosisWidth) {
+        const factor = Math.cos((dist / stenosisWidth) * Math.PI / 2);
+        r = baseRadius * (1 - (params.stenosis / 100) * factor);
+      }
+
+      const mat = new THREE.MeshBasicMaterial({
+        color: color, transparent: true, opacity: 0.55, side: THREE.DoubleSide
+      });
+      const geom = new THREE.RingGeometry(0.02, Math.max(0.05, r * 0.95), 24);
+      const ring = new THREE.Mesh(geom, mat);
+      ring.position.x = x;
+      ring.rotation.y = Math.PI / 2;
+      ring.userData = { type: 'heatmap', pressure: pressure, position: t, localR: r };
+      heatGroup.add(ring);
+    }
+
+    heatmapMesh = heatGroup;
+    pipeGroup.add(heatGroup);
+  }
+
+  function computePressure(params, t){
+    const stenosisT = params.stenosisPos / 100;
+    const dist = Math.abs(t - stenosisT);
+    const width = 0.08;
+    const stenosisFactor = Math.exp(-Math.pow(dist / width, 2));
+
+    const baseP = 100 - (params.velocity * 0.3);
+    const stenosisP = 60 + (params.stenosis / 100) * 80;
+    const viscosityFactor = (params.viscosity / 5) * 10;
+
+    const pressure = baseP + stenosisP * stenosisFactor + viscosityFactor;
+    return Math.max(0, Math.min(200, pressure));
+  }
+
+  function pressureToColor(p){
+    const t = Math.max(0, Math.min(1, p / 200));
+    const r = Math.round(255 * Math.min(1, t * 1.5));
+    const g = Math.round(180 * (1 - Math.abs(t - 0.5) * 2));
+    const b = Math.round(255 * (1 - t));
+    return new THREE.Color(r / 255, Math.max(0, g) / 255, b / 255);
+  }
+
+  function buildPressureMarkers(params, pipeLength){
+    if (!showOptions.velocity) return;
+
+    const markerCount = 8;
+    for (let i = 0; i < markerCount; i++) {
+      const t = (i + 0.5) / markerCount;
+      const x = t * pipeLength - pipeLength / 2;
+      const localVel = computeLocalVelocity(params, t);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 128; canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(10, 14, 39, 0.85)';
+      ctx.fillRect(0, 0, 128, 64);
+      ctx.strokeStyle = '#4a9eff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, 0, 128, 64);
+      ctx.fillStyle = '#6fb3ff';
+      ctx.font = 'bold 14px monospace';
+      ctx.fillText('v=' + localVel.toFixed(1) + 'cm/s', 8, 24);
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = '11px monospace';
+      const p = computePressure(params, t);
+      ctx.fillText('P=' + p.toFixed(0) + 'mmHg', 8, 44);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.scale.set(3, 1.5, 1);
+      sprite.position.set(x, 2.5, 0);
+      sprite.userData = { type: 'velocityLabel', velocity: localVel, pressure: p };
+      pipeGroup.add(sprite);
+      labelSprites.push(sprite);
+    }
+  }
+
+  function computeLocalVelocity(params, t){
+    const stenosisT = params.stenosisPos / 100;
+    const dist = Math.abs(t - stenosisT);
+    const width = 0.08;
+    const stenosisFactor = Math.exp(-Math.pow(dist / width, 2));
+
+    const v = params.velocity * (1 + (params.stenosis / 100) * 2.5 * stenosisFactor);
+    return Math.max(0, v);
+  }
+
+  function addDiameterLabels(params, pipeLength){
+    const baseRadius = params.diameter / 20;
+    const positions = [0.2, 0.5, 0.8];
+    positions.forEach(t => {
+      const x = t * pipeLength - pipeLength / 2;
+      const stenosisCenter = (params.stenosisPos / 100) * pipeLength - pipeLength / 2;
+      const stenosisWidth = 2.5;
+      const dist = Math.abs(x - stenosisCenter);
+      let r = baseRadius;
+      if (dist < stenosisWidth) {
+        const factor = Math.cos((dist / stenosisWidth) * Math.PI / 2);
+        r = baseRadius * (1 - (params.stenosis / 100) * factor);
+      }
+      const d = r * 20;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 100; canvas.height = 36;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(10, 14, 39, 0.85)';
+      ctx.fillRect(0, 0, 100, 36);
+      ctx.strokeStyle = '#4ade80';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, 0, 100, 36);
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('D=' + d.toFixed(1) + 'mm', 8, 22);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.scale.set(2.5, 0.9, 1);
+      sprite.position.set(x, -baseRadius - 1.5, 0);
+      pipeGroup.add(sprite);
+      labelSprites.push(sprite);
+    });
+  }
+
+  function buildParticles(){
+    while(particleGroup.children.length > 0){
+      particleGroup.remove(particleGroup.children[0]);
+    }
+    particles = [];
+    particleVelocities = [];
+
+    if (!showOptions.particles) return;
+
+    const particleCount = 400;
+    const pipeLength = 30;
+    const baseRadius = pipeParams.diameter / 20;
+
+    for (let i = 0; i < particleCount; i++) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 16; canvas.height = 16;
+      const ctx = canvas.getContext('2d');
+      const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+      gradient.addColorStop(0, 'rgba(255, 220, 150, 1)');
+      gradient.addColorStop(0.4, 'rgba(255, 180, 100, 0.8)');
+      gradient.addColorStop(1, 'rgba(255, 150, 50, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 16, 16);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
+      const sprite = new THREE.Sprite(mat);
+
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * baseRadius * 0.85;
+      const x = (Math.random() - 0.5) * pipeLength;
+      sprite.position.set(x, Math.cos(angle) * radius, Math.sin(angle) * radius);
+      sprite.scale.set(0.4, 0.4, 1);
+      sprite.userData = { type: 'particle', baseRadius: radius, angle: angle };
+
+      particleGroup.add(sprite);
+      particles.push(sprite);
+      particleVelocities.push(0.5 + Math.random() * 0.5);
+    }
+  }
+
+  function updateParticles(delta){
+    if (!showOptions.particles) return;
+
+    const pipeLength = 30;
+    const baseRadius = pipeParams.diameter / 20;
+    const speedFactor = pipeParams.velocity / 30;
+
+    particles.forEach((p, i) => {
+      const t = (p.position.x + pipeLength / 2) / pipeLength;
+      const localVel = computeLocalVelocity(pipeParams, Math.max(0, Math.min(1, t)));
+
+      p.position.x += localVel * speedFactor * particleVelocities[i] * delta * 0.08;
+
+      if (p.position.x > pipeLength / 2) {
+        p.position.x = -pipeLength / 2;
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * baseRadius * 0.85;
+        p.position.y = Math.cos(angle) * r;
+        p.position.z = Math.sin(angle) * r;
+      }
+
+      const stenosisCenter = (pipeParams.stenosisPos / 100) * pipeLength - pipeLength / 2;
+      const stenosisWidth = 2.5;
+      const dist = Math.abs(p.position.x - stenosisCenter);
+      let r = baseRadius;
+      if (dist < stenosisWidth) {
+        const factor = Math.cos((dist / stenosisWidth) * Math.PI / 2);
+        r = baseRadius * (1 - (pipeParams.stenosis / 100) * factor);
+      }
+
+      const curR = Math.sqrt(p.position.y ** 2 + p.position.z ** 2);
+      const maxR = Math.max(0.05, r * 0.85);
+      if (curR > maxR) {
+        const a = Math.atan2(p.position.z, p.position.y);
+        p.position.y = Math.cos(a) * maxR;
+        p.position.z = Math.sin(a) * maxR;
+      }
+
+      const pressure = computePressure(pipeParams, Math.max(0, Math.min(1, t)));
+      const col = pressureToColor(pressure);
+      p.material.color = col;
+    });
+  }
+
+  function addEventListeners(){
+    window.addEventListener('resize', onResize);
+    renderer.domElement.addEventListener('mousemove', onMouseMove);
+    renderer.domElement.addEventListener('click', onClick);
+
+    let isDragging = false, prevX = 0, prevY = 0, rotX = 0.3, rotY = 0;
+    renderer.domElement.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - prevX;
+      const dy = e.clientY - prevY;
+      rotY += dx * 0.005;
+      rotX += dy * 0.005;
+      rotX = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, rotX));
+      const r = 28;
+      camera.position.x = r * Math.sin(rotY) * Math.cos(rotX);
+      camera.position.y = r * Math.sin(rotX);
+      camera.position.z = r * Math.cos(rotY) * Math.cos(rotX);
+      camera.lookAt(0, 0, 0);
+      prevX = e.clientX; prevY = e.clientY;
+    });
+
+    renderer.domElement.addEventListener('wheel', e => {
+      e.preventDefault();
+      const dir = e.deltaY > 0 ? 1.1 : 0.9;
+      camera.position.multiplyScalar(dir);
+      const d = camera.position.length();
+      if (d < 10) camera.position.setLength(10);
+      if (d > 60) camera.position.setLength(60);
+    }, { passive: false });
+
+    const ids = ['diameter','velocity','viscosity','stenosis','stenosisPos','samples'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      const valEl = document.getElementById(id + '-val');
+      el.addEventListener('input', () => {
+        const v = parseFloat(el.value);
+        valEl.textContent = v.toFixed(id === 'samples' || id === 'stenosis' || id === 'stenosisPos' ? 0 : 1);
+
+        const param = id === 'diameter' ? 'diameter' : id === 'velocity' ? 'velocity' :
+                     id === 'viscosity' ? 'viscosity' : id === 'stenosis' ? 'stenosis' :
+                     id === 'stenosisPos' ? 'stenosisPos' : 'samples';
+        pipeParams[param] = v;
+
+        const validation = validateParams(pipeParams);
+        if (validation.issues.length > 0 || validation.warnings.length > 0) {
+          valEl.classList.add('warn');
+        } else {
+          valEl.classList.remove('warn');
+        }
+
+        updateParamStatus(validation.issues, validation.warnings);
+      });
+      el.addEventListener('change', () => {
+        logTrace('参数更新: ' + id + ' = ' + el.value, 'accepted');
+        rebuildAll();
+      });
+    });
+
+    document.getElementById('showParticles').addEventListener('change', e => {
+      showOptions.particles = e.target.checked;
+      buildParticles();
+    });
+    document.getElementById('showHeatmap').addEventListener('change', e => {
+      showOptions.heatmap = e.target.checked;
+      buildPipe();
+    });
+    document.getElementById('showVelocity').addEventListener('change', e => {
+      showOptions.velocity = e.target.checked;
+      buildPipe();
+    });
+    document.getElementById('showLabels').addEventListener('change', e => {
+      showOptions.labels = e.target.checked;
+      buildPipe();
+    });
+  }
+
+  function rebuildAll(){
+    buildPipe();
+    buildParticles();
+  }
+
+  function onResize(){
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+
+  function onMouseMove(e){
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const targets = [];
+    pipeGroup.traverse(obj => { if (obj.userData && obj.userData.type) targets.push(obj); });
+    const intersects = raycaster.intersectObjects(targets, true);
+
+    if (intersects.length > 0) {
+      const obj = intersects[0].object;
+      hoveredObject = obj;
+      showTooltip(e.clientX, e.clientY, obj);
+    } else {
+      hoveredObject = null;
+      tooltip.style.display = 'none';
+    }
+  }
+
+  function showTooltip(x, y, obj){
+    const data = obj.userData;
+    let html = '';
+    if (data.type === 'heatmap') {
+      const p = data.pressure;
+      let status = '正常';
+      if (p > 160) status = '危险高压';
+      else if (p > 120) status = '偏高';
+      else if (p < 60) status = '偏低';
+      html = `<div class="t-title">压力采样点</div>
+              <div class="t-row"><span class="t-label">压力</span><span class="t-val">${p.toFixed(1)} mmHg</span></div>
+              <div class="t-row"><span class="t-label">位置</span><span class="t-val">${(data.position*100).toFixed(0)}%</span></div>
+              <div class="t-row"><span class="t-label">局部管径</span><span class="t-val">${(data.localR*20).toFixed(2)} mm</span></div>
+              <div class="t-row"><span class="t-label">状态</span><span class="t-val">${status}</span></div>`;
+    } else if (data.type === 'vessel') {
+      html = `<div class="t-title">血管壁</div>
+              <div class="t-row"><span class="t-label">管径</span><span class="t-val">${pipeParams.diameter.toFixed(1)} mm</span></div>
+              <div class="t-row"><span class="t-label">狭窄程度</span><span class="t-val">${pipeParams.stenosis}%</span></div>
+              <div class="t-row"><span class="t-label">黏度</span><span class="t-val">${pipeParams.viscosity} mPa·s</span></div>`;
+    } else if (data.type === 'velocityLabel') {
+      html = `<div class="t-title">流速/压力标注</div>
+              <div class="t-row"><span class="t-label">局部流速</span><span class="t-val">${data.velocity.toFixed(1)} cm/s</span></div>
+              <div class="t-row"><span class="t-label">局部压力</span><span class="t-val">${data.pressure.toFixed(1)} mmHg</span></div>`;
+    }
+    if (html) {
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (x + 15) + 'px';
+      tooltip.style.top = (y - 10) + 'px';
+    }
+  }
+
+  function onClick(e){
+    if (hoveredObject && hoveredObject.userData) {
+      const data = hoveredObject.userData;
+      if (data.type === 'heatmap') {
+        showStatus(`采样点 #${Math.round(data.position * pipeParams.samples)}: P=${data.pressure.toFixed(1)}mmHg, D=${(data.localR*20).toFixed(2)}mm`, 'info');
+        logTrace(`点击采样: 位置=${(data.position*100).toFixed(0)}%, 压力=${data.pressure.toFixed(1)}mmHg`, 'accepted');
+      }
+    }
+  }
+
+  let lastTime = 0;
+  function animate(time){
+    animationId = requestAnimationFrame(animate);
+    const delta = time - lastTime;
+    lastTime = time;
+
+    updateParticles(delta || 16);
+
+    renderer.render(scene, camera);
+  }
+
+  window.resetCamera = function(){
+    camera.position.set(0, 12, 25);
+    camera.lookAt(0, 0, 0);
+  };
+
+  window.exportScreenshot = function(){
+    renderer.render(scene, camera);
+    const link = document.createElement('a');
+    link.download = '血流演示_' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.png';
+    link.href = renderer.domElement.toDataURL('image/png');
+    link.click();
+    showStatus('截图已导出', 'info');
+    logTrace('截图导出成功', 'accepted');
+  };
+
+  window.loadSample = function(type){
+    let s;
+    if (type === 'normal') {
+      s = { diameter: 10, velocity: 30, viscosity: 3.5, stenosis: 30, stenosisPos: 50, samples: 80 };
+      logTrace('加载样例: 正常记录 (管径10mm, 流速30cm/s, 狭窄30%)', 'accepted');
+      showStatus('加载正常记录 - 生理范围内', 'info');
+    } else if (type === 'boundary') {
+      s = { diameter: 3, velocity: 120, viscosity: 6, stenosis: 75, stenosisPos: 45, samples: 120 };
+      logTrace('加载样例: 边界记录 (管径3mm, 流速120cm/s, 狭窄75%)', 'correction');
+      showStatus('加载边界记录 - 接近生理极限', 'warning');
+    } else {
+      s = { diameter: 0.3, velocity: 180, viscosity: 2, stenosis: 95, stenosisPos: 50, samples: 50 };
+      logTrace('加载样例: 异常数据 (管径0.3mm, 流速180cm/s, 狭窄95%)', 'correction');
+      showStatus('加载异常数据 - 参数异常，已自动修正', 'danger');
+    }
+
+    pipeParams = { ...s };
+    Object.keys(s).forEach(k => {
+      const el = document.getElementById(k);
+      if (el) {
+        el.value = s[k];
+        const valEl = document.getElementById(k + '-val');
+        if (valEl) valEl.textContent = s[k].toFixed(k === 'samples' || k === 'stenosis' || k === 'stenosisPos' ? 0 : 1);
+      }
+    });
+    rebuildAll();
+  };
+
+  window.exportReport = function(){
+    const validation = validateParams(pipeParams);
+    const report = {
+      timestamp: new Date().toISOString(),
+      parameters: pipeParams,
+      validation: {
+        issues: validation.issues,
+        warnings: validation.warnings,
+        correctedParams: validation.corrected
+      },
+      source: '生物物理实验室 - 血流速度管道演示',
+      dataPoints: []
+    };
+
+    const sampleCount = pipeParams.samples;
+    for (let i = 0; i < Math.min(sampleCount, 50); i++) {
+      const t = i / (sampleCount - 1);
+      report.dataPoints.push({
+        position: t.toFixed(3),
+        pressure: computePressure(pipeParams, t).toFixed(2),
+        velocity: computeLocalVelocity(pipeParams, t).toFixed(2)
+      });
+    }
+
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.download = '血流实验报告_' + new Date().toISOString().slice(0,10) + '.json';
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    showStatus('实验报告已导出 (JSON)', 'info');
+    logTrace('实验报告导出: 共 ' + report.dataPoints.length + ' 个数据点', 'accepted');
+  };
+
+  init();
+})();
+</script>
+</body>
+</html>
