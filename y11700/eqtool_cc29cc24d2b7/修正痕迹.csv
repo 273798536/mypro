@@ -1,0 +1,5 @@
+﻿修正ID,修正类型,学生ID,试卷版本,原始值,修正值,原因,时间戳
+2a84d490,absence_excluded,S0003,A卷,61.0,已排除,缺考状态: absent,2026-05-27T15:16:44
+e00f984a,absence_excluded,S0005,A卷,43.0,已排除,缺考状态: invalid,2026-05-27T15:16:44
+1520be56,absence_excluded,S0007,A卷,25.0,已排除,缺考状态: absent,2026-05-27T15:16:44
+b748fdff,absence_excluded,S0103,B卷,58.0,已排除,缺考状态: absent,2026-05-27T15:16:44

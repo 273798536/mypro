@@ -1,0 +1,5 @@
+﻿级别,类别,消息,详情,时间,已确认
+CRITICAL,缺考计入,学生[S0003]试卷[A卷]标记为[absent]，已排除出正常计算,"{'student_id': 'S0003', 'test_form': 'A卷', 'status': 'absent', 'reason': '病假'}",2026-05-27T15:12:22,否
+CRITICAL,缺考计入,学生[S0005]试卷[A卷]标记为[invalid]，已排除出正常计算,"{'student_id': 'S0005', 'test_form': 'A卷', 'status': 'invalid', 'reason': '作弊'}",2026-05-27T15:12:22,否
+CRITICAL,缺考计入,学生[S0007]试卷[A卷]标记为[absent]，已排除出正常计算,"{'student_id': 'S0007', 'test_form': 'A卷', 'status': 'absent', 'reason': '事假'}",2026-05-27T15:12:22,否
+CRITICAL,缺考计入,学生[S0103]试卷[B卷]标记为[absent]，已排除出正常计算,"{'student_id': 'S0103', 'test_form': 'B卷', 'status': 'absent', 'reason': '病假'}",2026-05-27T15:12:22,否
