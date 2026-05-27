@@ -1,0 +1,25 @@
+{
+  "quantile": {
+    "upper": 0.95,
+    "lower": 0.05
+  },
+  "seasonal": {
+    "window": 7,
+    "method": "rolling_zscore",
+    "threshold": 2.0
+  },
+  "tag_groups": {
+    "risk_events": [
+      "system_alert",
+      "manual_review"
+    ],
+    "peak_periods": [
+      "friday_peak",
+      "month_end"
+    ]
+  },
+  "conflict_tags": [
+    "high_risk",
+    "low_risk"
+  ]
+}

@@ -1,0 +1,2 @@
+[console_scripts]
+anomaly-bucket = anomaly_bucket.cli:main

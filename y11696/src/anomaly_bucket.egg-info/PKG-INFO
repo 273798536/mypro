@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: anomaly-bucket
+Version: 0.1.0
+Summary: 统计异常分桶CLI - 风控交易指标异常检测与分桶工具
+Requires-Python: >=3.9
+Requires-Dist: pandas>=1.5.0
+Requires-Dist: numpy>=1.23.0
+Requires-Dist: click>=8.1.0
+Requires-Dist: pyyaml>=6.0
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

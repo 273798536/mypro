@@ -1,0 +1,177 @@
+{
+  "generated_at": "2026-05-27T14:56:18.864326",
+  "validation": {
+    "issues": [
+      {
+        "type": "holiday_false_positive",
+        "severity": "info",
+        "message": "2026-04-05 [daily_tx_amount] 为节假日 [清明节]，异常标记将标注\"节假日误报\"风险",
+        "affected": [
+          "daily_tx_amount@2026-04-05"
+        ]
+      }
+    ],
+    "has_blocking": false
+  },
+  "bucket_assignments": [
+    {
+      "date": "2026-04-01",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "中季节偏离",
+      "score": 0.7244616763479588,
+      "level": "mild",
+      "reasons": [
+        "季节异常: 偏离局部均值 72.4%"
+      ],
+      "sources": [
+        "数据源: risk_system"
+      ]
+    },
+    {
+      "date": "2026-04-02",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "弱季节偏离",
+      "score": 0.4147610143554071,
+      "level": "mild",
+      "reasons": [
+        "季节异常: 偏离局部均值 41.5%"
+      ],
+      "sources": [
+        "数据源: risk_system"
+      ]
+    },
+    {
+      "date": "2026-04-03",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "中季节偏离",
+      "score": 0.7559289460184544,
+      "level": "mild",
+      "reasons": [
+        "季节异常: 偏离局部均值 75.6%"
+      ],
+      "sources": [
+        "数据源: risk_system"
+      ]
+    },
+    {
+      "date": "2026-04-07",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "弱季节偏离",
+      "score": 0.49821919460155734,
+      "level": "mild",
+      "reasons": [
+        "季节异常: 偏离局部均值 49.8%"
+      ],
+      "sources": [
+        "数据源: risk_system"
+      ]
+    },
+    {
+      "date": "2026-04-08",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "中季节偏离",
+      "score": 0.7540436197848918,
+      "level": "mild",
+      "reasons": [
+        "季节异常: 偏离局部均值 75.4%"
+      ],
+      "sources": [
+        "数据源: risk_system"
+      ]
+    },
+    {
+      "date": "2026-04-10",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "弱季节偏离",
+      "score": 0.31843543565248117,
+      "level": "mild",
+      "reasons": [
+        "季节异常: 偏离局部均值 31.8%"
+      ],
+      "sources": [
+        "数据源: risk_system"
+      ]
+    },
+    {
+      "date": "2026-04-16",
+      "metric": "daily_tx_amount",
+      "category": "quantile",
+      "bucket": "极端低值-Q01-",
+      "score": 1.0,
+      "level": "severe",
+      "reasons": [
+        "分位异常: 值 50.00 低于下四分位 100.00"
+      ],
+      "sources": [
+        "数据源: risk_system",
+        "备注: 异常波动"
+      ]
+    },
+    {
+      "date": "2026-04-16",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "强季节偏离",
+      "score": 1.0,
+      "level": "severe",
+      "reasons": [
+        "季节异常: 偏离局部均值 100.0%"
+      ],
+      "sources": [
+        "数据源: risk_system",
+        "备注: 异常波动"
+      ]
+    },
+    {
+      "date": "2026-04-23",
+      "metric": "daily_tx_amount",
+      "category": "quantile",
+      "bucket": "极端高值-Q99+",
+      "score": 1.0,
+      "level": "severe",
+      "reasons": [
+        "分位异常: 值 180.00 超过上四分位 114.00"
+      ],
+      "sources": [
+        "数据源: risk_system",
+        "备注: 异常波动"
+      ]
+    },
+    {
+      "date": "2026-04-23",
+      "metric": "daily_tx_amount",
+      "category": "seasonal",
+      "bucket": "强季节偏离",
+      "score": 1.0,
+      "level": "severe",
+      "reasons": [
+        "季节异常: 偏离局部均值 100.0%"
+      ],
+      "sources": [
+        "数据源: risk_system",
+        "备注: 异常波动"
+      ]
+    }
+  ],
+  "corrections": [],
+  "summary": {
+    "total_anomalies": 10,
+    "by_category": {
+      "seasonal": 8,
+      "quantile": 2
+    },
+    "by_level": {
+      "normal": 0,
+      "mild": 6,
+      "moderate": 0,
+      "severe": 4
+    },
+    "total_corrections": 0
+  }
+}

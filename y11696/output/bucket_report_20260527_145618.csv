@@ -1,0 +1,15 @@
+﻿=== 分桶报告明细 ===
+日期,指标名称,分桶类别,分桶名称,异常分数,异常等级,原因,来源追溯
+2026-04-01,daily_tx_amount,seasonal,中季节偏离,0.7245,mild,季节异常: 偏离局部均值 72.4%,数据源: risk_system
+2026-04-02,daily_tx_amount,seasonal,弱季节偏离,0.4148,mild,季节异常: 偏离局部均值 41.5%,数据源: risk_system
+2026-04-03,daily_tx_amount,seasonal,中季节偏离,0.7559,mild,季节异常: 偏离局部均值 75.6%,数据源: risk_system
+2026-04-07,daily_tx_amount,seasonal,弱季节偏离,0.4982,mild,季节异常: 偏离局部均值 49.8%,数据源: risk_system
+2026-04-08,daily_tx_amount,seasonal,中季节偏离,0.7540,mild,季节异常: 偏离局部均值 75.4%,数据源: risk_system
+2026-04-10,daily_tx_amount,seasonal,弱季节偏离,0.3184,mild,季节异常: 偏离局部均值 31.8%,数据源: risk_system
+2026-04-16,daily_tx_amount,quantile,极端低值-Q01-,1.0000,severe,分位异常: 值 50.00 低于下四分位 100.00,数据源: risk_system; 备注: 异常波动
+2026-04-16,daily_tx_amount,seasonal,强季节偏离,1.0000,severe,季节异常: 偏离局部均值 100.0%,数据源: risk_system; 备注: 异常波动
+2026-04-23,daily_tx_amount,quantile,极端高值-Q99+,1.0000,severe,分位异常: 值 180.00 超过上四分位 114.00,数据源: risk_system; 备注: 异常波动
+2026-04-23,daily_tx_amount,seasonal,强季节偏离,1.0000,severe,季节异常: 偏离局部均值 100.0%,数据源: risk_system; 备注: 异常波动
+
+=== 校验信息 ===
+holiday_false_positive,info,"2026-04-05 [daily_tx_amount] 为节假日 [清明节]，异常标记将标注""节假日误报""风险",daily_tx_amount@2026-04-05

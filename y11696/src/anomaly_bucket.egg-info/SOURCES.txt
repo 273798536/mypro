@@ -1,0 +1,15 @@
+setup.py
+src/anomaly_bucket/__init__.py
+src/anomaly_bucket/analyzer.py
+src/anomaly_bucket/bucket.py
+src/anomaly_bucket/cli.py
+src/anomaly_bucket/models.py
+src/anomaly_bucket/reporter.py
+src/anomaly_bucket/validator.py
+src/anomaly_bucket.egg-info/PKG-INFO
+src/anomaly_bucket.egg-info/SOURCES.txt
+src/anomaly_bucket.egg-info/dependency_links.txt
+src/anomaly_bucket.egg-info/entry_points.txt
+src/anomaly_bucket.egg-info/requires.txt
+src/anomaly_bucket.egg-info/top_level.txt
+tests/test_anomaly_bucket.py
