@@ -1,0 +1,3797 @@
+{
+  "generated_at": "2026-05-27T23:35:32.131475",
+  "source_files": [
+    "returns_source1.csv",
+    "returns_source2.csv"
+  ],
+  "asset_order": [
+    "STOCK_A",
+    "STOCK_B",
+    "STOCK_C",
+    "STOCK_D",
+    "STOCK_E",
+    "STOCK_F"
+  ],
+  "summary": {
+    "n_assets": 6,
+    "cleaning_time": "2026-05-27T23:35:32.131475",
+    "source_files": [
+      "returns_source1.csv",
+      "returns_source2.csv"
+    ],
+    "asset_order": [
+      "STOCK_A",
+      "STOCK_B",
+      "STOCK_C",
+      "STOCK_D",
+      "STOCK_E",
+      "STOCK_F"
+    ],
+    "total_corrections": 121,
+    "unprocessed_count": 14,
+    "corrected_count": 85,
+    "manual_count": 22,
+    "severity_counts": {
+      "info": 14,
+      "warning": 85,
+      "critical": 22
+    },
+    "type_counts": {
+      "order_reorder": 5,
+      "order_drop_extra": 8,
+      "missing_impute_mean": 13,
+      "missing_drop_row": 93,
+      "posdef_eigen_clip": 2
+    },
+    "original_shape": [
+      6,
+      6
+    ],
+    "cleaned_shape": [
+      6,
+      6
+    ],
+    "min_eigenvalue": 6.66217065036369e-05,
+    "max_eigenvalue": 0.00100898955750495,
+    "condition_number": 15.145057226204031,
+    "is_positive_definite": true,
+    "max_correlation": 0.8220173860372995,
+    "min_correlation": -0.8220173860372995
+  },
+  "plots": [
+    "examples/output/test_run_001/eigenvalues.png",
+    "examples/output/test_run_001/covariance_heatmap.png",
+    "examples/output/test_run_001/correlation_heatmap.png",
+    "examples/output/test_run_001/severity_distribution.png"
+  ],
+  "traces": {
+    "all": [
+      {
+        "timestamp": "2026-05-27T23:35:31.987897",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Loaded reference order with 6 assets from examples/input/asset_order.txt",
+        "source_file": "examples/input/asset_order.txt",
+        "asset": null,
+        "details": {
+          "n_assets": 6,
+          "order_file": "examples/input/asset_order.txt"
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.988077",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Merged returns_source1.csv with 6 assets",
+        "source_file": "returns_source1.csv",
+        "asset": null,
+        "details": {
+          "n_assets": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.990989",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Merged returns_source2.csv with 7 assets",
+        "source_file": "returns_source2.csv",
+        "asset": null,
+        "details": {
+          "n_assets": 7
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991041",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Found 7 extra assets not in reference order",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "extra_assets": [
+            "STOCK_F_2",
+            "STOCK_A_2",
+            "STOCK_C_2",
+            "STOCK_B_2",
+            "STOCK_D_2",
+            "STOCK_E_2",
+            "STOCK_G_2"
+          ]
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991051",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_F_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_F_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991055",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_A_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_A_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991059",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_C_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_C_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991062",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_B_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_B_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991065",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_D_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_D_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991069",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_E_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_E_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991072",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_G_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_G_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991076",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Ordered 6 assets according to reference",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "final_order": [
+            "STOCK_A",
+            "STOCK_B",
+            "STOCK_C",
+            "STOCK_D",
+            "STOCK_E",
+            "STOCK_F"
+          ]
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.993955",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Overall missing ratio: 6.22% (94/1512 cells)",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "total_missing": 94,
+          "total_cells": 1512,
+          "overall_ratio": 0.062169312169312166
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994118",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_A' has 5.16% missing values (13 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_A",
+        "details": {
+          "missing_count": 13,
+          "missing_ratio": 0.051587301587301584,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994160",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_B' has 4.76% missing values (12 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_B",
+        "details": {
+          "missing_count": 12,
+          "missing_ratio": 0.047619047619047616,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994173",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_C' has 5.95% missing values (15 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_C",
+        "details": {
+          "missing_count": 15,
+          "missing_ratio": 0.05952380952380952,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994188",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_D' has 7.94% missing values (20 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_D",
+        "details": {
+          "missing_count": 20,
+          "missing_ratio": 0.07936507936507936,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994203",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_E' has 8.33% missing values (21 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_E",
+        "details": {
+          "missing_count": 21,
+          "missing_ratio": 0.08333333333333333,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994261",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_F' has 5.16% missing values (13 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_F",
+        "details": {
+          "missing_count": 13,
+          "missing_ratio": 0.051587301587301584,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.995983",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-05 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-05 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.996870",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-16 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-16 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.996972",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-17 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-17 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997060",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-18 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-18 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997149",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-19 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-19 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997236",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-20 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-20 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997322",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997409",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997495",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997582",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997671",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-27 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-27 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997904",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-02-01 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-02-01 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.998799",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-02-13 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-02-13 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.999927",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-02-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-02-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.000528",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-01 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-01 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.001800",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-03 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-03 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.002186",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-07 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-07 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.002308",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-08 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-08 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.002548",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-09 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-09 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.003880",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-20 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-20 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004136",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-03-22 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-22 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004246",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004641",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-30 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-30 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004878",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-04 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-04 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005043",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-06 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-06 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005130",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-07 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-07 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005555",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-14 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-14 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005926",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-19 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-19 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.006170",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-04-20 00:00:00 has 50.00% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-20 00:00:00",
+          "missing_count": 3,
+          "missing_ratio": 0.5,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.007520",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-02 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-02 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.009448",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-12 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-12 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.010857",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-16 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-16 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.011767",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-17 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-17 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012355",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-22 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-22 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012452",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012538",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012623",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012706",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012789",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-29 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-29 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012870",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-30 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-30 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012949",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-31 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-31 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013027",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-01 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-01 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013108",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-02 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-02 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013186",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-05 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-05 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013889",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-09 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-09 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.014120",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-13 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-13 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.014540",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-21 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-21 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.014916",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015115",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015284",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-27 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-27 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015370",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-28 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-28 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015451",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-29 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-29 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.017223",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-10 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-10 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.018051",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-07-13 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-13 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019036",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-21 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-21 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019384",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019478",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019634",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-27 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-27 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.020809",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-01 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-01 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.022458",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-10 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-10 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.022592",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-11 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-11 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.022692",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-14 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-14 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.023592",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-21 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-21 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.025921",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-29 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-29 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.026319",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-05 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-05 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.031112",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-19 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-19 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.032077",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-22 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-22 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.032769",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.043074",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-28 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-28 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.043173",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-29 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-29 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.046878",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-10-11 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-10-11 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.050098",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-10-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-10-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.050356",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-10-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-10-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.054394",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-03 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-03 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.054870",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-06 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-06 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.055595",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-15 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-15 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.055687",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-16 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-16 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058225",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-01 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-01 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058334",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-12-04 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-04 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058756",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-12-07 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-07 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058849",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-12-08 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-08 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058934",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-11 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-11 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.063640",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-05 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-05 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.064514",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-17 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-17 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.072992",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-03-22 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-22 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.075560",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-04-20 00:00:00 dropped: missing ratio 50.00% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-20 00:00:00",
+          "missing_ratio": 0.5
+        },
+        "before_value": "0.5",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.080161",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-02 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-02 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.081793",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-21 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-21 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.085564",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-07-13 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-13 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.087126",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-01 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-01 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.091310",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-29 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-29 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.099202",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-01 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-01 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.100862",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-11 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-11 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.104442",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 11 missing values for 'STOCK_A' with mean=-0.002288",
+        "source_file": "merged",
+        "asset": "STOCK_A",
+        "details": {
+          "imputed_count": 11,
+          "imputation_value": -0.002287502276220301,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.002287502276220301"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.104720",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 9 missing values for 'STOCK_B' with mean=-0.001242",
+        "source_file": "merged",
+        "asset": "STOCK_B",
+        "details": {
+          "imputed_count": 9,
+          "imputation_value": -0.0012415960920551777,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0012415960920551777"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.104932",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 10 missing values for 'STOCK_C' with mean=-0.003735",
+        "source_file": "merged",
+        "asset": "STOCK_C",
+        "details": {
+          "imputed_count": 10,
+          "imputation_value": -0.0037351987238754677,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0037351987238754677"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.105621",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 17 missing values for 'STOCK_D' with mean=-0.002207",
+        "source_file": "merged",
+        "asset": "STOCK_D",
+        "details": {
+          "imputed_count": 17,
+          "imputation_value": -0.0022066799728118628,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0022066799728118628"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.106531",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 15 missing values for 'STOCK_E' with mean=-0.001970",
+        "source_file": "merged",
+        "asset": "STOCK_E",
+        "details": {
+          "imputed_count": 15,
+          "imputation_value": -0.001969854147327794,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.001969854147327794"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.107422",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 9 missing values for 'STOCK_F' with mean=-0.001251",
+        "source_file": "merged",
+        "asset": "STOCK_F",
+        "details": {
+          "imputed_count": 9,
+          "imputation_value": -0.0012513832272823895,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0012513832272823895"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.110296",
+        "correction_type": "posdef_eigen_clip",
+        "severity": "info",
+        "description": "Estimated 6x6 covariance matrix using pearson method from 241 observations",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "n_assets": 6,
+          "n_obs": 241,
+          "method": "pearson"
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.131381",
+        "correction_type": "posdef_eigen_clip",
+        "severity": "info",
+        "description": "Matrix is positive definite: min eigenvalue=6.66e-05",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "min_eigenvalue": 6.662170650363696e-05
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.131453",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Asset order already matches reference",
+        "source_file": "merged",
+        "asset": null,
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      }
+    ],
+    "unprocessed": [
+      {
+        "timestamp": "2026-05-27T23:35:31.987897",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Loaded reference order with 6 assets from examples/input/asset_order.txt",
+        "source_file": "examples/input/asset_order.txt",
+        "asset": null,
+        "details": {
+          "n_assets": 6,
+          "order_file": "examples/input/asset_order.txt"
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.988077",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Merged returns_source1.csv with 6 assets",
+        "source_file": "returns_source1.csv",
+        "asset": null,
+        "details": {
+          "n_assets": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.990989",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Merged returns_source2.csv with 7 assets",
+        "source_file": "returns_source2.csv",
+        "asset": null,
+        "details": {
+          "n_assets": 7
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991076",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Ordered 6 assets according to reference",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "final_order": [
+            "STOCK_A",
+            "STOCK_B",
+            "STOCK_C",
+            "STOCK_D",
+            "STOCK_E",
+            "STOCK_F"
+          ]
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.993955",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Overall missing ratio: 6.22% (94/1512 cells)",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "total_missing": 94,
+          "total_cells": 1512,
+          "overall_ratio": 0.062169312169312166
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994118",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_A' has 5.16% missing values (13 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_A",
+        "details": {
+          "missing_count": 13,
+          "missing_ratio": 0.051587301587301584,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994160",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_B' has 4.76% missing values (12 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_B",
+        "details": {
+          "missing_count": 12,
+          "missing_ratio": 0.047619047619047616,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994173",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_C' has 5.95% missing values (15 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_C",
+        "details": {
+          "missing_count": 15,
+          "missing_ratio": 0.05952380952380952,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994188",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_D' has 7.94% missing values (20 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_D",
+        "details": {
+          "missing_count": 20,
+          "missing_ratio": 0.07936507936507936,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994203",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_E' has 8.33% missing values (21 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_E",
+        "details": {
+          "missing_count": 21,
+          "missing_ratio": 0.08333333333333333,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.994261",
+        "correction_type": "missing_impute_mean",
+        "severity": "info",
+        "description": "Asset 'STOCK_F' has 5.16% missing values (13 rows)",
+        "source_file": "merged",
+        "asset": "STOCK_F",
+        "details": {
+          "missing_count": 13,
+          "missing_ratio": 0.051587301587301584,
+          "total_rows": 252
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.110296",
+        "correction_type": "posdef_eigen_clip",
+        "severity": "info",
+        "description": "Estimated 6x6 covariance matrix using pearson method from 241 observations",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "n_assets": 6,
+          "n_obs": 241,
+          "method": "pearson"
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.131381",
+        "correction_type": "posdef_eigen_clip",
+        "severity": "info",
+        "description": "Matrix is positive definite: min eigenvalue=6.66e-05",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "min_eigenvalue": 6.662170650363696e-05
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.131453",
+        "correction_type": "order_reorder",
+        "severity": "info",
+        "description": "Asset order already matches reference",
+        "source_file": "merged",
+        "asset": null,
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      }
+    ],
+    "corrected": [
+      {
+        "timestamp": "2026-05-27T23:35:31.991041",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Found 7 extra assets not in reference order",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "extra_assets": [
+            "STOCK_F_2",
+            "STOCK_A_2",
+            "STOCK_C_2",
+            "STOCK_B_2",
+            "STOCK_D_2",
+            "STOCK_E_2",
+            "STOCK_G_2"
+          ]
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991051",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_F_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_F_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991055",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_A_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_A_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991059",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_C_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_C_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991062",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_B_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_B_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991065",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_D_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_D_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991069",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_E_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_E_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.991072",
+        "correction_type": "order_drop_extra",
+        "severity": "warning",
+        "description": "Asset 'STOCK_G_2' not in reference order will be dropped",
+        "source_file": "merged",
+        "asset": "STOCK_G_2",
+        "details": {},
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.996870",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-16 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-16 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997060",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-18 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-18 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997149",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-19 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-19 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997236",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-20 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-20 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997322",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997409",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997495",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997582",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997671",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-01-27 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-27 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.997904",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-02-01 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-02-01 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.998799",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-02-13 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-02-13 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.999927",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-02-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-02-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.000528",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-01 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-01 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.001800",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-03 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-03 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.002186",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-07 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-07 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.002308",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-08 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-08 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.002548",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-09 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-09 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.003880",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-20 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-20 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004246",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004641",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-03-30 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-30 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004878",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-04 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-04 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005043",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-06 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-06 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005130",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-07 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-07 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005555",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-14 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-14 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.005926",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-04-19 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-19 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.007520",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-02 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-02 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.009448",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-12 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-12 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.010857",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-16 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-16 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.011767",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-17 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-17 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012355",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-22 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-22 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012452",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012538",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012623",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012706",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012789",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-29 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-29 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012870",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-30 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-30 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.012949",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-05-31 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-05-31 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013027",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-01 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-01 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013186",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-05 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-05 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013889",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-09 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-09 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.014120",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-13 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-13 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.014916",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-23 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-23 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015115",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015284",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-27 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-27 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015370",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-28 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-28 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.015451",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-06-29 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-29 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.017223",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-10 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-10 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019036",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-21 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-21 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019384",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019478",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.019634",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-07-27 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-27 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.022458",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-10 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-10 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.022592",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-11 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-11 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.022692",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-14 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-14 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.023592",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-08-21 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-21 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.026319",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-05 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-05 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.031112",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-19 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-19 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.032077",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-22 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-22 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.032769",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-26 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-26 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.043074",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-28 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-28 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.043173",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-09-29 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-09-29 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.046878",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-10-11 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-10-11 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.050098",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-10-24 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-10-24 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.050356",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-10-25 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-10-25 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.054394",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-03 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-03 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.054870",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-06 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-06 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.055595",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-15 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-15 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.055687",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-11-16 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-11-16 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058334",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-12-04 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-04 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058756",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-12-07 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-07 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058849",
+        "correction_type": "missing_drop_row",
+        "severity": "warning",
+        "description": "Row 2023-12-08 00:00:00 has 16.67% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-08 00:00:00",
+          "missing_count": 1,
+          "missing_ratio": 0.16666666666666666,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.104442",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 11 missing values for 'STOCK_A' with mean=-0.002288",
+        "source_file": "merged",
+        "asset": "STOCK_A",
+        "details": {
+          "imputed_count": 11,
+          "imputation_value": -0.002287502276220301,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.002287502276220301"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.104720",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 9 missing values for 'STOCK_B' with mean=-0.001242",
+        "source_file": "merged",
+        "asset": "STOCK_B",
+        "details": {
+          "imputed_count": 9,
+          "imputation_value": -0.0012415960920551777,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0012415960920551777"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.104932",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 10 missing values for 'STOCK_C' with mean=-0.003735",
+        "source_file": "merged",
+        "asset": "STOCK_C",
+        "details": {
+          "imputed_count": 10,
+          "imputation_value": -0.0037351987238754677,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0037351987238754677"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.105621",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 17 missing values for 'STOCK_D' with mean=-0.002207",
+        "source_file": "merged",
+        "asset": "STOCK_D",
+        "details": {
+          "imputed_count": 17,
+          "imputation_value": -0.0022066799728118628,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0022066799728118628"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.106531",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 15 missing values for 'STOCK_E' with mean=-0.001970",
+        "source_file": "merged",
+        "asset": "STOCK_E",
+        "details": {
+          "imputed_count": 15,
+          "imputation_value": -0.001969854147327794,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.001969854147327794"
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.107422",
+        "correction_type": "missing_impute_mean",
+        "severity": "warning",
+        "description": "Imputed 9 missing values for 'STOCK_F' with mean=-0.001251",
+        "source_file": "merged",
+        "asset": "STOCK_F",
+        "details": {
+          "imputed_count": 9,
+          "imputation_value": -0.0012513832272823895,
+          "strategy": "mean"
+        },
+        "before_value": null,
+        "after_value": "-0.0012513832272823895"
+      }
+    ],
+    "needs_manual": [
+      {
+        "timestamp": "2026-05-27T23:35:31.995983",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-05 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-05 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:31.996972",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-17 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-17 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.004136",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-03-22 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-22 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.006170",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-04-20 00:00:00 has 50.00% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-20 00:00:00",
+          "missing_count": 3,
+          "missing_ratio": 0.5,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.013108",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-02 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-02 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.014540",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-21 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-21 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.018051",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-07-13 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-13 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.020809",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-01 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-01 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.025921",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-29 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-29 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058225",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-01 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-01 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.058934",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-11 00:00:00 has 33.33% missing values",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-11 00:00:00",
+          "missing_count": 2,
+          "missing_ratio": 0.3333333333333333,
+          "total_columns": 6
+        },
+        "before_value": null,
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.063640",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-05 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-05 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.064514",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-01-17 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-01-17 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.072992",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-03-22 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-03-22 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.075560",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-04-20 00:00:00 dropped: missing ratio 50.00% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-04-20 00:00:00",
+          "missing_ratio": 0.5
+        },
+        "before_value": "0.5",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.080161",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-02 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-02 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.081793",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-06-21 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-06-21 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.085564",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-07-13 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-07-13 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.087126",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-01 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-01 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.091310",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-08-29 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-08-29 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.099202",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-01 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-01 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      },
+      {
+        "timestamp": "2026-05-27T23:35:32.100862",
+        "correction_type": "missing_drop_row",
+        "severity": "critical",
+        "description": "Row 2023-12-11 00:00:00 dropped: missing ratio 33.33% exceeds limit",
+        "source_file": "merged",
+        "asset": null,
+        "details": {
+          "row_index": "2023-12-11 00:00:00",
+          "missing_ratio": 0.3333333333333333
+        },
+        "before_value": "0.3333333333333333",
+        "after_value": null
+      }
+    ]
+  },
+  "matrix_shape": [
+    6,
+    6
+  ]
+}

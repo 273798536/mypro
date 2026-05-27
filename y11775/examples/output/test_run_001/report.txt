@@ -1,0 +1,519 @@
+================================================================================
+COVARIANCE MATRIX CLEANING - DIAGNOSTIC REPORT
+================================================================================
+Generated at: 2026-05-27T23:35:32.131475
+Source files: returns_source1.csv, returns_source2.csv
+
+--------------------------------------------------------------------------------
+SUMMARY STATISTICS
+--------------------------------------------------------------------------------
+Number of assets: 6
+Asset order: STOCK_A, STOCK_B, STOCK_C, STOCK_D, STOCK_E, STOCK_F
+Positive definite: YES
+Min eigenvalue: 6.66e-05
+Condition number: 1.51e+01
+
+--------------------------------------------------------------------------------
+PROCESSING SUMMARY
+--------------------------------------------------------------------------------
+Total corrections tracked: 121
+  - Unprocessed (INFO):    14
+  - Corrected (WARNING/ERROR): 85
+  - Needs manual review (CRITICAL): 22
+
+Severity breakdown:
+  - CRITICAL: 22
+  - INFO: 14
+  - WARNING: 85
+
+Correction type breakdown:
+  - missing_drop_row: 93
+  - missing_impute_mean: 13
+  - order_drop_extra: 8
+  - order_reorder: 5
+  - posdef_eigen_clip: 2
+
+--------------------------------------------------------------------------------
+ITEMS NEEDING MANUAL REVIEW (CRITICAL)
+--------------------------------------------------------------------------------
+
+1. [CRITICAL] Row 2023-01-05 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-01-05 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+2. [CRITICAL] Row 2023-01-17 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-01-17 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+3. [CRITICAL] Row 2023-03-22 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-03-22 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+4. [CRITICAL] Row 2023-04-20 00:00:00 has 50.00% missing values
+   Source: merged
+   Details: {"row_index": "2023-04-20 00:00:00", "missing_count": 3, "missing_ratio": 0.5, "total_columns": 6}
+
+5. [CRITICAL] Row 2023-06-02 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-06-02 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+6. [CRITICAL] Row 2023-06-21 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-06-21 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+7. [CRITICAL] Row 2023-07-13 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-07-13 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+8. [CRITICAL] Row 2023-08-01 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-08-01 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+9. [CRITICAL] Row 2023-08-29 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-08-29 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+10. [CRITICAL] Row 2023-12-01 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-12-01 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+11. [CRITICAL] Row 2023-12-11 00:00:00 has 33.33% missing values
+   Source: merged
+   Details: {"row_index": "2023-12-11 00:00:00", "missing_count": 2, "missing_ratio": 0.3333333333333333, "total_columns": 6}
+
+12. [CRITICAL] Row 2023-01-05 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-01-05 00:00:00", "missing_ratio": 0.3333333333333333}
+
+13. [CRITICAL] Row 2023-01-17 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-01-17 00:00:00", "missing_ratio": 0.3333333333333333}
+
+14. [CRITICAL] Row 2023-03-22 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-03-22 00:00:00", "missing_ratio": 0.3333333333333333}
+
+15. [CRITICAL] Row 2023-04-20 00:00:00 dropped: missing ratio 50.00% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-04-20 00:00:00", "missing_ratio": 0.5}
+
+16. [CRITICAL] Row 2023-06-02 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-06-02 00:00:00", "missing_ratio": 0.3333333333333333}
+
+17. [CRITICAL] Row 2023-06-21 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-06-21 00:00:00", "missing_ratio": 0.3333333333333333}
+
+18. [CRITICAL] Row 2023-07-13 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-07-13 00:00:00", "missing_ratio": 0.3333333333333333}
+
+19. [CRITICAL] Row 2023-08-01 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-08-01 00:00:00", "missing_ratio": 0.3333333333333333}
+
+20. [CRITICAL] Row 2023-08-29 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-08-29 00:00:00", "missing_ratio": 0.3333333333333333}
+
+21. [CRITICAL] Row 2023-12-01 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-12-01 00:00:00", "missing_ratio": 0.3333333333333333}
+
+22. [CRITICAL] Row 2023-12-11 00:00:00 dropped: missing ratio 33.33% exceeds limit
+   Source: merged
+   Details: {"row_index": "2023-12-11 00:00:00", "missing_ratio": 0.3333333333333333}
+
+--------------------------------------------------------------------------------
+CORRECTED ITEMS (WARNING/ERROR)
+--------------------------------------------------------------------------------
+
+1. [WARNING] Found 7 extra assets not in reference order
+   Type: order_drop_extra
+   Source: merged
+
+2. [WARNING] Asset 'STOCK_F_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_F_2
+
+3. [WARNING] Asset 'STOCK_A_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_A_2
+
+4. [WARNING] Asset 'STOCK_C_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_C_2
+
+5. [WARNING] Asset 'STOCK_B_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_B_2
+
+6. [WARNING] Asset 'STOCK_D_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_D_2
+
+7. [WARNING] Asset 'STOCK_E_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_E_2
+
+8. [WARNING] Asset 'STOCK_G_2' not in reference order will be dropped
+   Type: order_drop_extra
+   Source: merged
+   Asset: STOCK_G_2
+
+9. [WARNING] Row 2023-01-16 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+10. [WARNING] Row 2023-01-18 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+11. [WARNING] Row 2023-01-19 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+12. [WARNING] Row 2023-01-20 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+13. [WARNING] Row 2023-01-23 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+14. [WARNING] Row 2023-01-24 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+15. [WARNING] Row 2023-01-25 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+16. [WARNING] Row 2023-01-26 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+17. [WARNING] Row 2023-01-27 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+18. [WARNING] Row 2023-02-01 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+19. [WARNING] Row 2023-02-13 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+20. [WARNING] Row 2023-02-24 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+21. [WARNING] Row 2023-03-01 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+22. [WARNING] Row 2023-03-03 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+23. [WARNING] Row 2023-03-07 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+24. [WARNING] Row 2023-03-08 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+25. [WARNING] Row 2023-03-09 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+26. [WARNING] Row 2023-03-20 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+27. [WARNING] Row 2023-03-23 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+28. [WARNING] Row 2023-03-30 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+29. [WARNING] Row 2023-04-04 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+30. [WARNING] Row 2023-04-06 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+31. [WARNING] Row 2023-04-07 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+32. [WARNING] Row 2023-04-14 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+33. [WARNING] Row 2023-04-19 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+34. [WARNING] Row 2023-05-02 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+35. [WARNING] Row 2023-05-12 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+36. [WARNING] Row 2023-05-16 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+37. [WARNING] Row 2023-05-17 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+38. [WARNING] Row 2023-05-22 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+39. [WARNING] Row 2023-05-23 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+40. [WARNING] Row 2023-05-24 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+41. [WARNING] Row 2023-05-25 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+42. [WARNING] Row 2023-05-26 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+43. [WARNING] Row 2023-05-29 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+44. [WARNING] Row 2023-05-30 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+45. [WARNING] Row 2023-05-31 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+46. [WARNING] Row 2023-06-01 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+47. [WARNING] Row 2023-06-05 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+48. [WARNING] Row 2023-06-09 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+49. [WARNING] Row 2023-06-13 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+50. [WARNING] Row 2023-06-23 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+51. [WARNING] Row 2023-06-26 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+52. [WARNING] Row 2023-06-27 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+53. [WARNING] Row 2023-06-28 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+54. [WARNING] Row 2023-06-29 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+55. [WARNING] Row 2023-07-10 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+56. [WARNING] Row 2023-07-21 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+57. [WARNING] Row 2023-07-24 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+58. [WARNING] Row 2023-07-25 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+59. [WARNING] Row 2023-07-27 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+60. [WARNING] Row 2023-08-10 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+61. [WARNING] Row 2023-08-11 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+62. [WARNING] Row 2023-08-14 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+63. [WARNING] Row 2023-08-21 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+64. [WARNING] Row 2023-09-05 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+65. [WARNING] Row 2023-09-19 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+66. [WARNING] Row 2023-09-22 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+67. [WARNING] Row 2023-09-26 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+68. [WARNING] Row 2023-09-28 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+69. [WARNING] Row 2023-09-29 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+70. [WARNING] Row 2023-10-11 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+71. [WARNING] Row 2023-10-24 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+72. [WARNING] Row 2023-10-25 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+73. [WARNING] Row 2023-11-03 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+74. [WARNING] Row 2023-11-06 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+75. [WARNING] Row 2023-11-15 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+76. [WARNING] Row 2023-11-16 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+77. [WARNING] Row 2023-12-04 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+78. [WARNING] Row 2023-12-07 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+79. [WARNING] Row 2023-12-08 00:00:00 has 16.67% missing values
+   Type: missing_drop_row
+   Source: merged
+
+80. [WARNING] Imputed 11 missing values for 'STOCK_A' with mean=-0.002288
+   Type: missing_impute_mean
+   Source: merged
+   Asset: STOCK_A
+   Before -> After: None -> -0.002287502276220301
+
+81. [WARNING] Imputed 9 missing values for 'STOCK_B' with mean=-0.001242
+   Type: missing_impute_mean
+   Source: merged
+   Asset: STOCK_B
+   Before -> After: None -> -0.0012415960920551777
+
+82. [WARNING] Imputed 10 missing values for 'STOCK_C' with mean=-0.003735
+   Type: missing_impute_mean
+   Source: merged
+   Asset: STOCK_C
+   Before -> After: None -> -0.0037351987238754677
+
+83. [WARNING] Imputed 17 missing values for 'STOCK_D' with mean=-0.002207
+   Type: missing_impute_mean
+   Source: merged
+   Asset: STOCK_D
+   Before -> After: None -> -0.0022066799728118628
+
+84. [WARNING] Imputed 15 missing values for 'STOCK_E' with mean=-0.001970
+   Type: missing_impute_mean
+   Source: merged
+   Asset: STOCK_E
+   Before -> After: None -> -0.001969854147327794
+
+85. [WARNING] Imputed 9 missing values for 'STOCK_F' with mean=-0.001251
+   Type: missing_impute_mean
+   Source: merged
+   Asset: STOCK_F
+   Before -> After: None -> -0.0012513832272823895
+
+--------------------------------------------------------------------------------
+UNPROCESSED ITEMS (INFO)
+--------------------------------------------------------------------------------
+1. Loaded reference order with 6 assets from examples/input/asset_order.txt
+2. Merged returns_source1.csv with 6 assets
+3. Merged returns_source2.csv with 7 assets
+4. Ordered 6 assets according to reference
+5. Overall missing ratio: 6.22% (94/1512 cells)
+6. Asset 'STOCK_A' has 5.16% missing values (13 rows)
+7. Asset 'STOCK_B' has 4.76% missing values (12 rows)
+8. Asset 'STOCK_C' has 5.95% missing values (15 rows)
+9. Asset 'STOCK_D' has 7.94% missing values (20 rows)
+10. Asset 'STOCK_E' has 8.33% missing values (21 rows)
+11. Asset 'STOCK_F' has 5.16% missing values (13 rows)
+12. Estimated 6x6 covariance matrix using pearson method from 241 observations
+13. Matrix is positive definite: min eigenvalue=6.66e-05
+14. Asset order already matches reference
+
+--------------------------------------------------------------------------------
+GENERATED PLOTS
+--------------------------------------------------------------------------------
+  - examples/output/test_run_001/eigenvalues.png
+  - examples/output/test_run_001/covariance_heatmap.png
+  - examples/output/test_run_001/correlation_heatmap.png
+  - examples/output/test_run_001/severity_distribution.png
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: 22 ITEMS REQUIRE MANUAL REVIEW!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
