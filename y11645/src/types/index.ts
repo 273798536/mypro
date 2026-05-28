@@ -41,6 +41,26 @@ export interface ConveyorBelt {
   speed: number;
 }
 
+export type SourceType = 'baggage_tag' | 'conveyor_belt' | 'gate_info' | 'oversized_label' | 'transfer_timer' | 'sorting_report';
+
+export const SOURCE_LABELS: Record<SourceType, string> = {
+  baggage_tag: '行李牌',
+  conveyor_belt: '传送带',
+  gate_info: '登机口',
+  oversized_label: '超规件标签',
+  transfer_timer: '转机计时器',
+  sorting_report: '分拣报告',
+};
+
+export interface CorrectionEntry {
+  timestamp: number;
+  field: string;
+  oldValue: string | number | boolean;
+  newValue: string | number | boolean;
+  reason: string;
+  source: SourceType;
+}
+
 export interface ActionRecord {
   timestamp: number;
   baggageId: string;
@@ -50,6 +70,8 @@ export interface ActionRecord {
   errorType: ErrorType;
   scoreChange: number;
   responseTime: number;
+  source: SourceType;
+  correctionTrail: CorrectionEntry[];
   baggageInfo: Pick<Baggage, 'weight' | 'isTransfer' | 'transferTime' | 'isDelayed' | 'gate' | 'destination'>;
 }
 
@@ -89,6 +111,11 @@ export interface LevelConfig {
   };
 }
 
+export interface GateTraffic {
+  exit: ExitType;
+  timestamps: number[];
+}
+
 export interface GameState {
   currentPage: 'home' | 'game' | 'result' | 'history' | 'replay';
   gameStatus: 'idle' | 'playing' | 'paused' | 'finished';
@@ -101,6 +128,7 @@ export interface GameState {
   maxCombo: number;
   currentBaggage: Baggage[];
   conveyorBelts: ConveyorBelt[];
+  gateTraffic: GateTraffic[];
   actions: ActionRecord[];
   currentErrors: ActionRecord[];
   activeError: ActionRecord | null;

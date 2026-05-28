@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/useGameStore';
 import { StarRating } from '../components/StarRating';
-import { EXIT_LABELS, ERROR_MESSAGES } from '../types';
-import { Home, Download, Play, Trash2, Filter, Search, FileSpreadsheet, FileText } from 'lucide-react';
+import { ERROR_MESSAGES } from '../types';
+import { Home, Play, Trash2, Filter, Search, FileSpreadsheet, FileText } from 'lucide-react';
 
 export const History: React.FC = () => {
   const { gameHistory, setPage, startReplay, exportReport, clearHistory } = useGameStore();

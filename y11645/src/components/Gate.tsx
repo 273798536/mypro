@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ExitType, EXIT_LABELS } from '../types';
-import { DoorOpen, Package, AlertTriangle, Clock, Plane } from 'lucide-react';
+import { Package, AlertTriangle, Clock, Plane } from 'lucide-react';
 
 interface GateProps {
   type: ExitType;

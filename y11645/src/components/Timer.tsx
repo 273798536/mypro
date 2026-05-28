@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useGameStore } from '../store/useGameStore';
 
 export const Timer: React.FC = () => {
-  const { gameStatus, timeRemaining, endGame, updateBaggagePositions, spawnBaggage, currentLevel } = useGameStore();
+  const { gameStatus, endGame, updateBaggagePositions, spawnBaggage, currentLevel } = useGameStore();
   const lastUpdateRef = useRef<number>(Date.now());
   const lastSpawnRef = useRef<number>(Date.now());
 

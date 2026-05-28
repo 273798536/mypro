@@ -4,7 +4,7 @@ import { useGameStore } from '../store/useGameStore';
 import { StarRating } from '../components/StarRating';
 import { generateImprovementSuggestions } from '../utils/export';
 import { EXIT_LABELS, ERROR_MESSAGES } from '../types';
-import { Home, RotateCcw, Play, Download, FileText, TrendingUp, Clock, Target, Zap, AlertTriangle } from 'lucide-react';
+import { Home, RotateCcw, Play, Download, TrendingUp, Clock, Target, Zap, AlertTriangle } from 'lucide-react';
 
 export const Result: React.FC = () => {
   const {

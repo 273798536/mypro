@@ -61,10 +61,6 @@ export const Replay: React.FC = () => {
   }
 
   const duration = replayData.endTime - replayData.startTime;
-  const progress = (currentTime / duration) * 100;
-  const errorsAtCurrentTime = replayData.errors.filter(
-    e => e.timestamp - replayData.startTime <= currentTime
-  );
 
   const formatTime = (ms: number) => {
     const seconds = Math.floor(ms / 1000);

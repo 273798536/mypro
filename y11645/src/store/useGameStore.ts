@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { GameState, ExitType, ConveyorBelt, ActionRecord, GameRecord } from '../types';
+import { GameState, ConveyorBelt, GameRecord } from '../types';
 import { LEVELS } from '../data/levels';
-import { generateBaggage, resetBaggageCounter, determineCorrectExit } from '../utils/baggageGenerator';
-import { calculateScore, createActionRecord, calculateAccuracy, calculateStarRating } from '../utils/scoring';
+import { generateBaggage, resetBaggageCounter } from '../utils/baggageGenerator';
+import { calculateScore, createActionRecord, calculateAccuracy, calculateStarRating, updateGateTraffic, determineSource } from '../utils/scoring';
 import { addGameRecord, saveBestScore, loadStorageState, clearAllStorage, getGameRecordById } from '../utils/storage';
 import { exportToCSV, exportToExcel, exportToPDF } from '../utils/export';
 
@@ -41,6 +41,7 @@ const getInitialState = (): Omit<GameState,
   maxCombo: 0,
   currentBaggage: [],
   conveyorBelts: [...initialConveyorBelts],
+  gateTraffic: [],
   actions: [],
   currentErrors: [],
   activeError: null,
@@ -82,6 +83,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       maxCombo: 0,
       currentBaggage: [],
       conveyorBelts: initialConveyorBelts.map(b => ({ ...b })),
+      gateTraffic: [],
       actions: [],
       currentErrors: [],
       activeError: null,
@@ -179,7 +181,25 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (!baggage) return;
     
     const responseTime = Date.now() - baggage.generatedAt;
-    const result = calculateScore(baggage, exitType, responseTime, state.combo);
+    const result = calculateScore(baggage, exitType, responseTime, state.combo, state.gateTraffic);
+    const source = determineSource(baggage, exitType);
+    const newGateTraffic = result.errorType !== 'gate_congested' 
+      ? updateGateTraffic(exitType, state.gateTraffic)
+      : state.gateTraffic;
+    
+    const correctionTrail = result.errorType !== 'none' && result.errorType !== 'gate_congested'
+      ? [{
+          timestamp: Date.now(),
+          field: 'selectedExit',
+          oldValue: exitType,
+          newValue: result.correctExit,
+          reason: result.errorType === 'gate_wrong' ? '登机口分配错误' :
+                  result.errorType === 'oversized_wrong' ? '超规件识别错误' :
+                  result.errorType === 'transfer_timeout' ? '转机时间判断错误' :
+                  result.errorType === 'delayed_wrong' ? '延误航班处理错误' : '分拣规则应用错误',
+          source: source,
+        }]
+      : [];
     
     const actionRecord = createActionRecord(
       baggage,
@@ -187,7 +207,9 @@ export const useGameStore = create<GameState>((set, get) => ({
       result.score,
       result.errorType,
       result.correctExit,
-      baggage.generatedAt
+      baggage.generatedAt,
+      source,
+      correctionTrail
     );
     
     const newCombo = result.errorType === 'none' ? state.combo + 1 : 0;
@@ -199,6 +221,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       score: Math.max(0, state.score + result.score),
       combo: newCombo,
       maxCombo: newMaxCombo,
+      gateTraffic: newGateTraffic,
       currentBaggage: updatedBaggage,
       actions: [...state.actions, actionRecord],
       currentErrors: result.errorType !== 'none' 
