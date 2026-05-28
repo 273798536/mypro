@@ -1,0 +1,74 @@
+[
+  {
+    "slip_no": "SLIP-EUR-001",
+    "order_no": "ORD-2026-001",
+    "currency": "EUR",
+    "amount": 49800.00,
+    "slip_date": "2026-05-24",
+    "bank_ref": "DEUTDEFF5001",
+    "is_split": false,
+    "split_group_id": null,
+    "fee_deducted": true,
+    "fee_amount": 200.00
+  },
+  {
+    "slip_no": "SLIP-JPY-001A",
+    "order_no": "ORD-2026-002",
+    "currency": "JPY",
+    "amount": 3000000.00,
+    "slip_date": "2026-05-26",
+    "bank_ref": "BOFAJPJT3001",
+    "is_split": true,
+    "split_group_id": "GRP-JPY-001",
+    "fee_deducted": false,
+    "fee_amount": null
+  },
+  {
+    "slip_no": "SLIP-JPY-001B",
+    "order_no": "ORD-2026-002",
+    "currency": "JPY",
+    "amount": 2000000.00,
+    "slip_date": "2026-05-27",
+    "bank_ref": "BOFAJPJT3002",
+    "is_split": true,
+    "split_group_id": "GRP-JPY-001",
+    "fee_deducted": false,
+    "fee_amount": null
+  },
+  {
+    "slip_no": "SLIP-GBP-001",
+    "order_no": "ORD-2026-003",
+    "currency": "GBP",
+    "amount": 27650.00,
+    "slip_date": "2026-05-28",
+    "bank_ref": null,
+    "is_split": false,
+    "split_group_id": null,
+    "fee_deducted": false,
+    "fee_amount": null
+  },
+  {
+    "slip_no": "SLIP-USD-001",
+    "order_no": "ORD-2026-004",
+    "currency": null,
+    "amount": null,
+    "slip_date": null,
+    "bank_ref": "CHASUSUS4001",
+    "is_split": false,
+    "split_group_id": null,
+    "fee_deducted": false,
+    "fee_amount": null
+  },
+  {
+    "slip_no": "SLIP-HKD-001",
+    "order_no": null,
+    "currency": "HKD",
+    "amount": 200000.00,
+    "slip_date": "2026-05-22",
+    "bank_ref": "HSBCHKHH5001",
+    "is_split": false,
+    "split_group_id": null,
+    "fee_deducted": false,
+    "fee_amount": null
+  }
+]

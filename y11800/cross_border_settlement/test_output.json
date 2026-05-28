@@ -1,0 +1,116 @@
+[
+  {
+    "settlement_id": 1,
+    "order_no": "ORD-2026-001",
+    "client_name": "Hamburg Trading GmbH",
+    "match_status": "converted",
+    "original_amount": 50000.0,
+    "original_currency": "EUR",
+    "settled_amount": 392500.0,
+    "exchange_rate": 7.85,
+    "rate_date": "2026-05-24",
+    "rate_date_mismatch": false,
+    "fee_handling": "deducted",
+    "fee_amount": 200.0,
+    "slip_nos": [
+      "SLIP-EUR-001"
+    ],
+    "bill_nos": [
+      "PLAT-EUR-001"
+    ],
+    "notes": "水单 'SLIP-EUR-001' 标记为手续费内扣，到账 EUR 49800.00，订单金额 EUR 50000.00 —— 需确认手续费金额，在状态推进时填写 fee_handling='deducted' 和 fee_amount\n确认手续费 200 EUR 内扣",
+    "created_at": "2026-05-28 13:46:37.595648",
+    "updated_at": "2026-05-28 13:46:37.769083"
+  },
+  {
+    "settlement_id": 2,
+    "order_no": "ORD-2026-002",
+    "client_name": "Tokyo Electronics Co., Ltd.",
+    "match_status": "pending_confirm",
+    "original_amount": 5000000.0,
+    "original_currency": "JPY",
+    "settled_amount": null,
+    "exchange_rate": null,
+    "rate_date": null,
+    "rate_date_mismatch": false,
+    "fee_handling": null,
+    "fee_amount": null,
+    "slip_nos": [
+      "SLIP-JPY-001A",
+      "SLIP-JPY-001B"
+    ],
+    "bill_nos": [
+      "PLAT-JPY-001"
+    ],
+    "notes": "水单为拆分到账，需确认拆分组合是否完整对应本订单",
+    "created_at": "2026-05-28 13:46:37.605045",
+    "updated_at": "2026-05-28 13:46:37.605049"
+  },
+  {
+    "settlement_id": 3,
+    "order_no": "ORD-2026-003",
+    "client_name": "London Fashion Group",
+    "match_status": "matched",
+    "original_amount": 28000.0,
+    "original_currency": "GBP",
+    "settled_amount": 27650.0,
+    "exchange_rate": null,
+    "rate_date": null,
+    "rate_date_mismatch": false,
+    "fee_handling": "fee_deducted_suspected",
+    "fee_amount": null,
+    "slip_nos": [
+      "SLIP-GBP-001"
+    ],
+    "bill_nos": [
+      "PLAT-GBP-001"
+    ],
+    "notes": "水单 'SLIP-GBP-001' 到账金额 (GBP 27650.00) 小于订单金额 (GBP 28000.00)，差额 350.00，疑似手续费内扣 —— 请确认是否为手续费内扣；如是，在状态推进时填写 fee_handling='deducted' 和 fee_amount",
+    "created_at": "2026-05-28 13:46:37.618253",
+    "updated_at": "2026-05-28 13:46:37.618258"
+  },
+  {
+    "settlement_id": 4,
+    "order_no": "ORD-2026-004",
+    "client_name": "New York Wholesale Inc.",
+    "match_status": "partial",
+    "original_amount": 35000.0,
+    "original_currency": "USD",
+    "settled_amount": null,
+    "exchange_rate": null,
+    "rate_date": null,
+    "rate_date_mismatch": false,
+    "fee_handling": null,
+    "fee_amount": null,
+    "slip_nos": [
+      "SLIP-USD-001"
+    ],
+    "bill_nos": [
+      "PLAT-USD-001"
+    ],
+    "notes": "水单合计 0.00 < 订单金额 35000.00，到账不足",
+    "created_at": "2026-05-28 13:46:37.638780",
+    "updated_at": "2026-05-28 13:46:37.638786"
+  },
+  {
+    "settlement_id": 5,
+    "order_no": "ORD-2026-005",
+    "client_name": "Hong Kong Trading Ltd.",
+    "match_status": "matched",
+    "original_amount": 200000.0,
+    "original_currency": "HKD",
+    "settled_amount": 200000.0,
+    "exchange_rate": null,
+    "rate_date": null,
+    "rate_date_mismatch": false,
+    "fee_handling": null,
+    "fee_amount": null,
+    "slip_nos": [
+      "SLIP-HKD-001"
+    ],
+    "bill_nos": [],
+    "notes": null,
+    "created_at": "2026-05-28 13:46:37.660606",
+    "updated_at": "2026-05-28 13:46:37.660608"
+  }
+]

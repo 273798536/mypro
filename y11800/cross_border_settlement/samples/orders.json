@@ -1,0 +1,42 @@
+[
+  {
+    "order_no": "ORD-2026-001",
+    "client_name": "Hamburg Trading GmbH",
+    "currency": "EUR",
+    "amount": 50000.00,
+    "order_date": "2026-05-10",
+    "due_date": "2026-05-25"
+  },
+  {
+    "order_no": "ORD-2026-002",
+    "client_name": "Tokyo Electronics Co., Ltd.",
+    "currency": "JPY",
+    "amount": 5000000.00,
+    "order_date": "2026-05-12",
+    "due_date": "2026-05-28"
+  },
+  {
+    "order_no": "ORD-2026-003",
+    "client_name": "London Fashion Group",
+    "currency": "GBP",
+    "amount": 28000.00,
+    "order_date": "2026-05-15",
+    "due_date": "2026-06-01"
+  },
+  {
+    "order_no": "ORD-2026-004",
+    "client_name": "New York Wholesale Inc.",
+    "currency": "USD",
+    "amount": 35000.00,
+    "order_date": "2026-05-18",
+    "due_date": "2026-06-03"
+  },
+  {
+    "order_no": "ORD-2026-005",
+    "client_name": "Hong Kong Trading Ltd.",
+    "currency": "HKD",
+    "amount": 200000.00,
+    "order_date": "2026-05-20",
+    "due_date": "2026-06-05"
+  }
+]

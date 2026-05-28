@@ -1,0 +1,34 @@
+[
+  {
+    "bill_no": "PLAT-EUR-001",
+    "order_no": "ORD-2026-001",
+    "currency": "EUR",
+    "amount": 49800.00,
+    "bill_date": "2026-05-25",
+    "platform_ref": "ALI-EUR-20260525"
+  },
+  {
+    "bill_no": "PLAT-JPY-001",
+    "order_no": "ORD-2026-002",
+    "currency": "JPY",
+    "amount": 5000000.00,
+    "bill_date": null,
+    "platform_ref": "ALI-JPY-20260527"
+  },
+  {
+    "bill_no": "PLAT-GBP-001",
+    "order_no": "ORD-2026-003",
+    "currency": null,
+    "amount": null,
+    "bill_date": null,
+    "platform_ref": "ALI-GBP-20260528"
+  },
+  {
+    "bill_no": "PLAT-USD-001",
+    "order_no": "ORD-2026-004",
+    "currency": "USD",
+    "amount": 35000.00,
+    "bill_date": "2026-05-23",
+    "platform_ref": null
+  }
+]
