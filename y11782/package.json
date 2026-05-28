@@ -1,0 +1,43 @@
+{
+  "name": "course-prereq-checker",
+  "version": "1.0.0",
+  "description": "课程先修图检查CLI工具 - 检测循环依赖、替代课冲突、学期超载",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "course-check": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli/index.js",
+    "dev": "ts-node src/cli/index.ts",
+    "test": "jest",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "course",
+    "prerequisite",
+    "topological-sort",
+    "cycle-detection",
+    "education"
+  ],
+  "author": "教务系统团队",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.0",
+    "@types/jest": "^29.5.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "eslint": "^8.54.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0"
+  }
+}

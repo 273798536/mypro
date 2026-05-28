@@ -1,0 +1,1097 @@
+{
+  "id": "dbc5c007-cbfe-4152-ac87-f9d702e4a868",
+  "createdAt": "2026-05-27T18:27:25.747Z",
+  "dataSource": "manual",
+  "summary": {
+    "totalCourses": 20,
+    "totalPrerequisites": 23,
+    "anomaliesCount": 17,
+    "cyclesCount": 2,
+    "conflictsCount": 4,
+    "overloadsCount": 11
+  },
+  "topology": {
+    "order": [
+      "CS101",
+      "MATH101",
+      "MATH201",
+      "ENG101",
+      "ELEC101",
+      "CS102",
+      "CS202",
+      "MATH102",
+      "PHY101",
+      "ENG102",
+      "ELEC102",
+      "CS201"
+    ],
+    "hasCycle": true,
+    "cycles": [
+      [
+        "CS301",
+        "CS303",
+        "CS301"
+      ],
+      [
+        "CS302",
+        "CS401",
+        "CS302"
+      ]
+    ],
+    "inDegree": {
+      "CS101": 0,
+      "CS102": 1,
+      "CS201": 2,
+      "CS202": 1,
+      "CS301": 3,
+      "CS302": 2,
+      "CS303": 3,
+      "CS401": 1,
+      "CS402": 1,
+      "CS403": 2,
+      "MATH101": 0,
+      "MATH102": 1,
+      "MATH201": 0,
+      "ENG101": 0,
+      "ENG102": 1,
+      "PHY101": 1,
+      "CS501": 1,
+      "CS502": 1,
+      "ELEC101": 0,
+      "ELEC102": 1
+    }
+  },
+  "anomalies": [
+    {
+      "id": "8d4b2ee9-29a1-4596-b5b0-cb3c035778e6",
+      "type": "cycle",
+      "severity": "error",
+      "title": "循环依赖 #1",
+      "description": "检测到课程先修关系循环，涉及 2 门课程：循环路径: 算法设计与分析 (CS301) → 数据库系统 (CS303) → 算法设计与分析 (CS301)",
+      "involvedCourses": [
+        "CS301",
+        "CS303",
+        "CS301"
+      ],
+      "path": [
+        "CS301",
+        "CS303",
+        "CS301"
+      ],
+      "source": "persisted",
+      "details": {
+        "cycle": [
+          "CS301",
+          "CS303",
+          "CS301"
+        ],
+        "cycleLength": 2,
+        "involvedPrerequisites": [
+          {
+            "courseId": "CS301",
+            "prerequisiteId": "CS303",
+            "type": "required",
+            "source": "persisted"
+          },
+          {
+            "courseId": "CS303",
+            "prerequisiteId": "CS301",
+            "type": "required",
+            "source": "persisted"
+          }
+        ],
+        "explanation": "循环路径: 算法设计与分析 (CS301) → 数据库系统 (CS303) → 算法设计与分析 (CS301)",
+        "topologicalOrder": [
+          "CS101",
+          "MATH101",
+          "MATH201",
+          "ENG101",
+          "ELEC101",
+          "CS102",
+          "CS202",
+          "MATH102",
+          "PHY101",
+          "ENG102",
+          "ELEC102",
+          "CS201"
+        ]
+      }
+    },
+    {
+      "id": "2a3b5fda-bce8-4831-8713-f2aaed90a5a7",
+      "type": "cycle",
+      "severity": "error",
+      "title": "循环依赖 #2",
+      "description": "检测到课程先修关系循环，涉及 2 门课程：循环路径: 操作系统 (CS302) → 计算机网络 (CS401) → 操作系统 (CS302)",
+      "involvedCourses": [
+        "CS302",
+        "CS401",
+        "CS302"
+      ],
+      "path": [
+        "CS302",
+        "CS401",
+        "CS302"
+      ],
+      "source": "persisted",
+      "details": {
+        "cycle": [
+          "CS302",
+          "CS401",
+          "CS302"
+        ],
+        "cycleLength": 2,
+        "involvedPrerequisites": [
+          {
+            "courseId": "CS401",
+            "prerequisiteId": "CS302",
+            "type": "required",
+            "source": "persisted"
+          },
+          {
+            "courseId": "CS302",
+            "prerequisiteId": "CS401",
+            "type": "required",
+            "source": "persisted"
+          },
+          {
+            "courseId": "CS401",
+            "prerequisiteId": "CS302",
+            "type": "required",
+            "source": "persisted"
+          }
+        ],
+        "explanation": "循环路径: 操作系统 (CS302) → 计算机网络 (CS401) → 操作系统 (CS302)",
+        "topologicalOrder": [
+          "CS101",
+          "MATH101",
+          "MATH201",
+          "ENG101",
+          "ELEC101",
+          "CS102",
+          "CS202",
+          "MATH102",
+          "PHY101",
+          "ENG102",
+          "ELEC102",
+          "CS201"
+        ]
+      }
+    },
+    {
+      "id": "1fc80afa-ab2d-4a47-868b-06a4bff93423",
+      "type": "alternative_conflict",
+      "severity": "error",
+      "title": "循环替代关系",
+      "description": "检测到循环替代关系：算法设计与分析 (CS301) 与 高级算法 (CS501) 互为替代课程",
+      "involvedCourses": [
+        "CS301",
+        "CS501"
+      ],
+      "path": [
+        "CS301",
+        "CS501",
+        "CS301"
+      ],
+      "source": "persisted",
+      "details": {
+        "conflictType": "circular_alternative",
+        "alternative1": {
+          "originalId": "CS301",
+          "alternativeId": "CS501",
+          "reason": "内容深度更高，适合优秀学生",
+          "effectiveFrom": "2024-01-01",
+          "source": "persisted"
+        },
+        "alternative2": {
+          "originalId": "CS501",
+          "alternativeId": "CS301",
+          "reason": "互为替代",
+          "effectiveFrom": "2024-01-01",
+          "source": "persisted"
+        }
+      }
+    },
+    {
+      "id": "bc691fe2-e62b-40bc-b088-763dbaa5eb17",
+      "type": "semester_overload",
+      "severity": "error",
+      "title": "先修顺序错误",
+      "description": "先修顺序错误：程序设计基础 (CS102) (1年级第1学期) 的先修课 计算机导论 (CS101) (2年级第1学期) 未在之前学期修读",
+      "involvedCourses": [
+        "CS101",
+        "CS102"
+      ],
+      "path": [
+        "CS101",
+        "CS102"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "prerequisite_order",
+        "semester": 1,
+        "studentGrade": 1,
+        "courseId": "CS102",
+        "prerequisiteId": "CS101",
+        "courseSemester": {
+          "grade": 1,
+          "semester": 1
+        },
+        "prerequisiteSemester": {
+          "grade": 2,
+          "semester": 1
+        },
+        "prerequisiteType": "required"
+      }
+    },
+    {
+      "id": "37400e59-13db-4d60-a622-633f4ecf35b5",
+      "type": "semester_overload",
+      "severity": "error",
+      "title": "先修顺序错误",
+      "description": "先修顺序错误：数据结构 (CS201) (1年级第2学期) 的先修课 高等数学II (MATH102) (1年级第2学期) 未在之前学期修读",
+      "involvedCourses": [
+        "MATH102",
+        "CS201"
+      ],
+      "path": [
+        "MATH102",
+        "CS201"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "prerequisite_order",
+        "semester": 2,
+        "studentGrade": 1,
+        "courseId": "CS201",
+        "prerequisiteId": "MATH102",
+        "courseSemester": {
+          "grade": 1,
+          "semester": 2
+        },
+        "prerequisiteSemester": {
+          "grade": 1,
+          "semester": 2
+        },
+        "prerequisiteType": "required"
+      }
+    },
+    {
+      "id": "9f200184-e8b9-43e3-b8c4-2f46aab98944",
+      "type": "semester_overload",
+      "severity": "error",
+      "title": "先修顺序错误",
+      "description": "先修顺序错误：算法设计与分析 (CS301) (2年级第1学期) 的先修课 数据库系统 (CS303) (2年级第1学期) 未在之前学期修读",
+      "involvedCourses": [
+        "CS303",
+        "CS301"
+      ],
+      "path": [
+        "CS303",
+        "CS301"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "prerequisite_order",
+        "semester": 1,
+        "studentGrade": 2,
+        "courseId": "CS301",
+        "prerequisiteId": "CS303",
+        "courseSemester": {
+          "grade": 2,
+          "semester": 1
+        },
+        "prerequisiteSemester": {
+          "grade": 2,
+          "semester": 1
+        },
+        "prerequisiteType": "required"
+      }
+    },
+    {
+      "id": "77c3c6c6-891c-4fdc-ac4f-47550d3b3d9a",
+      "type": "semester_overload",
+      "severity": "error",
+      "title": "先修顺序错误",
+      "description": "先修顺序错误：数据库系统 (CS303) (2年级第1学期) 的先修课 算法设计与分析 (CS301) (2年级第1学期) 未在之前学期修读",
+      "involvedCourses": [
+        "CS301",
+        "CS303"
+      ],
+      "path": [
+        "CS301",
+        "CS303"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "prerequisite_order",
+        "semester": 1,
+        "studentGrade": 2,
+        "courseId": "CS303",
+        "prerequisiteId": "CS301",
+        "courseSemester": {
+          "grade": 2,
+          "semester": 1
+        },
+        "prerequisiteSemester": {
+          "grade": 2,
+          "semester": 1
+        },
+        "prerequisiteType": "required"
+      }
+    },
+    {
+      "id": "796c1b26-3738-48d3-aefd-df758ec6c98a",
+      "type": "semester_overload",
+      "severity": "error",
+      "title": "先修顺序错误",
+      "description": "先修顺序错误：操作系统 (CS302) (2年级第2学期) 的先修课 计算机网络 (CS401) (3年级第1学期) 未在之前学期修读",
+      "involvedCourses": [
+        "CS401",
+        "CS302"
+      ],
+      "path": [
+        "CS401",
+        "CS302"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "prerequisite_order",
+        "semester": 2,
+        "studentGrade": 2,
+        "courseId": "CS302",
+        "prerequisiteId": "CS401",
+        "courseSemester": {
+          "grade": 2,
+          "semester": 2
+        },
+        "prerequisiteSemester": {
+          "grade": 3,
+          "semester": 1
+        },
+        "prerequisiteType": "required"
+      }
+    },
+    {
+      "id": "56fb18d7-e48c-49d1-9b1a-165e9771451d",
+      "type": "alternative_conflict",
+      "severity": "warning",
+      "title": "先修要求不匹配",
+      "description": "替代课程先修要求不匹配：算法设计与分析 (CS301) 与 高级算法 (CS501) 的先修课不同。 算法设计与分析 (CS301) 需要: 数据结构 (CS201), 离散数学 (CS202), 数据库系统 (CS303)。 高级算法 (CS501) 需要: 算法设计与分析 (CS301)。",
+      "involvedCourses": [
+        "CS301",
+        "CS501",
+        "CS201",
+        "CS202",
+        "CS303",
+        "CS301"
+      ],
+      "source": "persisted",
+      "details": {
+        "conflictType": "prerequisite_mismatch",
+        "originalPrerequisites": [
+          "CS201",
+          "CS202",
+          "CS303"
+        ],
+        "alternativePrerequisites": [
+          "CS301"
+        ],
+        "originalOnly": [
+          "CS201",
+          "CS202",
+          "CS303"
+        ],
+        "alternativeOnly": [
+          "CS301"
+        ]
+      }
+    },
+    {
+      "id": "fd209770-a9ef-4fb8-a690-b17804aa43ab",
+      "type": "alternative_conflict",
+      "severity": "warning",
+      "title": "先修要求不匹配",
+      "description": "替代课程先修要求不匹配：高级算法 (CS501) 与 算法设计与分析 (CS301) 的先修课不同。 高级算法 (CS501) 需要: 算法设计与分析 (CS301)。 算法设计与分析 (CS301) 需要: 数据结构 (CS201), 离散数学 (CS202), 数据库系统 (CS303)。",
+      "involvedCourses": [
+        "CS501",
+        "CS301",
+        "CS301",
+        "CS201",
+        "CS202",
+        "CS303"
+      ],
+      "source": "persisted",
+      "details": {
+        "conflictType": "prerequisite_mismatch",
+        "originalPrerequisites": [
+          "CS301"
+        ],
+        "alternativePrerequisites": [
+          "CS201",
+          "CS202",
+          "CS303"
+        ],
+        "originalOnly": [
+          "CS301"
+        ],
+        "alternativeOnly": [
+          "CS201",
+          "CS202",
+          "CS303"
+        ]
+      }
+    },
+    {
+      "id": "f6e6163b-32bd-4970-8e0d-80354bc88709",
+      "type": "alternative_conflict",
+      "severity": "warning",
+      "title": "先修要求不匹配",
+      "description": "替代课程先修要求不匹配：软件工程 (CS402) 与 人工智能导论 (CS403) 的先修课不同。 人工智能导论 (CS403) 需要: 线性代数 (MATH201)。",
+      "involvedCourses": [
+        "CS402",
+        "CS403",
+        "MATH201"
+      ],
+      "source": "persisted",
+      "details": {
+        "conflictType": "prerequisite_mismatch",
+        "originalPrerequisites": [
+          "CS301"
+        ],
+        "alternativePrerequisites": [
+          "CS301",
+          "MATH201"
+        ],
+        "originalOnly": [],
+        "alternativeOnly": [
+          "MATH201"
+        ]
+      }
+    },
+    {
+      "id": "fde6f5a1-f376-4acd-887c-f706485f98d9",
+      "type": "semester_overload",
+      "severity": "warning",
+      "title": "年级不匹配",
+      "description": "重复修读：学生 张三 已修读完成 计算机导论 (CS101)，但仍被安排在本学期计划中",
+      "involvedCourses": [
+        "CS101"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "grade_level_mismatch",
+        "semester": 1,
+        "studentGrade": 2,
+        "studentId": "S001",
+        "studentName": "张三",
+        "completedCourse": "CS101"
+      }
+    },
+    {
+      "id": "ffbf0bd7-1343-4d04-8977-29369a7f0e31",
+      "type": "semester_overload",
+      "severity": "warning",
+      "title": "年级不匹配",
+      "description": "重复修读：学生 李四 已修读完成 计算机导论 (CS101)，但仍被安排在本学期计划中",
+      "involvedCourses": [
+        "CS101"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "grade_level_mismatch",
+        "semester": 1,
+        "studentGrade": 2,
+        "studentId": "S002",
+        "studentName": "李四",
+        "completedCourse": "CS101"
+      }
+    },
+    {
+      "id": "fd4b04bc-0beb-4e38-9dfa-00ab2ab8ed56",
+      "type": "semester_overload",
+      "severity": "warning",
+      "title": "学期安排冲突",
+      "description": "学期安排冲突：软件工程 (CS402) 课程定义为第2学期，但被安排在第1学期",
+      "involvedCourses": [
+        "CS402"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "semester_conflict",
+        "semester": 1,
+        "studentGrade": 3,
+        "courseDefinedSemester": 2,
+        "plannedSemester": 1,
+        "sourceDefinition": "persisted",
+        "sourcePlan": "persisted"
+      }
+    },
+    {
+      "id": "82e3d933-3b2f-4d46-bf6d-014520414227",
+      "type": "semester_overload",
+      "severity": "warning",
+      "title": "学期安排冲突",
+      "description": "学期安排冲突：电路原理 (ELEC101) 课程定义为第1学期，但被安排在第2学期",
+      "involvedCourses": [
+        "ELEC101"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "semester_conflict",
+        "semester": 2,
+        "studentGrade": 1,
+        "courseDefinedSemester": 1,
+        "plannedSemester": 2,
+        "sourceDefinition": "persisted",
+        "sourcePlan": "persisted"
+      }
+    },
+    {
+      "id": "2c741ef8-fd1e-4e22-a0fd-d3c2c30202f1",
+      "type": "semester_overload",
+      "severity": "warning",
+      "title": "学期安排冲突",
+      "description": "学期安排冲突：数字电路 (ELEC102) 课程定义为第2学期，但被安排在第1学期",
+      "involvedCourses": [
+        "ELEC102"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "semester_conflict",
+        "semester": 1,
+        "studentGrade": 2,
+        "courseDefinedSemester": 2,
+        "plannedSemester": 1,
+        "sourceDefinition": "persisted",
+        "sourcePlan": "persisted"
+      }
+    },
+    {
+      "id": "7a3c3b8e-450d-440c-b807-7dc220d01d78",
+      "type": "semester_overload",
+      "severity": "warning",
+      "title": "学期安排冲突",
+      "description": "多重学期安排冲突：计算机导论 (CS101) 被同时安排在多个学期：1年级第1学期, 2年级第1学期",
+      "involvedCourses": [
+        "CS101"
+      ],
+      "source": "persisted",
+      "details": {
+        "overloadType": "semester_conflict",
+        "semester": 1,
+        "studentGrade": 1,
+        "plans": [
+          {
+            "grade": 1,
+            "semester": 1,
+            "source": "persisted"
+          },
+          {
+            "grade": 2,
+            "semester": 1,
+            "source": "persisted"
+          }
+        ]
+      }
+    }
+  ],
+  "recommendations": [
+    "检测到 2 个循环依赖，必须修复才能确定正确的修课顺序。",
+    "建议：检查循环路径中的先修关系，移除造成循环的边。",
+    "循环依赖涉及 4 门课程，需要优先处理。",
+    "检测到 4 个替代课程冲突问题。",
+    "其中 1 个为循环替代，必须修复。",
+    "有 5 个先修顺序错误，需要调整学期安排。",
+    "共有 8 个严重错误，必须在排课前修复。",
+    "共有 9 个警告，建议检查处理。"
+  ],
+  "dataSnapshot": {
+    "courses": [
+      {
+        "id": "CS101",
+        "name": "计算机导论",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 1,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "CS102",
+        "name": "程序设计基础",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 1,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "CS201",
+        "name": "数据结构",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 2,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "CS202",
+        "name": "离散数学",
+        "credits": 3,
+        "department": "计算机学院",
+        "semester": 2,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "CS301",
+        "name": "算法设计与分析",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 1,
+        "gradeLevel": 2,
+        "source": "persisted"
+      },
+      {
+        "id": "CS302",
+        "name": "操作系统",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 2,
+        "gradeLevel": 2,
+        "source": "persisted"
+      },
+      {
+        "id": "CS303",
+        "name": "数据库系统",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 1,
+        "gradeLevel": 2,
+        "source": "persisted"
+      },
+      {
+        "id": "CS401",
+        "name": "计算机网络",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 1,
+        "gradeLevel": 3,
+        "source": "persisted"
+      },
+      {
+        "id": "CS402",
+        "name": "软件工程",
+        "credits": 4,
+        "department": "计算机学院",
+        "semester": 2,
+        "gradeLevel": 3,
+        "source": "persisted"
+      },
+      {
+        "id": "CS403",
+        "name": "人工智能导论",
+        "credits": 3,
+        "department": "计算机学院",
+        "semester": 2,
+        "gradeLevel": 3,
+        "source": "persisted"
+      },
+      {
+        "id": "MATH101",
+        "name": "高等数学I",
+        "credits": 5,
+        "department": "数学学院",
+        "semester": 1,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "MATH102",
+        "name": "高等数学II",
+        "credits": 5,
+        "department": "数学学院",
+        "semester": 2,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "MATH201",
+        "name": "线性代数",
+        "credits": 3,
+        "department": "数学学院",
+        "semester": 1,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "ENG101",
+        "name": "大学英语I",
+        "credits": 3,
+        "department": "外语学院",
+        "semester": 1,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "ENG102",
+        "name": "大学英语II",
+        "credits": 3,
+        "department": "外语学院",
+        "semester": 2,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "PHY101",
+        "name": "大学物理",
+        "credits": 4,
+        "department": "物理学院",
+        "semester": 2,
+        "gradeLevel": 1,
+        "source": "persisted"
+      },
+      {
+        "id": "CS501",
+        "name": "高级算法",
+        "credits": 3,
+        "department": "计算机学院",
+        "semester": 1,
+        "gradeLevel": 4,
+        "source": "persisted"
+      },
+      {
+        "id": "CS502",
+        "name": "机器学习",
+        "credits": 3,
+        "department": "计算机学院",
+        "semester": 2,
+        "gradeLevel": 4,
+        "source": "persisted"
+      },
+      {
+        "id": "ELEC101",
+        "name": "电路原理",
+        "credits": 4,
+        "department": "电子工程学院",
+        "semester": 1,
+        "gradeLevel": 2,
+        "source": "persisted"
+      },
+      {
+        "id": "ELEC102",
+        "name": "数字电路",
+        "credits": 4,
+        "department": "电子工程学院",
+        "semester": 2,
+        "gradeLevel": 2,
+        "source": "persisted"
+      }
+    ],
+    "prerequisites": [
+      {
+        "courseId": "CS102",
+        "prerequisiteId": "CS101",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS201",
+        "prerequisiteId": "CS102",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS201",
+        "prerequisiteId": "MATH102",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS202",
+        "prerequisiteId": "MATH101",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS301",
+        "prerequisiteId": "CS201",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS301",
+        "prerequisiteId": "CS202",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS302",
+        "prerequisiteId": "CS201",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS303",
+        "prerequisiteId": "CS201",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS303",
+        "prerequisiteId": "MATH201",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS401",
+        "prerequisiteId": "CS302",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS402",
+        "prerequisiteId": "CS301",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS403",
+        "prerequisiteId": "CS301",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS403",
+        "prerequisiteId": "MATH201",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "MATH102",
+        "prerequisiteId": "MATH101",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "ENG102",
+        "prerequisiteId": "ENG101",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "PHY101",
+        "prerequisiteId": "MATH101",
+        "type": "corequisite",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS501",
+        "prerequisiteId": "CS301",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS502",
+        "prerequisiteId": "CS403",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "ELEC102",
+        "prerequisiteId": "ELEC101",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS302",
+        "prerequisiteId": "CS401",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS401",
+        "prerequisiteId": "CS302",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS301",
+        "prerequisiteId": "CS303",
+        "type": "required",
+        "source": "persisted"
+      },
+      {
+        "courseId": "CS303",
+        "prerequisiteId": "CS301",
+        "type": "required",
+        "source": "persisted"
+      }
+    ],
+    "semesterPlans": [
+      {
+        "studentGrade": 1,
+        "semester": 1,
+        "maxCredits": 25,
+        "courses": [
+          "CS101",
+          "CS102",
+          "MATH101",
+          "MATH201",
+          "ENG101"
+        ],
+        "source": "persisted"
+      },
+      {
+        "studentGrade": 1,
+        "semester": 2,
+        "maxCredits": 25,
+        "courses": [
+          "CS201",
+          "CS202",
+          "MATH102",
+          "ENG102",
+          "PHY101",
+          "ELEC101"
+        ],
+        "source": "persisted"
+      },
+      {
+        "studentGrade": 2,
+        "semester": 1,
+        "maxCredits": 25,
+        "courses": [
+          "CS301",
+          "CS303",
+          "ELEC102",
+          "CS101"
+        ],
+        "source": "persisted"
+      },
+      {
+        "studentGrade": 2,
+        "semester": 2,
+        "maxCredits": 25,
+        "courses": [
+          "CS302",
+          "CS403"
+        ],
+        "source": "persisted"
+      },
+      {
+        "studentGrade": 3,
+        "semester": 1,
+        "maxCredits": 25,
+        "courses": [
+          "CS401",
+          "CS402",
+          "CS501"
+        ],
+        "source": "persisted"
+      },
+      {
+        "studentGrade": 3,
+        "semester": 2,
+        "maxCredits": 25,
+        "courses": [
+          "CS502"
+        ],
+        "source": "persisted"
+      }
+    ],
+    "alternativeCourses": [
+      {
+        "originalId": "CS301",
+        "alternativeId": "CS501",
+        "reason": "内容深度更高，适合优秀学生",
+        "effectiveFrom": "2024-01-01",
+        "source": "persisted"
+      },
+      {
+        "originalId": "CS501",
+        "alternativeId": "CS301",
+        "reason": "互为替代",
+        "effectiveFrom": "2024-01-01",
+        "source": "persisted"
+      },
+      {
+        "originalId": "CS101",
+        "alternativeId": "ELEC101",
+        "reason": "转专业学生可选",
+        "effectiveFrom": "2024-01-01",
+        "source": "persisted"
+      },
+      {
+        "originalId": "MATH101",
+        "alternativeId": "MATH201",
+        "reason": "先修要求不同",
+        "effectiveFrom": "2024-01-01",
+        "source": "persisted"
+      },
+      {
+        "originalId": "CS402",
+        "alternativeId": "CS403",
+        "reason": "软件工程可替代人工智能导论",
+        "effectiveFrom": "2024-01-01",
+        "source": "persisted"
+      }
+    ],
+    "studentGrades": [
+      {
+        "id": "S001",
+        "name": "张三",
+        "gradeLevel": 2,
+        "completedCourses": [
+          "CS101",
+          "CS102",
+          "MATH101",
+          "MATH102",
+          "ENG101"
+        ],
+        "source": "persisted"
+      },
+      {
+        "id": "S002",
+        "name": "李四",
+        "gradeLevel": 2,
+        "completedCourses": [
+          "CS101",
+          "CS102",
+          "CS201",
+          "MATH101",
+          "MATH102",
+          "ENG101",
+          "ENG102"
+        ],
+        "source": "persisted"
+      },
+      {
+        "id": "S003",
+        "name": "王五",
+        "gradeLevel": 3,
+        "completedCourses": [
+          "CS101",
+          "CS102",
+          "CS201",
+          "CS202",
+          "CS301",
+          "MATH101",
+          "MATH102",
+          "MATH201",
+          "ENG101",
+          "ENG102",
+          "PHY101"
+        ],
+        "source": "persisted"
+      },
+      {
+        "id": "S004",
+        "name": "赵六",
+        "gradeLevel": 1,
+        "completedCourses": [],
+        "source": "persisted"
+      }
+    ]
+  }
+}

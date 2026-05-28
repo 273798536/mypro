@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程先修关系检查报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-card.error {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+        }
+
+        .summary-card.warning {
+            background: linear-gradient(135deg, #ed8936 0%, #c05621 100%);
+        }
+
+        .summary-card.success {
+            background: linear-gradient(135deg, #48bb78 0%, #276749 100%);
+        }
+
+        .summary-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .summary-card .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .topology-order {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .course-chain {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .course-node {
+            background: #4299e1;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .course-node.cycle {
+            background: #f56565;
+            animation: pulse 2s infinite;
+        }
+
+        .arrow {
+            color: #a0aec0;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .anomaly-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .anomaly-card {
+            border-left: 4px solid;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+
+        .anomaly-card.error {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+
+        .anomaly-card.warning {
+            border-color: #ed8936;
+            background: #fffaf0;
+        }
+
+        .anomaly-card.info {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .anomaly-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .anomaly-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2d3748;
+        }
+
+        .anomaly-severity {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .anomaly-severity.error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .anomaly-severity.warning {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .anomaly-severity.info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .anomaly-description {
+            color: #4a5568;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .anomaly-path {
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .anomaly-details {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .anomaly-source {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .recommendations-list {
+            list-style: none;
+        }
+
+        .recommendations-list li {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+            border-radius: 6px;
+            color: #276749;
+        }
+
+        .data-source-section {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .data-source-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .data-source-table th,
+        .data-source-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-source-table th {
+            background: #f7fafc;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible::after {
+            content: ' ▼';
+            font-size: 12px;
+        }
+
+        .collapsible.open::after {
+            content: ' ▲';
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .collapsible-content.open {
+            max-height: 2000px;
+        }
+
+        .cycle-path {
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .cycle-path h4 {
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎓 课程先修关系检查报告</h1>
+            <div class="meta">
+                <span class="badge">报告ID: 943fe13b-1816-403f-b7f5-ec85edc4874a</span>
+                <span class="badge">生成时间: 2026/5/28 01:17:20</span>
+                <span class="badge">数据源: manual</span>
+            </div>
+        </header>
+
+        <section class="section">
+            <h2>📊 检查概览</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="number">20</div>
+                    <div class="label">课程总数</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number">23</div>
+                    <div class="label">先修关系</div>
+                </div>
+                <div class="summary-card error">
+                    <div class="number">17</div>
+                    <div class="label">异常总数</div>
+                </div>
+                <div class="summary-card error">
+                    <div class="number">2</div>
+                    <div class="label">循环依赖</div>
+                </div>
+                <div class="summary-card warning">
+                    <div class="number">4</div>
+                    <div class="label">替代课冲突</div>
+                </div>
+                <div class="summary-card warning">
+                    <div class="number">11</div>
+                    <div class="label">学期超载</div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h2>🔗 拓扑排序结果</h2>
+            <div class="topology-order">
+                <div class="course-chain">
+            <span class="course-node " title="CS101">计算机导论</span><span class="arrow">→</span><span class="course-node " title="MATH101">高等数学I</span><span class="arrow">→</span><span class="course-node " title="MATH201">线性代数</span><span class="arrow">→</span><span class="course-node " title="ENG101">大学英语I</span><span class="arrow">→</span><span class="course-node " title="ELEC101">电路原理</span><span class="arrow">→</span><span class="course-node " title="CS102">程序设计基础</span><span class="arrow">→</span><span class="course-node " title="CS202">离散数学</span><span class="arrow">→</span><span class="course-node " title="MATH102">高等数学II</span><span class="arrow">→</span><span class="course-node " title="PHY101">大学物理</span><span class="arrow">→</span><span class="course-node " title="ENG102">大学英语II</span><span class="arrow">→</span><span class="course-node " title="ELEC102">数字电路</span><span class="arrow">→</span><span class="course-node " title="CS201">数据结构</span>
+        </div>
+            </div>
+            <div style="margin-top: 20px;">
+            <h3 style="color: #c53030; margin-bottom: 15px;">🔴 检测到的循环</h3>
+            <div class="cycle-path">
+                    <h4>循环 #1 (2 门课程)</h4>
+                    <div class="course-chain">
+                        <span class="course-node cycle">算法设计与分析 (CS301)</span><span class="arrow">→</span><span class="course-node cycle">数据库系统 (CS303)</span><span class="arrow">→</span><span class="course-node cycle">算法设计与分析 (CS301)</span>
+                    </div>
+                </div><div class="cycle-path">
+                    <h4>循环 #2 (2 门课程)</h4>
+                    <div class="course-chain">
+                        <span class="course-node cycle">操作系统 (CS302)</span><span class="arrow">→</span><span class="course-node cycle">计算机网络 (CS401)</span><span class="arrow">→</span><span class="course-node cycle">操作系统 (CS302)</span>
+                    </div>
+                </div>
+        </div>
+        </section>
+        <section class="section">
+            <h2>⚠️ 异常检测 (17 项)</h2>
+            <div style="margin-bottom: 25px;">
+                <h3 style="color: #4a5568; margin-bottom: 15px;">🔴 循环依赖 (2 项)</h3>
+                <div class="anomaly-list">
+                    <div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#1 循环依赖 #1</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">检测到课程先修关系循环，涉及 2 门课程：循环路径: 算法设计与分析 (CS301) → 数据库系统 (CS303) → 算法设计与分析 (CS301)</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                算法设计与分析 (CS301) → 数据库系统 (CS303) → 算法设计与分析 (CS301)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span><span class="course-node" style="margin: 3px; display: inline-block;">数据库系统</span><span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span>
+            </div>
+            
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#2 循环依赖 #2</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">检测到课程先修关系循环，涉及 2 门课程：循环路径: 操作系统 (CS302) → 计算机网络 (CS401) → 操作系统 (CS302)</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                操作系统 (CS302) → 计算机网络 (CS401) → 操作系统 (CS302)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">操作系统</span><span class="course-node" style="margin: 3px; display: inline-block;">计算机网络</span><span class="course-node" style="margin: 3px; display: inline-block;">操作系统</span>
+            </div>
+            
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div>
+                </div>
+            </div><div style="margin-bottom: 25px;">
+                <h3 style="color: #4a5568; margin-bottom: 15px;">🟠 替代课程冲突 (4 项)</h3>
+                <div class="anomaly-list">
+                    <div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#1 循环替代关系</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">检测到循环替代关系：算法设计与分析 (CS301) 与 高级算法 (CS501) 互为替代课程</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                算法设计与分析 (CS301) → 高级算法 (CS501) → 算法设计与分析 (CS301)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span><span class="course-node" style="margin: 3px; display: inline-block;">高级算法</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">冲突类型</div>
+                        <div class="detail-value">circular_alternative</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#2 先修要求不匹配</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">替代课程先修要求不匹配：算法设计与分析 (CS301) 与 高级算法 (CS501) 的先修课不同。 算法设计与分析 (CS301) 需要: 数据结构 (CS201), 离散数学 (CS202), 数据库系统 (CS303)。 高级算法 (CS501) 需要: 算法设计与分析 (CS301)。</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span><span class="course-node" style="margin: 3px; display: inline-block;">高级算法</span><span class="course-node" style="margin: 3px; display: inline-block;">数据结构</span><span class="course-node" style="margin: 3px; display: inline-block;">离散数学</span><span class="course-node" style="margin: 3px; display: inline-block;">数据库系统</span><span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">冲突类型</div>
+                        <div class="detail-value">prerequisite_mismatch</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#3 先修要求不匹配</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">替代课程先修要求不匹配：高级算法 (CS501) 与 算法设计与分析 (CS301) 的先修课不同。 高级算法 (CS501) 需要: 算法设计与分析 (CS301)。 算法设计与分析 (CS301) 需要: 数据结构 (CS201), 离散数学 (CS202), 数据库系统 (CS303)。</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">高级算法</span><span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span><span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span><span class="course-node" style="margin: 3px; display: inline-block;">数据结构</span><span class="course-node" style="margin: 3px; display: inline-block;">离散数学</span><span class="course-node" style="margin: 3px; display: inline-block;">数据库系统</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">冲突类型</div>
+                        <div class="detail-value">prerequisite_mismatch</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#4 先修要求不匹配</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">替代课程先修要求不匹配：软件工程 (CS402) 与 人工智能导论 (CS403) 的先修课不同。 人工智能导论 (CS403) 需要: 线性代数 (MATH201)。</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">软件工程</span><span class="course-node" style="margin: 3px; display: inline-block;">人工智能导论</span><span class="course-node" style="margin: 3px; display: inline-block;">线性代数</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">冲突类型</div>
+                        <div class="detail-value">prerequisite_mismatch</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div>
+                </div>
+            </div><div style="margin-bottom: 25px;">
+                <h3 style="color: #4a5568; margin-bottom: 15px;">🟡 学期超载/冲突 (11 项)</h3>
+                <div class="anomaly-list">
+                    <div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#1 先修顺序错误</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">先修顺序错误：程序设计基础 (CS102) (1年级第1学期) 的先修课 计算机导论 (CS101) (2年级第1学期) 未在之前学期修读</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                计算机导论 (CS101) → 程序设计基础 (CS102)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">计算机导论</span><span class="course-node" style="margin: 3px; display: inline-block;">程序设计基础</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">prerequisite_order</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">1年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#2 先修顺序错误</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">先修顺序错误：数据结构 (CS201) (1年级第2学期) 的先修课 高等数学II (MATH102) (1年级第2学期) 未在之前学期修读</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                高等数学II (MATH102) → 数据结构 (CS201)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">高等数学II</span><span class="course-node" style="margin: 3px; display: inline-block;">数据结构</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">prerequisite_order</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第2学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">1年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#3 先修顺序错误</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">先修顺序错误：算法设计与分析 (CS301) (2年级第1学期) 的先修课 数据库系统 (CS303) (2年级第1学期) 未在之前学期修读</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                数据库系统 (CS303) → 算法设计与分析 (CS301)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">数据库系统</span><span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">prerequisite_order</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">2年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#4 先修顺序错误</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">先修顺序错误：数据库系统 (CS303) (2年级第1学期) 的先修课 算法设计与分析 (CS301) (2年级第1学期) 未在之前学期修读</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                算法设计与分析 (CS301) → 数据库系统 (CS303)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析</span><span class="course-node" style="margin: 3px; display: inline-block;">数据库系统</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">prerequisite_order</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">2年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card error">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#5 先修顺序错误</span>
+                <span class="anomaly-severity error">错误</span>
+            </div>
+            <div class="anomaly-description">先修顺序错误：操作系统 (CS302) (2年级第2学期) 的先修课 计算机网络 (CS401) (3年级第1学期) 未在之前学期修读</div>
+            <div class="anomaly-path">
+                <strong>问题路径：</strong><br>
+                计算机网络 (CS401) → 操作系统 (CS302)
+            </div>
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">计算机网络</span><span class="course-node" style="margin: 3px; display: inline-block;">操作系统</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">prerequisite_order</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第2学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">2年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#6 年级不匹配</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">重复修读：学生 张三 已修读完成 计算机导论 (CS101)，但仍被安排在本学期计划中</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">计算机导论</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">grade_level_mismatch</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">2年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#7 年级不匹配</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">重复修读：学生 李四 已修读完成 计算机导论 (CS101)，但仍被安排在本学期计划中</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">计算机导论</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">grade_level_mismatch</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">2年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#8 学期安排冲突</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">学期安排冲突：软件工程 (CS402) 课程定义为第2学期，但被安排在第1学期</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">软件工程</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">semester_conflict</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">3年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#9 学期安排冲突</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">学期安排冲突：电路原理 (ELEC101) 课程定义为第1学期，但被安排在第2学期</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">电路原理</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">semester_conflict</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第2学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">1年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#10 学期安排冲突</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">学期安排冲突：数字电路 (ELEC102) 课程定义为第2学期，但被安排在第1学期</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">数字电路</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">semester_conflict</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">2年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div><div class="anomaly-card warning">
+            <div class="anomaly-header">
+                <span class="anomaly-title">#11 学期安排冲突</span>
+                <span class="anomaly-severity warning">警告</span>
+            </div>
+            <div class="anomaly-description">多重学期安排冲突：计算机导论 (CS101) 被同时安排在多个学期：1年级第1学期, 2年级第1学期</div>
+            
+            <div style="margin-top: 10px;">
+                <strong>涉及课程：</strong>
+                <span class="course-node" style="margin: 3px; display: inline-block;">计算机导论</span>
+            </div>
+            <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">超载类型</div>
+                        <div class="detail-value">semester_conflict</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">学期</div>
+                        <div class="detail-value">第1学期</div>
+                    </div><div class="detail-item">
+                        <div class="detail-label">年级</div>
+                        <div class="detail-value">1年级</div>
+                    </div>
+                </div>
+            <span class="anomaly-source">📌 来源: persisted</span>
+        </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h2>💡 建议措施</h2>
+            <ul class="recommendations-list">
+                <li>检测到 2 个循环依赖，必须修复才能确定正确的修课顺序。</li><li>建议：检查循环路径中的先修关系，移除造成循环的边。</li><li>循环依赖涉及 4 门课程，需要优先处理。</li><li>检测到 4 个替代课程冲突问题。</li><li>其中 1 个为循环替代，必须修复。</li><li>有 5 个先修顺序错误，需要调整学期安排。</li><li>共有 8 个严重错误，必须在排课前修复。</li><li>共有 9 个警告，建议检查处理。</li>
+            </ul>
+        </section>
+        <section class="section">
+            <h2>📁 数据来源明细</h2>
+            <div class="data-source-section">
+                <h3 class="collapsible" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')">
+                    课程清单 (20 门)
+                </h3>
+                <div class="collapsible-content">
+                    <table class="data-source-table">
+                        <thead>
+                            <tr>
+                                <th>课程ID</th>
+                                <th>课程名称</th>
+                                <th>学分</th>
+                                <th>开课学院</th>
+                                <th>建议学期</th>
+                                <th>数据来源</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>CS101</code></td>
+                                <td>计算机导论</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS102</code></td>
+                                <td>程序设计基础</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS201</code></td>
+                                <td>数据结构</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS202</code></td>
+                                <td>离散数学</td>
+                                <td>3</td>
+                                <td>计算机学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS301</code></td>
+                                <td>算法设计与分析</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS302</code></td>
+                                <td>操作系统</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS303</code></td>
+                                <td>数据库系统</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS401</code></td>
+                                <td>计算机网络</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS402</code></td>
+                                <td>软件工程</td>
+                                <td>4</td>
+                                <td>计算机学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS403</code></td>
+                                <td>人工智能导论</td>
+                                <td>3</td>
+                                <td>计算机学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>MATH101</code></td>
+                                <td>高等数学I</td>
+                                <td>5</td>
+                                <td>数学学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>MATH102</code></td>
+                                <td>高等数学II</td>
+                                <td>5</td>
+                                <td>数学学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>MATH201</code></td>
+                                <td>线性代数</td>
+                                <td>3</td>
+                                <td>数学学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>ENG101</code></td>
+                                <td>大学英语I</td>
+                                <td>3</td>
+                                <td>外语学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>ENG102</code></td>
+                                <td>大学英语II</td>
+                                <td>3</td>
+                                <td>外语学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>PHY101</code></td>
+                                <td>大学物理</td>
+                                <td>4</td>
+                                <td>物理学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS501</code></td>
+                                <td>高级算法</td>
+                                <td>3</td>
+                                <td>计算机学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>CS502</code></td>
+                                <td>机器学习</td>
+                                <td>3</td>
+                                <td>计算机学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>ELEC101</code></td>
+                                <td>电路原理</td>
+                                <td>4</td>
+                                <td>电子工程学院</td>
+                                <td>第1学期</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>ELEC102</code></td>
+                                <td>数字电路</td>
+                                <td>4</td>
+                                <td>电子工程学院</td>
+                                <td>第2学期</td>
+                                <td>persisted</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="collapsible" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')" style="margin-top: 20px;">
+                    先修关系 (23 条)
+                </h3>
+                <div class="collapsible-content">
+                    <table class="data-source-table">
+                        <thead>
+                            <tr>
+                                <th>先修课</th>
+                                <th></th>
+                                <th>后续课</th>
+                                <th>类型</th>
+                                <th>数据来源</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>计算机导论 <code>(CS101)</code></td>
+                                <td>→</td>
+                                <td>程序设计基础 <code>(CS102)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>程序设计基础 <code>(CS102)</code></td>
+                                <td>→</td>
+                                <td>数据结构 <code>(CS201)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>高等数学II <code>(MATH102)</code></td>
+                                <td>→</td>
+                                <td>数据结构 <code>(CS201)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>高等数学I <code>(MATH101)</code></td>
+                                <td>→</td>
+                                <td>离散数学 <code>(CS202)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>数据结构 <code>(CS201)</code></td>
+                                <td>→</td>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>离散数学 <code>(CS202)</code></td>
+                                <td>→</td>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>数据结构 <code>(CS201)</code></td>
+                                <td>→</td>
+                                <td>操作系统 <code>(CS302)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>数据结构 <code>(CS201)</code></td>
+                                <td>→</td>
+                                <td>数据库系统 <code>(CS303)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>线性代数 <code>(MATH201)</code></td>
+                                <td>→</td>
+                                <td>数据库系统 <code>(CS303)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>操作系统 <code>(CS302)</code></td>
+                                <td>→</td>
+                                <td>计算机网络 <code>(CS401)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>→</td>
+                                <td>软件工程 <code>(CS402)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>→</td>
+                                <td>人工智能导论 <code>(CS403)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>线性代数 <code>(MATH201)</code></td>
+                                <td>→</td>
+                                <td>人工智能导论 <code>(CS403)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>高等数学I <code>(MATH101)</code></td>
+                                <td>→</td>
+                                <td>高等数学II <code>(MATH102)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>大学英语I <code>(ENG101)</code></td>
+                                <td>→</td>
+                                <td>大学英语II <code>(ENG102)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>高等数学I <code>(MATH101)</code></td>
+                                <td>→</td>
+                                <td>大学物理 <code>(PHY101)</code></td>
+                                <td>共修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>→</td>
+                                <td>高级算法 <code>(CS501)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>人工智能导论 <code>(CS403)</code></td>
+                                <td>→</td>
+                                <td>机器学习 <code>(CS502)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>电路原理 <code>(ELEC101)</code></td>
+                                <td>→</td>
+                                <td>数字电路 <code>(ELEC102)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>计算机网络 <code>(CS401)</code></td>
+                                <td>→</td>
+                                <td>操作系统 <code>(CS302)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>操作系统 <code>(CS302)</code></td>
+                                <td>→</td>
+                                <td>计算机网络 <code>(CS401)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>数据库系统 <code>(CS303)</code></td>
+                                <td>→</td>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>→</td>
+                                <td>数据库系统 <code>(CS303)</code></td>
+                                <td>必修先修</td>
+                                <td>persisted</td>
+                              </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="collapsible" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')" style="margin-top: 20px;">
+                    学期计划 (6 个)
+                </h3>
+                <div class="collapsible-content">
+                    <div style="margin-bottom: 15px; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <h4>1年级 第1学期 (学分上限: 25, 计划: 19)</h4>
+                        <div style="margin-top: 10px;">
+                            <span class="course-node" style="margin: 3px; display: inline-block;">计算机导论 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">程序设计基础 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">高等数学I (5学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">线性代数 (3学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">大学英语I (3学分)</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #718096;">来源: persisted</div>
+                      </div><div style="margin-bottom: 15px; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <h4>1年级 第2学期 (学分上限: 25, 计划: 23)</h4>
+                        <div style="margin-top: 10px;">
+                            <span class="course-node" style="margin: 3px; display: inline-block;">数据结构 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">离散数学 (3学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">高等数学II (5学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">大学英语II (3学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">大学物理 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">电路原理 (4学分)</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #718096;">来源: persisted</div>
+                      </div><div style="margin-bottom: 15px; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <h4>2年级 第1学期 (学分上限: 25, 计划: 16)</h4>
+                        <div style="margin-top: 10px;">
+                            <span class="course-node" style="margin: 3px; display: inline-block;">算法设计与分析 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">数据库系统 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">数字电路 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">计算机导论 (4学分)</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #718096;">来源: persisted</div>
+                      </div><div style="margin-bottom: 15px; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <h4>2年级 第2学期 (学分上限: 25, 计划: 7)</h4>
+                        <div style="margin-top: 10px;">
+                            <span class="course-node" style="margin: 3px; display: inline-block;">操作系统 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">人工智能导论 (3学分)</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #718096;">来源: persisted</div>
+                      </div><div style="margin-bottom: 15px; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <h4>3年级 第1学期 (学分上限: 25, 计划: 11)</h4>
+                        <div style="margin-top: 10px;">
+                            <span class="course-node" style="margin: 3px; display: inline-block;">计算机网络 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">软件工程 (4学分)</span><span class="course-node" style="margin: 3px; display: inline-block;">高级算法 (3学分)</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #718096;">来源: persisted</div>
+                      </div><div style="margin-bottom: 15px; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <h4>3年级 第2学期 (学分上限: 25, 计划: 3)</h4>
+                        <div style="margin-top: 10px;">
+                            <span class="course-node" style="margin: 3px; display: inline-block;">机器学习 (3学分)</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #718096;">来源: persisted</div>
+                      </div>
+                </div>
+
+                <h3 class="collapsible" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')" style="margin-top: 20px;">
+                    替代课程 (5 条)
+                </h3>
+                <div class="collapsible-content">
+                    <table class="data-source-table">
+                        <thead>
+                            <tr>
+                                <th>原课程</th>
+                                <th></th>
+                                <th>替代课程</th>
+                                <th>原因</th>
+                                <th>生效时间</th>
+                                <th>数据来源</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>⇄</td>
+                                <td>高级算法 <code>(CS501)</code></td>
+                                <td>内容深度更高，适合优秀学生</td>
+                                <td>2024-01-01</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>高级算法 <code>(CS501)</code></td>
+                                <td>⇄</td>
+                                <td>算法设计与分析 <code>(CS301)</code></td>
+                                <td>互为替代</td>
+                                <td>2024-01-01</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>计算机导论 <code>(CS101)</code></td>
+                                <td>⇄</td>
+                                <td>电路原理 <code>(ELEC101)</code></td>
+                                <td>转专业学生可选</td>
+                                <td>2024-01-01</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>高等数学I <code>(MATH101)</code></td>
+                                <td>⇄</td>
+                                <td>线性代数 <code>(MATH201)</code></td>
+                                <td>先修要求不同</td>
+                                <td>2024-01-01</td>
+                                <td>persisted</td>
+                              </tr><tr>
+                                <td>软件工程 <code>(CS402)</code></td>
+                                <td>⇄</td>
+                                <td>人工智能导论 <code>(CS403)</code></td>
+                                <td>软件工程可替代人工智能导论</td>
+                                <td>2024-01-01</td>
+                                <td>persisted</td>
+                              </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="collapsible" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')" style="margin-top: 20px;">
+                    学生信息 (4 人)
+                </h3>
+                <div class="collapsible-content">
+                    <table class="data-source-table">
+                        <thead>
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>年级</th>
+                                <th>已修课程</th>
+                                <th>数据来源</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>S001</code></td>
+                                <td>张三</td>
+                                <td>2年级</td>
+                                <td>CS101, CS102, MATH101, MATH102, ENG101</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>S002</code></td>
+                                <td>李四</td>
+                                <td>2年级</td>
+                                <td>CS101, CS102, CS201, MATH101, MATH102, ENG101, ENG102</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>S003</code></td>
+                                <td>王五</td>
+                                <td>3年级</td>
+                                <td>CS101, CS102, CS201, CS202, CS301, MATH101, MATH102, MATH201, ENG101, ENG102, PHY101</td>
+                                <td>persisted</td>
+                            </tr><tr>
+                                <td><code>S004</code></td>
+                                <td>赵六</td>
+                                <td>1年级</td>
+                                <td>-</td>
+                                <td>persisted</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>课程先修图检查CLI工具 © 2026 | 教务系统团队</p>
+        </footer>
+    </div>
+</body>
+</html>
