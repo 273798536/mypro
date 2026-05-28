@@ -5,10 +5,12 @@ import { EnvironmentSettings } from './components/ControlPanel/EnvironmentSettin
 import { MomentumTable } from './components/DataPanel/MomentumTable';
 import { ErrorList } from './components/DataPanel/ErrorList';
 import { ExperimentLog } from './components/ExperimentLog';
+import { PhysicsLoop } from './components/PhysicsLoop';
 
 function App() {
   return (
     <div className="h-screen w-screen flex flex-col bg-space-950 overflow-hidden">
+      <PhysicsLoop />
       <header className="h-14 border-b border-space-800 flex items-center px-6 justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-cyber-500 flex items-center justify-center">

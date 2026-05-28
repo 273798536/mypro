@@ -1,15 +1,15 @@
+import { useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, PerspectiveCamera } from '@react-three/drei';
 import { useExperimentStore } from '../../store/useExperimentStore';
 import { Table } from './Table';
 import { Ball3D } from './Ball';
-import { usePhysicsLoop } from '../../hooks/usePhysicsLoop';
 
 export function Scene3D() {
   const balls = useExperimentStore((state) => state.balls);
   const settings = useExperimentStore((state) => state.settings);
 
-  usePhysicsLoop();
+  console.log('[DEBUG] Scene3D rendering, balls[0].velocity.x:', balls[0]?.velocity.x.toFixed(2));
 
   return (
     <div className="w-full h-full relative">

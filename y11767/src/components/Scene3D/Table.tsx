@@ -49,7 +49,7 @@ export function Table({ width, height }: TableProps) {
         <meshBasicMaterial color="#0A1628" />
       </mesh>
 
-      <gridHelper args={[width, 20, '#00D4FF30', '#00D4FF10']} position={[0, 0.01, 0]} />
+      <gridHelper args={[width, 20, 0x00d4ff, 0x00d4ff]} position={[0, 0.01, 0]} />
     </group>
   );
 }

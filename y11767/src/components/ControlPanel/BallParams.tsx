@@ -47,9 +47,9 @@ export function BallParams({ ball, canRemove }: BallParamsProps) {
 
   return (
     <div className="bg-space-800 rounded-lg overflow-hidden border border-space-700">
-      <button
+      <div
         onClick={() => setExpanded(!expanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-space-700 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-space-700 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3">
           <div
@@ -75,7 +75,7 @@ export function BallParams({ ball, canRemove }: BallParamsProps) {
           )}
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </div>
-      </button>
+      </div>
 
       {expanded && (
         <div className="px-4 pb-4 space-y-4">
@@ -172,6 +172,8 @@ export function BallParams({ ball, canRemove }: BallParamsProps) {
 export function BallParamsList() {
   const balls = useExperimentStore((state) => state.balls);
   const addBall = useExperimentStore((state) => state.addBall);
+
+  console.log('[DEBUG] BallParamsList rendering, balls[0].velocity.x:', balls[0]?.velocity.x.toFixed(2));
 
   return (
     <div className="space-y-3">

@@ -15,6 +15,8 @@ export function PlaybackControls() {
   const frameIndex = useExperimentStore((state) => state.frameIndex);
   const recordingMode = useExperimentStore((state) => state.recordingMode);
 
+  console.log('[DEBUG] PlaybackControls rendering, isPlaying:', isPlaying, 'currentTime:', currentTime.toFixed(2));
+
   const setPlaying = useExperimentStore((state) => state.setPlaying);
   const setPaused = useExperimentStore((state) => state.setPaused);
   const setPlaybackSpeed = useExperimentStore((state) => state.setPlaybackSpeed);
@@ -58,9 +60,11 @@ export function PlaybackControls() {
     }
   };
 
-  const progress = recordingMode === 'playback' && playbackFrames.length > 0
-    ? (frameIndex / playbackFrames.length) * duration
-    : currentTime;
+  const progress = isPlaying
+    ? currentTime
+    : recordingMode === 'playback' && playbackFrames.length > 0
+      ? (frameIndex / playbackFrames.length) * duration
+      : currentTime;
 
   return (
     <div className="bg-space-800 rounded-lg p-4 border border-space-700">

@@ -50,7 +50,7 @@ const createInitialBalls = (): BallState[] => [
 ];
 
 const initialSettings: ExperimentSettings = {
-  friction: 0.0,
+  friction: 0.01,
   tableWidth: 8,
   tableHeight: 5,
   gravity: 9.8,
@@ -118,22 +118,27 @@ export const useExperimentStore = create<ExperimentStore>((set, get) => ({
   recordingMode: 'live',
   frameIndex: 0,
 
-  setPlaying: (playing) => {
-    if (playing) {
-      const { balls } = get();
-      const momentum = calculateTotalMomentum(balls);
-      const ke = calculateTotalKineticEnergy(balls);
-      set({
-        isPlaying: true,
-        initialMomentum: vectorToObject(momentum),
-        initialKineticEnergy: ke,
-        playbackFrames: [],
-        recordingMode: 'live',
-      });
-    } else {
-      set({ isPlaying: false, recordingMode: 'playback' });
-    }
-  },
+  setPlaying: (playing: boolean) => {
+      console.log('[DEBUG] setPlaying called with:', playing, 'current isPlaying:', get().isPlaying);
+      if (playing) {
+        const { balls } = get();
+        const momentum = calculateTotalMomentum(balls);
+        const ke = calculateTotalKineticEnergy(balls);
+        set({
+          isPlaying: true,
+          isPaused: false,
+          currentTime: 0,
+          initialMomentum: vectorToObject(momentum),
+          initialKineticEnergy: ke,
+          playbackFrames: [],
+          recordingMode: 'live',
+          frameIndex: 0,
+        });
+      } else {
+        set({ isPlaying: false, recordingMode: 'playback' });
+      }
+      console.log('[DEBUG] setPlaying done, new isPlaying:', get().isPlaying);
+    },
 
   setPaused: (paused) => set({ isPaused: paused }),
 
@@ -258,7 +263,7 @@ export const useExperimentStore = create<ExperimentStore>((set, get) => ({
     set((state) => ({ errors: state.errors.filter((e) => e.id !== errorId) }));
   },
 
-  physicsStep: (dt) => {
+  physicsStep: (dt: number) => {
     const { balls, settings, initialMomentum } = get();
     const newBalls = balls.map((ball) => ({
       ...ball,
@@ -278,6 +283,7 @@ export const useExperimentStore = create<ExperimentStore>((set, get) => ({
       if (ball.trail.length > 100) ball.trail.shift();
     });
 
+    let collisionOccurred = false;
     for (let i = 0; i < newBalls.length; i++) {
       for (let j = i + 1; j < newBalls.length; j++) {
         if (checkBallCollision(newBalls[i], newBalls[j])) {
@@ -290,9 +296,22 @@ export const useExperimentStore = create<ExperimentStore>((set, get) => ({
 
           separateBalls(newBalls[i], newBalls[j]);
 
+          const momentumBefore = calculateTotalMomentum(newBalls);
+
           const [v1, v2] = elasticCollision2D(newBalls[i], newBalls[j]);
           newBalls[i].velocity.copy(v1);
           newBalls[j].velocity.copy(v2);
+
+          const momentumAfter = calculateTotalMomentum(newBalls);
+          const momError = checkMomentumConservation(
+            momentumBefore,
+            momentumAfter,
+            `碰撞后动量校验 (球 ${i + 1}-${j + 1}, t=${get().currentTime.toFixed(2)}s)`,
+            [newBalls[i].id, newBalls[j].id]
+          );
+          if (momError) newErrors.push(momError);
+
+          collisionOccurred = true;
         }
       }
     }
@@ -308,26 +327,10 @@ export const useExperimentStore = create<ExperimentStore>((set, get) => ({
       }
     });
 
-    if (initialMomentum) {
-      const currentMomentum = calculateTotalMomentum(newBalls);
-      const initMomVec = new Vector3(
-        initialMomentum.x,
-        initialMomentum.y,
-        initialMomentum.z
-      );
-      const momError = checkMomentumConservation(
-        initMomVec,
-        currentMomentum,
-        `物理引擎动量校验 (t=${get().currentTime.toFixed(2)}s)`,
-        newBalls.map((b) => b.id)
-      );
-      if (momError) newErrors.push(momError);
-    }
-
     set((state) => ({
       balls: newBalls,
       currentTime: state.currentTime + dt,
-      errors: newErrors.length > 0 ? [...state.errors, ...newErrors] : state.errors,
+      errors: newErrors.length > 0 ? [...state.errors, ...newErrors] : [...state.errors],
     }));
   },
 
