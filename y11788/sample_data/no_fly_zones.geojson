@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "nfz001",
+        "name": "机场禁飞区",
+        "min_altitude_m": 0,
+        "max_altitude_m": 500
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              121.465,
+              31.232
+            ],
+            [
+              121.475,
+              31.232
+            ],
+            [
+              121.475,
+              31.238
+            ],
+            [
+              121.465,
+              31.238
+            ],
+            [
+              121.465,
+              31.232
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

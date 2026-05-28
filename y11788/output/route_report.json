@@ -1,0 +1,2662 @@
+{
+  "result_id": "5ae11db8-10f5-43f1-9dea-777de03b0634",
+  "input_hash": "933ab0b49cddf7a6423e9db0e637a4160fd077f959f06c03aa0501f0fd3cd07c",
+  "optimal_route": {
+    "route_id": "1d4830e4-ccac-4fe4-a470-5a8193961e47",
+    "waypoint_order": [
+      "wp001",
+      "wp002",
+      "wp003",
+      "wp004",
+      "wp005"
+    ],
+    "segments": [
+      {
+        "start_waypoint_id": "wp001",
+        "end_waypoint_id": "wp002",
+        "distance_m": 787.6732586571092,
+        "ground_speed_m_s": 4.6115487431133255,
+        "air_speed_m_s": 15.0,
+        "heading_deg": 49.5037424258187,
+        "wind_angle_deg": 358.5037424258187,
+        "wind_component_m_s": -10.396453939662997,
+        "flight_time_s": 170.80449595884335,
+        "energy_used_wh": 0.2383702316984543,
+        "anomalies": []
+      },
+      {
+        "start_waypoint_id": "wp002",
+        "end_waypoint_id": "wp003",
+        "distance_m": 1101.3731463831457,
+        "ground_speed_m_s": 22.126324542321207,
+        "air_speed_m_s": 15.0,
+        "heading_deg": 300.320758179519,
+        "wind_angle_deg": 246.82075817951898,
+        "wind_component_m_s": 4.4871412584041925,
+        "flight_time_s": 49.77659729597385,
+        "energy_used_wh": 1.5259389697447567,
+        "anomalies": [
+          {
+            "anomaly_id": "b8b032d6-b03d-4a20-96d7-d2d28972f87f",
+            "anomaly_type": {},
+            "severity": {},
+            "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+            "source": {
+              "file_name": "waypoints.csv",
+              "line_number": 3,
+              "column": null,
+              "sheet_name": null,
+              "raw_value": null
+            },
+            "route_segment": null,
+            "details": {
+              "zone_id": "nfz001",
+              "zone_name": "机场禁飞区",
+              "intersection_type": "LineString",
+              "avg_altitude": 135.0
+            },
+            "timestamp": "2026-05-28T02:19:11.032570"
+          }
+        ]
+      },
+      {
+        "start_waypoint_id": "wp003",
+        "end_waypoint_id": "wp004",
+        "distance_m": 976.3931362474083,
+        "ground_speed_m_s": 25.4298131516453,
+        "air_speed_m_s": 15.0,
+        "heading_deg": 256.836968827699,
+        "wind_angle_deg": 204.33696882769902,
+        "wind_component_m_s": 10.022513230919742,
+        "flight_time_s": 38.39560795924433,
+        "energy_used_wh": 2.04695322759056,
+        "anomalies": [
+          {
+            "anomaly_id": "b3a19186-7992-47fc-9c31-3e437c052011",
+            "anomaly_type": {},
+            "severity": {},
+            "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+            "source": {
+              "file_name": "waypoints.csv",
+              "line_number": 4,
+              "column": null,
+              "sheet_name": null,
+              "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+            },
+            "route_segment": null,
+            "details": {
+              "headwind_component": 10.022513230919742,
+              "wind_speed": 11.0,
+              "wind_direction": 52.5,
+              "heading": 256.836968827699
+            },
+            "timestamp": "2026-05-28T02:19:11.029524"
+          }
+        ]
+      },
+      {
+        "start_waypoint_id": "wp004",
+        "end_waypoint_id": "wp005",
+        "distance_m": 1008.6185836879187,
+        "ground_speed_m_s": 19.528163566677282,
+        "air_speed_m_s": 15.0,
+        "heading_deg": 151.87819115163768,
+        "wind_angle_deg": 102.87819115163768,
+        "wind_component_m_s": 2.1396390762300634,
+        "flight_time_s": 51.649433406478536,
+        "energy_used_wh": 0.8849203180409008,
+        "anomalies": []
+      }
+    ],
+    "total_distance_m": 3874.0581249755814,
+    "total_flight_time_s": 310.6261346205401,
+    "total_energy_wh": 4.696182747074672,
+    "remaining_battery_wh": 495.30381725292534,
+    "anomalies": [
+      {
+        "anomaly_id": "b8b032d6-b03d-4a20-96d7-d2d28972f87f",
+        "anomaly_type": {},
+        "severity": {},
+        "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+        "source": {
+          "file_name": "waypoints.csv",
+          "line_number": 3,
+          "column": null,
+          "sheet_name": null,
+          "raw_value": null
+        },
+        "route_segment": null,
+        "details": {
+          "zone_id": "nfz001",
+          "zone_name": "机场禁飞区",
+          "intersection_type": "LineString",
+          "avg_altitude": 135.0
+        },
+        "timestamp": "2026-05-28T02:19:11.032570"
+      },
+      {
+        "anomaly_id": "b8b032d6-b03d-4a20-96d7-d2d28972f87f",
+        "anomaly_type": {},
+        "severity": {},
+        "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+        "source": {
+          "file_name": "waypoints.csv",
+          "line_number": 3,
+          "column": null,
+          "sheet_name": null,
+          "raw_value": null
+        },
+        "route_segment": null,
+        "details": {
+          "zone_id": "nfz001",
+          "zone_name": "机场禁飞区",
+          "intersection_type": "LineString",
+          "avg_altitude": 135.0
+        },
+        "timestamp": "2026-05-28T02:19:11.032570"
+      },
+      {
+        "anomaly_id": "b3a19186-7992-47fc-9c31-3e437c052011",
+        "anomaly_type": {},
+        "severity": {},
+        "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+        "source": {
+          "file_name": "waypoints.csv",
+          "line_number": 4,
+          "column": null,
+          "sheet_name": null,
+          "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+        },
+        "route_segment": null,
+        "details": {
+          "headwind_component": 10.022513230919742,
+          "wind_speed": 11.0,
+          "wind_direction": 52.5,
+          "heading": 256.836968827699
+        },
+        "timestamp": "2026-05-28T02:19:11.029524"
+      }
+    ],
+    "is_valid": false,
+    "creation_time": "2026-05-28T02:19:11.032696"
+  },
+  "candidate_routes": [
+    {
+      "route_id": "51a52e8f-dcbc-4db0-a5ef-f038dcd40305",
+      "waypoint_order": [
+        "wp001",
+        "wp002",
+        "wp003",
+        "wp004",
+        "wp005"
+      ],
+      "segments": [
+        {
+          "start_waypoint_id": "wp001",
+          "end_waypoint_id": "wp002",
+          "distance_m": 787.6732586571092,
+          "ground_speed_m_s": 4.6115487431133255,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 49.5037424258187,
+          "wind_angle_deg": 358.5037424258187,
+          "wind_component_m_s": -10.396453939662997,
+          "flight_time_s": 170.80449595884335,
+          "energy_used_wh": 0.2383702316984543,
+          "anomalies": []
+        },
+        {
+          "start_waypoint_id": "wp002",
+          "end_waypoint_id": "wp003",
+          "distance_m": 1101.3731463831457,
+          "ground_speed_m_s": 22.126324542321207,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 300.320758179519,
+          "wind_angle_deg": 246.82075817951898,
+          "wind_component_m_s": 4.4871412584041925,
+          "flight_time_s": 49.77659729597385,
+          "energy_used_wh": 1.5259389697447567,
+          "anomalies": [
+            {
+              "anomaly_id": "016682f4-083b-4752-bee3-43d802da13c8",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.033843"
+            },
+            {
+              "anomaly_id": "97c0b6d7-9b30-4500-99d4-d25644a734b2",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036608"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp003",
+          "end_waypoint_id": "wp004",
+          "distance_m": 976.3931362474083,
+          "ground_speed_m_s": 25.4298131516453,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 256.836968827699,
+          "wind_angle_deg": 204.33696882769902,
+          "wind_component_m_s": 10.022513230919742,
+          "flight_time_s": 38.39560795924433,
+          "energy_used_wh": 2.04695322759056,
+          "anomalies": [
+            {
+              "anomaly_id": "b6940efd-61d5-43cb-9b04-5ed14fc10050",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+              },
+              "route_segment": null,
+              "details": {
+                "headwind_component": 10.022513230919742,
+                "wind_speed": 11.0,
+                "wind_direction": 52.5,
+                "heading": 256.836968827699
+              },
+              "timestamp": "2026-05-28T02:19:11.033354"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp004",
+          "end_waypoint_id": "wp005",
+          "distance_m": 1008.6185836879187,
+          "ground_speed_m_s": 19.528163566677282,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 151.87819115163768,
+          "wind_angle_deg": 102.87819115163768,
+          "wind_component_m_s": 2.1396390762300634,
+          "flight_time_s": 51.649433406478536,
+          "energy_used_wh": 0.8849203180409008,
+          "anomalies": []
+        }
+      ],
+      "total_distance_m": 3874.0581249755814,
+      "total_flight_time_s": 310.6261346205401,
+      "total_energy_wh": 4.696182747074672,
+      "remaining_battery_wh": 495.30381725292534,
+      "anomalies": [
+        {
+          "anomaly_id": "016682f4-083b-4752-bee3-43d802da13c8",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.033843"
+        },
+        {
+          "anomaly_id": "016682f4-083b-4752-bee3-43d802da13c8",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.033843"
+        },
+        {
+          "anomaly_id": "b6940efd-61d5-43cb-9b04-5ed14fc10050",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+          },
+          "route_segment": null,
+          "details": {
+            "headwind_component": 10.022513230919742,
+            "wind_speed": 11.0,
+            "wind_direction": 52.5,
+            "heading": 256.836968827699
+          },
+          "timestamp": "2026-05-28T02:19:11.033354"
+        }
+      ],
+      "is_valid": false,
+      "creation_time": "2026-05-28T02:19:11.034063"
+    },
+    {
+      "route_id": "5cef7026-fea8-408f-b8fb-0e10b05be68c",
+      "waypoint_order": [
+        "wp001",
+        "wp002",
+        "wp004",
+        "wp003",
+        "wp005"
+      ],
+      "segments": [
+        {
+          "start_waypoint_id": "wp001",
+          "end_waypoint_id": "wp002",
+          "distance_m": 787.6732586571092,
+          "ground_speed_m_s": 4.6115487431133255,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 49.5037424258187,
+          "wind_angle_deg": 358.5037424258187,
+          "wind_component_m_s": -10.396453939662997,
+          "flight_time_s": 170.80449595884335,
+          "energy_used_wh": 0.2383702316984543,
+          "anomalies": []
+        },
+        {
+          "start_waypoint_id": "wp002",
+          "end_waypoint_id": "wp004",
+          "distance_m": 1930.5479554230005,
+          "ground_speed_m_s": 23.195550248843652,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 279.95542361976004,
+          "wind_angle_deg": 228.95542361976004,
+          "wind_component_m_s": 6.829118378221026,
+          "flight_time_s": 83.22923727662992,
+          "energy_used_wh": 2.9459006126730514,
+          "anomalies": [
+            {
+              "anomaly_id": "ef194312-d10f-4ab9-9b54-900ef78001c3",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034300"
+            },
+            {
+              "anomaly_id": "c537056b-3017-4b95-9800-a633d893680a",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034991"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp004",
+          "end_waypoint_id": "wp003",
+          "distance_m": 976.3931362474083,
+          "ground_speed_m_s": 6.731440775505387,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 76.83178273652379,
+          "wind_angle_deg": 24.33178273652379,
+          "wind_component_m_s": -10.022923502862115,
+          "flight_time_s": 145.04965115348608,
+          "energy_used_wh": 0.5150184379345837,
+          "anomalies": []
+        },
+        {
+          "start_waypoint_id": "wp003",
+          "end_waypoint_id": "wp005",
+          "distance_m": 1209.30636503286,
+          "ground_speed_m_s": 24.84387069519729,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 203.14915853251782,
+          "wind_angle_deg": 151.64915853251784,
+          "wind_component_m_s": 9.328597037322751,
+          "flight_time_s": 48.67624614012493,
+          "energy_used_wh": 2.385074019837056,
+          "anomalies": [
+            {
+              "anomaly_id": "08d7c350-f28b-47b9-a24f-de8c42102d49",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "强逆风: 航段 检查点B -> 降落点 逆风分量 9.3 m/s",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+              },
+              "route_segment": null,
+              "details": {
+                "headwind_component": 9.328597037322751,
+                "wind_speed": 10.6,
+                "wind_direction": 51.5,
+                "heading": 203.14915853251782
+              },
+              "timestamp": "2026-05-28T02:19:11.033394"
+            },
+            {
+              "anomaly_id": "e2a5f36f-8b0a-44e8-83d2-45471894e409",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 115.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034583"
+            },
+            {
+              "anomaly_id": "ea572700-d35b-4340-a3d3-94197e492eeb",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 115.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036870"
+            }
+          ]
+        }
+      ],
+      "total_distance_m": 4903.920715360378,
+      "total_flight_time_s": 447.7596305290843,
+      "total_energy_wh": 6.084363302143146,
+      "remaining_battery_wh": 493.9156366978568,
+      "anomalies": [
+        {
+          "anomaly_id": "ef194312-d10f-4ab9-9b54-900ef78001c3",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034300"
+        },
+        {
+          "anomaly_id": "ef194312-d10f-4ab9-9b54-900ef78001c3",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034300"
+        },
+        {
+          "anomaly_id": "e2a5f36f-8b0a-44e8-83d2-45471894e409",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 115.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034583"
+        },
+        {
+          "anomaly_id": "08d7c350-f28b-47b9-a24f-de8c42102d49",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "强逆风: 航段 检查点B -> 降落点 逆风分量 9.3 m/s",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+          },
+          "route_segment": null,
+          "details": {
+            "headwind_component": 9.328597037322751,
+            "wind_speed": 10.6,
+            "wind_direction": 51.5,
+            "heading": 203.14915853251782
+          },
+          "timestamp": "2026-05-28T02:19:11.033394"
+        },
+        {
+          "anomaly_id": "e2a5f36f-8b0a-44e8-83d2-45471894e409",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 115.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034583"
+        }
+      ],
+      "is_valid": false,
+      "creation_time": "2026-05-28T02:19:11.034608"
+    },
+    {
+      "route_id": "ec6b9890-5dd7-406e-92ff-3d1ce4db57b4",
+      "waypoint_order": [
+        "wp001",
+        "wp003",
+        "wp002",
+        "wp004",
+        "wp005"
+      ],
+      "segments": [
+        {
+          "start_waypoint_id": "wp001",
+          "end_waypoint_id": "wp003",
+          "distance_m": 1123.9425955427332,
+          "ground_speed_m_s": 15.399357559327669,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 341.7613793580281,
+          "wind_angle_deg": 289.2613793580281,
+          "wind_component_m_s": -3.6286595586659245,
+          "flight_time_s": 72.98633019024491,
+          "energy_used_wh": 0.8193492874548739,
+          "anomalies": [
+            {
+              "anomaly_id": "5dd0cd63-94e9-4f7a-89af-ed32e13c1196",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 125.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034762"
+            },
+            {
+              "anomaly_id": "42b86070-ac77-4f76-9cca-9a06ffc5ebc2",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 125.0
+              },
+              "timestamp": "2026-05-28T02:19:11.035432"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp003",
+          "end_waypoint_id": "wp002",
+          "distance_m": 1101.3731463831457,
+          "ground_speed_m_s": 14.843089534776784,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 120.31557231218397,
+          "wind_angle_deg": 66.81557231218397,
+          "wind_component_m_s": -4.48808976875333,
+          "flight_time_s": 74.20107140111708,
+          "energy_used_wh": 0.2932842185913591,
+          "anomalies": [
+            {
+              "anomaly_id": "f9eca5f0-34a8-47ec-b2d0-1ea7c5564b55",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034880"
+            },
+            {
+              "anomaly_id": "a14795bf-a10d-4f56-9926-1f18a8759c90",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.037333"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp002",
+          "end_waypoint_id": "wp004",
+          "distance_m": 1930.5479554230005,
+          "ground_speed_m_s": 23.195550248843652,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 279.95542361976004,
+          "wind_angle_deg": 228.95542361976004,
+          "wind_component_m_s": 6.829118378221026,
+          "flight_time_s": 83.22923727662992,
+          "energy_used_wh": 2.9459006126730514,
+          "anomalies": [
+            {
+              "anomaly_id": "ef194312-d10f-4ab9-9b54-900ef78001c3",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034300"
+            },
+            {
+              "anomaly_id": "c537056b-3017-4b95-9800-a633d893680a",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034991"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp004",
+          "end_waypoint_id": "wp005",
+          "distance_m": 1008.6185836879187,
+          "ground_speed_m_s": 19.528163566677282,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 151.87819115163768,
+          "wind_angle_deg": 102.87819115163768,
+          "wind_component_m_s": 2.1396390762300634,
+          "flight_time_s": 51.649433406478536,
+          "energy_used_wh": 0.8849203180409008,
+          "anomalies": []
+        }
+      ],
+      "total_distance_m": 5164.482281036798,
+      "total_flight_time_s": 282.06607227447046,
+      "total_energy_wh": 4.943454436760185,
+      "remaining_battery_wh": 495.0565455632398,
+      "anomalies": [
+        {
+          "anomaly_id": "5dd0cd63-94e9-4f7a-89af-ed32e13c1196",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 125.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034762"
+        },
+        {
+          "anomaly_id": "5dd0cd63-94e9-4f7a-89af-ed32e13c1196",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 125.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034762"
+        },
+        {
+          "anomaly_id": "f9eca5f0-34a8-47ec-b2d0-1ea7c5564b55",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034880"
+        },
+        {
+          "anomaly_id": "f9eca5f0-34a8-47ec-b2d0-1ea7c5564b55",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034880"
+        },
+        {
+          "anomaly_id": "c537056b-3017-4b95-9800-a633d893680a",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034991"
+        },
+        {
+          "anomaly_id": "ef194312-d10f-4ab9-9b54-900ef78001c3",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034300"
+        },
+        {
+          "anomaly_id": "c537056b-3017-4b95-9800-a633d893680a",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034991"
+        }
+      ],
+      "is_valid": false,
+      "creation_time": "2026-05-28T02:19:11.035118"
+    },
+    {
+      "route_id": "c0fdb3cd-3296-42b4-826e-a2fd0bd57d0f",
+      "waypoint_order": [
+        "wp001",
+        "wp003",
+        "wp004",
+        "wp002",
+        "wp005"
+      ],
+      "segments": [
+        {
+          "start_waypoint_id": "wp001",
+          "end_waypoint_id": "wp003",
+          "distance_m": 1123.9425955427332,
+          "ground_speed_m_s": 15.399357559327669,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 341.7613793580281,
+          "wind_angle_deg": 289.2613793580281,
+          "wind_component_m_s": -3.6286595586659245,
+          "flight_time_s": 72.98633019024491,
+          "energy_used_wh": 0.8193492874548739,
+          "anomalies": [
+            {
+              "anomaly_id": "5dd0cd63-94e9-4f7a-89af-ed32e13c1196",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 125.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034762"
+            },
+            {
+              "anomaly_id": "42b86070-ac77-4f76-9cca-9a06ffc5ebc2",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 125.0
+              },
+              "timestamp": "2026-05-28T02:19:11.035432"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp003",
+          "end_waypoint_id": "wp004",
+          "distance_m": 976.3931362474083,
+          "ground_speed_m_s": 25.4298131516453,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 256.836968827699,
+          "wind_angle_deg": 204.33696882769902,
+          "wind_component_m_s": 10.022513230919742,
+          "flight_time_s": 38.39560795924433,
+          "energy_used_wh": 2.04695322759056,
+          "anomalies": [
+            {
+              "anomaly_id": "b6940efd-61d5-43cb-9b04-5ed14fc10050",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+              },
+              "route_segment": null,
+              "details": {
+                "headwind_component": 10.022513230919742,
+                "wind_speed": 11.0,
+                "wind_direction": 52.5,
+                "heading": 256.836968827699
+              },
+              "timestamp": "2026-05-28T02:19:11.033354"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp004",
+          "end_waypoint_id": "wp002",
+          "distance_m": 1930.5479554230005,
+          "ground_speed_m_s": 11.324480438007289,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 99.94505218347064,
+          "wind_angle_deg": 48.94505218347064,
+          "wind_component_m_s": -6.8305380936396745,
+          "flight_time_s": 170.47563161870843,
+          "energy_used_wh": 0.49794995994943825,
+          "anomalies": [
+            {
+              "anomaly_id": "cf3f2b37-0dd4-48e2-a021-ec2a18c16311",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 5,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.035717"
+            },
+            {
+              "anomaly_id": "d6b6d653-4ee5-48b1-8773-013ebe399492",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 5,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036364"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp002",
+          "end_waypoint_id": "wp005",
+          "distance_m": 1530.7291914656578,
+          "ground_speed_m_s": 24.681008777409247,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 248.70648541505,
+          "wind_angle_deg": 198.70648541505,
+          "wind_component_m_s": 9.471739809018409,
+          "flight_time_s": 62.02052781840701,
+          "energy_used_wh": 3.0928836675145424,
+          "anomalies": [
+            {
+              "anomaly_id": "fe9833a8-626d-4e02-9bcb-7f7e0a59578f",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "强逆风: 航段 检查点A -> 降落点 逆风分量 9.5 m/s",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": "{'id': 'wp002', 'name': '检查点A', 'latitude': 31.235, 'longitude': 121.48, 'altitude_m': 120, 'type': 'waypoint', 'order': 2, 'stay_time_s': 0}"
+              },
+              "route_segment": null,
+              "details": {
+                "headwind_component": 9.471739809018409,
+                "wind_speed": 10.0,
+                "wind_direction": 50.0,
+                "heading": 248.70648541505
+              },
+              "timestamp": "2026-05-28T02:19:11.033233"
+            },
+            {
+              "anomaly_id": "7814ae84-fd8e-4902-8ce0-c6fef47fec23",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.035848"
+            },
+            {
+              "anomaly_id": "0b0fc03d-1f41-4c65-9ef0-243f67cbcae5",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.037445"
+            }
+          ]
+        }
+      ],
+      "total_distance_m": 5561.6128786787995,
+      "total_flight_time_s": 343.87809758660467,
+      "total_energy_wh": 6.457136142509414,
+      "remaining_battery_wh": 493.5428638574906,
+      "anomalies": [
+        {
+          "anomaly_id": "42b86070-ac77-4f76-9cca-9a06ffc5ebc2",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 125.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035432"
+        },
+        {
+          "anomaly_id": "5dd0cd63-94e9-4f7a-89af-ed32e13c1196",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 125.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034762"
+        },
+        {
+          "anomaly_id": "42b86070-ac77-4f76-9cca-9a06ffc5ebc2",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 125.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035432"
+        },
+        {
+          "anomaly_id": "b6940efd-61d5-43cb-9b04-5ed14fc10050",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+          },
+          "route_segment": null,
+          "details": {
+            "headwind_component": 10.022513230919742,
+            "wind_speed": 11.0,
+            "wind_direction": 52.5,
+            "heading": 256.836968827699
+          },
+          "timestamp": "2026-05-28T02:19:11.033354"
+        },
+        {
+          "anomaly_id": "cf3f2b37-0dd4-48e2-a021-ec2a18c16311",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 5,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035717"
+        },
+        {
+          "anomaly_id": "cf3f2b37-0dd4-48e2-a021-ec2a18c16311",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 5,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035717"
+        },
+        {
+          "anomaly_id": "7814ae84-fd8e-4902-8ce0-c6fef47fec23",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035848"
+        },
+        {
+          "anomaly_id": "fe9833a8-626d-4e02-9bcb-7f7e0a59578f",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "强逆风: 航段 检查点A -> 降落点 逆风分量 9.5 m/s",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": "{'id': 'wp002', 'name': '检查点A', 'latitude': 31.235, 'longitude': 121.48, 'altitude_m': 120, 'type': 'waypoint', 'order': 2, 'stay_time_s': 0}"
+          },
+          "route_segment": null,
+          "details": {
+            "headwind_component": 9.471739809018409,
+            "wind_speed": 10.0,
+            "wind_direction": 50.0,
+            "heading": 248.70648541505
+          },
+          "timestamp": "2026-05-28T02:19:11.033233"
+        },
+        {
+          "anomaly_id": "7814ae84-fd8e-4902-8ce0-c6fef47fec23",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035848"
+        }
+      ],
+      "is_valid": false,
+      "creation_time": "2026-05-28T02:19:11.035873"
+    },
+    {
+      "route_id": "824e5a59-ba92-49b6-8b10-51822bdfb673",
+      "waypoint_order": [
+        "wp001",
+        "wp004",
+        "wp002",
+        "wp003",
+        "wp005"
+      ],
+      "segments": [
+        {
+          "start_waypoint_id": "wp001",
+          "end_waypoint_id": "wp004",
+          "distance_m": 1552.6877533326845,
+          "ground_speed_m_s": 20.317970477033015,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 302.9783473488585,
+          "wind_angle_deg": 252.9783473488585,
+          "wind_component_m_s": 2.9273308101861732,
+          "flight_time_s": 76.41943151201093,
+          "energy_used_wh": 1.4982500060776647,
+          "anomalies": [
+            {
+              "anomaly_id": "459e6af9-4b45-4a31-9d89-6ed7fba91a6a",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036065"
+            },
+            {
+              "anomaly_id": "611f98c7-07b6-40e7-a1e0-f38865a97fff",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.037125"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp004",
+          "end_waypoint_id": "wp002",
+          "distance_m": 1930.5479554230005,
+          "ground_speed_m_s": 11.324480438007289,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 99.94505218347064,
+          "wind_angle_deg": 48.94505218347064,
+          "wind_component_m_s": -6.8305380936396745,
+          "flight_time_s": 170.47563161870843,
+          "energy_used_wh": 0.49794995994943825,
+          "anomalies": [
+            {
+              "anomaly_id": "cf3f2b37-0dd4-48e2-a021-ec2a18c16311",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 5,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.035717"
+            },
+            {
+              "anomaly_id": "d6b6d653-4ee5-48b1-8773-013ebe399492",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 5,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 110.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036364"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp002",
+          "end_waypoint_id": "wp003",
+          "distance_m": 1101.3731463831457,
+          "ground_speed_m_s": 22.126324542321207,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 300.320758179519,
+          "wind_angle_deg": 246.82075817951898,
+          "wind_component_m_s": 4.4871412584041925,
+          "flight_time_s": 49.77659729597385,
+          "energy_used_wh": 1.5259389697447567,
+          "anomalies": [
+            {
+              "anomaly_id": "016682f4-083b-4752-bee3-43d802da13c8",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.033843"
+            },
+            {
+              "anomaly_id": "97c0b6d7-9b30-4500-99d4-d25644a734b2",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036608"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp003",
+          "end_waypoint_id": "wp005",
+          "distance_m": 1209.30636503286,
+          "ground_speed_m_s": 24.84387069519729,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 203.14915853251782,
+          "wind_angle_deg": 151.64915853251784,
+          "wind_component_m_s": 9.328597037322751,
+          "flight_time_s": 48.67624614012493,
+          "energy_used_wh": 2.385074019837056,
+          "anomalies": [
+            {
+              "anomaly_id": "08d7c350-f28b-47b9-a24f-de8c42102d49",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "强逆风: 航段 检查点B -> 降落点 逆风分量 9.3 m/s",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+              },
+              "route_segment": null,
+              "details": {
+                "headwind_component": 9.328597037322751,
+                "wind_speed": 10.6,
+                "wind_direction": 51.5,
+                "heading": 203.14915853251782
+              },
+              "timestamp": "2026-05-28T02:19:11.033394"
+            },
+            {
+              "anomaly_id": "e2a5f36f-8b0a-44e8-83d2-45471894e409",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 115.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034583"
+            },
+            {
+              "anomaly_id": "ea572700-d35b-4340-a3d3-94197e492eeb",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 115.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036870"
+            }
+          ]
+        }
+      ],
+      "total_distance_m": 5793.91522017169,
+      "total_flight_time_s": 345.34790656681815,
+      "total_energy_wh": 5.907212955608916,
+      "remaining_battery_wh": 494.09278704439106,
+      "anomalies": [
+        {
+          "anomaly_id": "459e6af9-4b45-4a31-9d89-6ed7fba91a6a",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036065"
+        },
+        {
+          "anomaly_id": "459e6af9-4b45-4a31-9d89-6ed7fba91a6a",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036065"
+        },
+        {
+          "anomaly_id": "d6b6d653-4ee5-48b1-8773-013ebe399492",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 5,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036364"
+        },
+        {
+          "anomaly_id": "cf3f2b37-0dd4-48e2-a021-ec2a18c16311",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 5,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035717"
+        },
+        {
+          "anomaly_id": "d6b6d653-4ee5-48b1-8773-013ebe399492",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 5,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 110.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036364"
+        },
+        {
+          "anomaly_id": "97c0b6d7-9b30-4500-99d4-d25644a734b2",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036608"
+        },
+        {
+          "anomaly_id": "016682f4-083b-4752-bee3-43d802da13c8",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.033843"
+        },
+        {
+          "anomaly_id": "97c0b6d7-9b30-4500-99d4-d25644a734b2",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036608"
+        },
+        {
+          "anomaly_id": "ea572700-d35b-4340-a3d3-94197e492eeb",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 115.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036870"
+        },
+        {
+          "anomaly_id": "08d7c350-f28b-47b9-a24f-de8c42102d49",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "强逆风: 航段 检查点B -> 降落点 逆风分量 9.3 m/s",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+          },
+          "route_segment": null,
+          "details": {
+            "headwind_component": 9.328597037322751,
+            "wind_speed": 10.6,
+            "wind_direction": 51.5,
+            "heading": 203.14915853251782
+          },
+          "timestamp": "2026-05-28T02:19:11.033394"
+        },
+        {
+          "anomaly_id": "e2a5f36f-8b0a-44e8-83d2-45471894e409",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 115.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034583"
+        },
+        {
+          "anomaly_id": "ea572700-d35b-4340-a3d3-94197e492eeb",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 115.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036870"
+        }
+      ],
+      "is_valid": false,
+      "creation_time": "2026-05-28T02:19:11.036898"
+    },
+    {
+      "route_id": "2137ad59-a299-476f-b263-8818fdfa6266",
+      "waypoint_order": [
+        "wp001",
+        "wp004",
+        "wp003",
+        "wp002",
+        "wp005"
+      ],
+      "segments": [
+        {
+          "start_waypoint_id": "wp001",
+          "end_waypoint_id": "wp004",
+          "distance_m": 1552.6877533326845,
+          "ground_speed_m_s": 20.317970477033015,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 302.9783473488585,
+          "wind_angle_deg": 252.9783473488585,
+          "wind_component_m_s": 2.9273308101861732,
+          "flight_time_s": 76.41943151201093,
+          "energy_used_wh": 1.4982500060776647,
+          "anomalies": [
+            {
+              "anomaly_id": "459e6af9-4b45-4a31-9d89-6ed7fba91a6a",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.036065"
+            },
+            {
+              "anomaly_id": "611f98c7-07b6-40e7-a1e0-f38865a97fff",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 2,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.037125"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp004",
+          "end_waypoint_id": "wp003",
+          "distance_m": 976.3931362474083,
+          "ground_speed_m_s": 6.731440775505387,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 76.83178273652379,
+          "wind_angle_deg": 24.33178273652379,
+          "wind_component_m_s": -10.022923502862115,
+          "flight_time_s": 145.04965115348608,
+          "energy_used_wh": 0.5150184379345837,
+          "anomalies": []
+        },
+        {
+          "start_waypoint_id": "wp003",
+          "end_waypoint_id": "wp002",
+          "distance_m": 1101.3731463831457,
+          "ground_speed_m_s": 14.843089534776784,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 120.31557231218397,
+          "wind_angle_deg": 66.81557231218397,
+          "wind_component_m_s": -4.48808976875333,
+          "flight_time_s": 74.20107140111708,
+          "energy_used_wh": 0.2932842185913591,
+          "anomalies": [
+            {
+              "anomaly_id": "f9eca5f0-34a8-47ec-b2d0-1ea7c5564b55",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.034880"
+            },
+            {
+              "anomaly_id": "a14795bf-a10d-4f56-9926-1f18a8759c90",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 4,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 135.0
+              },
+              "timestamp": "2026-05-28T02:19:11.037333"
+            }
+          ]
+        },
+        {
+          "start_waypoint_id": "wp002",
+          "end_waypoint_id": "wp005",
+          "distance_m": 1530.7291914656578,
+          "ground_speed_m_s": 24.681008777409247,
+          "air_speed_m_s": 15.0,
+          "heading_deg": 248.70648541505,
+          "wind_angle_deg": 198.70648541505,
+          "wind_component_m_s": 9.471739809018409,
+          "flight_time_s": 62.02052781840701,
+          "energy_used_wh": 3.0928836675145424,
+          "anomalies": [
+            {
+              "anomaly_id": "fe9833a8-626d-4e02-9bcb-7f7e0a59578f",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "强逆风: 航段 检查点A -> 降落点 逆风分量 9.5 m/s",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": "{'id': 'wp002', 'name': '检查点A', 'latitude': 31.235, 'longitude': 121.48, 'altitude_m': 120, 'type': 'waypoint', 'order': 2, 'stay_time_s': 0}"
+              },
+              "route_segment": null,
+              "details": {
+                "headwind_component": 9.471739809018409,
+                "wind_speed": 10.0,
+                "wind_direction": 50.0,
+                "heading": 248.70648541505
+              },
+              "timestamp": "2026-05-28T02:19:11.033233"
+            },
+            {
+              "anomaly_id": "7814ae84-fd8e-4902-8ce0-c6fef47fec23",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.035848"
+            },
+            {
+              "anomaly_id": "0b0fc03d-1f41-4c65-9ef0-243f67cbcae5",
+              "anomaly_type": {},
+              "severity": {},
+              "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+              "source": {
+                "file_name": "waypoints.csv",
+                "line_number": 3,
+                "column": null,
+                "sheet_name": null,
+                "raw_value": null
+              },
+              "route_segment": null,
+              "details": {
+                "zone_id": "nfz001",
+                "zone_name": "机场禁飞区",
+                "intersection_type": "LineString",
+                "avg_altitude": 100.0
+              },
+              "timestamp": "2026-05-28T02:19:11.037445"
+            }
+          ]
+        }
+      ],
+      "total_distance_m": 5161.183227428896,
+      "total_flight_time_s": 357.6906818850211,
+      "total_energy_wh": 5.399436330118149,
+      "remaining_battery_wh": 494.60056366988186,
+      "anomalies": [
+        {
+          "anomaly_id": "611f98c7-07b6-40e7-a1e0-f38865a97fff",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.037125"
+        },
+        {
+          "anomaly_id": "459e6af9-4b45-4a31-9d89-6ed7fba91a6a",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.036065"
+        },
+        {
+          "anomaly_id": "611f98c7-07b6-40e7-a1e0-f38865a97fff",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 2,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.037125"
+        },
+        {
+          "anomaly_id": "a14795bf-a10d-4f56-9926-1f18a8759c90",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.037333"
+        },
+        {
+          "anomaly_id": "f9eca5f0-34a8-47ec-b2d0-1ea7c5564b55",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.034880"
+        },
+        {
+          "anomaly_id": "a14795bf-a10d-4f56-9926-1f18a8759c90",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 4,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 135.0
+          },
+          "timestamp": "2026-05-28T02:19:11.037333"
+        },
+        {
+          "anomaly_id": "0b0fc03d-1f41-4c65-9ef0-243f67cbcae5",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.037445"
+        },
+        {
+          "anomaly_id": "fe9833a8-626d-4e02-9bcb-7f7e0a59578f",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "强逆风: 航段 检查点A -> 降落点 逆风分量 9.5 m/s",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": "{'id': 'wp002', 'name': '检查点A', 'latitude': 31.235, 'longitude': 121.48, 'altitude_m': 120, 'type': 'waypoint', 'order': 2, 'stay_time_s': 0}"
+          },
+          "route_segment": null,
+          "details": {
+            "headwind_component": 9.471739809018409,
+            "wind_speed": 10.0,
+            "wind_direction": 50.0,
+            "heading": 248.70648541505
+          },
+          "timestamp": "2026-05-28T02:19:11.033233"
+        },
+        {
+          "anomaly_id": "7814ae84-fd8e-4902-8ce0-c6fef47fec23",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.035848"
+        },
+        {
+          "anomaly_id": "0b0fc03d-1f41-4c65-9ef0-243f67cbcae5",
+          "anomaly_type": {},
+          "severity": {},
+          "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+          "source": {
+            "file_name": "waypoints.csv",
+            "line_number": 3,
+            "column": null,
+            "sheet_name": null,
+            "raw_value": null
+          },
+          "route_segment": null,
+          "details": {
+            "zone_id": "nfz001",
+            "zone_name": "机场禁飞区",
+            "intersection_type": "LineString",
+            "avg_altitude": 100.0
+          },
+          "timestamp": "2026-05-28T02:19:11.037445"
+        }
+      ],
+      "is_valid": false,
+      "creation_time": "2026-05-28T02:19:11.037468"
+    }
+  ],
+  "all_anomalies": [
+    {
+      "anomaly_id": "8a6af3f4-d9b6-42fb-8f19-3fa029b301e8",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 检查点A -> 检查点B 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 3,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 135.0
+      },
+      "timestamp": "2026-05-28T02:19:11.028623"
+    },
+    {
+      "anomaly_id": "b09fda86-90db-4920-891c-3a57cce2b257",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "强逆风: 航段 检查点B -> 检查点C 逆风分量 10.0 m/s",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 4,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+      },
+      "route_segment": null,
+      "details": {
+        "headwind_component": 10.022513230919742,
+        "wind_speed": 11.0,
+        "wind_direction": 52.5,
+        "heading": 256.836968827699
+      },
+      "timestamp": "2026-05-28T02:19:11.022743"
+    },
+    {
+      "anomaly_id": "ef194312-d10f-4ab9-9b54-900ef78001c3",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 检查点A -> 检查点C 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 3,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 110.0
+      },
+      "timestamp": "2026-05-28T02:19:11.034300"
+    },
+    {
+      "anomaly_id": "e2a5f36f-8b0a-44e8-83d2-45471894e409",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 检查点B -> 降落点 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 4,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 115.0
+      },
+      "timestamp": "2026-05-28T02:19:11.034583"
+    },
+    {
+      "anomaly_id": "08d7c350-f28b-47b9-a24f-de8c42102d49",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "强逆风: 航段 检查点B -> 降落点 逆风分量 9.3 m/s",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 4,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": "{'id': 'wp003', 'name': '检查点B', 'latitude': 31.24, 'longitude': 121.47, 'altitude_m': 150, 'type': 'waypoint', 'order': 3, 'stay_time_s': 0}"
+      },
+      "route_segment": null,
+      "details": {
+        "headwind_component": 9.328597037322751,
+        "wind_speed": 10.6,
+        "wind_direction": 51.5,
+        "heading": 203.14915853251782
+      },
+      "timestamp": "2026-05-28T02:19:11.033394"
+    },
+    {
+      "anomaly_id": "5dd0cd63-94e9-4f7a-89af-ed32e13c1196",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 起飞点 -> 检查点B 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 2,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 125.0
+      },
+      "timestamp": "2026-05-28T02:19:11.034762"
+    },
+    {
+      "anomaly_id": "f9eca5f0-34a8-47ec-b2d0-1ea7c5564b55",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 检查点B -> 检查点A 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 4,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 135.0
+      },
+      "timestamp": "2026-05-28T02:19:11.034880"
+    },
+    {
+      "anomaly_id": "cf3f2b37-0dd4-48e2-a021-ec2a18c16311",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 检查点C -> 检查点A 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 5,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 110.0
+      },
+      "timestamp": "2026-05-28T02:19:11.035717"
+    },
+    {
+      "anomaly_id": "7814ae84-fd8e-4902-8ce0-c6fef47fec23",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 检查点A -> 降落点 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 3,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 100.0
+      },
+      "timestamp": "2026-05-28T02:19:11.035848"
+    },
+    {
+      "anomaly_id": "fe9833a8-626d-4e02-9bcb-7f7e0a59578f",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "强逆风: 航段 检查点A -> 降落点 逆风分量 9.5 m/s",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 3,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": "{'id': 'wp002', 'name': '检查点A', 'latitude': 31.235, 'longitude': 121.48, 'altitude_m': 120, 'type': 'waypoint', 'order': 2, 'stay_time_s': 0}"
+      },
+      "route_segment": null,
+      "details": {
+        "headwind_component": 9.471739809018409,
+        "wind_speed": 10.0,
+        "wind_direction": 50.0,
+        "heading": 248.70648541505
+      },
+      "timestamp": "2026-05-28T02:19:11.033233"
+    },
+    {
+      "anomaly_id": "459e6af9-4b45-4a31-9d89-6ed7fba91a6a",
+      "anomaly_type": {},
+      "severity": {},
+      "message": "航线 起飞点 -> 检查点C 穿越禁飞区: 机场禁飞区",
+      "source": {
+        "file_name": "waypoints.csv",
+        "line_number": 2,
+        "column": null,
+        "sheet_name": null,
+        "raw_value": null
+      },
+      "route_segment": null,
+      "details": {
+        "zone_id": "nfz001",
+        "zone_name": "机场禁飞区",
+        "intersection_type": "LineString",
+        "avg_altitude": 100.0
+      },
+      "timestamp": "2026-05-28T02:19:11.036065"
+    }
+  ],
+  "calculation_time_ms": 15.527963638305664,
+  "version": "1.0.0",
+  "timestamp": "2026-05-28T02:19:11.037596",
+  "data_sources": {
+    "sample_data/waypoints.csv": {
+      "file_name": "waypoints.csv",
+      "file_type": "waypoints",
+      "file_hash": "c86cae5c3d0f3e32019708a9eb1b33b43b53b7708ea0bc6fdc9e618686765f5c",
+      "import_time": "2026-05-28T02:19:11.010376"
+    },
+    "sample_data/wind.csv": {
+      "file_name": "wind.csv",
+      "file_type": "wind",
+      "file_hash": "7253209d55d1eab543d53a5a968af9664e88bba5624d7f9dd31643089366265f",
+      "import_time": "2026-05-28T02:19:11.019172"
+    },
+    "sample_data/no_fly_zones.geojson": {
+      "file_name": "no_fly_zones.geojson",
+      "file_type": "no_fly_zones",
+      "file_hash": "d4bcbbbff74525d0fea6beb6955b53e69fd9cbbbe8ab01fbe0e028b4b0eac262",
+      "import_time": "2026-05-28T02:19:11.021409"
+    },
+    "sample_data/aircraft.json": {
+      "file_name": "aircraft.json",
+      "file_type": "aircraft_params",
+      "file_hash": "529034f0dfc3ee490b981a4bbb4140f7e26a4cde7e037d077dcd65ccf8dc987b",
+      "import_time": "2026-05-28T02:19:11.021799"
+    }
+  },
+  "change_history": []
+}

@@ -1,0 +1,5 @@
+﻿segment_index,start_waypoint,end_waypoint,distance_m,ground_speed_m_s,heading_deg,wind_component_m_s,flight_time_s,energy_used_wh,anomalies_count,anomaly_types
+1,起飞点,检查点A,787.67,4.61,49.5,-10.4,170.8,0.24,0,
+2,检查点A,检查点B,1101.37,22.13,300.32,4.49,49.78,1.53,1,no_fly_zone_crossing
+3,检查点B,检查点C,976.39,25.43,256.84,10.02,38.4,2.05,1,headwind_excessive
+4,检查点C,降落点,1008.62,19.53,151.88,2.14,51.65,0.88,0,

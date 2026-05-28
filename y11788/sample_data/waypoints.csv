@@ -1,0 +1,6 @@
+id,name,latitude,longitude,altitude_m,type,order,stay_time_s
+wp001,起飞点,31.2304,121.4737,100,start,1,0
+wp002,检查点A,31.2350,121.4800,120,waypoint,2,0
+wp003,检查点B,31.2400,121.4700,150,waypoint,3,0
+wp004,检查点C,31.2380,121.4600,100,waypoint,4,0
+wp005,降落点,31.2300,121.4650,80,end,5,0

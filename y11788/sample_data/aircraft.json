@@ -1,0 +1,8 @@
+{
+  "model_name": "航模固定翼",
+  "mass_kg": 2.5,
+  "wing_area_m2": 0.5,
+  "drag_coefficient": 0.03,
+  "cruise_speed_m_s": 15.0,
+  "battery_capacity_wh": 500.0
+}
