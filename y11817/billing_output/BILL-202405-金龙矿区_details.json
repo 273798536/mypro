@@ -1,0 +1,354 @@
+{
+  "period_info": {
+    "start": "2024-05-01",
+    "end": "2024-05-05",
+    "customer": "",
+    "mining_site": "金龙矿区"
+  },
+  "summary": {
+    "total_billable_hours": 62.0,
+    "total_billable_shifts": 2,
+    "total_free_hours": 5.0,
+    "total_amount": 12840.0
+  },
+  "calendar_days": {
+    "2024-05-01_EX-001": {
+      "bill_date": "2024-05-01",
+      "device_id": "EX-001",
+      "billable_hours": 16.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 2880.0,
+      "shifts_count": 2,
+      "downtimes_count": 0,
+      "signatures_count": 2,
+      "issues": [
+        "签字单缺页 - 应4页实2页"
+      ],
+      "warnings": [
+        "班次中班跨日 - 开始:2024-05-01 16:00:00 结束:2024-05-02 00:00:00 - 来源: sample_data/班次表.csv第3行"
+      ],
+      "shift_sources": [
+        "sample_data/班次表.csv第2行",
+        "sample_data/班次表.csv第3行"
+      ],
+      "downtime_sources": [],
+      "signature_sources": [
+        "sample_data/签字单.csv第2行",
+        "sample_data/签字单.csv第3行"
+      ]
+    },
+    "2024-05-01_EX-002": {
+      "bill_date": "2024-05-01",
+      "device_id": "EX-002",
+      "billable_hours": 0.0,
+      "billable_shifts": 1,
+      "free_hours": 0.0,
+      "total_amount": 1200.0,
+      "shifts_count": 1,
+      "downtimes_count": 0,
+      "signatures_count": 1,
+      "issues": [],
+      "warnings": [],
+      "shift_sources": [
+        "sample_data/班次表.csv第6行"
+      ],
+      "downtime_sources": [],
+      "signature_sources": [
+        "sample_data/签字单.csv第6行"
+      ]
+    },
+    "2024-05-01_EX-003": {
+      "bill_date": "2024-05-01",
+      "device_id": "EX-003",
+      "billable_hours": 16.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 2400.0,
+      "shifts_count": 2,
+      "downtimes_count": 0,
+      "signatures_count": 2,
+      "issues": [],
+      "warnings": [],
+      "shift_sources": [
+        "sample_data/班次表.csv第8行",
+        "sample_data/班次表.csv第9行"
+      ],
+      "downtime_sources": [],
+      "signature_sources": [
+        "sample_data/签字单.csv第7行",
+        "sample_data/签字单.csv第8行"
+      ]
+    },
+    "2024-05-02_EX-001": {
+      "bill_date": "2024-05-02",
+      "device_id": "EX-001",
+      "billable_hours": 16.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 2880.0,
+      "shifts_count": 2,
+      "downtimes_count": 0,
+      "signatures_count": 2,
+      "issues": [
+        "签字单缺页 - 应6页实2页"
+      ],
+      "warnings": [
+        "班次中班跨日 - 开始:2024-05-01 16:00:00 结束:2024-05-02 00:00:00 - 来源: sample_data/班次表.csv第3行",
+        "班次早班无签字确认 - 来源: sample_data/班次表.csv第4行"
+      ],
+      "shift_sources": [
+        "sample_data/班次表.csv第3行",
+        "sample_data/班次表.csv第4行"
+      ],
+      "downtime_sources": [],
+      "signature_sources": [
+        "sample_data/签字单.csv第4行",
+        "sample_data/签字单.csv第5行"
+      ]
+    },
+    "2024-05-02_EX-002": {
+      "bill_date": "2024-05-02",
+      "device_id": "EX-002",
+      "billable_hours": 0.0,
+      "billable_shifts": 1,
+      "free_hours": 0.0,
+      "total_amount": 1200.0,
+      "shifts_count": 1,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [],
+      "shift_sources": [
+        "sample_data/班次表.csv第7行"
+      ],
+      "downtime_sources": [],
+      "signature_sources": []
+    },
+    "2024-05-02_EX-003": {
+      "bill_date": "2024-05-02",
+      "device_id": "EX-003",
+      "billable_hours": 8.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 1200.0,
+      "shifts_count": 1,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [],
+      "shift_sources": [
+        "sample_data/班次表.csv第10行"
+      ],
+      "downtime_sources": [],
+      "signature_sources": []
+    },
+    "2024-05-03_EX-001": {
+      "bill_date": "2024-05-03",
+      "device_id": "EX-001",
+      "billable_hours": 6.0,
+      "billable_shifts": 0,
+      "free_hours": 2.0,
+      "total_amount": 1080.0,
+      "shifts_count": 1,
+      "downtimes_count": 1,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "正常保养2.00小时免租 - 来源: sample_data/故障停机.csv第2行"
+      ],
+      "shift_sources": [
+        "sample_data/班次表.csv第5行"
+      ],
+      "downtime_sources": [
+        "sample_data/故障停机.csv第2行"
+      ],
+      "signature_sources": []
+    },
+    "2024-05-03_EX-002": {
+      "bill_date": "2024-05-03",
+      "device_id": "EX-002",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 3.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 1,
+      "signatures_count": 0,
+      "issues": [
+        "停机记录未审批 - 故障停机 3.00小时 - 来源: sample_data/故障停机.csv第4行"
+      ],
+      "warnings": [
+        "故障停机3.00小时免租 - 来源: sample_data/故障停机.csv第4行",
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [
+        "sample_data/故障停机.csv第4行"
+      ],
+      "signature_sources": []
+    },
+    "2024-05-03_EX-003": {
+      "bill_date": "2024-05-03",
+      "device_id": "EX-003",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [],
+      "signature_sources": []
+    },
+    "2024-05-04_EX-001": {
+      "bill_date": "2024-05-04",
+      "device_id": "EX-001",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 1,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [
+        "sample_data/故障停机.csv第3行"
+      ],
+      "signature_sources": []
+    },
+    "2024-05-04_EX-002": {
+      "bill_date": "2024-05-04",
+      "device_id": "EX-002",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [],
+      "signature_sources": []
+    },
+    "2024-05-04_EX-003": {
+      "bill_date": "2024-05-04",
+      "device_id": "EX-003",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 1,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [
+        "sample_data/故障停机.csv第5行"
+      ],
+      "signature_sources": []
+    },
+    "2024-05-05_EX-001": {
+      "bill_date": "2024-05-05",
+      "device_id": "EX-001",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [],
+      "signature_sources": []
+    },
+    "2024-05-05_EX-002": {
+      "bill_date": "2024-05-05",
+      "device_id": "EX-002",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [],
+      "signature_sources": []
+    },
+    "2024-05-05_EX-003": {
+      "bill_date": "2024-05-05",
+      "device_id": "EX-003",
+      "billable_hours": 0.0,
+      "billable_shifts": 0,
+      "free_hours": 0.0,
+      "total_amount": 0.0,
+      "shifts_count": 0,
+      "downtimes_count": 0,
+      "signatures_count": 0,
+      "issues": [],
+      "warnings": [
+        "当日无班次记录"
+      ],
+      "shift_sources": [],
+      "downtime_sources": [],
+      "signature_sources": []
+    }
+  },
+  "issues": [
+    "签字单SIG-20240502-01缺页 - 缺少第[2]页 (共3页) - 来源: sample_data/签字单.csv第4行"
+  ],
+  "warnings": [
+    "设备EX-001(挖掘机CAT320) 2024-05-01 缺少1个班次 (应3个,实2个) - 现有: 早班,中班",
+    "设备EX-001(挖掘机CAT320) 2024-05-02 缺少2个班次 (应3个,实1个) - 现有: 早班",
+    "设备EX-001(挖掘机CAT320) 2024-05-03 缺少2个班次 (应3个,实1个) - 现有: 早班",
+    "设备EX-001(挖掘机CAT320) 2024-05-04 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-001(挖掘机CAT320) 2024-05-05 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-002(装载机ZL50) 2024-05-01 缺少2个班次 (应3个,实1个) - 现有: 白班",
+    "设备EX-002(装载机ZL50) 2024-05-02 缺少2个班次 (应3个,实1个) - 现有: 白班",
+    "设备EX-002(装载机ZL50) 2024-05-03 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-002(装载机ZL50) 2024-05-04 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-002(装载机ZL50) 2024-05-05 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-003(自卸车HD465) 2024-05-01 缺少1个班次 (应3个,实2个) - 现有: 早班,中班",
+    "设备EX-003(自卸车HD465) 2024-05-02 缺少2个班次 (应3个,实1个) - 现有: 早班",
+    "设备EX-003(自卸车HD465) 2024-05-03 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-003(自卸车HD465) 2024-05-04 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "设备EX-003(自卸车HD465) 2024-05-05 缺少3个班次 (应3个,实0个) - 现有: 无",
+    "有1份签字单未匹配到班次",
+    "有4个班次无对应签字单"
+  ],
+  "missing_shifts_dates": [
+    "2024-05-01",
+    "2024-05-02",
+    "2024-05-03",
+    "2024-05-04",
+    "2024-05-05"
+  ],
+  "missing_signature_pages": [
+    "SIG-20240502-01缺1页"
+  ]
+}
