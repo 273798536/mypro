@@ -1,0 +1,30 @@
+{
+    "policy_number": "POL-2024-001",
+    "product_name": "鑫享人生终身寿险",
+    "issue_date": "2020-03-15",
+    "sum_assured": 500000,
+    "annual_premium": 20000,
+    "payment_term_years": 20,
+    "policy_status": "有效",
+    "grace_period_days": 60,
+    "has_loan": false,
+    "loan_principal": 30000,
+    "loan_interest": 1500,
+    "loan_interest_rate": 4.5,
+    "dividend_type": "累积生息",
+    "cash_value_table": [
+        {"year": 1, "cash_value": 3200},
+        {"year": 2, "cash_value": 12800},
+        {"year": 3, "cash_value": 26400},
+        {"year": 4, "cash_value": 42000},
+        {"year": 5, "cash_value": 58500},
+        {"year": 6, "cash_value": 76000},
+        {"year": 7, "cash_value": 94500}
+    ],
+    "dividend_records": [
+        {"year": 2021, "amount": 800, "dividend_type": "累积生息", "is_cross_year": false},
+        {"year": 2022, "amount": 950, "dividend_type": "累积生息", "is_cross_year": false},
+        {"year": 2023, "amount": 1100, "dividend_type": "累积生息", "is_cross_year": false},
+        {"year": 2024, "amount": 1250, "dividend_type": "累积生息", "is_cross_year": true}
+    ]
+}
