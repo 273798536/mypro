@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "description": "明显坏数据 - 存在审批越权、数据无效、折扣超限等多重问题",
+    "scenario": "销售代表越权审批25%折扣，原价为0导致计算错误，总价明显异常",
+    "expected_result": "检测到审批越权、数据无效、折扣超限三大异常"
+  },
+  "quotation": {
+    "quotation_id": "QUOTE-2026-0003",
+    "customer_id": "CUST-003",
+    "customer_level_id": "CUST-PLATINUM",
+    "items": [
+      {
+        "product_id": "PROD-003",
+        "product_name": "无线AP面板A3",
+        "quantity": 600,
+        "final_unit_price": 209.30,
+        "standard_price": 299.00,
+        "approval_level": 1,
+        "approver": "张三",
+        "approval_status": "已通过",
+        "remark": "销售代表越权审批大订单"
+      }
+    ]
+  }
+}

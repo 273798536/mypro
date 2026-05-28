@@ -1,0 +1,205 @@
+{
+  "report_generated_at": "2026-05-28T01:27:35.834100",
+  "result": {
+    "quotation": {
+      "quotation_id": "QUOTE-2026-0003",
+      "product_id": "PROD-003",
+      "product_name": "无线AP面板A3",
+      "quantity": 600,
+      "final_unit_price": 209.3,
+      "standard_price": 299.0,
+      "customer_id": "CUST-003",
+      "customer_level_id": "CUST-PLATINUM",
+      "approval_level": 1,
+      "approver": "张三",
+      "approval_status": "已通过",
+      "actual_discount_rate": 0.3,
+      "final_total_amount": 125580.0,
+      "standard_total_amount": 179400.0,
+      "total_discount_amount": 53820.0,
+      "remark": "销售代表越权审批大订单"
+    },
+    "matched_tier": {
+      "tier_id": "TIER-05",
+      "tier_name": "战略级采购",
+      "min_quantity": 501,
+      "max_quantity": null,
+      "discount_rate": 0.25,
+      "approval_level_required": 5,
+      "description": "501个以上，25%折扣，总经理审批"
+    },
+    "applied_customer_discount": 0.08,
+    "applied_tier_discount": 0.25,
+    "total_calculated_discount": 0.33,
+    "calculated_unit_price": 200.33,
+    "rounding_tolerance": 0.01,
+    "price_difference": 8.97,
+    "price_difference_percent": 3.0,
+    "steps": [
+      {
+        "step_order": 1,
+        "step_name": "输入数据校验",
+        "description": "校验报价单输入数据的完整性和有效性",
+        "value_before": "{'quantity': 600, 'standard_price': 299.0, 'final_price': 209.3}",
+        "value_after": "有效",
+        "formula": null,
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 2,
+        "step_name": "计算实际折扣率",
+        "description": "根据最终报价和原价反推实际享受的折扣率",
+        "value_before": "{'standard_price': 299.0, 'final_price': 209.3}",
+        "value_after": "30.0000%",
+        "formula": "实际折扣率 = 1 - (最终单价 / 原价)",
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 3,
+        "step_name": "获取客户等级折扣",
+        "description": "根据客户等级[铂金客户]获取基础折扣",
+        "value_before": "{'customer_level_id': 'CUST-PLATINUM'}",
+        "value_after": "8.00%",
+        "formula": "客户[铂金客户]基础折扣 = 8.00%",
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 4,
+        "step_name": "检测折扣阶梯匹配",
+        "description": "根据采购数量匹配对应折扣阶梯",
+        "value_before": "{'quantity': 600}",
+        "value_after": "TIER-05(501-∞, 25%)",
+        "formula": null,
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 5,
+        "step_name": "选择适用折扣阶梯",
+        "description": "确定适用的阶梯折扣",
+        "value_before": "['TIER-05']",
+        "value_after": "TIER-05 - 25.00%",
+        "formula": "阶梯折扣 = 25.00%",
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 6,
+        "step_name": "计算总折扣率",
+        "description": "计算总折扣，additive模式",
+        "value_before": null,
+        "value_after": "33.00%",
+        "formula": "总折扣 = 客户折扣(8.00%) + 阶梯折扣(25.00%) = 33.00%",
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 7,
+        "step_name": "计算理论单价",
+        "description": "根据总折扣率计算理论上的最终单价（保留2位小数）",
+        "value_before": "原价: 299.0, 折扣: 33.00%",
+        "value_after": "200.33",
+        "formula": "理论单价 = 原价 × (1 - 总折扣) = 299.0 × (1 - 0.33) = 200.33",
+        "is_exception": false,
+        "exception_type": null,
+        "exception_message": null
+      },
+      {
+        "step_order": 8,
+        "step_name": "分析价格差异",
+        "description": "比较实际报价与理论计算价的差异",
+        "value_before": "{'actual': 209.3, 'calculated': 200.33}",
+        "value_after": "差异: 8.9700 (超出容忍范围!)",
+        "formula": "差异 = 实际报价 - 理论价 = 209.3 - 200.33 = 8.9700",
+        "is_exception": true,
+        "exception_type": "四舍五入误差",
+        "exception_message": "价格差异8.9700超出容忍范围(0.01)！实际报价偏高，请检查报价是否有误或是否有其他特殊折扣。"
+      },
+      {
+        "step_order": 9,
+        "step_name": "校验审批级别",
+        "description": "校验审批级别和审批人是否符合规则",
+        "value_before": "{'actual_level': 1, 'required_level': 5}",
+        "value_after": "审批不合规!",
+        "formula": null,
+        "is_exception": true,
+        "exception_type": "审批越权",
+        "exception_message": "审批越权：销售代表(级别1)最大只能审批5.00%折扣，但实际折扣为33.00%; 级别不足：该折扣需要总经理(级别5)审批，但实际由销售代表(级别1)审批"
+      }
+    ],
+    "exceptions": [
+      {
+        "step_order": 8,
+        "step_name": "分析价格差异",
+        "description": "比较实际报价与理论计算价的差异",
+        "value_before": "{'actual': 209.3, 'calculated': 200.33}",
+        "value_after": "差异: 8.9700 (超出容忍范围!)",
+        "formula": "差异 = 实际报价 - 理论价 = 209.3 - 200.33 = 8.9700",
+        "is_exception": true,
+        "exception_type": "四舍五入误差",
+        "exception_message": "价格差异8.9700超出容忍范围(0.01)！实际报价偏高，请检查报价是否有误或是否有其他特殊折扣。"
+      },
+      {
+        "step_order": 9,
+        "step_name": "校验审批级别",
+        "description": "校验审批级别和审批人是否符合规则",
+        "value_before": "{'actual_level': 1, 'required_level': 5}",
+        "value_after": "审批不合规!",
+        "formula": null,
+        "is_exception": true,
+        "exception_type": "审批越权",
+        "exception_message": "审批越权：销售代表(级别1)最大只能审批5.00%折扣，但实际折扣为33.00%; 级别不足：该折扣需要总经理(级别5)审批，但实际由销售代表(级别1)审批"
+      }
+    ],
+    "approval_validation": {
+      "is_valid": false,
+      "required_level": 5,
+      "required_level_name": "总经理",
+      "actual_level": 1,
+      "actual_level_name": "销售代表",
+      "max_discount_at_actual_level": 0.05,
+      "requested_discount": 0.33,
+      "issues": [
+        "审批越权：销售代表(级别1)最大只能审批5.00%折扣，但实际折扣为33.00%",
+        "级别不足：该折扣需要总经理(级别5)审批，但实际由销售代表(级别1)审批"
+      ]
+    },
+    "data_sources": [
+      {
+        "source": "客户等级",
+        "file_name": "config.yaml",
+        "record_id": "CUST-PLATINUM",
+        "loaded_at": "2026-05-28T01:27:35.831604"
+      },
+      {
+        "source": "原价表",
+        "file_name": "config.yaml",
+        "record_id": "PROD-003",
+        "loaded_at": "2026-05-28T01:27:35.831623"
+      },
+      {
+        "source": "报价单",
+        "file_name": "03_bad_data_record.json",
+        "record_id": "QUOTE-2026-0003-PROD-003",
+        "loaded_at": "2026-05-28T01:27:35.832472"
+      }
+    ],
+    "audit_trails": [],
+    "is_valid": true,
+    "has_exceptions": true,
+    "conclusion": "反推完成，发现2个异常: 四舍五入误差, 审批越权",
+    "suggestions": [
+      "【四舍五入】价格差异8.9700超出容忍范围(0.01)！实际报价偏高，请检查报价是否有误或是否有其他特殊折扣。。差异比例3.0000%，建议核查是否存在其他未记录的折扣或报价错误。",
+      "【审批越权】审批越权：销售代表(级别1)最大只能审批5.00%折扣，但实际折扣为33.00%; 级别不足：该折扣需要总经理(级别5)审批，但实际由销售代表(级别1)审批。建议升级审批或调整报价至对应级别权限内。"
+    ]
+  }
+}

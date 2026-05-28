@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "description": "正常记录 - 完全符合规则，无异常",
+    "scenario": "客户采购80台路由器，金牌客户享受5%基础折扣+10%阶梯折扣，销售主管审批",
+    "expected_result": "验证通过，无异常"
+  },
+  "quotation": {
+    "quotation_id": "QUOTE-2026-0001",
+    "customer_id": "CUST-001",
+    "customer_level_id": "CUST-GOLD",
+    "items": [
+      {
+        "product_id": "PROD-001",
+        "product_name": "智能路由器X1",
+        "quantity": 80,
+        "final_unit_price": 1104.15,
+        "standard_price": 1299.00,
+        "approval_level": 3,
+        "approver": "孙八",
+        "approval_status": "已通过",
+        "remark": "正常采购订单"
+      }
+    ]
+  }
+}

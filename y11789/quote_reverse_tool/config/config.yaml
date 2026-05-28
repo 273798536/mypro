@@ -1,0 +1,131 @@
+# 报价阶梯反推工具 - 配置文件
+# 包含折扣阶梯、审批级别、客户等级配置
+# 注意：TIER-03和TIER-04故意设置了重叠，用于测试异常检测功能
+
+version: "1.0"
+created_at: "2026-05-28"
+
+# ===== 折扣阶梯配置 =====
+# 注意：TIER-03的max=200与TIER-04的min=200存在边界重叠，TIER-04的min=150与TIER-03的区间重叠
+discount_tiers:
+  - tier_id: TIER-01
+    tier_name: "小批量采购"
+    min_quantity: 1
+    max_quantity: 50
+    discount_rate: 0.05
+    approval_level_required: 1
+    description: "1-50个，5%折扣，销售代表审批"
+
+  - tier_id: TIER-02
+    tier_name: "中批量采购"
+    min_quantity: 51
+    max_quantity: 100
+    discount_rate: 0.10
+    approval_level_required: 2
+    description: "51-100个，10%折扣，销售主管审批"
+
+  - tier_id: TIER-03
+    tier_name: "大批量采购"
+    min_quantity: 101
+    max_quantity: 200
+    discount_rate: 0.15
+    approval_level_required: 3
+    description: "101-200个，15%折扣，销售经理审批"
+
+  - tier_id: TIER-04
+    tier_name: "超大批量采购"
+    min_quantity: 150
+    max_quantity: 500
+    discount_rate: 0.20
+    approval_level_required: 4
+    description: "150-500个，20%折扣，销售总监审批"
+
+  - tier_id: TIER-05
+    tier_name: "战略级采购"
+    min_quantity: 501
+    max_quantity: null
+    discount_rate: 0.25
+    approval_level_required: 5
+    description: "501个以上，25%折扣，总经理审批"
+
+# ===== 审批级别配置 =====
+approval_levels:
+  - level: 1
+    name: "销售代表"
+    max_discount_allowed: 0.05
+    approvers: ["张三", "李四", "王五"]
+    description: "最大审批5%折扣"
+
+  - level: 2
+    name: "销售主管"
+    max_discount_allowed: 0.10
+    approvers: ["赵六", "钱七"]
+    description: "最大审批10%折扣"
+
+  - level: 3
+    name: "销售经理"
+    max_discount_allowed: 0.15
+    approvers: ["孙八", "周九"]
+    description: "最大审批15%折扣"
+
+  - level: 4
+    name: "销售总监"
+    max_discount_allowed: 0.20
+    approvers: ["吴十", "郑十一"]
+    description: "最大审批20%折扣"
+
+  - level: 5
+    name: "总经理"
+    max_discount_allowed: 0.30
+    approvers: ["王总"]
+    description: "最大审批30%折扣"
+
+# ===== 客户等级配置 =====
+customer_levels:
+  - level_id: CUST-NORMAL
+    level_name: "普通客户"
+    base_discount_rate: 0.00
+    priority: 1
+    description: "无基础折扣"
+
+  - level_id: CUST-SILVER
+    level_name: "银牌客户"
+    base_discount_rate: 0.02
+    priority: 2
+    description: "额外2%基础折扣"
+
+  - level_id: CUST-GOLD
+    level_name: "金牌客户"
+    base_discount_rate: 0.05
+    priority: 3
+    description: "额外5%基础折扣"
+
+  - level_id: CUST-PLATINUM
+    level_name: "铂金客户"
+    base_discount_rate: 0.08
+    priority: 4
+    description: "额外8%基础折扣"
+
+# ===== 产品原价表 =====
+products:
+  - product_id: PROD-001
+    product_name: "智能路由器X1"
+    standard_price: 1299.00
+    unit: "台"
+
+  - product_id: PROD-002
+    product_name: "企业交换机S2"
+    standard_price: 3599.00
+    unit: "台"
+
+  - product_id: PROD-003
+    product_name: "无线AP面板A3"
+    standard_price: 299.00
+    unit: "个"
+
+# ===== 系统配置 =====
+system:
+  rounding_tolerance: 0.01
+  rounding_precision: 2
+  discount_combine_method: "additive"
+  max_discount_rate: 0.50
