@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-primary-950 text-primary-100 min-h-screen;
+  }
+
+  * {
+    @apply border-primary-800/50;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-primary-900/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-700/50 rounded-full hover:bg-primary-600/50 transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary-600/70;
+  }
+
+  /* Range slider thumb for Firefox */
+  input[type="range"]::-moz-range-thumb {
+    @apply w-4 h-4 rounded-full bg-primary-500 border-none shadow-lg cursor-grab;
+  }
+
+  input[type="range"]::-moz-range-thumb:active {
+    cursor: grabbing;
+  }
+
+  input[type="range"]::-moz-range-track {
+    @apply bg-primary-800/50 rounded-lg h-2;
+  }
+
+  /* Number input spin buttons */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-primary-900/40 backdrop-blur-md border border-primary-800/50 rounded-xl shadow-xl;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:bg-primary-800/30 hover:border-primary-700/50 hover:shadow-lg;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-medium rounded-lg transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40;
+  }
+
+  .btn-secondary {
+    @apply bg-primary-800/50 hover:bg-primary-700/50 text-primary-200 rounded-lg transition-colors;
+  }
+}
