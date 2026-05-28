@@ -1,0 +1,6 @@
+[
+  {"value": 10, "label": "十元"},
+  {"value": 5, "label": "五元"},
+  {"value": 10, "label": "十元（重复）"},
+  {"value": 1, "label": "一元"}
+]

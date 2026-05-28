@@ -1,0 +1,26 @@
+[
+  {
+    "amount": 37,
+    "cashier": "小王",
+    "shift": "早班",
+    "feasible_count": 20,
+    "optimal_count": 1,
+    "warnings": 0
+  },
+  {
+    "amount": 65,
+    "cashier": "小李",
+    "shift": "晚班",
+    "feasible_count": 67,
+    "optimal_count": 1,
+    "warnings": 0
+  },
+  {
+    "amount": 500,
+    "cashier": "小张",
+    "shift": "中班",
+    "feasible_count": 225,
+    "optimal_count": 1,
+    "warnings": 0
+  }
+]

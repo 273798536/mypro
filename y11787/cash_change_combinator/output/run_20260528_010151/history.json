@@ -1,0 +1,74 @@
+[
+  {
+    "id": "be8ba0c6",
+    "timestamp": "2026-05-28T01:01:51.801133",
+    "action": "start",
+    "detail": "输入目录=sample_input, 输出目录=output"
+  },
+  {
+    "id": "631c7e90",
+    "timestamp": "2026-05-28T01:01:51.801323",
+    "action": "load",
+    "detail": "加载面额文件",
+    "source": "sample_input/denominations.json:0"
+  },
+  {
+    "id": "513e8222",
+    "timestamp": "2026-05-28T01:01:51.803577",
+    "action": "load",
+    "detail": "加载 6 个面额"
+  },
+  {
+    "id": "477708c5",
+    "timestamp": "2026-05-28T01:01:51.803618",
+    "action": "load",
+    "detail": "加载库存文件",
+    "source": "sample_input/inventory.json:0"
+  },
+  {
+    "id": "b5a14d83",
+    "timestamp": "2026-05-28T01:01:51.805813",
+    "action": "load",
+    "detail": "加载 6 条库存"
+  },
+  {
+    "id": "f8458d8e",
+    "timestamp": "2026-05-28T01:01:51.805849",
+    "action": "load",
+    "detail": "加载找零请求",
+    "source": "sample_input/change_requests.json:0"
+  },
+  {
+    "id": "da58a295",
+    "timestamp": "2026-05-28T01:01:51.806705",
+    "action": "load",
+    "detail": "加载 3 条找零请求"
+  },
+  {
+    "id": "18f3d65e",
+    "timestamp": "2026-05-28T01:01:51.807191",
+    "action": "output",
+    "detail": "输出目录: output/run_20260528_010151"
+  },
+  {
+    "id": "8689e02b",
+    "timestamp": "2026-05-28T01:01:51.807617",
+    "action": "solve",
+    "detail": "金额=37, 可行=20, 最优=1, 警告=0",
+    "source": "sample_input/change_requests.json:1"
+  },
+  {
+    "id": "22218d8a",
+    "timestamp": "2026-05-28T01:01:51.815465",
+    "action": "solve",
+    "detail": "金额=65, 可行=67, 最优=1, 警告=0",
+    "source": "sample_input/change_requests.json:2"
+  },
+  {
+    "id": "573945a5",
+    "timestamp": "2026-05-28T01:01:52.109121",
+    "action": "solve",
+    "detail": "金额=500, 可行=225, 最优=1, 警告=0",
+    "source": "sample_input/change_requests.json:3"
+  }
+]

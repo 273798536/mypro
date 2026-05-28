@@ -1,0 +1,5 @@
+[
+  {"amount": 6, "cashier": "新人A", "shift": "早班"},
+  {"amount": 30, "cashier": "新人B", "shift": "晚班"},
+  {"amount": 10, "cashier": "新人C", "shift": "中班"}
+]

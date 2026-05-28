@@ -1,0 +1,8 @@
+[
+  {"value": 100, "label": "百元"},
+  {"value": 50, "label": "五十元"},
+  {"value": 20, "label": "二十元"},
+  {"value": 10, "label": "十元"},
+  {"value": 5, "label": "五元"},
+  {"value": 1, "label": "一元"}
+]
