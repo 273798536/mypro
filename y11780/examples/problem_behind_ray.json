@@ -1,0 +1,36 @@
+{
+    "problem_id": "MIRROR-006-BEHIND-RAY",
+    "source": "边界情况测试 - 射线后方交点",
+    "angle_unit": "degree",
+    "refractive_index_env": 1.0,
+    "bounding_box": {
+        "x_min": 0,
+        "x_max": 10,
+        "y_min": 0,
+        "y_max": 10
+    },
+    "mirror_segments": [
+        {
+            "label": "M1",
+            "start": [2, 2],
+            "end": [8, 2],
+            "material": "mirror"
+        }
+    ],
+    "incident_rays": [
+        {
+            "label": "R1-behind",
+            "origin": [5, 1],
+            "direction": [0, -1]
+        },
+        {
+            "label": "R2-normal",
+            "origin": [5, 7],
+            "direction": [0, -1]
+        }
+    ],
+    "metadata": {
+        "test_case": "behind_ray",
+        "description": "R1的方向朝下，镜面在上方，交点在射线后方(t<0)"
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "problem_id": "MIRROR-003-EXTENSION",
+    "source": "边界情况测试 - 延长线交点",
+    "angle_unit": "degree",
+    "refractive_index_env": 1.0,
+    "bounding_box": {
+        "x_min": 0,
+        "x_max": 10,
+        "y_min": 0,
+        "y_max": 10
+    },
+    "mirror_segments": [
+        {
+            "label": "M1",
+            "start": [4, 3],
+            "end": [6, 3],
+            "material": "mirror"
+        }
+    ],
+    "incident_rays": [
+        {
+            "label": "R1-extension-s<0",
+            "origin": [1, 5],
+            "angle": -45
+        },
+        {
+            "label": "R2-extension-s>1",
+            "origin": [9, 5],
+            "angle": -135
+        }
+    ],
+    "metadata": {
+        "test_case": "extension_intersection",
+        "description": "交点在镜面线段的延长线上，s<0或s>1"
+    }
+}

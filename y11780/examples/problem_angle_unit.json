@@ -1,0 +1,36 @@
+{
+    "problem_id": "MIRROR-004-ANGLE-UNIT",
+    "source": "边界情况测试 - 角度单位错误",
+    "angle_unit": "degree",
+    "refractive_index_env": 1.0,
+    "bounding_box": {
+        "x_min": 0,
+        "x_max": 10,
+        "y_min": 0,
+        "y_max": 10
+    },
+    "mirror_segments": [
+        {
+            "label": "M1",
+            "start": [2, 2],
+            "end": [8, 2],
+            "material": "mirror"
+        }
+    ],
+    "incident_rays": [
+        {
+            "label": "R1-small-angle",
+            "origin": [5, 5],
+            "angle": 0.785
+        },
+        {
+            "label": "R2-normal",
+            "origin": [3, 5],
+            "angle": -60
+        }
+    ],
+    "metadata": {
+        "test_case": "angle_unit_error",
+        "description": "R1的angle=0.785很小，可能实际是弧度(π/4=45°)，但声明为度"
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "problem_id": "MIRROR-005-OUT-OF-BOUNDS",
+    "source": "边界情况测试 - 边界框外交点",
+    "angle_unit": "degree",
+    "refractive_index_env": 1.0,
+    "bounding_box": {
+        "x_min": 2,
+        "x_max": 8,
+        "y_min": 2,
+        "y_max": 8
+    },
+    "mirror_segments": [
+        {
+            "label": "M1",
+            "start": [0, 0],
+            "end": [10, 10],
+            "material": "mirror"
+        }
+    ],
+    "incident_rays": [
+        {
+            "label": "R1-in-bounds",
+            "origin": [3, 7],
+            "angle": -45
+        },
+        {
+            "label": "R2-out-bounds",
+            "origin": [1, 1],
+            "angle": 45
+        }
+    ],
+    "metadata": {
+        "test_case": "out_of_bounds",
+        "description": "R2的交点在边界框外，R1在边界框内"
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "problem_id": "MIRROR-002-PARALLEL",
+    "source": "边界情况测试 - 平行无交",
+    "angle_unit": "degree",
+    "refractive_index_env": 1.0,
+    "bounding_box": {
+        "x_min": 0,
+        "x_max": 10,
+        "y_min": 0,
+        "y_max": 10
+    },
+    "mirror_segments": [
+        {
+            "label": "M1",
+            "start": [2, 2],
+            "end": [8, 2],
+            "material": "mirror"
+        }
+    ],
+    "incident_rays": [
+        {
+            "label": "R1-parallel",
+            "origin": [1, 4],
+            "direction": [1, 0]
+        }
+    ],
+    "metadata": {
+        "test_case": "parallel_rays",
+        "description": "入射光线与镜面平行，应该检测为无交点"
+    }
+}
