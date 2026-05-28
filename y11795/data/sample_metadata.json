@@ -1,0 +1,12 @@
+{
+  "water_volume": 500,
+  "launch_angle": 85.0,
+  "wind_speed": 2.5,
+  "wind_direction": 45,
+  "air_pressure": 101325,
+  "rocket_mass": 0.5,
+  "rocket_diameter": 0.09,
+  "notes": "示例测试数据，包含模拟噪声和人工异常点",
+  "actual_v0": 35.0,
+  "actual_Cd": 0.42
+}
