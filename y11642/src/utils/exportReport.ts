@@ -3,7 +3,7 @@ import { GameState, ReportData } from '../types';
 import { calculateFinalScore } from '../engine/scoring';
 
 export function generateReportData(gameState: GameState): ReportData {
-  const { finalScore, grade, summary } = calculateFinalScore(
+  const { finalScore } = calculateFinalScore(
     gameState.score,
     gameState.plots,
     gameState.currentRound

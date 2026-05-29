@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Download, FileText, FileText as FileTextIcon } from 'lucide-react';
+import { ArrowLeft, Download, FileText } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore';
 import { generateReportData, exportReportAsText, exportReportAsPDF, downloadTextFile } from '../utils/exportReport';
 

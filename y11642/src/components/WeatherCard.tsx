@@ -1,6 +1,5 @@
 import React from 'react';
 import { useGameStore } from '../store/useGameStore';
-import { Weather } from '../types';
 
 export const WeatherCard: React.FC = () => {
   const { state } = useGameStore();

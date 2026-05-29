@@ -1,12 +1,7 @@
 import { create } from 'zustand';
-import {
+import type {
   GameState,
-  Valve,
-  Plot,
-  Cell,
-  ActionRecord,
-  Anomaly,
-  Weather
+  ActionRecord
 } from '../types';
 import {
   createDefaultBoard,

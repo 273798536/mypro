@@ -75,15 +75,15 @@ const normalGameState: GameState = {
   phase: 'ended',
   currentRound: 8,
   maxRounds: MAX_ROUNDS,
-  score: 1850,
+  score: 2200,
   board: createSampleBoard(),
   valves: createSampleValves(['open', 'open']),
-  plots: createSamplePlots([22, 28, 38]),
+  plots: createSamplePlots([20, 25, 35]),
   currentWeather: { ...WEATHER_TYPES.cloudy },
   anomalies: [
     {
       type: 'evaporation',
-      message: '蒸发损失：本回合蒸发损失水量8单位',
+      message: '蒸发损失：本回合蒸发损失水量3单位',
       round: 3,
       timestamp: Date.now() - 500000
     }
@@ -106,15 +106,15 @@ const boundaryGameState: GameState = {
   phase: 'ended',
   currentRound: 8,
   maxRounds: MAX_ROUNDS,
-  score: 1050,
+  score: 1750,
   board: createSampleBoard(),
   valves: createSampleValves(['open', 'closed']),
-  plots: createSamplePlots([18, 8, 32]),
+  plots: createSamplePlots([18, 12, 32]),
   currentWeather: { ...WEATHER_TYPES.sunny },
   anomalies: [
     {
       type: 'drought',
-      message: '警告：二号地块（玉米）严重缺水！当前水量仅为8，需水量25',
+      message: '警告：二号地块（玉米）严重缺水！当前水量仅为12，需水量25',
       round: 4,
       plotId: 'p2',
       timestamp: Date.now() - 400000

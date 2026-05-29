@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore';
 
@@ -16,6 +16,24 @@ export const ReplayPanel: React.FC<ReplayPanelProps> = ({ onBack }) => {
     ...actionHistory.map(a => ({ ...a, type: 'action' as const })),
     ...anomalies.map(a => ({ ...a, type: 'anomaly' as const }))
   ].sort((a, b) => a.timestamp - b.timestamp);
+
+  const totalSteps = allEvents.length;
+
+  const advanceStep = useCallback(() => {
+    setCurrentStep(prev => {
+      if (prev >= totalSteps - 1) {
+        setIsPlaying(false);
+        return prev;
+      }
+      return prev + 1;
+    });
+  }, [totalSteps]);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const timer = setInterval(advanceStep, 1000);
+    return () => clearInterval(timer);
+  }, [isPlaying, advanceStep]);
 
   const displayedEvents = allEvents.slice(0, currentStep + 1);
 
@@ -58,9 +76,9 @@ export const ReplayPanel: React.FC<ReplayPanelProps> = ({ onBack }) => {
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
             <button
-              onClick={() => setCurrentStep(allEvents.length - 1)}
+              onClick={() => setCurrentStep(totalSteps - 1)}
               className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-              disabled={currentStep === allEvents.length - 1}
+              disabled={currentStep === totalSteps - 1}
             >
               <SkipForward size={20} />
             </button>
@@ -70,13 +88,13 @@ export const ReplayPanel: React.FC<ReplayPanelProps> = ({ onBack }) => {
             <input
               type="range"
               min="0"
-              max={allEvents.length - 1}
+              max={totalSteps - 1}
               value={currentStep}
               onChange={(e) => setCurrentStep(parseInt(e.target.value))}
               className="w-full"
             />
             <p className="text-center text-sm text-gray-500 mt-1">
-              步骤 {currentStep + 1} / {allEvents.length}
+              步骤 {currentStep + 1} / {totalSteps}
             </p>
           </div>
         </div>

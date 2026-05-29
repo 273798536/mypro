@@ -1,6 +1,5 @@
 import React from 'react';
 import { useGameStore } from '../store/useGameStore';
-import { CELL_COLORS } from '../data/constants';
 import { CROP_TYPES } from '../data/constants';
 import type { Cell as CellType, Valve, Plot } from '../types';
 
