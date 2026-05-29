@@ -14,6 +14,11 @@ from .fee_attributor import detect_fee_misclassification
 from .matcher import match_trades, detect_partial_executions, bucket_discrepancies
 from .reporter import generate_summary, generate_all_reports
 from .exceptions import ReconcileError
+from .corrections import (
+    correct_cashflow_settlement_date,
+    correct_fee_classification,
+    resolve_discrepancy,
+)
 
 console = Console()
 
@@ -158,8 +163,8 @@ def list_discrepancies(data_dir, report_date, output_dir, filter_type, severity)
     """列出所有差异"""
 
     ctx = import_all(data_dir, report_date)
-    detect_t1_mismatch(ctx)
-    detect_fee_misclassification(ctx)
+    ctx.discrepancies.extend(detect_t1_mismatch(ctx))
+    ctx.discrepancies.extend(detect_fee_misclassification(ctx))
     detect_partial_executions(ctx)
     match_trades(ctx)
 
@@ -193,6 +198,92 @@ def list_discrepancies(data_dir, report_date, output_dir, filter_type, severity)
     else:
         console.print(table)
         console.print(f"\n共 {count} 条差异")
+
+
+@cli.command()
+@click.option("--data-dir", "-d", required=True, type=click.Path(exists=True, file_okay=False),
+              help="数据目录")
+@click.option("--report-date", "-r", callback=_parse_date_arg, default=None,
+              help="报告日期")
+@click.option("--output-dir", "-o", default="./output", help="输出目录")
+@click.option("--flow-id", required=True, help="流水编号")
+@click.option("--new-date", required=True, help="新的交收日期 (YYYY-MM-DD)")
+@click.option("--reason", default="根据日历对齐修正", help="修正原因")
+def correct_date(data_dir, report_date, output_dir, flow_id, new_date, reason):
+    """修正流水交收日期"""
+
+    ctx = import_all(data_dir, report_date)
+    result = correct_cashflow_settlement_date(ctx, flow_id, new_date, reason)
+
+    if result:
+        console.print(f"[green]修正成功:[/green] {result['correction_id']}")
+        console.print(f"  {result['old_value']} -> {result['new_value']}")
+        console.print(f"  原因: {result['reason']}")
+
+        out_path = Path(output_dir)
+        out_path.mkdir(parents=True, exist_ok=True)
+        from .reporter import export_json
+        export_json(ctx, str(out_path / "reconcile_result.json"))
+        console.print(f"\n结果已保存到: {output_dir}")
+    else:
+        console.print(f"[red]未找到流水: {flow_id}[/red]")
+
+
+@cli.command()
+@click.option("--data-dir", "-d", required=True, type=click.Path(exists=True, file_okay=False),
+              help="数据目录")
+@click.option("--report-date", "-r", callback=_parse_date_arg, default=None,
+              help="报告日期")
+@click.option("--output-dir", "-o", default="./output", help="输出目录")
+@click.option("--flow-id", required=True, help="流水编号")
+@click.option("--new-fee-code", required=True, help="新的费用代码")
+@click.option("--new-fee-name", required=True, help="新的费用名称")
+@click.option("--reason", default="修正费用归类", help="修正原因")
+def correct_fee(data_dir, report_date, output_dir, flow_id, new_fee_code, new_fee_name, reason):
+    """修正流水费用归类"""
+
+    ctx = import_all(data_dir, report_date)
+    result = correct_fee_classification(ctx, flow_id, new_fee_code, new_fee_name, reason)
+
+    if result:
+        console.print(f"[green]修正成功:[/green] {result['correction_id']}")
+        console.print(f"  {result['old_value']} -> {result['new_value']}")
+        console.print(f"  原因: {result['reason']}")
+
+        out_path = Path(output_dir)
+        out_path.mkdir(parents=True, exist_ok=True)
+        from .reporter import export_json
+        export_json(ctx, str(out_path / "reconcile_result.json"))
+        console.print(f"\n结果已保存到: {output_dir}")
+    else:
+        console.print(f"[red]未找到流水: {flow_id}[/red]")
+
+
+@cli.command()
+@click.option("--data-dir", "-d", required=True, type=click.Path(exists=True, file_okay=False),
+              help="数据目录")
+@click.option("--report-date", "-r", callback=_parse_date_arg, default=None,
+              help="报告日期")
+@click.option("--output-dir", "-o", default="./output", help="输出目录")
+@click.option("--discrepancy-id", required=True, help="差异编号")
+@click.option("--note", required=True, help="解决说明")
+def resolve_disc(data_dir, report_date, output_dir, discrepancy_id, note):
+    """标记差异为已解决"""
+
+    ctx = import_all(data_dir, report_date)
+    result = resolve_discrepancy(ctx, discrepancy_id, note)
+
+    if result:
+        console.print(f"[green]差异已解决:[/green] {discrepancy_id}")
+        console.print(f"  说明: {note}")
+
+        out_path = Path(output_dir)
+        out_path.mkdir(parents=True, exist_ok=True)
+        from .reporter import export_json
+        export_json(ctx, str(out_path / "reconcile_result.json"))
+        console.print(f"\n结果已保存到: {output_dir}")
+    else:
+        console.print(f"[red]未找到差异: {discrepancy_id}[/red]")
 
 
 def _print_summary(ctx):

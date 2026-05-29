@@ -29,6 +29,15 @@ class TraceInfo:
     modified_at: Optional[datetime] = None
     modification_note: Optional[str] = None
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "source_file": self.source_file,
+            "source_line": self.source_line,
+            "imported_at": self.imported_at.isoformat(),
+            "modified_at": self.modified_at.isoformat() if self.modified_at else None,
+            "modification_note": self.modification_note,
+        }
+
 
 @dataclass
 class Security:
@@ -42,6 +51,7 @@ class Security:
             "code": self.code,
             "name": self.name,
             "type": self.type,
+            "trace": self.trace.to_dict(),
         }
 
 
@@ -57,6 +67,7 @@ class FeeItem:
             "fee_code": self.fee_code,
             "fee_name": self.fee_name,
             "category": self.category,
+            "trace": self.trace.to_dict(),
         }
 
 
@@ -95,6 +106,9 @@ class TradeConfirmation:
             "fees": self.fees,
             "total_fees": self.total_fees,
             "net_amount": self.net_amount,
+            "matched": self.matched,
+            "match_id": self.match_id,
+            "trace": self.trace.to_dict(),
         }
 
 
@@ -122,6 +136,9 @@ class CashFlow:
             "fee_code": self.fee_code,
             "fee_name": self.fee_name,
             "direction": self.direction,
+            "matched": self.matched,
+            "match_id": self.match_id,
+            "trace": self.trace.to_dict(),
         }
 
 
@@ -137,6 +154,7 @@ class TradeCalendar:
             "trade_date": self.trade_date.isoformat(),
             "is_trading_day": self.is_trading_day,
             "settlement_day": self.settlement_day.isoformat() if self.settlement_day else None,
+            "trace": self.trace.to_dict(),
         }
 
 

@@ -2,6 +2,7 @@ pyproject.toml
 broker_reconcile/__init__.py
 broker_reconcile/calendar_aligner.py
 broker_reconcile/cli.py
+broker_reconcile/corrections.py
 broker_reconcile/exceptions.py
 broker_reconcile/fee_attributor.py
 broker_reconcile/importer.py
