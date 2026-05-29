@@ -1,0 +1,10 @@
+"""
+协方差矩阵修复器 - 配置文件
+"""
+
+MISSING_THRESHOLD = 0.3
+MIN_NON_MISSING_OBS = 10
+EPSILON = 1e-6
+DEFAULT_METHOD = 'near_pd'
+OUTPUT_PRECISION = 6
+REPORT_TITLE = "协方差矩阵修复诊断报告"
