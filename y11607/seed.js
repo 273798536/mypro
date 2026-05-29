@@ -1,4 +1,5 @@
 const { init, getDb } = require('./db');
+const anomalyDetector = require('./services/anomalyDetector');
 
 function seed() {
   init();
@@ -101,6 +102,16 @@ function seed() {
   });
 
   tx();
+
+  const caseRows = db.prepare('SELECT case_no FROM arbitration_cases').all();
+  let totalAnomalies = 0;
+  for (const row of caseRows) {
+    const anomalies = anomalyDetector.detectForCase(row.case_no);
+    if (anomalies.length > 0) {
+      totalAnomalies += anomalyDetector.saveAnomalies(row.case_no, anomalies);
+    }
+  }
+
   console.log('[SEED] 种子数据已写入，包含:');
   console.log('  - 4条分账规则（含v1.0/v2.0版本切换）');
   console.log('  - 7条商户订单（跨3月和4月）');
@@ -108,6 +119,7 @@ function seed() {
   console.log('  - 8条平台补贴（含一条重复入账的SUB0416001）');
   console.log('  - 3条仲裁工单（2条pending、1条investigating）');
   console.log('  - 5条结算报告');
+  console.log(`  - ${totalAnomalies}条异常记录（自动检测写入）`);
 }
 
 if (require.main === module) {

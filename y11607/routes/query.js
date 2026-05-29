@@ -122,7 +122,17 @@ router.post('/anomalies/detect', (req, res) => {
   try {
     if (global) {
       const all = anomalyDetector.detectAll();
-      res.json({ detected: all.length, anomalies: all });
+      const db = getDb();
+      let saved = 0;
+      const caseRows = db.prepare('SELECT case_no FROM arbitration_cases').all();
+      for (const row of caseRows) {
+        const caseAnomalies = anomalyDetector.detectForCase(row.case_no);
+        if (caseAnomalies.length > 0) {
+          saved += anomalyDetector.saveAnomalies(row.case_no, caseAnomalies);
+        }
+      }
+      const persisted = anomalyDetector.getAnomalies();
+      res.json({ detected: persisted.length, newly_saved: saved, anomalies: persisted });
     } else if (case_no) {
       const anomalies = anomalyDetector.detectForCase(case_no);
       anomalyDetector.saveAnomalies(case_no, anomalies);

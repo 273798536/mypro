@@ -74,6 +74,10 @@ router.get('/', (req, res) => {
   res.json({ total, limit: l, offset: o, data: rows });
 });
 
+router.get('/status/chain', (req, res) => {
+  res.json(stateMachine.getStatusChain());
+});
+
 router.get('/:caseNo', (req, res) => {
   const db = getDb();
   const c = db.prepare('SELECT * FROM arbitration_cases WHERE case_no = ?').get(req.params.caseNo);
@@ -188,10 +192,6 @@ router.post('/:caseNo/rollback/execute', (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-});
-
-router.get('/status/chain', (req, res) => {
-  res.json(stateMachine.getStatusChain());
 });
 
 module.exports = router;
