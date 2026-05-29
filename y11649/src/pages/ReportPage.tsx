@@ -4,7 +4,7 @@ import { useGameStore } from '@/store/useGameStore';
 import { downloadReport, exportReportAsJSON } from '@/utils/export';
 import { Button } from '@/components/common/Button';
 import { Card, CardHeader, CardContent } from '@/components/common/Card';
-import { Home, Download, FileJson, FileText, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Home, Download, FileJson, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
 export const ReportPage = () => {
   const navigate = useNavigate();

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { useGameStore } from '@/store/useGameStore';
 import { equipmentData } from '@/data/equipment';
 import type { EquipmentType } from '@/types';
 import { Check } from 'lucide-react';

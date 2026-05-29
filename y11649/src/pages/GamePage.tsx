@@ -11,7 +11,7 @@ import { Home } from 'lucide-react';
 
 export const GamePage = () => {
   const navigate = useNavigate();
-  const { status, updateTimer, report } = useGameStore();
+  const { status, updateTimer } = useGameStore();
 
   useEffect(() => {
     if (status === 'idle') {

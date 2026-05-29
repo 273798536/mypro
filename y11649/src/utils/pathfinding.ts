@@ -25,7 +25,7 @@ export const findShortestPath = (
     let minDist = Infinity;
 
     for (const nodeId of unvisited) {
-      const dist = distances.get(nodeId) || Infinity;
+      const dist = distances.get(nodeId) ?? Infinity;
       if (dist < minDist) {
         minDist = dist;
         current = nodeId;
@@ -44,8 +44,8 @@ export const findShortestPath = (
       const neighbor = nodeMap.get(neighborId);
       if (!neighbor || !neighbor.isOpen) continue;
 
-      const alt = (distances.get(current) || 0) + 1;
-      if (alt < (distances.get(neighborId) || Infinity)) {
+      const alt = (distances.get(current) ?? 0) + 1;
+      if (alt < (distances.get(neighborId) ?? Infinity)) {
         distances.set(neighborId, alt);
         previous.set(neighborId, current);
       }

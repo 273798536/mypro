@@ -1,57 +1,139 @@
-# React + TypeScript + Vite
+# ⛷️ 滑雪救援派遣赛
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一款面向滑雪巡逻队员培训的浏览器策略游戏，玩家需要在复杂的雪场环境中快速做出救援决策。
 
-Currently, two official plugins are available:
+## 🎮 游戏特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **地图派遣系统** - SVG交互式雪道地图，实时显示伤员位置和巡逻员状态
+- **装备匹配机制** - 根据伤情选择正确的救援装备，不匹配时发出警告
+- **时间压力系统** - 倒计时与伤情恶化机制，考验快速决策能力
+- **天气影响系统** - 5种天气条件影响救援速度和能见度
+- **智能路径规划** - Dijkstra算法自动计算最优救援路线
+- **操作回放功能** - 完整时间线记录，支持逐帧复盘
+- **详细报告导出** - 分类统计救援结果，支持TXT和JSON格式导出
 
-## Expanding the ESLint configuration
+## 🚀 快速开始
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 安装依赖
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 启动开发服务器
+```bash
+npm run dev
 ```
+
+访问 `http://localhost:5173` 开始游戏。
+
+### 构建生产版本
+```bash
+npm run build
+```
+
+### 代码检查
+```bash
+npm run lint
+npm run check
+```
+
+## 🎯 游戏玩法
+
+### 1. 选择难度
+- **简单模式** - 3名伤员，充足时间，良好天气
+- **普通模式** - 5名伤员，标准时间，多变天气
+- **困难模式** - 7名伤员，紧张时间，恶劣天气
+
+### 2. 核心操作
+
+#### 派遣巡逻员
+1. 在右侧面板选择一名空闲的巡逻员
+2. 点击地图上的伤员标记或从列表中选择伤员
+3. 根据伤情提示选择必要的救援装备
+4. 点击"派遣救援"按钮
+
+#### 装备说明
+| 装备 | 用途 | 适用伤情 |
+|------|------|----------|
+| 急救包 | 基础急救用品 | 擦伤、扭伤 |
+| 担架 | 运送受伤人员 | 扭伤、骨折 |
+| 氧气瓶 | 提供氧气支持 | 骨折、昏迷 |
+| AED除颤器 | 心脏骤停急救 | 心脏骤停 |
+| 救援绳索 | 复杂地形救援 | 高级雪道救援 |
+| 对讲机 | 保持通讯联系 | 所有救援 |
+
+### 3. 警告处理
+
+游戏中会出现三种警告，需及时处理：
+
+- 🟠 **装备不匹配** - 缺少必要的救援装备
+- 🔴 **路线关闭** - 通往伤员的路线已关闭
+- 🔴 **伤情恶化** - 伤员剩余时间不足30%
+
+### 4. 评分标准
+
+| 项目 | 分值 | 说明 |
+|------|------|------|
+| 救援成功率 | 40分 | 成功救援的伤员比例 |
+| 响应速度 | 30分 | 平均救援时间评分 |
+| 装备正确率 | 20分 | 装备匹配准确率 |
+| 警告处理 | 10分 | 警告处理情况扣分 |
+
+评级：S(≥90) / A(≥80) / B(≥70) / C(≥60) / D(≥50) / F(<50)
+
+## 📁 项目结构
+
+```
+src/
+├── components/          # UI组件
+│   ├── common/         # 通用组件 (Button, Card)
+│   └── game/           # 游戏组件 (地图、控制面板等)
+├── pages/              # 页面组件
+│   ├── StartPage.tsx   # 开始页面
+│   ├── GamePage.tsx    # 游戏主界面
+│   ├── ResultPage.tsx  # 结算页面
+│   ├── ReplayPage.tsx  # 回放页面
+│   └── ReportPage.tsx  # 报告页面
+├── store/              # 状态管理
+│   └── useGameStore.ts # Zustand游戏状态
+├── hooks/              # 自定义Hooks
+├── utils/              # 工具函数
+│   ├── pathfinding.ts  # 路径查找算法
+│   ├── scoring.ts      # 评分系统
+│   ├── export.ts       # 报告导出
+│   └── gameUtils.ts    # 游戏工具函数
+├── data/               # 游戏数据
+│   ├── slopes.ts       # 雪道数据
+│   ├── equipment.ts    # 装备数据
+│   ├── victims.ts      # 伤员/伤情数据
+│   └── weather.ts      # 天气数据
+└── types/              # TypeScript类型定义
+```
+
+## 🛠️ 技术栈
+
+- **框架** - React 18 + TypeScript
+- **构建** - Vite 5
+- **样式** - TailwindCSS 3
+- **状态管理** - Zustand 4
+- **路由** - React Router Dom 6
+- **图标** - Lucide React
+
+## 📊 报告系统
+
+救援报告包含以下分类统计：
+
+- **未处理** - 救援失败和未开始救援的伤员
+- **已修正** - 已处理的警告记录
+- **待确认** - 需要人工确认的警告
+
+报告支持导出为：
+- 文本格式 (.txt) - 适合打印存档
+- JSON格式 (.json) - 适合数据分析
+
+## 🎨 设计说明
+
+- 采用雪山蓝为主色调，红色表示警告，绿色表示成功
+- 使用Montserrat作为标题字体，Inter作为正文字体
+- 响应式布局，支持桌面端和移动端
+- 玻璃拟态卡片设计，冰雪主题视觉效果

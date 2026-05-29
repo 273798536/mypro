@@ -219,8 +219,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     let updatedVictims = [...state.victims];
     let updatedPatrollers = [...state.patrollers];
-    let newWarnings = [...state.warnings];
-    let newActions = [...state.actionHistory];
+    const newWarnings = [...state.warnings];
+    const newActions = [...state.actionHistory];
 
     const weatherModifier = getWeatherModifier(state.weather);
 

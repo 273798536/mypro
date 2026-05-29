@@ -3,7 +3,6 @@ import type {
   WeatherCondition,
   Victim,
   Patroller,
-  InjuryType,
   SlopeNode,
 } from '@/types';
 import { injuryData, victimNames } from '@/data/victims';
@@ -50,7 +49,6 @@ export const generateVictims = (difficulty: GameDifficulty): Victim[] => {
 
   const shuffledLocations = shuffleArray(availableLocations);
   const shuffledNames = shuffleArray(victimNames);
-  const injuries: InjuryType[] = ['abrasion', 'sprain', 'fracture', 'unconscious', 'cardiac-arrest'];
 
   const victims: Victim[] = [];
 

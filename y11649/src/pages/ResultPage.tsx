@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '@/store/useGameStore';
 import { Button } from '@/components/common/Button';
 import { Card, CardHeader, CardContent } from '@/components/common/Card';
-import { Trophy, RotateCcw, FileText, Play, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Trophy, RotateCcw, FileText, Play, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 export const ResultPage = () => {
   const navigate = useNavigate();

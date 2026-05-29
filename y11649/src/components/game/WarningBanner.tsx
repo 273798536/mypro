@@ -1,5 +1,5 @@
 import { useGameStore } from '@/store/useGameStore';
-import { AlertTriangle, X, Check } from 'lucide-react';
+import { AlertTriangle, Check } from 'lucide-react';
 
 export const WarningBanner = () => {
   const { warnings, resolveWarning } = useGameStore();
@@ -8,7 +8,7 @@ export const WarningBanner = () => {
 
   if (activeWarnings.length === 0) return null;
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = () => {
     return <AlertTriangle size={20} />;
   };
 
@@ -46,7 +46,7 @@ export const WarningBanner = () => {
           className={`flex items-start gap-3 p-3 rounded-lg border ${getTypeColor(warning.type)}`}
         >
           <div className="flex-shrink-0 mt-0.5">
-            {getTypeIcon(warning.type)}
+            {getTypeIcon()}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
