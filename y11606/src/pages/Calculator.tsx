@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Card, Form, DatePicker, InputNumber, Select, Button, Tabs, Table, Tag, Space, Modal, Input, message } from 'antd';
-import { Calculator as CalculatorIcon, FileDown, Plus, Save, GitCompare } from 'lucide-react';
+import { Calculator as CalculatorIcon, FileDown, Save, GitCompare } from 'lucide-react';
 import ReactECharts from 'echarts-for-react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
 import type { ColumnsType } from 'antd/es/table';
 import { useAppStore } from '@/store';
 import { calculatePrepayment, formatCurrency } from '@/utils/calculator';
@@ -13,7 +12,6 @@ import WarningAlerts from '@/components/WarningAlerts';
 import type { PrepaymentResult, RepaymentItem, PrepaymentParams } from '@/types';
 
 const { Option } = Select;
-const { TextArea } = Input;
 
 export default function Calculator() {
   const navigate = useNavigate();
@@ -54,10 +52,10 @@ export default function Calculator() {
     );
   }
 
-  const handleCalculate = (values: PrepaymentParams & { prepaymentDate: any }) => {
+  const handleCalculate = (values: PrepaymentParams & { prepaymentDate: { format: (format: string) => string } }) => {
     const params: PrepaymentParams = {
       ...values,
-      prepaymentDate: values.prepaymentDate.format('yyyy-MM-dd'),
+      prepaymentDate: values.prepaymentDate.format('YYYY-MM-DD'),
     };
 
     const result = calculatePrepayment(
@@ -73,12 +71,6 @@ export default function Calculator() {
 
   const handleSaveResult = () => {
     if (!currentResult) return;
-    
-    const warnings = {
-      unhandled: currentResult.warnings.filter(w => w.level === 'info').map(w => w.message),
-      corrected: repaymentSchedule.filter(i => i.isCorrected).map(i => `第${i.period}期：${i.correctionNote || '已修正'}`),
-      needConfirm: currentResult.warnings.filter(w => w.level === 'warning' || w.level === 'error').map(w => w.message),
-    };
 
     const namedResult = { ...currentResult, name: resultName || `试算方案 ${prepaymentResults.length + 1}` };
     addPrepaymentResult(namedResult);
@@ -123,7 +115,6 @@ export default function Calculator() {
   ];
 
   const getChartOption = (result: PrepaymentResult) => {
-    const originalInterest = result.originalTotalInterest;
     const newInterest = result.newTotalInterest;
     const savedInterest = result.interestSaved;
     const penalty = result.penaltyAmount;

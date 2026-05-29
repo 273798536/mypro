@@ -1,4 +1,4 @@
-import { addMonths, differenceInDays, differenceInMonths, format, isAfter, isBefore, parseISO } from 'date-fns';
+import { addMonths, differenceInDays, differenceInMonths, format, isAfter, parseISO } from 'date-fns';
 import type {
   LoanBaseInfo,
   PenaltyRule,
@@ -313,7 +313,7 @@ export function calculatePrepayment(
   const interestPaidBefore = schedule.slice(0, periodAtPrepayment - 1).reduce((sum, item) => sum + item.interest, 0);
   const originalRemainingTerm = schedule.length - periodAtPrepayment + 1;
   
-  let newRepaymentSchedule: RepaymentItem[] = [];
+  const newRepaymentSchedule: RepaymentItem[] = [];
   let newTotalInterest = interestPaidBefore;
   let newMonthlyPayment: number | undefined;
   let newTerm: number | undefined;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Table, Tag, Button, Space, Collapse, Typography } from 'antd';
+import { Card, Table, Tag, Button, Collapse, Typography } from 'antd';
 import { History as HistoryIcon, FileText, Calculator, Edit2, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import type { ColumnsType } from 'antd/es/table';
@@ -27,9 +27,9 @@ export default function History() {
     correct: { label: '修正', color: 'purple' },
   };
 
-  const formatValue = (value: any): string => {
+  const formatValue = (value: unknown): string => {
     if (value === null || value === undefined) return '-';
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && value !== null) {
       try {
         return JSON.stringify(value, null, 2);
       } catch {

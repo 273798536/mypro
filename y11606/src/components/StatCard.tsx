@@ -1,5 +1,5 @@
 import { Card } from 'antd';
-import { TrendingDown, TrendingUp, DollarSign, AlertCircle } from 'lucide-react';
+import { TrendingDown, TrendingUp, DollarSign } from 'lucide-react';
 import { formatCurrency } from '@/utils/calculator';
 
 interface StatCardProps {

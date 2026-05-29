@@ -108,8 +108,8 @@ export interface HistoryRecord {
   timestamp: string;
   action: ActionType;
   fieldName?: string;
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: unknown;
+  newValue?: unknown;
   operatorNote?: string;
   source?: string;
 }

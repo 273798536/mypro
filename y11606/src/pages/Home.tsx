@@ -1,4 +1,4 @@
-import { Card, Button, Space, message } from 'antd';
+import { Card, Button, message } from 'antd';
 import { Calculator, FileText, GitCompare, History, PlayCircle, Database } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store';

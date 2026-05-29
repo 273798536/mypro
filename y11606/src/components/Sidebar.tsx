@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { Calculator, FileText, GitCompare, History, Home, Settings } from 'lucide-react';
+import { Calculator, FileDown, FileText, GitCompare, History, Home } from 'lucide-react';
 
 const navItems = [
   { path: '/', label: '首页', icon: Home },
   { path: '/loan-info', label: '贷款信息', icon: FileText },
   { path: '/calculator', label: '提前还款试算', icon: Calculator },
   { path: '/compare', label: '方案对比', icon: GitCompare },
+  { path: '/export', label: '报告导出', icon: FileDown },
   { path: '/history', label: '历史记录', icon: History },
 ];
 

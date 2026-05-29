@@ -1,5 +1,5 @@
 import { Alert, AlertProps } from 'antd';
-import { AlertCircle, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import type { WarningItem } from '@/types';
 
 interface WarningAlertProps {

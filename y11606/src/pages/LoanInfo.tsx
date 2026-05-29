@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Card, Form, Input, InputNumber, DatePicker, Select, Button, Table, Modal, message, Tabs, Tag, Space, Popconfirm } from 'antd';
-import { Plus, Edit2, Trash2, Download, Upload, RefreshCw, FileText } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Edit2, Trash2, Download, RefreshCw, FileText } from 'lucide-react';
 import type { ColumnsType } from 'antd/es/table';
 import { useAppStore } from '@/store';
 import { generateRepaymentSchedule, generateId } from '@/utils/calculator';
@@ -33,7 +32,18 @@ export default function LoanInfo() {
   const [penaltyModal, setPenaltyModal] = useState(false);
   const [penaltyForm] = Form.useForm();
 
-  const handleSaveLoanInfo = (values: any) => {
+  const handleSaveLoanInfo = (values: {
+    borrowerName?: string;
+    loanAmount: number;
+    loanTerm: number;
+    interestRate: number;
+    repaymentMethod: 'equal_principal_interest' | 'equal_principal';
+    disbursementDate: { format: (f: string) => string };
+    firstRepaymentDate: { format: (f: string) => string };
+    repricingDate: { format: (f: string) => string };
+    repricingCycle: number;
+    contractNumber?: string;
+  }) => {
     const info: LoanBaseInfo = {
       id: loanInfo?.id || generateId(),
       borrowerName: values.borrowerName,
@@ -41,9 +51,9 @@ export default function LoanInfo() {
       loanTerm: values.loanTerm,
       interestRate: values.interestRate,
       repaymentMethod: values.repaymentMethod,
-      disbursementDate: values.disbursementDate.format('yyyy-MM-dd'),
-      firstRepaymentDate: values.firstRepaymentDate.format('yyyy-MM-dd'),
-      repricingDate: values.repricingDate.format('yyyy-MM-dd'),
+      disbursementDate: values.disbursementDate.format('YYYY-MM-DD'),
+      firstRepaymentDate: values.firstRepaymentDate.format('YYYY-MM-DD'),
+      repricingDate: values.repricingDate.format('YYYY-MM-DD'),
       repricingCycle: values.repricingCycle,
       contractNumber: values.contractNumber,
       source: '贷款合同录入',
@@ -78,7 +88,7 @@ export default function LoanInfo() {
   const handleAddRateAdjustment = () => {
     rateForm.validateFields().then((values) => {
       addRateAdjustment({
-        effectiveDate: values.effectiveDate.format('yyyy-MM-dd'),
+        effectiveDate: values.effectiveDate.format('YYYY-MM-DD'),
         oldRate: values.oldRate,
         newRate: values.newRate,
         basis: values.basis,
@@ -132,7 +142,7 @@ export default function LoanInfo() {
       title: '修正',
       dataIndex: 'isCorrected',
       width: 80,
-      render: (v, record) => (
+      render: (v) => (
         v ? <Tag color="orange">已修正</Tag> : null
       ),
     },
@@ -267,7 +277,7 @@ export default function LoanInfo() {
                     <Button icon={<RefreshCw size={14} />} onClick={handleGenerateSchedule}>
                       重新生成还款计划
                     </Button>
-                    <Button icon={<Download size={14} />} onClick={() => exportScheduleToExcel(repaymentSchedule, loanInfo)}>
+                    <Button icon={<Download size={14} />} onClick={() => exportScheduleToExcel(repaymentSchedule)}>
                       导出Excel
                     </Button>
                   </Space>

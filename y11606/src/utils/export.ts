@@ -248,7 +248,7 @@ export function exportToExcel(
   XLSX.writeFile(wb, `提前还款试算明细_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`);
 }
 
-export function exportScheduleToExcel(schedule: RepaymentItem[], loanInfo?: LoanBaseInfo | null) {
+export function exportScheduleToExcel(schedule: RepaymentItem[]) {
   const wb = XLSX.utils.book_new();
 
   const headers = ['期数', '应还日期', '应还本金', '应还利息', '应还总额', '剩余本金', '状态', '数据来源', '是否修正', '修正备注'];

@@ -7,6 +7,7 @@ import LoanInfo from "@/pages/LoanInfo";
 import Calculator from "@/pages/Calculator";
 import Compare from "@/pages/Compare";
 import History from "@/pages/History";
+import Export from "@/pages/Export";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
                 <Route path="/calculator" element={<Calculator />} />
                 <Route path="/compare" element={<Compare />} />
                 <Route path="/history" element={<History />} />
+                <Route path="/export" element={<Export />} />
               </Routes>
             </main>
           </div>

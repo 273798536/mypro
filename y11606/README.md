@@ -1,57 +1,149 @@
-# React + TypeScript + Vite
+# 房贷提前还款试算分析工具
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+帮助个贷客户经理快速准确计算提前还款的利息节省、违约金、剩余期数等关键指标，解决手动计算易出错、口径不一致问题，提高客户咨询效率和专业性。
 
-Currently, two official plugins are available:
+## ✨ 核心功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🔹 贷款信息录入
+- 从贷款合同提取基础信息（贷款金额、期限、利率、还款方式等）
+- 支持导入/手动录入还款计划明细，保留每条数据的来源标记
+- 记录LPR调整历史，支持多阶段利率重算
+- 配置违约金规则（计算方式、免罚期、特殊条款）
 
-## Expanding the ESLint configuration
+### 🔹 提前还款试算
+- **等额本息/等额本金重算**：精确计算月供、总利息、剩余本金
+- **智能违约金窗口**：根据贷款合同规则自动计算违约金
+- **风险提示机制**：
+  - 利率重定价日临近提醒
+  - 部分还款后期数变化标注
+  - 宽限期内误算警告
+  - 需人工确认项明确标记
+- **图表可视化**：本金利息占比图、月供变化趋势图、节省利息对比
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🔹 方案对比
+- 保存多个提前还款方案进行并排对比
+- 关键指标差异高亮显示
+- 智能推荐最优方案
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 🔹 历史记录
+- 完整记录所有操作痕迹
+- 显示每次修改的字段、前后值、操作人备注
+- 支持版本追溯和恢复
+- 区分"未处理/已修正/需人工确认"三类数据状态
+
+### 🔹 报告导出
+- **PDF摘要报告**：包含核心结论、关键数据、风险提示
+- **Excel明细导出**：完整计算过程和还款计划表
+- 报告中明确区分未处理、已修正、需人工确认的内容
+
+## 🛠 技术栈
+
+- **前端框架**：React 18 + TypeScript + Vite
+- **状态管理**：Zustand（支持本地持久化）
+- **UI组件**：Ant Design 5.x
+- **图表**：ECharts
+- **PDF导出**：jsPDF
+- **Excel导出**：SheetJS (xlsx)
+- **日期处理**：date-fns + dayjs
+- **样式**：TailwindCSS 3
+
+## 📁 项目结构
+
+```
+src/
+├── components/          # 通用组件
+│   ├── Sidebar.tsx      # 侧边导航
+│   ├── StatCard.tsx     # 统计卡片
+│   └── WarningAlerts.tsx # 风险提示组件
+├── pages/               # 页面组件
+│   ├── Home.tsx         # 首页
+│   ├── LoanInfo.tsx     # 贷款信息录入
+│   ├── Calculator.tsx   # 提前还款试算
+│   ├── Compare.tsx      # 方案对比
+│   ├── History.tsx      # 历史记录
+│   └── Export.tsx       # 报告导出
+├── store/               # 状态管理
+│   └── index.ts         # Zustand store
+├── types/               # TypeScript类型定义
+│   └── index.ts
+├── utils/               # 工具函数
+│   ├── calculator.ts    # 核心计算逻辑
+│   ├── export.ts        # 导出功能
+│   └── sampleData.ts    # 示例数据
+├── App.tsx              # 应用入口
+├── main.tsx             # 渲染入口
+└── index.css            # 全局样式
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 快速开始
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 安装依赖
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
 ```
+
+### 启动开发服务器
+
+```bash
+npm run dev
+```
+
+访问 http://localhost:5173/ 查看应用
+
+### 快速体验
+
+1. 打开首页点击「加载示例数据快速体验」
+2. 系统自动加载示例贷款（150万、360期、等额本息）
+3. 进入「提前还款试算」页面输入参数开始计算
+4. 保存多个方案后可在「方案对比」中进行对比
+5. 在「报告导出」页面导出PDF报告和Excel明细
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+### 代码检查
+
+```bash
+# TypeScript类型检查
+npm run check
+
+# ESLint检查
+npm run lint
+```
+
+## 🧮 核心算法
+
+### 等额本息计算公式
+
+```
+月供 = 贷款本金 × [月利率×(1+月利率)^还款月数] ÷ [(1+月利率)^还款月数 - 1]
+总利息 = 月供 × 还款月数 - 贷款本金
+```
+
+### 提前还款重算逻辑
+
+1. 定位提前还款日所在期数
+2. 计算该期应还利息和违约金
+3. 计算剩余本金 = 当前剩余本金 - 提前还款金额
+4. 根据用户选择（减月供/减期限）重算剩余期数
+5. 生成新的还款计划表
+
+## 💾 数据存储
+
+- 所有数据保存在浏览器本地存储（localStorage + IndexedDB）
+- 历史记录最多保留500条，超出自动清理最早记录
+- 支持数据导入导出（后续版本）
+
+## ⚠️ 重要提示
+
+1. 本工具仅供内部参考，实际金额以银行柜台计算为准
+2. 涉及违约金特殊条款、跨计息周期等复杂情况，请标记为"需人工确认"
+3. 每次数据修改都会留下痕迹，便于后续追溯和审计
+
+## 📄 License
+
+内部工具，仅供个贷中心使用。
