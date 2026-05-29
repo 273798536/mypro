@@ -1,0 +1,5 @@
+﻿tier_name,min_amount,max_amount,discount_rate,required_approval_level,applicable_customer_levels
+小额散单档,0,5000,0.05,销售代表,"普通客户,VIP客户,战略客户"
+普通订单档,5000,20000,0.15,销售经理,"普通客户,VIP客户,战略客户"
+大额订单档,15000,50000,0.2,销售总监,"VIP客户,战略客户"
+战略客户档,20000,,0.3,总经理,战略客户

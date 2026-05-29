@@ -1,0 +1,23 @@
+[
+  {
+    "level_name": "普通客户",
+    "level_code": "C001",
+    "base_discount_rate": 0.05,
+    "max_allowed_discount_rate": 0.1,
+    "description": "新注册或消费较少的客户"
+  },
+  {
+    "level_name": "VIP客户",
+    "level_code": "C002",
+    "base_discount_rate": 0.1,
+    "max_allowed_discount_rate": 0.2,
+    "description": "有一定消费历史的优质客户"
+  },
+  {
+    "level_name": "战略客户",
+    "level_code": "C003",
+    "base_discount_rate": 0.2,
+    "max_allowed_discount_rate": 0.35,
+    "description": "重点合作的大客户"
+  }
+]

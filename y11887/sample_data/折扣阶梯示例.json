@@ -1,0 +1,34 @@
+[
+  {
+    "tier_name": "小额散单档",
+    "min_amount": 0,
+    "max_amount": 5000,
+    "discount_rate": 0.05,
+    "required_approval_level": "销售代表",
+    "applicable_customer_levels": "普通客户,VIP客户,战略客户"
+  },
+  {
+    "tier_name": "普通订单档",
+    "min_amount": 5000,
+    "max_amount": 20000,
+    "discount_rate": 0.15,
+    "required_approval_level": "销售经理",
+    "applicable_customer_levels": "普通客户,VIP客户,战略客户"
+  },
+  {
+    "tier_name": "大额订单档",
+    "min_amount": 15000,
+    "max_amount": 50000,
+    "discount_rate": 0.2,
+    "required_approval_level": "销售总监",
+    "applicable_customer_levels": "VIP客户,战略客户"
+  },
+  {
+    "tier_name": "战略客户档",
+    "min_amount": 20000,
+    "max_amount": "",
+    "discount_rate": 0.3,
+    "required_approval_level": "总经理",
+    "applicable_customer_levels": "战略客户"
+  }
+]

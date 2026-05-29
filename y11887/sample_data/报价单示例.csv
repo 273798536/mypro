@@ -1,0 +1,6 @@
+﻿item_name,item_code,list_price,final_price,quantity,customer_name,customer_level_raw,salesperson,approval_level_raw,quoted_discount,notes
+企业版SaaS服务,SAAS-ENT-001,12000.0,9600.0,1,腾讯科技,战略客户,张三,销售总监,0.2,年度合同
+企业版SaaS服务,SAAS-ENT-001,12000.0,10200.0,1,阿里巴巴,VIP客户,李四,销售经理,0.15,季度合同
+基础版SaaS服务,SAAS-BASE-001,3000.0,2850.0,2,创业公司A,普通客户,王五,销售代表,0.05,月度合同
+企业版SaaS服务,SAAS-ENT-001,12000.0,7800.0,3,字节跳动,战略客户,张三,销售经理,0.35,越权审批测试案例
+专业版SaaS服务,SAAS-PRO-001,6000.0,5099.99,1,美团点评,VIP客户,李四,销售经理,0.15,舍入误差测试案例

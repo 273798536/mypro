@@ -1,0 +1,5 @@
+﻿level_name,level_order,max_discount_allowed,max_amount_allowed,approver_title
+销售代表,1,0.1,5000,销售代表
+销售经理,2,0.2,20000,销售经理
+销售总监,3,0.3,50000,销售总监
+总经理,4,0.5,,总经理

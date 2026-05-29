@@ -1,0 +1,30 @@
+[
+  {
+    "level_name": "销售代表",
+    "level_order": 1,
+    "max_discount_allowed": 0.1,
+    "max_amount_allowed": 5000,
+    "approver_title": "销售代表"
+  },
+  {
+    "level_name": "销售经理",
+    "level_order": 2,
+    "max_discount_allowed": 0.2,
+    "max_amount_allowed": 20000,
+    "approver_title": "销售经理"
+  },
+  {
+    "level_name": "销售总监",
+    "level_order": 3,
+    "max_discount_allowed": 0.3,
+    "max_amount_allowed": 50000,
+    "approver_title": "销售总监"
+  },
+  {
+    "level_name": "总经理",
+    "level_order": 4,
+    "max_discount_allowed": 0.5,
+    "max_amount_allowed": "",
+    "approver_title": "总经理"
+  }
+]

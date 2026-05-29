@@ -1,0 +1,67 @@
+[
+  {
+    "item_name": "企业版SaaS服务",
+    "item_code": "SAAS-ENT-001",
+    "list_price": 12000.0,
+    "final_price": 9600.0,
+    "quantity": 1,
+    "customer_name": "腾讯科技",
+    "customer_level_raw": "战略客户",
+    "salesperson": "张三",
+    "approval_level_raw": "销售总监",
+    "quoted_discount": 0.2,
+    "notes": "年度合同"
+  },
+  {
+    "item_name": "企业版SaaS服务",
+    "item_code": "SAAS-ENT-001",
+    "list_price": 12000.0,
+    "final_price": 10200.0,
+    "quantity": 1,
+    "customer_name": "阿里巴巴",
+    "customer_level_raw": "VIP客户",
+    "salesperson": "李四",
+    "approval_level_raw": "销售经理",
+    "quoted_discount": 0.15,
+    "notes": "季度合同"
+  },
+  {
+    "item_name": "基础版SaaS服务",
+    "item_code": "SAAS-BASE-001",
+    "list_price": 3000.0,
+    "final_price": 2850.0,
+    "quantity": 2,
+    "customer_name": "创业公司A",
+    "customer_level_raw": "普通客户",
+    "salesperson": "王五",
+    "approval_level_raw": "销售代表",
+    "quoted_discount": 0.05,
+    "notes": "月度合同"
+  },
+  {
+    "item_name": "企业版SaaS服务",
+    "item_code": "SAAS-ENT-001",
+    "list_price": 12000.0,
+    "final_price": 7800.0,
+    "quantity": 3,
+    "customer_name": "字节跳动",
+    "customer_level_raw": "战略客户",
+    "salesperson": "张三",
+    "approval_level_raw": "销售经理",
+    "quoted_discount": 0.35,
+    "notes": "越权审批测试案例"
+  },
+  {
+    "item_name": "专业版SaaS服务",
+    "item_code": "SAAS-PRO-001",
+    "list_price": 6000.0,
+    "final_price": 5099.99,
+    "quantity": 1,
+    "customer_name": "美团点评",
+    "customer_level_raw": "VIP客户",
+    "salesperson": "李四",
+    "approval_level_raw": "销售经理",
+    "quoted_discount": 0.15,
+    "notes": "舍入误差测试案例"
+  }
+]

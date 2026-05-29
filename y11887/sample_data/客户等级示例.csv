@@ -1,0 +1,4 @@
+﻿level_name,level_code,base_discount_rate,max_allowed_discount_rate,description
+普通客户,C001,0.05,0.1,新注册或消费较少的客户
+VIP客户,C002,0.1,0.2,有一定消费历史的优质客户
+战略客户,C003,0.2,0.35,重点合作的大客户
