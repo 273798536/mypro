@@ -3,7 +3,6 @@ import {
   Card, 
   Table, 
   Button, 
-  Space, 
   Tag, 
   Input, 
   Select,
@@ -26,17 +25,17 @@ import {
   ReloadOutlined
 } from '@ant-design/icons';
 import { useAppStore } from '../store';
-import { AuditLog, AuditAction, AuditEntityType } from '../types';
+import { AuditAction, EntityType } from '../types';
 
 const { Search } = Input;
 const { Option } = Select;
 
 const AuditLogs: React.FC = () => {
-  const { auditLogs, employees } = useAppStore();
+  const { auditLogs } = useAppStore();
   
   const [searchText, setSearchText] = useState('');
   const [actionFilter, setActionFilter] = useState<AuditAction | undefined>();
-  const [entityTypeFilter, setEntityTypeFilter] = useState<AuditEntityType | undefined>();
+  const [entityTypeFilter, setEntityTypeFilter] = useState<EntityType | undefined>();
   const [operatorFilter, setOperatorFilter] = useState<string | undefined>();
   
   const getActionIcon = (action: AuditAction) => {
@@ -83,13 +82,12 @@ const AuditLogs: React.FC = () => {
     }
   };
   
-  const getEntityTypeName = (type: AuditEntityType) => {
+  const getEntityTypeName = (type: EntityType) => {
     switch (type) {
       case 'employee': return '员工档案';
-      case 'salary_item': return '工资项';
-      case 'special_deduction': return '专项扣除';
-      case 'back_pay': return '补发记录';
-      case 'resignation': return '离职记录';
+      case 'salary': return '工资项';
+      case 'deduction': return '专项扣除';
+      case 'backpay': return '补发记录';
       case 'tax_period': return '税期';
       case 'calculation': return '工资计算';
       case 'exception': return '异常';
@@ -295,7 +293,7 @@ const AuditLogs: React.FC = () => {
                   title: '类型',
                   dataIndex: 'entityType',
                   width: 100,
-                  render: (type: AuditEntityType) => (
+                  render: (type: EntityType) => (
                     <span style={{ fontSize: 12, color: '#6b7280' }}>
                       {getEntityTypeName(type)}
                     </span>

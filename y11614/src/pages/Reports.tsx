@@ -3,7 +3,6 @@ import {
   Card, 
   Button, 
   Space, 
-  Input, 
   Select,
   Modal,
   message,
@@ -15,12 +14,12 @@ import {
   List,
   Progress,
   Descriptions,
-  Divider
+  Divider,
+  Alert
 } from 'antd';
 import { 
   FileExcelOutlined, 
   FilePdfOutlined, 
-  DownloadOutlined,
   EyeOutlined,
   HistoryOutlined,
   CheckCircleOutlined,
@@ -33,7 +32,6 @@ import { useAppStore } from '../store';
 import { exportToExcel, exportToPDF, downloadSampleTemplate } from '../utils/exporter';
 import { formatCurrency } from '../utils/calculator';
 
-const { Search } = Input;
 const { Option } = Select;
 
 const Reports: React.FC = () => {
@@ -55,19 +53,19 @@ const Reports: React.FC = () => {
   const currentPeriod = taxPeriods.find(p => p.id === selectedPeriodId);
   const periodName = currentPeriod?.periodName || '2026-05';
   const isLocked = currentPeriod?.isLocked || false;
+  const periodKey = currentPeriod?.periodName?.replace('年', '-').replace('月', '') || '2026-05';
   
   const periodCalculations = salaryCalculations.filter(c => c.taxPeriodId === selectedPeriodId);
-  const periodExceptions = exceptions.filter(e => e.taxPeriodId === selectedPeriodId);
-  const periodDeductions = specialDeductions.filter(d => d.taxPeriodId === selectedPeriodId);
-  const periodBackPay = backPayRecords.filter(b => b.taxPeriodId === selectedPeriodId);
+  const periodExceptions = exceptions.filter(e => e.taxPeriod === periodKey);
+  const periodDeductions = specialDeductions.filter(d => d.effectiveMonth <= periodKey);
+  const periodBackPay = backPayRecords.filter(b => b.targetPeriod === periodKey);
   
   const stats = useMemo(() => {
-    const totalGross = periodCalculations.reduce((sum, c) => sum + c.grossPay, 0);
-    const totalTax = periodCalculations.reduce((sum, c) => sum + c.tax, 0);
-    const totalNet = periodCalculations.reduce((sum, c) => sum + c.netPay, 0);
+    const totalGross = periodCalculations.reduce((sum, c) => sum + c.grossSalary, 0);
+    const totalTax = periodCalculations.reduce((sum, c) => sum + c.taxAmount, 0);
+    const totalNet = periodCalculations.reduce((sum, c) => sum + c.netSalary, 0);
     const totalBackPay = periodBackPay.reduce((sum, b) => sum + b.amount, 0);
-    const totalDeductions = periodDeductions.reduce((sum, d) => 
-      sum + d.children + d.education + d.housing + d.elderly + d.healthcare + d.infant, 0);
+    const totalDeductions = periodDeductions.reduce((sum, d) => sum + d.amount, 0);
     
     const pendingExceptions = periodExceptions.filter(e => e.status === 'pending').length;
     const resolvedExceptions = periodExceptions.filter(e => e.status === 'resolved').length;
@@ -103,9 +101,9 @@ const Reports: React.FC = () => {
       
       const deptData = deptMap.get(dept)!;
       deptData.count += 1;
-      deptData.gross += calc.grossPay;
-      deptData.tax += calc.tax;
-      deptData.net += calc.netPay;
+      deptData.gross += calc.grossSalary;
+      deptData.tax += calc.taxAmount;
+      deptData.net += calc.netSalary;
     });
     
     return Array.from(deptMap.entries()).map(([name, data]) => ({
@@ -116,7 +114,7 @@ const Reports: React.FC = () => {
   
   const topTaxPayers = useMemo(() => {
     return [...periodCalculations]
-      .sort((a, b) => b.tax - a.tax)
+      .sort((a, b) => b.taxAmount - a.taxAmount)
       .slice(0, 5)
       .map(calc => {
         const emp = employees.find(e => e.id === calc.employeeId);
@@ -142,7 +140,7 @@ const Reports: React.FC = () => {
       addAuditLog({
         entityType: 'report',
         entityId: periodName,
-        action: 'export_excel',
+        action: 'export',
         operator: '薪酬专员',
         timestamp: new Date().toISOString(),
         source: '报告中心',
@@ -168,7 +166,7 @@ const Reports: React.FC = () => {
       addAuditLog({
         entityType: 'report',
         entityId: periodName,
-        action: 'export_pdf',
+        action: 'export',
         operator: '薪酬专员',
         timestamp: new Date().toISOString(),
         source: '报告中心',
@@ -346,7 +344,7 @@ const Reports: React.FC = () => {
                     ¥{formatCurrency(stats.totalDeductions)}
                   </div>
                 </div>
-                <Tag color="green">{periodDeductions.length} 人</Tag>
+                <Tag color="green">{periodDeductions.length} 条</Tag>
               </div>
             </Card>
           </Col>
@@ -433,7 +431,7 @@ const Reports: React.FC = () => {
                   <span>实发: ¥{formatCurrency(dept.net)}</span>
                 </div>
                 <Progress 
-                  percent={Math.round((dept.net / dept.gross) * 100)} 
+                  percent={dept.gross > 0 ? Math.round((dept.net / dept.gross) * 100) : 0} 
                   showInfo={false}
                   size="small"
                   strokeColor="#2563eb"
@@ -469,7 +467,7 @@ const Reports: React.FC = () => {
                   </div>
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: '#dc2626' }}>
-                  ¥{formatCurrency(payer.tax)}
+                  ¥{formatCurrency(payer.taxAmount)}
                 </div>
               </div>
             ))}
@@ -514,21 +512,24 @@ const Reports: React.FC = () => {
             </Descriptions>
           </Card>
           
-          <Divider orientation="left">工资明细</Divider>
+          <Divider>工资明细</Divider>
           
           <Table
-            dataSource={periodCalculations.slice(0, 10)}
+            dataSource={periodCalculations.slice(0, 10).map(c => {
+              const emp = employees.find(e => e.id === c.employeeId);
+              return { ...c, employeeName: emp?.name || '' };
+            })}
             rowKey="id"
             size="small"
             pagination={false}
             columns={[
               { title: '员工', dataIndex: 'employeeName', key: 'name', width: 100 },
-              { title: '应发工资', dataIndex: 'grossPay', key: 'gross', width: 100, render: v => `¥${formatCurrency(v)}` },
-              { title: '社保', dataIndex: 'socialSecurity', key: 'ss', width: 80, render: v => `¥${formatCurrency(v)}` },
-              { title: '公积金', dataIndex: 'housingFund', key: 'hf', width: 80, render: v => `¥${formatCurrency(v)}` },
-              { title: '专项扣除', dataIndex: 'specialDeduction', key: 'sd', width: 90, render: v => `¥${formatCurrency(v)}` },
-              { title: '个税', dataIndex: 'tax', key: 'tax', width: 80, render: v => `¥${formatCurrency(v)}` },
-              { title: '实发工资', dataIndex: 'netPay', key: 'net', width: 100, render: v => <span style={{ fontWeight: 500 }}>¥{formatCurrency(v)}</span> }
+              { title: '应发工资', dataIndex: 'grossSalary', key: 'gross', width: 100, render: (v: number) => `¥${formatCurrency(v)}` },
+              { title: '社保', dataIndex: 'socialSecurityPersonal', key: 'ss', width: 80, render: (v: number) => `¥${formatCurrency(v)}` },
+              { title: '公积金', dataIndex: 'housingFundPersonal', key: 'hf', width: 80, render: (v: number) => `¥${formatCurrency(v)}` },
+              { title: '专项扣除', dataIndex: 'specialDeductionTotal', key: 'sd', width: 90, render: (v: number) => `¥${formatCurrency(v)}` },
+              { title: '个税', dataIndex: 'taxAmount', key: 'tax', width: 80, render: (v: number) => `¥${formatCurrency(v)}` },
+              { title: '实发工资', dataIndex: 'netSalary', key: 'net', width: 100, render: (v: number) => <span style={{ fontWeight: 500 }}>¥{formatCurrency(v)}</span> }
             ]}
           />
           
@@ -540,7 +541,7 @@ const Reports: React.FC = () => {
           
           {periodExceptions.length > 0 && (
             <>
-              <Divider orientation="left">异常提醒</Divider>
+              <Divider>异常提醒</Divider>
               <Alert
                 message={`检测到 ${periodExceptions.length} 条异常`}
                 description={

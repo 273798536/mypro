@@ -27,7 +27,6 @@ import {
 import { useAppStore } from '../store';
 import { formatCurrency } from '../utils/calculator';
 import { monthlyTrendData, exceptionTypeDistribution } from '../data/mockData';
-import { getExceptionTypeName, getSeverityColor } from '../utils/exceptionDetector';
 
 const COLORS = ['#dc2626', '#f97316', '#2563eb', '#10b981', '#8b5cf6'];
 
@@ -47,7 +46,6 @@ const Dashboard: React.FC = () => {
   const recentLogs = auditLogs.slice(0, 5);
   
   const totalSalary = salaryCalculations.reduce((sum, c) => sum + c.grossSalary, 0);
-  const totalTax = salaryCalculations.reduce((sum, c) => sum + c.taxAmount, 0);
   const totalNet = salaryCalculations.reduce((sum, c) => sum + c.netSalary, 0);
   
   const quickActions = [
@@ -277,7 +275,7 @@ const Dashboard: React.FC = () => {
                     outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
-                    label={({ type, value }) => `${type}: ${value}`}
+                    label={({ name, value }) => `${name}: ${value}`}
                     labelLine={false}
                   >
                     {exceptionTypeDistribution.map((entry, index) => (

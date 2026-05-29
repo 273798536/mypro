@@ -143,8 +143,6 @@ export const detectDataInconsistency = (
     if (!employee) return;
     
     const expectedSocialSecurity = Math.floor(employee.socialSecurityBase * 0.105);
-    const expectedHousingFund = Math.floor(employee.housingFundBase * 0.12);
-    
     if (Math.abs(salaryItem.socialSecurityPersonal - expectedSocialSecurity) > 10) {
       exceptions.push({
         id: generateId(),

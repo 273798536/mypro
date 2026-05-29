@@ -340,7 +340,6 @@ export const mockTaxPeriods: TaxPeriod[] = [
 ];
 
 export const mockSalaryCalculations: SalaryCalculation[] = mockSalaryItems.map(item => {
-  const emp = mockEmployees.find(e => e.id === item.employeeId)!;
   const deductions = mockSpecialDeductions.filter(d => d.employeeId === item.employeeId);
   const backPay = mockBackPayRecords.find(b => b.employeeId === item.employeeId && b.targetPeriod === '2026-05');
   
@@ -548,9 +547,9 @@ export const departmentSalaryData = [
 ];
 
 export const exceptionTypeDistribution = [
-  { type: '扣除月份错位', value: 1 },
-  { type: '补发跨税期', value: 1 },
-  { type: '离职后社保', value: 1 },
-  { type: '数据不一致', value: 1 },
-  { type: '计算提示', value: 1 }
+  { name: '扣除月份错位', value: 1 },
+  { name: '补发跨税期', value: 1 },
+  { name: '离职后社保', value: 1 },
+  { name: '数据不一致', value: 1 },
+  { name: '计算提示', value: 1 }
 ];

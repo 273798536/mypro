@@ -120,7 +120,7 @@ export const exportToPDF = (
   
   y += 7;
   
-  calculations.forEach((calc, index) => {
+  calculations.forEach((calc) => {
     if (y > 270) {
       doc.addPage();
       y = 20;
@@ -155,13 +155,13 @@ export const exportToPDF = (
     y += 10;
     
     doc.setFontSize(9);
-    exceptions.forEach((exc, index) => {
+    exceptions.forEach((exc, idx) => {
       if (y > 270) {
         doc.addPage();
         y = 20;
       }
       
-      doc.text(`${index + 1}. [${getSeverityName(exc.severity)}] ${getExceptionTypeName(exc.type)}`, 14, y);
+      doc.text(`${idx + 1}. [${getSeverityName(exc.severity)}] ${getExceptionTypeName(exc.type)}`, 14, y);
       y += 5;
       doc.text(`   员工: ${exc.employeeName || ''}`, 14, y);
       y += 5;

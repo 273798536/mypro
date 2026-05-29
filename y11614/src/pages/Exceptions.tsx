@@ -21,8 +21,7 @@ import {
   CloseCircleOutlined,
   EyeOutlined,
   ReloadOutlined,
-  SearchOutlined,
-  FilterOutlined
+  SearchOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
@@ -35,7 +34,6 @@ import { Exception, ExceptionType, ExceptionSeverity, ExceptionStatus } from '..
 
 const { Search } = Input;
 const { Option } = Select;
-const { TabPane } = Tabs;
 
 const Exceptions: React.FC = () => {
   const navigate = useNavigate();
@@ -423,7 +421,7 @@ const Exceptions: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {selectedException.affectedFields.map((field, i) => (
-                    <Tag key={i} color="blue" size="small">{field}</Tag>
+                    <Tag key={i} color="blue">{field}</Tag>
                   ))}
                 </div>
               </Col>

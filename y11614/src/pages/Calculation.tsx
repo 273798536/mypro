@@ -19,7 +19,6 @@ import {
   CalculatorOutlined, 
   ReloadOutlined, 
   EyeOutlined, 
-  EditOutlined,
   WarningOutlined,
   CheckCircleOutlined,
   DownloadOutlined,
@@ -30,6 +29,8 @@ import { useAppStore } from '../store';
 import { formatCurrency } from '../utils/calculator';
 import { getExceptionTypeName, getSeverityColor } from '../utils/exceptionDetector';
 import { calculateSalary } from '../utils/calculator';
+
+import { SalaryCalculation } from '../types';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -53,7 +54,7 @@ const Calculation: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<string | undefined>();
   const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [selectedCalc, setSelectedCalc] = useState<any>(null);
+  const [selectedCalc, setSelectedCalc] = useState<(SalaryCalculation & { employee?: typeof employees[0]; deductions?: typeof specialDeductions; backPay?: typeof backPayRecords[0]; exceptions?: typeof exceptions }) | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   
   const currentPeriod = taxPeriods.find(p => p.id === currentTaxPeriodId);
@@ -105,7 +106,7 @@ const Calculation: React.FC = () => {
     }, 2000);
   };
   
-  const handleRecalculate = (record: any) => {
+  const handleRecalculate = (record: SalaryCalculation) => {
     const salaryItem = salaryItems.find(s => s.employeeId === record.employeeId && s.taxPeriod === periodName);
     if (!salaryItem) return;
     
@@ -125,7 +126,7 @@ const Calculation: React.FC = () => {
     message.success('重新计算完成');
   };
   
-  const handleViewDetail = (record: any) => {
+  const handleViewDetail = (record: SalaryCalculation) => {
     const emp = employees.find(e => e.id === record.employeeId);
     const empDeductions = specialDeductions.filter(d => d.employeeId === record.employeeId);
     const empBackPay = backPayRecords.find(b => b.employeeId === record.employeeId && b.targetPeriod === periodName);
@@ -489,7 +490,7 @@ const Calculation: React.FC = () => {
                 style={{ marginTop: 16 }}
               >
                 <div style={{ fontSize: 13, lineHeight: 2 }}>
-                  {selectedCalc.deductions.map((d: any, i: number) => (
+                  {selectedCalc.deductions.map((d, i: number) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: '#6b7280' }}>
                         {deductionTypeNames[d.deductionType]}
@@ -513,7 +514,7 @@ const Calculation: React.FC = () => {
                 } 
                 style={{ marginTop: 16, borderColor: '#fecaca' }}
               >
-                {selectedCalc.exceptions.map((e: any, i: number) => (
+                {selectedCalc.exceptions.map((e, i: number) => (
                   <div key={i} style={{ marginBottom: i < selectedCalc.exceptions.length - 1 ? 12 : 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <Tag color={getSeverityColor(e.severity)}>

@@ -15,26 +15,239 @@ import {
   Divider
 } from 'antd';
 import { 
-  InboxOutlined, 
-  FileExcelOutlined, 
   CheckCircleOutlined, 
   CloseCircleOutlined,
   DownloadOutlined,
   EyeOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  ImportOutlined
 } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
+import { ImportFile, Employee, SalaryItem, SpecialDeduction, BackPay, Resignation, DeductionType } from '../types';
+import * as XLSX from 'xlsx';
 import { useAppStore } from '../store';
 import { downloadSampleTemplate } from '../utils/exporter';
-import { ImportFile } from '../types';
 
-const { Dragger } = Upload;
+interface ParsedData {
+  rows: Record<string, unknown>[];
+  errors: string[];
+}
+
+const parseEmployeeSheet = (rows: Record<string, unknown>[]): { data: Employee[]; errors: string[] } => {
+  const errors: string[] = [];
+  const data: Employee[] = [];
+  
+  rows.forEach((row, i) => {
+    const line = i + 2;
+    const employeeNo = String(row['员工编号'] || '').trim();
+    const name = String(row['姓名'] || '').trim();
+    const department = String(row['部门'] || '').trim();
+    const position = String(row['岗位'] || '').trim();
+    const joinDate = String(row['入职日期'] || '').trim();
+    const socialSecurityBase = Number(row['社保基数']) || 0;
+    const housingFundBase = Number(row['公积金基数']) || 0;
+    
+    if (!employeeNo) { errors.push(`第${line}行：员工编号不能为空`); return; }
+    if (!name) { errors.push(`第${line}行：姓名不能为空`); return; }
+    if (!department) { errors.push(`第${line}行：部门不能为空`); return; }
+    
+    data.push({
+      id: `emp-${employeeNo}`,
+      name,
+      employeeNo,
+      department,
+      position: position || '未指定',
+      joinDate: joinDate || '2020-01-01',
+      idCard: String(row['身份证号'] || ''),
+      socialSecurityBase,
+      housingFundBase: housingFundBase || socialSecurityBase,
+      status: 'active'
+    });
+  });
+  
+  return { data, errors };
+};
+
+const parseSalarySheet = (rows: Record<string, unknown>[], taxPeriod: string): { data: SalaryItem[]; errors: string[] } => {
+  const errors: string[] = [];
+  const data: SalaryItem[] = [];
+  
+  rows.forEach((row, i) => {
+    const line = i + 2;
+    const employeeNo = String(row['员工编号'] || '').trim();
+    const baseSalary = Number(row['基本工资']) || 0;
+    const performanceBonus = Number(row['绩效奖金']) || 0;
+    const overtimePay = Number(row['加班费']) || 0;
+    const allowance = Number(row['津贴']) || 0;
+    const otherIncome = Number(row['其他收入']) || 0;
+    const socialSecurityPersonal = Number(row['社保个人']) || 0;
+    const housingFundPersonal = Number(row['公积金个人']) || 0;
+    const otherDeduction = Number(row['其他扣款']) || 0;
+    
+    if (!employeeNo) { errors.push(`第${line}行：员工编号不能为空`); return; }
+    if (baseSalary <= 0) { errors.push(`第${line}行：基本工资必须大于0`); return; }
+    
+    data.push({
+      id: `sal-imp-${employeeNo}-${taxPeriod.replace('-', '')}`,
+      employeeId: `emp-${employeeNo}`,
+      taxPeriod,
+      baseSalary,
+      performanceBonus,
+      overtimePay,
+      allowance,
+      otherIncome,
+      socialSecurityPersonal,
+      housingFundPersonal,
+      otherDeduction
+    });
+  });
+  
+  return { data, errors };
+};
+
+const parseDeductionSheet = (rows: Record<string, unknown>[]): { data: SpecialDeduction[]; errors: string[] } => {
+  const errors: string[] = [];
+  const data: SpecialDeduction[] = [];
+  const validTypes: DeductionType[] = ['children_education', 'continuing_education', 'housing_loan', 'housing_rent', 'elderly_care', 'infant_care'];
+  
+  rows.forEach((row, i) => {
+    const line = i + 2;
+    const employeeNo = String(row['员工编号'] || '').trim();
+    const deductionType = String(row['扣除类型'] || '').trim() as DeductionType;
+    const amount = Number(row['金额']) || 0;
+    const effectiveMonth = String(row['生效月份'] || '').trim();
+    
+    if (!employeeNo) { errors.push(`第${line}行：员工编号不能为空`); return; }
+    if (!validTypes.includes(deductionType)) { errors.push(`第${line}行：扣除类型「${deductionType}」无效，有效值：${validTypes.join(', ')}`); return; }
+    if (amount <= 0) { errors.push(`第${line}行：金额必须大于0`); return; }
+    if (!effectiveMonth) { errors.push(`第${line}行：生效月份不能为空`); return; }
+    
+    data.push({
+      id: `ded-imp-${employeeNo}-${deductionType}-${effectiveMonth}`,
+      employeeId: `emp-${employeeNo}`,
+      deductionType,
+      amount,
+      effectiveMonth,
+      expiryMonth: row['失效月份'] ? String(row['失效月份']) : undefined,
+      source: 'system_import',
+      isLocked: false
+    });
+  });
+  
+  return { data, errors };
+};
+
+const parseBackPaySheet = (rows: Record<string, unknown>[]): { data: BackPay[]; errors: string[] } => {
+  const errors: string[] = [];
+  const data: BackPay[] = [];
+  
+  rows.forEach((row, i) => {
+    const line = i + 2;
+    const employeeNo = String(row['员工编号'] || '').trim();
+    const originalPeriod = String(row['原所属期'] || '').trim();
+    const targetPeriod = String(row['目标期'] || '').trim();
+    const amount = Number(row['金额']) || 0;
+    const reason = String(row['原因'] || '').trim();
+    const taxAdjustment = Number(row['税额调整']) || 0;
+    
+    if (!employeeNo) { errors.push(`第${line}行：员工编号不能为空`); return; }
+    if (!originalPeriod) { errors.push(`第${line}行：原所属期不能为空`); return; }
+    if (!targetPeriod) { errors.push(`第${line}行：目标期不能为空`); return; }
+    if (amount <= 0) { errors.push(`第${line}行：金额必须大于0`); return; }
+    
+    const originalYear = parseInt(originalPeriod.split('-')[0]);
+    const targetYear = parseInt(targetPeriod.split('-')[0]);
+    
+    data.push({
+      id: `back-imp-${employeeNo}-${originalPeriod.replace('-', '')}`,
+      employeeId: `emp-${employeeNo}`,
+      originalPeriod,
+      targetPeriod,
+      amount,
+      reason: reason || '补发工资',
+      taxAdjustment,
+      isCrossPeriod: originalYear !== targetYear
+    });
+  });
+  
+  return { data, errors };
+};
+
+const parseResignationSheet = (rows: Record<string, unknown>[]): { data: Resignation[]; errors: string[] } => {
+  const errors: string[] = [];
+  const data: Resignation[] = [];
+  
+  rows.forEach((row, i) => {
+    const line = i + 2;
+    const employeeNo = String(row['员工编号'] || '').trim();
+    const resignationDate = String(row['离职日期'] || '').trim();
+    const socialSecurityEndMonth = String(row['社保截止月'] || '').trim();
+    const housingFundEndMonth = String(row['公积金截止月'] || '').trim();
+    const severancePay = Number(row['补偿金']) || 0;
+    
+    if (!employeeNo) { errors.push(`第${line}行：员工编号不能为空`); return; }
+    if (!resignationDate) { errors.push(`第${line}行：离职日期不能为空`); return; }
+    
+    data.push({
+      id: `res-imp-${employeeNo}`,
+      employeeId: `emp-${employeeNo}`,
+      resignationDate,
+      lastWorkingDay: resignationDate,
+      socialSecurityEndMonth: socialSecurityEndMonth || resignationDate.substring(0, 7),
+      housingFundEndMonth: housingFundEndMonth || resignationDate.substring(0, 7),
+      hasSeverancePay: severancePay > 0,
+      severancePayAmount: severancePay
+    });
+  });
+  
+  return { data, errors };
+};
+
+const readExcelFile = (file: File): Promise<Record<string, unknown>[]> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
+        resolve(jsonData);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = () => reject(new Error('文件读取失败'));
+    reader.readAsArrayBuffer(file);
+  });
+};
 
 const DataImport: React.FC = () => {
-  const { importFiles, addImportFile, updateImportFile, removeImportFile } = useAppStore();
+  const { 
+    importFiles, 
+    addImportFile, 
+    updateImportFile, 
+    removeImportFile,
+    setEmployees,
+    setSalaryItems,
+    setSpecialDeductions,
+    setBackPayRecords,
+    setResignations,
+    addAuditLog,
+    currentTaxPeriodId,
+    taxPeriods,
+    employees: existingEmployees
+  } = useAppStore();
+  
   const [currentStep, setCurrentStep] = useState(0);
   const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [previewData, setPreviewData] = useState<Record<string, unknown>[]>([]);
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [parsedResults, setParsedResults] = useState<Map<string, ParsedData>>(new Map());
+  const [isImporting, setIsImporting] = useState(false);
+  
+  const currentPeriod = taxPeriods.find(p => p.id === currentTaxPeriodId);
+  const taxPeriod = currentPeriod?.periodName?.replace('年', '-').replace('月', '') || '2026-05';
   
   const fileTypes = [
     { type: 'employee', name: '员工档案', icon: '👥', color: '#2563eb' },
@@ -45,9 +258,9 @@ const DataImport: React.FC = () => {
     { type: 'tax_preview', name: '个税试算', icon: '🧮', color: '#0891b2' },
   ];
   
-  const handleFileUpload = (type: string, file: File) => {
+  const handleFileUpload = async (type: string, file: File) => {
     const newFile: ImportFile = {
-      id: `file-${Date.now()}`,
+      id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
       name: file.name,
       type: type as ImportFile['type'],
       status: 'uploading',
@@ -57,39 +270,173 @@ const DataImport: React.FC = () => {
     };
     
     addImportFile(newFile);
+    setCurrentStep(1);
     
-    setTimeout(() => {
-      updateImportFile(newFile.id, { status: 'uploaded', rowCount: Math.floor(Math.random() * 50) + 10 });
+    try {
+      const rows = await readExcelFile(file);
       
-      setTimeout(() => {
-        updateImportFile(newFile.id, { status: 'validating' });
-        
-        setTimeout(() => {
-          const hasError = Math.random() > 0.7;
-          updateImportFile(newFile.id, { 
-            status: hasError ? 'invalid' : 'valid',
-            errorCount: hasError ? Math.floor(Math.random() * 5) + 1 : 0,
-            errors: hasError ? ['第3行：员工编号不能为空', '第7行：日期格式不正确'] : undefined
-          });
-          
-          message.success(`${file.name} 上传完成`);
-        }, 1000);
-      }, 1000);
-    }, 1000);
+      updateImportFile(newFile.id, { 
+        status: 'validating', 
+        rowCount: rows.length 
+      });
+      
+      let parsed: ParsedData;
+      
+      switch (type) {
+        case 'employee': {
+          const result = parseEmployeeSheet(rows);
+          parsed = { rows, errors: result.errors };
+          break;
+        }
+        case 'salary': {
+          const result = parseSalarySheet(rows, taxPeriod);
+          parsed = { rows, errors: result.errors };
+          break;
+        }
+        case 'deduction': {
+          const result = parseDeductionSheet(rows);
+          parsed = { rows, errors: result.errors };
+          break;
+        }
+        case 'backpay': {
+          const result = parseBackPaySheet(rows);
+          parsed = { rows, errors: result.errors };
+          break;
+        }
+        case 'resignation': {
+          const result = parseResignationSheet(rows);
+          parsed = { rows, errors: result.errors };
+          break;
+        }
+        default:
+          parsed = { rows, errors: [] };
+      }
+      
+      setParsedResults(prev => new Map(prev).set(newFile.id, parsed));
+      
+      updateImportFile(newFile.id, { 
+        status: parsed.errors.length > 0 ? 'invalid' : 'valid',
+        errorCount: parsed.errors.length,
+        errors: parsed.errors.length > 0 ? parsed.errors.slice(0, 10) : undefined
+      });
+      
+      setCurrentStep(2);
+      
+      if (parsed.errors.length === 0) {
+        message.success(`${file.name} 解析成功，共 ${rows.length} 行数据`);
+      } else {
+        message.warning(`${file.name} 解析完成，${parsed.errors.length} 个错误`);
+      }
+    } catch {
+      updateImportFile(newFile.id, { 
+        status: 'invalid', 
+        errorCount: 1,
+        errors: ['文件解析失败，请检查文件格式是否正确']
+      });
+      message.error('文件解析失败');
+    }
     
     return false;
   };
   
   const handlePreview = (file: ImportFile) => {
-    const mockData = Array.from({ length: 5 }, (_, i) => ({
-      key: i,
-      员工编号: `E${String(1001 + i).padStart(3, '0')}`,
-      姓名: ['张三', '李四', '王五', '赵六', '钱七'][i],
-      部门: ['技术部', '产品部', '市场部', '财务部', '人事部'][i],
-      基本工资: 15000 + Math.floor(Math.random() * 20000),
-    }));
-    setPreviewData(mockData);
+    const parsed = parsedResults.get(file.id);
+    if (parsed && parsed.rows.length > 0) {
+      const previewRows = parsed.rows.slice(0, 20);
+      setPreviewData(previewRows);
+      setPreviewTitle(`${file.name} - 数据预览`);
+    } else {
+      setPreviewData([]);
+      setPreviewTitle(`${file.name} - 暂无数据`);
+    }
     setPreviewVisible(true);
+  };
+  
+  const handleConfirmImport = async () => {
+    setIsImporting(true);
+    setCurrentStep(3);
+    
+    let totalImported = 0;
+    
+    for (const file of importFiles) {
+      if (file.status !== 'valid') continue;
+      
+      const parsed = parsedResults.get(file.id);
+      if (!parsed) continue;
+      
+      try {
+        switch (file.type) {
+          case 'employee': {
+            const result = parseEmployeeSheet(parsed.rows);
+            if (result.data.length > 0) {
+              const merged = [...existingEmployees];
+              result.data.forEach(emp => {
+                const idx = merged.findIndex(e => e.employeeNo === emp.employeeNo);
+                if (idx >= 0) {
+                  merged[idx] = { ...merged[idx], ...emp };
+                } else {
+                  merged.push(emp);
+                }
+              });
+              setEmployees(merged);
+              totalImported += result.data.length;
+            }
+            break;
+          }
+          case 'salary': {
+            const result = parseSalarySheet(parsed.rows, taxPeriod);
+            if (result.data.length > 0) {
+              setSalaryItems(result.data);
+              totalImported += result.data.length;
+            }
+            break;
+          }
+          case 'deduction': {
+            const result = parseDeductionSheet(parsed.rows);
+            if (result.data.length > 0) {
+              setSpecialDeductions(result.data);
+              totalImported += result.data.length;
+            }
+            break;
+          }
+          case 'backpay': {
+            const result = parseBackPaySheet(parsed.rows);
+            if (result.data.length > 0) {
+              setBackPayRecords(result.data);
+              totalImported += result.data.length;
+            }
+            break;
+          }
+          case 'resignation': {
+            const result = parseResignationSheet(parsed.rows);
+            if (result.data.length > 0) {
+              setResignations(result.data);
+              totalImported += result.data.length;
+            }
+            break;
+          }
+        }
+        
+        addAuditLog({
+          entityType: file.type === 'employee' ? 'employee' 
+            : file.type === 'salary' ? 'salary' 
+            : file.type === 'deduction' ? 'deduction' 
+            : file.type === 'backpay' ? 'backpay' 
+            : 'salary',
+          entityId: file.id,
+          action: 'import',
+          operator: '薪酬专员',
+          timestamp: new Date().toISOString(),
+          source: '数据导入',
+          remark: `导入${fileTypes.find(f => f.type === file.type)?.name || file.type}数据：${file.name}，共${parsed.rows.length}行`
+        });
+      } catch {
+        message.error(`导入 ${file.name} 失败`);
+      }
+    }
+    
+    setIsImporting(false);
+    message.success(`数据导入完成，共导入 ${totalImported} 条记录`);
   };
   
   const getStatusColor = (status: string) => {
@@ -114,8 +461,19 @@ const DataImport: React.FC = () => {
     }
   };
   
-  const allValid = importFiles.length > 0 && importFiles.every(f => f.status === 'valid');
+  const allValid = importFiles.length > 0 && importFiles.some(f => f.status === 'valid');
   
+  const previewColumns = previewData.length > 0 
+    ? Object.keys(previewData[0]).map(key => ({
+        title: key,
+        dataIndex: key,
+        key,
+        ellipsis: true,
+        width: 120,
+        render: (val: unknown) => String(val ?? '')
+      }))
+    : [];
+
   return (
     <div>
       <Card 
@@ -165,7 +523,10 @@ const DataImport: React.FC = () => {
                     <Upload
                       accept=".xlsx,.xls"
                       showUploadList={false}
-                      beforeUpload={(file) => handleFileUpload(fileType.type, file)}
+                      beforeUpload={(file) => {
+                        handleFileUpload(fileType.type, file);
+                        return false;
+                      }}
                     >
                       <div style={{ fontSize: 32, marginBottom: 8 }}>{fileType.icon}</div>
                       <div style={{ fontWeight: 500, color: '#1f2937', marginBottom: 4 }}>{fileType.name}</div>
@@ -207,7 +568,8 @@ const DataImport: React.FC = () => {
                 <li style={{ marginBottom: 4 }}>日期格式请使用 YYYY-MM-DD</li>
                 <li style={{ marginBottom: 4 }}>金额请使用数字格式</li>
                 <li style={{ marginBottom: 4 }}>员工编号必须唯一</li>
-                <li>如有疑问请联系系统管理员</li>
+                <li style={{ marginBottom: 4 }}>专项扣除类型可选：children_education / continuing_education / housing_loan / housing_rent / elderly_care / infant_care</li>
+                <li>数据导入后会覆盖当前同类数据</li>
               </ul>
             </div>
           </Card>
@@ -220,10 +582,19 @@ const DataImport: React.FC = () => {
           style={{ borderRadius: 8, border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
           extra={
             <Space>
-              <Button onClick={() => setCurrentStep(3)} disabled={!allValid}>
-                开始导入
+              <Button 
+                type="primary" 
+                icon={<ImportOutlined />}
+                onClick={handleConfirmImport}
+                disabled={!allValid}
+                loading={isImporting}
+              >
+                确认导入到系统
               </Button>
-              <Button danger onClick={() => importFiles.forEach(f => removeImportFile(f.id))}>
+              <Button danger onClick={() => {
+                importFiles.forEach(f => removeImportFile(f.id));
+                setParsedResults(new Map());
+              }}>
                 清空全部
               </Button>
             </Space>
@@ -306,12 +677,24 @@ const DataImport: React.FC = () => {
                     >
                       预览
                     </Button>
-                    {record.errors && (
+                    {record.errors && record.errors.length > 0 && (
                       <Button 
                         type="link" 
                         size="small" 
                         danger
-                        onClick={() => message.error(record.errors?.join('\n'))}
+                        onClick={() => {
+                          Modal.error({
+                            title: '数据校验错误',
+                            content: (
+                              <div>
+                                {record.errors?.map((err, i) => (
+                                  <div key={i} style={{ marginBottom: 4, fontSize: 12 }}>{err}</div>
+                                ))}
+                              </div>
+                            ),
+                            width: 500
+                          });
+                        }}
                       >
                         查看错误
                       </Button>
@@ -321,7 +704,14 @@ const DataImport: React.FC = () => {
                       size="small" 
                       danger 
                       icon={<DeleteOutlined />}
-                      onClick={() => removeImportFile(record.id)}
+                      onClick={() => {
+                        removeImportFile(record.id);
+                        setParsedResults(prev => {
+                          const next = new Map(prev);
+                          next.delete(record.id);
+                          return next;
+                        });
+                      }}
                     >
                       删除
                     </Button>
@@ -335,7 +725,7 @@ const DataImport: React.FC = () => {
       )}
       
       <Modal
-        title="数据预览"
+        title={previewTitle}
         open={previewVisible}
         onCancel={() => setPreviewVisible(false)}
         footer={[
@@ -343,16 +733,27 @@ const DataImport: React.FC = () => {
             关闭
           </Button>
         ]}
-        width={800}
+        width={900}
       >
-        <Table
-          dataSource={previewData}
-          pagination={false}
-          size="small"
-        />
-        <p style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, marginTop: 16 }}>
-          仅显示前5条数据预览
-        </p>
+        {previewData.length > 0 ? (
+          <>
+            <Table
+              dataSource={previewData.map((row, i) => ({ ...row, _key: i }))}
+              columns={previewColumns}
+              rowKey="_key"
+              pagination={false}
+              size="small"
+              scroll={{ x: 'max-content' }}
+            />
+            <p style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, marginTop: 16 }}>
+              显示前 {Math.min(previewData.length, 20)} 条数据（共 {previewData.length} 行）
+            </p>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>
+            暂无数据预览
+          </div>
+        )}
       </Modal>
     </div>
   );

@@ -1,4 +1,4 @@
-import { TaxBracket, SalaryItem, SpecialDeduction, BackPay, SalaryCalculation } from '../types';
+import { SalaryItem, SpecialDeduction, BackPay, SalaryCalculation } from '../types';
 import { taxBrackets } from '../data/mockData';
 
 export const calculateTax = (taxableIncome: number): number => {

@@ -129,10 +129,14 @@ export type AuditAction =
   | 'update' 
   | 'delete' 
   | 'import' 
+  | 'export' 
   | 'calculate' 
+  | 'recalculate'
   | 'lock' 
   | 'unlock'
-  | 'resolve_exception';
+  | 'resolve_exception'
+  | 'ignore_exception'
+  | 'download';
 
 export type EntityType = 
   | 'employee' 
@@ -141,7 +145,9 @@ export type EntityType =
   | 'backpay' 
   | 'calculation'
   | 'tax_period'
-  | 'exception';
+  | 'exception'
+  | 'report'
+  | 'template';
 
 export interface AuditLog {
   id: string;

@@ -10,8 +10,7 @@ import {
   message,
   Row,
   Col,
-  Statistic,
-  Divider
+  Statistic
 } from 'antd';
 import { 
   CalendarOutlined, 
@@ -20,13 +19,13 @@ import {
   EyeOutlined,
   PlusOutlined,
   TeamOutlined,
-  MoneyCollectOutlined,
-  CalculatorOutlined,
   WarningOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 import { formatCurrency } from '../utils/calculator';
+
+import { TaxPeriod } from '../types';
 
 const TaxPeriods: React.FC = () => {
   const navigate = useNavigate();
@@ -40,7 +39,7 @@ const TaxPeriods: React.FC = () => {
   } = useAppStore();
   
   const [lockModalVisible, setLockModalVisible] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState<any>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<TaxPeriod | null>(null);
   const [lockAction, setLockAction] = useState<'lock' | 'unlock'>('lock');
   
   const getStatusColor = (status: string) => {
@@ -63,7 +62,7 @@ const TaxPeriods: React.FC = () => {
     }
   };
   
-  const handleLockClick = (period: any, action: 'lock' | 'unlock') => {
+  const handleLockClick = (period: TaxPeriod, action: 'lock' | 'unlock') => {
     setSelectedPeriod(period);
     setLockAction(action);
     setLockModalVisible(true);
@@ -207,7 +206,7 @@ const TaxPeriods: React.FC = () => {
                     {text}
                   </span>
                   {record.id === currentTaxPeriodId && (
-                    <Tag color="blue" size="small">当前</Tag>
+                    <Tag color="blue">当前</Tag>
                   )}
                 </div>
               )
