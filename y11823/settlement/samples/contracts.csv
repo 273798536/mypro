@@ -1,0 +1,7 @@
+contract_id,artist_name,tour_name,guarantee_amount,artist_split_ratio,sponsor_deduction_order,refund_cross_show,notes
+CTR001,张三乐队,《星火燎原全国巡演,500000,0.6,before_split,true,含保底触发场景
+CTR002,李四歌手,《星途万里巡演,300000,0.5,after_split,false,赞助抵扣在分成后；注意备注
+CTR003,王五组合,城市站特别场,200000,0.55,before_split,true,多城巡演退票跨场
+
+,,空值测试合同,,,,,空值
+

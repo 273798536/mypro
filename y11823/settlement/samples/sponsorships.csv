@@ -1,0 +1,9 @@
+sponsorship_id,contract_id,sponsor_name,amount,show_id,deduction_order,notes
+SPON001,CTR001,红牛,200000,,1,巡演级，按票房分摊
+SPON002,CTR001,华为,100000,SHOW001,2,北京场次专属
+SPON003,CTR001,可口可乐,80000,SHOW002,1,
+SPON004,CTR001,空值测试,,"",,空值amount
+SPON005,CTR002,农夫山泉,150000,SHOW006,1,分成后抵扣
+SPON006,CTR002,小米,100000,SHOW007,2,
+SPON007,CTR003,星巴克,50000,,1,巡演级，退票跨场合同
+

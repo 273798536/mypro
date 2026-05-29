@@ -1,0 +1,101 @@
+{
+  "export_time": "2026-05-28T23:56:36.800920",
+  "exception_count": 7,
+  "exceptions": [
+    {
+      "settlement_id": "225ffc8284d9",
+      "contract_id": "CTR001",
+      "show_id": "SHOW002",
+      "city": "上海",
+      "show_date": "2026-01-22",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 500000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成403929.82 < 保底500000.00"
+      ],
+      "amendments": []
+    },
+    {
+      "settlement_id": "a5880b025cd0",
+      "contract_id": "CTR001",
+      "show_id": "SHOW003",
+      "city": "广州",
+      "show_date": "2026-01-29",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 500000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成293754.38 < 保底500000.00",
+        "主办方份额为负(-10409.36)，保底补差后主办倒贴"
+      ],
+      "amendments": []
+    },
+    {
+      "settlement_id": "c86dad1f362b",
+      "contract_id": "CTR001",
+      "show_id": "SHOW004",
+      "city": "成都",
+      "show_date": "2026-02-05",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 500000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成141228.07 < 保底500000.00",
+        "主办方份额为负(-264619.88)，保底补差后主办倒贴"
+      ],
+      "amendments": []
+    },
+    {
+      "settlement_id": "8a60b330efb9",
+      "contract_id": "CTR001",
+      "show_id": "SHOW005",
+      "city": "深圳",
+      "show_date": "2026-02-12",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 500000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成395438.60 < 保底500000.00"
+      ],
+      "amendments": []
+    },
+    {
+      "settlement_id": "4ea0fdd8927f",
+      "contract_id": "CTR002",
+      "show_id": "SHOW007",
+      "city": "杭州",
+      "show_date": "2026-03-08",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 300000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成250000.00 < 保底300000.00"
+      ],
+      "amendments": []
+    },
+    {
+      "settlement_id": "7b35a6bfe4f5",
+      "contract_id": "CTR003",
+      "show_id": "SHOW009",
+      "city": "南京",
+      "show_date": "2026-04-01",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 200000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成27500.00 < 保底200000.00",
+        "主办方份额为负(-150000.00)，保底补差后主办倒贴"
+      ],
+      "amendments": []
+    },
+    {
+      "settlement_id": "b663040dbf9a",
+      "contract_id": "CTR003",
+      "show_id": "SHOW012",
+      "city": "常州",
+      "show_date": "2026-04-22",
+      "is_guarantee_triggered": true,
+      "final_artist_payment": 200000.0,
+      "exception_notes": [
+        "保底触发: 艺人分成11000.00 < 保底200000.00",
+        "主办方份额为负(-180000.00)，保底补差后主办倒贴"
+      ],
+      "amendments": []
+    }
+  ]
+}
