@@ -197,7 +197,8 @@ def _export_csv(forecast_data):
     writer.writerow(['=== 核心指标 ==='])
     writer.writerow(['指标', '数值'])
     writer.writerow(['当前积分总余额', forecast_data['total_points_balance']])
-    writer.writerow(['预计过期积分', forecast_data['expected_expired_points']])
+    writer.writerow(['预计过期积分(正常)', forecast_data['expected_expired_points']])
+    writer.writerow(['跨月过期积分(不计入负债)', forecast_data.get('cross_month_expired_points', 0)])
     writer.writerow(['预计退款返积分', forecast_data['expected_refund_points']])
     writer.writerow(['预计兑换消耗积分', forecast_data['expected_redemption_points']])
     writer.writerow(['预计兑换券成本(元)', forecast_data['expected_coupon_cost']])
@@ -208,9 +209,10 @@ def _export_csv(forecast_data):
     writer.writerow(['项目', '金额(元)', '占比'])
     total = forecast_data['total_estimated_liability'] or 1
     summary = forecast_data['summary']
-    writer.writerow(['积分过期负债', summary['expired_liability'], f"{summary['expired_liability']/total*100:.1f}%"])
+    writer.writerow(['积分过期负债(正常)', summary['expired_liability'], f"{summary['expired_liability']/total*100:.1f}%"])
     writer.writerow(['退款返积分负债', summary['refund_liability'], f"{summary['refund_liability']/total*100:.1f}%"])
     writer.writerow(['兑换券成本', summary['coupon_liability'], f"{summary['coupon_liability']/total*100:.1f}%"])
+    writer.writerow(['跨月过期负债(不计入合计)', summary.get('cross_month_expired_liability', 0), '-'])
     writer.writerow([])
     
     writer.writerow(['=== 风险提示 ==='])
@@ -271,7 +273,8 @@ def _export_excel(forecast_data):
     
     metrics = [
         ['当前积分总余额', forecast_data['total_points_balance']],
-        ['预计过期积分', forecast_data['expected_expired_points']],
+        ['预计过期积分(正常)', forecast_data['expected_expired_points']],
+        ['跨月过期积分(不计入负债)', forecast_data.get('cross_month_expired_points', 0)],
         ['预计退款返积分', forecast_data['expected_refund_points']],
         ['预计兑换消耗积分', forecast_data['expected_redemption_points']],
         ['预计兑换券成本(元)', forecast_data['expected_coupon_cost']],
@@ -297,14 +300,15 @@ def _export_excel(forecast_data):
     total = forecast_data['total_estimated_liability'] or 1
     summary = forecast_data['summary']
     components = [
-        ['积分过期负债', summary['expired_liability'], summary['expired_liability']/total*100],
+        ['积分过期负债(正常)', summary['expired_liability'], summary['expired_liability']/total*100],
         ['退款返积分负债', summary['refund_liability'], summary['refund_liability']/total*100],
-        ['兑换券成本', summary['coupon_liability'], summary['coupon_liability']/total*100]
+        ['兑换券成本', summary['coupon_liability'], summary['coupon_liability']/total*100],
+        ['跨月过期负债(不计入合计)', summary.get('cross_month_expired_liability', 0), '-']
     ]
     for comp in components:
         ws.cell(row=row, column=1, value=comp[0])
         ws.cell(row=row, column=2, value=comp[1])
-        ws.cell(row=row, column=3, value=f"{comp[2]:.1f}%")
+        ws.cell(row=row, column=3, value=str(comp[2]) if comp[2] == '-' else f"{comp[2]:.1f}%")
         row += 1
     row += 1
     
@@ -453,6 +457,8 @@ def simulate_expiry():
             'end_date': end_date.strftime('%Y-%m-%d')
         },
         'total_expired_points': result['total_expired_points'],
+        'normal_expired_points': result['normal_expired_points'],
+        'cross_month_expired_points': result['cross_month_expired_points'],
         'affected_ledger_count': result['ledger_count'],
         'warnings': result['warnings'],
         'details': result['results'][:100]

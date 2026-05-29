@@ -38,8 +38,8 @@ python run.py
 ```
 
 服务启动后访问：
-- 健康检查: http://localhost:5000/health
-- API文档: http://localhost:5000/api/help
+- 健康检查: http://localhost:5001/health
+- API文档: http://localhost:5001/api/help
 
 ### 运行测试
 ```bash

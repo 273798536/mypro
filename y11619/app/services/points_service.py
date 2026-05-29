@@ -22,7 +22,8 @@ class PointsExpiryService:
         ).order_by(PointTransaction.expire_date).all()
         
         expiry_details = []
-        total_expired = 0
+        normal_expired = 0
+        cross_month_expired = 0
         cross_month_warnings = []
         
         for txn in transactions:
@@ -44,21 +45,24 @@ class PointsExpiryService:
                     'remark': txn.remark
                 })
                 
-                total_expired += txn.points
-                
                 if is_cross_month:
+                    cross_month_expired += txn.points
                     cross_month_warnings.append({
                         'type': 'cross_month_expiry',
-                        'message': f'会员 {txn.member_id} 的积分 {txn.points} 在预测期外跨月过期',
+                        'message': f'会员 {txn.member_id} 的积分 {txn.points} 在预测期外跨月过期，不计入本期正常负债',
                         'source_reference': f'交易ID={txn.id}, 源行号={txn.source_line}',
                         'expire_date': txn.expire_date.strftime('%Y-%m-%d'),
                         'points': txn.points
                     })
+                else:
+                    normal_expired += txn.points
         
         return {
             'ledger_id': ledger_id,
             'member_id': ledger.member_id,
-            'total_expired_points': total_expired,
+            'total_expired_points': normal_expired + cross_month_expired,
+            'normal_expired_points': normal_expired,
+            'cross_month_expired_points': cross_month_expired,
             'expiry_details': expiry_details,
             'cross_month_warnings': cross_month_warnings
         }
@@ -69,16 +73,22 @@ class PointsExpiryService:
         results = []
         all_warnings = []
         grand_total = 0
+        grand_normal = 0
+        grand_cross_month = 0
         
         for ledger in ledgers:
             result = PointsExpiryService.calculate_expiry(ledger.id, start_date, end_date)
             if 'error' not in result:
                 results.append(result)
                 grand_total += result['total_expired_points']
+                grand_normal += result['normal_expired_points']
+                grand_cross_month += result['cross_month_expired_points']
                 all_warnings.extend(result['cross_month_warnings'])
         
         return {
             'total_expired_points': grand_total,
+            'normal_expired_points': grand_normal,
+            'cross_month_expired_points': grand_cross_month,
             'ledger_count': len(results),
             'results': results,
             'warnings': all_warnings

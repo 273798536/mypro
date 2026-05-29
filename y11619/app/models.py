@@ -148,6 +148,7 @@ class LiabilityForecast(db.Model):
     
     total_points_balance = db.Column(db.Integer, default=0)
     expected_expired_points = db.Column(db.Integer, default=0)
+    cross_month_expired_points = db.Column(db.Integer, default=0)
     expected_refund_points = db.Column(db.Integer, default=0)
     expected_redemption_points = db.Column(db.Integer, default=0)
     expected_coupon_cost = db.Column(db.Float, default=0)

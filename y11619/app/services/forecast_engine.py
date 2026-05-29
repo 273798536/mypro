@@ -44,7 +44,8 @@ class ForecastEngine:
         expiry_result = PointsExpiryService.batch_calculate_expiry(
             forecast.start_date, forecast.end_date
         )
-        forecast.expected_expired_points = expiry_result['total_expired_points']
+        forecast.expected_expired_points = expiry_result['normal_expired_points']
+        forecast.cross_month_expired_points = expiry_result['cross_month_expired_points']
         warnings.extend(expiry_result['warnings'])
         
         pending_refunds = OrderRefund.query.filter(
@@ -142,6 +143,9 @@ class ForecastEngine:
             PointTransaction.points > 0
         ).order_by(PointTransaction.expire_date).all()
         
+        start_month = start.strftime('%Y-%m')
+        end_month = end.strftime('%Y-%m')
+        
         pending_refunds = OrderRefund.query.filter(
             OrderRefund.points_returned == False,
             OrderRefund.refund_time >= start,
@@ -156,6 +160,7 @@ class ForecastEngine:
             period_expiry = sum(
                 t.points for t in expiry_txns 
                 if t.expire_date >= current and t.expire_date <= period_end
+                and t.expire_date.strftime('%Y-%m') in (start_month, end_month)
             )
             cumulative_expired += period_expiry
             
@@ -202,6 +207,7 @@ class ForecastEngine:
             'end_date': forecast.end_date.strftime('%Y-%m-%d'),
             'total_points_balance': forecast.total_points_balance,
             'expected_expired_points': forecast.expected_expired_points,
+            'cross_month_expired_points': forecast.cross_month_expired_points,
             'expected_refund_points': forecast.expected_refund_points,
             'expected_redemption_points': forecast.expected_redemption_points,
             'expected_coupon_cost': forecast.expected_coupon_cost,
@@ -239,6 +245,7 @@ class ForecastEngine:
             } for c in curve_data],
             'summary': {
                 'expired_liability': forecast.expected_expired_points * forecast.points_per_yuan,
+                'cross_month_expired_liability': forecast.cross_month_expired_points * forecast.points_per_yuan,
                 'refund_liability': forecast.expected_refund_points * forecast.points_per_yuan,
                 'coupon_liability': forecast.expected_coupon_cost,
                 'warning_count': len(warnings),
