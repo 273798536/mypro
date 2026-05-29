@@ -3,6 +3,7 @@ import Home from "@/pages/Home";
 import Game from "@/pages/Game";
 import Result from "@/pages/Result";
 import History from "@/pages/History";
+import Replay from "@/pages/Replay";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/game" element={<Game />} />
         <Route path="/result/:gameId" element={<Result />} />
         <Route path="/history" element={<History />} />
+        <Route path="/replay/:gameId" element={<Replay />} />
       </Routes>
     </Router>
   );

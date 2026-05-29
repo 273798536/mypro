@@ -7,9 +7,9 @@ import {
   AlertTriangle,
   CheckCircle,
   Home,
-  Play,
   Download,
   Trash2,
+  RotateCcw,
 } from 'lucide-react';
 import { getGameRecords } from '../store/gameStore';
 import { formatTime } from '../utils/scoring';
@@ -182,8 +182,15 @@ export default function HistoryPage() {
                         onClick={() => navigate(`/result/${record.id}`)}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
                       >
-                        <Play className="w-4 h-4" />
+                        <CheckCircle className="w-4 h-4" />
                         查看详情
+                      </button>
+                      <button
+                        onClick={() => navigate(`/replay/${record.id}`)}
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        回放
                       </button>
                     </div>
                   </div>

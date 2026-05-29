@@ -4,7 +4,6 @@ import {
   Trophy,
   Clock,
   CheckCircle,
-  XCircle,
   AlertTriangle,
   Download,
   Home,
@@ -27,6 +26,91 @@ import {
 import { getGameReplay } from '../store/gameStore';
 import { formatTime } from '../utils/scoring';
 import { LEVEL_CONFIGS } from '../data/levels';
+import type { ScoreItem, Anomaly } from '../types';
+
+function ScoreBreakdownChart({ scoreHistory }: { scoreHistory: ScoreItem[] }) {
+  const data = useMemo(() => {
+    const orderComplete = scoreHistory
+      .filter(s => s.type === 'order_complete')
+      .reduce((sum, s) => sum + s.value, 0);
+    const efficiency = scoreHistory
+      .filter(s => s.type === 'efficiency')
+      .reduce((sum, s) => sum + s.value, 0);
+    const penalty = scoreHistory
+      .filter(s => s.type === 'penalty')
+      .reduce((sum, s) => sum + s.value, 0);
+    const bonus = scoreHistory
+      .filter(s => s.type === 'bonus')
+      .reduce((sum, s) => sum + s.value, 0);
+    return [
+      { name: '订单完成', value: orderComplete, color: '#10B981' },
+      { name: '效率奖励', value: efficiency, color: '#3B82F6' },
+      { name: '异常扣分', value: penalty, color: '#EF4444' },
+      { name: '额外奖励', value: bonus, color: '#F59E0B' },
+    ];
+  }, [scoreHistory]);
+
+  return (
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+          <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} />
+          <YAxis stroke="#94A3B8" fontSize={12} />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '8px' }}
+            labelStyle={{ color: '#F1F5F9' }}
+          />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function AnomalyPieChart({ anomalies }: { anomalies: Anomaly[] }) {
+  const data = useMemo(() => {
+    const types: Record<string, number> = { collision: 0, low_battery: 0, timeout: 0 };
+    anomalies.forEach(a => {
+      types[a.type] = (types[a.type] || 0) + 1;
+    });
+    return [
+      { name: '碰撞', value: types.collision, color: '#EF4444' },
+      { name: '低电量', value: types.low_battery, color: '#F97316' },
+      { name: '超时', value: types.timeout, color: '#EAB308' },
+    ];
+  }, [anomalies]);
+
+  return (
+    <div className="h-64 flex items-center justify-center">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={90}
+            paddingAngle={5}
+            dataKey="value"
+            label={({ name, value }) => `${name}: ${value}`}
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip
+            contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '8px' }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 export default function Result() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -37,7 +121,36 @@ export default function Result() {
     return getGameReplay(gameId);
   }, [gameId]);
 
-  if (!replayData) {
+  const gameInfo = useMemo(() => {
+    if (!replayData) return null;
+    const { state } = replayData;
+    const config = LEVEL_CONFIGS[state.level];
+    const completedOrders = state.orders.filter(o => o.status === 'completed').length;
+    const totalOrders = state.orders.length;
+    return { state, config, completedOrders, totalOrders };
+  }, [replayData]);
+
+  const exportToCSV = () => {
+    if (!gameInfo) return;
+    const { state } = gameInfo;
+    const headers = ['时间', '类型', '描述', '分值', '来源'];
+    const rows = state.scoreHistory.map(s => [
+      new Date(s.timestamp).toLocaleTimeString(),
+      s.type,
+      s.description,
+      s.value,
+      s.source,
+    ]);
+
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `游戏成绩_${new Date(state.startTime).toLocaleDateString()}.csv`;
+    link.click();
+  };
+
+  if (!replayData || !gameInfo) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -55,65 +168,7 @@ export default function Result() {
     );
   }
 
-  const { state } = replayData;
-  const config = LEVEL_CONFIGS[state.level];
-
-  const completedOrders = state.orders.filter(o => o.status === 'completed').length;
-  const timeoutOrders = state.orders.filter(o => o.status === 'timeout').length;
-  const totalOrders = state.orders.length;
-  const completionRate = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
-
-  const scoreBreakdown = useMemo(() => {
-    const orderComplete = state.scoreHistory
-      .filter(s => s.type === 'order_complete')
-      .reduce((sum, s) => sum + s.value, 0);
-    const efficiency = state.scoreHistory
-      .filter(s => s.type === 'efficiency')
-      .reduce((sum, s) => sum + s.value, 0);
-    const penalty = state.scoreHistory
-      .filter(s => s.type === 'penalty')
-      .reduce((sum, s) => sum + s.value, 0);
-    const bonus = state.scoreHistory
-      .filter(s => s.type === 'bonus')
-      .reduce((sum, s) => sum + s.value, 0);
-
-    return [
-      { name: '订单完成', value: orderComplete, color: '#10B981' },
-      { name: '效率奖励', value: efficiency, color: '#3B82F6' },
-      { name: '异常扣分', value: penalty, color: '#EF4444' },
-      { name: '额外奖励', value: bonus, color: '#F59E0B' },
-    ];
-  }, [state.scoreHistory]);
-
-  const anomalyByType = useMemo(() => {
-    const types: Record<string, number> = { collision: 0, low_battery: 0, timeout: 0 };
-    state.anomalies.forEach(a => {
-      types[a.type] = (types[a.type] || 0) + 1;
-    });
-    return [
-      { name: '碰撞', value: types.collision, color: '#EF4444' },
-      { name: '低电量', value: types.low_battery, color: '#F97316' },
-      { name: '超时', value: types.timeout, color: '#EAB308' },
-    ];
-  }, [state.anomalies]);
-
-  const exportToCSV = () => {
-    const headers = ['时间', '类型', '描述', '分值', '来源'];
-    const rows = state.scoreHistory.map(s => [
-      new Date(s.timestamp).toLocaleTimeString(),
-      s.type,
-      s.description,
-      s.value,
-      s.source,
-    ]);
-
-    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
-    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `游戏成绩_${new Date(state.startTime).toLocaleDateString()}.csv`;
-    link.click();
-  };
+  const { state, config, completedOrders, totalOrders } = gameInfo;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-8 px-4">
@@ -164,51 +219,12 @@ export default function Result() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-slate-800 rounded-xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">得分构成</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={scoreBreakdown}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-                  <XAxis dataKey="name" stroke="#94A3B8" fontSize={12} />
-                  <YAxis stroke="#94A3B8" fontSize={12} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '8px' }}
-                    labelStyle={{ color: '#F1F5F9' }}
-                  />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                    {scoreBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ScoreBreakdownChart scoreHistory={state.scoreHistory} />
           </div>
 
           <div className="bg-slate-800 rounded-xl p-6">
             <h3 className="text-lg font-bold text-white mb-4">异常类型分布</h3>
-            <div className="h-64 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={anomalyByType}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, value }) => `${name}: ${value}`}
-                  >
-                    {anomalyByType.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '8px' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            <AnomalyPieChart anomalies={state.anomalies} />
           </div>
         </div>
 
@@ -297,7 +313,7 @@ export default function Result() {
             返回首页
           </button>
           <button
-            onClick={() => navigate('/history')}
+            onClick={() => navigate(`/replay/${gameId}`)}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
           >
             <Play className="w-5 h-5" />

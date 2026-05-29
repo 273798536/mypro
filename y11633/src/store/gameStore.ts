@@ -8,7 +8,6 @@ import type {
   Charger,
   Obstacle,
   Anomaly,
-  ScoreItem,
   Position,
   OrderPriority,
 } from '../types';
@@ -51,6 +50,7 @@ const initialState: GameState = {
   replayData: [],
   selectedRobotId: null,
   gridSize: 10,
+  ordersGenerated: 0,
 };
 
 function generateRandomPosition(
@@ -150,6 +150,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       replayData: [],
       selectedRobotId: null,
       gridSize: config.gridSize,
+      ordersGenerated: 0,
     });
   },
 
@@ -237,7 +238,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   sendRobotToCharge: (robotId: string) => {
     const state = get();
     const robot = state.robots.find(r => r.id === robotId);
-    if (!robot || robot.status !== 'idle') return;
+    if (!robot || (robot.status !== 'idle' && robot.status !== 'low_battery')) return;
 
     const nearestChargerPos = findNearestCharger(robot.position, state.chargers);
     if (!nearestChargerPos) return;
@@ -401,7 +402,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 path: [],
                 targetPosition: null,
                 battery: newBattery,
-                status: 'idle',
+                status: newBattery < 20 ? 'low_battery' : 'idle',
                 currentOrderId: null,
               };
             }
@@ -412,11 +413,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
             position: nextPos,
             path: newPath,
             battery: newBattery,
+            status: newBattery < 20 ? 'low_battery' : 'moving',
           };
-        }
-
-        if (newBattery < 20 && newBattery > 15) {
-          newRobots[i].status = 'low_battery';
         }
       }
     }
@@ -457,14 +455,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
     }
 
-    const completedOrders = newOrders.filter(o => o.status === 'completed').length;
-    const totalOrders = state.orders.length;
-    const hasPendingOrders = newOrders.some(o => o.status === 'pending' || o.status === 'assigned');
+    const allOrdersGenerated = state.ordersGenerated >= config.orderCount;
+    const allOrdersTerminal = newOrders.every(
+      o => o.status === 'completed' || o.status === 'timeout'
+    );
 
     let newStatus: GameState['status'] = state.status;
     let newEndTime = state.endTime;
 
-    if (totalOrders > 0 && !hasPendingOrders) {
+    if (allOrdersGenerated && newOrders.length > 0 && allOrdersTerminal) {
       newStatus = 'finished';
       newEndTime = Date.now();
     }
@@ -492,7 +491,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     const config = LEVEL_CONFIGS[state.level];
 
-    if (state.orders.length >= config.orderCount) return;
+    if (state.ordersGenerated >= config.orderCount) return;
 
     const priorities: OrderPriority[] = ['high', 'medium', 'low'];
     const priority = priorities[Math.floor(Math.random() * priorities.length)];
@@ -513,6 +512,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     set(state => ({
       orders: [...state.orders, order],
+      ordersGenerated: state.ordersGenerated + 1,
     }));
   },
 

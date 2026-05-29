@@ -97,6 +97,7 @@ export interface GameState {
   replayData: ReplayFrame[];
   selectedRobotId: string | null;
   gridSize: number;
+  ordersGenerated: number;
 }
 
 export interface LevelConfig {

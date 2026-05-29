@@ -86,7 +86,7 @@ export function RobotPanel({ robots, selectedRobotId, onSelectRobot }: RobotPane
                   执行订单: {robot.currentOrderId.slice(0, 10)}
                 </div>
               )}
-              {robot.status === 'idle' && robot.battery < 50 && (
+              {(robot.status === 'idle' || robot.status === 'low_battery') && robot.battery < 50 && (
                 <button
                   className="w-full mt-2 px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg flex items-center justify-center gap-2 transition-colors"
                   onClick={e => {
@@ -98,10 +98,10 @@ export function RobotPanel({ robots, selectedRobotId, onSelectRobot }: RobotPane
                   派遣充电
                 </button>
               )}
-              {robot.battery < 20 && (
+              {robot.status === 'low_battery' && (
                 <div className="mt-2 flex items-center gap-1 text-orange-400 text-xs">
                   <AlertTriangle className="w-3 h-3" />
-                  电量过低，无法接单
+                  电量过低，无法接单，请派遣充电
                 </div>
               )}
             </div>

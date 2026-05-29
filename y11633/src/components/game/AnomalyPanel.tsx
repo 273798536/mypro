@@ -1,6 +1,5 @@
 import { AlertTriangle, X } from 'lucide-react';
 import type { Anomaly } from '../../types';
-import { formatTime } from '../../utils/scoring';
 
 interface AnomalyPanelProps {
   anomalies: Anomaly[];
