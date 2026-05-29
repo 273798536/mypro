@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #0A1628;
+  color: #E0E7FF;
+}
+
+.glass-panel {
+  background: rgba(15, 43, 91, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(100, 149, 237, 0.2);
+}
+
+.glow-warning {
+  box-shadow: 0 0 15px rgba(230, 57, 70, 0.5);
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(230, 57, 70, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(230, 57, 70, 0.7); }
+}
+
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(100, 149, 237, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 149, 237, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(15, 43, 91, 0.3);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(100, 149, 237, 0.4);
+  border-radius: 3px;
+}
