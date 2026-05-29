@@ -44,14 +44,35 @@ function createDirtyRecord(record) {
 
   if (existing) {
     if (existing.status === HANDLE_STATUSES.PENDING) {
-      return existing.id;
-    }
-    if (existing.status === HANDLE_STATUSES.RESOLVED) {
       db.prepare(`
         UPDATE dirty_records
-        SET status = ?, updated_at = ?
+        SET updated_at = ?, expected_value = ?, actual_value = ?, description = ?
         WHERE id = ?
-      `).run(HANDLE_STATUSES.REOPENED, now, existing.id);
+      `).run(
+        now,
+        record.expected_value !== undefined ? String(record.expected_value) : null,
+        record.actual_value !== undefined ? String(record.actual_value) : null,
+        record.description,
+        existing.id
+      );
+      return existing.id;
+    }
+    if (existing.status === HANDLE_STATUSES.RESOLVED || existing.status === HANDLE_STATUSES.REOPENED) {
+      db.prepare(`
+        UPDATE dirty_records
+        SET status = ?, updated_at = ?, expected_value = ?, actual_value = ?, description = ?
+        WHERE id = ?
+      `).run(
+        HANDLE_STATUSES.PENDING,
+        now,
+        record.expected_value !== undefined ? String(record.expected_value) : null,
+        record.actual_value !== undefined ? String(record.actual_value) : null,
+        record.description,
+        existing.id
+      );
+      return existing.id;
+    }
+    if (existing.status === HANDLE_STATUSES.IGNORED || existing.status === HANDLE_STATUSES.CONFIRMED) {
       return existing.id;
     }
   }
@@ -75,7 +96,7 @@ function createDirtyRecord(record) {
     record.actual_value !== undefined ? String(record.actual_value) : null,
     record.description,
     record.severity || 'warning',
-    record.status || 'pending',
+    HANDLE_STATUSES.PENDING,
     null,
     null,
     null,

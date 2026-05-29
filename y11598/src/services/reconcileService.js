@@ -5,7 +5,6 @@ const {
   HANDLE_STATUSES,
   createDirtyRecord,
   batchCreateDirtyRecords,
-  resetPendingDirtyRecords,
 } = require('../models/dirtyRecord');
 const { getSupplierStatements } = require('../models/supplierStatement');
 const { getAgentQuotes, getQuoteStatsByKbId } = require('../models/agentQuote');
@@ -13,6 +12,42 @@ const { getChangeOrders } = require('../models/changeOrder');
 const { createAuditTrail, ACTION_TYPES, ACTION_STATUSES } = require('../models/auditTrail');
 
 const dayjs = require('dayjs');
+
+function getPendingDirtyRecordKeys(sourceTable) {
+  const db = getDb();
+  const rows = db.prepare(`
+    SELECT id, source_id, dirty_type, field_name
+    FROM dirty_records
+    WHERE source_table = ? AND status = ?
+  `).all(sourceTable, HANDLE_STATUSES.PENDING);
+
+  return new Set(rows.map(r => `${r.source_id}:${r.dirty_type}:${r.field_name || ''}`));
+}
+
+function resolveMissingDirtyRecords(sourceTable, detectedKeys) {
+  const db = getDb();
+  const now = new Date().toISOString();
+
+  const allPending = db.prepare(`
+    SELECT id, source_id, dirty_type, field_name
+    FROM dirty_records
+    WHERE source_table = ? AND status = ?
+  `).all(sourceTable, HANDLE_STATUSES.PENDING);
+
+  let resolvedCount = 0;
+  for (const record of allPending) {
+    const key = `${record.source_id}:${record.dirty_type}:${record.field_name || ''}`;
+    if (!detectedKeys.has(key)) {
+      db.prepare(`
+        UPDATE dirty_records
+        SET status = ?, updated_at = ?
+        WHERE id = ?
+      `).run(HANDLE_STATUSES.RESOLVED, now, record.id);
+      resolvedCount++;
+    }
+  }
+  return resolvedCount;
+}
 
 function checkMissingFields(record, requiredFields, sourceTable, sourceId) {
   const dirtyRecords = [];
@@ -92,8 +127,6 @@ function reconcileStatementsWithQuotes(filters = {}) {
   const startTime = Date.now();
   const detectedDirtyRecords = [];
 
-  const resetResult = resetPendingDirtyRecords('supplier_statements');
-
   const statements = getSupplierStatements(filters);
 
   for (const stmt of statements) {
@@ -155,26 +188,32 @@ function reconcileStatementsWithQuotes(filters = {}) {
     detectedDirtyRecords.push(...checkNameChange(statements, 'supplier_id', 'supplier_name', 'supplier_statements'));
   }
 
-  const durationMs = Date.now() - startTime;
+  const detectedKeys = new Set(
+    detectedDirtyRecords.map(r => `${r.source_id}:${r.dirty_type}:${r.field_name || ''}`)
+  );
 
   if (detectedDirtyRecords.length > 0) {
     batchCreateDirtyRecords(detectedDirtyRecords);
   }
+
+  const resolvedCount = resolveMissingDirtyRecords('supplier_statements', detectedKeys);
+
+  const durationMs = Date.now() - startTime;
 
   createAuditTrail({
     action_type: ACTION_TYPES.RECONCILE,
     action_subtype: 'statements_with_quotes',
     operator: 'system',
     status: ACTION_STATUSES.SUCCESS,
-    detail: `对账完成，重置旧pending: ${resetResult.updated}条，检测到新脏记录: ${detectedDirtyRecords.length}条`,
+    detail: `对账完成，自动解决: ${resolvedCount}条，当前待处理: ${detectedDirtyRecords.length}条`,
     record_count: statements.length,
     duration_ms: durationMs,
   });
 
   return {
     total_records: statements.length,
-    reset_pending: resetResult.updated,
-    new_dirty_records: detectedDirtyRecords.length,
+    auto_resolved: resolvedCount,
+    current_pending: detectedDirtyRecords.length,
     records: detectedDirtyRecords,
   };
 }
@@ -183,8 +222,6 @@ function reconcileChangeOrders(filters = {}) {
   const startTime = Date.now();
   const detectedDirtyRecords = [];
 
-  const resetResult = resetPendingDirtyRecords('change_orders');
-
   const orders = getChangeOrders(filters);
 
   for (const order of orders) {
@@ -192,26 +229,32 @@ function reconcileChangeOrders(filters = {}) {
     detectedDirtyRecords.push(...checkMissingFields(order, requiredFields, 'change_orders', order.id));
   }
 
-  const durationMs = Date.now() - startTime;
+  const detectedKeys = new Set(
+    detectedDirtyRecords.map(r => `${r.source_id}:${r.dirty_type}:${r.field_name || ''}`)
+  );
 
   if (detectedDirtyRecords.length > 0) {
     batchCreateDirtyRecords(detectedDirtyRecords);
   }
+
+  const resolvedCount = resolveMissingDirtyRecords('change_orders', detectedKeys);
+
+  const durationMs = Date.now() - startTime;
 
   createAuditTrail({
     action_type: ACTION_TYPES.RECONCILE,
     action_subtype: 'change_orders',
     operator: 'system',
     status: ACTION_STATUSES.SUCCESS,
-    detail: `变更单对账完成，重置旧pending: ${resetResult.updated}条，检测到新脏记录: ${detectedDirtyRecords.length}条`,
+    detail: `变更单对账完成，自动解决: ${resolvedCount}条，当前待处理: ${detectedDirtyRecords.length}条`,
     record_count: orders.length,
     duration_ms: durationMs,
   });
 
   return {
     total_records: orders.length,
-    reset_pending: resetResult.updated,
-    new_dirty_records: detectedDirtyRecords.length,
+    auto_resolved: resolvedCount,
+    current_pending: detectedDirtyRecords.length,
     records: detectedDirtyRecords,
   };
 }
