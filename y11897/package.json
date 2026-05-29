@@ -1,0 +1,29 @@
+{
+  "name": "city-service-radius-optimizer",
+  "version": "1.0.0",
+  "description": "城市服务半径优化计算工具 - 用于社区医院、学校等公共服务设施的公平覆盖分析",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-node tests/run-tests.ts",
+    "demo": "ts-node examples/demo.ts"
+  },
+  "keywords": [
+    "城市规划",
+    "服务半径",
+    "覆盖优化",
+    "公平性分析"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "graphology": "^0.25.0",
+    "graphology-shortest-path": "^2.0.0"
+  }
+}
