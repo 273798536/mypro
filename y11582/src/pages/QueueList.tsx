@@ -107,7 +107,7 @@ export function QueueList() {
                   <td className="px-6 py-4"><SourceTypeBadge type={task.sourceType} /></td>
                   <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">{task.sourceFile}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">{task.sourceLine}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-800">¥{task.standardData.amount}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-800">¥{String(task.standardData.amount)}</td>
                   <td className="px-6 py-4">
                     <span className={`text-sm ${task.retryCount > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
                       {task.retryCount}/{task.maxRetries}

@@ -70,7 +70,7 @@ export function DeadLetterPage() {
                   <td className="px-6 py-4 text-sm font-mono text-slate-600">{task.id.slice(0, 8)}...</td>
                   <td className="px-6 py-4"><SourceTypeBadge type={task.sourceType} /></td>
                   <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">{task.sourceFile}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-800">¥{task.standardData.amount}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-800">¥{String(task.standardData.amount)}</td>
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {task.processedAt ? new Date(task.processedAt).toLocaleString('zh-CN') : '-'}
                   </td>

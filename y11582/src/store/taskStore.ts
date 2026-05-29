@@ -7,7 +7,7 @@ interface TaskStore {
   tasks: QueueTask[];
   task: QueueTask | null;
   history: OperationHistory[];
-  evidence: OriginalEvidence | null;
+  evidence: OriginalEvidence[];
   stats: DashboardStats | null;
   retryCategories: RetryCategory[];
   deadLetters: QueueTask[];
@@ -39,7 +39,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
   task: null,
   history: [],
-  evidence: null,
+  evidence: [],
   stats: null,
   retryCategories: [],
   deadLetters: [],

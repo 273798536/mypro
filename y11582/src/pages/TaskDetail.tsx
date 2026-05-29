@@ -268,23 +268,25 @@ export function TaskDetail() {
         </div>
       )}
 
-      {activeTab === 'evidence' && evidence && (
+      {activeTab === 'evidence' && evidence.length > 0 && (
         <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
           <div className="flex items-center gap-2 mb-4">
             <FileText size={18} className="text-slate-500" />
             <h4 className="font-medium text-slate-800">原始证据</h4>
           </div>
-          <div className="space-y-3">
-            <InfoRow label="文件名" value={evidence.fileName} />
-            <InfoRow label="行号" value={evidence.lineNumber.toString()} />
-            <InfoRow label="文件哈希" value={<code className="text-xs bg-slate-100 px-2 py-1 rounded">{evidence.fileHash}</code>} />
-            <div>
-              <p className="text-xs text-slate-500 mb-2">原始内容</p>
-              <pre className="bg-slate-50 p-4 rounded-lg text-xs overflow-auto">
-                {evidence.originalContent}
-              </pre>
+          {evidence.map((item, index) => (
+            <div key={item.id} className={`space-y-3 ${index > 0 ? 'pt-4 border-t border-slate-100' : ''}`}>
+              <InfoRow label="文件名" value={item.fileName} />
+              <InfoRow label="行号" value={item.lineNumber.toString()} />
+              <InfoRow label="文件哈希" value={<code className="text-xs bg-slate-100 px-2 py-1 rounded">{item.fileHash}</code>} />
+              <div>
+                <p className="text-xs text-slate-500 mb-2">原始内容</p>
+                <pre className="bg-slate-50 p-4 rounded-lg text-xs overflow-auto">
+                  {item.originalContent}
+                </pre>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       )}
 

@@ -33,6 +33,7 @@ class QueueService {
       taskId: task.id,
       operation: 'create',
       operator,
+      beforeState: null,
       afterState: { status: task.status, standardData: task.standardData },
       diff: historyRepository.calculateDiff(null, { status: task.status, standardData: task.standardData }),
     });
