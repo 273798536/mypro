@@ -1,0 +1,230 @@
+{
+  "snapshot_time": "2026-05-29T19:46:29.423145",
+  "credit_summary": {
+    "customer_count": 1,
+    "status_distribution": {
+      "正常": 0,
+      "预警": 0,
+      "逾期": 0,
+      "冻结": 0,
+      "CreditStatus.NORMAL": 1
+    },
+    "total_base_limit": 100000.0,
+    "total_effective_limit": 130000.0,
+    "total_usage": 30000.0,
+    "overall_usage_rate": 23.08,
+    "top_usage_customers": [
+      {
+        "customer_id": "C001",
+        "customer_name": "测试客户",
+        "base_limit": 100000,
+        "effective_limit": 130000,
+        "total_credit_amount": 50000.0,
+        "total_paid_amount": 20000.0,
+        "approved_return_amount": 0.0,
+        "pending_return_amount": 5000.0,
+        "actual_usage": 30000.0,
+        "available_credit": 100000.0,
+        "usage_rate": 23.08,
+        "current_status": "正常"
+      }
+    ],
+    "customers_by_status": {
+      "frozen": [],
+      "overdue": [],
+      "warning": [],
+      "normal": [
+        {
+          "customer_id": "C001",
+          "customer_name": "测试客户",
+          "base_limit": 100000,
+          "effective_limit": 130000,
+          "total_credit_amount": 50000.0,
+          "total_paid_amount": 20000.0,
+          "approved_return_amount": 0.0,
+          "pending_return_amount": 5000.0,
+          "actual_usage": 30000.0,
+          "available_credit": 100000.0,
+          "usage_rate": 23.08,
+          "current_status": "正常"
+        }
+      ]
+    }
+  },
+  "payment_summary": {
+    "unmatched_summary": {
+      "total_unmatched_count": 1,
+      "total_unmatched_amount": 20000.0,
+      "by_customer": {
+        "未指定客户": 20000.0
+      },
+      "unmatched_list": [
+        {
+          "payment_id": "P001",
+          "customer_id": null,
+          "payment_date": "2026-05-29",
+          "amount": 20000,
+          "unmatched_amount": 20000.0,
+          "match_status": "PaymentMatchStatus.UNMATCHED",
+          "remarks": null
+        }
+      ]
+    },
+    "all_payments": [
+      {
+        "payment_id": "P001",
+        "customer_id": null,
+        "customer_name": "",
+        "payment_date": "2026-05-29",
+        "amount": 20000,
+        "matched_amount": 0.0,
+        "unmatched_amount": 20000.0,
+        "match_status": "待认领",
+        "matched_orders": [],
+        "remarks": null
+      }
+    ],
+    "total_payments_count": 1,
+    "total_payments_amount": 20000
+  },
+  "correction_tasks": {
+    "pending_returns": {
+      "total_pending_count": 1,
+      "total_pending_amount": 5000,
+      "affected_customers": 1,
+      "by_customer": [
+        {
+          "customer_id": "C001",
+          "customer_name": "测试客户",
+          "pending_count": 1,
+          "pending_total_amount": 5000,
+          "avg_days_pending": 20.0,
+          "max_days_pending": 20,
+          "urgency": "重要",
+          "current_available_credit": 100000.0,
+          "available_after_processing": 105000.0,
+          "usage_rate_after_processing": 19.23,
+          "returns_detail": [
+            {
+              "return_id": "R001",
+              "order_id": "O001",
+              "return_date": "2026-05-09",
+              "return_amount": 5000,
+              "days_pending": 20,
+              "remarks": null
+            }
+          ]
+        }
+      ]
+    },
+    "temp_limits": {
+      "total_active_count": 1,
+      "total_active_amount": 30000,
+      "expiring_soon_count": 0,
+      "expiring_soon_amount": 0,
+      "expired_count": 0,
+      "expired_amount": 0,
+      "expiring_soon_detail": [],
+      "expired_detail": [],
+      "customer_summary": [
+        {
+          "customer_id": "C001",
+          "customer_name": "测试客户",
+          "active_temp_count": 1,
+          "active_temp_amount": 30000,
+          "expired_count": 0,
+          "expired_amount": 0,
+          "would_be_over_limit": false,
+          "current_usage_rate": 23.08,
+          "usage_rate_without_temp": 30.0
+        }
+      ]
+    },
+    "correction_tasks": {
+      "high_priority": [],
+      "medium_priority": [
+        {
+          "type": "退货处理",
+          "priority": "中",
+          "customer_id": "C001",
+          "customer_name": "测试客户",
+          "description": "1笔退货待处理，总额5000.00",
+          "action": "尽快审核退货单"
+        }
+      ],
+      "summary": {
+        "high_priority_count": 0,
+        "medium_priority_count": 1,
+        "pending_returns_count": 1,
+        "expired_temp_count": 0,
+        "expiring_temp_count": 0
+      }
+    }
+  },
+  "detail_data": {
+    "customers": [
+      {
+        "customer_id": "C001",
+        "name": "测试客户",
+        "base_credit_limit": 100000,
+        "current_credit_status": "CreditStatus.NORMAL",
+        "contact": null,
+        "phone": null,
+        "remarks": null
+      }
+    ],
+    "sales_orders": [
+      {
+        "order_id": "O001",
+        "customer_id": "C001",
+        "order_date": "2026-05-19",
+        "total_amount": 50000,
+        "credit_amount": 50000,
+        "paid_amount": 20000,
+        "unpaid_amount": 30000,
+        "is_credit_order": true,
+        "salesperson": null,
+        "remarks": null
+      }
+    ],
+    "payments": [
+      {
+        "payment_id": "P001",
+        "customer_id": null,
+        "payment_date": "2026-05-29",
+        "amount": 20000,
+        "matched_amount": 0.0,
+        "unmatched_amount": 20000.0,
+        "match_status": "PaymentMatchStatus.UNMATCHED",
+        "matched_order_ids": [],
+        "payment_method": null,
+        "remarks": null
+      }
+    ],
+    "return_orders": [
+      {
+        "return_id": "R001",
+        "order_id": "O001",
+        "customer_id": "C001",
+        "return_date": "2026-05-09",
+        "return_amount": 5000,
+        "status": "ReturnStatus.PENDING",
+        "processed_date": null,
+        "remarks": null
+      }
+    ],
+    "temp_limits": [
+      {
+        "temp_id": "T001",
+        "customer_id": "C001",
+        "amount": 30000,
+        "effective_date": "2026-05-24",
+        "expiry_date": "2026-06-23",
+        "status": "TemporaryLimitStatus.ACTIVE",
+        "is_active": true,
+        "reason": null,
+        "approver": null
+      }
+    ]
+  }
+}
