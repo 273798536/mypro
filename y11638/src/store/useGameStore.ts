@@ -50,6 +50,8 @@ interface GameState {
   failureMessage: string | null;
   failureMemberId: string | null;
   
+  budgetWarnings: string[];
+  
   showImportDialog: boolean;
   showResultPanel: boolean;
   
@@ -150,6 +152,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   failureMessage: null,
   failureMemberId: null,
   
+  budgetWarnings: [],
+  
   showImportDialog: false,
   showResultPanel: false,
   
@@ -195,6 +199,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       failureReason: null,
       failureMessage: null,
       failureMemberId: null,
+      budgetWarnings: [],
       showResultPanel: false,
       isReplaying: false,
       replayIndex: 0,
@@ -259,6 +264,9 @@ export const useGameStore = create<GameState>((set, get) => ({
     const memberCost = material.costPerMeter * length;
     
     if (state.totalCost + memberCost > (state.currentLevel?.budget || 0)) {
+      const budget = state.currentLevel?.budget || 0;
+      const msg = `预算超支！添加此杆件需 ${Math.round(memberCost)} 元，剩余预算仅 ${budget - state.totalCost} 元`;
+      set({ budgetWarnings: [...state.budgetWarnings, msg] });
       return false;
     }
     

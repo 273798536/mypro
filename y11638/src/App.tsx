@@ -9,7 +9,7 @@ export default function App() {
       <ReplayPlayer />
       <Routes>
         <Route path="/" element={<MainMenu />} />
-        <Route path="/build" element={<BuildPage />} />
+        <Route path="/build/:levelId?" element={<BuildPage />} />
       </Routes>
     </Router>
   );

@@ -11,7 +11,8 @@ export default function StatusBar() {
     simWarnings,
     isSimulating,
     members,
-    nodes
+    nodes,
+    budgetWarnings
   } = useGameStore();
   
   if (!currentLevel) return null;
@@ -47,6 +48,12 @@ export default function StatusBar() {
             <div className="flex items-center gap-1 mt-1 text-xs text-red-400">
               <AlertTriangle size={12} />
               预算超支！请删除部分杆件
+            </div>
+          )}
+          {isNearBudget && !isOverBudget && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-yellow-400">
+              <AlertTriangle size={12} />
+              接近预算上限
             </div>
           )}
         </div>
@@ -110,11 +117,25 @@ export default function StatusBar() {
           <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
             <div className="flex items-center gap-2 text-yellow-400 font-medium mb-2">
               <AlertTriangle size={14} />
-              警告 ({simWarnings.length})
+              模拟警告 ({simWarnings.length})
             </div>
             <div className="space-y-1 max-h-24 overflow-y-auto">
-              {simWarnings.slice(-3).map((warning, i) => (
+              {simWarnings.slice(-5).map((warning, i) => (
                 <div key={i} className="text-xs text-yellow-300/80">• {warning}</div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {budgetWarnings.length > 0 && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+            <div className="flex items-center gap-2 text-red-400 font-medium mb-2">
+              <AlertTriangle size={14} />
+              预算警告 ({budgetWarnings.length})
+            </div>
+            <div className="space-y-1 max-h-24 overflow-y-auto">
+              {budgetWarnings.slice(-3).map((warning, i) => (
+                <div key={i} className="text-xs text-red-300/80">• {warning}</div>
               ))}
             </div>
           </div>
