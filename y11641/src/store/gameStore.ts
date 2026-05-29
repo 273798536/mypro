@@ -18,7 +18,7 @@ export const useGameStore = create<GameState & {
   startGame: (levelId: string) => string;
   selectDrug: (drugId: string) => void;
   confirmUnit: (unit: string) => void;
-  checkContraindication: (drugId: string, hasContraindication: boolean) => void;
+  checkContraindication: (drugId: string, contraIndex: number, hasContraindication: boolean) => void;
   selectBatch: (batchId: string) => void;
   completeStep: () => void;
   endGame: (status: 'completed' | 'timeout') => void;
@@ -167,7 +167,7 @@ export const useGameStore = create<GameState & {
         });
       },
 
-      checkContraindication: (drugId: string, hasContraindication: boolean) => {
+      checkContraindication: (drugId: string, contraIndex: number, hasContraindication: boolean) => {
         const state = get();
         const session = state.currentSession;
         if (!session || session.status !== 'playing') return;
@@ -178,10 +178,10 @@ export const useGameStore = create<GameState & {
         const drug = level.availableDrugs.find(d => d.id === drugId);
         if (!drug) return;
 
-        const actualContraindication = drug.contraindications.some(c => 
-          level.patientInfo.allergies.some(a => c.includes(a)) ||
-          level.patientInfo.conditions.some(con => c.includes(con))
-        );
+        const contraText = drug.contraindications[contraIndex] || '';
+        const actualContraindication = 
+          level.patientInfo.allergies.some(a => contraText.includes(a)) ||
+          level.patientInfo.conditions.some(con => contraText.includes(con));
 
         const isCorrect = hasContraindication === actualContraindication;
         const pointsDelta = hasContraindication && isCorrect ? 15 : !isCorrect ? -20 : 0;
@@ -190,18 +190,15 @@ export const useGameStore = create<GameState & {
           step: session.currentStep,
           timestamp: Date.now(),
           type: 'contra_check',
-          selectedId: `${drugId}-${hasContraindication}`,
+          selectedId: `${drugId}-${contraIndex}-${hasContraindication}`,
           isCorrect,
           correctionMade: session.actions.some(a => a.step === session.currentStep && a.type === 'contra_check'),
           pointsDelta,
           errorType: !isCorrect ? 'CONTRAINDICATION' : undefined,
           errorDetail: !isCorrect 
             ? hasContraindication
-              ? `误判药品"${drug.name}"存在禁忌，实际无禁忌`
-              : `未识别药品"${drug.name}"的禁忌：${drug.contraindications.find(c => 
-                  level.patientInfo.allergies.some(a => c.includes(a)) ||
-                  level.patientInfo.conditions.some(con => c.includes(con))
-                )}`
+              ? `误判药品"${drug.name}"的第${contraIndex + 1}条禁忌存在，实际无相关禁忌`
+              : `未识别药品"${drug.name}"的禁忌：${contraText}`
             : undefined,
           sourceLine: level.prescriptions[session.currentStep]?.lineNumber
         };
@@ -327,10 +324,13 @@ export const useGameStore = create<GameState & {
           levelId: session.levelId,
           levelName: level.name,
           startTime: session.startTime,
+          endTime: Date.now(),
           totalScore: session.totalScore,
           maxScore: session.maxScore,
           errorCount: session.errors.length,
-          status
+          status,
+          actions: session.actions,
+          errors: session.errors
         };
 
         const newHighScores = { ...state.highScores };
@@ -354,14 +354,20 @@ export const useGameStore = create<GameState & {
 
       getReport: (sessionId: string) => {
         const state = get();
-        const session = state.history.find(h => h.id === sessionId);
+        let session: GameSession | null = state.currentSession;
+        
+        if (!session || session.id !== sessionId) {
+          const historySession = state.history.find(h => h.id === sessionId);
+          session = historySession ? (historySession as unknown as GameSession) : null;
+        }
+        
         if (!session) return null;
 
         const level = getLevelById(session.levelId);
         if (!level) return null;
 
         const scoreBreakdown: ScoreItem[] = level.prescriptions.map((prescription, index) => {
-          const stepActions = state.currentSession?.actions.filter(a => a.step === index) || [];
+          const stepActions = session?.actions.filter(a => a.step === index) || [];
           const basePoints = 50;
           const deductions = stepActions
             .filter(a => a.pointsDelta < 0)
@@ -389,7 +395,7 @@ export const useGameStore = create<GameState & {
         const errorSummary: ErrorSummaryItem[] = [];
         const errorsByType = new Map<ErrorType, ErrorSummaryItem>();
 
-        (state.currentSession?.errors || []).forEach(error => {
+        (session?.errors || []).forEach(error => {
           if (!error.errorType) return;
           
           if (!errorsByType.has(error.errorType)) {
@@ -412,7 +418,7 @@ export const useGameStore = create<GameState & {
 
         errorsByType.forEach(summary => errorSummary.push(summary));
 
-        const correctionTrail: CorrectionTrail[] = (state.currentSession?.actions || [])
+        const correctionTrail: CorrectionTrail[] = (session?.actions || [])
           .filter(a => a.correctionMade && a.originalSelection)
           .map(a => ({
             step: a.step + 1,
@@ -424,7 +430,7 @@ export const useGameStore = create<GameState & {
           }));
 
         return {
-          session: state.currentSession!,
+          session: session,
           scoreBreakdown,
           errorSummary,
           correctionTrail

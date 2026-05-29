@@ -130,10 +130,13 @@ export interface HistoryRecord {
   levelId: string;
   levelName: string;
   startTime: number;
+  endTime?: number;
   totalScore: number;
   maxScore: number;
   errorCount: number;
   status: 'completed' | 'timeout';
+  actions: PlayerAction[];
+  errors: PlayerAction[];
 }
 
 export interface GameState {

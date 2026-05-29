@@ -42,7 +42,7 @@ export default function GamePage() {
   const [selectedBatchId, setSelectedBatchId] = useState<string>('');
   const [showError, setShowError] = useState<{ message: string; lineNumber: number } | null>(null);
   const [dragOver, setDragOver] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentStep = currentSession?.currentStep || 0;
   const currentPrescription = level?.prescriptions[currentStep];
@@ -145,12 +145,13 @@ export default function GamePage() {
     confirmUnit(unit);
   };
 
-  const handleContraindicationCheck = (drugId: string, checked: boolean) => {
+  const handleContraindicationCheck = (drugId: string, contraIndex: number, checked: boolean) => {
+    const contraId = `${drugId}-${contraIndex}`;
     const newChecked = checked 
-      ? [...checkedContraindications, drugId]
-      : checkedContraindications.filter(id => id !== drugId);
+      ? [...checkedContraindications, contraId]
+      : checkedContraindications.filter(id => id !== contraId);
     setCheckedContraindications(newChecked);
-    checkContraindication(drugId, checked);
+    checkContraindication(drugId, contraIndex, checked);
   };
 
   const handleBatchSelect = (batchId: string) => {
@@ -497,7 +498,8 @@ export default function GamePage() {
                                   type="checkbox"
                                   checked={checkedContraindications.includes(`${selectedDrug.id}-${index}`)}
                                   onChange={(e) => handleContraindicationCheck(
-                                    `${selectedDrug.id}-${index}`, 
+                                    selectedDrug.id,
+                                    index, 
                                     e.target.checked
                                   )}
                                   className="w-5 h-5 rounded"
@@ -608,7 +610,7 @@ export default function GamePage() {
                   <motion.div
                     key={drug.id}
                     draggable
-                    onDragStart={(e) => handleDragStart(e, drug)}
+                    onDragStart={(e: any) => handleDragStart(e, drug)}
                     onClick={() => handleDrugSelect(drug)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

@@ -51,6 +51,12 @@ export default function ReportPage() {
     return history.find(h => h.id === sessionId);
   }, [sessionId, currentSession, history]);
 
+  const sessionWithDetails = session as (typeof session) & {
+    endTime?: number;
+    actions: PlayerAction[];
+    errors: PlayerAction[];
+  };
+
   const level = useMemo(() => {
     if (!session) return null;
     return getLevelById(session.levelId);
@@ -85,18 +91,18 @@ export default function ReportPage() {
 关卡名称: ${level.name}
 难度等级: ${level.difficulty}
 开始时间: ${new Date(session.startTime).toLocaleString('zh-CN')}
-结束时间: ${session.endTime ? new Date(session.endTime).toLocaleString('zh-CN') : 'N/A'}
-用时: ${session.endTime ? Math.floor((session.endTime - session.startTime) / 1000) : 0}秒
+结束时间: ${sessionWithDetails.endTime ? new Date(sessionWithDetails.endTime).toLocaleString('zh-CN') : 'N/A'}
+用时: ${sessionWithDetails.endTime ? Math.floor((sessionWithDetails.endTime - session.startTime) / 1000) : 0}秒
 
 得分统计
 --------
 总分: ${session.totalScore} / ${session.maxScore}
 评级: ${getScoreGrade(session.totalScore, session.maxScore).label}
-错误数: ${session.errors.length}
+错误数: ${sessionWithDetails.errors.length}
 
 错误详情
 --------
-${session.errors.map((error, index) => `
+${sessionWithDetails.errors.map((error: PlayerAction, index: number) => `
 ${index + 1}. ${errorTypeLabels[error.errorType!]?.label || error.errorType}
    步骤: ${error.step + 1}
    来源行号: 处方第${error.sourceLine}行
@@ -106,7 +112,7 @@ ${index + 1}. ${errorTypeLabels[error.errorType!]?.label || error.errorType}
 
 详细操作记录
 --------
-${session.actions.map((action, index) => `
+${sessionWithDetails.actions.map((action: PlayerAction, index: number) => `
 ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
    选择: ${action.selectedId}
    结果: ${action.isCorrect ? '正确' : '错误'}
@@ -143,7 +149,7 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
   }
 
   const scoreGrade = getScoreGrade(session.totalScore, session.maxScore);
-  const duration = session.endTime ? Math.floor((session.endTime - session.startTime) / 1000) : 0;
+  const duration = sessionWithDetails.endTime ? Math.floor((sessionWithDetails.endTime - session.startTime) / 1000) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-bg to-dark-card text-white py-8">
@@ -219,12 +225,12 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
             </div>
             <div className="bg-dark-bg/50 rounded-xl p-4 text-center">
               <CheckCircle className="w-6 h-6 mx-auto mb-2 text-green-400" />
-              <p className="text-2xl font-bold">{session.actions.length - session.errors.length}</p>
+              <p className="text-2xl font-bold">{sessionWithDetails.actions.length - sessionWithDetails.errors.length}</p>
               <p className="text-sm text-gray-400">正确操作</p>
             </div>
             <div className="bg-dark-bg/50 rounded-xl p-4 text-center">
               <XCircle className="w-6 h-6 mx-auto mb-2 text-red-400" />
-              <p className="text-2xl font-bold">{session.errors.length}</p>
+              <p className="text-2xl font-bold">{sessionWithDetails.errors.length}</p>
               <p className="text-sm text-gray-400">错误次数</p>
             </div>
           </div>
@@ -250,9 +256,9 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 text-red-400" />
               错误清单
-              {session.errors.length > 0 && (
+              {sessionWithDetails.errors.length > 0 && (
                 <span className="bg-red-500 text-white text-sm px-2 py-0.5 rounded-full">
-                  {session.errors.length}
+                  {sessionWithDetails.errors.length}
                 </span>
               )}
             </h2>
@@ -265,13 +271,13 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
 
           {expandedSections.includes('errors') && (
             <div className="mt-6 space-y-4">
-              {session.errors.length === 0 ? (
+              {sessionWithDetails.errors.length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 mx-auto mb-2 text-green-500" />
                   <p className="text-gray-400">没有错误，干得漂亮！</p>
                 </div>
               ) : (
-                session.errors.map((error, index) => (
+                sessionWithDetails.errors.map((error, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -337,7 +343,7 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
               <FileText className="w-6 h-6 text-blue-400" />
               详细操作记录
               <span className="bg-gray-500 text-white text-sm px-2 py-0.5 rounded-full">
-                {session.actions.length}
+                {sessionWithDetails.actions.length}
               </span>
             </h2>
             {expandedSections.includes('details') ? (
@@ -362,7 +368,7 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
                   </tr>
                 </thead>
                 <tbody>
-                  {session.actions.map((action, index) => (
+                  {sessionWithDetails.actions.map((action, index) => (
                     <tr 
                       key={index} 
                       className={`border-b border-gray-700/50 ${
@@ -438,7 +444,7 @@ ${index + 1}. 步骤${action.step + 1} - ${actionTypeLabels[action.type]}
 
           <div className="space-y-4">
             {level.prescriptions.map((prescription, index) => {
-              const stepActions = session.actions.filter(a => a.step === index);
+              const stepActions = sessionWithDetails.actions.filter(a => a.step === index);
               const hasError = stepActions.some(a => !a.isCorrect);
               
               return (
