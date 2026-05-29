@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
+import type { OperationLog } from '../types';
 import {
   generateReport,
   exportReportToJSON,
@@ -10,17 +11,44 @@ import {
   formatDuration,
 } from '../utils/reportGenerator';
 import { getConflictTypeLabel } from '../utils/conflictDetector';
-import { Home, Download, ArrowLeft, Clock, AlertTriangle, CheckCircle, HelpCircle, List } from 'lucide-react';
+import { Home, Download, ArrowLeft, Clock, AlertTriangle, CheckCircle, HelpCircle, List, Edit, Eye, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 type TabType = 'unhandled' | 'corrected' | 'review' | 'all';
+type LogDisplayItem = OperationLog | { original: OperationLog; correction: OperationLog };
 
 const ReportPage = () => {
   const navigate = useNavigate();
   const state = useGameStore();
   const report = generateReport(state);
   const [activeTab, setActiveTab] = useState<TabType>('unhandled');
+  const [showCorrectionModal, setShowCorrectionModal] = useState(false);
+  const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
+  const [correctionText, setCorrectionText] = useState('');
+
+  const handleOpenCorrection = (logId: string, currentAction: string) => {
+    setSelectedLogId(logId);
+    setCorrectionText(currentAction);
+    setShowCorrectionModal(true);
+  };
+
+  const handleSubmitCorrection = () => {
+    if (selectedLogId && correctionText.trim()) {
+      state.correctLog(selectedLogId, correctionText.trim());
+      setShowCorrectionModal(false);
+      setSelectedLogId(null);
+      setCorrectionText('');
+    }
+  };
+
+  const handleMarkForReview = (logId: string) => {
+    state.markLogForReview(logId);
+  };
+
+  const handleConfirmReviewed = (logId: string) => {
+    state.confirmReviewedLog(logId);
+  };
 
   const handleExportJSON = () => {
     const json = exportReportToJSON(report);
@@ -64,7 +92,7 @@ const ReportPage = () => {
   };
 
   const renderLogs = () => {
-    let logsToShow: any[] = [];
+    let logsToShow: LogDisplayItem[] = [];
 
     switch (activeTab) {
       case 'unhandled':
@@ -138,6 +166,38 @@ const ReportPage = () => {
                 <div className="mt-3 pt-3 border-t border-slate-600">
                   <div className="text-xs text-emerald-400 mb-1">✓ 修正操作:</div>
                   <p className="text-sm text-emerald-300">{log.correction.action}</p>
+                </div>
+              )}
+
+              {!isCorrectionPair && (
+                <div className="mt-3 pt-3 border-t border-slate-600 flex flex-wrap gap-2">
+                  {logData.type === 'conflict' && !logData.isCorrection && (
+                    <button
+                      onClick={() => handleOpenCorrection(logData.id, logData.action)}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs rounded-lg transition-colors"
+                    >
+                      <Edit size={12} />
+                      修正记录
+                    </button>
+                  )}
+                  {!state.pendingReviewLogs.includes(logData.id) && (
+                    <button
+                      onClick={() => handleMarkForReview(logData.id)}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition-colors"
+                    >
+                      <Eye size={12} />
+                      标记待确认
+                    </button>
+                  )}
+                  {state.pendingReviewLogs.includes(logData.id) && (
+                    <button
+                      onClick={() => handleConfirmReviewed(logData.id)}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs rounded-lg transition-colors"
+                    >
+                      <CheckCircle size={12} />
+                      确认已审核
+                    </button>
+                  )}
                 </div>
               )}
             </motion.div>
@@ -265,6 +325,62 @@ const ReportPage = () => {
           <p>报告生成时间: {new Date(report.completedAt).toLocaleString('zh-CN')}</p>
         </motion.div>
       </div>
+
+      {showCorrectionModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            className="bg-slate-800 rounded-2xl border border-slate-700 w-full max-w-lg p-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">修正操作记录</h3>
+              <button
+                onClick={() => setShowCorrectionModal(false)}
+                className="p-1 hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm text-slate-400 mb-2">原操作描述</label>
+              <p className="text-slate-300 bg-slate-700/50 rounded-lg p-3 text-sm">
+                {correctionText}
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm text-slate-400 mb-2">修正后描述</label>
+              <textarea
+                value={correctionText}
+                onChange={(e) => setCorrectionText(e.target.value)}
+                className="w-full h-24 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                placeholder="请输入修正后的操作描述..."
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowCorrectionModal(false)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSubmitCorrection}
+                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
+              >
+                确认修正
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };

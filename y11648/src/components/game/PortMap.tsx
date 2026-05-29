@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import Berth from './Berth';
 import Ship from './Ship';

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { levels } from '../data/levels';
 import { useGameStore } from '../store/gameStore';
-import { Ship, Anchor, Waves, Fuel } from 'lucide-react';
+import { Ship, Anchor, Waves, Fuel, PlayCircle } from 'lucide-react';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -140,10 +140,39 @@ const HomePage = () => {
         </motion.div>
 
         <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="mt-8 w-full max-w-4xl"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/replay')}
+            className="w-full p-5 bg-slate-800/50 backdrop-blur rounded-xl border border-slate-700 hover:border-cyan-500/50 transition-all flex items-center justify-between"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                <PlayCircle className="w-6 h-6 text-cyan-400" />
+              </div>
+              <div className="text-left">
+                <div className="text-white font-semibold">调度回放</div>
+                <div className="text-sm text-slate-400">查看历史游戏记录，分析调度过程</div>
+              </div>
+            </div>
+            <div className="text-slate-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </motion.button>
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-12 text-center"
+          transition={{ delay: 1.2 }}
+          className="mt-8 text-center"
         >
           <p className="text-sm text-slate-500">
             💡 操作提示：点击拖轮选中，再点击船舶分配任务，或点击地图移动拖轮

@@ -2,18 +2,25 @@ import { create } from 'zustand';
 import type {
   GameState,
   LevelData,
-  Tug,
   OperationLog,
-  Task,
-  Conflict,
   Position,
+  GameStateSnapshot,
+  ReplayData,
 } from '../types';
 import { checkAllConflicts } from '../utils/conflictDetector';
 import { calculateFuelConsumption, calculateDistance } from '../utils/fuelCalculator';
+import { levels } from '../data/levels';
 
 const generateId = (): string => Math.random().toString(36).substring(2, 11);
+const SNAPSHOT_INTERVAL = 5000;
 
 interface GameStore extends GameState {
+  isReplayMode: boolean;
+  replayData: ReplayData | null;
+  replayIndex: number;
+  snapshots: GameStateSnapshot[];
+  lastSnapshotTime: number;
+  pendingReviewLogs: string[];
   initGame: (level: LevelData) => void;
   startGame: () => void;
   pauseGame: () => void;
@@ -33,11 +40,29 @@ interface GameStore extends GameState {
   resolveConflict: (conflictId: string) => void;
   addLog: (log: Omit<OperationLog, 'id' | 'timestamp'>) => void;
   correctLog: (logId: string, newAction: string) => void;
+  markLogForReview: (logId: string) => void;
+  confirmReviewedLog: (logId: string) => void;
   endGame: () => void;
   getCurrentLevel: () => LevelData | undefined;
+  takeSnapshot: () => void;
+  saveReplayData: () => ReplayData;
+  loadReplayData: (data: ReplayData) => void;
+  setReplayIndex: (index: number) => void;
+  stepReplay: (direction: 'forward' | 'backward') => void;
+  exitReplayMode: () => void;
+  getReplayList: () => ReplayData[];
 }
 
-const initialState: GameState = {
+const REPLAY_STORAGE_KEY = 'port-tug-replays';
+
+const initialState: GameState & {
+  isReplayMode: boolean;
+  replayData: ReplayData | null;
+  replayIndex: number;
+  snapshots: GameStateSnapshot[];
+  lastSnapshotTime: number;
+  pendingReviewLogs: string[];
+} = {
   id: '',
   level: 1,
   status: 'ready',
@@ -55,6 +80,12 @@ const initialState: GameState = {
   selectedTugId: undefined,
   selectedShipId: undefined,
   isDragging: false,
+  isReplayMode: false,
+  replayData: null,
+  replayIndex: 0,
+  snapshots: [],
+  lastSnapshotTime: 0,
+  pendingReviewLogs: [],
 };
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -143,6 +174,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.status !== 'playing') return;
 
     const newTime = state.currentTime + deltaTime * state.speed * 1000;
+
+    if (newTime - state.lastSnapshotTime >= SNAPSHOT_INTERVAL || state.snapshots.length === 0) {
+      get().takeSnapshot();
+    }
 
     const updatedTugs = state.tugs.map((tug) => {
       if (tug.status === 'moving' && tug.targetPosition) {
@@ -477,18 +512,169 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }));
   },
 
+  markLogForReview: (logId) => {
+    const state = get();
+    if (!state.pendingReviewLogs.includes(logId)) {
+      set((state) => ({
+        pendingReviewLogs: [...state.pendingReviewLogs, logId],
+      }));
+      get().addLog({
+        gameTime: state.currentTime,
+        type: 'system',
+        action: `日志 ${logId} 标记为待人工确认`,
+        targetId: logId,
+        isCorrection: false,
+        source: 'player',
+      });
+    }
+  },
+
+  confirmReviewedLog: (logId) => {
+    const state = get();
+    set((state) => ({
+      pendingReviewLogs: state.pendingReviewLogs.filter((id) => id !== logId),
+    }));
+    get().addLog({
+      gameTime: state.currentTime,
+      type: 'system',
+      action: `日志 ${logId} 已人工确认`,
+      targetId: logId,
+      isCorrection: false,
+      source: 'player',
+    });
+  },
+
   endGame: () => {
+    const state = get();
     set({ status: 'finished' });
     get().addLog({
-      gameTime: get().currentTime,
+      gameTime: state.currentTime,
       type: 'system',
       action: '游戏结束',
       isCorrection: false,
       source: 'system',
     });
+    get().saveReplayData();
   },
 
   getCurrentLevel: () => {
-    return undefined;
+    const state = get();
+    return levels.find((l) => l.id === state.level);
+  },
+
+  takeSnapshot: () => {
+    const state = get();
+    const snapshot: GameStateSnapshot = {
+      time: state.currentTime,
+      tugs: JSON.parse(JSON.stringify(state.tugs)),
+      ships: JSON.parse(JSON.stringify(state.ships)),
+      berths: JSON.parse(JSON.stringify(state.berths)),
+      tasks: JSON.parse(JSON.stringify(state.tasks)),
+      activeConflicts: JSON.parse(JSON.stringify(state.activeConflicts)),
+    };
+    set((state) => ({
+      snapshots: [...state.snapshots, snapshot],
+      lastSnapshotTime: state.currentTime,
+    }));
+  },
+
+  saveReplayData: (): ReplayData => {
+    const state = get();
+    const level = levels.find((l) => l.id === state.level);
+    const replayData: ReplayData = {
+      gameId: state.id,
+      level: state.level,
+      levelName: level?.name || '未知关卡',
+      startTime: state.startTime,
+      endTime: state.currentTime,
+      snapshots: state.snapshots,
+      logs: state.logs,
+      finalScore: 0,
+      completedAt: Date.now(),
+      playDuration: state.currentTime - state.startTime,
+    };
+
+    try {
+      const existing = localStorage.getItem(REPLAY_STORAGE_KEY);
+      const replayList: ReplayData[] = existing ? JSON.parse(existing) : [];
+      replayList.unshift(replayData);
+      const trimmedList = replayList.slice(0, 20);
+      localStorage.setItem(REPLAY_STORAGE_KEY, JSON.stringify(trimmedList));
+    } catch (e) {
+      console.warn('Failed to save replay data:', e);
+    }
+
+    return replayData;
+  },
+
+  loadReplayData: (data: ReplayData) => {
+    if (data.snapshots.length === 0) return;
+
+    const firstSnapshot = data.snapshots[0];
+    set({
+      isReplayMode: true,
+      replayData: data,
+      replayIndex: 0,
+      id: data.gameId,
+      level: data.level,
+      status: 'paused',
+      currentTime: firstSnapshot.time,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      tugs: firstSnapshot.tugs,
+      ships: firstSnapshot.ships,
+      berths: firstSnapshot.berths,
+      tasks: firstSnapshot.tasks,
+      logs: data.logs,
+      activeConflicts: firstSnapshot.activeConflicts,
+    });
+  },
+
+  setReplayIndex: (index: number) => {
+    const state = get();
+    if (!state.replayData || !state.isReplayMode) return;
+
+    const safeIndex = Math.max(0, Math.min(index, state.replayData.snapshots.length - 1));
+    const snapshot = state.replayData.snapshots[safeIndex];
+
+    set({
+      replayIndex: safeIndex,
+      currentTime: snapshot.time,
+      tugs: snapshot.tugs,
+      ships: snapshot.ships,
+      berths: snapshot.berths,
+      tasks: snapshot.tasks,
+      activeConflicts: snapshot.activeConflicts,
+    });
+  },
+
+  stepReplay: (direction: 'forward' | 'backward') => {
+    const state = get();
+    if (!state.replayData) return;
+
+    const newIndex = direction === 'forward'
+      ? state.replayIndex + 1
+      : state.replayIndex - 1;
+
+    state.setReplayIndex(newIndex);
+  },
+
+  exitReplayMode: () => {
+    set({
+      isReplayMode: false,
+      replayData: null,
+      replayIndex: 0,
+      ...initialState,
+    });
+  },
+
+  getReplayList: (): ReplayData[] => {
+    try {
+      const existing = localStorage.getItem(REPLAY_STORAGE_KEY);
+      return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+      console.warn('Failed to load replay list:', e);
+      return [];
+    }
   },
 }));

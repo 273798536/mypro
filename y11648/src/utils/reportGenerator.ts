@@ -3,8 +3,17 @@ import type {
   DispatchReport,
   ScoreBreakdown,
   Task,
-  GameState,
 } from '../types';
+
+interface ReportState {
+  id: string;
+  level: number;
+  currentTime: number;
+  startTime: number;
+  logs: OperationLog[];
+  tasks: Task[];
+  pendingReviewLogs?: string[];
+}
 
 export const generateScoreBreakdown = (
   tasks: Task[],
@@ -12,7 +21,6 @@ export const generateScoreBreakdown = (
   duration: number
 ): ScoreBreakdown => {
   const completedTasks = tasks.filter((t) => t.status === 'completed');
-  const totalTasks = tasks.length;
 
   const conflictCount = logs.filter((l) => l.type === 'conflict').length;
   const correctionCount = logs.filter((l) => l.isCorrection).length;
@@ -58,7 +66,7 @@ export const generateScoreBreakdown = (
   };
 };
 
-export const generateReport = (state: GameState): DispatchReport => {
+export const generateReport = (state: ReportState): DispatchReport => {
   const playDuration = state.currentTime - state.startTime;
 
   const conflictLogs = state.logs.filter((l) => l.type === 'conflict');
@@ -79,9 +87,7 @@ export const generateReport = (state: GameState): DispatchReport => {
   );
 
   const needsReview = state.logs.filter((l) => {
-    if (l.type !== 'conflict') return false;
-    const hasCorrection = correctionLogs.some((c) => c.correctedLogId === l.id);
-    return !hasCorrection && l.action.includes('紧迫');
+    return state.pendingReviewLogs?.includes(l.id) || (l.type === 'conflict' && !correctionLogs.some((c) => c.correctedLogId === l.id));
   });
 
   const score = generateScoreBreakdown(state.tasks, state.logs, playDuration);

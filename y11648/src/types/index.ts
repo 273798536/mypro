@@ -171,6 +171,28 @@ export interface LevelData {
   tasks: Omit<Task, 'startTime' | 'endTime' | 'conflicts'>[];
 }
 
+export interface GameStateSnapshot {
+  time: number;
+  tugs: Tug[];
+  ships: Ship[];
+  berths: Berth[];
+  tasks: Task[];
+  activeConflicts: Conflict[];
+}
+
+export interface ReplayData {
+  gameId: string;
+  level: number;
+  levelName: string;
+  startTime: number;
+  endTime: number;
+  snapshots: GameStateSnapshot[];
+  logs: OperationLog[];
+  finalScore: number;
+  completedAt: number;
+  playDuration: number;
+}
+
 export interface GameRecord {
   id: string;
   level: number;
@@ -178,4 +200,5 @@ export interface GameRecord {
   score: number;
   completedAt: number;
   playDuration: number;
+  replayDataId: string;
 }
