@@ -1,13 +1,13 @@
 {
-  "export_no": "EXP20260526100227",
-  "export_time": "2026-05-26T10:02:27.520036",
+  "export_no": "EXP20260527190816",
+  "export_time": "2026-05-27T19:08:16.799703",
   "operator": "系统管理员",
   "mask_sensitive": true,
   "records": [
     {
-      "ledger_no": "LD202605260002",
+      "ledger_no": "LD202605270001",
       "wave_no": "WB20260525001",
-      "wave_date": "2026-05-25",
+      "wave_date": "2026-05-27",
       "picker_name": "**",
       "reviewer_name": "****",
       "sku_code": "SKU001",
@@ -20,14 +20,14 @@
       "diff_reason": "库存不符",
       "status": "audited",
       "is_dirty": true,
-      "dirty_type": "duplicate",
+      "dirty_type": "amount_conflict",
       "performance_impact": "****",
       "inventory_impact": "-5**.0",
       "handle_opinion": null,
       "data_sources": "{\"wave_order\": \"WB20260525001\", \"pick_difference\": \"DF2026052500100\", \"review_scan\": \"SC2026052500100\", \"refund_flow\": \"RF20260525001\", \"stock_split\": \"SP20260525001\", \"inventory_check\": \"IC20260525001\"}",
       "version": 5,
       "created_by": "en**y1",
-      "created_at": "2026-05-26 10:02:25"
+      "created_at": "2026-05-27 19:08:16"
     }
   ]
 }

@@ -132,82 +132,188 @@ class DirtyRecordDetector:
             InventoryDifference.sku_code == ledger.sku_code
         ).first()
         
+        ledger_inv = float(ledger.inventory_impact or 0)
+        ledger_perf = float(ledger.performance_impact or 0)
+
         if refund and refund.refund_amount is not None:
-            if ledger.inventory_impact is None or ledger.inventory_impact == 0:
+            refund_amt = float(refund.refund_amount)
+            if ledger_inv == 0:
                 self.issues.append({
                     "type": "amount_conflict",
                     "field_name": "inventory_impact",
-                    "original_value": str(refund.refund_amount),
-                    "current_value": str(ledger.inventory_impact or 0),
-                    "error_message": f"退款金额 {refund.refund_amount} 存在，但台账库存影响为 0，可能漏记",
+                    "original_value": str(refund_amt),
+                    "current_value": str(ledger_inv),
+                    "error_message": f"退款金额 {refund_amt} 存在，但台账库存影响为 0，可能漏记",
                     "source_data": {
                         "refund_no": refund.refund_no,
-                        "refund_amount": float(refund.refund_amount),
-                        "refund_type": refund.refund_type
+                        "refund_amount": refund_amt,
+                        "refund_type": refund.refund_type,
+                        "ledger_inventory_impact": ledger_inv,
+                        "conflict_type": "missing_ledger_value"
                     }
                 })
                 issues_found = True
-        
-        if split_record and split_record.inventory_deviation is not None:
-            if ledger.inventory_impact is None or ledger.inventory_impact == 0:
+            elif abs(ledger_inv - refund_amt) > max(abs(refund_amt) * 0.1, 1.0):
                 self.issues.append({
                     "type": "amount_conflict",
                     "field_name": "inventory_impact",
-                    "original_value": str(split_record.inventory_deviation),
-                    "current_value": str(ledger.inventory_impact or 0),
-                    "error_message": f"缺货拆单库存偏差 {split_record.inventory_deviation} 存在，但台账库存影响为 0，可能漏记",
+                    "original_value": str(refund_amt),
+                    "current_value": str(ledger_inv),
+                    "expected_value": str(refund_amt),
+                    "error_message": f"库存影响与退款金额不一致: 退款金额 {refund_amt}，台账库存影响 {ledger_inv}，差异 {abs(ledger_inv - refund_amt)}",
                     "source_data": {
-                        "split_no": split_record.split_no,
-                        "inventory_deviation": float(split_record.inventory_deviation),
-                        "split_reason": split_record.split_reason
+                        "refund_no": refund.refund_no,
+                        "refund_amount": refund_amt,
+                        "ledger_inventory_impact": ledger_inv,
+                        "difference": abs(ledger_inv - refund_amt),
+                        "conflict_type": "value_mismatch"
                     }
                 })
                 issues_found = True
-        
+
+        if split_record:
+            split_inv = float(split_record.inventory_deviation or 0)
+            split_perf = float(split_record.performance_deviation or 0)
+            
+            if split_inv != 0:
+                if ledger_inv == 0:
+                    self.issues.append({
+                        "type": "amount_conflict",
+                        "field_name": "inventory_impact",
+                        "original_value": str(split_inv),
+                        "current_value": str(ledger_inv),
+                        "error_message": f"缺货拆单库存偏差 {split_inv} 存在，但台账库存影响为 0，可能漏记",
+                        "source_data": {
+                            "split_no": split_record.split_no,
+                            "inventory_deviation": split_inv,
+                            "ledger_inventory_impact": ledger_inv,
+                            "conflict_type": "missing_ledger_value"
+                        }
+                    })
+                    issues_found = True
+                elif abs(ledger_inv - split_inv) > max(abs(split_inv) * 0.1, 1.0):
+                    self.issues.append({
+                        "type": "amount_conflict",
+                        "field_name": "inventory_impact",
+                        "original_value": str(split_inv),
+                        "current_value": str(ledger_inv),
+                        "expected_value": str(split_inv),
+                        "error_message": f"库存影响与拆单偏差不一致: 拆单库存偏差 {split_inv}，台账库存影响 {ledger_inv}，差异 {abs(ledger_inv - split_inv)}",
+                        "source_data": {
+                            "split_no": split_record.split_no,
+                            "inventory_deviation": split_inv,
+                            "ledger_inventory_impact": ledger_inv,
+                            "difference": abs(ledger_inv - split_inv),
+                            "conflict_type": "value_mismatch"
+                        }
+                    })
+                    issues_found = True
+
+            if split_perf != 0:
+                if ledger_perf == 0:
+                    self.issues.append({
+                        "type": "amount_conflict",
+                        "field_name": "performance_impact",
+                        "original_value": str(split_perf),
+                        "current_value": str(ledger_perf),
+                        "error_message": f"缺货拆单绩效偏差 {split_perf} 存在，但台账绩效影响为 0，可能漏记",
+                        "source_data": {
+                            "split_no": split_record.split_no,
+                            "performance_deviation": split_perf,
+                            "ledger_performance_impact": ledger_perf,
+                            "conflict_type": "missing_ledger_value"
+                        }
+                    })
+                    issues_found = True
+                elif abs(ledger_perf - split_perf) > max(abs(split_perf) * 0.1, 0.5):
+                    self.issues.append({
+                        "type": "amount_conflict",
+                        "field_name": "performance_impact",
+                        "original_value": str(split_perf),
+                        "current_value": str(ledger_perf),
+                        "expected_value": str(split_perf),
+                        "error_message": f"绩效影响与拆单偏差不一致: 拆单绩效偏差 {split_perf}，台账绩效影响 {ledger_perf}，差异 {abs(ledger_perf - split_perf)}",
+                        "source_data": {
+                            "split_no": split_record.split_no,
+                            "performance_deviation": split_perf,
+                            "ledger_performance_impact": ledger_perf,
+                            "difference": abs(ledger_perf - split_perf),
+                            "conflict_type": "value_mismatch"
+                        }
+                    })
+                    issues_found = True
+
         if inventory_diff and inventory_diff.diff_qty != 0:
             estimated_impact = abs(inventory_diff.diff_qty) * 10
-            if ledger.inventory_impact is None or ledger.inventory_impact == 0:
+            if ledger_inv == 0:
                 self.issues.append({
                     "type": "amount_conflict",
                     "field_name": "inventory_impact",
                     "original_value": f"预估 {estimated_impact}",
-                    "current_value": str(ledger.inventory_impact or 0),
+                    "current_value": str(ledger_inv),
                     "error_message": f"盘点差异 {inventory_diff.diff_qty} 存在，但台账库存影响为 0，可能漏记",
                     "source_data": {
                         "check_no": inventory_diff.check_no,
                         "diff_qty": inventory_diff.diff_qty,
-                        "diff_type": inventory_diff.diff_type
+                        "estimated_impact": estimated_impact,
+                        "ledger_inventory_impact": ledger_inv,
+                        "conflict_type": "missing_ledger_value"
+                    }
+                })
+                issues_found = True
+            elif abs(ledger_inv - estimated_impact) > max(estimated_impact * 0.1, 1.0):
+                self.issues.append({
+                    "type": "amount_conflict",
+                    "field_name": "inventory_impact",
+                    "original_value": f"预估 {estimated_impact}",
+                    "current_value": str(ledger_inv),
+                    "expected_value": f"预估 {estimated_impact}",
+                    "error_message": f"库存影响与盘点预估不一致: 盘点预估影响 {estimated_impact}，台账库存影响 {ledger_inv}，差异 {abs(ledger_inv - estimated_impact)}",
+                    "source_data": {
+                        "check_no": inventory_diff.check_no,
+                        "diff_qty": inventory_diff.diff_qty,
+                        "estimated_impact": estimated_impact,
+                        "ledger_inventory_impact": ledger_inv,
+                        "difference": abs(ledger_inv - estimated_impact),
+                        "conflict_type": "value_mismatch"
                     }
                 })
                 issues_found = True
         
-        if ledger.inventory_impact is not None and ledger.inventory_impact != 0:
-            has_source = refund is not None or split_record is not None or inventory_diff is not None
+        if ledger_inv != 0:
+            has_source = (refund is not None and refund.refund_amount is not None) or \
+                        (split_record is not None and split_record.inventory_deviation is not None) or \
+                        (inventory_diff is not None and inventory_diff.diff_qty != 0)
             if not has_source:
                 self.issues.append({
                     "type": "amount_conflict",
                     "field_name": "inventory_impact",
-                    "original_value": str(ledger.inventory_impact),
-                    "current_value": str(ledger.inventory_impact),
-                    "error_message": f"台账库存影响 {ledger.inventory_impact} 无对应来源记录（退款/拆单/盘点差异）",
+                    "original_value": str(ledger_inv),
+                    "current_value": str(ledger_inv),
+                    "error_message": f"台账库存影响 {ledger_inv} 无对应来源记录（退款/拆单/盘点差异）",
                     "source_data": {
-                        "has_refund": refund is not None,
-                        "has_split": split_record is not None,
-                        "has_inventory_diff": inventory_diff is not None
+                        "ledger_inventory_impact": ledger_inv,
+                        "has_refund": refund is not None and refund.refund_amount is not None,
+                        "has_split": split_record is not None and split_record.inventory_deviation is not None,
+                        "has_inventory_diff": inventory_diff is not None and inventory_diff.diff_qty != 0,
+                        "conflict_type": "no_source_record"
                     }
                 })
                 issues_found = True
         
-        if ledger.performance_impact is not None and ledger.performance_impact != 0:
-            if split_record is None or split_record.performance_deviation is None:
+        if ledger_perf != 0:
+            if split_record is None or split_record.performance_deviation is None or split_record.performance_deviation == 0:
                 self.issues.append({
                     "type": "amount_conflict",
                     "field_name": "performance_impact",
-                    "original_value": str(ledger.performance_impact),
-                    "current_value": str(ledger.performance_impact),
-                    "error_message": f"台账绩效影响 {ledger.performance_impact} 无对应拆单记录",
+                    "original_value": str(ledger_perf),
+                    "current_value": str(ledger_perf),
+                    "error_message": f"台账绩效影响 {ledger_perf} 无对应拆单绩效偏差记录",
                     "source_data": {
-                        "has_split": split_record is not None
+                        "ledger_performance_impact": ledger_perf,
+                        "has_split": split_record is not None,
+                        "split_performance_deviation": float(split_record.performance_deviation) if (split_record and split_record.performance_deviation) else None,
+                        "conflict_type": "no_source_record"
                     }
                 })
                 issues_found = True
