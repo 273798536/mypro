@@ -1,0 +1,6 @@
+student_id,name,class_name,course_ids,special_needs
+S001,张三,计科2001,C001;C002,
+,李四,计科2001,C001;C002,
+S003,王五,,C001;C002,
+S004,赵六,计科2001,C001;C002,
+S005,孙七,计科2001,C001;C002,
