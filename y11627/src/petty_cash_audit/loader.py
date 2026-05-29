@@ -45,19 +45,26 @@ class LoadResult:
     corrections: list[CorrectionTrace] = field(default_factory=list)
 
 
-def _parse_date(value: str) -> datetime.date:
-    value = value.strip()
+def _parse_date(value: str) -> tuple[datetime.date, str, str]:
+    """返回 (解析结果, 归一化后字符串, 归一化说明)"""
+    original = value.strip()
     for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%Y%m%d"):
         try:
-            return datetime.strptime(value, fmt).date()
+            parsed = datetime.strptime(original, fmt).date()
+            normalized = parsed.strftime("%Y-%m-%d")
+            note = "" if original == normalized else f"格式归一化（{fmt} → %Y-%m-%d）"
+            return parsed, normalized, note
         except ValueError:
             continue
-    raise ValueError(f"无法解析日期: {value}")
+    raise ValueError(f"无法解析日期: {original}")
 
 
-def _parse_float(value: str) -> float:
-    value = value.strip().replace(",", "")
-    return float(value)
+def _parse_float(value: str) -> tuple[float, str, str]:
+    """返回 (解析结果, 归一化后字符串, 归一化说明)"""
+    original = value.strip()
+    normalized = original.replace(",", "")
+    note = "" if original == normalized else "移除千分位逗号"
+    return float(normalized), normalized, note
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:
@@ -68,7 +75,12 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
                 reader = csv.DictReader(f)
                 rows = []
                 for row in reader:
-                    rows.append({k.strip(): v.strip() for k, v in row.items()})
+                    rows.append(
+                        {
+                            k.strip() if k else k: (v.strip() if v else "")
+                            for k, v in row.items()
+                        }
+                    )
                 return rows
         except UnicodeDecodeError:
             continue
@@ -133,6 +145,14 @@ class DataLoader:
             )
             return default
 
+    def _clean_str(
+        self, source: Source, field: str, raw: str
+    ) -> str:
+        cleaned = raw.strip()
+        if raw != cleaned:
+            self._trace(source, field, raw, cleaned, "去除首尾空白")
+        return cleaned
+
     # ------------------------------------------------------------------
 
     def _load_reimbursements(self, path: Path):
@@ -140,13 +160,26 @@ class DataLoader:
         for idx, row in enumerate(rows, start=2):
             source = _make_source(path, idx)
             try:
+                raw_amount = row.get("amount", "0")
+                amount, amount_norm, amount_note = _parse_float(raw_amount)
+                if amount_note:
+                    self._trace(source, "amount", raw_amount, amount_norm, amount_note)
+
+                raw_date = row.get("submit_date", "")
+                submit_date, date_norm, date_note = _parse_date(raw_date)
+                if date_note:
+                    self._trace(source, "submit_date", raw_date, date_norm, date_note)
+
+                raw_approver = row.get("approver", "")
+                approver = self._clean_str(source, "approver", raw_approver)
+
                 obj = Reimbursement(
-                    reimburse_id=row.get("reimburse_id", "").strip() or "",
-                    applicant=row.get("applicant", "").strip() or "",
-                    amount=_parse_float(row.get("amount", "0")),
-                    project_code=row.get("project_code", "").strip() or "",
-                    submit_date=_parse_date(row.get("submit_date", "")),
-                    approver=row.get("approver", "").strip() or "",
+                    reimburse_id=self._clean_str(source, "reimburse_id", row.get("reimburse_id", "")),
+                    applicant=self._clean_str(source, "applicant", row.get("applicant", "")),
+                    amount=amount,
+                    project_code=self._clean_str(source, "project_code", row.get("project_code", "")),
+                    submit_date=submit_date,
+                    approver=approver,
                     source=source,
                 )
                 self._result.reimbursements.append(obj)
@@ -160,11 +193,21 @@ class DataLoader:
         for idx, row in enumerate(rows, start=2):
             source = _make_source(path, idx)
             try:
+                raw_amount = row.get("amount", "0")
+                amount, amount_norm, amount_note = _parse_float(raw_amount)
+                if amount_note:
+                    self._trace(source, "amount", raw_amount, amount_norm, amount_note)
+
+                raw_date = row.get("invoice_date", "")
+                invoice_date, date_norm, date_note = _parse_date(raw_date)
+                if date_note:
+                    self._trace(source, "invoice_date", raw_date, date_norm, date_note)
+
                 obj = Invoice(
-                    invoice_no=row.get("invoice_no", "").strip() or "",
-                    invoice_date=_parse_date(row.get("invoice_date", "")),
-                    amount=_parse_float(row.get("amount", "0")),
-                    reimburse_id=row.get("reimburse_id", "").strip() or "",
+                    invoice_no=self._clean_str(source, "invoice_no", row.get("invoice_no", "")),
+                    invoice_date=invoice_date,
+                    amount=amount,
+                    reimburse_id=self._clean_str(source, "reimburse_id", row.get("reimburse_id", "")),
                     source=source,
                 )
                 self._result.invoices.append(obj)
@@ -178,15 +221,30 @@ class DataLoader:
         for idx, row in enumerate(rows, start=2):
             source = _make_source(path, idx)
             try:
+                raw_amount = row.get("amount", "0")
+                amount, amount_norm, amount_note = _parse_float(raw_amount)
+                if amount_note:
+                    self._trace(source, "amount", raw_amount, amount_norm, amount_note)
+
+                raw_loan_date = row.get("loan_date", "")
+                loan_date, loan_date_norm, loan_date_note = _parse_date(raw_loan_date)
+                if loan_date_note:
+                    self._trace(source, "loan_date", raw_loan_date, loan_date_norm, loan_date_note)
+
                 settle_raw = row.get("settle_date", "").strip()
-                settle_date = _parse_date(settle_raw) if settle_raw else None
+                settle_date = None
+                if settle_raw:
+                    settle_date, settle_norm, settle_note = _parse_date(settle_raw)
+                    if settle_note:
+                        self._trace(source, "settle_date", settle_raw, settle_norm, settle_note)
+
                 obj = Loan(
-                    loan_id=row.get("loan_id", "").strip() or "",
-                    borrower=row.get("borrower", "").strip() or "",
-                    amount=_parse_float(row.get("amount", "0")),
-                    loan_date=_parse_date(row.get("loan_date", "")),
+                    loan_id=self._clean_str(source, "loan_id", row.get("loan_id", "")),
+                    borrower=self._clean_str(source, "borrower", row.get("borrower", "")),
+                    amount=amount,
+                    loan_date=loan_date,
                     settle_date=settle_date,
-                    reimburse_id=row.get("reimburse_id", "").strip() or "",
+                    reimburse_id=self._clean_str(source, "reimburse_id", row.get("reimburse_id", "")),
                     source=source,
                 )
                 self._result.loans.append(obj)
@@ -200,11 +258,16 @@ class DataLoader:
         for idx, row in enumerate(rows, start=2):
             source = _make_source(path, idx)
             try:
+                raw_budget = row.get("budget", "0")
+                budget, budget_norm, budget_note = _parse_float(raw_budget)
+                if budget_note:
+                    self._trace(source, "budget", raw_budget, budget_norm, budget_note)
+
                 obj = Project(
-                    code=row.get("code", "").strip() or "",
-                    name=row.get("name", "").strip() or "",
-                    manager=row.get("manager", "").strip() or "",
-                    budget=_parse_float(row.get("budget", "0")),
+                    code=self._clean_str(source, "code", row.get("code", "")),
+                    name=self._clean_str(source, "name", row.get("name", "")),
+                    manager=self._clean_str(source, "manager", row.get("manager", "")),
+                    budget=budget,
                     source=source,
                 )
                 self._result.projects.append(obj)
@@ -218,10 +281,15 @@ class DataLoader:
         for idx, row in enumerate(rows, start=2):
             source = _make_source(path, idx)
             try:
+                raw_max = row.get("max_amount", "0")
+                max_amount, max_norm, max_note = _parse_float(raw_max)
+                if max_note:
+                    self._trace(source, "max_amount", raw_max, max_norm, max_note)
+
                 obj = Approver(
-                    name=row.get("name", "").strip() or "",
+                    name=self._clean_str(source, "name", row.get("name", "")),
                     level=int(row.get("level", "0")),
-                    max_amount=_parse_float(row.get("max_amount", "0")),
+                    max_amount=max_amount,
                     source=source,
                 )
                 self._result.approvers.append(obj)

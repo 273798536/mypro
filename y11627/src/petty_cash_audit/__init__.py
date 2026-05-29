@@ -8,10 +8,11 @@ from .models import (
     AuditFinding,
     AuditResult,
 )
-from .loader import DataLoader
+from .loader import DataLoader, CorrectionTrace, LoadError, LoadResult
 from .engine import AuditEngine
 from .scorer import RiskScorer
 from .report import ReportGenerator
+from .state import StateStore
 
 __all__ = [
     "Reimbursement",
@@ -26,4 +27,8 @@ __all__ = [
     "AuditEngine",
     "RiskScorer",
     "ReportGenerator",
+    "StateStore",
+    "CorrectionTrace",
+    "LoadError",
+    "LoadResult",
 ]

@@ -11,9 +11,10 @@ from .models import (
     FindingStatus,
     SpotCheckReport,
 )
+from .scorer import SEVERITY_WEIGHTS
 
 
-SEVERITY_ORDER = {
+SEVERITY_SORT_KEY = {
     FindingSeverity.CRITICAL: 0,
     FindingSeverity.HIGH: 1,
     FindingSeverity.MEDIUM: 2,
@@ -57,7 +58,6 @@ class ReportGenerator:
         self,
         result: AuditResult,
         sample_size: int = 5,
-        seed: int = 42,
     ) -> list[str]:
         """基于风险分数选择抽检样本。优先选取高风险报销单。"""
         if not result.findings:
@@ -65,11 +65,12 @@ class ReportGenerator:
 
         rid_risk: dict[str, float] = defaultdict(float)
         for f in result.findings:
+            weight = SEVERITY_WEIGHTS.get(f.severity, 1)
             for rid in f.data_refs.get("reimburse_ids", []):
-                rid_risk[rid] += SEVERITY_ORDER.get(f.severity, 2)
+                rid_risk[rid] += weight
             single_rid = f.data_refs.get("reimburse_id")
             if single_rid:
-                rid_risk[single_rid] += SEVERITY_ORDER.get(f.severity, 2)
+                rid_risk[single_rid] += weight
 
         sorted_rids = sorted(rid_risk.keys(), key=lambda r: rid_risk[r], reverse=True)
         return sorted_rids[:sample_size]
@@ -153,7 +154,7 @@ class ReportGenerator:
             lines.append("  （无）")
             lines.append("")
             return
-        sorted_f = sorted(findings, key=lambda f: SEVERITY_ORDER.get(f.severity, 2))
+        sorted_f = sorted(findings, key=lambda f: SEVERITY_SORT_KEY.get(f.severity, 2))
         for i, f in enumerate(sorted_f, 1):
             sources_str = "; ".join(str(s) for s in f.sources)
             lines.append(f"  {i}. [{f.severity.value}] {f.rule_name} - {f.description}")
