@@ -1,0 +1,149 @@
+{
+  "records": [
+    {
+      "disbursement_id": "4a5f312f-ca08-44e6-a91b-6a71fffd99f9",
+      "project_id": "proj_002",
+      "project_name": "阳光新城",
+      "account_id": "acc_002",
+      "total_request_amount": 1120000.0,
+      "total_approved_amount": 1120000.0,
+      "status": "待拨付",
+      "run_batch_no": "batch_v1",
+      "run_timestamp": "2026-05-29T00:03:49.426059",
+      "items": [
+        {
+          "item_id": "a44626f2-b9f1-4716-bb04-73b61afe85dd",
+          "node_id": "node_004",
+          "node_name": "基础工程完成",
+          "invoice_id": "inv_003",
+          "invoice_amount": 3200000.0,
+          "node_completed_amount": 3500000.0,
+          "applicable_ratio": 35.0,
+          "request_amount": 1120000.0,
+          "approved_amount": 1120000.0
+        }
+      ]
+    },
+    {
+      "disbursement_id": "02a57010-6f74-411a-b815-3ffb932030ff",
+      "project_id": "proj_001",
+      "project_name": "滨江花园一期",
+      "account_id": "acc_001",
+      "total_request_amount": 3690000.0,
+      "total_approved_amount": 3690000.0,
+      "status": "待拨付",
+      "run_batch_no": "batch_v1",
+      "run_timestamp": "2026-05-29T00:03:49.426059",
+      "items": [
+        {
+          "item_id": "155866ca-f85b-461e-ae67-8083ebef307f",
+          "node_id": "node_001",
+          "node_name": "基础工程完成",
+          "invoice_id": "inv_001",
+          "invoice_amount": 4800000.0,
+          "node_completed_amount": 5000000.0,
+          "applicable_ratio": 30.0,
+          "request_amount": 1440000.0,
+          "approved_amount": 1440000.0
+        },
+        {
+          "item_id": "73a3499f-96cc-4dc9-9202-1a028cb4826a",
+          "node_id": "node_002",
+          "node_name": "主体结构封顶",
+          "invoice_id": "inv_002",
+          "invoice_amount": 7500000.0,
+          "node_completed_amount": 8000000.0,
+          "applicable_ratio": 30.0,
+          "request_amount": 2250000.0,
+          "approved_amount": 2250000.0
+        }
+      ]
+    },
+    {
+      "disbursement_id": "c3796759-cd3b-4cab-93e7-b3c1b5f0d717",
+      "project_id": "proj_001",
+      "project_name": "滨江花园一期",
+      "account_id": "acc_001",
+      "total_request_amount": 3825000.0,
+      "total_approved_amount": 3825000.0,
+      "status": "待拨付",
+      "run_batch_no": "batch_v2",
+      "run_timestamp": "2026-05-29T00:03:59.518784",
+      "items": [
+        {
+          "item_id": "a792ae18-06b9-4abe-8bbb-24bd7cf926b0",
+          "node_id": "node_001",
+          "node_name": "基础工程完成",
+          "invoice_id": "inv_001",
+          "invoice_amount": 4800000.0,
+          "node_completed_amount": 5000000.0,
+          "applicable_ratio": 25.0,
+          "request_amount": 1200000.0,
+          "approved_amount": 1200000.0
+        },
+        {
+          "item_id": "5bdfd5dc-a35e-430e-8555-7192ca08daad",
+          "node_id": "node_002",
+          "node_name": "主体结构封顶",
+          "invoice_id": "inv_004",
+          "invoice_amount": 7800000.0,
+          "node_completed_amount": 8000000.0,
+          "applicable_ratio": 25.0,
+          "request_amount": 1950000.0,
+          "approved_amount": 1950000.0
+        },
+        {
+          "item_id": "f3aa56f6-b7e5-4f33-bef3-939ef5f92f30",
+          "node_id": "node_003",
+          "node_name": "竣工验收",
+          "invoice_id": "inv_005",
+          "invoice_amount": 2700000.0,
+          "node_completed_amount": 2800000.0,
+          "applicable_ratio": 25.0,
+          "request_amount": 675000.0,
+          "approved_amount": 675000.0
+        }
+      ]
+    },
+    {
+      "disbursement_id": "364f9fb7-4902-4c2f-aec5-8d945a3e0da0",
+      "project_id": "proj_002",
+      "project_name": "阳光新城",
+      "account_id": "acc_002",
+      "total_request_amount": 2030000.0,
+      "total_approved_amount": 2030000.0,
+      "status": "待拨付",
+      "run_batch_no": "batch_v2",
+      "run_timestamp": "2026-05-29T00:03:59.518784",
+      "items": [
+        {
+          "item_id": "abfcbe99-5e91-42fd-97b0-cd63d6d91116",
+          "node_id": "node_005",
+          "node_name": "主体结构封顶",
+          "invoice_id": "inv_006",
+          "invoice_amount": 5800000.0,
+          "node_completed_amount": 6000000.0,
+          "applicable_ratio": 35.0,
+          "request_amount": 2030000.0,
+          "approved_amount": 2030000.0
+        }
+      ]
+    }
+  ],
+  "batches": {
+    "batch_v1": {
+      "timestamp": "2026-05-29T00:03:49.426789",
+      "record_ids": [
+        "4a5f312f-ca08-44e6-a91b-6a71fffd99f9",
+        "02a57010-6f74-411a-b815-3ffb932030ff"
+      ]
+    },
+    "batch_v2": {
+      "timestamp": "2026-05-29T00:03:59.519976",
+      "record_ids": [
+        "c3796759-cd3b-4cab-93e7-b3c1b5f0d717",
+        "364f9fb7-4902-4c2f-aec5-8d945a3e0da0"
+      ]
+    }
+  }
+}

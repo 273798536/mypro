@@ -1,0 +1,22 @@
+[project]
+name = "presale-fund-cli"
+version = "0.1.0"
+description = "预售房监管资金拨付CLI工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.0",
+    "pydantic>=2.0",
+    "pandas>=2.0",
+    "openpyxl>=3.1",
+    "rich>=13.0",
+]
+
+[project.scripts]
+presale-fund = "presale_fund.cli:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["presale_fund"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
