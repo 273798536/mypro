@@ -1,4 +1,4 @@
-import type { GameState, GameAction } from '../types';
+import type { GameState, GameAction, Position } from '../types';
 import { GAME_CONFIG } from '../constants/gameConfig';
 import { createInitialState } from './initialState';
 import {
@@ -63,7 +63,8 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
 
     case 'TICK': {
       if (state.status !== 'playing') return state;
-      if (state.timeRemaining <= 1) {
+      if (state.timeRemaining <= 0) return state;
+      if (state.timeRemaining === 1) {
         return processTimeout(state);
       }
       return { ...state, timeRemaining: state.timeRemaining - 1 };
@@ -82,7 +83,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
         state.lastExtremeDirection
       );
 
-      let updatedAccounts = state.accounts.map(account => {
+      const updatedAccounts = state.accounts.map(account => {
         if (account.status === 'liquidated') return account;
         
         const updatedPositions = updatePositionPrices(
@@ -239,7 +240,7 @@ export const gameReducer = (state: GameState, action: GameAction): GameState => 
           const newVolume = pos.volume - closeVolume;
           if (newVolume <= 0) return null;
           return { ...pos, volume: newVolume };
-        }).filter(Boolean) as any[];
+        }).filter(Boolean) as Position[];
 
         const newTotalCapital = acc.totalCapital + realizedPnL;
         const newAvailableCapital = acc.availableCapital + realizedPnL + (positionToClose.marginRequired * (closeVolume / positionToClose.volume));
@@ -398,6 +399,7 @@ const processTimeout = (state: GameState): GameState => {
       ...state,
       operationLogs: [...state.operationLogs, log],
       totalScore: state.totalScore + GAME_CONFIG.SCORE_TIMEOUT,
+      timeRemaining: 0,
     };
   }
 
@@ -458,5 +460,6 @@ const processTimeout = (state: GameState): GameState => {
     forceCloseQueue,
     totalScore: state.totalScore + GAME_CONFIG.SCORE_TIMEOUT,
     status: allLiquidated ? 'settled' : state.status,
+    timeRemaining: 0,
   };
 };

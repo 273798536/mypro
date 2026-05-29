@@ -3,12 +3,13 @@ import { TrendingUp, TrendingDown, Zap, Activity } from 'lucide-react';
 import { useGameEngine } from '../hooks/useGameEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getContract } from '../utils/marginCalculator';
+import type { MarketEvent } from '../types';
 
 export const MarketEventList: React.FC = () => {
   const { state } = useGameEngine();
   const { marketEvents } = state;
 
-  const getEventIcon = (event: any) => {
+  const getEventIcon = (event: MarketEvent) => {
     if (event.isExtreme) {
       return <Zap className="w-5 h-5 text-red-500" />;
     }
@@ -17,7 +18,7 @@ export const MarketEventList: React.FC = () => {
       : <TrendingDown className="w-5 h-5 text-red-500" />;
   };
 
-  const getEventColor = (event: any) => {
+  const getEventColor = (event: MarketEvent) => {
     if (event.isExtreme) return 'bg-red-50 border-red-200';
     return event.priceChangePercent >= 0
       ? 'bg-green-50 border-green-200'

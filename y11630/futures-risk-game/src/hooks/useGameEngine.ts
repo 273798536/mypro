@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useGame } from '../store/gameContext';
+import { useGame } from './useGame';
 import { calculateMarginToAdd } from '../utils/marginCalculator';
 
 
@@ -86,9 +86,8 @@ export const useGameEngine = () => {
 
   const isGameOver = useCallback(() => {
     return state.status === 'settled' || 
-           state.currentRound >= state.totalRounds ||
-           state.accounts.every(a => a.status === 'liquidated');
-  }, [state.status, state.currentRound, state.totalRounds, state.accounts]);
+           (state.accounts.length > 0 && state.accounts.every(a => a.status === 'liquidated'));
+  }, [state.status, state.accounts]);
 
   return {
     state,

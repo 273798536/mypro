@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useGame } from '../store/gameContext';
+import { useGame } from './useGame';
 
 export const useTimer = () => {
   const { state, dispatch } = useGame();

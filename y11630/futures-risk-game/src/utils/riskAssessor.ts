@@ -51,7 +51,7 @@ export const sortForceCloseQueue = (accounts: Account[]): Account[] => {
 export const evaluateOperation = (
   account: Account,
   operationType: OperationType,
-  _amount?: number
+  amount?: number
 ): { isCorrect: boolean; reason: string; scoreChange: number } => {
   const { WARNING_THRESHOLD, DANGER_THRESHOLD, SCORE_CORRECT_OPERATION, SCORE_WRONG_OPERATION } = GAME_CONFIG;
   
@@ -67,6 +67,20 @@ export const evaluateOperation = (
 
   switch (operationType) {
     case 'add_margin':
+      if (amount !== undefined && amount <= 0) {
+        return {
+          isCorrect: false,
+          reason: '追加保证金金额必须大于0',
+          scoreChange: SCORE_WRONG_OPERATION * 0.3,
+        };
+      }
+      if (amount !== undefined && amount > account.availableCapital) {
+        return {
+          isCorrect: false,
+          reason: '可用资金不足，无法追加该金额的保证金',
+          scoreChange: SCORE_WRONG_OPERATION * 0.5,
+        };
+      }
       if (currentRisk >= DANGER_THRESHOLD) {
         return {
           isCorrect: true,
