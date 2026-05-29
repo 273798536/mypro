@@ -136,7 +136,7 @@ def apply_red_flush_compensation(db: Session, invoice_id: int,
         f"红冲补偿：金额{adjustment_amount}", operator,
     )
 
-    db.commit()
+    db.flush()
 
     return {
         "invoice_id": rf.id,
@@ -154,6 +154,7 @@ def batch_apply_red_flush(db: Session, period: str = None,
     for item in results:
         res = apply_red_flush_compensation(db, item["invoice_id"], operator)
         applied.append(res)
+    db.commit()
 
     return {
         "period": period,

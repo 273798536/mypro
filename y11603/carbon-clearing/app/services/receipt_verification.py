@@ -104,7 +104,7 @@ def verify_receipts(db: Session, period: str = None) -> List[dict]:
                 "candidate_count": len(matching_by_amount),
             })
 
-    db.commit()
+    db.flush()
     return results
 
 

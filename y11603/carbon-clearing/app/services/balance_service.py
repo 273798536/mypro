@@ -137,14 +137,17 @@ def recalculate_balance(db: Session, enterprise_id: int, period: str = None,
 
     calculated_closing = opening + total_in - total_out + red_flush_adj
 
-    old_balance = str(ent.current_balance)
-    ent.current_balance = calculated_closing
-    _log_correction(
-        db, enterprise_id, "enterprise", enterprise_id,
-        "current_balance", old_balance, str(calculated_closing),
-        f"余额重算 period={period or 'all'}",
-    )
-    db.commit()
+    if period:
+        ent.current_balance = calculated_closing
+    else:
+        old_balance = str(ent.current_balance)
+        ent.current_balance = calculated_closing
+        _log_correction(
+            db, enterprise_id, "enterprise", enterprise_id,
+            "current_balance", old_balance, str(calculated_closing),
+            f"余额重算 period=all",
+        )
+    db.flush()
 
     return {
         "enterprise_id": enterprise_id,

@@ -6,7 +6,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from app.models.models import (
-    Enterprise, CreditTransaction, Invoice, Receipt,
+    Enterprise, CreditTransaction, Invoice, Receipt, EnergyReading,
     ClearingTable, Reconciliation, ReconciliationItem, Anomaly
 )
 from app.services.balance_service import recalculate_balance
@@ -22,6 +22,14 @@ from app.services.anomaly_service import (
 def run_reconciliation(db: Session, period: str, operator: str = None,
                        auto_apply_red_flush: bool = True,
                        remark: str = None) -> Reconciliation:
+    existing = (
+        db.query(Reconciliation)
+        .filter(Reconciliation.period == period, Reconciliation.status == "completed")
+        .first()
+    )
+    if existing:
+        return existing
+
     rec = Reconciliation(
         period=period,
         status="running",
@@ -32,6 +40,8 @@ def run_reconciliation(db: Session, period: str, operator: str = None,
     db.add(rec)
     db.flush()
 
+    detect_duplicate_credits(db, rec.id, period)
+
     if auto_apply_red_flush:
         rf_results = detect_red_flush_invoices(db, period)
         for item in rf_results:
@@ -41,20 +51,23 @@ def run_reconciliation(db: Session, period: str, operator: str = None,
     verify_receipts(db, period)
 
     enterprises = db.query(Enterprise).filter(Enterprise.status == "active").all()
-    items = []
 
     for ent in enterprises:
-        _process_enterprise(db, rec.id, ent.id, period, items)
+        _build_reconciliation_item(db, rec.id, ent.id, period)
 
     rec.total_enterprises = len(enterprises)
     db.flush()
 
-    detect_duplicate_credits(db, rec.id, period)
     detect_cross_month_anomalies(db, rec.id, period)
     detect_red_flush_anomalies(db, rec.id, period)
     detect_receipt_anomalies(db, rec.id, period)
 
     db.flush()
+    items = (
+        db.query(ReconciliationItem)
+        .filter(ReconciliationItem.reconciliation_id == rec.id)
+        .all()
+    )
     detect_balance_mismatch(db, rec.id, period, items)
 
     anomalies = (
@@ -70,9 +83,8 @@ def run_reconciliation(db: Session, period: str, operator: str = None,
     return rec
 
 
-def _process_enterprise(db: Session, reconciliation_id: int,
-                        enterprise_id: int, period: str,
-                        items: list) -> ReconciliationItem:
+def _build_reconciliation_item(db: Session, reconciliation_id: int,
+                               enterprise_id: int, period: str) -> ReconciliationItem:
     year, month = period.split("-")
     y, m = int(year), int(month)
     period_start = date(y, m, 1)
@@ -88,12 +100,13 @@ def _process_enterprise(db: Session, reconciliation_id: int,
     reported_closing = ct.closing_balance if ct else Decimal("0")
     balance_diff = balance_result["calculated_closing"] - reported_closing
 
-    from app.models.models import EnergyReading
     cross_month_readings = (
         db.query(EnergyReading)
         .filter(
             EnergyReading.enterprise_id == enterprise_id,
             EnergyReading.is_cross_month == True,
+            EnergyReading.reading_date >= period_start,
+            EnergyReading.reading_date < period_end,
         )
         .count()
     )
@@ -103,6 +116,8 @@ def _process_enterprise(db: Session, reconciliation_id: int,
         .filter(
             CreditTransaction.enterprise_id == enterprise_id,
             CreditTransaction.is_duplicate == True,
+            CreditTransaction.transaction_date >= period_start,
+            CreditTransaction.transaction_date < period_end,
         )
         .count()
     )
@@ -113,6 +128,8 @@ def _process_enterprise(db: Session, reconciliation_id: int,
             Invoice.enterprise_id == enterprise_id,
             Invoice.is_red_flush == True,
             Invoice.red_flush_applied == False,
+            Invoice.issue_date >= period_start,
+            Invoice.issue_date < period_end,
         )
         .count()
     )
@@ -122,6 +139,8 @@ def _process_enterprise(db: Session, reconciliation_id: int,
         .filter(
             Receipt.enterprise_id == enterprise_id,
             Receipt.is_verified == False,
+            Receipt.receipt_date >= period_start,
+            Receipt.receipt_date < period_end,
         )
         .count()
     )
@@ -150,7 +169,6 @@ def _process_enterprise(db: Session, reconciliation_id: int,
     )
     db.add(item)
     db.flush()
-    items.append(item)
     return item
 
 

@@ -105,7 +105,7 @@ def detect_cross_month_readings(db: Session, period: str = None) -> List[dict]:
                     "prev_value": str(prev_reading.value),
                 })
 
-    db.commit()
+    db.flush()
     return results
 
 

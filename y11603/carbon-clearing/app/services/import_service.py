@@ -56,9 +56,23 @@ def _create_batch(db: Session, source_type: str, source_file: str = None,
 def import_enterprises(db: Session, items: List[EnterpriseIn],
                        operator: str = None) -> ImportBatch:
     batch = _create_batch(db, "enterprise", operator=operator)
+    skipped = 0
     for item in items:
-        _get_or_create_enterprise(db, item.enterprise_code, item.name, item.initial_balance)
-    batch.record_count = len(items)
+        existing = db.query(Enterprise).filter(Enterprise.enterprise_code == item.enterprise_code).first()
+        if existing:
+            skipped += 1
+            continue
+        ent = Enterprise(
+            enterprise_code=item.enterprise_code,
+            name=item.name,
+            credit_code=item.credit_code,
+            account_id=item.account_id,
+            initial_balance=item.initial_balance,
+            current_balance=item.initial_balance,
+        )
+        db.add(ent)
+    batch.record_count = len(items) - skipped
+    batch.remark = f"跳过已存在{skipped}条" if skipped > 0 else None
     db.commit()
     return batch
 
@@ -66,8 +80,22 @@ def import_enterprises(db: Session, items: List[EnterpriseIn],
 def import_readings(db: Session, items: List[EnergyReadingIn],
                     operator: str = None) -> ImportBatch:
     batch = _create_batch(db, "reading", operator=operator)
+    skipped = 0
     for item in items:
         ent = _get_or_create_enterprise(db, item.enterprise_code)
+        existing = (
+            db.query(EnergyReading)
+            .filter(
+                EnergyReading.enterprise_id == ent.id,
+                EnergyReading.reading_date == item.reading_date,
+                EnergyReading.energy_type == item.energy_type,
+                EnergyReading.value == item.value,
+            )
+            .first()
+        )
+        if existing:
+            skipped += 1
+            continue
         reading = EnergyReading(
             enterprise_id=ent.id,
             batch_id=batch.id,
@@ -78,7 +106,8 @@ def import_readings(db: Session, items: List[EnergyReadingIn],
             source=item.source,
         )
         db.add(reading)
-    batch.record_count = len(items)
+    batch.record_count = len(items) - skipped
+    batch.remark = f"跳过已存在{skipped}条" if skipped > 0 else None
     db.commit()
     return batch
 
@@ -86,8 +115,23 @@ def import_readings(db: Session, items: List[EnergyReadingIn],
 def import_credits(db: Session, items: List[CreditTransactionIn],
                    operator: str = None) -> ImportBatch:
     batch = _create_batch(db, "credit", operator=operator)
+    skipped = 0
     for item in items:
         ent = _get_or_create_enterprise(db, item.enterprise_code)
+        existing = (
+            db.query(CreditTransaction)
+            .filter(
+                CreditTransaction.enterprise_id == ent.id,
+                CreditTransaction.transaction_no == item.transaction_no,
+                CreditTransaction.amount == item.amount,
+                CreditTransaction.direction == item.direction,
+                CreditTransaction.transaction_date == item.transaction_date,
+            )
+            .first()
+        )
+        if existing:
+            skipped += 1
+            continue
         credit = CreditTransaction(
             enterprise_id=ent.id,
             batch_id=batch.id,
@@ -99,7 +143,8 @@ def import_credits(db: Session, items: List[CreditTransactionIn],
             source=item.source,
         )
         db.add(credit)
-    batch.record_count = len(items)
+    batch.record_count = len(items) - skipped
+    batch.remark = f"跳过已存在{skipped}条" if skipped > 0 else None
     db.commit()
     return batch
 
@@ -107,8 +152,21 @@ def import_credits(db: Session, items: List[CreditTransactionIn],
 def import_invoices(db: Session, items: List[InvoiceIn],
                     operator: str = None) -> ImportBatch:
     batch = _create_batch(db, "invoice", operator=operator)
+    skipped = 0
     for item in items:
         ent = _get_or_create_enterprise(db, item.enterprise_code)
+        existing = (
+            db.query(Invoice)
+            .filter(
+                Invoice.enterprise_id == ent.id,
+                Invoice.invoice_no == item.invoice_no,
+                Invoice.issue_date == item.issue_date,
+            )
+            .first()
+        )
+        if existing:
+            skipped += 1
+            continue
         invoice = Invoice(
             enterprise_id=ent.id,
             batch_id=batch.id,
@@ -121,7 +179,8 @@ def import_invoices(db: Session, items: List[InvoiceIn],
             source=item.source,
         )
         db.add(invoice)
-    batch.record_count = len(items)
+    batch.record_count = len(items) - skipped
+    batch.remark = f"跳过已存在{skipped}条" if skipped > 0 else None
     db.commit()
     return batch
 
@@ -129,8 +188,21 @@ def import_invoices(db: Session, items: List[InvoiceIn],
 def import_receipts(db: Session, items: List[ReceiptIn],
                     operator: str = None) -> ImportBatch:
     batch = _create_batch(db, "receipt", operator=operator)
+    skipped = 0
     for item in items:
         ent = _get_or_create_enterprise(db, item.enterprise_code)
+        existing = (
+            db.query(Receipt)
+            .filter(
+                Receipt.enterprise_id == ent.id,
+                Receipt.receipt_no == item.receipt_no,
+                Receipt.receipt_date == item.receipt_date,
+            )
+            .first()
+        )
+        if existing:
+            skipped += 1
+            continue
         receipt = Receipt(
             enterprise_id=ent.id,
             batch_id=batch.id,
@@ -140,7 +212,8 @@ def import_receipts(db: Session, items: List[ReceiptIn],
             source=item.source,
         )
         db.add(receipt)
-    batch.record_count = len(items)
+    batch.record_count = len(items) - skipped
+    batch.remark = f"跳过已存在{skipped}条" if skipped > 0 else None
     db.commit()
     return batch
 
@@ -148,6 +221,7 @@ def import_receipts(db: Session, items: List[ReceiptIn],
 def import_clearing(db: Session, items: List[ClearingTableIn],
                     operator: str = None) -> ImportBatch:
     batch = _create_batch(db, "clearing", operator=operator)
+    skipped = 0
     for item in items:
         ent = _get_or_create_enterprise(db, item.enterprise_code)
         existing = (
@@ -161,6 +235,7 @@ def import_clearing(db: Session, items: List[ClearingTableIn],
             existing.total_out = item.total_out
             existing.closing_balance = item.closing_balance
             existing.remark = item.remark
+            skipped += 1
         else:
             ct = ClearingTable(
                 enterprise_id=ent.id,
@@ -172,6 +247,7 @@ def import_clearing(db: Session, items: List[ClearingTableIn],
                 remark=item.remark,
             )
             db.add(ct)
-    batch.record_count = len(items)
+    batch.record_count = len(items) - skipped
+    batch.remark = f"更新已存在{skipped}条" if skipped > 0 else None
     db.commit()
     return batch

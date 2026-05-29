@@ -23,8 +23,8 @@ def detect_duplicate_credits(db: Session, reconciliation_id: int,
         .filter(
             CreditTransaction.transaction_date >= period_start,
             CreditTransaction.transaction_date < period_end,
-            CreditTransaction.is_duplicate == False,
         )
+        .order_by(CreditTransaction.id)
         .all()
     )
 
@@ -35,26 +35,27 @@ def detect_duplicate_credits(db: Session, reconciliation_id: int,
         key = (credit.enterprise_id, credit.transaction_no, str(credit.amount),
                credit.direction, str(credit.transaction_date))
         if key in seen:
-            credit.is_duplicate = True
-            credit.duplicate_of = seen[key].id
-            credit.duplicate_note = f"与流水ID={seen[key].id}重复"
+            if not credit.is_duplicate:
+                credit.is_duplicate = True
+                credit.duplicate_of = seen[key].id
+                credit.duplicate_note = f"与流水ID={seen[key].id}重复"
 
-            anomaly = Anomaly(
-                reconciliation_id=reconciliation_id,
-                enterprise_id=credit.enterprise_id,
-                anomaly_type="DUPLICATE_CREDIT",
-                severity="critical",
-                description=f"积分流水重复：流水号{credit.transaction_no}，金额{credit.amount}，日期{credit.transaction_date}",
-                target_table="credit_transactions",
-                target_id=credit.id,
-                status="open",
-            )
-            anomalies.append(anomaly)
+                anomaly = Anomaly(
+                    reconciliation_id=reconciliation_id,
+                    enterprise_id=credit.enterprise_id,
+                    anomaly_type="DUPLICATE_CREDIT",
+                    severity="critical",
+                    description=f"积分流水重复：流水号{credit.transaction_no}，金额{credit.amount}，日期{credit.transaction_date}",
+                    target_table="credit_transactions",
+                    target_id=credit.id,
+                    status="open",
+                )
+                anomalies.append(anomaly)
         else:
             seen[key] = credit
 
     db.add_all(anomalies)
-    db.commit()
+    db.flush()
     return anomalies
 
 
@@ -91,7 +92,7 @@ def detect_cross_month_anomalies(db: Session, reconciliation_id: int,
         anomalies.append(anomaly)
 
     db.add_all(anomalies)
-    db.commit()
+    db.flush()
     return anomalies
 
 
@@ -140,7 +141,7 @@ def detect_red_flush_anomalies(db: Session, reconciliation_id: int,
         anomalies.append(anomaly)
 
     db.add_all(anomalies)
-    db.commit()
+    db.flush()
     return anomalies
 
 
@@ -180,7 +181,7 @@ def detect_receipt_anomalies(db: Session, reconciliation_id: int,
         anomalies.append(anomaly)
 
     db.add_all(anomalies)
-    db.commit()
+    db.flush()
     return anomalies
 
 
@@ -202,7 +203,7 @@ def detect_balance_mismatch(db: Session, reconciliation_id: int,
             anomalies.append(anomaly)
 
     db.add_all(anomalies)
-    db.commit()
+    db.flush()
     return anomalies
 
 
