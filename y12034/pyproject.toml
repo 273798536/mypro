@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "charging-station-analytics"
+version = "1.0.0"
+description = "充电站分时电价收益分析系统"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "openpyxl>=3.1.0",
+    "PyYAML>=6.0",
+    "flask>=3.0.0",
+    "click>=8.1.0",
+    "matplotlib>=3.7.0",
+]
+
+[project.scripts]
+charging-analytics = "charging_station_analytics.cli.main:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["charging_station_analytics*"]

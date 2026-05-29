@@ -1,0 +1,452 @@
+{% extends 'base.html' %}
+
+{% block title %}分析仪表板 - 充电站分时电价收益分析系统{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-1">
+                <i class="bi bi-speedometer2 me-2"></i>
+                分析仪表板
+            </h4>
+            <small class="text-muted">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                {{ filename }}
+            </small>
+        </div>
+        <div>
+            <a href="{{ url_for('charts') }}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-bar-chart me-2"></i>图表分析
+            </a>
+            <a href="{{ url_for('download_report') }}" class="btn btn-primary">
+                <i class="bi bi-download me-2"></i>导出报告
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card" style="--card-color: #1890FF; --card-color-dark: #096dd9;">
+            <div class="card-body">
+                <div class="card-title">
+                    <i class="bi bi-lightning-charge me-1"></i>
+                    电费总额
+                </div>
+                <div class="stat-value">¥{{ '%.2f'|format(summary.revenue.total_electricity_fee) }}</div>
+                <div class="stat-subtitle">
+                    共 {{ summary.device_status.total_orders }} 笔订单，{{ summary.data_quality.valid_rows }} 条有效数据
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card" style="--card-color: #52C41A; --card-color-dark: #389E0D;">
+            <div class="card-body">
+                <div class="card-title">
+                    <i class="bi bi-gear me-1"></i>
+                    服务费总额
+                </div>
+                <div class="stat-value">¥{{ '%.2f'|format(summary.revenue.total_service_fee) }}</div>
+                <div class="stat-subtitle">
+                    平均服务费率 ¥0.60/度
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card" style="--card-color: #FF4D4F; --card-color-dark: #CF1322;">
+            <div class="card-body">
+                <div class="card-title">
+                    <i class="bi bi-tags me-1"></i>
+                    优惠抵扣
+                </div>
+                <div class="stat-value">-¥{{ '%.2f'|format(summary.revenue.total_coupon_discount) }}</div>
+                <div class="stat-subtitle">
+                    {{ summary.anomalies.stacked_coupon.count }} 笔优惠叠加订单
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card" style="--card-color: #722ED1; --card-color-dark: #531DAB;">
+            <div class="card-body">
+                <div class="card-title">
+                    <i class="bi bi-wallet2 me-1"></i>
+                    净收益
+                </div>
+                <div class="stat-value">¥{{ '%.2f'|format(summary.revenue.net_revenue) }}</div>
+                <div class="stat-subtitle">
+                    电费+服务费-优惠
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="card-title mb-1">
+                            <i class="bi bi-pc-display text-success me-2"></i>
+                            正常订单
+                        </h6>
+                        <div class="display-4 fw-bold text-success">
+                            {{ summary.device_status.normal_orders }}
+                        </div>
+                    </div>
+                    <span class="badge bg-success">
+                        {{ '%.1f'|format(summary.device_status.normal_orders / summary.device_status.total_orders * 100) }}%
+                    </span>
+                </div>
+                <a href="javascript:void(0)" onclick="showTab('normal')" class="text-decoration-none">
+                    查看详情 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="card-title mb-1">
+                            <i class="bi bi-pc-display text-danger me-2"></i>
+                            设备离线
+                        </h6>
+                        <div class="display-4 fw-bold text-danger">
+                            {{ summary.device_status.offline_orders }}
+                        </div>
+                    </div>
+                    <span class="badge bg-danger">
+                        需复核
+                    </span>
+                </div>
+                <a href="javascript:void(0)" onclick="showTab('offline')" class="text-decoration-none text-danger">
+                    查看详情 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="card-title mb-1">
+                            <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                            异常订单
+                        </h6>
+                        <div class="display-4 fw-bold text-warning">
+                            {{ summary.anomalies.cross_period.count + summary.anomalies.stacked_coupon.count }}
+                        </div>
+                    </div>
+                    <span class="badge bg-warning text-dark">
+                        待复核
+                    </span>
+                </div>
+                <div class="small text-muted">
+                    跨时段 {{ summary.anomalies.cross_period.count }} 笔，优惠叠加 {{ summary.anomalies.stacked_coupon.count }} 笔
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+        <ul class="nav nav-tabs" id="dataTabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-tab="normal" onclick="showTab('normal')">
+                    <i class="bi bi-check-circle me-1"></i>
+                    正常订单
+                    <span class="badge bg-success ms-1">{{ summary.device_status.normal_orders }}</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-tab="offline" onclick="showTab('offline')">
+                    <i class="bi bi-pc-display-horizontal me-1"></i>
+                    设备离线（单独处理）
+                    <span class="badge bg-danger ms-1">{{ summary.device_status.offline_orders }}</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-tab="cross_period" onclick="showTab('cross_period')">
+                    <i class="bi bi-clock-history me-1"></i>
+                    跨时段充电（需复核）
+                    <span class="badge bg-warning text-dark ms-1">{{ summary.anomalies.cross_period.count }}</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-tab="stacked_coupon" onclick="showTab('stacked_coupon')">
+                    <i class="bi bi-tags me-1"></i>
+                    优惠叠加（需复核）
+                    <span class="badge bg-info ms-1">{{ summary.anomalies.stacked_coupon.count }}</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="form-control" placeholder="搜索订单号、设备编号、充电站名称...">
+                <button class="btn btn-outline-secondary" onclick="clearSearch()">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="tabContent" class="data-table-container">
+            <div class="text-center py-5">
+                <div class="loading mb-3"></div>
+                <p class="text-muted">正在加载数据...</p>
+            </div>
+        </div>
+
+        <div id="pagination" class="mt-3 d-none">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted" id="paginationInfo"></small>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="paginationLinks"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentTab = 'normal';
+    let currentPage = 1;
+    let totalPages = 1;
+    let searchQuery = '';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTabData('normal');
+    });
+
+    function showTab(tabName) {
+        currentTab = tabName;
+        currentPage = 1;
+        searchQuery = '';
+        document.getElementById('searchInput').value = '';
+        
+        document.querySelectorAll('#dataTabs .nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.tab === tabName) {
+                link.classList.add('active');
+            }
+        });
+        
+        loadTabData(tabName);
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        searchQuery = '';
+        currentPage = 1;
+        loadTabData(currentTab);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        searchQuery = e.target.value;
+        currentPage = 1;
+        loadTabData(currentTab);
+    });
+
+    function loadTabData(tabName) {
+        const tabContent = document.getElementById('tabContent');
+        tabContent.innerHTML = `
+            <div class="text-center py-5">
+                <div class="loading mb-3"></div>
+                <p class="text-muted">正在加载数据...</p>
+            </div>
+        `;
+        
+        let apiUrl = '';
+        switch(tabName) {
+            case 'normal':
+                apiUrl = `/api/normal_orders?page=${currentPage}&search=${encodeURIComponent(searchQuery)}`;
+                break;
+            case 'offline':
+                apiUrl = '/api/offline_orders';
+                break;
+            case 'cross_period':
+                apiUrl = '/api/cross_period_orders';
+                break;
+            case 'stacked_coupon':
+                apiUrl = '/api/stacked_coupon_orders';
+                break;
+        }
+        
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                renderTable(tabName, data);
+            })
+            .catch(error => {
+                tabContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        加载数据失败：${error}
+                    </div>
+                `;
+            });
+    }
+
+    function renderTable(tabName, data) {
+        const tabContent = document.getElementById('tabContent');
+        const pagination = document.getElementById('pagination');
+        
+        if (!data.data || data.data.length === 0) {
+            tabContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-4 text-muted mb-3"></i>
+                    <p class="text-muted">暂无数据</p>
+                </div>
+            `;
+            pagination.classList.add('d-none');
+            return;
+        }
+        
+        let columns = [];
+        if (tabName === 'normal') {
+            columns = [
+                { key: 'order_id', label: '订单号', width: '150px' },
+                { key: 'station_name', label: '充电站', width: '120px' },
+                { key: 'device_name', label: '设备名称', width: '100px' },
+                { key: 'start_time', label: '开始时间', width: '160px' },
+                { key: 'energy', label: '充电量(度)', width: '100px' },
+                { key: 'calculated_electricity_fee', label: '电费(元)', width: '100px' },
+                { key: 'calculated_service_fee', label: '服务费(元)', width: '100px' },
+                { key: 'original_coupon_amount', label: '优惠(元)', width: '100px' },
+                { key: 'net_revenue', label: '净收益(元)', width: '100px' },
+                { key: 'action', label: '操作', width: '80px' }
+            ];
+        } else if (tabName === 'offline') {
+            columns = [
+                { key: 'order_id', label: '订单号', width: '150px' },
+                { key: 'station_name', label: '充电站', width: '120px' },
+                { key: 'device_name', label: '设备名称', width: '100px' },
+                { key: 'original_status', label: '原始状态', width: '100px' },
+                { key: 'normalized_device_status', label: '标准化状态', width: '100px' },
+                { key: 'is_manual_supplement', label: '人工补录', width: '80px' },
+                { key: 'review_reason', label: '复核原因', width: '150px' },
+                { key: 'energy', label: '充电量(度)', width: '100px' },
+                { key: 'net_revenue', label: '净收益(元)', width: '100px' },
+                { key: 'action', label: '操作', width: '80px' }
+            ];
+        } else if (tabName === 'cross_period') {
+            columns = [
+                { key: 'order_id', label: '订单号', width: '150px' },
+                { key: 'station_name', label: '充电站', width: '120px' },
+                { key: 'start_time', label: '开始时间', width: '160px' },
+                { key: 'end_time', label: '结束时间', width: '160px' },
+                { key: 'crossed_periods', label: '跨时段类型', width: '120px' },
+                { key: 'energy', label: '充电量(度)', width: '100px' },
+                { key: 'calculated_electricity_fee', label: '电费(元)', width: '100px' },
+                { key: 'action', label: '操作', width: '80px' }
+            ];
+        } else if (tabName === 'stacked_coupon') {
+            columns = [
+                { key: 'order_id', label: '订单号', width: '150px' },
+                { key: 'station_name', label: '充电站', width: '120px' },
+                { key: 'coupon_type', label: '优惠券类型', width: '180px' },
+                { key: 'coupon_stack_count', label: '叠加张数', width: '80px' },
+                { key: 'original_coupon_amount', label: '优惠金额(元)', width: '120px' },
+                { key: 'energy', label: '充电量(度)', width: '100px' },
+                { key: 'net_revenue', label: '净收益(元)', width: '100px' },
+                { key: 'action', label: '操作', width: '80px' }
+            ];
+        }
+        
+        let html = '<div class="table-responsive"><table class="table table-hover table-sm">';
+        html += '<thead><tr>';
+        columns.forEach(col => {
+            html += `<th style="width: ${col.width}">${col.label}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+        
+        data.data.forEach(row => {
+            html += '<tr>';
+            columns.forEach(col => {
+                if (col.key === 'action') {
+                    html += `<td><a href="/trace/${row.order_id}" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i> 追溯</a></td>`;
+                } else if (col.key === 'is_manual_supplement') {
+                    html += `<td>${row[col.key] ? '<span class="badge bg-warning text-dark">是</span>' : '<span class="badge bg-secondary">否</span>'}</td>`;
+                } else if (col.key === 'normalized_device_status') {
+                    let badgeClass = row[col.key] === '离线' ? 'bg-danger' : 
+                                    row[col.key] === '故障' ? 'bg-warning text-dark' : 'bg-success';
+                    html += `<td><span class="badge ${badgeClass}">${row[col.key] || '-'}</span></td>`;
+                } else if (col.key === 'crossed_periods') {
+                    let periods = (row[col.key] || '').split(',').map(p => {
+                        if (p === 'peak') return '<span class="badge bg-danger">尖峰</span>';
+                        if (p === 'high') return '<span class="badge bg-warning text-dark">高峰</span>';
+                        if (p === 'flat') return '<span class="badge bg-success">平段</span>';
+                        if (p === 'valley') return '<span class="badge bg-primary">低谷</span>';
+                        return p;
+                    }).join(' ');
+                    html += `<td>${periods}</td>`;
+                } else {
+                    html += `<td>${row[col.key] !== undefined ? row[col.key] : '-'}</td>`;
+                }
+            });
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+        tabContent.innerHTML = html;
+        
+        if (tabName === 'normal' && data.pages > 1) {
+            pagination.classList.remove('d-none');
+            renderPagination(data.page, data.pages, data.total);
+        } else {
+            pagination.classList.add('d-none');
+            if (data.total !== undefined) {
+                document.getElementById('paginationInfo').textContent = `共 ${data.total} 条记录`;
+            }
+        }
+    }
+
+    function renderPagination(page, pages, total) {
+        const paginationInfo = document.getElementById('paginationInfo');
+        const paginationLinks = document.getElementById('paginationLinks');
+        
+        paginationInfo.textContent = `共 ${total} 条记录，第 ${page}/${pages} 页`;
+        
+        let html = '';
+        html += `<li class="page-item ${page === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="goToPage(${page - 1})">上一页</a>
+        </li>`;
+        
+        const startPage = Math.max(1, page - 2);
+        const endPage = Math.min(pages, page + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            html += `<li class="page-item ${i === page ? 'active' : ''}">
+                <a class="page-link" href="javascript:void(0)" onclick="goToPage(${i})">${i}</a>
+            </li>`;
+        }
+        
+        html += `<li class="page-item ${page === pages ? 'disabled' : ''}">
+            <a class="page-link" href="javascript:void(0)" onclick="goToPage(${page + 1})">下一页</a>
+        </li>`;
+        
+        paginationLinks.innerHTML = html;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        loadTabData(currentTab);
+    }
+</script>
+{% endblock %}

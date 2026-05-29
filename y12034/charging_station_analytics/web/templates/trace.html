@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}订单追溯详情 - 充电站分时电价收益分析系统{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="mb-1">
+                <i class="bi bi-diagram-3 me-2"></i>
+                订单追溯详情
+            </h4>
+            <small class="text-muted">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                {{ filename }} · 订单号: <span id="orderIdDisplay">{{ order_id }}</span>
+            </small>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left me-2"></i>返回仪表板
+            </a>
+            <a href="{{ url_for('download_report') }}" class="btn btn-primary">
+                <i class="bi bi-download me-2"></i>导出报告
+            </a>
+        </div>
+    </div>
+</div>
+
+<div id="traceContent" class="mb-4">
+    <div class="text-center py-5">
+        <div class="loading mb-3"></div>
+        <p class="text-muted">正在加载追溯信息...</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const orderId = '{{ order_id }}';
+    document.getElementById('orderIdDisplay').textContent = orderId;
+    
+    fetch(`/api/trace/${orderId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('traceContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        ${data.error}
+                    </div>
+                `;
+                return;
+            }
+            renderTrace(data);
+        })
+        .catch(error => {
+            document.getElementById('traceContent').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    加载追溯信息失败：${error}
+                </div>
+            `;
+        });
+});
+
+function renderTrace(trace) {
+    const traceContent = document.getElementById('traceContent');
+    
+    let html = '';
+    
+    html += `
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="text-muted small mb-1">追溯ID</div>
+                    <div class="fw-monospace text-primary">${trace.trace_id}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="text-muted small mb-1">原始行号</div>
+                    <div class="display-6 fw-bold">${trace.original_row}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card ${trace.needs_review ? 'border-warning' : ''}">
+                <div class="card-body text-center">
+                    <div class="text-muted small mb-1">需复核</div>
+                    <div class="display-6 fw-bold ${trace.needs_review ? 'text-warning' : 'text-success'}">
+                        ${trace.needs_review ? '<i class="bi bi-exclamation-triangle"></i> 是' : '<i class="bi bi-check-circle"></i> 否'}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="text-muted small mb-1">异常数量</div>
+                    <div class="display-6 fw-bold ${trace.anomalies.length > 0 ? 'text-danger' : 'text-success'}">
+                        ${trace.anomalies.length}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    
+    if (trace.needs_review && trace.review_reason) {
+        html += `
+        <div class="alert alert-warning mb-4">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>复核原因：</strong>${trace.review_reason}
+        </div>
+        `;
+    }
+    
+    if (trace.anomalies.length > 0) {
+        html += `
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-exclamation-circle text-danger me-2"></i>
+                    异常标记
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    ${trace.anomalies.map(a => `
+                        <span class="badge bg-danger">${a}</span>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+        `;
+    }
+    
+    if (trace.final_result && trace.final_result.revenue_breakdown) {
+        const rev = trace.final_result.revenue_breakdown;
+        html += `
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-wallet2 text-primary me-2"></i>
+                    最终收益拆分
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-md-3">
+                        <div class="text-muted small mb-1">电费</div>
+                        <div class="h4 text-primary">¥${rev.electricity_fee.toFixed(2)}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-muted small mb-1">服务费</div>
+                        <div class="h4 text-success">¥${rev.service_fee.toFixed(2)}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-muted small mb-1">优惠抵扣</div>
+                        <div class="h4 text-danger">-¥${rev.coupon_discount.toFixed(2)}</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-muted small mb-1">净收益</div>
+                        <div class="h4 fw-bold text-purple">¥${rev.net_revenue.toFixed(2)}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+    
+    html += `
+    <div class="card">
+        <div class="card-header bg-white">
+            <h6 class="card-title mb-0">
+                <i class="bi bi-list-steps text-info me-2"></i>
+                处理步骤链
+            </h6>
+        </div>
+        <div class="card-body">
+    `;
+    
+    trace.processing_steps.forEach((step, index) => {
+        let stepIcon = '';
+        let stepColor = '';
+        
+        switch(step.step) {
+            case '数据读取':
+                stepIcon = 'bi-cloud-upload';
+                stepColor = 'text-info';
+                break;
+            case '分时电价计算':
+                stepIcon = 'bi-lightning-charge';
+                stepColor = 'text-primary';
+                break;
+            case '服务费计算':
+                stepIcon = 'bi-gear';
+                stepColor = 'text-success';
+                break;
+            case '优惠券处理':
+                stepIcon = 'bi-tags';
+                stepColor = 'text-warning';
+                break;
+            case '设备状态处理':
+                stepIcon = 'bi-pc-display';
+                stepColor = 'text-danger';
+                break;
+            default:
+                stepIcon = 'bi-check-circle';
+                stepColor = 'text-secondary';
+        }
+        
+        html += `
+        <div class="trace-step">
+            <div class="trace-step-icon" style="background-color: var(--primary-color);">
+                ${index + 1}
+            </div>
+            <div class="card">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0">
+                            <i class="bi ${stepIcon} ${stepColor} me-2"></i>
+                            ${step.step}
+                        </h6>
+                        <small class="text-muted">${new Date(step.timestamp).toLocaleString('zh-CN')}</small>
+                    </div>
+        `;
+        
+        if (step.details) {
+            html += '<div class="ms-4 text-muted small">';
+            
+            if (step.step === '数据读取' && step.details.column_mapping) {
+                html += '<strong>列映射：</strong><br>';
+                for (const [col, mapped] of Object.entries(step.details.column_mapping)) {
+                    html += `&nbsp;&nbsp;${col} → ${mapped}<br>`;
+                }
+            }
+            
+            if (step.step === '分时电价计算') {
+                if (step.details.energy_distribution) {
+                    html += '<strong>时段分布：</strong><br>';
+                    html += '&nbsp;&nbsp;';
+                    for (const [period, energy] of Object.entries(step.details.energy_distribution)) {
+                        let periodName = period === 'peak' ? '尖峰' : 
+                                        period === 'high' ? '高峰' : 
+                                        period === 'flat' ? '平段' : '低谷';
+                        let periodColor = period === 'peak' ? 'text-danger' : 
+                                         period === 'high' ? 'text-warning' : 
+                                         period === 'flat' ? 'text-success' : 'text-primary';
+                        html += `<span class="${periodColor}">${periodName}: ${energy.toFixed(2)}度</span>&nbsp;&nbsp;`;
+                    }
+                    html += '<br>';
+                }
+                if (step.details.is_cross_period) {
+                    html += `<span class="badge bg-warning text-dark me-2">跨时段</span>`;
+                    if (step.details.crossed_periods) {
+                        html += `跨时段类型：${step.details.crossed_periods}`;
+                    }
+                    html += '<br>';
+                }
+            }
+            
+            if (step.step === '服务费计算') {
+                if (step.details.service_fee_rate) {
+                    html += `<strong>服务费率：</strong>¥${step.details.service_fee_rate.toFixed(2)}/度`;
+                    if (step.details.is_from_order) {
+                        html += ' <span class="badge bg-info">订单指定</span>';
+                    } else {
+                        html += ' <span class="badge bg-secondary">默认配置</span>';
+                    }
+                    html += '<br>';
+                }
+                if (step.details.service_fee_distribution) {
+                    html += '<strong>服务费分布：</strong><br>';
+                    html += '&nbsp;&nbsp;';
+                    for (const [period, fee] of Object.entries(step.details.service_fee_distribution)) {
+                        let periodName = period === 'peak' ? '尖峰' : 
+                                        period === 'high' ? '高峰' : 
+                                        period === 'flat' ? '平段' : '低谷';
+                        html += `${periodName}: ¥${fee.toFixed(2)}&nbsp;&nbsp;`;
+                    }
+                    html += '<br>';
+                }
+            }
+            
+            if (step.step === '优惠券处理') {
+                if (step.details.original_coupon_amount !== undefined) {
+                    html += `<strong>优惠金额：</strong>¥${step.details.original_coupon_amount.toFixed(2)}`;
+                    if (step.details.is_stacked) {
+                        html += ` <span class="badge bg-warning text-dark">叠加${step.details.stack_count}张</span>`;
+                    }
+                    html += '<br>';
+                }
+                if (step.details.allocation) {
+                    html += `<strong>分摊：</strong>电费 ¥${step.details.allocation.electricity_coupon.toFixed(2)} / 服务费 ¥${step.details.allocation.service_coupon.toFixed(2)}<br>`;
+                }
+            }
+            
+            if (step.step === '设备状态处理') {
+                if (step.details.original_status) {
+                    html += `<strong>原始状态：</strong>${step.details.original_status}<br>`;
+                }
+                if (step.details.normalized_status) {
+                    let statusColor = step.details.normalized_status === '离线' ? 'text-danger' : 
+                                     step.details.normalized_status === '故障' ? 'text-warning' : 'text-success';
+                    html += `<strong>标准化状态：</strong><span class="${statusColor}">${step.details.normalized_status}</span><br>`;
+                }
+                if (step.details.is_offline) {
+                    html += `<span class="badge bg-danger">设备离线</span> `;
+                }
+                if (step.details.is_manual_supplement) {
+                    html += `<span class="badge bg-warning text-dark">人工补录</span> `;
+                }
+                if (step.details.needs_review) {
+                    html += `<span class="badge bg-info">需复核</span><br>`;
+                    if (step.details.review_reason) {
+                        html += `<strong>复核原因：</strong>${step.details.review_reason}<br>`;
+                    }
+                }
+            }
+            
+            html += '</div>';
+        }
+        
+        html += `
+                </div>
+            </div>
+        </div>
+        `;
+    });
+    
+    html += `
+        </div>
+    </div>
+    `;
+    
+    traceContent.innerHTML = html;
+}
+</script>
+{% endblock %}

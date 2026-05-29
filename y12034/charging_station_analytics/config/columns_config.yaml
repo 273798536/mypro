@@ -1,0 +1,113 @@
+columns:
+  required:
+    - name: "order_id"
+      aliases: ["订单编号", "订单号", "order_no", "id"]
+      description: "订单唯一标识"
+      data_type: "string"
+    
+    - name: "station_id"
+      aliases: ["充电站编号", "充电站ID", "station_no"]
+      description: "充电站标识"
+      data_type: "string"
+    
+    - name: "station_name"
+      aliases: ["充电站名称", "站点名称", "station_name"]
+      description: "充电站名称"
+      data_type: "string"
+    
+    - name: "device_id"
+      aliases: ["设备编号", "充电桩编号", "device_no", "pile_id"]
+      description: "设备标识"
+      data_type: "string"
+    
+    - name: "device_name"
+      aliases: ["设备名称", "充电桩名称", "device_name"]
+      description: "设备名称"
+      data_type: "string"
+    
+    - name: "start_time"
+      aliases: ["开始时间", "充电开始时间", "start_datetime"]
+      description: "充电开始时间"
+      data_type: "datetime"
+    
+    - name: "end_time"
+      aliases: ["结束时间", "充电结束时间", "end_datetime"]
+      description: "充电结束时间"
+      data_type: "datetime"
+    
+    - name: "duration"
+      aliases: ["充电时长", "时长", "充电时间(分钟)"]
+      description: "充电时长（分钟）"
+      data_type: "numeric"
+    
+    - name: "energy"
+      aliases: ["充电量", "电量", "充电度数", "kwh"]
+      description: "充电量（度）"
+      data_type: "numeric"
+    
+    - name: "total_amount"
+      aliases: ["总金额", "订单金额", "实付金额", "amount"]
+      description: "订单总金额（元）"
+      data_type: "numeric"
+
+  optional:
+    - name: "device_status"
+      aliases: ["设备状态", "充电桩状态", "status"]
+      description: "设备状态（在线/离线/故障）"
+      data_type: "string"
+      default_value: "在线"
+    
+    - name: "service_fee_rate"
+      aliases: ["服务费单价", "服务费费率", "服务费(元/度)"]
+      description: "服务费单价（元/度）"
+      data_type: "numeric"
+      default_value: null
+    
+    - name: "electricity_fee"
+      aliases: ["电费", "电费金额", "电价费用"]
+      description: "电费金额（元）"
+      data_type: "numeric"
+      default_value: null
+    
+    - name: "service_fee"
+      aliases: ["服务费", "服务费金额"]
+      description: "服务费金额（元）"
+      data_type: "numeric"
+      default_value: null
+    
+    - name: "coupon_amount"
+      aliases: ["优惠金额", "优惠券金额", "折扣金额", "coupon"]
+      description: "优惠金额（元）"
+      data_type: "numeric"
+      default_value: 0.0
+    
+    - name: "coupon_type"
+      aliases: ["优惠券类型", "优惠类型"]
+      description: "优惠券类型"
+      data_type: "string"
+      default_value: null
+    
+    - name: "car_plate"
+      aliases: ["车牌号", "车辆牌照"]
+      description: "车牌号"
+      data_type: "string"
+      default_value: null
+    
+    - name: "operator"
+      aliases: ["操作员", "操作人"]
+      description: "操作员"
+      data_type: "string"
+      default_value: null
+    
+    - name: "remark"
+      aliases: ["备注", "说明", "remark"]
+      description: "备注信息"
+      data_type: "string"
+      default_value: null
+
+  validation:
+    min_energy: 0.1
+    max_energy: 500.0
+    min_duration: 1
+    max_duration: 1440
+    min_amount: 0.0

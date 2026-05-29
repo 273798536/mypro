@@ -1,0 +1,46 @@
+tariff_config:
+  version: "1.0"
+  description: "充电站分时电价配置"
+  
+  periods:
+    peak:
+      name: "尖峰"
+      price: 1.80
+      color: "#FF4D4F"
+      time_ranges:
+        - ["10:00", "12:00"]
+        - ["19:00", "21:00"]
+    
+    high:
+      name: "高峰"
+      price: 1.45
+      color: "#FA8C16"
+      time_ranges:
+        - ["08:00", "10:00"]
+        - ["12:00", "14:00"]
+        - ["17:00", "19:00"]
+        - ["21:00", "23:00"]
+    
+    flat:
+      name: "平段"
+      price: 0.90
+      color: "#52C41A"
+      time_ranges:
+        - ["06:00", "08:00"]
+        - ["14:00", "17:00"]
+        - ["23:00", "24:00"]
+    
+    valley:
+      name: "低谷"
+      price: 0.45
+      color: "#1890FF"
+      time_ranges:
+        - ["00:00", "06:00"]
+
+  service_fee:
+    default_rate: 0.60
+    description: "服务费单价（元/度）"
+  
+  rounding:
+    precision: 2
+    method: "round_half_up"
