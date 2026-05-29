@@ -28,6 +28,7 @@ export interface Patient {
   waitTime: number;
   maxWaitTime: number;
   arrivalTime: number;
+  arrivalDelay?: number;
   status: PatientStatus;
   roomId?: string;
   source: string;

@@ -145,7 +145,11 @@ const GamePage: React.FC = () => {
 
         <div className="grid grid-cols-12 gap-4" style={{ height: 'calc(100vh - 280px)' }}>
           <div className="col-span-4 pl-8">
-            <PatientQueue patients={patients} />
+            <PatientQueue
+              patients={patients}
+              selectedPatientId={selectedPatientId}
+              onSelectPatient={setSelectedPatientId}
+            />
           </div>
 
           <div className="col-span-5 space-y-4">

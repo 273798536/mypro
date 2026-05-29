@@ -21,9 +21,11 @@ import { useGameStore } from '@/stores/useGameStore';
 
 interface PatientQueueProps {
   patients: Patient[];
+  selectedPatientId: string | null;
+  onSelectPatient: (id: string | null) => void;
 }
 
-export const PatientQueue: React.FC<PatientQueueProps> = ({ patients }) => {
+export const PatientQueue: React.FC<PatientQueueProps> = ({ patients, selectedPatientId, onSelectPatient }) => {
   const reorderPatients = useGameStore(state => state.reorderPatients);
 
   const sensors = useSensors(
@@ -86,7 +88,17 @@ export const PatientQueue: React.FC<PatientQueueProps> = ({ patients }) => {
                     <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500 font-medium">
                       {index + 1}
                     </div>
-                    <PatientCard patient={patient} />
+                    <PatientCard
+                      patient={patient}
+                      isSelected={selectedPatientId === patient.id}
+                      onSelect={() => {
+                        if (selectedPatientId === patient.id) {
+                          onSelectPatient(null);
+                        } else {
+                          onSelectPatient(patient.id);
+                        }
+                      }}
+                    />
                   </div>
                 ))}
               </div>

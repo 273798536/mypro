@@ -44,12 +44,20 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   startGame: (patients?: Patient[]) => {
     const rooms = generateMockRooms();
     const initialPatients = patients || generateMockPatients(15);
-    pendingPatients = initialPatients.map(p => ({ ...p, arrivalTime: Date.now() + p.arrivalTime - initialPatients[0].arrivalTime }));
+    
+    pendingPatients = initialPatients.map((p, idx) => ({
+      ...p,
+      arrivalDelay: idx * 15,
+      waitTime: 0,
+      status: 'waiting' as const,
+    }));
     
     let maxScore = 0;
     initialPatients.forEach(p => {
       maxScore += PRIORITY_CONFIG[p.initialPriority].points;
     });
+
+    const firstBatch = pendingPatients.slice(0, 3);
 
     set({
       status: 'playing',
@@ -57,10 +65,18 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       elapsedTime: 0,
       score: 0,
       maxScore,
-      patients: [],
+      patients: firstBatch,
       rooms,
-      events: [],
-      currentPatientIndex: 0,
+      events: firstBatch.map(p => ({
+        id: `event-init-${p.id}`,
+        type: 'patient_arrive' as const,
+        timestamp: Date.now(),
+        message: `新患者 ${p.name} 到达`,
+        patientId: p.id,
+        pointsChange: 0,
+        read: false,
+      })),
+      currentPatientIndex: 3,
     });
     patientSpawnTimer = 0;
   },
@@ -129,24 +145,27 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     if (state.status !== 'playing') return;
 
     const adjustedDelta = deltaTime * state.speed;
+    const newElapsedTime = state.elapsedTime + adjustedDelta;
     
-    set({ elapsedTime: state.elapsedTime + adjustedDelta });
+    set({ elapsedTime: newElapsedTime });
 
-    patientSpawnTimer += adjustedDelta * 1000;
-    const readyPatients = pendingPatients.filter(p => p.arrivalTime <= Date.now() + patientSpawnTimer - pendingPatients[0]?.arrivalTime || 0);
-    if (readyPatients.length > 0) {
-      readyPatients.forEach(p => {
-        if (!state.patients.find(ep => ep.id === p.id)) {
-          get().addEvent({
-            type: 'patient_arrive',
-            message: `新患者 ${p.name} 到达`,
-            patientId: p.id,
-            pointsChange: 0,
-            details: { priority: p.currentPriority, symptoms: p.symptoms },
-          });
-          set(s => ({ patients: [...s.patients, { ...p, arrivalTime: Date.now() + s.elapsedTime * 1000 }] }));
-        }
+    const newArrivals = pendingPatients.filter(p => 
+      p.arrivalDelay !== undefined &&
+      p.arrivalDelay <= newElapsedTime &&
+      !state.patients.find(ep => ep.id === p.id)
+    );
+
+    if (newArrivals.length > 0) {
+      newArrivals.forEach(p => {
+        get().addEvent({
+          type: 'patient_arrive',
+          message: `新患者 ${p.name} 到达`,
+          patientId: p.id,
+          pointsChange: 0,
+          details: { priority: p.currentPriority, symptoms: p.symptoms },
+        });
       });
+      set(s => ({ patients: [...s.patients, ...newArrivals.map(p => ({ ...p, arrivalTime: Date.now() }))] }));
     }
 
     set(s => ({
