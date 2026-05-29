@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Save, FolderOpen, Trash2, Copy, Check, Plus, FileJson, FileSpreadsheet, Download } from 'lucide-react';
+import { Save, FolderOpen, Trash2, Check, FileJson, FileSpreadsheet } from 'lucide-react';
 import { useCashflowStore } from '../../store/useCashflowStore';
 import { exportDataAsCSV, exportScenarioAsJSON } from '../../utils/exporter';
 import type { Scenario } from '../../types';

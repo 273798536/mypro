@@ -9,12 +9,13 @@ import type { CashflowEntry, CashflowType, FlowDirection, Priority } from '../..
 
 interface EditEntryDialogProps {
   entry: CashflowEntry;
+  mode?: 'edit' | 'add';
   onClose: () => void;
 }
 
-export default function EditEntryDialog({ entry, onClose }: EditEntryDialogProps) {
+export default function EditEntryDialog({ entry, onClose, mode = 'edit' }: EditEntryDialogProps) {
   const updateEntry = useCashflowStore(state => state.updateEntry);
-  const markAsDelayed = useCashflowStore(state => state.markAsDelayed);
+  const addEntry = useCashflowStore(state => state.addEntry);
 
   const [type, setType] = useState<CashflowType>(entry.type);
   const [direction, setDirection] = useState<FlowDirection>(entry.direction);
@@ -42,6 +43,24 @@ export default function EditEntryDialog({ entry, onClose }: EditEntryDialogProps
   }, [entry]);
 
   const handleSave = () => {
+    if (mode === 'add') {
+      if (amount <= 0 || !description.trim()) return;
+      addEntry({
+        type,
+        direction,
+        amount,
+        date,
+        description,
+        priority,
+        source,
+        isDelayed,
+        delayNote: delayNote || undefined,
+        originalDate: originalDate || undefined
+      });
+      onClose();
+      return;
+    }
+
     const changes: Partial<CashflowEntry> = {};
 
     if (type !== entry.type) changes.type = type;
@@ -76,7 +95,7 @@ export default function EditEntryDialog({ entry, onClose }: EditEntryDialogProps
         onClick={e => e.stopPropagation()}
       >
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">编辑条目</h3>
+          <h3 className="font-semibold text-gray-800">{mode === 'add' ? '新增条目' : '编辑条目'}</h3>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded transition-colors"

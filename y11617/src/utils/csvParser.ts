@@ -1,6 +1,5 @@
 import Papa from 'papaparse';
 import type { CashflowEntry, CashflowType, FlowDirection, Priority } from '../types';
-import { generateId } from './balanceCalculator';
 
 const TYPE_MAP: Record<string, CashflowType> = {
   '工资': 'salary',

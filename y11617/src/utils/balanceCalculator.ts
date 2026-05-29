@@ -1,4 +1,4 @@
-import { format, parseISO, differenceInDays, addDays, isBefore, isAfter, startOfDay } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import type { CashflowEntry, DailySummary, AccountSettings, StressLevel } from '../types';
 
 export function formatMoney(amount: number, currency: string = '¥'): string {

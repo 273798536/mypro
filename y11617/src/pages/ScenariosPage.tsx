@@ -2,13 +2,12 @@ import { useState } from 'react';
 import ScenarioList from '../components/scenarios/ScenarioList';
 import ExportPanel from '../components/scenarios/ExportPanel';
 import type { Scenario } from '../types';
-import { useCashflowStore } from '../store/useCashflowStore';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, parseISO } from 'date-fns';
+import { calculateDailySummaries } from '../utils/balanceCalculator';
 
 export default function ScenariosPage() {
   const [compareScenarios, setCompareScenarios] = useState<Scenario[]>([]);
-  const getBalanceForecast = useCashflowStore(state => state.getBalanceForecast);
 
   const handleCompare = (scenarios: Scenario[]) => {
     setCompareScenarios(scenarios);
@@ -19,21 +18,22 @@ export default function ScenariosPage() {
   const combinedData = () => {
     if (compareScenarios.length === 0) return [];
 
+    const today = new Date().toISOString().split('T')[0];
+    const days = 90;
+
     const forecasts = compareScenarios.map(scenario => {
-      const tempState = { ...useCashflowStore.getState() };
-      const originalEntries = tempState.currentScenario?.entries || [];
-      const originalSettings = tempState.currentScenario?.settings || { initialBalance: 0, safetyLine: 0, currency: '¥' };
-
-      tempState.scenarios = [scenario];
-      tempState.currentScenarioId = scenario.id;
-
-      const forecast = getBalanceForecast(90);
-      return forecast;
+      const summaries = calculateDailySummaries(
+        scenario.entries,
+        scenario.settings,
+        today,
+        days
+      );
+      return summaries.map(s => ({ date: s.date, balance: s.balance }));
     });
 
-    if (forecasts.length === 0) return [];
-
     const maxLength = Math.max(...forecasts.map(f => f.length));
+    if (maxLength === 0) return [];
+
     const result = [];
 
     for (let i = 0; i < maxLength; i++) {

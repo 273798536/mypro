@@ -9,7 +9,7 @@ import { useCashflowStore } from '../store/useCashflowStore';
 
 export default function DataPage() {
   const [editingEntry, setEditingEntry] = useState<CashflowEntry | null>(null);
-  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addMode, setAddMode] = useState(false);
   const resetToSampleData = useCashflowStore(state => state.resetToSampleData);
 
   const handleAdd = () => {
@@ -28,28 +28,12 @@ export default function DataPage() {
       updatedAt: '',
       revisionHistory: []
     });
-    setShowAddDialog(true);
+    setAddMode(true);
   };
 
-  const handleSaveNew = () => {
-    if (!editingEntry || editingEntry.amount <= 0 || !editingEntry.description.trim()) {
-      return;
-    }
-    const addEntry = useCashflowStore.getState().addEntry;
-    addEntry({
-      type: editingEntry.type,
-      direction: editingEntry.direction,
-      amount: editingEntry.amount,
-      date: editingEntry.date,
-      description: editingEntry.description,
-      priority: editingEntry.priority,
-      source: editingEntry.source,
-      isDelayed: editingEntry.isDelayed,
-      delayNote: editingEntry.delayNote,
-      originalDate: editingEntry.originalDate
-    });
+  const handleCloseDialog = () => {
     setEditingEntry(null);
-    setShowAddDialog(false);
+    setAddMode(false);
   };
 
   return (
@@ -91,20 +75,11 @@ export default function DataPage() {
         </div>
       </div>
 
-      {editingEntry && !showAddDialog && (
+      {editingEntry && (
         <EditEntryDialog
           entry={editingEntry}
-          onClose={() => setEditingEntry(null)}
-        />
-      )}
-
-      {editingEntry && showAddDialog && (
-        <EditEntryDialog
-          entry={editingEntry}
-          onClose={() => {
-            setEditingEntry(null);
-            setShowAddDialog(false);
-          }}
+          mode={addMode ? 'add' : 'edit'}
+          onClose={handleCloseDialog}
         />
       )}
     </div>

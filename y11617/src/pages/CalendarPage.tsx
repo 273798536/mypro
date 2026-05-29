@@ -6,7 +6,7 @@ import FilterBar from '../components/common/FilterBar';
 import EditEntryDialog from '../components/common/EditEntryDialog';
 import { useCashflowStore } from '../store/useCashflowStore';
 import type { CashflowEntry } from '../types';
-import { format, startOfMonth } from 'date-fns';
+import { startOfMonth } from 'date-fns';
 
 export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(new Date()));
