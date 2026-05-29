@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0F172A;
+    color: #E2E8F0;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .card {
+    @apply bg-base-800 border border-base-700;
+  }
+
+  .btn {
+    @apply px-3 py-1.5 text-sm border border-base-600 bg-base-800 hover:bg-base-700 transition-colors cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply px-3 py-1.5 text-sm border border-accent-orange bg-accent-orange/10 text-accent-orange hover:bg-accent-orange/20 transition-colors cursor-pointer;
+  }
+
+  .btn-danger {
+    @apply px-3 py-1.5 text-sm border border-accent-red bg-accent-red/10 text-accent-red hover:bg-accent-red/20 transition-colors cursor-pointer;
+  }
+
+  .stats-card {
+    @apply card p-4 flex flex-col gap-2;
+  }
+
+  .stats-value {
+    @apply font-mono text-3xl font-semibold text-white;
+  }
+
+  .stats-label {
+    @apply text-sm text-base-500;
+  }
+
+  .table-header {
+    @apply text-xs font-medium text-base-500 uppercase tracking-wider px-4 py-3 text-left;
+  }
+
+  .table-cell {
+    @apply px-4 py-3 text-sm border-t border-base-700;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-base-700/50 transition-colors cursor-pointer;
+  }
+
+  .progress-bar-bg {
+    @apply h-2 bg-base-700;
+  }
+
+  .progress-bar-fill {
+    @apply h-full transition-all duration-300;
+  }
+
+  .pending-card {
+    @apply border border-accent-amber bg-accent-amber/5 p-4 mb-2 animate-slide-in;
+  }
+
+  .pulse-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .node-warehouse {
+    @apply fill-accent-cyan;
+  }
+
+  .node-distribution {
+    @apply fill-accent-amber;
+  }
+
+  .node-demand {
+    @apply fill-accent-orange;
+  }
+
+  .node-isolated {
+    @apply fill-accent-red;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #1E293B;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #64748B;
+  }
+}
