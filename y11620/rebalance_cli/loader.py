@@ -186,6 +186,11 @@ def load_portfolio_config(file_path: str) -> dict:
     return config
 
 
+def _require_file(file_path: str, label: str) -> None:
+    if file_path and not Path(file_path).exists():
+        raise FileNotFoundError(f"{label}文件不存在: {file_path}")
+
+
 def load_all(
     holdings_file: str = "",
     target_file: str = "",
@@ -196,25 +201,32 @@ def load_all(
 ) -> Portfolio:
     portfolio = Portfolio()
 
-    if config_file and Path(config_file).exists():
+    _require_file(holdings_file, "持仓")
+    _require_file(target_file, "目标权重")
+    _require_file(limits_file, "持仓限制")
+    _require_file(forbidden_file, "禁买名单")
+    _require_file(suggestions_file, "调仓建议")
+    _require_file(config_file, "组合配置")
+
+    if config_file:
         cfg = load_portfolio_config(config_file)
         portfolio.cash = cfg["cash"]
         portfolio.min_trade_amount = cfg["min_trade_amount"]
         portfolio.source = _make_source(config_file, 1)
 
-    if holdings_file and Path(holdings_file).exists():
+    if holdings_file:
         portfolio.holdings = load_holdings(holdings_file)
 
-    if target_file and Path(target_file).exists():
+    if target_file:
         portfolio.target_weights = load_target_weights(target_file)
 
-    if limits_file and Path(limits_file).exists():
+    if limits_file:
         portfolio.position_limits = load_position_limits(limits_file)
 
-    if forbidden_file and Path(forbidden_file).exists():
+    if forbidden_file:
         portfolio.forbidden_list = load_forbidden_list(forbidden_file)
 
-    if suggestions_file and Path(suggestions_file).exists():
+    if suggestions_file:
         portfolio.suggestions = load_suggestions(suggestions_file)
 
     return portfolio
