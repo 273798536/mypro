@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { SimulationResult, SimulationEvent, TacticsScheme } from '../engine/types';
 import { runSimulation } from '../engine/simulation';
 import { saveSimulationResult, loadSimulationResult } from '../utils/storage';
+import { useTacticsStore } from './useTacticsStore';
 
 interface SimulationState {
   isRunning: boolean;
@@ -22,7 +23,8 @@ interface SimulationState {
   addShowingEvent: (eventId: string) => void;
   removeShowingEvent: (eventId: string) => void;
   clearResult: () => void;
-  loadResult: (schemeId: string) => void;
+  loadResult: (schemeId: string) => boolean;
+  setResult: (result: SimulationResult) => void;
 }
 
 export const useSimulationStore = create<SimulationState>((set, get) => ({
@@ -38,6 +40,10 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   startSimulation: (scheme) => {
     const result = runSimulation(scheme);
     saveSimulationResult(result);
+
+    const tacticsStore = useTacticsStore.getState();
+    tacticsStore.updateSchemeLastScore(scheme.id, result.score.total);
+
     set({
       isRunning: true,
       isPaused: false,
@@ -116,6 +122,20 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     const result = loadSimulationResult(schemeId);
     if (result) {
       set({ result, currentFrameIndex: 0, currentTime: 0 });
+      return true;
     }
+    return false;
+  },
+
+  setResult: (result) => {
+    set({
+      result,
+      currentFrameIndex: 0,
+      currentTime: 0,
+      isRunning: false,
+      isPaused: false,
+      activeEvents: [],
+      showingEvents: new Set(),
+    });
   },
 }));

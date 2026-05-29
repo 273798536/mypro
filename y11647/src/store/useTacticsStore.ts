@@ -53,6 +53,7 @@ interface TacticsState {
   deleteSchemeById: (id: string) => void;
   resetScheme: () => void;
   loadSchemeFromObject: (scheme: TacticsScheme) => void;
+  updateSchemeLastScore: (schemeId: string, score: number) => void;
 }
 
 const createEmptyScheme = (): TacticsScheme => ({
@@ -99,9 +100,13 @@ export const useTacticsStore = create<TacticsState>((set, get) => ({
   addElement: (type, position) => {
     const { scheme, robotCounter, obstacleCounter, passPointCounter } = get();
     let element: AnyElement;
+    const isPassPoint = type === 'passPoint';
+    const margin = isPassPoint ? -50 : 30;
+    const maxX = isPassPoint ? FIELD_WIDTH + 50 : FIELD_WIDTH - 30;
+    const maxY = isPassPoint ? FIELD_HEIGHT + 50 : FIELD_HEIGHT - 30;
     const clampedPos = {
-      x: clamp(position.x, 30, FIELD_WIDTH - 30),
-      y: clamp(position.y, 30, FIELD_HEIGHT - 30),
+      x: clamp(position.x, margin, maxX),
+      y: clamp(position.y, margin, maxY),
     };
 
     switch (type) {
@@ -338,5 +343,19 @@ export const useTacticsStore = create<TacticsState>((set, get) => ({
       selectedPathId: null,
     });
     get().updateCollisionWarnings();
+  },
+
+  updateSchemeLastScore: (schemeId, score) => {
+    const { scheme } = get();
+    if (scheme.id === schemeId) {
+      const updated = { ...scheme, lastScore: score };
+      set({ scheme: updated });
+      saveScheme(updated);
+    } else {
+      const stored = loadScheme(schemeId);
+      if (stored) {
+        saveScheme({ ...stored, lastScore: score });
+      }
+    }
   },
 }));

@@ -1,7 +1,10 @@
 import type { TacticsScheme, SimulationResult } from '../engine/types';
+import { loadSimulationResult } from './storage';
 
 export function exportSchemeAsJSON(scheme: TacticsScheme): void {
-  const dataStr = JSON.stringify(scheme, null, 2);
+  const result = loadSimulationResult(scheme.id);
+  const exportData = buildExportPayload(scheme, result);
+  const dataStr = JSON.stringify(exportData, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -11,6 +14,35 @@ export function exportSchemeAsJSON(scheme: TacticsScheme): void {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+export function exportSchemeWithReport(scheme: TacticsScheme): void {
+  exportSchemeAsJSON(scheme);
+}
+
+export function buildExportPayload(scheme: TacticsScheme, result: SimulationResult | undefined) {
+  const payload: Record<string, unknown> = {
+    ...scheme,
+    exportedAt: new Date().toISOString(),
+  };
+  if (result) {
+    payload.simulationReport = {
+      totalScore: result.score.total,
+      scoreBreakdown: result.score,
+      events: result.events.map((e) => ({
+        time: +e.time.toFixed(2),
+        type: e.type,
+        message: e.message,
+        position: e.position,
+      })),
+      finalElementStates: result.finalElementStates,
+      frameCount: result.frames.length,
+      duration: +(result.frames.length > 0
+        ? result.frames[result.frames.length - 1].time.toFixed(2)
+        : 0),
+    };
+  }
+  return payload;
 }
 
 export function exportResultAsJSON(result: SimulationResult, schemeName: string): void {

@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Plus, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SchemeCard } from '../components/history/SchemeCard';
-import { loadSchemes, deleteScheme } from '../utils/storage';
+import { loadSchemes, deleteScheme, loadSimulationResults } from '../utils/storage';
 import { useTacticsStore } from '../store/useTacticsStore';
 import { useSimulationStore } from '../store/useSimulationStore';
-import { exportSchemeAsJSON, importSchemeFromJSON } from '../utils/export';
+import { exportSchemeWithReport, importSchemeFromJSON } from '../utils/export';
 import type { TacticsScheme } from '../engine/types';
 
 export function HistoryPage() {
@@ -13,6 +13,12 @@ export function HistoryPage() {
   const [schemes, setSchemes] = useState<TacticsScheme[]>([]);
   const { loadSchemeById, loadSchemeFromObject } = useTacticsStore();
   const { startSimulation } = useSimulationStore();
+
+  const schemesWithReport = useMemo(() => {
+    const results = loadSimulationResults();
+    const schemeIdsWithResult = new Set(results.map((r) => r.schemeId));
+    return schemeIdsWithResult;
+  }, [schemes]);
 
   useEffect(() => {
     refreshSchemes();
@@ -35,7 +41,7 @@ export function HistoryPage() {
   };
 
   const handleExport = (scheme: TacticsScheme) => {
-    exportSchemeAsJSON(scheme);
+    exportSchemeWithReport(scheme);
   };
 
   const handleSimulate = (scheme: TacticsScheme) => {
@@ -45,6 +51,10 @@ export function HistoryPage() {
       startSimulation(currentScheme);
       navigate('/simulation');
     }, 0);
+  };
+
+  const handleViewReport = (schemeId: string) => {
+    navigate(`/report?schemeId=${schemeId}`);
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,10 +124,12 @@ export function HistoryPage() {
               <SchemeCard
                 key={scheme.id}
                 scheme={scheme}
+                hasReport={schemesWithReport.has(scheme.id)}
                 onLoad={handleLoad}
                 onDelete={handleDelete}
                 onExport={handleExport}
                 onSimulate={handleSimulate}
+                onViewReport={handleViewReport}
               />
             ))}
           </div>

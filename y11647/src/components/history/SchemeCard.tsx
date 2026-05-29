@@ -1,15 +1,17 @@
-import { Calendar, Trash2, Download, Play, Edit } from 'lucide-react';
+import { Calendar, Trash2, Download, Play, Edit, FileText } from 'lucide-react';
 import type { TacticsScheme } from '../../engine/types';
 
 interface SchemeCardProps {
   scheme: TacticsScheme;
+  hasReport: boolean;
   onLoad: (id: string) => void;
   onDelete: (id: string) => void;
   onExport: (scheme: TacticsScheme) => void;
   onSimulate?: (scheme: TacticsScheme) => void;
+  onViewReport?: (schemeId: string) => void;
 }
 
-export function SchemeCard({ scheme, onLoad, onDelete, onExport, onSimulate }: SchemeCardProps) {
+export function SchemeCard({ scheme, hasReport, onLoad, onDelete, onExport, onSimulate, onViewReport }: SchemeCardProps) {
   const robotCount = scheme.elements.filter((e) => e.type === 'robot').length;
   const obstacleCount = scheme.elements.filter((e) => e.type === 'obstacle').length;
   const passPointCount = scheme.elements.filter((e) => e.type === 'passPoint').length;
@@ -77,6 +79,15 @@ export function SchemeCard({ scheme, onLoad, onDelete, onExport, onSimulate }: S
           >
             <Play className="w-4 h-4" />
             模拟
+          </button>
+        )}
+        {hasReport && onViewReport && (
+          <button
+            onClick={() => onViewReport(scheme.id)}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg transition-colors"
+          >
+            <FileText className="w-4 h-4" />
+            报告
           </button>
         )}
         <button

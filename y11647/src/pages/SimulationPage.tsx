@@ -76,7 +76,7 @@ export function SimulationPage() {
             </div>
             {!isRunning && (
               <button
-                onClick={() => navigate('/report')}
+                onClick={() => navigate(`/report?schemeId=${result.schemeId}`)}
                 className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
               >
                 <FileText className="w-4 h-4" />

@@ -58,7 +58,8 @@ export function loadSimulationResult(
   schemeId: string
 ): SimulationResult | undefined {
   const results = loadSimulationResults();
-  return results.find((r) => r.schemeId === schemeId);
+  const matches = results.filter((r) => r.schemeId === schemeId);
+  return matches.length > 0 ? matches[matches.length - 1] : undefined;
 }
 
 export function clearAllData(): void {

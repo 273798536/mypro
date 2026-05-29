@@ -171,6 +171,12 @@ export function PropertyPanel() {
             <p className="text-xs text-slate-500 mt-1">
               球的ID: {scheme.elements.find((e) => e.type === 'ball')?.id || '未放置球'}
             </p>
+            {(selectedElement.position.x < 0 || selectedElement.position.x > 900 ||
+              selectedElement.position.y < 0 || selectedElement.position.y > 600) && (
+              <div className="mt-2 p-2 bg-red-900/30 border border-red-500/50 rounded text-xs text-red-300">
+                ⚠️ 传球点在场外！机器人向此处传球时球将越界出界
+              </div>
+            )}
           </div>
         )}
 

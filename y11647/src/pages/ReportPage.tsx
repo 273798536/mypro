@@ -1,15 +1,31 @@
+import { useEffect } from 'react';
 import { ArrowLeft, Download, RotateCcw } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ScoreCard } from '../components/report/ScoreCard';
 import { EventTimeline } from '../components/report/EventTimeline';
 import { useSimulationStore } from '../store/useSimulationStore';
 import { useTacticsStore } from '../store/useTacticsStore';
 import { exportResultAsJSON, exportResultAsText } from '../utils/export';
+import { loadSimulationResult } from '../utils/storage';
 
 export function ReportPage() {
   const navigate = useNavigate();
-  const { result, clearResult, startSimulation } = useSimulationStore();
-  const { scheme } = useTacticsStore();
+  const [searchParams] = useSearchParams();
+  const schemeIdParam = searchParams.get('schemeId');
+  const { result, clearResult, startSimulation, setResult } = useSimulationStore();
+  const { scheme, loadSchemeById } = useTacticsStore();
+
+  useEffect(() => {
+    if (result) return;
+    const sid = schemeIdParam || scheme.id;
+    const loaded = loadSimulationResult(sid);
+    if (loaded) {
+      setResult(loaded);
+      if (schemeIdParam && schemeIdParam !== scheme.id) {
+        loadSchemeById(schemeIdParam);
+      }
+    }
+  }, [result, schemeIdParam, scheme.id, setResult, loadSchemeById]);
 
   if (!result) {
     return (
