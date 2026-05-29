@@ -1,0 +1,32 @@
+{
+  "id": "fan_hall_01",
+  "name": "扇形剧场样例",
+  "type": "procedural_fan",
+  "params": {
+    "width": 30,
+    "depth": 25,
+    "height": 8,
+    "stageDepth": 5,
+    "curvature": 0.6
+  },
+  "importMeta": {
+    "batch": 1,
+    "timestamp": 1735478400000,
+    "fileName": "fan_hall_procedural.json"
+  },
+  "materials": [
+    { "meshName": "floor", "materialId": "wood_hard" },
+    { "meshName": "ceiling", "materialId": "gypsum_board" },
+    { "meshName": "back_wall", "materialId": "concrete" },
+    { "meshName": "side_wall_left", "materialId": "plaster" },
+    { "meshName": "side_wall_right", "materialId": "plaster" },
+    { "meshName": "stage_wall", "materialId": "wood_soft" },
+    { "meshName": "balcony_front", "materialId": null },
+    { "meshName": "acoustic_panels_left", "materialId": "acoustic_panel" },
+    { "meshName": "acoustic_panels_right", "materialId": "acoustic_panel" }
+  ],
+  "bounds": {
+    "min": { "x": -15, "y": 0, "z": -20 },
+    "max": { "x": 15, "y": 8, "z": 10 }
+  }
+}

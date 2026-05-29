@@ -1,0 +1,26 @@
+[
+  {
+    "id": "src_stage_left",
+    "name": "舞台左侧声源",
+    "position": { "x": -8, "y": 1.5, "z": -15 },
+    "frequency": "mid",
+    "power": 90,
+    "directivity": "cardioid"
+  },
+  {
+    "id": "src_stage_center",
+    "name": "舞台中央声源",
+    "position": { "x": 0, "y": 1.8, "z": -15 },
+    "frequency": "low",
+    "power": 95,
+    "directivity": "omnidirectional"
+  },
+  {
+    "id": "src_stage_right",
+    "name": "舞台右侧声源",
+    "position": { "x": 8, "y": 1.5, "z": -15 },
+    "frequency": "high",
+    "power": 88,
+    "directivity": "cardioid"
+  }
+]

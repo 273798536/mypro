@@ -1,0 +1,72 @@
+[
+  {
+    "id": "wood_hard",
+    "name": "硬木",
+    "absorptionLow": 0.15,
+    "absorptionMid": 0.10,
+    "absorptionHigh": 0.08
+  },
+  {
+    "id": "wood_soft",
+    "name": "软木",
+    "absorptionLow": 0.20,
+    "absorptionMid": 0.15,
+    "absorptionHigh": 0.12
+  },
+  {
+    "id": "concrete",
+    "name": "混凝土",
+    "absorptionLow": 0.02,
+    "absorptionMid": 0.03,
+    "absorptionHigh": 0.05
+  },
+  {
+    "id": "plaster",
+    "name": "石膏板",
+    "absorptionLow": 0.10,
+    "absorptionMid": 0.08,
+    "absorptionHigh": 0.06
+  },
+  {
+    "id": "acoustic_panel",
+    "name": "吸音板",
+    "absorptionLow": 0.30,
+    "absorptionMid": 0.75,
+    "absorptionHigh": 0.90
+  },
+  {
+    "id": "carpet_heavy",
+    "name": "厚地毯",
+    "absorptionLow": 0.10,
+    "absorptionMid": 0.30,
+    "absorptionHigh": 0.60
+  },
+  {
+    "id": "fabric",
+    "name": "布艺窗帘",
+    "absorptionLow": 0.15,
+    "absorptionMid": 0.45,
+    "absorptionHigh": 0.65
+  },
+  {
+    "id": "glass",
+    "name": "玻璃",
+    "absorptionLow": 0.03,
+    "absorptionMid": 0.04,
+    "absorptionHigh": 0.05
+  },
+  {
+    "id": "seat_upholstered",
+    "name": "软座",
+    "absorptionLow": 0.20,
+    "absorptionMid": 0.40,
+    "absorptionHigh": 0.50
+  },
+  {
+    "id": "gypsum_board",
+    "name": "石膏板吊顶",
+    "absorptionLow": 0.05,
+    "absorptionMid": 0.15,
+    "absorptionHigh": 0.25
+  }
+]
