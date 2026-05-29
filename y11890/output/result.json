@@ -1,0 +1,214 @@
+{
+  "generated_at": "2026-05-29T12:01:50.159453",
+  "run_count": 1,
+  "runs": [
+    {
+      "total_students": 130,
+      "total_distance": 113.0,
+      "has_errors": false,
+      "has_warnings": true,
+      "routes": [
+        {
+          "route_id": "R001",
+          "vehicle_id": "BUS001",
+          "vehicle_capacity": 45,
+          "total_students": 45,
+          "total_duration": 24.0,
+          "load_ratio": 1.0,
+          "is_overloaded": false,
+          "stops": [
+            {
+              "stop_id": "SCH001",
+              "name": "新校区实验学校",
+              "lat": 31.2304,
+              "lng": 121.4737,
+              "student_count": 0
+            },
+            {
+              "stop_id": "STOP003",
+              "name": "金桥地铁站",
+              "lat": 31.228,
+              "lng": 121.485,
+              "student_count": 30
+            },
+            {
+              "stop_id": "STOP005",
+              "name": "市民广场",
+              "lat": 31.238,
+              "lng": 121.48,
+              "student_count": 15
+            },
+            {
+              "stop_id": "SCH001",
+              "name": "新校区实验学校",
+              "lat": 31.2304,
+              "lng": 121.4737,
+              "student_count": 0
+            }
+          ]
+        },
+        {
+          "route_id": "R002",
+          "vehicle_id": "BUS002",
+          "vehicle_capacity": 45,
+          "total_students": 45,
+          "total_duration": 36.0,
+          "load_ratio": 1.0,
+          "is_overloaded": false,
+          "stops": [
+            {
+              "stop_id": "SCH001",
+              "name": "新校区实验学校",
+              "lat": 31.2304,
+              "lng": 121.4737,
+              "student_count": 0
+            },
+            {
+              "stop_id": "STOP001",
+              "name": "阳光花园东门",
+              "lat": 31.235,
+              "lng": 121.465,
+              "student_count": 25
+            },
+            {
+              "stop_id": "STOP006",
+              "name": "体育中心",
+              "lat": 31.215,
+              "lng": 121.46,
+              "student_count": 20
+            },
+            {
+              "stop_id": "SCH001",
+              "name": "新校区实验学校",
+              "lat": 31.2304,
+              "lng": 121.4737,
+              "student_count": 0
+            }
+          ]
+        },
+        {
+          "route_id": "R003",
+          "vehicle_id": "BUS003",
+          "vehicle_capacity": 45,
+          "total_students": 40,
+          "total_duration": 53.0,
+          "load_ratio": 0.8888888888888888,
+          "is_overloaded": false,
+          "stops": [
+            {
+              "stop_id": "SCH001",
+              "name": "新校区实验学校",
+              "lat": 31.2304,
+              "lng": 121.4737,
+              "student_count": 0
+            },
+            {
+              "stop_id": "STOP004",
+              "name": "湖畔花园",
+              "lat": 31.22,
+              "lng": 121.492,
+              "student_count": 22
+            },
+            {
+              "stop_id": "STOP002",
+              "name": "翠苑小区北门",
+              "lat": 31.24,
+              "lng": 121.458,
+              "student_count": 18
+            },
+            {
+              "stop_id": "SCH001",
+              "name": "新校区实验学校",
+              "lat": 31.2304,
+              "lng": 121.4737,
+              "student_count": 0
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "level": "INFO",
+          "code": "CAPACITY_SUFFICIENT",
+          "message": "运力充足: 学生总数 130 人，车辆总容量 135 人，剩余 5 个座位",
+          "details": {
+            "total_students": 130,
+            "total_capacity": 135,
+            "surplus": 5
+          }
+        },
+        {
+          "level": "INFO",
+          "code": "ROUTE_GROUP_INFO",
+          "message": "路线分组 1: 车辆 BUS001 (容量 45) 分配 2 个站点, 载学生 45 人, 负载率 100.0%",
+          "details": {
+            "group": 1,
+            "vehicle_id": "BUS001",
+            "capacity": 45,
+            "stop_count": 2,
+            "students": 45,
+            "load_ratio": 1.0
+          }
+        },
+        {
+          "level": "INFO",
+          "code": "ROUTE_GROUP_INFO",
+          "message": "路线分组 2: 车辆 BUS002 (容量 45) 分配 2 个站点, 载学生 45 人, 负载率 100.0%",
+          "details": {
+            "group": 2,
+            "vehicle_id": "BUS002",
+            "capacity": 45,
+            "stop_count": 2,
+            "students": 45,
+            "load_ratio": 1.0
+          }
+        },
+        {
+          "level": "INFO",
+          "code": "ROUTE_GROUP_INFO",
+          "message": "路线分组 3: 车辆 BUS003 (容量 45) 分配 2 个站点, 载学生 40 人, 负载率 88.9%",
+          "details": {
+            "group": 3,
+            "vehicle_id": "BUS003",
+            "capacity": 45,
+            "stop_count": 2,
+            "students": 40,
+            "load_ratio": 0.8888888888888888
+          }
+        },
+        {
+          "level": "WARNING",
+          "code": "HIGH_LOAD_RATIO",
+          "message": "路线 R001 车辆 BUS001 负载率较高: 100.0%",
+          "details": {
+            "route_id": "R001",
+            "vehicle_id": "BUS001",
+            "load_ratio": 1.0
+          }
+        },
+        {
+          "level": "WARNING",
+          "code": "HIGH_LOAD_RATIO",
+          "message": "路线 R002 车辆 BUS002 负载率较高: 100.0%",
+          "details": {
+            "route_id": "R002",
+            "vehicle_id": "BUS002",
+            "load_ratio": 1.0
+          }
+        },
+        {
+          "level": "INFO",
+          "code": "SCHEDULE_SUMMARY",
+          "message": "调度完成: 共 3 条路线, 运送 130 名学生, 总行程时间 113.0 分钟, 平均负载率 96.3%",
+          "details": {
+            "route_count": 3,
+            "total_students": 130,
+            "total_capacity": 135,
+            "total_duration": 113.0,
+            "avg_load_ratio": 0.9629629629629629
+          }
+        }
+      ]
+    }
+  ]
+}

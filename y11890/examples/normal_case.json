@@ -1,0 +1,125 @@
+{
+  "school": {
+    "id": "SCH001",
+    "name": "新校区实验学校",
+    "lat": 31.2304,
+    "lng": 121.4737
+  },
+  "stops": [
+    {
+      "id": "STOP001",
+      "name": "阳光花园东门",
+      "lat": 31.235,
+      "lng": 121.465,
+      "student_count": 25
+    },
+    {
+      "id": "STOP002",
+      "name": "翠苑小区北门",
+      "lat": 31.24,
+      "lng": 121.458,
+      "student_count": 18
+    },
+    {
+      "id": "STOP003",
+      "name": "金桥地铁站",
+      "lat": 31.228,
+      "lng": 121.485,
+      "student_count": 30
+    },
+    {
+      "id": "STOP004",
+      "name": "湖畔花园",
+      "lat": 31.22,
+      "lng": 121.492,
+      "student_count": 22
+    },
+    {
+      "id": "STOP005",
+      "name": "市民广场",
+      "lat": 31.238,
+      "lng": 121.48,
+      "student_count": 15
+    },
+    {
+      "id": "STOP006",
+      "name": "体育中心",
+      "lat": 31.215,
+      "lng": 121.46,
+      "student_count": 20
+    }
+  ],
+  "roads": [
+    {
+      "id": "R001",
+      "from": "SCH001",
+      "to": "STOP001",
+      "duration_minutes": 8
+    },
+    {
+      "id": "R002",
+      "from": "STOP001",
+      "to": "STOP002",
+      "duration_minutes": 6
+    },
+    {
+      "id": "R003",
+      "from": "SCH001",
+      "to": "STOP005",
+      "duration_minutes": 5
+    },
+    {
+      "id": "R004",
+      "from": "STOP005",
+      "to": "STOP003",
+      "duration_minutes": 7
+    },
+    {
+      "id": "R005",
+      "from": "STOP003",
+      "to": "STOP004",
+      "duration_minutes": 5
+    },
+    {
+      "id": "R006",
+      "from": "SCH001",
+      "to": "STOP006",
+      "duration_minutes": 12
+    },
+    {
+      "id": "R007",
+      "from": "STOP006",
+      "to": "STOP002",
+      "duration_minutes": 10
+    },
+    {
+      "id": "R008",
+      "from": "STOP001",
+      "to": "STOP005",
+      "duration_minutes": 4
+    },
+    {
+      "id": "R009",
+      "from": "STOP002",
+      "to": "STOP006",
+      "duration_minutes": 10
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "BUS001",
+      "capacity": 45,
+      "description": "45座大巴"
+    },
+    {
+      "id": "BUS002",
+      "capacity": 45,
+      "description": "45座大巴"
+    },
+    {
+      "id": "BUS003",
+      "capacity": 45,
+      "description": "45座大巴"
+    }
+  ]
+}
