@@ -52,11 +52,19 @@ export interface Station {
   connectedTrackIds: string[]
 }
 
+export interface EventData {
+  [key: string]: string | number | boolean | undefined
+}
+
+export interface OperationData {
+  [key: string]: string | number | boolean | undefined
+}
+
 export interface GameEvent {
   id: string
   type: EventType
   time: number
-  data: Record<string, any>
+  data: EventData
   message: string
   resolved: boolean
 }
@@ -65,7 +73,7 @@ export interface OperationRecord {
   id: string
   time: number
   type: OperationType
-  data: Record<string, any>
+  data: OperationData
   result: 'success' | 'failed'
   scoreChange: number
   message: string

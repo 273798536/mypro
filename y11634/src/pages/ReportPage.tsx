@@ -15,8 +15,7 @@ import {
   Cell,
 } from 'recharts'
 import { useGameStore } from '../store/useGameStore'
-import { ArrowLeft, Trophy, Clock, Zap, Gem, AlertTriangle, CheckCircle, XCircle, Play, Pause, RotateCcw } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { ArrowLeft, Trophy, Clock, Gem, AlertTriangle, CheckCircle, XCircle, RotateCcw } from 'lucide-react'
 
 const ReportPage = () => {
   const navigate = useNavigate()
@@ -30,18 +29,7 @@ const ReportPage = () => {
     operationHistory,
     events,
     resetGame,
-    updateGame,
-    status,
-    carts,
-    tracks,
-    junctions,
-    stations,
   } = useGameStore()
-
-  const [isReplaying, setIsReplaying] = useState(false)
-  const [replayIndex, setReplayIndex] = useState(0)
-  const animationRef = useRef<number>()
-  const lastTimeRef = useRef<number>(0)
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -113,40 +101,6 @@ const ReportPage = () => {
         return 'from-yellow-500/20 to-orange-500/20 border-yellow-500/50'
     }
   }
-
-  const replayGame = () => {
-    setIsReplaying(!isReplaying)
-  }
-
-  const resetReplay = () => {
-    setReplayIndex(0)
-    setIsReplaying(false)
-  }
-
-  useEffect(() => {
-    if (!isReplaying) return
-
-    const replayLoop = (timestamp: number) => {
-      if (lastTimeRef.current === 0) {
-        lastTimeRef.current = timestamp
-      }
-
-      const deltaTime = (timestamp - lastTimeRef.current) / 1000
-      lastTimeRef.current = timestamp
-
-      updateGame(deltaTime)
-
-      animationRef.current = requestAnimationFrame(replayLoop)
-    }
-
-    animationRef.current = requestAnimationFrame(replayLoop)
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [isReplaying, updateGame])
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8">
@@ -439,49 +393,6 @@ const ReportPage = () => {
                 )}
               </tbody>
             </table>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
-          className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30 mt-8"
-        >
-          <h3 className="text-lg font-bold text-cyan-400 mb-4">游戏回放</h3>
-          <div className="flex gap-4 mb-4">
-            <button
-              onClick={replayGame}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                isReplaying
-                  ? 'bg-yellow-500 hover:bg-yellow-400 text-white'
-                  : 'bg-green-500 hover:bg-green-400 text-white'
-              }`}
-            >
-              {isReplaying ? (
-                <>
-                  <Pause className="w-4 h-4" />
-                  暂停回放
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4" />
-                  开始回放
-                </>
-              )}
-            </button>
-            <button
-              onClick={resetReplay}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-all"
-            >
-              <RotateCcw className="w-4 h-4" />
-              重置
-            </button>
-          </div>
-          <div className="text-sm text-slate-400">
-            <p>• 回放功能可以重新观看游戏过程</p>
-            <p>• 您可以看到每一步操作如何影响游戏结果</p>
-            <p>• 建议在重新开始新游戏前仔细分析本次报告</p>
           </div>
         </motion.div>
       </div>

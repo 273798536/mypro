@@ -8,10 +8,15 @@ import type {
   GameEvent,
   OperationRecord,
   ScoreEntry,
+  Position,
 } from '../types/game'
 import { GAME_CONFIG, COLORS, CANVAS_CONFIG } from '../utils/constants'
 
 const generateId = () => Math.random().toString(36).substring(2, 9)
+
+const posEqual = (a: Position, b: Position): boolean => {
+  return Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1
+}
 
 const createInitialTracks = (): Track[] => {
   const { WIDTH, HEIGHT } = CANVAS_CONFIG
@@ -44,14 +49,6 @@ const createInitialTracks = (): Track[] => {
       connectedTo: ['track-1', 'track-6'],
     },
     {
-      id: 'track-4',
-      type: 'straight',
-      from: { x: cx, y: cy },
-      to: { x: 650, y: cy },
-      blocked: false,
-      connectedTo: ['track-5', 'track-6', 'track-7'],
-    },
-    {
       id: 'track-5',
       type: 'straight',
       from: { x: 400, y: cy - 100 },
@@ -68,12 +65,20 @@ const createInitialTracks = (): Track[] => {
       connectedTo: ['track-3', 'track-4'],
     },
     {
+      id: 'track-4',
+      type: 'straight',
+      from: { x: cx, y: cy },
+      to: { x: 650, y: cy },
+      blocked: false,
+      connectedTo: ['track-5', 'track-6', 'track-7'],
+    },
+    {
       id: 'track-7',
       type: 'straight',
       from: { x: 650, y: cy },
       to: { x: 800, y: cy },
       blocked: false,
-      connectedTo: ['track-4'],
+      connectedTo: ['track-4', 'track-8'],
     },
     {
       id: 'track-8',
@@ -89,14 +94,15 @@ const createInitialTracks = (): Track[] => {
       from: { x: 800, y: cy + 100 },
       to: { x: 400, y: cy + 100 },
       blocked: false,
-      connectedTo: ['track-8', 'track-3'],
+      connectedTo: ['track-8', 'track-6'],
     },
   ]
 }
 
 const createInitialJunctions = (): Junction[] => {
-  const { HEIGHT } = CANVAS_CONFIG
+  const { WIDTH, HEIGHT } = CANVAS_CONFIG
   const cy = HEIGHT / 2
+  const cx = WIDTH / 2
 
   return [
     {
@@ -107,9 +113,9 @@ const createInitialJunctions = (): Junction[] => {
     },
     {
       id: 'junction-2',
-      position: { x: CANVAS_CONFIG.WIDTH / 2, y: cy },
-      activeTrack: 'track-5',
-      availableTracks: ['track-5', 'track-6'],
+      position: { x: cx, y: cy },
+      activeTrack: 'track-4',
+      availableTracks: ['track-4', 'track-5', 'track-6'],
     },
   ]
 }
@@ -166,7 +172,7 @@ const createInitialCarts = (): Cart[] => {
     {
       id: 'cart-2',
       position: { x: 500, y: cy - 50 },
-      trackId: 'track-2',
+      trackId: 'track-5',
       direction: 'forward',
       progress: 0.5,
       speed: GAME_CONFIG.CART_SPEED,
@@ -336,34 +342,43 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
 
         if (newProgress >= 1) {
           newProgress = 0
-          const track = state.tracks.find((t) => t.id === cart.trackId)
-          if (!track) return cart
+          const currentTrack = state.tracks.find((t) => t.id === cart.trackId)
+          if (!currentTrack) return cart
 
           const junction = state.junctions.find((j) =>
-            j.availableTracks.includes(cart.trackId)
+            posEqual(j.position, currentTrack.to)
           )
 
           let nextTrackId: string | undefined
-          if (junction && track.to.x === junction.position.x && track.to.y === junction.position.y) {
+
+          if (junction) {
             nextTrackId = junction.activeTrack
+            if (nextTrackId === cart.trackId) {
+              const otherTracks = junction.availableTracks.filter((t) => t !== cart.trackId)
+              nextTrackId = otherTracks[0]
+            }
           } else {
-            nextTrackId = track.connectedTo.find((t) => t !== cart.trackId)
+            nextTrackId = currentTrack.connectedTo.find((t) => t !== cart.trackId)
+          }
+
+          if (!nextTrackId && currentTrack.connectedTo.length > 0) {
+            nextTrackId = currentTrack.connectedTo[0]
           }
 
           if (nextTrackId) {
             const nextTrack = state.tracks.find((t) => t.id === nextTrackId)
             if (nextTrack && !nextTrack.blocked) {
-              const nextStation = state.stations.find((s) =>
-                s.connectedTrackIds.includes(nextTrackId!)
+              const stationAtEnd = state.stations.find((s) =>
+                posEqual(s.position, currentTrack.to)
               )
 
-              if (nextStation) {
-                if (nextStation.type === 'warehouse' && cart.cargo > 0) {
+              if (stationAtEnd) {
+                if (stationAtEnd.type === 'warehouse' && cart.cargo > 0) {
                   const delivered = cart.cargo
                   set((s) => ({
                     ore: s.ore + delivered,
                     stations: s.stations.map((st) =>
-                      st.id === nextStation.id
+                      st.id === stationAtEnd.id
                         ? { ...st, current: st.current + delivered }
                         : st
                     ),
@@ -384,17 +399,17 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
                   })
 
                   cart = { ...cart, cargo: 0 }
-                } else if (nextStation.type === 'ore' && cart.cargo < cart.maxCargo) {
-                  const loadAmount = Math.min(cart.maxCargo - cart.cargo, nextStation.current)
+                } else if (stationAtEnd.type === 'ore' && cart.cargo < cart.maxCargo) {
+                  const loadAmount = Math.min(cart.maxCargo - cart.cargo, stationAtEnd.current)
                   set((s) => ({
                     stations: s.stations.map((st) =>
-                      st.id === nextStation.id
+                      st.id === stationAtEnd.id
                         ? { ...st, current: st.current - loadAmount }
                         : st
                     ),
                   }))
                   cart = { ...cart, cargo: cart.cargo + loadAmount }
-                } else if (nextStation.type === 'energy') {
+                } else if (stationAtEnd.type === 'energy') {
                   const chargeAmount = Math.min(
                     GAME_CONFIG.MAX_ENERGY - state.energy,
                     GAME_CONFIG.ENERGY_STATION_CHARGE
@@ -413,7 +428,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
                 ...cart,
                 trackId: nextTrackId,
                 progress: 0,
-                position: nextTrack.from,
+                position: { ...nextTrack.from },
               }
             }
           }
