@@ -2,7 +2,7 @@ import type { ErrorType, GameReport, GameState, PlayerAction } from '@/types';
 import { ERROR_TYPE_LABELS, MATERIAL_TYPE_LABELS, SECURITY_LEVEL_LABELS, RETENTION_PERIOD_LABELS, CARD_SOURCE_LABELS, DIFFICULTY_LABELS } from '@/types';
 import { calculateAccuracy } from './scoreSystem';
 
-export function generateReport(gameState: GameState): GameReport {
+export function generateReport(gameState: GameState, reportId?: string): GameReport {
   const { cards, actions, score, maxCombo, startTime, endTime, difficulty } = gameState;
   
   const errorsByType: Record<ErrorType, number> = {
@@ -28,7 +28,7 @@ export function generateReport(gameState: GameState): GameReport {
   const errorCount = actions.filter((a) => a.errors.length > 0).length;
   
   return {
-    id: `report-${Date.now()}`,
+    id: reportId || `report-${Date.now()}`,
     startTime: startTime || 0,
     endTime: endTime || Date.now(),
     difficulty,

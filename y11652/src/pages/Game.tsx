@@ -45,7 +45,7 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     if (gameState.status === 'finished' && gameState.currentReportId) {
-      const report = generateReport(gameState);
+      const report = generateReport(gameState, gameState.currentReportId);
       saveReport(report);
       const historyRecord = createHistoryRecord(report);
       saveHistory(historyRecord);
