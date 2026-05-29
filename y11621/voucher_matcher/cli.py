@@ -290,10 +290,12 @@ class VoucherMatcherCLI:
         edit_table.add_row("[2]", "修改备注")
         edit_table.add_row("[3]", "标记为异常")
         edit_table.add_row("[4]", "重置为待匹配")
+        edit_table.add_row("[5]", "✂️  拆分付款")
+        edit_table.add_row("[6]", "🔗 合并到其他匹配")
         edit_table.add_row("[0]", "返回")
         console.print(edit_table)
 
-        choice = Prompt.ask("选择操作", choices=["1", "2", "3", "4", "0"], default="0")
+        choice = Prompt.ask("选择操作", choices=["1", "2", "3", "4", "5", "6", "0"], default="0")
 
         if choice == "1":
             self._manual_confirm(match)
@@ -303,6 +305,10 @@ class VoucherMatcherCLI:
             self._flag_as_exception(match)
         elif choice == "4":
             self._reset_match(match)
+        elif choice == "5":
+            self._split_match(match)
+        elif choice == "6":
+            self._merge_match(match)
 
         self.sm.save()
 
@@ -390,6 +396,148 @@ class VoucherMatcherCLI:
             self.sm.update_match(match)
             self.sm.add_history(history)
             rprint("[green]✓ 已重置[/green]")
+        console.input("\n按回车键继续...")
+
+    def _split_match(self, match):
+        flow = self.sm.get_bank_flow_by_id(match.bank_flow_id)
+        if not flow:
+            rprint("[red]找不到对应的银行流水记录[/red]")
+            console.input("\n按回车键继续...")
+            return
+
+        total_amount = abs(match.matched_amount)
+        rprint(f"[cyan]拆分付款 - 原金额: {total_amount:,.2f}[/cyan]")
+        rprint(f"  流水ID: {match.bank_flow_id}")
+        rprint(f"  对方: {flow.counterparty}")
+        rprint(f"  摘要: {flow.summary}")
+        rprint("")
+
+        try:
+            num_splits = int(Prompt.ask("拆分为几笔？", default="2"))
+            if num_splits < 2:
+                rprint("[yellow]至少拆分为2笔[/yellow]")
+                console.input("\n按回车键继续...")
+                return
+
+            split_amounts = []
+            remaining = total_amount
+            sign = 1 if match.matched_amount > 0 else -1
+
+            for i in range(num_splits):
+                if i == num_splits - 1:
+                    amount = remaining * sign
+                    rprint(f"  第{i+1}笔 (最后一笔): {amount:,.2f}")
+                else:
+                    default_amount = (total_amount / num_splits)
+                    amount_str = Prompt.ask(
+                        f"  第{i+1}笔金额 (剩余: {remaining:,.2f})",
+                        default=f"{default_amount:.2f}"
+                    )
+                    amount = float(amount_str) * sign
+                    remaining -= abs(amount)
+
+                if abs(amount) <= 0:
+                    rprint("[red]金额必须大于0[/red]")
+                    console.input("\n按回车键继续...")
+                    return
+                split_amounts.append(amount)
+
+            if abs(sum(split_amounts) - match.matched_amount) > 0.01:
+                rprint(f"[red]拆分金额合计 {sum(split_amounts):,.2f} 与原金额 {match.matched_amount:,.2f} 不符[/red]")
+                console.input("\n按回车键继续...")
+                return
+
+        except ValueError:
+            rprint("[red]输入无效[/red]")
+            console.input("\n按回车键继续...")
+            return
+
+        if not Confirm.ask(f"确认拆分为 {num_splits} 笔，金额分别为 {split_amounts}？"):
+            console.input("\n按回车键继续...")
+            return
+
+        old_status = match.status.value
+        match.status = MatchStatus.SPLIT
+        match.flags = [f"已拆分为{num_splits}笔"]
+        match.updated_at = __import__("datetime").datetime.now().isoformat()
+        match.version += 1
+
+        history = HistoryEntry(
+            record_id=match.id,
+            field_name="拆分",
+            old_value=f"{old_status}, 金额: {match.matched_amount:,.2f}",
+            new_value=f"已拆分为{num_splits}笔: {split_amounts}",
+            operator="user",
+            source=DataSource.MANUAL,
+        )
+        self.sm.update_match(match)
+        self.sm.add_history(history)
+
+        new_matches = self.engine.split_match(match, split_amounts, self.sm.state.invoices)
+        for new_match in new_matches:
+            self.sm.add_match(new_match)
+
+        rprint(f"[green]✓ 拆分成功，生成 {len(new_matches)} 条新记录[/green]")
+        console.input("\n按回车键继续...")
+
+    def _merge_match(self, match):
+        same_flow_matches = [
+            m for m in self.sm.state.matches
+            if m.bank_flow_id == match.bank_flow_id and m.id != match.id
+        ]
+
+        if not same_flow_matches:
+            rprint("[yellow]没有找到同一条流水的其他匹配记录可合并[/yellow]")
+            console.input("\n按回车键继续...")
+            return
+
+        rprint(f"[cyan]合并匹配 - 当前记录: {match.id[:8]}[/cyan]")
+        rprint(f"  金额: {match.matched_amount:,.2f}")
+        rprint(f"  发票: {', '.join(match.invoice_ids) if match.invoice_ids else '无'}")
+        rprint("")
+        rprint("[cyan]可合并的记录:[/cyan]")
+
+        for idx, m in enumerate(same_flow_matches, 1):
+            inv_count = len(m.invoice_ids)
+            rprint(f"  [{idx}] {m.id[:8]} | {m.status.value:8s} | {m.matched_amount:,.2f} | 发票{inv_count}张")
+
+        rprint("")
+        choices_str = Prompt.ask("选择要合并的记录序号（用逗号分隔多个）", default="1")
+
+        try:
+            selected_indices = [int(x.strip()) - 1 for x in choices_str.split(",")]
+            source_matches = [same_flow_matches[i] for i in selected_indices if 0 <= i < len(same_flow_matches)]
+
+            if not source_matches:
+                rprint("[yellow]未选择有效记录[/yellow]")
+                console.input("\n按回车键继续...")
+                return
+
+            total_new = sum(m.matched_amount for m in source_matches)
+            rprint(f"  选中 {len(source_matches)} 条记录，合计金额: {total_new:,.2f}")
+            rprint(f"  合并后总金额: {match.matched_amount + total_new:,.2f}")
+
+        except (ValueError, IndexError):
+            rprint("[red]选择无效[/red]")
+            console.input("\n按回车键继续...")
+            return
+
+        if not Confirm.ask("确认合并？"):
+            console.input("\n按回车键继续...")
+            return
+
+        updated_match, history_entries = self.engine.merge_matches(match, source_matches)
+        self.sm.update_match(updated_match)
+
+        for h in history_entries:
+            self.sm.add_history(h)
+
+        for src in source_matches:
+            src.status = MatchStatus.FLAGGED
+            src.flags = [f"已合并到 {match.id[:8]}"]
+            self.sm.update_match(src)
+
+        rprint(f"[green]✓ 合并成功，共合并 {len(source_matches)} 条记录[/green]")
         console.input("\n按回车键继续...")
 
     def _show_history(self):

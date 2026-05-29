@@ -204,6 +204,51 @@ class MatchingEngine:
             result.append(new_match)
         return result
 
+    def merge_matches(self, target_match: MatchRecord, source_matches: List[MatchRecord],
+                      operator: str = "user") -> Tuple[MatchRecord, List[HistoryEntry]]:
+        history_entries = []
+        old_target_status = target_match.status.value
+
+        all_invoice_ids = list(target_match.invoice_ids)
+        total_amount = target_match.matched_amount
+        all_sources = list(target_match.sources)
+
+        for src in source_matches:
+            all_invoice_ids.extend(src.invoice_ids)
+            total_amount += src.matched_amount
+            for s in src.sources:
+                if s not in all_sources:
+                    all_sources.append(s)
+
+            history_entries.append(HistoryEntry(
+                record_id=src.id,
+                field_name="合并",
+                old_value=f"独立记录, 金额: {src.matched_amount}",
+                new_value=f"已合并到 {target_match.id[:8]}",
+                operator=operator,
+                source=DataSource.MANUAL,
+            ))
+
+        target_match.invoice_ids = all_invoice_ids
+        target_match.matched_amount = total_amount
+        target_match.sources = all_sources
+        target_match.status = MatchStatus.MANUAL
+        if "合并付款" not in target_match.flags:
+            target_match.flags.append("合并付款")
+        target_match.updated_at = datetime.now().isoformat()
+        target_match.version += 1
+
+        history_entries.append(HistoryEntry(
+            record_id=target_match.id,
+            field_name="合并",
+            old_value=f"{old_target_status}, 金额: {target_match.matched_amount - sum(s.matched_amount for s in source_matches)}",
+            new_value=f"合并后, 金额: {total_amount}, 发票: {len(all_invoice_ids)}张",
+            operator=operator,
+            source=DataSource.MANUAL,
+        ))
+
+        return target_match, history_entries
+
     def manual_confirm(self, match: MatchRecord, selected_invoice_id: str,
                        operator: str = "user") -> Tuple[MatchRecord, HistoryEntry]:
         old_status = match.status.value

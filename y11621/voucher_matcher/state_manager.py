@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import List, Optional
 
 from .models import (
-    AppState, BankFlow, Invoice, Contract, MatchRecord, HistoryEntry
+    AppState, BankFlow, Invoice, Contract, MatchRecord, HistoryEntry,
+    MatchStatus, DataSource
 )
 
 STATE_FILE = os.path.expanduser("~/.voucher_matcher_state.json")
@@ -46,21 +47,51 @@ class StateManager:
 
     def _deserialize(self, data: dict) -> None:
         self.state.bank_flows = [
-            BankFlow(**f) for f in data.get("bank_flows", [])
+            self._deserialize_bank_flow(f) for f in data.get("bank_flows", [])
         ]
         self.state.invoices = [
-            Invoice(**i) for i in data.get("invoices", [])
+            self._deserialize_invoice(i) for i in data.get("invoices", [])
         ]
         self.state.contracts = [
-            Contract(**c) for c in data.get("contracts", [])
+            self._deserialize_contract(c) for c in data.get("contracts", [])
         ]
         self.state.matches = [
-            MatchRecord(**m) for m in data.get("matches", [])
+            self._deserialize_match(m) for m in data.get("matches", [])
         ]
         self.state.history = [
-            HistoryEntry(**h) for h in data.get("history", [])
+            self._deserialize_history(h) for h in data.get("history", [])
         ]
         self.state.last_updated = data.get("last_updated", datetime.now().isoformat())
+
+    def _deserialize_bank_flow(self, data: dict) -> BankFlow:
+        if isinstance(data.get("source"), str):
+            data["source"] = DataSource(data["source"])
+        return BankFlow(**data)
+
+    def _deserialize_invoice(self, data: dict) -> Invoice:
+        if isinstance(data.get("source"), str):
+            data["source"] = DataSource(data["source"])
+        return Invoice(**data)
+
+    def _deserialize_contract(self, data: dict) -> Contract:
+        if isinstance(data.get("source"), str):
+            data["source"] = DataSource(data["source"])
+        return Contract(**data)
+
+    def _deserialize_match(self, data: dict) -> MatchRecord:
+        if isinstance(data.get("status"), str):
+            data["status"] = MatchStatus(data["status"])
+        if data.get("sources") and isinstance(data["sources"], list):
+            data["sources"] = [
+                DataSource(s) if isinstance(s, str) else s
+                for s in data["sources"]
+            ]
+        return MatchRecord(**data)
+
+    def _deserialize_history(self, data: dict) -> HistoryEntry:
+        if isinstance(data.get("source"), str):
+            data["source"] = DataSource(data["source"])
+        return HistoryEntry(**data)
 
     def add_bank_flow(self, flow: BankFlow) -> None:
         self.state.bank_flows.append(flow)
