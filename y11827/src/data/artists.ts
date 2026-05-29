@@ -1,0 +1,68 @@
+import type { Artist } from '../types';
+
+export const artists: Artist[] = [
+  {
+    id: 'artist-1',
+    name: '星火乐队',
+    duration: 60,
+    equipment: ['重型音响', '灯光矩阵'],
+    heat: 5,
+    preferredStages: ['stage-main'],
+  },
+  {
+    id: 'artist-2',
+    name: '月光少女',
+    duration: 45,
+    equipment: ['标准音响', '简单灯光'],
+    heat: 4,
+    preferredStages: ['stage-main'],
+  },
+  {
+    id: 'artist-3',
+    name: '暴风鼓手',
+    duration: 30,
+    equipment: ['打击乐套装'],
+    heat: 3,
+    preferredStages: ['stage-main', 'stage-sub', 'stage-small'],
+  },
+  {
+    id: 'artist-4',
+    name: '静谧组合',
+    duration: 40,
+    equipment: ['原声乐器'],
+    heat: 2,
+    preferredStages: ['stage-small'],
+  },
+  {
+    id: 'artist-5',
+    name: '电音骑士',
+    duration: 75,
+    equipment: ['电子设备', 'LED屏'],
+    heat: 5,
+    preferredStages: ['stage-main', 'stage-sub'],
+  },
+  {
+    id: 'artist-6',
+    name: '民谣诗人',
+    duration: 35,
+    equipment: ['原声乐器', '麦克风'],
+    heat: 3,
+    preferredStages: ['stage-small'],
+  },
+  {
+    id: 'artist-7',
+    name: '霓虹舞团',
+    duration: 50,
+    equipment: ['舞蹈灯光', '烟雾机'],
+    heat: 4,
+    preferredStages: ['stage-sub'],
+  },
+  {
+    id: 'artist-8',
+    name: '摇滚老炮',
+    duration: 55,
+    equipment: ['重型音响', '烟火装置'],
+    heat: 5,
+    preferredStages: ['stage-main'],
+  },
+];
