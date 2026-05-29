@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: live-settle
+Version: 0.1.0
+Summary: 直播打赏税费拆分工具 - 主播账号、打赏流水、工会协议对齐
+Author: Live Settle Team
+Requires-Python: >=3.9
+Requires-Dist: click>=8.0
+Requires-Dist: rich>=13.0
+Requires-Dist: pydantic>=2.0

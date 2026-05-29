@@ -1,0 +1,21 @@
+[project]
+name = "live-settle"
+version = "0.1.0"
+description = "直播打赏税费拆分工具 - 主播账号、打赏流水、工会协议对齐"
+requires-python = ">=3.9"
+authors = [{ name = "Live Settle Team" }]
+dependencies = [
+    "click>=8.0",
+    "rich>=13.0",
+    "pydantic>=2.0",
+]
+
+[project.scripts]
+live-settle = "live_settle.cli:cli"
+
+[tool.setuptools.packages.find]
+include = ["live_settle*"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
