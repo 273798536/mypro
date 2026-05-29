@@ -37,6 +37,11 @@ const {
   ROLES
 } = require('../utils/auth');
 
+const {
+  addToRetryQueue,
+  getFailedImportItems
+} = require('../utils/queue-manager');
+
 const importCommand = new Command('import')
   .description('导入数据文件')
   .argument('<file>', '要导入的文件路径')
@@ -140,6 +145,7 @@ const importCommand = new Command('import')
       const recordId = validation.recordId || `${dataType}-${record.rowNumber}`;
 
       if (!validation.valid) {
+        const errorMsg = validation.errors.join('; ');
         if (options.allowPartial) {
           importResults.failed++;
           importResults.errors.push({
@@ -148,11 +154,35 @@ const importCommand = new Command('import')
             errors: validation.errors,
             rawData: record.rawData
           });
+
+          const queueItem = addToRetryQueue(root, {
+            originalData: record,
+            action: 'import',
+            dataType: dataType,
+            sourceFile: record.source?.file,
+            rowNumber: record.rowNumber,
+            error: errorMsg,
+            parsedData: record.parsedData,
+            rawData: record.rawData,
+            source: record.source,
+            recordId: recordId,
+            sourcePath: filePath
+          }, {
+            metadata: {
+              importId,
+              batchId,
+              validationErrors: validation.errors
+            }
+          });
+          importResults.enqueuedForRetry = importResults.enqueuedForRetry || 0;
+          importResults.enqueuedForRetry++;
+          importResults.queueItemIds = importResults.queueItemIds || [];
+          importResults.queueItemIds.push(queueItem.id);
           continue;
         } else {
           console.log(chalk.red(`❌ 第 ${record.rowNumber} 行验证失败:`));
           validation.errors.forEach(e => console.log(`   - ${e}`));
-          console.log(chalk.gray('使用 --allow-partial 允许部分导入'));
+          console.log(chalk.gray('使用 --allow-partial 允许部分导入，失败项将进入重试队列'));
           process.exit(1);
         }
       }
@@ -256,7 +286,9 @@ const importCommand = new Command('import')
         success: importResults.success,
         failed: importResults.failed,
         skipped: importResults.skipped,
-        duplicate: importResults.duplicate
+        duplicate: importResults.duplicate,
+        enqueuedForRetry: importResults.enqueuedForRetry || 0,
+        queueItemIds: importResults.queueItemIds || []
       }
     };
 
@@ -275,6 +307,12 @@ const importCommand = new Command('import')
       ['跳过重复', chalk.yellow(importResults.duplicate)]
     );
 
+    if (importResults.enqueuedForRetry > 0) {
+      table.push(
+        ['进入重试队列', chalk.cyan(importResults.enqueuedForRetry)]
+      );
+    }
+
     console.log(table.toString());
     console.log('');
 
@@ -286,6 +324,11 @@ const importCommand = new Command('import')
       if (importResults.errors.length > 5) {
         console.log(chalk.gray(`  ... 还有 ${importResults.errors.length - 5} 条错误`));
       }
+      console.log('');
+      console.log(chalk.cyan('🔄 重试队列:'));
+      console.log(`  ${importResults.enqueuedForRetry} 条记录已进入重试队列`);
+      console.log(`  查看队列: ${chalk.white('kbase-audit queue status')}`);
+      console.log(`  执行重试: ${chalk.white('kbase-audit queue retry')}`);
       console.log('');
     }
 

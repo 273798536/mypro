@@ -1,0 +1,58 @@
+[
+  {
+    "id": "mpoftqslncz48zvlz",
+    "createdAt": "2026-05-27T19:08:58.725Z",
+    "retryCount": 0,
+    "maxRetries": 2,
+    "delayStrategy": "exponential",
+    "status": "pending",
+    "nextRetryAt": "2026-05-27T19:08:59.726Z",
+    "lastError": null,
+    "lastRetryAt": null,
+    "originalData": {
+      "rowNumber": 3,
+      "rawData": {
+        "change_id": "CO011",
+        "title": "测试变更单11",
+        "version": "v1.0",
+        "status": "active",
+        "submitter": "user11",
+        "submit_time": "2026-05-27 10:01:00",
+        "reviewer": "reviewer2",
+        "review_time": "2026-05-27 10:30:00"
+      },
+      "parsedData": {
+        "change_id": "CO011",
+        "title": "测试变更单11",
+        "version": "v1.0",
+        "status": "active",
+        "submitter": "user11",
+        "submit_time": "2026-05-27 10:01:00",
+        "reviewer": "reviewer2",
+        "review_time": "2026-05-27 10:30:00"
+      },
+      "source": {
+        "file": "test_invalid_change_orders.csv",
+        "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/test_invalid_change_orders.csv",
+        "rowIndex": 2,
+        "rowNumber": 3
+      }
+    },
+    "action": "import",
+    "dataType": null,
+    "sourceFile": null,
+    "rowNumber": 3,
+    "error": null,
+    "metadata": {
+      "importId": "mpofq0jjq2pwsdizj",
+      "batchId": "mpofq0jjzsjzgyzgv",
+      "validationErrors": [
+        "缺少必填字段: creator",
+        "缺少必填字段: created_at"
+      ],
+      "requeuedFromDeadLetter": true,
+      "originalDeadLetterId": "mpofsrrh0d6yu4aco",
+      "previousErrors": 2
+    }
+  }
+]

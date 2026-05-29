@@ -129,8 +129,37 @@ function processRetryQueue(root, processor) {
         item.completedAt = now.toISOString();
         item.result = result.data;
         results.succeeded++;
+        results.items.push(item);
+        continue;
       } else {
-        throw new Error(result.error || '处理失败');
+        item.lastError = result.error || '处理失败';
+        
+        if (result.retryable === false || item.retryCount >= item.maxRetries) {
+          item.status = 'dead_letter';
+          item.movedToDeadLetterAt = now.toISOString();
+          item.deadLetterReason = result.retryable === false 
+            ? '不可重试错误' 
+            : `重试 ${item.maxRetries} 次失败`;
+          
+          const deadLetterItem = {
+            ...item,
+            deadLetterId: generateId(),
+            originalQueueId: item.id,
+            notRetryable: result.retryable === false
+          };
+          deadLetterQueue.push(deadLetterItem);
+          results.movedToDeadLetter++;
+          results.failed++;
+          results.items.push(item);
+          continue;
+        } else {
+          item.status = 'pending';
+          item.nextRetryAt = calculateNextRetry(item.retryCount, item.delayStrategy);
+          updatedQueue.push(item);
+          results.failed++;
+          results.items.push(item);
+          continue;
+        }
       }
     } catch (e) {
       item.lastError = e.message;
@@ -148,10 +177,14 @@ function processRetryQueue(root, processor) {
         };
         deadLetterQueue.push(deadLetterItem);
         results.movedToDeadLetter++;
+        results.items.push(item);
+        continue;
       } else {
         item.status = 'pending';
         item.nextRetryAt = calculateNextRetry(item.retryCount, item.delayStrategy);
         updatedQueue.push(item);
+        results.items.push(item);
+        continue;
       }
     }
 

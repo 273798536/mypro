@@ -116,32 +116,121 @@ queueCommand
 
 function retryImportItem(root, item) {
   const { parseCSV, parseJSON, validateRecord, detectDataType } = require('../utils/parser');
+  const { createSnapshot } = require('../utils/diff-utils');
   const fs = require('fs');
   const path = require('path');
-  const { getWorkspacePaths, readJson, writeJson, generateId, getTimestamp } = require('../utils/file-manager');
+  const {
+    getWorkspacePaths,
+    readJson,
+    writeJson,
+    generateId,
+    getTimestamp,
+    readState,
+    writeState
+  } = require('../utils/file-manager');
   const paths = getWorkspacePaths(root);
 
   try {
-    if (!item.originalData || !item.sourceFile) {
-      return { success: false, error: '缺少原始数据或源文件信息' };
+    if (!item.originalData || !item.dataType) {
+      return { success: false, error: '缺少原始数据或数据类型信息' };
     }
 
-    const filePath = item.originalData.sourcePath || path.join(paths.source, item.sourceFile);
-    if (!fs.existsSync(filePath)) {
-      return { success: false, error: `源文件不存在: ${filePath}` };
+    const record = item.originalData;
+    const dataType = item.dataType;
+    const recordId = item.recordId || `${dataType}-${item.rowNumber}`;
+
+    const validation = validateRecord(record, dataType);
+    if (!validation.valid) {
+      return {
+        success: false,
+        error: `验证失败: ${validation.errors.join('; ')}`,
+        retryable: true
+      };
     }
 
-    const ext = path.extname(filePath).toLowerCase();
-    let parseResult;
+    const existingDataPath = path.join(paths.parsed, `${dataType}.json`);
+    const existingData = readJson(existingDataPath) || [];
+    const existingIds = new Set(existingData.map(r => r.recordId));
 
-    if (ext === '.csv') {
-      parseResult = require('csv-parser');
-      return { success: true, data: { note: '需重新导入完整文件', rowNumber: item.rowNumber } };
+    const isDuplicate = existingIds.has(recordId);
+    if (isDuplicate) {
+      return {
+        success: false,
+        error: `记录 ${recordId} 已存在`,
+        retryable: false
+      };
     }
 
-    return { success: true, data: item.originalData };
+    const importId = generateId();
+    const batchId = generateId();
+    const importTime = getTimestamp();
+
+    const importRecord = {
+      importId,
+      batchId,
+      recordId,
+      dataType,
+      importTime,
+      rowNumber: record.rowNumber,
+      source: record.source,
+      rawData: record.rawData,
+      parsedData: record.parsedData,
+      status: 'retry_imported',
+      isResubmit: false,
+      manualOverride: false,
+      checkStatus: 'pending',
+      retrySource: {
+        queueId: item.id,
+        retryCount: item.retryCount,
+        originalError: item.error
+      }
+    };
+
+    const snapshotBefore = createSnapshot(existingData);
+    existingData.push(importRecord);
+    writeJson(existingDataPath, existingData);
+    const snapshotAfter = createSnapshot(existingData);
+
+    const state = readState(root);
+    state.importStats = state.importStats || {};
+    state.importStats[dataType] = state.importStats[dataType] || { total: 0, valid: 0, invalid: 0 };
+    state.importStats[dataType].total += 1;
+    state.importStats[dataType].valid += 1;
+    writeState(root, state);
+
+    const historyEntry = {
+      action: 'retry_import',
+      importId,
+      batchId,
+      dataType,
+      timestamp: importTime,
+      sourceQueueId: item.id,
+      retryCount: item.retryCount,
+      snapshotBefore,
+      snapshotAfter,
+      summary: {
+        total: 1,
+        success: 1,
+        failed: 0,
+        skipped: 0,
+        duplicate: 0
+      }
+    };
+
+    const historyPath = path.join(paths.history, `retry-import-${importId}.json`);
+    writeJson(historyPath, historyEntry);
+
+    return {
+      success: true,
+      data: {
+        recordId,
+        importId,
+        batchId,
+        importTime
+      }
+    };
   } catch (e) {
-    return { success: false, error: e.message };
+    return { success: false, error: e.message, retryable: true };
   }
 }
 

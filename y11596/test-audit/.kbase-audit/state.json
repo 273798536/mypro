@@ -1,13 +1,14 @@
 {
   "version": "1.0.0",
   "status": "active",
-  "frozen": true,
-  "currentBatch": "mpk0xsevxeuachg02",
+  "frozen": false,
+  "currentBatch": "mpofq0jjzsjzgyzgv",
   "batches": [
     "mpk0xdert16kz29zp",
     "mpk0xrzpjpntrilek",
     "mpk0xs3k8ycx7dli0",
-    "mpk0xsevxeuachg02"
+    "mpk0xsevxeuachg02",
+    "mpofq0jjzsjzgyzgv"
   ],
   "lastCheck": {
     "checkId": "mpmh9aijydi0cr67c",
@@ -73,9 +74,9 @@
   },
   "importStats": {
     "change_order": {
-      "total": 5,
-      "valid": 5,
-      "invalid": 0
+      "total": 11,
+      "valid": 6,
+      "invalid": 5
     },
     "review_opinion": {
       "total": 4,
@@ -95,5 +96,5 @@
   },
   "frozenAt": "2026-05-26T09:36:30.268Z",
   "frozenBy": "user-via-cli",
-  "unfrozenAt": "2026-05-26T09:33:57.608Z"
+  "unfrozenAt": "2026-05-27T19:05:48.707Z"
 }

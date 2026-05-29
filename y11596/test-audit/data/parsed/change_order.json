@@ -183,5 +183,53 @@
     "checkStatus": "checked",
     "lastCheckId": "mpmh9aijydi0cr67c",
     "lastCheckTime": "2026-05-26T10:13:31.387Z"
+  },
+  {
+    "importId": "mpofsioxrbrt0yhco",
+    "batchId": "mpofsiox37tanozp7",
+    "recordId": "CO010",
+    "dataType": "change_order",
+    "importTime": "2026-05-27T19:08:01.569Z",
+    "rowNumber": 2,
+    "source": {
+      "file": "test_invalid_change_orders.csv",
+      "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/test_invalid_change_orders.csv",
+      "rowIndex": 1,
+      "rowNumber": 2
+    },
+    "rawData": {
+      "change_id": "CO010",
+      "title": "测试变更单10",
+      "version": "v1.0",
+      "status": "pending",
+      "submitter": "user10",
+      "submit_time": "2026-05-27 10:00:00",
+      "reviewer": "",
+      "review_time": "",
+      "creator": "user_fixed",
+      "created_at": "2026-05-27 11:00:00"
+    },
+    "parsedData": {
+      "change_id": "CO010",
+      "title": "测试变更单10",
+      "version": "v1.0",
+      "status": "pending",
+      "submitter": "user10",
+      "submit_time": "2026-05-27 10:00:00",
+      "reviewer": "",
+      "review_time": "",
+      "creator": "user_fixed",
+      "created_at": "2026-05-27 11:00:00",
+      "record_id": "CO010"
+    },
+    "status": "retry_imported",
+    "isResubmit": false,
+    "manualOverride": false,
+    "checkStatus": "pending",
+    "retrySource": {
+      "queueId": "mpofq0jjqxrex6wqk",
+      "retryCount": 1,
+      "originalError": "缺少必填字段: creator; 缺少必填字段: created_at"
+    }
   }
 ]

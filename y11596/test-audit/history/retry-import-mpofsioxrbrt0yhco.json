@@ -1,0 +1,448 @@
+{
+  "action": "retry_import",
+  "importId": "mpofsioxrbrt0yhco",
+  "batchId": "mpofsiox37tanozp7",
+  "dataType": "change_order",
+  "timestamp": "2026-05-27T19:08:01.569Z",
+  "sourceQueueId": "mpofq0jjqxrex6wqk",
+  "retryCount": 1,
+  "snapshotBefore": {
+    "timestamp": "2026-05-27T19:08:01.569Z",
+    "dataHash": "[{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO001\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":2,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":1,\"rowNumber\":2},\"rawData\":{\"change_id\":\"CO001\",\"title\":\"关于退款政策的更新说明\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-15 10:30:00\",\"answer_id\":\"ANS001\",\"content\":\"退款政策调整为7天无理由\"},\"parsedData\":{\"change_id\":\"CO001\",\"title\":\"关于退款政策的更新说明\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-15 10:30:00\",\"answer_id\":\"ANS001\",\"content\":\"退款政策调整为7天无理由\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO002\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":3,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":2,\"rowNumber\":3},\"rawData\":{\"change_id\":\"CO002\",\"title\":\"会员权益升级公告\",\"status\":\"online\",\"creator\":\"李四\",\"created_at\":\"2024-01-16 14:20:00\",\"answer_id\":\"ANS002\",\"content\":\"会员新增专属客服通道\"},\"parsedData\":{\"change_id\":\"CO002\",\"title\":\"会员权益升级公告\",\"status\":\"online\",\"creator\":\"李四\",\"created_at\":\"2024-01-16 14:20:00\",\"answer_id\":\"ANS002\",\"content\":\"会员新增专属客服通道\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO003\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":4,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":3,\"rowNumber\":4},\"rawData\":{\"change_id\":\"CO003\",\"title\":\"物流配送时效调整\",\"status\":\"offline\",\"creator\":\"王五\",\"created_at\":\"2024-01-17 09:15:00\",\"answer_id\":\"ANS003\",\"content\":\"因运力调整，配送时间延后24小时\"},\"parsedData\":{\"change_id\":\"CO003\",\"title\":\"物流配送时效调整\",\"status\":\"offline\",\"creator\":\"王五\",\"created_at\":\"2024-01-17 09:15:00\",\"answer_id\":\"ANS003\",\"content\":\"因运力调整，配送时间延后24小时\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO004\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":5,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":4,\"rowNumber\":5},\"rawData\":{\"change_id\":\"CO004\",\"title\":\"常见问题补充说明\",\"status\":\"pending\",\"creator\":\"赵六\",\"created_at\":\"2024-01-18 16:45:00\",\"answer_id\":\"ANS004\",\"content\":\"关于发票开具的补充说明\"},\"parsedData\":{\"change_id\":\"CO004\",\"title\":\"常见问题补充说明\",\"status\":\"pending\",\"creator\":\"赵六\",\"created_at\":\"2024-01-18 16:45:00\",\"answer_id\":\"ANS004\",\"content\":\"关于发票开具的补充说明\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO005\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":6,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":5,\"rowNumber\":6},\"rawData\":{\"change_id\":\"CO005\",\"title\":\"活动规则澄清\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-19 11:00:00\",\"answer_id\":\"ANS005\",\"content\":\"满减活动不叠加其他优惠\"},\"parsedData\":{\"change_id\":\"CO005\",\"title\":\"活动规则澄清\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-19 11:00:00\",\"answer_id\":\"ANS005\",\"content\":\"满减活动不叠加其他优惠\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"}]",
+    "data": [
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO001",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 2,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 1,
+          "rowNumber": 2
+        },
+        "rawData": {
+          "change_id": "CO001",
+          "title": "关于退款政策的更新说明",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-15 10:30:00",
+          "answer_id": "ANS001",
+          "content": "退款政策调整为7天无理由"
+        },
+        "parsedData": {
+          "change_id": "CO001",
+          "title": "关于退款政策的更新说明",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-15 10:30:00",
+          "answer_id": "ANS001",
+          "content": "退款政策调整为7天无理由"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO002",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 3,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 2,
+          "rowNumber": 3
+        },
+        "rawData": {
+          "change_id": "CO002",
+          "title": "会员权益升级公告",
+          "status": "online",
+          "creator": "李四",
+          "created_at": "2024-01-16 14:20:00",
+          "answer_id": "ANS002",
+          "content": "会员新增专属客服通道"
+        },
+        "parsedData": {
+          "change_id": "CO002",
+          "title": "会员权益升级公告",
+          "status": "online",
+          "creator": "李四",
+          "created_at": "2024-01-16 14:20:00",
+          "answer_id": "ANS002",
+          "content": "会员新增专属客服通道"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO003",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 4,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 3,
+          "rowNumber": 4
+        },
+        "rawData": {
+          "change_id": "CO003",
+          "title": "物流配送时效调整",
+          "status": "offline",
+          "creator": "王五",
+          "created_at": "2024-01-17 09:15:00",
+          "answer_id": "ANS003",
+          "content": "因运力调整，配送时间延后24小时"
+        },
+        "parsedData": {
+          "change_id": "CO003",
+          "title": "物流配送时效调整",
+          "status": "offline",
+          "creator": "王五",
+          "created_at": "2024-01-17 09:15:00",
+          "answer_id": "ANS003",
+          "content": "因运力调整，配送时间延后24小时"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO004",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 5,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 4,
+          "rowNumber": 5
+        },
+        "rawData": {
+          "change_id": "CO004",
+          "title": "常见问题补充说明",
+          "status": "pending",
+          "creator": "赵六",
+          "created_at": "2024-01-18 16:45:00",
+          "answer_id": "ANS004",
+          "content": "关于发票开具的补充说明"
+        },
+        "parsedData": {
+          "change_id": "CO004",
+          "title": "常见问题补充说明",
+          "status": "pending",
+          "creator": "赵六",
+          "created_at": "2024-01-18 16:45:00",
+          "answer_id": "ANS004",
+          "content": "关于发票开具的补充说明"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO005",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 6,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 5,
+          "rowNumber": 6
+        },
+        "rawData": {
+          "change_id": "CO005",
+          "title": "活动规则澄清",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-19 11:00:00",
+          "answer_id": "ANS005",
+          "content": "满减活动不叠加其他优惠"
+        },
+        "parsedData": {
+          "change_id": "CO005",
+          "title": "活动规则澄清",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-19 11:00:00",
+          "answer_id": "ANS005",
+          "content": "满减活动不叠加其他优惠"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      }
+    ],
+    "metadata": {}
+  },
+  "snapshotAfter": {
+    "timestamp": "2026-05-27T19:08:01.569Z",
+    "dataHash": "[{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO001\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":2,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":1,\"rowNumber\":2},\"rawData\":{\"change_id\":\"CO001\",\"title\":\"关于退款政策的更新说明\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-15 10:30:00\",\"answer_id\":\"ANS001\",\"content\":\"退款政策调整为7天无理由\"},\"parsedData\":{\"change_id\":\"CO001\",\"title\":\"关于退款政策的更新说明\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-15 10:30:00\",\"answer_id\":\"ANS001\",\"content\":\"退款政策调整为7天无理由\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO002\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":3,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":2,\"rowNumber\":3},\"rawData\":{\"change_id\":\"CO002\",\"title\":\"会员权益升级公告\",\"status\":\"online\",\"creator\":\"李四\",\"created_at\":\"2024-01-16 14:20:00\",\"answer_id\":\"ANS002\",\"content\":\"会员新增专属客服通道\"},\"parsedData\":{\"change_id\":\"CO002\",\"title\":\"会员权益升级公告\",\"status\":\"online\",\"creator\":\"李四\",\"created_at\":\"2024-01-16 14:20:00\",\"answer_id\":\"ANS002\",\"content\":\"会员新增专属客服通道\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO003\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":4,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":3,\"rowNumber\":4},\"rawData\":{\"change_id\":\"CO003\",\"title\":\"物流配送时效调整\",\"status\":\"offline\",\"creator\":\"王五\",\"created_at\":\"2024-01-17 09:15:00\",\"answer_id\":\"ANS003\",\"content\":\"因运力调整，配送时间延后24小时\"},\"parsedData\":{\"change_id\":\"CO003\",\"title\":\"物流配送时效调整\",\"status\":\"offline\",\"creator\":\"王五\",\"created_at\":\"2024-01-17 09:15:00\",\"answer_id\":\"ANS003\",\"content\":\"因运力调整，配送时间延后24小时\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO004\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":5,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":4,\"rowNumber\":5},\"rawData\":{\"change_id\":\"CO004\",\"title\":\"常见问题补充说明\",\"status\":\"pending\",\"creator\":\"赵六\",\"created_at\":\"2024-01-18 16:45:00\",\"answer_id\":\"ANS004\",\"content\":\"关于发票开具的补充说明\"},\"parsedData\":{\"change_id\":\"CO004\",\"title\":\"常见问题补充说明\",\"status\":\"pending\",\"creator\":\"赵六\",\"created_at\":\"2024-01-18 16:45:00\",\"answer_id\":\"ANS004\",\"content\":\"关于发票开具的补充说明\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpk0xderh3nofgqzk\",\"batchId\":\"mpk0xdert16kz29zp\",\"recordId\":\"CO005\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-24T17:00:49.059Z\",\"rowNumber\":6,\"source\":{\"file\":\"change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv\",\"rowIndex\":5,\"rowNumber\":6},\"rawData\":{\"change_id\":\"CO005\",\"title\":\"活动规则澄清\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-19 11:00:00\",\"answer_id\":\"ANS005\",\"content\":\"满减活动不叠加其他优惠\"},\"parsedData\":{\"change_id\":\"CO005\",\"title\":\"活动规则澄清\",\"status\":\"online\",\"creator\":\"张三\",\"created_at\":\"2024-01-19 11:00:00\",\"answer_id\":\"ANS005\",\"content\":\"满减活动不叠加其他优惠\"},\"status\":\"imported\",\"manualOverride\":false,\"checkStatus\":\"checked\",\"lastCheckId\":\"mpmh9aijydi0cr67c\",\"lastCheckTime\":\"2026-05-26T10:13:31.387Z\"},{\"importId\":\"mpofsioxrbrt0yhco\",\"batchId\":\"mpofsiox37tanozp7\",\"recordId\":\"CO010\",\"dataType\":\"change_order\",\"importTime\":\"2026-05-27T19:08:01.569Z\",\"rowNumber\":2,\"source\":{\"file\":\"test_invalid_change_orders.csv\",\"filePath\":\"/Users/mac/pro/solo/workspaces/y11596/samples/test_invalid_change_orders.csv\",\"rowIndex\":1,\"rowNumber\":2},\"rawData\":{\"change_id\":\"CO010\",\"title\":\"测试变更单10\",\"version\":\"v1.0\",\"status\":\"pending\",\"submitter\":\"user10\",\"submit_time\":\"2026-05-27 10:00:00\",\"reviewer\":\"\",\"review_time\":\"\",\"creator\":\"user_fixed\",\"created_at\":\"2026-05-27 11:00:00\"},\"parsedData\":{\"change_id\":\"CO010\",\"title\":\"测试变更单10\",\"version\":\"v1.0\",\"status\":\"pending\",\"submitter\":\"user10\",\"submit_time\":\"2026-05-27 10:00:00\",\"reviewer\":\"\",\"review_time\":\"\",\"creator\":\"user_fixed\",\"created_at\":\"2026-05-27 11:00:00\",\"record_id\":\"CO010\"},\"status\":\"retry_imported\",\"isResubmit\":false,\"manualOverride\":false,\"checkStatus\":\"pending\",\"retrySource\":{\"queueId\":\"mpofq0jjqxrex6wqk\",\"retryCount\":1,\"originalError\":\"缺少必填字段: creator; 缺少必填字段: created_at\"}}]",
+    "data": [
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO001",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 2,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 1,
+          "rowNumber": 2
+        },
+        "rawData": {
+          "change_id": "CO001",
+          "title": "关于退款政策的更新说明",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-15 10:30:00",
+          "answer_id": "ANS001",
+          "content": "退款政策调整为7天无理由"
+        },
+        "parsedData": {
+          "change_id": "CO001",
+          "title": "关于退款政策的更新说明",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-15 10:30:00",
+          "answer_id": "ANS001",
+          "content": "退款政策调整为7天无理由"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO002",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 3,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 2,
+          "rowNumber": 3
+        },
+        "rawData": {
+          "change_id": "CO002",
+          "title": "会员权益升级公告",
+          "status": "online",
+          "creator": "李四",
+          "created_at": "2024-01-16 14:20:00",
+          "answer_id": "ANS002",
+          "content": "会员新增专属客服通道"
+        },
+        "parsedData": {
+          "change_id": "CO002",
+          "title": "会员权益升级公告",
+          "status": "online",
+          "creator": "李四",
+          "created_at": "2024-01-16 14:20:00",
+          "answer_id": "ANS002",
+          "content": "会员新增专属客服通道"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO003",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 4,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 3,
+          "rowNumber": 4
+        },
+        "rawData": {
+          "change_id": "CO003",
+          "title": "物流配送时效调整",
+          "status": "offline",
+          "creator": "王五",
+          "created_at": "2024-01-17 09:15:00",
+          "answer_id": "ANS003",
+          "content": "因运力调整，配送时间延后24小时"
+        },
+        "parsedData": {
+          "change_id": "CO003",
+          "title": "物流配送时效调整",
+          "status": "offline",
+          "creator": "王五",
+          "created_at": "2024-01-17 09:15:00",
+          "answer_id": "ANS003",
+          "content": "因运力调整，配送时间延后24小时"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO004",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 5,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 4,
+          "rowNumber": 5
+        },
+        "rawData": {
+          "change_id": "CO004",
+          "title": "常见问题补充说明",
+          "status": "pending",
+          "creator": "赵六",
+          "created_at": "2024-01-18 16:45:00",
+          "answer_id": "ANS004",
+          "content": "关于发票开具的补充说明"
+        },
+        "parsedData": {
+          "change_id": "CO004",
+          "title": "常见问题补充说明",
+          "status": "pending",
+          "creator": "赵六",
+          "created_at": "2024-01-18 16:45:00",
+          "answer_id": "ANS004",
+          "content": "关于发票开具的补充说明"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpk0xderh3nofgqzk",
+        "batchId": "mpk0xdert16kz29zp",
+        "recordId": "CO005",
+        "dataType": "change_order",
+        "importTime": "2026-05-24T17:00:49.059Z",
+        "rowNumber": 6,
+        "source": {
+          "file": "change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/change_orders.csv",
+          "rowIndex": 5,
+          "rowNumber": 6
+        },
+        "rawData": {
+          "change_id": "CO005",
+          "title": "活动规则澄清",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-19 11:00:00",
+          "answer_id": "ANS005",
+          "content": "满减活动不叠加其他优惠"
+        },
+        "parsedData": {
+          "change_id": "CO005",
+          "title": "活动规则澄清",
+          "status": "online",
+          "creator": "张三",
+          "created_at": "2024-01-19 11:00:00",
+          "answer_id": "ANS005",
+          "content": "满减活动不叠加其他优惠"
+        },
+        "status": "imported",
+        "manualOverride": false,
+        "checkStatus": "checked",
+        "lastCheckId": "mpmh9aijydi0cr67c",
+        "lastCheckTime": "2026-05-26T10:13:31.387Z"
+      },
+      {
+        "importId": "mpofsioxrbrt0yhco",
+        "batchId": "mpofsiox37tanozp7",
+        "recordId": "CO010",
+        "dataType": "change_order",
+        "importTime": "2026-05-27T19:08:01.569Z",
+        "rowNumber": 2,
+        "source": {
+          "file": "test_invalid_change_orders.csv",
+          "filePath": "/Users/mac/pro/solo/workspaces/y11596/samples/test_invalid_change_orders.csv",
+          "rowIndex": 1,
+          "rowNumber": 2
+        },
+        "rawData": {
+          "change_id": "CO010",
+          "title": "测试变更单10",
+          "version": "v1.0",
+          "status": "pending",
+          "submitter": "user10",
+          "submit_time": "2026-05-27 10:00:00",
+          "reviewer": "",
+          "review_time": "",
+          "creator": "user_fixed",
+          "created_at": "2026-05-27 11:00:00"
+        },
+        "parsedData": {
+          "change_id": "CO010",
+          "title": "测试变更单10",
+          "version": "v1.0",
+          "status": "pending",
+          "submitter": "user10",
+          "submit_time": "2026-05-27 10:00:00",
+          "reviewer": "",
+          "review_time": "",
+          "creator": "user_fixed",
+          "created_at": "2026-05-27 11:00:00",
+          "record_id": "CO010"
+        },
+        "status": "retry_imported",
+        "isResubmit": false,
+        "manualOverride": false,
+        "checkStatus": "pending",
+        "retrySource": {
+          "queueId": "mpofq0jjqxrex6wqk",
+          "retryCount": 1,
+          "originalError": "缺少必填字段: creator; 缺少必填字段: created_at"
+        }
+      }
+    ],
+    "metadata": {}
+  },
+  "summary": {
+    "total": 1,
+    "success": 1,
+    "failed": 0,
+    "skipped": 0,
+    "duplicate": 0
+  }
+}
