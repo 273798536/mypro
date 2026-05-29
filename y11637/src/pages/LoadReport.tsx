@@ -14,7 +14,7 @@ import {
   Home,
 } from 'lucide-react';
 import { getSessionById, getLevelById } from '../utils/storage';
-import type { GameSession, Level, CargoBox, Compartment } from '../types';
+import type { GameSession, Level } from '../types';
 import { ZONE_LABELS } from '../types';
 import { formatTime } from '../utils/game';
 
@@ -49,6 +49,64 @@ export default function LoadReport() {
     const totalTime = (session.endTime || Date.now()) - session.startTime - session.pauseDuration;
     return Math.floor(totalTime / 1000);
   }, [session, level]);
+
+  const scoreData = useMemo(() => {
+    if (!session || !level || !session.score) return null;
+    const score = session.score;
+    const totalPossible =
+      score.baseScore +
+      level.cargoBoxes.length * 5 +
+      level.cargoBoxes.length * 3 +
+      level.timeLimit * 0.5;
+    const scorePercentage = Math.min(100, (score.total / totalPossible) * 100);
+
+    let grade;
+    if (scorePercentage >= 90) grade = { label: '优秀', color: 'text-status-success' };
+    else if (scorePercentage >= 70) grade = { label: '良好', color: 'text-primary-500' };
+    else if (scorePercentage >= 50) grade = { label: '及格', color: 'text-status-warning' };
+    else grade = { label: '需加强', color: 'text-status-error' };
+
+    return {
+      score,
+      totalPossible,
+      scorePercentage,
+      grade,
+    };
+  }, [session, level]);
+
+  const zoneStats = useMemo(() => {
+    if (!session || !level) return null;
+    
+    const stats: Record<string, { correct: number; wrong: number; total: number }> = {
+      frozen: { correct: 0, wrong: 0, total: 0 },
+      chilled: { correct: 0, wrong: 0, total: 0 },
+      ambient: { correct: 0, wrong: 0, total: 0 },
+    };
+
+    level.cargoBoxes.forEach((cargo) => {
+      stats[cargo.zone].total++;
+    });
+
+    Array.from(session.placedCargos.entries()).forEach(([compartmentId, cargoId]) => {
+      const cargo = level.cargoBoxes.find((c) => c.id === cargoId);
+      const compartment = level.compartments.find((c) => c.id === compartmentId);
+      if (cargo && compartment) {
+        if (cargo.zone === compartment.zone) {
+          stats[cargo.zone].correct++;
+        } else {
+          stats[cargo.zone].wrong++;
+        }
+      }
+    });
+
+    return stats;
+  }, [session, level]);
+
+  const zoneColors: Record<string, string> = {
+    frozen: 'bg-zone-frozen',
+    chilled: 'bg-zone-chilled',
+    ambient: 'bg-zone-ambient',
+  };
 
   const exportReport = () => {
     if (!session || !level) return;
@@ -98,7 +156,7 @@ export default function LoadReport() {
     }
   };
 
-  if (!session || !level || !session.score) {
+  if (!session || !level || !session.score || !scoreData || !zoneStats) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
@@ -106,54 +164,7 @@ export default function LoadReport() {
     );
   }
 
-  const score = session.score;
-  const totalPossible =
-    score.baseScore +
-    level.cargoBoxes.length * 5 +
-    level.cargoBoxes.length * 3 +
-    level.timeLimit * 0.5;
-  const scorePercentage = Math.min(100, (score.total / totalPossible) * 100);
-
-  const getScoreGrade = () => {
-    if (scorePercentage >= 90) return { label: '优秀', color: 'text-status-success' };
-    if (scorePercentage >= 70) return { label: '良好', color: 'text-primary-500' };
-    if (scorePercentage >= 50) return { label: '及格', color: 'text-status-warning' };
-    return { label: '需加强', color: 'text-status-error' };
-  };
-
-  const grade = getScoreGrade();
-
-  const zoneStats = useMemo(() => {
-    const stats: Record<string, { correct: number; wrong: number; total: number }> = {
-      frozen: { correct: 0, wrong: 0, total: 0 },
-      chilled: { correct: 0, wrong: 0, total: 0 },
-      ambient: { correct: 0, wrong: 0, total: 0 },
-    };
-
-    level.cargoBoxes.forEach((cargo) => {
-      stats[cargo.zone].total++;
-    });
-
-    Array.from(session.placedCargos.entries()).forEach(([compartmentId, cargoId]) => {
-      const cargo = level.cargoBoxes.find((c) => c.id === cargoId);
-      const compartment = level.compartments.find((c) => c.id === compartmentId);
-      if (cargo && compartment) {
-        if (cargo.zone === compartment.zone) {
-          stats[cargo.zone].correct++;
-        } else {
-          stats[cargo.zone].wrong++;
-        }
-      }
-    });
-
-    return stats;
-  }, [level, session.placedCargos]);
-
-  const zoneColors: Record<string, string> = {
-    frozen: 'bg-zone-frozen',
-    chilled: 'bg-zone-chilled',
-    ambient: 'bg-zone-ambient',
-  };
+  const { score, scorePercentage, grade } = scoreData;
 
   return (
     <div className="min-h-screen py-8 px-4 pb-24">

@@ -9,7 +9,7 @@ import type {
   Compartment,
   ToastMessage,
 } from '../types';
-import { generateId, validateZonePlacement, calculateScore } from '../utils/game';
+import { generateId, validateZonePlacement, calculateScore, checkUnloadOrder } from '../utils/game';
 import { saveSession, saveRecord, clearCurrentSession } from '../utils/storage';
 
 interface GameStore {
@@ -118,8 +118,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   placeCargo: (cargo, compartmentId) => {
-    const { currentSession, compartments, currentLevel } = get();
+    const { currentSession, compartments, currentLevel, remainingTime } = get();
     if (!currentSession || !currentLevel || currentSession.status !== 'playing') return false;
+
+    if (remainingTime <= 0) {
+      get().addToast({
+        type: 'error',
+        message: '时间已到，无法继续放置货箱，请提交装载方案',
+        duration: 3000,
+      });
+      return false;
+    }
 
     const compartment = compartments.find((c) => c.id === compartmentId);
     if (!compartment || compartment.occupiedBy) return false;
@@ -168,6 +177,34 @@ export const useGameStore = create<GameStore>((set, get) => ({
         duration: 3000,
       });
       return false;
+    }
+
+    const orderCheck = checkUnloadOrder(
+      newPlacedCargos,
+      currentLevel.cargoBoxes,
+      updatedCompartments,
+      currentLevel.stations
+    );
+
+    if (!orderCheck.valid && orderCheck.warnings.length > 0) {
+      const latestWarning = orderCheck.warnings[orderCheck.warnings.length - 1];
+      const exists = newErrors.some(
+        (e) =>
+          e.type === 'unload_order' &&
+          e.cargoId === latestWarning.cargoId &&
+          e.compartmentId === latestWarning.compartmentId
+      );
+      if (!exists) {
+        newErrors.push(latestWarning);
+        updatedSession.errors = newErrors;
+        set({ currentSession: updatedSession });
+        saveSession(updatedSession);
+      }
+      get().addToast({
+        type: 'warning',
+        message: latestWarning.message,
+        duration: 4000,
+      });
     }
 
     return true;
@@ -259,11 +296,41 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!currentSession || !currentLevel) return;
 
     const usedTime = currentLevel.timeLimit - remainingTime;
+    const updatedErrors = [...currentSession.errors];
+
+    if (remainingTime <= 0) {
+      updatedErrors.push({
+        type: 'timeout',
+        timestamp: Date.now(),
+        cargoId: 'timeout',
+        message: `装载超时：超出时间限制 ${usedTime - currentLevel.timeLimit} 秒，超时货物温度升高风险增加`,
+      });
+    }
+
+    const orderCheck = checkUnloadOrder(
+      currentSession.placedCargos,
+      currentLevel.cargoBoxes,
+      compartments,
+      currentLevel.stations
+    );
+
+    orderCheck.warnings.forEach((warning) => {
+      const exists = updatedErrors.some(
+        (e) =>
+          e.type === 'unload_order' &&
+          e.cargoId === warning.cargoId &&
+          e.compartmentId === warning.compartmentId
+      );
+      if (!exists) {
+        updatedErrors.push(warning);
+      }
+    });
+
     const score = calculateScore(
       currentLevel,
       currentSession.placedCargos,
       compartments,
-      currentSession.errors,
+      updatedErrors,
       usedTime
     );
 
@@ -274,10 +341,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const updatedSession: GameSession = {
       ...currentSession,
-      status: 'completed',
+      status: remainingTime <= 0 ? 'timeout' : 'completed',
       endTime: Date.now(),
       actions: [...currentSession.actions, action],
       score,
+      errors: updatedErrors,
     };
 
     set({ currentSession: updatedSession });

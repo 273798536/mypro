@@ -107,6 +107,22 @@ export function calculateScore(
   const orderErrors = orderCheck.warnings.length;
   unloadOrder = Math.max(0, (totalCargos - orderErrors) * 3);
 
+  orderCheck.warnings.forEach((warning) => {
+    const exists = errors.some(
+      (e) =>
+        e.type === 'unload_order' &&
+        e.cargoId === warning.cargoId &&
+        e.compartmentId === warning.compartmentId
+    );
+    if (!exists) {
+      deductions.push({
+        type: 'unload_order',
+        amount: 5,
+        reason: warning.message,
+      });
+    }
+  });
+
   errors.forEach((error) => {
     if (error.type === 'zone_mismatch') {
       deductions.push({
@@ -120,14 +136,18 @@ export function calculateScore(
         amount: 5,
         reason: error.message,
       });
-    } else if (error.type === 'timeout') {
-      deductions.push({
-        type: 'timeout',
-        amount: 1,
-        reason: error.message,
-      });
     }
   });
+
+  const timeoutErrors = errors.filter((e) => e.type === 'timeout');
+  if (timeoutErrors.length > 0 && usedTime > level.timeLimit) {
+    const overtimeSeconds = usedTime - level.timeLimit;
+    deductions.push({
+      type: 'timeout',
+      amount: overtimeSeconds,
+      reason: `装载超时：超出时间限制 ${overtimeSeconds} 秒，超时每秒扣1分，共扣 ${overtimeSeconds} 分`,
+    });
+  }
 
   const timeBonus = Math.max(0, Math.floor((level.timeLimit - usedTime) * 0.5));
 
