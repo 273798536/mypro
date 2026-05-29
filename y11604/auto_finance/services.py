@@ -66,20 +66,81 @@ def create_contract_version(db, contract_data: Dict, source: str = None, operato
     db.flush()
     log_creation(db, "Contract", contract.id, source=source, operator=operator)
 
-    if existing and existing.vin != vin:
-        gps_orders = db.query(GpsWorkOrder).filter(
-            GpsWorkOrder.contract_id == existing.id
-        ).all()
-        for order in gps_orders:
-            order.vin = vin
-            order.contract_id = contract.id
-            log_update(
-                db, "GpsWorkOrder", order.id, "vin",
-                existing.vin, vin, source=source, operator=operator,
-                remark=f"合同换车，VIN从{existing.vin}变更为{vin}"
-            )
+    if existing:
+        _migrate_contract_records(db, existing, contract, source, operator)
 
     return contract
+
+
+def _migrate_contract_records(db, old_contract: Contract, new_contract: Contract,
+                               source: str = None, operator: str = None):
+    vin_changed = old_contract.vin != new_contract.vin
+
+    down_payments = db.query(DownPayment).filter(
+        DownPayment.contract_id == old_contract.id
+    ).all()
+    for dp in down_payments:
+        old_contract_id = dp.contract_id
+        dp.contract_id = new_contract.id
+        log_update(
+            db, "DownPayment", dp.id, "contract_id",
+            old_contract_id, new_contract.id, source=source, operator=operator,
+            remark=f"合同版本升级，从版本{old_contract.version}迁移到版本{new_contract.version}"
+        )
+
+    balance_plans = db.query(BalancePlan).filter(
+        BalancePlan.contract_id == old_contract.id
+    ).all()
+    for bp in balance_plans:
+        old_contract_id = bp.contract_id
+        bp.contract_id = new_contract.id
+        log_update(
+            db, "BalancePlan", bp.id, "contract_id",
+            old_contract_id, new_contract.id, source=source, operator=operator,
+            remark=f"合同版本升级，从版本{old_contract.version}迁移到版本{new_contract.version}"
+        )
+
+    deliveries = db.query(Delivery).filter(
+        Delivery.contract_id == old_contract.id
+    ).all()
+    for d in deliveries:
+        old_contract_id = d.contract_id
+        d.contract_id = new_contract.id
+        if vin_changed:
+            d.vin = new_contract.vin
+        log_update(
+            db, "Delivery", d.id, "contract_id",
+            old_contract_id, new_contract.id, source=source, operator=operator,
+            remark=f"合同版本升级，从版本{old_contract.version}迁移到版本{new_contract.version}"
+        )
+
+    refunds = db.query(Refund).filter(
+        Refund.contract_id == old_contract.id
+    ).all()
+    for r in refunds:
+        old_contract_id = r.contract_id
+        r.contract_id = new_contract.id
+        log_update(
+            db, "Refund", r.id, "contract_id",
+            old_contract_id, new_contract.id, source=source, operator=operator,
+            remark=f"合同版本升级，从版本{old_contract.version}迁移到版本{new_contract.version}"
+        )
+
+    gps_orders = db.query(GpsWorkOrder).filter(
+        GpsWorkOrder.contract_id == old_contract.id
+    ).all()
+    for order in gps_orders:
+        old_contract_id = order.contract_id
+        old_vin = order.vin
+        order.contract_id = new_contract.id
+        if vin_changed:
+            order.vin = new_contract.vin
+        log_update(
+            db, "GpsWorkOrder", order.id, "contract_id",
+            old_contract_id, new_contract.id, source=source, operator=operator,
+            remark=f"合同版本升级，从版本{old_contract.version}迁移到版本{new_contract.version}"
+            + (f"，VIN从{old_vin}变更为{new_contract.vin}" if vin_changed else "")
+        )
 
 
 def record_down_payment(db, payment_data: Dict, source: str = None, operator: str = None) -> DownPayment:
