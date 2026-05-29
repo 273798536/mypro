@@ -1,0 +1,179 @@
+{
+  "batch_id": "B20260529222732",
+  "generated_at": "2026-05-29T22:27:32.875765",
+  "record_count": 6,
+  "data": [
+    {
+      "item_id": "ba07fbdfd2ea6c57",
+      "category": "保单撤销",
+      "order_id": "O2026002",
+      "farmer_id": "F002",
+      "farmer_name": "李大叔",
+      "issue_description": "订单O2026002已于2026-04-10撤销 (原因: 农户改种蔬菜，主动退保)，但仍有1笔保费已缴 合计175.00元，需办理退款",
+      "severity": "高",
+      "related_records": [
+        "ORDER:O2026002",
+        "PREMIUM:P2026002"
+      ],
+      "suggestion": "请联系保险公司办理保费退款，同时更新保费状态为refunded",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 2,
+          "raw_value": "{\"order_id\": \"O2026002\", \"farmer_id\": \"F002\", \"crop_type\": \"小麦\", \"area_mu\": 35.0, \"order_date\": \"2026-03-18\", \"status\": \"cancelled\", \"expected_yield_kg\": 14000, \"contract_price\": 2.8, \"cancellation_reason\": \"农户改种蔬菜，主动退保\", \"cancellation_date\": \"2026-04-10\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 2,
+          "raw_value": "{\"premium_id\": \"P2026002\", \"order_id\": \"O2026002\", \"farmer_id\": \"F002\", \"total_premium\": 875.0, \"farmer_payable\": 175.0, \"subsidy_amount\": 700.0, \"premium_date\": \"2026-03-22\", \"status\": \"paid\", \"policy_number\": \"NY20260002\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"2026年中央财政农业保险补贴第1批\"}"
+        }
+      ]
+    },
+    {
+      "item_id": "4de2a0f2e3fa4d09",
+      "category": "补贴追溯",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "farmer_name": "王大婶",
+      "issue_description": "保费记录P2026003补贴金额1365.00元 与分摊计算1274.00元不一致，差异+91.00元",
+      "severity": "高",
+      "related_records": [
+        "PREMIUM:P2026003",
+        "SPLIT:b3cf136758b911fc"
+      ],
+      "suggestion": "请核实补贴计算标准，必要时调整保费或重新分摊",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 3,
+          "raw_value": "{\"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"crop_type\": \"玉米\", \"area_mu\": 80.0, \"order_date\": \"2026-03-20\", \"status\": \"amended\", \"expected_yield_kg\": 48000, \"contract_price\": 2.6, \"amendment_note\": \"2026年4月土地确权后实测面积增加15亩，原申报65亩\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    },
+    {
+      "item_id": "89630e8861c0d5b5",
+      "category": "保费分摊",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "farmer_name": "王大婶",
+      "issue_description": "保费记录P2026003总保费1820.00元 与分摊计算1698.67元不一致，差异+121.33元",
+      "severity": "高",
+      "related_records": [
+        "PREMIUM:P2026003",
+        "SPLIT:b3cf136758b911fc"
+      ],
+      "suggestion": "请核实保费计算标准，确认面积和费率是否正确",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 3,
+          "raw_value": "{\"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"crop_type\": \"玉米\", \"area_mu\": 80.0, \"order_date\": \"2026-03-20\", \"status\": \"amended\", \"expected_yield_kg\": 48000, \"contract_price\": 2.6, \"amendment_note\": \"2026年4月土地确权后实测面积增加15亩，原申报65亩\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    },
+    {
+      "item_id": "24678caeb8d93cd8",
+      "category": "面积核验",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "farmer_name": "王大婶",
+      "issue_description": "订单O2026003面积核验VerifyResult.NEEDS_REVIEW: 申报80.00亩，核验60.67亩，差异-19.33亩(-24.2%)。问题: historical_consistency: 与历史保费面积偏差31.9% > 5.0%",
+      "severity": "中",
+      "related_records": [
+        "VERIFY:32e41f07af3e85c5"
+      ],
+      "suggestion": "建议与农户确认实际种植面积，必要时现场核查",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 3,
+          "raw_value": "{\"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"crop_type\": \"玉米\", \"area_mu\": 80.0, \"order_date\": \"2026-03-20\", \"status\": \"amended\", \"expected_yield_kg\": 48000, \"contract_price\": 2.6, \"amendment_note\": \"2026年4月土地确权后实测面积增加15亩，原申报65亩\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    },
+    {
+      "item_id": "29502fc8b1235528",
+      "category": "补贴追溯",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "farmer_name": "王大婶",
+      "issue_description": "保费记录P2026003缺少补贴追溯信息，涉及补贴金额1365.00元",
+      "severity": "中",
+      "related_records": [
+        "PREMIUM:P2026003"
+      ],
+      "suggestion": "请补充补贴资金来源、拨付批次等追溯信息",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    },
+    {
+      "item_id": "8af632161db64f20",
+      "category": "面积变更",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "farmer_name": "王大婶",
+      "issue_description": "订单O2026003面积已变更: 原约60.67亩 → 现80.00亩，变化+19.33亩(+31.9%)。变更说明: 2026年4月土地确权后实测面积增加15亩，原申报65亩",
+      "severity": "中",
+      "related_records": [
+        "ORDER:O2026003",
+        "PREMIUM:P2026003"
+      ],
+      "suggestion": "请按新面积重新核算保费，如需补贴调整请走变更流程",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 3,
+          "raw_value": "{\"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"crop_type\": \"玉米\", \"area_mu\": 80.0, \"order_date\": \"2026-03-20\", \"status\": \"amended\", \"expected_yield_kg\": 48000, \"contract_price\": 2.6, \"amendment_note\": \"2026年4月土地确权后实测面积增加15亩，原申报65亩\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    }
+  ]
+}

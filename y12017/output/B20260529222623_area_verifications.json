@@ -1,0 +1,138 @@
+{
+  "batch_id": "B20260529222623",
+  "generated_at": "2026-05-29T22:26:23.710062",
+  "record_count": 3,
+  "data": [
+    {
+      "verify_id": "c47bdef9c625ce14",
+      "order_id": "O2026001",
+      "farmer_id": "F001",
+      "reported_area": 50.0,
+      "verified_area": 50.0,
+      "area_diff": 0.0,
+      "area_diff_pct": 0.0,
+      "result": "passed",
+      "check_items": {
+        "area_range": {
+          "passed": true,
+          "message": "面积在合理范围内"
+        },
+        "historical_consistency": {
+          "passed": true,
+          "message": "与历史保费面积偏差0.0%，在允许范围内",
+          "diff_pct": 0.0
+        },
+        "crop_area_match": {
+          "passed": true,
+          "message": "水稻面积符合种植常识"
+        }
+      },
+      "notes": null,
+      "verify_date": "2026-05-29",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 1,
+          "raw_value": "{\"order_id\": \"O2026001\", \"farmer_id\": \"F001\", \"crop_type\": \"水稻\", \"area_mu\": 50.0, \"order_date\": \"2026-03-15\", \"status\": \"normal\", \"expected_yield_kg\": 30000, \"contract_price\": 3.2}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 1,
+          "raw_value": "{\"premium_id\": \"P2026001\", \"order_id\": \"O2026001\", \"farmer_id\": \"F001\", \"total_premium\": 1500.0, \"farmer_payable\": 300.0, \"subsidy_amount\": 1200.0, \"premium_date\": \"2026-03-20\", \"status\": \"paid\", \"policy_number\": \"NY20260001\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"2026年中央财政农业保险补贴第1批\"}"
+        }
+      ]
+    },
+    {
+      "verify_id": "112463250288f32c",
+      "order_id": "O2026002",
+      "farmer_id": "F002",
+      "reported_area": 35.0,
+      "verified_area": 0.0,
+      "area_diff": -35.0,
+      "area_diff_pct": -100.0,
+      "result": "passed",
+      "check_items": {
+        "area_range": {
+          "passed": true,
+          "message": "面积在合理范围内"
+        },
+        "historical_consistency": {
+          "passed": false,
+          "message": "与历史保费面积偏差20.0% > 5.0%",
+          "diff_pct": 19.999999999999996
+        },
+        "crop_area_match": {
+          "passed": true,
+          "message": "小麦面积符合种植常识"
+        },
+        "cancelled": {
+          "passed": true,
+          "message": "订单已撤销，面积核验仅做记录"
+        }
+      },
+      "notes": "与历史保费面积偏差20.0% > 5.0%; 核验面积采用历史平均值: 29.17亩; 已撤销订单，不参与保费计算",
+      "verify_date": "2026-05-29",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 2,
+          "raw_value": "{\"order_id\": \"O2026002\", \"farmer_id\": \"F002\", \"crop_type\": \"小麦\", \"area_mu\": 35.0, \"order_date\": \"2026-03-18\", \"status\": \"cancelled\", \"expected_yield_kg\": 14000, \"contract_price\": 2.8, \"cancellation_reason\": \"农户改种蔬菜，主动退保\", \"cancellation_date\": \"2026-04-10\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 2,
+          "raw_value": "{\"premium_id\": \"P2026002\", \"order_id\": \"O2026002\", \"farmer_id\": \"F002\", \"total_premium\": 875.0, \"farmer_payable\": 175.0, \"subsidy_amount\": 700.0, \"premium_date\": \"2026-03-22\", \"status\": \"paid\", \"policy_number\": \"NY20260002\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"2026年中央财政农业保险补贴第1批\"}"
+        }
+      ]
+    },
+    {
+      "verify_id": "32e41f07af3e85c5",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "reported_area": 80.0,
+      "verified_area": 60.666666666666664,
+      "area_diff": -19.33,
+      "area_diff_pct": -24.17,
+      "result": "needs_review",
+      "check_items": {
+        "area_range": {
+          "passed": true,
+          "message": "面积在合理范围内"
+        },
+        "historical_consistency": {
+          "passed": false,
+          "message": "与历史保费面积偏差31.9% > 5.0%",
+          "diff_pct": 31.868131868131872
+        },
+        "crop_area_match": {
+          "passed": true,
+          "message": "玉米面积符合种植常识"
+        },
+        "amendment_consistency": {
+          "passed": true,
+          "message": "面积变更+19.33亩(+31.9%)，已有变更说明: 2026年4月土地确权后实测面积增加15亩，原申报65亩"
+        }
+      },
+      "notes": "与历史保费面积偏差31.9% > 5.0%; 核验面积采用历史平均值: 60.67亩; 面积变更+19.33亩(+31.9%)，已有变更说明: 2026年4月土地确权后实测面积增加15亩，原申报65亩",
+      "verify_date": "2026-05-29",
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 3,
+          "raw_value": "{\"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"crop_type\": \"玉米\", \"area_mu\": 80.0, \"order_date\": \"2026-03-20\", \"status\": \"amended\", \"expected_yield_kg\": 48000, \"contract_price\": 2.6, \"amendment_note\": \"2026年4月土地确权后实测面积增加15亩，原申报65亩\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    }
+  ]
+}

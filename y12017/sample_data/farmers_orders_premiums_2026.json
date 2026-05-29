@@ -1,0 +1,101 @@
+{
+  "farmers": [
+    {
+      "farmer_id": "F001",
+      "name": "张大爷",
+      "id_card": "110101196001011234",
+      "village": "幸福村一组",
+      "phone": "13800138001"
+    },
+    {
+      "farmer_id": "F002",
+      "name": "李大叔",
+      "id_card": "110101196502025678",
+      "village": "幸福村二组",
+      "phone": "13800138002"
+    },
+    {
+      "farmer_id": "F003",
+      "name": "王大婶",
+      "id_card": "110101197003039012",
+      "village": "富裕村一组",
+      "phone": "13800138003"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "O2026001",
+      "farmer_id": "F001",
+      "crop_type": "水稻",
+      "area_mu": 50.0,
+      "order_date": "2026-03-15",
+      "status": "normal",
+      "expected_yield_kg": 30000,
+      "contract_price": 3.2
+    },
+    {
+      "order_id": "O2026002",
+      "farmer_id": "F002",
+      "crop_type": "小麦",
+      "area_mu": 35.0,
+      "order_date": "2026-03-18",
+      "status": "cancelled",
+      "expected_yield_kg": 14000,
+      "contract_price": 2.8,
+      "cancellation_reason": "农户改种蔬菜，主动退保",
+      "cancellation_date": "2026-04-10"
+    },
+    {
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "crop_type": "玉米",
+      "area_mu": 80.0,
+      "order_date": "2026-03-20",
+      "status": "amended",
+      "expected_yield_kg": 48000,
+      "contract_price": 2.6,
+      "amendment_note": "2026年4月土地确权后实测面积增加15亩，原申报65亩"
+    }
+  ],
+  "premiums": [
+    {
+      "premium_id": "P2026001",
+      "order_id": "O2026001",
+      "farmer_id": "F001",
+      "total_premium": 1500.0,
+      "farmer_payable": 300.0,
+      "subsidy_amount": 1200.0,
+      "premium_date": "2026-03-20",
+      "status": "paid",
+      "policy_number": "NY20260001",
+      "insurance_company": "中华保险",
+      "subsidy_tracing": "2026年中央财政农业保险补贴第1批"
+    },
+    {
+      "premium_id": "P2026002",
+      "order_id": "O2026002",
+      "farmer_id": "F002",
+      "total_premium": 875.0,
+      "farmer_payable": 175.0,
+      "subsidy_amount": 700.0,
+      "premium_date": "2026-03-22",
+      "status": "paid",
+      "policy_number": "NY20260002",
+      "insurance_company": "中华保险",
+      "subsidy_tracing": "2026年中央财政农业保险补贴第1批"
+    },
+    {
+      "premium_id": "P2026003",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "total_premium": 1820.0,
+      "farmer_payable": 455.0,
+      "subsidy_amount": 1365.0,
+      "premium_date": "2026-03-25",
+      "status": "paid",
+      "policy_number": "NY20260003",
+      "insurance_company": "中华保险",
+      "subsidy_tracing": ""
+    }
+  ]
+}

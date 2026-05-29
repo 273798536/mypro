@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: agri-insurance-premium
+Version: 0.1.0
+Summary: 农业订单保险保费核算工具 - 保费分摊、面积核验、复核清单
+Requires-Python: >=3.9

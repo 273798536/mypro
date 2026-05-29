@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agri-insurance-premium"
+version = "0.1.0"
+description = "农业订单保险保费核算工具 - 保费分摊、面积核验、复核清单"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+agri-insurance = "agri_insurance.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

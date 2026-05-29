@@ -1,0 +1,91 @@
+{
+  "batch_id": "B20260529222732",
+  "generated_at": "2026-05-29T22:27:32.874840",
+  "record_count": 2,
+  "data": [
+    {
+      "split_id": "f4ab157b91c144e8",
+      "order_id": "O2026001",
+      "farmer_id": "F001",
+      "crop_type": "水稻",
+      "area_mu": 50.0,
+      "total_premium": 1500.0,
+      "farmer_payable": 300.0,
+      "subsidy_amount": 1200.0,
+      "subsidy_rate": 0.8,
+      "unit_premium": 30.0,
+      "calculation_details": {
+        "crop_type": "水稻",
+        "reported_area": 50.0,
+        "verified_area": 50.0,
+        "used_area": 50.0,
+        "unit_premium": 30.0,
+        "total_premium_formula": "50.00亩 × 30.00元/亩 = 1500.00元",
+        "subsidy_rate": 0.8,
+        "farmer_rate": 0.2,
+        "subsidy_formula": "1500.00元 × 80% = 1200.00元",
+        "farmer_formula": "1500.00元 × 20% = 300.00元",
+        "existing_premium_count": 1,
+        "already_paid": 300.0,
+        "already_refunded": 0,
+        "balance_due": 0.0
+      },
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 1,
+          "raw_value": "{\"order_id\": \"O2026001\", \"farmer_id\": \"F001\", \"crop_type\": \"水稻\", \"area_mu\": 50.0, \"order_date\": \"2026-03-15\", \"status\": \"normal\", \"expected_yield_kg\": 30000, \"contract_price\": 3.2}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 1,
+          "raw_value": "{\"premium_id\": \"P2026001\", \"order_id\": \"O2026001\", \"farmer_id\": \"F001\", \"total_premium\": 1500.0, \"farmer_payable\": 300.0, \"subsidy_amount\": 1200.0, \"premium_date\": \"2026-03-20\", \"status\": \"paid\", \"policy_number\": \"NY20260001\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"2026年中央财政农业保险补贴第1批\"}"
+        }
+      ]
+    },
+    {
+      "split_id": "b3cf136758b911fc",
+      "order_id": "O2026003",
+      "farmer_id": "F003",
+      "crop_type": "玉米",
+      "area_mu": 60.666666666666664,
+      "total_premium": 1698.67,
+      "farmer_payable": 424.67,
+      "subsidy_amount": 1274.0,
+      "subsidy_rate": 0.75,
+      "unit_premium": 28.0,
+      "calculation_details": {
+        "crop_type": "玉米",
+        "reported_area": 80.0,
+        "verified_area": 60.666666666666664,
+        "used_area": 60.666666666666664,
+        "unit_premium": 28.0,
+        "total_premium_formula": "60.67亩 × 28.00元/亩 = 1698.67元",
+        "subsidy_rate": 0.75,
+        "farmer_rate": 0.25,
+        "subsidy_formula": "1698.67元 × 75% = 1274.00元",
+        "farmer_formula": "1698.67元 × 25% = 424.67元",
+        "existing_premium_count": 1,
+        "already_paid": 455.0,
+        "already_refunded": 0,
+        "balance_due": -30.33
+      },
+      "sources": [
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "orders",
+          "row_number": 3,
+          "raw_value": "{\"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"crop_type\": \"玉米\", \"area_mu\": 80.0, \"order_date\": \"2026-03-20\", \"status\": \"amended\", \"expected_yield_kg\": 48000, \"contract_price\": 2.6, \"amendment_note\": \"2026年4月土地确权后实测面积增加15亩，原申报65亩\"}"
+        },
+        {
+          "file_name": "farmers_orders_premiums_2026.json",
+          "sheet_name": "premiums",
+          "row_number": 3,
+          "raw_value": "{\"premium_id\": \"P2026003\", \"order_id\": \"O2026003\", \"farmer_id\": \"F003\", \"total_premium\": 1820.0, \"farmer_payable\": 455.0, \"subsidy_amount\": 1365.0, \"premium_date\": \"2026-03-25\", \"status\": \"paid\", \"policy_number\": \"NY20260003\", \"insurance_company\": \"中华保险\", \"subsidy_tracing\": \"\"}"
+        }
+      ]
+    }
+  ]
+}
