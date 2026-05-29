@@ -100,7 +100,7 @@ class StatementParser:
                 code=code,
                 name=name,
                 statement_type=StatementType.INCOME_STATEMENT,
-                category="income" if code.startswith("6") else "expense",
+                category=self._determine_income_category(code, name),
                 balance=float(row["本期金额"]) if pd.notna(row["本期金额"]) else 0.0,
             )
             statement.accounts[code] = account
@@ -232,6 +232,25 @@ class StatementParser:
             return "financing"
         else:
             return "other"
+
+    def _determine_income_category(self, code: str, name: str = "") -> str:
+        income_keywords = ["收入", "收益", "投资收益", "营业外收入", "公允价值变动"]
+        expense_keywords = ["成本", "费用", "支出", "税金", "损失", "折旧", "摊销"]
+
+        for keyword in income_keywords:
+            if keyword in name:
+                return "income"
+
+        for keyword in expense_keywords:
+            if keyword in name:
+                return "expense"
+
+        if code.startswith("60") or code.startswith("61") or code.startswith("63"):
+            return "income"
+        elif code.startswith("64") or code.startswith("66") or code.startswith("67") or code.startswith("68"):
+            return "expense"
+
+        return "income"
 
     def parse_all(self, directory: str) -> Dict[str, any]:
         return {
