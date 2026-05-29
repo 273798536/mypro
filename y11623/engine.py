@@ -20,13 +20,19 @@ class LiquidationEngine:
         self.ds = dataset
 
     def run_all(self) -> Dict[str, int]:
-        """运行全部检测，返回各类争议计数"""
+        """运行全部检测，返回各类争议计数
+
+        检测顺序：
+        1. 先做"标记类"检测（凭证去重、身份归并、凭证缺失），将有问题的记录标记为 disputed
+        2. 再做"差异类"检测（金额、利息），统计所有兑付（含 disputed）以发现总额差异
+        3. 最后在汇总阶段（recalculate）排除 disputed 记录，避免异常数据混入正常结果
+        """
         results = {}
         results["identity_merge"] = self.detect_identity_merge()
         results["voucher_duplicate"] = self.detect_voucher_duplicates()
-        results["interest_mismatch"] = self.detect_interest_mismatch()
-        results["amount_mismatch"] = self.detect_amount_mismatch()
         results["missing_voucher"] = self.detect_missing_voucher()
+        results["amount_mismatch"] = self.detect_amount_mismatch()
+        results["interest_mismatch"] = self.detect_interest_mismatch()
         return results
 
     # ── 1. 身份归并 ──────────────────────────────────────
@@ -132,34 +138,49 @@ class LiquidationEngine:
 
     # ── 3. 利息口径变化检测 ──────────────────────────────
     def detect_interest_mismatch(self) -> int:
-        """检测实际兑付利息与合同利率是否一致"""
+        """检测实际兑付利息与合同利率是否一致
+
+        注意：利息检测排除disputed状态的兑付，因为这些通常是重复凭证、凭证缺失等
+        数据质量问题，需要先解决。只基于有效兑付检测真正的"利息口径变化"。
+        金额检测会统计所有兑付以发现总额差异。
+        """
         count = 0
         for contract in self.ds.contracts.values():
             expected_interest = contract.principal_amount * contract.interest_rate
             actual_interest = 0.0
+            disputed_interest = 0.0
             for rep in self.ds.repayments.values():
                 if (rep.contract_id == contract.contract_id
-                        and rep.repayment_type == RepaymentType.INTEREST
-                        and rep.status != RepaymentStatus.DISPUTED):
-                    actual_interest += rep.amount
+                        and rep.repayment_type == RepaymentType.INTEREST):
+                    if rep.status != RepaymentStatus.DISPUTED:
+                        actual_interest += rep.amount
+                    else:
+                        disputed_interest += rep.amount
 
-            if actual_interest > 0 and abs(expected_interest - actual_interest) > 0.01:
+            if abs(expected_interest - actual_interest) > 0.01:
                 did = self.ds.next_dispute_id()
                 diff = actual_interest - expected_interest
                 effective_rate = actual_interest / contract.principal_amount if contract.principal_amount else 0
+                evidence = [
+                    f"合同利率: {contract.interest_rate*100:.2f}%",
+                    f"应兑付利息: {expected_interest:.2f}",
+                    f"实际有效利息: {actual_interest:.2f}",
+                    f"争议中利息: {disputed_interest:.2f}",
+                    f"有效利息差额: {diff:+.2f}",
+                    f"实际利率(基于有效): {effective_rate*100:.2f}%"
+                ]
+                description = (f"合同[{contract.contract_id}]载明利率{contract.interest_rate*100:.2f}%，"
+                               f"应兑付利息{expected_interest:.2f}元，有效实际兑付{actual_interest:.2f}元，"
+                               f"差额{diff:+.2f}元，实际利率{effective_rate*100:.2f}%")
+                if disputed_interest > 0:
+                    description += f"（另有{disputed_interest:.2f}元处于争议中）"
                 dispute = Dispute(
                     dispute_id=did,
                     related_entity_id=contract.contract_id,
                     related_entity_type="contract",
                     dispute_type=DisputeType.INTEREST_CHANGE,
-                    description=f"合同[{contract.contract_id}]载明利率{contract.interest_rate*100:.2f}%，应兑付利息{expected_interest:.2f}元，实际兑付{actual_interest:.2f}元，差额{diff:+.2f}元，实际利率{effective_rate*100:.2f}%",
-                    evidence=[
-                        f"合同利率: {contract.interest_rate*100:.2f}%",
-                        f"应兑付利息: {expected_interest:.2f}",
-                        f"实际兑付利息: {actual_interest:.2f}",
-                        f"差额: {diff:+.2f}",
-                        f"实际利率: {effective_rate*100:.2f}%"
-                    ],
+                    description=description,
+                    evidence=evidence,
                     status=DisputeStatus.OPEN,
                     created_at=now_iso(),
                     resolution_notes="需确认是否存在利率调整协议或口头约定"
@@ -170,17 +191,21 @@ class LiquidationEngine:
 
     # ── 4. 金额不符检测 ──────────────────────────────────
     def detect_amount_mismatch(self) -> int:
-        """检测兑付本金与合同本金不一致"""
+        """检测兑付本金与合同本金不一致
+
+        注意：金额检测统计所有已记录的兑付（含disputed状态），因为即使有争议，
+        兑付记录本身是存在的，需要核对总额是否与合同一致。
+        本息重算阶段才会排除disputed记录，避免异常数据混入正常结果。
+        """
         count = 0
         for contract in self.ds.contracts.values():
             actual_principal = 0.0
             for rep in self.ds.repayments.values():
                 if (rep.contract_id == contract.contract_id
-                        and rep.repayment_type == RepaymentType.PRINCIPAL
-                        and rep.status != RepaymentStatus.DISPUTED):
+                        and rep.repayment_type == RepaymentType.PRINCIPAL):
                     actual_principal += rep.amount
 
-            if actual_principal > 0 and abs(actual_principal - contract.principal_amount) > 0.01:
+            if abs(actual_principal - contract.principal_amount) > 0.01:
                 did = self.ds.next_dispute_id()
                 diff = actual_principal - contract.principal_amount
                 dispute = Dispute(

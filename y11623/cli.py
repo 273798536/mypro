@@ -3,18 +3,33 @@
 命令:
   run     加载数据 + 检测争议 + 重算本息 + 导出CSV
   check   仅检测争议（不导出）
-  export  仅导出CSV（不重跑检测）
-  show    查看汇总/争议/修正日志
+  export  检测争议 + 导出CSV
+  show    检测争议 + 查看汇总/争议/修正日志
+
+公共选项:
+  --data-dir <目录>   从指定CSV目录加载数据（投资人/合同/兑付/凭证/争议）
+                      未指定时使用内置样例数据
+  --load <文件>       从JSON状态文件加载（跳过检测，直接使用之前保存的处理结果）
+  --save <文件>       处理完成后将完整状态保存为JSON，供后续加载使用
+  --no-detect         加载数据后不自动运行检测（仅与--load或--data-dir配合使用）
+
+示例:
+  python3 cli.py run --data-dir ./my_case_data
+  python3 cli.py check --data-dir ./case001 --save ./case001_state.json
+  python3 cli.py show disputes --load ./case001_state.json
+  python3 cli.py export ./output_dir --load ./case001_state.json
 """
 
 import sys
 import os
+import argparse
 from typing import Optional
 
 from models import Dataset, DisputeStatus
-from data import build_sample_dataset
+from loader import load_dataset
 from engine import LiquidationEngine
 from exporter import export_all
+from persistence import save_state, load_state
 
 
 def print_section(title: str, items: list, cols: list):
@@ -33,23 +48,103 @@ def print_section(title: str, items: list, cols: list):
         print(row)
 
 
-def cmd_run(output_dir: str = "output"):
-    """加载样例数据，执行完整处理链"""
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="p2p-liquidation",
+        description="P2P历史兑付清算 CLI - 身份归并 / 本息重算 / 凭证去重 / 争议清单 / CSV导出"
+    )
+    subparsers = parser.add_subparsers(dest="cmd", required=True)
+
+    # run
+    p_run = subparsers.add_parser("run", help="完整处理链：加载+检测+重算+导出")
+    p_run.add_argument("output_dir", nargs="?", default="output", help="CSV输出目录（默认: ./output）")
+    p_run.add_argument("--data-dir", help="数据CSV目录，含investors/contracts/repayments/vouchers.csv")
+    p_run.add_argument("--load", help="从JSON状态文件加载（跳过检测）")
+    p_run.add_argument("--save", help="处理完成后保存状态到JSON文件")
+    p_run.add_argument("--no-detect", action="store_true", help="加载数据后不自动运行检测")
+
+    # check
+    p_check = subparsers.add_parser("check", help="仅检测争议，输出检测结果")
+    p_check.add_argument("--data-dir", help="数据CSV目录")
+    p_check.add_argument("--load", help="从JSON状态文件加载")
+    p_check.add_argument("--save", help="处理完成后保存状态到JSON文件")
+    p_check.add_argument("--no-detect", action="store_true", help="加载数据后不自动运行检测")
+
+    # export
+    p_export = subparsers.add_parser("export", help="检测争议后导出CSV")
+    p_export.add_argument("output_dir", nargs="?", default="output", help="CSV输出目录")
+    p_export.add_argument("--data-dir", help="数据CSV目录")
+    p_export.add_argument("--load", help="从JSON状态文件加载（跳过检测）")
+    p_export.add_argument("--save", help="处理完成后保存状态到JSON文件")
+    p_export.add_argument("--no-detect", action="store_true", help="加载数据后不自动运行检测")
+
+    # show
+    p_show = subparsers.add_parser("show", help="检测争议后查看结果")
+    p_show.add_argument("what", nargs="?", default="all",
+                        choices=["all", "disputes", "recalc", "investors", "audit"],
+                        help="查看内容（默认: all）")
+    p_show.add_argument("--data-dir", help="数据CSV目录")
+    p_show.add_argument("--load", help="从JSON状态文件加载（跳过检测）")
+    p_show.add_argument("--save", help="处理完成后保存状态到JSON文件")
+    p_show.add_argument("--no-detect", action="store_true", help="加载数据后不自动运行检测")
+
+    return parser
+
+
+def _get_dataset_and_engine(args) -> tuple[Dataset, LiquidationEngine]:
+    """统一加载数据，确保所有入口状态一致
+
+    优先级：--load > --data-dir > 内置样例
+    行为：
+      - 使用 --load 时，默认跳过检测（已包含处理结果），除非 --no-detect=false
+      - 使用 --data-dir 或内置样例时，默认运行检测，除非 --no-detect
+    """
+    # 加载数据
+    if getattr(args, "load", None):
+        print(f"▶ 从状态文件加载: {args.load}")
+        ds = load_state(args.load)
+        print(f"  投资人: {len(ds.investors)} 合同: {len(ds.contracts)} 凭证: {len(ds.vouchers)} 兑付: {len(ds.repayments)}")
+        if ds.disputes:
+            print(f"  已有争议: {len(ds.disputes)} 条")
+    else:
+        ds = load_dataset(args.data_dir)
+
+    engine = LiquidationEngine(ds)
+
+    # 判断是否运行检测
+    should_detect = True
+    if getattr(args, "load", None) and not getattr(args, "no_detect", False):
+        # 从状态文件加载，默认不重新检测
+        should_detect = False
+    if getattr(args, "no_detect", False):
+        should_detect = False
+
+    if should_detect:
+        print("\n▶ 运行检测引擎...")
+        counts = engine.run_all()
+        for k, v in counts.items():
+            print(f"  {k}: {v}")
+        print(f"  争议总数: {len(ds.disputes)}")
+    else:
+        print(f"\n▶ 跳过检测（使用已有状态），争议: {len(ds.disputes)} 条")
+
+    # 保存状态
+    if getattr(args, "save", None):
+        save_state(ds, args.save)
+        print(f"\n▶ 状态已保存到: {args.save}")
+
+    return ds, engine
+
+
+def cmd_run(args):
+    """完整处理链"""
     print("""
 ┌─────────────────────────────────────────┐
 │  P2P 历史兑付清算 CLI                    │
-│  数据: 3投资人 / 3合同 / 4凭证 / 7兑付  │
 └─────────────────────────────────────────┘""")
 
-    ds = build_sample_dataset()
-    engine = LiquidationEngine(ds)
-
-    print("\n▶ 运行检测引擎...")
-    counts = engine.run_all()
-    for k, v in counts.items():
-        print(f"  {k}: {v}")
-
-    print(f"\n▶ 争议总数: {len(ds.disputes)}")
+    ds, engine = _get_dataset_and_engine(args)
+    output_dir = args.output_dir
 
     # 展示争议清单
     dispute_rows = []
@@ -115,41 +210,48 @@ def cmd_run(output_dir: str = "output"):
     print("\n✓ 完成。输出目录:", os.path.abspath(output_dir))
 
 
-def cmd_check():
+def cmd_check(args):
     """仅检测争议"""
-    ds = build_sample_dataset()
-    engine = LiquidationEngine(ds)
-    counts = engine.run_all()
-    print("检测结果:")
-    for k, v in counts.items():
-        print(f"  {k}: {v}")
-    print(f"\n争议总数: {len(ds.disputes)}")
+    ds, engine = _get_dataset_and_engine(args)
+
+    print(f"\n争议列表:")
     for d in ds.disputes:
-        print(f"  [{d.dispute_id}] {d.dispute_type.value} - {d.description[:60]}")
+        print(f"  [{d.dispute_id}] {d.dispute_type.value} | {d.status.value}")
+        print(f"    {d.description[:70]}")
+        if d.resolution_notes:
+            print(f"    建议: {d.resolution_notes}")
 
 
-def cmd_export(output_dir: str = "output"):
-    """仅导出"""
-    ds = build_sample_dataset()
-    engine = LiquidationEngine(ds)
-    counts = export_all(ds, engine, output_dir)
-    for fname, cnt in counts.items():
+def cmd_export(args):
+    """检测后导出CSV"""
+    ds, engine = _get_dataset_and_engine(args)
+    output_dir = args.output_dir
+
+    print(f"\n▶ 导出CSV到 {output_dir}/ ...")
+    export_counts = export_all(ds, engine, output_dir)
+    for fname, cnt in export_counts.items():
         print(f"  {fname}.csv: {cnt} 行")
 
+    print("\n✓ 完成。输出目录:", os.path.abspath(output_dir))
 
-def cmd_show(what: str = "all"):
-    """查看数据"""
-    ds = build_sample_dataset()
-    engine = LiquidationEngine(ds)
+
+def cmd_show(args):
+    """查看数据 - 先运行检测确保状态一致"""
+    what = args.what
+    ds, engine = _get_dataset_and_engine(args)
 
     if what in ("all", "disputes"):
         print(f"\n争议 ({len(ds.disputes)}):")
+        if not ds.disputes:
+            print("  (无)")
         for d in ds.disputes:
             print(f"  [{d.dispute_id}] {d.dispute_type.value} | {d.status.value}")
             print(f"    {d.description}")
             if d.evidence:
                 for e in d.evidence:
                     print(f"    证据: {e}")
+            if d.resolution_notes:
+                print(f"    建议: {d.resolution_notes}")
 
     if what in ("all", "recalc"):
         recalc = engine.recalculate()
@@ -173,36 +275,25 @@ def cmd_show(what: str = "all"):
 
     if what in ("all", "audit"):
         print(f"\n修正日志 ({len(ds.audit_log)}):")
+        if not ds.audit_log:
+            print("  (无)")
         for a in ds.audit_log:
             print(f"  [{a.timestamp[11:19]}] {a.entity_type}:{a.entity_id} "
                   f"{a.field} {a.old_value}→{a.new_value} ({a.reason})")
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("用法: python cli.py [run|check|export|show] [选项]")
-        print("  run     完整处理链（检测+重算+导出）")
-        print("  check   仅检测争议")
-        print("  export  仅导出CSV")
-        print("  show [all|disputes|recalc|investors|audit]")
-        sys.exit(0)
+    parser = _build_parser()
+    args = parser.parse_args()
 
-    cmd = sys.argv[1]
-
-    if cmd == "run":
-        out = sys.argv[2] if len(sys.argv) > 2 else "output"
-        cmd_run(out)
-    elif cmd == "check":
-        cmd_check()
-    elif cmd == "export":
-        out = sys.argv[2] if len(sys.argv) > 2 else "output"
-        cmd_export(out)
-    elif cmd == "show":
-        what = sys.argv[2] if len(sys.argv) > 2 else "all"
-        cmd_show(what)
-    else:
-        print(f"未知命令: {cmd}")
-        sys.exit(1)
+    if args.cmd == "run":
+        cmd_run(args)
+    elif args.cmd == "check":
+        cmd_check(args)
+    elif args.cmd == "export":
+        cmd_export(args)
+    elif args.cmd == "show":
+        cmd_show(args)
 
 
 if __name__ == "__main__":
