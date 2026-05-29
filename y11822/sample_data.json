@@ -1,0 +1,208 @@
+{
+  "pool_id": "POOL001",
+  "total_quota": 50000000,
+  "bills": [
+    {
+      "bill_id": "B001",
+      "bill_type": "银行承兑汇票",
+      "amount": 5000000,
+      "issue_date": "2025-12-09",
+      "maturity_date": "2026-05-30",
+      "status": "质押",
+      "pool_id": "POOL001",
+      "pledge_contract_id": "P001",
+      "extended_maturity_date": null,
+      "discount_date": null,
+      "pledge_date": "2026-02-17",
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-05-30"
+    },
+    {
+      "bill_id": "B002",
+      "bill_type": "银行承兑汇票",
+      "amount": 8000000,
+      "issue_date": "2025-12-19",
+      "maturity_date": "2026-06-02",
+      "status": "质押",
+      "pool_id": "POOL001",
+      "pledge_contract_id": "P002",
+      "extended_maturity_date": null,
+      "discount_date": null,
+      "pledge_date": "2026-02-27",
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-06-02"
+    },
+    {
+      "bill_id": "B003",
+      "bill_type": "商业承兑汇票",
+      "amount": 3000000,
+      "issue_date": "2025-12-29",
+      "maturity_date": "2026-06-07",
+      "status": "贴现",
+      "pool_id": "POOL001",
+      "pledge_contract_id": null,
+      "extended_maturity_date": null,
+      "discount_date": "2026-03-29",
+      "pledge_date": null,
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-06-07"
+    },
+    {
+      "bill_id": "B004",
+      "bill_type": "银行承兑汇票",
+      "amount": 10000000,
+      "issue_date": "2026-01-08",
+      "maturity_date": "2026-05-31",
+      "status": "质押",
+      "pool_id": "POOL001",
+      "pledge_contract_id": "P003",
+      "extended_maturity_date": "2026-06-30",
+      "discount_date": null,
+      "pledge_date": "2026-03-09",
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-06-30"
+    },
+    {
+      "bill_id": "B005",
+      "bill_type": "银行承兑汇票",
+      "amount": 6000000,
+      "issue_date": "2025-11-29",
+      "maturity_date": "2026-05-27",
+      "status": "逾期",
+      "pool_id": "POOL001",
+      "pledge_contract_id": "P004",
+      "extended_maturity_date": null,
+      "discount_date": null,
+      "pledge_date": "2026-02-07",
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-05-27"
+    },
+    {
+      "bill_id": "B006",
+      "bill_type": "商业承兑汇票",
+      "amount": 2000000,
+      "issue_date": "2026-01-18",
+      "maturity_date": "2026-06-12",
+      "status": "承兑",
+      "pool_id": "POOL001",
+      "pledge_contract_id": null,
+      "extended_maturity_date": null,
+      "discount_date": null,
+      "pledge_date": null,
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-06-12"
+    },
+    {
+      "bill_id": "B007",
+      "bill_type": "银行承兑汇票",
+      "amount": 4500000,
+      "issue_date": "2026-01-28",
+      "maturity_date": "2026-06-17",
+      "status": "质押",
+      "pool_id": "POOL001",
+      "pledge_contract_id": "P005",
+      "extended_maturity_date": null,
+      "discount_date": null,
+      "pledge_date": "2026-03-19",
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-06-17"
+    },
+    {
+      "bill_id": "B008",
+      "bill_type": "银行承兑汇票",
+      "amount": 12000000,
+      "issue_date": "2026-02-17",
+      "maturity_date": "2026-05-29",
+      "status": "质押",
+      "pool_id": "POOL001",
+      "pledge_contract_id": "P006",
+      "extended_maturity_date": null,
+      "discount_date": null,
+      "pledge_date": "2026-04-08",
+      "release_date": null,
+      "_transition_log": [],
+      "effective_maturity_date": "2026-05-29"
+    }
+  ],
+  "pledge_contracts": [
+    {
+      "contract_id": "P001",
+      "bill_ids": [
+        "B001"
+      ],
+      "pledged_amount": 5000000,
+      "pool_id": "POOL001",
+      "start_date": "2026-02-17",
+      "expected_release_date": "2026-05-29",
+      "actual_release_date": null,
+      "status": "生效中"
+    },
+    {
+      "contract_id": "P002",
+      "bill_ids": [
+        "B002"
+      ],
+      "pledged_amount": 8000000,
+      "pool_id": "POOL001",
+      "start_date": "2026-02-27",
+      "expected_release_date": "2026-06-01",
+      "actual_release_date": null,
+      "status": "生效中"
+    },
+    {
+      "contract_id": "P003",
+      "bill_ids": [
+        "B004"
+      ],
+      "pledged_amount": 10000000,
+      "pool_id": "POOL001",
+      "start_date": "2026-03-09",
+      "expected_release_date": "2026-06-29",
+      "actual_release_date": null,
+      "status": "生效中"
+    },
+    {
+      "contract_id": "P004",
+      "bill_ids": [
+        "B005"
+      ],
+      "pledged_amount": 6000000,
+      "pool_id": "POOL001",
+      "start_date": "2026-02-07",
+      "expected_release_date": "2026-05-26",
+      "actual_release_date": "2026-05-30",
+      "status": "生效中"
+    },
+    {
+      "contract_id": "P005",
+      "bill_ids": [
+        "B007"
+      ],
+      "pledged_amount": 4500000,
+      "pool_id": "POOL001",
+      "start_date": "2026-03-19",
+      "expected_release_date": "2026-06-16",
+      "actual_release_date": null,
+      "status": "生效中"
+    },
+    {
+      "contract_id": "P006",
+      "bill_ids": [
+        "B008"
+      ],
+      "pledged_amount": 12000000,
+      "pool_id": "POOL001",
+      "start_date": "2026-04-08",
+      "expected_release_date": "2026-05-28",
+      "actual_release_date": null,
+      "status": "生效中"
+    }
+  ]
+}

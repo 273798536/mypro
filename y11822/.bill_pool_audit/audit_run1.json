@@ -1,0 +1,14 @@
+{
+  "run_id": "run1",
+  "entries": [
+    {
+      "timestamp": "2026-05-28T23:51:26.566049",
+      "action": "数据校验",
+      "entity_type": "质押合同",
+      "entity_id": "P004",
+      "detail": "校验发现问题: 实际释放日 2026-05-30 晚于预期释放日 2026-05-26，延迟4天，字段=actual_release_date，类型=释放延迟",
+      "before": null,
+      "after": null
+    }
+  ]
+}

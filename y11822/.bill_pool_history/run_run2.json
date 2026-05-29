@@ -1,0 +1,102 @@
+{
+  "run_id": "run2",
+  "timestamp": "2026-05-28T23:52:18.146369",
+  "warnings": [
+    {
+      "bill_id": "B001",
+      "pool_id": "POOL001",
+      "amount": 5000000,
+      "effective_maturity_date": "2026-05-30",
+      "days_to_maturity": 2,
+      "bill_status": "即将到期",
+      "pledge_contract_id": "P001",
+      "warning_level": "紧急",
+      "is_extended": false,
+      "pledge_release_status": null,
+      "quota_impact": 5000000
+    },
+    {
+      "bill_id": "B004",
+      "pool_id": "POOL001",
+      "amount": 10000000,
+      "effective_maturity_date": "2026-05-31",
+      "days_to_maturity": 3,
+      "bill_status": "质押",
+      "pledge_contract_id": "P003",
+      "warning_level": "紧急",
+      "is_extended": false,
+      "pledge_release_status": "释放日在到期前",
+      "quota_impact": 10000000
+    },
+    {
+      "bill_id": "B009",
+      "pool_id": "POOL001",
+      "amount": 7500000,
+      "effective_maturity_date": "2026-05-31",
+      "days_to_maturity": 3,
+      "bill_status": "质押",
+      "pledge_contract_id": "P007",
+      "warning_level": "紧急",
+      "is_extended": false,
+      "pledge_release_status": "释放日在到期前",
+      "quota_impact": 7500000
+    },
+    {
+      "bill_id": "B002",
+      "pool_id": "POOL001",
+      "amount": 8000000,
+      "effective_maturity_date": "2026-06-02",
+      "days_to_maturity": 5,
+      "bill_status": "质押",
+      "pledge_contract_id": "P002",
+      "warning_level": "预警",
+      "is_extended": false,
+      "pledge_release_status": "释放日在到期前",
+      "quota_impact": 8000000
+    },
+    {
+      "bill_id": "B003",
+      "pool_id": "POOL001",
+      "amount": 3000000,
+      "effective_maturity_date": "2026-06-07",
+      "days_to_maturity": 10,
+      "bill_status": "贴现",
+      "pledge_contract_id": null,
+      "warning_level": "正常",
+      "is_extended": false,
+      "pledge_release_status": null,
+      "quota_impact": 3000000
+    }
+  ],
+  "quota_snapshot": {
+    "pool_id": "POOL001",
+    "total_quota": 50000000,
+    "used_quota": 33000000,
+    "pledged_quota": 30000000,
+    "discounted_quota": 3000000,
+    "available_quota": 17000000,
+    "usage_ratio": 0.66
+  },
+  "risk_score": {
+    "risk_score": 46.9,
+    "risk_level": "中",
+    "components": {
+      "额度占用率得分": {
+        "value": 26.4,
+        "explanation": "额度占用率=66.0%，反映票据池中质押+贴现金额占总额度的比重。来源于票据信息中状态为'质押'或'贴现'的票据金额之和，除以票据池总额度。"
+      },
+      "到期集中度得分": {
+        "value": 20.5,
+        "explanation": "即将到期金额=22500000，占已用额度=68.2%。来源于3天内到期的票据金额，这些票据到期后额度释放，但如果质押合同释放延迟则额度仍被占用。"
+      },
+      "质押释放延迟得分": {
+        "value": 0.0,
+        "explanation": "释放延迟金额=0。来源于质押合同中actual_release_date > expected_release_date的合同所关联票据金额，延迟释放导致额度被额外占用。"
+      },
+      "到期顺延得分": {
+        "value": 0,
+        "explanation": "顺延票据数=0。来源于票据信息中extended_maturity_date不为空的票据，每张顺延票据意味着原到期日已被推迟，需关注顺延原因和新的到期日。"
+      }
+    }
+  }
+}
