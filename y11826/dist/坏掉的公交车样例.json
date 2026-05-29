@@ -1,0 +1,113 @@
+{
+  "description": "这是一个用于测试异常检测功能的样例数据，包含明显的异常情况：车辆故障、扎堆、司机超时",
+  "stations": [
+    { "id": "s1", "name": "火车站", "x": 100, "y": 200, "passengerFlow": 45, "maxCapacity": 100, "isTransfer": true, "connectedLines": ["l1", "l2"] },
+    { "id": "s2", "name": "市政府", "x": 200, "y": 200, "passengerFlow": 30, "maxCapacity": 80, "isTransfer": false, "connectedLines": ["l1"] },
+    { "id": "s3", "name": "中心广场", "x": 300, "y": 200, "passengerFlow": 95, "maxCapacity": 80, "isTransfer": true, "connectedLines": ["l1", "l3"] },
+    { "id": "s4", "name": "科技园", "x": 400, "y": 200, "passengerFlow": 35, "maxCapacity": 90, "isTransfer": false, "connectedLines": ["l1"] },
+    { "id": "s5", "name": "大学城", "x": 500, "y": 200, "passengerFlow": 55, "maxCapacity": 100, "isTransfer": false, "connectedLines": ["l1"] },
+    { "id": "s6", "name": "汽车站", "x": 150, "y": 300, "passengerFlow": 40, "maxCapacity": 90, "isTransfer": false, "connectedLines": ["l2"] },
+    { "id": "s7", "name": "商业街", "x": 250, "y": 300, "passengerFlow": 60, "maxCapacity": 110, "isTransfer": true, "connectedLines": ["l2", "l3"] },
+    { "id": "s8", "name": "医院", "x": 350, "y": 300, "passengerFlow": 25, "maxCapacity": 70, "isTransfer": false, "connectedLines": ["l2"] },
+    { "id": "s9", "name": "公园", "x": 200, "y": 400, "passengerFlow": 20, "maxCapacity": 60, "isTransfer": false, "connectedLines": ["l3"] },
+    { "id": "s10", "name": "体育馆", "x": 400, "y": 400, "passengerFlow": 30, "maxCapacity": 80, "isTransfer": false, "connectedLines": ["l3"] }
+  ],
+  "lines": [
+    { "id": "l1", "name": "1路", "color": "#165DFF", "stations": ["s1", "s2", "s3", "s4", "s5"], "interval": 8 },
+    { "id": "l2", "name": "2路", "color": "#00B42A", "stations": ["s1", "s6", "s7", "s8"], "interval": 10 },
+    { "id": "l3", "name": "3路", "color": "#FF7D00", "stations": ["s3", "s7", "s9", "s10"], "interval": 12 }
+  ],
+  "buses": [
+    {
+      "id": "broken-001",
+      "lineId": "l1",
+      "plateNumber": "故障-001",
+      "driverName": "张测试",
+      "currentStationIndex": 2,
+      "direction": "forward",
+      "status": "broken",
+      "passengerCount": 40,
+      "maxPassengers": 60,
+      "continuousDriving": 0
+    },
+    {
+      "id": "cluster-001",
+      "lineId": "l1",
+      "plateNumber": "扎堆-001",
+      "driverName": "李测试",
+      "currentStationIndex": 2,
+      "direction": "forward",
+      "status": "running",
+      "passengerCount": 35,
+      "maxPassengers": 60,
+      "continuousDriving": 2.0
+    },
+    {
+      "id": "cluster-002",
+      "lineId": "l1",
+      "plateNumber": "扎堆-002",
+      "driverName": "王测试",
+      "currentStationIndex": 2,
+      "direction": "backward",
+      "status": "running",
+      "passengerCount": 30,
+      "maxPassengers": 60,
+      "continuousDriving": 1.5
+    },
+    {
+      "id": "cluster-003",
+      "lineId": "l1",
+      "plateNumber": "扎堆-003",
+      "driverName": "赵测试",
+      "currentStationIndex": 2,
+      "direction": "forward",
+      "status": "stopped",
+      "passengerCount": 25,
+      "maxPassengers": 60,
+      "continuousDriving": 3.0
+    },
+    {
+      "id": "overtime-001",
+      "lineId": "l2",
+      "plateNumber": "超时-001",
+      "driverName": "刘测试",
+      "currentStationIndex": 1,
+      "direction": "forward",
+      "status": "running",
+      "passengerCount": 20,
+      "maxPassengers": 50,
+      "continuousDriving": 6.5
+    },
+    {
+      "id": "overtime-002",
+      "lineId": "l2",
+      "plateNumber": "超时-002",
+      "driverName": "陈测试",
+      "currentStationIndex": 3,
+      "direction": "backward",
+      "status": "running",
+      "passengerCount": 15,
+      "maxPassengers": 50,
+      "continuousDriving": 5.0
+    },
+    {
+      "id": "normal-001",
+      "lineId": "l3",
+      "plateNumber": "正常-001",
+      "driverName": "周正常",
+      "currentStationIndex": 0,
+      "direction": "forward",
+      "status": "running",
+      "passengerCount": 28,
+      "maxPassengers": 45,
+      "continuousDriving": 1.5
+    }
+  ],
+  "expectedAnomalies": [
+    "中心广场同时有4辆车停靠 → 车辆扎堆异常",
+    "刘测试连续驾驶6.5小时 → 司机超时异常",
+    "陈测试连续驾驶5.0小时 → 司机超时异常",
+    "中心广场客流95人超过容量80人 → 站点超载异常",
+    "故障-001车辆状态为broken → 红色闪烁显示"
+  ]
+}

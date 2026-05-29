@@ -1,0 +1,16 @@
+{
+  "description": "这是一个用于测试数据导入和字段缺失检测的不完整数据样例",
+  "stations": [
+    { "id": "s1", "name": "火车站", "x": 100, "y": 200 },
+    { "id": "s2", "name": "市政府", "x": 200, "y": 200, "passengerFlow": 30 },
+    { "id": "s3", "name": "中心广场", "x": 300, "y": 200, "maxCapacity": 120 }
+  ],
+  "lines": [
+    { "id": "l1", "name": "1路", "color": "#165DFF" },
+    { "id": "l2", "name": "2路", "color": "#00B42A", "stations": ["s1", "s2"] }
+  ],
+  "buses": [
+    { "id": "b1", "lineId": "l1", "plateNumber": "A-001" },
+    { "id": "b2", "lineId": "l1", "plateNumber": "A-002", "driverName": "李师傅" }
+  ]
+}
