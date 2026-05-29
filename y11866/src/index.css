@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(226, 232, 240, 0.95);
+  background-color: #0a0e1a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --color-primary: #00d4ff;
+  --color-secondary: #a855f7;
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-danger: #ef4444;
+  --color-pending: #f97316;
+  
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(148, 163, 184, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #1e1b4b 100%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Glass panel utility */
+@layer components {
+  .glass-panel {
+    @apply bg-glass backdrop-blur-xl border border-glass-border rounded-xl;
+  }
+  
+  .neon-border {
+    @apply border border-neon-blue/30 shadow-[0_0_15px_rgba(0,212,255,0.15)];
+  }
+  
+  .neon-text {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+  }
+  
+  .risk-badge {
+    @apply px-2 py-0.5 rounded text-xs font-medium;
+  }
+  
+  .risk-badge-low {
+    @apply bg-risk-low/20 text-risk-low border border-risk-low/30;
+  }
+  
+  .risk-badge-medium {
+    @apply bg-risk-medium/20 text-risk-medium border border-risk-medium/30;
+  }
+  
+  .risk-badge-high {
+    @apply bg-risk-high/20 text-risk-high border border-risk-high/30;
+  }
+  
+  .risk-badge-pending {
+    @apply bg-risk-pending/20 text-risk-pending border border-risk-pending/30;
+  }
+}
+
+/* Animation keyframes */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.animate-dash {
+  animation: dash 2s linear infinite;
+}
+
+/* Range input styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-track {
+  height: 4px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #00d4ff;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  accent-color: #00d4ff;
+}
+
+/* Select styling */
+select {
+  @apply bg-deep-space-2 border border-glass-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-neon-blue/50 focus:ring-1 focus:ring-neon-blue/30;
+}
+
+/* Button base */
+button {
+  @apply transition-all duration-200;
+}
+
+button:focus-visible {
+  @apply outline-none ring-2 ring-neon-blue/50 ring-offset-2 ring-offset-deep-space;
+}
