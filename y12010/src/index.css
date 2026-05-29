@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --color-teal-primary: #0F766E;
+  --color-teal-dark: #0D5F59;
+  --color-teal-light: #14B8A6;
+  --color-amber-warn: #D97706;
+  --color-amber-light: #FCD34D;
+  --color-red-danger: #DC2626;
+}
+
+body {
+  margin: 0;
+  background: #F8FAFC;
+  color: #1E293B;
+}
+
+.font-display {
+  font-family: "DM Sans", "Noto Sans SC", sans-serif;
+}
+
+.font-mono-data {
+  font-family: "JetBrains Mono", monospace;
+}
+
+@layer components {
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-locked {
+    @apply bg-teal-100 text-teal-800;
+  }
+  .badge-pending {
+    @apply bg-amber-100 text-amber-800;
+  }
+  .badge-released {
+    @apply bg-emerald-100 text-emerald-800;
+  }
+  .badge-delayed {
+    @apply bg-orange-100 text-orange-800;
+  }
+  .badge-pending-order {
+    @apply bg-slate-100 text-slate-700;
+  }
+  .badge-dealt {
+    @apply bg-blue-100 text-blue-800;
+  }
+  .badge-cancelled {
+    @apply bg-gray-100 text-gray-600;
+  }
+  .badge-complying {
+    @apply bg-indigo-100 text-indigo-800;
+  }
+  .badge-complied {
+    @apply bg-emerald-100 text-emerald-800;
+  }
+  .badge-overdue {
+    @apply bg-red-100 text-red-800;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
