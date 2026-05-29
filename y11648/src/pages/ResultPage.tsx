@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { generateReport, formatDuration, getScoreGrade, getScoreGradeColor } from '../utils/reportGenerator';
-import { Home, FileText, RotateCcw, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Home, FileText, RotateCcw, Trophy, Clock, CheckCircle, XCircle, PlayCircle } from 'lucide-react';
 import { levels } from '../data/levels';
 
 const ResultPage = () => {
@@ -215,6 +215,16 @@ const ResultPage = () => {
           >
             <FileText size={20} />
             查看详细报告
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/replay')}
+            className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium transition-colors"
+          >
+            <PlayCircle size={20} />
+            查看回放
           </motion.button>
         </motion.div>
       </motion.div>

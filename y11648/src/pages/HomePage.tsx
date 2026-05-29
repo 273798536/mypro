@@ -1,12 +1,18 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { levels } from '../data/levels';
 import { useGameStore } from '../store/gameStore';
+import { ensureSampleReplayData } from '../utils/sampleReplayData';
 import { Ship, Anchor, Waves, Fuel, PlayCircle } from 'lucide-react';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { initGame } = useGameStore();
+
+  useEffect(() => {
+    ensureSampleReplayData();
+  }, []);
 
   const handleSelectLevel = (levelId: number) => {
     const level = levels.find((l) => l.id === levelId);

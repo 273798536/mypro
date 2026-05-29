@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
@@ -11,7 +11,7 @@ import {
   formatDuration,
 } from '../utils/reportGenerator';
 import { getConflictTypeLabel } from '../utils/conflictDetector';
-import { Home, Download, ArrowLeft, Clock, AlertTriangle, CheckCircle, HelpCircle, List, Edit, Eye, X } from 'lucide-react';
+import { Home, Download, ArrowLeft, Clock, AlertTriangle, CheckCircle, HelpCircle, List, Edit, Eye, X, Info, PlayCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
@@ -20,12 +20,23 @@ type LogDisplayItem = OperationLog | { original: OperationLog; correction: Opera
 
 const ReportPage = () => {
   const navigate = useNavigate();
-  const state = useGameStore();
-  const report = generateReport(state);
+  const { id, logs, tasks, currentTime, startTime, pendingReviewLogs, correctLog, markLogForReview, confirmReviewedLog, level } = useGameStore();
   const [activeTab, setActiveTab] = useState<TabType>('unhandled');
   const [showCorrectionModal, setShowCorrectionModal] = useState(false);
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   const [correctionText, setCorrectionText] = useState('');
+
+  const report = useMemo(() => {
+    return generateReport({
+      id,
+      level,
+      currentTime,
+      startTime,
+      logs,
+      tasks,
+      pendingReviewLogs,
+    });
+  }, [id, level, currentTime, startTime, logs, tasks, pendingReviewLogs]);
 
   const handleOpenCorrection = (logId: string, currentAction: string) => {
     setSelectedLogId(logId);
@@ -35,7 +46,7 @@ const ReportPage = () => {
 
   const handleSubmitCorrection = () => {
     if (selectedLogId && correctionText.trim()) {
-      state.correctLog(selectedLogId, correctionText.trim());
+      correctLog(selectedLogId, correctionText.trim());
       setShowCorrectionModal(false);
       setSelectedLogId(null);
       setCorrectionText('');
@@ -43,11 +54,11 @@ const ReportPage = () => {
   };
 
   const handleMarkForReview = (logId: string) => {
-    state.markLogForReview(logId);
+    markLogForReview(logId);
   };
 
   const handleConfirmReviewed = (logId: string) => {
-    state.confirmReviewedLog(logId);
+    confirmReviewedLog(logId);
   };
 
   const handleExportJSON = () => {
@@ -180,7 +191,7 @@ const ReportPage = () => {
                       修正记录
                     </button>
                   )}
-                  {!state.pendingReviewLogs.includes(logData.id) && (
+                  {!pendingReviewLogs.includes(logData.id) && (
                     <button
                       onClick={() => handleMarkForReview(logData.id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg transition-colors"
@@ -189,7 +200,7 @@ const ReportPage = () => {
                       标记待确认
                     </button>
                   )}
-                  {state.pendingReviewLogs.includes(logData.id) && (
+                  {pendingReviewLogs.includes(logData.id) && (
                     <button
                       onClick={() => handleConfirmReviewed(logData.id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs rounded-lg transition-colors"
@@ -282,6 +293,35 @@ const ReportPage = () => {
           <div className="p-4 bg-slate-800/70 rounded-xl border border-slate-700">
             <div className="text-slate-400 text-sm mb-1">总操作数</div>
             <div className="text-3xl font-bold text-amber-400">{report.operationTrail.length}</div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl"
+        >
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="text-cyan-400 font-medium mb-1">报告操作说明</h4>
+              <ul className="text-sm text-slate-300 space-y-1">
+                <li>• <span className="text-amber-400">修正记录</span>: 点击冲突日志的"修正记录"可编辑描述，保留修正痕迹</li>
+                <li>• <span className="text-blue-400">标记待确认</span>: 将日志标记为需要教员人工审核</li>
+                <li>• <span className="text-emerald-400">确认已审核</span>: 完成人工确认后点击，移除待审核标记</li>
+                <li>• 所有操作都会记录到操作日志，便于后续追溯</li>
+              </ul>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/replay')}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              <PlayCircle size={16} />
+              查看回放
+            </motion.button>
           </div>
         </motion.div>
 
