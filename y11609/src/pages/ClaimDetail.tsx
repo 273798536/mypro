@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit2, Download, FileText, Table, FileJson, Calendar, User, Shield, FileCheck } from 'lucide-react';
 import { useClaimStore } from '@/store/claimStore';
-import { StatusBadge, AnomalyBadge, SourceBadge, AnomalyAlert } from '@/components/Badges';
+import { StatusBadge, SourceBadge, AnomalyAlert } from '@/components/Badges';
 import { Card, DataRow, Button } from '@/components/UI';
 import { exportToJSON, exportToCSV, exportCalculationNote } from '@/utils/export';
 import { calculatePayout } from '@/utils/rulesEngine';

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Claim, DeductRule, OperationType, Receipt, Supplement, History } from '@/types';
+import type { Claim, DeductRule, OperationType, Receipt, Supplement } from '@/types';
 import { mockClaims, mockDeductRules } from '@/data/mockData';
 import { detectAnomalies, calculatePayout, matchDeductRule } from '@/utils/rulesEngine';
 
@@ -20,6 +20,7 @@ interface ClaimState {
   updateSupplement: (claimId: string, supplementId: string, updates: Partial<Supplement>) => void;
   updateClaimStatus: (id: string, status: Claim['status'], reason: string) => void;
   getAllReceiptNos: () => Set<string>;
+  getOtherReceiptNos: (excludeClaimId: string) => Set<string>;
   resetData: () => void;
 }
 
@@ -48,6 +49,16 @@ export const useClaimStore = create<ClaimState>()(
         const receiptNos = new Set<string>();
         get().claims.forEach((claim) => {
           claim.receipts.forEach((r) => receiptNos.add(r.receiptNo));
+        });
+        return receiptNos;
+      },
+
+      getOtherReceiptNos: (excludeClaimId) => {
+        const receiptNos = new Set<string>();
+        get().claims.forEach((claim) => {
+          if (claim.id !== excludeClaimId) {
+            claim.receipts.forEach((r) => receiptNos.add(r.receiptNo));
+          }
         });
         return receiptNos;
       },
@@ -156,15 +167,21 @@ export const useClaimStore = create<ClaimState>()(
         const claimIndex = claims.findIndex((c) => c.id === claimId);
         if (claimIndex === -1) return { success: false, message: '理赔单不存在' };
 
-        const allReceiptNos = get().getAllReceiptNos();
-        if (allReceiptNos.has(receipt.receiptNo)) {
+        const otherReceiptNos = get().getOtherReceiptNos(claimId);
+        const isDuplicateInOther = otherReceiptNos.has(receipt.receiptNo);
+
+        const oldClaim = claims[claimIndex];
+        const isDuplicateInSelf = oldClaim.receipts.some(
+          (r) => r.receiptNo === receipt.receiptNo
+        );
+        if (isDuplicateInOther || isDuplicateInSelf) {
           return { success: false, message: '该票据号已存在，可能重复报销' };
         }
 
-        const oldClaim = claims[claimIndex];
         const newReceipt: Receipt = {
           ...receipt,
           id: `r-${Date.now()}`,
+          isDuplicate: isDuplicateInOther,
         };
 
         const newVersion = `v${oldClaim.history.length + 1}.0`;
@@ -188,11 +205,9 @@ export const useClaimStore = create<ClaimState>()(
           history: [...oldClaim.history, historyEntry],
         };
 
-        const updatedAllReceiptNos = new Set(allReceiptNos);
-        updatedAllReceiptNos.add(receipt.receiptNo);
         updatedClaims[claimIndex].anomalies = detectAnomalies(
           updatedClaims[claimIndex],
-          allReceiptNos
+          otherReceiptNos
         );
 
         set({ claims: updatedClaims });
@@ -275,10 +290,10 @@ export const useClaimStore = create<ClaimState>()(
           history: [...oldClaim.history, historyEntry],
         };
 
-        const allReceiptNos = get().getAllReceiptNos();
+        const otherReceiptNos = get().getOtherReceiptNos(claimId);
         updatedClaims[claimIndex].anomalies = detectAnomalies(
           updatedClaims[claimIndex],
-          allReceiptNos
+          otherReceiptNos
         );
 
         set({ claims: updatedClaims });
@@ -322,10 +337,10 @@ export const useClaimStore = create<ClaimState>()(
           updatedClaims[claimIndex].status = 'reviewing';
         }
 
-        const allReceiptNos = get().getAllReceiptNos();
+        const otherReceiptNos = get().getOtherReceiptNos(claimId);
         updatedClaims[claimIndex].anomalies = detectAnomalies(
           updatedClaims[claimIndex],
-          allReceiptNos
+          otherReceiptNos
         );
 
         set({ claims: updatedClaims });

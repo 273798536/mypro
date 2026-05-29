@@ -4,8 +4,8 @@ import { ArrowLeft, Save, Calculator, Plus, Trash2, AlertTriangle, CheckCircle, 
 import { useClaimStore } from '@/store/claimStore';
 import { AnomalyAlert, SourceBadge } from '@/components/Badges';
 import { Card, Button, Input } from '@/components/UI';
-import { calculatePayout, matchDeductRule, detectAnomalies, generateCalculationNote } from '@/utils/rulesEngine';
-import type { Receipt, Supplement } from '@/types';
+import { calculatePayout, matchDeductRule, detectAnomalies } from '@/utils/rulesEngine';
+import type { Supplement } from '@/types';
 
 export default function ClaimEdit() {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,7 @@ export default function ClaimEdit() {
   const addSupplement = useClaimStore((state) => state.addSupplement);
   const updateSupplement = useClaimStore((state) => state.updateSupplement);
   const updateClaimStatus = useClaimStore((state) => state.updateClaimStatus);
-  const getAllReceiptNos = useClaimStore((state) => state.getAllReceiptNos);
+  const getOtherReceiptNos = useClaimStore((state) => state.getOtherReceiptNos);
 
   const [newReceipt, setNewReceipt] = useState({
     receiptNo: '',
@@ -75,9 +75,17 @@ export default function ClaimEdit() {
       return;
     }
 
-    const allReceiptNos = getAllReceiptNos();
-    if (allReceiptNos.has(newReceipt.receiptNo)) {
-      setReceiptError('该票据号已存在，涉嫌重复报销！');
+    const otherReceiptNos = getOtherReceiptNos(claim.id);
+    if (otherReceiptNos.has(newReceipt.receiptNo)) {
+      setReceiptError('该票据号在其他理赔单中已存在，涉嫌重复报销！');
+      return;
+    }
+
+    const selfDuplicate = claim.receipts.some(
+      (r) => r.receiptNo === newReceipt.receiptNo
+    );
+    if (selfDuplicate) {
+      setReceiptError('该票据号在当前理赔单中已存在！');
       return;
     }
 
@@ -108,7 +116,7 @@ export default function ClaimEdit() {
   };
 
   const handleSave = () => {
-    const anomalies = detectAnomalies(claim, getAllReceiptNos());
+    const anomalies = detectAnomalies(claim, getOtherReceiptNos(claim.id));
     if (anomalies.includes('not_recalculated')) {
       if (!confirm('数据已变更，尚未重新计算。是否继续保存？')) {
         return;

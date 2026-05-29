@@ -36,20 +36,17 @@ export function calculatePayout(
 
 export function detectDuplicateReceipts(
   receipts: Receipt[],
-  allReceiptNos: Set<string>
-): { duplicates: Receipt[]; receiptNos: Set<string> } {
+  otherReceiptNos: Set<string>
+): Receipt[] {
   const duplicates: Receipt[] = [];
-  const newReceiptNos = new Set(allReceiptNos);
 
   receipts.forEach((receipt) => {
-    if (newReceiptNos.has(receipt.receiptNo)) {
+    if (otherReceiptNos.has(receipt.receiptNo)) {
       duplicates.push({ ...receipt, isDuplicate: true });
-    } else {
-      newReceiptNos.add(receipt.receiptNo);
     }
   });
 
-  return { duplicates, receiptNos: newReceiptNos };
+  return duplicates;
 }
 
 export function detectCrossYear(claim: Claim): boolean {
@@ -72,11 +69,11 @@ export function detectMissingSupplement(claim: Claim): boolean {
 
 export function detectAnomalies(
   claim: Claim,
-  allReceiptNos: Set<string>
+  otherClaimReceiptNos: Set<string>
 ): AnomalyType[] {
   const anomalies: AnomalyType[] = [];
 
-  const { duplicates } = detectDuplicateReceipts(claim.receipts, allReceiptNos);
+  const duplicates = detectDuplicateReceipts(claim.receipts, otherClaimReceiptNos);
   if (duplicates.length > 0) {
     anomalies.push('duplicate_receipt');
   }
