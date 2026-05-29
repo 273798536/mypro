@@ -1,0 +1,61 @@
+{
+  "report_info": {
+    "title": "矩阵消元步骤批改报告",
+    "generated_at": "",
+    "total_steps": 3,
+    "correct_steps": 2,
+    "total_deduction": 0.0,
+    "progress_score": 100.0
+  },
+  "error_summary": {},
+  "step_details": [
+    {
+      "step_index": 1,
+      "is_correct": true,
+      "operation": "正确：第3行 = 第3行 + (-2) × 第1行",
+      "deduction_points": 0.0,
+      "errors": [],
+      "next_action": "继续下一步消元，注意选择正确的主元位置"
+    },
+    {
+      "step_index": 2,
+      "is_correct": true,
+      "operation": "正确：第3行 = 第3行 + (1) × 第2行",
+      "deduction_points": 0.0,
+      "errors": [],
+      "next_action": "继续下一步消元，注意选择正确的主元位置"
+    }
+  ],
+  "recommendations": [],
+  "chart_data": {
+    "step_accuracy": {
+      "labels": [
+        "步骤1",
+        "步骤2"
+      ],
+      "values": [
+        1,
+        1
+      ],
+      "description": "每步正确性分布图（1表示正确，0表示错误）"
+    },
+    "error_distribution": {
+      "labels": [
+        "add"
+      ],
+      "values": [],
+      "description": "各类型操作的错误分布统计"
+    },
+    "deduction_by_step": {
+      "labels": [
+        "步骤1",
+        "步骤2"
+      ],
+      "values": [
+        0.0,
+        0.0
+      ],
+      "description": "每步扣分数值，反映错误严重程度"
+    }
+  }
+}
