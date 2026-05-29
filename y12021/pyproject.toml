@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "presale-reconciliation"
+version = "0.1.0"
+description = "电商预售尾款对账工具 - 自动对齐预售订单、定金流水、尾款支付"
+requires-python = ">=3.9"
+authors = [{ name = "Finance Team" }]
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "rich>=13.0.0",
+    "Jinja2>=3.1.0",
+]
+
+[project.scripts]
+presale-recon = "presale_reconciliation.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

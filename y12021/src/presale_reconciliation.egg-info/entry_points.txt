@@ -1,0 +1,2 @@
+[console_scripts]
+presale-recon = presale_reconciliation.cli:main

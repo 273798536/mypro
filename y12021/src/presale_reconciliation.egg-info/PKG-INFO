@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: presale-reconciliation
+Version: 0.1.0
+Summary: 电商预售尾款对账工具 - 自动对齐预售订单、定金流水、尾款支付
+Author: Finance Team
+Requires-Python: >=3.9
+Requires-Dist: click>=8.1.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: openpyxl>=3.1.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: Jinja2>=3.1.0

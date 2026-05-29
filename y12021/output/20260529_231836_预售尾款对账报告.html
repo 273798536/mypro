@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商预售尾款对账报告</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        h3 {
+            color: #e74c3c;
+        }
+        .summary-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-card .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-card.success .value { color: #27ae60; }
+        .stat-card.danger .value { color: #e74c3c; }
+        .stat-card.warning .value { color: #f39c12; }
+        .stat-card.high-priority {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+        .stat-card.high-priority .value {
+            color: #856404;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .exception-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .exception-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .exception-order-no {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .exception-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .exception-detail {
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+        .exception-detail strong {
+            color: #555;
+        }
+        .problem-source {
+            display: inline-block;
+            background: #ffeaa7;
+            color: #856404;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .high-priority-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 电商预售尾款对账报告</h1>
+    <p style="text-align: center; color: #666;">对账时间: 2026-05-29 23:18:36</p>
+
+    <div class="summary-box">
+        <h2 style="margin-top: 0;">📁 输入文件</h2>
+        <table>
+            <tr>
+                <th>数据类型</th>
+                <th>文件路径</th>
+                <th style="text-align: right;">记录数</th>
+            </tr>
+            <tr>
+                <td>预售订单</td>
+                <td>/Users/mac/pro/solo/workspaces/y12021/sample_data/预售订单表.csv</td>
+                <td style="text-align: right;">10</td>
+            </tr>
+            <tr>
+                <td>定金流水</td>
+                <td>/Users/mac/pro/solo/workspaces/y12021/sample_data/定金流水表.csv</td>
+                <td style="text-align: right;">10</td>
+            </tr>
+            <tr>
+                <td>尾款支付</td>
+                <td>/Users/mac/pro/solo/workspaces/y12021/sample_data/尾款支付表.csv</td>
+                <td style="text-align: right;">7</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="summary-box">
+        <h2 style="margin-top: 0;">📈 对账统计</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">总订单数</div>
+                <div class="value">12</div>
+            </div>
+            <div class="stat-card success">
+                <div class="label">✅ 对账通过</div>
+                <div class="value">4</div>
+                <div style="font-size: 12px; color: #666;">33.3%</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="label">❌ 存在异常</div>
+                <div class="value">8</div>
+                <div style="font-size: 12px; color: #666;">66.7%</div>
+            </div>
+            <div class="stat-card high-priority">
+                <div class="label">⚠️  定金不退</div>
+                <div class="value">1</div>
+            </div>
+            <div class="stat-card high-priority">
+                <div class="label">⏰ 尾款超时</div>
+                <div class="value">2</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="label">💰 金额不符</div>
+                <div class="value">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">📊 订单总金额</div>
+                <div class="value" style="font-size: 18px;">¥46,140.00</div>
+            </div>
+            <div class="stat-card success">
+                <div class="label">💰 累计收款</div>
+                <div class="value" style="font-size: 18px;">¥37,344.00</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>🔍 异常订单详情</h2>
+
+    <div class="high-priority-section">
+        <h3>🚨 高优先级 - 需要立即处理</h3>
+
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501003</span>
+            <span class="exception-badge" style="background-color: #fff3cd; color: #856404; font-weight: bold;">⚠️ 定金不退</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>商品:</strong> AirPods Pro 2
+        </div>
+        <div class="exception-detail">
+            <strong>金额:</strong> 定金¥200.00 + 尾款¥1,699.00 = ¥1,899.00
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">预售订单表</span><span class="problem-source">定金流水表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 【定金不退】订单【AirPods Pro 2】买家未支付尾款，按规则定金200.00元不予退还。请核查：尾款截止时间2026-05-25 23:59:59，订单备注：买家表示不想要了，定金不退
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>定金流水:</strong> DEP20260510003 | 金额¥200.00 | 2026-05-10 11:20:00
+        </div>
+</div></div>
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501004</span>
+            <span class="exception-badge" style="background-color: #f8d7da; color: #721c24; font-weight: bold;">⏰ 尾款超时</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>商品:</strong> iPad Air 5
+        </div>
+        <div class="exception-detail">
+            <strong>金额:</strong> 定金¥500.00 + 尾款¥4,299.00 = ¥4,799.00
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">预售订单表</span><span class="problem-source">定金流水表</span><span class="problem-source">尾款支付表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 【尾款超时】订单【iPad Air 5】买家未在截止时间前支付尾款。尾款截止时间：2026-05-25 23:59:59，当前核查时间：2026-05-29 12:00:00
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>定金流水:</strong> DEP20260510004 | 金额¥500.00 | 2026-05-10 14:05:00
+        </div>
+</div></div>
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501005</span>
+            <span class="exception-badge" style="background-color: #f8d7da; color: #721c24; font-weight: bold;">⏰ 尾款超时</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>商品:</strong> Apple Watch Series 9
+        </div>
+        <div class="exception-detail">
+            <strong>金额:</strong> 定金¥300.00 + 尾款¥2,699.00 = ¥2,999.00
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">预售订单表</span><span class="problem-source">尾款支付表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 【尾款超时支付】订单【Apple Watch Series 9】实际支付时间晚于截止时间。截止时间：2026-05-25 23:59:59，实际支付：2026-05-26 09:00:00，超时：9小时0分钟
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>定金流水:</strong> DEP20260510005 | 金额¥300.00 | 2026-05-10 15:30:00
+        </div>
+
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>尾款支付:</strong> BAL20260525003 | 金额¥2,699.00 | 2026-05-26 09:00:00
+        </div>
+</div></div></div>
+    <h3>📌 普通优先级 - 需要核实</h3>
+
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501006</span>
+            <span class="exception-badge" style="background-color: #fff3cd; color: #856404;">💰 定金金额不符</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>商品:</strong> Magic Keyboard
+        </div>
+        <div class="exception-detail">
+            <strong>金额:</strong> 定金¥100.00 + 尾款¥799.00 = ¥899.00
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">预售订单表</span><span class="problem-source">定金流水表</span><span class="problem-source">尾款支付表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 定金金额不符：订单约定100.00元，实际支付150.00元，差额+50.00元；尾款金额不符：订单约定799.00元，实际支付750.00元，差额-49.00元；总金额不符：订单总额899.00元，累计支付900.00元，差额+1.00元
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>定金流水:</strong> DEP20260510006 | 金额¥150.00 | 2026-05-10 16:45:00
+        </div>
+
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>尾款支付:</strong> BAL20260525004 | 金额¥750.00 | 2026-05-25 11:20:00
+        </div>
+</div></div>
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501009</span>
+            <span class="exception-badge" style="background-color: #f8d7da; color: #721c24;">📋 缺失定金流水</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>商品:</strong> Apple TV 4K
+        </div>
+        <div class="exception-detail">
+            <strong>金额:</strong> 定金¥150.00 + 尾款¥1,349.00 = ¥1,499.00
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">预售订单表</span><span class="problem-source">定金流水表</span><span class="problem-source">尾款支付表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 缺失定金流水：订单【Apple TV 4K】约定定金150.00元，但未找到支付记录；缺失尾款支付：订单【Apple TV 4K】约定尾款1349.00元，但未找到支付记录
+        </div>
+</div>
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501010</span>
+            <span class="exception-badge" style="background-color: #f8d7da; color: #721c24;">📋 缺失尾款支付</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>商品:</strong> iPhone 15 128G
+        </div>
+        <div class="exception-detail">
+            <strong>金额:</strong> 定金¥600.00 + 尾款¥5,399.00 = ¥5,999.00
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">预售订单表</span><span class="problem-source">尾款支付表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 缺失尾款支付：订单【iPhone 15 128G】约定尾款5399.00元，但未找到支付记录；【尾款已超时未付】订单【iPhone 15 128G】已超过尾款支付截止时间但未支付尾款。截止时间：2026-05-20 23:59:59，当前时间：2026-05-29 12:00:00，已超时：204小时0分钟，定金600.00元按规则可能不予退还
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>定金流水:</strong> DEP20260510009 | 金额¥600.00 | 2026-05-10 20:30:00
+        </div>
+</div></div>
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501011</span>
+            <span class="exception-badge" style="background-color: #f8d7da; color: #721c24;">📋 缺失预售订单</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">定金流水表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 缺失预售订单信息：定金流水/尾款支付有记录，但找不到对应的预售订单
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>定金流水:</strong> DEP20260510010 | 金额¥800.00 | 2026-05-10 21:00:00
+        </div>
+</div></div>
+    <div class="exception-item">
+        <div class="exception-header">
+            <span class="exception-order-no">订单号: PO20260501012</span>
+            <span class="exception-badge" style="background-color: #f8d7da; color: #721c24;">📋 缺失预售订单</span>
+        </div>
+
+        <div class="exception-detail">
+            <strong>问题材料:</strong> <span class="problem-source">尾款支付表</span>
+        </div>
+        <div class="exception-detail" style="color: #e74c3c;">
+            <strong>说明:</strong> 缺失预售订单信息：定金流水/尾款支付有记录，但找不到对应的预售订单
+        </div>
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+        <div class="exception-detail" style="font-size: 13px; color: #666;">
+            <strong>尾款支付:</strong> BAL20260525007 | 金额¥3,299.00 | 2026-05-25 20:00:00
+        </div>
+</div></div>
+    <h2>📋 全部订单对账结果</h2>
+    <table>
+        <tr>
+            <th>订单号</th>
+            <th>商品</th>
+            <th>状态</th>
+            <th>问题材料</th>
+            <th>说明</th>
+        </tr>
+
+        <tr>
+            <td>PO20260501001</td>
+            <td>iPhone 15 Pro Max 256G</td>
+            <td><span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px;">✅ 正常</span></td>
+            <td>-</td>
+            <td>对账通过，三方数据一致</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501002</td>
+            <td>MacBook Pro 14寸 M3</td>
+            <td><span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px;">✅ 正常</span></td>
+            <td>-</td>
+            <td>对账通过，三方数据一致</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501003</td>
+            <td>AirPods Pro 2</td>
+            <td><span style="background-color: #fff3cd; color: #856404; font-weight: bold; padding: 4px 8px; border-radius: 4px;">⚠️ 定金不退</span></td>
+            <td>预售订单表、定金流水表</td>
+            <td>【定金不退】订单【AirPods Pro 2】买家未支付尾款，按规则定金200.00元不予退还。请核查：尾款截止时间2026-05-25 23:59:59，订单备注：买家表示不想要了，定金不退</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501004</td>
+            <td>iPad Air 5</td>
+            <td><span style="background-color: #f8d7da; color: #721c24; font-weight: bold; padding: 4px 8px; border-radius: 4px;">⏰ 尾款超时</span></td>
+            <td>预售订单表、定金流水表、尾款支付表</td>
+            <td>【尾款超时】订单【iPad Air 5】买家未在截止时间前支付尾款。尾款截止时间：2026-05-25 23:59:59，当前核查时间：2026-05-29 12:00:00</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501005</td>
+            <td>Apple Watch Series 9</td>
+            <td><span style="background-color: #f8d7da; color: #721c24; font-weight: bold; padding: 4px 8px; border-radius: 4px;">⏰ 尾款超时</span></td>
+            <td>预售订单表、尾款支付表</td>
+            <td>【尾款超时支付】订单【Apple Watch Series 9】实际支付时间晚于截止时间。截止时间：2026-05-25 23:59:59，实际支付：2026-05-26 09:00:00，超时：9小时0分钟</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501006</td>
+            <td>Magic Keyboard</td>
+            <td><span style="background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 4px;">💰 定金金额不符</span></td>
+            <td>预售订单表、定金流水表、尾款支付表</td>
+            <td>定金金额不符：订单约定100.00元，实际支付150.00元，差额+50.00元；尾款金额不符：订单约定799.00元，实际支付750.00元，差额-49.00元；总金额不符：订单总额899.00元，累计支付900.00元，差额+1.00元</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501007</td>
+            <td>HomePod mini</td>
+            <td><span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px;">✅ 正常</span></td>
+            <td>-</td>
+            <td>对账通过，三方数据一致</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501008</td>
+            <td>AirTag 四件装</td>
+            <td><span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px;">✅ 正常</span></td>
+            <td>-</td>
+            <td>对账通过，三方数据一致</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501009</td>
+            <td>Apple TV 4K</td>
+            <td><span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">📋 缺失定金流水</span></td>
+            <td>预售订单表、定金流水表、尾款支付表</td>
+            <td>缺失定金流水：订单【Apple TV 4K】约定定金150.00元，但未找到支付记录；缺失尾款支付：订单【Apple TV 4K】约定尾款1349.00元，但未找到支付记录</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501010</td>
+            <td>iPhone 15 128G</td>
+            <td><span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">📋 缺失尾款支付</span></td>
+            <td>预售订单表、尾款支付表</td>
+            <td>缺失尾款支付：订单【iPhone 15 128G】约定尾款5399.00元，但未找到支付记录；【尾款已超时未付】订单【iPhone 15 128G】已超过尾款支付截止时间但未支付尾款。截止时间：2026-05-20 23:59:59，当前时间：2026-05-29 12:00:00，已超时：204小时0分钟，定金600.00元按规则可能不予退还</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501011</td>
+            <td>-</td>
+            <td><span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">📋 缺失预售订单</span></td>
+            <td>定金流水表</td>
+            <td>缺失预售订单信息：定金流水/尾款支付有记录，但找不到对应的预售订单</td>
+        </tr>
+
+        <tr>
+            <td>PO20260501012</td>
+            <td>-</td>
+            <td><span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">📋 缺失预售订单</span></td>
+            <td>尾款支付表</td>
+            <td>缺失预售订单信息：定金流水/尾款支付有记录，但找不到对应的预售订单</td>
+        </tr>
+
+    </table>
+    <div class="footer">
+        <p>本报告由预售尾款对账工具自动生成</p>
+    </div>
+</body>
+</html>
