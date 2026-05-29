@@ -1,0 +1,325 @@
+================================================================================
+农险灾损赔付测算报告
+================================================================================
+批次号: BATCH-20260529000144
+测算时间: 2026-05-29 00:01:44
+
+一、汇总统计
+----------------------------------------
+农户总数: 5 户
+原始总面积: 80.50 亩
+去重后总面积: 76.25 亩
+去重减少面积: 4.25 亩
+总赔付金额: 20400.00 元
+
+二、凭证状态分布
+----------------------------------------
+  有争议: 2 单
+  已驳回: 1 单
+  已通过: 1 单
+  待审核: 1 单
+
+三、灾损等级分布
+----------------------------------------
+  重度: 55.50 亩
+  轻度: 10.75 亩
+  绝收: 10.00 亩
+
+四、图斑重叠去重记录
+----------------------------------------
+  1. 张三:
+     原始面积: 15.00 亩
+     重叠面积: 1.25 亩
+     去重后面积: 13.75 亩
+     重叠图斑: P002
+     数据来源: [卫星图斑] samples/parcels.yaml → parcels[0] = {'parcel_id': 'P001', 'farmer_id': 'F001', 'farmer_name': '张三', 'village': '幸福村', 'area': 15.0, 'crop_type': '玉米', 'damage_level': '中度', 'boundary': [{'x': 0.0, 'y': 0.0}, {'x': 5.0, 'y': 0.0}, {'x': 5.0, 'y': 3.0}, {'x': 0.0, 'y': 3.0}]}
+  2. 李四:
+     原始面积: 12.00 亩
+     重叠面积: 1.25 亩
+     去重后面积: 10.75 亩
+     重叠图斑: P001
+     数据来源: [卫星图斑] samples/parcels.yaml → parcels[1] = {'parcel_id': 'P002', 'farmer_id': 'F002', 'farmer_name': '李四', 'village': '幸福村', 'area': 12.0, 'crop_type': '玉米', 'damage_level': '轻度', 'boundary': [{'x': 4.5, 'y': 0.0}, {'x': 10.0, 'y': 0.0}, {'x': 10.0, 'y': 2.5}, {'x': 4.5, 'y': 2.5}]}
+
+五、等级变更记录
+----------------------------------------
+  1. 张三:
+     原等级: 中度
+     新等级: 重度
+     变更原因: 签字表申报等级(重度)高于卫星图斑判定等级(中度)，按高标准执行
+     下一步: 联系理赔员/驻村干部复核
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F001.damage_level (需补充到农户档案)
+  2. 王五:
+     原等级: 中度
+     新等级: 重度
+     变更原因: 卫星图斑判定等级(重度)高于签字表申报等级(中度)，按高标准执行
+     下一步: 联系理赔员/驻村干部复核
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F003.damage_level (需补充到农户档案)
+  3. 孙七:
+     原等级: 中度
+     新等级: 重度
+     变更原因: 签字表申报等级(重度)高于卫星图斑判定等级(中度)，按高标准执行
+     下一步: 联系理赔员/驻村干部复核
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F005.damage_level (需补充到农户档案)
+
+六、缺失签字记录
+----------------------------------------
+  1. 王五 (幸福村):
+     申报面积: 20.00 亩
+     申报损失: 中度
+     下一步: 联系村主任/包片干部补签
+     修改文件: samples/signatures.yaml
+     修改字段: records.S003.has_signature
+
+七、赔付清单
+----------------------------------------
+凭证号                  农户         村庄         状态               面积 等级             赔付金额 备注
+----------------------------------------------------------------------------------------------------
+V-F001-20260529      张三         幸福村        有争议          15.00 重度         4200.00 图斑存在重叠，已触发面积去重;灾损等级存在变更，需复核;三源面积数据不一致
+V-F002-20260529      李四         幸福村        有争议          10.75 轻度          860.00 图斑存在重叠，已触发面积去重;三源面积数据不一致
+V-F003-20260529      王五         幸福村        已驳回          18.50 重度         5180.00 灾损等级存在变更，需复核;缺少村干部签字确认;三源面积数据不一致
+V-F004-20260529      赵六         富裕村        已通过          10.00 绝收         4000.00 
+V-F005-20260529      孙七         富裕村        待审核          22.00 重度         6160.00 灾损等级存在变更，需复核
+
+八、溯源追踪
+----------------------------------------
+
+【张三 - V-F001-20260529】
+  ▶ 张三的赔付面积确定为15.00亩
+    计算过程:
+      农户档案投保面积: 15.00亩
+      卫星图斑总面积(去重后): 16.75亩
+      签字表申报面积: 18.00亩
+      取值规则: 取档案与图斑较小值，同时参考签字表
+      最终赔付面积: 15.00亩
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[0] = {'farmer_id': 'F001', 'name': '张三', 'id_card': '110101198001010001', 'village': '幸福村', 'phone': '13800138001', 'insurance_type': '玉米种植保险', 'insured_area': 15.0, 'premium_amount': 45.0, 'insurance_amount': 6000.0}
+      [卫星图斑] samples/parcels.yaml → parcels[0] = {'parcel_id': 'P001', 'farmer_id': 'F001', 'farmer_name': '张三', 'village': '幸福村', 'area': 15.0, 'crop_type': '玉米', 'damage_level': '中度', 'boundary': [{'x': 0.0, 'y': 0.0}, {'x': 5.0, 'y': 0.0}, {'x': 5.0, 'y': 3.0}, {'x': 0.0, 'y': 3.0}]}
+      [卫星图斑] samples/parcels.yaml → parcels[5] = {'parcel_id': 'P006', 'farmer_id': 'F001', 'farmer_name': '张三', 'village': '幸福村', 'area': 3.0, 'crop_type': '玉米', 'damage_level': '中度', 'boundary': [{'x': 15.0, 'y': 3.0}, {'x': 18.0, 'y': 3.0}, {'x': 18.0, 'y': 4.0}, {'x': 15.0, 'y': 4.0}]}
+  ▶ 张三的灾损等级确定为重度
+    计算过程:
+      保险类型: 玉米种植保险
+      单位保额: 400.00元/亩
+      灾损等级: 重度
+      赔付比例: 70%
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[0] = {'farmer_id': 'F001', 'name': '张三', 'id_card': '110101198001010001', 'village': '幸福村', 'phone': '13800138001', 'insurance_type': '玉米种植保险', 'insured_area': 15.0, 'premium_amount': 45.0, 'insurance_amount': 6000.0}
+      [签字表] samples/signatures.yaml → records[0] = {'record_id': 'S001', 'farmer_id': 'F001', 'farmer_name': '张三', 'village': '幸福村', 'reported_area': 18.0, 'reported_damage': '重度', 'has_signature': True, 'signatory': '村主任A', 'signature_date': '2024-05-20T10:30:00', 'notes': '暴雨后积水严重'}
+  ▶ 张三的赔付金额计算为4200.00元
+    计算过程:
+      计算公式: 赔付面积 × 单位保额 × 赔付比例
+      代入数值: 15.00 × 400.00 × 0.7
+      计算过程: 15.00 × 400.00 = 6000.00
+      计算过程: 6000.00 × 0.7 = 4200.00
+      最终赔付金额: 4200.00元
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[0] = {'farmer_id': 'F001', 'name': '张三', 'id_card': '110101198001010001', 'village': '幸福村', 'phone': '13800138001', 'insurance_type': '玉米种植保险', 'insured_area': 15.0, 'premium_amount': 45.0, 'insurance_amount': 6000.0}
+
+【李四 - V-F002-20260529】
+  ▶ 李四的赔付面积确定为10.75亩
+    计算过程:
+      农户档案投保面积: 12.00亩
+      卫星图斑总面积(去重后): 10.75亩
+      签字表申报面积: 12.00亩
+      取值规则: 取档案与图斑较小值，同时参考签字表
+      最终赔付面积: 10.75亩
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[1] = {'farmer_id': 'F002', 'name': '李四', 'id_card': '110101198002020002', 'village': '幸福村', 'phone': '13800138002', 'insurance_type': '玉米种植保险', 'insured_area': 12.0, 'premium_amount': 36.0, 'insurance_amount': 4800.0}
+      [卫星图斑] samples/parcels.yaml → parcels[1] = {'parcel_id': 'P002', 'farmer_id': 'F002', 'farmer_name': '李四', 'village': '幸福村', 'area': 12.0, 'crop_type': '玉米', 'damage_level': '轻度', 'boundary': [{'x': 4.5, 'y': 0.0}, {'x': 10.0, 'y': 0.0}, {'x': 10.0, 'y': 2.5}, {'x': 4.5, 'y': 2.5}]}
+  ▶ 李四的灾损等级确定为轻度
+    计算过程:
+      保险类型: 玉米种植保险
+      单位保额: 400.00元/亩
+      灾损等级: 轻度
+      赔付比例: 20%
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[1] = {'farmer_id': 'F002', 'name': '李四', 'id_card': '110101198002020002', 'village': '幸福村', 'phone': '13800138002', 'insurance_type': '玉米种植保险', 'insured_area': 12.0, 'premium_amount': 36.0, 'insurance_amount': 4800.0}
+      [签字表] samples/signatures.yaml → records[1] = {'record_id': 'S002', 'farmer_id': 'F002', 'farmer_name': '李四', 'village': '幸福村', 'reported_area': 12.0, 'reported_damage': '轻度', 'has_signature': True, 'signatory': '村主任A', 'signature_date': '2024-05-20T11:00:00', 'notes': ''}
+  ▶ 李四的赔付金额计算为860.00元
+    计算过程:
+      计算公式: 赔付面积 × 单位保额 × 赔付比例
+      代入数值: 10.75 × 400.00 × 0.2
+      计算过程: 10.75 × 400.00 = 4300.00
+      计算过程: 4300.00 × 0.2 = 860.00
+      最终赔付金额: 860.00元
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[1] = {'farmer_id': 'F002', 'name': '李四', 'id_card': '110101198002020002', 'village': '幸福村', 'phone': '13800138002', 'insurance_type': '玉米种植保险', 'insured_area': 12.0, 'premium_amount': 36.0, 'insurance_amount': 4800.0}
+
+【王五 - V-F003-20260529】
+  ▶ 王五的赔付面积确定为18.50亩
+    计算过程:
+      农户档案投保面积: 18.50亩
+      卫星图斑总面积(去重后): 18.50亩
+      签字表申报面积: 20.00亩
+      取值规则: 取档案与图斑较小值，同时参考签字表
+      最终赔付面积: 18.50亩
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[2] = {'farmer_id': 'F003', 'name': '王五', 'id_card': '110101198003030003', 'village': '幸福村', 'phone': '13800138003', 'insurance_type': '小麦种植保险', 'insured_area': 18.5, 'premium_amount': 55.5, 'insurance_amount': 7400.0}
+      [卫星图斑] samples/parcels.yaml → parcels[2] = {'parcel_id': 'P003', 'farmer_id': 'F003', 'farmer_name': '王五', 'village': '幸福村', 'area': 18.5, 'crop_type': '小麦', 'damage_level': '重度', 'boundary': [{'x': 10.0, 'y': 0.0}, {'x': 20.0, 'y': 0.0}, {'x': 20.0, 'y': 2.0}, {'x': 10.0, 'y': 2.0}]}
+  ▶ 王五的灾损等级确定为重度
+    计算过程:
+      保险类型: 小麦种植保险
+      单位保额: 400.00元/亩
+      灾损等级: 重度
+      赔付比例: 70%
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[2] = {'farmer_id': 'F003', 'name': '王五', 'id_card': '110101198003030003', 'village': '幸福村', 'phone': '13800138003', 'insurance_type': '小麦种植保险', 'insured_area': 18.5, 'premium_amount': 55.5, 'insurance_amount': 7400.0}
+      [签字表] samples/signatures.yaml → records[2] = {'record_id': 'S003', 'farmer_id': 'F003', 'farmer_name': '王五', 'village': '幸福村', 'reported_area': 20.0, 'reported_damage': '中度', 'has_signature': False, 'signatory': None, 'signature_date': None, 'notes': '村干部外出，待补签'}
+  ▶ 王五的赔付金额计算为5180.00元
+    计算过程:
+      计算公式: 赔付面积 × 单位保额 × 赔付比例
+      代入数值: 18.50 × 400.00 × 0.7
+      计算过程: 18.50 × 400.00 = 7400.00
+      计算过程: 7400.00 × 0.7 = 5180.00
+      最终赔付金额: 5180.00元
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[2] = {'farmer_id': 'F003', 'name': '王五', 'id_card': '110101198003030003', 'village': '幸福村', 'phone': '13800138003', 'insurance_type': '小麦种植保险', 'insured_area': 18.5, 'premium_amount': 55.5, 'insurance_amount': 7400.0}
+
+【赵六 - V-F004-20260529】
+  ▶ 赵六的赔付面积确定为10.00亩
+    计算过程:
+      农户档案投保面积: 10.00亩
+      卫星图斑总面积(去重后): 10.00亩
+      签字表申报面积: 10.00亩
+      取值规则: 取档案与图斑较小值，同时参考签字表
+      最终赔付面积: 10.00亩
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[3] = {'farmer_id': 'F004', 'name': '赵六', 'id_card': '110101198004040004', 'village': '富裕村', 'phone': '13800138004', 'insurance_type': '玉米种植保险', 'insured_area': 10.0, 'premium_amount': 30.0, 'insurance_amount': 4000.0}
+      [卫星图斑] samples/parcels.yaml → parcels[3] = {'parcel_id': 'P004', 'farmer_id': 'F004', 'farmer_name': '赵六', 'village': '富裕村', 'area': 10.0, 'crop_type': '玉米', 'damage_level': '绝收', 'boundary': [{'x': 0.0, 'y': 5.0}, {'x': 4.0, 'y': 5.0}, {'x': 4.0, 'y': 7.5}, {'x': 0.0, 'y': 7.5}]}
+  ▶ 赵六的灾损等级确定为绝收
+    计算过程:
+      保险类型: 玉米种植保险
+      单位保额: 400.00元/亩
+      灾损等级: 绝收
+      赔付比例: 100%
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[3] = {'farmer_id': 'F004', 'name': '赵六', 'id_card': '110101198004040004', 'village': '富裕村', 'phone': '13800138004', 'insurance_type': '玉米种植保险', 'insured_area': 10.0, 'premium_amount': 30.0, 'insurance_amount': 4000.0}
+      [签字表] samples/signatures.yaml → records[3] = {'record_id': 'S004', 'farmer_id': 'F004', 'farmer_name': '赵六', 'village': '富裕村', 'reported_area': 10.0, 'reported_damage': '绝收', 'has_signature': True, 'signatory': '村主任B', 'signature_date': '2024-05-20T14:00:00', 'notes': '全部被冲走'}
+  ▶ 赵六的赔付金额计算为4000.00元
+    计算过程:
+      计算公式: 赔付面积 × 单位保额 × 赔付比例
+      代入数值: 10.00 × 400.00 × 1.0
+      计算过程: 10.00 × 400.00 = 4000.00
+      计算过程: 4000.00 × 1.0 = 4000.00
+      最终赔付金额: 4000.00元
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[3] = {'farmer_id': 'F004', 'name': '赵六', 'id_card': '110101198004040004', 'village': '富裕村', 'phone': '13800138004', 'insurance_type': '玉米种植保险', 'insured_area': 10.0, 'premium_amount': 30.0, 'insurance_amount': 4000.0}
+
+【孙七 - V-F005-20260529】
+  ▶ 孙七的赔付面积确定为22.00亩
+    计算过程:
+      农户档案投保面积: 22.00亩
+      卫星图斑总面积(去重后): 22.00亩
+      签字表申报面积: 22.00亩
+      取值规则: 取档案与图斑较小值，同时参考签字表
+      最终赔付面积: 22.00亩
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[4] = {'farmer_id': 'F005', 'name': '孙七', 'id_card': '110101198005050005', 'village': '富裕村', 'phone': '13800138005', 'insurance_type': '小麦种植保险', 'insured_area': 22.0, 'premium_amount': 66.0, 'insurance_amount': 8800.0}
+      [卫星图斑] samples/parcels.yaml → parcels[4] = {'parcel_id': 'P005', 'farmer_id': 'F005', 'farmer_name': '孙七', 'village': '富裕村', 'area': 22.0, 'crop_type': '小麦', 'damage_level': '中度', 'boundary': [{'x': 4.0, 'y': 4.5}, {'x': 15.0, 'y': 4.5}, {'x': 15.0, 'y': 7.0}, {'x': 4.0, 'y': 7.0}]}
+  ▶ 孙七的灾损等级确定为重度
+    计算过程:
+      保险类型: 小麦种植保险
+      单位保额: 400.00元/亩
+      灾损等级: 重度
+      赔付比例: 70%
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[4] = {'farmer_id': 'F005', 'name': '孙七', 'id_card': '110101198005050005', 'village': '富裕村', 'phone': '13800138005', 'insurance_type': '小麦种植保险', 'insured_area': 22.0, 'premium_amount': 66.0, 'insurance_amount': 8800.0}
+      [签字表] samples/signatures.yaml → records[4] = {'record_id': 'S005', 'farmer_id': 'F005', 'farmer_name': '孙七', 'village': '富裕村', 'reported_area': 22.0, 'reported_damage': '重度', 'has_signature': True, 'signatory': '村主任B', 'signature_date': '2024-05-20T14:30:00', 'notes': '低洼处积水'}
+  ▶ 孙七的赔付金额计算为6160.00元
+    计算过程:
+      计算公式: 赔付面积 × 单位保额 × 赔付比例
+      代入数值: 22.00 × 400.00 × 0.7
+      计算过程: 22.00 × 400.00 = 8800.00
+      计算过程: 8800.00 × 0.7 = 6160.00
+      最终赔付金额: 6160.00元
+    数据来源:
+      [农户档案] samples/farmers.yaml → farmers[4] = {'farmer_id': 'F005', 'name': '孙七', 'id_card': '110101198005050005', 'village': '富裕村', 'phone': '13800138005', 'insurance_type': '小麦种植保险', 'insured_area': 22.0, 'premium_amount': 66.0, 'insurance_amount': 8800.0}
+
+九、待办事项
+----------------------------------------
+  [高] 1. 图斑重叠核实
+     责任方: 村主任/驻村干部
+     联系方式: 联系村两委核实地块边界
+     问题描述: 张三的图斑P001与1个图斑重叠(P002)，重叠面积1.25亩，需现场核实确认权属
+     修改文件: samples/parcels.yaml
+     修改字段: parcels.P001.boundary 或 parcels.P001.area
+     关联结论: dedup_P001
+     当前状态: 待处理
+
+  [高] 2. 图斑重叠核实
+     责任方: 村主任/驻村干部
+     联系方式: 联系村两委核实地块边界
+     问题描述: 李四的图斑P002与1个图斑重叠(P001)，重叠面积1.25亩，需现场核实确认权属
+     修改文件: samples/parcels.yaml
+     修改字段: parcels.P002.boundary 或 parcels.P002.area
+     关联结论: dedup_P002
+     当前状态: 待处理
+
+  [高] 3. 等级变更复核
+     责任方: 理赔员/驻村干部
+     联系方式: 联系农户电话: 13800138001
+     问题描述: 张三的灾损等级存在差异: 签字表重度 vs 卫星图斑中度，最终确定为重度，需复核确认
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F001.damage_level (需补充到农户档案)
+     关联结论: level_change_F001
+     当前状态: 待复核
+
+  [高] 4. 等级变更复核
+     责任方: 理赔员/驻村干部
+     联系方式: 联系农户电话: 13800138003
+     问题描述: 王五的灾损等级存在差异: 签字表中度 vs 卫星图斑重度，最终确定为重度，需复核确认
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F003.damage_level (需补充到农户档案)
+     关联结论: level_change_F003
+     当前状态: 待复核
+
+  [高] 5. 等级变更复核
+     责任方: 理赔员/驻村干部
+     联系方式: 联系农户电话: 13800138005
+     问题描述: 孙七的灾损等级存在差异: 签字表重度 vs 卫星图斑中度，最终确定为重度，需复核确认
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F005.damage_level (需补充到农户档案)
+     关联结论: level_change_F005
+     当前状态: 待复核
+
+  [高] 6. 签字缺失补全
+     责任方: 村主任/包片干部
+     联系方式: 联系村两委安排签字
+     问题描述: 王五(村:幸福村)的报案签字表缺少村干部签字，申报面积20.0亩，损失中度，需补签后才能进入正常赔付流程
+     修改文件: samples/signatures.yaml
+     修改字段: records.S003.has_signature / .signatory / .signature_date
+     关联结论: missing_sig_S003
+     当前状态: 待补签
+
+  [高] 7. 面积口径统一
+     责任方: 理赔员/测绘员
+     联系方式: 联系农户: 13800138001
+     问题描述: 张三的面积数据存在差异: 档案15.00亩、签字表18.00亩、图斑16.75亩，需现场丈量确认
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F001.insured_area 或对应图斑/签字表记录
+     关联结论: area_mismatch_F001
+     当前状态: 待核实
+
+  [高] 8. 面积口径统一
+     责任方: 理赔员/测绘员
+     联系方式: 联系农户: 13800138002
+     问题描述: 李四的面积数据存在差异: 档案12.00亩、签字表12.00亩、图斑10.75亩，需现场丈量确认
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F002.insured_area 或对应图斑/签字表记录
+     关联结论: area_mismatch_F002
+     当前状态: 待核实
+
+  [高] 9. 面积口径统一
+     责任方: 理赔员/测绘员
+     联系方式: 联系农户: 13800138003
+     问题描述: 王五的面积数据存在差异: 档案18.50亩、签字表20.00亩、图斑18.50亩，需现场丈量确认
+     修改文件: samples/farmers.yaml
+     修改字段: farmers.F003.insured_area 或对应图斑/签字表记录
+     关联结论: area_mismatch_F003
+     当前状态: 待核实
+
+================================================================================
+报告结束
+================================================================================

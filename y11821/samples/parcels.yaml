@@ -1,0 +1,78 @@
+parcels:
+  - parcel_id: "P001"
+    farmer_id: "F001"
+    farmer_name: "张三"
+    village: "幸福村"
+    area: 15.0
+    crop_type: "玉米"
+    damage_level: "中度"
+    boundary:
+      - {x: 0.0, y: 0.0}
+      - {x: 5.0, y: 0.0}
+      - {x: 5.0, y: 3.0}
+      - {x: 0.0, y: 3.0}
+
+  - parcel_id: "P002"
+    farmer_id: "F002"
+    farmer_name: "李四"
+    village: "幸福村"
+    area: 12.0
+    crop_type: "玉米"
+    damage_level: "轻度"
+    boundary:
+      - {x: 4.5, y: 0.0}
+      - {x: 10.0, y: 0.0}
+      - {x: 10.0, y: 2.5}
+      - {x: 4.5, y: 2.5}
+
+  - parcel_id: "P003"
+    farmer_id: "F003"
+    farmer_name: "王五"
+    village: "幸福村"
+    area: 18.5
+    crop_type: "小麦"
+    damage_level: "重度"
+    boundary:
+      - {x: 10.0, y: 0.0}
+      - {x: 20.0, y: 0.0}
+      - {x: 20.0, y: 2.0}
+      - {x: 10.0, y: 2.0}
+
+  - parcel_id: "P004"
+    farmer_id: "F004"
+    farmer_name: "赵六"
+    village: "富裕村"
+    area: 10.0
+    crop_type: "玉米"
+    damage_level: "绝收"
+    boundary:
+      - {x: 0.0, y: 5.0}
+      - {x: 4.0, y: 5.0}
+      - {x: 4.0, y: 7.5}
+      - {x: 0.0, y: 7.5}
+
+  - parcel_id: "P005"
+    farmer_id: "F005"
+    farmer_name: "孙七"
+    village: "富裕村"
+    area: 22.0
+    crop_type: "小麦"
+    damage_level: "中度"
+    boundary:
+      - {x: 4.0, y: 4.5}
+      - {x: 15.0, y: 4.5}
+      - {x: 15.0, y: 7.0}
+      - {x: 4.0, y: 7.0}
+
+  - parcel_id: "P006"
+    farmer_id: "F001"
+    farmer_name: "张三"
+    village: "幸福村"
+    area: 3.0
+    crop_type: "玉米"
+    damage_level: "中度"
+    boundary:
+      - {x: 15.0, y: 3.0}
+      - {x: 18.0, y: 3.0}
+      - {x: 18.0, y: 4.0}
+      - {x: 15.0, y: 4.0}

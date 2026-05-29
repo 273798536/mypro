@@ -1,0 +1,28 @@
+{
+  "batch_id": "BATCH-20260529000144",
+  "calculated_at": "2026-05-29T00:01:44.078928",
+  "generated_files": {
+    "machine_readable": "output/BATCH-20260529000144_20260529_000144.json",
+    "human_report": "output/BATCH-20260529000144_20260529_000144_report.txt",
+    "vouchers_csv": "output/BATCH-20260529000144_20260529_000144_vouchers.csv",
+    "actions_csv": "output/BATCH-20260529000144_20260529_000144_actions.csv",
+    "dedup_csv": "output/BATCH-20260529000144_20260529_000144_dedup.csv",
+    "level_changes_csv": "output/BATCH-20260529000144_20260529_000144_level_changes.csv"
+  },
+  "summary": {
+    "total_farmers": 5,
+    "total_original_area": 80.5,
+    "total_deduplicated_area": 76.25,
+    "total_compensation": 20400.0
+  },
+  "status_counts": {
+    "有争议": 2,
+    "已驳回": 1,
+    "已通过": 1,
+    "待审核": 1
+  },
+  "has_dedup": true,
+  "has_level_changes": true,
+  "has_missing_signatures": true,
+  "pending_actions_count": 9
+}

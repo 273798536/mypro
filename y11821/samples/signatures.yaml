@@ -1,0 +1,55 @@
+records:
+  - record_id: "S001"
+    farmer_id: "F001"
+    farmer_name: "张三"
+    village: "幸福村"
+    reported_area: 18.0
+    reported_damage: "重度"
+    has_signature: true
+    signatory: "村主任A"
+    signature_date: "2024-05-20T10:30:00"
+    notes: "暴雨后积水严重"
+
+  - record_id: "S002"
+    farmer_id: "F002"
+    farmer_name: "李四"
+    village: "幸福村"
+    reported_area: 12.0
+    reported_damage: "轻度"
+    has_signature: true
+    signatory: "村主任A"
+    signature_date: "2024-05-20T11:00:00"
+    notes: ""
+
+  - record_id: "S003"
+    farmer_id: "F003"
+    farmer_name: "王五"
+    village: "幸福村"
+    reported_area: 20.0
+    reported_damage: "中度"
+    has_signature: false
+    signatory: null
+    signature_date: null
+    notes: "村干部外出，待补签"
+
+  - record_id: "S004"
+    farmer_id: "F004"
+    farmer_name: "赵六"
+    village: "富裕村"
+    reported_area: 10.0
+    reported_damage: "绝收"
+    has_signature: true
+    signatory: "村主任B"
+    signature_date: "2024-05-20T14:00:00"
+    notes: "全部被冲走"
+
+  - record_id: "S005"
+    farmer_id: "F005"
+    farmer_name: "孙七"
+    village: "富裕村"
+    reported_area: 22.0
+    reported_damage: "重度"
+    has_signature: true
+    signatory: "村主任B"
+    signature_date: "2024-05-20T14:30:00"
+    notes: "低洼处积水"

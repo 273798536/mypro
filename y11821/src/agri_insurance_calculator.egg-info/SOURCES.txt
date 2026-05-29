@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/agri_insurance_calculator/__init__.py
+src/agri_insurance_calculator/cli.py
+src/agri_insurance_calculator/data_loader.py
+src/agri_insurance_calculator/dedup.py
+src/agri_insurance_calculator/engine.py
+src/agri_insurance_calculator/level_handler.py
+src/agri_insurance_calculator/models.py
+src/agri_insurance_calculator/persistence.py
+src/agri_insurance_calculator/report.py
+src/agri_insurance_calculator.egg-info/PKG-INFO
+src/agri_insurance_calculator.egg-info/SOURCES.txt
+src/agri_insurance_calculator.egg-info/dependency_links.txt
+src/agri_insurance_calculator.egg-info/entry_points.txt
+src/agri_insurance_calculator.egg-info/requires.txt
+src/agri_insurance_calculator.egg-info/top_level.txt

@@ -1,0 +1,2 @@
+[console_scripts]
+agri-ins = agri_insurance_calculator.cli:main

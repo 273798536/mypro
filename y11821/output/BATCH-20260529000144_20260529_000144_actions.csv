@@ -1,0 +1,10 @@
+﻿待办ID,优先级,类型,问题描述,责任方,联系方式,需修改文件,需修改字段,当前状态,关联结论
+action_dedup_P001,高,图斑重叠核实,张三的图斑P001与1个图斑重叠(P002)，重叠面积1.25亩，需现场核实确认权属,村主任/驻村干部,联系村两委核实地块边界,samples/parcels.yaml,parcels.P001.boundary 或 parcels.P001.area,待处理,dedup_P001
+action_dedup_P002,高,图斑重叠核实,李四的图斑P002与1个图斑重叠(P001)，重叠面积1.25亩，需现场核实确认权属,村主任/驻村干部,联系村两委核实地块边界,samples/parcels.yaml,parcels.P002.boundary 或 parcels.P002.area,待处理,dedup_P002
+action_level_F001,高,等级变更复核,张三的灾损等级存在差异: 签字表重度 vs 卫星图斑中度，最终确定为重度，需复核确认,理赔员/驻村干部,联系农户电话: 13800138001,samples/farmers.yaml,farmers.F001.damage_level (需补充到农户档案),待复核,level_change_F001
+action_level_F003,高,等级变更复核,王五的灾损等级存在差异: 签字表中度 vs 卫星图斑重度，最终确定为重度，需复核确认,理赔员/驻村干部,联系农户电话: 13800138003,samples/farmers.yaml,farmers.F003.damage_level (需补充到农户档案),待复核,level_change_F003
+action_level_F005,高,等级变更复核,孙七的灾损等级存在差异: 签字表重度 vs 卫星图斑中度，最终确定为重度，需复核确认,理赔员/驻村干部,联系农户电话: 13800138005,samples/farmers.yaml,farmers.F005.damage_level (需补充到农户档案),待复核,level_change_F005
+action_sig_S003,高,签字缺失补全,王五(村:幸福村)的报案签字表缺少村干部签字，申报面积20.0亩，损失中度，需补签后才能进入正常赔付流程,村主任/包片干部,联系村两委安排签字,samples/signatures.yaml,records.S003.has_signature / .signatory / .signature_date,待补签,missing_sig_S003
+action_area_F001,高,面积口径统一,张三的面积数据存在差异: 档案15.00亩、签字表18.00亩、图斑16.75亩，需现场丈量确认,理赔员/测绘员,联系农户: 13800138001,samples/farmers.yaml,farmers.F001.insured_area 或对应图斑/签字表记录,待核实,area_mismatch_F001
+action_area_F002,高,面积口径统一,李四的面积数据存在差异: 档案12.00亩、签字表12.00亩、图斑10.75亩，需现场丈量确认,理赔员/测绘员,联系农户: 13800138002,samples/farmers.yaml,farmers.F002.insured_area 或对应图斑/签字表记录,待核实,area_mismatch_F002
+action_area_F003,高,面积口径统一,王五的面积数据存在差异: 档案18.50亩、签字表20.00亩、图斑18.50亩，需现场丈量确认,理赔员/测绘员,联系农户: 13800138003,samples/farmers.yaml,farmers.F003.insured_area 或对应图斑/签字表记录,待核实,area_mismatch_F003
