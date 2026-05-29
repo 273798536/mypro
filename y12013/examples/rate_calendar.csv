@@ -1,0 +1,7 @@
+rate_date,base_rate,is_weekend,is_holiday,holiday_name
+2026-05-01,598,False,True,劳动节
+2026-05-02,598,False,True,劳动节
+2026-05-03,598,False,True,劳动节
+2026-05-04,458,False,False,
+2026-05-05,458,True,False,
+2026-05-06,458,True,False,

@@ -1,0 +1,9 @@
+order_id,channel,channel_type,guest_name,checkin_date,checkout_date,room_nights,order_type,room_rate,total_amount,refund_amount,refund_date,notes
+ORD001,携程,ota,张三,2026-05-01,2026-05-02,1,full_day,598,598,0,,正常入住
+ORD002,美团团购,groupon,李四,2026-05-01,2026-05-02,1,full_day,498,498,0,,团购券
+ORD003,会员直销,member_direct,王五,2026-05-01,2026-05-01,0.5,half_day,398,398,0,,会员半日房
+ORD004,携程,ota,赵六,2026-05-02,2026-05-04,2,full_day,598,1196,598,2026-05-03,跨夜退款测试
+ORD005,美团团购,groupon,钱七,2026-05-03,2026-05-03,0.5,half_day,358,358,0,,团购半日房
+ORD006,会员直销,member_direct,孙八,2026-05-04,2026-05-05,1,full_day,458,458,0,,周末入住
+ORD007,携程,ota,周九,2026-05-05,2026-05-06,1,full_day,688,688,0,,节假日加价
+ORD008,美团团购,groupon,吴十,2026-05-05,2026-05-06,1,full_day,588,588,294,2026-05-05,部分退款

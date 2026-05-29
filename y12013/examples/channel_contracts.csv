@@ -1,0 +1,4 @@
+channel,channel_type,commission_rate,half_day_commission_rate,weekend_surcharge,holiday_surcharge,effective_from,effective_to,notes
+携程,ota,0.15,0.12,0.02,0.05,2026-01-01,2026-12-31,OTA标准合同
+美团团购,groupon,0.10,0.08,0.01,0.03,2026-01-01,2026-12-31,团购渠道
+会员直销,member_direct,0.05,0.03,0,0,2026-01-01,2026-12-31,会员渠道
