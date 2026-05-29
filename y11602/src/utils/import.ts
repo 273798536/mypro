@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import type { Customer, Repayment, Guarantee, Approval, MultiSourceImportData, ImportResult } from '../types';
-import { generateId, getRecentMonths } from './dateUtils';
+import { generateId, getRecentMonths, calculateGuaranteeStatus } from './dateUtils';
 
 export async function parseCSVFile(file: File): Promise<Record<string, unknown>[]> {
   return new Promise((resolve, reject) => {
@@ -219,7 +219,7 @@ export function validateMultiSourceData(
       guarantor: String(row['担保人/物'] || ''),
       startDate: String(row['担保起始日'] || ''),
       expiryDate: String(row['担保到期日'] || ''),
-      status: 'valid',
+      status: row['担保到期日'] ? calculateGuaranteeStatus(String(row['担保到期日'])) : 'valid',
       source: String(row['数据来源'] || '担保信息导入')
     });
   });
@@ -238,16 +238,18 @@ export function validateMultiSourceData(
     if (!['approved', 'rejected', 'pending', 'withdrawn'].includes(result)) {
       warnings.push(`审批记录第 ${lineNum} 行：审批结果无效，使用默认待审批`);
     }
+    const resolvedResult = (['approved', 'rejected', 'pending', 'withdrawn'].includes(result) ? result : 'pending') as 'approved' | 'rejected' | 'pending' | 'withdrawn';
+    const explicitlyWithdrawn = row['是否撤回'] === 'true' || row['是否撤回'] === '是';
     
     approvals.push({
       id: generateId(),
       customerId,
       stage: String(row['审批阶段'] || ''),
-      result: (['approved', 'rejected', 'pending', 'withdrawn'].includes(result) ? result : 'pending') as 'approved' | 'rejected' | 'pending' | 'withdrawn',
+      result: resolvedResult,
       opinion: String(row['审批意见'] || ''),
       operator: String(row['操作人'] || ''),
       timestamp: String(row['审批时间'] || new Date().toISOString()),
-      isWithdrawn: row['是否撤回'] === 'true' || row['是否撤回'] === '是',
+      isWithdrawn: explicitlyWithdrawn || resolvedResult === 'withdrawn',
       source: String(row['数据来源'] || '审批记录导入')
     });
   });

@@ -1,3 +1,5 @@
+import type { GuaranteeStatus } from '../types';
+
 export function calculateDaysBetween(date1: string, date2: string): number {
   const d1 = new Date(date1);
   const d2 = new Date(date2);
@@ -11,6 +13,13 @@ export function calculateDaysToExpiry(expiryDate: string): number {
   const expiry = new Date(expiryDate);
   expiry.setHours(0, 0, 0, 0);
   return Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+export function calculateGuaranteeStatus(expiryDate: string): GuaranteeStatus {
+  const days = calculateDaysToExpiry(expiryDate);
+  if (days <= 0) return 'expired';
+  if (days <= 30) return 'expiring_soon';
+  return 'valid';
 }
 
 export function formatDate(dateStr: string): string {

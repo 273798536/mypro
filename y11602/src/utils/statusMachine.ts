@@ -1,5 +1,5 @@
 import type { Customer, Guarantee, Repayment, Approval, LoanStatus } from '../types';
-import { calculateDaysToExpiry } from './dateUtils';
+import { calculateDaysToExpiry, calculateGuaranteeStatus } from './dateUtils';
 
 const statusTransitions: Record<LoanStatus, LoanStatus[]> = {
   normal: ['warning', 'expiring_soon', 'expired', 'abnormal'],
@@ -19,10 +19,13 @@ export function calculateLoanStatus(
   repayments: Repayment[],
   approvals: Approval[]
 ): LoanStatus {
-  const hasWithdrawnApproval = approvals.some(a => a.isWithdrawn);
+  const hasWithdrawnApproval = approvals.some(a => a.isWithdrawn || a.result === 'withdrawn');
   if (hasWithdrawnApproval) return 'abnormal';
   
-  const hasExpiredGuarantee = guarantees.some(g => g.status === 'expired');
+  const hasExpiredGuarantee = guarantees.some(g => {
+    if (!g.expiryDate) return false;
+    return calculateGuaranteeStatus(g.expiryDate) === 'expired';
+  });
   if (hasExpiredGuarantee) return 'abnormal';
   
   const missingMonths = repayments.filter(r => r.status === 'missing').length;

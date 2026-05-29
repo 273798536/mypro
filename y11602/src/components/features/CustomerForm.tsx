@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../store/AppContext';
-import { generateId } from '../../utils/dateUtils';
+import { generateId, calculateGuaranteeStatus } from '../../utils/dateUtils';
 import { generateEmptyRepayments } from '../../utils/import';
 import type { Customer, Guarantee, Approval } from '../../types';
 
@@ -79,7 +79,7 @@ export default function CustomerForm({ onClose }: CustomerFormProps) {
       guarantor: formData.guarantor.trim(),
       startDate: formData.startDate,
       expiryDate: formData.guaranteeExpiryDate,
-      status: 'valid',
+      status: formData.guaranteeExpiryDate ? calculateGuaranteeStatus(formData.guaranteeExpiryDate) : 'valid',
       source: '手动录入'
     };
     dispatch({ type: 'ADD_GUARANTEE', payload: guarantee });
@@ -92,7 +92,7 @@ export default function CustomerForm({ onClose }: CustomerFormProps) {
       opinion: formData.approvalOpinion,
       operator: formData.approvalOperator,
       timestamp: new Date().toISOString(),
-      isWithdrawn: false,
+      isWithdrawn: formData.approvalResult === 'withdrawn',
       source: '手动录入'
     };
     dispatch({ type: 'ADD_APPROVAL', payload: approval });

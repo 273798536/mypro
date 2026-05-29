@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import type { AppState, AppAction, Customer, User } from '../types';
+import type { AppState, AppAction, Customer, User, Guarantee, Approval } from '../types';
 import { getAllSampleData } from '../data/sampleData';
 import { calculateLoanStatus } from '../utils/statusMachine';
 import { detectAnomalies } from '../utils/anomalyDetector';
+import { calculateGuaranteeStatus } from '../utils/dateUtils';
 
 const STORAGE_KEY = 'micro_loan_app_state';
 
@@ -44,10 +45,30 @@ function processCustomerAnomalies(customer: Customer, state: AppState): Customer
   };
 }
 
+function recalculateGuaranteeStatuses(guarantees: Guarantee[]): Guarantee[] {
+  return guarantees.map(g => {
+    if (!g.expiryDate) return g;
+    const realStatus = calculateGuaranteeStatus(g.expiryDate);
+    if (g.status === realStatus) return g;
+    return { ...g, status: realStatus };
+  });
+}
+
+function recalculateApprovalWithdrawn(approvals: Approval[]): Approval[] {
+  return approvals.map(a => {
+    const shouldBeWithdrawn = a.result === 'withdrawn' || a.isWithdrawn;
+    if (a.isWithdrawn === shouldBeWithdrawn) return a;
+    return { ...a, isWithdrawn: shouldBeWithdrawn };
+  });
+}
+
 function processAllCustomers(state: AppState): AppState {
+  const updatedGuarantees = recalculateGuaranteeStatuses(state.guarantees);
+  const updatedApprovals = recalculateApprovalWithdrawn(state.approvals);
+  const updatedState = { ...state, guarantees: updatedGuarantees, approvals: updatedApprovals };
   return {
-    ...state,
-    customers: state.customers.map(c => processCustomerAnomalies(c, state))
+    ...updatedState,
+    customers: state.customers.map(c => processCustomerAnomalies(c, updatedState))
   };
 }
 

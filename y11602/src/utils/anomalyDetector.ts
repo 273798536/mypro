@@ -1,5 +1,5 @@
 import type { Customer, Guarantee, Repayment, Approval, Anomaly } from '../types';
-import { calculateDaysToExpiry } from './dateUtils';
+import { calculateDaysToExpiry, calculateGuaranteeStatus } from './dateUtils';
 
 export function detectAnomalies(
   customer: Customer,
@@ -11,15 +11,18 @@ export function detectAnomalies(
   const now = new Date().toISOString();
 
   guarantees.forEach(g => {
-    if (g.status === 'expired') {
+    if (!g.expiryDate) return;
+    const realStatus = calculateGuaranteeStatus(g.expiryDate);
+    const daysToExpiry = calculateDaysToExpiry(g.expiryDate);
+    
+    if (realStatus === 'expired') {
       anomalies.push({
         type: 'guarantee_expired',
         severity: 'high',
         message: `担保已过期（${getGuaranteeTypeLabel(g.type)}），过期日期：${g.expiryDate}`,
         detectedAt: now
       });
-    } else if (g.status === 'expiring_soon') {
-      const daysToExpiry = calculateDaysToExpiry(g.expiryDate);
+    } else if (realStatus === 'expiring_soon') {
       anomalies.push({
         type: 'guarantee_expired',
         severity: 'medium',
@@ -40,7 +43,7 @@ export function detectAnomalies(
   }
 
   approvals.forEach(a => {
-    if (a.isWithdrawn) {
+    if (a.isWithdrawn || a.result === 'withdrawn') {
       anomalies.push({
         type: 'approval_withdrawn',
         severity: 'high',
