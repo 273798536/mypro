@@ -1,0 +1,145 @@
+{
+  "id": "scene-error-001",
+  "name": "错误样例 - 坐标系混用方案",
+  "description": "包含常见问题：坐标系混用、建筑超高、数据缺失、建筑重复、净空面遮挡",
+  "runway": {
+    "id": "runway-001",
+    "name": "09/27 跑道",
+    "length": 3400,
+    "width": 45,
+    "heading": 90,
+    "coordinates": [113.12345, 23.45678, 0],
+    "coordinateSystem": "WGS84"
+  },
+  "buildings": [
+    {
+      "id": "building-001",
+      "name": "T3 航站楼",
+      "type": "terminal",
+      "height": 68,
+      "position": [-113.12348, 23.45678, 0],
+      "footprint": [300, 120],
+      "status": "planned",
+      "floors": 12,
+      "address": "新机场大道1号"
+    },
+    {
+      "id": "building-002",
+      "name": "新建塔台",
+      "type": "tower",
+      "height": 120,
+      "position": [0, 0, 0],
+      "footprint": [25, 25],
+      "status": "proposed",
+      "floors": 28
+    },
+    {
+      "id": "building-003",
+      "name": "货运仓库A",
+      "type": "other",
+      "height": 55,
+      "position": [113.12360, 23.45685, 0],
+      "footprint": [180, 80],
+      "status": "existing",
+      "floors": 5
+    },
+    {
+      "id": "building-003",
+      "name": "货运仓库A",
+      "type": "other",
+      "height": 55,
+      "position": [113.12360, 23.45685, 0],
+      "footprint": [180, 80],
+      "status": "existing"
+    },
+    {
+      "id": "building-004",
+      "name": "航空食品厂",
+      "type": "other",
+      "position": [500, 0, -400],
+      "footprint": [100, 60],
+      "status": "planned",
+      "floors": 4
+    },
+    {
+      "id": "building-005",
+      "name": "能源中心",
+      "type": "other",
+      "height": -15,
+      "position": [800, 0, 300],
+      "footprint": [80, 50],
+      "status": "existing"
+    },
+    {
+      "id": "building-006",
+      "name": "VIP贵宾楼",
+      "type": "terminal",
+      "height": 38,
+      "position": [-600, 0, 200],
+      "footprint": [120, 70]
+    },
+    {
+      "id": "building-007",
+      "name": "周边高层住宅",
+      "type": "residential",
+      "height": 180,
+      "position": [2000, 0, 0],
+      "footprint": [60, 40],
+      "status": "existing",
+      "floors": 60
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "surface-001",
+      "type": "approach",
+      "maxHeight": 120,
+      "description": "跑道东端进近面",
+      "color": "rgba(59, 130, 246, 0.3)",
+      "boundaryPoints": [
+        [113.12500, 23.45678, 120],
+        [113.12500, 23.45628, 120],
+        [113.12200, 23.45658, 0],
+        [113.12200, 23.45698, 0],
+        [113.12500, 23.45728, 120]
+      ]
+    },
+    {
+      "id": "surface-002",
+      "type": "takeoff",
+      "maxHeight": 70,
+      "description": "跑道西端起飞面",
+      "color": "rgba(16, 185, 129, 0.3)",
+      "boundaryPoints": [
+        [-2000, -200, 70],
+        [-2000, 200, 70],
+        [-4000, -300, 0],
+        [-4000, 300, 0]
+      ]
+    },
+    {
+      "id": "surface-003",
+      "type": "inner",
+      "maxHeight": 45,
+      "color": "rgba(245, 158, 11, 0.2)",
+      "boundaryPoints": []
+    },
+    {
+      "id": "surface-004",
+      "type": "conical",
+      "maxHeight": 145,
+      "description": "锥形面 - 与内水平面重叠",
+      "color": "rgba(139, 92, 246, 0.2)",
+      "boundaryPoints": [
+        [-2000, -4500, 45],
+        [2000, -4500, 45],
+        [2500, -5500, 145],
+        [-2500, -5500, 145],
+        [-2500, 5500, 145],
+        [2500, 5500, 145],
+        [2000, 4500, 45],
+        [-2000, 4500, 45]
+      ]
+    }
+  ]
+}

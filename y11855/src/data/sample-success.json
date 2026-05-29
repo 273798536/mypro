@@ -1,0 +1,193 @@
+{
+  "id": "scene-success-001",
+  "name": "顺利样例 - 机场扩建方案A",
+  "description": "标准坐标系，数据完整，包含3000米跑道及周边建筑和净空面",
+  "coordinateSystem": "local",
+  "runway": {
+    "id": "runway-001",
+    "name": "18L/36R 跑道",
+    "length": 3000,
+    "width": 60,
+    "heading": 180,
+    "coordinates": [0, 0, 0],
+    "coordinateSystem": "local"
+  },
+  "buildings": [
+    {
+      "id": "building-001",
+      "name": "T1 航站楼",
+      "type": "terminal",
+      "height": 45,
+      "position": [-800, 0, 22.5],
+      "footprint": [200, 80],
+      "status": "existing",
+      "floors": 8,
+      "address": "机场大道1号"
+    },
+    {
+      "id": "building-002",
+      "name": "T2 航站楼",
+      "type": "terminal",
+      "height": 52,
+      "position": [-800, 0, -22.5],
+      "footprint": [250, 90],
+      "status": "planned",
+      "floors": 10,
+      "address": "机场大道2号"
+    },
+    {
+      "id": "building-003",
+      "name": "空管塔台",
+      "type": "tower",
+      "height": 85,
+      "position": [-500, 0, 0],
+      "footprint": [20, 20],
+      "status": "existing",
+      "floors": 20
+    },
+    {
+      "id": "building-004",
+      "name": "维修机库1",
+      "type": "hangar",
+      "height": 38,
+      "position": [600, 0, 300],
+      "footprint": [150, 120],
+      "status": "existing",
+      "floors": 2
+    },
+    {
+      "id": "building-005",
+      "name": "维修机库2",
+      "type": "hangar",
+      "height": 42,
+      "position": [600, 0, -300],
+      "footprint": [150, 120],
+      "status": "planned",
+      "floors": 2
+    },
+    {
+      "id": "building-006",
+      "name": "机场酒店",
+      "type": "hotel",
+      "height": 65,
+      "position": [-1200, 0, 150],
+      "footprint": [80, 60],
+      "status": "proposed",
+      "floors": 18,
+      "address": "空港路88号"
+    },
+    {
+      "id": "building-007",
+      "name": "办公综合楼",
+      "type": "office",
+      "height": 55,
+      "position": [-1200, 0, -150],
+      "footprint": [70, 50],
+      "status": "existing",
+      "floors": 14
+    },
+    {
+      "id": "building-008",
+      "name": "职工宿舍A",
+      "type": "residential",
+      "height": 58,
+      "position": [-1500, 0, 200],
+      "footprint": [50, 30],
+      "status": "existing",
+      "floors": 19
+    },
+    {
+      "id": "building-009",
+      "name": "职工宿舍B",
+      "type": "residential",
+      "height": 55,
+      "position": [-1500, 0, -200],
+      "footprint": [50, 30],
+      "status": "existing",
+      "floors": 18
+    },
+    {
+      "id": "building-010",
+      "name": "货运中心",
+      "type": "other",
+      "height": 28,
+      "position": [1000, 0, 0],
+      "footprint": [200, 100],
+      "status": "planned",
+      "floors": 3
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "surface-001",
+      "type": "approach",
+      "maxHeight": 150,
+      "description": "跑道南端进近面，坡度1:50",
+      "color": "rgba(59, 130, 246, 0.3)",
+      "boundaryPoints": [
+        [1500, 0, 150],
+        [1500, -300, 150],
+        [-1500, -100, 0],
+        [-1500, 100, 0],
+        [1500, 300, 150]
+      ]
+    },
+    {
+      "id": "surface-002",
+      "type": "takeoff",
+      "maxHeight": 80,
+      "description": "跑道北端起飞面，坡度1:40",
+      "color": "rgba(16, 185, 129, 0.3)",
+      "boundaryPoints": [
+        [-1500, 0, 80],
+        [-1500, -180, 80],
+        [-1500, 180, 80],
+        [-3000, -300, 0],
+        [-3000, 300, 0]
+      ]
+    },
+    {
+      "id": "surface-003",
+      "type": "inner",
+      "maxHeight": 45,
+      "description": "内水平面，半径4500米",
+      "color": "rgba(245, 158, 11, 0.2)",
+      "boundaryPoints": [
+        [-1500, -4500, 45],
+        [1500, -4500, 45],
+        [1500, 4500, 45],
+        [-1500, 4500, 45]
+      ]
+    },
+    {
+      "id": "surface-004",
+      "type": "conical",
+      "maxHeight": 145,
+      "description": "锥形面，坡度1:5",
+      "color": "rgba(139, 92, 246, 0.2)",
+      "boundaryPoints": [
+        [-1500, -4500, 45],
+        [1500, -4500, 45],
+        [2500, -5500, 145],
+        [-2500, -5500, 145],
+        [-2500, 5500, 145],
+        [2500, 5500, 145],
+        [1500, 4500, 45],
+        [-1500, 4500, 45]
+      ]
+    },
+    {
+      "id": "surface-005",
+      "type": "horizontal",
+      "maxHeight": 145,
+      "description": "外水平面，半径8000米",
+      "color": "rgba(236, 72, 153, 0.15)",
+      "boundaryPoints": [
+        [-8000, -8000, 145],
+        [8000, -8000, 145],
+        [8000, 8000, 145],
+        [-8000, 8000, 145]
+      ]
+    }
+  ]
+}
