@@ -118,18 +118,31 @@ class RebateEngine:
         base_rebate = volume.fee_amount * tier.rebate_rate
         adjusted_rebate = base_rebate
 
-        inviter_rebate = self._calculate_inviter_rebate(inviter_chain, week, volume)
-        if inviter_rebate > 0:
+        inviter_rebate_details = self._calculate_inviter_rebate(inviter_chain, week, volume)
+        total_inviter_rebate = sum(d["amount"] for d in inviter_rebate_details)
+
+        if inviter_rebate_details:
             anomalies.append({
                 "anomaly_type": "inviter_rebate_split",
                 "account_id": account_id,
                 "week": week,
-                "description": f"邀请链路返佣分配: 邀请人获得 {inviter_rebate:.4f}",
+                "description": f"邀请链路返佣: 共 {total_inviter_rebate:.4f}, 不影响交易者返佣",
                 "severity": "info",
-                "inviter_rebate": inviter_rebate,
+                "inviter_rebate_total": total_inviter_rebate,
+                "inviter_rebate_details": inviter_rebate_details,
             })
 
-        adjusted_rebate -= inviter_rebate
+        base_rebate = max(0, base_rebate)
+        adjusted_rebate = max(0, adjusted_rebate)
+
+        if base_rebate == 0 and volume.fee_amount > 0:
+            anomalies.append({
+                "anomaly_type": RebateAnomalyType.MISSING_DATA.value,
+                "account_id": account_id,
+                "week": week,
+                "description": "返佣计算为0，请检查费率配置",
+                "severity": "medium",
+            })
 
         record_id = f"{account_id}_{week}_{uuid.uuid4().hex[:6]}"
 
@@ -189,21 +202,39 @@ class RebateEngine:
             ),
         )
 
-    def _calculate_inviter_rebate(self, inviter_chain: List[str], week: str, volume: TradeVolume) -> float:
+    def _calculate_inviter_rebate(self, inviter_chain: List[str], week: str, volume: TradeVolume) -> List[Dict[str, Any]]:
         if not inviter_chain:
-            return 0
+            return []
 
-        total_rebate = volume.fee_amount
-        total = 0
+        details = []
+        fee_amount = volume.fee_amount
+
+        level_rates = [0.15, 0.10, 0.05]
+
         for level, inviter_id in enumerate(inviter_chain):
             inviter_volume = self.store.get_volume_for_week(inviter_id, week)
-            if inviter_volume:
-                inviter_tier = self.store.get_tier_for_volume(week, inviter_volume.trade_amount)
-                if inviter_tier:
-                    rate = inviter_tier.rebate_rate * 0.5
-                    total += total_rebate * rate
+            if not inviter_volume:
+                continue
 
-        return total
+            inviter_tier = self.store.get_tier_for_volume(week, inviter_volume.trade_amount)
+            if not inviter_tier:
+                continue
+
+            level_rate = level_rates[level] if level < len(level_rates) else level_rates[-1]
+            rebate_amount = fee_amount * level_rate
+
+            rebate_amount = max(0, rebate_amount)
+
+            if rebate_amount > 0:
+                details.append({
+                    "inviter_id": inviter_id,
+                    "level": level + 1,
+                    "rate": level_rate,
+                    "amount": round(rebate_amount, 4),
+                    "tier_name": inviter_tier.tier_name,
+                })
+
+        return details
 
     def _get_previous_cancelled_volume(self, account_id: str, week: str) -> Optional[TradeVolume]:
         volumes = self.store.volumes.get(account_id, [])
