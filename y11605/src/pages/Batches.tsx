@@ -114,6 +114,16 @@ export default function Batches() {
     }
   }
 
+  const handleConfirm = async (batch: RefundBatch) => {
+    try {
+      await api.batches.confirm(batch.id)
+      toast.success('批次已提交')
+      fetchBatches()
+    } catch (error) {
+      toast.error((error as Error).message)
+    }
+  }
+
   const payChannelLabels: Record<string, string> = {
     alipay: '支付宝',
     wechat: '微信',
@@ -193,6 +203,15 @@ export default function Batches() {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
+                        {batch.status === 'draft' && (
+                          <button
+                            onClick={() => handleConfirm(batch)}
+                            className="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded"
+                            title="提交批次"
+                          >
+                            <CheckCircle2 className="h-4 w-4" />
+                          </button>
+                        )}
                         {batch.status === 'pending' && (
                           <button
                             onClick={() => handleFreeze(batch)}

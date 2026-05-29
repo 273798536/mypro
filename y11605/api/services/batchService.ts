@@ -103,6 +103,7 @@ export async function createBatch(
     data: {
       name: data.name,
       ruleId: data.ruleId,
+      status: 'pending',
       totalAmount,
       totalFee,
       totalActualRefund,
@@ -223,6 +224,30 @@ export async function executeBatch(id: string, operator: string): Promise<Refund
   })
 
   await createAuditLog('batch', id, 'execute', operator, beforeSnapshot, batch, '执行批次退款')
+
+  return parseBatch(batch)
+}
+
+export async function confirmBatch(id: string, operator: string): Promise<RefundBatch> {
+  const existing = await prisma.refundBatch.findUnique({ where: { id } })
+  if (!existing) {
+    throw new Error('批次不存在')
+  }
+
+  if (existing.status !== 'draft') {
+    throw new Error('只有草稿状态的批次可以提交')
+  }
+
+  const beforeSnapshot = { ...existing }
+
+  const batch = await prisma.refundBatch.update({
+    where: { id },
+    data: {
+      status: 'pending',
+    },
+  })
+
+  await createAuditLog('batch', id, 'confirm', operator, beforeSnapshot, batch, '提交批次')
 
   return parseBatch(batch)
 }

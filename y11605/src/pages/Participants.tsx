@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Search, Eye, Edit2, AlertCircle, Filter, X } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { Search, Eye, Edit2, AlertCircle, Filter, X, Upload, Download } from 'lucide-react'
+import * as XLSX from 'xlsx'
 import { useAppStore } from '../store/useAppStore'
 import { api } from '../lib/api'
 import { toast } from '../components/UI/Toast'
@@ -39,6 +40,9 @@ export default function Participants() {
   })
   const [history, setHistory] = useState<AuditLog[]>([])
   const [loadingHistory, setLoadingHistory] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetchParticipants(filters)
@@ -61,6 +65,70 @@ export default function Participants() {
       status: '',
       hasAnomalies: false,
     })
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleImport(file)
+    }
+  }
+
+  const handleImport = async (file: File) => {
+    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      toast.error('请上传Excel文件（.xlsx或.xls格式）')
+      return
+    }
+
+    setImporting(true)
+    try {
+      const result = await api.participants.import(file)
+      toast.success(`成功导入 ${result.count} 条记录`)
+      setShowImportModal(false)
+      fetchParticipants(filters)
+      fetchTiers()
+    } catch (error) {
+      toast.error((error as Error).message)
+    } finally {
+      setImporting(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const downloadTemplate = () => {
+    const templateData = [
+      {
+        '姓名': '张三',
+        '手机号': '13800138001',
+        '订单号': 'ORDER202401001',
+        '用户ID': 'user001',
+        '档位': '早鸟档',
+        '支付渠道': '支付宝',
+        '支付金额': 299,
+        '早鸟折扣': 50,
+        '赠品价值': 30,
+        '赠品已发货': '否',
+      },
+      {
+        '姓名': '李四',
+        '手机号': '13800138002',
+        '订单号': 'ORDER202401002',
+        '用户ID': 'user002',
+        '档位': '标准档',
+        '支付渠道': '微信',
+        '支付金额': 399,
+        '早鸟折扣': 0,
+        '赠品价值': 50,
+        '赠品已发货': '是',
+      },
+    ]
+
+    const ws = XLSX.utils.json_to_sheet(templateData)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, '参与人数据')
+    XLSX.writeFile(wb, '参与人导入模板.xlsx')
   }
 
   const viewDetail = async (participant: Participant) => {
@@ -113,9 +181,27 @@ export default function Participants() {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">参与人管理</h1>
-        <p className="text-sm text-slate-500 mt-1">管理所有参与退款的用户</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">参与人管理</h1>
+          <p className="text-sm text-slate-500 mt-1">管理所有参与退款的用户</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={downloadTemplate}
+            className="btn btn-secondary"
+          >
+            <Download className="h-4 w-4 mr-1" />
+            下载模板
+          </button>
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="btn btn-primary"
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            导入参与人
+          </button>
+        </div>
       </div>
 
       <div className="card p-4 mb-6">
@@ -499,6 +585,67 @@ export default function Participants() {
               placeholder="请填写修正原因..."
               required
             />
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        title="导入参与人"
+        footer={
+          <div className="flex justify-end gap-3">
+            <button onClick={() => setShowImportModal(false)} className="btn btn-secondary">
+              取消
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-medium text-blue-900 mb-2">导入说明</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• 支持 Excel 格式（.xlsx、.xls）</li>
+              <li>• 必填字段：姓名、手机号、订单号</li>
+              <li>• 可选字段：用户ID、档位、支付渠道、支付金额、早鸟折扣、赠品价值、赠品已发货</li>
+              <li>• 支付渠道支持：支付宝、微信、银行卡</li>
+              <li>• 档位支持：早鸟档、标准档、豪华档、至尊档</li>
+            </ul>
+          </div>
+
+          <div>
+            <button
+              onClick={downloadTemplate}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              <Download className="h-4 w-4 inline mr-1" />
+              下载导入模板
+            </button>
+          </div>
+
+          <div
+            className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            {importing ? (
+              <div className="text-slate-500">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2" />
+                <p>导入中...</p>
+              </div>
+            ) : (
+              <div>
+                <Upload className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+                <p className="text-slate-600 font-medium">点击或拖拽文件到此处</p>
+                <p className="text-sm text-slate-400 mt-1">支持 .xlsx、.xls 格式</p>
+              </div>
+            )}
           </div>
         </div>
       </Modal>

@@ -90,6 +90,27 @@ export const api = {
       >('/participants/tiers'),
 
     history: (id: string) => request<AuditLog[]>(`/participants/${id}/history`),
+
+    import: (file: File) => {
+      const formData = new FormData()
+      formData.append('file', file)
+      return fetch(`${API_BASE}/participants/import`, {
+        method: 'POST',
+        body: formData,
+      }).then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: '导入失败' }))
+          throw new Error(data.error || `HTTP ${res.status}`)
+        }
+        return res.json()
+      })
+    },
+
+    createBatch: (data: { participants: any[] }) =>
+      request<{ success: boolean; count: number; participants: Participant[] }>('/participants/batch', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   },
 
   calculation: {
@@ -153,6 +174,9 @@ export const api = {
 
     execute: (id: string) =>
       request<RefundBatch>(`/batches/${id}/execute`, { method: 'POST' }),
+
+    confirm: (id: string) =>
+      request<RefundBatch>(`/batches/${id}/confirm`, { method: 'POST' }),
   },
 
   exports: {

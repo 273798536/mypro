@@ -6,6 +6,7 @@ import {
   freezeBatch,
   unfreezeBatch,
   executeBatch,
+  confirmBatch,
 } from '../services/batchService'
 
 const router = express.Router()
@@ -67,6 +68,15 @@ router.post('/:id/unfreeze', async (req, res) => {
 router.post('/:id/execute', async (req, res) => {
   try {
     const batch = await executeBatch(req.params.id, OPERATOR)
+    res.json(batch)
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message })
+  }
+})
+
+router.post('/:id/confirm', async (req, res) => {
+  try {
+    const batch = await confirmBatch(req.params.id, OPERATOR)
     res.json(batch)
   } catch (error) {
     res.status(500).json({ error: (error as Error).message })
