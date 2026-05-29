@@ -44,6 +44,32 @@ interface GameStore {
   deleteHistory: (id: string) => void;
   clearHistories: () => void;
   getHistoryById: (id: string) => GameHistory | null;
+  refreshHistories: () => void;
+}
+
+function recalculateScoreAndRisks(
+  shelf: Shelf,
+  engine: RiskEngine,
+  chemicalsList: Chemical[]
+): { score: number; risks: RiskEvent[]; breakdown: Map<string, number> } {
+  const allRisks = engine.checkAllRisks();
+  
+  let totalScore = 0;
+  const scoreBreakdown = new Map<string, number>();
+
+  for (const slot of shelf.slots) {
+    if (slot.chemicalId) {
+      const chemical = chemicalsList.find(c => c.id === slot.chemicalId);
+      if (chemical) {
+        const slotRisks = allRisks.filter(r => r.slotIds.includes(slot.id));
+        const { score } = ScoringEngine.calculatePlacementScore(chemical, slot, slotRisks);
+        totalScore += score;
+        scoreBreakdown.set(slot.id, score);
+      }
+    }
+  }
+
+  return { score: totalScore, risks: allRisks, breakdown: scoreBreakdown };
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -111,8 +137,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     slot.chemicalId = chemicalId;
     engine.updateShelf(game.shelf);
 
-    const risks = engine.checkSlotRisks(slot);
-    const { score: scoreChange } = ScoringEngine.calculatePlacementScore(chemical, slot, risks);
+    const { score: newScore, risks: allRisks } = recalculateScoreAndRisks(game.shelf, engine, chemicals);
+    const scoreChange = newScore - game.currentScore;
+
+    const slotRisks = allRisks.filter(r => r.slotIds.includes(slot.id));
 
     const log: OperationLog = {
       id: generateId(),
@@ -123,12 +151,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       toSlotPosition: `(${slot.row + 1}行, ${slot.col + 1}列)`,
       timestamp: Date.now(),
       scoreChange,
-      risks
+      risks: slotRisks
     };
 
     const newRemaining = game.remainingChemicals.filter(c => c !== chemicalId);
-    const newScore = game.currentScore + scoreChange;
-    const newRisks = [...game.riskEvents, ...risks];
 
     const updatedGame: GameState = {
       ...game,
@@ -136,7 +162,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       shelf: game.shelf,
       remainingChemicals: newRemaining,
       operationLogs: [...game.operationLogs, log],
-      riskEvents: newRisks
+      riskEvents: allRisks
     };
 
     set({ currentGame: updatedGame });
@@ -159,7 +185,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     slot.chemicalId = null;
     engine.updateShelf(game.shelf);
 
-    const allRisks = engine.checkAllRisks();
+    const { score: newScore, risks: allRisks } = recalculateScoreAndRisks(game.shelf, engine, chemicals);
+    const scoreChange = newScore - game.currentScore;
 
     const log: OperationLog = {
       id: generateId(),
@@ -168,13 +195,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       chemicalName: chemical?.name,
       fromSlotId: slotId,
       toSlotId: slotId,
+      toSlotPosition: `(${slot.row + 1}行, ${slot.col + 1}列)`,
       timestamp: Date.now(),
-      scoreChange: 0,
+      scoreChange,
       risks: []
     };
 
     const updatedGame: GameState = {
       ...game,
+      currentScore: newScore,
       shelf: game.shelf,
       remainingChemicals: [...game.remainingChemicals, chemicalId],
       operationLogs: [...game.operationLogs, log],
@@ -207,7 +236,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     toSlot.chemicalId = chemicalId;
     engine.updateShelf(game.shelf);
 
-    const risks = [...engine.checkSlotRisks(fromSlot), ...engine.checkSlotRisks(toSlot)];
+    const { score: newScore, risks: allRisks } = recalculateScoreAndRisks(game.shelf, engine, chemicals);
+    const scoreChange = newScore - game.currentScore;
+
+    const affectedSlotIds = [fromSlotId, toSlotId];
+    const operationRisks = allRisks.filter(r => r.slotIds.some(id => affectedSlotIds.includes(id)));
 
     const log: OperationLog = {
       id: generateId(),
@@ -216,15 +249,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       chemicalName: chemical.name,
       fromSlotId,
       toSlotId,
+      toSlotPosition: `(${toSlot.row + 1}行, ${toSlot.col + 1}列)`,
       timestamp: Date.now(),
-      scoreChange: 0,
-      risks
+      scoreChange,
+      risks: operationRisks
     };
-
-    const allRisks = engine.checkAllRisks();
 
     const updatedGame: GameState = {
       ...game,
+      currentScore: newScore,
       shelf: game.shelf,
       operationLogs: [...game.operationLogs, log],
       riskEvents: allRisks
@@ -275,6 +308,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     storage.saveHistory(history);
     storage.clearGameState();
 
+    const updatedHistories = storage.getHistories();
+
     set({
       currentGame: {
         ...game,
@@ -282,7 +317,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         currentScore: finalScore,
         isCompleted: true
       },
-      histories: storage.getHistories()
+      histories: updatedHistories
     });
 
     return history;
@@ -334,5 +369,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ histories: [] });
   },
 
-  getHistoryById: (id: string) => storage.getHistoryById(id)
+  getHistoryById: (id: string) => storage.getHistoryById(id),
+
+  refreshHistories: () => {
+    set({ histories: storage.getHistories() });
+  }
 }));

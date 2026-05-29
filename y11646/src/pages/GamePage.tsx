@@ -21,7 +21,6 @@ export const GamePage: React.FC = () => {
     resumeGame,
     placeChemical,
     removeChemical,
-    swapChemical,
     completeGame,
     pauseGame,
     resumeFromPause,
@@ -32,7 +31,6 @@ export const GamePage: React.FC = () => {
   } = useGameStore();
 
   const [selectedChemical, setSelectedChemical] = useState<Chemical | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<ShelfSlot | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   useEffect(() => {
@@ -115,7 +113,6 @@ export const GamePage: React.FC = () => {
         removeChemical(slot.id);
       }
     }
-    setSelectedSlot(slot);
   };
 
   const handlePlaceChemical = (chemicalId: string, slotId: string) => {
@@ -193,7 +190,6 @@ export const GamePage: React.FC = () => {
           <div className="col-span-6 space-y-4">
             <ShelfGrid
               shelf={currentGame.shelf}
-              chemicals={allChemicals}
               onSlotClick={handleSlotClick}
               onChemicalPlace={handlePlaceChemical}
             />

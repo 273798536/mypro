@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flame, Bomb, Droplets, Skull, Zap, Wind, Snowflake, AlertTriangle, Thermometer, Droplet } from 'lucide-react';
-import { ShelfSlot, Chemical, RiskEvent, ChemicalCategory } from '../../types';
+import { ShelfSlot, Chemical, RiskEvent } from '../../types';
 import { RiskEngine } from '../../engine/RiskEngine';
 
 interface ShelfSlotProps {

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Trophy, Clock, AlertTriangle, Download, Home, RotateCcw, FileText, History, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
+import { Trophy, Clock, AlertTriangle, Download, Home, FileText, History, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useGameStore } from '../store/gameStore';
 import { GameHistory, RiskEvent, OperationLog, RiskType } from '../types';
@@ -17,7 +17,6 @@ export const ResultPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'summary' | 'risks' | 'operations'>('summary');
 
   const getHistoryById = useGameStore(state => state.getHistoryById);
-  const getChemicalById = useGameStore(state => state.getChemicalById);
 
   useEffect(() => {
     if (gameId) {

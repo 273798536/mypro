@@ -34,7 +34,7 @@ export const OperationHistory: React.FC<OperationHistoryProps> = ({ operations }
             <p className="text-sm">暂无操作记录</p>
           </div>
         ) : (
-          [...operations].reverse().map((op, index) => (
+          [...operations].reverse().map((op) => (
             <div
               key={op.id}
               className="p-2 bg-gray-800 rounded-lg text-sm"

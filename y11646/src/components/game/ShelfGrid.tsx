@@ -1,18 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { Shelf, Chemical, RiskEvent, ShelfSlot } from '../../types';
+import { Shelf, RiskEvent, ShelfSlot } from '../../types';
 import { ShelfSlotComponent } from './ShelfSlot';
 import { useGameStore } from '../../store/gameStore';
 
 interface ShelfGridProps {
   shelf: Shelf;
-  chemicals: Chemical[];
   onSlotClick: (slot: ShelfSlot) => void;
   onChemicalPlace: (chemicalId: string, slotId: string) => void;
 }
 
 export const ShelfGrid: React.FC<ShelfGridProps> = ({
   shelf,
-  chemicals,
   onSlotClick,
   onChemicalPlace
 }) => {
@@ -21,7 +19,7 @@ export const ShelfGrid: React.FC<ShelfGridProps> = ({
   const getCurrentRisks = useGameStore(state => state.getCurrentRisks);
   const getChemicalById = useGameStore(state => state.getChemicalById);
 
-  const allRisks = useMemo(() => getCurrentRisks(), [shelf.slots, getCurrentRisks]);
+  const allRisks = useMemo(() => getCurrentRisks(), [getCurrentRisks]);
 
   const getRisksForSlot = (slotId: string): RiskEvent[] => {
     return allRisks.filter(r => r.slotIds.includes(slotId));

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, CheckCircle, Clock, Trophy, Trash2, Eye, Send } from 'lucide-react';
+import React from 'react';
+import { Play, Pause, RotateCcw, CheckCircle, Clock, Trophy, Eye } from 'lucide-react';
 import { formatTime } from '../../utils/storage';
 
 interface ControlPanelProps {

@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History, Trophy, Clock, AlertTriangle, Trash2, Eye, Download, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
+import { History, Trophy, Clock, AlertTriangle, Trash2, Eye, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import { useGameStore } from '../store/gameStore';
-import { GameHistory } from '../types';
 import { ScoringEngine } from '../engine/ScoringEngine';
 import { formatTimestamp, formatTime } from '../utils/storage';
 
 export const HistoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const { histories, getHistories, deleteHistory, clearHistories } = useGameStore();
-  const [selectedHistory, setSelectedHistory] = useState<GameHistory | null>(null);
+  const { histories, refreshHistories, deleteHistory, clearHistories } = useGameStore();
 
   useEffect(() => {
-    getHistories();
-  }, [getHistories]);
+    refreshHistories();
+  }, [refreshHistories]);
 
   const handleViewResult = (historyId: string) => {
     navigate(`/result/${historyId}`);

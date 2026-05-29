@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { Package, Filter } from 'lucide-react';
 import { Chemical, ChemicalCategory } from '../../types';
 import { ChemicalCard } from './ChemicalCard';
-import { RiskEngine } from '../../engine/RiskEngine';
 
 interface ChemicalLibraryProps {
   chemicals: Chemical[];
