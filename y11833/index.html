@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>节奏维修工 - Rhythm Mechanic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="game-container">
+    <div class="machine-bg"></div>
+    
+    <div class="start-screen" id="start-screen">
+      <h1>🔧 节奏维修工</h1>
+      <p class="subtitle">修好这台机器，节拍就是你的扳手！</p>
+      
+      <div class="instructions">
+        <h3>📖 操作说明</h3>
+        <ul>
+          <li><span class="key-hint">D</span><span class="key-hint">F</span><span class="key-hint">J</span><span class="key-hint">K</span> 对应四条轨道</li>
+          <li>音符落到判定线时按下对应按键</li>
+          <li>也可以直接点击轨道进行操作</li>
+          <li>红色音符为切分音，需要特别注意</li>
+          <li>遇到脏数据会自动跳过并记录</li>
+          <li>可疑判定会出现在右侧待确认区</li>
+        </ul>
+      </div>
+      
+      <button id="start-btn">开始维修</button>
+    </div>
+    
+    <div class="game-area" id="game-area" style="display: none;">
+      <div class="hud">
+        <div class="hud-left">
+          <div class="score-display" id="score">0</div>
+        </div>
+        <div class="hud-center">
+          <div class="combo-display" id="combo"></div>
+        </div>
+        <div class="hud-right">
+          <div class="health-container">
+            <label>机器:</label>
+            <div class="health-bar-bg">
+              <div class="health-bar good" id="health-bar" style="width: 100%"></div>
+            </div>
+            <span id="health-text">100%</span>
+          </div>
+          <div class="bpm-display" id="bpm">120 BPM</div>
+          <div class="time-display" id="time">0:00</div>
+        </div>
+      </div>
+      
+      <div class="judgment-display" id="judgment-display"></div>
+      
+      <div class="game-area">
+        <div class="track" id="track-0">
+          <span class="track-label">D</span>
+        </div>
+        <div class="track" id="track-1">
+          <span class="track-label">F</span>
+        </div>
+        <div class="track" id="track-2">
+          <span class="track-label">J</span>
+        </div>
+        <div class="track" id="track-3">
+          <span class="track-label">K</span>
+        </div>
+      </div>
+      
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+      </div>
+    </div>
+    
+    <div class="pending-area" id="pending-area">
+      <button class="pending-toggle" id="pending-toggle">
+        <span>⚠️ 待确认判定</span>
+        <span class="pending-count" id="pending-count">0</span>
+      </button>
+      <div class="pending-list" id="pending-list"></div>
+    </div>
+    
+    <div class="report-screen" id="report-screen"></div>
+  </div>
+  
+  <script src="js/data/sampleData.js"></script>
+  <script src="js/game/NoteManager.js"></script>
+  <script src="js/game/Judge.js"></script>
+  <script src="js/game/GameEngine.js"></script>
+  <script src="js/ui/HUD.js"></script>
+  <script src="js/ui/PendingArea.js"></script>
+  <script src="js/ui/Report.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
