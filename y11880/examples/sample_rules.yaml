@@ -1,0 +1,11 @@
+rules:
+  age:
+    method: standard
+  income:
+    method: log
+  purchase_frequency:
+    method: standard
+  spending_score:
+    method: minmax
+  tenure:
+    method: robust

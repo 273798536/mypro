@@ -1,0 +1,48 @@
+rule_count: 5
+rules:
+  age:
+    feature: age
+    fitted: true
+    max: null
+    mean: 40.37659974170097
+    method: standard
+    min: null
+    params: {}
+    std: 10.702219040815175
+  income:
+    feature: income
+    fitted: true
+    max: null
+    mean: 11.268136007322992
+    method: log
+    min: null
+    params: {}
+    std: 0.413331326131515
+  purchase_frequency:
+    feature: purchase_frequency
+    fitted: true
+    max: null
+    mean: 11.74494332519238
+    method: standard
+    min: null
+    params: {}
+    std: 6.991231359249265
+  spending_score:
+    feature: spending_score
+    fitted: true
+    max: 110.7888080845524
+    mean: null
+    method: minmax
+    min: 7.706641105712755
+    params: {}
+    std: null
+  tenure:
+    feature: tenure
+    fitted: true
+    max: null
+    mean: null
+    method: robust
+    min: null
+    params: {}
+    std: null
+source: default
