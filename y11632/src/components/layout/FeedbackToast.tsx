@@ -21,7 +21,7 @@ export default function FeedbackToast() {
       {feedback && (
         <motion.div
           className={`
-            fixed top-4 left-1/2 -translate-x-1/2 z-50
+            fixed top-4 left-0 right-0 z-50 mx-auto w-fit
             flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg
             ${feedback.type === 'success' ? 'bg-emerald-500' : ''}
             ${feedback.type === 'error' ? 'bg-rose-500' : ''}
@@ -32,7 +32,6 @@ export default function FeedbackToast() {
             opacity: 1,
             y: 0,
             scale: 1,
-            x: ['-50%', '-48%', '-52%', '-50%'],
           }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{

@@ -12,11 +12,7 @@ export function checkDurationMismatch(
   bond: BondCard,
   slot: Slot
 ): DetectionResult {
-  const bondCategory = bond.category;
-  const slotMin = slot.minDuration;
-  const slotMax = slot.maxDuration;
-
-  const bondInSlot = bond.duration >= slotMin && bond.duration < slotMax;
+  const bondInSlot = bond.duration >= slot.minDuration && bond.duration < slot.maxDuration;
 
   if (!bondInSlot) {
     const correctCategory = getDurationCategory(bond.duration);

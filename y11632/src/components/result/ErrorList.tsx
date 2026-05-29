@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { AlertCircle, ChevronDown, Info } from 'lucide-react';
 import type { ErrorRecord } from '@/types';
 
 interface ErrorListProps {

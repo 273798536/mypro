@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipBack, SkipForward, History } from 'lucide-react';
 import type { Operation } from '@/types';
@@ -10,6 +10,7 @@ interface ReplayTimelineProps {
 export default function ReplayTimeline({ operations }: ReplayTimelineProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentOperation = operations[currentIndex];
 
@@ -17,13 +18,45 @@ export default function ReplayTimeline({ operations }: ReplayTimelineProps) {
     setCurrentIndex(prev => Math.max(0, prev - 1));
   };
 
-  const goToNext = () => {
-    setCurrentIndex(prev => Math.min(operations.length - 1, prev + 1));
-  };
+  const goToNext = useCallback(() => {
+    setCurrentIndex(prev => {
+      if (prev >= operations.length - 1) {
+        setIsPlaying(false);
+        return prev;
+      }
+      return prev + 1;
+    });
+  }, [operations.length]);
 
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    setIsPlaying(prev => !prev);
   };
+
+  useEffect(() => {
+    if (isPlaying) {
+      intervalRef.current = setInterval(() => {
+        goToNext();
+      }, 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isPlaying, goToNext]);
+
+  useEffect(() => {
+    if (currentIndex >= operations.length - 1) {
+      setIsPlaying(false);
+    }
+  }, [currentIndex, operations.length]);
 
   const operationTypeLabels: Record<string, string> = {
     drag: '债券拖拽',

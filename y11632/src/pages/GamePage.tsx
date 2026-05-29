@@ -12,7 +12,7 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Pause, Play, X } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import { useGameStore } from '@/store/gameStore';
 import { useGameTimer } from '@/hooks/useGameTimer';
 import { getLevelById } from '@/data/levels';
@@ -42,7 +42,6 @@ export default function GamePage() {
   const currentCurveDirection = useGameStore(state => state.currentCurveDirection);
   const cashFlowEstimates = useGameStore(state => state.cashFlowEstimates);
   const score = useGameStore(state => state.score);
-  const timeRemaining = useGameStore(state => state.timeRemaining);
 
   const { formattedTime } = useGameTimer();
 

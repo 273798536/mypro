@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type {
   GameState,
-  GamePhase,
   PlacedBond,
   Operation,
   ErrorRecord,
@@ -53,12 +52,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!level) return;
 
     const usedBondIds = new Set<string>();
-    const levelBonds = bondLibrary.slice(0, 6).map(b => {
-      if (!usedBondIds.has(b.id)) {
-        usedBondIds.add(b.id);
-        return b;
-      }
-      return b;
+    bondLibrary.slice(0, 6).forEach(b => {
+      usedBondIds.add(b.id);
     });
 
     const newState: Partial<GameState> = {
@@ -303,6 +298,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     };
 
     const avgDeviation = deviations.reduce((a, b) => a + b, 0) / deviations.length;
+    const maxDeviation = Math.max(...deviations);
+    const maxDevIndex = deviations.indexOf(maxDeviation);
 
     if (cfScore > 0) {
       set({
@@ -316,10 +313,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
         },
       });
     } else {
+      const errorRecord: ErrorRecord = {
+        operationIndex: state.operations.length,
+        type: 'cashflow_weight',
+        description: maxDeviation > 10
+          ? `现金流权重误判：${bond.name}第${maxDevIndex + 1}期偏差最大（实际${bond.cashFlows[maxDevIndex].weight.toFixed(1)}%，判断${(weights[maxDevIndex] || 0).toFixed(1)}%），平均偏差${avgDeviation.toFixed(1)}%。`
+          : `现金流权重判断偏差较大：${bond.name}平均偏差${avgDeviation.toFixed(1)}%。`,
+        suggestion: avgDeviation > 5
+          ? '票面利息占比通常较小，本金偿还期权重最大。请重新审视各期现金流的相对大小。'
+          : '权重判断接近正确答案，继续调整可提高得分。',
+      };
+
       set({
         score: state.score + cfScore,
         cashFlowEstimates: { ...state.cashFlowEstimates, [bondId]: weights },
         operations: [...state.operations, operation],
+        errors: [...state.errors, errorRecord],
         feedback: {
           message: cfScore < 0
             ? `权重偏差过大！${cfScore}分 (平均偏差${avgDeviation.toFixed(1)}%)`

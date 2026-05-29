@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, HelpCircle, X, TrendingUp, Clock, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,7 @@ export default function StartPage() {
   const [showHelp, setShowHelp] = useState(false);
   const [hasSavedGame, setHasSavedGame] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     try {
       const saved = localStorage.getItem('bond-duration-puzzle-state');
       if (saved) {
@@ -20,7 +20,7 @@ export default function StartPage() {
     } catch {
       // localStorage may be unavailable
     }
-  });
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center px-4">
