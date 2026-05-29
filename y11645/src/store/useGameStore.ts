@@ -187,16 +187,17 @@ export const useGameStore = create<GameState>((set, get) => ({
       ? updateGateTraffic(exitType, state.gateTraffic)
       : state.gateTraffic;
     
-    const correctionTrail = result.errorType !== 'none' && result.errorType !== 'gate_congested'
+    const correctionTrail = result.errorType !== 'none'
       ? [{
           timestamp: Date.now(),
           field: 'selectedExit',
           oldValue: exitType,
-          newValue: result.correctExit,
+          newValue: result.suggestedExit,
           reason: result.errorType === 'gate_wrong' ? '登机口分配错误' :
                   result.errorType === 'oversized_wrong' ? '超规件识别错误' :
                   result.errorType === 'transfer_timeout' ? '转机时间判断错误' :
-                  result.errorType === 'delayed_wrong' ? '延误航班处理错误' : '分拣规则应用错误',
+                  result.errorType === 'delayed_wrong' ? '延误航班处理错误' :
+                  result.errorType === 'gate_congested' ? '该登机口已积压，请分流到其他通道' : '分拣规则应用错误',
           source: source,
         }]
       : [];
@@ -206,7 +207,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       exitType,
       result.score,
       result.errorType,
-      result.correctExit,
+      result.suggestedExit,
       baggage.generatedAt,
       source,
       correctionTrail

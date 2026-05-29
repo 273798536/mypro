@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../store/useGameStore';
 import { StarRating } from '../components/StarRating';
 import { generateImprovementSuggestions } from '../utils/export';
-import { EXIT_LABELS, ERROR_MESSAGES } from '../types';
+import { EXIT_LABELS, ERROR_MESSAGES, SOURCE_LABELS } from '../types';
 import { Home, RotateCcw, Play, Download, TrendingUp, Clock, Target, Zap, AlertTriangle } from 'lucide-react';
 
 export const Result: React.FC = () => {
@@ -143,25 +143,42 @@ export const Result: React.FC = () => {
             transition={{ delay: 0.5 }}
             className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100"
           >
-            <h3 className="text-lg font-bold text-gray-800 mb-4">错误详情</h3>
-            <div className="space-y-3 max-h-64 overflow-y-auto">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">错误详情与修正轨迹</h3>
+            <div className="space-y-3 max-h-80 overflow-y-auto">
               {record.errors.map((error, index) => (
                 <div
                   key={index}
-                  className="bg-red-50 border border-red-100 rounded-lg p-4 flex justify-between items-center"
+                  className="bg-red-50 border border-red-100 rounded-lg p-4"
                 >
-                  <div>
-                    <div className="font-mono font-medium text-gray-800">{error.flightNo}</div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(error.timestamp).toLocaleTimeString('zh-CN')}
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="font-mono font-medium text-gray-800 flex items-center gap-2">
+                        {error.flightNo}
+                        <span className="text-xs px-2 py-0.5 bg-aviation-100 text-aviation-700 rounded-full">
+                          {SOURCE_LABELS[error.source] || error.source}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(error.timestamp).toLocaleTimeString('zh-CN')}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-red-600 font-bold text-sm">{error.scoreChange}分</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs text-gray-500">
-                      {EXIT_LABELS[error.selectedExit]} → {EXIT_LABELS[error.correctExit]}
-                    </div>
-                    <div className="text-red-600 font-bold text-sm">{error.scoreChange}分</div>
+                  <div className="text-xs text-gray-600 mb-2">
+                    分流：{EXIT_LABELS[error.selectedExit]} → {EXIT_LABELS[error.correctExit]}
                   </div>
+                  {error.correctionTrail.length > 0 && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded p-2 text-xs">
+                      <div className="font-medium text-yellow-800 mb-1">修正说明：</div>
+                      {error.correctionTrail.map((c, i) => (
+                        <div key={i} className="text-yellow-700">
+                          {c.reason}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

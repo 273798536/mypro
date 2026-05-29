@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/useGameStore';
-import { EXIT_LABELS, ERROR_MESSAGES } from '../types';
+import { EXIT_LABELS, ERROR_MESSAGES, SOURCE_LABELS } from '../types';
 import { Home, Play, Pause, SkipBack, SkipForward, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export const Replay: React.FC = () => {
@@ -145,8 +145,11 @@ export const Replay: React.FC = () => {
                     <AlertTriangle size={16} className="text-red-400 flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-mono text-sm">{action.flightNo}</span>
+                      <span className="text-xs px-1.5 py-0.5 bg-aviation-900/50 text-aviation-300 rounded">
+                        {SOURCE_LABELS[action.source] || action.source}
+                      </span>
                       <span className="text-xs text-gray-400">
                         → {EXIT_LABELS[action.selectedExit]}
                       </span>
@@ -157,8 +160,15 @@ export const Replay: React.FC = () => {
                       )}
                     </div>
                     {action.errorType !== 'none' && (
-                      <div className="text-xs text-red-400 mt-0.5">
-                        {ERROR_MESSAGES[action.errorType as keyof typeof ERROR_MESSAGES]?.title}
+                      <div className="mt-1">
+                        <div className="text-xs text-red-400">
+                          {ERROR_MESSAGES[action.errorType as keyof typeof ERROR_MESSAGES]?.title}
+                        </div>
+                        {action.correctionTrail.length > 0 && (
+                          <div className="text-xs text-yellow-400 mt-0.5">
+                            ↳ {action.correctionTrail.map(c => c.reason).join('; ')}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -1,4 +1,4 @@
-import { GameRecord, EXIT_LABELS, ERROR_MESSAGES } from '../types';
+import { GameRecord, EXIT_LABELS, ERROR_MESSAGES, SOURCE_LABELS } from '../types';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 
@@ -13,9 +13,11 @@ export function exportToCSV(record: GameRecord): void {
     '转机时间(分钟)',
     '是否延误',
     '登机口',
+    '材料来源',
     '选择出口',
     '正确出口',
     '错误类型',
+    '修正说明',
     '得分变化',
     '响应时间(ms)',
   ];
@@ -30,9 +32,11 @@ export function exportToCSV(record: GameRecord): void {
     action.baggageInfo.transferTime ?? '-',
     action.baggageInfo.isDelayed ? '是' : '否',
     action.baggageInfo.gate,
+    SOURCE_LABELS[action.source] || action.source,
     EXIT_LABELS[action.selectedExit],
     EXIT_LABELS[action.correctExit],
     action.errorType === 'none' ? '无' : ERROR_MESSAGES[action.errorType].title,
+    action.correctionTrail.length > 0 ? action.correctionTrail.map(c => c.reason).join('; ') : '-',
     action.scoreChange,
     action.responseTime,
   ]);
@@ -78,7 +82,7 @@ export function exportToExcel(record: GameRecord): void {
   ];
   
   const detailHeaders = [
-    ['序号', '时间', '航班号', '目的地', '重量', '转机', '转机时间', '延误', '登机口', '选择出口', '正确出口', '错误类型', '得分变化', '响应时间(ms)'],
+    ['序号', '时间', '航班号', '目的地', '重量', '转机', '转机时间', '延误', '登机口', '材料来源', '选择出口', '正确出口', '错误类型', '修正说明', '得分变化', '响应时间(ms)'],
   ];
   
   const detailData = record.actions.map((action, index) => [
@@ -91,9 +95,11 @@ export function exportToExcel(record: GameRecord): void {
     action.baggageInfo.transferTime ?? '-',
     action.baggageInfo.isDelayed ? '是' : '否',
     action.baggageInfo.gate,
+    SOURCE_LABELS[action.source] || action.source,
     EXIT_LABELS[action.selectedExit],
     EXIT_LABELS[action.correctExit],
     action.errorType === 'none' ? '无' : ERROR_MESSAGES[action.errorType].title,
+    action.correctionTrail.length > 0 ? action.correctionTrail.map(c => c.reason).join('; ') : '-',
     action.scoreChange,
     action.responseTime,
   ]);
@@ -102,17 +108,19 @@ export function exportToExcel(record: GameRecord): void {
   XLSX.utils.book_append_sheet(wb, ws1, '报告详情');
   
   if (record.errors.length > 0) {
-    const errorHeaders = [['错误详情']];
+    const errorHeaders = [['错误详情与修正轨迹']];
     const errorData = record.errors.map((error, index) => [
       index + 1,
       new Date(error.timestamp).toLocaleTimeString('zh-CN'),
       error.flightNo,
+      SOURCE_LABELS[error.source] || error.source,
       ERROR_MESSAGES[error.errorType].title,
       EXIT_LABELS[error.selectedExit],
       EXIT_LABELS[error.correctExit],
+      error.correctionTrail.length > 0 ? error.correctionTrail.map(c => c.reason).join('; ') : '-',
       error.scoreChange,
     ]);
-    const ws2 = XLSX.utils.aoa_to_sheet([...errorHeaders, [], ['序号', '时间', '航班号', '错误类型', '选择出口', '正确出口', '扣分'], ...errorData]);
+    const ws2 = XLSX.utils.aoa_to_sheet([...errorHeaders, [], ['序号', '时间', '航班号', '材料来源', '错误类型', '选择出口', '建议出口', '修正说明', '扣分'], ...errorData]);
     XLSX.utils.book_append_sheet(wb, ws2, '错误统计');
   }
   

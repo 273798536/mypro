@@ -9,11 +9,18 @@ export interface GateTraffic {
 
 const CONGESTION_THRESHOLD = 3;
 const CONGESTION_WINDOW_MS = 10000;
+const GATE_EXITS: ExitType[] = ['gate_A', 'gate_B', 'gate_C', 'gate_D'];
+
+export function isGateExit(exit: ExitType): boolean {
+  return GATE_EXITS.includes(exit);
+}
 
 export function checkGateCongestion(
   selectedExit: ExitType,
   gateTraffic: GateTraffic[]
 ): boolean {
+  if (!isGateExit(selectedExit)) return false;
+  
   const now = Date.now();
   const traffic = gateTraffic.find(t => t.exit === selectedExit);
   if (!traffic) return false;
@@ -23,6 +30,24 @@ export function checkGateCongestion(
   ).length;
   
   return recentCount >= CONGESTION_THRESHOLD;
+}
+
+export function findAvailableGates(
+  baggageGate: string,
+  gateTraffic: GateTraffic[]
+): ExitType[] {
+  const targetGate = `gate_${baggageGate}` as ExitType;
+  const now = Date.now();
+  
+  const availableGates = GATE_EXITS.filter(exit => {
+    if (exit === targetGate) return false;
+    const traffic = gateTraffic.find(t => t.exit === exit);
+    if (!traffic) return true;
+    const recentCount = traffic.timestamps.filter(t => now - t <= CONGESTION_WINDOW_MS).length;
+    return recentCount < CONGESTION_THRESHOLD;
+  });
+  
+  return availableGates;
 }
 
 export function updateGateTraffic(
@@ -58,12 +83,27 @@ export function calculateScore(
   responseTime: number,
   currentCombo: number,
   gateTraffic: GateTraffic[]
-): { score: number; errorType: ErrorType; correctExit: ExitType; isCongested: boolean } {
+): { 
+  score: number; 
+  errorType: ErrorType; 
+  correctExit: ExitType; 
+  isCongested: boolean;
+  suggestedExit: ExitType;
+} {
   const correctExit = determineCorrectExit(baggage);
   const isCongested = checkGateCongestion(selectedExit, gateTraffic);
+  const isTargetGate = isGateExit(correctExit);
+  const availableGates = isTargetGate ? findAvailableGates(baggage.gate, gateTraffic) : [];
   
   if (isCongested) {
-    return { score: -ERROR_MESSAGES.gate_congested.penalty, errorType: 'gate_congested', correctExit, isCongested: true };
+    const suggestedExit = availableGates.length > 0 ? availableGates[0] : correctExit;
+    return { 
+      score: -ERROR_MESSAGES.gate_congested.penalty, 
+      errorType: 'gate_congested', 
+      correctExit, 
+      isCongested: true,
+      suggestedExit
+    };
   }
   
   if (selectedExit === correctExit) {
@@ -72,12 +112,19 @@ export function calculateScore(
     if (currentCombo >= 5) score += 5;
     if (currentCombo >= 10) score += 15;
     if (currentCombo >= 20) score += 30;
-    return { score, errorType: 'none', correctExit, isCongested: false };
-  } else {
-    const errorType = determineErrorType(baggage, selectedExit, correctExit);
-    const penalty = errorType !== 'none' ? ERROR_MESSAGES[errorType].penalty : 10;
-    return { score: -penalty, errorType, correctExit, isCongested: false };
+    return { score, errorType: 'none', correctExit, isCongested: false, suggestedExit: correctExit };
   }
+  
+  if (isTargetGate && availableGates.includes(selectedExit) && !baggage.isOversized && !baggage.isDelayed && !baggage.isTransfer) {
+    let score = 8;
+    if (responseTime < 3000) score += 2;
+    if (currentCombo >= 5) score += 3;
+    return { score, errorType: 'none', correctExit: selectedExit, isCongested: false, suggestedExit: selectedExit };
+  }
+  
+  const errorType = determineErrorType(baggage, selectedExit, correctExit);
+  const penalty = errorType !== 'none' ? ERROR_MESSAGES[errorType].penalty : 10;
+  return { score: -penalty, errorType, correctExit, isCongested: false, suggestedExit: correctExit };
 }
 
 export function determineErrorType(
