@@ -1,0 +1,29 @@
+{
+  "missing_field": {
+    "spectrum_frames": {
+      "action": "请重新导入音频文件，确保FFT分析完整执行。如问题持续，请检查：1) 音频文件是否损坏；2) 文件格式是否为标准WAV/MP3；3) 文件时长是否大于0.5秒。",
+      "responsible": "音频处理工程师 / 混音师",
+      "fileReference": "源音频文件 (.wav, .mp3, .aiff)"
+    },
+    "voice_labels": {
+      "action": "系统已自动生成默认声部标签。如需自定义，请在侧边栏点击'编辑声部'按钮，手动调整各声部的频率范围和颜色标识。",
+      "responsible": "音乐制作老师 / 混音师",
+      "fileReference": "声部配置文件 (voice_config.json)"
+    }
+  },
+  "silent_segment": {
+    "action": "检测到疑似静音段，但可能存在低电平信号被误判。建议：1) 佩戴监听耳机试听该时间段；2) 提高可视化能量阈值观察细节；3) 如确为静音，可在混音时添加环境音或房间混响增加空气感。",
+    "responsible": "音乐制作老师 / 学生",
+    "fileReference": "混音工程文件 (.logicx, .sesx, .ptx)"
+  },
+  "sample_rate_error": {
+    "action": "当前采样率不符合专业音频制作标准。请使用以下方法转换：1) 在DAW中导出时选择44.1kHz或48kHz；2) 使用ffmpeg命令：ffmpeg -i input.wav -ar 48000 output.wav；3) 注意处理采样率转换可能带来的音高偏移。",
+    "responsible": "录音师 / 音频处理工程师",
+    "fileReference": "原始录音文件 / 导出设置"
+  },
+  "peak_clipping": {
+    "action": "检测到峰值遮挡（削波）风险。请：1) 检查DAW中的主输出电平表，确保峰值不超过-0.3dB；2) 降低推子增益或插入限制器（推荐FabFilter Pro-L 2或Waves L2）；3) 重新导出音频文件。削波会导致不可逆的音质劣化。",
+    "responsible": "混音师 / 母带工程师",
+    "fileReference": "混音工程文件 / 母带链预设"
+  }
+}
