@@ -1,0 +1,29 @@
+[
+  {
+    "id": "occ_b978d29c",
+    "source": "occupation_report",
+    "occupation_no": "OCC2026052854EB",
+    "invoice_id": "inv_001",
+    "amount": 130000.0,
+    "status": "locked",
+    "locked_at": "2026-05-28T03:24:15.522704"
+  },
+  {
+    "id": "occ_1ff53941",
+    "source": "occupation_report",
+    "occupation_no": "OCC20260528EA2D",
+    "invoice_id": "inv_004",
+    "amount": 80000.0,
+    "status": "locked",
+    "locked_at": "2026-05-28T03:24:15.522854"
+  },
+  {
+    "id": "occ_3d8607ff",
+    "source": "occupation_report",
+    "occupation_no": "OCC202605288E58",
+    "invoice_id": "inv_005",
+    "amount": 150000.0,
+    "status": "locked",
+    "locked_at": "2026-05-28T03:24:15.522912"
+  }
+]

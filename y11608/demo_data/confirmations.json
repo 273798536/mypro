@@ -6,7 +6,7 @@
     "buyer_name": "甲公司",
     "confirmed_amount": 100000.0,
     "status": "confirmed",
-    "confirmed_at": "2026-05-26T18:35:21.871279",
+    "confirmed_at": "2026-05-28T03:24:02.366299",
     "created_by": "buyer_api"
   },
   {
@@ -16,8 +16,8 @@
     "buyer_name": "甲公司",
     "confirmed_amount": 250000.0,
     "status": "revoked",
-    "confirmed_at": "2026-05-25T18:35:21.871280",
-    "revoked_at": "2026-05-26T18:35:21.871283",
+    "confirmed_at": "2026-05-27T03:24:02.366300",
+    "revoked_at": "2026-05-28T03:24:02.366304",
     "revoker": "jia_manager",
     "revocation_reason": "货物存在质量争议",
     "created_by": "buyer_api"
@@ -29,7 +29,7 @@
     "buyer_name": "丙公司",
     "confirmed_amount": 80000.0,
     "status": "confirmed",
-    "confirmed_at": "2026-05-26T18:35:21.871284",
+    "confirmed_at": "2026-05-28T03:24:02.366306",
     "created_by": "buyer_api"
   },
   {
@@ -39,7 +39,7 @@
     "buyer_name": "丁公司",
     "confirmed_amount": 150000.0,
     "status": "confirmed",
-    "confirmed_at": "2026-05-26T18:35:21.871285",
+    "confirmed_at": "2026-05-28T03:24:02.366307",
     "created_by": "buyer_api"
   }
 ]

@@ -5,7 +5,23 @@
     "apply_no": "WO202605001",
     "invoice_id": "inv_001",
     "amount": 30000.0,
-    "apply_date": "2026-05-23",
-    "created_by": "officer_zhang"
+    "apply_date": "2026-05-25",
+    "status": "rolled_back",
+    "created_by": "officer_zhang",
+    "approved_amount": 30000.0,
+    "approved_at": "2026-05-28T03:24:26.890925",
+    "approver": "approver_zhang",
+    "corrections": [
+      {
+        "trace_id": "trace_6a776bc0",
+        "field_name": "status",
+        "old_value": "WriteOffStatus.APPROVED",
+        "new_value": "WriteOffStatus.ROLLED_BACK",
+        "operator": "operator_li",
+        "operated_at": "2026-05-28T03:24:40.095515",
+        "reason": "买方异议，需重新核实",
+        "source": "manual_correction"
+      }
+    ]
   }
 ]

@@ -359,6 +359,20 @@ class InvoiceFinanceEngine:
         net_amount = invoice.amount - total_written_off
 
         if total_repaid > 0 and total_repaid < invoice.amount:
+            partial_alert = RiskAlert(
+                alert_id=f"alert_{uuid.uuid4().hex[:8]}",
+                risk_type=RiskType.PARTIAL_WRITE_OFF,
+                severity="medium",
+                invoice_id=invoice_id,
+                invoice_no=invoice.invoice_no,
+                message=f"部分回款: 已回{total_repaid:.2f}, 未回{invoice.amount - total_repaid:.2f}",
+                details={
+                    "total_repaid": total_repaid,
+                    "invoice_amount": invoice.amount,
+                    "unpaid": invoice.amount - total_repaid
+                }
+            )
+            alerts.append(partial_alert)
             result.notes.append(f"部分回款: 已回{total_repaid:.2f}, 未回{invoice.amount - total_repaid:.2f}")
 
         lock_success, lock_alert = self.lock_credit(pool_id, invoice_id, net_amount)

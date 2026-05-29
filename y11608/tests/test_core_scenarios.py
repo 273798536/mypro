@@ -174,6 +174,11 @@ class TestPartialWriteOff:
 
         result = engine.process_invoice("inv_test_001", "pool_test_001")
 
+        assert result.status != ProcessingStatus.NORMAL
+        assert result.status == ProcessingStatus.CORRECTED
+        partial_alerts = [a for a in result.risk_alerts if a.risk_type == RiskType.PARTIAL_WRITE_OFF]
+        assert len(partial_alerts) == 1
+        assert partial_alerts[0].severity == "medium"
         assert "部分回款" in str(result.notes)
 
 

@@ -7,8 +7,8 @@ import os
 
 from .models import (
     Invoice, BuyerConfirmation, CreditPool, RepaymentFlow,
-    WriteOffApplication, DataSource, InvoiceStatus,
-    ConfirmationStatus, CorrectionTrace
+    WriteOffApplication, OccupationRecord, DataSource, InvoiceStatus,
+    ConfirmationStatus, OccupationStatus, WriteOffStatus, CorrectionTrace
 )
 
 
@@ -123,6 +123,22 @@ class DataLoader:
         """加载核销申请数据"""
         write_offs = []
         for item in data:
+            corrections = []
+            if 'corrections' in item:
+                corrections = [
+                    CorrectionTrace(
+                        trace_id=c['trace_id'],
+                        field_name=c['field_name'],
+                        old_value=c['old_value'],
+                        new_value=c['new_value'],
+                        operator=c['operator'],
+                        operated_at=datetime.fromisoformat(c['operated_at']) if c.get('operated_at') else datetime.now(),
+                        reason=c.get('reason', ''),
+                        source=DataSource(c.get('source', DataSource.MANUAL_CORRECTION))
+                    )
+                    for c in item.get('corrections', [])
+                ]
+
             wo = WriteOffApplication(
                 id=item['id'],
                 source=DataSource(item.get('source', DataSource.WRITE_OFF_APPLY)),
@@ -130,10 +146,53 @@ class DataLoader:
                 invoice_id=item['invoice_id'],
                 amount=float(item['amount']),
                 apply_date=date.fromisoformat(item['apply_date']),
+                status=WriteOffStatus(item.get('status', WriteOffStatus.PENDING)),
+                approved_amount=float(item['approved_amount']) if item.get('approved_amount') is not None else None,
+                approved_at=datetime.fromisoformat(item['approved_at']) if item.get('approved_at') else None,
+                approver=item.get('approver'),
+                rejection_reason=item.get('rejection_reason'),
+                corrections=corrections,
                 created_by=item.get('created_by')
             )
             write_offs.append(wo)
         return write_offs
+
+    def load_occupations(self, data: List[Dict[str, Any]]) -> List[OccupationRecord]:
+        """加载额度占用记录"""
+        occupations = []
+        for item in data:
+            corrections = []
+            if 'corrections' in item:
+                corrections = [
+                    CorrectionTrace(
+                        trace_id=c['trace_id'],
+                        field_name=c['field_name'],
+                        old_value=c['old_value'],
+                        new_value=c['new_value'],
+                        operator=c['operator'],
+                        operated_at=datetime.fromisoformat(c['operated_at']) if c.get('operated_at') else datetime.now(),
+                        reason=c.get('reason', ''),
+                        source=DataSource(c.get('source', DataSource.MANUAL_CORRECTION))
+                    )
+                    for c in item.get('corrections', [])
+                ]
+
+            occ = OccupationRecord(
+                id=item['id'],
+                source=DataSource(item.get('source', DataSource.OCCUPATION_REPORT)),
+                occupation_no=item['occupation_no'],
+                invoice_id=item['invoice_id'],
+                amount=float(item['amount']),
+                status=OccupationStatus(item.get('status', OccupationStatus.LOCKED)),
+                locked_at=datetime.fromisoformat(item['locked_at']) if item.get('locked_at') else datetime.now(),
+                occupied_at=datetime.fromisoformat(item['occupied_at']) if item.get('occupied_at') else None,
+                released_at=datetime.fromisoformat(item['released_at']) if item.get('released_at') else None,
+                release_reason=item.get('release_reason'),
+                corrections=corrections,
+                created_by=item.get('created_by')
+            )
+            occupations.append(occ)
+        return occupations
 
     def load_all(self, data_dir: str) -> Dict[str, List]:
         """从目录加载所有数据"""
@@ -142,7 +201,8 @@ class DataLoader:
             'confirmations': [],
             'credit_pools': [],
             'repayments': [],
-            'write_offs': []
+            'write_offs': [],
+            'occupations': []
         }
 
         files = {
@@ -150,7 +210,8 @@ class DataLoader:
             'confirmations.json': ('confirmations', self.load_confirmations),
             'credit_pools.json': ('credit_pools', self.load_credit_pools),
             'repayments.json': ('repayments', self.load_repayments),
-            'write_offs.json': ('write_offs', self.load_write_offs)
+            'write_offs.json': ('write_offs', self.load_write_offs),
+            'occupations.json': ('occupations', self.load_occupations)
         }
 
         for filename, (key, loader) in files.items():

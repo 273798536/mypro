@@ -7,7 +7,30 @@ from datetime import datetime
 from .engine import InvoiceFinanceEngine
 from .data_loader import DataLoader
 from .reporters import ReportGenerator
+from .persister import DataPersister
 from .models import ProcessingStatus
+
+
+def _build_engine(data_dir):
+    """从数据目录构建引擎"""
+    loader = DataLoader()
+    data = loader.load_all(data_dir)
+
+    engine = InvoiceFinanceEngine()
+    for invoice in data['invoices']:
+        engine.add_invoice(invoice)
+    for conf in data['confirmations']:
+        engine.add_confirmation(conf)
+    for pool in data['credit_pools']:
+        engine.add_credit_pool(pool)
+    for rep in data['repayments']:
+        engine.add_repayment(rep)
+    for wo in data['write_offs']:
+        engine.add_write_off(wo)
+    for occ in data['occupations']:
+        engine.add_occupation(occ)
+
+    return engine, data
 
 
 @click.group()
@@ -32,30 +55,20 @@ def process(data_dir, pool_id, output, fmt, audit_export, show_details, filter_s
     """处理发票融资额度占用"""
     click.echo(click.style("正在加载数据...", fg="blue"))
 
-    loader = DataLoader()
-    data = loader.load_all(data_dir)
-
-    engine = InvoiceFinanceEngine()
-
-    for invoice in data['invoices']:
-        engine.add_invoice(invoice)
-    for conf in data['confirmations']:
-        engine.add_confirmation(conf)
-    for pool in data['credit_pools']:
-        engine.add_credit_pool(pool)
-    for rep in data['repayments']:
-        engine.add_repayment(rep)
-    for wo in data['write_offs']:
-        engine.add_write_off(wo)
+    engine, data = _build_engine(data_dir)
 
     click.echo(f"  发票: {len(data['invoices'])} 张")
     click.echo(f"  买方确认: {len(data['confirmations'])} 条")
     click.echo(f"  额度池: {len(data['credit_pools'])} 个")
     click.echo(f"  回款流水: {len(data['repayments'])} 条")
     click.echo(f"  核销申请: {len(data['write_offs'])} 条")
+    click.echo(f"  占用记录: {len(data['occupations'])} 条")
 
     click.echo(click.style("\n正在处理...", fg="blue"))
     summary = engine.process_all(pool_id)
+
+    persister = DataPersister()
+    persister.persist_occupations(engine, data_dir)
 
     reporter = ReportGenerator(engine)
 
@@ -91,12 +104,7 @@ def process(data_dir, pool_id, output, fmt, audit_export, show_details, filter_s
 @click.option('--note', '-n', default='', help='验真备注')
 def verify(data_dir, invoice_id, verifier, note):
     """验真发票"""
-    loader = DataLoader()
-    data = loader.load_all(data_dir)
-
-    engine = InvoiceFinanceEngine()
-    for invoice in data['invoices']:
-        engine.add_invoice(invoice)
+    engine, _ = _build_engine(data_dir)
 
     success, alert = engine.verify_invoice(invoice_id, verifier, note)
     if success:
@@ -114,24 +122,16 @@ def verify(data_dir, invoice_id, verifier, note):
 @click.option('--amount', type=float, help='审批金额（不指定则全额审批）')
 def approve_write_off(data_dir, write_off_id, approver, amount):
     """审批核销申请"""
-    loader = DataLoader()
-    data = loader.load_all(data_dir)
-
-    engine = InvoiceFinanceEngine()
-    for invoice in data['invoices']:
-        engine.add_invoice(invoice)
-    for wo in data['write_offs']:
-        engine.add_write_off(wo)
-    for rep in data['repayments']:
-        engine.add_repayment(rep)
-    for pool in data['credit_pools']:
-        engine.add_credit_pool(pool)
-    for occ in data.get('occupations', []):
-        engine.add_occupation(occ)
+    engine, _ = _build_engine(data_dir)
 
     success, alerts = engine.approve_write_off(write_off_id, approver, amount)
     if success:
+        persister = DataPersister()
+        persister.persist_write_offs(engine, data_dir)
+        persister.persist_occupations(engine, data_dir)
+
         click.echo(click.style(f"核销申请 {write_off_id} 审批成功", fg="green"))
+        click.echo(click.style(f"状态已回写到 {data_dir}", fg="green"))
         for alert in alerts:
             click.echo(click.style(f"  警告: {alert.message}", fg="yellow"))
     else:
@@ -147,22 +147,16 @@ def approve_write_off(data_dir, write_off_id, approver, amount):
 @click.option('--reason', '-r', required=True, help='回滚原因')
 def rollback_write_off(data_dir, write_off_id, operator, reason):
     """回滚核销"""
-    loader = DataLoader()
-    data = loader.load_all(data_dir)
-
-    engine = InvoiceFinanceEngine()
-    for invoice in data['invoices']:
-        engine.add_invoice(invoice)
-    for wo in data['write_offs']:
-        engine.add_write_off(wo)
-    for pool in data['credit_pools']:
-        engine.add_credit_pool(pool)
-    for occ in data.get('occupations', []):
-        engine.add_occupation(occ)
+    engine, _ = _build_engine(data_dir)
 
     success = engine.rollback_write_off(write_off_id, operator, reason)
     if success:
+        persister = DataPersister()
+        persister.persist_write_offs(engine, data_dir)
+        persister.persist_occupations(engine, data_dir)
+
         click.echo(click.style(f"核销申请 {write_off_id} 已回滚", fg="green"))
+        click.echo(click.style(f"状态已回写到 {data_dir}", fg="green"))
     else:
         click.echo(click.style(f"核销申请 {write_off_id} 回滚失败", fg="red"))
         sys.exit(1)
@@ -344,6 +338,7 @@ def demo():
             "invoice_id": "inv_001",
             "amount": 30000.00,
             "apply_date": (today - timedelta(days=3)).isoformat(),
+            "status": "pending",
             "created_by": "officer_zhang"
         }
     ]

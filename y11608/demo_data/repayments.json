@@ -5,7 +5,7 @@
     "flow_no": "FLOW202605001",
     "invoice_id": "inv_001",
     "amount": 50000.0,
-    "repayment_date": "2026-05-21",
+    "repayment_date": "2026-05-23",
     "payer_account": "6222****1234",
     "payer_name": "甲公司",
     "created_by": "bank_api"
