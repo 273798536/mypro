@@ -73,9 +73,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       return {
         ...state,
+        grid: action.payload.grid,
+        scanHistory: [...state.scanHistory, action.payload.scanRecord],
+        playerActions: [...state.playerActions, action.payload.playerAction],
         energy: state.energy - state.scanCost,
-        cooldown: state.cooldownTime,
-        notifications: state.notifications
+        cooldown: state.cooldownTime
       };
     }
 
@@ -89,7 +91,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       return {
         ...state,
-        grid: newGrid
+        grid: newGrid,
+        playerActions: [...state.playerActions, action.payload.playerAction]
       };
     }
 
@@ -103,15 +106,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       return {
         ...state,
-        grid: newGrid
+        grid: newGrid,
+        playerActions: [...state.playerActions, action.payload.playerAction]
       };
     }
 
     case 'SUBMIT_GUESS': {
       return {
         ...state,
-        guessPosition: action.payload.position,
-        status: 'finished'
+        guessPosition: action.payload.position
       };
     }
 
@@ -124,7 +127,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       let newState: GameState = {
         ...state,
         turn: newTurn,
-        cooldown: newCooldown
+        cooldown: newCooldown,
+        submarine: action.payload.submarine
       };
 
       if (newTurn > state.maxTurns) {
@@ -140,13 +144,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       return newState;
-    }
-
-    case 'UPDATE_COOLDOWN': {
-      return {
-        ...state,
-        cooldown: Math.max(0, action.payload.value)
-      };
     }
 
     case 'ADD_NOTIFICATION': {

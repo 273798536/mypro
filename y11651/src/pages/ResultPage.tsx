@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Trophy, Target, MapPin, Zap, Clock, RotateCcw, Play, Download, Home } from 'lucide-react';
 import { useGame } from '../store/gameContext';
 import { getLevelById } from '../data/levels';
-import { calculateScore, getScoreGrade, analyzeFailureReason, generateSuccessTips } from '../utils/scoringUtils';
+import { getScoreGrade, analyzeFailureReasonFromReplay, generateSuccessTips } from '../utils/scoringUtils';
 import { getReplays, downloadReplay, updateHighScore, unlockLevel } from '../utils/storage';
+import { manhattanDistance } from '../utils/gridUtils';
 import { Button } from '../components/ui/Button';
-import { ProgressBar } from '../components/ui/ProgressBar';
-import type { ReplayRecord } from '../types/game';
+import type { ReplayRecord, ScoreResult } from '../types/game';
 
 export const ResultPage: React.FC = () => {
   const { levelId } = useParams<{ levelId: string }>();
@@ -49,18 +49,21 @@ export const ResultPage: React.FC = () => {
     );
   }
 
-  const scoreResult = {
-    score: replay.finalScore,
-    accuracy: 0,
-    distance: 0,
-    distanceScore: 0,
-    turnEfficiency: 0,
-    energyBonus: 0
-  };
+  const scoreResult: ScoreResult = (() => {
+    if (!replay.guessPosition) {
+      return { score: replay.finalScore, accuracy: 0, distance: 0, distanceScore: 0, turnEfficiency: 0, energyBonus: 0 };
+    }
+    const distance = manhattanDistance(replay.guessPosition, replay.actualPosition);
+    const distanceScore = Math.max(0, 1000 - distance * 100);
+    const turnEfficiency = Math.max(0, 500 - replay.turnsUsed * 50);
+    const energyBonus = replay.energyLeft * 2;
+    const accuracy = Math.max(0, 100 - distance * 10);
+    return { score: replay.finalScore, accuracy, distance, distanceScore, turnEfficiency, energyBonus };
+  })();
 
   const grade = getScoreGrade(replay.finalScore);
   const isSuccess = replay.result === 'success';
-  const failureReasons = isSuccess ? [] : analyzeFailureReason(state, replay.guessPosition || { x: 0, y: 0 });
+  const failureReasons = isSuccess ? [] : analyzeFailureReasonFromReplay(replay);
   const tips = isSuccess ? generateSuccessTips(scoreResult) : [];
 
   return (
@@ -137,7 +140,7 @@ export const ResultPage: React.FC = () => {
             <div className="bg-slate-700/50 rounded-xl p-4 text-center">
               <Clock className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
               <p className="text-slate-400 text-sm mb-1">使用回合</p>
-              <p className="text-2xl font-bold text-white">{replay.submarineTrajectory.length}</p>
+              <p className="text-2xl font-bold text-white">{replay.turnsUsed}</p>
             </div>
             <div className="bg-slate-700/50 rounded-xl p-4 text-center">
               <Zap className="w-8 h-8 text-green-400 mx-auto mb-2" />

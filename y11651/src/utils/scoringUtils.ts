@@ -1,4 +1,4 @@
-import type { GameState, Point, ScoreResult } from '../types/game';
+import type { GameState, Point, ScoreResult, ReplayRecord, ScanRecord } from '../types/game';
 import { manhattanDistance } from './gridUtils';
 
 export function calculateScore(
@@ -97,4 +97,51 @@ export function generateSuccessTips(scoreResult: ScoreResult): string[] {
   }
   
   return tips;
+}
+
+export function analyzeFailureReasonFromReplay(
+  replay: ReplayRecord
+): string[] {
+  const reasons: string[] = [];
+  const guessPosition = replay.guessPosition;
+  const actualPosition = replay.actualPosition;
+
+  if (guessPosition) {
+    const distance = manhattanDistance(guessPosition, actualPosition);
+    if (distance > 3) {
+      reasons.push(`定位偏差过大：与实际位置相差 ${distance} 格`);
+    }
+  } else {
+    reasons.push('未提交猜测位置');
+  }
+
+  if (replay.failReason === '能量已耗尽') {
+    reasons.push('能量耗尽：扫描次数过多或能量管理不当');
+  }
+
+  if (replay.failReason === '回合数已用尽') {
+    reasons.push('回合用尽：决策时间不足，需要更快推理');
+  }
+
+  const scanHistory = replay.scanHistory;
+  if (scanHistory.length < 3) {
+    reasons.push('扫描次数过少：信息收集不足');
+  }
+
+  const strongScans = scanHistory.filter(s => s.echoStrength >= 60).length;
+  if (strongScans < 2 && scanHistory.length > 0) {
+    reasons.push('有效回波过少：强回波信号不足2次');
+  }
+
+  const noiseAffectedScans = scanHistory.filter(s => s.hasNoise).length;
+  const totalScans = scanHistory.length;
+  if (totalScans > 0 && noiseAffectedScans / totalScans > 0.5) {
+    reasons.push('受噪声影响严重：超过一半的扫描受到干扰');
+  }
+
+  if (reasons.length === 0) {
+    reasons.push('需要更多练习来提升推理能力');
+  }
+
+  return reasons;
 }

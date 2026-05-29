@@ -34,10 +34,10 @@ export const GamePage: React.FC = () => {
   }, [levelId, initGame]);
 
   useEffect(() => {
-    if (state.status === 'finished' && state.guessPosition) {
+    if (state.status === 'finished') {
       navigate(`/result/${state.currentLevel}`);
     }
-  }, [state.status, state.guessPosition, state.currentLevel, navigate]);
+  }, [state.status, state.currentLevel, navigate]);
 
   const handleCellClick = (position: { x: number; y: number }) => {
     if (isGuessMode) {
@@ -65,19 +65,7 @@ export const GamePage: React.FC = () => {
 
   const handleSubmitGuess = () => {
     if (!selectedGuess) return;
-    
-    const scoreResult = submitGuess(selectedGuess);
-    if (scoreResult) {
-      const isSuccess = scoreResult.accuracy >= 50;
-      dispatch({
-        type: 'FINISH_GAME',
-        payload: {
-          result: isSuccess ? 'success' : 'failed',
-          reason: isSuccess ? undefined : '定位不准确',
-          score: scoreResult.score
-        }
-      });
-    }
+    submitGuess(selectedGuess);
   };
 
   const handleEndTurn = () => {

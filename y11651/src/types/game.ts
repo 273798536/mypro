@@ -87,6 +87,9 @@ export interface ReplayRecord {
   levelConfig: LevelConfig;
   guessPosition: Point | null;
   actualPosition: Point;
+  turnsUsed: number;
+  energyLeft: number;
+  maxEnergy: number;
 }
 
 export interface GameState {
@@ -115,12 +118,11 @@ export interface GameState {
 
 export type GameAction =
   | { type: 'INIT_GAME'; payload: { level: LevelConfig } }
-  | { type: 'SCAN_CELL'; payload: { position: Point } }
-  | { type: 'MARK_CELL'; payload: { position: Point } }
-  | { type: 'UNMARK_CELL'; payload: { position: Point } }
+  | { type: 'SCAN_CELL'; payload: { position: Point; grid: Cell[][]; scanRecord: ScanRecord; playerAction: PlayerAction } }
+  | { type: 'MARK_CELL'; payload: { position: Point; playerAction: PlayerAction } }
+  | { type: 'UNMARK_CELL'; payload: { position: Point; playerAction: PlayerAction } }
   | { type: 'SUBMIT_GUESS'; payload: { position: Point } }
-  | { type: 'END_TURN' }
-  | { type: 'UPDATE_COOLDOWN'; payload: { value: number } }
+  | { type: 'END_TURN'; payload: { submarine: Submarine } }
   | { type: 'ADD_NOTIFICATION'; payload: Notification }
   | { type: 'REMOVE_NOTIFICATION'; payload: { id: string } }
   | { type: 'FINISH_GAME'; payload: { result: 'success' | 'failed'; reason?: string; score: number } }

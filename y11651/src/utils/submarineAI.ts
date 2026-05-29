@@ -13,7 +13,7 @@ export function createSubmarine(
     position: { ...startPosition },
     direction: initialDirection,
     speed,
-    trajectory: [{ ...startPosition }],
+    trajectory: [],
     isTurning: false
   };
 }

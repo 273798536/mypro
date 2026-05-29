@@ -25,13 +25,6 @@ export function useGameEngine() {
     const scanResult = scanCell(position);
     
     if (scanResult) {
-      const action: PlayerAction = {
-        type: 'scan',
-        position,
-        turn: state.turn,
-        timestamp: Date.now()
-      };
-
       if (scanResult.hasNoise) {
         dispatch({
           type: 'ADD_NOTIFICATION',
@@ -54,17 +47,17 @@ export function useGameEngine() {
         });
       }
 
-      return { scanResult, action };
+      return scanResult;
     }
     
     return null;
-  }, [state.turn, scanCell, dispatch]);
+  }, [scanCell, dispatch]);
 
   const handleMark = useCallback((position: Point) => {
     const cell = state.grid[position.y]?.[position.x];
     if (!cell) return;
 
-    const action: PlayerAction = {
+    const playerAction: PlayerAction = {
       type: cell.marked ? 'unmark' : 'mark',
       position,
       turn: state.turn,
@@ -72,12 +65,10 @@ export function useGameEngine() {
     };
 
     if (cell.marked) {
-      dispatch({ type: 'UNMARK_CELL', payload: { position } });
+      dispatch({ type: 'UNMARK_CELL', payload: { position, playerAction } });
     } else {
-      dispatch({ type: 'MARK_CELL', payload: { position } });
+      dispatch({ type: 'MARK_CELL', payload: { position, playerAction } });
     }
-
-    return action;
   }, [state.grid, state.turn, dispatch]);
 
   const endTurn = useCallback(() => {
@@ -104,19 +95,21 @@ export function useGameEngine() {
       });
     }
 
-    dispatch({ type: 'END_TURN' });
+    dispatch({ type: 'END_TURN', payload: { submarine: newSubmarine } });
 
-    const updatedState = gameStateRef.current;
-    if (updatedState.energy < updatedState.maxEnergy * 0.2 && updatedState.energy > 0) {
-      dispatch({
-        type: 'ADD_NOTIFICATION',
-        payload: createNotification(
-          'danger',
-          `能量不足！剩余: ${updatedState.energy}`,
-          3000
-        )
-      });
-    }
+    setTimeout(() => {
+      const updatedState = gameStateRef.current;
+      if (updatedState.energy < updatedState.maxEnergy * 0.2 && updatedState.energy > 0) {
+        dispatch({
+          type: 'ADD_NOTIFICATION',
+          payload: createNotification(
+            'danger',
+            `能量不足！剩余: ${updatedState.energy}`,
+            3000
+          )
+        });
+      }
+    }, 50);
 
     return newSubmarine;
   }, [state.status, dispatch]);
@@ -124,17 +117,10 @@ export function useGameEngine() {
   const submitGuess = useCallback((position: Point): ScoreResult | null => {
     if (state.status !== 'playing') return null;
 
-    dispatch({ type: 'SUBMIT_GUESS', payload: { position } });
-
     const scoreResult = calculateScore(state, position);
     const isSuccess = scoreResult.accuracy >= 50;
 
-    const action: PlayerAction = {
-      type: 'guess',
-      position,
-      turn: state.turn,
-      timestamp: Date.now()
-    };
+    dispatch({ type: 'SUBMIT_GUESS', payload: { position } });
 
     dispatch({
       type: 'FINISH_GAME',
@@ -170,7 +156,7 @@ export function useGameEngine() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (state.status === 'finished' && state.guessPosition) {
+    if (state.status === 'finished') {
       const levelConfig = getLevelById(state.currentLevel);
       if (levelConfig) {
         const replay = {
@@ -186,12 +172,15 @@ export function useGameEngine() {
           scanHistory: state.scanHistory,
           levelConfig,
           guessPosition: state.guessPosition,
-          actualPosition: state.submarine.position
+          actualPosition: state.submarine.position,
+          turnsUsed: state.turn,
+          energyLeft: state.energy,
+          maxEnergy: state.maxEnergy
         };
         saveReplay(replay);
       }
     }
-  }, [state.status, state.guessPosition, state.currentLevel, state.score, state.result, state.failReason, state.startTime, state.playerActions, state.submarine.trajectory, state.submarine.position, state.scanHistory]);
+  }, [state.status, state.currentLevel, state.score, state.result, state.failReason, state.startTime, state.playerActions, state.submarine.trajectory, state.submarine.position, state.scanHistory, state.guessPosition, state.turn, state.energy, state.maxEnergy]);
 
   return {
     initGame,

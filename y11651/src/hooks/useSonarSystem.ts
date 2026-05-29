@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { Point, ScanRecord, Cell } from '../types/game';
+import type { Point, ScanRecord, Cell, PlayerAction } from '../types/game';
 import { calculateEchoStrength, createScanRecord, updateGridWithScanResult, isTargetDetected } from '../utils/sonarUtils';
 import { useGame } from '../store/gameContext';
 
@@ -28,8 +28,6 @@ export function useSonarSystem() {
       detected
     );
 
-    dispatch({ type: 'SCAN_CELL', payload: { position } });
-
     const newGrid = updateGridWithScanResult(
       state.grid,
       position,
@@ -38,9 +36,21 @@ export function useSonarSystem() {
       result.noiseLevel
     );
 
+    const playerAction: PlayerAction = {
+      type: 'scan',
+      position,
+      turn: state.turn,
+      timestamp: Date.now()
+    };
+
     dispatch({
-      type: 'UPDATE_COOLDOWN',
-      payload: { value: state.cooldownTime }
+      type: 'SCAN_CELL',
+      payload: {
+        position,
+        grid: newGrid,
+        scanRecord,
+        playerAction
+      }
     });
 
     return scanRecord;
