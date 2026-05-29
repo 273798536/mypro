@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from datetime import datetime
 
 from sqlalchemy.orm import Session
@@ -51,20 +51,24 @@ class ImportService:
         )
         self.db.add(audit)
 
-    def _get_or_create_customer(self, customer_code: str, customer_name: str,
-                                source_id: int, imported_by: str) -> Tuple[Customer, str]:
+    def _ensure_customer(self, customer_code: str, customer_name: str,
+                         source_id: int, imported_by: str,
+                         allow_update: bool = True) -> Tuple[Optional[Customer], str]:
         customer = self.db.query(Customer).filter(Customer.customer_code == customer_code).first()
         if customer:
-            old_vals = {
-                "customer_name": customer.customer_name,
-                "is_active": customer.is_active
-            }
-            customer.customer_name = customer_name
-            customer.is_active = True
-            self._log_audit("customers", customer.id, "update", old_vals,
-                           {"customer_name": customer_name}, imported_by,
-                           "数据导入更新", source_id)
-            return customer, "updated"
+            if allow_update:
+                old_vals = {
+                    "customer_name": customer.customer_name,
+                    "is_active": customer.is_active
+                }
+                customer.customer_name = customer_name
+                customer.is_active = True
+                self._log_audit("customers", customer.id, "update", old_vals,
+                               {"customer_name": customer_name}, imported_by,
+                               "数据导入更新", source_id)
+                return customer, "updated"
+            else:
+                return customer, "skipped"
         else:
             customer = Customer(
                 customer_code=customer_code,
@@ -86,6 +90,8 @@ class ImportService:
         ds = self._create_data_source(DataSourceType.CUSTOMER, file_name, strategy,
                                       imported_by, f"客户数据导入，共{len(records)}条", len(records))
 
+        allow_update = strategy == ImportStrategy.OVERWRITE
+
         for record in records:
             customer_code = str(record.get("customer_code", "")).strip()
             customer_name = str(record.get("customer_name", "")).strip()
@@ -94,15 +100,19 @@ class ImportService:
                 continue
 
             existing = self.db.query(Customer).filter(Customer.customer_code == customer_code).first()
-            if existing and strategy == ImportStrategy.IGNORE:
+            if existing and strategy in (ImportStrategy.IGNORE, ImportStrategy.APPEND):
                 skipped += 1
                 continue
 
-            customer, action = self._get_or_create_customer(customer_code, customer_name, ds.id, imported_by)
+            customer, action = self._ensure_customer(customer_code, customer_name, ds.id, imported_by,
+                                                      allow_update=allow_update)
             if action == "created":
                 created += 1
-            else:
+            elif action == "updated":
                 updated += 1
+            else:
+                skipped += 1
+                continue
 
             if "industry" in record:
                 customer.industry = str(record["industry"]).strip() if record["industry"] else None
@@ -144,14 +154,15 @@ class ImportService:
                 skipped += 1
                 continue
 
-            customer, _ = self._get_or_create_customer(
+            customer, _ = self._ensure_customer(
                 customer_code,
                 str(record.get("customer_name", customer_code)).strip(),
-                ds.id, imported_by
+                ds.id, imported_by,
+                allow_update=(strategy == ImportStrategy.OVERWRITE)
             )
 
             existing = self.db.query(Contract).filter(Contract.contract_no == contract_no).first()
-            if existing and strategy == ImportStrategy.IGNORE:
+            if existing and strategy in (ImportStrategy.IGNORE, ImportStrategy.APPEND):
                 skipped += 1
                 continue
 
@@ -229,14 +240,15 @@ class ImportService:
                 skipped += 1
                 continue
 
-            customer, _ = self._get_or_create_customer(
+            customer, _ = self._ensure_customer(
                 customer_code,
                 str(record.get("customer_name", customer_code)).strip(),
-                ds.id, imported_by
+                ds.id, imported_by,
+                allow_update=(strategy == ImportStrategy.OVERWRITE)
             )
 
             existing = self.db.query(Invoice).filter(Invoice.invoice_no == invoice_no).first()
-            if existing and strategy == ImportStrategy.IGNORE:
+            if existing and strategy in (ImportStrategy.IGNORE, ImportStrategy.APPEND):
                 skipped += 1
                 continue
 
@@ -326,14 +338,15 @@ class ImportService:
                 skipped += 1
                 continue
 
-            customer, _ = self._get_or_create_customer(
+            customer, _ = self._ensure_customer(
                 customer_code,
                 str(record.get("customer_name", customer_code)).strip(),
-                ds.id, imported_by
+                ds.id, imported_by,
+                allow_update=(strategy == ImportStrategy.OVERWRITE)
             )
 
             existing = self.db.query(Receipt).filter(Receipt.receipt_no == receipt_no).first()
-            if existing and strategy == ImportStrategy.IGNORE:
+            if existing and strategy in (ImportStrategy.IGNORE, ImportStrategy.APPEND):
                 skipped += 1
                 continue
 
@@ -404,10 +417,11 @@ class ImportService:
                 skipped += 1
                 continue
 
-            customer, _ = self._get_or_create_customer(
+            customer, _ = self._ensure_customer(
                 customer_code,
                 str(record.get("customer_name", customer_code)).strip(),
-                ds.id, imported_by
+                ds.id, imported_by,
+                allow_update=(strategy == ImportStrategy.OVERWRITE)
             )
 
             invoice_id = None
@@ -463,10 +477,11 @@ class ImportService:
                 skipped += 1
                 continue
 
-            customer, _ = self._get_or_create_customer(
+            customer, _ = self._ensure_customer(
                 customer_code,
                 str(record.get("customer_name", customer_code)).strip(),
-                ds.id, imported_by
+                ds.id, imported_by,
+                allow_update=(strategy == ImportStrategy.OVERWRITE)
             )
 
             existing = self.db.query(CreditLimit).filter(
@@ -474,7 +489,7 @@ class ImportService:
                 CreditLimit.is_frozen == False
             ).order_by(CreditLimit.effective_date.desc()).first()
 
-            if existing and strategy == ImportStrategy.IGNORE:
+            if existing and strategy in (ImportStrategy.IGNORE, ImportStrategy.APPEND):
                 skipped += 1
                 continue
 

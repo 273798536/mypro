@@ -30,6 +30,29 @@ def get_alerts(
     return alerts
 
 
+@router.get("/summary", summary="预警汇总统计")
+def get_alerts_summary(db: Session = Depends(get_db)):
+    total_unresolved = db.query(Alert).filter(Alert.is_resolved == False).count()
+    by_type = db.query(
+        Alert.alert_type,
+        Alert.is_resolved
+    ).all()
+
+    type_counts = {}
+    for atype, resolved in by_type:
+        key = atype.value
+        if key not in type_counts:
+            type_counts[key] = {"total": 0, "unresolved": 0}
+        type_counts[key]["total"] += 1
+        if not resolved:
+            type_counts[key]["unresolved"] += 1
+
+    return {
+        "total_unresolved": total_unresolved,
+        "by_type": type_counts
+    }
+
+
 @router.get("/{alert_id}", response_model=AlertSchema, summary="获取预警详情")
 def get_alert(alert_id: int, db: Session = Depends(get_db)):
     alert = db.query(Alert).filter(Alert.id == alert_id).first()
@@ -62,26 +85,3 @@ def check_promise_dates(db: Session = Depends(get_db)):
     service = ARService(db)
     alerts_created = service.check_promise_dates()
     return {"alerts_created": alerts_created}
-
-
-@router.get("/summary", summary="预警汇总统计")
-def get_alerts_summary(db: Session = Depends(get_db)):
-    total_unresolved = db.query(Alert).filter(Alert.is_resolved == False).count()
-    by_type = db.query(
-        Alert.alert_type,
-        Alert.is_resolved
-    ).all()
-
-    type_counts = {}
-    for atype, resolved in by_type:
-        key = atype.value
-        if key not in type_counts:
-            type_counts[key] = {"total": 0, "unresolved": 0}
-        type_counts[key]["total"] += 1
-        if not resolved:
-            type_counts[key]["unresolved"] += 1
-
-    return {
-        "total_unresolved": total_unresolved,
-        "by_type": type_counts
-    }
