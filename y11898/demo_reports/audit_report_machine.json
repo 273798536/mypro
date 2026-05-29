@@ -1,0 +1,215 @@
+{
+  "version": "1.0",
+  "summary": {
+    "num_trajectories": 2,
+    "num_complete_trajectories": 1,
+    "total_steps": 20,
+    "total_reward": 260.85,
+    "avg_reward_per_trajectory": 130.425,
+    "avg_steps_per_trajectory": 10.0,
+    "reward_by_trajectory": [
+      {
+        "trajectory_id": "demo_traj_001",
+        "total_reward": 260.85,
+        "steps": 10,
+        "complete": true
+      },
+      {
+        "trajectory_id": "demo_traj_002",
+        "total_reward": 0,
+        "steps": 10,
+        "complete": false
+      }
+    ],
+    "reward_contribution": [
+      {
+        "name": "key_collection",
+        "ratio": 0.7705577918343876,
+        "total": 201.0
+      },
+      {
+        "name": "coin",
+        "ratio": 0.19359785317232123,
+        "total": 50.5
+      },
+      {
+        "name": "goal_reached",
+        "ratio": 0.0383362085489745,
+        "total": 10.0
+      },
+      {
+        "name": "exploration",
+        "ratio": 0.00038336208548974505,
+        "total": 0.1
+      },
+      {
+        "name": "distance_to_goal",
+        "ratio": -0.00019168104274487253,
+        "total": -0.05
+      },
+      {
+        "name": "movement",
+        "ratio": -0.002683534598428215,
+        "total": -0.7
+      }
+    ],
+    "num_corrections": 10,
+    "num_errors": 0
+  },
+  "reward_aggregations": {
+    "movement": {
+      "total": -0.7,
+      "mean": -0.1,
+      "std": 0.0,
+      "min": -0.1,
+      "max": -0.1,
+      "contribution_ratio": -0.002683534598428215
+    },
+    "exploration": {
+      "total": 0.1,
+      "mean": 0.05,
+      "std": 0.0,
+      "min": 0.05,
+      "max": 0.05,
+      "contribution_ratio": 0.00038336208548974505
+    },
+    "coin": {
+      "total": 50.5,
+      "mean": 8.416666666666666,
+      "std": 20.371589694146767,
+      "min": 0.1,
+      "max": 50.0,
+      "contribution_ratio": 0.19359785317232123
+    },
+    "distance_to_goal": {
+      "total": -0.05,
+      "mean": -0.05,
+      "std": 0.0,
+      "min": -0.05,
+      "max": -0.05,
+      "contribution_ratio": -0.00019168104274487253
+    },
+    "key_collection": {
+      "total": 201.0,
+      "mean": 67.0,
+      "std": 57.15767664977295,
+      "min": 1.0,
+      "max": 100.0,
+      "contribution_ratio": 0.7705577918343876
+    },
+    "goal_reached": {
+      "total": 10.0,
+      "mean": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "contribution_ratio": 0.0383362085489745
+    }
+  },
+  "anomalies": [
+    {
+      "type": "reward_leakage",
+      "severity": "medium",
+      "trajectory_id": "demo_traj_001",
+      "step_id": 6,
+      "description": "检测到奖励泄漏: 奖励项 'coin' 在步骤 6 的值 50.0000 显著偏离平均值 (Z-score: 2.24)",
+      "evidence": {
+        "reward_name": "coin",
+        "actual_value": 50.0,
+        "expected_mean": 8.416666666666666,
+        "expected_std": 18.596632012873254,
+        "z_score": 2.2360679774997894,
+        "step_id": 6,
+        "state": {
+          "x": 2,
+          "y": 2,
+          "has_key": true,
+          "coins": 3
+        },
+        "action": "move_up"
+      },
+      "recommendation": "检查奖励函数中 'coin' 的计算逻辑。可能是状态特征被误用来获取额外奖励，或者奖励阈值设置不合理。建议查看步骤 6 前后的状态变化，确认奖励条件是否被智能体利用。"
+    },
+    {
+      "type": "action_loop",
+      "severity": "medium",
+      "trajectory_id": "demo_traj_002",
+      "step_id": 0,
+      "description": "检测到动作循环: 从步骤 0 开始，动作序列 ['move_right', 'move_left'] 重复了 5 次",
+      "evidence": {
+        "start_step": 0,
+        "end_step": 9,
+        "pattern": [
+          "move_right",
+          "move_left"
+        ],
+        "pattern_length": 2,
+        "repeat_count": 5
+      },
+      "recommendation": "该动作循环表明智能体可能陷入了局部最优策略。建议检查奖励函数是否存在激励循环行为的设计缺陷，或者考虑增加探索率、修改终止条件。"
+    }
+  ],
+  "corrections": [
+    {
+      "field_name": "reward",
+      "step_id": 0,
+      "correction_type": "missing_field",
+      "message": "步骤 0: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 1,
+      "correction_type": "missing_field",
+      "message": "步骤 1: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 2,
+      "correction_type": "missing_field",
+      "message": "步骤 2: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 3,
+      "correction_type": "missing_field",
+      "message": "步骤 3: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 4,
+      "correction_type": "missing_field",
+      "message": "步骤 4: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 5,
+      "correction_type": "missing_field",
+      "message": "步骤 5: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 6,
+      "correction_type": "missing_field",
+      "message": "步骤 6: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 7,
+      "correction_type": "missing_field",
+      "message": "步骤 7: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 8,
+      "correction_type": "missing_field",
+      "message": "步骤 8: 缺少奖励字段，设为 0"
+    },
+    {
+      "field_name": "reward",
+      "step_id": 9,
+      "correction_type": "missing_field",
+      "message": "步骤 9: 缺少奖励字段，设为 0"
+    }
+  ],
+  "errors": []
+}
