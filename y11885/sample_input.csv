@@ -1,0 +1,4 @@
+name,prevalence,sensitivity,specificity,description,is_broken,broken_reason
+示例场景1 - 罕见病筛查,0.005,0.95,0.98,0.5%患病率,False,
+示例场景2 - 常见疾病,0.1,0.9,0.9,10%患病率,False,
+示例场景3 - 异常数据,2.0,0.95,0.95,200%患病率，不可能存在,True,患病率超过100%

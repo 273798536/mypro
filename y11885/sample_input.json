@@ -1,0 +1,31 @@
+{
+  "scenarios": [
+    {
+      "name": "示例场景1 - 罕见病筛查",
+      "prevalence": 0.005,
+      "sensitivity": 0.95,
+      "specificity": 0.98,
+      "description": "0.5%患病率",
+      "is_broken": false,
+      "broken_reason": ""
+    },
+    {
+      "name": "示例场景2 - 常见疾病",
+      "prevalence": 0.1,
+      "sensitivity": 0.9,
+      "specificity": 0.9,
+      "description": "10%患病率",
+      "is_broken": false,
+      "broken_reason": ""
+    },
+    {
+      "name": "示例场景3 - 异常数据",
+      "prevalence": 2.0,
+      "sensitivity": 0.95,
+      "specificity": 0.95,
+      "description": "200%患病率，不可能存在",
+      "is_broken": true,
+      "broken_reason": "患病率超过100%"
+    }
+  ]
+}
