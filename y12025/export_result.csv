@@ -1,0 +1,18 @@
+﻿规则,严重程度,竞买人,拍品,描述,来源,建议
+DL-002,info,B001,LOT001,竞买人 B001 拍品 LOT001: 已成交，保证金 500000.0 锁定转部分付款,test_data_registrations.csv#L2; test_data_confirmations.csv#L2; test_data_funds.csv#L2; test_data_funds.csv#L10,保证金已锁定，无需操作
+BS-002,info,B001,LOT001,竞买人 B001 拍品 LOT001: 竞价状态=已成交,test_data_registrations.csv#L2; test_data_confirmations.csv#L2; test_data_funds.csv#L2; test_data_funds.csv#L10,
+OW-001,error,B001,LOT001,"竞买人 B001 拍品 LOT001: 尾款逾期 19 天 (应付 4500000.0, 本拍品已付 4250000.0)",test_data_registrations.csv#L2; test_data_confirmations.csv#L2; test_data_funds.csv#L2; test_data_funds.csv#L10; test_data_confirmations.csv#L2,催收尾款 250000.0 或启动违约流程
+DL-003,info,B002,LOT002,竞买人 B002 拍品 LOT002: 流拍，保证金应退回,test_data_registrations.csv#L3; test_data_funds.csv#L3; test_data_funds.csv#L8,确认退回金额与缴纳金额一致
+BS-003,info,B002,LOT002,竞买人 B002 拍品 LOT002: 竞价状态=流拍,test_data_registrations.csv#L3; test_data_funds.csv#L3; test_data_funds.csv#L8,
+DL-002,info,B003,LOT003,竞买人 B003 拍品 LOT003: 已成交，保证金 800000.0 锁定转部分付款,test_data_registrations.csv#L4; test_data_confirmations.csv#L3; test_data_funds.csv#L4; test_data_funds.csv#L11; test_data_funds.csv#L12,保证金已锁定，无需操作
+DL-CONFLICT,error,B003,LOT003,竞买人 B003 拍品 LOT003: 已成交但存在保证金退回 100000.0，疑似脏数据（成交不应退保证金）,test_data_registrations.csv#L4; test_data_confirmations.csv#L3; test_data_funds.csv#L4; test_data_funds.csv#L11; test_data_funds.csv#L12; test_data_funds.csv#L12,核实退回流水是否录入错误，已成交拍品保证金不应退回
+BS-002,info,B003,LOT003,竞买人 B003 拍品 LOT003: 竞价状态=已成交,test_data_registrations.csv#L4; test_data_confirmations.csv#L3; test_data_funds.csv#L4; test_data_funds.csv#L11; test_data_funds.csv#L12,
+OW-001,error,B003,LOT003,"竞买人 B003 拍品 LOT003: 尾款逾期 45 天 (应付 11200000.0, 本拍品已付 500000.0)",test_data_registrations.csv#L4; test_data_confirmations.csv#L3; test_data_funds.csv#L4; test_data_funds.csv#L11; test_data_funds.csv#L12; test_data_confirmations.csv#L3,催收尾款 10700000.0 或启动违约流程
+DL-002,info,B003,LOT006,竞买人 B003 拍品 LOT006: 已成交，保证金 400000.0 锁定转部分付款,test_data_registrations.csv#L7; test_data_confirmations.csv#L4; test_data_funds.csv#L7,保证金已锁定，无需操作
+BS-002,info,B003,LOT006,竞买人 B003 拍品 LOT006: 竞价状态=已成交,test_data_registrations.csv#L7; test_data_confirmations.csv#L4; test_data_funds.csv#L7,
+OW-001,error,B003,LOT006,"竞买人 B003 拍品 LOT006: 尾款逾期 40 天 (应付 5600000.0, 本拍品已付 0)",test_data_registrations.csv#L7; test_data_confirmations.csv#L4; test_data_funds.csv#L7; test_data_confirmations.csv#L4,催收尾款 5600000.0 或启动违约流程
+OW-MERGE,warning,B003,LOT006,竞买人 B003 拍品 LOT006: 该竞买人多拍品尾款合计 500000.0，但本拍品仅到账 0，请勿将其他拍品尾款计入本拍品,test_data_registrations.csv#L7; test_data_confirmations.csv#L4; test_data_funds.csv#L7; test_data_confirmations.csv#L4,按拍品逐一核对尾款，避免跨拍品合并
+DL-004,warning,B004,LOT004,竞买人 B004 拍品 LOT004: 竞价已撤销，保证金应解锁退回,test_data_registrations.csv#L5; test_data_funds.csv#L5; test_data_funds.csv#L9,核实撤销后执行保证金退回
+BS-004,info,B004,LOT004,竞买人 B004 拍品 LOT004: 竞价状态=已撤销,test_data_registrations.csv#L5; test_data_funds.csv#L5; test_data_funds.csv#L9,
+DL-003,info,B005,LOT005,竞买人 B005 拍品 LOT005: 流拍，保证金应退回,test_data_registrations.csv#L6; test_data_funds.csv#L6; test_data_funds.csv#L13,确认退回金额与缴纳金额一致
+BS-003,info,B005,LOT005,竞买人 B005 拍品 LOT005: 竞价状态=流拍,test_data_registrations.csv#L6; test_data_funds.csv#L6; test_data_funds.csv#L13,
