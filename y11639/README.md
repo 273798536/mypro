@@ -1,57 +1,40 @@
-# React + TypeScript + Vite
+# 配电抢修回合战
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+电力公司风暴后抢修培训小游戏。模拟回合制调度决策，在医院与居民区之间做优先级权衡。
 
-Currently, two official plugins are available:
+## 功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 回合制调度：选择队伍 → 选择区域 → 结束回合
+- 优先级规则：医院(P1) > 居民区(P3) > 商业区(P4+)
+- 冷却时间：队伍完成任务后需冷却
+- 备件管理：每次抢修消耗备件，不足时不可派遣
+- 超时惩罚：区域超时后标记失败并扣分（只扣一次）
+- 错误提示：重复派遣、技能不匹配、备件不足均有来源位置
+- 关卡结果：得分、失败原因、操作记录
+- 报告导出：JSON 格式
+- 操作回放：逐回合查看状态变化
 
-## Expanding the ESLint configuration
+## 运行
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+浏览器打开 http://localhost:5173
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 验证
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm run check   # TypeScript 类型检查
+npm run lint    # ESLint 检查
+npm run build   # 生产构建
 ```
+
+## 三个关卡
+
+| 关卡 | 难度 | 队伍 | 区域 | 回合 |
+|------|------|------|------|------|
+| 基础训练关 | 简单 | 2 | 3 | 12 |
+| 进阶训练关 | 普通 | 3 | 5 | 15 |
+| 挑战关 | 困难 | 4 | 8 | 18 |

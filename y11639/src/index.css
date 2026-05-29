@@ -56,11 +56,8 @@ body {
   padding: 0;
   background-color: #0f172a;
   color: #f1f5f9;
-  overflow: hidden;
 }
 
 #root {
-  width: 100vw;
-  height: 100vh;
-  overflow: auto;
+  min-height: 100vh;
 }

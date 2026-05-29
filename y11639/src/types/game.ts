@@ -4,7 +4,7 @@ export type TeamStatus = 'idle' | 'executing' | 'cooling';
 
 export type AreaType = 'hospital' | 'residential' | 'commercial' | 'industrial';
 
-export type PowerStatus = 'normal' | 'damaged' | 'blackout';
+export type PowerStatus = 'normal' | 'damaged' | 'blackout' | 'timeout';
 
 export type WeatherType = 'typhoon' | 'rainstorm' | 'lightning' | 'normal' | 'fog';
 
@@ -174,7 +174,8 @@ export const TEAM_STATUS_LABELS: Record<TeamStatus, string> = {
 export const POWER_STATUS_LABELS: Record<PowerStatus, string> = {
   normal: '正常供电',
   damaged: '受损',
-  blackout: '停电'
+  blackout: '停电',
+  timeout: '已超时'
 };
 
 export const FAIL_TYPE_LABELS: Record<FailType, string> = {

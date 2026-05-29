@@ -10,7 +10,7 @@ import type {
 } from '../types/game';
 import { getWeatherForRound } from '../data/levels';
 import { validateDispatch, validateRecall, checkTimeouts } from './validation';
-import { SKILL_LABELS, AREA_TYPE_LABELS, TEAM_STATUS_LABELS } from '../types/game';
+import { AREA_TYPE_LABELS } from '../types/game';
 
 interface InternalGameState extends GameState {
   level: LevelConfig;
@@ -157,7 +157,6 @@ export function dispatchTeam(
 
   const newState = cloneState(state);
   const newTeam = newState.teams.find(t => t.id === teamId)!;
-  const newArea = newState.areas.find(a => a.id === areaId)!;
 
   const executeRounds = state.baseExecuteRounds + state.weather.cooldownModifier;
   newTeam.status = 'executing';
@@ -213,7 +212,7 @@ export function recallTeam(
     };
   }
 
-  const validation = validateRecall(team, state);
+  const validation = validateRecall(team);
   if (!validation.valid && validation.error) {
     const newState = cloneState(state);
     newState.logs.push(
@@ -253,7 +252,7 @@ export function recallTeam(
 }
 
 export function endRound(state: InternalGameState): InternalGameState {
-  let newState = cloneState(state);
+  const newState = cloneState(state);
 
   newState.teams.forEach(team => {
     if (team.status === 'executing') {
@@ -290,13 +289,15 @@ export function endRound(state: InternalGameState): InternalGameState {
   });
 
   newState.areas.forEach(area => {
-    if (area.powerStatus !== 'normal') {
+    if (area.powerStatus !== 'normal' && area.powerStatus !== 'timeout') {
       area.timeoutRounds -= 1;
     }
   });
 
   const { timedOut } = checkTimeouts(newState);
   timedOut.forEach(area => {
+    area.powerStatus = 'timeout';
+    area.timeoutRounds = 0;
     newState.score -= area.penalty;
     newState.logs.push(
       createLog(
@@ -367,8 +368,22 @@ export function calculateMaxScore(level: LevelConfig): number {
 }
 
 export function toPublicState(state: InternalGameState): GameState {
-  const { level, baseExecuteRounds, baseCooldownRounds, ...publicState } = state;
-  return publicState;
+  const result: GameState = {
+    currentRound: state.currentRound,
+    maxRounds: state.maxRounds,
+    teams: state.teams,
+    areas: state.areas,
+    spareParts: state.spareParts,
+    weather: state.weather,
+    logs: state.logs,
+    score: state.score,
+    gameOver: state.gameOver,
+    failReasons: state.failReasons,
+    dispatchHistory: state.dispatchHistory,
+    stateSnapshots: state.stateSnapshots,
+    sparePartPerRepair: state.sparePartPerRepair
+  };
+  return result;
 }
 
 export { type InternalGameState };

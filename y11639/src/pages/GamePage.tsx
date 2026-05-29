@@ -5,7 +5,6 @@ import { TopBar } from '../components/TopBar';
 import { TeamCard } from '../components/TeamCard';
 import { AreaCard } from '../components/AreaCard';
 import { EventLog } from '../components/EventLog';
-import { calculateMaxScore } from '../utils/gameEngine';
 
 export function GamePage() {
   const navigate = useNavigate();
@@ -82,13 +81,11 @@ export function GamePage() {
   const executingTeams = publicState.teams.filter(t => t.status === 'executing');
   const coolingTeams = publicState.teams.filter(t => t.status === 'cooling');
 
-  const maxScore = calculateMaxScore(currentLevel);
-
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col">
+    <div className="h-screen bg-slate-900 flex flex-col overflow-hidden">
       <TopBar />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex min-h-0">
         {/* Left Panel - Teams */}
         <div className="w-80 bg-slate-800/30 border-r border-slate-600 p-4 flex flex-col">
           <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
@@ -170,7 +167,7 @@ export function GamePage() {
               <AreaCard
                 key={area.id}
                 area={area}
-                isSelectable={!!selectedTeamId && area.powerStatus !== 'normal'}
+                isSelectable={!!selectedTeamId && area.powerStatus !== 'normal' && area.powerStatus !== 'timeout'}
                 onClick={() => handleAreaClick(area.id)}
               />
             ))}

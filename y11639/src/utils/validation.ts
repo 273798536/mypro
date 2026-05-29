@@ -42,6 +42,18 @@ export function validateDispatch(
     };
   }
 
+  if (area.powerStatus === 'timeout') {
+    return {
+      valid: false,
+      error: {
+        type: 'timeout',
+        message: `${area.name} 已超时，无法再抢修`,
+        detail: `区域 [${area.name}] 抢修超时，已判定失败，不可再派遣队伍。`,
+        source: `areas[${area.id}].powerStatus === 'timeout'`
+      }
+    };
+  }
+
   if (!team.skills.includes(area.requiredSkill)) {
     return {
       valid: false,
@@ -71,8 +83,7 @@ export function validateDispatch(
 }
 
 export function validateRecall(
-  team: RepairTeam,
-  _state: GameState
+  team: RepairTeam
 ): ValidationResult {
   if (team.status === 'idle') {
     return {

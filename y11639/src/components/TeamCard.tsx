@@ -1,4 +1,3 @@
-import { useGameStore } from '../store/gameStore';
 import { SKILL_LABELS, TEAM_STATUS_LABELS } from '../types/game';
 import type { RepairTeam } from '../types/game';
 

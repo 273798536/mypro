@@ -34,7 +34,8 @@ const priorityColors: Record<number, string> = {
 const powerStatusColors = {
   normal: 'bg-emerald-500 text-emerald-400',
   damaged: 'bg-yellow-500 text-yellow-400',
-  blackout: 'bg-red-500 text-red-400'
+  blackout: 'bg-red-500 text-red-400',
+  timeout: 'bg-red-700 text-red-300'
 };
 
 const getPriorityLabel = (p: number) => {
@@ -52,13 +53,15 @@ export function AreaCard({ area, isSelectable, onClick }: AreaCardProps) {
   return (
     <button
       onClick={onClick}
-      disabled={area.powerStatus === 'normal' || !isSelectable}
+      disabled={area.powerStatus === 'normal' || area.powerStatus === 'timeout' || !isSelectable}
       className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200
         ${area.powerStatus === 'normal'
           ? 'bg-slate-700/50 border-slate-600'
-          : isSelectable
-            ? 'bg-slate-700 border-slate-500 hover:bg-slate-600 hover:scale-102 hover:shadow-lg cursor-pointer'
-            : 'bg-slate-700/50 border-slate-600 cursor-not-allowed'
+          : area.powerStatus === 'timeout'
+            ? 'bg-red-900/30 border-red-700 cursor-not-allowed'
+            : isSelectable
+              ? 'bg-slate-700 border-slate-500 hover:bg-slate-600 hover:scale-102 hover:shadow-lg cursor-pointer'
+              : 'bg-slate-700/50 border-slate-600 cursor-not-allowed'
         }
       `}
     >
@@ -84,7 +87,7 @@ export function AreaCard({ area, isSelectable, onClick }: AreaCardProps) {
         </span>
       </div>
 
-      {area.powerStatus !== 'normal' && (
+      {(area.powerStatus === 'blackout' || area.powerStatus === 'damaged') && (
         <div className="space-y-2">
           <div className="flex justify-between text-xs">
             <span className="text-slate-400">超时倒计时</span>
@@ -98,6 +101,12 @@ export function AreaCard({ area, isSelectable, onClick }: AreaCardProps) {
               style={{ width: `${Math.max(100 - ((4 - area.timeoutRounds) * 25), 0)}%` }}
             />
           </div>
+        </div>
+      )}
+
+      {area.powerStatus === 'timeout' && (
+        <div className="mt-2 p-2 bg-red-500/20 rounded-lg border border-red-500/50 text-center">
+          <span className="text-red-400 font-bold text-sm">⚠ 已超时，不可抢修</span>
         </div>
       )}
 
