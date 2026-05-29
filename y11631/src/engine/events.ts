@@ -33,12 +33,25 @@ export function generateRandomEvent(
 }
 
 export function isEventActive(event: GameEvent, currentTime: number): boolean {
+  if (event.applied && event.duration === 0) return false;
   if (event.duration === 0) return true;
   return currentTime < event.timestamp + event.duration;
 }
 
 export function getActiveEvents(events: GameEvent[], currentTime: number): GameEvent[] {
   return events.filter(event => isEventActive(event, currentTime));
+}
+
+export function consumeUnappliedPriceJumps(events: GameEvent[]): { priceJump: number; updatedEvents: GameEvent[] } {
+  let priceJump = 0;
+  const updatedEvents = events.map(event => {
+    if (event.type === 'price_jump' && !event.applied) {
+      priceJump += event.effect.priceChange || 0;
+      return { ...event, applied: true as const };
+    }
+    return event;
+  });
+  return { priceJump, updatedEvents };
 }
 
 export function getEventColor(severity: EventSeverity): string {

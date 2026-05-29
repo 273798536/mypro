@@ -8,6 +8,7 @@ import {
   ReplaySnapshot,
   ReplayData,
   SettlementReport,
+  PlayerAction,
 } from '../engine/types';
 import {
   DIFFICULTY_CONFIGS,
@@ -25,6 +26,7 @@ import {
 import {
   generateRandomEvent,
   getActiveEvents,
+  consumeUnappliedPriceJumps,
 } from '../engine/events';
 import {
   createReplayData,
@@ -40,6 +42,8 @@ interface GameStore {
   isReplayMode: boolean;
   currentReplayIndex: number;
   replaySpeed: number;
+  pendingAction: PlayerAction | null;
+  playerActionLog: PlayerAction[];
   
   startGame: (difficulty: Difficulty) => void;
   pauseGame: () => void;
@@ -87,6 +91,7 @@ function createInitialState(difficulty: Difficulty): GameState {
     events: [],
     orderBook: generateInitialOrderBook(initialPrice),
     priceHistory: [{ time: 0, price: initialPrice }],
+    inventoryHistory: [{ time: 0, inventory: 0 }],
   };
 }
 
@@ -98,6 +103,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   isReplayMode: false,
   currentReplayIndex: 0,
   replaySpeed: 1,
+  pendingAction: null,
+  playerActionLog: [],
 
   startGame: (difficulty: Difficulty) => {
     const newState = createInitialState(difficulty);
@@ -106,6 +113,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       replaySnapshots: [],
       settlementReport: null,
       isReplayMode: false,
+      pendingAction: null,
+      playerActionLog: [],
     });
     
     setTimeout(() => {
@@ -197,18 +206,31 @@ export const useGameStore = create<GameStore>((set, get) => ({
       timestamp: Date.now(),
       status: 'active',
     };
+
+    const action: PlayerAction = {
+      type: 'place_order',
+      payload: { side, price, quantity, orderId: order.id },
+      timestamp: Date.now(),
+    };
     
     set(state => ({
       gameState: {
         ...state.gameState,
         activeOrders: [...state.gameState.activeOrders, order],
       },
+      pendingAction: action,
+      playerActionLog: [...state.playerActionLog, action],
     }));
     
     return true;
   },
 
   cancelOrder: (orderId) => {
+    const action: PlayerAction = {
+      type: 'cancel_order',
+      payload: { orderId },
+      timestamp: Date.now(),
+    };
     set(state => ({
       gameState: {
         ...state.gameState,
@@ -216,6 +238,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
           o.id === orderId ? { ...o, status: 'cancelled' as const } : o
         ),
       },
+      pendingAction: action,
+      playerActionLog: [...state.playerActionLog, action],
     }));
   },
 
@@ -233,15 +257,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return;
     }
     
-    const activeEvents = getActiveEvents(state.gameState.events, gameTime * 1000);
+    let newEvents = [...state.gameState.events];
+    const newEvent = generateRandomEvent(state.gameState.difficulty, gameTime * 1000);
+    if (newEvent) {
+      newEvents.push(newEvent);
+    }
+
+    const { priceJump, updatedEvents } = consumeUnappliedPriceJumps(newEvents);
+    newEvents = updatedEvents;
+
+    const activeEvents = getActiveEvents(newEvents, gameTime * 1000);
     
     const trend = Math.sin(gameTime * 0.1) * 0.5;
-    const newPrice = generateNextPrice(
+    let newPrice = generateNextPrice(
       state.gameState.currentPrice,
       config.baseVolatility,
       trend,
       activeEvents
     );
+    newPrice = +(newPrice + priceJump).toFixed(2);
     
     const newOrderBook = updateOrderBook(state.gameState.orderBook, newPrice, activeEvents);
     
@@ -314,12 +348,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       config.inventoryPenaltyCoeff
     );
     
-    let newEvents = [...state.gameState.events];
-    const newEvent = generateRandomEvent(state.gameState.difficulty, gameTime * 1000);
-    if (newEvent) {
-      newEvents.push(newEvent);
-    }
-    
     const newScore = newRealizedPnL + newUnrealizedPnL - newTotalFees - newInventoryPenalty 
       + state.gameState.eventBonus;
     
@@ -334,6 +362,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       newPriceHistory.push({ time: currentTimeMs, price: newPrice });
       if (newPriceHistory.length > 1000) {
         newPriceHistory.shift();
+      }
+    }
+
+    const newInventoryHistory = [...state.gameState.inventoryHistory];
+    if (newInventoryHistory.length === 0 ||
+        currentTimeMs - newInventoryHistory[newInventoryHistory.length - 1].time > 500) {
+      newInventoryHistory.push({ time: currentTimeMs, inventory: newInventory });
+      if (newInventoryHistory.length > 1000) {
+        newInventoryHistory.shift();
       }
     }
     
@@ -354,6 +391,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       events: newEvents,
       orderBook: newOrderBook,
       priceHistory: newPriceHistory,
+      inventoryHistory: newInventoryHistory,
     };
     
     const newSnapshots = [...state.replaySnapshots];
@@ -362,12 +400,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       newSnapshots.push({
         timestamp: currentTimeMs,
         gameState: JSON.parse(JSON.stringify(newState)),
+        playerAction: state.pendingAction || undefined,
       });
     }
     
     set({
       gameState: newState,
       replaySnapshots: newSnapshots,
+      pendingAction: null,
     });
   },
 

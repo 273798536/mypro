@@ -58,11 +58,17 @@ export interface GameEvent {
   effect: Record<string, any>;
   timestamp: number;
   duration: number;
+  applied?: boolean;
 }
 
 export interface PricePoint {
   time: number;
   price: number;
+}
+
+export interface InventoryPoint {
+  time: number;
+  inventory: number;
 }
 
 export interface GameState {
@@ -85,6 +91,7 @@ export interface GameState {
   events: GameEvent[];
   orderBook: OrderBook;
   priceHistory: PricePoint[];
+  inventoryHistory: InventoryPoint[];
   gameOverReason?: string;
   endReason?: 'timeout' | 'bankrupt' | 'manual' | 'force_liquidation';
 }

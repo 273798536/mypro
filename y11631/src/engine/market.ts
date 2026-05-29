@@ -29,21 +29,17 @@ export function generateNextPrice(
   activeEvents: GameEvent[]
 ): number {
   let effectiveVolatility = volatility;
-  let priceJump = 0;
   
   for (const event of activeEvents) {
     if (event.type === 'volatility_spike') {
       effectiveVolatility *= event.effect.volatilityMultiplier || 2;
-    }
-    if (event.type === 'price_jump') {
-      priceJump = event.effect.priceChange || 0;
     }
   }
   
   const drift = trend * currentPrice * 0.0001;
   const shock = (Math.random() - 0.5) * 2 * effectiveVolatility * currentPrice;
   
-  return +(currentPrice + drift + shock + priceJump).toFixed(2);
+  return +(currentPrice + drift + shock).toFixed(2);
 }
 
 export function updateOrderBook(

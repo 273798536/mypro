@@ -149,6 +149,7 @@ export const GamePage: React.FC<GamePageProps> = ({ onGoHome, onShowSettlement }
               onPlaceOrder={handlePlaceOrder}
               onCancelOrder={cancelOrder}
               disabled={gameState.status !== 'playing'}
+              selectedPrice={selectedPrice}
             />
             
             {gameState.tradeHistory.length > 0 && (

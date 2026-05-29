@@ -1,4 +1,4 @@
-import { ReplayData, ReplaySnapshot, GameState, SettlementReport, GameEvent } from './types';
+import { ReplayData, ReplaySnapshot, GameState, SettlementReport, GameEvent, InventoryPoint } from './types';
 import { GAME_CONFIG, DIFFICULTY_CONFIGS } from './config';
 
 export function createReplayData(
@@ -67,9 +67,9 @@ export function generateSettlementReport(
   
   let maxInventory = 0;
   let inventoryViolations = 0;
-  const priceHistory = finalState.priceHistory || [];
-  for (const point of priceHistory) {
-    const absInv = Math.abs(point as any);
+  const inventoryHistory: InventoryPoint[] = finalState.inventoryHistory || [];
+  for (const point of inventoryHistory) {
+    const absInv = Math.abs(point.inventory);
     if (absInv > maxInventory) maxInventory = absInv;
     if (absInv > GAME_CONFIG.INVENTORY_THRESHOLD) inventoryViolations++;
   }

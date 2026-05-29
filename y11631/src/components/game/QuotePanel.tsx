@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import { Order } from '../../engine/types';
 import { GAME_CONFIG } from '../../engine/config';
@@ -10,6 +10,7 @@ interface QuotePanelProps {
   onPlaceOrder: (side: 'buy' | 'sell', price: number, quantity: number) => boolean;
   onCancelOrder: (orderId: string) => void;
   disabled?: boolean;
+  selectedPrice?: number;
 }
 
 export const QuotePanel: React.FC<QuotePanelProps> = ({
@@ -18,10 +19,24 @@ export const QuotePanel: React.FC<QuotePanelProps> = ({
   onPlaceOrder,
   onCancelOrder,
   disabled,
+  selectedPrice,
 }) => {
   const [buyPrice, setBuyPrice] = useState<number>(currentPrice - 0.5);
   const [sellPrice, setSellPrice] = useState<number>(currentPrice + 0.5);
   const [quantity, setQuantity] = useState<number>(GAME_CONFIG.ORDER_QUANTITY);
+
+  useEffect(() => {
+    if (selectedPrice !== undefined && selectedPrice > 0) {
+      if (selectedPrice < currentPrice) {
+        setBuyPrice(+selectedPrice.toFixed(2));
+      } else if (selectedPrice > currentPrice) {
+        setSellPrice(+selectedPrice.toFixed(2));
+      } else {
+        setBuyPrice(+(selectedPrice - 0.1).toFixed(2));
+        setSellPrice(+(selectedPrice + 0.1).toFixed(2));
+      }
+    }
+  }, [selectedPrice, currentPrice]);
 
   const handlePriceAdjust = (side: 'buy' | 'sell', delta: number) => {
     if (side === 'buy') {
