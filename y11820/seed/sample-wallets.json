@@ -1,0 +1,165 @@
+{
+  "wallets": [
+    {
+      "address": "0x742d35cc6634c0532925a3b844bc9e7595f2bd18",
+      "chain": "ethereum",
+      "label": "托管主钱包-ETH",
+      "group_id": null
+    },
+    {
+      "address": "0x8ba1f109551bd432803012645ac136ddd64dba72",
+      "chain": "ethereum",
+      "label": "托管子钱包-运营",
+      "group_id": null
+    },
+    {
+      "address": "0x1234567890abcdef1234567890abcdef12345678",
+      "chain": "polygon",
+      "label": "托管主钱包-POL",
+      "group_id": null
+    },
+    {
+      "address": "0xabcdef1234567890abcdef1234567890abcdef12",
+      "chain": "arbitrum",
+      "label": "托管子钱包-ARB",
+      "group_id": null
+    },
+    {
+      "address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "chain": "ethereum",
+      "label": "外部合作方钱包",
+      "group_id": null
+    }
+  ],
+  "transfers": [
+    {
+      "tx_hash": "0xaaa1110000000000000000000000000000000000000000000000000000000001",
+      "chain": "ethereum",
+      "from_address": "0x742d35cc6634c0532925a3b844bc9e7595f2bd18",
+      "to_address": "0x8ba1f109551bd432803012645ac136ddd64dba72",
+      "token_symbol": "ETH",
+      "amount": "5.0",
+      "block_timestamp": "2026-05-10T10:00:00Z",
+      "is_internal": true
+    },
+    {
+      "tx_hash": "0xaaa1110000000000000000000000000000000000000000000000000000000002",
+      "chain": "ethereum",
+      "from_address": "0x8ba1f109551bd432803012645ac136ddd64dba72",
+      "to_address": "0x742d35cc6634c0532925a3b844bc9e7595f2bd18",
+      "token_symbol": "ETH",
+      "amount": "5.0",
+      "block_timestamp": "2026-05-10T10:00:00Z",
+      "is_internal": true
+    },
+    {
+      "tx_hash": "0xbbb2220000000000000000000000000000000000000000000000000000000001",
+      "chain": "polygon",
+      "from_address": "0x1234567890abcdef1234567890abcdef12345678",
+      "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "token_symbol": "USDC",
+      "amount": "10000",
+      "block_timestamp": "2026-05-12T14:30:00Z",
+      "is_internal": false
+    },
+    {
+      "tx_hash": "0xbbb2220000000000000000000000000000000000000000000000000000000002",
+      "chain": "arbitrum",
+      "from_address": "0xabcdef1234567890abcdef1234567890abcdef12",
+      "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "token_symbol": "USDC",
+      "amount": "10000",
+      "block_timestamp": "2026-05-12T14:30:00Z",
+      "is_internal": false
+    },
+    {
+      "tx_hash": "0xccc3330000000000000000000000000000000000000000000000000000000001",
+      "chain": "ethereum",
+      "from_address": "0x742d35cc6634c0532925a3b844bc9e7595f2bd18",
+      "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "token_symbol": "USDT",
+      "amount": "50000",
+      "block_timestamp": "2026-05-15T09:00:00Z",
+      "is_internal": false
+    }
+  ],
+  "exchange_bills": [
+    {
+      "exchange_name": "binance",
+      "asset_symbol": "BTC",
+      "amount": "0.5",
+      "bill_type": "deposit",
+      "bill_date": "2026-05-03",
+      "reference_id": null
+    },
+    {
+      "exchange_name": "binance",
+      "asset_symbol": "ETH",
+      "amount": "10.0",
+      "bill_type": "deposit",
+      "bill_date": "2026-05-05",
+      "reference_id": null
+    },
+    {
+      "exchange_name": "binance",
+      "asset_symbol": "ETH",
+      "amount": "2.0",
+      "bill_type": "trade_sell",
+      "bill_date": "2026-05-08",
+      "reference_id": null
+    },
+    {
+      "exchange_name": "okx",
+      "asset_symbol": "USDT",
+      "amount": "50000",
+      "bill_type": "deposit",
+      "bill_date": "2026-05-15",
+      "reference_id": null
+    },
+    {
+      "exchange_name": "okx",
+      "asset_symbol": "USDT",
+      "amount": "15",
+      "bill_type": "fee",
+      "bill_date": "2026-05-15",
+      "reference_id": null
+    }
+  ],
+  "prices": [
+    { "token_symbol": "BTC", "price_usd": 98000, "snapshot_date": "2026-05-01", "source": "coingecko" },
+    { "token_symbol": "BTC", "price_usd": 99500, "snapshot_date": "2026-05-15", "source": "coingecko" },
+    { "token_symbol": "ETH", "price_usd": 3800, "snapshot_date": "2026-05-01", "source": "coingecko" },
+    { "token_symbol": "ETH", "price_usd": 3950, "snapshot_date": "2026-05-15", "source": "coingecko" },
+    { "token_symbol": "USDT", "price_usd": 1.0, "snapshot_date": "2026-05-01", "source": "coingecko" },
+    { "token_symbol": "USDC", "price_usd": 1.0, "snapshot_date": "2026-05-01", "source": "coingecko" }
+  ],
+  "gas_fees": [
+    {
+      "chain": "ethereum",
+      "tx_hash": "0xaaa1110000000000000000000000000000000000000000000000000000000001",
+      "gas_used": "21000",
+      "gas_price_gwei": "25",
+      "fee_native": "0.000525",
+      "fee_usd": "2.07",
+      "block_timestamp": "2026-05-10T10:00:00Z"
+    },
+    {
+      "chain": "ethereum",
+      "tx_hash": "0xccc3330000000000000000000000000000000000000000000000000000000001",
+      "gas_used": "65000",
+      "gas_price_gwei": "30",
+      "fee_native": "0.00195",
+      "fee_usd": "7.70",
+      "block_timestamp": "2026-05-15T09:00:00Z"
+    },
+    {
+      "chain": "polygon",
+      "tx_hash": "0xbbb2220000000000000000000000000000000000000000000000000000000001",
+      "gas_used": "45000",
+      "gas_price_gwei": "80",
+      "fee_native": "0.0036",
+      "fee_usd": "0.01",
+      "block_timestamp": "2026-05-12T14:30:00Z"
+    }
+  ]
+}
