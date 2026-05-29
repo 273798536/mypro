@@ -46,11 +46,24 @@ body {
   margin-bottom: 20px;
 }
 
-.app-header h1 {
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-title h1 {
   font-size: 24px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 4px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .subtitle {
@@ -482,6 +495,32 @@ body {
   color: #6b7280;
 }
 
+/* ===== Rule match badges ===== */
+.hist-badge {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 3px;
+  background: var(--info);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+  cursor: help;
+}
+
+.rule-match-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 /* ===== Status dots ===== */
 .status-dot {
   display: inline-block;
@@ -533,6 +572,21 @@ body {
 .conflict-banner.conflict-rule_mismatch {
   border-left-color: var(--warning);
   background: #fefce8;
+}
+
+.conflict-banner.conflict-no_rule_match {
+  border-left-color: var(--danger);
+  background: #fef2f2;
+}
+
+.conflict-banner.conflict-historical_rule {
+  border-left-color: var(--info);
+  background: #eef2ff;
+}
+
+.conflict-banner.conflict-ambiguous_match {
+  border-left-color: var(--purple);
+  background: #faf5ff;
 }
 
 .conflict-header {

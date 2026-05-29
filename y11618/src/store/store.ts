@@ -1,5 +1,13 @@
 import { useState, useCallback, useMemo } from 'react';
-import type { AppState, Override } from '../types';
+import type {
+  AppState,
+  Override,
+  Contract,
+  Invoice,
+  Receipt,
+  RuleVersion,
+  PaymentRecord,
+} from '../types';
 import { processAll } from '../engine/processor';
 import { allMockData } from '../data/mockData';
 
@@ -71,6 +79,38 @@ export function useAppStore() {
     [],
   );
 
+  const loadData = useCallback(
+    (data: {
+      contracts: Contract[];
+      invoices: Invoice[];
+      receipts: Receipt[];
+      ruleVersions: RuleVersion[];
+      payments: PaymentRecord[];
+      overrides: Override[];
+    }) => {
+      const result = processAll(data);
+      setState({
+        ...data,
+        analysis: result.analysis,
+        aggregated: result.aggregated,
+        chartData: result.chartData,
+        processingErrors: result.processingErrors,
+        filters: {
+          supplierId: null,
+          status: null,
+          conflictType: null,
+          dateRange: null,
+        },
+        selectedInvoiceId: null,
+      });
+    },
+    [],
+  );
+
+  const resetToMockData = useCallback(() => {
+    setState(initialState());
+  }, []);
+
   const setFilter = useCallback(
     <K extends keyof AppState['filters']>(
       key: K,
@@ -117,6 +157,8 @@ export function useAppStore() {
       overriddenCount: filtered.filter((a) => a.overrideApplied).length,
       overdueCount: filtered.filter((a) => a.paymentStatus === 'overdue').length,
       processingErrors: state.processingErrors.length,
+      noRuleMatchCount: filtered.filter((a) => a.ruleMatchType === 'none').length,
+      historicalRuleCount: filtered.filter((a) => a.isHistoricalRule).length,
     };
   }, [filteredAnalysis, state.processingErrors]);
 
@@ -126,6 +168,8 @@ export function useAppStore() {
     selectedInvoice,
     summary,
     addOverride,
+    loadData,
+    resetToMockData,
     setFilter,
     selectInvoice,
     reprocess,

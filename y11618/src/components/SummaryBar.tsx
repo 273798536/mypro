@@ -5,6 +5,8 @@ interface Props {
   overriddenCount: number;
   overdueCount: number;
   processingErrors: number;
+  noRuleMatchCount: number;
+  historicalRuleCount: number;
 }
 
 export function SummaryBar({
@@ -14,6 +16,8 @@ export function SummaryBar({
   overriddenCount,
   overdueCount,
   processingErrors,
+  noRuleMatchCount,
+  historicalRuleCount,
 }: Props) {
   const stats = [
     { label: '发票总数', value: totalInvoices, color: '#3b82f6' },
@@ -21,7 +25,9 @@ export function SummaryBar({
     { label: '冲突项', value: conflictCount, color: '#ef4444' },
     { label: '改判项', value: overriddenCount, color: '#f59e0b' },
     { label: '逾期项', value: overdueCount, color: '#dc2626' },
-    { label: '处理错误', value: processingErrors, color: '#a855f7' },
+    { label: '无匹配规则', value: noRuleMatchCount, color: '#a855f7' },
+    { label: '历史规则', value: historicalRuleCount, color: '#6366f1' },
+    { label: '处理错误', value: processingErrors, color: '#7c3aed' },
   ];
 
   return (

@@ -6,9 +6,17 @@ import type {
   Override,
   ProcessingError,
   PaymentStatus,
+  WarningInfo,
 } from '../types';
-import { findActiveRuleVersion } from './versioning';
-import { computePaymentStatus } from './paymentStatus';
+import {
+  findRuleVersionForInvoice,
+  getMatchTypeLabel,
+  type RuleMatchResult,
+} from './versioning';
+import {
+  computePaymentStatus,
+  buildPaymentTransitions,
+} from './paymentStatus';
 import { runAllConflictChecks, makeSourceRef } from './conflict';
 
 export interface ProcessInput {
@@ -34,17 +42,45 @@ function addDays(dateStr: string, days: number): string {
 }
 
 function buildTrace(
+  matchResult: RuleMatchResult,
   appliedVersionLabel: string,
   overrideReason?: string,
 ): InvoiceAnalysis['trace'] {
   const trace: InvoiceAnalysis['trace'] = [];
+
   trace.push({
     timestamp: new Date().toISOString(),
     action: '规则匹配',
-    detail: `匹配到规则版本: ${appliedVersionLabel}`,
+    detail: `匹配类型: ${getMatchTypeLabel(matchResult.matchType)}, 候选版本: ${matchResult.candidateCount}个`,
     operator: 'system',
-    sourceRef: makeSourceRef('rule_version', 0, '', appliedVersionLabel),
+    sourceRef: makeSourceRef(
+      'rule_version',
+      matchResult.version?.sourceRef.lineNumber ?? 0,
+      matchResult.version?.id ?? '',
+      appliedVersionLabel,
+    ),
   });
+
+  if (matchResult.isHistorical) {
+    trace.push({
+      timestamp: new Date().toISOString(),
+      action: '历史版本',
+      detail: '使用的规则版本已停用，属于历史追溯应用',
+      operator: 'system',
+      sourceRef: makeSourceRef('rule_version', 0, '', '历史版本标记'),
+    });
+  }
+
+  if (matchResult.isSwitch) {
+    trace.push({
+      timestamp: new Date().toISOString(),
+      action: '版本切换',
+      detail: '存在更新的规则版本，需确认追溯范围',
+      operator: 'system',
+      sourceRef: makeSourceRef('rule_version', 0, '', '版本切换'),
+    });
+  }
+
   if (overrideReason) {
     trace.push({
       timestamp: new Date().toISOString(),
@@ -54,6 +90,7 @@ function buildTrace(
       sourceRef: makeSourceRef('override', 0, '', '人工改判'),
     });
   }
+
   return trace;
 }
 
@@ -78,51 +115,115 @@ function getEffectiveDays(
   return { days: baseDays, overrideApplied: false };
 }
 
+function buildMatchWarnings(
+  matchResult: RuleMatchResult,
+  invoiceCode: string,
+): WarningInfo[] {
+  const warnings: WarningInfo[] = [];
+
+  if (matchResult.matchType === 'none') {
+    warnings.push({
+      level: 'error',
+      message: `发票 ${invoiceCode} 无法找到匹配的规则版本`,
+      sourceRef: makeSourceRef('rule_version', 0, '', '无匹配版本'),
+      relatedTo: invoiceCode,
+    });
+  }
+
+  if (matchResult.matchType === 'supplier_fallback') {
+    warnings.push({
+      level: 'warning',
+      message: `发票 ${invoiceCode} 未找到合同级规则，已回退到供应商级规则`,
+      sourceRef: makeSourceRef('rule_version', 0, '', '供应商兜底'),
+      relatedTo: invoiceCode,
+    });
+  }
+
+  if (matchResult.matchType === 'ambiguous') {
+    warnings.push({
+      level: 'warning',
+      message: `发票 ${invoiceCode} 存在多个候选规则版本，匹配结果可能有歧义`,
+      sourceRef: makeSourceRef('rule_version', 0, '', '模糊匹配'),
+      relatedTo: invoiceCode,
+    });
+  }
+
+  if (matchResult.isHistorical) {
+    warnings.push({
+      level: 'info',
+      message: `发票 ${invoiceCode} 使用的是历史（已停用）规则版本`,
+      sourceRef: makeSourceRef('rule_version', 0, '', '历史版本'),
+      relatedTo: invoiceCode,
+    });
+  }
+
+  if (matchResult.isSwitch) {
+    warnings.push({
+      level: 'info',
+      message: `发票 ${invoiceCode} 开票后存在规则版本切换，请注意追溯范围`,
+      sourceRef: makeSourceRef('rule_version', 0, '', '版本切换'),
+      relatedTo: invoiceCode,
+    });
+  }
+
+  return warnings;
+}
+
+function determineConflictType(
+  matchResult: RuleMatchResult,
+  conflictCheckType: string | null,
+): string | null {
+  if (matchResult.matchType === 'none') return 'no_rule_match';
+  if (matchResult.matchType === 'ambiguous') return 'ambiguous_match';
+  if (matchResult.isHistorical) return 'historical_rule';
+  return conflictCheckType;
+}
+
 export function processAll(input: ProcessInput): ProcessOutput {
   const processingErrors: ProcessingError[] = [];
   const analysis: InvoiceAnalysis[] = [];
 
   for (const invoice of input.invoices) {
     try {
-      const { version, isSwitch } = findActiveRuleVersion(
+      const matchResult = findRuleVersionForInvoice(
         input.ruleVersions,
         invoice.supplierId,
         invoice.invoiceDate,
         invoice.contractId,
       );
 
-      if (!version) {
-        processingErrors.push({
-          sourceRef: invoice.sourceRef,
-          message: `无法找到适用于供应商 ${invoice.supplierId} 的规则版本，日期: ${invoice.invoiceDate}`,
-        });
-        continue;
-      }
+      const version = matchResult.version;
 
-      const effective = getEffectiveDays(
-        version.baseDays,
-        input.overrides,
-        invoice.id,
-      );
+      const baseDays = version?.baseDays ?? 0;
+      const effective = version
+        ? getEffectiveDays(baseDays, input.overrides, invoice.id)
+        : { days: 0, overrideApplied: false };
 
-      const dueDate = addDays(invoice.invoiceDate, effective.days);
+      const dueDate = version
+        ? addDays(invoice.invoiceDate, effective.days)
+        : 'N/A';
+
+      const supplierName =
+        input.contracts.find((c) => c.supplierId === invoice.supplierId)
+          ?.supplierName ?? invoice.supplierId;
+      const contractCode =
+        input.contracts.find((c) => c.id === invoice.contractId)
+          ?.contractCode ?? invoice.contractId;
 
       const tempAnalysis: InvoiceAnalysis = {
         invoiceId: invoice.id,
         invoiceCode: invoice.invoiceCode,
         supplierId: invoice.supplierId,
-        supplierName:
-          input.contracts.find((c) => c.supplierId === invoice.supplierId)
-            ?.supplierName ?? invoice.supplierId,
+        supplierName,
         contractId: invoice.contractId,
-        contractCode:
-          input.contracts.find((c) => c.id === invoice.contractId)
-            ?.contractCode ?? invoice.contractId,
+        contractCode,
         invoiceDate: invoice.invoiceDate,
         amount: invoice.amount,
-        appliedRuleVersionId: version.id,
-        appliedRuleVersionLabel: version.versionLabel,
-        baseDays: version.baseDays,
+        appliedRuleVersionId: version?.id ?? null,
+        appliedRuleVersionLabel: version?.versionLabel ?? '无匹配版本',
+        ruleMatchType: matchResult.matchType,
+        isHistoricalRule: matchResult.isHistorical,
+        baseDays,
         effectiveDays: effective.days,
         dueDate,
         receiptStatus: 'matched',
@@ -132,7 +233,11 @@ export function processAll(input: ProcessInput): ProcessOutput {
         overrideApplied: effective.overrideApplied,
         overrideReason: effective.overrideReason,
         warnings: [],
-        trace: buildTrace(version.versionLabel, effective.overrideReason),
+        trace: buildTrace(
+          matchResult,
+          version?.versionLabel ?? '无匹配版本',
+          effective.overrideReason,
+        ),
         sourceRef: invoice.sourceRef,
       };
 
@@ -157,14 +262,11 @@ export function processAll(input: ProcessInput): ProcessOutput {
           ? 'partial'
           : 'matched';
 
-      const warnings = [...conflictResult.warnings];
-      if (isSwitch) {
-        warnings.push({
-          level: 'info',
-          message: '合同版本切换: 存在更新的规则版本，需注意追溯范围',
-          sourceRef: version.sourceRef,
-        });
-      }
+      const warnings: WarningInfo[] = [
+        ...buildMatchWarnings(matchResult, invoice.invoiceCode),
+        ...conflictResult.warnings,
+      ];
+
       if (receiptStatus === 'unmatched') {
         warnings.push({
           level: 'warning',
@@ -173,8 +275,19 @@ export function processAll(input: ProcessInput): ProcessOutput {
         });
       }
 
-      tempAnalysis.conflictType = conflictResult.conflictType;
-      tempAnalysis.conflictDetail = conflictResult.conflictDetail;
+      tempAnalysis.conflictType = determineConflictType(
+        matchResult,
+        conflictResult.conflictType,
+      ) as InvoiceAnalysis['conflictType'];
+
+      let conflictDetail = conflictResult.conflictDetail;
+      if (matchResult.matchType === 'none') {
+        conflictDetail = `无法找到适用于供应商 ${invoice.supplierId} 的规则版本，开票日期: ${invoice.invoiceDate}，来源: ${invoice.sourceRef.source}#${invoice.sourceRef.lineNumber}`;
+      } else if (matchResult.matchType === 'ambiguous') {
+        conflictDetail = `存在 ${matchResult.candidateCount} 个候选规则版本，匹配结果可能有歧义，请人工确认，来源: ${invoice.sourceRef.source}#${invoice.sourceRef.lineNumber}`;
+      }
+
+      tempAnalysis.conflictDetail = conflictDetail;
       tempAnalysis.warnings = warnings;
       tempAnalysis.receiptStatus = receiptStatus;
 
@@ -185,11 +298,69 @@ export function processAll(input: ProcessInput): ProcessOutput {
         message: `处理发票 ${invoice.invoiceCode} 时出错: ${err instanceof Error ? err.message : '未知错误'}`,
         context: { error: err },
       });
+
+      const supplierName =
+        input.contracts.find((c) => c.supplierId === invoice.supplierId)
+          ?.supplierName ?? invoice.supplierId;
+      const contractCode =
+        input.contracts.find((c) => c.id === invoice.contractId)
+          ?.contractCode ?? invoice.contractId;
+
+      analysis.push({
+        invoiceId: invoice.id,
+        invoiceCode: invoice.invoiceCode,
+        supplierId: invoice.supplierId,
+        supplierName,
+        contractId: invoice.contractId,
+        contractCode,
+        invoiceDate: invoice.invoiceDate,
+        amount: invoice.amount,
+        appliedRuleVersionId: null,
+        appliedRuleVersionLabel: '处理错误',
+        ruleMatchType: 'none',
+        isHistoricalRule: false,
+        baseDays: 0,
+        effectiveDays: 0,
+        dueDate: 'ERROR',
+        receiptStatus: 'unmatched',
+        paymentStatus: 'disputed',
+        conflictType: 'no_rule_match',
+        conflictDetail: `处理异常: ${err instanceof Error ? err.message : '未知错误'}，来源: ${invoice.sourceRef.source}#${invoice.sourceRef.lineNumber}`,
+        overrideApplied: false,
+        warnings: [
+          {
+            level: 'error',
+            message: `处理异常: ${err instanceof Error ? err.message : '未知错误'}`,
+            sourceRef: invoice.sourceRef,
+          },
+        ],
+        trace: [
+          {
+            timestamp: new Date().toISOString(),
+            action: '处理错误',
+            detail: err instanceof Error ? err.message : '未知错误',
+            operator: 'system',
+            sourceRef: invoice.sourceRef,
+          },
+        ],
+        sourceRef: invoice.sourceRef,
+      });
     }
   }
 
   for (const a of analysis) {
     a.paymentStatus = computePaymentStatus(a, input.payments);
+    const transitions = buildPaymentTransitions(a, input.payments);
+    a.trace = [
+      ...a.trace,
+      ...transitions.map((t) => ({
+        timestamp: t.triggeredAt,
+        action: `状态转换: ${t.from} → ${t.to}`,
+        detail: t.reason,
+        operator: t.triggeredBy,
+        sourceRef: makeSourceRef('payment_list', 0, '', '付款状态更新'),
+      })),
+    ];
   }
 
   const aggregated = aggregateBySupplier(analysis);
@@ -270,6 +441,8 @@ export function exportToCSV(analysis: InvoiceAnalysis[]): string {
     '开票日期',
     '金额',
     '适用规则版本',
+    '规则匹配类型',
+    '是否历史版本',
     '基准账期(天)',
     '实际账期(天)',
     '应付款日',
@@ -289,6 +462,8 @@ export function exportToCSV(analysis: InvoiceAnalysis[]): string {
     a.invoiceDate,
     a.amount.toFixed(2),
     a.appliedRuleVersionLabel,
+    getMatchTypeLabel(a.ruleMatchType),
+    a.isHistoricalRule ? '是' : '否',
     String(a.baseDays),
     String(a.effectiveDays),
     a.dueDate,

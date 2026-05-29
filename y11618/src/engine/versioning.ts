@@ -5,36 +5,104 @@ import type {
   SupplierId,
 } from '../types';
 
-export function findActiveRuleVersion(
+export interface RuleMatchResult {
+  version: RuleVersion | null;
+  matchType: 'exact_contract' | 'supplier_fallback' | 'none' | 'ambiguous';
+  isSwitch: boolean;
+  isHistorical: boolean;
+  candidateCount: number;
+}
+
+export function findRuleVersionForInvoice(
   ruleVersions: RuleVersion[],
   supplierId: SupplierId,
-  date: string,
-  _contractId?: ContractId,
-): { version: RuleVersion | null; isSwitch: boolean } {
-  const candidates = ruleVersions.filter(
-    (v) =>
-      v.supplierId === supplierId &&
-      v.isActive &&
-      new Date(v.effectiveDate) <= new Date(date),
-  );
-  if (candidates.length === 0) {
-    return { version: null, isSwitch: false };
+  invoiceDate: string,
+  contractId?: ContractId,
+): RuleMatchResult {
+  const invoiceTs = new Date(invoiceDate).getTime();
+
+  const contractMatches = contractId
+    ? ruleVersions.filter((v) => {
+        if (v.contractId !== contractId) return false;
+        if (v.supplierId !== supplierId) return false;
+        return new Date(v.effectiveDate).getTime() <= invoiceTs;
+      })
+    : [];
+
+  if (contractMatches.length > 0) {
+    const sorted = contractMatches.sort(
+      (a, b) =>
+        new Date(b.effectiveDate).getTime() -
+        new Date(a.effectiveDate).getTime(),
+    );
+    const selected = sorted[0];
+    const isHistorical = !selected.isActive;
+
+    const laterVersions = ruleVersions.filter(
+      (v) =>
+        v.supplierId === supplierId &&
+        v.id !== selected.id &&
+        new Date(v.effectiveDate).getTime() > invoiceTs,
+    );
+    const isSwitch = laterVersions.length > 0;
+
+    return {
+      version: selected,
+      matchType: 'exact_contract',
+      isSwitch,
+      isHistorical,
+      candidateCount: contractMatches.length,
+    };
   }
-  const sorted = candidates.sort(
+
+  const supplierMatches = ruleVersions.filter((v) => {
+    if (v.supplierId !== supplierId) return false;
+    return new Date(v.effectiveDate).getTime() <= invoiceTs;
+  });
+
+  if (supplierMatches.length === 0) {
+    return {
+      version: null,
+      matchType: 'none',
+      isSwitch: false,
+      isHistorical: false,
+      candidateCount: 0,
+    };
+  }
+
+  const sorted = supplierMatches.sort(
     (a, b) =>
       new Date(b.effectiveDate).getTime() -
       new Date(a.effectiveDate).getTime(),
   );
   const selected = sorted[0];
-  const nextActive = ruleVersions.find(
+  const isHistorical = !selected.isActive;
+
+  const laterVersions = ruleVersions.filter(
     (v) =>
       v.supplierId === supplierId &&
-      v.isActive &&
       v.id !== selected.id &&
-      new Date(v.effectiveDate) > new Date(date),
+      new Date(v.effectiveDate).getTime() > invoiceTs,
   );
-  const isSwitch = !!nextActive;
-  return { version: selected, isSwitch };
+  const isSwitch = laterVersions.length > 0;
+
+  if (contractId && supplierMatches.length > 1) {
+    return {
+      version: selected,
+      matchType: 'ambiguous',
+      isSwitch,
+      isHistorical,
+      candidateCount: supplierMatches.length,
+    };
+  }
+
+  return {
+    version: selected,
+    matchType: 'supplier_fallback',
+    isSwitch,
+    isHistorical,
+    candidateCount: supplierMatches.length,
+  };
 }
 
 export function findRuleVersionById(
@@ -64,9 +132,30 @@ export function detectVersionSwitch(
   endDate: string,
 ): RuleVersion[] {
   const timeline = getRuleVersionTimeline(ruleVersions, supplierId);
-  return timeline.filter(
-    (v) =>
-      new Date(v.effectiveDate) >= new Date(startDate) &&
-      new Date(v.effectiveDate) <= new Date(endDate),
-  );
+  const startTs = new Date(startDate).getTime();
+  const endTs = new Date(endDate).getTime();
+  return timeline.filter((v) => {
+    const ts = new Date(v.effectiveDate).getTime();
+    return ts >= startTs && ts <= endTs;
+  });
+}
+
+export function getMatchTypeLabel(matchType: RuleMatchResult['matchType']): string {
+  const labels: Record<RuleMatchResult['matchType'], string> = {
+    exact_contract: '合同精确匹配',
+    supplier_fallback: '供应商兜底匹配',
+    ambiguous: '多版本模糊匹配',
+    none: '无匹配版本',
+  };
+  return labels[matchType];
+}
+
+export function getMatchTypeColor(matchType: RuleMatchResult['matchType']): string {
+  const colors: Record<RuleMatchResult['matchType'], string> = {
+    exact_contract: '#10b981',
+    supplier_fallback: '#f59e0b',
+    ambiguous: '#ef4444',
+    none: '#6b7280',
+  };
+  return colors[matchType];
 }

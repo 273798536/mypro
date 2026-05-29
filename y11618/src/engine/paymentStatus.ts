@@ -6,7 +6,7 @@ import type {
 } from '../types';
 
 const TRANSITION_GRAPH: Record<PaymentStatus, PaymentStatus[]> = {
-  not_due: ['due_soon', 'disputed'],
+  not_due: ['due_soon', 'disputed', 'overdue'],
   due_soon: ['not_due', 'overdue', 'paid', 'partially_paid', 'disputed'],
   overdue: ['partially_paid', 'paid', 'disputed', 'void'],
   partially_paid: ['overdue', 'paid', 'disputed'],
@@ -37,6 +37,9 @@ export function computePaymentStatus(
   );
 
   if (invoicePayments.length === 0) {
+    if (invoiceAnalysis.dueDate === 'N/A' || invoiceAnalysis.dueDate === 'ERROR') {
+      return 'disputed';
+    }
     const today = new Date();
     const due = new Date(invoiceAnalysis.dueDate);
     const diffDays = Math.floor(
@@ -58,6 +61,66 @@ export function computePaymentStatus(
   if (hasDisputed) return 'disputed';
 
   return 'overdue';
+}
+
+export function buildPaymentTransitions(
+  invoiceAnalysis: InvoiceAnalysis,
+  payments: PaymentRecord[],
+): PaymentTransition[] {
+  const transitions: PaymentTransition[] = [];
+  const invoicePayments = payments.filter(
+    (p) => p.invoiceId === invoiceAnalysis.invoiceId,
+  );
+
+  if (invoicePayments.length === 0) {
+    if (invoiceAnalysis.dueDate !== 'N/A' && invoiceAnalysis.dueDate !== 'ERROR') {
+      transitions.push({
+        from: 'not_due',
+        to: computePaymentStatus(invoiceAnalysis, payments),
+        triggeredAt: new Date().toISOString(),
+        triggeredBy: 'system',
+        reason: `自动推算: 基于应付款日 ${invoiceAnalysis.dueDate}`,
+      });
+    }
+    return transitions;
+  }
+
+  const sortedPayments = invoicePayments.sort(
+    (a, b) => {
+      const aDate = a.actualDate ?? a.plannedDate;
+      const bDate = b.actualDate ?? b.plannedDate;
+      return new Date(aDate).getTime() - new Date(bDate).getTime();
+    },
+  );
+
+  let currentStatus: PaymentStatus = 'not_due';
+
+  for (const payment of sortedPayments) {
+    const nextStatus = payment.status;
+    if (currentStatus !== nextStatus) {
+      transitions.push({
+        from: currentStatus,
+        to: nextStatus,
+        triggeredAt: payment.actualDate ?? payment.plannedDate,
+        triggeredBy: 'payment_system',
+        reason: `付款记录 ${payment.id} 状态变更，金额: ¥${payment.amount}`,
+      });
+      currentStatus = nextStatus;
+    }
+  }
+
+  const finalStatus = computePaymentStatus(invoiceAnalysis, payments);
+  if (currentStatus !== finalStatus) {
+    transitions.push({
+      from: currentStatus,
+      to: finalStatus,
+      triggeredAt: new Date().toISOString(),
+      triggeredBy: 'system',
+      reason: `最终状态确认: 基于付款记录和应付款日`,
+    });
+  }
+
+  return transitions;
 }
 
 export function createTransition(

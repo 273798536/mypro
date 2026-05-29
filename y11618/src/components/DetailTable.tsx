@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { InvoiceAnalysis, ConflictType } from '../types';
 import { PAYMENT_STATUS_LABELS, PAYMENT_STATUS_COLORS } from '../engine/paymentStatus';
+import { getMatchTypeLabel, getMatchTypeColor } from '../engine/versioning';
 
 interface Props {
   analysis: InvoiceAnalysis[];
@@ -15,6 +16,9 @@ const conflictLabels: Record<ConflictType, string> = {
   rule_mismatch: '规则不符',
   payment_delay: '付款逾期',
   version_overlap: '版本重叠',
+  no_rule_match: '无匹配规则',
+  historical_rule: '历史规则',
+  ambiguous_match: '模糊匹配',
 };
 
 const receiptStatusLabels = {
@@ -46,6 +50,7 @@ export function DetailTable({ analysis, selectedInvoiceId, onSelect }: Props) {
             <th>开票日</th>
             <th className="num">金额</th>
             <th>规则版本</th>
+            <th>匹配类型</th>
             <th>账期</th>
             <th>应付款日</th>
             <th>入库</th>
@@ -58,6 +63,7 @@ export function DetailTable({ analysis, selectedInvoiceId, onSelect }: Props) {
           {analysis.map((a) => {
             const isSelected = a.invoiceId === selectedInvoiceId;
             const isExpanded = expandedRows.has(a.invoiceId);
+            const matchTypeColor = getMatchTypeColor(a.ruleMatchType);
             return (
               <React.Fragment key={a.invoiceId}>
                 <tr
@@ -77,7 +83,20 @@ export function DetailTable({ analysis, selectedInvoiceId, onSelect }: Props) {
                   <td>{a.supplierName}</td>
                   <td>{a.invoiceDate}</td>
                   <td className="num">¥{a.amount.toLocaleString()}</td>
-                  <td className="mono">{a.appliedRuleVersionLabel}</td>
+                  <td className="mono">
+                    {a.appliedRuleVersionLabel}
+                    {a.isHistoricalRule && (
+                      <span className="hist-badge" title="历史版本">H</span>
+                    )}
+                  </td>
+                  <td>
+                    <span
+                      className="rule-match-badge"
+                      style={{ background: matchTypeColor, color: '#fff' }}
+                    >
+                      {getMatchTypeLabel(a.ruleMatchType)}
+                    </span>
+                  </td>
                   <td>
                     {a.effectiveDays !== a.baseDays && (
                       <span className="strike">{a.baseDays}</span>
@@ -118,7 +137,7 @@ export function DetailTable({ analysis, selectedInvoiceId, onSelect }: Props) {
                 </tr>
                 {isExpanded && (
                   <tr className="expanded-row">
-                    <td colSpan={12}>
+                    <td colSpan={14}>
                       <div className="expanded-content">
                         {a.warnings.length > 0 && (
                           <div className="warnings-list">

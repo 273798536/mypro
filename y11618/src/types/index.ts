@@ -113,6 +113,8 @@ export interface InvoiceAnalysis {
   amount: number;
   appliedRuleVersionId: RuleVersionId | null;
   appliedRuleVersionLabel: string;
+  ruleMatchType: RuleMatchType;
+  isHistoricalRule: boolean;
   baseDays: number;
   effectiveDays: number;
   dueDate: string;
@@ -133,7 +135,16 @@ export type ConflictType =
   | 'retroactive_change'
   | 'rule_mismatch'
   | 'payment_delay'
-  | 'version_overlap';
+  | 'version_overlap'
+  | 'no_rule_match'
+  | 'historical_rule'
+  | 'ambiguous_match';
+
+export type RuleMatchType =
+  | 'exact_contract'
+  | 'supplier_fallback'
+  | 'ambiguous'
+  | 'none';
 
 export interface WarningInfo {
   level: 'info' | 'warning' | 'error';

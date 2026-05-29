@@ -7,6 +7,7 @@ import { FilterBar } from './components/FilterBar';
 import { SummaryBar } from './components/SummaryBar';
 import { InvoiceDetail } from './components/InvoiceDetail';
 import { OverrideDialog } from './components/OverrideDialog';
+import { DataImportDialog } from './components/DataImportDialog';
 import './App.css';
 
 function App() {
@@ -16,11 +17,14 @@ function App() {
     selectedInvoice,
     summary,
     addOverride,
+    loadData,
+    resetToMockData,
     setFilter,
     selectInvoice,
   } = useAppStore();
 
   const [showOverrideDialog, setShowOverrideDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
 
   const suppliers = state.aggregated.map((a) => ({
     id: a.supplierId,
@@ -30,10 +34,29 @@ function App() {
   return (
     <div className="app-root">
       <header className="app-header">
-        <h1>供应商账期改判分析</h1>
-        <p className="subtitle">
-          围绕同一批数据刷新图表、明细与导出，保留来源与改判痕迹
-        </p>
+        <div className="header-row">
+          <div className="header-title">
+            <h1>供应商账期改判分析</h1>
+            <p className="subtitle">
+              围绕同一批数据刷新图表、明细与导出，保留来源与改判痕迹
+            </p>
+          </div>
+          <div className="header-actions">
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => setShowImportDialog(true)}
+            >
+              📁 导入数据
+            </button>
+            <button
+              className="btn btn-sm"
+              onClick={resetToMockData}
+              title="重置为示例数据"
+            >
+              🔄 重置
+            </button>
+          </div>
+        </div>
       </header>
 
       <SummaryBar {...summary} />
@@ -122,6 +145,16 @@ function App() {
             setShowOverrideDialog(false);
           }}
           onClose={() => setShowOverrideDialog(false)}
+        />
+      )}
+
+      {showImportDialog && (
+        <DataImportDialog
+          onDataLoaded={(data) => {
+            loadData(data);
+            setShowImportDialog(false);
+          }}
+          onClose={() => setShowImportDialog(false)}
         />
       )}
     </div>
