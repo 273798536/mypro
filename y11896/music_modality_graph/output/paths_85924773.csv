@@ -1,0 +1,4 @@
+Rank,Path,Steps,Total Difficulty,Avg Difficulty/Step,Total Common Tones,Modalities
+1,Path[C major -> G major -> F# harmonic_minor] (score: 8.79),2,8.79,4.39,10,C major -> G major -> F# harmonic_minor
+2,Path[C major -> C lydian -> G lydian -> F# harmonic_minor] (score: 8.79),3,8.79,2.93,17,C major -> C lydian -> G lydian -> F# harmonic_minor
+3,Path[C major -> B phrygian -> F# phrygian -> F# harmonic_minor] (score: 8.79),3,8.79,2.93,17,C major -> B phrygian -> F# phrygian -> F# harmonic_minor

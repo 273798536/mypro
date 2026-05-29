@@ -1,0 +1,4 @@
+Rank,Path,Steps,Total Difficulty,Avg Difficulty/Step,Total Common Tones,Modalities
+1,Path[C major -> G major] (score: 5.57),1,5.57,5.57,6,C major -> G major
+2,Path[C major -> C lydian -> G lydian -> G major] (score: 6.71),3,6.71,2.24,18,C major -> C lydian -> G lydian -> G major
+3,Path[C major -> C mixolydian -> G mixolydian -> G major] (score: 6.71),3,6.71,2.24,18,C major -> C mixolydian -> G mixolydian -> G major

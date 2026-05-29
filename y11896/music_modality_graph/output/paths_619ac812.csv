@@ -1,0 +1,4 @@
+Rank,Path,Steps,Total Difficulty,Avg Difficulty/Step,Total Common Tones,Modalities
+1,Path[C major -> B locrian -> A minor -> G major] (score: -1.29),3,-1.29,-0.43,20,C major -> B locrian -> A minor -> G major
+2,Path[C major -> B locrian -> C major -> A minor -> G major] (score: -1.69),4,-1.69,-0.42,27,C major -> B locrian -> C major -> A minor -> G major
+3,Path[C major -> B locrian -> A minor -> G mixolydian -> G major] (score: -1.29),4,-1.29,-0.32,27,C major -> B locrian -> A minor -> G mixolydian -> G major

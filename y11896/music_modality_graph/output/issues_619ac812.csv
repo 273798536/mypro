@@ -1,0 +1,4 @@
+Issue Type,Severity,Description,Related Items,Suggested Action
+path_too_long,info,"Path has 4 steps, consider intermediate modulations",Path[C major -> B locrian -> C major -> A minor -> G major] (score: -1.69),Review if a more direct path exists or break into smaller learning units
+duplicate_modality,warning,Path contains duplicate modalities,Path[C major -> B locrian -> C major -> A minor -> G major] (score: -1.69),Remove cycles from the path
+path_too_long,info,"Path has 4 steps, consider intermediate modulations",Path[C major -> B locrian -> A minor -> G mixolydian -> G major] (score: -1.29),Review if a more direct path exists or break into smaller learning units

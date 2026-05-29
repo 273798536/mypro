@@ -1,0 +1,425 @@
+{
+  "run1_id": "ef9bdb49",
+  "run2_id": "85924773",
+  "comparison": {
+    "paths": {
+      "new_count": 3,
+      "removed_count": 3,
+      "changed_count": 0,
+      "new_paths": [
+        {
+          "rank": 1,
+          "path_str": "Path[C major -> G major -> F# harmonic_minor] (score: 8.79)",
+          "length": 2,
+          "total_difficulty": 8.79,
+          "total_common_tones": 10,
+          "modalities": [
+            "C major",
+            "G major",
+            "F# harmonic_minor"
+          ],
+          "modality_ids": [
+            "C_major",
+            "G_major",
+            "F#_harmonic_minor"
+          ],
+          "edges": [
+            {
+              "source_id": "C_major",
+              "target_id": "G_major",
+              "source": "C major",
+              "target": "G major",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 5.57,
+              "modulation_type": "diatonic_common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "G_major",
+              "target_id": "F#_harmonic_minor",
+              "source": "G major",
+              "target": "F# harmonic_minor",
+              "common_tones": [
+                "A",
+                "D",
+                "B",
+                "F#"
+              ],
+              "common_tone_count": 4,
+              "difficulty_score": 3.21,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "path_str": "Path[C major -> C lydian -> G lydian -> F# harmonic_minor] (score: 8.79)",
+          "length": 3,
+          "total_difficulty": 8.79,
+          "total_common_tones": 17,
+          "modalities": [
+            "C major",
+            "C lydian",
+            "G lydian",
+            "F# harmonic_minor"
+          ],
+          "modality_ids": [
+            "C_major",
+            "C_lydian",
+            "G_lydian",
+            "F#_harmonic_minor"
+          ],
+          "edges": [
+            {
+              "source_id": "C_major",
+              "target_id": "C_lydian",
+              "source": "C major",
+              "target": "C lydian",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 0.57,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "C_lydian",
+              "target_id": "G_lydian",
+              "source": "C lydian",
+              "target": "G lydian",
+              "common_tones": [
+                "D",
+                "E",
+                "F#",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 5.57,
+              "modulation_type": "diatonic_common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "G_lydian",
+              "target_id": "F#_harmonic_minor",
+              "source": "G lydian",
+              "target": "F# harmonic_minor",
+              "common_tones": [
+                "C#",
+                "D",
+                "F#",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 5,
+              "difficulty_score": 2.64,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "path_str": "Path[C major -> B phrygian -> F# phrygian -> F# harmonic_minor] (score: 8.79)",
+          "length": 3,
+          "total_difficulty": 8.79,
+          "total_common_tones": 17,
+          "modalities": [
+            "C major",
+            "B phrygian",
+            "F# phrygian",
+            "F# harmonic_minor"
+          ],
+          "modality_ids": [
+            "C_major",
+            "B_phrygian",
+            "F#_phrygian",
+            "F#_harmonic_minor"
+          ],
+          "edges": [
+            {
+              "source_id": "C_major",
+              "target_id": "B_phrygian",
+              "source": "C major",
+              "target": "B phrygian",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 2.07,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "B_phrygian",
+              "target_id": "F#_phrygian",
+              "source": "B phrygian",
+              "target": "F# phrygian",
+              "common_tones": [
+                "D",
+                "E",
+                "F#",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 5.57,
+              "modulation_type": "diatonic_common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "F#_phrygian",
+              "target_id": "F#_harmonic_minor",
+              "source": "F# phrygian",
+              "target": "F# harmonic_minor",
+              "common_tones": [
+                "C#",
+                "D",
+                "F#",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 5,
+              "difficulty_score": 1.14,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            }
+          ]
+        }
+      ],
+      "removed_paths": [
+        {
+          "rank": 1,
+          "path_str": "Path[C major -> G major] (score: 5.57)",
+          "length": 1,
+          "total_difficulty": 5.57,
+          "total_common_tones": 6,
+          "modalities": [
+            "C major",
+            "G major"
+          ],
+          "modality_ids": [
+            "C_major",
+            "G_major"
+          ],
+          "edges": [
+            {
+              "source_id": "C_major",
+              "target_id": "G_major",
+              "source": "C major",
+              "target": "G major",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 5.57,
+              "modulation_type": "diatonic_common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "path_str": "Path[C major -> C lydian -> G lydian -> G major] (score: 6.71)",
+          "length": 3,
+          "total_difficulty": 6.71,
+          "total_common_tones": 18,
+          "modalities": [
+            "C major",
+            "C lydian",
+            "G lydian",
+            "G major"
+          ],
+          "modality_ids": [
+            "C_major",
+            "C_lydian",
+            "G_lydian",
+            "G_major"
+          ],
+          "edges": [
+            {
+              "source_id": "C_major",
+              "target_id": "C_lydian",
+              "source": "C major",
+              "target": "C lydian",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 0.57,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "C_lydian",
+              "target_id": "G_lydian",
+              "source": "C lydian",
+              "target": "G lydian",
+              "common_tones": [
+                "D",
+                "E",
+                "F#",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 5.57,
+              "modulation_type": "diatonic_common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "G_lydian",
+              "target_id": "G_major",
+              "source": "G lydian",
+              "target": "G major",
+              "common_tones": [
+                "D",
+                "E",
+                "F#",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 0.57,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "path_str": "Path[C major -> C mixolydian -> G mixolydian -> G major] (score: 6.71)",
+          "length": 3,
+          "total_difficulty": 6.71,
+          "total_common_tones": 18,
+          "modalities": [
+            "C major",
+            "C mixolydian",
+            "G mixolydian",
+            "G major"
+          ],
+          "modality_ids": [
+            "C_major",
+            "C_mixolydian",
+            "G_mixolydian",
+            "G_major"
+          ],
+          "edges": [
+            {
+              "source_id": "C_major",
+              "target_id": "C_mixolydian",
+              "source": "C major",
+              "target": "C mixolydian",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "A"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 0.57,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "C_mixolydian",
+              "target_id": "G_mixolydian",
+              "source": "C mixolydian",
+              "target": "G mixolydian",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "A"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 5.57,
+              "modulation_type": "diatonic_common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            },
+            {
+              "source_id": "G_mixolydian",
+              "target_id": "G_major",
+              "source": "G mixolydian",
+              "target": "G major",
+              "common_tones": [
+                "C",
+                "D",
+                "E",
+                "G",
+                "A",
+                "B"
+              ],
+              "common_tone_count": 6,
+              "difficulty_score": 0.57,
+              "modulation_type": "common_tone",
+              "is_enharmonic": false,
+              "needs_confirmation": false
+            }
+          ]
+        }
+      ],
+      "changed_paths": []
+    },
+    "edges": {
+      "new_count": 0,
+      "removed_count": 0,
+      "changed_count": 0,
+      "new_edges": [],
+      "removed_edges": [],
+      "changed_edges": []
+    }
+  }
+}
