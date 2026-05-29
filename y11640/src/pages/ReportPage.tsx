@@ -6,6 +6,7 @@ import type { ScoreDetail, ActionLog, Passenger } from '@/types/game';
 
 interface GameResult {
   score: number;
+  timeRemaining: number;
   passengers: { id: string; status: string; waitTime: number }[];
   actionLogs: ActionLog[];
   timestamp: number;
@@ -45,9 +46,7 @@ export function ReportPage() {
       color: '',
     }));
     
-    const timeRemaining = Math.max(0, 180 - Math.floor(gameResult.timestamp / 1000));
-    
-    return calculateScoreDetails(mockPassengers, timeRemaining, gameResult.actionLogs);
+    return calculateScoreDetails(mockPassengers, gameResult.timeRemaining, gameResult.actionLogs);
   }, [gameResult]);
 
   const totalScore = useMemo(() => {

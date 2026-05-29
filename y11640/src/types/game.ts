@@ -93,6 +93,9 @@ export interface GameState {
   congestionZones: { x: number; y: number; radius: number }[];
   lineCounter: number;
   gameStartTime: number;
+  lastEventTriggerTime: number;
+  lastBroadcastTime: number;
+  passengerDetourInfo: { passengerId: string; detourPercent: number }[];
 }
 
 export interface GameActions {
@@ -111,6 +114,10 @@ export interface GameActions {
   triggerEmergencyEvent: (event: EmergencyEvent) => void;
   resolveEmergencyEvent: () => void;
   setTimeRemaining: (time: number) => void;
+  setCongestionZones: (zones: { x: number; y: number; radius: number }[]) => void;
+  markEventTriggered: (eventId: string) => void;
+  checkBroadcastMissed: () => void;
+  addDetourWarning: (passengerId: string, detourPercent: number) => void;
 }
 
 export type GameStore = GameState & GameActions;

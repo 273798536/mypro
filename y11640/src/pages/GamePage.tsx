@@ -5,7 +5,7 @@ import { StationMap } from '@/components/StationMap';
 import { ControlPanel } from '@/components/ControlPanel';
 import { ScorePanel } from '@/components/ScorePanel';
 import { ActionLogPanel } from '@/components/ActionLog';
-import { getDefaultLevelConfig, generatePassenger, updatePassengerPosition, checkCongestion } from '@/engine/gameEngine';
+import { getDefaultLevelConfig, generatePassenger, updatePassengerPosition, checkCongestion, calculatePath } from '@/engine/gameEngine';
 import { Play, Flag } from 'lucide-react';
 
 export function GamePage() {
@@ -32,6 +32,9 @@ export function GamePage() {
   const setTimeRemaining = useGameStore(state => state.setTimeRemaining);
   const addActionLog = useGameStore(state => state.addActionLog);
   const triggerEmergencyEvent = useGameStore(state => state.triggerEmergencyEvent);
+  const setCongestionZones = useGameStore(state => state.setCongestionZones);
+  const checkBroadcastMissed = useGameStore(state => state.checkBroadcastMissed);
+  const addDetourWarning = useGameStore(state => state.addDetourWarning);
 
   const startNewGame = useCallback(() => {
     const level = getDefaultLevelConfig();
@@ -42,6 +45,7 @@ export function GamePage() {
     endGame();
     const gameData = {
       score,
+      timeRemaining,
       passengers: passengers.map(p => ({
         id: p.id,
         status: p.status,
@@ -52,7 +56,7 @@ export function GamePage() {
     };
     localStorage.setItem('lastGameResult', JSON.stringify(gameData));
     navigate('/report');
-  }, [endGame, score, passengers, actionLogs, navigate]);
+  }, [endGame, score, timeRemaining, passengers, actionLogs, navigate]);
 
   useEffect(() => {
     if (!isPlaying || isPaused || isGameOver) {
@@ -72,10 +76,11 @@ export function GamePage() {
       if (deltaTime >= 1000) {
         lastTimeRef.current = timestamp;
         
-        setTimeRemaining(Math.max(0, timeRemaining - 1));
+        const newTime = Math.max(0, timeRemaining - 1);
+        setTimeRemaining(newTime);
 
-        if (currentLevel) {
-          const elapsed = currentLevel.timeLimit - timeRemaining;
+        if (currentLevel && currentLevel.timeLimit > 0) {
+          const elapsed = currentLevel.timeLimit - newTime;
           currentLevel.emergencyEvents.forEach(event => {
             if (!event.triggered && elapsed >= event.triggerTime) {
               triggerEmergencyEvent(event);
@@ -83,7 +88,9 @@ export function GamePage() {
           });
         }
 
-        if (timeRemaining <= 0) {
+        checkBroadcastMissed();
+
+        if (newTime <= 0) {
           handleEndGame();
           return;
         }
@@ -108,18 +115,56 @@ export function GamePage() {
 
       if (currentLevel) {
         const congestionZones = checkCongestion(passengers);
+        setCongestionZones(congestionZones);
         
-        const updatedPassengers = passengers.map(passenger => 
-          updatePassengerPosition(
+        const updatedPassengers = passengers.map(passenger => {
+          const newPassenger = updatePassengerPosition(
             passenger,
             currentLevel.exits,
             areas,
             congestionZones
-          )
-        );
+          );
+
+          if (newPassenger.status !== 'exited' && newPassenger.status !== 'stuck') {
+            const exit = currentLevel.exits.find(e => e.id === newPassenger.targetExit);
+            if (exit) {
+              const straightPath = calculatePath(
+                passenger.x, passenger.y, exit.x, exit.y, []
+              );
+              const blockedPath = calculatePath(
+                passenger.x, passenger.y, exit.x, exit.y, areas
+              );
+              
+              if (straightPath.length > 1 && blockedPath.length > 1) {
+                let straightDist = 0;
+                let blockedDist = 0;
+                for (let i = 1; i < straightPath.length; i++) {
+                  straightDist += Math.sqrt(
+                    Math.pow(straightPath[i].x - straightPath[i-1].x, 2) +
+                    Math.pow(straightPath[i].y - straightPath[i-1].y, 2)
+                  );
+                }
+                for (let i = 1; i < blockedPath.length; i++) {
+                  blockedDist += Math.sqrt(
+                    Math.pow(blockedPath[i].x - blockedPath[i-1].x, 2) +
+                    Math.pow(blockedPath[i].y - blockedPath[i-1].y, 2)
+                  );
+                }
+                
+                if (straightDist > 0 && blockedDist > straightDist * 1.5) {
+                  const detourPercent = Math.round((blockedDist - straightDist) / straightDist * 100);
+                  addDetourWarning(passenger.id, detourPercent);
+                }
+              }
+            }
+          }
+
+          return newPassenger;
+        });
 
         updatedPassengers.forEach(p => {
-          if (p.status !== passengers.find(orig => orig.id === p.id)?.status) {
+          const original = passengers.find(orig => orig.id === p.id);
+          if (original && p.status !== original.status) {
             if (p.status === 'exited') {
               addActionLog('客流引擎', `乘客 ${p.id} 已疏散`, 'success');
             } else if (p.status === 'stuck') {
@@ -147,7 +192,7 @@ export function GamePage() {
         cancelAnimationFrame(gameLoopRef.current);
       }
     };
-  }, [isPlaying, isPaused, isGameOver, timeRemaining, currentLevel, passengers, gates, areas, addPassenger, updatePassenger, setTimeRemaining, triggerEmergencyEvent, addActionLog, handleEndGame]);
+  }, [isPlaying, isPaused, isGameOver, timeRemaining, currentLevel, passengers, gates, areas, addPassenger, updatePassenger, setTimeRemaining, triggerEmergencyEvent, addActionLog, handleEndGame, setCongestionZones, checkBroadcastMissed, addDetourWarning]);
 
   useEffect(() => {
     if (!currentLevel) {
