@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}版本对比 V{{ old_result.version }} vs V{{ new_result.version }}{% endblock %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 style="color: #2d3748;">版本对比</h2>
+            <p style="color: #718096;">V{{ old_result.version }} ({{ old_result.created_at.strftime('%Y-%m-%d %H:%M') }}) 
+                → 
+               V{{ new_result.version }} ({{ new_result.created_at.strftime('%Y-%m-%d %H:%M') }})</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="/export/diff/{{ old_result.result_id }}/{{ new_result.result_id }}" class="btn btn-success">下载对比报告</a>
+            <a href="/result/{{ new_result.result_id }}" class="btn btn-primary">查看最新结果</a>
+            <a href="/" class="btn btn-secondary">返回</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📊 总体变化</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div style="text-align: center; padding: 20px; background: #f7fafc; border-radius: 8px;">
+                <div style="font-size: 13px; color: #718096; margin-bottom: 8px;">总人天变化</div>
+                <div style="font-size: 32px; font-weight: 700; color: {{ '#48bb78' if diff.total_days_change > 0 else '#f56565' if diff.total_days_change < 0 else '#718096' }};">
+                    {{ '+' if diff.total_days_change > 0 }}{{ diff.total_days_change }}
+                </div>
+                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px;">
+                    {{ old_result.total_days }} → {{ new_result.total_days }}
+                </div>
+            </div>
+            <div style="text-align: center; padding: 20px; background: #f7fafc; border-radius: 8px;">
+                <div style="font-size: 13px; color: #718096; margin-bottom: 8px;">总金额变化</div>
+                <div style="font-size: 32px; font-weight: 700; color: {{ '#48bb78' if diff.total_amount_change > 0 else '#f56565' if diff.total_amount_change < 0 else '#718096' }};">
+                    {{ '+' if diff.total_amount_change > 0 }}¥{{ "{:,.0f}".format(diff.total_amount_change) }}
+                </div>
+                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px;">
+                    ¥{{ "{:,.0f}".format(old_result.total_amount) }} → ¥{{ "{:,.0f}".format(new_result.total_amount) }}
+                </div>
+            </div>
+            <div style="text-align: center; padding: 20px; background: #f7fafc; border-radius: 8px;">
+                <div style="font-size: 13px; color: #718096; margin-bottom: 8px;">争议变化</div>
+                <div style="font-size: 32px; font-weight: 700; color: {{ '#f56565' if diff.added_disputes|length > diff.removed_disputes|length else '#48bb78' }};">
+                    {{ '+' if (diff.added_disputes|length - diff.removed_disputes|length) > 0 }}{{ diff.added_disputes|length - diff.removed_disputes|length }}
+                </div>
+                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px;">
+                    {{ old_result.disputes|length }} → {{ new_result.disputes|length }}
+                </div>
+            </div>
+            <div style="text-align: center; padding: 20px; background: #f7fafc; border-radius: 8px;">
+                <div style="font-size: 13px; color: #718096; margin-bottom: 8px;">考勤记录变化</div>
+                <div style="font-size: 32px; font-weight: 700;">{{ diff.attendance_changes|length }}</div>
+                <div style="font-size: 12px; color: #a0aec0; margin-top: 4px;">条记录发生变更</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('added')">新增争议 ({{ diff.added_disputes|length }})</div>
+            <div class="tab" onclick="switchTab('removed')">已解决 ({{ diff.removed_disputes|length }})</div>
+            <div class="tab" onclick="switchTab('changed')">变更争议 ({{ diff.changed_disputes|length }})</div>
+            <div class="tab" onclick="switchTab('attendance')">考勤变更 ({{ diff.attendance_changes|length }})</div>
+        </div>
+
+        <div id="tab-added">
+            {% if diff.added_disputes %}
+                {% for dispute in diff.added_disputes %}
+                    <div class="dispute-item diff-added">
+                        <div class="dispute-header">
+                            <span class="dispute-title">
+                                <span class="badge badge-success">新增</span>
+                                <span class="badge {{ 
+                                    'badge-error' if dispute.status == VerificationStatus.ERROR else 
+                                    'badge-warning' if dispute.status == VerificationStatus.WARNING else 
+                                    'badge-pending'
+                                }}">{{ dispute.status.value }}</span>
+                                <span class="badge badge-info">{{ dispute.dispute_type.value }}</span>
+                            </span>
+                        </div>
+                        <div class="dispute-desc">{{ dispute.description }}</div>
+                        <div class="dispute-suggestion">💡 {{ dispute.suggestion }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">没有新增争议</div>
+            {% endif %}
+        </div>
+
+        <div id="tab-removed" style="display: none;">
+            {% if diff.removed_disputes %}
+                {% for dispute in diff.removed_disputes %}
+                    <div class="dispute-item diff-removed">
+                        <div class="dispute-header">
+                            <span class="dispute-title">
+                                <span class="badge badge-success">已解决</span>
+                                <span class="badge badge-info">{{ dispute.dispute_type.value }}</span>
+                            </span>
+                        </div>
+                        <div class="dispute-desc">{{ dispute.description }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">没有已解决的争议</div>
+            {% endif %}
+        </div>
+
+        <div id="tab-changed" style="display: none;">
+            {% if diff.changed_disputes %}
+                {% for old_d, new_d, changes in diff.changed_disputes %}
+                    <div class="dispute-item diff-changed">
+                        <div class="dispute-header">
+                            <span class="dispute-title">
+                                <span class="badge badge-warning">变更</span>
+                                <span class="badge badge-info">{{ new_d.dispute_type.value }}</span>
+                            </span>
+                        </div>
+                        <div class="dispute-desc">{{ new_d.description }}</div>
+                        <div style="margin-top: 12px;">
+                            <strong>变更内容：</strong>
+                            <ul style="margin-top: 8px; padding-left: 20px;">
+                                {% for change in changes %}
+                                    <li style="margin-bottom: 4px;">
+                                        {{ change.field_name }}: 
+                                        <span style="text-decoration: line-through; opacity: 0.7;">{{ change.old_value }}</span>
+                                        → <strong>{{ change.new_value }}</strong>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">没有变更的争议</div>
+            {% endif %}
+        </div>
+
+        <div id="tab-attendance" style="display: none;">
+            {% if diff.attendance_changes %}
+                {% for change in diff.attendance_changes %}
+                    <div class="change-item change-{{ change.change_type }}">
+                        <strong>{{ change.field_name }}</strong>
+                        <div style="margin-top: 4px;">
+                            {% if change.old_value %}
+                                <span style="background: #fed7d7; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">
+                                    {{ change.old_value }}
+                                </span>
+                            {% endif %}
+                            {% if change.old_value and change.new_value %}→{% endif %}
+                            {% if change.new_value %}
+                                <span style="background: #c6f6d5; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">
+                                    {{ change.new_value }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">没有考勤记录变更</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).style.display = 'block';
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{
+  "5076e029": {
+    "rate_id": "5076e029",
+    "staff_id": "S001",
+    "daily_rate": 800.0,
+    "effective_date": "2026-04-30",
+    "end_date": null,
+    "version": 1,
+    "created_at": "2026-05-30T00:19:08.815719"
+  },
+  "546712a4": {
+    "rate_id": "546712a4",
+    "staff_id": "S002",
+    "daily_rate": 1000.0,
+    "effective_date": "2026-04-30",
+    "end_date": "2026-05-15",
+    "version": 1,
+    "created_at": "2026-05-30T00:19:08.816074"
+  },
+  "62de6c9e": {
+    "rate_id": "62de6c9e",
+    "staff_id": "S002",
+    "daily_rate": 1200.0,
+    "effective_date": "2026-05-16",
+    "end_date": null,
+    "version": 2,
+    "created_at": "2026-05-30T00:19:08.816413"
+  },
+  "fd287d4d": {
+    "rate_id": "fd287d4d",
+    "staff_id": "S003",
+    "daily_rate": 600.0,
+    "effective_date": "2026-04-30",
+    "end_date": null,
+    "version": 1,
+    "created_at": "2026-05-30T00:19:08.816754"
+  },
+  "9a3f1dc8": {
+    "rate_id": "9a3f1dc8",
+    "staff_id": "S004",
+    "daily_rate": 1500.0,
+    "effective_date": "2026-04-30",
+    "end_date": null,
+    "version": 1,
+    "created_at": "2026-05-30T00:19:08.817156"
+  }
+}

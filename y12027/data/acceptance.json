@@ -1,0 +1,222 @@
+{
+  "0b0ed047": {
+    "acceptance_id": "0b0ed047",
+    "staff_id": "S001",
+    "work_date": "2026-05-22",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.862509",
+    "is_overdue": false
+  },
+  "ae0398d1": {
+    "acceptance_id": "ae0398d1",
+    "staff_id": "S001",
+    "work_date": "2026-05-21",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.863885",
+    "is_overdue": false
+  },
+  "b4d30d75": {
+    "acceptance_id": "b4d30d75",
+    "staff_id": "S001",
+    "work_date": "2026-05-20",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.865185",
+    "is_overdue": false
+  },
+  "26195bd7": {
+    "acceptance_id": "26195bd7",
+    "staff_id": "S001",
+    "work_date": "2026-05-19",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.866492",
+    "is_overdue": false
+  },
+  "ca84cefa": {
+    "acceptance_id": "ca84cefa",
+    "staff_id": "S001",
+    "work_date": "2026-05-18",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.867726",
+    "is_overdue": false
+  },
+  "445533c0": {
+    "acceptance_id": "445533c0",
+    "staff_id": "S001",
+    "work_date": "2026-05-15",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.868751",
+    "is_overdue": false
+  },
+  "f6f7b3ff": {
+    "acceptance_id": "f6f7b3ff",
+    "staff_id": "S001",
+    "work_date": "2026-05-14",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.869688",
+    "is_overdue": false
+  },
+  "c473b400": {
+    "acceptance_id": "c473b400",
+    "staff_id": "S001",
+    "work_date": "2026-05-13",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.870659",
+    "is_overdue": false
+  },
+  "baedc17d": {
+    "acceptance_id": "baedc17d",
+    "staff_id": "S001",
+    "work_date": "2026-05-12",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.871586",
+    "is_overdue": false
+  },
+  "ec77f80b": {
+    "acceptance_id": "ec77f80b",
+    "staff_id": "S001",
+    "work_date": "2026-05-11",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "项目经理",
+    "accepted_at": "2026-05-30T00:19:08.872527",
+    "is_overdue": false
+  },
+  "bdc3bc2e": {
+    "acceptance_id": "bdc3bc2e",
+    "staff_id": "S002",
+    "work_date": "2026-05-22",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "2edd036c": {
+    "acceptance_id": "2edd036c",
+    "staff_id": "S002",
+    "work_date": "2026-05-21",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "aa13f58a": {
+    "acceptance_id": "aa13f58a",
+    "staff_id": "S002",
+    "work_date": "2026-05-20",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "8caebbbe": {
+    "acceptance_id": "8caebbbe",
+    "staff_id": "S002",
+    "work_date": "2026-05-19",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "f26038ba": {
+    "acceptance_id": "f26038ba",
+    "staff_id": "S002",
+    "work_date": "2026-05-18",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "2502878e": {
+    "acceptance_id": "2502878e",
+    "staff_id": "S002",
+    "work_date": "2026-05-15",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "923b595f": {
+    "acceptance_id": "923b595f",
+    "staff_id": "S002",
+    "work_date": "2026-05-14",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "fec676c7": {
+    "acceptance_id": "fec676c7",
+    "staff_id": "S002",
+    "work_date": "2026-05-13",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "1604840b": {
+    "acceptance_id": "1604840b",
+    "staff_id": "S002",
+    "work_date": "2026-05-12",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  },
+  "f7988c80": {
+    "acceptance_id": "f7988c80",
+    "staff_id": "S002",
+    "work_date": "2026-05-11",
+    "accepted_days": 1.0,
+    "project_code": "PROJ001",
+    "acceptance_note": "",
+    "accepted_by": "",
+    "accepted_at": null,
+    "is_overdue": false
+  }
+}

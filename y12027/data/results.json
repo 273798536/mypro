@@ -1,0 +1,1249 @@
+{
+  "6466a038": {
+    "result_id": "6466a038",
+    "version": 1,
+    "attendance_ids": [
+      "51f0ee52",
+      "27ed9afa",
+      "7e2cc5f2",
+      "82c4a205",
+      "ffedcb9a",
+      "36a45789",
+      "6ed83540",
+      "f6c7b27a",
+      "3de53d02",
+      "d192fdf6",
+      "5f78e55d",
+      "011b710e",
+      "e07f844c",
+      "f484ec8a",
+      "c2dc42f4",
+      "7d8096dc",
+      "886003a2",
+      "ff218197",
+      "8d899f8d",
+      "97155c76",
+      "18b07725",
+      "174d56aa",
+      "91293d0b",
+      "946166ba",
+      "39543814",
+      "952468a6",
+      "0fd0f5b6",
+      "1cc506ff",
+      "85578992",
+      "7eacab9d",
+      "24d93d88",
+      "150ce6e9",
+      "1f93edbf",
+      "fd77fa88",
+      "b33a7b3d",
+      "77a5b523",
+      "66e0bfc4",
+      "de4e22bb",
+      "20780662",
+      "b615ee04",
+      "3a1df1b3",
+      "852eb78c",
+      "7e5a02a9",
+      "b2dad759",
+      "78e6f5ae",
+      "220cc25c",
+      "fc928335"
+    ],
+    "total_days": 47.0,
+    "total_amount": 40300.0,
+    "duplicate_days": 1.0,
+    "duplicate_amount": 800.0,
+    "missing_acceptance_count": 27,
+    "rate_change_count": 1,
+    "disputes": [
+      {
+        "dispute_id": "f345ac55",
+        "dispute_type": "人天重复",
+        "status": "错误",
+        "attendance_ids": [
+          "d192fdf6",
+          "220cc25c"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-26",
+        "description": "人员【张三】在 2026-05-26 存在重复人天，共 2 条记录，总工时 16.0 小时，超出 8.0 小时（约 1.0 人天）",
+        "suggestion": "请核对考勤记录来源：OA系统(ID:d192fdf6), 项目经理提交(ID:220cc25c)。建议保留其中一条有效记录或调整工时，重复部分涉及记录ID：d192fdf6, 220cc25c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886584"
+      },
+      {
+        "dispute_id": "b0fd3ebb",
+        "dispute_type": "字段缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "fc928335"
+        ],
+        "staff_id": "S004",
+        "work_date": "2026-05-29",
+        "description": "人员【赵六】在 2026-05-29 的考勤记录缺少字段：项目编号, 数据来源",
+        "suggestion": "请补充以下字段信息：项目编号, 数据来源。可在考勤系统中更新记录（ID：fc928335）",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886607"
+      },
+      {
+        "dispute_id": "6f0690c1",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "d192fdf6"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-26",
+        "description": "人员【张三】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ001 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：d192fdf6",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886630"
+      },
+      {
+        "dispute_id": "dbfb386a",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "5f78e55d"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-26",
+        "description": "人员【李四】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ001 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：5f78e55d",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886638"
+      },
+      {
+        "dispute_id": "5740df23",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "011b710e"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-26",
+        "description": "人员【王五】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：011b710e",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886645"
+      },
+      {
+        "dispute_id": "a0d6b620",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "e07f844c"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-25",
+        "description": "人员【张三】在 2026-05-25 的考勤缺少交付验收记录，已逾期 5 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：e07f844c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886652"
+      },
+      {
+        "dispute_id": "15240910",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "f484ec8a"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-25",
+        "description": "人员【李四】在 2026-05-25 的考勤缺少交付验收记录，已逾期 5 天",
+        "suggestion": "请联系项目经理 PROJ001 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：f484ec8a",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886659"
+      },
+      {
+        "dispute_id": "11075020",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "c2dc42f4"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-25",
+        "description": "人员【王五】在 2026-05-25 的考勤缺少交付验收记录，已逾期 5 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：c2dc42f4",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886666"
+      },
+      {
+        "dispute_id": "7f1def7d",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "886003a2"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-22",
+        "description": "人员【李四】在 2026-05-22 的验收已逾期 8 天未确认",
+        "suggestion": "验收单 bdc3bc2e 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886673"
+      },
+      {
+        "dispute_id": "6de3c334",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "ff218197"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-22",
+        "description": "人员【王五】在 2026-05-22 的考勤缺少交付验收记录，已逾期 8 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：ff218197",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886680"
+      },
+      {
+        "dispute_id": "bf46f8dc",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "97155c76"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-21",
+        "description": "人员【李四】在 2026-05-21 的验收已逾期 9 天未确认",
+        "suggestion": "验收单 2edd036c 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886686"
+      },
+      {
+        "dispute_id": "39fb5764",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "18b07725"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-21",
+        "description": "人员【王五】在 2026-05-21 的考勤缺少交付验收记录，已逾期 9 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：18b07725",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886693"
+      },
+      {
+        "dispute_id": "93343e84",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "91293d0b"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-20",
+        "description": "人员【李四】在 2026-05-20 的验收已逾期 10 天未确认",
+        "suggestion": "验收单 aa13f58a 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886700"
+      },
+      {
+        "dispute_id": "3d3fbd37",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "946166ba"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-20",
+        "description": "人员【王五】在 2026-05-20 的考勤缺少交付验收记录，已逾期 10 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：946166ba",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886706"
+      },
+      {
+        "dispute_id": "9d80139c",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "952468a6"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-19",
+        "description": "人员【李四】在 2026-05-19 的验收已逾期 11 天未确认",
+        "suggestion": "验收单 8caebbbe 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886713"
+      },
+      {
+        "dispute_id": "f4aee364",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "0fd0f5b6"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-19",
+        "description": "人员【王五】在 2026-05-19 的考勤缺少交付验收记录，已逾期 11 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：0fd0f5b6",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886719"
+      },
+      {
+        "dispute_id": "e29bb739",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "85578992"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-18",
+        "description": "人员【李四】在 2026-05-18 的验收已逾期 12 天未确认",
+        "suggestion": "验收单 f26038ba 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886726"
+      },
+      {
+        "dispute_id": "c3036e90",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "7eacab9d"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-18",
+        "description": "人员【王五】在 2026-05-18 的考勤缺少交付验收记录，已逾期 12 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：7eacab9d",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886733"
+      },
+      {
+        "dispute_id": "fe037442",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "150ce6e9"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-15",
+        "description": "人员【李四】在 2026-05-15 的验收已逾期 15 天未确认",
+        "suggestion": "验收单 2502878e 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886740"
+      },
+      {
+        "dispute_id": "2462ddcf",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "1f93edbf"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-15",
+        "description": "人员【王五】在 2026-05-15 的考勤缺少交付验收记录，已逾期 15 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：1f93edbf",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886746"
+      },
+      {
+        "dispute_id": "f792fa68",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "b33a7b3d"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-14",
+        "description": "人员【李四】在 2026-05-14 的验收已逾期 16 天未确认",
+        "suggestion": "验收单 923b595f 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886754"
+      },
+      {
+        "dispute_id": "f0435f11",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "77a5b523"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-14",
+        "description": "人员【王五】在 2026-05-14 的考勤缺少交付验收记录，已逾期 16 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：77a5b523",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886760"
+      },
+      {
+        "dispute_id": "e1e6d192",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "de4e22bb"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-13",
+        "description": "人员【李四】在 2026-05-13 的验收已逾期 17 天未确认",
+        "suggestion": "验收单 fec676c7 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886767"
+      },
+      {
+        "dispute_id": "b4a2aa9f",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "20780662"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-13",
+        "description": "人员【王五】在 2026-05-13 的考勤缺少交付验收记录，已逾期 17 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：20780662",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886773"
+      },
+      {
+        "dispute_id": "0aeea1d5",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "3a1df1b3"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-12",
+        "description": "人员【李四】在 2026-05-12 的验收已逾期 18 天未确认",
+        "suggestion": "验收单 1604840b 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886781"
+      },
+      {
+        "dispute_id": "ff0816d8",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "852eb78c"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-12",
+        "description": "人员【王五】在 2026-05-12 的考勤缺少交付验收记录，已逾期 18 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：852eb78c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886788"
+      },
+      {
+        "dispute_id": "52a3be69",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "b2dad759"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-11",
+        "description": "人员【李四】在 2026-05-11 的验收已逾期 19 天未确认",
+        "suggestion": "验收单 f7988c80 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886795"
+      },
+      {
+        "dispute_id": "1e02fae0",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "78e6f5ae"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-11",
+        "description": "人员【王五】在 2026-05-11 的考勤缺少交付验收记录，已逾期 19 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：78e6f5ae",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886802"
+      },
+      {
+        "dispute_id": "56671874",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "220cc25c"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-26",
+        "description": "人员【张三】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：220cc25c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886808"
+      },
+      {
+        "dispute_id": "097f7230",
+        "dispute_type": "费率变更",
+        "status": "待确认",
+        "attendance_ids": [
+          "27ed9afa",
+          "ffedcb9a",
+          "f6c7b27a",
+          "5f78e55d",
+          "f484ec8a",
+          "886003a2",
+          "97155c76",
+          "91293d0b",
+          "952468a6",
+          "85578992"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-16",
+        "description": "人员【李四】的日费率在 2026-05-16 发生变更",
+        "suggestion": "费率从 1000.00 元/天 变更为 1200.00 元/天。请确认费率变更是否经过审批。涉及 10 条考勤记录，费用差额约 2000.00 元",
+        "old_value": "1000.00",
+        "new_value": "1200.00",
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.886858"
+      }
+    ],
+    "created_at": "2026-05-30T00:19:08.886521",
+    "created_by": "演示用户",
+    "is_archived": false
+  },
+  "fb6dd735": {
+    "result_id": "fb6dd735",
+    "version": 2,
+    "attendance_ids": [
+      "51f0ee52",
+      "27ed9afa",
+      "7e2cc5f2",
+      "82c4a205",
+      "ffedcb9a",
+      "36a45789",
+      "6ed83540",
+      "f6c7b27a",
+      "3de53d02",
+      "d192fdf6",
+      "5f78e55d",
+      "011b710e",
+      "e07f844c",
+      "f484ec8a",
+      "c2dc42f4",
+      "7d8096dc",
+      "886003a2",
+      "ff218197",
+      "8d899f8d",
+      "97155c76",
+      "18b07725",
+      "174d56aa",
+      "91293d0b",
+      "946166ba",
+      "39543814",
+      "952468a6",
+      "0fd0f5b6",
+      "1cc506ff",
+      "85578992",
+      "7eacab9d",
+      "24d93d88",
+      "150ce6e9",
+      "1f93edbf",
+      "fd77fa88",
+      "b33a7b3d",
+      "77a5b523",
+      "66e0bfc4",
+      "de4e22bb",
+      "20780662",
+      "b615ee04",
+      "3a1df1b3",
+      "852eb78c",
+      "7e5a02a9",
+      "b2dad759",
+      "78e6f5ae",
+      "220cc25c",
+      "fc928335",
+      "2e3493bb"
+    ],
+    "total_days": 47.5,
+    "total_amount": 41400.0,
+    "duplicate_days": 0.5,
+    "duplicate_amount": 400.0,
+    "missing_acceptance_count": 28,
+    "rate_change_count": 1,
+    "disputes": [
+      {
+        "dispute_id": "60ed4071",
+        "dispute_type": "人天重复",
+        "status": "错误",
+        "attendance_ids": [
+          "d192fdf6",
+          "220cc25c"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-26",
+        "description": "人员【张三】在 2026-05-26 存在重复人天，共 2 条记录，总工时 12.0 小时，超出 4.0 小时（约 0.5 人天）",
+        "suggestion": "请核对考勤记录来源：OA系统(ID:d192fdf6), 项目经理提交(ID:220cc25c)。建议保留其中一条有效记录或调整工时，重复部分涉及记录ID：d192fdf6, 220cc25c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892296"
+      },
+      {
+        "dispute_id": "77effe9e",
+        "dispute_type": "字段缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "fc928335"
+        ],
+        "staff_id": "S004",
+        "work_date": "2026-05-29",
+        "description": "人员【赵六】在 2026-05-29 的考勤记录缺少字段：项目编号, 数据来源",
+        "suggestion": "请补充以下字段信息：项目编号, 数据来源。可在考勤系统中更新记录（ID：fc928335）",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892315"
+      },
+      {
+        "dispute_id": "fe06da35",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "d192fdf6"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-26",
+        "description": "人员【张三】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ001 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：d192fdf6",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892336"
+      },
+      {
+        "dispute_id": "596cc234",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "5f78e55d"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-26",
+        "description": "人员【李四】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ001 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：5f78e55d",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892343"
+      },
+      {
+        "dispute_id": "2babe46f",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "011b710e"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-26",
+        "description": "人员【王五】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：011b710e",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892350"
+      },
+      {
+        "dispute_id": "7f08d916",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "e07f844c"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-25",
+        "description": "人员【张三】在 2026-05-25 的考勤缺少交付验收记录，已逾期 5 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：e07f844c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892357"
+      },
+      {
+        "dispute_id": "941ee6a6",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "f484ec8a"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-25",
+        "description": "人员【李四】在 2026-05-25 的考勤缺少交付验收记录，已逾期 5 天",
+        "suggestion": "请联系项目经理 PROJ001 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：f484ec8a",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892364"
+      },
+      {
+        "dispute_id": "daf25103",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "c2dc42f4"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-25",
+        "description": "人员【王五】在 2026-05-25 的考勤缺少交付验收记录，已逾期 5 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：c2dc42f4",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892371"
+      },
+      {
+        "dispute_id": "0a3ee68c",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "886003a2"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-22",
+        "description": "人员【李四】在 2026-05-22 的验收已逾期 8 天未确认",
+        "suggestion": "验收单 bdc3bc2e 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892379"
+      },
+      {
+        "dispute_id": "5af3dd87",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "ff218197"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-22",
+        "description": "人员【王五】在 2026-05-22 的考勤缺少交付验收记录，已逾期 8 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：ff218197",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892386"
+      },
+      {
+        "dispute_id": "5fc1f5f9",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "97155c76"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-21",
+        "description": "人员【李四】在 2026-05-21 的验收已逾期 9 天未确认",
+        "suggestion": "验收单 2edd036c 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892392"
+      },
+      {
+        "dispute_id": "3ce36203",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "18b07725"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-21",
+        "description": "人员【王五】在 2026-05-21 的考勤缺少交付验收记录，已逾期 9 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：18b07725",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892399"
+      },
+      {
+        "dispute_id": "a7d6a286",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "91293d0b"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-20",
+        "description": "人员【李四】在 2026-05-20 的验收已逾期 10 天未确认",
+        "suggestion": "验收单 aa13f58a 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892406"
+      },
+      {
+        "dispute_id": "da8e7b2e",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "946166ba"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-20",
+        "description": "人员【王五】在 2026-05-20 的考勤缺少交付验收记录，已逾期 10 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：946166ba",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892412"
+      },
+      {
+        "dispute_id": "508de553",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "952468a6"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-19",
+        "description": "人员【李四】在 2026-05-19 的验收已逾期 11 天未确认",
+        "suggestion": "验收单 8caebbbe 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892419"
+      },
+      {
+        "dispute_id": "92f76382",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "0fd0f5b6"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-19",
+        "description": "人员【王五】在 2026-05-19 的考勤缺少交付验收记录，已逾期 11 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：0fd0f5b6",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892425"
+      },
+      {
+        "dispute_id": "05c94762",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "85578992"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-18",
+        "description": "人员【李四】在 2026-05-18 的验收已逾期 12 天未确认",
+        "suggestion": "验收单 f26038ba 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892432"
+      },
+      {
+        "dispute_id": "b78e1188",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "7eacab9d"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-18",
+        "description": "人员【王五】在 2026-05-18 的考勤缺少交付验收记录，已逾期 12 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：7eacab9d",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892568"
+      },
+      {
+        "dispute_id": "84d6ea41",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "150ce6e9"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-15",
+        "description": "人员【李四】在 2026-05-15 的验收已逾期 15 天未确认",
+        "suggestion": "验收单 2502878e 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892640"
+      },
+      {
+        "dispute_id": "56298647",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "1f93edbf"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-15",
+        "description": "人员【王五】在 2026-05-15 的考勤缺少交付验收记录，已逾期 15 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：1f93edbf",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892659"
+      },
+      {
+        "dispute_id": "49d05e01",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "b33a7b3d"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-14",
+        "description": "人员【李四】在 2026-05-14 的验收已逾期 16 天未确认",
+        "suggestion": "验收单 923b595f 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892674"
+      },
+      {
+        "dispute_id": "b067558d",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "77a5b523"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-14",
+        "description": "人员【王五】在 2026-05-14 的考勤缺少交付验收记录，已逾期 16 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：77a5b523",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892687"
+      },
+      {
+        "dispute_id": "38a5ddea",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "de4e22bb"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-13",
+        "description": "人员【李四】在 2026-05-13 的验收已逾期 17 天未确认",
+        "suggestion": "验收单 fec676c7 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892701"
+      },
+      {
+        "dispute_id": "2e69f6f8",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "20780662"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-13",
+        "description": "人员【王五】在 2026-05-13 的考勤缺少交付验收记录，已逾期 17 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：20780662",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892713"
+      },
+      {
+        "dispute_id": "d8ff1356",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "3a1df1b3"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-12",
+        "description": "人员【李四】在 2026-05-12 的验收已逾期 18 天未确认",
+        "suggestion": "验收单 1604840b 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892727"
+      },
+      {
+        "dispute_id": "0a674733",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "852eb78c"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-12",
+        "description": "人员【王五】在 2026-05-12 的考勤缺少交付验收记录，已逾期 18 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：852eb78c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892740"
+      },
+      {
+        "dispute_id": "7494a5af",
+        "dispute_type": "验收缺失",
+        "status": "错误",
+        "attendance_ids": [
+          "b2dad759"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-11",
+        "description": "人员【李四】在 2026-05-11 的验收已逾期 19 天未确认",
+        "suggestion": "验收单 f7988c80 已提交但未确认，请催促相关人员确认。超期未验收的费用将暂停支付",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892754"
+      },
+      {
+        "dispute_id": "684d251a",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "78e6f5ae"
+        ],
+        "staff_id": "S003",
+        "work_date": "2026-05-11",
+        "description": "人员【王五】在 2026-05-11 的考勤缺少交付验收记录，已逾期 19 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：78e6f5ae",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892766"
+      },
+      {
+        "dispute_id": "5ff0f3b5",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "220cc25c"
+        ],
+        "staff_id": "S001",
+        "work_date": "2026-05-26",
+        "description": "人员【张三】在 2026-05-26 的考勤缺少交付验收记录，已逾期 4 天",
+        "suggestion": "请联系项目经理 PROJ002 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：220cc25c",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892778"
+      },
+      {
+        "dispute_id": "e81e46d2",
+        "dispute_type": "验收缺失",
+        "status": "警告",
+        "attendance_ids": [
+          "2e3493bb"
+        ],
+        "staff_id": "S004",
+        "work_date": "2026-05-23",
+        "description": "人员【赵六】在 2026-05-23 的考勤缺少交付验收记录，已逾期 7 天",
+        "suggestion": "请联系项目经理 PROJ003 尽快提交验收。如已验收，请在系统中补录验收记录并关联考勤ID：2e3493bb",
+        "old_value": null,
+        "new_value": null,
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892792"
+      },
+      {
+        "dispute_id": "c70cc2d0",
+        "dispute_type": "费率变更",
+        "status": "待确认",
+        "attendance_ids": [
+          "27ed9afa",
+          "ffedcb9a",
+          "f6c7b27a",
+          "5f78e55d",
+          "f484ec8a",
+          "886003a2",
+          "97155c76",
+          "91293d0b",
+          "952468a6",
+          "85578992"
+        ],
+        "staff_id": "S002",
+        "work_date": "2026-05-16",
+        "description": "人员【李四】的日费率在 2026-05-16 发生变更",
+        "suggestion": "费率从 1000.00 元/天 变更为 1200.00 元/天。请确认费率变更是否经过审批。涉及 10 条考勤记录，费用差额约 2000.00 元",
+        "old_value": "1000.00",
+        "new_value": "1200.00",
+        "resolved": false,
+        "resolved_at": null,
+        "resolved_by": "",
+        "created_at": "2026-05-30T00:19:08.892923"
+      }
+    ],
+    "created_at": "2026-05-30T00:19:08.892255",
+    "created_by": "演示用户",
+    "is_archived": false
+  }
+}

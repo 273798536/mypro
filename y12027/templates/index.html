@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if latest_result %}
+        <div class="stats-grid">
+            <div class="stat-card" style="--color1: #667eea; --color2: #764ba2;">
+                <div class="label">总人天</div>
+                <div class="value">{{ stats.total_days }}</div>
+            </div>
+            <div class="stat-card" style="--color1: #f093fb; --color2: #f5576c;">
+                <div class="label">总金额</div>
+                <div class="value">¥{{ "{:,.0f}".format(stats.total_amount) }}</div>
+            </div>
+            <div class="stat-card" style="--color1: #4facfe; --color2: #00f2fe;">
+                <div class="label">重复人天</div>
+                <div class="value">{{ stats.duplicate_days }}</div>
+                <div class="sub">涉及金额 ¥{{ "{:,.0f}".format(stats.duplicate_amount) }}</div>
+            </div>
+            <div class="stat-card" style="--color1: #fa709a; --color2: #fee140;">
+                <div class="label">待处理争议</div>
+                <div class="value">{{ stats.dispute_count }}</div>
+                <div class="sub">错误{{ stats.error_count }} 警告{{ stats.warning_count }}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">快速操作</div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <a href="/result/{{ latest_result.result_id }}" class="btn btn-primary">查看详细报告</a>
+                <a href="/export/excel/{{ latest_result.result_id }}" class="btn btn-success">下载Excel报告</a>
+                <button onclick="showVerifyModal()" class="btn btn-warning">重新核验</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">争议分布</div>
+            <canvas id="disputeChart" height="100"></canvas>
+        </div>
+
+        <div class="card">
+            <div class="card-title">最新争议 ({{ latest_result.disputes|length }})</div>
+            {% for dispute in latest_result.disputes[:10] %}
+                <div class="dispute-item">
+                    <div class="dispute-header">
+                        <span class="dispute-title">
+                            <span class="badge {{ 
+                                'badge-error' if dispute.status == VerificationStatus.ERROR else 
+                                'badge-warning' if dispute.status == VerificationStatus.WARNING else 
+                                'badge-pending' if dispute.status == VerificationStatus.PENDING else 
+                                'badge-success'
+                            }}">{{ dispute.status.value }}</span>
+                            <span class="badge badge-info">{{ dispute.dispute_type.value }}</span>
+                            {{ dispute.description[:60 }}...
+                        </span>
+                    </div>
+                    <div class="dispute-suggestion">{{ dispute.suggestion[:100 }}...</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-4.172.3"/>
+                </svg>
+                <h3>暂无核验数据</h3>
+                <p>点击下方按钮开始第一次核验</p>
+                <br>
+                <button onclick="showVerifyModal()" class="btn btn-primary">开始核验</button>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-title">历史版本</div>
+        {% if version_history %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>版本</th>
+                        <th>核验时间</th>
+                        <th>操作人</th>
+                        <th>总人天</th>
+                        <th>争议数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in version_history %}
+                        <tr>
+                            <td><strong>V{{ result.version }}</strong></td>
+                            <td>{{ result.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ result.created_by }}</td>
+                            <td>{{ result.total_days }}</td>
+                            <td>{{ result.disputes|length }}</td>
+                            <td>
+                                <a href="/result/{{ result.result_id }}" class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;">查看</a>
+                                {% if not loop.first %}
+                                    <a href="/compare/{{ version_history[loop.index0 - 1].result_id }}/{{ result.result_id }}" class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;">对比</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color: #718096;">暂无历史记录</p>
+        {% endif %}
+    </div>
+
+    <div id="verifyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; width: 400px;">
+            <h3 style="margin-bottom: 20px;">执行核验</h3>
+            <div class="form-group">
+                <label>开始日期</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="form-group">
+                <label>结束日期</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="form-group">
+                <label>操作人</label>
+                <input type="text" id="operator" placeholder="请输入姓名">
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="hideVerifyModal()" class="btn btn-secondary">取消</button>
+                <button onclick="runVerify()" class="btn btn-primary">开始核验</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showVerifyModal() {
+            document.getElementById('verifyModal').style.display = 'flex';
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            document.getElementById('endDate').valueAsDate = today;
+            document.getElementById('startDate').valueAsDate = firstDay;
+        }
+        
+        function hideVerifyModal() {
+            document.getElementById('verifyModal').style.display = 'none';
+        }
+        
+        function runVerify() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const operator = document.getElementById('operator').value;
+            
+            if (!startDate || !endDate) {
+                alert('请选择日期范围');
+                return;
+            }
+            
+            fetch('/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ start_date: startDate, end_date: endDate, operator: operator })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+        
+        {% if latest_result %}
+            const ctx = document.getElementById('disputeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['人天重复', '验收缺失', '费率变更', '字段缺失'],
+                    datasets: [{
+                        data: [
+                            {{ latest_result.disputes|selectattr('dispute_type', 'equalto', DisputeType.DUPLICATE_DAYS)|list|length }},
+                            {{ latest_result.missing_acceptance_count }},
+                            {{ latest_result.rate_change_count }},
+                            {{ latest_result.disputes|selectattr('dispute_type', 'equalto', DisputeType.FIELD_MISSING)|list|length }}
+                        ],
+                        backgroundColor: ['#f56565', '#ed8936', '#4299e1', '#667eea']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        {% endif %}
+    </script>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}外包人天费用核验系统{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1a202c; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 100%); color: white; padding: 20px; border-radius: 12px; }
+        .stat-card .label { font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
+        .stat-card .value { font-size: 28px; font-weight: 700; }
+        .stat-card .sub { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a67d8; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-success:hover { background: #38a169; }
+        .btn-warning { background: #ed8936; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+        .btn-secondary { background: #718096; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f7fafc; font-weight: 600; color: #4a5568; font-size: 13px; }
+        tr:hover { background: #f7fafc; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-error { background: #fed7d7; color: #c53030; }
+        .badge-warning { background: #feebc8; color: #c05621; }
+        .badge-pending { background: #bee3f8; color: #2b6cb0; }
+        .badge-success { background: #c6f6d5; color: #276749; }
+        .badge-info { background: #e2e8f0; color: #4a5568; }
+        .dispute-item { padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; }
+        .dispute-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .dispute-title { font-weight: 600; color: #2d3748; }
+        .dispute-desc { color: #718096; font-size: 14px; margin-bottom: 8px; }
+        .dispute-suggestion { background: #f7fafc; padding: 10px 14px; border-radius: 6px; font-size: 13px; color: #4a5568; border-left: 3px solid #667eea; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #4a5568; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .tabs { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
+        .tab { padding: 12px 24px; cursor: pointer; font-weight: 500; color: #718096; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .diff-added { background: #c6f6d5; }
+        .diff-removed { background: #fed7d7; }
+        .diff-changed { background: #fefcbf; }
+        .version-selector { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+        .change-item { padding: 12px; border-radius: 8px; margin-bottom: 8px; }
+        .change-added { background: #f0fff4; border-left: 4px solid #48bb78; }
+        .change-removed { background: #fff5f5; border-left: 4px solid #f56565; }
+        .change-modified { background: #fffff0; border-left: 4px solid #ecc94b; }
+        .nav-links { display: flex; gap: 16px; margin-top: 10px; }
+        .nav-links a { color: white; text-decoration: none; opacity: 0.9; }
+        .nav-links a:hover { opacity: 1; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #718096; }
+        .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 外包人天费用核验系统</h1>
+        <p>智能检测人天重复、验收缺失、费率变更，确保费用准确</p>
+        <div class="nav-links">
+            <a href="/">首页</a>
+        </div>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

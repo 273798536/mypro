@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}核验结果 V{{ result.version }}{% endblock %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 style="color: #2d3748;">核验结果 V{{ result.version }}</h2>
+            <p style="color: #718096;">核验时间: {{ result.created_at.strftime('%Y-%m-%d %H:%M:%S') }} | 操作人: {{ result.created_by }}</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="/export/excel/{{ result.result_id }}" class="btn btn-success">下载Excel</a>
+            {% if prev_result %}
+                <a href="/compare/{{ prev_result.result_id }}/{{ result.result_id }}" class="btn btn-primary">与上一版本对比</a>
+            {% endif %}
+            <a href="/" class="btn btn-secondary">返回</a>
+        </div>
+    </div>
+
+    {% if diff and diff.attendance_changes %}
+        <div class="card" style="border: 2px solid #667eea;">
+            <div class="card-title">📈 与上一版本对比变化</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <div style="color: #718096; font-size: 13px;">总人天变化</div>
+                    <div style="font-size: 20px; font-weight: 600; color: {{ 'green' if diff.total_days_change > 0 else 'red' if diff.total_days_change < 0 else 'gray' }};">
+                        {{ '+' if diff.total_days_change > 0 }}{{ diff.total_days_change }}
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #718096; font-size: 13px;">总金额变化</div>
+                    <div style="font-size: 20px; font-weight: 600; color: {{ 'green' if diff.total_amount_change > 0 else 'red' if diff.total_amount_change < 0 else 'gray' }};">
+                        {{ '+' if diff.total_amount_change > 0 }}¥{{ diff.total_amount_change }}
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #718096; font-size: 13px;">新增争议</div>
+                    <div style="font-size: 20px; font-weight: 600; color: #f56565;">+{{ diff.added_disputes|length }}</div>
+                </div>
+                <div>
+                    <div style="color: #718096; font-size: 13px;">已解决争议</div>
+                    <div style="font-size: 20px; font-weight: 600; color: #48bb78;">-{{ diff.removed_disputes|length }}</div>
+                </div>
+            </div>
+            {% for change in diff.attendance_changes[:5] %}
+                <div class="change-item change-{{ change.change_type }}">
+                    <strong>{{ change.field_name }}</strong>: 
+                    {% if change.old_value %}<span style="text-decoration: line-through; opacity: 0.7;">{{ change.old_value }}</span>{% endif %}
+                    {% if change.old_value and change.new_value %} → {% endif %}
+                    {% if change.new_value %}{{ change.new_value }}{% endif %}
+                </div>
+            {% endfor %}
+            {% if diff.attendance_changes|length > 5 %}
+                <p style="text-align: center; color: #718096; margin-top: 12px;">还有 {{ diff.attendance_changes|length - 5 }} 项变化，请查看对比详情</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="stats-grid">
+        <div class="stat-card" style="--color1: #667eea; --color2: #764ba2;">
+            <div class="label">总人天</div>
+            <div class="value">{{ result.total_days }}</div>
+        </div>
+        <div class="stat-card" style="--color1: #f093fb; --color2: #f5576c;">
+            <div class="label">总金额</div>
+            <div class="value">¥{{ "{:,.0f}".format(result.total_amount) }}</div>
+        </div>
+        <div class="stat-card" style="--color1: #4facfe; --color2: #00f2fe;">
+            <div class="label">重复人天</div>
+            <div class="value">{{ result.duplicate_days }}</div>
+            <div class="sub">涉及金额 ¥{{ "{:,.0f}".format(result.duplicate_amount) }}</div>
+        </div>
+        <div class="stat-card" style="--color1: #fa709a; --color2: #fee140;">
+            <div class="label">争议总数</div>
+            <div class="value">{{ result.disputes|length }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('disputes')">争议明细 ({{ result.disputes|length }})</div>
+            <div class="tab" onclick="switchTab('attendance')">考勤明细 ({{ attendance_details|length }})</div>
+            <div class="tab" onclick="switchTab('summary')">数据汇总</div>
+        </div>
+
+        <div id="tab-disputes">
+            {% if result.disputes %}
+                {% for dispute in result.disputes %}
+                    <div class="dispute-item" id="dispute-{{ dispute.dispute_id }}">
+                        <div class="dispute-header">
+                            <span class="dispute-title">
+                                <span class="badge {{ 
+                                    'badge-error' if dispute.status == VerificationStatus.ERROR else 
+                                    'badge-warning' if dispute.status == VerificationStatus.WARNING else 
+                                    'badge-pending' if dispute.status == VerificationStatus.PENDING else 
+                                    'badge-success'
+                                }}">{{ dispute.status.value }}</span>
+                                <span class="badge badge-info">{{ dispute.dispute_type.value }}</span>
+                                {% if dispute.work_date %}{{ dispute.work_date }}{% endif %}
+                            </span>
+                            {% if not dispute.resolved %}
+                                <button onclick="resolveDispute('{{ dispute.dispute_id }}')" class="btn btn-success" style="padding: 4px 12px; font-size: 12px;">标记解决</button>
+                            {% else %}
+                                <span class="badge badge-success">已解决</span>
+                            {% endif %}
+                        </div>
+                        <div class="dispute-desc">{{ dispute.description }}</div>
+                        <div class="dispute-suggestion">
+                            <strong>💡 操作建议：</strong>{{ dispute.suggestion }}
+                        </div>
+                        {% if dispute.old_value or dispute.new_value %}
+                            <div style="margin-top: 8px; font-size: 13px;">
+                                <span style="background: #fed7d7; padding: 2px 8px; border-radius: 4px;">原值: {{ dispute.old_value }}</span>
+                                <span style="margin: 0 8px;">→</span>
+                                <span style="background: #c6f6d5; padding: 2px 8px; border-radius: 4px;">新值: {{ dispute.new_value }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">
+                    🎉 太棒了！没有发现任何争议
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="tab-attendance" style="display: none;">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>人员</th>
+                            <th>工时</th>
+                            <th>项目</th>
+                            <th>数据来源</th>
+                            <th>审批状态</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in attendance_details %}
+                            <tr>
+                                <td>{{ item.record.work_date }}</td>
+                                <td>{{ item.staff_name }}</td>
+                                <td>{{ item.record.hours }}h</td>
+                                <td>{{ item.record.project_code or '-' }}</td>
+                                <td>{{ item.record.source or '-' }}</td>
+                                <td>
+                                    <span class="badge {{ 'badge-success' if item.record.is_approved else 'badge-warning' }}">
+                                        {{ '已审批' if item.record.is_approved else '未审批' }}
+                                    </span>
+                                </td>
+                                <td>{{ item.record.remark or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-summary" style="display: none;">
+            <table style="max-width: 500px;">
+                <tr>
+                    <td><strong>核验版本</strong></td>
+                    <td>V{{ result.version }}</td>
+                </tr>
+                <tr>
+                    <td><strong>核验结果ID</strong></td>
+                    <td>{{ result.result_id }}</td>
+                </tr>
+                <tr>
+                    <td><strong>核验时间</strong></td>
+                    <td>{{ result.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                <tr>
+                    <td><strong>考勤记录数</strong></td>
+                    <td>{{ result.attendance_ids|length }}</td>
+                </tr>
+                <tr>
+                    <td><strong>总人天</strong></td>
+                    <td>{{ result.total_days }}</td>
+                </tr>
+                <tr>
+                    <td><strong>总金额</strong></td>
+                    <td>¥{{ "{:,.2f}".format(result.total_amount) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>重复人天</strong></td>
+                    <td>{{ result.duplicate_days }}</td>
+                </tr>
+                <tr>
+                    <td><strong>重复金额</strong></td>
+                    <td>¥{{ "{:,.2f}".format(result.duplicate_amount) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>人天重复争议</strong></td>
+                    <td>{{ result.disputes|selectattr('dispute_type', 'equalto', DisputeType.DUPLICATE_DAYS)|list|length }}</td>
+                </tr>
+                <tr>
+                    <td><strong>验收缺失争议</strong></td>
+                    <td>{{ result.missing_acceptance_count }}</td>
+                </tr>
+                <tr>
+                    <td><strong>费率变更争议</strong></td>
+                    <td>{{ result.rate_change_count }}</td>
+                </tr>
+                <tr>
+                    <td><strong>字段缺失争议</strong></td>
+                    <td>{{ result.disputes|selectattr('dispute_type', 'equalto', DisputeType.FIELD_MISSING)|list|length }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).style.display = 'block';
+        }
+        
+        function resolveDispute(disputeId) {
+            if (confirm('确定标记此争议为已解决？')) {
+                fetch('/api/dispute/' + disputeId + '/resolve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resolved_by: 'user' })
+                }).then(r => r.json()).then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+    </script>
+{% endblock %}
