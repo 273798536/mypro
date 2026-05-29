@@ -1,0 +1,3 @@
+rebate_id,account_id,amount,date,rebate_from_recharge_id,note
+RB001,ACC001,5000.00,2024-02-20,R001,Q1充值返点
+RB002,ACC002,8000.00,2024-03-01,R003,Q1充值返点

@@ -1,0 +1,11 @@
+[project]
+name = "ad-ledger"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["click>=8.0"]
+
+[project.scripts]
+ad-ledger = "ad_ledger.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ad_ledger*"]

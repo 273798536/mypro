@@ -1,0 +1,2 @@
+[console_scripts]
+ad-ledger = ad_ledger.cli:main
