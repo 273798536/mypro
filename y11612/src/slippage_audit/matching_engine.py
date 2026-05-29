@@ -34,7 +34,13 @@ class FeeCalculator:
         self.config = fee_config or {}
 
     def _get_tier_rate(self, total_amount: float, direction: int) -> Tuple[float, float]:
-        """获取阶梯费率"""
+        """获取阶梯费率
+
+        Returns:
+            Tuple[适用费率, 另一方向费率]
+            - 买入时: (buy_rate, sell_rate)
+            - 卖出时: (sell_rate, buy_rate)
+        """
         tiers = self.config.get('tiers', [])
         default_buy = self.config.get('commission', {}).get('buy', {})
         default_sell = self.config.get('commission', {}).get('sell', {})
@@ -48,7 +54,10 @@ class FeeCalculator:
                 sell_rate = tier.get('sell_rate', sell_rate)
                 break
 
-        return (buy_rate, sell_rate) if direction > 0 else (sell_rate, buy_rate)
+        if direction > 0:
+            return (buy_rate, sell_rate)
+        else:
+            return (sell_rate, buy_rate)
 
     def calculate(self, amount: float, direction: int, total_amount: float = 0) -> Tuple[float, Dict]:
         """计算手续费
@@ -77,7 +86,7 @@ class FeeCalculator:
             min_fee = sell_cfg.get('min_fee', 0)
             stamp_duty = sell_cfg.get('stamp_duty', 0)
             if self.config.get('tiers'):
-                _, rate = self._get_tier_rate(total_amount, direction)
+                rate, _ = self._get_tier_rate(total_amount, direction)
             if stamp_duty > 0:
                 stamp_fee = amount * stamp_duty
                 detail['stamp_duty'] = stamp_fee

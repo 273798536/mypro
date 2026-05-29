@@ -1,0 +1,18 @@
+{
+  "total_actions": 5,
+  "total_corrections": 112,
+  "total_parameter_versions": 2,
+  "actions_by_type": {
+    "audit_started": 1,
+    "data_loaded": 1,
+    "trades_recalculated": 1,
+    "anomalies_detected": 1,
+    "score_calculated": 1
+  },
+  "corrected_fields": {
+    "fee": 75,
+    "slippage": 35,
+    "fee_rate": 2
+  },
+  "parameters_tracked": 2
+}

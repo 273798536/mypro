@@ -1,0 +1,58 @@
+[
+  {
+    "name": "fee_config",
+    "version": "v1",
+    "value": {
+      "commission": {
+        "buy": {
+          "min_fee": 5,
+          "rate": 0.0003
+        },
+        "sell": {
+          "min_fee": 5,
+          "rate": 0.0013,
+          "stamp_duty": 0.001
+        }
+      },
+      "tiers": [
+        {
+          "buy_rate": 0.00025,
+          "sell_rate": 0.0011,
+          "threshold": 1000000
+        },
+        {
+          "buy_rate": 0.0002,
+          "sell_rate": 0.001,
+          "threshold": 5000000
+        }
+      ]
+    },
+    "effective_from": "2026-05-28T03:31:24.350030",
+    "effective_to": null,
+    "reason": "加载手续费配置",
+    "changed_by": "audit_system"
+  },
+  {
+    "name": "slippage_params",
+    "version": "v1",
+    "value": {
+      "fixed": {
+        "buy_bps": 3,
+        "sell_bps": 3
+      },
+      "model": "fixed",
+      "percentage": {
+        "buy_ratio": 0.0003,
+        "sell_ratio": 0.0003
+      },
+      "volatility": {
+        "lookback": 20,
+        "multiplier": 0.1
+      }
+    },
+    "effective_from": "2026-05-28T03:31:24.350185",
+    "effective_to": null,
+    "reason": "加载滑点参数配置",
+    "changed_by": "audit_system"
+  }
+]

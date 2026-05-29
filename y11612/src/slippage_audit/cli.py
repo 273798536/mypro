@@ -28,6 +28,17 @@ from .utils import json_dump
 console = Console()
 
 
+def _get_anomaly_field_name(anomaly_type: str) -> Optional[str]:
+    """将异常类型映射到修正字段名"""
+    field_map = {
+        'fee_mismatch': 'fee',
+        'fee_tier_mismatch': 'fee_rate',
+        'slippage_exceeded': 'slippage',
+        'price_outside_range': 'match_price',
+    }
+    return field_map.get(anomaly_type)
+
+
 def _create_output_dir(base_dir: str) -> str:
     """创建带时间戳的输出目录，避免污染旧结果"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -298,7 +309,33 @@ def audit(input: str, output: str, tolerance: float, no_charts: bool, quiet: boo
 
             data = load_all_data(input)
             audit_trail.log_action("data_loaded", {"sources": list(data.sources.keys())})
-            progress.update(task, advance=20)
+            progress.update(task, advance=10)
+
+            if data.fee_table:
+                audit_trail.log_parameter_version(
+                    name="fee_config",
+                    value=data.fee_table,
+                    reason="加载手续费配置",
+                    changed_by="audit_system"
+                )
+
+            if data.slippage_params:
+                audit_trail.log_parameter_version(
+                    name="slippage_params",
+                    value=data.slippage_params,
+                    reason="加载滑点参数配置",
+                    changed_by="audit_system"
+                )
+
+            if tolerance != 1.0:
+                audit_trail.log_parameter_version(
+                    name="tolerance_bps",
+                    value=tolerance,
+                    reason="设置差异容忍度",
+                    changed_by="audit_system"
+                )
+
+            progress.update(task, advance=10)
 
             if not quiet:
                 _print_data_summary(data)
@@ -333,6 +370,21 @@ def audit(input: str, output: str, tolerance: float, no_charts: bool, quiet: boo
                 tolerance_bps=tolerance,
             )
             audit_trail.log_action("anomalies_detected", anomaly_summary)
+
+            for anomaly in anomalies:
+                if anomaly.actual is not None and anomaly.expected is not None:
+                    field_name = _get_anomaly_field_name(anomaly.type.value)
+                    if field_name:
+                        audit_trail.log_correction(
+                            field=field_name,
+                            old_value=anomaly.actual,
+                            new_value=anomaly.expected,
+                            reason=anomaly.message,
+                            corrected_by="audit_system",
+                            trade_index=anomaly.trade_index,
+                            symbol=anomaly.symbol,
+                        )
+
             progress.update(task, advance=10)
 
             progress.update(task, description="计算评分...", advance=10)

@@ -1,0 +1,5 @@
+{"timestamp": "2026-05-28T03:31:24.331623", "action": "audit_started", "user": "system", "details": {"input_dir": "sample_data", "output_dir": "results/audit_20260528_033124"}, "entry_hash": "466f0fd1904001db"}
+{"timestamp": "2026-05-28T03:31:24.349918", "action": "data_loaded", "user": "system", "details": {"sources": ["kline", "signals", "fee_table", "suspension", "slippage_params", "backtest_report"]}, "entry_hash": "555b469439329238"}
+{"timestamp": "2026-05-28T03:31:24.403718", "action": "trades_recalculated", "user": "system", "details": {"trade_count": 100}, "entry_hash": "bae2cffa6ea0b31d"}
+{"timestamp": "2026-05-28T03:31:24.460302", "action": "anomalies_detected", "user": "system", "details": {"total": 124, "by_type": {"suspension_trade": 7, "price_outside_range": 5, "fee_mismatch": 75, "slippage_exceeded": 35, "fee_tier_mismatch": 2}, "by_severity": {"critical": 7, "warning": 117, "info": 0}}, "entry_hash": "1b77ec558c439353"}
+{"timestamp": "2026-05-28T03:31:24.516311", "action": "score_calculated", "user": "system", "details": {"score": 42.09090909090909, "grade": "F (严重)"}, "entry_hash": "e0bf2a351f90bcb7"}
