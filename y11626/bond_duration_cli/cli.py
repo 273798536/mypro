@@ -191,18 +191,30 @@ def calc(curve_id, portfolio_id, scenario, top):
             ScenarioConfig(name="rate_down_50bp", shift_bp=-50),
         ]
         results = ScenarioRunner.run_comparison(bonds, curve, scenarios)
+        # 保存每个情景的完整数据(含bond_metrics),供后续图表生成
+        scenario_ids = []
         for r in results:
-            store.save_result({
+            full_result = {
                 "result_id": r.result_id,
                 "created_at": r.created_at.isoformat(),
                 "scenario_name": r.scenario_name,
                 "curve_id": r.curve_id,
-                "portfolio": {
-                    "total_pv": r.portfolio.total_pv,
-                    "total_dv01": r.portfolio.total_dv01,
-                    "weighted_duration": r.portfolio.weighted_duration,
-                },
-            })
+                "bond_metrics": {k: json.loads(v.json()) for k, v in r.bond_metrics.items()},
+                "portfolio": json.loads(r.portfolio.json()),
+                "anomalies": r.anomalies,
+            }
+            store.save_result(full_result)
+            scenario_ids.append(r.result_id)
+        # 额外保存汇总记录,方便图表生成时识别情景组
+        group_result = {
+            "result_id": f"SCENARIO_GROUP_{datetime.now():%Y%m%d_%H%M%S}",
+            "created_at": datetime.now().isoformat(),
+            "scenario_name": "scenario_group",
+            "curve_id": curve_id,
+            "portfolio": json.loads(results[0].portfolio.json()),
+            "scenario_result_ids": scenario_ids,
+        }
+        store.save_result(group_result)
         _print_scenario_table(results, top)
     else:
         pricer = BondPricer(curve)
@@ -342,8 +354,59 @@ def report(result_id, output, fmt):
             json.dump(result_data, f, ensure_ascii=False, indent=2)
 
     if fmt in ("chart", "all"):
-        # 简单导出敏感性图(需要多结果对比)
-        pass
+        from .models import AnalysisResult, PortfolioSummary, BondMetrics
+
+        # 情景组: 导出多情景敏感性对比图
+        if result_data.get("scenario_name") == "scenario_group" and "scenario_result_ids" in result_data:
+            console.print(f"[dim]正在生成情景对比图表...[/dim]")
+            scen_results = []
+            for sid in result_data["scenario_result_ids"]:
+                s_data = store.load_result(sid)
+                if s_data and "bond_metrics" in s_data:
+                    s_metrics = {k: BondMetrics(**v) for k, v in s_data["bond_metrics"].items()}
+                    s_portfolio = PortfolioSummary(**s_data["portfolio"])
+                    scen_results.append(AnalysisResult(
+                        result_id=sid,
+                        created_at=datetime.fromisoformat(s_data["created_at"]),
+                        scenario_name=s_data["scenario_name"],
+                        curve_id=s_data["curve_id"],
+                        bond_metrics=s_metrics,
+                        portfolio=s_portfolio,
+                        anomalies=s_data.get("anomalies", []),
+                    ))
+            if scen_results:
+                chart_path = gen.export_chart_sensitivity(scen_results, bonds)
+                if chart_path:
+                    exported.append(chart_path)
+                # 为每个子结果导出贡献图
+                for sr in scen_results:
+                    contrib_path = gen.export_chart_contribution(sr, bonds)
+                    if contrib_path:
+                        exported.append(contrib_path)
+                    dur_path = gen.export_chart_duration_bar(sr, bonds)
+                    if dur_path:
+                        exported.append(dur_path)
+
+        # 单结果: 导出贡献图和逐券久期对比图
+        elif "bond_metrics" in result_data:
+            console.print(f"[dim]正在生成分析图表...[/dim]")
+            metrics = {k: BondMetrics(**v) for k, v in result_data["bond_metrics"].items()}
+            portfolio = PortfolioSummary(**result_data["portfolio"])
+            result_obj = AnalysisResult(
+                result_id=result_id,
+                created_at=datetime.fromisoformat(result_data["created_at"]),
+                scenario_name=result_data["scenario_name"],
+                curve_id=result_data["curve_id"],
+                bond_metrics=metrics,
+                portfolio=portfolio,
+                anomalies=result_data.get("anomalies", []),
+            )
+            contrib_path = gen.export_chart_contribution(result_obj, bonds)
+            if contrib_path:
+                exported.append(contrib_path)
+            dur_path = gen.export_chart_duration_bar(result_obj, bonds)
+            if dur_path:
+                exported.append(dur_path)
 
     console.print(f"[green]✓ 报告已导出到 {output}/[/green]")
     for p in exported:

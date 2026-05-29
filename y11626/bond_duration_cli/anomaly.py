@@ -124,27 +124,34 @@ class AnomalyDetector:
                 {"modified_duration": m.modified_duration},
             )
 
-        # 3. 久期超过剩余期限
+        # 3. 久期超过剩余期限(含权债用期权日)
         if m.modified_duration is not None:
-            remaining = (bond.maturity_date - self.settlement_date).days / 365.0
-            if m.modified_duration > remaining + 0.5:
+            eff_maturity = bond.maturity_date
+            if bond.embedded_option == EmbeddedOptionType.CALLABLE and bond.call_date:
+                eff_maturity = bond.call_date
+            elif bond.embedded_option == EmbeddedOptionType.PUTTABLE and bond.put_date:
+                eff_maturity = bond.put_date
+            remaining = (eff_maturity - self.settlement_date).days / 365.0
+            if remaining > 0 and m.modified_duration > remaining + 0.5:
                 self._add(
                     AnomalyType.DURATION_EXCEEDS_MATURITY,
                     AnomalySeverity.WARNING,
                     f"债券{bond.bond_id}久期({m.modified_duration:.2f}年)超过剩余期限({remaining:.2f}年)",
                     bond.bond_id,
-                    {"modified_duration": m.modified_duration, "remaining_years": remaining},
+                    {"modified_duration": m.modified_duration, "remaining_years": remaining,
+                     "effective_maturity": str(eff_maturity)},
                 )
 
         # 4. 含权债到期口径
         if bond.embedded_option != EmbeddedOptionType.NONE:
             option_date = bond.call_date or bond.put_date
+            opt_type = "赎回" if bond.embedded_option == EmbeddedOptionType.CALLABLE else "回售"
             if option_date and option_date < bond.maturity_date:
                 self._add(
                     AnomalyType.OPTION_MATURITY_MISMATCH,
                     AnomalySeverity.WARNING,
-                    f"含权债{bond.bond_id}:期权日({option_date})早于到期日({bond.maturity_date}),"
-                    f"久期按期权日口径计算,实际可能到期",
+                    f"含权债{bond.bond_id}:{opt_type}日({option_date})早于到期日({bond.maturity_date}),"
+                    f"现金流/久期/DV01全部按{opt_type}日口径计算,实际到期存在不确定性",
                     bond.bond_id,
                     {"option_date": str(option_date), "maturity_date": str(bond.maturity_date),
                      "option_type": bond.embedded_option.value},

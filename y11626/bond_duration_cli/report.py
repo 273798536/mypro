@@ -184,7 +184,7 @@ class ReportGenerator:
         self, results: list[AnalysisResult], bonds: list[Bond],
         filename: Optional[str] = None,
     ) -> Optional[Path]:
-        """导出敏感性对比图"""
+        """导出多情景敏感性对比图"""
         if not filename:
             filename = f"sensitivity_{datetime.now():%Y%m%d_%H%M%S}.png"
         path = self.output_dir / filename
@@ -202,18 +202,132 @@ class ReportGenerator:
             ax1 = axes[0]
             names = [r.scenario_name for r in results]
             durations = [r.portfolio.weighted_duration for r in results]
-            ax1.bar(names, durations, color="#3b82f6")
+            colors = ["#3b82f6" if n == "base" else "#60a5fa" for n in names]
+            ax1.bar(names, durations, color=colors)
             ax1.set_title("各情景组合加权久期")
             ax1.set_ylabel("久期(年)")
             ax1.tick_params(axis="x", rotation=30)
+            for i, v in enumerate(durations):
+                ax1.text(i, v + max(durations) * 0.01, f"{v:.2f}", ha="center", fontsize=9)
 
             # 图2: 各情景总DV01
             ax2 = axes[1]
             dv01s = [r.portfolio.total_dv01 for r in results]
-            ax2.bar(names, dv01s, color="#ef4444")
+            colors2 = ["#ef4444" if n == "base" else "#f87171" for n in names]
+            ax2.bar(names, dv01s, color=colors2)
             ax2.set_title("各情景组合总DV01")
             ax2.set_ylabel("DV01(元/bp)")
             ax2.tick_params(axis="x", rotation=30)
+            for i, v in enumerate(dv01s):
+                ax2.text(i, v + max(dv01s) * 0.01, f"{v:,.0f}", ha="center", fontsize=9)
+
+            plt.tight_layout()
+            plt.savefig(path, dpi=120, bbox_inches="tight")
+            plt.close(fig)
+            return path
+        except ImportError:
+            return None
+
+    def export_chart_contribution(
+        self, result: AnalysisResult, bonds: list[Bond],
+        top_n: int = 10,
+        filename: Optional[str] = None,
+    ) -> Optional[Path]:
+        """导出单结果久期贡献排名条形图"""
+        if not filename:
+            filename = f"contribution_{result.result_id}_{datetime.now():%Y%m%d_%H%M%S}.png"
+        path = self.output_dir / filename
+
+        bond_map = {b.bond_id: b for b in bonds}
+        contributors = result.portfolio.worst_contributors[:top_n]
+        if not contributors:
+            return None
+
+        try:
+            import matplotlib
+            matplotlib.use("Agg")
+            import matplotlib.pyplot as plt
+            plt.rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC"]
+            plt.rcParams["axes.unicode_minus"] = False
+
+            fig, ax = plt.subplots(figsize=(12, 6))
+            labels = [f"{c['bond_id']}\n{c['name'][:8]}" for c in contributors]
+            values = [c["contribution_pct"] for c in contributors]
+            colors = [f"#{int(239 - i*20):02x}{int(68 + i*15):02x}{int(68 + i*15):02x}" for i in range(len(values))]
+
+            y_pos = range(len(labels))
+            bars = ax.barh(y_pos, values, color=colors)
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels(labels, fontsize=9)
+            ax.invert_yaxis()
+            ax.set_xlabel("DV01贡献占比(%)")
+            ax.set_title(f"Top {len(contributors)} 久期拖累最大 - {result.scenario_name}")
+
+            for i, (bar, v) in enumerate(zip(bars, values)):
+                ax.text(
+                    bar.get_width() + max(values) * 0.01,
+                    bar.get_y() + bar.get_height() / 2,
+                    f"{v:.1f}%",
+                    va="center", fontsize=9,
+                )
+
+            plt.tight_layout()
+            plt.savefig(path, dpi=120, bbox_inches="tight")
+            plt.close(fig)
+            return path
+        except ImportError:
+            return None
+
+    def export_chart_duration_bar(
+        self, result: AnalysisResult, bonds: list[Bond],
+        filename: Optional[str] = None,
+    ) -> Optional[Path]:
+        """导出逐券修正久期条形图"""
+        if not filename:
+            filename = f"duration_bar_{result.result_id}_{datetime.now():%Y%m%d_%H%M%S}.png"
+        path = self.output_dir / filename
+
+        bond_map = {b.bond_id: b for b in bonds}
+        items = []
+        for bid, m in result.bond_metrics.items():
+            b = bond_map.get(bid)
+            if b and m.modified_duration is not None:
+                items.append((b.name, m.modified_duration, m.dv01 or 0))
+        if not items:
+            return None
+
+        items.sort(key=lambda x: x[1], reverse=True)
+
+        try:
+            import matplotlib
+            matplotlib.use("Agg")
+            import matplotlib.pyplot as plt
+            plt.rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC"]
+            plt.rcParams["axes.unicode_minus"] = False
+
+            fig, ax1 = plt.subplots(figsize=(12, 6))
+            labels = [f"{n[:10]}" for n, _, _ in items]
+            durations = [d for _, d, _ in items]
+            dv01s = [dv for _, _, dv in items]
+
+            x = range(len(labels))
+            width = 0.35
+
+            ax1.bar(x, durations, width, label="修正久期(年)", color="#3b82f6")
+            ax1.set_ylabel("修正久期(年)", color="#3b82f6")
+            ax1.tick_params(axis="y", labelcolor="#3b82f6")
+            ax1.set_xticks(x)
+            ax1.set_xticklabels(labels, rotation=30, ha="right", fontsize=9)
+
+            ax2 = ax1.twinx()
+            ax2.bar([i + width for i in x], dv01s, width, label="DV01(元/bp)", color="#f59e0b")
+            ax2.set_ylabel("DV01(元/bp)", color="#f59e0b")
+            ax2.tick_params(axis="y", labelcolor="#f59e0b")
+
+            plt.title(f"逐券久期与DV01对比 - {result.scenario_name}")
+            lines1, labels1 = ax1.get_legend_handles_labels()
+            lines2, labels2 = ax2.get_legend_handles_labels()
+            ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper right")
 
             plt.tight_layout()
             plt.savefig(path, dpi=120, bbox_inches="tight")

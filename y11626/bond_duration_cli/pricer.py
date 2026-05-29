@@ -20,22 +20,25 @@ class CashFlowItem:
     cf_type: str
 
 
-def generate_cashflows(bond: Bond, settlement_date: date) -> list[CashFlowItem]:
-    """生成债券的现金流序列"""
+def generate_cashflows(bond: Bond, settlement_date: date,
+                       effective_maturity: Optional[date] = None) -> list[CashFlowItem]:
+    """生成债券的现金流序列 - 考虑含权债的有效到期日"""
     flows: list[CashFlowItem] = []
     freq = bond.coupon_frequency
     coupon_per_period = bond.face_value * bond.coupon_rate / freq
     period_days = int(365 / freq)
+    final_maturity = effective_maturity or bond.maturity_date
 
     d = bond.issue_date
-    while d < bond.maturity_date:
+    while d < final_maturity:
         d = _add_period(d, period_days)
-        if d > settlement_date:
+        if d > settlement_date and d <= final_maturity:
             flows.append(CashFlowItem(pay_date=d, amount=coupon_per_period, cf_type="coupon"))
-        if d >= bond.maturity_date:
+        if d >= final_maturity:
             break
 
-    flows.append(CashFlowItem(pay_date=bond.maturity_date, amount=bond.face_value, cf_type="principal"))
+    if final_maturity > settlement_date:
+        flows.append(CashFlowItem(pay_date=final_maturity, amount=bond.face_value, cf_type="principal"))
     return flows
 
 
@@ -142,8 +145,8 @@ class BondPricer:
         eff_maturity, opt_warnings = self._adjust_maturity_for_option(bond)
         self.warnings.extend(opt_warnings)
 
-        # --- 生成现金流 ---
-        flows = generate_cashflows(bond, self.settlement_date)
+        # --- 生成现金流 (含权债按有效到期日截断) ---
+        flows = generate_cashflows(bond, self.settlement_date, effective_maturity=eff_maturity)
         if not flows:
             metrics.warnings.append("无有效现金流")
             return metrics
@@ -209,23 +212,14 @@ class BondPricer:
         return metrics
 
     def _adjust_maturity_for_option(self, bond: Bond) -> tuple[date, list[str]]:
-        """根据嵌入期权调整到期日 - 并生成警告"""
-        warnings: list[str] = []
+        """根据嵌入期权调整到期日"""
         if bond.embedded_option == EmbeddedOptionType.CALLABLE and bond.call_date:
             if bond.call_date < bond.maturity_date:
-                warnings.append(
-                    f"含权债({bond.bond_id}):可赎回日{bond.call_date}早于到期日{bond.maturity_date},"
-                    f"采用赎回日口径计算久期,实际到期存在不确定性"
-                )
-                return bond.call_date, warnings
+                return bond.call_date, []
         elif bond.embedded_option == EmbeddedOptionType.PUTTABLE and bond.put_date:
             if bond.put_date < bond.maturity_date:
-                warnings.append(
-                    f"含权债({bond.bond_id}):可回售日{bond.put_date}早于到期日{bond.maturity_date},"
-                    f"采用回售日口径计算久期,实际到期存在不确定性"
-                )
-                return bond.put_date, warnings
-        return bond.maturity_date, warnings
+                return bond.put_date, []
+        return bond.maturity_date, []
 
     def _estimate_ytm(self, bond: Bond, maturity: date) -> float:
         """简化YTM估算 - 用当前曲线平均收益率"""

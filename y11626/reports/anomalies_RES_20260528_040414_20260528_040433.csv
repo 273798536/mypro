@@ -1,0 +1,6 @@
+﻿类型,严重性,目标,消息,详情
+curve_gap,warning,YC-0d12209f,收益率曲线缺数据点: 7Y 到 10Y 间隔1095天,"{""gap_days"": 1095, ""from_tenor"": ""7Y"", ""to_tenor"": ""10Y""}"
+curve_gap,warning,YC-0d12209f,收益率曲线缺数据点: 10Y 到 15Y 间隔1825天,"{""gap_days"": 1825, ""from_tenor"": ""10Y"", ""to_tenor"": ""15Y""}"
+curve_gap,warning,YC-0d12209f,收益率曲线缺数据点: 15Y 到 20Y 间隔1825天,"{""gap_days"": 1825, ""from_tenor"": ""15Y"", ""to_tenor"": ""20Y""}"
+curve_gap,warning,YC-0d12209f,收益率曲线缺数据点: 20Y 到 30Y 间隔3650天,"{""gap_days"": 3650, ""from_tenor"": ""20Y"", ""to_tenor"": ""30Y""}"
+option_maturity_mismatch,warning,CN005,"含权债CN005:赎回日(2026-07-01)早于到期日(2031-07-01),现金流/久期/DV01全部按赎回日口径计算,实际到期存在不确定性","{""option_date"": ""2026-07-01"", ""maturity_date"": ""2031-07-01"", ""option_type"": ""callable""}"

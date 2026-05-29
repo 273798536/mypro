@@ -1,0 +1,77 @@
+{
+  "result_id": "SCENARIO_GROUP_20260528_040556",
+  "created_at": "2026-05-28T04:05:56.640256",
+  "scenario_name": "scenario_group",
+  "curve_id": "YC-0d12209f",
+  "portfolio": {
+    "total_pv": 165318787.07,
+    "total_dv01": 70228.31,
+    "weighted_duration": 4.248054,
+    "weighted_convexity": 29.428763,
+    "contribution_by_bond": {
+      "CN001": 36492.08,
+      "CN002": 8453.79,
+      "CN003": 23448.08,
+      "CN004": 1595.82,
+      "CN005": 238.54
+    },
+    "worst_contributors": [
+      {
+        "rank": 1,
+        "bond_id": "CN001",
+        "name": "24国开01",
+        "position": 50000000.0,
+        "present_value": 48064745.79,
+        "modified_duration": 7.592276,
+        "dv01": 36492.08,
+        "contribution_pct": 51.96
+      },
+      {
+        "rank": 2,
+        "bond_id": "CN003",
+        "name": "22进出10",
+        "position": 40000000.0,
+        "present_value": 40683589.17,
+        "modified_duration": 5.763523,
+        "dv01": 23448.08,
+        "contribution_pct": 33.39
+      },
+      {
+        "rank": 3,
+        "bond_id": "CN002",
+        "name": "23农发05",
+        "position": 30000000.0,
+        "present_value": 30129889.95,
+        "modified_duration": 2.805783,
+        "dv01": 8453.79,
+        "contribution_pct": 12.04
+      },
+      {
+        "rank": 4,
+        "bond_id": "CN004",
+        "name": "21万科01",
+        "position": 20000000.0,
+        "present_value": 20426062.13,
+        "modified_duration": 0.781266,
+        "dv01": 1595.82,
+        "contribution_pct": 2.27
+      },
+      {
+        "rank": 5,
+        "bond_id": "CN005",
+        "name": "20中铁可续期债",
+        "position": 25000000.0,
+        "present_value": 26014500.03,
+        "modified_duration": 0.091696,
+        "dv01": 238.54,
+        "contribution_pct": 0.34
+      }
+    ]
+  },
+  "scenario_result_ids": [
+    "RES-2f2867cd",
+    "RES-c291c94a",
+    "RES-fc945935",
+    "RES-2a9abc98"
+  ]
+}

@@ -1,11 +1,11 @@
 {
-  "source_id": "SRC-e3cbb716",
-  "saved_at": "2026-05-27T00:58:56.320760",
+  "source_id": "SRC-ca14479c",
+  "saved_at": "2026-05-28T04:02:17.257874",
   "curve": {
-    "curve_id": "YC-d7ec15d6",
+    "curve_id": "YC-0d12209f",
     "name": "国债收益率曲线",
     "currency": "CNY",
-    "as_of_date": "2026-05-27",
+    "as_of_date": "2026-05-28",
     "points": [
       {
         "tenor": "1M",

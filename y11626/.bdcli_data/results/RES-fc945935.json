@@ -1,0 +1,255 @@
+{
+  "result_id": "RES-fc945935",
+  "created_at": "2026-05-28T04:05:56.615337",
+  "scenario_name": "rate_up_100bp",
+  "curve_id": "YC-0d12209f-rate_up_100bp",
+  "bond_metrics": {
+    "CN001": {
+      "bond_id": "CN001",
+      "ytm": 0.039099,
+      "modified_duration": 7.479886,
+      "macaulay_duration": 7.772341,
+      "convexity": 64.596373,
+      "dv01": 33256.56,
+      "present_value": 44461319.44,
+      "accrued_interest": 0.9010958904109588,
+      "dirty_price": 89.82,
+      "effective_duration": null,
+      "key_rate_durations": {
+        "3M": 0.0001,
+        "6M": 0.0001,
+        "1Y": 0.0001,
+        "2Y": 0.0001,
+        "3Y": 0.0001,
+        "5Y": 0.0001,
+        "7Y": 0.0001,
+        "10Y": 0.0001,
+        "20Y": 0.0001,
+        "30Y": 0.0001
+      },
+      "warnings": []
+    },
+    "CN002": {
+      "bond_id": "CN002",
+      "ytm": 0.035136,
+      "modified_duration": 2.777478,
+      "macaulay_duration": 2.875068,
+      "convexity": 8.391171,
+      "dv01": 8131.29,
+      "present_value": 29275787.27,
+      "accrued_interest": 0.13068493150684932,
+      "dirty_price": 97.72,
+      "effective_duration": null,
+      "key_rate_durations": {
+        "3M": 0.0001,
+        "6M": 0.0001,
+        "1Y": 0.0001,
+        "2Y": 0.0001,
+        "3Y": 0.0001,
+        "5Y": 0.0001,
+        "7Y": 0.0001,
+        "10Y": 0.0001,
+        "20Y": 0.0001,
+        "30Y": 0.0001
+      },
+      "warnings": []
+    },
+    "CN003": {
+      "bond_id": "CN003",
+      "ytm": 0.038091,
+      "modified_duration": 5.714729,
+      "macaulay_duration": 5.823569,
+      "convexity": 36.04319,
+      "dv01": 21931.98,
+      "present_value": 38377983.15,
+      "accrued_interest": 0.34354395604395604,
+      "dirty_price": 96.29,
+      "effective_duration": null,
+      "key_rate_durations": {
+        "3M": 0.0001,
+        "6M": 0.0001,
+        "1Y": 0.0001,
+        "2Y": 0.0001,
+        "3Y": 0.0001,
+        "5Y": 0.0001,
+        "7Y": 0.0001,
+        "10Y": 0.0001,
+        "20Y": 0.0001,
+        "30Y": 0.0001
+      },
+      "warnings": []
+    },
+    "CN004": {
+      "bond_id": "CN004",
+      "ytm": 0.030343,
+      "modified_duration": 0.773684,
+      "macaulay_duration": 0.79716,
+      "convexity": 0.635464,
+      "dv01": 1567.78,
+      "present_value": 20263881.02,
+      "accrued_interest": 0.7808219178082192,
+      "dirty_price": 102.1,
+      "effective_duration": null,
+      "key_rate_durations": {
+        "3M": 0.0001,
+        "6M": 0.0001,
+        "1Y": 0.0001,
+        "2Y": 0.0001,
+        "3Y": 0.0001,
+        "5Y": 0.0001,
+        "7Y": 0.0001,
+        "10Y": 0.0001,
+        "20Y": 0.0001,
+        "30Y": 0.0001
+      },
+      "warnings": []
+    },
+    "CN005": {
+      "bond_id": "CN005",
+      "ytm": 0.024659,
+      "modified_duration": 0.090801,
+      "macaulay_duration": 0.09304,
+      "convexity": 0.008657,
+      "dv01": 236.0,
+      "present_value": 25990307.33,
+      "accrued_interest": 3.82027397260274,
+      "dirty_price": 107.78,
+      "effective_duration": 0.077181,
+      "key_rate_durations": {
+        "3M": 0.0001,
+        "6M": 0.0001,
+        "1Y": 0.0001,
+        "2Y": 0.0001,
+        "3Y": 0.0001,
+        "5Y": 0.0001,
+        "7Y": 0.0001,
+        "10Y": 0.0001,
+        "20Y": 0.0001,
+        "30Y": 0.0001
+      },
+      "warnings": []
+    }
+  },
+  "portfolio": {
+    "total_pv": 158369278.21,
+    "total_dv01": 65123.61,
+    "weighted_duration": 4.112136,
+    "weighted_convexity": 28.503413,
+    "contribution_by_bond": {
+      "CN001": 33256.56,
+      "CN002": 8131.29,
+      "CN003": 21931.98,
+      "CN004": 1567.78,
+      "CN005": 236.0
+    },
+    "worst_contributors": [
+      {
+        "rank": 1,
+        "bond_id": "CN001",
+        "name": "24国开01",
+        "position": 50000000.0,
+        "present_value": 44461319.44,
+        "modified_duration": 7.479886,
+        "dv01": 33256.56,
+        "contribution_pct": 51.07
+      },
+      {
+        "rank": 2,
+        "bond_id": "CN003",
+        "name": "22进出10",
+        "position": 40000000.0,
+        "present_value": 38377983.15,
+        "modified_duration": 5.714729,
+        "dv01": 21931.98,
+        "contribution_pct": 33.68
+      },
+      {
+        "rank": 3,
+        "bond_id": "CN002",
+        "name": "23农发05",
+        "position": 30000000.0,
+        "present_value": 29275787.27,
+        "modified_duration": 2.777478,
+        "dv01": 8131.29,
+        "contribution_pct": 12.49
+      },
+      {
+        "rank": 4,
+        "bond_id": "CN004",
+        "name": "21万科01",
+        "position": 20000000.0,
+        "present_value": 20263881.02,
+        "modified_duration": 0.773684,
+        "dv01": 1567.78,
+        "contribution_pct": 2.41
+      },
+      {
+        "rank": 5,
+        "bond_id": "CN005",
+        "name": "20中铁可续期债",
+        "position": 25000000.0,
+        "present_value": 25990307.33,
+        "modified_duration": 0.090801,
+        "dv01": 236.0,
+        "contribution_pct": 0.36
+      }
+    ]
+  },
+  "anomalies": [
+    {
+      "type": "curve_gap",
+      "severity": "warning",
+      "message": "收益率曲线缺数据点: 7Y 到 10Y 间隔1095天",
+      "target": "YC-0d12209f-rate_up_100bp",
+      "details": {
+        "gap_days": 1095,
+        "from_tenor": "7Y",
+        "to_tenor": "10Y"
+      }
+    },
+    {
+      "type": "curve_gap",
+      "severity": "warning",
+      "message": "收益率曲线缺数据点: 10Y 到 15Y 间隔1825天",
+      "target": "YC-0d12209f-rate_up_100bp",
+      "details": {
+        "gap_days": 1825,
+        "from_tenor": "10Y",
+        "to_tenor": "15Y"
+      }
+    },
+    {
+      "type": "curve_gap",
+      "severity": "warning",
+      "message": "收益率曲线缺数据点: 15Y 到 20Y 间隔1825天",
+      "target": "YC-0d12209f-rate_up_100bp",
+      "details": {
+        "gap_days": 1825,
+        "from_tenor": "15Y",
+        "to_tenor": "20Y"
+      }
+    },
+    {
+      "type": "curve_gap",
+      "severity": "warning",
+      "message": "收益率曲线缺数据点: 20Y 到 30Y 间隔3650天",
+      "target": "YC-0d12209f-rate_up_100bp",
+      "details": {
+        "gap_days": 3650,
+        "from_tenor": "20Y",
+        "to_tenor": "30Y"
+      }
+    },
+    {
+      "type": "option_maturity_mismatch",
+      "severity": "warning",
+      "message": "含权债CN005:赎回日(2026-07-01)早于到期日(2031-07-01),现金流/久期/DV01全部按赎回日口径计算,实际到期存在不确定性",
+      "target": "CN005",
+      "details": {
+        "option_date": "2026-07-01",
+        "maturity_date": "2031-07-01",
+        "option_type": "callable"
+      }
+    }
+  ]
+}
