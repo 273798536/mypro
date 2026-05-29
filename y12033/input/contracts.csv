@@ -1,0 +1,4 @@
+contract_id,contract_name,project_id,supplier,total_amount,invoiced_amount,paid_amount
+HT2024001,服务器设备采购合同,KY2024001,华为技术有限公司,100000,100000,30000
+HT2024002,数据分析服务合同,KY2024001,北京数智科技有限公司,50000,50000,48000
+HT2024003,差旅服务协议,KY2024002,携程旅游,80000,60000,55000

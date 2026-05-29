@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>院校科研经费报销校验报告</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 8px 0 0; opacity: 0.9; font-size: 14px; }
+        .summary {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card .num { font-size: 28px; font-weight: bold; }
+        .stat-card .label { font-size: 13px; margin-top: 4px; opacity: 0.8; }
+        .pass { background: #d4edda; color: #155724; }
+        .warn { background: #fff3cd; color: #856404; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .total { background: #e3f2fd; color: #0d47a1; }
+        .type-stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .type-stat {
+            padding: 10px 16px;
+            background: #f5f7fa;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .details { padding: 30px; }
+        .details h2 {
+            margin: 0 0 20px;
+            font-size: 18px;
+            color: #555;
+        }
+        .result-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .result-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+        .result-header .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .result-body {
+            padding: 16px;
+            background: #fafafa;
+        }
+        .result-body .meta {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .result-body .message {
+            font-size: 15px;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        .result-body .sources {
+            font-size: 12px;
+            color: #888;
+        }
+        .result-body .sources .title {
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .result-body .sources ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .result-body .sources li {
+            font-family: "SF Mono", Monaco, Consolas, monospace;
+            margin: 2px 0;
+        }
+        .conclusion {
+            padding: 20px 30px;
+            border-top: 1px solid #eee;
+            font-weight: 500;
+        }
+        .conclusion.pass { background: #d4edda; color: #155724; }
+        .conclusion.warn { background: #fff3cd; color: #856404; }
+        .conclusion.fail { background: #f8d7da; color: #721c24; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+        .badge.budget { background: #e3f2fd; color: #1565c0; }
+        .badge.invoice { background: #f3e5f5; color: #6a1b9a; }
+        .badge.contract { background: #e8f5e9; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>院校科研经费报销校验报告</h1>
+            <p>生成时间: 2026-05-30 01:16:28</p>
+        </div>
+
+        <div class="summary">
+            <h2 style="margin:0 0 20px;font-size:18px;color:#555;">校验概览</h2>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="num">12</div>
+                    <div class="label">总检查项</div>
+                </div>
+                <div class="stat-card pass">
+                    <div class="num">8</div>
+                    <div class="label">通过</div>
+                </div>
+                <div class="stat-card warn">
+                    <div class="num">0</div>
+                    <div class="label">警告</div>
+                </div>
+                <div class="stat-card fail">
+                    <div class="num">4</div>
+                    <div class="label">不通过</div>
+                </div>
+            </div>
+            <div class="type-stats">
+
+                <div class="type-stat">
+                    <strong>预算占用:</strong>
+                    <span style="color:#155724;">3✓</span> /
+                    <span style="color:#856404;">0⚠</span> /
+                    <span style="color:#721c24;">1✗</span>
+                </div>
+
+                <div class="type-stat">
+                    <strong>发票查重:</strong>
+                    <span style="color:#155724;">2✓</span> /
+                    <span style="color:#856404;">0⚠</span> /
+                    <span style="color:#721c24;">2✗</span>
+                </div>
+
+                <div class="type-stat">
+                    <strong>合同余额:</strong>
+                    <span style="color:#155724;">3✓</span> /
+                    <span style="color:#856404;">0⚠</span> /
+                    <span style="color:#721c24;">1✗</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="details">
+            <h2>检查明细</h2>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #f8d7da; color: #721c24;">
+                    <span class="status-icon">✗</span>
+                    <span class="badge invoice">发票查重</span>
+                    <span>FAIL</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024001 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥25,000.00
+                    </div>
+                    <div class="message">发票011002300111-24000001重复报销，涉及2条记录：BX2024001, BX2024004</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行2(amount): 25000</li><li>invoices.csv行2(total_amount): 25000</li><li>invoices.csv行5(total_amount): 25000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #f8d7da; color: #721c24;">
+                    <span class="status-icon">✗</span>
+                    <span class="badge contract">合同余额</span>
+                    <span>FAIL</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024002 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥50,000.00
+                    </div>
+                    <div class="message">合同HT2024002(数据分析服务合同)余额不足，超支¥48,000.00。合同总额¥50,000.00，已付¥48,000.00，本次申请¥50,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行3(amount): 50000</li><li>contracts.csv行3(total_amount): 50000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #f8d7da; color: #721c24;">
+                    <span class="status-icon">✗</span>
+                    <span class="badge budget">预算占用</span>
+                    <span>FAIL</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024003 |
+                        <strong>科目:</strong> 502 |
+                        <strong>金额:</strong> ¥110,000.00
+                    </div>
+                    <div class="message">科目502(差旅费)超支 ¥60,000.00，预算¥100,000.00，已用¥50,000.00，本次申请¥110,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行4(amount): 110000</li><li>budgets.csv行3(total_amount): 100000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #f8d7da; color: #721c24;">
+                    <span class="status-icon">✗</span>
+                    <span class="badge invoice">发票查重</span>
+                    <span>FAIL</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024004 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥25,000.00
+                    </div>
+                    <div class="message">发票011002300111-24000001重复报销，涉及2条记录：BX2024001, BX2024004</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行5(amount): 25000</li><li>invoices.csv行2(total_amount): 25000</li><li>invoices.csv行5(total_amount): 25000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge budget">预算占用</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024001 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥25,000.00
+                    </div>
+                    <div class="message">科目501(设备费)预算充足，剩余¥250,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行2(amount): 25000</li><li>budgets.csv行2(total_amount): 500000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge contract">合同余额</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024001 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥25,000.00
+                    </div>
+                    <div class="message">合同HT2024001(服务器设备采购合同)余额充足，剩余可付¥20,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行2(amount): 25000</li><li>contracts.csv行2(total_amount): 100000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge budget">预算占用</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024002 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥50,000.00
+                    </div>
+                    <div class="message">科目501(设备费)预算充足，剩余¥250,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行3(amount): 50000</li><li>budgets.csv行2(total_amount): 500000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge invoice">发票查重</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024002 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥50,000.00
+                    </div>
+                    <div class="message">发票011002300111-24000002校验通过，金额¥50,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行3(amount): 50000</li><li>invoices.csv行3(total_amount): 50000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge contract">合同余额</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024003 |
+                        <strong>科目:</strong> 502 |
+                        <strong>金额:</strong> ¥110,000.00
+                    </div>
+                    <div class="message">报销无关联合同，跳过合同校验</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行4(amount): 110000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge invoice">发票查重</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024003 |
+                        <strong>科目:</strong> 502 |
+                        <strong>金额:</strong> ¥110,000.00
+                    </div>
+                    <div class="message">发票011002300111-24000003校验通过，金额¥110,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行4(amount): 110000</li><li>invoices.csv行4(total_amount): 110000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge budget">预算占用</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024004 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥25,000.00
+                    </div>
+                    <div class="message">科目501(设备费)预算充足，剩余¥250,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行5(amount): 25000</li><li>budgets.csv行2(total_amount): 500000</li></ul></div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-header" style="background: #d4edda; color: #155724;">
+                    <span class="status-icon">✓</span>
+                    <span class="badge contract">合同余额</span>
+                    <span>PASS</span>
+                </div>
+                <div class="result-body">
+                    <div class="meta">
+                        <strong>记录ID:</strong> BX2024004 |
+                        <strong>科目:</strong> 501 |
+                        <strong>金额:</strong> ¥25,000.00
+                    </div>
+                    <div class="message">合同HT2024001(服务器设备采购合同)余额充足，剩余可付¥20,000.00</div>
+                    <div class="sources"><div class="title">数据来源:</div><ul><li>reimbursements.csv行5(amount): 25000</li><li>contracts.csv行2(total_amount): 100000</li></ul></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="conclusion fail">
+            结论: 存在不通过项，请核实后再处理。
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,230 @@
+{
+  "generated_at": "2026-05-30T01:16:28.104038",
+  "summary": {
+    "total": 12,
+    "pass": 8,
+    "warning": 0,
+    "fail": 4,
+    "has_failure": true,
+    "records_with_issues": [
+      "BX2024001",
+      "BX2024002",
+      "BX2024003",
+      "BX2024004"
+    ]
+  },
+  "results": [
+    {
+      "check_type": "invoice_duplicate",
+      "status": "FAIL",
+      "message": "发票011002300111-24000001重复报销，涉及2条记录：BX2024001, BX2024004",
+      "record_id": "BX2024001",
+      "subject_code": "501",
+      "amount": 25000.0,
+      "sources": [
+        "reimbursements.csv行2(amount): 25000",
+        "invoices.csv行2(total_amount): 25000",
+        "invoices.csv行5(total_amount): 25000"
+      ],
+      "details": {
+        "invoice_key": "011002300111-24000001",
+        "total_amount": 25000.0,
+        "duplicate_count": 2,
+        "other_record_ids": [
+          "BX2024004"
+        ]
+      }
+    },
+    {
+      "check_type": "contract_balance",
+      "status": "FAIL",
+      "message": "合同HT2024002(数据分析服务合同)余额不足，超支¥48,000.00。合同总额¥50,000.00，已付¥48,000.00，本次申请¥50,000.00",
+      "record_id": "BX2024002",
+      "subject_code": "501",
+      "amount": 50000.0,
+      "sources": [
+        "reimbursements.csv行3(amount): 50000",
+        "contracts.csv行3(total_amount): 50000"
+      ],
+      "details": {
+        "contract_id": "HT2024002",
+        "contract_total": 50000.0,
+        "contract_paid": 48000.0,
+        "pending_amount": 50000.0,
+        "over_amount": 48000.0
+      }
+    },
+    {
+      "check_type": "budget_occupancy",
+      "status": "FAIL",
+      "message": "科目502(差旅费)超支 ¥60,000.00，预算¥100,000.00，已用¥50,000.00，本次申请¥110,000.00",
+      "record_id": "BX2024003",
+      "subject_code": "502",
+      "amount": 110000.0,
+      "sources": [
+        "reimbursements.csv行4(amount): 110000",
+        "budgets.csv行3(total_amount): 100000"
+      ],
+      "details": {
+        "budget_total": 100000.0,
+        "budget_used": 50000.0,
+        "budget_remaining": 50000.0,
+        "pending_amount": 110000.0,
+        "over_amount": 60000.0
+      }
+    },
+    {
+      "check_type": "invoice_duplicate",
+      "status": "FAIL",
+      "message": "发票011002300111-24000001重复报销，涉及2条记录：BX2024001, BX2024004",
+      "record_id": "BX2024004",
+      "subject_code": "501",
+      "amount": 25000.0,
+      "sources": [
+        "reimbursements.csv行5(amount): 25000",
+        "invoices.csv行2(total_amount): 25000",
+        "invoices.csv行5(total_amount): 25000"
+      ],
+      "details": {
+        "invoice_key": "011002300111-24000001",
+        "total_amount": 25000.0,
+        "duplicate_count": 2,
+        "other_record_ids": [
+          "BX2024001"
+        ]
+      }
+    },
+    {
+      "check_type": "budget_occupancy",
+      "status": "PASS",
+      "message": "科目501(设备费)预算充足，剩余¥250,000.00",
+      "record_id": "BX2024001",
+      "subject_code": "501",
+      "amount": 25000.0,
+      "sources": [
+        "reimbursements.csv行2(amount): 25000",
+        "budgets.csv行2(total_amount): 500000"
+      ],
+      "details": {
+        "budget_total": 500000.0,
+        "budget_remaining": 250000.0
+      }
+    },
+    {
+      "check_type": "contract_balance",
+      "status": "PASS",
+      "message": "合同HT2024001(服务器设备采购合同)余额充足，剩余可付¥20,000.00",
+      "record_id": "BX2024001",
+      "subject_code": "501",
+      "amount": 25000.0,
+      "sources": [
+        "reimbursements.csv行2(amount): 25000",
+        "contracts.csv行2(total_amount): 100000"
+      ],
+      "details": {
+        "contract_id": "HT2024001",
+        "contract_total": 100000.0,
+        "contract_paid": 30000.0,
+        "remaining_balance": 20000.0
+      }
+    },
+    {
+      "check_type": "budget_occupancy",
+      "status": "PASS",
+      "message": "科目501(设备费)预算充足，剩余¥250,000.00",
+      "record_id": "BX2024002",
+      "subject_code": "501",
+      "amount": 50000.0,
+      "sources": [
+        "reimbursements.csv行3(amount): 50000",
+        "budgets.csv行2(total_amount): 500000"
+      ],
+      "details": {
+        "budget_total": 500000.0,
+        "budget_remaining": 250000.0
+      }
+    },
+    {
+      "check_type": "invoice_duplicate",
+      "status": "PASS",
+      "message": "发票011002300111-24000002校验通过，金额¥50,000.00",
+      "record_id": "BX2024002",
+      "subject_code": "501",
+      "amount": 50000.0,
+      "sources": [
+        "reimbursements.csv行3(amount): 50000",
+        "invoices.csv行3(total_amount): 50000"
+      ],
+      "details": {
+        "invoice_key": "011002300111-24000002",
+        "total_amount": 50000.0,
+        "invoice_date": "2024-03-18"
+      }
+    },
+    {
+      "check_type": "invoice_duplicate",
+      "status": "PASS",
+      "message": "发票011002300111-24000003校验通过，金额¥110,000.00",
+      "record_id": "BX2024003",
+      "subject_code": "502",
+      "amount": 110000.0,
+      "sources": [
+        "reimbursements.csv行4(amount): 110000",
+        "invoices.csv行4(total_amount): 110000"
+      ],
+      "details": {
+        "invoice_key": "011002300111-24000003",
+        "total_amount": 110000.0,
+        "invoice_date": "2024-03-20"
+      }
+    },
+    {
+      "check_type": "contract_balance",
+      "status": "PASS",
+      "message": "报销无关联合同，跳过合同校验",
+      "record_id": "BX2024003",
+      "subject_code": "502",
+      "amount": 110000.0,
+      "sources": [
+        "reimbursements.csv行4(amount): 110000"
+      ],
+      "details": {
+        "contract_id": null
+      }
+    },
+    {
+      "check_type": "budget_occupancy",
+      "status": "PASS",
+      "message": "科目501(设备费)预算充足，剩余¥250,000.00",
+      "record_id": "BX2024004",
+      "subject_code": "501",
+      "amount": 25000.0,
+      "sources": [
+        "reimbursements.csv行5(amount): 25000",
+        "budgets.csv行2(total_amount): 500000"
+      ],
+      "details": {
+        "budget_total": 500000.0,
+        "budget_remaining": 250000.0
+      }
+    },
+    {
+      "check_type": "contract_balance",
+      "status": "PASS",
+      "message": "合同HT2024001(服务器设备采购合同)余额充足，剩余可付¥20,000.00",
+      "record_id": "BX2024004",
+      "subject_code": "501",
+      "amount": 25000.0,
+      "sources": [
+        "reimbursements.csv行5(amount): 25000",
+        "contracts.csv行2(total_amount): 100000"
+      ],
+      "details": {
+        "contract_id": "HT2024001",
+        "contract_total": 100000.0,
+        "contract_paid": 30000.0,
+        "remaining_balance": 20000.0
+      }
+    }
+  ]
+}
