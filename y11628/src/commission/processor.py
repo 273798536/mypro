@@ -89,7 +89,12 @@ class OrderProcessor:
         )
         summary.cross_region_count = len(status_groups.get(OrderStatus.CROSS_REGION, []))
         summary.payment_pending_count = len(status_groups.get(OrderStatus.PAYMENT_PENDING, []))
-        summary.rate_mismatch_count = len(status_groups.get(OrderStatus.RATE_VERSION_MISMATCH, []))
+
+        rate_mismatch_orders = set()
+        for issue in self.all_validation_issues:
+            if issue.issue_type == "rate_version_mismatch":
+                rate_mismatch_orders.add(issue.order_id)
+        summary.rate_mismatch_count = len(rate_mismatch_orders)
 
         for result in results:
             summary.total_commission += result.final_commission

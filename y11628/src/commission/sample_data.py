@@ -25,19 +25,35 @@ def create_sample_data(data_dir: str = "./data"):
         payment_status = random.choice(payment_statuses)
         amount = round(random.uniform(5000, 500000), 2)
         payment_amount = amount if payment_status == "已回款" else round(amount * random.uniform(0, 0.7), 2)
+        region = random.choice(regions)
+        product_line = random.choice(product_lines)
+        rate_version = random.choice(["2026Q1", "2026Q2", "2024Q1", "2024Q2", "2023Q4", ""])
 
-        if i == 5:
+        if i == 2:
+            payment_status = "未回款"
+            payment_amount = round(amount * 0.3, 2)
+            payment_date = ""
+        elif i == 13:
+            payment_status = "未回款"
+            payment_amount = round(amount * 0.5, 2)
+            payment_date = ""
+            region = "西北区"
+            product_line = "云服务"
+            rate_version = "2023Q4"
+        elif i == 19:
+            payment_status = "未回款"
+            payment_amount = 0
+            payment_date = ""
+            rate_version = "2023Q4"
+        elif i == 5:
             region = "华东"
+            rate_version = "2023Q4"
         elif i == 15:
             region = "华南北区"
         elif i == 25:
             region = "华东区"
             product_line = "硬件"
-        else:
-            region = random.choice(regions)
-            product_line = random.choice(product_lines)
-
-        rate_version = random.choice(["2024Q1", "2024Q2", "2023Q4", ""])
+            rate_version = "INVALID_VERSION"
 
         orders.append({
             "order_id": f"ORD{i:04d}",
@@ -106,17 +122,21 @@ def create_sample_data(data_dir: str = "./data"):
         yaml.dump(region_rules_data, f, allow_unicode=True, sort_keys=False)
 
     tier_rates = []
-    versions = ["2023Q4", "2024Q1", "2024Q2"]
+    versions = ["2023Q4", "2024Q1", "2024Q2", "2026Q1", "2026Q2"]
     for version in versions:
         effective_date = {
             "2023Q4": "2023-10-01",
             "2024Q1": "2024-01-01",
             "2024Q2": "2024-04-01",
+            "2026Q1": "2026-01-01",
+            "2026Q2": "2026-04-01",
         }[version]
         expiry_date = {
             "2023Q4": "2023-12-31",
             "2024Q1": "2024-03-31",
             "2024Q2": "2024-06-30",
+            "2026Q1": "2026-03-31",
+            "2026Q2": "2026-06-30",
         }[version]
 
         base_rates = {
@@ -127,13 +147,17 @@ def create_sample_data(data_dir: str = "./data"):
             "咨询服务": [0.05, 0.07, 0.09, 0.15],
         }
 
+        if version.startswith("2026"):
+            for key in base_rates:
+                base_rates[key] = [r * 1.1 for r in base_rates[key]]
+
         for product, rates in base_rates.items():
             tier_rates.append({
                 "rate_version": version,
                 "product_line": product,
                 "min_amount": 0,
                 "max_amount": 50000,
-                "rate": rates[0],
+                "rate": round(rates[0], 4),
                 "effective_date": effective_date,
                 "expiry_date": expiry_date,
             })
@@ -142,7 +166,7 @@ def create_sample_data(data_dir: str = "./data"):
                 "product_line": product,
                 "min_amount": 50000,
                 "max_amount": 200000,
-                "rate": rates[1],
+                "rate": round(rates[1], 4),
                 "effective_date": effective_date,
                 "expiry_date": expiry_date,
             })
@@ -151,7 +175,7 @@ def create_sample_data(data_dir: str = "./data"):
                 "product_line": product,
                 "min_amount": 200000,
                 "max_amount": 500000,
-                "rate": rates[2],
+                "rate": round(rates[2], 4),
                 "effective_date": effective_date,
                 "expiry_date": expiry_date,
             })
@@ -160,7 +184,7 @@ def create_sample_data(data_dir: str = "./data"):
                 "product_line": product,
                 "min_amount": 500000,
                 "max_amount": "",
-                "rate": rates[3],
+                "rate": round(rates[3], 4),
                 "effective_date": effective_date,
                 "expiry_date": expiry_date,
             })

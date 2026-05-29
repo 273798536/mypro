@@ -88,7 +88,8 @@ def calculate(data_dir, orders, region_rules, tier_rates, auto_fix, quarter):
 @click.option("--orders", help="订单文件路径")
 @click.option("--region-rules", help="区域规则文件路径")
 @click.option("--tier-rates", help="阶梯费率文件路径")
-def validate(data_dir, orders, region_rules, tier_rates):
+@click.option("--quarter", help="目标季度 (如 2024Q1)")
+def validate(data_dir, orders, region_rules, tier_rates, quarter):
     """仅校验数据，不计算佣金"""
     click.echo("数据校验中...")
 
@@ -106,14 +107,26 @@ def validate(data_dir, orders, region_rules, tier_rates):
     calculator = CommissionCalculator(
         tier_rates=tier_rates_list,
         region_rules=region_rules_dict,
+        target_quarter=quarter,
     )
     processor = OrderProcessor(calculator)
     results = processor.process_batch(sales_orders)
+    summary = processor.summarize(results)
 
     issues = []
+    from .models import OrderStatus
     for r in results:
-        if r.status != "normal":
+        if r.status != OrderStatus.NORMAL:
             issues.append((r.order_id, r.status.value, "; ".join(r.messages)))
+
+    click.echo(f"\n【校验汇总】")
+    click.echo(f"  订单总数:     {summary.total_orders}")
+    click.echo(f"  正常:         {summary.normal_count}")
+    click.echo(f"  跨区订单:     {summary.cross_region_count}")
+    click.echo(f"  回款未达标:   {summary.payment_pending_count}")
+    click.echo(f"  费率版本错:   {summary.rate_mismatch_count}")
+    click.echo(f"  待人工确认:   {summary.pending_review_count}")
+    click.echo(f"  错误/缺失:    {summary.error_count}")
 
     if issues:
         click.echo(f"\n发现 {len(issues)} 个问题:")
@@ -122,7 +135,7 @@ def validate(data_dir, orders, region_rules, tier_rates):
         if len(issues) > 20:
             click.echo(f"  ... 还有 {len(issues) - 20} 个问题")
     else:
-        click.echo("所有数据校验通过！")
+        click.echo("\n所有数据校验通过！")
 
 
 @cli.command()
