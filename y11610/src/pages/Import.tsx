@@ -9,6 +9,7 @@ import { useDataStore } from '../store/useDataStore';
 export default function Import() {
   const [activeTab, setActiveTab] = useState<ImportType>('order');
   const [dragActive, setDragActive] = useState(false);
+  const [allData, setAllData] = useState<Record<string, string>[] | null>(null);
   const [previewData, setPreviewData] = useState<{
     headers: string[];
     rows: Record<string, string>[];
@@ -60,6 +61,7 @@ export default function Import() {
       if (result.errors.length > 0) {
         showToast('warning', `解析完成，有 ${result.errors.length} 条警告`);
       }
+      setAllData(result.data);
       setPreviewData({
         headers: result.meta.headers,
         rows: result.data.slice(0, 10),
@@ -73,12 +75,12 @@ export default function Import() {
   };
 
   const handleImport = async () => {
-    if (!previewData) return;
+    if (!allData || allData.length === 0) return;
 
     setLoading(true, '正在导入数据...');
     try {
       const mapping: Record<string, string> = {};
-      const result = await importData(activeTab, previewData.rows, mapping);
+      const result = await importData(activeTab, allData, mapping);
       setImportResult(result);
       await refreshData();
 
@@ -126,6 +128,7 @@ export default function Import() {
             key={tab.type}
             onClick={() => {
               setActiveTab(tab.type);
+              setAllData(null);
               setPreviewData(null);
               setImportResult(null);
             }}
@@ -183,6 +186,7 @@ export default function Import() {
           <div className="flex gap-2">
             <button
               onClick={() => {
+                setAllData(null);
                 setPreviewData(null);
                 setImportResult(null);
               }}

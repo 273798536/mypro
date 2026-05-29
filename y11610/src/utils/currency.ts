@@ -32,11 +32,11 @@ export function convertCurrency(
   }
 
   let matchingRates = rates.filter(
-    (r) => r.fromCurrency === fromCurrency && r.toCurrency === toCurrency
+    (r) => r.baseCurrency === fromCurrency && r.targetCurrency === toCurrency
   );
 
   if (rateDate) {
-    const dateMatch = matchingRates.find((r) => r.rateDate === rateDate);
+    const dateMatch = matchingRates.find((r) => r.date === rateDate);
     if (dateMatch) {
       return {
         amount: amount * dateMatch.rate,
@@ -48,7 +48,7 @@ export function convertCurrency(
 
   if (matchingRates.length > 0) {
     const latestRate = matchingRates.sort(
-      (a, b) => new Date(b.rateDate).getTime() - new Date(a.rateDate).getTime()
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     )[0];
     return {
       amount: amount * latestRate.rate,
@@ -58,12 +58,12 @@ export function convertCurrency(
   }
 
   const reverseRates = rates.filter(
-    (r) => r.fromCurrency === toCurrency && r.toCurrency === fromCurrency
+    (r) => r.baseCurrency === toCurrency && r.targetCurrency === fromCurrency
   );
 
   if (reverseRates.length > 0) {
     const latestRate = reverseRates.sort(
-      (a, b) => new Date(b.rateDate).getTime() - new Date(a.rateDate).getTime()
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     )[0];
     return {
       amount: amount / latestRate.rate,
@@ -73,10 +73,10 @@ export function convertCurrency(
   }
 
   const usdFrom = rates.find(
-    (r) => r.fromCurrency === fromCurrency && r.toCurrency === 'USD'
+    (r) => r.baseCurrency === fromCurrency && r.targetCurrency === 'USD'
   );
   const usdTo = rates.find(
-    (r) => r.fromCurrency === 'USD' && r.toCurrency === toCurrency
+    (r) => r.baseCurrency === 'USD' && r.targetCurrency === toCurrency
   );
 
   if (usdFrom && usdTo) {
@@ -103,6 +103,8 @@ export function getCurrencyColor(currency: Currency): string {
     GBP: 'text-purple-600',
     JPY: 'text-yellow-600',
     HKD: 'text-cyan-600',
+    AUD: 'text-orange-600',
+    CAD: 'text-indigo-600',
   };
   return colors[currency] || 'text-gray-600';
 }
