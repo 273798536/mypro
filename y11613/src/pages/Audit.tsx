@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Download, Search, FileText, AlertTriangle, Clock, User } from 'lucide-react';
+import { Download, Search, FileText, AlertTriangle, Clock, User, Camera } from 'lucide-react';
 import { api } from '@/api/client';
 import { AuditLog, BalanceLedger } from '@/types';
 import { formatMoney, formatDateTime } from '@/utils/format';
@@ -8,11 +8,13 @@ import { useAppStore } from '@/store';
 export default function Audit() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [exceptions, setExceptions] = useState<BalanceLedger[]>([]);
-  const [activeTab, setActiveTab] = useState<'logs' | 'exceptions'>('logs');
+  const [snapshots, setSnapshots] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'logs' | 'exceptions' | 'snapshots'>('logs');
   const [loading, setLoading] = useState(true);
   const [moduleFilter, setModuleFilter] = useState('');
   const [search, setSearch] = useState('');
-  const { showToast } = useAppStore();
+  const [generating, setGenerating] = useState(false);
+  const { operator, showToast } = useAppStore();
 
   useEffect(() => {
     loadData();
@@ -26,9 +28,12 @@ export default function Audit() {
           module: moduleFilter || undefined,
         });
         setLogs(data as AuditLog[]);
-      } else {
+      } else if (activeTab === 'exceptions') {
         const data = await api.audit.exceptions();
         setExceptions(data as BalanceLedger[]);
+      } else {
+        const data = await api.audit.snapshots();
+        setSnapshots(data as any[]);
       }
     } catch (error) {
       showToast('加载失败', 'error');
@@ -37,16 +42,39 @@ export default function Audit() {
     }
   }
 
-  async function handleExport(type: string) {
+  async function handleGenerateSnapshot() {
     try {
-      const data = await api.audit.export({ type });
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `audit-${type}-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      setGenerating(true);
+      const result = await api.audit.generateSnapshot(operator);
+      showToast(`快照已生成，包含 ${(result as any).count} 张会员卡`);
+      loadData();
+    } catch (error: any) {
+      showToast(error.message || '生成失败', 'error');
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  async function handleExport(format: string) {
+    try {
+      if (format === 'csv') {
+        const blob = await api.audit.exportCsv();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `audit-export-${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        const data = await api.audit.export({ format: undefined });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `audit-export-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
       showToast('导出成功');
     } catch (error) {
       showToast('导出失败', 'error');
@@ -55,11 +83,13 @@ export default function Audit() {
 
   const modules = [
     { value: '', label: '全部模块' },
+    { value: 'auth', label: '认证' },
     { value: 'cards', label: '会员卡' },
     { value: 'recharge', label: '充值' },
     { value: 'consume', label: '消费' },
     { value: 'refund', label: '退卡' },
     { value: 'rules', label: '规则' },
+    { value: 'audit', label: '审计' },
   ];
 
   const filteredLogs = logs.filter(
@@ -84,18 +114,26 @@ export default function Audit() {
         <h1 className="text-2xl font-display font-bold text-navy-900">审计中心</h1>
         <div className="flex gap-2">
           <button
-            onClick={() => handleExport('logs')}
+            onClick={handleGenerateSnapshot}
+            disabled={generating}
+            className="flex items-center gap-2 px-4 py-2 bg-navy-900 text-white rounded-lg hover:bg-navy-800 transition-colors disabled:opacity-50"
+          >
+            <Camera size={18} />
+            {generating ? '生成中...' : '生成余额快照'}
+          </button>
+          <button
+            onClick={() => handleExport('json')}
             className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Download size={18} />
-            导出日志
+            导出JSON
           </button>
           <button
-            onClick={() => handleExport('exceptions')}
+            onClick={() => handleExport('csv')}
             className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
           >
             <Download size={18} />
-            导出异常
+            导出CSV
           </button>
         </div>
       </div>
@@ -127,6 +165,16 @@ export default function Audit() {
               </span>
             )}
           </button>
+          <button
+            onClick={() => setActiveTab('snapshots')}
+            className={`px-6 py-3 text-sm font-medium transition-colors ${
+              activeTab === 'snapshots'
+                ? 'text-navy-900 border-b-2 border-navy-900'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            余额快照
+          </button>
         </div>
 
         <div className="p-4 border-b border-gray-100">
@@ -135,7 +183,11 @@ export default function Audit() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="text"
-                placeholder={activeTab === 'logs' ? '搜索操作人、操作类型...' : '搜索卡号、姓名、异常类型...'}
+                placeholder={
+                  activeTab === 'logs' ? '搜索操作人、操作类型...' :
+                  activeTab === 'exceptions' ? '搜索卡号、姓名、异常类型...' :
+                  '搜索卡号、姓名...'
+                }
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-transparent"
@@ -201,7 +253,7 @@ export default function Audit() {
               </div>
             )}
           </div>
-        ) : (
+        ) : activeTab === 'exceptions' ? (
           <div className="divide-y divide-gray-100 max-h-[600px] overflow-y-auto">
             {filteredExceptions.map((exception) => (
               <div key={exception.id} className="p-4 hover:bg-gray-50 bg-red-50/50">
@@ -245,6 +297,45 @@ export default function Audit() {
               <div className="text-center py-12 text-gray-500">
                 <AlertTriangle className="mx-auto mb-4 opacity-50" size={48} />
                 <p>暂无异常记录</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100 max-h-[600px] overflow-y-auto">
+            {snapshots.map((snap) => (
+              <div key={snap.id} className="p-4 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gold-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Camera size={16} className="text-gold-600" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">
+                          {snap.user_name} ({snap.card_no})
+                        </span>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                          {snap.snapshot_date}
+                        </span>
+                      </div>
+                      <div className="mt-1 flex gap-4 text-sm">
+                        <span className="text-gray-600">本金: <span className="font-semibold">{formatMoney(snap.principal_balance)}</span></span>
+                        <span className="text-gold-600">赠送金: <span className="font-semibold">{formatMoney(snap.bonus_balance)}</span></span>
+                        <span className="text-navy-900 font-bold">合计: {formatMoney(snap.total_balance)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {formatDateTime(snap.created_at)}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {snapshots.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                <Camera className="mx-auto mb-4 opacity-50" size={48} />
+                <p>暂无余额快照</p>
+                <p className="text-sm mt-1">点击「生成余额快照」按钮创建今日快照</p>
               </div>
             )}
           </div>

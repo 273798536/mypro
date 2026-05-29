@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getDatabase } from '../database/init.js';
 import { generateId, splitConsumptionAmount, detectException } from '../utils/index.js';
+import type { MemberCardRow, StoreRow, BonusRuleRow, ConsumptionRow, ConsumptionWithCard } from '../types/index.js';
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.get('/', (req, res) => {
     }
     sql += ' ORDER BY c.created_at DESC';
 
-    const records = db.prepare(sql).all(...params);
+    const records = db.prepare(sql).all(...params) as ConsumptionWithCard[];
     res.json(records);
   } finally {
     db.close();
@@ -42,12 +43,12 @@ router.post('/', (req, res) => {
   try {
     const { cardId, storeId, amount, operator, remark } = req.body;
 
-    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(cardId);
+    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(cardId) as MemberCardRow | undefined;
     if (!card) {
       return res.status(404).json({ error: '会员卡不存在' });
     }
 
-    const store = db.prepare('SELECT * FROM stores WHERE id = ?').get(storeId);
+    const store = db.prepare('SELECT * FROM stores WHERE id = ?').get(storeId) as StoreRow | undefined;
     if (!store) {
       return res.status(404).json({ error: '门店不存在' });
     }
@@ -57,18 +58,18 @@ router.post('/', (req, res) => {
       return res.status(400).json({ error: '余额不足' });
     }
 
-    const rule = db.prepare('SELECT * FROM bonus_rules WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1').get();
+    const rule = db.prepare('SELECT * FROM bonus_rules WHERE is_active = 1 ORDER BY created_at DESC LIMIT 1').get() as BonusRuleRow | undefined;
     const priority = rule?.priority || 'bonus_first';
 
     const { principalUsed, bonusUsed } = splitConsumptionAmount(
       amount,
       card.principal_balance,
       card.bonus_balance,
-      priority
+      priority as 'bonus_first' | 'principal_first'
     );
 
-    const isCrossStore = store.code !== 'STORE001';
-    const exception = detectException(card.status, false, isCrossStore);
+    const isCrossStore = store.code !== 'STORE001' ? 1 : 0;
+    const exception = detectException(card.status, false, !!isCrossStore);
 
     const consumptionId = generateId('consume');
     const newPrincipal = card.principal_balance - principalUsed;
@@ -81,7 +82,7 @@ router.post('/', (req, res) => {
       db.prepare(`
         INSERT INTO consumptions (id, card_id, store_id, store_name, amount, principal_used, bonus_used, is_cross_store, is_reversed, operator)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
-      `).run(consumptionId, cardId, storeId, store.name, amount, principalUsed, bonusUsed, isCrossStore ? 1 : 0, operator);
+      `).run(consumptionId, cardId, storeId, store.name, amount, principalUsed, bonusUsed, isCrossStore, operator);
 
       db.prepare(`
         UPDATE member_cards 
@@ -124,7 +125,7 @@ router.post('/', (req, res) => {
 
       db.prepare('COMMIT').run();
 
-      const record = db.prepare('SELECT * FROM consumptions WHERE id = ?').get(consumptionId);
+      const record = db.prepare('SELECT * FROM consumptions WHERE id = ?').get(consumptionId) as ConsumptionRow;
       res.status(201).json({
         ...record,
         isException: exception.isException,
@@ -146,7 +147,7 @@ router.post('/:id/reverse', (req, res) => {
     const { id } = req.params;
     const { operator, reason } = req.body;
 
-    const consumption = db.prepare('SELECT * FROM consumptions WHERE id = ?').get(id);
+    const consumption = db.prepare('SELECT * FROM consumptions WHERE id = ?').get(id) as ConsumptionRow | undefined;
     if (!consumption) {
       return res.status(404).json({ error: '消费记录不存在' });
     }
@@ -154,12 +155,12 @@ router.post('/:id/reverse', (req, res) => {
       return res.status(400).json({ error: '该消费已撤销' });
     }
 
-    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(consumption.card_id);
+    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(consumption.card_id) as MemberCardRow | undefined;
     if (!card) {
       return res.status(404).json({ error: '会员卡不存在' });
     }
 
-    const exception = detectException(card.status, true, consumption.is_cross_store);
+    const exception = detectException(card.status, true, !!consumption.is_cross_store);
 
     const newPrincipal = card.principal_balance + consumption.principal_used;
     const newBonus = card.bonus_balance + consumption.bonus_used;
@@ -213,7 +214,7 @@ router.post('/:id/reverse', (req, res) => {
 
       db.prepare('COMMIT').run();
 
-      const updated = db.prepare('SELECT * FROM consumptions WHERE id = ?').get(id);
+      const updated = db.prepare('SELECT * FROM consumptions WHERE id = ?').get(id) as ConsumptionRow;
       res.json({
         ...updated,
         isException: exception.isException,

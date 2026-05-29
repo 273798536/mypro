@@ -1,13 +1,25 @@
 const API_BASE = '/api';
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_BASE}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
     ...options,
   });
+
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('operator');
+    localStorage.removeItem('userRole');
+    if (!window.location.pathname.includes('/login')) {
+      window.location.href = '/login';
+    }
+    throw new Error('请重新登录');
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: '请求失败' }));
@@ -18,6 +30,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
+  auth: {
+    login: (data: { username: string; password: string }) =>
+      request('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+    logout: () =>
+      request('/auth/logout', { method: 'POST' }),
+    session: () =>
+      request('/auth/session'),
+  },
+
   stores: {
     list: () => request('/stores'),
     get: (id: string) => request(`/stores/${id}`),
@@ -101,13 +122,28 @@ export const api = {
       const query = params?.date ? `?date=${params.date}` : '';
       return request(`/audit/snapshots${query}`);
     },
-    export: (params?: { type?: string; startDate?: string; endDate?: string }) => {
+    generateSnapshot: (operator: string) =>
+      request('/audit/snapshots/generate', { method: 'POST', body: JSON.stringify({ operator }) }),
+    export: (params?: { type?: string; startDate?: string; endDate?: string; format?: string }) => {
       const searchParams = new URLSearchParams();
       if (params?.type) searchParams.set('type', params.type);
       if (params?.startDate) searchParams.set('startDate', params.startDate);
       if (params?.endDate) searchParams.set('endDate', params.endDate);
+      if (params?.format) searchParams.set('format', params.format);
       const query = searchParams.toString();
       return request(`/audit/export${query ? `?${query}` : ''}`);
+    },
+    exportCsv: (params?: { type?: string; startDate?: string; endDate?: string }) => {
+      const token = localStorage.getItem('token');
+      const searchParams = new URLSearchParams();
+      searchParams.set('format', 'csv');
+      if (params?.type) searchParams.set('type', params.type);
+      if (params?.startDate) searchParams.set('startDate', params.startDate);
+      if (params?.endDate) searchParams.set('endDate', params.endDate);
+      const url = `${API_BASE}/audit/export?${searchParams.toString()}`;
+      return fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(r => r.blob());
     },
   },
 

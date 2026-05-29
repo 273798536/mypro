@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   CreditCard,
@@ -13,6 +13,7 @@ import {
   User,
 } from 'lucide-react';
 import { useAppStore } from '@/store';
+import { api } from '@/api/client';
 import Toast from './Toast';
 
 const navItems = [
@@ -27,7 +28,21 @@ const navItems = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { operator, toast } = useAppStore();
+  const { operator, toast, setOperator } = useAppStore();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    try {
+      await api.auth.logout();
+    } catch {
+      // ignore
+    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('operator');
+    localStorage.removeItem('userRole');
+    setOperator('');
+    navigate('/login');
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 font-body">
@@ -74,10 +89,21 @@ export default function Layout() {
               <User size={20} />
             </div>
             {sidebarOpen && (
-              <div className="overflow-hidden">
+              <div className="flex-1 overflow-hidden">
                 <p className="text-sm font-medium truncate">{operator}</p>
-                <p className="text-xs text-gray-400">财务管理员</p>
+                <p className="text-xs text-gray-400">
+                  {localStorage.getItem('userRole') === 'finance_admin' ? '财务管理员' : '门店操作员'}
+                </p>
               </div>
+            )}
+            {sidebarOpen && (
+              <button
+                onClick={handleLogout}
+                className="p-2 text-gray-400 hover:text-white hover:bg-navy-700 rounded-lg transition-colors"
+                title="退出登录"
+              >
+                <LogOut size={18} />
+              </button>
             )}
           </div>
         </div>

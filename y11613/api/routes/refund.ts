@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getDatabase } from '../database/init.js';
 import { generateId } from '../utils/index.js';
+import type { MemberCardRow, RefundRequestRow, RefundWithCard } from '../types/index.js';
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.get('/', (req, res) => {
     }
     sql += ' ORDER BY r.created_at DESC';
 
-    const requests = db.prepare(sql).all(...params);
+    const requests = db.prepare(sql).all(...params) as RefundWithCard[];
     res.json(requests);
   } finally {
     db.close();
@@ -34,7 +35,7 @@ router.post('/', (req, res) => {
   try {
     const { cardId, applicant, reason } = req.body;
 
-    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(cardId);
+    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(cardId) as MemberCardRow | undefined;
     if (!card) {
       return res.status(404).json({ error: '会员卡不存在' });
     }
@@ -45,7 +46,7 @@ router.post('/', (req, res) => {
     const existingRequest = db.prepare(`
       SELECT * FROM refund_requests 
       WHERE card_id = ? AND status = 'pending'
-    `).get(cardId);
+    `).get(cardId) as RefundRequestRow | undefined;
     if (existingRequest) {
       return res.status(400).json({ error: '已有待审核的退卡申请' });
     }
@@ -67,7 +68,7 @@ router.post('/', (req, res) => {
       reason
     }));
 
-    const request = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(requestId);
+    const request = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(requestId) as RefundRequestRow;
     res.status(201).json(request);
   } finally {
     db.close();
@@ -80,7 +81,7 @@ router.post('/:id/approve', (req, res) => {
     const { id } = req.params;
     const { approver } = req.body;
 
-    const request = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id);
+    const request = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id) as RefundRequestRow | undefined;
     if (!request) {
       return res.status(404).json({ error: '申请不存在' });
     }
@@ -88,7 +89,7 @@ router.post('/:id/approve', (req, res) => {
       return res.status(400).json({ error: '申请已处理' });
     }
 
-    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(request.card_id);
+    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(request.card_id) as MemberCardRow | undefined;
     if (!card) {
       return res.status(404).json({ error: '会员卡不存在' });
     }
@@ -132,7 +133,7 @@ router.post('/:id/approve', (req, res) => {
 
       db.prepare('COMMIT').run();
 
-      const updated = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id);
+      const updated = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id) as RefundRequestRow;
       res.json(updated);
     } catch (e) {
       db.prepare('ROLLBACK').run();
@@ -149,7 +150,7 @@ router.post('/:id/reject', (req, res) => {
     const { id } = req.params;
     const { approver, reason } = req.body;
 
-    const request = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id);
+    const request = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id) as RefundRequestRow | undefined;
     if (!request) {
       return res.status(404).json({ error: '申请不存在' });
     }
@@ -171,7 +172,7 @@ router.post('/:id/reject', (req, res) => {
       reason
     }));
 
-    const updated = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id);
+    const updated = db.prepare('SELECT * FROM refund_requests WHERE id = ?').get(id) as RefundRequestRow;
     res.json(updated);
   } finally {
     db.close();

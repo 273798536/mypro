@@ -1,11 +1,16 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dbPath = path.join(__dirname, '../../data/stored_value.db');
+
+function hashPassword(password: string): string {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
 
 export function initDatabase() {
   const db = new Database(dbPath);
@@ -134,6 +139,17 @@ export function initDatabase() {
       UNIQUE(snapshot_date, card_id)
     );
 
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'store_operator',
+      display_name TEXT NOT NULL,
+      store_id TEXT,
+      is_active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_ledger_card_id ON balance_ledger(card_id);
     CREATE INDEX IF NOT EXISTS idx_ledger_created_at ON balance_ledger(created_at);
     CREATE INDEX IF NOT EXISTS idx_consumption_card_id ON consumptions(card_id);
@@ -182,6 +198,17 @@ export function initDatabase() {
     insertCard.run('card_001', '88880001', '张三', '13800138001', 1500, 200);
     insertCard.run('card_002', '88880002', '李四', '13800138002', 800, 120);
     insertCard.run('card_003', '88880003', '王五', '13800138003', 500, 50);
+  }
+
+  const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
+  if (userCount.count === 0) {
+    const insertUser = db.prepare(`
+      INSERT INTO users (id, username, password_hash, role, display_name, store_id, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, 1)
+    `);
+    insertUser.run('user_001', 'admin', hashPassword('admin123'), 'finance_admin', '系统管理员', null);
+    insertUser.run('user_002', 'zongdian', hashPassword('store123'), 'store_operator', '总店操作员', 'store_001');
+    insertUser.run('user_003', 'chaoyang', hashPassword('store123'), 'store_operator', '朝阳操作员', 'store_002');
   }
 
   db.close();

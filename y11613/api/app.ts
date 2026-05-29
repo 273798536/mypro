@@ -1,7 +1,3 @@
-/**
- * This is a API server
- */
-
 import express, {
   type Request,
   type Response,
@@ -12,6 +8,7 @@ import path from 'path'
 import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import { initDatabase } from './database/init.js'
+import authRoutes, { authMiddleware } from './routes/auth.js'
 import storeRoutes from './routes/stores.js'
 import cardRoutes from './routes/cards.js'
 import rechargeRoutes from './routes/recharge.js'
@@ -34,18 +31,17 @@ app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-app.use('/api/stores', storeRoutes)
-app.use('/api/cards', cardRoutes)
-app.use('/api/recharge', rechargeRoutes)
-app.use('/api/consume', consumeRoutes)
-app.use('/api/refund', refundRoutes)
-app.use('/api/rules', ruleRoutes)
-app.use('/api/audit', auditRoutes)
-app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/auth', authRoutes)
 
-/**
- * health
- */
+app.use('/api/stores', authMiddleware, storeRoutes)
+app.use('/api/cards', authMiddleware, cardRoutes)
+app.use('/api/recharge', authMiddleware, rechargeRoutes)
+app.use('/api/consume', authMiddleware, consumeRoutes)
+app.use('/api/refund', authMiddleware, refundRoutes)
+app.use('/api/rules', authMiddleware, ruleRoutes)
+app.use('/api/audit', authMiddleware, auditRoutes)
+app.use('/api/dashboard', authMiddleware, dashboardRoutes)
+
 app.use(
   '/api/health',
   (req: Request, res: Response, next: NextFunction): void => {
@@ -56,19 +52,14 @@ app.use(
   },
 )
 
-/**
- * error handler middleware
- */
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error('Server error:', error.message);
   res.status(500).json({
     success: false,
     error: 'Server internal error',
   })
 })
 
-/**
- * 404 handler
- */
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,

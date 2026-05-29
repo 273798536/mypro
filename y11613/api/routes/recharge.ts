@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getDatabase } from '../database/init.js';
 import { generateId, calculateBonus } from '../utils/index.js';
+import type { MemberCardRow, BonusRuleRow, RechargeRecordRow, RechargeWithCard } from '../types/index.js';
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.get('/', (req, res) => {
     }
     sql += ' ORDER BY r.created_at DESC';
 
-    const records = db.prepare(sql).all(...params);
+    const records = db.prepare(sql).all(...params) as RechargeWithCard[];
     res.json(records);
   } finally {
     db.close();
@@ -34,7 +35,7 @@ router.post('/', (req, res) => {
   try {
     const { cardId, principalAmount, ruleId, operator, source, remark } = req.body;
 
-    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(cardId);
+    const card = db.prepare('SELECT * FROM member_cards WHERE id = ?').get(cardId) as MemberCardRow | undefined;
     if (!card) {
       return res.status(404).json({ error: '会员卡不存在' });
     }
@@ -44,7 +45,7 @@ router.post('/', (req, res) => {
 
     let bonusAmount = 0;
     if (ruleId) {
-      const rule = db.prepare('SELECT * FROM bonus_rules WHERE id = ? AND is_active = 1').get(ruleId);
+      const rule = db.prepare('SELECT * FROM bonus_rules WHERE id = ? AND is_active = 1').get(ruleId) as BonusRuleRow | undefined;
       if (rule) {
         const tiers = JSON.parse(rule.tiers);
         bonusAmount = calculateBonus(principalAmount, tiers);
@@ -84,7 +85,7 @@ router.post('/', (req, res) => {
 
       db.prepare('COMMIT').run();
 
-      const record = db.prepare('SELECT * FROM recharge_records WHERE id = ?').get(rechargeId);
+      const record = db.prepare('SELECT * FROM recharge_records WHERE id = ?').get(rechargeId) as RechargeRecordRow;
       res.status(201).json(record);
     } catch (e) {
       db.prepare('ROLLBACK').run();

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getDatabase } from '../database/init.js';
 import { generateId } from '../utils/index.js';
+import type { BonusRuleRow } from '../types/index.js';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ router.get('/', (req, res) => {
     const rules = db.prepare(`
       SELECT * FROM bonus_rules 
       ORDER BY is_active DESC, created_at DESC
-    `).all();
+    `).all() as BonusRuleRow[];
     res.json(rules.map(r => ({
       ...r,
       tiers: JSON.parse(r.tiers)
@@ -28,11 +29,15 @@ router.get('/active', (req, res) => {
       WHERE is_active = 1 
       ORDER BY created_at DESC 
       LIMIT 1
-    `).get();
+    `).get() as BonusRuleRow | undefined;
     if (rule) {
-      rule.tiers = JSON.parse(rule.tiers);
+      res.json({
+        ...rule,
+        tiers: JSON.parse(rule.tiers)
+      });
+    } else {
+      res.json(null);
     }
-    res.json(rule || null);
   } finally {
     db.close();
   }
@@ -45,7 +50,7 @@ router.post('/', (req, res) => {
 
     const maxVersion = db.prepare(`
       SELECT MAX(version) as max_version FROM bonus_rules
-    `).get() as { max_version: number };
+    `).get() as { max_version: number | null };
     const version = (maxVersion?.max_version || 0) + 1;
 
     db.prepare('BEGIN TRANSACTION').run();
@@ -81,9 +86,11 @@ router.post('/', (req, res) => {
 
       db.prepare('COMMIT').run();
 
-      const rule = db.prepare('SELECT * FROM bonus_rules WHERE id = ?').get(ruleId);
-      rule.tiers = JSON.parse(rule.tiers);
-      res.status(201).json(rule);
+      const rule = db.prepare('SELECT * FROM bonus_rules WHERE id = ?').get(ruleId) as BonusRuleRow;
+      res.status(201).json({
+        ...rule,
+        tiers: JSON.parse(rule.tiers)
+      });
     } catch (e) {
       db.prepare('ROLLBACK').run();
       throw e;
@@ -99,7 +106,7 @@ router.patch('/:id/activate', (req, res) => {
     const { id } = req.params;
     const { operator } = req.body;
 
-    const rule = db.prepare('SELECT * FROM bonus_rules WHERE id = ?').get(id);
+    const rule = db.prepare('SELECT * FROM bonus_rules WHERE id = ?').get(id) as BonusRuleRow | undefined;
     if (!rule) {
       return res.status(404).json({ error: '规则不存在' });
     }
@@ -120,9 +127,11 @@ router.patch('/:id/activate', (req, res) => {
 
       db.prepare('COMMIT').run();
 
-      const updated = db.prepare('SELECT * FROM bonus_rules WHERE id = ?').get(id);
-      updated.tiers = JSON.parse(updated.tiers);
-      res.json(updated);
+      const updated = db.prepare('SELECT * FROM bonus_rules WHERE id = ?').get(id) as BonusRuleRow;
+      res.json({
+        ...updated,
+        tiers: JSON.parse(updated.tiers)
+      });
     } catch (e) {
       db.prepare('ROLLBACK').run();
       throw e;
