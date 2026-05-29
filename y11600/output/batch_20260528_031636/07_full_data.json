@@ -1,7 +1,7 @@
 {
   "summary": {
-    "batch_id": "RECON_20260526_4",
-    "run_date": "2026-05-26",
+    "batch_id": "RECON_20260528_4",
+    "run_date": "2026-05-28",
     "total_records": 4,
     "success_count": 0,
     "failed_count": 0,
@@ -18,23 +18,23 @@
       "customer_plans.csv",
       "bank_returns.csv"
     ],
-    "generated_at": "2026-05-26T18:29:52.996130"
+    "generated_at": "2026-05-28T03:16:36.246843"
   },
   "records": [
     {
-      "record_id": "69b9a4338b3b94a7",
+      "record_id": "569e7d7599df241e",
       "bank_return": {
         "serial_no": "BR202605200001",
         "customer_id": "C003",
         "customer_name": "王五",
         "plan_id": "P003",
-        "deduct_date": "2026-05-21",
-        "return_date": "2026-05-26",
+        "deduct_date": "2026-05-23",
+        "return_date": "2026-05-28",
         "amount": 1500.0,
         "return_code": "BAL001",
         "return_msg": "账户余额不足",
         "source_file": "bank_returns.csv",
-        "created_at": "2026-05-26T18:29:52.985654"
+        "created_at": "2026-05-28T03:16:36.238317"
       },
       "customer_plan": {
         "plan_id": "P003",
@@ -61,9 +61,9 @@
       "replenish_window": {
         "window_id": "W003",
         "plan_id": "P003",
-        "original_deduct_date": "2026-05-21",
-        "window_start": "2026-05-26",
-        "window_end": "2026-06-05",
+        "original_deduct_date": "2026-05-23",
+        "window_start": "2026-05-28",
+        "window_end": "2026-06-07",
         "attempts_made": 0,
         "last_attempt_date": null,
         "source_file": "replenish_windows.csv"
@@ -73,7 +73,7 @@
       "risks": [],
       "audit_trail": [
         {
-          "timestamp": "2026-05-26T18:29:52.995991",
+          "timestamp": "2026-05-28T03:16:36.246755",
           "from_status": "待处理",
           "to_status": "可补扣",
           "operator": "system",
@@ -81,27 +81,27 @@
           "source": "state_machine"
         }
       ],
-      "scheduled_replenish_date": "2026-05-27",
+      "scheduled_replenish_date": "2026-05-29",
       "actual_replenish_date": null,
       "replenish_attempts": 0,
       "is_reconciled": false,
-      "created_at": "2026-05-26T18:29:52.995303",
-      "updated_at": "2026-05-26T18:29:52.996052"
+      "created_at": "2026-05-28T03:16:36.246263",
+      "updated_at": "2026-05-28T03:16:36.246792"
     },
     {
-      "record_id": "6c69fa36f5e987d8",
+      "record_id": "d7bec81d7e3eb578",
       "bank_return": {
         "serial_no": "BR202605200002",
         "customer_id": "C002",
         "customer_name": "李四",
         "plan_id": "P002",
-        "deduct_date": "2026-05-21",
-        "return_date": "2026-05-26",
+        "deduct_date": "2026-05-23",
+        "return_date": "2026-05-28",
         "amount": 2000.0,
         "return_code": "BAL001",
         "return_msg": "账户余额不足",
         "source_file": "bank_returns.csv",
-        "created_at": "2026-05-26T18:29:52.985891"
+        "created_at": "2026-05-28T03:16:36.238759"
       },
       "customer_plan": {
         "plan_id": "P002",
@@ -128,11 +128,11 @@
       "replenish_window": {
         "window_id": "W002",
         "plan_id": "P002",
-        "original_deduct_date": "2026-05-21",
-        "window_start": "2026-05-26",
-        "window_end": "2026-06-05",
+        "original_deduct_date": "2026-05-23",
+        "window_start": "2026-05-28",
+        "window_end": "2026-06-07",
         "attempts_made": 1,
-        "last_attempt_date": "2026-05-24",
+        "last_attempt_date": "2026-05-26",
         "source_file": "replenish_windows.csv"
       },
       "manual_remarks": [
@@ -140,7 +140,7 @@
           "remark_id": "R001",
           "related_serial_no": "BR202605200002",
           "operator": "运营小王",
-          "remark_time": "2026-05-26T18:29:52.992514",
+          "remark_time": "2026-05-28T03:16:36.244712",
           "content": "客户来电说明已充值，同意补扣",
           "action": "同意补扣",
           "source_file": "manual_remarks.csv"
@@ -152,7 +152,7 @@
       ],
       "audit_trail": [
         {
-          "timestamp": "2026-05-26T18:29:52.996082",
+          "timestamp": "2026-05-28T03:16:36.246811",
           "from_status": "待处理",
           "to_status": "客户暂停",
           "operator": "system",
@@ -164,23 +164,23 @@
       "actual_replenish_date": null,
       "replenish_attempts": 0,
       "is_reconciled": false,
-      "created_at": "2026-05-26T18:29:52.995321",
-      "updated_at": "2026-05-26T18:29:52.996089"
+      "created_at": "2026-05-28T03:16:36.246273",
+      "updated_at": "2026-05-28T03:16:36.246816"
     },
     {
-      "record_id": "f5ace69383ef7bd4",
+      "record_id": "1991b2aa206145ac",
       "bank_return": {
         "serial_no": "BR202605200003",
         "customer_id": "C001",
         "customer_name": "张三",
         "plan_id": "P001",
-        "deduct_date": "2026-05-21",
-        "return_date": "2026-05-26",
+        "deduct_date": "2026-05-23",
+        "return_date": "2026-05-28",
         "amount": 1000.0,
         "return_code": "BAL001",
         "return_msg": "账户余额不足",
         "source_file": "bank_returns.csv",
-        "created_at": "2026-05-26T18:29:52.985980"
+        "created_at": "2026-05-28T03:16:36.238834"
       },
       "customer_plan": {
         "plan_id": "P001",
@@ -207,9 +207,9 @@
       "replenish_window": {
         "window_id": "W001",
         "plan_id": "P001",
-        "original_deduct_date": "2026-05-21",
-        "window_start": "2026-05-26",
-        "window_end": "2026-06-05",
+        "original_deduct_date": "2026-05-23",
+        "window_start": "2026-05-28",
+        "window_end": "2026-06-07",
         "attempts_made": 0,
         "last_attempt_date": null,
         "source_file": "replenish_windows.csv"
@@ -221,7 +221,7 @@
       ],
       "audit_trail": [
         {
-          "timestamp": "2026-05-26T18:29:52.996097",
+          "timestamp": "2026-05-28T03:16:36.246823",
           "from_status": "待处理",
           "to_status": "重复扣款风险",
           "operator": "system",
@@ -233,23 +233,23 @@
       "actual_replenish_date": null,
       "replenish_attempts": 0,
       "is_reconciled": false,
-      "created_at": "2026-05-26T18:29:52.995329",
-      "updated_at": "2026-05-26T18:29:52.996102"
+      "created_at": "2026-05-28T03:16:36.246279",
+      "updated_at": "2026-05-28T03:16:36.246827"
     },
     {
-      "record_id": "818cf6acfce3de66",
+      "record_id": "4efbc015c7ffc072",
       "bank_return": {
         "serial_no": "BR202605200004",
         "customer_id": "C001",
         "customer_name": "张三",
         "plan_id": "P001",
-        "deduct_date": "2026-05-21",
-        "return_date": "2026-05-26",
+        "deduct_date": "2026-05-23",
+        "return_date": "2026-05-28",
         "amount": 1000.0,
         "return_code": "BAL001",
         "return_msg": "账户余额不足",
         "source_file": "bank_returns.csv",
-        "created_at": "2026-05-26T18:29:52.986057"
+        "created_at": "2026-05-28T03:16:36.238895"
       },
       "customer_plan": {
         "plan_id": "P001",
@@ -276,9 +276,9 @@
       "replenish_window": {
         "window_id": "W001",
         "plan_id": "P001",
-        "original_deduct_date": "2026-05-21",
-        "window_start": "2026-05-26",
-        "window_end": "2026-06-05",
+        "original_deduct_date": "2026-05-23",
+        "window_start": "2026-05-28",
+        "window_end": "2026-06-07",
         "attempts_made": 0,
         "last_attempt_date": null,
         "source_file": "replenish_windows.csv"
@@ -290,7 +290,7 @@
       ],
       "audit_trail": [
         {
-          "timestamp": "2026-05-26T18:29:52.996108",
+          "timestamp": "2026-05-28T03:16:36.246832",
           "from_status": "待处理",
           "to_status": "重复扣款风险",
           "operator": "system",
@@ -302,9 +302,9 @@
       "actual_replenish_date": null,
       "replenish_attempts": 0,
       "is_reconciled": false,
-      "created_at": "2026-05-26T18:29:52.995336",
-      "updated_at": "2026-05-26T18:29:52.996112"
+      "created_at": "2026-05-28T03:16:36.246284",
+      "updated_at": "2026-05-28T03:16:36.246836"
     }
   ],
-  "export_time": "2026-05-26T18:29:53.013747"
+  "export_time": "2026-05-28T03:16:36.259842"
 }

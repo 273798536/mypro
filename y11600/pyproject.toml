@@ -19,4 +19,4 @@ dependencies = [
 fund-replenish = "fund_replenish_cli.cli:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
+include = ["fund_replenish_cli*"]

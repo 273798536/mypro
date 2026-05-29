@@ -15,8 +15,9 @@
 
 ### 1. 安装依赖
 
+在项目根目录执行：
+
 ```bash
-cd fund_replenish_cli
 pip install -e .
 ```
 
@@ -26,10 +27,22 @@ pip install -e .
 python -m fund_replenish_cli.cli generate-sample -i ./sample_input
 ```
 
+或者使用安装后的控制台入口：
+
+```bash
+fund-replenish generate-sample -i ./sample_input
+```
+
 ### 3. 执行补扣处理
 
 ```bash
-python -m fund_replenish_cli.cli process -i ./sample_input -o ./output
+python -m fund_replenish_cli.cli process -i ./sample_input -o ./output -h ./sample_input/holidays.json
+```
+
+或者使用安装后的控制台入口：
+
+```bash
+fund-replenish process -i ./sample_input -o ./output -h ./sample_input/holidays.json
 ```
 
 ### 4. 查看记录列表
@@ -145,19 +158,26 @@ R001,BR202605200002,运营小王,2026-05-20T10:00:00,客户来电说明已充值
 ## 目录结构
 
 ```
-fund_replenish_cli/
-├── models/              # 数据模型
-│   └── base.py         # 银行回盘、客户计划、补扣记录等
-├── core/                # 核心逻辑
-│   ├── state_machine.py    # 状态机
-│   ├── holiday_manager.py  # 节假日管理
-│   ├── idempotent_manager.py # 幂等管理
-│   ├── data_loader.py      # 数据加载
-│   ├── replenish_processor.py # 补扣处理器
-│   └── reconciliation.py   # 对账导出
-├── sample_data/         # 样例数据生成
-├── cli.py              # 命令行入口
-└── pyproject.toml      # 项目配置
+y11600/
+├── pyproject.toml      # 项目配置
+├── README.md           # 项目说明
+└── fund_replenish_cli/ # 主包目录
+    ├── __init__.py
+    ├── cli.py          # 命令行入口
+    ├── models/         # 数据模型
+    │   ├── __init__.py
+    │   └── base.py     # 银行回盘、客户计划、补扣记录等
+    ├── core/           # 核心逻辑
+    │   ├── __init__.py
+    │   ├── state_machine.py    # 状态机
+    │   ├── holiday_manager.py  # 节假日管理
+    │   ├── idempotent_manager.py # 幂等管理
+    │   ├── data_loader.py      # 数据加载
+    │   ├── replenish_processor.py # 补扣处理器
+    │   └── reconciliation.py   # 对账导出
+    └── sample_data/    # 样例数据生成
+        ├── __init__.py
+        └── generator.py
 ```
 
 ## 注意事项
