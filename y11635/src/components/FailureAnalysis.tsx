@@ -1,15 +1,14 @@
 import React from 'react';
 import { AlertCircle, XCircle, CheckCircle, Info } from 'lucide-react';
 import { useGameStore } from '../hooks/useGameStore';
-import { ScoreDetail, RoundLog } from '../types/game';
+import { ScoreDetail } from '../types/game';
 
 interface FailureAnalysisProps {
   scoreDetails: ScoreDetail[];
-  logs: RoundLog[];
 }
 
-export function FailureAnalysis({ scoreDetails, logs }: FailureAnalysisProps) {
-  const { status, failureReason, totalScore } = useGameStore();
+export function FailureAnalysis({ scoreDetails }: FailureAnalysisProps) {
+  const { status, failureReason } = useGameStore();
 
   const criticalRounds = scoreDetails.filter(d => d.score < -10);
 

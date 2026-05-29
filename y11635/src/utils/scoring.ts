@@ -1,4 +1,4 @@
-import { ScoreDetail, RoundLog, WeatherCard } from '../types/game';
+import { ScoreDetail, WeatherCard } from '../types/game';
 import {
   SAFE_LEVEL,
   WARNING_LINE,
@@ -120,8 +120,7 @@ export function calculateScore(
 export function checkFailure(
   reservoirLevel: number,
   consecutiveOverflow: number,
-  riskScore: number,
-  logs: RoundLog[]
+  riskScore: number
 ): { failed: boolean; reason: string | null } {
   if (reservoirLevel >= 100) {
     return { failed: true, reason: `溃坝！水位达到 ${reservoirLevel.toFixed(1)}，超过溃坝水位 100` };

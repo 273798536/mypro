@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -8,17 +8,21 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-  Legend,
 } from 'recharts';
+import { Download, Loader2 } from 'lucide-react';
 import { useGameStore } from '../hooks/useGameStore';
 import { SAFE_LEVEL, WARNING_LINE, OVERFLOW_LINE } from '../data/constants';
+import { exportElementAsImage } from '../utils/export';
 
 interface WaterLevelChartProps {
   height?: number;
+  showExport?: boolean;
 }
 
-export function WaterLevelChart({ height = 200 }: WaterLevelChartProps) {
+export function WaterLevelChart({ height = 200, showExport = true }: WaterLevelChartProps) {
   const { logs, reservoirLevel, round } = useGameStore();
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [exporting, setExporting] = useState(false);
 
   const chartData = [
     ...logs.map((log) => ({
@@ -37,9 +41,46 @@ export function WaterLevelChart({ height = 200 }: WaterLevelChartProps) {
     },
   ];
 
+  const handleExport = async () => {
+    if (!chartRef.current || exporting) return;
+    
+    setExporting(true);
+    try {
+      const timestamp = new Date().toISOString().slice(0, 10);
+      await exportElementAsImage(
+        chartRef.current,
+        `水位曲线图-${timestamp}.png`,
+        '#1e293b'
+      );
+    } catch (error) {
+      console.error('导出图表失败:', error);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
-    <div className="bg-slate-800 rounded-xl p-4">
-      <h3 className="text-lg font-bold text-slate-100 mb-3">水位变化曲线</h3>
+    <div ref={chartRef} className="bg-slate-800 rounded-xl p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-bold text-slate-100">水位变化曲线</h3>
+        {showExport && (
+          <button
+            onClick={handleExport}
+            disabled={exporting || logs.length === 0}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
+              bg-slate-700 hover:bg-slate-600 text-slate-300
+              disabled:opacity-50 disabled:cursor-not-allowed
+              transition-all duration-200"
+          >
+            {exporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            导出图表
+          </button>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" />

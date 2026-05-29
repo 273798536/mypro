@@ -27,6 +27,28 @@ export function downloadFile(content: string, filename: string, mimeType: string
   URL.revokeObjectURL(url);
 }
 
+export function downloadCanvasImage(canvas: HTMLCanvasElement, filename: string) {
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL('image/png');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+export async function exportElementAsImage(element: HTMLElement, filename: string, backgroundColor?: string): Promise<void> {
+  const html2canvas = (await import('html2canvas')).default;
+  
+  const canvas = await html2canvas(element, {
+    backgroundColor: backgroundColor || '#1e293b',
+    scale: 2,
+    useCORS: true,
+    logging: false,
+  });
+  
+  downloadCanvasImage(canvas, filename);
+}
+
 export function exportReportAsText(data: ExportData): string {
   const lines: string[] = [];
   

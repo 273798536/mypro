@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Trophy, RotateCcw, BarChart3 } from 'lucide-react';
+import { Trophy, RotateCcw, BarChart3 } from 'lucide-react';
 import { useGameStore } from '../hooks/useGameStore';
 import { WaterLevelChart } from '../components/WaterLevelChart';
 import { ScoreDetail } from '../components/ScoreDetail';
@@ -163,7 +163,7 @@ export function Result() {
         {activeTab === 'analysis' && (
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-8">
-              <FailureAnalysis scoreDetails={scoreDetails} logs={logs} />
+              <FailureAnalysis scoreDetails={scoreDetails} />
             </div>
             <div className="col-span-4">
               <ExportButton />

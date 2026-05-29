@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GameState, WeatherCard, RoundLog, ScoreDetail } from '../types/game';
+import { GameState, RoundLog, ScoreDetail } from '../types/game';
 import { drawWeatherCard, calculateInflow } from '../utils/weather';
 import { calculateScore, checkFailure, calculateRiskScore } from '../utils/scoring';
 import {
@@ -112,7 +112,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       downstreamFlow: gateFlow,
     };
 
-    const failureCheck = checkFailure(newLevel, newConsecutiveOverflow, newRiskScore, [...state.logs, log]);
+    const failureCheck = checkFailure(newLevel, newConsecutiveOverflow, newRiskScore);
 
     const isLastRound = state.round >= state.maxRounds;
     const newStatus = failureCheck.failed ? 'failed' : isLastRound ? 'success' : 'playing';
