@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学晶体结构漫游</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>化学晶体结构漫游</h1>
+            <div class="header-actions">
+                <select id="materialSelector" class="material-select">
+                    <option value="">选择晶体材料...</option>
+                </select>
+                <button id="loadMaterialBtn" class="btn btn-primary">加载</button>
+                <button id="saveViewBtn" class="btn">保存视角</button>
+                <button id="loadViewBtn" class="btn">恢复视角</button>
+                <button id="exportDataBtn" class="btn">导出数据</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3>晶胞参数</h3>
+                    <div class="param-group">
+                        <label>
+                            <span>a (Å)</span>
+                            <input type="number" id="paramA" step="0.01" value="5.43">
+                        </label>
+                        <label>
+                            <span>b (Å)</span>
+                            <input type="number" id="paramB" step="0.01" value="5.43">
+                        </label>
+                        <label>
+                            <span>c (Å)</span>
+                            <input type="number" id="paramC" step="0.01" value="5.43">
+                        </label>
+                        <label>
+                            <span>α (°)</span>
+                            <input type="number" id="paramAlpha" step="0.1" value="90">
+                        </label>
+                        <label>
+                            <span>β (°)</span>
+                            <input type="number" id="paramBeta" step="0.1" value="90">
+                        </label>
+                        <label>
+                            <span>γ (°)</span>
+                            <input type="number" id="paramGamma" step="0.1" value="90">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>晶胞复制</h3>
+                    <div class="param-group">
+                        <label>
+                            <span>X 方向</span>
+                            <input type="number" id="repeatX" min="1" max="5" value="1">
+                        </label>
+                        <label>
+                            <span>Y 方向</span>
+                            <input type="number" id="repeatY" min="1" max="5" value="1">
+                        </label>
+                        <label>
+                            <span>Z 方向</span>
+                            <input type="number" id="repeatZ" min="1" max="5" value="1">
+                        </label>
+                    </div>
+                    <button id="applyRepeatBtn" class="btn btn-primary btn-full">应用复制</button>
+                </div>
+
+                <div class="panel">
+                    <h3>键长设置</h3>
+                    <div class="param-group">
+                        <label>
+                            <span>键长阈值 (Å)</span>
+                            <input type="number" id="bondThreshold" step="0.1" value="2.5">
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showBonds" checked>
+                            <span>显示化学键</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showBondLabels">
+                            <span>显示键长标注</span>
+                        </label>
+                    </div>
+                    <button id="recalcBondsBtn" class="btn btn-primary btn-full">重新计算键</button>
+                </div>
+
+                <div class="panel">
+                    <h3>原子筛选</h3>
+                    <div id="atomFilterList" class="filter-list"></div>
+                </div>
+
+                <div class="panel">
+                    <h3>显示选项</h3>
+                    <div class="param-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showUnitCell" checked>
+                            <span>显示晶胞线框</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showAxes" checked>
+                            <span>显示坐标轴</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showLabels">
+                            <span>显示原子标签</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>自定义数据</h3>
+                    <textarea id="customDataInput" placeholder="粘贴原子坐标数据...&#10;格式: 元素 x y z&#10;例如:&#10;Si 0.0 0.0 0.0&#10;Si 0.25 0.25 0.25"></textarea>
+                    <button id="loadCustomDataBtn" class="btn btn-primary btn-full">加载自定义数据</button>
+                </div>
+            </aside>
+
+            <main class="viewer-container">
+                <div id="threeCanvas" class="three-canvas"></div>
+                <div class="info-panel">
+                    <div id="materialInfo" class="material-info">
+                        <h4 id="materialName">未加载材料</h4>
+                        <p id="materialFormula">-</p>
+                        <p id="materialDesc">-</p>
+                    </div>
+                    <div id="statsInfo" class="stats-info">
+                        <span>原子数: <strong id="atomCount">0</strong></span>
+                        <span>化学键: <strong id="bondCount">0</strong></span>
+                        <span>配位数: <strong id="coordNumber">-</strong></span>
+                    </div>
+                </div>
+                <div id="errorPanel" class="error-panel hidden"></div>
+            </main>
+
+            <aside class="detail-sidebar">
+                <div class="panel">
+                    <h3>原子明细</h3>
+                    <div class="search-box">
+                        <input type="text" id="atomSearch" placeholder="搜索原子...">
+                    </div>
+                    <div id="atomList" class="atom-list"></div>
+                </div>
+
+                <div class="panel">
+                    <h3>选中原子</h3>
+                    <div id="selectedAtomInfo" class="selected-info">
+                        <p class="empty-text">点击3D视图中的原子查看详情</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>化学键明细</h3>
+                    <div id="bondList" class="bond-list"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
