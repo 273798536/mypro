@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bayesian-qc"
+version = "0.1.0"
+description = "贝叶斯质检抽样工具 - 基于Beta分布共轭先验的批次质量评估"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.21.0",
+    "scipy>=1.7.0",
+]
+
+[project.scripts]
+bayesian-qc = "bayesian_qc.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["bayesian_qc*"]
+exclude = ["test_data*", "test*", "tests*"]

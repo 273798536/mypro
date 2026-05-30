@@ -1,0 +1,11 @@
+{
+  "batch_id": "BATCH-A-2026-001",
+  "description": "样本量过少的批次 - 仅5个样本",
+  "samples": [
+    {"sample_id": "A001", "batch_id": "BATCH-A-2026-001", "is_defective": false, "inspector": "张三"},
+    {"sample_id": "A002", "batch_id": "BATCH-A-2026-001", "is_defective": false, "inspector": "张三"},
+    {"sample_id": "A003", "batch_id": "BATCH-A-2026-001", "is_defective": true, "inspector": "李四", "notes": "外观划痕"},
+    {"sample_id": "A004", "batch_id": "BATCH-A-2026-001", "is_defective": false, "inspector": "李四"},
+    {"sample_id": "A005", "batch_id": "BATCH-A-2026-001", "is_defective": false, "inspector": "张三"}
+  ]
+}

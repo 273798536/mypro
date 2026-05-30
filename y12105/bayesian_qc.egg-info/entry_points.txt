@@ -1,0 +1,2 @@
+[console_scripts]
+bayesian-qc = bayesian_qc.cli:main

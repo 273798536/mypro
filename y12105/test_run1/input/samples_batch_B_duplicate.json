@@ -1,0 +1,32 @@
+{
+  "batch_id": "BATCH-B-2026-001",
+  "description": "存在重复样本ID的批次 - 模拟缺陷漏标被错误合并",
+  "samples": [
+    {"sample_id": "B001", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B002", "batch_id": "BATCH-B-2026-001", "is_defective": true, "inspector": "王五", "notes": "尺寸超差"},
+    {"sample_id": "B002", "batch_id": "BATCH-B-2026-001", "is_defective": true, "inspector": "赵六", "notes": "重复记录 - 可能漏标"},
+    {"sample_id": "B003", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B004", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B005", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B006", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B007", "batch_id": "BATCH-B-2026-001", "is_defective": true, "inspector": "王五", "notes": "功能失效"},
+    {"sample_id": "B008", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B009", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B010", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B011", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B012", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B013", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B014", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B015", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B016", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B017", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B018", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B019", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B020", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B021", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B022", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B023", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"},
+    {"sample_id": "B024", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "赵六"},
+    {"sample_id": "B025", "batch_id": "BATCH-B-2026-001", "is_defective": false, "inspector": "王五"}
+  ]
+}

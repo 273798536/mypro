@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: bayesian-qc
+Version: 0.1.0
+Summary: 贝叶斯质检抽样工具 - 基于Beta分布共轭先验的批次质量评估
+Requires-Python: >=3.9
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: scipy>=1.7.0
