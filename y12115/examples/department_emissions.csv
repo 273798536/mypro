@@ -1,0 +1,11 @@
+department_id,department_name,emission,period,unit,remark,source
+DEPT001,生产一部,1250.5,2024-Q1,ton_CO2e,估算值，待最终核算,内部统计
+DEPT002,生产二部,980.2,2024-Q1,ton_CO2e,,ERP系统
+DEPT003,能源管理部,650.0,2024-Q1,ton_CO2e,包含外购电力排放,电力公司
+DEPT004,研发中心,280.8,2024-Q1,ton_CO2e,,内部统计
+DEPT005,物流部,520.3,2024-Q1,ton_CO2e,调整: +20.5吨（上月遗漏）,运输管理系统
+DEPT006,行政部,120.5,2024-Q1,ton_CO2e,,内部统计
+DEPT007,采购部,85.6,2024-Q1,ton_CO2e,暂估,预估
+DEPT008,质量部,,2024-Q1,ton_CO2e,数据待提交,
+DEPT009,销售部,0,2024-Q1,ton_CO2e,确认无直接排放,内部统计
+DEPT010,生产三部,1850.0,2024-Q1,ton_CO2e,新生产线投产，部分数据估算,内部统计

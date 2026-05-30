@@ -1,0 +1,6 @@
+department_id,indicator_name,indicator_value,period,unit,expected_arrival
+DEPT001,产量,15000,2024-Q1,件,2024-04-10
+DEPT002,产量,12000,2024-Q1,件,2024-04-10
+DEPT003,发电量,2500000,2024-Q1,kWh,2024-04-15
+DEPT005,运输里程,850000,2024-Q1,公里,2024-04-08
+DEPT010,产量,8000,2024-Q1,件,2024-04-20

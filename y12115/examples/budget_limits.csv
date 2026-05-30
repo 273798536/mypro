@@ -1,0 +1,8 @@
+department_id,budget_amount,period,budget_type,currency,remark
+,2000000,2024-Q1,carbon,CNY,公司整体碳预算，暂定
+DEPT001,800000,2024-Q1,carbon,CNY,
+DEPT002,600000,2024-Q1,carbon,CNY,待审批
+DEPT003,500000,2024-Q1,carbon,CNY,
+,500000,2024-Q1,carbon,CNY,应急储备
+DEPT005,300000,2024-Q1,carbon,CNY,
+DEPT010,1000000,2024-Q1,carbon,CNY,新建生产线专项

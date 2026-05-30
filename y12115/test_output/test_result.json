@@ -1,0 +1,683 @@
+{
+  "export_time": "2026-05-31T03:05:50.804111",
+  "optimization": {
+    "primary_objective": "balance",
+    "constraint": {
+      "max_budget_utilization": 1.0,
+      "min_reduction_ratio": 0.1,
+      "max_project_count": null,
+      "allow_over_budget": true,
+      "required_departments": [],
+      "excluded_departments": []
+    },
+    "primary_result": {
+      "selected_projects": [
+        "PROJ001",
+        "PROJ003",
+        "PROJ004",
+        "PROJ005",
+        "PROJ007",
+        "PROJ008",
+        "PROJ010",
+        "PROJ011",
+        "PROJ012"
+      ],
+      "total_cost": 4780000.0,
+      "total_reduction": 1915.5,
+      "net_emission": 3822.3999999999996,
+      "budget_utilization": 1.912,
+      "objective_scores": {
+        "minimize_cost": 0.33194444444444443,
+        "minimize_emission": 0.6661670646055177,
+        "maximize_reduction": 0.19364344348558193,
+        "balance": 0.424143192221215
+      },
+      "rank": 0,
+      "is_feasible": true,
+      "over_budget_amount": 2280000.0,
+      "constraint_violations": []
+    },
+    "pareto_front": [
+      {
+        "selected_projects": [
+          "PROJ001",
+          "PROJ003",
+          "PROJ004",
+          "PROJ005",
+          "PROJ007",
+          "PROJ008",
+          "PROJ010",
+          "PROJ011",
+          "PROJ012"
+        ],
+        "total_cost": 4780000.0,
+        "total_reduction": 1915.5,
+        "net_emission": 3822.3999999999996,
+        "budget_utilization": 1.912,
+        "objective_scores": {
+          "minimize_cost": 0.33194444444444443,
+          "minimize_emission": 0.6661670646055177,
+          "maximize_reduction": 0.19364344348558193,
+          "balance": 0.424143192221215
+        },
+        "rank": 1,
+        "is_feasible": true,
+        "over_budget_amount": 2280000.0,
+        "constraint_violations": []
+      },
+      {
+        "selected_projects": [
+          "PROJ001",
+          "PROJ002",
+          "PROJ004",
+          "PROJ006",
+          "PROJ008",
+          "PROJ012"
+        ],
+        "total_cost": 2830000.0,
+        "total_reduction": 1355.5,
+        "net_emission": 4382.4,
+        "budget_utilization": 1.132,
+        "objective_scores": {
+          "minimize_cost": 0.19652777777777777,
+          "minimize_emission": 0.7637637463183394,
+          "maximize_reduction": 0.4293832877288992,
+          "balance": 0.49327881817933883
+        },
+        "rank": 2,
+        "is_feasible": true,
+        "over_budget_amount": 330000.0,
+        "constraint_violations": []
+      },
+      {
+        "selected_projects": [
+          "PROJ001",
+          "PROJ002",
+          "PROJ006",
+          "PROJ008",
+          "PROJ012"
+        ],
+        "total_cost": 2380000.0,
+        "total_reduction": 1175.5,
+        "net_emission": 4562.4,
+        "budget_utilization": 0.952,
+        "objective_scores": {
+          "minimize_cost": 0.16527777777777777,
+          "minimize_emission": 0.7951341082974608,
+          "maximize_reduction": 0.5051568090928226,
+          "balance": 0.5191840193801645
+        },
+        "rank": 3,
+        "is_feasible": true,
+        "over_budget_amount": 0,
+        "constraint_violations": []
+      },
+      {
+        "selected_projects": [
+          "PROJ001",
+          "PROJ002",
+          "PROJ006",
+          "PROJ008"
+        ],
+        "total_cost": 1400000.0,
+        "total_reduction": 755.5,
+        "net_emission": 4982.4,
+        "budget_utilization": 0.56,
+        "objective_scores": {
+          "minimize_cost": 0.09722222222222222,
+          "minimize_emission": 0.868331619582077,
+          "maximize_reduction": 0.6819616922753104,
+          "balance": 0.5810878221820907
+        },
+        "rank": 4,
+        "is_feasible": true,
+        "over_budget_amount": 0,
+        "constraint_violations": []
+      },
+      {
+        "selected_projects": [
+          "PROJ001",
+          "PROJ002",
+          "PROJ006",
+          "PROJ007"
+        ],
+        "total_cost": 1160000.0,
+        "total_reduction": 620.5,
+        "net_emission": 5117.4,
+        "budget_utilization": 0.464,
+        "objective_scores": {
+          "minimize_cost": 0.08055555555555556,
+          "minimize_emission": 0.891859391066418,
+          "maximize_reduction": 0.738791833298253,
+          "balance": 0.6025479730827098
+        },
+        "rank": 5,
+        "is_feasible": true,
+        "over_budget_amount": 0,
+        "constraint_violations": []
+      }
+    ],
+    "summary": {
+      "total_emission": 5737.9,
+      "total_budget": 2500000.0,
+      "available_projects": 11,
+      "pareto_solutions": 5
+    }
+  },
+  "anomalies": [
+    {
+      "data_type": "emission",
+      "record_id": "DEPT001",
+      "anomaly_type": "remark_info",
+      "description": "备注包含信息: ['estimated']",
+      "severity": "info",
+      "suggested_fix": "已自动提取备注信息，建议核实后结构化存储"
+    },
+    {
+      "data_type": "emission",
+      "record_id": "DEPT005",
+      "anomaly_type": "remark_info",
+      "description": "备注包含信息: ['adjustment']",
+      "severity": "info",
+      "suggested_fix": "已自动提取备注信息，建议核实后结构化存储"
+    },
+    {
+      "data_type": "emission",
+      "record_id": "DEPT008",
+      "anomaly_type": "missing_value",
+      "description": "排放量缺失",
+      "severity": "error",
+      "suggested_fix": "请填写排放量数据"
+    },
+    {
+      "data_type": "emission",
+      "record_id": "DEPT009",
+      "anomaly_type": "zero_value",
+      "description": "排放量为0",
+      "severity": "info",
+      "suggested_fix": "请确认该部门是否确实无排放"
+    },
+    {
+      "data_type": "emission",
+      "record_id": "DEPT010",
+      "anomaly_type": "remark_info",
+      "description": "备注包含信息: ['estimated', 'partial']",
+      "severity": "info",
+      "suggested_fix": "已自动提取备注信息，建议核实后结构化存储"
+    },
+    {
+      "data_type": "budget",
+      "record_id": "budget_0",
+      "anomaly_type": "missing_department",
+      "description": "预算未关联部门，将作为公司整体预算处理",
+      "severity": "info",
+      "suggested_fix": "如需部门级预算控制，请补充部门ID或名称"
+    },
+    {
+      "data_type": "budget",
+      "record_id": "budget_0",
+      "anomaly_type": "tentative_budget",
+      "description": "该预算为暂定版本，可能会有调整",
+      "severity": "warning",
+      "suggested_fix": "建议确认预算最终版本后再进行优化分析"
+    },
+    {
+      "data_type": "budget",
+      "record_id": "budget_4",
+      "anomaly_type": "missing_department",
+      "description": "预算未关联部门，将作为公司整体预算处理",
+      "severity": "info",
+      "suggested_fix": "如需部门级预算控制，请补充部门ID或名称"
+    },
+    {
+      "data_type": "indicator",
+      "record_id": "DEPT001_产量",
+      "anomaly_type": "data_late",
+      "description": "业务指标数据晚到 781 天",
+      "severity": "warning",
+      "suggested_fix": "数据晚到不影响当前优化，但建议催交数据以获得更完整的分析"
+    },
+    {
+      "data_type": "indicator",
+      "record_id": "DEPT002_产量",
+      "anomaly_type": "data_late",
+      "description": "业务指标数据晚到 781 天",
+      "severity": "warning",
+      "suggested_fix": "数据晚到不影响当前优化，但建议催交数据以获得更完整的分析"
+    },
+    {
+      "data_type": "indicator",
+      "record_id": "DEPT003_发电量",
+      "anomaly_type": "data_late",
+      "description": "业务指标数据晚到 776 天",
+      "severity": "warning",
+      "suggested_fix": "数据晚到不影响当前优化，但建议催交数据以获得更完整的分析"
+    },
+    {
+      "data_type": "indicator",
+      "record_id": "DEPT005_运输里程",
+      "anomaly_type": "data_late",
+      "description": "业务指标数据晚到 783 天",
+      "severity": "warning",
+      "suggested_fix": "数据晚到不影响当前优化，但建议催交数据以获得更完整的分析"
+    },
+    {
+      "data_type": "indicator",
+      "record_id": "DEPT010_产量",
+      "anomaly_type": "data_late",
+      "description": "业务指标数据晚到 771 天",
+      "severity": "warning",
+      "suggested_fix": "数据晚到不影响当前优化，但建议催交数据以获得更完整的分析"
+    }
+  ],
+  "conflicts": [
+    {
+      "conflict_type": "cross_department_mutex",
+      "involved_items": [
+        "PROJ003",
+        "PROJ002"
+      ],
+      "description": "项目 光伏发电项目 与 余热回收系统 分属不同部门但定义为互斥",
+      "suggestions": [
+        "确认跨部门项目互斥的合理性",
+        "建立跨部门协调机制决策",
+        "考虑由公司层面统一决策"
+      ]
+    },
+    {
+      "conflict_type": "objective_conflict",
+      "involved_items": [
+        "minimize_emission",
+        "minimize_cost"
+      ],
+      "description": "成本控制较好但净排放量仍然较高，存在排放控制与成本控制的冲突",
+      "suggestions": [
+        "方案1: 针对高排放部门制定专项减排计划",
+        "方案2: 考虑碳交易市场购买配额作为过渡方案",
+        "方案3: 优化生产工艺，从源头降低排放"
+      ]
+    },
+    {
+      "conflict_type": "budget_conflict",
+      "involved_items": [
+        "total_budget",
+        "selected_projects"
+      ],
+      "description": "当前方案超出预算 2280000.00 元",
+      "suggestions": [
+        "方案1: 移除性价比最低的项目 '供应链碳管理' (成本 350000.00 元，减排 95.00 吨CO2e)，可节省预算 350000.00 元",
+        "方案2: 延迟低优先级项目 '员工绿色办公' (优先级 5)，可节省预算 50000.00 元",
+        "方案3: 申请追加预算 2280000.00 元，当前方案减排效果最优",
+        "方案4: 拆分高成本项目 '光伏发电项目' 分阶段实施，首期投入可减少约 600000.00 元"
+      ]
+    }
+  ],
+  "data": {
+    "emissions": [
+      {
+        "department_id": "DEPT001",
+        "department_name": "生产一部",
+        "emission": 1250.5,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": "估算值，待最终核算",
+        "source": "内部统计",
+        "last_updated": "2026-05-31T03:05:24.523286"
+      },
+      {
+        "department_id": "DEPT002",
+        "department_name": "生产二部",
+        "emission": 980.2,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": null,
+        "source": "ERP系统",
+        "last_updated": "2026-05-31T03:05:24.523741"
+      },
+      {
+        "department_id": "DEPT003",
+        "department_name": "能源管理部",
+        "emission": 650.0,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": "包含外购电力排放",
+        "source": "电力公司",
+        "last_updated": "2026-05-31T03:05:24.523951"
+      },
+      {
+        "department_id": "DEPT004",
+        "department_name": "研发中心",
+        "emission": 280.8,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": null,
+        "source": "内部统计",
+        "last_updated": "2026-05-31T03:05:24.524064"
+      },
+      {
+        "department_id": "DEPT005",
+        "department_name": "物流部",
+        "emission": 520.3,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": "调整: +20.5吨（上月遗漏）",
+        "source": "运输管理系统",
+        "last_updated": "2026-05-31T03:05:24.524184"
+      },
+      {
+        "department_id": "DEPT006",
+        "department_name": "行政部",
+        "emission": 120.5,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": null,
+        "source": "内部统计",
+        "last_updated": "2026-05-31T03:05:24.524280"
+      },
+      {
+        "department_id": "DEPT007",
+        "department_name": "采购部",
+        "emission": 85.6,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": "暂估",
+        "source": "预估",
+        "last_updated": "2026-05-31T03:05:24.524384"
+      },
+      {
+        "department_id": "DEPT009",
+        "department_name": "销售部",
+        "emission": 0.0,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": "确认无直接排放",
+        "source": "内部统计",
+        "last_updated": "2026-05-31T03:05:24.524588"
+      },
+      {
+        "department_id": "DEPT010",
+        "department_name": "生产三部",
+        "emission": 1850.0,
+        "period": "2024-Q1",
+        "unit": "ton_CO2e",
+        "remark": "新生产线投产，部分数据估算",
+        "source": "内部统计",
+        "last_updated": "2026-05-31T03:05:24.524709"
+      }
+    ],
+    "budgets": [
+      {
+        "department_id": null,
+        "department_name": null,
+        "budget_amount": 2000000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": "公司整体碳预算，暂定"
+      },
+      {
+        "department_id": "DEPT001",
+        "department_name": null,
+        "budget_amount": 800000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": null
+      },
+      {
+        "department_id": "DEPT002",
+        "department_name": null,
+        "budget_amount": 600000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": "待审批"
+      },
+      {
+        "department_id": "DEPT003",
+        "department_name": null,
+        "budget_amount": 500000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": null
+      },
+      {
+        "department_id": null,
+        "department_name": null,
+        "budget_amount": 500000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": "应急储备"
+      },
+      {
+        "department_id": "DEPT005",
+        "department_name": null,
+        "budget_amount": 300000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": null
+      },
+      {
+        "department_id": "DEPT010",
+        "department_name": null,
+        "budget_amount": 1000000.0,
+        "period": "2024-Q1",
+        "budget_type": "carbon",
+        "currency": "CNY",
+        "remark": "新建生产线专项"
+      }
+    ],
+    "projects": [
+      {
+        "project_id": "PROJ001",
+        "project_name": "LED照明改造",
+        "department_id": "DEPT001",
+        "cost": 150000.0,
+        "reduction_potential": 120.5,
+        "duration_months": 3,
+        "status": "planned",
+        "priority": 3,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ002",
+        "project_name": "余热回收系统",
+        "department_id": "DEPT001",
+        "cost": 650000.0,
+        "reduction_potential": 350.0,
+        "duration_months": 12,
+        "status": "in_progress",
+        "priority": 1,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ003",
+        "project_name": "光伏发电项目",
+        "department_id": "DEPT003",
+        "cost": 1200000.0,
+        "reduction_potential": 500.0,
+        "duration_months": 18,
+        "status": "planned",
+        "priority": 2,
+        "dependencies": [],
+        "mutually_exclusive": [
+          "PROJ002"
+        ],
+        "remark": "与余热回收互斥，二选一"
+      },
+      {
+        "project_id": "PROJ004",
+        "project_name": "电机能效升级",
+        "department_id": "DEPT002",
+        "cost": 450000.0,
+        "reduction_potential": 180.0,
+        "duration_months": 6,
+        "status": "planned",
+        "priority": 3,
+        "dependencies": [
+          "PROJ001"
+        ],
+        "mutually_exclusive": [],
+        "remark": "依赖照明改造完成"
+      },
+      {
+        "project_id": "PROJ005",
+        "project_name": "运输车队电动化",
+        "department_id": "DEPT005",
+        "cost": 800000.0,
+        "reduction_potential": 280.0,
+        "duration_months": 12,
+        "status": "planned",
+        "priority": 2,
+        "dependencies": [],
+        "mutually_exclusive": [
+          "PROJ006"
+        ],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ006",
+        "project_name": "物流路线优化",
+        "department_id": "DEPT005",
+        "cost": 80000.0,
+        "reduction_potential": 65.0,
+        "duration_months": 2,
+        "status": "planned",
+        "priority": 4,
+        "dependencies": [],
+        "mutually_exclusive": [
+          "PROJ005"
+        ],
+        "remark": "与电动化互斥"
+      },
+      {
+        "project_id": "PROJ007",
+        "project_name": "空调系统改造",
+        "department_id": "DEPT004",
+        "cost": 280000.0,
+        "reduction_potential": 85.0,
+        "duration_months": 4,
+        "status": "planned",
+        "priority": 3,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ008",
+        "project_name": "生产工艺优化",
+        "department_id": "DEPT002",
+        "cost": 520000.0,
+        "reduction_potential": 220.0,
+        "duration_months": 9,
+        "status": "planned",
+        "priority": 2,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ009",
+        "project_name": "智能电表安装",
+        "department_id": "DEPT003",
+        "cost": 120000.0,
+        "reduction_potential": 45.0,
+        "duration_months": 2,
+        "status": "completed",
+        "priority": 5,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ010",
+        "project_name": "供应链碳管理",
+        "department_id": "DEPT007",
+        "cost": 350000.0,
+        "reduction_potential": 95.0,
+        "duration_months": 6,
+        "status": "planned",
+        "priority": 3,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": "风险: 供应商配合度"
+      },
+      {
+        "project_id": "PROJ011",
+        "project_name": "员工绿色办公",
+        "department_id": "DEPT006",
+        "cost": 50000.0,
+        "reduction_potential": 15.0,
+        "duration_months": 1,
+        "status": "planned",
+        "priority": 5,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      },
+      {
+        "project_id": "PROJ012",
+        "project_name": "废水处理系统升级",
+        "department_id": "DEPT010",
+        "cost": 980000.0,
+        "reduction_potential": 420.0,
+        "duration_months": 15,
+        "status": "planned",
+        "priority": 1,
+        "dependencies": [],
+        "mutually_exclusive": [],
+        "remark": null
+      }
+    ],
+    "indicators": [
+      {
+        "department_id": "DEPT001",
+        "indicator_name": "产量",
+        "indicator_value": 15000.0,
+        "period": "2024-Q1",
+        "unit": "件",
+        "arrival_delay": 781
+      },
+      {
+        "department_id": "DEPT002",
+        "indicator_name": "产量",
+        "indicator_value": 12000.0,
+        "period": "2024-Q1",
+        "unit": "件",
+        "arrival_delay": 781
+      },
+      {
+        "department_id": "DEPT003",
+        "indicator_name": "发电量",
+        "indicator_value": 2500000.0,
+        "period": "2024-Q1",
+        "unit": "kWh",
+        "arrival_delay": 776
+      },
+      {
+        "department_id": "DEPT005",
+        "indicator_name": "运输里程",
+        "indicator_value": 850000.0,
+        "period": "2024-Q1",
+        "unit": "公里",
+        "arrival_delay": 783
+      },
+      {
+        "department_id": "DEPT010",
+        "indicator_name": "产量",
+        "indicator_value": 8000.0,
+        "period": "2024-Q1",
+        "unit": "件",
+        "arrival_delay": 771
+      }
+    ]
+  },
+  "data_consistency_check": "PASSED"
+}

@@ -1,0 +1,13 @@
+project_id,project_name,department_id,cost,reduction_potential,duration_months,status,priority,dependencies,mutually_exclusive,remark
+PROJ001,LED照明改造,DEPT001,150000,120.5,3,planned,3,,,
+PROJ002,余热回收系统,DEPT001,650000,350.0,12,in_progress,1,,,
+PROJ003,光伏发电项目,DEPT003,1200000,500.0,18,planned,2,,PROJ002,与余热回收互斥，二选一
+PROJ004,电机能效升级,DEPT002,450000,180.0,6,planned,3,PROJ001,,依赖照明改造完成
+PROJ005,运输车队电动化,DEPT005,800000,280.0,12,planned,2,,PROJ006,
+PROJ006,物流路线优化,DEPT005,80000,65.0,2,planned,4,,PROJ005,与电动化互斥
+PROJ007,空调系统改造,DEPT004,280000,85.0,4,planned,3,,,
+PROJ008,生产工艺优化,DEPT002,520000,220.0,9,planned,2,,,
+PROJ009,智能电表安装,DEPT003,120000,45.0,2,completed,5,,,
+PROJ010,供应链碳管理,DEPT007,350000,95.0,6,planned,3,,,"风险: 供应商配合度"
+PROJ011,员工绿色办公,DEPT006,50000,15.0,1,planned,5,,,
+PROJ012,废水处理系统升级,DEPT010,980000,420.0,15,planned,1,,,
