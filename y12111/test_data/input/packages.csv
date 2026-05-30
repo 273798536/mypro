@@ -1,0 +1,7 @@
+package_id,name,tier,price
+P001,Starter,basic,99
+P002,Professional,mid,299
+P003,Business,mid,599
+P004,Enterprise,enterprise,1499
+P005,Enterprise Plus,enterprise,2999
+P006,Custom,custom,4999

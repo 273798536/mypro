@@ -1,0 +1,1065 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非线性定价拟合分析报告 - 结果对比报告 - 9edbaab8_vs_32dc80d2</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header .meta { opacity: 0.9; font-size: 14px; }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .summary-card .label { font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-card .value { font-size: 24px; font-weight: 600; color: #2c3e50; margin-top: 4px; }
+        .summary-card .change { font-size: 12px; margin-top: 4px; }
+        .change.positive { color: #27ae60; }
+        .change.negative { color: #e74c3c; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e8e8e8; }
+        th { background: #f8f9ff; font-weight: 600; color: #2c3e50; }
+        tr:hover { background: #f8f9ff; }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge.success { background: #d4edda; color: #155724; }
+        .badge.warning { background: #fff3cd; color: #856404; }
+        .badge.danger { background: #f8d7da; color: #721c24; }
+        .badge.info { background: #d1ecf1; color: #0c5460; }
+        .outlier-item, .customer-item {
+            background: #fdfdfd;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .outlier-item .reason, .customer-item .metrics { color: #666; font-size: 13px; margin-top: 4px; }
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .chart-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .recommendation {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        .recommendation h3 { color: #667eea; font-size: 16px; margin-bottom: 8px; }
+        .comparison-table { overflow-x: auto; }
+        .comparison-table td, .comparison-table th { font-size: 13px; }
+        .improved { color: #27ae60; font-weight: 500; }
+        .declined { color: #e74c3c; font-weight: 500; }
+        .correction-info {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .correction-info h3 { color: #ff9800; font-size: 16px; margin-bottom: 8px; }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .two-column { grid-template-columns: 1fr; }
+        }
+        .stage-change {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        .footer {
+            text-align: center;
+            color: #95a5a6;
+            font-size: 12px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e8e8e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 非线性定价拟合分析报告</h1>
+        <div class="meta">
+            报告标题: 结果对比报告 - 9edbaab8_vs_32dc80d2 | 生成时间: 2026-05-31 03:15:11 | 运行哈希: 9edbaab8db27_vs_32dc80d28995 | 阶段: stage2
+        </div>
+    </div>
+
+    
+
+    <div class="section">
+        <h2>📈 拟合结果摘要</h2>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">最佳模型</div>
+                <div class="value">power_law</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">R² 分数</div>
+                <div class="value">0.8545</div>
+                
+            </div>
+            <div class="summary-card">
+                <div class="label">RMSE</div>
+                <div class="value">20.26</div>
+                
+            </div>
+            <div class="summary-card">
+                <div class="label">平均弹性</div>
+                <div class="value">-0.223</div>
+            </div>
+        </div>
+
+        
+
+        
+    </div>
+
+    <div class="section">
+        <h2>🎯 数据质量分析</h2>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">转化记录数</div>
+                <div class="value">500</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">客户数</div>
+                <div class="value">175</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">总营收</div>
+                <div class="value">9314838</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">转化率</div>
+                <div class="value">78.0%</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">异常值</div>
+                <div class="value">
+                    <span class="badge danger">
+                        24
+                    </span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="label">大客户</div>
+                <div class="value">
+                    <span class="badge warning">
+                        10
+                    </span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="label">折扣记录</div>
+                <div class="value">
+                    <span class="badge info">353</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="label">稀疏组</div>
+                <div class="value">
+                    <span class="badge success">
+                        0
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    
+    <div class="section">
+        <h2>⚠️ 异常值详情</h2>
+        
+        <div class="outlier-item">
+            <strong>R00095</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00233</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00267</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00286</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00288</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00348</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00355</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00396</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00397</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00422</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00499</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00033</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00102</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00112</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00163</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00165</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00260</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00298</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00301</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        <div class="outlier-item">
+            <strong>R00370</strong>
+            <span class="badge danger">multivariate</span>
+            
+            <div class="reason">多变量联合异常（Isolation Forest + Elliptic Envelope）</div>
+        </div>
+        
+        
+        <p style="color: #7f8c8d; margin-top: 8px;">... 还有 4 条异常值</p>
+        
+    </div>
+    
+
+    
+    <div class="section">
+        <h2>🏢 异常大客户详情</h2>
+        
+        <div class="customer-item">
+            <strong>C0159</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">423.9x 中位数</span>
+            <div class="metrics">
+                总营收: 2586844 |
+                总用量: 23257 |
+                订单数: 5 |
+                ARPU: 517369
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0157</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">268.5x 中位数</span>
+            <div class="metrics">
+                总营收: 1638234 |
+                总用量: 11447 |
+                订单数: 2 |
+                ARPU: 819117
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0162</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">143.4x 中位数</span>
+            <div class="metrics">
+                总营收: 875312 |
+                总用量: 7897 |
+                订单数: 2 |
+                ARPU: 437656
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0168</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">115.6x 中位数</span>
+            <div class="metrics">
+                总营收: 705281 |
+                总用量: 7545 |
+                订单数: 2 |
+                ARPU: 352641
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0163</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">102.1x 中位数</span>
+            <div class="metrics">
+                总营收: 623125 |
+                总用量: 8735 |
+                订单数: 5 |
+                ARPU: 124625
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0154</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">85.4x 中位数</span>
+            <div class="metrics">
+                总营收: 520989 |
+                总用量: 8132 |
+                订单数: 3 |
+                ARPU: 173663
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0151</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">46.6x 中位数</span>
+            <div class="metrics">
+                总营收: 284361 |
+                总用量: 5687 |
+                订单数: 1 |
+                ARPU: 284361
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0158</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">42.9x 中位数</span>
+            <div class="metrics">
+                总营收: 261964 |
+                总用量: 4743 |
+                订单数: 2 |
+                ARPU: 130982
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0152</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">41.1x 中位数</span>
+            <div class="metrics">
+                总营收: 250747 |
+                总用量: 2735 |
+                订单数: 2 |
+                ARPU: 125373
+            </div>
+        </div>
+        
+        <div class="customer-item">
+            <strong>C0156</strong>
+            
+            <span class="badge danger">极端大客户</span>
+            
+            <span class="badge info">24.4x 中位数</span>
+            <div class="metrics">
+                总营收: 149136 |
+                总用量: 2983 |
+                订单数: 2 |
+                ARPU: 74568
+            </div>
+        </div>
+        
+        
+    </div>
+    
+
+    
+    <div class="section">
+        <h2>🧹 异常剔除影响分析</h2>
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>剔除方案</th>
+                        <th>剔除数量</th>
+                        <th>R²</th>
+                        <th>R² 变化</th>
+                        <th>RMSE</th>
+                        <th>RMSE 变化</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>
+                            
+                            remove_none
+                        </td>
+                        <td>0</td>
+                        <td>0.8545</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>20.26</td>
+                        <td class="declined">
+                            +0.00
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            remove_zscore_only
+                        </td>
+                        <td>0</td>
+                        <td>0.8545</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>20.26</td>
+                        <td class="declined">
+                            +0.00
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            <span class="badge success">推荐</span>
+                            
+                            remove_multivariate_only
+                        </td>
+                        <td>24</td>
+                        <td>0.8699</td>
+                        <td class="improved">
+                            +0.0154
+                        </td>
+                        <td>18.88</td>
+                        <td class="improved">
+                            -1.38
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            remove_all
+                        </td>
+                        <td>24</td>
+                        <td>0.8699</td>
+                        <td class="improved">
+                            +0.0154
+                        </td>
+                        <td>18.88</td>
+                        <td class="improved">
+                            -1.38
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="recommendation">
+            <h3>💡 建议</h3>
+            <p>ℹ️  剔除异常值改善有限，建议根据业务场景决定</p>
+        </div>
+    </div>
+    
+
+    
+    <div class="section">
+        <h2>👥 分组对比分析</h2>
+        <p><strong>分组字段:</strong> customer_segment</p>
+        
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>分组</th>
+                        <th>样本数</th>
+                        <th>模型</th>
+                        <th>R²</th>
+                        <th>与整体R²差</th>
+                        <th>平均弹性</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>
+                            
+                            <span class="badge success">最佳</span>
+                            
+                            Mid-Market
+                        </td>
+                        <td>150</td>
+                        <td>power_law</td>
+                        <td>0.8804</td>
+                        <td class="improved">
+                            +0.0258
+                        </td>
+                        <td>-0.235</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            SMB
+                        </td>
+                        <td>192</td>
+                        <td>power_law</td>
+                        <td>0.8736</td>
+                        <td class="improved">
+                            +0.0191
+                        </td>
+                        <td>-0.241</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            Enterprise
+                        </td>
+                        <td>92</td>
+                        <td>exponential</td>
+                        <td>0.8515</td>
+                        <td class="declined">
+                            -0.0030
+                        </td>
+                        <td>-0.136</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            Startup
+                        </td>
+                        <td>51</td>
+                        <td>power_law</td>
+                        <td>0.8255</td>
+                        <td class="declined">
+                            -0.0291
+                        </td>
+                        <td>-0.246</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            
+                            <span class="badge danger">最差</span>
+                            
+                            Government
+                        </td>
+                        <td>15</td>
+                        <td>piecewise_linear</td>
+                        <td>0.6031</td>
+                        <td class="declined">
+                            -0.2514
+                        </td>
+                        <td>-551.299</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div style="margin-top: 16px;">
+            <strong>ANOVA 检验:</strong>
+            F = 5.0563,
+            p = 0.0005
+            <span class="badge danger">
+                显著
+            </span>
+            <p style="margin-top: 8px; color: #555;">🚨 组间差异显著，建议分组建模</p>
+        </div>
+        
+
+        <div class="recommendation">
+            <h3>💡 建议</h3>
+            <p>🚨 各组异质性显著，强烈建议分组定价策略</p>
+        </div>
+    </div>
+    
+
+    
+    <div class="section">
+        <h2>💰 批量折扣分析</h2>
+        <p>
+            <strong>基准用量:</strong> 1 |
+            <strong>基准单价:</strong> 244.13 |
+            <strong>最大折扣:</strong> 100.0%
+        </p>
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>用量</th>
+                        <th>预测总价</th>
+                        <th>单价</th>
+                        <th>相对基准折扣</th>
+                        <th>弹性</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>2223</td>
+                        <td>66.44</td>
+                        <td>0.03</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>4445</td>
+                        <td>65.15</td>
+                        <td>0.01</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>6667</td>
+                        <td>64.57</td>
+                        <td>0.01</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>8889</td>
+                        <td>64.23</td>
+                        <td>0.01</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>11112</td>
+                        <td>63.99</td>
+                        <td>0.01</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>13334</td>
+                        <td>63.81</td>
+                        <td>0.00</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>15556</td>
+                        <td>63.68</td>
+                        <td>0.00</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>17778</td>
+                        <td>63.57</td>
+                        <td>0.00</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>20000</td>
+                        <td>63.48</td>
+                        <td>0.00</td>
+                        <td class="improved">100.0%</td>
+                        <td>-</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+    
+    <div class="section">
+        <h2>🔍 参数敏感度分析</h2>
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数</th>
+                        <th>参数值</th>
+                        <th>±20.0% 扰动对RMSE影响</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>a</td>
+                        <td>190.7981</td>
+                        <td>
+                            <div style="background: #e8e8e8; border-radius: 4px; height: 20px; overflow: hidden;">
+                                <div style="background: #e74c3c;
+                                            height: 100%; width: 100%;"></div>
+                            </div>
+                            29.95%
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>b</td>
+                        <td>-0.4854</td>
+                        <td>
+                            <div style="background: #e8e8e8; border-radius: 4px; height: 20px; overflow: hidden;">
+                                <div style="background: #e74c3c;
+                                            height: 100%; width: 57.217041731851104%;"></div>
+                            </div>
+                            11.44%
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>c</td>
+                        <td>61.9167</td>
+                        <td>
+                            <div style="background: #e8e8e8; border-radius: 4px; height: 20px; overflow: hidden;">
+                                <div style="background: #e74c3c;
+                                            height: 100%; width: 86.02558471638356%;"></div>
+                            </div>
+                            17.21%
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+    
+
+    
+
+    
+
+    
+    <div class="section">
+        <h2>⚖️  新旧结果并排对比</h2>
+        <div class="two-column">
+            <div>
+                <h3 style="color: #e74c3c; margin-bottom: 12px;">📅 旧结果 (9edbaab8db27)</h3>
+                <div class="summary-grid" style="grid-template-columns: 1fr;">
+                    <div class="summary-card">
+                        <div class="label">模型类型</div>
+                        <div class="value">power_law</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">R² 分数</div>
+                        <div class="value">0.8545</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">RMSE</div>
+                        <div class="value">20.26</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color: #27ae60; margin-bottom: 12px;">✨ 新结果 (32dc80d28995)</h3>
+                <div class="summary-grid" style="grid-template-columns: 1fr;">
+                    <div class="summary-card">
+                        <div class="label">模型类型</div>
+                        <div class="value">power_law</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">R² 分数</div>
+                        <div class="value" style="color: #27ae60;">
+                            0.8545
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="label">RMSE</div>
+                        <div class="value" style="color: #27ae60;">
+                            20.26
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-table" style="margin-top: 20px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>指标</th>
+                        <th>旧值</th>
+                        <th>新值</th>
+                        <th>变化量</th>
+                        <th>变化率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>R² 分数</td>
+                        <td>0.8545291786399722</td>
+                        <td>0.8545291786399722</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>
+                            
+                            +0.0%
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>RMSE</td>
+                        <td>20.25694585009894</td>
+                        <td>20.25694585009894</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>
+                            
+                            +0.0%
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>模型类型</td>
+                        <td>power_law</td>
+                        <td>power_law</td>
+                        <td class="declined">
+                            无变化
+                        </td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>异常值数量</td>
+                        <td>24</td>
+                        <td>24</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>
+                            
+                            +0.0%
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>大客户数量</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>
+                            
+                            +0.0%
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>折扣记录数</td>
+                        <td>353</td>
+                        <td>353</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>
+                            
+                            +0.0%
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>稀疏组数</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="declined">
+                            +0.0000
+                        </td>
+                        <td>
+                            
+                            +inf%
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="chart-container" style="margin-top: 20px;">
+            <img src="/Users/mac/pro/solo/workspaces/y12111/test_data/output/charts/comparison_9edbaab8_vs_32dc80d2_20260531_031511.png" alt="新旧结果对比图">
+        </div>
+        
+    </div>
+    
+
+    <div class="footer">
+        <p>非线性定价拟合分析工具 v1.0.0 | 报告生成于 2026-05-31 03:15:11</p>
+        <p>本报告可转发分享，所有数据均已脱敏处理</p>
+    </div>
+</body>
+</html>

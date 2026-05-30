@@ -1,0 +1,2 @@
+[console_scripts]
+pricing-fit = pricing_fit.cli:cli
