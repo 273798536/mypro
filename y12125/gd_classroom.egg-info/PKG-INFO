@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: gd-classroom
+Version: 1.0.0
+Summary: 梯度下降可视课堂
+Requires-Python: >=3.9
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: numpy>=1.21

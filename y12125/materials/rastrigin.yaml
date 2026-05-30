@@ -1,0 +1,7 @@
+name: "Rastrigin — 局部平坦陷阱"
+loss: "20 + x**2 - 10*cos(2*pi*x) + y**2 - 10*cos(2*pi*y)"
+learning_rate: 0.01
+initial_point: [3.5, 3.5]
+max_iterations: 300
+tolerance: 1e-6
+bounds: [-5.0, 5.0, -5.0, 5.0]

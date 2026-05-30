@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gd-classroom"
+version = "1.0.0"
+description = "梯度下降可视课堂"
+requires-python = ">=3.9"
+dependencies = [
+    "pyyaml>=6.0",
+    "numpy>=1.21",
+]
+
+[project.scripts]
+gd-classroom = "gd_classroom.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["gd_classroom*"]

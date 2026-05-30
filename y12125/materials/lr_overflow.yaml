@@ -1,0 +1,6 @@
+name: "学习率过大 — 发散"
+loss: "x**2 + y**2"
+learning_rate: 1.5
+initial_point: [1.0, 1.0]
+max_iterations: 50
+tolerance: 1e-6
