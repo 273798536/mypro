@@ -1,0 +1,76 @@
+import { GameConfig, IndustryGate } from '@/types';
+import { funds } from './funds';
+
+export const defaultIndustryGates: IndustryGate[] = [
+  {
+    id: 'gate-tech',
+    industryId: 'tech',
+    industryName: '科技',
+    maxConcentration: 0.4,
+    condition: 'exceed',
+    penaltyType: 'drawdown',
+    penaltyValue: 0.15,
+    missingFieldHandling: 'warn',
+  },
+  {
+    id: 'gate-consumer',
+    industryId: 'consumer',
+    industryName: '消费',
+    maxConcentration: 0.35,
+    condition: 'exceed',
+    penaltyType: 'drawdown',
+    penaltyValue: 0.12,
+    missingFieldHandling: 'warn',
+  },
+  {
+    id: 'gate-finance',
+    industryId: 'finance',
+    industryName: '金融',
+    maxConcentration: 0.5,
+    condition: 'exceed',
+    penaltyType: 'fee',
+    penaltyValue: 0.02,
+    missingFieldHandling: 'allow',
+  },
+  {
+    id: 'gate-energy',
+    industryId: 'energy',
+    industryName: '能源',
+    maxConcentration: 0.3,
+    condition: 'exceed',
+    penaltyType: 'drawdown',
+    penaltyValue: 0.2,
+    missingFieldHandling: 'warn',
+  },
+  {
+    id: 'gate-healthcare',
+    industryId: 'healthcare',
+    industryName: '医疗',
+    maxConcentration: 0.4,
+    condition: 'exceed',
+    penaltyType: 'fee',
+    penaltyValue: 0.015,
+    missingFieldHandling: 'warn',
+  },
+  {
+    id: 'gate-overall',
+    industryId: null,
+    industryName: '整体',
+    maxConcentration: 0.6,
+    condition: 'exceed',
+    penaltyType: 'drawdown',
+    penaltyValue: 0.1,
+    missingFieldHandling: 'block',
+  },
+];
+
+export const defaultConfig: GameConfig = {
+  id: 'config-v1',
+  version: '1.0.0',
+  name: '默认配置',
+  createdAt: Date.now(),
+  isActive: true,
+  industryGates: defaultIndustryGates,
+  funds: funds,
+  mazeId: 'maze-default',
+};
