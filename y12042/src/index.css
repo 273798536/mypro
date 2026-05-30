@@ -1,0 +1,243 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #0a1628;
+  color: #e6f1ff;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #06101e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a3050;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4da6ff;
+}
+
+::-webkit-scrollbar-corner {
+  background: #06101e;
+}
+
+/* 细滚动条 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #1a3050;
+  border-radius: 2px;
+}
+
+/* CRT 扫描线效果 */
+.crt-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 霓虹发光文字 */
+.neon-text-blue {
+  text-shadow: 
+    0 0 5px rgba(77, 166, 255, 0.8),
+    0 0 10px rgba(77, 166, 255, 0.5),
+    0 0 20px rgba(77, 166, 255, 0.3);
+}
+
+.neon-text-green {
+  text-shadow: 
+    0 0 5px rgba(0, 255, 136, 0.8),
+    0 0 10px rgba(0, 255, 136, 0.5),
+    0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.neon-text-red {
+  text-shadow: 
+    0 0 5px rgba(255, 51, 102, 0.8),
+    0 0 10px rgba(255, 51, 102, 0.5),
+    0 0 20px rgba(255, 51, 102, 0.3);
+}
+
+/* 电流流动动画 */
+.current-flow {
+  background: linear-gradient(
+    90deg,
+    rgba(77, 166, 255, 0.1) 0%,
+    rgba(77, 166, 255, 0.4) 50%,
+    rgba(77, 166, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: currentFlow 1.5s linear infinite;
+}
+
+@keyframes currentFlow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 短路扩散脉冲 */
+.short-pulse {
+  animation: shortPulse 0.5s ease-out;
+}
+
+@keyframes shortPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(255, 51, 102, 0);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.4);
+  }
+}
+
+/* 闪烁效果 */
+.flicker {
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* 按钮悬停效果 */
+.btn-glow:hover {
+  box-shadow: 
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* 卡片玻璃效果 */
+.glass-card {
+  background: rgba(15, 31, 53, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(26, 48, 80, 0.5);
+}
+
+/* 网格背景 */
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(77, 166, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 166, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* 选择禁用 */
+.select-none {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 过渡效果 */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+/* 范围滑块样式 */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+  background: #1a3050;
+  height: 8px;
+  border-radius: 4px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4da6ff;
+  margin-top: -4px;
+  box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+}
+
+input[type="range"]::-moz-range-track {
+  background: #1a3050;
+  height: 8px;
+  border-radius: 4px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4da6ff;
+  border: none;
+  box-shadow: 0 0 10px rgba(77, 166, 255, 0.5);
+}
