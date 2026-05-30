@@ -1,0 +1,390 @@
+{
+  "report_info": {
+    "title": "航线网络瓶颈分析报告",
+    "generated_at": "2026-05-31T04:17:11.834787",
+    "version": "1.0.0"
+  },
+  "methodology": "\n        1. 网络中心性：采用度中心性、介数中心性、接近中心性和特征向量中心性四个维度综合评估。\n        2. 瓶颈识别标准：介数中心性 ≥ 0.1 或 容量利用率 ≥ 70% 的节点被识别为瓶颈。\n        3. 延误传播模型：基于航班频次计算传播系数，默认最大传播层数为3层。\n        4. 数据冲突处理：所有冲突均已列出供人工确认，系统不自动选择任何一方数据。\n        5. 所有分析结果均基于同一原始数据集，确保图表和数据的一致性。\n        ",
+  "analysis_data": {
+    "merge_report": {
+      "summary": {
+        "total_nodes": 15,
+        "unique_nodes": 15,
+        "total_routes": 28,
+        "airports_in_routes": 13,
+        "total_conflicts": 0,
+        "conflicts_by_type": {}
+      },
+      "conflicts": [],
+      "high_priority_conflicts": []
+    },
+    "network_report": {
+      "network_summary": {
+        "node_count": 15,
+        "edge_count": 28,
+        "is_connected": false,
+        "density": 0.13333333333333333
+      },
+      "centrality_summary": {
+        "top_by_degree": [
+          {
+            "airport_code": "PEK",
+            "degree_centrality": 0.5714285714285714
+          },
+          {
+            "airport_code": "SHA",
+            "degree_centrality": 0.5714285714285714
+          },
+          {
+            "airport_code": "CAN",
+            "degree_centrality": 0.5
+          },
+          {
+            "airport_code": "CTU",
+            "degree_centrality": 0.5
+          },
+          {
+            "airport_code": "SZX",
+            "degree_centrality": 0.2857142857142857
+          }
+        ],
+        "top_by_betweenness": [
+          {
+            "airport_code": "SHA",
+            "betweenness_centrality": 0.049450549450549455
+          },
+          {
+            "airport_code": "CAN",
+            "betweenness_centrality": 0.049450549450549455
+          },
+          {
+            "airport_code": "CTU",
+            "betweenness_centrality": 0.038461538461538464
+          },
+          {
+            "airport_code": "PEK",
+            "betweenness_centrality": 0.027472527472527476
+          },
+          {
+            "airport_code": "HGH",
+            "betweenness_centrality": 0.02197802197802198
+          }
+        ]
+      },
+      "bottlenecks": {
+        "total_count": 4,
+        "high_severity": 0,
+        "medium_severity": 4,
+        "details": [
+          {
+            "airport_code": "PEK",
+            "airport_name": "北京首都国际机场",
+            "bottleneck_type": "high_traffic_hub",
+            "bottleneck_score": 2,
+            "severity": "medium",
+            "evidence_count": 1,
+            "degree_centrality": 0.5714285714285714,
+            "betweenness_centrality": 0.027472527472527476,
+            "closeness_centrality": 0.6428571428571428,
+            "eigenvector_centrality": 0.5134482041859686
+          },
+          {
+            "airport_code": "SHA",
+            "airport_name": "上海虹桥国际机场",
+            "bottleneck_type": "high_traffic_hub",
+            "bottleneck_score": 2,
+            "severity": "medium",
+            "evidence_count": 1,
+            "degree_centrality": 0.5714285714285714,
+            "betweenness_centrality": 0.049450549450549455,
+            "closeness_centrality": 0.6428571428571428,
+            "eigenvector_centrality": 0.47993268769957254
+          },
+          {
+            "airport_code": "CAN",
+            "airport_name": "广州白云国际机场",
+            "bottleneck_type": "high_traffic_hub",
+            "bottleneck_score": 2,
+            "severity": "medium",
+            "evidence_count": 1,
+            "degree_centrality": 0.5,
+            "betweenness_centrality": 0.049450549450549455,
+            "closeness_centrality": 0.6050420168067226,
+            "eigenvector_centrality": 0.40481080912797507
+          },
+          {
+            "airport_code": "CTU",
+            "airport_name": "成都双流国际机场",
+            "bottleneck_type": "high_traffic_hub",
+            "bottleneck_score": 2,
+            "severity": "medium",
+            "evidence_count": 1,
+            "degree_centrality": 0.5,
+            "betweenness_centrality": 0.038461538461538464,
+            "closeness_centrality": 0.6050420168067226,
+            "eigenvector_centrality": 0.33965488129879645
+          }
+        ]
+      }
+    },
+    "propagation_report": {
+      "summary": {
+        "total_propagation_paths": 29,
+        "unique_source_airports": 4,
+        "average_affected_per_source": 7.0
+      },
+      "top_impact_airports": [
+        [
+          "PEK",
+          533.4037333333333
+        ],
+        [
+          "SHA",
+          473.87807999999995
+        ],
+        [
+          "CAN",
+          280.36479999999995
+        ],
+        [
+          "CTU",
+          131.46
+        ]
+      ],
+      "propagation_paths": [
+        {
+          "source_airport": "PEK",
+          "affected_airport": "SHA",
+          "delay_minutes": 57.599999999999994,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "CAN",
+          "delay_minutes": 54.4,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "SZX",
+          "delay_minutes": 60.0,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "CTU",
+          "delay_minutes": 56.0,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "HGH",
+          "delay_minutes": 62.400000000000006,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "NKG",
+          "delay_minutes": 53.6,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "XIY",
+          "delay_minutes": 55.44959999999999,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.76
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "KMG",
+          "delay_minutes": 39.458133333333336,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.64
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "CKG",
+          "delay_minutes": 34.49600000000001,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.56
+        },
+        {
+          "source_airport": "PEK",
+          "affected_airport": "KMG",
+          "delay_minutes": 32.199999999999996,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.5
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "CAN",
+          "delay_minutes": 65.6,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "SZX",
+          "delay_minutes": 59.2,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "CTU",
+          "delay_minutes": 55.199999999999996,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "XIY",
+          "delay_minutes": 57.76,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.76
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "HGH",
+          "delay_minutes": 62.975999999999985,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.72
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "KMG",
+          "delay_minutes": 47.581866666666656,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.64
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "HGH",
+          "delay_minutes": 51.66186666666667,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.68
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "CKG",
+          "delay_minutes": 34.0032,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.56
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "KMG",
+          "delay_minutes": 31.739999999999995,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.5
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "CKG",
+          "delay_minutes": 35.541653333333336,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.52
+        },
+        {
+          "source_airport": "SHA",
+          "affected_airport": "NKG",
+          "delay_minutes": 30.01855999999999,
+          "propagation_hops": 3,
+          "affected_flights_count": 1,
+          "confidence_score": 0.44
+        },
+        {
+          "source_airport": "CAN",
+          "affected_airport": "CTU",
+          "delay_minutes": 56.8,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.8
+        },
+        {
+          "source_airport": "CAN",
+          "affected_airport": "HGH",
+          "delay_minutes": 57.599999999999994,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.72
+        },
+        {
+          "source_airport": "CAN",
+          "affected_airport": "KMG",
+          "delay_minutes": 43.519999999999996,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.64
+        },
+        {
+          "source_airport": "CAN",
+          "affected_airport": "CKG",
+          "delay_minutes": 34.988800000000005,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.56
+        },
+        {
+          "source_airport": "CAN",
+          "affected_airport": "NKG",
+          "delay_minutes": 27.455999999999996,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.44
+        },
+        {
+          "source_airport": "CAN",
+          "affected_airport": "CKG",
+          "delay_minutes": 20.30933333333333,
+          "propagation_hops": 2,
+          "affected_flights_count": 1,
+          "confidence_score": 0.4
+        },
+        {
+          "source_airport": "CTU",
+          "affected_airport": "CKG",
+          "delay_minutes": 36.96000000000001,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.56
+        },
+        {
+          "source_airport": "CTU",
+          "affected_airport": "KMG",
+          "delay_minutes": 34.5,
+          "propagation_hops": 1,
+          "affected_flights_count": 1,
+          "confidence_score": 0.5
+        }
+      ]
+    }
+  }
+}

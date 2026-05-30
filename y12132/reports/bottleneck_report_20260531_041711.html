@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>航线网络瓶颈分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1e3a5f, #2d5a87); color: white; padding: 30px 40px; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .content { padding: 30px 40px; }
+        .section { margin-bottom: 35px; }
+        .section-title { font-size: 20px; color: #1e3a5f; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8eef5; }
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: #f8fafc; border-radius: 8px; padding: 20px; border-left: 4px solid #3b82f6; }
+        .card.high { border-left-color: #ef4444; }
+        .card.medium { border-left-color: #f59e0b; }
+        .card-value { font-size: 32px; font-weight: bold; color: #1e3a5f; }
+        .card-label { font-size: 14px; color: #64748b; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; font-weight: 600; color: #475569; }
+        tr:hover { background: #f8fafc; }
+        .severity-high { color: #dc2626; font-weight: bold; }
+        .severity-medium { color: #d97706; font-weight: bold; }
+        .methodology { background: #fef3c7; border-radius: 8px; padding: 20px; margin-top: 30px; }
+        .methodology h3 { color: #92400e; margin-bottom: 10px; }
+        .methodology p { color: #78350f; font-size: 14px; line-height: 1.6; }
+        .conflict-item { padding: 10px; background: #fef2f2; border-radius: 6px; margin-bottom: 8px; }
+        .conflict-type { font-weight: bold; color: #dc2626; }
+        .evidence { font-size: 13px; color: #64748b; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>航线网络瓶颈分析报告</h1>
+            <p>生成时间: 2026-05-31 04:17:11</p>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">数据概览</h2>
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-value">15</div>
+                        <div class="card-label">节点总数</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value">28</div>
+                        <div class="card-label">航线条数</div>
+                    </div>
+                    <div class="card high">
+                        <div class="card-value">0</div>
+                        <div class="card-label">数据冲突数</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value">15</div>
+                        <div class="card-label">网络节点数</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">数据冲突明细 (需人工处理)</h2>
+                
+                    <p>无高优先级数据冲突</p>
+                
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">瓶颈节点识别</h2>
+                <div class="summary-cards">
+                    <div class="card high">
+                        <div class="card-value">0</div>
+                        <div class="card-label">高优先级瓶颈</div>
+                    </div>
+                    <div class="card medium">
+                        <div class="card-value">4</div>
+                        <div class="card-label">中优先级瓶颈</div>
+                    </div>
+                </div>
+                
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>机场代码</th>
+                            <th>机场名称</th>
+                            <th>瓶颈类型</th>
+                            <th>瓶颈评分</th>
+                            <th>严重程度</th>
+                            <th>介数中心性</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong>PEK</strong></td>
+                            <td>北京首都国际机场</td>
+                            <td>high_traffic_hub</td>
+                            <td>2</td>
+                            <td class="severity-medium">medium</td>
+                            <td>0.027</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>SHA</strong></td>
+                            <td>上海虹桥国际机场</td>
+                            <td>high_traffic_hub</td>
+                            <td>2</td>
+                            <td class="severity-medium">medium</td>
+                            <td>0.049</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>CAN</strong></td>
+                            <td>广州白云国际机场</td>
+                            <td>high_traffic_hub</td>
+                            <td>2</td>
+                            <td class="severity-medium">medium</td>
+                            <td>0.049</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>CTU</strong></td>
+                            <td>成都双流国际机场</td>
+                            <td>high_traffic_hub</td>
+                            <td>2</td>
+                            <td class="severity-medium">medium</td>
+                            <td>0.038</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">延误传播分析</h2>
+                
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-value">29</div>
+                        <div class="card-label">传播路径数</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value">4</div>
+                        <div class="card-label">源机场数</div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="methodology">
+                <h3>分析口径说明</h3>
+                <p>
+        1. 网络中心性：采用度中心性、介数中心性、接近中心性和特征向量中心性四个维度综合评估。
+        2. 瓶颈识别标准：介数中心性 ≥ 0.1 或 容量利用率 ≥ 70% 的节点被识别为瓶颈。
+        3. 延误传播模型：基于航班频次计算传播系数，默认最大传播层数为3层。
+        4. 数据冲突处理：所有冲突均已列出供人工确认，系统不自动选择任何一方数据。
+        5. 所有分析结果均基于同一原始数据集，确保图表和数据的一致性。
+        </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+        
