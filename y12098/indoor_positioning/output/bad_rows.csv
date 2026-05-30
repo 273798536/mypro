@@ -1,0 +1,11 @@
+﻿original_line,content,expected_cols,actual_cols,error
+4,(empty line),,,
+32,(empty line),,,
+34,(empty line),,,
+65,(empty line),,,
+1,# 室内定位测试数据 - 物联网工程演示,,,
+2,# 包含: 楼层串跳、信标重号、轨迹漂移,,,
+3,# 生成时间: 2026-05-31,,,
+33,# 备注: 进入楼梯间，信号可能不稳定,,,
+107,"47.5,33.661,11.402",6.0,3.0,
+139,"62.5,invalid,21.184,3,BEACON_03_0804,-72.4",,,could not convert string to float: 'invalid'
