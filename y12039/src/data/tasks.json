@@ -1,0 +1,67 @@
+[
+  {
+    "id": "task-1",
+    "name": "修复实验舱氧气泄漏",
+    "description": "实验舱氧气密封圈老化，需要紧急更换以防止氧气持续流失",
+    "moduleId": "lab",
+    "priority": "high",
+    "duration": 45,
+    "requiredStaff": 2,
+    "requiredSkill": "advanced",
+    "deadline": 120,
+    "status": "pending",
+    "assignedStaff": []
+  },
+  {
+    "id": "task-2",
+    "name": "能源舱主电路检修",
+    "description": "能源舱主配电板出现故障，影响全空间站电力供应稳定性",
+    "moduleId": "power",
+    "priority": "critical",
+    "duration": 60,
+    "requiredStaff": 2,
+    "requiredSkill": "expert",
+    "deadline": 90,
+    "status": "pending",
+    "assignedStaff": []
+  },
+  {
+    "id": "task-3",
+    "name": "货运舱门校准",
+    "description": "货运舱自动门传感器偏移，需要重新校准位置",
+    "moduleId": "cargo",
+    "priority": "medium",
+    "duration": 30,
+    "requiredStaff": 1,
+    "requiredSkill": "basic",
+    "deadline": 180,
+    "status": "pending",
+    "assignedStaff": []
+  },
+  {
+    "id": "task-4",
+    "name": "通讯天线指向调整",
+    "description": "高增益通讯天线偏离地球方向，导致数据传输速率下降",
+    "moduleId": "comm",
+    "priority": "high",
+    "duration": 35,
+    "requiredStaff": 1,
+    "requiredSkill": "advanced",
+    "deadline": 150,
+    "status": "pending",
+    "assignedStaff": []
+  },
+  {
+    "id": "task-5",
+    "name": "核心舱过滤器更换",
+    "description": "核心舱空气净化过滤器已达到使用寿命，需要更换新滤芯",
+    "moduleId": "core",
+    "priority": "medium",
+    "duration": 25,
+    "requiredStaff": 1,
+    "requiredSkill": "basic",
+    "deadline": 200,
+    "status": "pending",
+    "assignedStaff": []
+  }
+]

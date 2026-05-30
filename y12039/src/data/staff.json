@@ -1,0 +1,46 @@
+[
+  {
+    "id": "staff-1",
+    "name": "张伟",
+    "skill": "expert",
+    "fatigue": 20,
+    "maxFatigue": 100,
+    "shift": "day",
+    "shiftStart": 0,
+    "shiftEnd": 180,
+    "status": "idle"
+  },
+  {
+    "id": "staff-2",
+    "name": "李娜",
+    "skill": "advanced",
+    "fatigue": 15,
+    "maxFatigue": 100,
+    "shift": "day",
+    "shiftStart": 0,
+    "shiftEnd": 180,
+    "status": "idle"
+  },
+  {
+    "id": "staff-3",
+    "name": "王强",
+    "skill": "advanced",
+    "fatigue": 30,
+    "maxFatigue": 100,
+    "shift": "day",
+    "shiftStart": 0,
+    "shiftEnd": 180,
+    "status": "idle"
+  },
+  {
+    "id": "staff-4",
+    "name": "陈静",
+    "skill": "basic",
+    "fatigue": 10,
+    "maxFatigue": 100,
+    "shift": "night",
+    "shiftStart": 120,
+    "shiftEnd": 300,
+    "status": "idle"
+  }
+]

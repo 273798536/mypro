@@ -1,0 +1,20 @@
+[
+  {
+    "id": "pn-core",
+    "name": "核心配电节点",
+    "moduleId": "core",
+    "capacity": 100,
+    "currentLoad": 45,
+    "affectedModules": ["core", "lab", "living", "comm"],
+    "status": "online"
+  },
+  {
+    "id": "pn-power",
+    "name": "能源主节点",
+    "moduleId": "power",
+    "capacity": 150,
+    "currentLoad": 80,
+    "affectedModules": ["power", "cargo", "core"],
+    "status": "online"
+  }
+]

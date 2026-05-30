@@ -1,0 +1,64 @@
+[
+  {
+    "id": "core",
+    "name": "核心舱",
+    "position": { "x": 400, "y": 300 },
+    "connections": ["lab", "living", "cargo", "power", "comm"],
+    "status": "normal",
+    "oxygenConsumption": 2,
+    "powerConsumption": 5,
+    "hasPowerNode": true,
+    "powerNodeId": "pn-core"
+  },
+  {
+    "id": "lab",
+    "name": "实验舱",
+    "position": { "x": 220, "y": 180 },
+    "connections": ["core"],
+    "status": "damaged",
+    "oxygenConsumption": 1.5,
+    "powerConsumption": 8,
+    "hasPowerNode": false
+  },
+  {
+    "id": "living",
+    "name": "生活舱",
+    "position": { "x": 580, "y": 180 },
+    "connections": ["core"],
+    "status": "normal",
+    "oxygenConsumption": 3,
+    "powerConsumption": 4,
+    "hasPowerNode": false
+  },
+  {
+    "id": "cargo",
+    "name": "货运舱",
+    "position": { "x": 220, "y": 420 },
+    "connections": ["core"],
+    "status": "damaged",
+    "oxygenConsumption": 0.8,
+    "powerConsumption": 2,
+    "hasPowerNode": false
+  },
+  {
+    "id": "power",
+    "name": "能源舱",
+    "position": { "x": 580, "y": 420 },
+    "connections": ["core"],
+    "status": "critical",
+    "oxygenConsumption": 0.5,
+    "powerConsumption": 1,
+    "hasPowerNode": true,
+    "powerNodeId": "pn-power"
+  },
+  {
+    "id": "comm",
+    "name": "通讯舱",
+    "position": { "x": 400, "y": 100 },
+    "connections": ["core"],
+    "status": "damaged",
+    "oxygenConsumption": 0.6,
+    "powerConsumption": 6,
+    "hasPowerNode": false
+  }
+]
