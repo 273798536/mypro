@@ -1,0 +1,128 @@
+[
+  {
+    "parlay_id": "PARLAY_001",
+    "description": "正常组合 - 跨联赛低相关性",
+    "legs": [
+      {
+        "leg_id": "LEG_001_1",
+        "match_id": "MATCH_001",
+        "market_type": "全场胜负",
+        "selection": "曼城胜"
+      },
+      {
+        "leg_id": "LEG_001_2",
+        "match_id": "MATCH_003",
+        "market_type": "全场胜负",
+        "selection": "拜仁胜"
+      },
+      {
+        "leg_id": "LEG_001_3",
+        "match_id": "MATCH_006",
+        "market_type": "全场让分(-5.5)",
+        "selection": "湖人赢盘"
+      }
+    ]
+  },
+  {
+    "parlay_id": "PARLAY_002",
+    "description": "高相关性风险 - 同场比赛串关",
+    "legs": [
+      {
+        "leg_id": "LEG_002_1",
+        "match_id": "MATCH_001",
+        "market_type": "全场胜负",
+        "selection": "曼城胜"
+      },
+      {
+        "leg_id": "LEG_002_2",
+        "match_id": "MATCH_001",
+        "market_type": "全场让球(-0.5)",
+        "selection": "曼城胜"
+      },
+      {
+        "leg_id": "LEG_002_3",
+        "match_id": "MATCH_001",
+        "market_type": "全场大小球(2.5)",
+        "selection": "大球"
+      }
+    ]
+  },
+  {
+    "parlay_id": "PARLAY_003",
+    "description": "包含过期赔率",
+    "legs": [
+      {
+        "leg_id": "LEG_003_1",
+        "match_id": "MATCH_002",
+        "market_type": "全场胜负",
+        "selection": "皇马胜"
+      },
+      {
+        "leg_id": "LEG_003_2",
+        "match_id": "MATCH_005",
+        "market_type": "全场胜负",
+        "selection": "巴黎胜"
+      }
+    ]
+  },
+  {
+    "parlay_id": "PARLAY_004",
+    "description": "本金为零 - 对账异常",
+    "legs": [
+      {
+        "leg_id": "LEG_004_1",
+        "match_id": "MATCH_003",
+        "market_type": "全场让球(-1)",
+        "selection": "拜仁胜"
+      },
+      {
+        "leg_id": "LEG_004_2",
+        "match_id": "MATCH_005",
+        "market_type": "全场胜负",
+        "selection": "巴黎胜"
+      }
+    ]
+  },
+  {
+    "parlay_id": "PARLAY_005",
+    "description": "混合问题 - 部分过期+高相关",
+    "legs": [
+      {
+        "leg_id": "LEG_005_1",
+        "match_id": "MATCH_002",
+        "market_type": "全场胜负",
+        "selection": "皇马胜"
+      },
+      {
+        "leg_id": "LEG_005_2",
+        "match_id": "MATCH_002",
+        "market_type": "全场大小球(2.5)",
+        "selection": "大球"
+      },
+      {
+        "leg_id": "LEG_005_3",
+        "match_id": "MATCH_003",
+        "market_type": "全场胜负",
+        "selection": "拜仁胜"
+      }
+    ]
+  },
+  {
+    "parlay_id": "PARLAY_006",
+    "description": "全过期赔率 - 严重对齐问题",
+    "legs": [
+      {
+        "leg_id": "LEG_006_1",
+        "match_id": "MATCH_002",
+        "market_type": "全场胜负",
+        "selection": "皇马胜"
+      },
+      {
+        "leg_id": "LEG_006_2",
+        "match_id": "MATCH_004",
+        "market_type": "全场胜负",
+        "selection": "平局"
+      }
+    ]
+  }
+]

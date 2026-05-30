@@ -1,0 +1,175 @@
+{
+  "parlay_id": "PARLAY_002",
+  "trace_id": "3f4066f9-f3d",
+  "description": "高相关性风险 - 同场比赛串关",
+  "generated_at": "2026-05-28T00:00:00",
+  "calculation_trace": {
+    "description": "高相关性风险 - 同场比赛串关",
+    "steps": [
+      {
+        "step": "1_leg_validation",
+        "input_leg_count": 3,
+        "valid_leg_count": 3,
+        "expired_leg_count": 0,
+        "details": "原始3关，有效3关，过期0关"
+      },
+      {
+        "step": "3_odds_calculation",
+        "odds_breakdown": [
+          {
+            "leg_id": "LEG_002_1",
+            "match": "曼城 vs 利物浦",
+            "odd_value": 1.85
+          },
+          {
+            "leg_id": "LEG_002_2",
+            "match": "曼城 vs 利物浦",
+            "odd_value": 2.1
+          },
+          {
+            "leg_id": "LEG_002_3",
+            "match": "曼城 vs 利物浦",
+            "odd_value": 1.95
+          }
+        ],
+        "total_odds": 7.5758,
+        "formula": "1.85 × 2.1 × 1.95 = 7.5758",
+        "stake_amount": 500.0,
+        "potential_payout": 3787.88,
+        "potential_profit": 3287.88
+      },
+      {
+        "step": "4_correlation_analysis",
+        "total_correlation_pairs": 3,
+        "high_correlation_pairs": 3,
+        "max_correlation": 0.85,
+        "correlation_explanation": "高相关性 (0.85): 风险显著增加，投注并非独立事件，同时命中概率远低于理论值",
+        "high_risk_pairs": [
+          {
+            "pair": "曼城 vs 利物浦 <-> 曼城 vs 利物浦",
+            "correlation": 0.85,
+            "reason": "同一场比赛 + 同向结果（高相关）"
+          },
+          {
+            "pair": "曼城 vs 利物浦 <-> 曼城 vs 利物浦",
+            "correlation": 0.75,
+            "reason": "同一场比赛 + 不同市场（中高相关）"
+          },
+          {
+            "pair": "曼城 vs 利物浦 <-> 曼城 vs 利物浦",
+            "correlation": 0.75,
+            "reason": "同一场比赛 + 不同市场（中高相关）"
+          }
+        ]
+      },
+      {
+        "step": "5_result_calculation",
+        "status": "WON",
+        "won_count": 3,
+        "lost_count": 0,
+        "void_count": 0,
+        "pending_count": 0,
+        "legs_detail": [
+          {
+            "leg_id": "LEG_002_1",
+            "match": "曼城 vs 利物浦",
+            "selection": "曼城胜",
+            "result": "2-1",
+            "status": "WON",
+            "odd_value": 1.85
+          },
+          {
+            "leg_id": "LEG_002_2",
+            "match": "曼城 vs 利物浦",
+            "selection": "曼城胜",
+            "result": "2-1",
+            "status": "WON",
+            "odd_value": 2.1
+          },
+          {
+            "leg_id": "LEG_002_3",
+            "match": "曼城 vs 利物浦",
+            "selection": "大球",
+            "result": "2-1",
+            "status": "WON",
+            "odd_value": 1.95
+          }
+        ],
+        "actual_odds": 7.5758,
+        "actual_payout": 3787.88,
+        "profit": 3287.88,
+        "reason": "全部3关命中"
+      },
+      {
+        "step": "6_risk_assessment",
+        "risk_level": "HIGH",
+        "risk_score": 1.0,
+        "score_components": [
+          {
+            "factor": "高相关性",
+            "score": 1.0,
+            "weight": 1.0
+          }
+        ],
+        "key_factors": {
+          "has_critical_issues": false,
+          "has_expired_odds": false,
+          "all_expired_odds": false,
+          "zero_stake": false,
+          "max_correlation": 0.85,
+          "leg_count": 3
+        }
+      }
+    ],
+    "timestamp": "2026-05-28T00:00:00"
+  },
+  "final_result": {
+    "risk_level": "HIGH",
+    "risk_score": 1.0,
+    "total_odds": 7.57575,
+    "stake": 500.0,
+    "potential_payout": 3787.875,
+    "actual_payout": 3787.875,
+    "profit": 3287.875,
+    "status": "WON"
+  },
+  "validation_issues": [
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T19:30:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_002",
+        "placed_time": "2026-05-30T19:30:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    }
+  ],
+  "high_correlations": [
+    {
+      "leg_a_id": "LEG_002_1",
+      "leg_b_id": "LEG_002_2",
+      "correlation": 0.85,
+      "reason": "同一场比赛 + 同向结果（高相关）",
+      "match_a": "曼城 vs 利物浦",
+      "match_b": "曼城 vs 利物浦"
+    },
+    {
+      "leg_a_id": "LEG_002_1",
+      "leg_b_id": "LEG_002_3",
+      "correlation": 0.75,
+      "reason": "同一场比赛 + 不同市场（中高相关）",
+      "match_a": "曼城 vs 利物浦",
+      "match_b": "曼城 vs 利物浦"
+    },
+    {
+      "leg_a_id": "LEG_002_2",
+      "leg_b_id": "LEG_002_3",
+      "correlation": 0.75,
+      "reason": "同一场比赛 + 不同市场（中高相关）",
+      "match_a": "曼城 vs 利物浦",
+      "match_b": "曼城 vs 利物浦"
+    }
+  ]
+}

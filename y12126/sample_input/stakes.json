@@ -1,0 +1,50 @@
+[
+  {
+    "stake_id": "STK_001",
+    "bettor_id": "ANALYST_A",
+    "amount": 1000.00,
+    "currency": "CNY",
+    "placed_time": "2026-05-30T19:00:00",
+    "parlay_id": "PARLAY_001"
+  },
+  {
+    "stake_id": "STK_002",
+    "bettor_id": "ANALYST_A",
+    "amount": 500.00,
+    "currency": "CNY",
+    "placed_time": "2026-05-30T19:30:00",
+    "parlay_id": "PARLAY_002"
+  },
+  {
+    "stake_id": "STK_003",
+    "bettor_id": "ANALYST_B",
+    "amount": 2000.00,
+    "currency": "CNY",
+    "placed_time": "2026-05-30T20:00:00",
+    "parlay_id": "PARLAY_003"
+  },
+  {
+    "stake_id": "STK_004",
+    "bettor_id": "ANALYST_B",
+    "amount": 0.00,
+    "currency": "CNY",
+    "placed_time": "2026-05-30T20:30:00",
+    "parlay_id": "PARLAY_004"
+  },
+  {
+    "stake_id": "STK_005",
+    "bettor_id": "ANALYST_C",
+    "amount": 800.00,
+    "currency": "CNY",
+    "placed_time": "2026-05-30T21:00:00",
+    "parlay_id": "PARLAY_005"
+  },
+  {
+    "stake_id": "STK_006",
+    "bettor_id": "ANALYST_C",
+    "amount": 1500.00,
+    "currency": "CNY",
+    "placed_time": "2026-05-30T21:30:00",
+    "parlay_id": "PARLAY_006"
+  }
+]

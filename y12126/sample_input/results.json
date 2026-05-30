@@ -1,0 +1,44 @@
+[
+  {
+    "match_id": "MATCH_001",
+    "home_score": 2,
+    "away_score": 1,
+    "completed_time": "2026-06-01T22:00:00",
+    "is_final": true
+  },
+  {
+    "match_id": "MATCH_002",
+    "home_score": 3,
+    "away_score": 2,
+    "completed_time": "2026-05-29T22:00:00",
+    "is_final": true
+  },
+  {
+    "match_id": "MATCH_003",
+    "home_score": 1,
+    "away_score": 0,
+    "completed_time": "2026-06-03T22:00:00",
+    "is_final": true
+  },
+  {
+    "match_id": "MATCH_004",
+    "home_score": 1,
+    "away_score": 1,
+    "completed_time": "2026-05-27T22:00:00",
+    "is_final": true
+  },
+  {
+    "match_id": "MATCH_005",
+    "home_score": 3,
+    "away_score": 0,
+    "completed_time": "2026-06-04T22:00:00",
+    "is_final": true
+  },
+  {
+    "match_id": "MATCH_006",
+    "home_score": 112,
+    "away_score": 105,
+    "completed_time": "2026-06-01T12:00:00",
+    "is_final": true
+  }
+]

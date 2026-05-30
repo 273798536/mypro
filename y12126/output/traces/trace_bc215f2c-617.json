@@ -1,0 +1,70 @@
+{
+  "parlay_id": "PARLAY_006",
+  "trace_id": "bc215f2c-617",
+  "description": "全过期赔率 - 严重对齐问题",
+  "generated_at": "2026-05-31T04:08:44.408176",
+  "calculation_trace": {
+    "description": "全过期赔率 - 严重对齐问题",
+    "steps": [
+      {
+        "step": "1_leg_validation",
+        "input_leg_count": 2,
+        "valid_leg_count": 0,
+        "expired_leg_count": 2,
+        "details": "原始2关，有效0关，过期2关"
+      },
+      {
+        "step": "2_calculation_aborted",
+        "reason": "有效关卡不足2关，无法计算组合赔率",
+        "risk_level_assigned": "CRITICAL"
+      }
+    ],
+    "timestamp": "2026-05-31T04:08:44.408176"
+  },
+  "final_result": {
+    "risk_level": "CRITICAL",
+    "risk_score": 1.0,
+    "total_odds": 1.0,
+    "stake": 1500.0,
+    "potential_payout": 0.0,
+    "actual_payout": 0.0,
+    "profit": 0.0,
+    "status": "VOID"
+  },
+  "validation_issues": [
+    {
+      "level": "CRITICAL",
+      "code": "ODD_EXPIRED",
+      "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-31T04:08:44.408176",
+      "leg_id": "LEG_006_1",
+      "details": {
+        "expiry_time": "2026-05-29T20:00:00",
+        "current_time": "2026-05-31T04:08:44.408176",
+        "update_time": "2026-05-28T10:00:00",
+        "hours_since_update": 66.15
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ODD_EXPIRED",
+      "message": "赔率已过期: 到期时间=2026-05-27T20:00:00, 当前时间=2026-05-31T04:08:44.408176",
+      "leg_id": "LEG_006_2",
+      "details": {
+        "expiry_time": "2026-05-27T20:00:00",
+        "current_time": "2026-05-31T04:08:44.408176",
+        "update_time": "2026-05-25T10:00:00",
+        "hours_since_update": 138.15
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ALL_ODDS_EXPIRED",
+      "message": "组合中所有赔率均已过期，无法计算",
+      "leg_id": null,
+      "details": {
+        "total_legs": 2
+      }
+    }
+  ],
+  "high_correlations": []
+}

@@ -1,0 +1,42 @@
+{
+  "report_id": "8e7ac2d7",
+  "generated_at": "2026-05-28T00:00:00",
+  "traces": [
+    {
+      "parlay_id": "PARLAY_001",
+      "trace_id": "0b0de6ee-c9c",
+      "risk_level": "LOW",
+      "description": "正常组合 - 跨联赛低相关性"
+    },
+    {
+      "parlay_id": "PARLAY_002",
+      "trace_id": "3f4066f9-f3d",
+      "risk_level": "HIGH",
+      "description": "高相关性风险 - 同场比赛串关"
+    },
+    {
+      "parlay_id": "PARLAY_003",
+      "trace_id": "73bd28ed-66f",
+      "risk_level": "CRITICAL",
+      "description": "包含过期赔率"
+    },
+    {
+      "parlay_id": "PARLAY_004",
+      "trace_id": "6b3324d6-e70",
+      "risk_level": "CRITICAL",
+      "description": "本金为零 - 对账异常"
+    },
+    {
+      "parlay_id": "PARLAY_005",
+      "trace_id": "47ad9a47-cb8",
+      "risk_level": "HIGH",
+      "description": "混合问题 - 部分过期+高相关"
+    },
+    {
+      "parlay_id": "PARLAY_006",
+      "trace_id": "6b28dff0-cd9",
+      "risk_level": "CRITICAL",
+      "description": "全过期赔率 - 严重对齐问题"
+    }
+  ]
+}

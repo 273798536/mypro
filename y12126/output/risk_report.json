@@ -1,0 +1,1181 @@
+{
+  "report_id": "8e7ac2d7",
+  "generated_at": "2026-05-28T00:00:00",
+  "summary": {
+    "total_parlays": 6,
+    "total_stake": 5800.0,
+    "total_potential_payout": 12635.88,
+    "total_actual_payout": 12635.88,
+    "total_profit": 10335.88,
+    "risk_distribution": {
+      "LOW": 1,
+      "MEDIUM": 0,
+      "HIGH": 2,
+      "CRITICAL": 3
+    },
+    "critical_issues_count": 6,
+    "warning_issues_count": 8
+  },
+  "summary_issues": [
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T19:00:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_001",
+        "placed_time": "2026-05-30T19:00:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T19:30:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_002",
+        "placed_time": "2026-05-30T19:30:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T20:00:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_003",
+        "placed_time": "2026-05-30T20:00:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ODD_EXPIRED",
+      "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-28T00:00:00",
+      "leg_id": "LEG_003_1",
+      "details": {
+        "expiry_time": "2026-05-29T20:00:00",
+        "current_time": "2026-05-28T00:00:00",
+        "update_time": "2026-05-28T10:00:00",
+        "hours_since_update": -10.0
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "PARTIAL_ODDS_EXPIRED",
+      "message": "组合中有1/2关赔率已过期，仅计算有效部分",
+      "leg_id": null,
+      "details": {
+        "valid_count": 1,
+        "expired_count": 1
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "STAKE_ZERO_OR_NEGATIVE",
+      "message": "本金异常: 0.0 CNY (必须 > 0)",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_004",
+        "amount": 0.0,
+        "currency": "CNY",
+        "bettor_id": "ANALYST_B"
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T20:30:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_004",
+        "placed_time": "2026-05-30T20:30:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T21:00:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_005",
+        "placed_time": "2026-05-30T21:00:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ODD_EXPIRED",
+      "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-28T00:00:00",
+      "leg_id": "LEG_005_1",
+      "details": {
+        "expiry_time": "2026-05-29T20:00:00",
+        "current_time": "2026-05-28T00:00:00",
+        "update_time": "2026-05-28T10:00:00",
+        "hours_since_update": -10.0
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "PARTIAL_ODDS_EXPIRED",
+      "message": "组合中有1/3关赔率已过期，仅计算有效部分",
+      "leg_id": null,
+      "details": {
+        "valid_count": 2,
+        "expired_count": 1
+      }
+    },
+    {
+      "level": "WARNING",
+      "code": "STAKE_FUTURE_TIME",
+      "message": "下注时间在未来: 2026-05-30T21:30:00",
+      "leg_id": null,
+      "details": {
+        "stake_id": "STK_006",
+        "placed_time": "2026-05-30T21:30:00",
+        "current_time": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ODD_EXPIRED",
+      "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-28T00:00:00",
+      "leg_id": "LEG_006_1",
+      "details": {
+        "expiry_time": "2026-05-29T20:00:00",
+        "current_time": "2026-05-28T00:00:00",
+        "update_time": "2026-05-28T10:00:00",
+        "hours_since_update": -10.0
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ODD_EXPIRED",
+      "message": "赔率已过期: 到期时间=2026-05-27T20:00:00, 当前时间=2026-05-28T00:00:00",
+      "leg_id": "LEG_006_2",
+      "details": {
+        "expiry_time": "2026-05-27T20:00:00",
+        "current_time": "2026-05-28T00:00:00",
+        "update_time": "2026-05-25T10:00:00",
+        "hours_since_update": 62.0
+      }
+    },
+    {
+      "level": "CRITICAL",
+      "code": "ALL_ODDS_EXPIRED",
+      "message": "组合中所有赔率均已过期，无法计算",
+      "leg_id": null,
+      "details": {
+        "total_legs": 2
+      }
+    }
+  ],
+  "parlays": [
+    {
+      "parlay_id": "PARLAY_001",
+      "trace_id": "0b0de6ee-c9c",
+      "stake_amount": 1000.0,
+      "leg_count": 3,
+      "legs": [
+        {
+          "leg_id": "LEG_001_1",
+          "trace_id": "23018b30-d37",
+          "match_id": "MATCH_001",
+          "match": "曼城 vs 利物浦",
+          "market": "全场胜负",
+          "selection": "曼城胜",
+          "odd_value": 1.85,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "2-1",
+          "expiry_time": "2026-06-01T20:00:00"
+        },
+        {
+          "leg_id": "LEG_001_2",
+          "trace_id": "b748ff4d-b62",
+          "match_id": "MATCH_003",
+          "match": "拜仁 vs 多特",
+          "market": "全场胜负",
+          "selection": "拜仁胜",
+          "odd_value": 1.75,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "1-0",
+          "expiry_time": "2026-06-03T20:00:00"
+        },
+        {
+          "leg_id": "LEG_001_3",
+          "trace_id": "3ab0ba5a-c86",
+          "match_id": "MATCH_006",
+          "match": "湖人 vs 勇士",
+          "market": "全场让分(-5.5)",
+          "selection": "湖人赢盘",
+          "odd_value": 1.92,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "112-105",
+          "expiry_time": "2026-06-01T10:00:00"
+        }
+      ],
+      "total_odds": 6.216,
+      "potential_payout": 6216.0,
+      "actual_payout": 6216.0,
+      "profit": 5216.0,
+      "status": "WON",
+      "risk_level": "LOW",
+      "risk_score": 0.1,
+      "validation_issues": [
+        {
+          "level": "WARNING",
+          "code": "STAKE_FUTURE_TIME",
+          "message": "下注时间在未来: 2026-05-30T19:00:00",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_001",
+            "placed_time": "2026-05-30T19:00:00",
+            "current_time": "2026-05-28T00:00:00"
+          }
+        }
+      ],
+      "high_correlations": [],
+      "all_correlations": [
+        {
+          "leg_a_id": "LEG_001_1",
+          "leg_b_id": "LEG_001_2",
+          "correlation": 0.15,
+          "reason": "同一运动项目 + 不同联赛（极低相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "拜仁 vs 多特"
+        },
+        {
+          "leg_a_id": "LEG_001_1",
+          "leg_b_id": "LEG_001_3",
+          "correlation": 0.05,
+          "reason": "不同运动项目（几乎无相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "湖人 vs 勇士"
+        },
+        {
+          "leg_a_id": "LEG_001_2",
+          "leg_b_id": "LEG_001_3",
+          "correlation": 0.05,
+          "reason": "不同运动项目（几乎无相关）",
+          "match_a": "拜仁 vs 多特",
+          "match_b": "湖人 vs 勇士"
+        }
+      ],
+      "calculation_trace": {
+        "description": "正常组合 - 跨联赛低相关性",
+        "steps": [
+          {
+            "step": "1_leg_validation",
+            "input_leg_count": 3,
+            "valid_leg_count": 3,
+            "expired_leg_count": 0,
+            "details": "原始3关，有效3关，过期0关"
+          },
+          {
+            "step": "3_odds_calculation",
+            "odds_breakdown": [
+              {
+                "leg_id": "LEG_001_1",
+                "match": "曼城 vs 利物浦",
+                "odd_value": 1.85
+              },
+              {
+                "leg_id": "LEG_001_2",
+                "match": "拜仁 vs 多特",
+                "odd_value": 1.75
+              },
+              {
+                "leg_id": "LEG_001_3",
+                "match": "湖人 vs 勇士",
+                "odd_value": 1.92
+              }
+            ],
+            "total_odds": 6.216,
+            "formula": "1.85 × 1.75 × 1.92 = 6.2160",
+            "stake_amount": 1000.0,
+            "potential_payout": 6216.0,
+            "potential_profit": 5216.0
+          },
+          {
+            "step": "4_correlation_analysis",
+            "total_correlation_pairs": 3,
+            "high_correlation_pairs": 0,
+            "max_correlation": 0.15,
+            "correlation_explanation": "低相关性 (0.15): 接近独立事件，风险可控",
+            "high_risk_pairs": []
+          },
+          {
+            "step": "5_result_calculation",
+            "status": "WON",
+            "won_count": 3,
+            "lost_count": 0,
+            "void_count": 0,
+            "pending_count": 0,
+            "legs_detail": [
+              {
+                "leg_id": "LEG_001_1",
+                "match": "曼城 vs 利物浦",
+                "selection": "曼城胜",
+                "result": "2-1",
+                "status": "WON",
+                "odd_value": 1.85
+              },
+              {
+                "leg_id": "LEG_001_2",
+                "match": "拜仁 vs 多特",
+                "selection": "拜仁胜",
+                "result": "1-0",
+                "status": "WON",
+                "odd_value": 1.75
+              },
+              {
+                "leg_id": "LEG_001_3",
+                "match": "湖人 vs 勇士",
+                "selection": "湖人赢盘",
+                "result": "112-105",
+                "status": "WON",
+                "odd_value": 1.92
+              }
+            ],
+            "actual_odds": 6.216,
+            "actual_payout": 6216.0,
+            "profit": 5216.0,
+            "reason": "全部3关命中"
+          },
+          {
+            "step": "6_risk_assessment",
+            "risk_level": "LOW",
+            "risk_score": 0.1,
+            "score_components": [
+              {
+                "factor": "低相关性",
+                "score": 0.1,
+                "weight": 1.0
+              }
+            ],
+            "key_factors": {
+              "has_critical_issues": false,
+              "has_expired_odds": false,
+              "all_expired_odds": false,
+              "zero_stake": false,
+              "max_correlation": 0.15,
+              "leg_count": 3
+            }
+          }
+        ],
+        "timestamp": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "parlay_id": "PARLAY_002",
+      "trace_id": "3f4066f9-f3d",
+      "stake_amount": 500.0,
+      "leg_count": 3,
+      "legs": [
+        {
+          "leg_id": "LEG_002_1",
+          "trace_id": "6e2adb27-941",
+          "match_id": "MATCH_001",
+          "match": "曼城 vs 利物浦",
+          "market": "全场胜负",
+          "selection": "曼城胜",
+          "odd_value": 1.85,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "2-1",
+          "expiry_time": "2026-06-01T20:00:00"
+        },
+        {
+          "leg_id": "LEG_002_2",
+          "trace_id": "8f152974-059",
+          "match_id": "MATCH_001",
+          "match": "曼城 vs 利物浦",
+          "market": "全场让球(-0.5)",
+          "selection": "曼城胜",
+          "odd_value": 2.1,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "2-1",
+          "expiry_time": "2026-06-01T20:00:00"
+        },
+        {
+          "leg_id": "LEG_002_3",
+          "trace_id": "31dbe317-785",
+          "match_id": "MATCH_001",
+          "match": "曼城 vs 利物浦",
+          "market": "全场大小球(2.5)",
+          "selection": "大球",
+          "odd_value": 1.95,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "2-1",
+          "expiry_time": "2026-06-01T20:00:00"
+        }
+      ],
+      "total_odds": 7.5758,
+      "potential_payout": 3787.88,
+      "actual_payout": 3787.88,
+      "profit": 3287.88,
+      "status": "WON",
+      "risk_level": "HIGH",
+      "risk_score": 1.0,
+      "validation_issues": [
+        {
+          "level": "WARNING",
+          "code": "STAKE_FUTURE_TIME",
+          "message": "下注时间在未来: 2026-05-30T19:30:00",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_002",
+            "placed_time": "2026-05-30T19:30:00",
+            "current_time": "2026-05-28T00:00:00"
+          }
+        }
+      ],
+      "high_correlations": [
+        {
+          "leg_a_id": "LEG_002_1",
+          "leg_b_id": "LEG_002_2",
+          "correlation": 0.85,
+          "reason": "同一场比赛 + 同向结果（高相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "曼城 vs 利物浦"
+        },
+        {
+          "leg_a_id": "LEG_002_1",
+          "leg_b_id": "LEG_002_3",
+          "correlation": 0.75,
+          "reason": "同一场比赛 + 不同市场（中高相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "曼城 vs 利物浦"
+        },
+        {
+          "leg_a_id": "LEG_002_2",
+          "leg_b_id": "LEG_002_3",
+          "correlation": 0.75,
+          "reason": "同一场比赛 + 不同市场（中高相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "曼城 vs 利物浦"
+        }
+      ],
+      "all_correlations": [
+        {
+          "leg_a_id": "LEG_002_1",
+          "leg_b_id": "LEG_002_2",
+          "correlation": 0.85,
+          "reason": "同一场比赛 + 同向结果（高相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "曼城 vs 利物浦"
+        },
+        {
+          "leg_a_id": "LEG_002_1",
+          "leg_b_id": "LEG_002_3",
+          "correlation": 0.75,
+          "reason": "同一场比赛 + 不同市场（中高相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "曼城 vs 利物浦"
+        },
+        {
+          "leg_a_id": "LEG_002_2",
+          "leg_b_id": "LEG_002_3",
+          "correlation": 0.75,
+          "reason": "同一场比赛 + 不同市场（中高相关）",
+          "match_a": "曼城 vs 利物浦",
+          "match_b": "曼城 vs 利物浦"
+        }
+      ],
+      "calculation_trace": {
+        "description": "高相关性风险 - 同场比赛串关",
+        "steps": [
+          {
+            "step": "1_leg_validation",
+            "input_leg_count": 3,
+            "valid_leg_count": 3,
+            "expired_leg_count": 0,
+            "details": "原始3关，有效3关，过期0关"
+          },
+          {
+            "step": "3_odds_calculation",
+            "odds_breakdown": [
+              {
+                "leg_id": "LEG_002_1",
+                "match": "曼城 vs 利物浦",
+                "odd_value": 1.85
+              },
+              {
+                "leg_id": "LEG_002_2",
+                "match": "曼城 vs 利物浦",
+                "odd_value": 2.1
+              },
+              {
+                "leg_id": "LEG_002_3",
+                "match": "曼城 vs 利物浦",
+                "odd_value": 1.95
+              }
+            ],
+            "total_odds": 7.5758,
+            "formula": "1.85 × 2.1 × 1.95 = 7.5758",
+            "stake_amount": 500.0,
+            "potential_payout": 3787.88,
+            "potential_profit": 3287.88
+          },
+          {
+            "step": "4_correlation_analysis",
+            "total_correlation_pairs": 3,
+            "high_correlation_pairs": 3,
+            "max_correlation": 0.85,
+            "correlation_explanation": "高相关性 (0.85): 风险显著增加，投注并非独立事件，同时命中概率远低于理论值",
+            "high_risk_pairs": [
+              {
+                "pair": "曼城 vs 利物浦 <-> 曼城 vs 利物浦",
+                "correlation": 0.85,
+                "reason": "同一场比赛 + 同向结果（高相关）"
+              },
+              {
+                "pair": "曼城 vs 利物浦 <-> 曼城 vs 利物浦",
+                "correlation": 0.75,
+                "reason": "同一场比赛 + 不同市场（中高相关）"
+              },
+              {
+                "pair": "曼城 vs 利物浦 <-> 曼城 vs 利物浦",
+                "correlation": 0.75,
+                "reason": "同一场比赛 + 不同市场（中高相关）"
+              }
+            ]
+          },
+          {
+            "step": "5_result_calculation",
+            "status": "WON",
+            "won_count": 3,
+            "lost_count": 0,
+            "void_count": 0,
+            "pending_count": 0,
+            "legs_detail": [
+              {
+                "leg_id": "LEG_002_1",
+                "match": "曼城 vs 利物浦",
+                "selection": "曼城胜",
+                "result": "2-1",
+                "status": "WON",
+                "odd_value": 1.85
+              },
+              {
+                "leg_id": "LEG_002_2",
+                "match": "曼城 vs 利物浦",
+                "selection": "曼城胜",
+                "result": "2-1",
+                "status": "WON",
+                "odd_value": 2.1
+              },
+              {
+                "leg_id": "LEG_002_3",
+                "match": "曼城 vs 利物浦",
+                "selection": "大球",
+                "result": "2-1",
+                "status": "WON",
+                "odd_value": 1.95
+              }
+            ],
+            "actual_odds": 7.5758,
+            "actual_payout": 3787.88,
+            "profit": 3287.88,
+            "reason": "全部3关命中"
+          },
+          {
+            "step": "6_risk_assessment",
+            "risk_level": "HIGH",
+            "risk_score": 1.0,
+            "score_components": [
+              {
+                "factor": "高相关性",
+                "score": 1.0,
+                "weight": 1.0
+              }
+            ],
+            "key_factors": {
+              "has_critical_issues": false,
+              "has_expired_odds": false,
+              "all_expired_odds": false,
+              "zero_stake": false,
+              "max_correlation": 0.85,
+              "leg_count": 3
+            }
+          }
+        ],
+        "timestamp": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "parlay_id": "PARLAY_003",
+      "trace_id": "73bd28ed-66f",
+      "stake_amount": 2000.0,
+      "leg_count": 2,
+      "legs": [
+        {
+          "leg_id": "LEG_003_1",
+          "trace_id": "0f1f934d-d01",
+          "match_id": "MATCH_002",
+          "match": "皇马 vs 巴萨",
+          "market": "全场胜负",
+          "selection": "皇马胜",
+          "odd_value": 2.05,
+          "odd_status": "EXPIRED",
+          "leg_status": "EXPIRED",
+          "result": "3-2",
+          "expiry_time": "2026-05-29T20:00:00"
+        },
+        {
+          "leg_id": "LEG_003_2",
+          "trace_id": "a5f63346-d20",
+          "match_id": "MATCH_005",
+          "match": "巴黎圣日耳曼 vs 马赛",
+          "market": "全场胜负",
+          "selection": "巴黎胜",
+          "odd_value": 1.65,
+          "odd_status": "VALID",
+          "leg_status": "VOID",
+          "result": "3-0",
+          "expiry_time": "2026-06-04T20:00:00"
+        }
+      ],
+      "total_odds": 1.0,
+      "potential_payout": 0.0,
+      "actual_payout": 0.0,
+      "profit": 0.0,
+      "status": "VOID",
+      "risk_level": "CRITICAL",
+      "risk_score": 1.0,
+      "validation_issues": [
+        {
+          "level": "WARNING",
+          "code": "STAKE_FUTURE_TIME",
+          "message": "下注时间在未来: 2026-05-30T20:00:00",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_003",
+            "placed_time": "2026-05-30T20:00:00",
+            "current_time": "2026-05-28T00:00:00"
+          }
+        },
+        {
+          "level": "CRITICAL",
+          "code": "ODD_EXPIRED",
+          "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-28T00:00:00",
+          "leg_id": "LEG_003_1",
+          "details": {
+            "expiry_time": "2026-05-29T20:00:00",
+            "current_time": "2026-05-28T00:00:00",
+            "update_time": "2026-05-28T10:00:00",
+            "hours_since_update": -10.0
+          }
+        },
+        {
+          "level": "WARNING",
+          "code": "PARTIAL_ODDS_EXPIRED",
+          "message": "组合中有1/2关赔率已过期，仅计算有效部分",
+          "leg_id": null,
+          "details": {
+            "valid_count": 1,
+            "expired_count": 1
+          }
+        }
+      ],
+      "high_correlations": [],
+      "all_correlations": [],
+      "calculation_trace": {
+        "description": "包含过期赔率",
+        "steps": [
+          {
+            "step": "1_leg_validation",
+            "input_leg_count": 2,
+            "valid_leg_count": 1,
+            "expired_leg_count": 1,
+            "details": "原始2关，有效1关，过期1关"
+          },
+          {
+            "step": "2_calculation_aborted",
+            "reason": "有效关卡不足2关，无法计算组合赔率",
+            "risk_level_assigned": "CRITICAL"
+          }
+        ],
+        "timestamp": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "parlay_id": "PARLAY_004",
+      "trace_id": "6b3324d6-e70",
+      "stake_amount": 0.0,
+      "leg_count": 2,
+      "legs": [
+        {
+          "leg_id": "LEG_004_1",
+          "trace_id": "9543d554-7de",
+          "match_id": "MATCH_003",
+          "match": "拜仁 vs 多特",
+          "market": "全场让球(-1)",
+          "selection": "拜仁胜",
+          "odd_value": 2.25,
+          "odd_status": "VALID",
+          "leg_status": "LOST",
+          "result": "1-0",
+          "expiry_time": "2026-06-03T20:00:00"
+        },
+        {
+          "leg_id": "LEG_004_2",
+          "trace_id": "327d9542-a12",
+          "match_id": "MATCH_005",
+          "match": "巴黎圣日耳曼 vs 马赛",
+          "market": "全场胜负",
+          "selection": "巴黎胜",
+          "odd_value": 1.65,
+          "odd_status": "VALID",
+          "leg_status": "VOID",
+          "result": "3-0",
+          "expiry_time": "2026-06-04T20:00:00"
+        }
+      ],
+      "total_odds": 3.7125,
+      "potential_payout": 0.0,
+      "actual_payout": 0.0,
+      "profit": -0.0,
+      "status": "LOST",
+      "risk_level": "CRITICAL",
+      "risk_score": 1.0,
+      "validation_issues": [
+        {
+          "level": "CRITICAL",
+          "code": "STAKE_ZERO_OR_NEGATIVE",
+          "message": "本金异常: 0.0 CNY (必须 > 0)",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_004",
+            "amount": 0.0,
+            "currency": "CNY",
+            "bettor_id": "ANALYST_B"
+          }
+        },
+        {
+          "level": "WARNING",
+          "code": "STAKE_FUTURE_TIME",
+          "message": "下注时间在未来: 2026-05-30T20:30:00",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_004",
+            "placed_time": "2026-05-30T20:30:00",
+            "current_time": "2026-05-28T00:00:00"
+          }
+        }
+      ],
+      "high_correlations": [],
+      "all_correlations": [
+        {
+          "leg_a_id": "LEG_004_1",
+          "leg_b_id": "LEG_004_2",
+          "correlation": 0.15,
+          "reason": "同一运动项目 + 不同联赛（极低相关）",
+          "match_a": "拜仁 vs 多特",
+          "match_b": "巴黎圣日耳曼 vs 马赛"
+        }
+      ],
+      "calculation_trace": {
+        "description": "本金为零 - 对账异常",
+        "steps": [
+          {
+            "step": "1_leg_validation",
+            "input_leg_count": 2,
+            "valid_leg_count": 2,
+            "expired_leg_count": 0,
+            "details": "原始2关，有效2关，过期0关"
+          },
+          {
+            "step": "3_odds_calculation",
+            "odds_breakdown": [
+              {
+                "leg_id": "LEG_004_1",
+                "match": "拜仁 vs 多特",
+                "odd_value": 2.25
+              },
+              {
+                "leg_id": "LEG_004_2",
+                "match": "巴黎圣日耳曼 vs 马赛",
+                "odd_value": 1.65
+              }
+            ],
+            "total_odds": 3.7125,
+            "formula": "2.25 × 1.65 = 3.7125",
+            "stake_amount": 0.0,
+            "potential_payout": 0.0,
+            "potential_profit": 0.0
+          },
+          {
+            "step": "4_correlation_analysis",
+            "total_correlation_pairs": 1,
+            "high_correlation_pairs": 0,
+            "max_correlation": 0.15,
+            "correlation_explanation": "低相关性 (0.15): 接近独立事件，风险可控",
+            "high_risk_pairs": []
+          },
+          {
+            "step": "5_result_calculation",
+            "status": "LOST",
+            "won_count": 0,
+            "lost_count": 1,
+            "void_count": 1,
+            "pending_count": 0,
+            "legs_detail": [
+              {
+                "leg_id": "LEG_004_1",
+                "match": "拜仁 vs 多特",
+                "selection": "拜仁胜",
+                "result": "1-0",
+                "status": "LOST",
+                "odd_value": 2.25
+              },
+              {
+                "leg_id": "LEG_004_2",
+                "match": "巴黎圣日耳曼 vs 马赛",
+                "selection": "巴黎胜",
+                "result": "3-0",
+                "status": "VOID",
+                "odd_value": 1.65
+              }
+            ],
+            "actual_payout": 0.0,
+            "profit": -0.0,
+            "reason": "有1关未中，组合投注失败"
+          },
+          {
+            "step": "6_risk_assessment",
+            "risk_level": "CRITICAL",
+            "risk_score": 1.0,
+            "score_components": [
+              {
+                "factor": "全部赔率过期或零本金",
+                "score": 1.0,
+                "weight": 1.0
+              }
+            ],
+            "key_factors": {
+              "has_critical_issues": true,
+              "has_expired_odds": false,
+              "all_expired_odds": false,
+              "zero_stake": true,
+              "max_correlation": 0.15,
+              "leg_count": 2
+            }
+          }
+        ],
+        "timestamp": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "parlay_id": "PARLAY_005",
+      "trace_id": "47ad9a47-cb8",
+      "stake_amount": 800.0,
+      "leg_count": 3,
+      "legs": [
+        {
+          "leg_id": "LEG_005_1",
+          "trace_id": "b6eb790b-c2d",
+          "match_id": "MATCH_002",
+          "match": "皇马 vs 巴萨",
+          "market": "全场胜负",
+          "selection": "皇马胜",
+          "odd_value": 2.05,
+          "odd_status": "EXPIRED",
+          "leg_status": "EXPIRED",
+          "result": "3-2",
+          "expiry_time": "2026-05-29T20:00:00"
+        },
+        {
+          "leg_id": "LEG_005_2",
+          "trace_id": "935a1504-334",
+          "match_id": "MATCH_002",
+          "match": "皇马 vs 巴萨",
+          "market": "全场大小球(2.5)",
+          "selection": "大球",
+          "odd_value": 1.88,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "3-2",
+          "expiry_time": "2026-06-02T20:00:00"
+        },
+        {
+          "leg_id": "LEG_005_3",
+          "trace_id": "6103209d-79f",
+          "match_id": "MATCH_003",
+          "match": "拜仁 vs 多特",
+          "market": "全场胜负",
+          "selection": "拜仁胜",
+          "odd_value": 1.75,
+          "odd_status": "VALID",
+          "leg_status": "WON",
+          "result": "1-0",
+          "expiry_time": "2026-06-03T20:00:00"
+        }
+      ],
+      "total_odds": 3.29,
+      "potential_payout": 2632.0,
+      "actual_payout": 2632.0,
+      "profit": 1832.0,
+      "status": "WON",
+      "risk_level": "HIGH",
+      "risk_score": 0.7,
+      "validation_issues": [
+        {
+          "level": "WARNING",
+          "code": "STAKE_FUTURE_TIME",
+          "message": "下注时间在未来: 2026-05-30T21:00:00",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_005",
+            "placed_time": "2026-05-30T21:00:00",
+            "current_time": "2026-05-28T00:00:00"
+          }
+        },
+        {
+          "level": "CRITICAL",
+          "code": "ODD_EXPIRED",
+          "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-28T00:00:00",
+          "leg_id": "LEG_005_1",
+          "details": {
+            "expiry_time": "2026-05-29T20:00:00",
+            "current_time": "2026-05-28T00:00:00",
+            "update_time": "2026-05-28T10:00:00",
+            "hours_since_update": -10.0
+          }
+        },
+        {
+          "level": "WARNING",
+          "code": "PARTIAL_ODDS_EXPIRED",
+          "message": "组合中有1/3关赔率已过期，仅计算有效部分",
+          "leg_id": null,
+          "details": {
+            "valid_count": 2,
+            "expired_count": 1
+          }
+        }
+      ],
+      "high_correlations": [],
+      "all_correlations": [
+        {
+          "leg_a_id": "LEG_005_2",
+          "leg_b_id": "LEG_005_3",
+          "correlation": 0.15,
+          "reason": "同一运动项目 + 不同联赛（极低相关）",
+          "match_a": "皇马 vs 巴萨",
+          "match_b": "拜仁 vs 多特"
+        }
+      ],
+      "calculation_trace": {
+        "description": "混合问题 - 部分过期+高相关",
+        "steps": [
+          {
+            "step": "1_leg_validation",
+            "input_leg_count": 3,
+            "valid_leg_count": 2,
+            "expired_leg_count": 1,
+            "details": "原始3关，有效2关，过期1关"
+          },
+          {
+            "step": "3_odds_calculation",
+            "odds_breakdown": [
+              {
+                "leg_id": "LEG_005_2",
+                "match": "皇马 vs 巴萨",
+                "odd_value": 1.88
+              },
+              {
+                "leg_id": "LEG_005_3",
+                "match": "拜仁 vs 多特",
+                "odd_value": 1.75
+              }
+            ],
+            "total_odds": 3.29,
+            "formula": "1.88 × 1.75 = 3.2900",
+            "stake_amount": 800.0,
+            "potential_payout": 2632.0,
+            "potential_profit": 1832.0
+          },
+          {
+            "step": "4_correlation_analysis",
+            "total_correlation_pairs": 1,
+            "high_correlation_pairs": 0,
+            "max_correlation": 0.15,
+            "correlation_explanation": "低相关性 (0.15): 接近独立事件，风险可控",
+            "high_risk_pairs": []
+          },
+          {
+            "step": "5_result_calculation",
+            "status": "WON",
+            "won_count": 2,
+            "lost_count": 0,
+            "void_count": 0,
+            "pending_count": 0,
+            "legs_detail": [
+              {
+                "leg_id": "LEG_005_2",
+                "match": "皇马 vs 巴萨",
+                "selection": "大球",
+                "result": "3-2",
+                "status": "WON",
+                "odd_value": 1.88
+              },
+              {
+                "leg_id": "LEG_005_3",
+                "match": "拜仁 vs 多特",
+                "selection": "拜仁胜",
+                "result": "1-0",
+                "status": "WON",
+                "odd_value": 1.75
+              }
+            ],
+            "actual_odds": 3.29,
+            "actual_payout": 2632.0,
+            "profit": 1832.0,
+            "reason": "全部2关命中"
+          },
+          {
+            "step": "6_risk_assessment",
+            "risk_level": "HIGH",
+            "risk_score": 0.7,
+            "score_components": [
+              {
+                "factor": "存在严重问题（过期/零本金）",
+                "score": 0.7,
+                "weight": 0.6
+              },
+              {
+                "factor": "相关性风险",
+                "score": 0.1,
+                "weight": 0.4
+              }
+            ],
+            "key_factors": {
+              "has_critical_issues": true,
+              "has_expired_odds": true,
+              "all_expired_odds": false,
+              "zero_stake": false,
+              "max_correlation": 0.15,
+              "leg_count": 3
+            }
+          }
+        ],
+        "timestamp": "2026-05-28T00:00:00"
+      }
+    },
+    {
+      "parlay_id": "PARLAY_006",
+      "trace_id": "6b28dff0-cd9",
+      "stake_amount": 1500.0,
+      "leg_count": 2,
+      "legs": [
+        {
+          "leg_id": "LEG_006_1",
+          "trace_id": "7877c56e-751",
+          "match_id": "MATCH_002",
+          "match": "皇马 vs 巴萨",
+          "market": "全场胜负",
+          "selection": "皇马胜",
+          "odd_value": 2.05,
+          "odd_status": "EXPIRED",
+          "leg_status": "EXPIRED",
+          "result": "3-2",
+          "expiry_time": "2026-05-29T20:00:00"
+        },
+        {
+          "leg_id": "LEG_006_2",
+          "trace_id": "59f72e1e-37c",
+          "match_id": "MATCH_004",
+          "match": "尤文 vs AC米兰",
+          "market": "全场胜负",
+          "selection": "平局",
+          "odd_value": 3.4,
+          "odd_status": "EXPIRED",
+          "leg_status": "EXPIRED",
+          "result": "1-1",
+          "expiry_time": "2026-05-27T20:00:00"
+        }
+      ],
+      "total_odds": 1.0,
+      "potential_payout": 0.0,
+      "actual_payout": 0.0,
+      "profit": 0.0,
+      "status": "VOID",
+      "risk_level": "CRITICAL",
+      "risk_score": 1.0,
+      "validation_issues": [
+        {
+          "level": "WARNING",
+          "code": "STAKE_FUTURE_TIME",
+          "message": "下注时间在未来: 2026-05-30T21:30:00",
+          "leg_id": null,
+          "details": {
+            "stake_id": "STK_006",
+            "placed_time": "2026-05-30T21:30:00",
+            "current_time": "2026-05-28T00:00:00"
+          }
+        },
+        {
+          "level": "CRITICAL",
+          "code": "ODD_EXPIRED",
+          "message": "赔率已过期: 到期时间=2026-05-29T20:00:00, 当前时间=2026-05-28T00:00:00",
+          "leg_id": "LEG_006_1",
+          "details": {
+            "expiry_time": "2026-05-29T20:00:00",
+            "current_time": "2026-05-28T00:00:00",
+            "update_time": "2026-05-28T10:00:00",
+            "hours_since_update": -10.0
+          }
+        },
+        {
+          "level": "CRITICAL",
+          "code": "ODD_EXPIRED",
+          "message": "赔率已过期: 到期时间=2026-05-27T20:00:00, 当前时间=2026-05-28T00:00:00",
+          "leg_id": "LEG_006_2",
+          "details": {
+            "expiry_time": "2026-05-27T20:00:00",
+            "current_time": "2026-05-28T00:00:00",
+            "update_time": "2026-05-25T10:00:00",
+            "hours_since_update": 62.0
+          }
+        },
+        {
+          "level": "CRITICAL",
+          "code": "ALL_ODDS_EXPIRED",
+          "message": "组合中所有赔率均已过期，无法计算",
+          "leg_id": null,
+          "details": {
+            "total_legs": 2
+          }
+        }
+      ],
+      "high_correlations": [],
+      "all_correlations": [],
+      "calculation_trace": {
+        "description": "全过期赔率 - 严重对齐问题",
+        "steps": [
+          {
+            "step": "1_leg_validation",
+            "input_leg_count": 2,
+            "valid_leg_count": 0,
+            "expired_leg_count": 2,
+            "details": "原始2关，有效0关，过期2关"
+          },
+          {
+            "step": "2_calculation_aborted",
+            "reason": "有效关卡不足2关，无法计算组合赔率",
+            "risk_level_assigned": "CRITICAL"
+          }
+        ],
+        "timestamp": "2026-05-28T00:00:00"
+      }
+    }
+  ]
+}

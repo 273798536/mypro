@@ -1,0 +1,122 @@
+[
+  {
+    "match_id": "MATCH_001",
+    "league": "英超",
+    "home_team": "曼城",
+    "away_team": "利物浦",
+    "market_type": "全场胜负",
+    "selection": "曼城胜",
+    "odd_value": 1.85,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-01T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_001",
+    "league": "英超",
+    "home_team": "曼城",
+    "away_team": "利物浦",
+    "market_type": "全场让球(-0.5)",
+    "selection": "曼城胜",
+    "odd_value": 2.10,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-01T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_001",
+    "league": "英超",
+    "home_team": "曼城",
+    "away_team": "利物浦",
+    "market_type": "全场大小球(2.5)",
+    "selection": "大球",
+    "odd_value": 1.95,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-01T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_002",
+    "league": "西甲",
+    "home_team": "皇马",
+    "away_team": "巴萨",
+    "market_type": "全场胜负",
+    "selection": "皇马胜",
+    "odd_value": 2.05,
+    "update_time": "2026-05-28T10:00:00",
+    "expiry_time": "2026-05-29T20:00:00",
+    "status": "EXPIRED"
+  },
+  {
+    "match_id": "MATCH_002",
+    "league": "西甲",
+    "home_team": "皇马",
+    "away_team": "巴萨",
+    "market_type": "全场大小球(2.5)",
+    "selection": "大球",
+    "odd_value": 1.88,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-02T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_003",
+    "league": "德甲",
+    "home_team": "拜仁",
+    "away_team": "多特",
+    "market_type": "全场胜负",
+    "selection": "拜仁胜",
+    "odd_value": 1.75,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-03T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_003",
+    "league": "德甲",
+    "home_team": "拜仁",
+    "away_team": "多特",
+    "market_type": "全场让球(-1)",
+    "selection": "拜仁胜",
+    "odd_value": 2.25,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-03T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_004",
+    "league": "意甲",
+    "home_team": "尤文",
+    "away_team": "AC米兰",
+    "market_type": "全场胜负",
+    "selection": "平局",
+    "odd_value": 3.40,
+    "update_time": "2026-05-25T10:00:00",
+    "expiry_time": "2026-05-27T20:00:00",
+    "status": "EXPIRED"
+  },
+  {
+    "match_id": "MATCH_005",
+    "league": "法甲",
+    "home_team": "巴黎圣日耳曼",
+    "away_team": "马赛",
+    "market_type": "全场胜负",
+    "selection": "巴黎胜",
+    "odd_value": 1.65,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-04T20:00:00",
+    "status": "VALID"
+  },
+  {
+    "match_id": "MATCH_006",
+    "league": "NBA",
+    "home_team": "湖人",
+    "away_team": "勇士",
+    "market_type": "全场让分(-5.5)",
+    "selection": "湖人赢盘",
+    "odd_value": 1.92,
+    "update_time": "2026-05-30T18:00:00",
+    "expiry_time": "2026-06-01T10:00:00",
+    "status": "VALID"
+  }
+]
