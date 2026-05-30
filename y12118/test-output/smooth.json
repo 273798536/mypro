@@ -1,0 +1,1648 @@
+{
+  "totalBudget": 8000,
+  "allocatedBudget": 8000,
+  "remainingBudget": 0,
+  "totalExpectedConversions": 0.1192306826668318,
+  "totalRounds": 80,
+  "globalSummary": "总预算¥8,000，分配¥8,000，剩余¥0，预期转化0.12次。 预算耗尽：微信-朋友圈(上限¥3,000)、百度-搜索(上限¥2,000)。",
+  "budgetCapConclusion": {
+    "totalBudget": 8000,
+    "channelsAtCap": [
+      {
+        "channel": "微信-朋友圈",
+        "dailyCap": 3000,
+        "allocatedBudget": 3000,
+        "blockedMarginalReturn": 4.999048442209037e-7
+      },
+      {
+        "channel": "百度-搜索",
+        "dailyCap": 2000,
+        "allocatedBudget": 2000,
+        "blockedMarginalReturn": 8.422433748856834e-7
+      }
+    ],
+    "channelsAtCapDisplay": "微信-朋友圈;百度-搜索",
+    "channelsNotAtCap": [
+      {
+        "channel": "抖音-信息流",
+        "dailyCap": 5000,
+        "allocatedBudget": 3000
+      }
+    ]
+  },
+  "results": [
+    {
+      "channel": "抖音-信息流",
+      "allocatedBudget": 3000,
+      "dailyCap": 5000,
+      "capReached": false,
+      "marginalReturn": 1.9830017413330868e-7,
+      "expectedConversions": 0.03990084991293335,
+      "delayDiscount": 1,
+      "duplicatePenalty": 1,
+      "anomalies": [],
+      "optimizationSteps": [
+        {
+          "round": 3,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00008,
+          "marginalReturnAfter": 0.00006549846024623856,
+          "explanation": "第3轮：向抖音-信息流分配¥100，边际收益从0.000080降至0.000065"
+        },
+        {
+          "round": 5,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00006549846024623856,
+          "marginalReturnAfter": 0.000053625603682851154,
+          "explanation": "第5轮：向抖音-信息流分配¥100，边际收益从0.000065降至0.000054"
+        },
+        {
+          "round": 7,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000053625603682851154,
+          "marginalReturnAfter": 0.00004390493088752212,
+          "explanation": "第7轮：向抖音-信息流分配¥100，边际收益从0.000054降至0.000044"
+        },
+        {
+          "round": 10,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00004390493088752212,
+          "marginalReturnAfter": 0.00003594631712937773,
+          "explanation": "第10轮：向抖音-信息流分配¥100，边际收益从0.000044降至0.000036"
+        },
+        {
+          "round": 12,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00003594631712937773,
+          "marginalReturnAfter": 0.00002943035529371539,
+          "explanation": "第12轮：向抖音-信息流分配¥100，边际收益从0.000036降至0.000029"
+        },
+        {
+          "round": 15,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00002943035529371539,
+          "marginalReturnAfter": 0.000024095536952976168,
+          "explanation": "第15轮：向抖音-信息流分配¥100，边际收益从0.000029降至0.000024"
+        },
+        {
+          "round": 19,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000024095536952976168,
+          "marginalReturnAfter": 0.000019727757115328516,
+          "explanation": "第19轮：向抖音-信息流分配¥100，边际收益从0.000024降至0.000020"
+        },
+        {
+          "round": 22,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000019727757115328516,
+          "marginalReturnAfter": 0.00001615172143957243,
+          "explanation": "第22轮：向抖音-信息流分配¥100，边际收益从0.000020降至0.000016"
+        },
+        {
+          "round": 25,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00001615172143957243,
+          "marginalReturnAfter": 0.000013223911057726924,
+          "explanation": "第25轮：向抖音-信息流分配¥100，边际收益从0.000016降至0.000013"
+        },
+        {
+          "round": 28,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000013223911057726924,
+          "marginalReturnAfter": 0.000010826822658929016,
+          "explanation": "第28轮：向抖音-信息流分配¥100，边际收益从0.000013降至0.000011"
+        },
+        {
+          "round": 31,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000010826822658929016,
+          "marginalReturnAfter": 0.000008864252668986711,
+          "explanation": "第31轮：向抖音-信息流分配¥100，边际收益从0.000011降至0.000009"
+        },
+        {
+          "round": 34,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000008864252668986711,
+          "marginalReturnAfter": 0.000007257436263153001,
+          "explanation": "第34轮：向抖音-信息流分配¥100，边际收益从0.000009降至0.000007"
+        },
+        {
+          "round": 38,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000007257436263153001,
+          "marginalReturnAfter": 0.000005941886257146711,
+          "explanation": "第38轮：向抖音-信息流分配¥100，边际收益从0.000007降至0.000006"
+        },
+        {
+          "round": 41,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000005941886257146711,
+          "marginalReturnAfter": 0.000004864805010017437,
+          "explanation": "第41轮：向抖音-信息流分配¥100，边际收益从0.000006降至0.000005"
+        },
+        {
+          "round": 43,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000004864805010017437,
+          "marginalReturnAfter": 0.000003982965469429116,
+          "explanation": "第43轮：向抖音-信息流分配¥100，边际收益从0.000005降至0.000004"
+        },
+        {
+          "round": 47,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000003982965469429116,
+          "marginalReturnAfter": 0.000003260976318269297,
+          "explanation": "第47轮：向抖音-信息流分配¥100，边际收益从0.000004降至0.000003"
+        },
+        {
+          "round": 50,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000003260976318269297,
+          "marginalReturnAfter": 0.0000026698615968260867,
+          "explanation": "第50轮：向抖音-信息流分配¥100，边际收益从0.000003降至0.000003"
+        },
+        {
+          "round": 53,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000026698615968260867,
+          "marginalReturnAfter": 0.000002185897795783405,
+          "explanation": "第53轮：向抖音-信息流分配¥100，边际收益从0.000003降至0.000002"
+        },
+        {
+          "round": 57,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000002185897795783405,
+          "marginalReturnAfter": 0.0000017896617484932473,
+          "explanation": "第57轮：向抖音-信息流分配¥100，边际收益从0.000002降至0.000002"
+        },
+        {
+          "round": 59,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000017896617484932473,
+          "marginalReturnAfter": 0.0000014652511110987344,
+          "explanation": "第59轮：向抖音-信息流分配¥100，边际收益从0.000002降至0.000001"
+        },
+        {
+          "round": 62,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000014652511110987344,
+          "marginalReturnAfter": 0.0000011996461456382164,
+          "explanation": "第62轮：向抖音-信息流分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 66,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000011996461456382164,
+          "marginalReturnAfter": 9.82187192245475e-7,
+          "explanation": "第66轮：向抖音-信息流分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 69,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 9.82187192245475e-7,
+          "marginalReturnAfter": 8.041468595706861e-7,
+          "explanation": "第69轮：向抖音-信息流分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 71,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 8.041468595706861e-7,
+          "marginalReturnAfter": 6.583797639216024e-7,
+          "explanation": "第71轮：向抖音-信息流分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 74,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 6.583797639216024e-7,
+          "marginalReturnAfter": 5.390357599268374e-7,
+          "explanation": "第74轮：向抖音-信息流分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 76,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 5.390357599268374e-7,
+          "marginalReturnAfter": 4.4132515366086176e-7,
+          "explanation": "第76轮：向抖音-信息流分配¥100，边际收益从0.000001降至0.000000"
+        },
+        {
+          "round": 77,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 4.4132515366086176e-7,
+          "marginalReturnAfter": 3.613264754090133e-7,
+          "explanation": "第77轮：向抖音-信息流分配¥100，边际收益从0.000000降至0.000000"
+        },
+        {
+          "round": 78,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 3.613264754090133e-7,
+          "marginalReturnAfter": 2.9582909731863434e-7,
+          "explanation": "第78轮：向抖音-信息流分配¥100，边际收益从0.000000降至0.000000"
+        },
+        {
+          "round": 79,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 2.9582909731863434e-7,
+          "marginalReturnAfter": 2.4220437963006523e-7,
+          "explanation": "第79轮：向抖音-信息流分配¥100，边际收益从0.000000降至0.000000"
+        },
+        {
+          "round": 80,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 2.4220437963006523e-7,
+          "marginalReturnAfter": 1.9830017413330868e-7,
+          "explanation": "第80轮：向抖音-信息流分配¥100，边际收益从0.000000降至0.000000"
+        }
+      ],
+      "marginalReturnCurve": [
+        {
+          "budget": 0,
+          "marginalReturn": 0
+        },
+        {
+          "budget": 100,
+          "marginalReturn": 0.00006549846024623856
+        },
+        {
+          "budget": 200,
+          "marginalReturn": 0.000053625603682851154
+        },
+        {
+          "budget": 300,
+          "marginalReturn": 0.00004390493088752212
+        },
+        {
+          "budget": 400,
+          "marginalReturn": 0.00003594631712937773
+        },
+        {
+          "budget": 500,
+          "marginalReturn": 0.00002943035529371539
+        },
+        {
+          "budget": 600,
+          "marginalReturn": 0.000024095536952976168
+        },
+        {
+          "budget": 700,
+          "marginalReturn": 0.000019727757115328516
+        },
+        {
+          "budget": 800,
+          "marginalReturn": 0.00001615172143957243
+        },
+        {
+          "budget": 900,
+          "marginalReturn": 0.000013223911057726924
+        },
+        {
+          "budget": 1000,
+          "marginalReturn": 0.000010826822658929016
+        },
+        {
+          "budget": 1100,
+          "marginalReturn": 0.000008864252668986711
+        },
+        {
+          "budget": 1200,
+          "marginalReturn": 0.000007257436263153001
+        },
+        {
+          "budget": 1300,
+          "marginalReturn": 0.000005941886257146711
+        },
+        {
+          "budget": 1400,
+          "marginalReturn": 0.000004864805010017437
+        },
+        {
+          "budget": 1500,
+          "marginalReturn": 0.000003982965469429116
+        },
+        {
+          "budget": 1600,
+          "marginalReturn": 0.000003260976318269297
+        },
+        {
+          "budget": 1700,
+          "marginalReturn": 0.0000026698615968260867
+        },
+        {
+          "budget": 1800,
+          "marginalReturn": 0.000002185897795783405
+        },
+        {
+          "budget": 1900,
+          "marginalReturn": 0.0000017896617484932473
+        },
+        {
+          "budget": 2000,
+          "marginalReturn": 0.0000014652511110987344
+        },
+        {
+          "budget": 2100,
+          "marginalReturn": 0.0000011996461456382164
+        },
+        {
+          "budget": 2200,
+          "marginalReturn": 9.82187192245475e-7
+        },
+        {
+          "budget": 2300,
+          "marginalReturn": 8.041468595706861e-7
+        },
+        {
+          "budget": 2400,
+          "marginalReturn": 6.583797639216024e-7
+        },
+        {
+          "budget": 2500,
+          "marginalReturn": 5.390357599268374e-7
+        },
+        {
+          "budget": 2600,
+          "marginalReturn": 4.4132515366086176e-7
+        },
+        {
+          "budget": 2700,
+          "marginalReturn": 3.613264754090133e-7
+        },
+        {
+          "budget": 2800,
+          "marginalReturn": 2.9582909731863434e-7
+        },
+        {
+          "budget": 2900,
+          "marginalReturn": 2.4220437963006523e-7
+        },
+        {
+          "budget": 3000,
+          "marginalReturn": 1.9830017413330868e-7
+        }
+      ],
+      "budgetReplay": [
+        {
+          "round": 3,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 7700
+        },
+        {
+          "round": 5,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 7500
+        },
+        {
+          "round": 7,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 7300
+        },
+        {
+          "round": 10,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 7000
+        },
+        {
+          "round": 12,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 6800
+        },
+        {
+          "round": 15,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 6500
+        },
+        {
+          "round": 19,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 6100
+        },
+        {
+          "round": 22,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 5800
+        },
+        {
+          "round": 25,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 5500
+        },
+        {
+          "round": 28,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 5200
+        },
+        {
+          "round": 31,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 4900
+        },
+        {
+          "round": 34,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 4600
+        },
+        {
+          "round": 38,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 4200
+        },
+        {
+          "round": 41,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 3900
+        },
+        {
+          "round": 43,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 3700
+        },
+        {
+          "round": 47,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 3300
+        },
+        {
+          "round": 50,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 3000
+        },
+        {
+          "round": 53,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 2700
+        },
+        {
+          "round": 57,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 2300
+        },
+        {
+          "round": 59,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 2100
+        },
+        {
+          "round": 62,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 1800
+        },
+        {
+          "round": 66,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 1400
+        },
+        {
+          "round": 69,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 1100
+        },
+        {
+          "round": 71,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 900
+        },
+        {
+          "round": 74,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 600
+        },
+        {
+          "round": 76,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 400
+        },
+        {
+          "round": 77,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 300
+        },
+        {
+          "round": 78,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 200
+        },
+        {
+          "round": 79,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 100
+        },
+        {
+          "round": 80,
+          "channelId": "ch1",
+          "delta": 100,
+          "remainingBudget": 0
+        }
+      ]
+    },
+    {
+      "channel": "微信-朋友圈",
+      "allocatedBudget": 3000,
+      "dailyCap": 3000,
+      "capReached": true,
+      "marginalReturn": 4.999048442209037e-7,
+      "expectedConversions": 0.02966673010385273,
+      "delayDiscount": 1,
+      "duplicatePenalty": 1,
+      "anomalies": [
+        {
+          "type": "budget_exhausted",
+          "severity": "critical",
+          "explanation": "渠道微信-朋友圈已触及日消耗上限¥3,000，剩余边际收益¥0.000000被拦住。如需更多投放，需提高日消耗上限或等待次日额度刷新。"
+        }
+      ],
+      "optimizationSteps": [
+        {
+          "round": 9,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000044999999999999996,
+          "marginalReturnAfter": 0.0000387318589391276,
+          "explanation": "第9轮：向微信-朋友圈分配¥100，边际收益从0.000045降至0.000039"
+        },
+        {
+          "round": 11,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000387318589391276,
+          "marginalReturnAfter": 0.0000333368199306773,
+          "explanation": "第11轮：向微信-朋友圈分配¥100，边际收益从0.000039降至0.000033"
+        },
+        {
+          "round": 14,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000333368199306773,
+          "marginalReturnAfter": 0.000028693266822979792,
+          "explanation": "第14轮：向微信-朋友圈分配¥100，边际收益从0.000033降至0.000029"
+        },
+        {
+          "round": 16,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000028693266822979792,
+          "marginalReturnAfter": 0.00002469652362423119,
+          "explanation": "第16轮：向微信-朋友圈分配¥100，边际收益从0.000029降至0.000025"
+        },
+        {
+          "round": 18,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00002469652362423119,
+          "marginalReturnAfter": 0.00002125649487334566,
+          "explanation": "第18轮：向微信-朋友圈分配¥100，边际收益从0.000025降至0.000021"
+        },
+        {
+          "round": 21,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00002125649487334566,
+          "marginalReturnAfter": 0.000018295634688326957,
+          "explanation": "第21轮：向微信-朋友圈分配¥100，边际收益从0.000021降至0.000018"
+        },
+        {
+          "round": 23,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000018295634688326957,
+          "marginalReturnAfter": 0.00001574719871000199,
+          "explanation": "第23轮：向微信-朋友圈分配¥100，边际收益从0.000018降至0.000016"
+        },
+        {
+          "round": 26,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00001574719871000199,
+          "marginalReturnAfter": 0.000013553739536049092,
+          "explanation": "第26轮：向微信-朋友圈分配¥100，边际收益从0.000016降至0.000014"
+        },
+        {
+          "round": 27,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000013553739536049092,
+          "marginalReturnAfter": 0.000011665811729065116,
+          "explanation": "第27轮：向微信-朋友圈分配¥100，边际收益从0.000014降至0.000012"
+        },
+        {
+          "round": 30,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000011665811729065116,
+          "marginalReturnAfter": 0.00001004085720667934,
+          "explanation": "第30轮：向微信-朋友圈分配¥100，边际收益从0.000012降至0.000010"
+        },
+        {
+          "round": 33,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00001004085720667934,
+          "marginalReturnAfter": 0.000008642245887933934,
+          "explanation": "第33轮：向微信-朋友圈分配¥100，边际收益从0.000010降至0.000009"
+        },
+        {
+          "round": 35,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000008642245887933934,
+          "marginalReturnAfter": 0.000007438449969971394,
+          "explanation": "第35轮：向微信-朋友圈分配¥100，边际收益从0.000009降至0.000007"
+        },
+        {
+          "round": 37,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000007438449969971394,
+          "marginalReturnAfter": 0.000006402333221393111,
+          "explanation": "第37轮：向微信-朋友圈分配¥100，边际收益从0.000007降至0.000006"
+        },
+        {
+          "round": 39,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000006402333221393111,
+          "marginalReturnAfter": 0.000005510539271384185,
+          "explanation": "第39轮：向微信-朋友圈分配¥100，边际收益从0.000006降至0.000006"
+        },
+        {
+          "round": 42,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000005510539271384185,
+          "marginalReturnAfter": 0.000004742965105283894,
+          "explanation": "第42轮：向微信-朋友圈分配¥100，边际收益从0.000006降至0.000005"
+        },
+        {
+          "round": 45,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000004742965105283894,
+          "marginalReturnAfter": 0.000004082307898023562,
+          "explanation": "第45轮：向微信-朋友圈分配¥100，边际收益从0.000005降至0.000004"
+        },
+        {
+          "round": 46,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000004082307898023562,
+          "marginalReturnAfter": 0.0000035136749700518905,
+          "explanation": "第46轮：向微信-朋友圈分配¥100，边际收益从0.000004降至0.000004"
+        },
+        {
+          "round": 49,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000035136749700518905,
+          "marginalReturnAfter": 0.0000030242480732887387,
+          "explanation": "第49轮：向微信-朋友圈分配¥100，边际收益从0.000004降至0.000003"
+        },
+        {
+          "round": 51,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000030242480732887387,
+          "marginalReturnAfter": 0.00000260299443936773,
+          "explanation": "第51轮：向微信-朋友圈分配¥100，边际收益从0.000003降至0.000003"
+        },
+        {
+          "round": 54,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00000260299443936773,
+          "marginalReturnAfter": 0.0000022404180765538775,
+          "explanation": "第54轮：向微信-朋友圈分配¥100，边际收益从0.000003降至0.000002"
+        },
+        {
+          "round": 56,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000022404180765538775,
+          "marginalReturnAfter": 0.000001928345709016808,
+          "explanation": "第56轮：向微信-朋友圈分配¥100，边际收益从0.000002降至0.000002"
+        },
+        {
+          "round": 58,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000001928345709016808,
+          "marginalReturnAfter": 0.0000016597425330557996,
+          "explanation": "第58轮：向微信-朋友圈分配¥100，边际收益从0.000002降至0.000002"
+        },
+        {
+          "round": 61,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000016597425330557996,
+          "marginalReturnAfter": 0.000001428553637013057,
+          "explanation": "第61轮：向微信-朋友圈分配¥100，边际收益从0.000002降至0.000001"
+        },
+        {
+          "round": 63,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000001428553637013057,
+          "marginalReturnAfter": 0.0000012295675101281651,
+          "explanation": "第63轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 65,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000012295675101281651,
+          "marginalReturnAfter": 0.00000105829856352041,
+          "explanation": "第65轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 68,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00000105829856352041,
+          "marginalReturnAfter": 9.108860150611975e-7,
+          "explanation": "第68轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 70,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 9.108860150611975e-7,
+          "marginalReturnAfter": 7.840068587772081e-7,
+          "explanation": "第70轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 72,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 7.840068587772081e-7,
+          "marginalReturnAfter": 6.748009569214966e-7,
+          "explanation": "第72轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 73,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 6.748009569214966e-7,
+          "marginalReturnAfter": 5.808065661215937e-7,
+          "explanation": "第73轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 75,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 5.808065661215937e-7,
+          "marginalReturnAfter": 4.999048442209037e-7,
+          "explanation": "第75轮：向微信-朋友圈分配¥100，边际收益从0.000001降至0.000000"
+        },
+        {
+          "round": 75.5,
+          "action": "skip_cap",
+          "constraintType": "cap",
+          "deltaBudget": 0,
+          "marginalReturnBefore": 4.999048442209037e-7,
+          "marginalReturnAfter": 0,
+          "explanation": "渠道微信-朋友圈已触及日消耗上限¥3000，剩余边际收益¥0.000000被拦住"
+        }
+      ],
+      "marginalReturnCurve": [
+        {
+          "budget": 0,
+          "marginalReturn": 0
+        },
+        {
+          "budget": 100,
+          "marginalReturn": 0.0000387318589391276
+        },
+        {
+          "budget": 200,
+          "marginalReturn": 0.0000333368199306773
+        },
+        {
+          "budget": 300,
+          "marginalReturn": 0.000028693266822979792
+        },
+        {
+          "budget": 400,
+          "marginalReturn": 0.00002469652362423119
+        },
+        {
+          "budget": 500,
+          "marginalReturn": 0.00002125649487334566
+        },
+        {
+          "budget": 600,
+          "marginalReturn": 0.000018295634688326957
+        },
+        {
+          "budget": 700,
+          "marginalReturn": 0.00001574719871000199
+        },
+        {
+          "budget": 800,
+          "marginalReturn": 0.000013553739536049092
+        },
+        {
+          "budget": 900,
+          "marginalReturn": 0.000011665811729065116
+        },
+        {
+          "budget": 1000,
+          "marginalReturn": 0.00001004085720667934
+        },
+        {
+          "budget": 1100,
+          "marginalReturn": 0.000008642245887933934
+        },
+        {
+          "budget": 1200,
+          "marginalReturn": 0.000007438449969971394
+        },
+        {
+          "budget": 1300,
+          "marginalReturn": 0.000006402333221393111
+        },
+        {
+          "budget": 1400,
+          "marginalReturn": 0.000005510539271384185
+        },
+        {
+          "budget": 1500,
+          "marginalReturn": 0.000004742965105283894
+        },
+        {
+          "budget": 1600,
+          "marginalReturn": 0.000004082307898023562
+        },
+        {
+          "budget": 1700,
+          "marginalReturn": 0.0000035136749700518905
+        },
+        {
+          "budget": 1800,
+          "marginalReturn": 0.0000030242480732887387
+        },
+        {
+          "budget": 1900,
+          "marginalReturn": 0.00000260299443936773
+        },
+        {
+          "budget": 2000,
+          "marginalReturn": 0.0000022404180765538775
+        },
+        {
+          "budget": 2100,
+          "marginalReturn": 0.000001928345709016808
+        },
+        {
+          "budget": 2200,
+          "marginalReturn": 0.0000016597425330557996
+        },
+        {
+          "budget": 2300,
+          "marginalReturn": 0.000001428553637013057
+        },
+        {
+          "budget": 2400,
+          "marginalReturn": 0.0000012295675101281651
+        },
+        {
+          "budget": 2500,
+          "marginalReturn": 0.00000105829856352041
+        },
+        {
+          "budget": 2600,
+          "marginalReturn": 9.108860150611975e-7
+        },
+        {
+          "budget": 2700,
+          "marginalReturn": 7.840068587772081e-7
+        },
+        {
+          "budget": 2800,
+          "marginalReturn": 6.748009569214966e-7
+        },
+        {
+          "budget": 2900,
+          "marginalReturn": 5.808065661215937e-7
+        },
+        {
+          "budget": 3000,
+          "marginalReturn": 4.999048442209037e-7
+        }
+      ],
+      "budgetReplay": [
+        {
+          "round": 9,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 7100
+        },
+        {
+          "round": 11,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 6900
+        },
+        {
+          "round": 14,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 6600
+        },
+        {
+          "round": 16,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 6400
+        },
+        {
+          "round": 18,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 6200
+        },
+        {
+          "round": 21,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 5900
+        },
+        {
+          "round": 23,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 5700
+        },
+        {
+          "round": 26,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 5400
+        },
+        {
+          "round": 27,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 5300
+        },
+        {
+          "round": 30,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 5000
+        },
+        {
+          "round": 33,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 4700
+        },
+        {
+          "round": 35,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 4500
+        },
+        {
+          "round": 37,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 4300
+        },
+        {
+          "round": 39,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 4100
+        },
+        {
+          "round": 42,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 3800
+        },
+        {
+          "round": 45,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 3500
+        },
+        {
+          "round": 46,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 3400
+        },
+        {
+          "round": 49,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 3100
+        },
+        {
+          "round": 51,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 2900
+        },
+        {
+          "round": 54,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 2600
+        },
+        {
+          "round": 56,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 2400
+        },
+        {
+          "round": 58,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 2200
+        },
+        {
+          "round": 61,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 1900
+        },
+        {
+          "round": 63,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 1700
+        },
+        {
+          "round": 65,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 1500
+        },
+        {
+          "round": 68,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 1200
+        },
+        {
+          "round": 70,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 1000
+        },
+        {
+          "round": 72,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 800
+        },
+        {
+          "round": 73,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 700
+        },
+        {
+          "round": 75,
+          "channelId": "ch2",
+          "delta": 100,
+          "remainingBudget": 500
+        }
+      ]
+    },
+    {
+      "channel": "百度-搜索",
+      "allocatedBudget": 2000,
+      "dailyCap": 2000,
+      "capReached": true,
+      "marginalReturn": 8.422433748856834e-7,
+      "expectedConversions": 0.049663102650045726,
+      "delayDiscount": 1,
+      "duplicatePenalty": 1,
+      "anomalies": [
+        {
+          "type": "budget_exhausted",
+          "severity": "critical",
+          "explanation": "渠道百度-搜索已触及日消耗上限¥2,000，剩余边际收益¥0.000001被拦住。如需更多投放，需提高日消耗上限或等待次日额度刷新。"
+        }
+      ],
+      "optimizationSteps": [
+        {
+          "round": 1,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000125,
+          "marginalReturnAfter": 0.00009735009788392561,
+          "explanation": "第1轮：向百度-搜索分配¥100，边际收益从0.000125降至0.000097"
+        },
+        {
+          "round": 2,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00009735009788392561,
+          "marginalReturnAfter": 0.00007581633246407918,
+          "explanation": "第2轮：向百度-搜索分配¥100，边际收益从0.000097降至0.000076"
+        },
+        {
+          "round": 4,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00007581633246407918,
+          "marginalReturnAfter": 0.000059045819092626836,
+          "explanation": "第4轮：向百度-搜索分配¥100，边际收益从0.000076降至0.000059"
+        },
+        {
+          "round": 6,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000059045819092626836,
+          "marginalReturnAfter": 0.000045984930146430295,
+          "explanation": "第6轮：向百度-搜索分配¥100，边际收益从0.000059降至0.000046"
+        },
+        {
+          "round": 8,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000045984930146430295,
+          "marginalReturnAfter": 0.000035813099607523765,
+          "explanation": "第8轮：向百度-搜索分配¥100，边际收益从0.000046降至0.000036"
+        },
+        {
+          "round": 13,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000035813099607523765,
+          "marginalReturnAfter": 0.000027891270018553728,
+          "explanation": "第13轮：向百度-搜索分配¥100，边际收益从0.000036降至0.000028"
+        },
+        {
+          "round": 17,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000027891270018553728,
+          "marginalReturnAfter": 0.000021721742931305638,
+          "explanation": "第17轮：向百度-搜索分配¥100，边际收益从0.000028降至0.000022"
+        },
+        {
+          "round": 20,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000021721742931305638,
+          "marginalReturnAfter": 0.000016916910404576588,
+          "explanation": "第20轮：向百度-搜索分配¥100，边际收益从0.000022降至0.000017"
+        },
+        {
+          "round": 24,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000016916910404576588,
+          "marginalReturnAfter": 0.000013174903070233043,
+          "explanation": "第24轮：向百度-搜索分配¥100，边际收益从0.000017降至0.000013"
+        },
+        {
+          "round": 29,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000013174903070233043,
+          "marginalReturnAfter": 0.00001026062482798735,
+          "explanation": "第29轮：向百度-搜索分配¥100，边际收益从0.000013降至0.000010"
+        },
+        {
+          "round": 32,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.00001026062482798735,
+          "marginalReturnAfter": 0.000007990982650838447,
+          "explanation": "第32轮：向百度-搜索分配¥100，边际收益从0.000010降至0.000008"
+        },
+        {
+          "round": 36,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000007990982650838447,
+          "marginalReturnAfter": 0.000006223383545982993,
+          "explanation": "第36轮：向百度-搜索分配¥100，边际收益从0.000008降至0.000006"
+        },
+        {
+          "round": 40,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000006223383545982993,
+          "marginalReturnAfter": 0.0000048467759789652514,
+          "explanation": "第40轮：向百度-搜索分配¥100，边际收益从0.000006降至0.000005"
+        },
+        {
+          "round": 44,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000048467759789652514,
+          "marginalReturnAfter": 0.0000037746729277898127,
+          "explanation": "第44轮：向百度-搜索分配¥100，边际收益从0.000005降至0.000004"
+        },
+        {
+          "round": 48,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000037746729277898127,
+          "marginalReturnAfter": 0.000002939718232001139,
+          "explanation": "第48轮：向百度-搜索分配¥100，边际收益从0.000004降至0.000003"
+        },
+        {
+          "round": 52,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000002939718232001139,
+          "marginalReturnAfter": 0.0000022894548610917725,
+          "explanation": "第52轮：向百度-搜索分配¥100，边际收益从0.000003降至0.000002"
+        },
+        {
+          "round": 55,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000022894548610917725,
+          "marginalReturnAfter": 0.000001783029238624907,
+          "explanation": "第55轮：向百度-搜索分配¥100，边际收益从0.000002降至0.000002"
+        },
+        {
+          "round": 60,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.000001783029238624907,
+          "marginalReturnAfter": 0.0000013886245672802883,
+          "explanation": "第60轮：向百度-搜索分配¥100，边际收益从0.000002降至0.000001"
+        },
+        {
+          "round": 64,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000013886245672802883,
+          "marginalReturnAfter": 0.0000010814619003900792,
+          "explanation": "第64轮：向百度-搜索分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 67,
+          "action": "allocate",
+          "constraintType": "none",
+          "deltaBudget": 100,
+          "marginalReturnBefore": 0.0000010814619003900792,
+          "marginalReturnAfter": 8.422433748856834e-7,
+          "explanation": "第67轮：向百度-搜索分配¥100，边际收益从0.000001降至0.000001"
+        },
+        {
+          "round": 67.5,
+          "action": "skip_cap",
+          "constraintType": "cap",
+          "deltaBudget": 0,
+          "marginalReturnBefore": 8.422433748856834e-7,
+          "marginalReturnAfter": 0,
+          "explanation": "渠道百度-搜索已触及日消耗上限¥2000，剩余边际收益¥0.000001被拦住"
+        }
+      ],
+      "marginalReturnCurve": [
+        {
+          "budget": 0,
+          "marginalReturn": 0
+        },
+        {
+          "budget": 100,
+          "marginalReturn": 0.00009735009788392561
+        },
+        {
+          "budget": 200,
+          "marginalReturn": 0.00007581633246407918
+        },
+        {
+          "budget": 300,
+          "marginalReturn": 0.000059045819092626836
+        },
+        {
+          "budget": 400,
+          "marginalReturn": 0.000045984930146430295
+        },
+        {
+          "budget": 500,
+          "marginalReturn": 0.000035813099607523765
+        },
+        {
+          "budget": 600,
+          "marginalReturn": 0.000027891270018553728
+        },
+        {
+          "budget": 700,
+          "marginalReturn": 0.000021721742931305638
+        },
+        {
+          "budget": 800,
+          "marginalReturn": 0.000016916910404576588
+        },
+        {
+          "budget": 900,
+          "marginalReturn": 0.000013174903070233043
+        },
+        {
+          "budget": 1000,
+          "marginalReturn": 0.00001026062482798735
+        },
+        {
+          "budget": 1100,
+          "marginalReturn": 0.000007990982650838447
+        },
+        {
+          "budget": 1200,
+          "marginalReturn": 0.000006223383545982993
+        },
+        {
+          "budget": 1300,
+          "marginalReturn": 0.0000048467759789652514
+        },
+        {
+          "budget": 1400,
+          "marginalReturn": 0.0000037746729277898127
+        },
+        {
+          "budget": 1500,
+          "marginalReturn": 0.000002939718232001139
+        },
+        {
+          "budget": 1600,
+          "marginalReturn": 0.0000022894548610917725
+        },
+        {
+          "budget": 1700,
+          "marginalReturn": 0.000001783029238624907
+        },
+        {
+          "budget": 1800,
+          "marginalReturn": 0.0000013886245672802883
+        },
+        {
+          "budget": 1900,
+          "marginalReturn": 0.0000010814619003900792
+        },
+        {
+          "budget": 2000,
+          "marginalReturn": 8.422433748856834e-7
+        }
+      ],
+      "budgetReplay": [
+        {
+          "round": 1,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 7900
+        },
+        {
+          "round": 2,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 7800
+        },
+        {
+          "round": 4,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 7600
+        },
+        {
+          "round": 6,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 7400
+        },
+        {
+          "round": 8,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 7200
+        },
+        {
+          "round": 13,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 6700
+        },
+        {
+          "round": 17,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 6300
+        },
+        {
+          "round": 20,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 6000
+        },
+        {
+          "round": 24,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 5600
+        },
+        {
+          "round": 29,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 5100
+        },
+        {
+          "round": 32,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 4800
+        },
+        {
+          "round": 36,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 4400
+        },
+        {
+          "round": 40,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 4000
+        },
+        {
+          "round": 44,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 3600
+        },
+        {
+          "round": 48,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 3200
+        },
+        {
+          "round": 52,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 2800
+        },
+        {
+          "round": 55,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 2500
+        },
+        {
+          "round": 60,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 2000
+        },
+        {
+          "round": 64,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 1600
+        },
+        {
+          "round": 67,
+          "channelId": "ch3",
+          "delta": 100,
+          "remainingBudget": 1300
+        }
+      ]
+    }
+  ]
+}
