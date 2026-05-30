@@ -1,0 +1,202 @@
+{
+  "checks": {
+    "isolated_nodes": {
+      "passed": false,
+      "issues": [
+        {
+          "type": "isolated_node",
+          "severity": "warning",
+          "description": "节点 N7 (孤立节点) 是孤立节点，无任何边连接",
+          "affected_items": [
+            "N7"
+          ],
+          "details": {
+            "layer": "1F"
+          }
+        }
+      ],
+      "summary": {
+        "count": 1
+      }
+    },
+    "reversed_edges": {
+      "passed": false,
+      "issues": [
+        {
+          "type": "reversed_edge",
+          "severity": "error",
+          "description": "边 E5 是反向边，可能导致路径阻断",
+          "affected_items": [
+            "E5",
+            "N8",
+            "N1"
+          ],
+          "details": {
+            "from": "N8",
+            "to": "N1"
+          }
+        }
+      ],
+      "summary": {
+        "count": 1
+      }
+    },
+    "cross_layer_edges": {
+      "passed": false,
+      "issues": [
+        {
+          "type": "cross_layer_edge",
+          "severity": "warning",
+          "description": "边 E4 跨层连接: 1F -> 2F",
+          "affected_items": [
+            "E4",
+            "N5",
+            "N6"
+          ],
+          "details": {
+            "from_layer": "1F",
+            "to_layer": "2F"
+          }
+        },
+        {
+          "type": "cross_layer_edge",
+          "severity": "warning",
+          "description": "边 E6 跨层连接: 1F -> 2F",
+          "affected_items": [
+            "E6",
+            "N2",
+            "N6"
+          ],
+          "details": {
+            "from_layer": "1F",
+            "to_layer": "2F"
+          }
+        }
+      ],
+      "summary": {
+        "count": 2
+      }
+    },
+    "path_connectivity": {
+      "passed": false,
+      "issues": [
+        {
+          "type": "disconnected_component",
+          "severity": "error",
+          "description": "存在不连通子图 #1，包含 3 个节点",
+          "affected_items": [
+            "N2",
+            "N1",
+            "N6"
+          ],
+          "details": {
+            "component_size": 3,
+            "nodes": [
+              "N2",
+              "N1",
+              "N6"
+            ]
+          }
+        },
+        {
+          "type": "disconnected_component",
+          "severity": "error",
+          "description": "存在不连通子图 #2，包含 2 个节点",
+          "affected_items": [
+            "N3",
+            "N4"
+          ],
+          "details": {
+            "component_size": 2,
+            "nodes": [
+              "N3",
+              "N4"
+            ]
+          }
+        },
+        {
+          "type": "disconnected_component",
+          "severity": "error",
+          "description": "存在不连通子图 #3，包含 1 个节点",
+          "affected_items": [
+            "N5"
+          ],
+          "details": {
+            "component_size": 1,
+            "nodes": [
+              "N5"
+            ]
+          }
+        },
+        {
+          "type": "disconnected_component",
+          "severity": "error",
+          "description": "存在不连通子图 #4，包含 1 个节点",
+          "affected_items": [
+            "N7"
+          ],
+          "details": {
+            "component_size": 1,
+            "nodes": [
+              "N7"
+            ]
+          }
+        },
+        {
+          "type": "disconnected_component",
+          "severity": "error",
+          "description": "存在不连通子图 #5，包含 1 个节点",
+          "affected_items": [
+            "N8"
+          ],
+          "details": {
+            "component_size": 1,
+            "nodes": [
+              "N8"
+            ]
+          }
+        }
+      ],
+      "summary": {
+        "component_count": 5,
+        "component_sizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  },
+  "changes": {
+    "isolated_nodes": {
+      "previous_passed": false,
+      "current_passed": false,
+      "changed": false,
+      "new_issues": [],
+      "resolved_issues": []
+    },
+    "reversed_edges": {
+      "previous_passed": false,
+      "current_passed": false,
+      "changed": false,
+      "new_issues": [],
+      "resolved_issues": []
+    },
+    "cross_layer_edges": {
+      "previous_passed": false,
+      "current_passed": false,
+      "changed": false,
+      "new_issues": [],
+      "resolved_issues": []
+    },
+    "path_connectivity": {
+      "previous_passed": false,
+      "current_passed": false,
+      "changed": false,
+      "new_issues": [],
+      "resolved_issues": []
+    }
+  }
+}

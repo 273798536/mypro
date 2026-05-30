@@ -1,0 +1,10 @@
+{
+  "edges": [
+    {"edge_id": "E1", "from_node": "N1", "to_node": "N2", "direction": "forward"},
+    {"edge_id": "E2", "from_node": "N2", "to_node": "N3", "direction": "undirected"},
+    {"edge_id": "E3", "from_node": "N3", "to_node": "N4", "direction": "forward"},
+    {"edge_id": "E4", "from_node": "N5", "to_node": "N6", "direction": "undirected"},
+    {"edge_id": "E5", "from_node": "N8", "to_node": "N1", "direction": "reverse"},
+    {"edge_id": "E6", "from_node": "N2", "to_node": "N6", "direction": "forward"}
+  ]
+}
