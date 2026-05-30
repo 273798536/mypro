@@ -1,0 +1,7 @@
+﻿样本编号,异常类型,严重程度,技术信息,人话解释,源文件,行号,字段名,原始值,期望值
+S010,missing_size_unit,critical,Size unit is missing,样本【S010】的粒径单位漏掉了。当前只写了数字100.0，但没说是毫米、微米还是纳米。打个比方：1000微米=1毫米，差了1000倍，算出来的沉降速度会差100万倍。请补上单位（如：μm、mm、nm）。（记录位置：data/samples_combined.csv 第11行）,data/samples_combined.csv,11,diameter_unit,,mm / μm / nm / m 其中之一
+S012,size_out_of_model_range,warning,Size 100000.0μm out of typical model range,样本【S012】的粒径换算后是100000.00微米。这个值超出了Stokes模型通常适用的范围（0.1~1000微米）。太小可能出现布朗运动干扰，太大则进入紊流区。计算结果会标记为边界值，请谨慎使用。（记录位置：data/samples_combined.csv 第13行）,data/samples_combined.csv,13,diameter,,
+S013,negative_value,critical,Negative diameter: -50.0,样本【S013】的粒径是负数-50.0。现实中不存在负的粒径大小，请检查是否多打了负号。（记录位置：data/samples_combined.csv 第14行）,data/samples_combined.csv,14,diameter,-50.0,
+S013,size_out_of_model_range,warning,Size -49.99999999999999μm out of typical model range,样本【S013】的粒径换算后是-50.00微米。这个值超出了Stokes模型通常适用的范围（0.1~1000微米）。太小可能出现布朗运动干扰，太大则进入紊流区。计算结果会标记为边界值，请谨慎使用。（记录位置：data/samples_combined.csv 第14行）,data/samples_combined.csv,14,diameter,,
+S014,missing_temperature,warning,"Temperature is missing, using default 20°C viscosity",样本【S014】的实验温度没填。系统会默认用20°C的水粘度（1.002 mPa·s）来计算。如果实际温度不是20°C，沉降速度可能有偏差。建议补上实验温度。（记录位置：data/samples_combined.csv 第15行）,data/samples_combined.csv,15,temperature,,
+S015,missing_temperature,warning,"Temperature is missing, using default 20°C viscosity",样本【S015】的实验温度没填。系统会默认用20°C的水粘度（1.002 mPa·s）来计算。如果实际温度不是20°C，沉降速度可能有偏差。建议补上实验温度。（记录位置：data/samples_combined.csv 第16行）,data/samples_combined.csv,16,temperature,,

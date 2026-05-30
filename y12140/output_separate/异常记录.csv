@@ -1,0 +1,4 @@
+﻿样本编号,异常类型,严重程度,技术信息,人话解释,源文件,行号,字段名,原始值,期望值
+S104,merge_conflict,warning,Merge conflict in density_relationship,颗粒密度小于液体密度，颗粒会上浮而不是沉降。请核实哪组数据准确：颗粒密度应该大于液体密度才能沉降。,data/particles.csv,5,density_relationship,,
+S104,merge_conflict,warning,Merge conflict in liquid_density,液体密度有两个不同的值：颗粒数据里写的是1005.00 kg/m³，液体数据里写的是2700.00 kg/m³。请两位维护者确认哪个是对的，不要让系统自己选。,data/particles.csv,5,liquid_density,,
+S103,merge_conflict,warning,Merge conflict in temperature,实验温度有两个不同的值：颗粒数据里写的是22.0°C，液体数据里写的是25.0°C。请确认实际实验温度，温度会影响液体粘度，进而影响沉降速度。,data/particles.csv,4,temperature,,

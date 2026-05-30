@@ -1,0 +1,6 @@
+sample_id,diameter,diameter_unit,density,density_unit,temperature,liquid_density,source
+S101,50,μm,2650,kg/m³,25,1000,张工（颗粒组）
+S102,100,μm,2650,kg/m³,20,998.2,张工（颗粒组）
+S103,150,μm,2700,kg/m³,22,995.0,张工（颗粒组）
+S104,200,μm,2650,kg/m³,18,1005,张工（颗粒组）
+S105,75,μm,2650,kg/m³,25,998.2,张工（颗粒组）
