@@ -1,0 +1,50 @@
+{
+  "spacecraft": {
+    "name": "测试卫星T-2",
+    "dimensions": {
+      "length": 3,
+      "width": 3,
+      "height": 1
+    },
+    "remark": "模拟传感器安装方向错误导致的坐标轴反向问题"
+  },
+  "frames": [
+    { "timestamp": 0, "pitch": 0, "yaw": 0, "roll": 0, "remark": "初始姿态 - 传感器校准中" },
+    { "timestamp": 0.5, "pitch": 5, "yaw": 3, "roll": -2 },
+    { "timestamp": 1, "pitch": 10, "yaw": 6, "roll": -4 },
+    { "timestamp": 1.5, "pitch": 15, "yaw": 8, "roll": -6 },
+    { "timestamp": 2, "pitch": 20, "yaw": -10, "roll": -8,
+      "remark": "⚠️ 检测到异常 - 偏航角方向反转（从+10°跳转到-10°）"
+    },
+    { "timestamp": 2.5, "pitch": 25, "yaw": -15, "roll": -10,
+      "remark": "⚠️ 偏航角持续反向变化"
+    },
+    { "timestamp": 3, "pitch": 30, "yaw": -20, "roll": -12 },
+    { "timestamp": 3.5, "pitch": 35, "yaw": -25, "roll": -14 },
+    { "timestamp": 4, "pitch": 40, "yaw": -30, "roll": -15,
+      "remark": "⚠️ 滚转角也出现反向趋势"
+    },
+    { "timestamp": 4.5, "pitch": 45, "yaw": -35, "roll": 13 },
+    { "timestamp": 5, "pitch": 50, "yaw": -40, "roll": 25,
+      "remark": "🔴 滚转角完全反转（从-15°跳转到+25°，变化40°）"
+    },
+    { "timestamp": 5.5, "pitch": 55, "yaw": -45, "roll": 30 },
+    { "timestamp": 6, "pitch": 60, "yaw": -50, "roll": 35,
+      "remark": "⚠️ 俯仰角也开始出现异常"
+    },
+    { "timestamp": 6.5, "pitch": -55, "yaw": -55, "roll": 40,
+      "remark": "🔴 俯仰角反转（从+60°跳转到-55°，变化115°）"
+    },
+    { "timestamp": 7, "pitch": -50, "yaw": -60, "roll": 45 },
+    { "timestamp": 7.5, "pitch": -45, "yaw": -65, "roll": 50 },
+    { "timestamp": 8, "pitch": -40, "yaw": -70, "roll": 55,
+      "remark": "📊 三轴全部反向，可能是传感器安装方向错误"
+    },
+    { "timestamp": 8.5, "pitch": -35, "yaw": -65, "roll": 50 },
+    { "timestamp": 9, "pitch": -30, "yaw": -60, "roll": 45 },
+    { "timestamp": 9.5, "pitch": -25, "yaw": -55, "roll": 40 },
+    { "timestamp": 10, "pitch": -20, "yaw": -50, "roll": 35,
+      "remark": "✅ 点击修正建议可自动计算正确的角度值"
+    }
+  ]
+}

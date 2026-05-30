@@ -1,0 +1,62 @@
+{
+  "spacecraft": {
+    "name": "实验卫星X-1",
+    "dimensions": {
+      "length": 3.5,
+      "width": 2.5,
+      "height": 1.2
+    },
+    "remark": "模拟实际数据采集场景，包含缺字段、坐标轴晚到等问题"
+  },
+  "frames": [
+    { "timestamp": 0, "pitch": 0, "yaw": 0, "roll": 0 },
+    { "timestamp": 0.5, "pitch": 5, "yaw": 3, "roll": -2,
+      "axisArrival": { "pitch": true, "yaw": true, "roll": false },
+      "remark": "⚠️ 滚转角数据晚到一帧"
+    },
+    { "timestamp": 1, "yaw": 6, "roll": -4,
+      "remark": "⚠️ 俯仰角数据缺失，使用预测值填充"
+    },
+    { "timestamp": 1.5, "pitch": 15, "yaw": 8, "roll": -6 },
+    { "timestamp": 2, "pitch": 20, "roll": -8,
+      "remark": "⚠️ 偏航角数据缺失"
+    },
+    { "timestamp": 2.5, "pitch": 25, "yaw": 12,
+      "axisArrival": { "pitch": true, "yaw": true, "roll": false },
+      "remark": "⚠️ 滚转角再次晚到"
+    },
+    { "timestamp": 3, "pitch": 30, "yaw": 15, "roll": -12 },
+    { "timestamp": 3.5, "yaw": 18, "roll": -14,
+      "remark": "⚠️ 俯仰角缺失"
+    },
+    { "timestamp": 4, "pitch": 40, "yaw": 20, "roll": -15 },
+    { "timestamp": 4.5, "pitch": 45, "roll": -13,
+      "remark": "⚠️ 偏航角缺失"
+    },
+    { "timestamp": 5, "pitch": 50, "yaw": 25, "roll": -10,
+      "axisArrival": { "pitch": false, "yaw": true, "roll": true },
+      "remark": "⚠️ 俯仰角晚到"
+    },
+    { "timestamp": 5.5, "pitch": 55, "yaw": 28, "roll": -7 },
+    { "timestamp": 6, "yaw": 30, "roll": -5,
+      "remark": "⚠️ 俯仰角缺失"
+    },
+    { "timestamp": 6.5, "pitch": 65, "yaw": 32, "roll": -3 },
+    { "timestamp": 7, "pitch": 70, "yaw": 35, "roll": 0 },
+    { "timestamp": 7.5, "pitch": 75, "yaw": 38, "roll": 3,
+      "axisArrival": { "pitch": true, "yaw": false, "roll": true },
+      "remark": "⚠️ 偏航角晚到"
+    },
+    { "timestamp": 8, "pitch": 80, "roll": 5,
+      "remark": "⚠️ 偏航角缺失"
+    },
+    { "timestamp": 8.5, "pitch": 75, "yaw": 42, "roll": 8 },
+    { "timestamp": 9, "pitch": 70, "yaw": 45, "roll": 10 },
+    { "timestamp": 9.5, "pitch": 65, "yaw": 48,
+      "remark": "⚠️ 滚转角缺失"
+    },
+    { "timestamp": 10, "pitch": 60, "yaw": 50, "roll": 15,
+      "remark": "✅ 数据恢复完整"
+    }
+  ]
+}
