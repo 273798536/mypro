@@ -1,0 +1,21 @@
+{
+  "name": "cold-chain-defrost-analyzer",
+  "version": "1.0.0",
+  "description": "冷链融霜能耗分析服务 - 支持持久化、异常归因、版本追踪",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7",
+    "cors": "^2.8.5",
+    "moment": "^2.29.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
