@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+:root {
+  font-family: "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #12121e;
+  color: #d0d0dd;
+}
+
+@layer components {
+  .card-base {
+    @apply bg-ink-800 border border-ink-600 rounded-lg shadow-lg;
+  }
+
+  .card-interactive {
+    @apply card-base hover:border-amber/50 hover:shadow-amber-glow transition-all duration-300 cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply px-5 py-2.5 bg-amber text-ink-900 font-semibold rounded-lg
+           hover:bg-amber-light active:bg-amber-dark
+           transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-ink-700 text-parchment-100 border border-ink-500 rounded-lg
+           hover:bg-ink-600 hover:border-amber/50
+           transition-all duration-200;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-danger/20 text-danger-light border border-danger/40 rounded-lg
+           hover:bg-danger/30 transition-all duration-200;
+  }
+
+  .btn-success {
+    @apply px-4 py-2 bg-success/20 text-success-light border border-success/40 rounded-lg
+           hover:bg-success/30 transition-all duration-200;
+  }
+
+  .section-title {
+    @apply font-serif text-parchment-200 text-lg font-semibold tracking-wide;
+  }
+
+  .label-text {
+    @apply text-ink-200 text-xs uppercase tracking-widest;
+  }
+}
+
+@layer utilities {
+  .text-glow-amber {
+    text-shadow: 0 0 10px #d4a57460, 0 0 20px #d4a57430;
+  }
+
+  .border-glow-amber {
+    box-shadow: 0 0 8px #d4a57440, inset 0 0 8px #d4a57420;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #353550 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #353550;
+    border-radius: 4px;
+  }
+}
