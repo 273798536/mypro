@@ -1,0 +1,25 @@
+端到端一致性校验报告
+==================================================
+校验学生数: 59
+通过校验: 42
+存在问题: 17
+通过率: 71.19%
+
+存在问题的学生:
+  S001: coloring: No adjacent same color - FAILED
+  S002: seating: Color matches seating group - FAILED
+  S003: seating: Color matches seating group - FAILED
+  S005: coloring: No adjacent same color - FAILED
+  S007: seating: Color matches seating group - FAILED
+  S008: seating: Color matches seating group - FAILED
+  S009: seating: Color matches seating group - FAILED
+  S010: coloring: No adjacent same color - FAILED
+  S011: seating: Color matches seating group - FAILED
+  S013: seating: Color matches seating group - FAILED
+  S015: seating: Color matches seating group - FAILED
+  S016: seating: Color matches seating group - FAILED
+  S021: coloring: No adjacent same color - FAILED
+  S022: coloring: No adjacent same color - FAILED
+  S023: coloring: No adjacent same color - FAILED
+  S024: coloring: No adjacent same color - FAILED
+  S025: coloring: No adjacent same color - FAILED

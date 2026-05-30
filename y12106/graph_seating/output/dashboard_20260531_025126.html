@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>图论社团排座位 - 总览仪表板</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #ecf0f1; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; }
+        .header h1 { margin: 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+        .stat-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-box .label { color: #7f8c8d; font-size: 14px; }
+        .stat-box .value { font-size: 28px; font-weight: bold; color: #2c3e50; }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card h2 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        ul { padding-left: 20px; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .status-ok { color: #27ae60; }
+        .status-warn { color: #f39c12; }
+        .status-error { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图论社团排座位系统 - 运行结果总览</h1>
+        <p>生成时间: 2026-05-31T02:51:26.206822</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="label">学生总数</div>
+            <div class="value">59</div>
+        </div>
+        <div class="stat-box">
+            <div class="label">班级数量</div>
+            <div class="value">3</div>
+        </div>
+        <div class="stat-box">
+            <div class="label">冲突关系</div>
+            <div class="value">48</div>
+        </div>
+        <div class="stat-box">
+            <div class="label">数据异常</div>
+            <div class="value status-error">23</div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="card">
+            <h2>📊 核心数据指标</h2>
+            <ul>
+                <li>有效学生: <strong class="status-ok">59</strong></li>
+                <li>请假学生: <strong class="status-warn">12</strong></li>
+                <li>有冲突关系: <strong>17</strong></li>
+                <li>检测到闭环: <strong class="status-error">228</strong></li>
+                <li>已隔离闭环: <strong class="status-warn">228</strong></li>
+                <li>着色成功率: <strong class="status-ok">True</strong></li>
+                <li>未分配学生: <strong class="status-error">15</strong></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📁 生成的文件</h2>
+            <h3>数据导出</h3>
+            <ul>
+                <li>暂无导出文件</li>
+            </ul>
+            <h3>可视化图表</h3>
+            <ul>
+                <li><a href="conflict_graph_20260531_025126.html">Conflict Graph</a></li><li><a href="color_distribution_20260531_025126.html">Color Distribution</a></li><li><a href="capacity_utilization_20260531_025126.html">Capacity Utilization</a></li><li><a href="anomaly_report_20260531_025126.html">Anomaly Report</a></li><li><a href="conflict_type_distribution_20260531_025126.html">Conflict Type Chart</a></li><li><a href="leave_analysis_20260531_025126.html">Leave Analysis</a></li><li><a href="traceability_dashboard_20260531_025126.html">Traceability Dashboard</a></li><li><a href="conflict_cycles_20260531_025126.html">Cycles Visualization</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h2>⚠️ 需要人工复核的事项</h2>
+        <div class="content-grid">
+            <div>
+                <h3>数据质量问题</h3>
+                <ul><li class="status-error">有 23 条数据异常需要处理</li></ul>
+            </div>
+            <div>
+                <h3>冲突闭环</h3>
+                <ul><li class="status-error">有 228 个冲突闭环需要复核</li></ul>
+            </div>
+            <div>
+                <h3>容量问题</h3>
+                <ul><li class="status-warn">有 2 条容量告警</li></ul>
+            </div>
+            <div>
+                <h3>请假补位</h3>
+                <ul><li class="status-warn">有 12 个请假补位需要确认</li></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h2>🔗 数据链路验证</h2>
+        <p>每条学生记录都可以追溯到：原始数据行 → 冲突图节点 → 颜色组分配 → 班级座位 → 换座历史</p>
+        <p>使用 <code>trace://&lt;学生ID&gt;</code> 格式可快速定位学生的完整追溯链路</p>
+        <p>数据一致性校验: <strong class="status-ok">59</strong> 条记录一致，
+           <strong class="status-error">0</strong> 条需要关注</p>
+    </div>
+</body>
+</html>

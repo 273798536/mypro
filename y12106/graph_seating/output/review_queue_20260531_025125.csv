@@ -1,0 +1,18 @@
+﻿审核类别,学生ID,相关班级,问题描述,严重程度,建议操作,追溯链接
+leave_overrides,S002,二班,请假补位，替代张三,medium,确认请假补位是否合理,trace://S002
+leave_overrides,S008,二班,请假补位，替代张廿六,medium,确认请假补位是否合理,trace://S008
+leave_overrides,S009,二班,请假补位，替代孔廿七,medium,确认请假补位是否合理,trace://S009
+leave_overrides,S011,二班,请假补位，替代曹廿八,medium,确认请假补位是否合理,trace://S011
+leave_overrides,S013,二班,请假补位，替代严廿九,medium,确认请假补位是否合理,trace://S013
+leave_overrides,S016,二班,请假补位，替代窦四一,medium,确认请假补位是否合理,trace://S016
+conflict_warnings,S003,二班,"严重冲突: 与S002 (explicit, 权重1.0)",high,检查冲突原因，考虑调整,trace://S003
+leave_overrides,S003,二班,请假补位，替代孙七,medium,确认请假补位是否合理,trace://S003
+conflict_warnings,S007,二班,"严重冲突: 与S002 (explicit, 权重1.0)",high,检查冲突原因，考虑调整,trace://S007
+leave_overrides,S007,二班,请假补位，替代陈十二,medium,确认请假补位是否合理,trace://S007
+leave_overrides,S015,二班,请假补位，替代华三十,medium,确认请假补位是否合理,trace://S015
+leave_overrides,S021,二班,冲突闭环，已隔离等待人工复核,medium,确认请假补位是否合理,trace://S021
+conflict_warnings,S022,二班,"严重冲突: 与S021 (explicit, 权重1.0)",high,检查冲突原因，考虑调整,trace://S022
+leave_overrides,S022,二班,冲突闭环，已隔离等待人工复核,medium,确认请假补位是否合理,trace://S022
+conflict_warnings,S023,二班,"严重冲突: 与S021 (explicit, 权重1.0)",high,检查冲突原因，考虑调整,trace://S023
+conflict_warnings,S023,二班,"严重冲突: 与S022 (explicit, 权重1.0)",high,检查冲突原因，考虑调整,trace://S023
+leave_overrides,S023,二班,冲突闭环，已隔离等待人工复核,medium,确认请假补位是否合理,trace://S023

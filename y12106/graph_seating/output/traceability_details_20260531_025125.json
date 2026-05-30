@@ -1,0 +1,2752 @@
+{
+  "statistics": {
+    "total_students": 65,
+    "total_trace_records": 693,
+    "total_constraints": 322,
+    "total_seat_changes": 77,
+    "avg_records_per_student": 10.661538461538461,
+    "consistency_status": {
+      "consistent": 59,
+      "unknown": 6
+    },
+    "trace_coverage": "65 students with full trace"
+  },
+  "exported_at": "2026-05-31T02:51:26.155429",
+  "student_traces": {
+    "S001": {
+      "student_id": "S001",
+      "trace_summary": {
+        "student_id": "S001",
+        "record_count": 8,
+        "constraint_count": 33,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "124aa4b0",
+          "student_id": "S001",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 9,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136221",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-10~2024-09-15"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155495"
+    },
+    "S002": {
+      "student_id": "S002",
+      "trace_summary": {
+        "student_id": "S002",
+        "record_count": 13,
+        "constraint_count": 9,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "1c70b2cf",
+          "student_id": "S002",
+          "old_class_id": "G3_C1",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 1,
+          "new_seat_number": 9,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136420",
+          "operator": "system",
+          "notes": "补位替换: 填补张三的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155518"
+    },
+    "S003": {
+      "student_id": "S003",
+      "trace_summary": {
+        "student_id": "S003",
+        "record_count": 13,
+        "constraint_count": 5,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": {
+          "change_id": "2640f887",
+          "student_id": "S003",
+          "old_class_id": "G3_C3",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 1,
+          "new_seat_number": 8,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136540",
+          "operator": "system",
+          "notes": "补位替换: 填补孙七的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155537"
+    },
+    "S004": {
+      "student_id": "S004",
+      "trace_summary": {
+        "student_id": "S004",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "e8b7303b",
+          "student_id": "S004",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 6,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133014",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155555"
+    },
+    "S005": {
+      "student_id": "S005",
+      "trace_summary": {
+        "student_id": "S005",
+        "record_count": 8,
+        "constraint_count": 21,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "a755c204",
+          "student_id": "S005",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 8,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136523",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-10~2024-09-12"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155577"
+    },
+    "S006": {
+      "student_id": "S006",
+      "trace_summary": {
+        "student_id": "S006",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "c050ce9f",
+          "student_id": "S006",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 7,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133041",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155594"
+    },
+    "S007": {
+      "student_id": "S007",
+      "trace_summary": {
+        "student_id": "S007",
+        "record_count": 13,
+        "constraint_count": 5,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": {
+          "change_id": "f3666412",
+          "student_id": "S007",
+          "old_class_id": "G3_C3",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 2,
+          "new_seat_number": 1,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136618",
+          "operator": "system",
+          "notes": "补位替换: 填补陈十二的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155614"
+    },
+    "S008": {
+      "student_id": "S008",
+      "trace_summary": {
+        "student_id": "S008",
+        "record_count": 13,
+        "constraint_count": 0,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "cc4bc640",
+          "student_id": "S008",
+          "old_class_id": "G3_C1",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 8,
+          "new_seat_number": 11,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136765",
+          "operator": "system",
+          "notes": "补位替换: 填补张廿六的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155632"
+    },
+    "S009": {
+      "student_id": "S009",
+      "trace_summary": {
+        "student_id": "S009",
+        "record_count": 13,
+        "constraint_count": 0,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "4730bcd2",
+          "student_id": "S009",
+          "old_class_id": "G3_C1",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 9,
+          "new_seat_number": 10,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136844",
+          "operator": "system",
+          "notes": "补位替换: 填补孔廿七的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155649"
+    },
+    "S010": {
+      "student_id": "S010",
+      "trace_summary": {
+        "student_id": "S010",
+        "record_count": 8,
+        "constraint_count": 27,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "8b4aee45",
+          "student_id": "S010",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 1,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136603",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-08~2024-09-14"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155672"
+    },
+    "S011": {
+      "student_id": "S011",
+      "trace_summary": {
+        "student_id": "S011",
+        "record_count": 13,
+        "constraint_count": 0,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "015a31e8",
+          "student_id": "S011",
+          "old_class_id": "G3_C1",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 10,
+          "new_seat_number": 5,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136917",
+          "operator": "system",
+          "notes": "补位替换: 填补曹廿八的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155690"
+    },
+    "S012": {
+      "student_id": "S012",
+      "trace_summary": {
+        "student_id": "S012",
+        "record_count": 12,
+        "constraint_count": 9,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "968f9bee",
+          "student_id": "S012",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 2,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.132859",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155774"
+    },
+    "S013": {
+      "student_id": "S013",
+      "trace_summary": {
+        "student_id": "S013",
+        "record_count": 13,
+        "constraint_count": 0,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "432419ba",
+          "student_id": "S013",
+          "old_class_id": "G3_C1",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 11,
+          "new_seat_number": 7,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136989",
+          "operator": "system",
+          "notes": "补位替换: 填补严廿九的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155902"
+    },
+    "S014": {
+      "student_id": "S014",
+      "trace_summary": {
+        "student_id": "S014",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "9d06ffc7",
+          "student_id": "S014",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 12,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133172",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155924"
+    },
+    "S015": {
+      "student_id": "S015",
+      "trace_summary": {
+        "student_id": "S015",
+        "record_count": 13,
+        "constraint_count": 5,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": {
+          "change_id": "86580a9f",
+          "student_id": "S015",
+          "old_class_id": "G3_C3",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 3,
+          "new_seat_number": 2,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.137061",
+          "operator": "system",
+          "notes": "补位替换: 填补华三十的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155956"
+    },
+    "S016": {
+      "student_id": "S016",
+      "trace_summary": {
+        "student_id": "S016",
+        "record_count": 13,
+        "constraint_count": 0,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "48f34f9b",
+          "student_id": "S016",
+          "old_class_id": "G3_C1",
+          "new_class_id": "G3_C2",
+          "old_seat_number": 13,
+          "new_seat_number": 6,
+          "change_reason": "leave_substitution",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.137132",
+          "operator": "system",
+          "notes": "补位替换: 填补窦四一的请假空缺"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155974"
+    },
+    "S017": {
+      "student_id": "S017",
+      "trace_summary": {
+        "student_id": "S017",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "e04474db",
+          "student_id": "S017",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 14,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133532",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.155991"
+    },
+    "S018": {
+      "student_id": "S018",
+      "trace_summary": {
+        "student_id": "S018",
+        "record_count": 12,
+        "constraint_count": 5,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": {
+          "change_id": "fc5bfc6c",
+          "student_id": "S018",
+          "old_class_id": null,
+          "new_class_id": "G3_C3",
+          "old_seat_number": null,
+          "new_seat_number": 4,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.135085",
+          "operator": "system",
+          "notes": "根据颜色组1分配到三班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156010"
+    },
+    "S019": {
+      "student_id": "S019",
+      "trace_summary": {
+        "student_id": "S019",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "c0e8c972",
+          "student_id": "S019",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 15,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133612",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156027"
+    },
+    "S020": {
+      "student_id": "S020",
+      "trace_summary": {
+        "student_id": "S020",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "3c9c6075",
+          "student_id": "S020",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 16,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133641",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156043"
+    },
+    "S021": {
+      "student_id": "S021",
+      "trace_summary": {
+        "student_id": "S021",
+        "record_count": 8,
+        "constraint_count": 6,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "46dd693e",
+          "student_id": "S021",
+          "old_class_id": null,
+          "new_class_id": "G3_C2",
+          "old_seat_number": null,
+          "new_seat_number": 3,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.135531",
+          "operator": "system",
+          "notes": "根据颜色组2分配到二班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156061"
+    },
+    "S022": {
+      "student_id": "S022",
+      "trace_summary": {
+        "student_id": "S022",
+        "record_count": 8,
+        "constraint_count": 6,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "adbeb337",
+          "student_id": "S022",
+          "old_class_id": null,
+          "new_class_id": "G3_C2",
+          "old_seat_number": null,
+          "new_seat_number": 4,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.135569",
+          "operator": "system",
+          "notes": "根据颜色组2分配到二班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156079"
+    },
+    "S023": {
+      "student_id": "S023",
+      "trace_summary": {
+        "student_id": "S023",
+        "record_count": 8,
+        "constraint_count": 6,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "c645dbf1",
+          "student_id": "S023",
+          "old_class_id": null,
+          "new_class_id": "G3_C2",
+          "old_seat_number": null,
+          "new_seat_number": 12,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.135829",
+          "operator": "system",
+          "notes": "根据颜色组2分配到二班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156104"
+    },
+    "S024": {
+      "student_id": "S024",
+      "trace_summary": {
+        "student_id": "S024",
+        "record_count": 8,
+        "constraint_count": 24,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "374d4306",
+          "student_id": "S024",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 11,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136747",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-10~2024-09-20"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156210"
+    },
+    "S025": {
+      "student_id": "S025",
+      "trace_summary": {
+        "student_id": "S025",
+        "record_count": 8,
+        "constraint_count": 24,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "26a1c9df",
+          "student_id": "S025",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 10,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136828",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-10~2024-09-18"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156229"
+    },
+    "S026": {
+      "student_id": "S026",
+      "trace_summary": {
+        "student_id": "S026",
+        "record_count": 8,
+        "constraint_count": 21,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "433ab5f3",
+          "student_id": "S026",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 5,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136900",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-11~2024-09-15"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156249"
+    },
+    "S027": {
+      "student_id": "S027",
+      "trace_summary": {
+        "student_id": "S027",
+        "record_count": 8,
+        "constraint_count": 24,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "95e27f49",
+          "student_id": "S027",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 7,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.136972",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-10~2024-09-16"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156267"
+    },
+    "S028": {
+      "student_id": "S028",
+      "trace_summary": {
+        "student_id": "S028",
+        "record_count": 8,
+        "constraint_count": 18,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "c6120c82",
+          "student_id": "S028",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 2,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.137046",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-12~2024-09-14"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156286"
+    },
+    "S029": {
+      "student_id": "S029",
+      "trace_summary": {
+        "student_id": "S029",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "985a4c3c",
+          "student_id": "S029",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 17,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133668",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156304"
+    },
+    "S030": {
+      "student_id": "S030",
+      "trace_summary": {
+        "student_id": "S030",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "018da731",
+          "student_id": "S030",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 18,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133693",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156320"
+    },
+    "S032": {
+      "student_id": "S032",
+      "trace_summary": {
+        "student_id": "S032",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "d518bce5",
+          "student_id": "S032",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 19,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133821",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156337"
+    },
+    "S033": {
+      "student_id": "S033",
+      "trace_summary": {
+        "student_id": "S033",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "edef3f1b",
+          "student_id": "S033",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 20,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.133924",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156354"
+    },
+    "S034": {
+      "student_id": "S034",
+      "trace_summary": {
+        "student_id": "S034",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "ded13c76",
+          "student_id": "S034",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 21,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134063",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156372"
+    },
+    "S035": {
+      "student_id": "S035",
+      "trace_summary": {
+        "student_id": "S035",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "568cc6a1",
+          "student_id": "S035",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 22,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134111",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156388"
+    },
+    "S036": {
+      "student_id": "S036",
+      "trace_summary": {
+        "student_id": "S036",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "ad19ff58",
+          "student_id": "S036",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 23,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134148",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156404"
+    },
+    "S037": {
+      "student_id": "S037",
+      "trace_summary": {
+        "student_id": "S037",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "2f3ec3b4",
+          "student_id": "S037",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 24,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134179",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156421"
+    },
+    "S038": {
+      "student_id": "S038",
+      "trace_summary": {
+        "student_id": "S038",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "8ba3d555",
+          "student_id": "S038",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 25,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134221",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156437"
+    },
+    "S039": {
+      "student_id": "S039",
+      "trace_summary": {
+        "student_id": "S039",
+        "record_count": 8,
+        "constraint_count": 21,
+        "change_count": 2,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "seating"
+        ],
+        "constraint_types": [
+          "leave_overlap"
+        ],
+        "last_change": {
+          "change_id": "08ee130f",
+          "student_id": "S039",
+          "old_class_id": "G3_C2",
+          "new_class_id": null,
+          "old_seat_number": 6,
+          "new_seat_number": null,
+          "change_reason": "leave_removal",
+          "triggered_by": "leave_record",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.137116",
+          "operator": "system",
+          "notes": "请假移除: 2024-09-10~2024-09-13"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156457"
+    },
+    "S040": {
+      "student_id": "S040",
+      "trace_summary": {
+        "student_id": "S040",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "a889000e",
+          "student_id": "S040",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 26,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134251",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156473"
+    },
+    "S041": {
+      "student_id": "S041",
+      "trace_summary": {
+        "student_id": "S041",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "0ab29eed",
+          "student_id": "S041",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 27,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134396",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156489"
+    },
+    "S042": {
+      "student_id": "S042",
+      "trace_summary": {
+        "student_id": "S042",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "67fa9112",
+          "student_id": "S042",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 28,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134452",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156506"
+    },
+    "S043": {
+      "student_id": "S043",
+      "trace_summary": {
+        "student_id": "S043",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "8e982287",
+          "student_id": "S043",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 29,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134510",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156523"
+    },
+    "S044": {
+      "student_id": "S044",
+      "trace_summary": {
+        "student_id": "S044",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "05b4beb4",
+          "student_id": "S044",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 30,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134589",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156539"
+    },
+    "S045": {
+      "student_id": "S045",
+      "trace_summary": {
+        "student_id": "S045",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "0fc2f2ff",
+          "student_id": "S045",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 31,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134634",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156557"
+    },
+    "S046": {
+      "student_id": "S046",
+      "trace_summary": {
+        "student_id": "S046",
+        "record_count": 12,
+        "constraint_count": 3,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "a0898ec8",
+          "student_id": "S046",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 5,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.132981",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156574"
+    },
+    "S047": {
+      "student_id": "S047",
+      "trace_summary": {
+        "student_id": "S047",
+        "record_count": 12,
+        "constraint_count": 6,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "7e7f8301",
+          "student_id": "S047",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 3,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.132893",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156592"
+    },
+    "S048": {
+      "student_id": "S048",
+      "trace_summary": {
+        "student_id": "S048",
+        "record_count": 12,
+        "constraint_count": 5,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": {
+          "change_id": "6fef1b08",
+          "student_id": "S048",
+          "old_class_id": null,
+          "new_class_id": "G3_C3",
+          "old_seat_number": null,
+          "new_seat_number": 5,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.135105",
+          "operator": "system",
+          "notes": "根据颜色组1分配到三班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156612"
+    },
+    "S049": {
+      "student_id": "S049",
+      "trace_summary": {
+        "student_id": "S049",
+        "record_count": 12,
+        "constraint_count": 6,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": {
+          "change_id": "a29960d3",
+          "student_id": "S049",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 4,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.132918",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156631"
+    },
+    "S050": {
+      "student_id": "S050",
+      "trace_summary": {
+        "student_id": "S050",
+        "record_count": 12,
+        "constraint_count": 5,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": {
+          "change_id": "ae61e3b3",
+          "student_id": "S050",
+          "old_class_id": null,
+          "new_class_id": "G3_C3",
+          "old_seat_number": null,
+          "new_seat_number": 6,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.135298",
+          "operator": "system",
+          "notes": "根据颜色组1分配到三班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156651"
+    },
+    "S051": {
+      "student_id": "S051",
+      "trace_summary": {
+        "student_id": "S051",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "5be53e87",
+          "student_id": "S051",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 32,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134695",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156668"
+    },
+    "S052": {
+      "student_id": "S052",
+      "trace_summary": {
+        "student_id": "S052",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "b4532588",
+          "student_id": "S052",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 33,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134727",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156685"
+    },
+    "S053": {
+      "student_id": "S053",
+      "trace_summary": {
+        "student_id": "S053",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "e2cab395",
+          "student_id": "S053",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 34,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134756",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156701"
+    },
+    "S054": {
+      "student_id": "S054",
+      "trace_summary": {
+        "student_id": "S054",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "dd22a430",
+          "student_id": "S054",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 35,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134784",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156718"
+    },
+    "S055": {
+      "student_id": "S055",
+      "trace_summary": {
+        "student_id": "S055",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "1e80693f",
+          "student_id": "S055",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 36,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134813",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156734"
+    },
+    "S056": {
+      "student_id": "S056",
+      "trace_summary": {
+        "student_id": "S056",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "f10668eb",
+          "student_id": "S056",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 37,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134843",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156749"
+    },
+    "S057": {
+      "student_id": "S057",
+      "trace_summary": {
+        "student_id": "S057",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "c939f2b9",
+          "student_id": "S057",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 38,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134871",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156765"
+    },
+    "S058": {
+      "student_id": "S058",
+      "trace_summary": {
+        "student_id": "S058",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "03a039c9",
+          "student_id": "S058",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 39,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134901",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156782"
+    },
+    "S059": {
+      "student_id": "S059",
+      "trace_summary": {
+        "student_id": "S059",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "0ec14359",
+          "student_id": "S059",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 40,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134930",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156798"
+    },
+    "S060": {
+      "student_id": "S060",
+      "trace_summary": {
+        "student_id": "S060",
+        "record_count": 12,
+        "constraint_count": 0,
+        "change_count": 1,
+        "trace_types": [
+          "data_load",
+          "graph_build",
+          "coloring",
+          "seating"
+        ],
+        "constraint_types": [],
+        "last_change": {
+          "change_id": "76a7c2ef",
+          "student_id": "S060",
+          "old_class_id": null,
+          "new_class_id": "G3_C1",
+          "old_seat_number": null,
+          "new_seat_number": 41,
+          "change_reason": "initial_allocation",
+          "triggered_by": "color_based",
+          "related_changes": [],
+          "timestamp": "2026-05-31T02:51:26.134969",
+          "operator": "system",
+          "notes": "根据颜色组0分配到一班"
+        },
+        "consistency_status": {
+          "consistent": true,
+          "status": "consistent",
+          "hash_count": 4,
+          "stages_covered": [
+            "data_loaded",
+            "graph_built",
+            "colored",
+            "seated"
+          ],
+          "issues": []
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156814"
+    },
+    "S005|S010": {
+      "student_id": "S005|S010",
+      "trace_summary": {
+        "student_id": "S005|S010",
+        "record_count": 4,
+        "constraint_count": 3,
+        "change_count": 0,
+        "trace_types": [
+          "coloring"
+        ],
+        "constraint_types": [
+          "explicit_conflict"
+        ],
+        "last_change": null,
+        "consistency_status": {
+          "consistent": false,
+          "status": "unknown",
+          "hash_count": 0,
+          "issues": [
+            "No data hashes recorded"
+          ]
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156822"
+    },
+    "S003|S007": {
+      "student_id": "S003|S007",
+      "trace_summary": {
+        "student_id": "S003|S007",
+        "record_count": 4,
+        "constraint_count": 5,
+        "change_count": 0,
+        "trace_types": [
+          "coloring"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": null,
+        "consistency_status": {
+          "consistent": false,
+          "status": "unknown",
+          "hash_count": 0,
+          "issues": [
+            "No data hashes recorded"
+          ]
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156831"
+    },
+    "S015|S018": {
+      "student_id": "S015|S018",
+      "trace_summary": {
+        "student_id": "S015|S018",
+        "record_count": 4,
+        "constraint_count": 5,
+        "change_count": 0,
+        "trace_types": [
+          "coloring"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": null,
+        "consistency_status": {
+          "consistent": false,
+          "status": "unknown",
+          "hash_count": 0,
+          "issues": [
+            "No data hashes recorded"
+          ]
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156840"
+    },
+    "S047|S049": {
+      "student_id": "S047|S049",
+      "trace_summary": {
+        "student_id": "S047|S049",
+        "record_count": 4,
+        "constraint_count": 5,
+        "change_count": 0,
+        "trace_types": [
+          "coloring"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": null,
+        "consistency_status": {
+          "consistent": false,
+          "status": "unknown",
+          "hash_count": 0,
+          "issues": [
+            "No data hashes recorded"
+          ]
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156849"
+    },
+    "S046|S050": {
+      "student_id": "S046|S050",
+      "trace_summary": {
+        "student_id": "S046|S050",
+        "record_count": 4,
+        "constraint_count": 5,
+        "change_count": 0,
+        "trace_types": [
+          "coloring"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": null,
+        "consistency_status": {
+          "consistent": false,
+          "status": "unknown",
+          "hash_count": 0,
+          "issues": [
+            "No data hashes recorded"
+          ]
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156857"
+    },
+    "S046|S048": {
+      "student_id": "S046|S048",
+      "trace_summary": {
+        "student_id": "S046|S048",
+        "record_count": 4,
+        "constraint_count": 5,
+        "change_count": 0,
+        "trace_types": [
+          "coloring"
+        ],
+        "constraint_types": [
+          "explicit_conflict",
+          "color_ok"
+        ],
+        "last_change": null,
+        "consistency_status": {
+          "consistent": false,
+          "status": "unknown",
+          "hash_count": 0,
+          "issues": [
+            "No data hashes recorded"
+          ]
+        }
+      },
+      "exported_at": "2026-05-31T02:51:26.156865"
+    }
+  }
+}

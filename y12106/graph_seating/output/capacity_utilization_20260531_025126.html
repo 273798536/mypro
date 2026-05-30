@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>班级容量利用率 - 20260531_025126</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chart-container { width: 700px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">班级容量利用率</h1>
+    <div class="chart-container">
+        <canvas id="capacityChart"></canvas>
+    </div>
+    <script>
+        var ctx = document.getElementById('capacityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["一班", "二班", "三班"],
+                datasets: [
+                    {
+                        label: '当前人数',
+                        data: [35, 12, 3],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '最大容量',
+                        data: [45, 45, 45],
+                        backgroundColor: 'rgba(255, 99, 132, 0.3)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        type: 'line'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

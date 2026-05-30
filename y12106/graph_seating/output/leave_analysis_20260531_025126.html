@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>请假分析 - 20260531_025126</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chart-row { display: flex; justify-content: space-around; flex-wrap: wrap; }
+        .chart-container { width: 45%; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">请假数据分析</h1>
+    <div class="chart-row">
+        <div class="chart-container">
+            <h3>请假类型分布</h3>
+            <canvas id="leaveTypeChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>各班请假人数</h3>
+            <canvas id="leaveByClassChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-container" style="width: 90%; margin: 0 auto;">
+        <h3>请假天数分布 (Top 20)</h3>
+        <canvas id="leaveDurationChart"></canvas>
+    </div>
+
+    <script>
+        new Chart(document.getElementById('leaveTypeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ["general"],
+                datasets: [{
+                    data: [12],
+                    backgroundColor: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('leaveByClassChart'), {
+            type: 'bar',
+            data: {
+                labels: ["一班"],
+                datasets: [{
+                    label: '请假人数',
+                    data: [3],
+                    backgroundColor: '#DDA0DD'
+                }]
+            }
+        });
+
+        var durations = [11, 9, 7, 7, 6, 6, 5, 4, 3, 3, 1, 1];
+        new Chart(document.getElementById('leaveDurationChart'), {
+            type: 'bar',
+            data: {
+                labels: durations.map((d, i) => '学生' + (i+1)),
+                datasets: [{
+                    label: '请假总天数',
+                    data: durations,
+                    backgroundColor: '#F7DC6F'
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

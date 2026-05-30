@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>颜色组分布 - 20260531_025126</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chart-container { width: 600px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">颜色组分布</h1>
+    <div class="chart-container">
+        <canvas id="colorChart"></canvas>
+    </div>
+    <script>
+        var ctx = document.getElementById('colorChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["颜色组 0", "颜色组 1", "颜色组 2"],
+                datasets: [{
+                    label: '学生数量',
+                    data: [42, 11, 12],
+                    backgroundColor: ["#FF6B6B", "#4ECDC4", "#45B7D1"],
+                    borderColor: '#000',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>数据异常分析 - 20260531_025126</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chart-row { display: flex; justify-content: space-around; }
+        .chart-container { width: 45%; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .severity-error { color: red; font-weight: bold; }
+        .severity-warning { color: orange; font-weight: bold; }
+        .severity-info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">数据异常分析报告</h1>
+    <div class="chart-row">
+        <div class="chart-container">
+            <h3>按严重程度分布</h3>
+            <canvas id="severityChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>按异常类型分布</h3>
+            <canvas id="typeChart"></canvas>
+        </div>
+    </div>
+
+    <h2>异常明细</h2>
+    <table>
+        <tr>
+            <th>行号</th>
+            <th>异常类型</th>
+            <th>严重程度</th>
+            <th>描述</th>
+            <th>建议操作</th>
+        </tr>
+        
+        <tr>
+            <td>8</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>9</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>18</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>19</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>25</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>31</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>32</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>36</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>37</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>43</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>44</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>47</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>48</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>49</td>
+            <td>bad_row_marker</td>
+            <td class="severity-error">error</td>
+            <td>检测到坏行标记: test</td>
+            <td>isolate</td>
+        </tr>
+        
+        <tr>
+            <td>50</td>
+            <td>bad_row_marker</td>
+            <td class="severity-error">error</td>
+            <td>检测到坏行标记: invalid</td>
+            <td>isolate</td>
+        </tr>
+        
+        <tr>
+            <td>51</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>52</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>62</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>63</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>69</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>70</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>76</td>
+            <td>blank_row</td>
+            <td class="severity-info">info</td>
+            <td>空行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+        <tr>
+            <td>77</td>
+            <td>comment_row</td>
+            <td class="severity-info">info</td>
+            <td>备注行，已跳过</td>
+            <td>review</td>
+        </tr>
+        
+    </table>
+    
+
+    <script>
+        new Chart(document.getElementById('severityChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ["info", "error"],
+                datasets: [{
+                    data: [21, 2],
+                    backgroundColor: ['#FF6B6B', '#FFEAA7', '#74B9FF']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('typeChart'), {
+            type: 'bar',
+            data: {
+                labels: ["blank_row", "comment_row", "bad_row_marker"],
+                datasets: [{
+                    label: '数量',
+                    data: [11, 10, 2],
+                    backgroundColor: '#96CEB4'
+                }]
+            },
+            options: { indexAxis: 'y' }
+        });
+    </script>
+</body>
+</html>

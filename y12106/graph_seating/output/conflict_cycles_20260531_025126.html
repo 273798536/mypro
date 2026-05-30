@@ -1,0 +1,4590 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>冲突闭环检测 - 20260531_025126</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .cycle-card { border: 2px solid #e74c3c; border-radius: 8px; padding: 15px; margin: 15px 0; }
+        .cycle-card.isolated { background-color: #ffebee; }
+        .cycle-header { font-weight: bold; font-size: 18px; color: #c0392b; }
+        .cycle-nodes { margin: 10px 0; font-family: monospace; }
+        .cycle-nodes span { display: inline-block; padding: 5px 10px; margin: 2px; background: #ff6b6b; color: white; border-radius: 4px; }
+        .cycle-edges { margin: 10px 0; color: #666; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; }
+        .badge-isolated { background: #e74c3c; color: white; }
+        .badge-active { background: #f39c12; color: white; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">冲突闭环检测结果</h1>
+    <p style="text-align:center;color:#e74c3c;font-size:18px;">
+        检测到 228 个冲突闭环，其中 228 个已隔离
+    </p>
+
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_0
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.117921 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_1
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.95 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.117961 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_2
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.117977 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_3
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.117993 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_4
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118009 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_5
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.95 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118023 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_6
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118035 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_7
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118048 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_8
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118061 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_9
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118074 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_10
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118088 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_11
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118100 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_12
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118112 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_13
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118125 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_14
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118136 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_15
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118149 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_16
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118162 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_17
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118174 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_18
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118187 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_19
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118199 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_20
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118211 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_21
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118225 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_22
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118236 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_23
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.90 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118247 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_24
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118259 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_25
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118271 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_26
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.90 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118283 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_27
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118295 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_28
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>孙七</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118308 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_29
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.95 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118321 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_30
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118333 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_31
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118345 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_32
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118358 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_33
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118371 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_34
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118382 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_35
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118394 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_36
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118405 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_37
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118416 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_38
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118429 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_39
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118442 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_40
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118452 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_41
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118465 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_42
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.90 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118476 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_43
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118488 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_44
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118499 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_45
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118510 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_46
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118521 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_47
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118533 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_48
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118544 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_49
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118555 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_50
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118566 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_51
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.75 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118578 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_52
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.75 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118589 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_53
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118600 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_54
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118610 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_55
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.75 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118621 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_56
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118631 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_57
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孙七</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118642 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_58
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孙七</span> -> <span>张廿六</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118653 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_59
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孙七</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118663 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_60
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>窦四一</span> -> <span>孙七</span> -> <span>陈十二</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118675 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_61
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118687 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_62
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118699 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_63
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118710 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_64
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118722 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_65
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118737 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_66
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118749 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_67
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.90 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118760 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_68
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118771 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_69
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118781 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_70
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118792 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_71
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118803 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_72
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118815 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_73
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118827 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_74
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118839 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_75
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118851 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_76
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118863 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_77
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118879 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_78
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.90 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118890 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_79
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118901 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_80
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118912 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_81
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118924 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_82
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118934 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_83
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118944 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_84
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118954 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_85
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>陈十二</span> -> <span>孙七</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118966 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_86
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118975 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_87
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118986 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_88
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.118997 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_89
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119008 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_90
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119021 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_91
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>曹廿八</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119031 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_92
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>曹廿八</span> -> <span>窦四一</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119042 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_93
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119055 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_94
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119067 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_95
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119079 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_96
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119090 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_97
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119101 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_98
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119111 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_99
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119124 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_100
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>孔廿七</span> -> <span>孙七</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119135 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_101
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119147 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_102
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119158 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_103
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119168 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_104
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119179 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_105
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>严廿九</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119190 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_106
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119200 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_107
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119210 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_108
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119220 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_109
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119232 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_110
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119244 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_111
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119255 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_112
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119266 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_113
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119277 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_114
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119287 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_115
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>陈十二</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119297 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_116
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119308 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_117
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>孔廿七</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119318 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_118
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>孔廿七</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119327 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_119
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>孔廿七</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119337 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_120
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>张廿六</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119347 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_121
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>张廿六</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119357 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_122
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张三</span> -> <span>严廿九</span> -> <span>孙七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119367 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_123
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 5.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119379 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_124
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119392 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_125
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119403 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_126
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119414 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_127
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>曹廿八</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119426 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_128
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119438 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_129
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119454 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_130
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119465 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_131
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119476 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_132
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119487 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_133
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.70 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119498 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_134
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119510 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_135
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119521 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_136
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119532 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_137
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119542 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_138
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119553 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_139
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.80 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119566 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_140
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119577 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_141
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119588 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_142
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119651 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_143
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119732 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_144
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119752 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_145
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119769 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_146
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119786 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_147
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119800 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_148
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119814 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_149
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.119835 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_150
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121061 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_151
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121094 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_152
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121106 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_153
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.85 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121119 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_154
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121131 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_155
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121143 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_156
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121154 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_157
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>曹廿八</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121165 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_158
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121176 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_159
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121186 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_160
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>张廿六</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121197 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_161
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121209 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_162
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121219 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_163
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121230 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_164
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>华三十</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121242 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_165
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121252 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_166
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>孔廿七</span> -> <span>张廿六</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121262 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_167
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121273 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_168
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>张廿六</span> -> <span>陈十二</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.50 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121368 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_169
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>张廿六</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121379 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_170
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121390 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_171
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121424 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_172
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>张廿六</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121435 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_173
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>严廿九</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121542 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_174
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孙七</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>陈十二</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121565 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_175
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 4.95 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121581 |
+            <strong>节点数:</strong> 7
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_176
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121593 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_177
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.75 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121605 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_178
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121617 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_179
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121628 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_180
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121639 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_181
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121650 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_182
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121661 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_183
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.85 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121674 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_184
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121685 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_185
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121695 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_186
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121706 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_187
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121718 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_188
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.75 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121729 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_189
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121739 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_190
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>张廿六</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121749 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_191
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121761 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_192
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121772 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_193
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>窦四一</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121785 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_194
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>窦四一</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121797 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_195
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121808 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_196
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121819 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_197
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121831 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_198
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121841 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_199
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>窦四一</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121851 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_200
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121863 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_201
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>窦四一</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121879 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_202
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>华三十</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121889 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_203
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121899 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_204
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>陈十二</span> -> <span>曹廿八</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121909 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_205
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>何廿三</span> -> <span>施廿五</span> -> <span>吕廿四</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.00 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121919 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_206
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.75 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121931 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_207
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121943 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_208
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.55 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121954 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_209
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.30 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121964 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_210
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121974 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_211
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121985 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_212
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>窦四一</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.121995 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_213
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span> -> <span>孔廿七</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.65 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122006 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_214
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122016 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_215
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122027 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_216
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>曹廿八</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.40 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122036 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_217
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>严廿九</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.60 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122046 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_218
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122056 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_219
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>张廿六</span> -> <span>华三十</span> -> <span>孔廿七</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.20 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122230 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_220
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孔廿七</span> -> <span>窦四一</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.25 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122245 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_221
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孔廿七</span> -> <span>窦四一</span> -> <span>严廿九</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 3.45 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122372 |
+            <strong>节点数:</strong> 5
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_222
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孔廿七</span> -> <span>窦四一</span> -> <span>曹廿八</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122386 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_223
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孔廿七</span> -> <span>曹廿八</span> -> <span>严廿九</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.35 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122397 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_224
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孔廿七</span> -> <span>曹廿八</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122408 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_225
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>孔廿七</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.15 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122418 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_226
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>曹廿八</span> -> <span>严廿九</span> -> <span>窦四一</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.10 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122428 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+    <div class="cycle-card isolated">
+        <div class="cycle-header">
+            闭环 cycle_025126_227
+            <span class="badge badge-isolated">
+                已隔离
+            </span>
+        </div>
+        <div class="cycle-nodes">
+            <span>曹廿八</span> -> <span>严廿九</span> -> <span>华三十</span>
+        </div>
+        <div class="cycle-edges">
+            <strong>总权重:</strong> 2.05 |
+            <strong>检测时间:</strong> 2026-05-31T02:51:26.122438 |
+            <strong>节点数:</strong> 3
+        </div>
+        <div style="margin-top:10px;">
+            <strong>处理建议:</strong> 人工复核冲突关系，考虑单独成组或调整冲突关系
+        </div>
+    </div>
+    
+
+    
+</body>
+</html>

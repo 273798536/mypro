@@ -1,0 +1,70 @@
+============================================================
+图论社团排座位 - 运行摘要报告
+生成时间: 2026-05-31T02:51:26.184372
+============================================================
+
+1. 数据集概览
+----------------------------------------
+  total_students: 59
+  valid_students: 59
+  invalid_students: 0
+  students_with_leave: 12
+  students_with_conflicts: 17
+  students_with_special_needs: 7
+
+2. 冲突图统计
+----------------------------------------
+  graph_id: 04d6b8bc
+  node_count: 65
+  edge_count: 48
+  avg_degree: 1.476923076923077
+  max_degree: 9
+  isolated_nodes: 36
+
+3. 图着色结果
+----------------------------------------
+  algorithm: welsh_powell
+  success: True
+  colors_used: 3
+  uncolored_nodes: 0
+  backtrack_count: 0
+  cycles_found: 436
+  cycles_isolated: 228
+  颜色分布: {0: 42, 1: 11, 2: 12}
+
+4. 座位分配概览
+----------------------------------------
+  总学生数: 50
+  总容量: 135
+  整体利用率: 37.04%
+  未分配学生: 15
+  G3_C1 (一班): 35/45 (77.78%)
+  G3_C2 (二班): 12/45 (26.67%)
+  G3_C3 (三班): 3/45 (6.67%)
+
+5. 数据异常统计
+----------------------------------------
+  total_anomalies: 23
+  errors: 2
+  warnings: 0
+  info: 21
+  anomaly_types: ['bad_row_marker', 'comment_row', 'blank_row']
+
+6. 冲突闭环统计
+----------------------------------------
+  检测到闭环: 228
+  已隔离闭环: 228
+
+7. 追溯链路统计
+----------------------------------------
+  total_students: 65
+  total_trace_records: 693
+  total_constraints: 322
+  total_seat_changes: 77
+  avg_records_per_student: 10.661538461538461
+  consistency_status: {'consistent': 59, 'unknown': 6}
+  trace_coverage: 65 students with full trace
+
+============================================================
+报告生成完毕，请检查各导出文件
+============================================================

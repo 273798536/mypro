@@ -1,0 +1,18 @@
+﻿学生ID,整体状态,问题数量,问题描述,数据一致性状态,追溯可用
+S001,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S002,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S003,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S005,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S007,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S008,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S009,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S010,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S011,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S013,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S015,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S016,FAIL,1,seating: Color matches seating group - FAILED,consistent,是
+S021,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S022,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S023,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S024,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是
+S025,FAIL,1,coloring: No adjacent same color - FAILED,consistent,是

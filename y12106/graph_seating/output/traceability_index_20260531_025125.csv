@@ -1,0 +1,66 @@
+﻿学生ID,追溯记录数,约束数,换座次数,包含的追溯类型,数据一致性状态,最近换座时间,最近换座原因,完整追溯链接
+S001,8,33,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136221,leave_removal,trace://S001
+S002,13,9,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136420,leave_substitution,trace://S002
+S003,13,5,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136540,leave_substitution,trace://S003
+S004,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133014,initial_allocation,trace://S004
+S005,8,21,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136523,leave_removal,trace://S005
+S006,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133041,initial_allocation,trace://S006
+S007,13,5,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136618,leave_substitution,trace://S007
+S008,13,0,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136765,leave_substitution,trace://S008
+S009,13,0,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136844,leave_substitution,trace://S009
+S010,8,27,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136603,leave_removal,trace://S010
+S011,13,0,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136917,leave_substitution,trace://S011
+S012,12,9,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.132859,initial_allocation,trace://S012
+S013,13,0,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.136989,leave_substitution,trace://S013
+S014,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133172,initial_allocation,trace://S014
+S015,13,5,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.137061,leave_substitution,trace://S015
+S016,13,0,2,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.137132,leave_substitution,trace://S016
+S017,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133532,initial_allocation,trace://S017
+S018,12,5,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.135085,initial_allocation,trace://S018
+S019,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133612,initial_allocation,trace://S019
+S020,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133641,initial_allocation,trace://S020
+S021,8,6,1,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.135531,initial_allocation,trace://S021
+S022,8,6,1,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.135569,initial_allocation,trace://S022
+S023,8,6,1,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.135829,initial_allocation,trace://S023
+S024,8,24,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136747,leave_removal,trace://S024
+S025,8,24,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136828,leave_removal,trace://S025
+S026,8,21,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136900,leave_removal,trace://S026
+S027,8,24,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.136972,leave_removal,trace://S027
+S028,8,18,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.137046,leave_removal,trace://S028
+S029,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133668,initial_allocation,trace://S029
+S030,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133693,initial_allocation,trace://S030
+S032,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133821,initial_allocation,trace://S032
+S033,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.133924,initial_allocation,trace://S033
+S034,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134063,initial_allocation,trace://S034
+S035,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134111,initial_allocation,trace://S035
+S036,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134148,initial_allocation,trace://S036
+S037,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134179,initial_allocation,trace://S037
+S038,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134221,initial_allocation,trace://S038
+S039,8,21,2,"data_load, graph_build, seating",consistent,2026-05-31T02:51:26.137116,leave_removal,trace://S039
+S040,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134251,initial_allocation,trace://S040
+S041,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134396,initial_allocation,trace://S041
+S042,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134452,initial_allocation,trace://S042
+S043,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134510,initial_allocation,trace://S043
+S044,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134589,initial_allocation,trace://S044
+S045,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134634,initial_allocation,trace://S045
+S046,12,3,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.132981,initial_allocation,trace://S046
+S047,12,6,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.132893,initial_allocation,trace://S047
+S048,12,5,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.135105,initial_allocation,trace://S048
+S049,12,6,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.132918,initial_allocation,trace://S049
+S050,12,5,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.135298,initial_allocation,trace://S050
+S051,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134695,initial_allocation,trace://S051
+S052,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134727,initial_allocation,trace://S052
+S053,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134756,initial_allocation,trace://S053
+S054,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134784,initial_allocation,trace://S054
+S055,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134813,initial_allocation,trace://S055
+S056,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134843,initial_allocation,trace://S056
+S057,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134871,initial_allocation,trace://S057
+S058,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134901,initial_allocation,trace://S058
+S059,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134930,initial_allocation,trace://S059
+S060,12,0,1,"data_load, graph_build, coloring, seating",consistent,2026-05-31T02:51:26.134969,initial_allocation,trace://S060
+S005|S010,4,3,0,coloring,unknown,,,trace://S005|S010
+S003|S007,4,5,0,coloring,unknown,,,trace://S003|S007
+S015|S018,4,5,0,coloring,unknown,,,trace://S015|S018
+S047|S049,4,5,0,coloring,unknown,,,trace://S047|S049
+S046|S050,4,5,0,coloring,unknown,,,trace://S046|S050
+S046|S048,4,5,0,coloring,unknown,,,trace://S046|S048

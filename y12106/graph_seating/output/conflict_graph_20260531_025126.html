@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>冲突关系图 - 20260531_025126</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .legend { margin: 20px 0; }
+        .legend-item { display: inline-block; margin: 0 10px; }
+        .legend-color { display: inline-block; width: 20px; height: 20px; margin-right: 5px; vertical-align: middle; }
+        #graph-container { width: 100%; height: 600px; border: 1px solid #ddd; }
+        .node-info { margin-top: 20px; padding: 10px; background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>冲突关系可视化</h1>
+    <div class="legend">
+        <h3>图例:</h3>
+        <div class="legend-item"><span class="legend-color" style="background:#FF0000;"></span>严重冲突 (>=0.9)</div>
+        <div class="legend-item"><span class="legend-color" style="background:#FF6600;"></span>中等冲突 (0.7-0.9)</div>
+        <div class="legend-item"><span class="legend-color" style="background:#FFCC00;"></span>轻微冲突 (<0.7)</div>
+    </div>
+    <div id="graph-container"></div>
+    <div class="node-info" id="node-info">点击节点查看详情</div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        var nodes = [{"id": "S001", "name": "张三", "degree": 9, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S002", "name": "李四", "degree": 3, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S003", "name": "王五", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S004", "name": "赵六", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S005", "name": "孙七", "degree": 6, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S006", "name": "周八", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S007", "name": "吴九", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S008", "name": "郑十", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S009", "name": "冯十一", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S010", "name": "陈十二", "degree": 8, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S011", "name": "褚十三", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S012", "name": "卫十四", "degree": 3, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S013", "name": "蒋十五", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S014", "name": "沈十六", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S015", "name": "韩十七", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S016", "name": "杨十八", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S017", "name": "朱十九", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S018", "name": "秦二十", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S019", "name": "尤廿一", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S020", "name": "许廿二", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S021", "name": "何廿三", "degree": 2, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S022", "name": "吕廿四", "degree": 2, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S023", "name": "施廿五", "degree": 2, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S024", "name": "张廿六", "degree": 8, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S025", "name": "孔廿七", "degree": 8, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S026", "name": "曹廿八", "degree": 7, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S027", "name": "严廿九", "degree": 8, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S028", "name": "华三十", "degree": 6, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S029", "name": "金三一", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S030", "name": "魏三二", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S032", "name": "姜三三", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S033", "name": "戚三五", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S034", "name": "谢三六", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S035", "name": "邹三七", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S036", "name": "喻三八", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S037", "name": "柏三九", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S038", "name": "水四十", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S039", "name": "窦四一", "degree": 7, "color": 2, "color_hex": "#45B7D1", "group": 2}, {"id": "S040", "name": "苏四二", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S041", "name": "潘四三", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S042", "name": "葛四四", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S043", "name": "范四五", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S044", "name": "彭四六", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S045", "name": "鲁四七", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S046", "name": "韦四八", "degree": 1, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S047", "name": "昌四九", "degree": 2, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S048", "name": "马五十", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S049", "name": "苗五一", "degree": 2, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S050", "name": "凤五二", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S051", "name": "花五三", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S052", "name": "方五四", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S053", "name": "俞五五", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S054", "name": "任五六", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S055", "name": "袁五七", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S056", "name": "柳五八", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S057", "name": "酆五九", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S058", "name": "鲍六十", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S059", "name": "史六一", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S060", "name": "唐六二", "degree": 0, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S005|S010", "name": "S005|S010", "degree": 1, "color": 0, "color_hex": "#FF6B6B", "group": 0}, {"id": "S003|S007", "name": "S003|S007", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S015|S018", "name": "S015|S018", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S047|S049", "name": "S047|S049", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S046|S050", "name": "S046|S050", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}, {"id": "S046|S048", "name": "S046|S048", "degree": 1, "color": 1, "color_hex": "#4ECDC4", "group": 1}];
+        var edges = [{"source": "S001", "target": "S005|S010", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S002", "target": "S003|S007", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S002", "target": "S003", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S001", "target": "S005", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S002", "target": "S007", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S001", "target": "S010", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S012", "target": "S015|S018", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S012", "target": "S015", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S012", "target": "S018", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S021", "target": "S022", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S022", "target": "S023", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S021", "target": "S023", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S046", "target": "S047|S049", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S046|S050", "target": "S047", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S048", "target": "S049", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S046|S048", "target": "S049", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S047", "target": "S050", "weight": 1.0, "type": "explicit", "width": 5, "color": "#FF0000"}, {"source": "S001", "target": "S024", "weight": 0.8, "type": "leave_overlap", "width": 4.0, "color": "#FF6600"}, {"source": "S001", "target": "S025", "weight": 0.8, "type": "leave_overlap", "width": 4.0, "color": "#FF6600"}, {"source": "S001", "target": "S026", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S001", "target": "S027", "weight": 0.8, "type": "leave_overlap", "width": 4.0, "color": "#FF6600"}, {"source": "S001", "target": "S028", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S001", "target": "S039", "weight": 0.7, "type": "leave_overlap", "width": 3.5, "color": "#FF6600"}, {"source": "S005", "target": "S010", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S005", "target": "S024", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S005", "target": "S025", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S005", "target": "S027", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S005", "target": "S039", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S010", "target": "S024", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S010", "target": "S025", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S010", "target": "S026", "weight": 0.7, "type": "leave_overlap", "width": 3.5, "color": "#FF6600"}, {"source": "S010", "target": "S027", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S010", "target": "S028", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S010", "target": "S039", "weight": 0.7, "type": "leave_overlap", "width": 3.5, "color": "#FF6600"}, {"source": "S024", "target": "S025", "weight": 0.9, "type": "leave_overlap", "width": 4.5, "color": "#FF0000"}, {"source": "S024", "target": "S026", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S024", "target": "S027", "weight": 0.8500000000000001, "type": "leave_overlap", "width": 4.25, "color": "#FF6600"}, {"source": "S024", "target": "S028", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S024", "target": "S039", "weight": 0.7, "type": "leave_overlap", "width": 3.5, "color": "#FF6600"}, {"source": "S025", "target": "S026", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S025", "target": "S027", "weight": 0.8500000000000001, "type": "leave_overlap", "width": 4.25, "color": "#FF6600"}, {"source": "S025", "target": "S028", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S025", "target": "S039", "weight": 0.7, "type": "leave_overlap", "width": 3.5, "color": "#FF6600"}, {"source": "S026", "target": "S027", "weight": 0.75, "type": "leave_overlap", "width": 3.75, "color": "#FF6600"}, {"source": "S026", "target": "S028", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S026", "target": "S039", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S027", "target": "S028", "weight": 0.65, "type": "leave_overlap", "width": 3.25, "color": "#FFCC00"}, {"source": "S027", "target": "S039", "weight": 0.7, "type": "leave_overlap", "width": 3.5, "color": "#FF6600"}];
+
+        var width = document.getElementById('graph-container').clientWidth;
+        var height = 600;
+
+        var svg = d3.select("#graph-container")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(edges).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(30));
+
+        var link = svg.append("g")
+            .selectAll("line")
+            .data(edges)
+            .enter().append("line")
+            .attr("stroke", d => d.color)
+            .attr("stroke-width", d => d.width)
+            .attr("opacity", 0.6);
+
+        var node = svg.append("g")
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+            .attr("r", d => Math.max(8, Math.min(20, 8 + d.degree)))
+            .attr("fill", d => d.color_hex)
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1.5)
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+            .on("click", function(event, d) {
+                document.getElementById('node-info').innerHTML =
+                    '<strong>学生ID:</strong> ' + d.id + '<br>' +
+                    '<strong>姓名:</strong> ' + d.name + '<br>' +
+                    '<strong>冲突数:</strong> ' + d.degree + '<br>' +
+                    '<strong>颜色组:</strong> ' + (d.group >= 0 ? d.group : '未分配') + '<br>' +
+                    '<strong>追溯链接:</strong> trace://' + d.id;
+            });
+
+        var label = svg.append("g")
+            .selectAll("text")
+            .data(nodes)
+            .enter().append("text")
+            .text(d => d.name)
+            .attr("font-size", "10px")
+            .attr("dx", 12)
+            .attr("dy", 4);
+
+        simulation.on("tick", function() {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            label
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+</html>
