@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #e5e7eb;
+  background-color: #0f1117;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2f3340 transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #2f3340;
+  border-radius: 3px;
+}
+
+@layer utilities {
+  .data-glow {
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  }
+  .warn-glow {
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+  }
+}
