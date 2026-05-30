@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: #0A1628;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0A1628 0%, #0F1F38 50%, #0A1628 100%);
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(45, 212, 191, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 212, 191, 0.5);
+}
+
+/* 发光边框效果 */
+@layer utilities {
+  .glow-border {
+    box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.3), 0 0 10px rgba(45, 212, 191, 0.1);
+  }
+  
+  .glow-border-danger {
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.5), 0 0 15px rgba(239, 68, 68, 0.2);
+  }
+  
+  .glow-border-warning {
+    box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.5), 0 0 15px rgba(251, 191, 36, 0.2);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+  
+  .bg-grid {
+    background-image: 
+      linear-gradient(rgba(45, 212, 191, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45, 212, 191, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
