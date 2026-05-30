@@ -1,0 +1,104 @@
+import { Score, ScoreDetail, GameAction, Order, ExceptionRecord } from '@/types';
+
+const ACCURACY_WEIGHT = 0.4;
+const EFFICIENCY_WEIGHT = 0.3;
+const CONSERVATION_WEIGHT = 0.3;
+
+const TEMP_DEDUCTION_PER_DEGREE = 5;
+const TIME_DEDUCTION_PER_SECOND_OVER_LIMIT = 1;
+const CONSERVATION_ERROR_DEDUCTION = 30;
+const TEMP_BOUND_DEDUCTION = 20;
+const TIMEOUT_DEDUCTION = 15;
+
+export interface ScoreCalculationParams {
+  order: Order;
+  actions: GameAction[];
+  finalTemperature: number;
+  elapsedTime: number;
+  exceptions: ExceptionRecord[];
+}
+
+export function calculateScore({
+  order,
+  actions,
+  finalTemperature,
+  elapsedTime,
+  exceptions,
+}: ScoreCalculationParams): Score {
+  const details: ScoreDetail[] = [];
+
+  const tempDiff = Math.abs(finalTemperature - order.targetTemperature);
+  const finalAccuracy = Math.max(0, 100 - tempDiff * TEMP_DEDUCTION_PER_DEGREE);
+
+  const overtime = Math.max(0, elapsedTime - order.timeLimit);
+  const finalEfficiency = Math.max(0, 100 - overtime * TIME_DEDUCTION_PER_SECOND_OVER_LIMIT);
+
+  const conservationErrors = exceptions.filter(e => e.type === 'conservation_error').length;
+  const tempBoundErrors = exceptions.filter(e => e.type === 'temperature_bound').length;
+  const timeoutErrors = exceptions.filter(e => e.type === 'timeout').length;
+
+  const finalConservation = Math.max(
+    0,
+    100 -
+      conservationErrors * CONSERVATION_ERROR_DEDUCTION -
+      tempBoundErrors * TEMP_BOUND_DEDUCTION -
+      timeoutErrors * TIMEOUT_DEDUCTION
+  );
+
+  actions.forEach(action => {
+    if (action.heatExchange.abnormalType === 'conservation') {
+      details.push({
+        actionId: action.id,
+        deduction: CONSERVATION_ERROR_DEDUCTION,
+        reason: `热量守恒错误（误差：${(action.heatExchange.errorMargin * 100).toFixed(2)}%）`,
+      });
+    }
+    if (action.heatExchange.abnormalType === 'temperature_bound') {
+      details.push({
+        actionId: action.id,
+        deduction: TEMP_BOUND_DEDUCTION,
+        reason: '温度越界',
+      });
+    }
+  });
+
+  const total = Math.round(
+    finalAccuracy * ACCURACY_WEIGHT +
+    finalEfficiency * EFFICIENCY_WEIGHT +
+    finalConservation * CONSERVATION_WEIGHT
+  );
+
+  return {
+    total,
+    accuracy: Math.round(finalAccuracy),
+    efficiency: Math.round(finalEfficiency),
+    conservation: Math.round(finalConservation),
+    detail: details,
+  };
+}
+
+export function getScoreGrade(score: number): string {
+  if (score >= 90) return 'S';
+  if (score >= 80) return 'A';
+  if (score >= 70) return 'B';
+  if (score >= 60) return 'C';
+  return 'D';
+}
+
+export function explainScore(score: Score): string[] {
+  const explanations: string[] = [];
+  
+  explanations.push(`总分：${score.total}分`);
+  explanations.push(`温度准确度：${score.accuracy}分`);
+  explanations.push(`时间效率：${score.efficiency}分`);
+  explanations.push(`热量守恒：${score.conservation}分`);
+  
+  if (score.detail.length > 0) {
+    explanations.push('扣分明细：');
+    score.detail.forEach(detail => {
+      explanations.push(`  - ${detail.reason}: -${detail.deduction}分`);
+    });
+  }
+  
+  return explanations;
+}

@@ -1,0 +1,152 @@
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { PhysicsState, TempPoint, HeatExchangeResult } from '@/types';
+import {
+  calculateHeating,
+  calculateIceAdd,
+  calculateStirring,
+  SPECIFIC_HEAT_WATER,
+  ROOM_TEMP,
+  MIN_TEMP,
+  MAX_TEMP,
+} from '@/utils/physics';
+
+interface PhysicsStore extends PhysicsState {
+  setTemperature: (temp: number) => void;
+  addHeat: (power: number, duration: number) => HeatExchangeResult;
+  addIce: (mass: number, temp: number) => HeatExchangeResult;
+  stir: (speed: number, duration: number) => HeatExchangeResult;
+  addTemperaturePoint: (point: TempPoint) => void;
+  reset: () => void;
+}
+
+const INITIAL_STATE: PhysicsState = {
+  temperature: ROOM_TEMP,
+  mass: 200,
+  heatCapacity: SPECIFIC_HEAT_WATER,
+  internalEnergy: ROOM_TEMP * 200 * SPECIFIC_HEAT_WATER,
+  temperatureHistory: [],
+  conservationStatus: 'valid',
+};
+
+export const usePhysicsStore = create<PhysicsStore>()(
+  devtools(
+    (set, get) => ({
+      ...INITIAL_STATE,
+      
+      setTemperature: (temp: number) => {
+        const clampedTemp = Math.max(MIN_TEMP, Math.min(MAX_TEMP, temp));
+        const mass = get().mass;
+        set({
+          temperature: clampedTemp,
+          internalEnergy: clampedTemp * mass * SPECIFIC_HEAT_WATER,
+        });
+      },
+
+      addHeat: (power: number, duration: number) => {
+        const { temperature, mass } = get();
+        const result = calculateHeating({
+          currentTemp: temperature,
+          currentMass: mass,
+          power,
+          duration,
+        });
+
+        const newEnergy = get().internalEnergy + result.deltaU;
+
+        set({
+          temperature: result.finalTemp,
+          internalEnergy: newEnergy,
+          conservationStatus: result.conservationCheck ? 'valid' : 'error',
+          conservationError: result.errorMargin,
+        });
+
+        return {
+          Q_in: result.Q_in,
+          Q_out: result.Q_out,
+          deltaU: result.deltaU,
+          deltaT: result.deltaT,
+          conservationCheck: result.conservationCheck,
+          errorMargin: result.errorMargin,
+          isAbnormal: result.isAbnormal,
+          abnormalType: result.abnormalType,
+        };
+      },
+
+      addIce: (mass: number, temp: number) => {
+        const { temperature: currentTemp, mass: currentMass } = get();
+        const result = calculateIceAdd({
+          currentTemp,
+          currentMass,
+          iceMass: mass,
+          iceTemp: temp,
+        });
+
+        const newEnergy = get().internalEnergy + result.deltaU;
+
+        set({
+          temperature: result.finalTemp,
+          mass: result.finalMass,
+          internalEnergy: newEnergy,
+          conservationStatus: result.conservationCheck ? 'valid' : 'error',
+          conservationError: result.errorMargin,
+        });
+
+        return {
+          Q_in: result.Q_in,
+          Q_out: result.Q_out,
+          deltaU: result.deltaU,
+          deltaT: result.deltaT,
+          conservationCheck: result.conservationCheck,
+          errorMargin: result.errorMargin,
+          isAbnormal: result.isAbnormal,
+          abnormalType: result.abnormalType,
+        };
+      },
+
+      stir: (speed: number, duration: number) => {
+        const { temperature, mass } = get();
+        const result = calculateStirring({
+          currentTemp: temperature,
+          currentMass: mass,
+          speed,
+          duration,
+        });
+
+        const newEnergy = get().internalEnergy + result.deltaU;
+
+        set({
+          temperature: result.finalTemp,
+          internalEnergy: newEnergy,
+          conservationStatus: result.conservationCheck ? 'valid' : 'error',
+          conservationError: result.errorMargin,
+        });
+
+        return {
+          Q_in: result.Q_in,
+          Q_out: result.Q_out,
+          deltaU: result.deltaU,
+          deltaT: result.deltaT,
+          conservationCheck: result.conservationCheck,
+          errorMargin: result.errorMargin,
+          isAbnormal: result.isAbnormal,
+          abnormalType: result.abnormalType,
+        };
+      },
+
+      addTemperaturePoint: (point: TempPoint) => {
+        set(state => ({
+          temperatureHistory: [...state.temperatureHistory, point],
+        }));
+      },
+
+      reset: () => {
+        set({
+          ...INITIAL_STATE,
+          temperatureHistory: [],
+        });
+      },
+    }),
+    { name: 'physics-store' }
+  )
+);

@@ -1,0 +1,105 @@
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { GameState, GameAction, Order, ExceptionRecord, BadRow } from '@/types';
+import { generateGameId } from '@/utils/export';
+import { calculateScore } from '@/utils/scoreEngine';
+import { usePhysicsStore } from './physicsStore';
+
+interface GameStore extends GameState {
+  startGame: (order: Order) => void;
+  addAction: (action: GameAction) => void;
+  addException: (exception: Omit<ExceptionRecord, 'id' | 'gameId'>) => void;
+  setBadRows: (rows: BadRow[]) => void;
+  completeGame: () => void;
+  updateElapsedTime: (time: number) => void;
+  reset: () => void;
+}
+
+const INITIAL_STATE: GameState = {
+  gameId: '',
+  currentOrder: null,
+  actions: [],
+  startTime: 0,
+  elapsedTime: 0,
+  isComplete: false,
+  score: null,
+  badRows: [],
+  exceptions: [],
+};
+
+export const useGameStore = create<GameStore>()(
+  devtools(
+    (set, get) => ({
+      ...INITIAL_STATE,
+      
+      startGame: (order: Order) => {
+        const gameId = generateGameId();
+        set({
+          gameId,
+          currentOrder: order,
+          actions: [],
+          startTime: Date.now(),
+          elapsedTime: 0,
+          isComplete: false,
+          score: null,
+          exceptions: [],
+        });
+        usePhysicsStore.getState().reset();
+      },
+
+      addAction: (action: GameAction) => {
+        set(state => ({
+          actions: [...state.actions, action],
+        }));
+      },
+
+      addException: (exception: Omit<ExceptionRecord, 'id' | 'gameId'>) => {
+        const { gameId } = get();
+        set(state => ({
+          exceptions: [
+            ...state.exceptions,
+            {
+              ...exception,
+              id: `exc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              gameId,
+            },
+          ],
+        }));
+      },
+
+      setBadRows: (rows: BadRow[]) => {
+        set({ badRows: rows });
+      },
+
+      completeGame: () => {
+        const { currentOrder, actions, elapsedTime, exceptions } = get();
+        const { temperature } = usePhysicsStore.getState();
+        
+        if (!currentOrder) return;
+
+        const score = calculateScore({
+          order: currentOrder,
+          actions,
+          finalTemperature: temperature,
+          elapsedTime,
+          exceptions,
+        });
+
+        set({
+          isComplete: true,
+          score,
+        });
+      },
+
+      updateElapsedTime: (time: number) => {
+        set({ elapsedTime: time });
+      },
+
+      reset: () => {
+        set({ ...INITIAL_STATE });
+        usePhysicsStore.getState().reset();
+      },
+    }),
+    { name: 'game-store' }
+  )
+);
