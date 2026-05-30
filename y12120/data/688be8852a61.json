@@ -1,0 +1,73 @@
+{
+  "data_id": "688be8852a61",
+  "function_expr": "sin(10*x)",
+  "a": 0,
+  "b": 1,
+  "n": 4,
+  "created_at": "2026-05-31T03:31:12.824308",
+  "modified_at": "2026-05-31T03:31:12.844165",
+  "version": 4,
+  "exact_value": 0.18390715290764525,
+  "exact_value_source": "解析积分",
+  "f_double_prime_max": null,
+  "f_fourth_prime_max": null,
+  "error_estimate": {
+    "status": "待确认-步长过大",
+    "action": "请助教核步长选取合理性",
+    "trapezoidal_approx": 0.076384322692718,
+    "simpsons_approx": 0.3070015686082612,
+    "exact_value": 0.18390715290764525,
+    "trapezoidal_error": 0.10752283021492726,
+    "simpsons_error": 0.12309441570061597,
+    "trapezoidal_relative_error": 0.5846582284318392,
+    "simpsons_relative_error": 0.6693291356776737,
+    "step_size": 0.25,
+    "n_intervals": 4,
+    "has_singularity": false,
+    "singularity_points": [],
+    "is_interval_reversed": false,
+    "is_step_too_large": true,
+    "step_ratio": 0.25,
+    "notes": [
+      "步长过大: h/L = 0.2500"
+    ],
+    "trapezoidal_theoretical_bound": null,
+    "simpsons_theoretical_bound": null
+  },
+  "detail_data": null,
+  "change_history": [
+    {
+      "field": "error_estimate",
+      "old_value": "updated",
+      "new_value": "updated",
+      "timestamp": "2026-05-31T03:31:12.836527",
+      "changed_by": "system",
+      "comment": "重新计算误差估计"
+    },
+    {
+      "field": "exact_value",
+      "old_value": null,
+      "new_value": 0.18390715290764525,
+      "timestamp": "2026-05-31T03:31:12.837654",
+      "changed_by": "测试",
+      "comment": ""
+    },
+    {
+      "field": "exact_value_source",
+      "old_value": "",
+      "new_value": "解析积分",
+      "timestamp": "2026-05-31T03:31:12.837672",
+      "changed_by": "测试",
+      "comment": ""
+    },
+    {
+      "field": "error_estimate",
+      "old_value": "updated",
+      "new_value": "updated",
+      "timestamp": "2026-05-31T03:31:12.844148",
+      "changed_by": "system",
+      "comment": "重新计算误差估计"
+    }
+  ],
+  "tags": []
+}
