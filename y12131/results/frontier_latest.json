@@ -1,0 +1,499 @@
+{
+  "assets": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "asset_notes": [
+    "沪深300指数，2018年后数据",
+    "创业板指，波动较大",
+    "国债指数，无风险近似",
+    "恒生指数，需考虑汇率风险",
+    "黄金ETF, 2020年数据不全",
+    "新能源主题，近3年收益率"
+  ],
+  "expected_returns": [
+    0.08,
+    0.12,
+    0.05,
+    0.1,
+    0.06,
+    0.15
+  ],
+  "covariance_matrix": [
+    [
+      0.0415767510860718,
+      0.025,
+      0.001,
+      0.018,
+      0.015,
+      0.035
+    ],
+    [
+      0.025,
+      0.0915767510860718,
+      0.002,
+      0.022,
+      0.00775,
+      0.055
+    ],
+    [
+      0.001,
+      0.002,
+      0.0031767510860717984,
+      0.001,
+      0.00625,
+      0.001
+    ],
+    [
+      0.018,
+      0.022,
+      0.001,
+      0.0515767510860718,
+      0.020999999999999998,
+      0.0
+    ],
+    [
+      0.015,
+      0.00775,
+      0.00625,
+      0.020999999999999998,
+      0.0215767510860718,
+      0.0
+    ],
+    [
+      0.035,
+      0.055,
+      0.001,
+      0.0,
+      0.0,
+      0.1215767510860718
+    ]
+  ],
+  "allow_short_selling": false,
+  "efficient_frontier": [
+    {
+      "return": 0.05344827586206897,
+      "volatility": 0.0573196295167117,
+      "weights": [
+        0.04999999999999996,
+        0.0,
+        0.8946578264088102,
+        0.017718829941001275,
+        0.029999999999999544,
+        0.00762334365018911
+      ],
+      "sharpe": 0.9324602463888217
+    },
+    {
+      "return": 0.056896551724137934,
+      "volatility": 0.058406423935725635,
+      "weights": [
+        0.05000000000000004,
+        4.242922430235919e-17,
+        0.8475602795392021,
+        0.04294840643816081,
+        0.030000000000000127,
+        0.029491314022636893
+      ],
+      "sharpe": 0.974148867370321
+    },
+    {
+      "return": 0.0603448275862069,
+      "volatility": 0.06102654923772287,
+      "weights": [
+        0.04999999999999996,
+        0.0,
+        0.8004621528511782,
+        0.06817914257350724,
+        0.029999999999999027,
+        0.05135870457531557
+      ],
+      "sharpe": 0.9888290971711281
+    },
+    {
+      "return": 0.06379310344827586,
+      "volatility": 0.06499483047611854,
+      "weights": [
+        0.05000000000000001,
+        5.3676684719352364e-17,
+        0.7533608151105351,
+        0.09341630081341246,
+        0.030000000000000023,
+        0.07322288407605242
+      ],
+      "sharpe": 0.9815104213821401
+    },
+    {
+      "return": 0.06724137931034482,
+      "volatility": 0.07008263115774424,
+      "weights": [
+        0.05000000000000001,
+        0.0,
+        0.706261154723647,
+        0.11865010434581001,
+        0.02999999999999982,
+        0.09508874093054319
+      ],
+      "sharpe": 0.9594585448567957
+    },
+    {
+      "return": 0.0706896551724138,
+      "volatility": 0.07606559843363138,
+      "weights": [
+        0.05000000000000001,
+        0.0003234655058256585,
+        0.6591361325855016,
+        0.14374055207747538,
+        0.02999999999999983,
+        0.11679984983119752
+      ],
+      "sharpe": 0.9293249067657281
+    },
+    {
+      "return": 0.07413793103448275,
+      "volatility": 0.08274745839759175,
+      "weights": [
+        0.050000000000000024,
+        0.002657212044859756,
+        0.611857625688019,
+        0.16793180070714916,
+        0.030000000000000134,
+        0.13755336155997197
+      ],
+      "sharpe": 0.895954177568316
+    },
+    {
+      "return": 0.07758620689655173,
+      "volatility": 0.08997135210668016,
+      "weights": [
+        0.050000000000000044,
+        0.004991970581358556,
+        0.5645752254344941,
+        0.19213022885185962,
+        0.030000000000000335,
+        0.1583025751322873
+      ],
+      "sharpe": 0.8623434579993506
+    },
+    {
+      "return": 0.08103448275862069,
+      "volatility": 0.09761701817311072,
+      "weights": [
+        0.049999999999999975,
+        0.007323485640091435,
+        0.5173002623240521,
+        0.21631572879519226,
+        0.030000000000000162,
+        0.17906052324066415
+      ],
+      "sharpe": 0.8301265934482538
+    },
+    {
+      "return": 0.08448275862068966,
+      "volatility": 0.10559287853286403,
+      "weights": [
+        0.050000000000000044,
+        0.0096576927307852,
+        0.4700204037821963,
+        0.24050940438349938,
+        0.03000000000000022,
+        0.19981249910351884
+      ],
+      "sharpe": 0.8000800792109839
+    },
+    {
+      "return": 0.08793103448275862,
+      "volatility": 0.11382954569666953,
+      "weights": [
+        0.049999999999999996,
+        0.011989099737892002,
+        0.42274289782375,
+        0.2647000548540384,
+        0.030000000000000016,
+        0.2205679475843196
+      ],
+      "sharpe": 0.7724798859961657
+    },
+    {
+      "return": 0.09137931034482757,
+      "volatility": 0.12227432546638323,
+      "weights": [
+        0.049999999999999954,
+        0.014322645102723332,
+        0.3754641485271834,
+        0.28889190898779443,
+        0.030000000000000224,
+        0.24132129738229877
+      ],
+      "sharpe": 0.7473303164526588
+    },
+    {
+      "return": 0.09482758620689655,
+      "volatility": 0.13096638765642749,
+      "weights": [
+        0.049999999999999996,
+        0.031001461424911496,
+        0.3218488603998758,
+        0.3171496781752127,
+        0.03000000000000006,
+        0.25
+      ],
+      "sharpe": 0.7240604853182927
+    },
+    {
+      "return": 0.09827586206896552,
+      "volatility": 0.14030344249477408,
+      "weights": [
+        0.05000000000000008,
+        0.07379310365398138,
+        0.27,
+        0.3262068963460185,
+        0.029999999999999975,
+        0.25
+      ],
+      "sharpe": 0.7004522506468508
+    }
+  ],
+  "data_warnings": [
+    {
+      "type": "missing_covariance",
+      "cells": "A,E",
+      "suggestion": "协方差[A,E]缺失，建议使用两个资产的历史收益率计算协方差，或用同行业协方差替代"
+    },
+    {
+      "type": "missing_covariance",
+      "cells": "D,F",
+      "suggestion": "协方差[D,F]缺失，建议使用两个资产的历史收益率计算协方差，或用同行业协方差替代"
+    },
+    {
+      "type": "missing_covariance",
+      "cells": "E,F",
+      "suggestion": "协方差[E,F]缺失，建议使用两个资产的历史收益率计算协方差，或用同行业协方差替代"
+    },
+    {
+      "type": "missing_covariance",
+      "cells": "F,D",
+      "suggestion": "协方差[F,D]缺失，建议使用两个资产的历史收益率计算协方差，或用同行业协方差替代"
+    },
+    {
+      "type": "missing_covariance",
+      "cells": "F,E",
+      "suggestion": "协方差[F,E]缺失，建议使用两个资产的历史收益率计算协方差，或用同行业协方差替代"
+    },
+    {
+      "type": "non_positive_definite",
+      "value": -0.0015757510860717986,
+      "suggestion": "协方差矩阵非正定（最小特征值-0.001576），已添加正则化修正。建议检查数据质量，或使用收缩估计方法"
+    }
+  ],
+  "constraint_conflicts": [],
+  "optimization_issues": [
+    {
+      "type": "optimization_failed",
+      "target_return": 0.05,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.10172413793103448,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.10517241379310344,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.10862068965517241,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.11206896551724138,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.11551724137931034,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.1189655172413793,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.12241379310344827,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.12586206896551722,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.1293103448275862,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.13275862068965516,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.13620689655172413,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.1396551724137931,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.14310344827586208,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.14655172413793102,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    },
+    {
+      "type": "optimization_failed",
+      "target_return": 0.15,
+      "message": "Positive directional derivative for linesearch",
+      "suggestion": "该目标收益率下无法找到可行解。建议：1) 放松约束条件；2) 检查资产收益和协方差数据；3) 缩小目标收益率范围"
+    }
+  ],
+  "target_analysis": {
+    "target_return": 0.1,
+    "weights": [
+      0.049999999999999926,
+      0.14495387463684484,
+      0.23990774927368913,
+      0.2550461253631552,
+      0.06009225072631097,
+      0.24999999999999997
+    ],
+    "expected_return": 0.1,
+    "volatility": 0.14834512112239737,
+    "validation": {
+      "valid": true,
+      "issues": [],
+      "summary": "",
+      "allocation": [
+        {
+          "asset": "A",
+          "weight": 0.049999999999999926,
+          "type": "long"
+        },
+        {
+          "asset": "B",
+          "weight": 0.14495387463684484,
+          "type": "long"
+        },
+        {
+          "asset": "C",
+          "weight": 0.23990774927368913,
+          "type": "long"
+        },
+        {
+          "asset": "D",
+          "weight": 0.2550461253631552,
+          "type": "long"
+        },
+        {
+          "asset": "E",
+          "weight": 0.06009225072631097,
+          "type": "long"
+        },
+        {
+          "asset": "F",
+          "weight": 0.24999999999999997,
+          "type": "long"
+        }
+      ]
+    },
+    "risk_decomposition": {
+      "total_volatility": 0.14834512112239737,
+      "contributions": [
+        {
+          "asset": "A",
+          "weight": 0.049999999999999926,
+          "marginal_risk": 0.020184806186929857,
+          "component_risk": 0.0010092403093464914,
+          "contribution_pct": 4.586147865294793
+        },
+        {
+          "asset": "B",
+          "weight": 0.14495387463684484,
+          "marginal_risk": 0.0348309500962457,
+          "component_risk": 0.005048881173733397,
+          "contribution_pct": 22.94291597611463
+        },
+        {
+          "asset": "C",
+          "weight": 0.23990774927368913,
+          "marginal_risk": 0.001982657644738521,
+          "component_risk": 0.0004756549331294921,
+          "contribution_pct": 2.161451376829454
+        },
+        {
+          "asset": "D",
+          "weight": 0.2550461253631552,
+          "marginal_risk": 0.018745280779859323,
+          "component_risk": 0.004780911231747544,
+          "contribution_pct": 21.72521810374431
+        },
+        {
+          "asset": "E",
+          "weight": 0.06009225072631097,
+          "marginal_risk": 0.010025380130145792,
+          "component_risk": 0.000602447656407297,
+          "contribution_pct": 2.7376175998888046
+        },
+        {
+          "asset": "F",
+          "weight": 0.24999999999999997,
+          "marginal_risk": 0.0403565586258181,
+          "component_risk": 0.010089139656454523,
+          "contribution_pct": 45.84664907812802
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "data_hash": "d22c23e223c825ce547b33c74945256d",
+    "timestamp": "20260531_042022",
+    "assets_file": "asset_returns.csv",
+    "covariance_file": "covariance_matrix.csv",
+    "constraints_file": "constraints_late.yaml",
+    "assets_path": "sample_data/asset_returns.csv",
+    "cov_path": "sample_data/covariance_matrix.csv",
+    "constraints_path": "sample_data/constraints_late.yaml"
+  }
+}

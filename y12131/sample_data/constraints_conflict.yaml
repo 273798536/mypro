@@ -1,0 +1,17 @@
+constraints:
+  - type: weight_sum
+    value: 1.0
+  - type: min_weight
+    asset: A
+    value: 0.6
+    description: 要求沪深300不低于60%
+  - type: min_weight
+    asset: B
+    value: 0.5
+    description: 要求创业板不低于50%
+  - type: sector_limit
+    sector: 权益类
+    assets: [A, B, D, F]
+    max_total: 0.7
+    description: 但权益类合计不得超过70%
+description: 此配置存在约束冲突，A+B已达110%，但权益类限70%

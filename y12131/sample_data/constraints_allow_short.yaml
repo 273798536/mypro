@@ -1,0 +1,22 @@
+constraints:
+  - type: weight_sum
+    value: 1.0
+    description: 权重和为1
+  - type: min_weight
+    asset: A
+    value: -0.2
+    description: 允许沪深300做空最多20%
+  - type: max_weight
+    asset: F
+    value: 0.4
+    description: 新能源最高40%
+  - type: min_weight
+    asset: C
+    value: 0.05
+    description: 国债不低于5%
+  - type: min_weight
+    global: true
+    value: -0.3
+    description: 单资产做空不超过30%
+allow_short_selling: true
+description: 此配置允许做空，会触发负权重校验

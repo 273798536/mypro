@@ -1,0 +1,21 @@
+constraints:
+  - type: weight_sum
+    value: 1.0
+    description: 权重和为1
+  - type: min_weight
+    asset: A
+    value: 0.05
+    description: 沪深300不低于5%
+  - type: max_weight
+    asset: F
+    value: 0.25
+    description: 新能源不超过25%
+  - type: min_weight
+    asset: C
+    value: 0.1
+    description: 国债不低于10%
+  - type: sector_limit
+    sector: 权益类
+    assets: [A, B, D, F]
+    max_total: 0.7
+    description: 权益类合计不超过70%

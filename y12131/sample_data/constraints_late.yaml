@@ -1,0 +1,24 @@
+constraints:
+  - type: weight_sum
+    value: 1.0
+  - type: min_weight
+    asset: A
+    value: 0.05
+  - type: max_weight
+    asset: F
+    value: 0.25
+  - type: min_weight
+    asset: C
+    value: 0.1
+  - type: sector_limit
+    sector: 权益类
+    assets: [A, B, D, F]
+    max_total: 0.7
+  - type: max_weight
+    asset: B
+    value: 0.15
+    description: 创业板风险较高，追加限制不超过15%
+  - type: min_weight
+    asset: E
+    value: 0.03
+    description: 黄金作为避险资产，追加要求不低于3%
