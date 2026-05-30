@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1D2129;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3D4350;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4D535E;
+  }
+}
+
+@layer components {
+  .panel-section {
+    @apply border border-med-border rounded-lg bg-med-dark-2/60 backdrop-blur-sm;
+  }
+
+  .issue-card {
+    @apply border rounded-md p-3 cursor-pointer transition-all duration-200 hover:brightness-110;
+  }
+
+  .issue-card-size {
+    @apply border-med-orange/40 bg-med-orange/10;
+  }
+
+  .issue-card-side {
+    @apply border-med-purple/40 bg-med-purple/10;
+  }
+
+  .issue-card-collision {
+    @apply border-med-red/40 bg-med-red/10;
+  }
+
+  .filter-btn {
+    @apply px-3 py-1.5 rounded text-xs font-medium transition-all duration-150 border;
+  }
+
+  .filter-btn-active {
+    @apply border-med-blue bg-med-blue/20 text-med-blue;
+  }
+
+  .filter-btn-inactive {
+    @apply border-med-border bg-med-dark-3/50 text-med-text-dim hover:text-med-text;
+  }
+
+  .detail-row {
+    @apply flex items-start gap-2 py-2 border-b border-med-border/50 last:border-0;
+  }
+
+  .detail-label {
+    @apply text-med-text-dim text-xs font-mono min-w-[80px] shrink-0;
+  }
+
+  .detail-value {
+    @apply text-med-text text-xs;
+  }
+}
