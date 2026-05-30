@@ -1,0 +1,63 @@
+[
+  {
+    "timestamp": "2026-05-31T04:30:08.832934",
+    "action_type": "classification_adjustment",
+    "operator": "demo_user",
+    "target_sku": "SKU006",
+    "details": {
+      "original_class": "C",
+      "new_class": "B"
+    },
+    "reason": "新品表现良好，临时提升关注等级"
+  },
+  {
+    "timestamp": "2026-05-31T04:30:08.833515",
+    "action_type": "threshold_adjustment",
+    "operator": "demo_user",
+    "target_sku": null,
+    "details": {
+      "original_thresholds": {
+        "A": 0.7,
+        "B": 0.9
+      },
+      "new_thresholds": {
+        "A": 0.75,
+        "B": 0.9
+      }
+    },
+    "reason": "调整A类阈值以优化分类颗粒度"
+  },
+  {
+    "timestamp": "2026-05-31T04:30:08.888429",
+    "action_type": "report_export",
+    "operator": "demo_user",
+    "target_sku": null,
+    "details": {
+      "file_name": "abc_classification_report_20260531_043008.xlsx",
+      "report_type": "ABC分类报告"
+    },
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-31T04:30:08.910258",
+    "action_type": "report_export",
+    "operator": "demo_user",
+    "target_sku": null,
+    "details": {
+      "file_name": "special_cases_report_20260531_043008.xlsx",
+      "report_type": "特殊场景分析报告"
+    },
+    "reason": ""
+  },
+  {
+    "timestamp": "2026-05-31T04:30:08.946770",
+    "action_type": "report_export",
+    "operator": "demo_user",
+    "target_sku": null,
+    "details": {
+      "file_name": "sku_trace_SKU001_20260531_043008.xlsx",
+      "report_type": "SKU追溯详情"
+    },
+    "reason": ""
+  }
+]
