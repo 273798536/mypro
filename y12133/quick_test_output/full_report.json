@@ -1,0 +1,269 @@
+{
+  "analysis_id": "20260531_044548",
+  "analysis_time": "2026-05-31T04:45:48.819583",
+  "files": {
+    "file1": {
+      "file_path": "./quick_test_data/original.wav",
+      "duration_seconds": 5.0,
+      "sample_rate": 22050,
+      "tempo_bpm": 60.09,
+      "num_beats": 2,
+      "avg_beat_interval_ms": 998.5
+    },
+    "file2": {
+      "file_path": "./quick_test_data/transposed.wav",
+      "duration_seconds": 5.0,
+      "sample_rate": 22050,
+      "tempo_bpm": 117.45,
+      "num_beats": 1,
+      "avg_beat_interval_ms": 0
+    }
+  },
+  "similarity": {
+    "overall": 0.6267,
+    "beat": 0.0,
+    "melody": 0.7534,
+    "chroma": 0.9853,
+    "timbre": 0.9347,
+    "rhythmic": 0.0,
+    "dtw_distance": 0.8354,
+    "confidence": 0.5814,
+    "transposition_correction_applied": true,
+    "applied_transposition_shift": -3,
+    "speed_normalization_applied": "True",
+    "applied_speed_factor": 1.3177
+  },
+  "anomaly_detection": {
+    "speed_change": {
+      "is_speed_changed": "True",
+      "speed_factor": 1.3177,
+      "tempo_ratio": 1.9545,
+      "duration_ratio": 1.0,
+      "interval_ratio": 0.9985,
+      "tempo1_bpm": 60.09,
+      "tempo2_bpm": 117.45,
+      "confidence": 0.6,
+      "direction": "加速",
+      "severity": "显著"
+    },
+    "transposition": {
+      "is_transposed": "True",
+      "semitone_shift": -3,
+      "raw_shift": 9,
+      "chroma_correlation": 0.9922,
+      "pitch_based_shift": 3,
+      "shift_confirmed": false,
+      "confidence": 0.7,
+      "direction": "降调 3 个半音",
+      "severity": "中度"
+    }
+  },
+  "beat_alignment": {
+    "file1_beat_times": [
+      3.6455,
+      4.644
+    ],
+    "file2_beat_times": [
+      1.0449
+    ],
+    "alignment_quality": 1.0,
+    "beat_similarity": 0.0,
+    "warp_path_length": 54
+  },
+  "matched_segments": [
+    {
+      "file1_start_time": 0.0,
+      "file1_end_time": 4.923,
+      "file1_duration": 4.923,
+      "file2_start_time": 0.0,
+      "file2_end_time": 4.923,
+      "file2_duration": 4.923,
+      "avg_similarity": 0.9853,
+      "num_frames": 54,
+      "sim_scores": [
+        0.9992,
+        0.9985,
+        0.9977,
+        0.9942,
+        0.9887,
+        0.9687,
+        0.9503,
+        0.9503,
+        0.982,
+        0.9906,
+        0.9928,
+        0.9988,
+        0.9989,
+        0.9984,
+        0.9965,
+        0.9992,
+        0.9993,
+        0.9985,
+        0.9946,
+        0.9924,
+        0.9892,
+        0.9684,
+        0.948,
+        0.9427,
+        0.9737,
+        0.9892,
+        0.9639,
+        0.9561,
+        0.9669,
+        0.9832,
+        0.995,
+        0.9763,
+        0.9693,
+        0.98,
+        0.9895,
+        0.9957,
+        0.9876,
+        0.9832,
+        0.9896,
+        0.9905,
+        0.9931,
+        0.9927,
+        0.983,
+        0.9889,
+        0.9911,
+        0.9925,
+        0.9952,
+        0.9835,
+        0.9854,
+        0.9895,
+        0.9916,
+        0.995,
+        0.9985,
+        0.9998
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "type": "speed_change",
+      "severity": "high",
+      "confidence": 0.6,
+      "title": "⚠️ 检测到加速 (显著)",
+      "description": "文件2相对于文件1存在加速处理，速度因子为 1.3177。文件1 BPM: 60.1, 文件2 BPM: 117.5。",
+      "evidence": {
+        "tempo_ratio": 1.9545,
+        "interval_ratio": 0.9985,
+        "duration_ratio": 1.0
+      },
+      "material_ref": {
+        "file": "./quick_test_data/transposed.wav",
+        "note": "此文件被识别为变速版本，请核对原始素材来源"
+      }
+    },
+    {
+      "type": "transposition",
+      "severity": "medium",
+      "confidence": 0.7,
+      "title": "⚠️ 检测到降调 3 个半音 (中度)",
+      "description": "文件2相对于文件1存在降调 3 个半音处理，移调幅度为 -3 个半音。色度相关系数: 0.9922。",
+      "evidence": {
+        "semitone_shift": -3,
+        "chroma_correlation": 0.9922,
+        "pitch_based_shift": 3,
+        "shift_confirmed": false
+      },
+      "material_ref": {
+        "file": "./quick_test_data/transposed.wav",
+        "note": "此文件被识别为移调片段，相似度计算已自动修正移调影响"
+      }
+    },
+    {
+      "type": "high_similarity_segments",
+      "severity": "high",
+      "confidence": 0.9853,
+      "title": "⚠️ 检测到 1 个高度相似片段 (≥0.85)",
+      "description": "累计匹配时长: 4.92 秒。请人工复核这些片段是否构成实质性相似。",
+      "segments": [
+        {
+          "file1_start_time": 0.0,
+          "file1_end_time": 4.923,
+          "file1_duration": 4.923,
+          "file2_start_time": 0.0,
+          "file2_end_time": 4.923,
+          "file2_duration": 4.923,
+          "avg_similarity": 0.9853,
+          "num_frames": 54,
+          "sim_scores": [
+            0.9992,
+            0.9985,
+            0.9977,
+            0.9942,
+            0.9887,
+            0.9687,
+            0.9503,
+            0.9503,
+            0.982,
+            0.9906,
+            0.9928,
+            0.9988,
+            0.9989,
+            0.9984,
+            0.9965,
+            0.9992,
+            0.9993,
+            0.9985,
+            0.9946,
+            0.9924,
+            0.9892,
+            0.9684,
+            0.948,
+            0.9427,
+            0.9737,
+            0.9892,
+            0.9639,
+            0.9561,
+            0.9669,
+            0.9832,
+            0.995,
+            0.9763,
+            0.9693,
+            0.98,
+            0.9895,
+            0.9957,
+            0.9876,
+            0.9832,
+            0.9896,
+            0.9905,
+            0.9931,
+            0.9927,
+            0.983,
+            0.9889,
+            0.9911,
+            0.9925,
+            0.9952,
+            0.9835,
+            0.9854,
+            0.9895,
+            0.9916,
+            0.995,
+            0.9985,
+            0.9998
+          ]
+        }
+      ],
+      "material_ref": {
+        "file1": "./quick_test_data/original.wav",
+        "file2": "./quick_test_data/transposed.wav",
+        "note": "请重点核对这些时间段内的音频内容"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "low_confidence",
+      "title": "分析置信度偏低: 0.581",
+      "description": "分析结果的整体置信度较低，可能由于音频质量差、节拍不明显或内容差异大导致。"
+    }
+  ],
+  "verdict": {
+    "risk_level": "LOW_RISK",
+    "risk_score": 75,
+    "recommendation": "相似性较低，大概率为巧合或普通音乐共性。可酌情进行抽样复核。",
+    "needs_manual_review": false
+  }
+}

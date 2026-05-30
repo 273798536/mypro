@@ -1,0 +1,4 @@
+﻿序号,类型,严重程度,置信度,标题,描述,关联文件
+1,speed_change,high,0.6,⚠️ 检测到加速 (显著),"文件2相对于文件1存在加速处理，速度因子为 1.3177。文件1 BPM: 60.1, 文件2 BPM: 117.5。",./quick_test_data/transposed.wav
+2,transposition,medium,0.7,⚠️ 检测到降调 3 个半音 (中度),文件2相对于文件1存在降调 3 个半音处理，移调幅度为 -3 个半音。色度相关系数: 0.9922。,./quick_test_data/transposed.wav
+3,high_similarity_segments,high,0.9853,⚠️ 检测到 1 个高度相似片段 (≥0.85),累计匹配时长: 4.92 秒。请人工复核这些片段是否构成实质性相似。,./quick_test_data/original.wav / ./quick_test_data/transposed.wav
