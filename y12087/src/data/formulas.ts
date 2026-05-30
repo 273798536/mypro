@@ -1,0 +1,118 @@
+import type { VectorFieldFormula } from '@/types';
+
+export const defaultFormulas: VectorFieldFormula[] = [
+  {
+    id: 'formula-001',
+    name: '标准旋流场',
+    description: '经典的3D旋流场，流线螺旋上升，无明显异常',
+    fx: '-y + 0.1 * x',
+    fy: 'x + 0.1 * y',
+    fz: '0.5 * z',
+    params: {
+      xRange: [-5, 5],
+      yRange: [-5, 5],
+      zRange: [0, 5],
+    },
+    thresholds: {
+      explosion: 50,
+      directionFlip: 150,
+      outOfBounds: 10,
+    },
+    createdAt: '2025-01-15T10:00:00Z',
+  },
+  {
+    id: 'formula-002',
+    name: '采样爆炸风险场',
+    description: '在原点附近速度急剧增大，容易触发采样爆炸',
+    fx: 'x / (x^2 + y^2 + z^2 + 0.01)',
+    fy: 'y / (x^2 + y^2 + z^2 + 0.01)',
+    fz: 'z / (x^2 + y^2 + z^2 + 0.01)',
+    params: {
+      xRange: [-3, 3],
+      yRange: [-3, 3],
+      zRange: [-3, 3],
+    },
+    thresholds: {
+      explosion: 20,
+      directionFlip: 150,
+      outOfBounds: 5,
+    },
+    createdAt: '2025-01-15T10:01:00Z',
+  },
+  {
+    id: 'formula-003',
+    name: '方向反转测试场',
+    description: '在特定区域流线方向会发生剧烈反转',
+    fx: 'sin(x * 2) * cos(y)',
+    fy: 'cos(x) * sin(y * 2)',
+    fz: 'sin(z) * sign(x * y)',
+    params: {
+      xRange: [-4, 4],
+      yRange: [-4, 4],
+      zRange: [-2, 2],
+    },
+    thresholds: {
+      explosion: 30,
+      directionFlip: 90,
+      outOfBounds: 6,
+    },
+    createdAt: '2025-01-15T10:02:00Z',
+  },
+  {
+    id: 'formula-004',
+    name: '参数越界测试场',
+    description: '流线会快速超出参数范围',
+    fx: '3 * x',
+    fy: '2 * y',
+    fz: '4 * z',
+    params: {
+      xRange: [-2, 2],
+      yRange: [-2, 2],
+      zRange: [-2, 2],
+    },
+    thresholds: {
+      explosion: 100,
+      directionFlip: 150,
+      outOfBounds: 2,
+    },
+    createdAt: '2025-01-15T10:03:00Z',
+  },
+  {
+    id: 'formula-005',
+    name: '综合边界测试场',
+    description: '同时包含采样爆炸、方向反转、参数越界三种边界情况',
+    fx: 'x / (x^2 + y^2 + z^2 + 0.001) + sin(y * 5) * sign(x)',
+    fy: 'y / (x^2 + y^2 + z^2 + 0.001) + cos(x * 5) * sign(y)',
+    fz: '5 * z + sign(x * y) * sin(z * 3)',
+    params: {
+      xRange: [-3, 3],
+      yRange: [-3, 3],
+      zRange: [-2, 2],
+    },
+    thresholds: {
+      explosion: 10,
+      directionFlip: 60,
+      outOfBounds: 2,
+    },
+    createdAt: '2025-01-15T10:04:00Z',
+  },
+  {
+    id: 'formula-006',
+    name: '稳定层流场',
+    description: '简单的层流场，所有流线都正常，用于对比测试',
+    fx: '1',
+    fy: '0.5 * x',
+    fz: '0.2 * y',
+    params: {
+      xRange: [0, 5],
+      yRange: [-3, 3],
+      zRange: [-3, 3],
+    },
+    thresholds: {
+      explosion: 50,
+      directionFlip: 150,
+      outOfBounds: 10,
+    },
+    createdAt: '2025-01-15T10:05:00Z',
+  },
+];
