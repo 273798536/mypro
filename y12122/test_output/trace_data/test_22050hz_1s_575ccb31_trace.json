@@ -1,0 +1,9 @@
+{
+  "sample_rate": 22050,
+  "duration": 1.5,
+  "quality_metrics": {
+    "energy_ratio": 0.9999544757334589,
+    "noise_reduction_db": 43.41757042561174,
+    "spectral_distance": 0.012231799188607879,
+    "aliasing_score": 0.009988789965422615,
+    "over_filtered": 

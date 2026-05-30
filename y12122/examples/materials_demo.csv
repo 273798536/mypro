@@ -1,0 +1,11 @@
+audio_file,sample_rate,filter_method,noise_threshold,low_freq,high_freq,preserve_bands,spectrum_params,listening_notes
+test_audio/test_44100hz_2s.wav,44100,spectral_subtraction,0.1,,,200-3000;5000-8000,窗函数=hann;重叠=50%,测试音频1: 标准44.1kHz
+test_audio/test_48000hz_3s.wav,48000,bandpass,,100,15000,,滤波类型=butterworth,测试音频2: 带通滤波
+test_audio/test_22050hz_1s.wav,22050,wiener,,,,,维纳滤波测试,
+
+# 这是备注行，说明以下是特殊测试用例
+test_audio/test_8000hz_1s.wav,8000,spectral_subtraction,0.05,,,80-3000,低采样率测试,可能会有采样率警告
+,44100,spectral_subtraction,,,,,,这行缺少音频文件路径
+test_audio/nonexistent.wav,44100,spectral_subtraction,,,,,,这个文件不存在
+
+test_audio/test_44100hz_2s.wav,44100,spectral_subtraction,0.5,,,200-2000,高阈值测试,高阈值可能导致过度滤波

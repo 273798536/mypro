@@ -1,0 +1,4 @@
+﻿行号,错误类型,错误信息,原始内容
+5,empty_line,空行,
+8,missing_required_columns,缺少必需列: audio_file,",44100,spectral_subtraction,,,,,,这行缺少音频文件路径"
+10,empty_line,空行,

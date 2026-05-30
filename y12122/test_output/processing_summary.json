@@ -1,0 +1,41 @@
+{
+  "total_processed": 5,
+  "results": {
+    "success_count": 0,
+    "needs_review_count": 0,
+    "invalid_sample_rate_count": 0,
+    "failed_count": 5
+  },
+  "details": {
+    "success": [],
+    "needs_review": [],
+    "invalid_sample_rate": [],
+    "failed": [
+      {
+        "line_number": 2,
+        "audio_file": "test_audio/test_44100hz_2s.wav",
+        "error": "Object of type bool_ is not JSON serializable"
+      },
+      {
+        "line_number": 3,
+        "audio_file": "test_audio/test_48000hz_3s.wav",
+        "error": "Object of type bool_ is not JSON serializable"
+      },
+      {
+        "line_number": 4,
+        "audio_file": "test_audio/test_22050hz_1s.wav",
+        "error": "Object of type bool_ is not JSON serializable"
+      },
+      {
+        "line_number": 7,
+        "audio_file": "test_audio/test_8000hz_1s.wav",
+        "error": "音频文件不存在: test_audio/test_8000hz_1s.wav"
+      },
+      {
+        "line_number": 9,
+        "audio_file": "test_audio/nonexistent.wav",
+        "error": "音频文件不存在: test_audio/nonexistent.wav"
+      }
+    ]
+  }
+}
