@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0A1628;
+  color: #e0e7ef;
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F2140;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a3a5c;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5a8c;
+}
+
+@keyframes sonar-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(0, 255, 136, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+  }
+}
+
+.sonar-pulse-btn {
+  animation: sonar-pulse 2s infinite;
+}
+
+.data-value {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.glow-green {
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+.glow-cyan {
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.glow-orange {
+  text-shadow: 0 0 8px rgba(255, 107, 53, 0.5);
+}
+
+.glow-red {
+  text-shadow: 0 0 8px rgba(255, 51, 85, 0.5);
+}
