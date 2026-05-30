@@ -1,0 +1,13 @@
+[
+  {"user_id": "u1", "item_id": "i1", "action": "click", "timestamp": "2026-05-01T10:00:00", "duration": 30.5},
+  {"user_id": "u1", "item_id": "i2", "action": "click", "timestamp": "2026-05-01T10:05:00", "duration": 120.0},
+  {"user_id": "u1", "item_id": "i3", "action": "click", "timestamp": "2026-05-02T09:00:00", "duration": 45.0},
+  {"user_id": "u2", "item_id": "i1", "action": "click", "timestamp": "2026-05-01T11:00:00", "duration": 60.0},
+  {"user_id": "u2", "item_id": "i2", "action": "click", "timestamp": "2026-05-01T11:10:00", "duration": 90.0},
+  {"user_id": "u2", "item_id": "i4", "action": "click", "timestamp": "2026-05-02T14:00:00", "duration": 15.0},
+  {"user_id": "u3", "item_id": "i1", "action": "click", "timestamp": "2026-05-03T08:00:00", "duration": 200.0},
+  {"user_id": "u3", "item_id": "i3", "action": "click", "timestamp": "2026-05-03T08:30:00", "duration": 80.0},
+  {"user_id": "u3", "item_id": "i5", "action": "click", "timestamp": "2026-05-03T09:00:00", "duration": 10.0},
+  {"user_id": "u4", "item_id": "i1", "action": "click", "timestamp": "2026-05-04T10:00:00", "duration": 55.0},
+  {"user_id": "u4", "item_id": "i5", "action": "click", "timestamp": "2026-05-04T10:20:00", "duration": 30.0}
+]

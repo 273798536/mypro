@@ -1,0 +1,454 @@
+{
+  "report_title": "协同过滤相似度诊断报告",
+  "generated_at": "2026-05-31T04:14:03.096302",
+  "data_version": 3,
+  "summary": {
+    "total_similarity_pairs": 30,
+    "confirmed": 18,
+    "pending_cold_start": 0,
+    "corrected": 0,
+    "cold_start_affected": 12,
+    "total_corrections": 1,
+    "total_diagnoses": 1
+  },
+  "cold_starts": [
+    {
+      "item_id": "i5",
+      "reason": "手动标记",
+      "status": "confirmed_normal",
+      "assigned_to": "实习生A"
+    },
+    {
+      "item_id": "i4",
+      "reason": "手动标记",
+      "status": "confirmed_cold",
+      "assigned_to": "实习生A"
+    }
+  ],
+  "diagnoses": [
+    {
+      "type": "hot_crowding",
+      "severity": "high",
+      "details": "Top5物品占总交互的100.0%（阈值60%），热门物品: i1, i2, i3, i5, i4",
+      "next_step": "增加长尾物品曝光权重或引入探索策略",
+      "contact": "推荐策略组负责人"
+    }
+  ],
+  "corrections": [
+    {
+      "correction_id": "5e8057bb",
+      "timestamp": "2026-05-31T04:14:03.095459",
+      "field": "score",
+      "old_value": "0.745324",
+      "new_value": "0.85",
+      "reason": "业务侧反馈该相似度偏高，需下调",
+      "operator": "实习生B"
+    }
+  ],
+  "exposure_impact": [
+    {
+      "key": "i1|i2|cosine",
+      "old_score": 0.85,
+      "new_score": 0.745324,
+      "old_status": "confirmed",
+      "new_status": "confirmed"
+    },
+    {
+      "key": "i1|i4|cosine",
+      "old_score": 0.47724,
+      "new_score": 0.47724,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i2|i4|cosine",
+      "old_score": 0.780869,
+      "new_score": 0.780869,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i3|i4|cosine",
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i4|i5|cosine",
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i1|i4|pearson",
+      "old_score": -0.09759,
+      "new_score": -0.09759,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i2|i4|pearson",
+      "old_score": 0.697097,
+      "new_score": 0.697097,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i3|i4|pearson",
+      "old_score": -0.565916,
+      "new_score": -0.565916,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i4|i5|pearson",
+      "old_score": -0.522233,
+      "new_score": -0.522233,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i1|i4|jaccard",
+      "old_score": 0.5,
+      "new_score": 0.5,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i2|i4|jaccard",
+      "old_score": 0.2,
+      "new_score": 0.2,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i3|i4|jaccard",
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    },
+    {
+      "key": "i4|i5|jaccard",
+      "old_score": 0.0,
+      "new_score": 0.0,
+      "old_status": "confirmed",
+      "new_status": "cold_start_confirmed"
+    }
+  ],
+  "similarities": [
+    {
+      "item_a": "i1",
+      "item_b": "i2",
+      "method": "cosine",
+      "score": 0.745324,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i3",
+      "method": "cosine",
+      "score": 0.644274,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i4",
+      "method": "cosine",
+      "score": 0.47724,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i5",
+      "method": "cosine",
+      "score": 0.640285,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i3",
+      "method": "cosine",
+      "score": 0.374817,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i4",
+      "method": "cosine",
+      "score": 0.780869,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i5",
+      "method": "cosine",
+      "score": 0.0,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i3",
+      "item_b": "i4",
+      "method": "cosine",
+      "score": 0.0,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i3",
+      "item_b": "i5",
+      "method": "cosine",
+      "score": 0.357771,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i4",
+      "item_b": "i5",
+      "method": "cosine",
+      "score": 0.0,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i2",
+      "method": "pearson",
+      "score": 0.426732,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i3",
+      "method": "pearson",
+      "score": -0.355036,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i4",
+      "method": "pearson",
+      "score": -0.09759,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i5",
+      "method": "pearson",
+      "score": -0.152894,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i3",
+      "method": "pearson",
+      "score": -0.230551,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i4",
+      "method": "pearson",
+      "score": 0.697097,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i5",
+      "method": "pearson",
+      "score": -0.89357,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i3",
+      "item_b": "i4",
+      "method": "pearson",
+      "score": -0.565916,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i3",
+      "item_b": "i5",
+      "method": "pearson",
+      "score": -0.2111,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i4",
+      "item_b": "i5",
+      "method": "pearson",
+      "score": -0.522233,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i2",
+      "method": "jaccard",
+      "score": 0.5,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i3",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i4",
+      "method": "jaccard",
+      "score": 0.5,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i1",
+      "item_b": "i5",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i3",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i4",
+      "method": "jaccard",
+      "score": 0.2,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i2",
+      "item_b": "i5",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i3",
+      "item_b": "i4",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i3",
+      "item_b": "i5",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": false,
+      "status": "confirmed",
+      "data_version": 3,
+      "correction_id": null
+    },
+    {
+      "item_a": "i4",
+      "item_b": "i5",
+      "method": "jaccard",
+      "score": 0.0,
+      "is_cold_start": true,
+      "status": "cold_start_confirmed",
+      "data_version": 3,
+      "correction_id": null
+    }
+  ],
+  "routing": {
+    "routes": [
+      {
+        "diagnosis_type": "hot_crowding",
+        "severity": "high",
+        "summary": "Top5物品占总交互的100.0%（阈值60%），热门物品: i1, i2, i3, i5, i4",
+        "next_step": "增加长尾物品曝光权重或引入探索策略",
+        "contact": "推荐策略组负责人"
+      }
+    ]
+  }
+}

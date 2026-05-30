@@ -1,0 +1,8 @@
+[
+  {"user_id": "u1", "item_id": "i4", "position": 1, "timestamp": "2026-05-10T10:00:00", "clicked": false},
+  {"user_id": "u1", "item_id": "i5", "position": 2, "timestamp": "2026-05-10T10:00:00", "clicked": true},
+  {"user_id": "u2", "item_id": "i3", "position": 1, "timestamp": "2026-05-10T12:00:00", "clicked": false},
+  {"user_id": "u2", "item_id": "i5", "position": 3, "timestamp": "2026-05-10T12:00:00", "clicked": false},
+  {"user_id": "u3", "item_id": "i2", "position": 2, "timestamp": "2026-05-10T15:00:00", "clicked": true},
+  {"user_id": "u3", "item_id": "i4", "position": 4, "timestamp": "2026-05-10T15:00:00", "clicked": false}
+]
