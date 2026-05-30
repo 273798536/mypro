@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_74b4269ad0a1e45eacf1f87bac5ead5f {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ljagis/leaflet-measure@2.1.7/dist/leaflet-measure.min.css"/>
+</head>
+<body>
+    
+    
+        <div style="position: fixed; bottom: 50px; left: 50px; 
+                    background: white; padding: 15px; border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000;
+                    font-family: Arial, sans-serif; font-size: 12px;">
+            <div style="font-weight: bold; margin-bottom: 10px; font-size: 14px;">图例</div>
+            
+                <div style="display: flex; align-items: center; margin: 4px 0;">
+                    <div style="width: 20px; height: 15px; background: #3498db; 
+                         opacity: 0.5; border: 2px solid #3498db; margin-right: 8px;"></div>
+                    <span>仓库 #1 覆盖范围</span>
+                </div>
+            
+                <div style="display: flex; align-items: center; margin: 4px 0;">
+                    <div style="width: 20px; height: 15px; background: #e74c3c; 
+                         opacity: 0.5; border: 2px solid #e74c3c; margin-right: 8px;"></div>
+                    <span>仓库 #2 覆盖范围</span>
+                </div>
+            
+                <div style="display: flex; align-items: center; margin: 4px 0;">
+                    <div style="width: 20px; height: 15px; background: #2ecc71; 
+                         opacity: 0.5; border: 2px solid #2ecc71; margin-right: 8px;"></div>
+                    <span>仓库 #3 覆盖范围</span>
+                </div>
+            
+                <div style="display: flex; align-items: center; margin: 4px 0;">
+                    <div style="width: 20px; height: 15px; background: #f39c12; 
+                         opacity: 0.5; border: 2px solid #f39c12; margin-right: 8px;"></div>
+                    <span>仓库 #4 覆盖范围</span>
+                </div>
+            
+                <div style="display: flex; align-items: center; margin: 4px 0;">
+                    <div style="width: 20px; height: 15px; background: #9b59b6; 
+                         opacity: 0.5; border: 2px solid #9b59b6; margin-right: 8px;"></div>
+                    <span>仓库 #5 覆盖范围</span>
+                </div>
+            
+            <div style="display: flex; align-items: center; margin: 4px 0;">
+                <div style="width: 16px; height: 16px; background: green; 
+                     border-radius: 50%; margin-right: 8px;"></div>
+                <span>已覆盖小区</span>
+            </div>
+            <div style="display: flex; align-items: center; margin: 4px 0;">
+                <div style="width: 16px; height: 16px; background: orange; 
+                     border-radius: 50%; margin-right: 8px;"></div>
+                <span>未覆盖小区</span>
+            </div>
+            <div style="display: flex; align-items: center; margin: 4px 0;">
+                <div style="width: 16px; height: 16px; background: red; 
+                     margin-right: 8px; display: flex; align-items: center; 
+                     justify-content: center; color: white; font-size: 10px;">📍</div>
+                <span>仓库位置</span>
+            </div>
+        </div>
+        
+    
+            <div class="folium-map" id="map_74b4269ad0a1e45eacf1f87bac5ead5f" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_74b4269ad0a1e45eacf1f87bac5ead5f = L.map(
+                "map_74b4269ad0a1e45eacf1f87bac5ead5f",
+                {
+                    center: [39.90866666666667, 116.39850000000001],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_e95be93d274392dc174daefef26b1807 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e95be93d274392dc174daefef26b1807.addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var measure_control_7aab5354eee3244bc3479462d1235d36 = new L.Control.Measure(
+                {
+  "position": "topleft",
+  "primaryLengthUnit": "meters",
+  "secondaryLengthUnit": "miles",
+  "primaryAreaUnit": "sqmeters",
+  "secondaryAreaUnit": "acres",
+});
+            map_74b4269ad0a1e45eacf1f87bac5ead5f.addControl(measure_control_7aab5354eee3244bc3479462d1235d36);
+
+            // Workaround for using this plugin with Leaflet>=1.8.0
+            // https://github.com/ljagis/leaflet-measure/issues/171
+            L.Control.Measure.include({
+                _setCaptureMarkerIcon: function () {
+                    // disable autopan
+                    this._captureMarker.options.autoPanOnFocus = false;
+                    // default function
+                    this._captureMarker.setIcon(
+                        L.divIcon({
+                            iconSize: this._map.getSize().multiplyBy(2)
+                        })
+                    );
+                },
+            });
+
+        
+    
+            var circle_10811d1960fc2a2844cd226ec0172809 = L.circle(
+                [39.91, 116.4],
+                {"bubblingMouseEvents": true, "color": "#3498db", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3498db", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 3000.0, "stroke": true, "weight": 2}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_8c3f7a95c05814df7bb5efab9da704db = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_32b1d3a7cf4a4c60a7f4be699581fd22 = $(`<div id="html_32b1d3a7cf4a4c60a7f4be699581fd22" style="width: 100.0%; height: 100.0%;">仓配中心A - 服务半径(3.0km)</div>`)[0];
+                popup_8c3f7a95c05814df7bb5efab9da704db.setContent(html_32b1d3a7cf4a4c60a7f4be699581fd22);
+            
+        
+
+        circle_10811d1960fc2a2844cd226ec0172809.bindPopup(popup_8c3f7a95c05814df7bb5efab9da704db)
+        ;
+
+        
+    
+    
+            var polygon_8aaa4022d33f0ab0ebef68cc9850cabe = L.polygon(
+                [[39.895, 116.395], [39.9, 116.38], [39.91, 116.375], [39.925, 116.4], [39.92, 116.418], [39.898, 116.42], [39.895, 116.395]],
+                {"bubblingMouseEvents": true, "color": "#3498db", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3498db", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_b4789f77878fc7d8d8ec96c560d43c8d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0103989cae09dd4afb016ba5a5ab0276 = $(`<div id="html_0103989cae09dd4afb016ba5a5ab0276" style="width: 100.0%; height: 100.0%;">仓配中心A - 凸包覆盖<br>覆盖小区: 12个<br>覆盖人口: 13650人</div>`)[0];
+                popup_b4789f77878fc7d8d8ec96c560d43c8d.setContent(html_0103989cae09dd4afb016ba5a5ab0276);
+            
+        
+
+        polygon_8aaa4022d33f0ab0ebef68cc9850cabe.bindPopup(popup_b4789f77878fc7d8d8ec96c560d43c8d)
+        ;
+
+        
+    
+    
+            var marker_85efcbf659d293c43dc16a6f01f8564b = L.marker(
+                [39.91, 116.4],
+                {
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var icon_841898c920ac7671952cfb0ec7073d25 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "warehouse",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cc6648847a74d12bf68bfd78a9bf8c1a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_818d7694356d622f6812139bbdb1bbde = $(`<div id="html_818d7694356d622f6812139bbdb1bbde" style="width: 100.0%; height: 100.0%;"><b>仓配中心A</b><br>ID: W001<br>服务半径: 3.0km<br>覆盖小区: 12个<br>覆盖人口: 13650人</div>`)[0];
+                popup_cc6648847a74d12bf68bfd78a9bf8c1a.setContent(html_818d7694356d622f6812139bbdb1bbde);
+            
+        
+
+        marker_85efcbf659d293c43dc16a6f01f8564b.bindPopup(popup_cc6648847a74d12bf68bfd78a9bf8c1a)
+        ;
+
+        
+    
+    
+                marker_85efcbf659d293c43dc16a6f01f8564b.setIcon(icon_841898c920ac7671952cfb0ec7073d25);
+            
+    
+            var circle_031b1a19fff5e02cedf8fabc61a9de0d = L.circle(
+                [39.908, 116.395],
+                {"bubblingMouseEvents": true, "color": "#e74c3c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e74c3c", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2500.0, "stroke": true, "weight": 2}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_2046481cfcf58b4f427a3afb43def6a0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6ce5a3199821ca5168e869c17ef1dd5f = $(`<div id="html_6ce5a3199821ca5168e869c17ef1dd5f" style="width: 100.0%; height: 100.0%;">前置仓B - 服务半径(2.5km)</div>`)[0];
+                popup_2046481cfcf58b4f427a3afb43def6a0.setContent(html_6ce5a3199821ca5168e869c17ef1dd5f);
+            
+        
+
+        circle_031b1a19fff5e02cedf8fabc61a9de0d.bindPopup(popup_2046481cfcf58b4f427a3afb43def6a0)
+        ;
+
+        
+    
+    
+            var polygon_c49b1c535553bb9c61f46565db1ca178 = L.polygon(
+                [[39.895, 116.395], [39.9, 116.38], [39.91, 116.375], [39.925, 116.4], [39.92, 116.418], [39.898, 116.42], [39.895, 116.395]],
+                {"bubblingMouseEvents": true, "color": "#e74c3c", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e74c3c", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_2713f8a9a3746db4fcbb0d289293bdc7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_aea397f159aeb9c209e3a7de9a756dc8 = $(`<div id="html_aea397f159aeb9c209e3a7de9a756dc8" style="width: 100.0%; height: 100.0%;">前置仓B - 凸包覆盖<br>覆盖小区: 12个<br>覆盖人口: 13650人</div>`)[0];
+                popup_2713f8a9a3746db4fcbb0d289293bdc7.setContent(html_aea397f159aeb9c209e3a7de9a756dc8);
+            
+        
+
+        polygon_c49b1c535553bb9c61f46565db1ca178.bindPopup(popup_2713f8a9a3746db4fcbb0d289293bdc7)
+        ;
+
+        
+    
+    
+            var marker_82135f525d0a64be711ee29d627022bc = L.marker(
+                [39.908, 116.395],
+                {
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var icon_d038a8c7597a82e06fbd97bbad4e0647 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "warehouse",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d57250fd75feebc46645b981d6c264e7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3f53ee1b6a861d7b048c0a01834bfd22 = $(`<div id="html_3f53ee1b6a861d7b048c0a01834bfd22" style="width: 100.0%; height: 100.0%;"><b>前置仓B</b><br>ID: W002<br>服务半径: 2.5km<br>覆盖小区: 12个<br>覆盖人口: 13650人</div>`)[0];
+                popup_d57250fd75feebc46645b981d6c264e7.setContent(html_3f53ee1b6a861d7b048c0a01834bfd22);
+            
+        
+
+        marker_82135f525d0a64be711ee29d627022bc.bindPopup(popup_d57250fd75feebc46645b981d6c264e7)
+        ;
+
+        
+    
+    
+                marker_82135f525d0a64be711ee29d627022bc.setIcon(icon_d038a8c7597a82e06fbd97bbad4e0647);
+            
+    
+            var circle_20e6d0ffd6b3b15070fdec8ec85279a8 = L.circle(
+                [39.915, 116.41],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ecc71", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2000.0, "stroke": true, "weight": 2}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_c65e2b0f1f968dcb2e0337781a8fee8c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7d774e460a646a3ba5306b1f251fc60a = $(`<div id="html_7d774e460a646a3ba5306b1f251fc60a" style="width: 100.0%; height: 100.0%;">站点C - 服务半径(2.0km)</div>`)[0];
+                popup_c65e2b0f1f968dcb2e0337781a8fee8c.setContent(html_7d774e460a646a3ba5306b1f251fc60a);
+            
+        
+
+        circle_20e6d0ffd6b3b15070fdec8ec85279a8.bindPopup(popup_c65e2b0f1f968dcb2e0337781a8fee8c)
+        ;
+
+        
+    
+    
+            var polygon_2d8379a9d6c047647997691056e54cf1 = L.polygon(
+                [[39.903, 116.412], [39.908, 116.392], [39.915, 116.388], [39.925, 116.4], [39.92, 116.418], [39.903, 116.412]],
+                {"bubblingMouseEvents": true, "color": "#2ecc71", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#2ecc71", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_57da2798a41a15edb77a62b2f8247250 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1e9f356a69e38b3cc6501763e7594ee0 = $(`<div id="html_1e9f356a69e38b3cc6501763e7594ee0" style="width: 100.0%; height: 100.0%;">站点C - 凸包覆盖<br>覆盖小区: 8个<br>覆盖人口: 9850人</div>`)[0];
+                popup_57da2798a41a15edb77a62b2f8247250.setContent(html_1e9f356a69e38b3cc6501763e7594ee0);
+            
+        
+
+        polygon_2d8379a9d6c047647997691056e54cf1.bindPopup(popup_57da2798a41a15edb77a62b2f8247250)
+        ;
+
+        
+    
+    
+            var marker_f7405783eb8310d31b58e41f8542557c = L.marker(
+                [39.915, 116.41],
+                {
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var icon_efa5ab6cd0956eebcb700c142b28f8aa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "warehouse",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_45e60fae0e0fcf53719b7093a74abdd1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6b675004dfcc48b4b5115cf64b719dd1 = $(`<div id="html_6b675004dfcc48b4b5115cf64b719dd1" style="width: 100.0%; height: 100.0%;"><b>站点C</b><br>ID: W003<br>服务半径: 2.0km<br>覆盖小区: 8个<br>覆盖人口: 9850人</div>`)[0];
+                popup_45e60fae0e0fcf53719b7093a74abdd1.setContent(html_6b675004dfcc48b4b5115cf64b719dd1);
+            
+        
+
+        marker_f7405783eb8310d31b58e41f8542557c.bindPopup(popup_45e60fae0e0fcf53719b7093a74abdd1)
+        ;
+
+        
+    
+    
+                marker_f7405783eb8310d31b58e41f8542557c.setIcon(icon_efa5ab6cd0956eebcb700c142b28f8aa);
+            
+    
+            var circle_a7971c82097f3cb0091d2e3efeb66390 = L.circle(
+                [39.905, 116.385],
+                {"bubblingMouseEvents": true, "color": "#f39c12", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f39c12", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500.0, "stroke": true, "weight": 2}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_7f62e7a7efaae7399fb27b113ffbbd38 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_3df25b6b06e3e9ea219e00bd94fa71d4 = $(`<div id="html_3df25b6b06e3e9ea219e00bd94fa71d4" style="width: 100.0%; height: 100.0%;">仓配中心D - 服务半径(1.5km)</div>`)[0];
+                popup_7f62e7a7efaae7399fb27b113ffbbd38.setContent(html_3df25b6b06e3e9ea219e00bd94fa71d4);
+            
+        
+
+        circle_a7971c82097f3cb0091d2e3efeb66390.bindPopup(popup_7f62e7a7efaae7399fb27b113ffbbd38)
+        ;
+
+        
+    
+    
+            var polygon_bd933f69cc91b4314b7536e4d8ca7e8f = L.polygon(
+                [[39.895, 116.395], [39.9, 116.38], [39.91, 116.375], [39.915, 116.388], [39.91, 116.4], [39.895, 116.395]],
+                {"bubblingMouseEvents": true, "color": "#f39c12", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f39c12", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_571254f780c483f3e746e6563eb3a6cf = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1b54099d663f5b1054804beef8f0eafd = $(`<div id="html_1b54099d663f5b1054804beef8f0eafd" style="width: 100.0%; height: 100.0%;">仓配中心D - 凸包覆盖<br>覆盖小区: 7个<br>覆盖人口: 7750人</div>`)[0];
+                popup_571254f780c483f3e746e6563eb3a6cf.setContent(html_1b54099d663f5b1054804beef8f0eafd);
+            
+        
+
+        polygon_bd933f69cc91b4314b7536e4d8ca7e8f.bindPopup(popup_571254f780c483f3e746e6563eb3a6cf)
+        ;
+
+        
+    
+    
+            var marker_fac03f4dc50d75b633c2a49bfd11e6b2 = L.marker(
+                [39.905, 116.385],
+                {
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var icon_01387eed6b08184191d1eae347d596a0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "warehouse",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_324dabb1b8410a499d382e263ad572be = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e35cd64188d7cbfafaa0926bb4fe6b65 = $(`<div id="html_e35cd64188d7cbfafaa0926bb4fe6b65" style="width: 100.0%; height: 100.0%;"><b>仓配中心D</b><br>ID: W004<br>服务半径: 1.5km<br>覆盖小区: 7个<br>覆盖人口: 7750人</div>`)[0];
+                popup_324dabb1b8410a499d382e263ad572be.setContent(html_e35cd64188d7cbfafaa0926bb4fe6b65);
+            
+        
+
+        marker_fac03f4dc50d75b633c2a49bfd11e6b2.bindPopup(popup_324dabb1b8410a499d382e263ad572be)
+        ;
+
+        
+    
+    
+                marker_fac03f4dc50d75b633c2a49bfd11e6b2.setIcon(icon_01387eed6b08184191d1eae347d596a0);
+            
+    
+            var circle_bdcaea3c0ec1207a3c24319355b06faf = L.circle(
+                [39.91, 116.4],
+                {"bubblingMouseEvents": true, "color": "#9b59b6", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9b59b6", "fillOpacity": 0.1, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 2000.0, "stroke": true, "weight": 2}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_d960a032df4afee6bc669f65ed57ad5f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c1941a968f906319546e2a0994b0ed39 = $(`<div id="html_c1941a968f906319546e2a0994b0ed39" style="width: 100.0%; height: 100.0%;">梅园小区 - 服务半径(2.0km)</div>`)[0];
+                popup_d960a032df4afee6bc669f65ed57ad5f.setContent(html_c1941a968f906319546e2a0994b0ed39);
+            
+        
+
+        circle_bdcaea3c0ec1207a3c24319355b06faf.bindPopup(popup_d960a032df4afee6bc669f65ed57ad5f)
+        ;
+
+        
+    
+    
+            var polygon_6eca34236a47f84899b0f47305ba9738 = L.polygon(
+                [[39.895, 116.395], [39.915, 116.388], [39.925, 116.4], [39.92, 116.418], [39.903, 116.412], [39.895, 116.395]],
+                {"bubblingMouseEvents": true, "color": "#9b59b6", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9b59b6", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+        var popup_bb844ed13fe3ab776f61fb14f91c7d1c = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1866be4a6be5f407fe93a592e5f6fefe = $(`<div id="html_1866be4a6be5f407fe93a592e5f6fefe" style="width: 100.0%; height: 100.0%;">梅园小区 - 凸包覆盖<br>覆盖小区: 9个<br>覆盖人口: 10750人</div>`)[0];
+                popup_bb844ed13fe3ab776f61fb14f91c7d1c.setContent(html_1866be4a6be5f407fe93a592e5f6fefe);
+            
+        
+
+        polygon_6eca34236a47f84899b0f47305ba9738.bindPopup(popup_bb844ed13fe3ab776f61fb14f91c7d1c)
+        ;
+
+        
+    
+    
+            var marker_8b59c5e380132f06905e77115d679687 = L.marker(
+                [39.91, 116.4],
+                {
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var icon_bfc1530828acb242cdf24d49e83b892d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "warehouse",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a95011cbf7f5975c427b8d884d9563dd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d1fd62f9a4b857840996efda29d03efb = $(`<div id="html_d1fd62f9a4b857840996efda29d03efb" style="width: 100.0%; height: 100.0%;"><b>梅园小区</b><br>ID: W005<br>服务半径: 2.0km<br>覆盖小区: 9个<br>覆盖人口: 10750人</div>`)[0];
+                popup_a95011cbf7f5975c427b8d884d9563dd.setContent(html_d1fd62f9a4b857840996efda29d03efb);
+            
+        
+
+        marker_8b59c5e380132f06905e77115d679687.bindPopup(popup_a95011cbf7f5975c427b8d884d9563dd)
+        ;
+
+        
+    
+    
+                marker_8b59c5e380132f06905e77115d679687.setIcon(icon_bfc1530828acb242cdf24d49e83b892d);
+            
+    
+            var feature_group_040a0a85c479cfbd610f45792873ce0f = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_4abc20c51c36b165b98c6ad17f4bb62a = L.circleMarker(
+                [39.908, 116.397],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_fdd04b9967253d861ca8791d78680b4d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_b19f3d2bb542016b5b9f0f413c9a308e = $(`<div id="html_b19f3d2bb542016b5b9f0f413c9a308e" style="width: 100.0%; height: 100.0%;">             <b>阳光花园</b><br>             ID: C001<br>             人口: 1200<br>             状态: 已覆盖             </div>`)[0];
+                popup_fdd04b9967253d861ca8791d78680b4d.setContent(html_b19f3d2bb542016b5b9f0f413c9a308e);
+            
+        
+
+        circle_marker_4abc20c51c36b165b98c6ad17f4bb62a.bindPopup(popup_fdd04b9967253d861ca8791d78680b4d)
+        ;
+
+        
+    
+    
+            var circle_marker_e50b96bf54ee64a767b49eccd1add6be = L.circleMarker(
+                [39.912, 116.405],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_2f97502ced89bade50676383e958ae6d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_76829c0bcb2200e2b3fa339d0934aea5 = $(`<div id="html_76829c0bcb2200e2b3fa339d0934aea5" style="width: 100.0%; height: 100.0%;">             <b>幸福里</b><br>             ID: C002<br>             人口: 800<br>             状态: 已覆盖             </div>`)[0];
+                popup_2f97502ced89bade50676383e958ae6d.setContent(html_76829c0bcb2200e2b3fa339d0934aea5);
+            
+        
+
+        circle_marker_e50b96bf54ee64a767b49eccd1add6be.bindPopup(popup_2f97502ced89bade50676383e958ae6d)
+        ;
+
+        
+    
+    
+            var circle_marker_f7ab28c330c96d958aa0a608381c3aed = L.circleMarker(
+                [39.915, 116.388],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_88156eba30dec1b1ab2c0b243aaecba1 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_f9265a862a7adcac7996657b2d47e9b0 = $(`<div id="html_f9265a862a7adcac7996657b2d47e9b0" style="width: 100.0%; height: 100.0%;">             <b>和平家园</b><br>             ID: C003<br>             人口: 1500<br>             状态: 已覆盖             </div>`)[0];
+                popup_88156eba30dec1b1ab2c0b243aaecba1.setContent(html_f9265a862a7adcac7996657b2d47e9b0);
+            
+        
+
+        circle_marker_f7ab28c330c96d958aa0a608381c3aed.bindPopup(popup_88156eba30dec1b1ab2c0b243aaecba1)
+        ;
+
+        
+    
+    
+            var circle_marker_262abb437f02bbcce4f9907a9c9fbe37 = L.circleMarker(
+                [39.903, 116.412],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_67f13ace3c6b0f32c2657555ed9cbca8 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_063552ce8b1719fb9a9eb544a7d3a505 = $(`<div id="html_063552ce8b1719fb9a9eb544a7d3a505" style="width: 100.0%; height: 100.0%;">             <b>翠苑小区</b><br>             ID: C004<br>             人口: 2000<br>             状态: 已覆盖             </div>`)[0];
+                popup_67f13ace3c6b0f32c2657555ed9cbca8.setContent(html_063552ce8b1719fb9a9eb544a7d3a505);
+            
+        
+
+        circle_marker_262abb437f02bbcce4f9907a9c9fbe37.bindPopup(popup_67f13ace3c6b0f32c2657555ed9cbca8)
+        ;
+
+        
+    
+    
+            var circle_marker_8584bc9f2e54e026cc62b20bcb85ce67 = L.circleMarker(
+                [39.895, 116.395],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_1236968db8312f3312fa7880ab7a582e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_54cd623b6a47b2db1e0b25334efe20b0 = $(`<div id="html_54cd623b6a47b2db1e0b25334efe20b0" style="width: 100.0%; height: 100.0%;">             <b>金棕榈</b><br>             ID: C005<br>             人口: 900<br>             状态: 已覆盖             </div>`)[0];
+                popup_1236968db8312f3312fa7880ab7a582e.setContent(html_54cd623b6a47b2db1e0b25334efe20b0);
+            
+        
+
+        circle_marker_8584bc9f2e54e026cc62b20bcb85ce67.bindPopup(popup_1236968db8312f3312fa7880ab7a582e)
+        ;
+
+        
+    
+    
+            var circle_marker_bfe15f8883f67c250f4baa333795d31b = L.circleMarker(
+                [39.92, 116.418],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_d8c5344e141742ffcd5299a600613a0b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_2490760648336b01ae4c2ac34b4a1e5c = $(`<div id="html_2490760648336b01ae4c2ac34b4a1e5c" style="width: 100.0%; height: 100.0%;">             <b>锦绣家园</b><br>             ID: C006<br>             人口: 1100<br>             状态: 已覆盖             </div>`)[0];
+                popup_d8c5344e141742ffcd5299a600613a0b.setContent(html_2490760648336b01ae4c2ac34b4a1e5c);
+            
+        
+
+        circle_marker_bfe15f8883f67c250f4baa333795d31b.bindPopup(popup_d8c5344e141742ffcd5299a600613a0b)
+        ;
+
+        
+    
+    
+            var circle_marker_907ff0924e3a87651ff33e2da5a94bc8 = L.circleMarker(
+                [39.9, 116.38],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_5722cb58728578b03605a573ae60285c = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4f685c0f42d494655aa3ca3912b0097f = $(`<div id="html_4f685c0f42d494655aa3ca3912b0097f" style="width: 100.0%; height: 100.0%;">             <b>玫瑰园</b><br>             ID: C007<br>             人口: 600<br>             状态: 已覆盖             </div>`)[0];
+                popup_5722cb58728578b03605a573ae60285c.setContent(html_4f685c0f42d494655aa3ca3912b0097f);
+            
+        
+
+        circle_marker_907ff0924e3a87651ff33e2da5a94bc8.bindPopup(popup_5722cb58728578b03605a573ae60285c)
+        ;
+
+        
+    
+    
+            var circle_marker_1dcb07cceb307ba624cfb2f4216ec740 = L.circleMarker(
+                [39.925, 116.4],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_b7d4b9780d93d93128c7cc179efe3d34 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ff3ff4310f0342ff77b81153112e48f4 = $(`<div id="html_ff3ff4310f0342ff77b81153112e48f4" style="width: 100.0%; height: 100.0%;">             <b>莲花小区</b><br>             ID: C008<br>             人口: 1300<br>             状态: 已覆盖             </div>`)[0];
+                popup_b7d4b9780d93d93128c7cc179efe3d34.setContent(html_ff3ff4310f0342ff77b81153112e48f4);
+            
+        
+
+        circle_marker_1dcb07cceb307ba624cfb2f4216ec740.bindPopup(popup_b7d4b9780d93d93128c7cc179efe3d34)
+        ;
+
+        
+    
+    
+            var circle_marker_01bed17840688847de064729a6254ac5 = L.circleMarker(
+                [39.898, 116.42],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_b6298c3511a4d324d4360fde836b4784 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ab1a0690399ba52d07f9d992e2f0d2fc = $(`<div id="html_ab1a0690399ba52d07f9d992e2f0d2fc" style="width: 100.0%; height: 100.0%;">             <b>玉兰苑</b><br>             ID: C009<br>             人口: 700<br>             状态: 已覆盖             </div>`)[0];
+                popup_b6298c3511a4d324d4360fde836b4784.setContent(html_ab1a0690399ba52d07f9d992e2f0d2fc);
+            
+        
+
+        circle_marker_01bed17840688847de064729a6254ac5.bindPopup(popup_b6298c3511a4d324d4360fde836b4784)
+        ;
+
+        
+    
+    
+            var circle_marker_0b69f7f2a5f87fa8c75e5bed51cd5442 = L.circleMarker(
+                [39.91, 116.375],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_bcceeb6453ec8f3d3ac3d6b9d73bb676 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_5fdf0b38c6660e18215d4a450fd7aaee = $(`<div id="html_5fdf0b38c6660e18215d4a450fd7aaee" style="width: 100.0%; height: 100.0%;">             <b>海棠花园</b><br>             ID: C010<br>             人口: 1600<br>             状态: 已覆盖             </div>`)[0];
+                popup_bcceeb6453ec8f3d3ac3d6b9d73bb676.setContent(html_5fdf0b38c6660e18215d4a450fd7aaee);
+            
+        
+
+        circle_marker_0b69f7f2a5f87fa8c75e5bed51cd5442.bindPopup(popup_bcceeb6453ec8f3d3ac3d6b9d73bb676)
+        ;
+
+        
+    
+    
+            var circle_marker_a3e379c79d172c2c6ecfe047d25030d6 = L.circleMarker(
+                [39.91, 116.4],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_a1c2a51ee77563574825c89d4f5de078 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_9e5e1277abb0d6918914869412678862 = $(`<div id="html_9e5e1277abb0d6918914869412678862" style="width: 100.0%; height: 100.0%;">             <b>梅园小区</b><br>             ID: C011<br>             人口: 1100<br>             状态: 已覆盖             </div>`)[0];
+                popup_a1c2a51ee77563574825c89d4f5de078.setContent(html_9e5e1277abb0d6918914869412678862);
+            
+        
+
+        circle_marker_a3e379c79d172c2c6ecfe047d25030d6.bindPopup(popup_a1c2a51ee77563574825c89d4f5de078)
+        ;
+
+        
+    
+    
+            var circle_marker_fdac358572a068d13ff2976b547d9154 = L.circleMarker(
+                [39.908, 116.392],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(feature_group_040a0a85c479cfbd610f45792873ce0f);
+        
+    
+        var popup_72a37f8c17fe943d684b2ad6d139f0f3 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ed23ca06c52c4197d87e1c2465ed2b21 = $(`<div id="html_ed23ca06c52c4197d87e1c2465ed2b21" style="width: 100.0%; height: 100.0%;">             <b>竹苑</b><br>             ID: C012<br>             人口: 850<br>             状态: 已覆盖             </div>`)[0];
+                popup_72a37f8c17fe943d684b2ad6d139f0f3.setContent(html_ed23ca06c52c4197d87e1c2465ed2b21);
+            
+        
+
+        circle_marker_fdac358572a068d13ff2976b547d9154.bindPopup(popup_72a37f8c17fe943d684b2ad6d139f0f3)
+        ;
+
+        
+    
+    
+            feature_group_040a0a85c479cfbd610f45792873ce0f.addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+        
+    
+            var layer_control_8f58f1ea5d6aa14b96585ea0176c1167_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_e95be93d274392dc174daefef26b1807,
+                },
+                overlays :  {
+                    "\u5c0f\u533a\u5206\u5e03" : feature_group_040a0a85c479cfbd610f45792873ce0f,
+                },
+            };
+            let layer_control_8f58f1ea5d6aa14b96585ea0176c1167 = L.control.layers(
+                layer_control_8f58f1ea5d6aa14b96585ea0176c1167_layers.base_layers,
+                layer_control_8f58f1ea5d6aa14b96585ea0176c1167_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_74b4269ad0a1e45eacf1f87bac5ead5f);
+
+        
+</script>
+</html>
