@@ -1,0 +1,397 @@
+import type { Case, Clue, AudioClue, AnswerOption } from '@/types'
+
+const generateAudioData = (chord: string, inversion = 0): number[] => {
+  const baseFreqs: Record<string, number[]> = {
+    'C': [261.63, 329.63, 392.00],
+    'Cm': [261.63, 311.13, 392.00],
+    'G': [392.00, 493.88, 587.33],
+    'Am': [440.00, 523.25, 659.25],
+  }
+  const base = baseFreqs[chord] || baseFreqs['C']
+  const rotated = [...base.slice(inversion), ...base.slice(0, inversion)]
+  return rotated.map((f, i) => f * (1 + i * 0.01))
+}
+
+const generateFingerprint = (data: unknown): string => {
+  const str = JSON.stringify(data)
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return Math.abs(hash).toString(16)
+}
+
+export const CASES: Case[] = [
+  {
+    id: 'case-001',
+    title: '消失的根音：C大三和弦原位',
+    description: '一条清晰的音频线索，没有干扰项。训练基础和弦听辨能力。',
+    difficulty: 1,
+    targetConcept: '大三和弦原位识别',
+    tags: ['正常记录', '三和弦', '原位'],
+    brief: '一段钢琴录音中出现了一个和弦，侦探需要通过音频线索和乐理知识判断这是什么和弦。这是一条正常记录，没有重复或干扰。',
+    correctAnswerId: 'ans-001-1',
+    correctClueIds: ['clue-001-1', 'clue-001-2'],
+    correctAudioClueIds: ['audio-001-1'],
+  },
+  {
+    id: 'case-002',
+    title: '反转的真相：C大三和弦第一转位',
+    description: '一个容易被误判为原位的转位和弦。训练转位识别能力。',
+    difficulty: 2,
+    targetConcept: '和弦转位识别',
+    tags: ['转位误判', '三和弦', '第一转位'],
+    brief: '一段录音中出现了一个和弦，侦探需要判断它的准确位置。嫌疑人声称这是一个原位和弦，但音频中的低音区域似乎有些不对劲...',
+    correctAnswerId: 'ans-002-2',
+    correctClueIds: ['clue-002-1', 'clue-002-2', 'clue-002-3'],
+    correctAudioClueIds: ['audio-002-1'],
+    expectedErrorType: 'inversion_misjudgment',
+  },
+  {
+    id: 'case-003',
+    title: '同名调之谜：C大调与c小调',
+    description: '主音相同但调式不同的两个调，容易混淆。训练调式听辨能力。',
+    difficulty: 2,
+    targetConcept: '同名调（同主音大小调）区分',
+    tags: ['同名调混淆', '调式', '大小调'],
+    brief: '一段旋律结束在C音上，但它到底是C大调还是c小调？侦探需要仔细聆听三级音的色彩来揭开真相。',
+    correctAnswerId: 'ans-003-2',
+    correctClueIds: ['clue-003-1', 'clue-003-2', 'clue-003-3'],
+    correctAudioClueIds: ['audio-003-1'],
+    expectedErrorType: 'enharmonic_confusion',
+  },
+  {
+    id: 'case-004',
+    title: '重复的证词：线索重复案',
+    description: '同一段音频被提交了两次作为线索。训练识别重复线索的能力。',
+    difficulty: 3,
+    targetConcept: '线索重复检测',
+    tags: ['线索重复', '混合线索', '复核'],
+    brief: '同事送来的材料包中混着重复的音频线索，侦探需要在推理过程中识别出重复项，不要被同一份证词误导两次。',
+    correctAnswerId: 'ans-004-1',
+    correctClueIds: ['clue-004-1', 'clue-004-2'],
+    correctAudioClueIds: ['audio-004-1'],
+    expectedErrorType: 'duplicate_clue',
+  },
+]
+
+export const CLUES: Clue[] = [
+  {
+    id: 'clue-001-1',
+    caseId: 'case-001',
+    content: '大三和弦由根音、大三度、纯五度构成，音程结构为4+3个半音。',
+    type: 'theory',
+    source: '《和声学基础》第三章',
+    isKey: true,
+    relatedConcepts: ['大三和弦', '音程'],
+    fingerprint: generateFingerprint({ caseId: 'case-001', content: '大三和弦结构4+3' }),
+  },
+  {
+    id: 'clue-001-2',
+    caseId: 'case-001',
+    content: '原位和弦的最低音是根音，即和弦名称对应的音。',
+    type: 'theory',
+    source: '《乐理基础》第五章',
+    isKey: true,
+    relatedConcepts: ['原位和弦', '根音'],
+    fingerprint: generateFingerprint({ caseId: 'case-001', content: '原位最低音是根音' }),
+  },
+  {
+    id: 'clue-001-3',
+    caseId: 'case-001',
+    content: '小三和弦的中间音比大三和弦低半音，听起来更暗淡。',
+    type: 'hint',
+    source: '《听音训练指南》',
+    isKey: false,
+    relatedConcepts: ['小三和弦', '音色'],
+    fingerprint: generateFingerprint({ caseId: 'case-001', content: '小三和弦更暗淡' }),
+  },
+  {
+    id: 'clue-002-1',
+    caseId: 'case-002',
+    content: '大三和弦第一转位（六和弦）以三音为低音，音程结构为3+4个半音。',
+    type: 'theory',
+    source: '《和声学基础》第四章',
+    isKey: true,
+    relatedConcepts: ['第一转位', '六和弦'],
+    fingerprint: generateFingerprint({ caseId: 'case-002', content: '第一转位3+4' }),
+  },
+  {
+    id: 'clue-002-2',
+    caseId: 'case-002',
+    content: '第一转位的低音与上方是六度关系，标记为"6"。',
+    type: 'theory',
+    source: '《乐理基础》第五章',
+    isKey: true,
+    relatedConcepts: ['转位标记', '六度'],
+    fingerprint: generateFingerprint({ caseId: 'case-002', content: '第一转位标记6' }),
+  },
+  {
+    id: 'clue-002-3',
+    caseId: 'case-002',
+    content: '转位和弦的低音不是根音，需要从整体音响反推根音位置。',
+    type: 'hint',
+    source: '《听音训练指南》',
+    isKey: true,
+    relatedConcepts: ['转位听辨', '根音推断'],
+    fingerprint: generateFingerprint({ caseId: 'case-002', content: '转位低音非根音' }),
+  },
+  {
+    id: 'clue-002-4',
+    caseId: 'case-002',
+    content: '原位和弦听起来更稳定，因为根音在低音支撑。',
+    type: 'trap',
+    source: '常见误区：忽略转位也可以很稳定',
+    isKey: false,
+    relatedConcepts: ['和弦稳定性'],
+    fingerprint: generateFingerprint({ caseId: 'case-002', content: '原位更稳定陷阱' }),
+  },
+  {
+    id: 'clue-003-1',
+    caseId: 'case-003',
+    content: '同名调（同主音大小调）的主音相同，但三级音相差半音。',
+    type: 'theory',
+    source: '《调式理论》第二章',
+    isKey: true,
+    relatedConcepts: ['同名调', '同主音大小调', '三级音'],
+    fingerprint: generateFingerprint({ caseId: 'case-003', content: '同名调三级差半音' }),
+  },
+  {
+    id: 'clue-003-2',
+    caseId: 'case-003',
+    content: 'C大调的三级音是E（大三度），c小调的三级音是Eb（小三度）。',
+    type: 'theory',
+    source: '《乐理基础》第六章',
+    isKey: true,
+    relatedConcepts: ['C大调', 'c小调', '音级'],
+    fingerprint: generateFingerprint({ caseId: 'case-003', content: 'C/c三级音E/Eb' }),
+  },
+  {
+    id: 'clue-003-3',
+    caseId: 'case-003',
+    content: '大调听起来明亮开放，小调听起来暗淡忧郁，关键在三级音。',
+    type: 'hint',
+    source: '《调式听辨训练》',
+    isKey: true,
+    relatedConcepts: ['调式色彩', '听感特征'],
+    fingerprint: generateFingerprint({ caseId: 'case-003', content: '大调明亮小调暗淡' }),
+  },
+  {
+    id: 'clue-003-4',
+    caseId: 'case-003',
+    content: '结束音是C，所以一定是C大调。',
+    type: 'trap',
+    source: '常见误区：结束音相同不代表调式相同',
+    isKey: false,
+    relatedConcepts: ['主音确定'],
+    fingerprint: generateFingerprint({ caseId: 'case-003', content: '结束音=C大调陷阱' }),
+  },
+  {
+    id: 'clue-004-1',
+    caseId: 'case-004',
+    content: '重复的线索即使出现多次，也只应计算一次证据效力。',
+    type: 'theory',
+    source: '《证据学原理》',
+    isKey: true,
+    relatedConcepts: ['线索复核', '证据原则'],
+    fingerprint: generateFingerprint({ caseId: 'case-004', content: '重复线索只算一次' }),
+  },
+  {
+    id: 'clue-004-2',
+    caseId: 'case-004',
+    content: '音频指纹可以识别内容相同但格式或名称不同的音频。',
+    type: 'hint',
+    source: '《音频处理技术》',
+    isKey: true,
+    relatedConcepts: ['音频指纹', '重复检测'],
+    fingerprint: generateFingerprint({ caseId: 'case-004', content: '音频指纹识别重复' }),
+  },
+  {
+    id: 'clue-004-3',
+    caseId: 'case-004',
+    content: '多条相同线索可以互相印证，应该增加权重。',
+    type: 'trap',
+    source: '常见误区：重复不等于印证',
+    isKey: false,
+    relatedConcepts: ['证据权重'],
+    fingerprint: generateFingerprint({ caseId: 'case-004', content: '重复增加权重陷阱' }),
+  },
+]
+
+const audio001Data = generateAudioData('C', 0)
+const audio002Data = generateAudioData('C', 1)
+const audio003Data = generateAudioData('Cm', 0)
+const audio004Data = generateAudioData('G', 0)
+
+export const AUDIO_CLUES: AudioClue[] = [
+  {
+    id: 'audio-001-1',
+    caseId: 'case-001',
+    name: '钢琴和弦录音 #A1',
+    audioData: audio001Data,
+    description: '一段清晰的钢琴和弦录音，持续约2秒。',
+    chordInfo: 'C大三和弦原位 (C-E-G)',
+    isKey: true,
+    duration: 2,
+    fingerprint: generateFingerprint({ audioData: audio001Data }),
+  },
+  {
+    id: 'audio-002-1',
+    caseId: 'case-002',
+    name: '钢琴和弦录音 #B2',
+    audioData: audio002Data,
+    description: '一段钢琴和弦录音，低音区似乎有些特别。',
+    chordInfo: 'C大三和弦第一转位 (E-G-C)',
+    isKey: true,
+    duration: 2,
+    fingerprint: generateFingerprint({ audioData: audio002Data }),
+  },
+  {
+    id: 'audio-003-1',
+    caseId: 'case-003',
+    name: '旋律片段 #C3',
+    audioData: audio003Data,
+    description: '一段结束在C音上的旋律，注意聆听中间的三级音。',
+    chordInfo: 'c小三和弦 (C-Eb-G)',
+    isKey: true,
+    duration: 3,
+    fingerprint: generateFingerprint({ audioData: audio003Data }),
+  },
+  {
+    id: 'audio-004-1',
+    caseId: 'case-004',
+    name: '和弦录音 #D4',
+    audioData: audio004Data,
+    description: '第一段和弦录音。',
+    chordInfo: 'G大三和弦原位 (G-B-D)',
+    isKey: true,
+    duration: 2,
+    fingerprint: generateFingerprint({ audioData: audio004Data }),
+  },
+  {
+    id: 'audio-004-2',
+    caseId: 'case-004',
+    name: '和弦录音 #D4-副本',
+    audioData: [...audio004Data],
+    description: '另一段和弦录音，注意比对是否与其他线索重复。',
+    chordInfo: 'G大三和弦原位 (G-B-D)',
+    isKey: true,
+    duration: 2,
+    fingerprint: generateFingerprint({ audioData: audio004Data }),
+    isDuplicate: true,
+    duplicateOf: 'audio-004-1',
+  },
+]
+
+export const ANSWER_OPTIONS: AnswerOption[] = [
+  {
+    id: 'ans-001-1',
+    caseId: 'case-001',
+    label: 'C大三和弦 原位',
+    value: 'C_major_root',
+    isCorrect: true,
+    explanation: '正确！低音是C（根音），中间是E（大三度），高音是G（纯五度），构成完整的C大三原位和弦。',
+    inversionInfo: '原位',
+  },
+  {
+    id: 'ans-001-2',
+    caseId: 'case-001',
+    label: 'C小三和弦 原位',
+    value: 'C_minor_root',
+    isCorrect: false,
+    explanation: '错误。小三和弦的三级音是Eb而不是E，这段录音中的三级音是E（大三度）。',
+  },
+  {
+    id: 'ans-001-3',
+    caseId: 'case-001',
+    label: 'C大三和弦 第一转位',
+    value: 'C_major_1st',
+    isCorrect: false,
+    explanation: '错误。第一转位的低音应该是E（三音），但这段录音的低音是C（根音）。',
+    inversionInfo: '第一转位',
+  },
+  {
+    id: 'ans-002-1',
+    caseId: 'case-002',
+    label: 'C大三和弦 原位',
+    value: 'C_major_root',
+    isCorrect: false,
+    explanation: '这是最常见的误判！虽然和弦音是C-E-G，但低音是E而不是C。',
+    inversionInfo: '原位',
+  },
+  {
+    id: 'ans-002-2',
+    caseId: 'case-002',
+    label: 'C大三和弦 第一转位',
+    value: 'C_major_1st',
+    isCorrect: true,
+    explanation: '正确！低音是E（三音），上方是G和C，构成C大三和弦第一转位（六和弦）。',
+    inversionInfo: '第一转位',
+  },
+  {
+    id: 'ans-002-3',
+    caseId: 'case-002',
+    label: 'E小三和弦 原位',
+    value: 'E_minor_root',
+    isCorrect: false,
+    explanation: '错误。虽然低音是E，但整体音响是C-E-G而不是E-G-B。',
+  },
+  {
+    id: 'ans-003-1',
+    caseId: 'case-003',
+    label: 'C大调',
+    value: 'C_major',
+    isCorrect: false,
+    explanation: '这是同名调混淆的典型错误！虽然结束在C，但三级音是Eb（小三度）而不是E（大三度）。',
+    modeInfo: '大调',
+  },
+  {
+    id: 'ans-003-2',
+    caseId: 'case-003',
+    label: 'c小调',
+    value: 'C_minor',
+    isCorrect: true,
+    explanation: '正确！主音是C，三级音是Eb（小三度），整体色彩暗淡，符合c小调特征。',
+    modeInfo: '小调',
+  },
+  {
+    id: 'ans-003-3',
+    caseId: 'case-003',
+    label: 'a小调',
+    value: 'A_minor',
+    isCorrect: false,
+    explanation: '错误。a小调的主音是A，而这段旋律明确结束在C音上。',
+  },
+  {
+    id: 'ans-004-1',
+    caseId: 'case-004',
+    label: 'G大三和弦 原位',
+    value: 'G_major_root',
+    isCorrect: true,
+    explanation: '正确！虽然有两条相同的音频线索，但内容都是G-B-D，构成G大三和弦原位。',
+  },
+  {
+    id: 'ans-004-2',
+    caseId: 'case-004',
+    label: 'C大三和弦 原位',
+    value: 'C_major_root',
+    isCorrect: false,
+    explanation: '错误。音频内容是G-B-D而不是C-E-G。注意：即使有两条线索，内容相同也不能改变和弦本身。',
+  },
+  {
+    id: 'ans-004-3',
+    caseId: 'case-004',
+    label: '两条线索印证，可信度加倍，是G大三',
+    value: 'G_major_double',
+    isCorrect: false,
+    explanation: '错误。重复的线索不能增加证据效力，它们是同一份证词的两次提交。',
+  },
+]
+
+export const getCaseById = (id: string): Case | undefined => CASES.find(c => c.id === id)
+export const getCluesByCaseId = (caseId: string): Clue[] => CLUES.filter(c => c.caseId === caseId)
+export const getAudioCluesByCaseId = (caseId: string): AudioClue[] => AUDIO_CLUES.filter(a => a.caseId === caseId)
+export const getAnswerOptionsByCaseId = (caseId: string): AnswerOption[] => ANSWER_OPTIONS.filter(a => a.caseId === caseId)
+export const getAnswerById = (id: string): AnswerOption | undefined => ANSWER_OPTIONS.find(a => a.id === id)
