@@ -1,0 +1,6 @@
+detail_id,account_id,customer_name,customer_id,package_version_id,package_name,revenue_date,amount,revenue_type,is_adjusted,source_record_id,source_record_type,related_detail_id,account_start_date,account_expiry_date,original_purchase_amount,source_order_id
+rev_2372c52e,acc_001,张三,cust_001,pkg_basic_2024,基础年票2024,2024-01-01,1,recognized,False,acc_001,account,,2024-01-01,2024-12-31,365,ord_001
+rev_acf2a2f3,acc_001,张三,cust_001,pkg_basic_2024,基础年票2024,2024-01-02,1,recognized,False,acc_001,account,,2024-01-01,2024-12-31,365,ord_001
+rev_4813f3b8,acc_001,张三,cust_001,pkg_basic_2024,基础年票2024,2024-01-03,1,recognized,False,acc_001,account,,2024-01-01,2024-12-31,365,ord_001
+rev_a3e3c4e7,acc_001,张三,cust_001,pkg_basic_2024,基础年票2024,2024-01-04,1,recognized,False,acc_001,account,,2024-01-01,2024-12-31,365,ord_001
+rev_807d8a41,acc_001,张三,cust_001,pkg_basic_2024,基础年票2024,2024-01-05,1,recognized,False,acc_001,account,,2024-01-01,2024-12-31,365,ord_001
