@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手游联运渠道预付财务管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2d5a87 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,.8);
+            border-radius: 0;
+            padding: 12px 20px;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: #fff;
+            background: rgba(255,255,255,.1);
+            border-left: 4px solid #28a745;
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+        }
+        .stat-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .stat-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .anomaly-badge {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .comparison-table td {
+            vertical-align: middle;
+        }
+        .change-positive {
+            color: #28a745;
+        }
+        .change-negative {
+            color: #dc3545;
+        }
+        .nav-tabs .nav-link {
+            color: #495057;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: #007bff;
+        }
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .evidence-box {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h5 class="text-white px-3 mb-4">
+                        <i class="bi bi-currency-yen"></i> 财务系统
+                    </h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="showPage('dashboard')">
+                                <i class="bi bi-speedometer2"></i> 数据概览
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showPage('flows')">
+                                <i class="bi bi-table"></i> 流水归集
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showPage('prepayments')">
+                                <i class="bi bi-wallet2"></i> 预付管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showPage('anomalies')">
+                                <i class="bi bi-exclamation-triangle"></i> 异常追踪
+                                <span id="anomalyCount" class="badge bg-danger float-end anomaly-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showPage('history')">
+                                <i class="bi bi-clock-history"></i> 操作历史
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showPage('reports')">
+                                <i class="bi bi-file-earmark-excel"></i> 报表导出
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-10 ms-sm-auto px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2" id="pageTitle">数据概览</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshData()">
+                                <i class="bi bi-arrow-repeat"></i> 刷新
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="exportReport()">
+                            <i class="bi bi-download"></i> 导出报表
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dashboardPage" class="page-content">
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="mb-1 opacity-75">总流水</p>
+                                            <h3 class="mb-0" id="totalFlow">¥0</h3>
+                                        </div>
+                                        <i class="bi bi-graph-up fs-1 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card success">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="mb-1 opacity-75">净流水</p>
+                                            <h3 class="mb-0" id="totalNetFlow">¥0</h3>
+                                        </div>
+                                        <i class="bi bi-cash-stack fs-1 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card info">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="mb-1 opacity-75">预付使用率</p>
+                                            <h3 class="mb-0" id="prepayUsage">0%</h3>
+                                        </div>
+                                        <i class="bi bi-percent fs-1 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card warning">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="mb-1 opacity-75">待处理异常</p>
+                                            <h3 class="mb-0" id="unresolvedAnomalies">0</h3>
+                                        </div>
+                                        <i class="bi bi-exclamation-circle fs-1 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">月度流水汇总</h5>
+                                    <select class="form-select form-select-sm w-auto" onchange="filterMonthlySummary(this.value)">
+                                        <option value="">全部月份</option>
+                                    </select>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-container">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>结算月份</th>
+                                                    <th>渠道</th>
+                                                    <th>总流水</th>
+                                                    <th>渠道费</th>
+                                                    <th>税费</th>
+                                                    <th>净流水</th>
+                                                    <th>流水数</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="monthlySummaryTable">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">最新异常</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="latestAnomalies" class="list-group list-group-flush">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="flowsPage" class="page-content" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">结算月份</label>
+                                    <select class="form-select" id="filterMonth" onchange="loadFlows()">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">渠道</label>
+                                    <select class="form-select" id="filterChannel" onchange="loadFlows()">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">状态</label>
+                                    <select class="form-select" id="filterStatus" onchange="loadFlows()">
+                                        <option value="">全部</option>
+                                        <option value="PENDING">待结算</option>
+                                        <option value="SETTLED">已结算</option>
+                                        <option value="DISPUTED">有争议</option>
+                                        <option value="CORRECTED">已修正</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <button class="btn btn-primary" onclick="openAddFlowModal()">
+                                        <i class="bi bi-plus"></i> 新增流水
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>日期</th>
+                                            <th>游戏名称</th>
+                                            <th>渠道</th>
+                                            <th>总流水</th>
+                                            <th>渠道费</th>
+                                            <th>税费</th>
+                                            <th>净流水</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="flowsTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="prepaymentsPage" class="page-content" style="display: none;">
+                    <div class="row mb-4">
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h5>预付账款列表</h5>
+                            <button class="btn btn-primary" onclick="openAddPrepaymentModal()">
+                                <i class="bi bi-plus"></i> 新增预付
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>预付编号</th>
+                                        <th>渠道</th>
+                                        <th>类型</th>
+                                        <th>总金额</th>
+                                        <th>已使用</th>
+                                        <th>剩余</th>
+                                        <th>使用率</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prepaymentsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="anomaliesPage" class="page-content" style="display: none;">
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="filterAnomalies('all')">全部异常</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="filterAnomalies('unresolved')">待处理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="filterAnomalies('resolved')">已解决</a>
+                        </li>
+                    </ul>
+
+                    <div id="anomaliesList">
+                    </div>
+                </div>
+
+                <div id="historyPage" class="page-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>时间</th>
+                                            <th>操作类型</th>
+                                            <th>关联对象</th>
+                                            <th>操作人</th>
+                                            <th>变更摘要</th>
+                                            <th>影响结果</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyTable">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reportsPage" class="page-content" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="mb-4">导出月度报表</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">选择月份</label>
+                                    <select class="form-select" id="exportMonth">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button class="btn btn-success" onclick="doExportReport()">
+                                        <i class="bi bi-file-earmark-excel"></i> 导出Excel
+                                    </button>
+                                </div>
+                            </div>
+                            <hr>
+                            <p class="text-muted small">
+                                <i class="bi bi-info-circle"></i> 
+                                导出内容包含：流水明细、异常记录、预付使用情况、争议说明
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="correctionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">流水修正 - 新旧对比</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <label class="form-label">修正原因</label>
+                            <textarea class="form-control" id="correctionReason" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <table class="table table-bordered comparison-table">
+                        <thead>
+                            <tr>
+                                <th>项目</th>
+                                <th>原值</th>
+                                <th>新值</th>
+                                <th>差额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>总流水</td>
+                                <td id="origTotalFlow">0</td>
+                                <td><input type="number" class="form-control form-control-sm" id="newTotalFlow"></td>
+                                <td id="diffTotalFlow">0</td>
+                            </tr>
+                            <tr>
+                                <td>渠道费</td>
+                                <td id="origChannelFee">0</td>
+                                <td><input type="number" class="form-control form-control-sm" id="newChannelFee"></td>
+                                <td id="diffChannelFee">0</td>
+                            </tr>
+                            <tr>
+                                <td>税费</td>
+                                <td id="origTaxAmount">0</td>
+                                <td><input type="number" class="form-control form-control-sm" id="newTaxAmount"></td>
+                                <td id="diffTaxAmount">0</td>
+                            </tr>
+                            <tr class="table-info">
+                                <td><strong>净流水</strong></td>
+                                <td id="origNetFlow"><strong>0</strong></td>
+                                <td id="newNetFlow"><strong>0</strong></td>
+                                <td id="diffNetFlow"><strong>0</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mb-3">
+                        <label class="form-label">操作人</label>
+                        <input type="text" class="form-control" id="correctedBy" value="财务人员">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCorrection()">提交修正申请</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="anomalyDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="anomalyDetailTitle">异常详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="anomalyDetailContent">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-success" onclick="resolveAnomaly()">标记已解决</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addFlowModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增流水</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">渠道</label>
+                        <select class="form-select" id="newFlowChannel"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">游戏名称</label>
+                        <input type="text" class="form-control" id="newFlowGame">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">流水日期</label>
+                        <input type="date" class="form-control" id="newFlowDate">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">总流水</label>
+                        <input type="number" class="form-control" id="newFlowTotal">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">渠道费</label>
+                        <input type="number" class="form-control" id="newFlowFee">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">税费</label>
+                        <input type="number" class="form-control" id="newFlowTax">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">结算月份</label>
+                        <input type="text" class="form-control" id="newFlowMonth" placeholder="YYYY-MM">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="addFlow()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentFlowId = null;
+        let currentAnomalyId = null;
+        let currentAnomalyFilter = 'all';
+        let channels = [];
+
+        function formatMoney(amount) {
+            return '¥' + parseFloat(amount).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(page + 'Page').style.display = 'block';
+            event.target.closest('.nav-link').classList.add('active');
+
+            const titles = {
+                'dashboard': '数据概览',
+                'flows': '流水归集',
+                'prepayments': '预付管理',
+                'anomalies': '异常追踪',
+                'history': '操作历史',
+                'reports': '报表导出'
+            };
+            document.getElementById('pageTitle').textContent = titles[page];
+
+            if (page === 'flows') loadFlows();
+            else if (page === 'prepayments') loadPrepayments();
+            else if (page === 'anomalies') loadAnomalies();
+            else if (page === 'history') loadHistory();
+            else if (page === 'dashboard') loadDashboard();
+            else if (page === 'reports') loadReportMonths();
+        }
+
+        async function loadDashboard() {
+            const res = await fetch('/api/dashboard-data');
+            const data = await res.json();
+            if (data.success) {
+                const d = data.data;
+                document.getElementById('totalFlow').textContent = formatMoney(d.total_flow);
+                document.getElementById('totalNetFlow').textContent = formatMoney(d.total_net_flow);
+                document.getElementById('prepayUsage').textContent = d.prepayment_usage_rate + '%';
+                document.getElementById('unresolvedAnomalies').textContent = d.unresolved_anomalies;
+                document.getElementById('anomalyCount').textContent = d.unresolved_anomalies;
+
+                let html = '';
+                d.monthly_summary.forEach(m => {
+                    html += `
+                        <tr>
+                            <td>${m.settlement_month}</td>
+                            <td>${m.channel_name}</td>
+                            <td>${formatMoney(m.total_flow)}</td>
+                            <td>${formatMoney(m.total_channel_fee)}</td>
+                            <td>${formatMoney(m.total_tax)}</td>
+                            <td class="fw-bold text-success">${formatMoney(m.total_net_flow)}</td>
+                            <td><span class="badge bg-info">${m.flow_count}笔</span></td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('monthlySummaryTable').innerHTML = html;
+            }
+
+            loadLatestAnomalies();
+        }
+
+        async function loadLatestAnomalies() {
+            const res = await fetch('/api/anomalies?is_resolved=false');
+            const data = await res.json();
+            if (data.success) {
+                let html = '';
+                data.data.slice(0, 5).forEach(a => {
+                    const typeColors = {
+                        'GUARANTEE_EXHAUSTED': 'warning',
+                        'DUPLICATE_DEDUCTION': 'danger',
+                        'CONTRACT_FLOW_MISMATCH': 'info',
+                        'MANUAL_CORRECTION': 'secondary'
+                    };
+                    const typeNames = {
+                        'GUARANTEE_EXHAUSTED': '保底用尽',
+                        'DUPLICATE_DEDUCTION': '抵扣重复',
+                        'CONSISTENCY_MISMATCH': '合同流水不一致',
+                        'MANUAL_CORRECTION': '手动修正'
+                    };
+                    html += `
+                        <a href="#" class="list-group-item list-group-item-action" onclick="showAnomalyDetail(${a.id})">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${a.title}</h6>
+                                <span class="badge bg-${typeColors[a.anomaly_type] || 'secondary'}">${typeNames[a.anomaly_type] || a.anomaly_type}</span>
+                            </div>
+                            <p class="mb-1 small text-muted">${a.description}</p>
+                            <small class="text-muted">${new Date(a.created_at).toLocaleString('zh-CN')}</small>
+                        </a>
+                    `;
+                });
+                if (!html) {
+                    html = '<p class="text-muted text-center py-3">暂无待处理异常</p>';
+                }
+                document.getElementById('latestAnomalies').innerHTML = html;
+            }
+        }
+
+        async function loadFlows() {
+            const month = document.getElementById('filterMonth').value;
+            const channel = document.getElementById('filterChannel').value;
+            let url = '/api/game-flows?';
+            if (month) url += 'settlement_month=' + month + '&';
+            if (channel) url += 'channel_id=' + channel + '&';
+
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.success) {
+                let html = '';
+                data.data.forEach(f => {
+                    const statusColors = {
+                        'PENDING': 'secondary',
+                        'SETTLED': 'success',
+                        'DISPUTED': 'warning',
+                        'CORRECTED': 'info'
+                    };
+                    const statusNames = {
+                        'PENDING': '待结算',
+                        'SETTLED': '已结算',
+                        'DISPUTED': '有争议',
+                        'CORRECTED': '已修正'
+                    };
+                    html += `
+                        <tr>
+                            <td>${f.flow_date}</td>
+                            <td>${f.game_name}</td>
+                            <td>${f.channel_name}</td>
+                            <td>${formatMoney(f.total_flow)}</td>
+                            <td>${formatMoney(f.channel_fee)}</td>
+                            <td>${formatMoney(f.tax_amount)}</td>
+                            <td class="fw-bold">${formatMoney(f.net_flow)}</td>
+                            <td><span class="badge bg-${statusColors[f.status]}">${statusNames[f.status]}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="openCorrectionModal(${f.id})">
+                                    <i class="bi bi-pencil"></i> 修正
+                                </button>
+                                ${f.has_corrections ? `
+                                <button class="btn btn-sm btn-outline-info" onclick="showFlowHistory(${f.id})">
+                                    <i class="bi bi-clock-history"></i> 历史
+                                </button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('flowsTable').innerHTML = html;
+            }
+        }
+
+        async function loadPrepayments() {
+            const res = await fetch('/api/prepayments');
+            const data = await res.json();
+            if (data.success) {
+                let html = '';
+                data.data.forEach(p => {
+                    html += `
+                        <tr>
+                            <td>${p.prepayment_no}</td>
+                            <td>${p.channel_name}</td>
+                            <td>${p.prepayment_type === 'GUARANTEE' ? '保底预付' : p.prepayment_type === 'AD_COST' ? '买量预付' : '其他'}</td>
+                            <td>${formatMoney(p.amount)}</td>
+                            <td>${formatMoney(p.used_amount)}</td>
+                            <td class="${p.remaining_amount > 0 ? 'text-success' : 'text-danger'} fw-bold">${formatMoney(p.remaining_amount)}</td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar ${p.usage_rate >= 100 ? 'bg-danger' : p.usage_rate >= 80 ? 'bg-warning' : 'bg-success'}" 
+                                         style="width: ${Math.min(p.usage_rate, 100)}%">
+                                        ${p.usage_rate}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                ${p.is_exhausted ? '<span class="badge bg-danger">已用尽</span>' : '<span class="badge bg-success">正常</span>'}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" onclick="checkGuarantee(${p.contract_id})">
+                                    <i class="bi bi-search"></i> 检查
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('prepaymentsTable').innerHTML = html;
+            }
+        }
+
+        async function loadAnomalies() {
+            let url = '/api/anomalies?';
+            if (currentAnomalyFilter === 'unresolved') url += 'is_resolved=false';
+            else if (currentAnomalyFilter === 'resolved') url += 'is_resolved=true';
+
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.success) {
+                let html = '';
+                data.data.forEach(a => {
+                    const typeColors = {
+                        'GUARANTEE_EXHAUSTED': 'warning',
+                        'DUPLICATE_DEDUCTION': 'danger',
+                        'CONTRACT_FLOW_MISMATCH': 'info',
+                        'MANUAL_CORRECTION': 'secondary'
+                    };
+                    const typeNames = {
+                        'GUARANTEE_EXHAUSTED': '保底用尽',
+                        'DUPLICATE_DEDUCTION': '抵扣重复',
+                        'CONTRACT_FLOW_MISMATCH': '合同流水不一致',
+                        'MANUAL_CORRECTION': '手动修正'
+                    };
+                    html += `
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge bg-${typeColors[a.anomaly_type] || 'secondary'} me-2">
+                                                ${typeNames[a.anomaly_type] || a.anomaly_type}
+                                            </span>
+                                            <h6 class="mb-0">${a.title}</h6>
+                                            ${a.is_resolved ? '<span class="badge bg-success ms-2">已解决</span>' : '<span class="badge bg-danger ms-2">待处理</span>'}
+                                        </div>
+                                        <p class="mb-2 text-muted">${a.description}</p>
+                                        <small class="text-muted">
+                                            创建时间：${new Date(a.created_at).toLocaleString('zh-CN')}
+                                            ${a.resolved_by ? ` | 解决人：${a.resolved_by}` : ''}
+                                        </small>
+                                    </div>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="showAnomalyDetail(${a.id})">
+                                        查看详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                if (!html) {
+                    html = '<p class="text-muted text-center py-5">暂无异常记录</p>';
+                }
+                document.getElementById('anomaliesList').innerHTML = html;
+            }
+        }
+
+        function filterAnomalies(filter) {
+            currentAnomalyFilter = filter;
+            document.querySelectorAll('#anomaliesPage .nav-link').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+            loadAnomalies();
+        }
+
+        async function showAnomalyDetail(id) {
+            currentAnomalyId = id;
+            const res = await fetch('/api/anomalies/' + id);
+            const data = await res.json();
+            if (data.success) {
+                const a = data.data.anomaly;
+                const history = data.data.related_history;
+
+                let evidenceHtml = '';
+                if (a.evidence) {
+                    evidenceHtml = `
+                        <div class="evidence-box mb-3">
+                            <h6><i class="bi bi-file-earmark-text"></i> 证据数据</h6>
+                            <pre class="mb-0 small" style="white-space: pre-wrap;">${JSON.stringify(a.evidence, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+
+                let historyHtml = '';
+                if (history.length > 0) {
+                    historyHtml = `
+                        <h6><i class="bi bi-clock-history"></i> 关联操作历史</h6>
+                        <div class="list-group">
+                            ${history.map(h => `
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">${h.change_summary}</span>
+                                        <small class="text-muted">${new Date(h.created_at).toLocaleString('zh-CN')}</small>
+                                    </div>
+                                    <small>操作人：${h.operator} | ${h.impact_result}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                let resolutionHtml = '';
+                if (a.is_resolved) {
+                    resolutionHtml = `
+                        <div class="alert alert-success mt-3">
+                            <h6><i class="bi bi-check-circle"></i> 解决记录</h6>
+                            <p class="mb-1"><strong>解决人：</strong>${a.resolved_by}</p>
+                            <p class="mb-0"><strong>解决说明：</strong>${a.resolution_note}</p>
+                        </div>
+                    `;
+                } else {
+                    resolutionHtml = `
+                        <div class="mb-3">
+                            <label class="form-label">解决说明</label>
+                            <textarea class="form-control" id="resolutionNote" rows="2"></textarea>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('anomalyDetailTitle').textContent = a.title;
+                document.getElementById('anomalyDetailContent').innerHTML = `
+                    <p class="text-muted">${a.description}</p>
+                    ${evidenceHtml}
+                    ${historyHtml}
+                    ${resolutionHtml}
+                `;
+
+                const footerBtn = document.querySelector('#anomalyDetailModal .btn-success');
+                footerBtn.style.display = a.is_resolved ? 'none' : 'block';
+
+                new bootstrap.Modal(document.getElementById('anomalyDetailModal')).show();
+            }
+        }
+
+        async function resolveAnomaly() {
+            const note = document.getElementById('resolutionNote').value;
+            if (!note) {
+                alert('请填写解决说明');
+                return;
+            }
+            const res = await fetch(`/api/anomalies/${currentAnomalyId}/resolve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resolved_by: '财务人员', resolution_note: note })
+            });
+            const data = await res.json();
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('anomalyDetailModal')).hide();
+                loadAnomalies();
+                loadDashboard();
+            }
+        }
+
+        async function loadHistory() {
+            const res = await fetch('/api/operation-history?limit=100');
+            const data = await res.json();
+            if (data.success) {
+                let html = '';
+                data.data.forEach(h => {
+                    html += `
+                        <tr>
+                            <td>${new Date(h.created_at).toLocaleString('zh-CN')}</td>
+                            <td>${h.operation_type}</td>
+                            <td>${h.related_type} #${h.related_id}</td>
+                            <td>${h.operator}</td>
+                            <td>${h.change_summary}</td>
+                            <td><small class="text-muted">${h.impact_result}</small></td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('historyTable').innerHTML = html;
+            }
+        }
+
+        async function openCorrectionModal(flowId) {
+            currentFlowId = flowId;
+            const res = await fetch(`/api/game-flows/${flowId}/corrections`);
+            const data = await res.json();
+            if (data.success) {
+                const f = data.data.original;
+                document.getElementById('origTotalFlow').textContent = f.total_flow;
+                document.getElementById('origChannelFee').textContent = f.channel_fee;
+                document.getElementById('origTaxAmount').textContent = f.tax_amount;
+                document.getElementById('origNetFlow').textContent = f.net_flow;
+
+                document.getElementById('newTotalFlow').value = f.total_flow;
+                document.getElementById('newChannelFee').value = f.channel_fee;
+                document.getElementById('newTaxAmount').value = f.tax_amount;
+
+                updateCorrectionDiff();
+                new bootstrap.Modal(document.getElementById('correctionModal')).show();
+            }
+        }
+
+        function updateCorrectionDiff() {
+            const origTotal = parseFloat(document.getElementById('origTotalFlow').textContent);
+            const origFee = parseFloat(document.getElementById('origChannelFee').textContent);
+            const origTax = parseFloat(document.getElementById('origTaxAmount').textContent);
+            const origNet = parseFloat(document.getElementById('origNetFlow').textContent);
+
+            const newTotal = parseFloat(document.getElementById('newTotalFlow').value) || 0;
+            const newFee = parseFloat(document.getElementById('newChannelFee').value) || 0;
+            const newTax = parseFloat(document.getElementById('newTaxAmount').value) || 0;
+            const newNet = newTotal - newFee - newTax;
+
+            const diffTotal = newTotal - origTotal;
+            const diffFee = newFee - origFee;
+            const diffTax = newTax - origTax;
+            const diffNet = newNet - origNet;
+
+            document.getElementById('diffTotalFlow').textContent = (diffTotal >= 0 ? '+' : '') + diffTotal.toFixed(2);
+            document.getElementById('diffTotalFlow').className = diffTotal >= 0 ? 'change-positive' : 'change-negative';
+
+            document.getElementById('diffChannelFee').textContent = (diffFee >= 0 ? '+' : '') + diffFee.toFixed(2);
+            document.getElementById('diffChannelFee').className = diffFee <= 0 ? 'change-positive' : 'change-negative';
+
+            document.getElementById('diffTaxAmount').textContent = (diffTax >= 0 ? '+' : '') + diffTax.toFixed(2);
+            document.getElementById('diffTaxAmount').className = diffTax <= 0 ? 'change-positive' : 'change-negative';
+
+            document.getElementById('newNetFlow').innerHTML = '<strong>' + newNet.toFixed(2) + '</strong>';
+            document.getElementById('diffNetFlow').innerHTML = '<strong class="' + (diffNet >= 0 ? 'change-positive' : 'change-negative') + '">' + (diffNet >= 0 ? '+' : '') + diffNet.toFixed(2) + '</strong>';
+        }
+
+        document.getElementById('newTotalFlow').addEventListener('input', updateCorrectionDiff);
+        document.getElementById('newChannelFee').addEventListener('input', updateCorrectionDiff);
+        document.getElementById('newTaxAmount').addEventListener('input', updateCorrectionDiff);
+
+        async function submitCorrection() {
+            const reason = document.getElementById('correctionReason').value;
+            if (!reason) {
+                alert('请填写修正原因');
+                return;
+            }
+
+            const res = await fetch(`/api/game-flows/${currentFlowId}/corrections`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    corrected_by: document.getElementById('correctedBy').value,
+                    correction_reason: reason,
+                    new_total_flow: parseFloat(document.getElementById('newTotalFlow').value),
+                    new_channel_fee: parseFloat(document.getElementById('newChannelFee').value),
+                    new_tax_amount: parseFloat(document.getElementById('newTaxAmount').value),
+                    new_status: 'CORRECTED'
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('correctionModal')).hide();
+                const applyRes = await fetch(`/api/corrections/${data.data.id}/apply`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ operator: '财务人员' })
+                });
+                loadFlows();
+                loadDashboard();
+                alert('修正已应用');
+            } else {
+                alert(data.message);
+            }
+        }
+
+        async function loadReportMonths() {
+            const res = await fetch('/api/summary/monthly');
+            const data = await res.json();
+            if (data.success) {
+                const months = [...new Set(data.data.map(m => m.settlement_month))].sort().reverse();
+                let html = '<option value="">请选择</option>';
+                months.forEach(m => {
+                    html += `<option value="${m}">${m}</option>`;
+                });
+                document.getElementById('exportMonth').innerHTML = html;
+            }
+        }
+
+        function exportReport() {
+            showPage('reports');
+        }
+
+        function doExportReport() {
+            const month = document.getElementById('exportMonth').value;
+            if (!month) {
+                alert('请选择月份');
+                return;
+            }
+            window.open('/api/export/monthly-report?settlement_month=' + month);
+        }
+
+        async function checkGuarantee(contractId) {
+            const res = await fetch(`/api/check/guarantee/${contractId}`);
+            const data = await res.json();
+            if (data.success) {
+                alert(`保底使用率：${data.data.exhaustion_rate}%\n${data.data.is_exhausted ? '保底已用尽！' : '剩余保底正常'}`);
+            }
+        }
+
+        async function loadChannels() {
+            const res = await fetch('/api/channels');
+            const data = await res.json();
+            if (data.success) {
+                channels = data.data;
+                let html = '<option value="">全部</option>';
+                data.data.forEach(c => {
+                    html += `<option value="${c.channel_id}">${c.channel_name}</option>`;
+                });
+                document.getElementById('filterChannel').innerHTML = html;
+                document.getElementById('newFlowChannel').innerHTML = html.replace('<option value="">全部</option>', '');
+            }
+        }
+
+        async function loadFilterMonths() {
+            const res = await fetch('/api/summary/monthly');
+            const data = await res.json();
+            if (data.success) {
+                const months = [...new Set(data.data.map(m => m.settlement_month))].sort().reverse();
+                let html = '<option value="">全部</option>';
+                months.forEach(m => {
+                    html += `<option value="${m}">${m}</option>`;
+                });
+                document.getElementById('filterMonth').innerHTML = html;
+            }
+        }
+
+        function openAddFlowModal() {
+            document.getElementById('newFlowGame').value = '';
+            document.getElementById('newFlowDate').value = '';
+            document.getElementById('newFlowTotal').value = '';
+            document.getElementById('newFlowFee').value = '';
+            document.getElementById('newFlowTax').value = '';
+            document.getElementById('newFlowMonth').value = '';
+            new bootstrap.Modal(document.getElementById('addFlowModal')).show();
+        }
+
+        async function addFlow() {
+            const channelId = document.getElementById('newFlowChannel').value;
+            const gameName = document.getElementById('newFlowGame').value;
+            const flowDate = document.getElementById('newFlowDate').value;
+            const totalFlow = document.getElementById('newFlowTotal').value;
+            const channelFee = document.getElementById('newFlowFee').value;
+            const taxAmount = document.getElementById('newFlowTax').value;
+            const settlementMonth = document.getElementById('newFlowMonth').value;
+
+            if (!channelId || !gameName || !flowDate || !totalFlow || !settlementMonth) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            const res = await fetch('/api/game-flows', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    channel_id: parseInt(channelId),
+                    game_name: gameName,
+                    flow_date: flowDate,
+                    total_flow: parseFloat(totalFlow),
+                    channel_fee: parseFloat(channelFee || 0),
+                    tax_amount: parseFloat(taxAmount || 0),
+                    settlement_month: settlementMonth
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('addFlowModal')).hide();
+                loadFlows();
+                loadDashboard();
+            }
+        }
+
+        function refreshData() {
+            loadDashboard();
+            const activePage = document.querySelector('.sidebar .nav-link.active');
+            if (activePage) {
+                const page = activePage.getAttribute('onclick').match(/'(\w+)'/)[1];
+                if (page === 'flows') loadFlows();
+                else if (page === 'prepayments') loadPrepayments();
+                else if (page === 'anomalies') loadAnomalies();
+                else if (page === 'history') loadHistory();
+            }
+        }
+
+        async function init() {
+            await loadChannels();
+            await loadFilterMonths();
+            loadDashboard();
+        }
+
+        init();
+    </script>
+</body>
+</html>
