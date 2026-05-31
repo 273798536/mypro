@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电竞陪练订单仲裁</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>电竞陪练订单仲裁</h1>
+    <p class="subtitle">时长争议可查 · 段位错配可释 · 口径一致 · 冲突明示</p>
+  </header>
+
+  <section class="filter-panel">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>日期范围</label>
+        <input type="date" id="filterDateStart" value="2026-05-01">
+        <span class="filter-sep">至</span>
+        <input type="date" id="filterDateEnd" value="2026-05-31">
+      </div>
+      <div class="filter-group">
+        <label>订单状态</label>
+        <select id="filterStatus">
+          <option value="all">全部</option>
+          <option value="正常">正常</option>
+          <option value="争议">争议</option>
+          <option value="已仲裁">已仲裁</option>
+          <option value="补录">补录</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>争议类型</label>
+        <select id="filterDispute">
+          <option value="all">全部</option>
+          <option value="duration">时长争议</option>
+          <option value="rank">段位错配</option>
+          <option value="compensation">补偿重复</option>
+          <option value="wage">工资规则冲突</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>下单段位</label>
+        <select id="filterRank">
+          <option value="all">全部</option>
+          <option value="青铜">青铜</option>
+          <option value="白银">白银</option>
+          <option value="黄金">黄金</option>
+          <option value="铂金">铂金</option>
+          <option value="钻石">钻石</option>
+          <option value="星耀">星耀</option>
+          <option value="王者">王者</option>
+        </select>
+      </div>
+      <div class="filter-group filter-actions">
+        <button id="btnFilter" class="btn btn-primary">筛选</button>
+        <button id="btnReset" class="btn btn-secondary">重置</button>
+        <button id="btnExport" class="btn btn-accent">导出仲裁报告</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary-cards">
+    <div class="card card-total">
+      <div class="card-value" id="statTotal">0</div>
+      <div class="card-label">订单总数</div>
+    </div>
+    <div class="card card-dispute">
+      <div class="card-value" id="statDispute">0</div>
+      <div class="card-label">争议订单</div>
+    </div>
+    <div class="card card-duration">
+      <div class="card-value" id="statDuration">0</div>
+      <div class="card-label">时长争议</div>
+    </div>
+    <div class="card card-rank">
+      <div class="card-value" id="statRank">0</div>
+      <div class="card-label">段位错配</div>
+    </div>
+    <div class="card card-conflict">
+      <div class="card-value" id="statConflict">0</div>
+      <div class="card-label">材料冲突</div>
+    </div>
+    <div class="card card-amount">
+      <div class="card-value" id="statAmount">¥0</div>
+      <div class="card-label">涉及金额</div>
+    </div>
+  </section>
+
+  <section class="charts-section">
+    <div class="chart-container">
+      <h3>争议类型分布</h3>
+      <canvas id="chartDisputeType"></canvas>
+    </div>
+    <div class="chart-container">
+      <h3>时长偏差分布（小时）</h3>
+      <canvas id="chartDurationDiff"></canvas>
+    </div>
+    <div class="chart-container">
+      <h3>段位错配热力</h3>
+      <canvas id="chartRankMismatch"></canvas>
+    </div>
+  </section>
+
+  <section class="conflict-section" id="conflictSection">
+    <h3>材料冲突明细</h3>
+    <p class="section-desc">以下记录显示陪练订单、投诉工单与工资规则之间的不一致，需优先仲裁</p>
+    <div class="conflict-list" id="conflictList"></div>
+  </section>
+
+  <section class="detail-section">
+    <div class="detail-header">
+      <h3>订单明细</h3>
+      <div class="detail-tabs">
+        <button class="tab active" data-tab="all">全部</button>
+        <button class="tab" data-tab="dispute">仅争议</button>
+        <button class="tab" data-tab="backfill">仅补录</button>
+        <button class="tab" data-tab="conflict">仅冲突</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="orderTable">
+        <thead>
+          <tr>
+            <th>订单号</th>
+            <th>玩家</th>
+            <th>陪练</th>
+            <th>下单段位</th>
+            <th>实际段位</th>
+            <th>下单时长</th>
+            <th>实际时长</th>
+            <th>金额</th>
+            <th>状态</th>
+            <th>争议标记</th>
+            <th>创建时间</th>
+          </tr>
+        </thead>
+        <tbody id="orderTableBody"></tbody>
+      </table>
+    </div>
+    <div class="table-footer" id="tableFooter"></div>
+  </section>
+
+  <section class="report-section" id="reportSection" style="display:none;">
+    <h3>仲裁报告预览</h3>
+    <div class="report-content" id="reportContent"></div>
+    <div class="report-actions">
+      <button id="btnDownloadHtml" class="btn btn-primary">下载 HTML 报告</button>
+      <button id="btnCloseReport" class="btn btn-secondary">关闭</button>
+    </div>
+  </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
