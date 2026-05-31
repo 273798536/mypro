@@ -1,0 +1,52 @@
+[
+  {
+    "deduction_id": "AD001",
+    "franchisee_id": "FR001",
+    "deduction_date": "2023-06-15",
+    "deduction_amount": 2000.00,
+    "contract_version": "v1.0",
+    "status": "superseded",
+    "superseded_by": "AD002",
+    "description": "v1.0广告基金抵扣，后被v2.0替代"
+  },
+  {
+    "deduction_id": "AD002",
+    "franchisee_id": "FR001",
+    "deduction_date": "2024-06-15",
+    "deduction_amount": 3000.00,
+    "contract_version": "v2.0",
+    "status": "applied",
+    "superseded_by": null,
+    "description": "v2.0广告基金抵扣"
+  },
+  {
+    "deduction_id": "AD003",
+    "franchisee_id": "FR002",
+    "deduction_date": "2024-10-15",
+    "deduction_amount": 3000.00,
+    "contract_version": "v2.1",
+    "status": "applied",
+    "superseded_by": null,
+    "description": "广告基金抵扣"
+  },
+  {
+    "deduction_id": "AD004",
+    "franchisee_id": "FR003",
+    "deduction_date": "2024-06-15",
+    "deduction_amount": 1500.00,
+    "contract_version": "v2.0",
+    "status": "superseded",
+    "superseded_by": "AD005",
+    "description": "v2.0广告基金抵扣，合同升级后替代"
+  },
+  {
+    "deduction_id": "AD005",
+    "franchisee_id": "FR003",
+    "deduction_date": "2025-03-15",
+    "deduction_amount": 2500.00,
+    "contract_version": "v3.0",
+    "status": "applied",
+    "superseded_by": null,
+    "description": "v3.0广告基金抵扣"
+  }
+]

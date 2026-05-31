@@ -1,0 +1,38 @@
+[
+  {
+    "application_id": "SC001",
+    "franchisee_id": "FR001",
+    "original_store": "BJ-STORE-01",
+    "new_store": "BJ-STORE-05",
+    "application_date": "2024-03-01",
+    "approval_date": "2024-03-15",
+    "status": "approved",
+    "transfer_amount": 0.00,
+    "contract_version_at_application": "v2.0",
+    "reason": "商圈调整，换店不涉及保证金转存"
+  },
+  {
+    "application_id": "SC002",
+    "franchisee_id": "FR002",
+    "original_store": "SH-STORE-03",
+    "new_store": "SH-STORE-08",
+    "application_date": "2024-08-01",
+    "approval_date": null,
+    "status": "rejected",
+    "transfer_amount": 120000.00,
+    "contract_version_at_application": "v2.1",
+    "reason": "原店仍有未处理违约，换店转存不予批准"
+  },
+  {
+    "application_id": "SC003",
+    "franchisee_id": "FR003",
+    "original_store": "GZ-STORE-02",
+    "new_store": "GZ-STORE-10",
+    "application_date": "2025-03-01",
+    "approval_date": null,
+    "status": "pending",
+    "transfer_amount": 150000.00,
+    "contract_version_at_application": "v3.0",
+    "reason": "经营场地到期，申请换至新址"
+  }
+]

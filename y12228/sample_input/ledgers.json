@@ -1,0 +1,65 @@
+[
+  {
+    "franchisee_id": "FR001",
+    "opening_balance": 80000.00,
+    "entries": [
+      {
+        "franchisee_id": "FR001",
+        "entry_id": "E001-01",
+        "entry_date": "2024-01-15",
+        "amount": 20000.00,
+        "entry_type": "deposit_supplement",
+        "reference_contract_version": "v2.0",
+        "description": "合同升级补缴保证金"
+      }
+    ]
+  },
+  {
+    "franchisee_id": "FR002",
+    "opening_balance": 100000.00,
+    "entries": [
+      {
+        "franchisee_id": "FR002",
+        "entry_id": "E002-01",
+        "entry_date": "2024-06-10",
+        "amount": 20000.00,
+        "entry_type": "deposit_supplement",
+        "reference_contract_version": "v2.1",
+        "description": "新合同补缴"
+      },
+      {
+        "franchisee_id": "FR002",
+        "entry_id": "E002-02",
+        "entry_date": "2024-09-01",
+        "amount": -5000.00,
+        "entry_type": "breach_deduction",
+        "reference_contract_version": "v2.1",
+        "description": "产品质量违约扣款"
+      },
+      {
+        "franchisee_id": "FR002",
+        "entry_id": "E002-03",
+        "entry_date": "2024-10-15",
+        "amount": -3000.00,
+        "entry_type": "ad_fund_deduction",
+        "reference_contract_version": "v2.1",
+        "description": "广告基金抵扣"
+      }
+    ]
+  },
+  {
+    "franchisee_id": "FR003",
+    "opening_balance": 100000.00,
+    "entries": [
+      {
+        "franchisee_id": "FR003",
+        "entry_id": "E003-01",
+        "entry_date": "2025-01-10",
+        "amount": 50000.00,
+        "entry_type": "deposit_supplement",
+        "reference_contract_version": "v3.0",
+        "description": "v3.0合同补缴"
+      }
+    ]
+  }
+]

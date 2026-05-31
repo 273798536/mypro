@@ -1,0 +1,353 @@
+[
+  {
+    "franchisee_id": "FR001",
+    "conclusion": "mismatch",
+    "evidence_chain": [
+      {
+        "source_type": "contract",
+        "source_id": "CT-2024-001",
+        "description": "适用合同 CT-2024-001，版本 v2.0，保证金标准 100000.0",
+        "contract_version": "v2.0",
+        "raw_data": {
+          "deposit_standard": 100000.0,
+          "version": "v2.0"
+        }
+      },
+      {
+        "source_type": "ledger",
+        "source_id": "FR001",
+        "description": "保证金账本期初余额 80000.0，期末余额 100000.0，共 1 笔流水",
+        "contract_version": "",
+        "raw_data": {
+          "opening_balance": 80000.0,
+          "closing_balance": 100000.0,
+          "entry_count": 1
+        }
+      },
+      {
+        "source_type": "ad_deduction_superseded",
+        "source_id": "AD001",
+        "description": "广告基金抵扣 AD001 已被 AD002 替代（原金额 2000.0，版本 v1.0），保留为历史证据",
+        "contract_version": "v1.0",
+        "raw_data": {
+          "amount": 2000.0,
+          "superseded_by": "AD002",
+          "version": "v1.0"
+        }
+      },
+      {
+        "source_type": "ad_deduction",
+        "source_id": "AD002",
+        "description": "广告基金抵扣 3000.0（版本 v2.0）",
+        "contract_version": "v2.0",
+        "raw_data": {
+          "amount": 3000.0,
+          "version": "v2.0"
+        }
+      },
+      {
+        "source_type": "store_change",
+        "source_id": "SC001",
+        "description": "换店申请 SC001：BJ-STORE-01 → BJ-STORE-05，转存金额 0.0，状态 approved，申请时合同版本 v2.0",
+        "contract_version": "v2.0",
+        "raw_data": {
+          "transfer_amount": 0.0,
+          "status": "approved",
+          "version": "v2.0"
+        }
+      },
+      {
+        "source_type": "contract_history",
+        "source_id": "CT-2024-001-A",
+        "description": "历史合同版本 v1.0（2022-01-01 至 2023-12-31），保证金标准 80000.0，违约扣款率 0.2，广告基金率 0.01",
+        "contract_version": "v1.0",
+        "raw_data": {
+          "deposit_standard": 80000.0,
+          "breach_penalty_rate": 0.2,
+          "ad_fund_rate": 0.01
+        }
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_1",
+        "description": "扣款顺序第 1 步：保证金标准 100000.0（合同版本 v2.0）",
+        "contract_version": "v2.0",
+        "raw_data": {}
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_2",
+        "description": "扣款顺序第 2 步：广告基金抵扣 -3000.0（2024-06-15，版本 v2.0）",
+        "contract_version": "v2.0",
+        "raw_data": {}
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_3",
+        "description": "扣款顺序第 3 步：换店转存 +0.0（BJ-STORE-01 → BJ-STORE-05，2024-03-01）",
+        "contract_version": "v2.0",
+        "raw_data": {}
+      }
+    ],
+    "deduction_order_trace": [
+      {
+        "step": 7,
+        "description": "扣款顺序第 1 步：保证金标准 100000.0（合同版本 v2.0）"
+      },
+      {
+        "step": 8,
+        "description": "扣款顺序第 2 步：广告基金抵扣 -3000.0（2024-06-15，版本 v2.0）"
+      },
+      {
+        "step": 9,
+        "description": "扣款顺序第 3 步：换店转存 +0.0（BJ-STORE-01 → BJ-STORE-05，2024-03-01）"
+      }
+    ],
+    "contract_version_trace": [
+      {
+        "version": "v2.0",
+        "description": "适用合同 CT-2024-001，版本 v2.0，保证金标准 100000.0"
+      },
+      {
+        "version": "v1.0",
+        "description": "历史合同版本 v1.0（2022-01-01 至 2023-12-31），保证金标准 80000.0，违约扣款率 0.2，广告基金率 0.01"
+      }
+    ]
+  },
+  {
+    "franchisee_id": "FR002",
+    "conclusion": "match",
+    "evidence_chain": [
+      {
+        "source_type": "contract",
+        "source_id": "CT-2024-002",
+        "description": "适用合同 CT-2024-002，版本 v2.1，保证金标准 120000.0",
+        "contract_version": "v2.1",
+        "raw_data": {
+          "deposit_standard": 120000.0,
+          "version": "v2.1"
+        }
+      },
+      {
+        "source_type": "ledger",
+        "source_id": "FR002",
+        "description": "保证金账本期初余额 100000.0，期末余额 112000.0，共 3 笔流水",
+        "contract_version": "",
+        "raw_data": {
+          "opening_balance": 100000.0,
+          "closing_balance": 112000.0,
+          "entry_count": 3
+        }
+      },
+      {
+        "source_type": "breach_penalty",
+        "source_id": "BP001",
+        "description": "违约扣款 5000.0（quality_violation），按合同版本 v2.1，有争议",
+        "contract_version": "v2.1",
+        "raw_data": {
+          "amount": 5000.0,
+          "breach_type": "quality_violation",
+          "disputed": true
+        }
+      },
+      {
+        "source_type": "ad_deduction",
+        "source_id": "AD003",
+        "description": "广告基金抵扣 3000.0（版本 v2.1）",
+        "contract_version": "v2.1",
+        "raw_data": {
+          "amount": 3000.0,
+          "version": "v2.1"
+        }
+      },
+      {
+        "source_type": "store_change",
+        "source_id": "SC002",
+        "description": "换店申请 SC002：SH-STORE-03 → SH-STORE-08，转存金额 120000.0，状态 rejected，申请时合同版本 v2.1",
+        "contract_version": "v2.1",
+        "raw_data": {
+          "transfer_amount": 120000.0,
+          "status": "rejected",
+          "version": "v2.1"
+        }
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_1",
+        "description": "扣款顺序第 1 步：保证金标准 120000.0（合同版本 v2.1）",
+        "contract_version": "v2.1",
+        "raw_data": {}
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_2",
+        "description": "扣款顺序第 2 步：违约扣款 -5000.0（quality_violation，2024-09-01）",
+        "contract_version": "v2.1",
+        "raw_data": {}
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_3",
+        "description": "扣款顺序第 3 步：广告基金抵扣 -3000.0（2024-10-15，版本 v2.1）",
+        "contract_version": "v2.1",
+        "raw_data": {}
+      }
+    ],
+    "deduction_order_trace": [
+      {
+        "step": 6,
+        "description": "扣款顺序第 1 步：保证金标准 120000.0（合同版本 v2.1）"
+      },
+      {
+        "step": 7,
+        "description": "扣款顺序第 2 步：违约扣款 -5000.0（quality_violation，2024-09-01）"
+      },
+      {
+        "step": 8,
+        "description": "扣款顺序第 3 步：广告基金抵扣 -3000.0（2024-10-15，版本 v2.1）"
+      }
+    ],
+    "contract_version_trace": [
+      {
+        "version": "v2.1",
+        "description": "适用合同 CT-2024-002，版本 v2.1，保证金标准 120000.0"
+      }
+    ]
+  },
+  {
+    "franchisee_id": "FR003",
+    "conclusion": "mismatch",
+    "evidence_chain": [
+      {
+        "source_type": "contract",
+        "source_id": "CT-2025-003",
+        "description": "适用合同 CT-2025-003，版本 v3.0，保证金标准 150000.0",
+        "contract_version": "v3.0",
+        "raw_data": {
+          "deposit_standard": 150000.0,
+          "version": "v3.0"
+        }
+      },
+      {
+        "source_type": "ledger",
+        "source_id": "FR003",
+        "description": "保证金账本期初余额 100000.0，期末余额 150000.0，共 1 笔流水",
+        "contract_version": "",
+        "raw_data": {
+          "opening_balance": 100000.0,
+          "closing_balance": 150000.0,
+          "entry_count": 1
+        }
+      },
+      {
+        "source_type": "breach_penalty",
+        "source_id": "BP002",
+        "description": "违约扣款 8000.0（payment_default），按合同版本 v3.0，无争议",
+        "contract_version": "v3.0",
+        "raw_data": {
+          "amount": 8000.0,
+          "breach_type": "payment_default",
+          "disputed": false
+        }
+      },
+      {
+        "source_type": "ad_deduction_superseded",
+        "source_id": "AD004",
+        "description": "广告基金抵扣 AD004 已被 AD005 替代（原金额 1500.0，版本 v2.0），保留为历史证据",
+        "contract_version": "v2.0",
+        "raw_data": {
+          "amount": 1500.0,
+          "superseded_by": "AD005",
+          "version": "v2.0"
+        }
+      },
+      {
+        "source_type": "ad_deduction",
+        "source_id": "AD005",
+        "description": "广告基金抵扣 2500.0（版本 v3.0）",
+        "contract_version": "v3.0",
+        "raw_data": {
+          "amount": 2500.0,
+          "version": "v3.0"
+        }
+      },
+      {
+        "source_type": "store_change",
+        "source_id": "SC003",
+        "description": "换店申请 SC003：GZ-STORE-02 → GZ-STORE-10，转存金额 150000.0，状态 pending，申请时合同版本 v3.0",
+        "contract_version": "v3.0",
+        "raw_data": {
+          "transfer_amount": 150000.0,
+          "status": "pending",
+          "version": "v3.0"
+        }
+      },
+      {
+        "source_type": "contract_history",
+        "source_id": "CT-2023-003",
+        "description": "历史合同版本 v2.0（2023-01-01 至 2024-12-31），保证金标准 100000.0，违约扣款率 0.3，广告基金率 0.02",
+        "contract_version": "v2.0",
+        "raw_data": {
+          "deposit_standard": 100000.0,
+          "breach_penalty_rate": 0.3,
+          "ad_fund_rate": 0.02
+        }
+      },
+      {
+        "source_type": "supplementary_evidence",
+        "source_id": "SC003",
+        "description": "合同与流水结论不一致，换店申请 SC003 作为补充证据保留（状态：pending，转存金额 150000.0）",
+        "contract_version": "v3.0",
+        "raw_data": {
+          "status": "pending",
+          "transfer_amount": 150000.0
+        }
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_1",
+        "description": "扣款顺序第 1 步：保证金标准 150000.0（合同版本 v3.0）",
+        "contract_version": "v3.0",
+        "raw_data": {}
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_2",
+        "description": "扣款顺序第 2 步：违约扣款 -8000.0（payment_default，2025-02-15）",
+        "contract_version": "v3.0",
+        "raw_data": {}
+      },
+      {
+        "source_type": "deduction_order",
+        "source_id": "step_3",
+        "description": "扣款顺序第 3 步：广告基金抵扣 -2500.0（2025-03-15，版本 v3.0）",
+        "contract_version": "v3.0",
+        "raw_data": {}
+      }
+    ],
+    "deduction_order_trace": [
+      {
+        "step": 9,
+        "description": "扣款顺序第 1 步：保证金标准 150000.0（合同版本 v3.0）"
+      },
+      {
+        "step": 10,
+        "description": "扣款顺序第 2 步：违约扣款 -8000.0（payment_default，2025-02-15）"
+      },
+      {
+        "step": 11,
+        "description": "扣款顺序第 3 步：广告基金抵扣 -2500.0（2025-03-15，版本 v3.0）"
+      }
+    ],
+    "contract_version_trace": [
+      {
+        "version": "v3.0",
+        "description": "适用合同 CT-2025-003，版本 v3.0，保证金标准 150000.0"
+      },
+      {
+        "version": "v2.0",
+        "description": "历史合同版本 v2.0（2023-01-01 至 2024-12-31），保证金标准 100000.0，违约扣款率 0.3，广告基金率 0.02"
+      }
+    ]
+  }
+]

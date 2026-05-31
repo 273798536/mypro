@@ -1,0 +1,62 @@
+[
+  {
+    "franchisee_id": "FR001",
+    "contract_id": "CT-2024-001",
+    "version": "v2.0",
+    "deposit_standard": 100000.00,
+    "effective_date": "2024-01-01",
+    "expiry_date": "2026-12-31",
+    "breach_penalty_rate": 0.3,
+    "ad_fund_rate": 0.02,
+    "allows_store_change": true,
+    "store_change_fee": 5000.00,
+    "notes": "标准加盟合同v2.0"
+  },
+  {
+    "franchisee_id": "FR001",
+    "contract_id": "CT-2024-001-A",
+    "version": "v1.0",
+    "deposit_standard": 80000.00,
+    "effective_date": "2022-01-01",
+    "expiry_date": "2023-12-31",
+    "breach_penalty_rate": 0.2,
+    "ad_fund_rate": 0.01,
+    "allows_store_change": false,
+    "notes": "旧版合同"
+  },
+  {
+    "franchisee_id": "FR002",
+    "contract_id": "CT-2024-002",
+    "version": "v2.1",
+    "deposit_standard": 120000.00,
+    "effective_date": "2024-06-01",
+    "expiry_date": "2027-05-31",
+    "breach_penalty_rate": 0.25,
+    "ad_fund_rate": 0.025,
+    "allows_store_change": true,
+    "store_change_fee": 6000.00
+  },
+  {
+    "franchisee_id": "FR003",
+    "contract_id": "CT-2025-003",
+    "version": "v3.0",
+    "deposit_standard": 150000.00,
+    "effective_date": "2025-01-01",
+    "expiry_date": "2028-12-31",
+    "breach_penalty_rate": 0.35,
+    "ad_fund_rate": 0.03,
+    "allows_store_change": true,
+    "store_change_fee": 8000.00
+  },
+  {
+    "franchisee_id": "FR003",
+    "contract_id": "CT-2023-003",
+    "version": "v2.0",
+    "deposit_standard": 100000.00,
+    "effective_date": "2023-01-01",
+    "expiry_date": "2024-12-31",
+    "breach_penalty_rate": 0.3,
+    "ad_fund_rate": 0.02,
+    "allows_store_change": false
+  }
+]

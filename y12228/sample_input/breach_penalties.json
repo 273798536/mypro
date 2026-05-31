@@ -1,0 +1,22 @@
+[
+  {
+    "penalty_id": "BP001",
+    "franchisee_id": "FR002",
+    "breach_type": "quality_violation",
+    "penalty_date": "2024-09-01",
+    "penalty_amount": 5000.00,
+    "contract_version": "v2.1",
+    "description": "产品质量抽检不合格",
+    "disputed": true
+  },
+  {
+    "penalty_id": "BP002",
+    "franchisee_id": "FR003",
+    "breach_type": "payment_default",
+    "penalty_date": "2025-02-15",
+    "penalty_amount": 8000.00,
+    "contract_version": "v3.0",
+    "description": "加盟费逾期未缴",
+    "disputed": false
+  }
+]
