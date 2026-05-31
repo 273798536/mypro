@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #E2E8F0;
+  background-color: #0F172A;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at top, #1E293B 0%, transparent 50%),
+    linear-gradient(180deg, #0F172A 0%, #020617 100%);
+}
+
+@layer components {
+  .factory-panel {
+    @apply bg-factory-panel border border-factory-border rounded-lg;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .factory-btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 
+           border border-factory-border bg-factory-panel text-factory-text
+           hover:bg-primary-500 hover:border-primary-500 hover:text-white
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .factory-btn-primary {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200
+           bg-primary-500 text-white border border-primary-500
+           hover:bg-primary-600 hover:border-primary-600
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .factory-btn-danger {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200
+           bg-danger-500 text-white border border-danger-500
+           hover:bg-danger-600 hover:border-danger-600
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .anomaly-alert {
+    @apply bg-danger-500/10 border-2 border-danger-500 text-danger-100 
+           rounded-lg p-3 animate-flash-border;
+  }
+
+  .step-indicator {
+    @apply w-8 h-8 rounded-full flex items-center justify-center 
+           text-sm font-bold border-2 transition-all duration-300;
+  }
+
+  .step-indicator-active {
+    @apply bg-primary-500 border-primary-500 text-white;
+  }
+
+  .step-indicator-completed {
+    @apply bg-green-600 border-green-600 text-white;
+  }
+
+  .step-indicator-pending {
+    @apply bg-factory-panel border-factory-border text-factory-muted;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-factory-bg border border-factory-border rounded-md
+           text-factory-text placeholder-factory-muted
+           focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500
+           transition-all duration-200;
+  }
+
+  .slider-track {
+    @apply h-2 bg-factory-border rounded-full;
+  }
+
+  .slider-thumb {
+    @apply w-5 h-5 bg-primary-500 rounded-full cursor-grab active:cursor-grabbing
+           shadow-lg shadow-primary-500/30 transition-transform hover:scale-110;
+  }
+
+  .timeline-dot {
+    @apply w-3 h-3 rounded-full border-2 border-factory-border bg-factory-panel
+           transition-all duration-300;
+  }
+
+  .timeline-dot-active {
+    @apply bg-primary-500 border-primary-500 scale-125;
+  }
+
+  .timeline-dot-anomaly {
+    @apply bg-danger-500 border-danger-500;
+  }
+
+  .timeline-dot-simulation {
+    @apply bg-warning-500 border-warning-500;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.grid-overlay {
+  background-image: 
+    linear-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.status-light {
+  @apply w-3 h-3 rounded-full;
+  animation: pulse 2s infinite;
+}
+
+.status-light-red {
+  @apply bg-danger-500;
+  box-shadow: 0 0 10px rgba(245, 63, 63, 0.8);
+}
+
+.status-light-green {
+  @apply bg-green-500;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+}
+
+.status-light-yellow {
+  @apply bg-warning-500;
+  box-shadow: 0 0 10px rgba(255, 125, 0, 0.8);
+}
