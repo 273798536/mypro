@@ -1,0 +1,2 @@
+﻿record_id,experiment_id,batch_id,status,violations,max_speed_rpm,max_vacuum_pa,max_temperature_c,data_points,created_at,notes
+4d938bb2-f2f8-4454-bd45-9084303d0568,EXP-006,DEMO-BATCH-001,bad_input,[],8563.754073214663,0.009632146313943928,56.67730322484516,5,2026-05-31T09:37:14.857360,

@@ -1,0 +1,24 @@
+{
+  "batch_id": "DEMO-BATCH-001",
+  "processed_at": "2026-05-31T09:37:14.857427",
+  "total_records": 6,
+  "normal_count": 0,
+  "boundary_count": 4,
+  "bad_input_count": 1,
+  "pending_review_count": 1,
+  "breakdown": {
+    "normal": [],
+    "boundary": [
+      "3822c790-2fb3-4752-ade9-d0f55217ae15",
+      "56689fa0-69ae-48fd-b1ed-4f86150a47e7",
+      "02f98f41-006f-4e7a-81e6-406d94272d09",
+      "0d43fc72-188c-4526-84b7-f87d153aa9ed"
+    ],
+    "bad_inputs": [
+      "4d938bb2-f2f8-4454-bd45-9084303d0568"
+    ],
+    "pending_review": [
+      "8cee6afb-ceee-4b63-8aad-9627cce6b6e2"
+    ]
+  }
+}

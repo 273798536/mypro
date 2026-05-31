@@ -1,0 +1,2 @@
+﻿record_id,experiment_id,batch_id,status,violations,max_speed_rpm,max_vacuum_pa,max_temperature_c,data_points,created_at,notes
+8cee6afb-ceee-4b63-8aad-9627cce6b6e2,EXP-003,DEMO-BATCH-001,pending_review,['speed_over_limit'],10677.815695686979,0.009701983574733022,56.22492754748347,10,2026-05-31T09:37:14.857237,
