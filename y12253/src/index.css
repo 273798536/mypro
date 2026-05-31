@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.95);
+  background-color: #0a1628;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a1628 0%, #0d2137 50%, #0a1628 100%);
+}
+
+/* 深海网格背景 */
+.deep-grid {
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* 扫描线效果 */
+.scan-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.3), transparent);
+  animation: scanLine 4s linear infinite;
+  pointer-events: none;
+}
+
+/* 发光边框 */
+.glow-border {
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 
+    inset 0 0 10px rgba(0, 212, 255, 0.1),
+    0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+.glow-border-green {
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  box-shadow: 
+    inset 0 0 10px rgba(0, 255, 136, 0.1),
+    0 0 10px rgba(0, 255, 136, 0.1);
+}
+
+.glow-border-orange {
+  border: 1px solid rgba(255, 107, 53, 0.4);
+  box-shadow: 
+    inset 0 0 10px rgba(255, 107, 53, 0.1),
+    0 0 10px rgba(255, 107, 53, 0.1);
+}
+
+.glow-border-red {
+  border: 1px solid rgba(255, 71, 87, 0.4);
+  box-shadow: 
+    inset 0 0 10px rgba(255, 71, 87, 0.1),
+    0 0 10px rgba(255, 71, 87, 0.1);
+}
+
+/* 按钮发光效果 */
+.btn-glow {
+  transition: all 0.3s ease;
+}
+
+.btn-glow:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px currentColor, 0 0 30px currentColor;
+}
+
+/* 波形图容器 */
+.waveform-container {
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 212, 255, 0.02) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+/* 时间线样式 */
+.timeline-line {
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(0, 212, 255, 0.5) 10%, 
+    rgba(0, 212, 255, 0.5) 90%, 
+    transparent 100%
+  );
+}
+
+/* 潜艇尾迹 */
+.submarine-wake {
+  background: linear-gradient(90deg, 
+    rgba(0, 212, 255, 0.4) 0%, 
+    rgba(0, 212, 255, 0.1) 50%, 
+    transparent 100%
+  );
+  filter: blur(3px);
+}
+
+/* 声呐脉冲 */
+.sonar-pulse {
+  border: 2px solid rgba(0, 255, 136, 0.6);
+  border-radius: 50%;
+  animation: sonarRing 2s ease-out forwards;
+}
+
+/* 暗礁标签 */
+.reef-tag {
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
