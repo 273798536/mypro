@@ -1,0 +1,23 @@
+{
+  "name": "music-festival-deposit-refund",
+  "version": "1.0.0",
+  "description": "音乐节摊位押金清退系统 - 支持合同、流水、加电申请三方数据整合与冲突处理",
+  "main": "src/index.js",
+  "bin": {
+    "deposit-refund": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node tests/run-all.js",
+    "cli": "node src/cli.js",
+    "init-db": "node src/init-db.js",
+    "load-sample": "node src/load-sample-data.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "express": "^4.19.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "chalk": "^4.1.2"
+  }
+}

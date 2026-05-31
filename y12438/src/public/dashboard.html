@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音乐节摊位押金清退系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .status-pending { @apply bg-yellow-100 text-yellow-800; }
+    .status-pending_conflict { @apply bg-red-100 text-red-800; }
+    .status-completed { @apply bg-green-100 text-green-800; }
+    .conflict-icon { @apply text-red-500; }
+    .ok-icon { @apply text-green-500; }
+    .trace-step.active { @apply border-blue-500 bg-blue-50; }
+    .trace-step.completed { @apply border-green-500 bg-green-50; }
+    .modal-overlay { @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50; }
+    .modal-content { @apply bg-white rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto; }
+    .evidence-card { @apply border-l-4 p-4 my-2; }
+    .evidence-contract { @apply border-blue-500 bg-blue-50; }
+    .evidence-transaction { @apply border-green-500 bg-green-50; }
+    .evidence-power { @apply border-yellow-500 bg-yellow-50; }
+    .history-item { @apply border-l-2 border-gray-300 pl-4 py-2; }
+    .conflict-badge { @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <header class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <h1 class="text-2xl font-bold">🎵 音乐节摊位押金清退系统</h1>
+      <p class="text-purple-200 text-sm">透明追溯 · 冲突留痕 · 责任清晰</p>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold mb-4 text-gray-700">📊 数据汇总</h2>
+      <div id="summary-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">📋 清退记录列表</h2>
+        <div class="flex gap-2">
+          <button onclick="filterByStatus('all')" class="filter-btn px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300 transition">全部</button>
+          <button onclick="filterByStatus('pending')" class="filter-btn px-3 py-1 text-sm rounded bg-yellow-100 hover:bg-yellow-200 transition">待处理</button>
+          <button onclick="filterByStatus('pending_conflict')" class="filter-btn px-3 py-1 text-sm rounded bg-red-100 hover:bg-red-200 transition">有冲突</button>
+          <button onclick="filterByStatus('completed')" class="filter-btn px-3 py-1 text-sm rounded bg-green-100 hover:bg-green-200 transition">已完成</button>
+          <button onclick="showConflicts()" class="px-3 py-1 text-sm rounded bg-orange-100 hover:bg-orange-200 transition">⚠ 冲突列表</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">清退单号</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">商户</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">摊位</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">应收押金</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">加电费用</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">扣罚</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">应退金额</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">状态</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">冲突</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">操作</th>
+            </tr>
+          </thead>
+          <tbody id="refund-table-body" class="divide-y divide-gray-200">
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="detail-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-800">🔍 清退详情与证据追溯</h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+      </div>
+
+      <div class="p-6">
+        <div id="refund-basic-info" class="mb-6 p-4 bg-gray-50 rounded-lg">
+        </div>
+
+        <div class="mb-6">
+          <h4 class="font-semibold text-gray-700 mb-3">📍 追溯路径</h4>
+          <div class="flex flex-wrap gap-2">
+            <div class="trace-step flex items-center px-4 py-2 border-2 rounded-lg cursor-pointer" data-step="refund" onclick="showTraceStep('refund')">
+              <span class="mr-2">📄</span>清退结论
+            </div>
+            <div class="trace-step flex items-center px-4 py-2 border-2 rounded-lg cursor-pointer" data-step="deposit" onclick="showTraceStep('deposit')">
+              <span class="mr-2">💰</span>押金账本
+            </div>
+            <div class="trace-step flex items-center px-4 py-2 border-2 rounded-lg cursor-pointer" data-step="deduction" onclick="showTraceStep('deduction')">
+              <span class="mr-2">⚖️</span>扣罚试算
+            </div>
+            <div class="trace-step flex items-center px-4 py-2 border-2 rounded-lg cursor-pointer" data-step="evidence" onclick="showTraceStep('evidence')">
+              <span class="mr-2">🔗</span>证据追踪
+            </div>
+            <div class="trace-step flex items-center px-4 py-2 border-2 rounded-lg cursor-pointer" data-step="history" onclick="showTraceStep('history')">
+              <span class="mr-2">📜</span>历史记录
+            </div>
+          </div>
+        </div>
+
+        <div id="trace-content" class="min-h-[400px]">
+        </div>
+
+        <div id="conflict-resolution" class="mt-6 p-4 bg-orange-50 rounded-lg hidden">
+          <h4 class="font-semibold text-orange-800 mb-3">⚠️ 待处理冲突</h4>
+          <div id="conflict-list" class="space-y-3">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="conflicts-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-800">⚠️ 待处理冲突列表</h3>
+        <button onclick="closeConflictsModal()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+      </div>
+      <div class="p-6">
+        <div id="conflicts-table" class="space-y-4">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentRefundNo = null;
+    let currentRefundData = null;
+    let currentFilter = 'all';
+
+    async function loadSummary() {
+      const resp = await fetch('/api/summary');
+      const data = await resp.json();
+      if (data.success) {
+        const s = data.data;
+        document.getElementById('summary-cards').innerHTML = `
+          <div class="bg-white rounded-lg shadow p-5">
+            <div class="text-sm text-gray-500">合同总数</div>
+            <div class="text-2xl font-bold text-gray-800">${s.total_contracts}</div>
+            <div class="text-xs text-gray-400 mt-1">待处理 ${s.pending_refunds + s.conflict_refunds} 单</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-5">
+            <div class="text-sm text-gray-500">应收押金总额</div>
+            <div class="text-2xl font-bold text-blue-600">¥${s.total_deposit.toFixed(2)}</div>
+            <div class="text-xs text-gray-400 mt-1">清退 ${s.completed_refunds} 单</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-5">
+            <div class="text-sm text-gray-500">加电费用抵扣</div>
+            <div class="text-2xl font-bold text-yellow-600">¥${s.total_power_charge.toFixed(2)}</div>
+            <div class="text-xs text-gray-400 mt-1">从押金中扣除</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-5">
+            <div class="text-sm text-gray-500">应退总额</div>
+            <div class="text-2xl font-bold text-green-600">¥${s.total_refund_amount.toFixed(2)}</div>
+            <div class="text-xs text-red-400 mt-1">${s.unresolved_conflicts} 个冲突待处理</div>
+          </div>
+        `;
+      }
+    }
+
+    async function loadRefunds(status = 'all') {
+      const url = status === 'all' ? '/api/refunds' : `/api/refunds?status=${status}`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (data.success) {
+        renderRefundTable(data.data);
+      }
+    }
+
+    function renderRefundTable(refunds) {
+      const tbody = document.getElementById('refund-table-body');
+      tbody.innerHTML = refunds.map(r => `
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-4 py-3 text-sm font-mono text-blue-600">${r.refund_no}</td>
+          <td class="px-4 py-3 text-sm font-medium">${r.merchant_name}</td>
+          <td class="px-4 py-3 text-sm text-gray-500">${r.booth_id}</td>
+          <td class="px-4 py-3 text-sm text-right">¥${r.total_deposit_received.toFixed(2)}</td>
+          <td class="px-4 py-3 text-sm text-right text-yellow-600">-¥${r.total_power_charge.toFixed(2)}</td>
+          <td class="px-4 py-3 text-sm text-right text-red-600">-¥${r.total_deductions.toFixed(2)}</td>
+          <td class="px-4 py-3 text-sm text-right font-bold text-green-600">¥${r.refund_amount.toFixed(2)}</td>
+          <td class="px-4 py-3 text-center">
+            <span class="status-${r.refund_status} px-2 py-1 rounded text-xs font-medium">
+              ${r.refund_status === 'pending' ? '待处理' :
+                r.refund_status === 'pending_conflict' ? '待处理冲突' : '已完成'}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-center">
+            ${r.has_conflicts ? '<span class="conflict-icon">⚠</span>' : '<span class="ok-icon">✓</span>'}
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="viewDetail('${r.refund_no}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              查看追溯
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function viewDetail(refundNo) {
+      currentRefundNo = refundNo;
+      const resp = await fetch(`/api/refunds/${refundNo}`);
+      const data = await resp.json();
+      if (data.success) {
+        currentRefundData = data.data;
+        showDetailModal();
+        renderBasicInfo(data.data);
+        showTraceStep('refund');
+        renderConflicts(data.data.conflicts);
+      }
+    }
+
+    function renderBasicInfo(data) {
+      const { refund } = data;
+      document.getElementById('refund-basic-info').innerHTML = `
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <div class="text-xs text-gray-500">清退单号</div>
+            <div class="font-mono font-bold">${refund.refund_no}</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">商户 / 摊位</div>
+            <div class="font-bold">${refund.merchant_name} (${refund.booth_id})</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">应收押金</div>
+            <div class="font-bold text-blue-600">¥${refund.total_deposit_received.toFixed(2)}</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">应退金额</div>
+            <div class="font-bold text-green-600 text-xl">¥${refund.refund_amount.toFixed(2)}</div>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600">
+          <span class="font-medium">计算过程：</span>
+          ${refund.evidence_summary}
+        </div>
+        ${refund.final_decision ? `<div class="mt-2 text-sm text-purple-600"><span class="font-medium">最终处理：</span>${refund.final_decision}</div>` : ''}
+      `;
+    }
+
+    function showTraceStep(step) {
+      document.querySelectorAll('.trace-step').forEach(el => {
+        el.classList.remove('active', 'bg-blue-50', 'border-blue-500');
+      });
+      document.querySelector(`[data-step="${step}"]`).classList.add('active');
+
+      const content = document.getElementById('trace-content');
+
+      if (step === 'refund') {
+        content.innerHTML = renderRefundStep();
+      } else if (step === 'deposit') {
+        content.innerHTML = renderDepositStep();
+      } else if (step === 'deduction') {
+        content.innerHTML = renderDeductionStep();
+      } else if (step === 'evidence') {
+        content.innerHTML = renderEvidenceStep();
+      } else if (step === 'history') {
+        content.innerHTML = renderHistoryStep();
+      }
+    }
+
+    function renderRefundStep() {
+      const r = currentRefundData.refund;
+      return `
+        <h4 class="font-semibold text-gray-700 mb-4">📄 清退结论</h4>
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg">
+          <div class="text-center">
+            <div class="text-5xl font-bold text-green-600 mb-2">¥${r.refund_amount.toFixed(2)}</div>
+            <div class="text-gray-600">应退押金金额</div>
+          </div>
+          <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+            <div class="bg-white p-4 rounded shadow-sm">
+              <div class="text-2xl font-bold text-blue-600">+¥${r.total_deposit_received.toFixed(2)}</div>
+              <div class="text-xs text-gray-500 mt-1">应收押金</div>
+            </div>
+            <div class="bg-white p-4 rounded shadow-sm">
+              <div class="text-2xl font-bold text-yellow-600">-¥${r.total_power_charge.toFixed(2)}</div>
+              <div class="text-xs text-gray-500 mt-1">加电费用</div>
+            </div>
+            <div class="bg-white p-4 rounded shadow-sm">
+              <div class="text-2xl font-bold text-red-600">-¥${r.total_deductions.toFixed(2)}</div>
+              <div class="text-xs text-gray-500 mt-1">扣罚金额</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDepositStep() {
+      const data = currentRefundData;
+      const evidence = data.evidence_chain.filter(e => e.evidence_type === 'contract' || e.evidence_type === 'deposit_transaction');
+
+      return `
+        <h4 class="font-semibold text-gray-700 mb-4">💰 押金账本</h4>
+        <div class="space-y-3">
+          ${evidence.map(e => `
+            <div class="evidence-card ${e.evidence_type === 'contract' ? 'evidence-contract' : 'evidence-transaction'}">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="font-medium">${e.evidence_type === 'contract' ? '📑 合同约定' : '💳 押金交易'}</div>
+                  <div class="text-sm text-gray-600 mt-1">${e.source_description || e.source_table}</div>
+                  ${e.photo_url ? `<div class="text-sm text-blue-600 mt-1">📷 凭证: ${e.photo_url}</div>` : ''}
+                </div>
+                <div class="text-right">
+                  <div class="text-xl font-bold ${e.evidence_type === 'contract' ? 'text-blue-600' : 'text-green-600'}">
+                    ¥${e.evidence_value}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div class="flex justify-between items-center">
+            <span class="font-medium">押金账本合计</span>
+            <span class="text-xl font-bold text-blue-600">¥${data.refund.total_deposit_received.toFixed(2)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDeductionStep() {
+      const { deductions, corrections } = currentRefundData;
+
+      if (deductions.length === 0 && corrections.length === 0) {
+        return `
+          <h4 class="font-semibold text-gray-700 mb-4">⚖️ 扣罚试算</h4>
+          <div class="text-center py-12 text-gray-400">
+            <div class="text-4xl mb-2">✅</div>
+            <div>暂无扣罚记录</div>
+          </div>
+        `;
+      }
+
+      return `
+        <h4 class="font-semibold text-gray-700 mb-4">⚖️ 扣罚试算</h4>
+        ${deductions.length > 0 ? `
+          <div class="mb-4">
+            <h5 class="text-sm font-medium text-gray-600 mb-2">扣罚明细</h5>
+            <div class="space-y-2">
+              ${deductions.map(d => `
+                <div class="p-4 bg-white rounded-lg border ${d.is_contested ? 'border-red-300' : 'border-gray-200'}">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium">${d.deduction_type}</span>
+                        <span class="conflict-badge ${d.trial_status === 'approved' ? 'bg-green-100 text-green-800' : d.trial_status === 'contested' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                          ${d.trial_status === 'approved' ? '已批准' : d.trial_status === 'contested' ? '有争议' : '待审核'}
+                        </span>
+                      </div>
+                      <div class="text-sm text-gray-600 mt-1">${d.reason}</div>
+                      ${d.evidence_source ? `<div class="text-xs text-blue-600 mt-1">证据: ${d.evidence_source}</div>` : ''}
+                      ${d.is_contested ? `<div class="text-sm text-red-600 mt-2 bg-red-50 p-2 rounded">🗣️ 争议: ${d.contest_remark}</div>` : ''}
+                    </div>
+                    <div class="text-xl font-bold text-red-600">-¥${d.amount.toFixed(2)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        ${corrections.length > 0 ? `
+          <div>
+            <h5 class="text-sm font-medium text-gray-600 mb-2">✏️ 人工修正记录</h5>
+            <div class="space-y-2">
+              ${corrections.map(c => `
+                <div class="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="font-medium">${c.correction_type}</div>
+                      <div class="text-sm text-gray-600 mt-1">${c.reason}</div>
+                      <div class="text-xs text-gray-500 mt-1">操作人: ${c.operator} | 审批: ${c.approved_by}</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-sm text-gray-500 line-through">¥${c.original_value.toFixed(2)}</div>
+                      <div class="text-lg font-bold text-purple-600">¥${c.corrected_value.toFixed(2)}</div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function renderEvidenceStep() {
+      const { evidence_chain } = currentRefundData;
+
+      return `
+        <h4 class="font-semibold text-gray-700 mb-4">🔗 证据追踪</h4>
+        <div class="text-sm text-gray-500 mb-4">
+          共 ${evidence_chain.length} 条证据，从清退结论可完整追溯至所有原始材料
+        </div>
+        <div class="space-y-2">
+          ${evidence_chain.map((e, i) => `
+            <div class="evidence-card ${e.evidence_type === 'contract' ? 'evidence-contract' : e.evidence_type === 'deposit_transaction' ? 'evidence-transaction' : 'evidence-power'}">
+              <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                  ${i + 1}
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium">
+                      ${e.evidence_type === 'contract' ? '📑 合同' : e.evidence_type === 'deposit_transaction' ? '💳 交易' : '⚡ 加电'}
+                    </span>
+                    <span class="text-xs text-gray-500">表: ${e.source_table}</span>
+                    <span class="text-xs text-gray-500">字段: ${e.source_field}</span>
+                  </div>
+                  <div class="text-sm text-gray-600 mt-1">${e.source_description || '-'}</div>
+                  ${e.photo_url ? `<div class="text-sm text-blue-600 mt-1">📷 现场照片: ${e.photo_url}</div>` : ''}
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-lg">¥${e.evidence_value}</div>
+                  <div class="text-xs text-gray-400">源ID: ${e.source_id}</div>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderHistoryStep() {
+      const { history } = currentRefundData;
+
+      if (history.length === 0) {
+        return `
+          <h4 class="font-semibold text-gray-700 mb-4">📜 历史记录</h4>
+          <div class="text-center py-12 text-gray-400">暂无历史记录</div>
+        `;
+      }
+
+      return `
+        <h4 class="font-semibold text-gray-700 mb-4">📜 历史记录</h4>
+        <div class="text-sm text-gray-500 mb-4">
+          保存原始材料、处理结论、人工修正三块内容，完整追溯所有变更
+        </div>
+        <div class="space-y-2">
+          ${history.map(h => {
+            let result = '';
+            try {
+              const parsed = JSON.parse(h.processed_result);
+              result = `应退 ¥${parsed.refund_amount.toFixed(2)} | 扣罚 ¥${parsed.total_deductions.toFixed(2)}`;
+            } catch {
+              result = h.processed_result;
+            }
+            return `
+              <div class="history-item">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-medium">${h.record_type}</div>
+                    <div class="text-sm text-gray-600 mt-1">${result}</div>
+                    <div class="text-xs text-gray-400 mt-1">操作人: ${h.operator}</div>
+                    ${h.remarks ? `<div class="text-xs text-purple-600 mt-1">备注: ${h.remarks}</div>` : ''}
+                  </div>
+                  <div class="text-xs text-gray-400">${h.operation_time}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderConflicts(conflicts) {
+      const unresolved = conflicts.filter(c => c.status !== 'resolved');
+      const container = document.getElementById('conflict-resolution');
+      const list = document.getElementById('conflict-list');
+
+      if (unresolved.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      list.innerHTML = unresolved.map(c => `
+        <div class="p-4 bg-white rounded-lg border border-orange-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-medium text-orange-800">${c.description}</span>
+                <span class="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded">${c.conflict_type}</span>
+              </div>
+              <div class="text-sm text-gray-600 mt-2">
+                ${c.contract_value ? `<span class="mr-4">合同值: ${c.contract_value}</span>` : ''}
+                ${c.transaction_value ? `<span class="mr-4">流水值: ${c.transaction_value}</span>` : ''}
+                ${c.power_value ? `<span>加电值: ${c.power_value}</span>` : ''}
+              </div>
+            </div>
+            <button onclick="resolveConflict('${c.conflict_no}')" class="px-3 py-1 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition">
+              处理
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function resolveConflict(conflictNo) {
+      const resolution = prompt('请输入解决方案:');
+      if (resolution) {
+        const resp = await fetch(`/api/conflicts/${conflictNo}/resolve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resolution, resolvedBy: 'web_operator' })
+        });
+        const data = await resp.json();
+        if (data.success) {
+          alert('冲突已解决！');
+          viewDetail(currentRefundNo);
+          loadRefunds(currentFilter);
+        }
+      }
+    }
+
+    async function showConflicts() {
+      const resp = await fetch('/api/conflicts');
+      const data = await resp.json();
+      if (data.success) {
+        renderConflictsModal(data.data);
+        document.getElementById('conflicts-modal').classList.remove('hidden');
+      }
+    }
+
+    function renderConflictsModal(conflicts) {
+      const container = document.getElementById('conflicts-table');
+      if (conflicts.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-gray-400">✅ 没有待处理的冲突</div>`;
+        return;
+      }
+
+      container.innerHTML = conflicts.map(c => `
+        <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="font-bold text-red-800">${c.merchant_name}</span>
+                <span class="text-sm text-gray-600">(${c.booth_id})</span>
+                <span class="text-xs bg-red-200 text-red-800 px-2 py-0.5 rounded">${c.conflict_type}</span>
+              </div>
+              <div class="text-gray-700">${c.description}</div>
+              <div class="text-sm text-gray-500 mt-2">
+                ${c.contract_value ? `<span class="mr-4">合同: ${c.contract_value}</span>` : ''}
+                ${c.transaction_value ? `<span class="mr-4">流水: ${c.transaction_value}</span>` : ''}
+                ${c.power_value ? `<span>加电: ${c.power_value}</span>` : ''}
+              </div>
+              <div class="text-xs text-gray-400 mt-1">检测时间: ${c.detected_at}</div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <button onclick="resolveConflict('${c.conflict_no}')" class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
+                处理
+              </button>
+              <button onclick="closeConflictsModal(); viewDetailByContract('${c.contract_no}')" class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function viewDetailByContract(contractNo) {
+      const resp = await fetch(`/api/refunds`);
+      const data = await resp.json();
+      if (data.success) {
+        const refund = data.data.find(r => r.contract_no === contractNo);
+        if (refund) {
+          viewDetail(refund.refund_no);
+        }
+      }
+    }
+
+    function filterByStatus(status) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-blue-500');
+      });
+      event.target.classList.add('ring-2', 'ring-blue-500');
+      loadRefunds(status);
+    }
+
+    function showDetailModal() {
+      document.getElementById('detail-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').classList.add('hidden');
+      currentRefundNo = null;
+      currentRefundData = null;
+    }
+
+    function closeConflictsModal() {
+      document.getElementById('conflicts-modal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeConflictsModal();
+      }
+    });
+
+    loadSummary();
+    loadRefunds();
+  </script>
+</body>
+</html>
