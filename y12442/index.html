@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现金流小镇经营赛</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🏪 现金流小镇经营赛</h1>
+            <div class="game-controls">
+                <button id="startBtn" class="btn btn-primary">开始游戏</button>
+                <button id="pauseBtn" class="btn btn-warning" disabled>暂停</button>
+                <button id="restartBtn" class="btn btn-danger" disabled>重开</button>
+                <button id="settleBtn" class="btn btn-success" disabled>结算</button>
+                <button id="reviewBtn" class="btn btn-info" disabled>复盘</button>
+            </div>
+            <div class="game-status">
+                <span id="gameStatus">待开始</span>
+                <span id="currentWeek">第 0 周</span>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="panel panel-left">
+                <div class="panel-header">
+                    <h2>📊 财务仪表盘</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="metric-card">
+                        <span class="metric-label">现金余额</span>
+                        <span id="cashBalance" class="metric-value">¥0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">应收账款</span>
+                        <span id="accountsReceivable" class="metric-value">¥0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">应付账款</span>
+                        <span id="accountsPayable" class="metric-value">¥0</span>
+                    </div>
+                    <div class="metric-card warning" id="salaryCard">
+                        <span class="metric-label">待发工资</span>
+                        <span id="salaryDue" class="metric-value">¥0</span>
+                        <span id="salaryDeadline" class="metric-deadline"></span>
+                    </div>
+                </div>
+
+                <div class="panel-header">
+                    <h2>📦 库存管理</h2>
+                </div>
+                <div class="panel-content">
+                    <div id="inventoryGrid" class="inventory-grid"></div>
+                    <div class="inventory-stats">
+                        <span>总库存价值: <strong id="totalInventoryValue">¥0</strong></span>
+                        <span id="inventoryWarning" class="warning-text"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-center">
+                <div class="panel-header">
+                    <h2>📅 账期日历</h2>
+                    <div class="calendar-nav">
+                        <button id="prevMonthBtn" class="btn-small">◀</button>
+                        <span id="calendarMonth">2026年1月</span>
+                        <button id="nextMonthBtn" class="btn-small">▶</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div id="calendarGrid" class="calendar-grid"></div>
+                    <div class="calendar-legend">
+                        <span class="legend-item"><span class="legend-dot due"></span> 收款日</span>
+                        <span class="legend-item"><span class="legend-dot pay"></span> 付款日</span>
+                        <span class="legend-item"><span class="legend-dot salary"></span> 发薪日</span>
+                        <span class="legend-item"><span class="legend-dot danger"></span> 风险日</span>
+                    </div>
+                </div>
+
+                <div class="panel-header">
+                    <h2>🏪 我的店铺</h2>
+                </div>
+                <div class="panel-content">
+                    <div id="shopCards" class="shop-cards"></div>
+                </div>
+            </div>
+
+            <div class="panel panel-right">
+                <div class="panel-header">
+                    <h2>⚠️ 风险监控</h2>
+                </div>
+                <div class="panel-content">
+                    <div id="riskAlerts" class="risk-alerts">
+                        <div class="alert-empty">暂无风险预警</div>
+                    </div>
+                </div>
+
+                <div class="panel-header">
+                    <h2>📝 操作记录</h2>
+                </div>
+                <div class="panel-content">
+                    <div id="actionLog" class="action-log"></div>
+                </div>
+
+                <div class="panel-header">
+                    <h2>🎮 操作面板</h2>
+                </div>
+                <div class="panel-content">
+                    <div class="action-buttons">
+                        <button id="receivePaymentBtn" class="btn btn-small btn-success" disabled>确认收款</button>
+                        <button id="makePaymentBtn" class="btn btn-small btn-danger" disabled>安排付款</button>
+                        <button id="paySalaryBtn" class="btn btn-small btn-warning" disabled>发放工资</button>
+                        <button id="purchaseInventoryBtn" class="btn btn-small btn-primary" disabled>采购库存</button>
+                        <button id="makeSaleBtn" class="btn btn-small btn-info" disabled>完成销售</button>
+                        <button id="nextWeekBtn" class="btn btn-small btn-secondary" disabled>下一周</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="modalOverlay" class="modal-overlay hidden">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 id="modalTitle">标题</h3>
+                    <button id="modalCloseBtn" class="modal-close">×</button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+                <div class="modal-footer">
+                    <button id="modalCancelBtn" class="btn btn-secondary">取消</button>
+                    <button id="modalConfirmBtn" class="btn btn-primary">确认</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reviewPanel" class="review-panel hidden">
+            <div class="review-header">
+                <h2>📋 游戏复盘报告</h2>
+                <button id="closeReviewBtn" class="btn btn-secondary">关闭</button>
+            </div>
+            <div class="review-content">
+                <div class="review-summary">
+                    <div class="review-stats">
+                        <div class="review-stat">
+                            <span class="review-stat-label">最终现金</span>
+                            <span id="finalCash" class="review-stat-value">¥0</span>
+                        </div>
+                        <div class="review-stat">
+                            <span class="review-stat-label">存活周数</span>
+                            <span id="survivedWeeks" class="review-stat-value">0周</span>
+                        </div>
+                        <div class="review-stat">
+                            <span class="review-stat-label">处理交易数</span>
+                            <span id="totalTransactions" class="review-stat-value">0</span>
+                        </div>
+                        <div class="review-stat">
+                            <span class="review-stat-label">风险事件数</span>
+                            <span id="riskEvents" class="review-stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-section">
+                    <h3>🔴 账期断裂路径</h3>
+                    <div id="failurePath" class="failure-path"></div>
+                </div>
+                <div class="review-section">
+                    <h3>💡 改进建议</h3>
+                    <div id="improvementSuggestions" class="suggestions"></div>
+                </div>
+                <div class="review-section">
+                    <h3>📊 完整时间线</h3>
+                    <div id="fullTimeline" class="timeline"></div>
+                </div>
+                <div class="review-actions">
+                    <button id="exportReportBtn" class="btn btn-primary">导出报告</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
