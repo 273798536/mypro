@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  font-family: "Noto Sans SC", system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F8F4E3;
+  color: #264653;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-charcoal min-h-screen;
+  }
+}
+
+@layer components {
+  .issue-row {
+    @apply bg-alert/10 border-l-4 border-alert;
+  }
+  .issue-row-critical {
+    @apply bg-alert text-white border-l-4 border-alert;
+  }
+  .edited-cell {
+    @apply bg-edited relative;
+  }
+  .edited-cell::after {
+    content: '';
+    @apply absolute top-0 right-0 w-0 h-0 border-t-[6px] border-t-blue-500 border-l-[6px] border-l-transparent;
+  }
+  .source-badge {
+    @apply inline-flex items-center px-1.5 py-0.5 text-xs font-mono rounded bg-charcoal/10 text-charcoal/70;
+  }
+  .score-ring {
+    @apply inline-flex items-center justify-center rounded-full font-serif font-bold;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-charcoal/20 rounded-full;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-charcoal/40;
+  }
+}
