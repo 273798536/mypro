@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --color-deep-space: #0a0e1a;
+  --color-star-blue: #4fc3f7;
+  --color-engine-orange: #ff6d00;
+  --color-orbit-green: #00e676;
+  --color-warning-red: #ff1744;
+  --color-late-blue: #42a5f5;
+  --color-note-yellow: #ffd600;
+}
+
+body {
+  background: var(--color-deep-space);
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.font-orbitron {
+  font-family: 'Orbitron', monospace;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(79, 195, 247, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(79, 195, 247, 0.6); }
+}
+
+@keyframes pulse-warning {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 23, 68, 0.3); }
+  50% { box-shadow: 0 0 24px rgba(255, 23, 68, 0.7); }
+}
+
+@keyframes countdown-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-pulse-warning {
+  animation: pulse-warning 1s ease-in-out infinite;
+}
+
+.animate-countdown-pulse {
+  animation: countdown-pulse 0.8s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out;
+}
+
+.animate-orbit-spin {
+  animation: orbit-spin 20s linear infinite;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(79, 195, 247, 0.3);
+  border-radius: 2px;
+}
+
+.star-bg {
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 50% 10%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 20% 90%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.25), transparent),
+    radial-gradient(1px 1px at 45% 75%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 60% 50%, rgba(79, 195, 247, 0.2), transparent);
+}
