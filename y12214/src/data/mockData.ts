@@ -1,0 +1,230 @@
+import type { Series, Cost, Flow, Payment, Calculation, ChangeLog, Exception } from '@/types';
+
+const now = new Date().toISOString();
+const daysAgo = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString().split('T')[0];
+};
+
+export const mockSeries: Series[] = [
+  {
+    id: 's1',
+    name: '重生之都市风云',
+    episodes: 86,
+    productionCost: 1200000,
+    authorization: '中文在线',
+    status: 'active',
+    createdAt: daysAgo(60),
+    updatedAt: daysAgo(2),
+  },
+  {
+    id: 's2',
+    name: '总裁的契约新娘',
+    episodes: 100,
+    productionCost: 1500000,
+    authorization: '点众科技',
+    status: 'active',
+    createdAt: daysAgo(45),
+    updatedAt: daysAgo(5),
+  },
+  {
+    id: 's3',
+    name: '神医下山',
+    episodes: 72,
+    productionCost: 980000,
+    authorization: '番茄小说',
+    status: 'completed',
+    createdAt: daysAgo(90),
+    updatedAt: daysAgo(10),
+  },
+  {
+    id: 's4',
+    name: '穿越古代当王爷',
+    episodes: 95,
+    productionCost: 1350000,
+    authorization: '阅文集团',
+    status: 'pending',
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(1),
+  },
+];
+
+export const mockCosts: Cost[] = [
+  { id: 'c1', seriesId: 's1', channel: '抖音', costDate: daysAgo(10), amount: 156000, isDelayed: false, remark: '', createdAt: now },
+  { id: 'c2', seriesId: 's1', channel: '抖音', costDate: daysAgo(9), amount: 178000, isDelayed: false, remark: '', createdAt: now },
+  { id: 'c3', seriesId: 's1', channel: '抖音', costDate: daysAgo(8), amount: 192000, isDelayed: true, remark: '渠道数据延迟', createdAt: now },
+  { id: 'c4', seriesId: 's1', channel: '快手', costDate: daysAgo(10), amount: 89000, isDelayed: false, remark: '', createdAt: now },
+  { id: 'c5', seriesId: 's1', channel: '微信视频号', costDate: daysAgo(10), amount: 45000, isDelayed: false, remark: '', createdAt: now },
+  { id: 'c6', seriesId: 's2', channel: '抖音', costDate: daysAgo(7), amount: 210000, isDelayed: false, remark: '', createdAt: now },
+  { id: 'c7', seriesId: 's2', channel: '快手', costDate: daysAgo(7), amount: 156000, isDelayed: false, remark: '', createdAt: now },
+  { id: 'c8', seriesId: 's3', channel: '抖音', costDate: daysAgo(20), amount: 320000, isDelayed: false, remark: '', createdAt: now },
+];
+
+export const mockFlows: Flow[] = [
+  { id: 'f1', seriesId: 's1', flowDate: daysAgo(10), amount: 234000, userSource: '抖音信息流', orderNo: 'DY202405210001', createdAt: now },
+  { id: 'f2', seriesId: 's1', flowDate: daysAgo(9), amount: 256000, userSource: '抖音信息流', orderNo: 'DY202405220001', createdAt: now },
+  { id: 'f3', seriesId: 's1', flowDate: daysAgo(8), amount: 278000, userSource: '快手信息流', orderNo: 'KS202405230001', createdAt: now },
+  { id: 'f4', seriesId: 's1', flowDate: daysAgo(7), amount: 189000, userSource: '微信视频号', orderNo: 'WX202405240001', createdAt: now },
+  { id: 'f5', seriesId: 's2', flowDate: daysAgo(7), amount: 412000, userSource: '抖音信息流', orderNo: 'DY202405240002', createdAt: now },
+  { id: 'f6', seriesId: 's3', flowDate: daysAgo(20), amount: 580000, userSource: '抖音信息流', orderNo: 'DY202405110001', createdAt: now },
+];
+
+export const mockPayments: Payment[] = [
+  { id: 'p1', seriesId: 's1', channel: '抖音', paymentDate: daysAgo(5), amount: 180000, isSplit: false, remark: '', createdAt: now },
+  { id: 'p2', seriesId: 's1', channel: '快手', paymentDate: daysAgo(5), amount: 95000, isSplit: true, splitFrom: '快手5月结算批次2', remark: '拆分回款', createdAt: now },
+  { id: 'p3', seriesId: 's1', channel: '微信视频号', paymentDate: daysAgo(3), amount: 52000, isSplit: false, remark: '', createdAt: now },
+  { id: 'p4', seriesId: 's2', channel: '抖音', paymentDate: daysAgo(3), amount: 280000, isSplit: false, remark: '', createdAt: now },
+  { id: 'p5', seriesId: 's3', channel: '抖音', paymentDate: daysAgo(15), amount: 620000, isSplit: false, remark: '', createdAt: now },
+];
+
+export const mockCalculations: Calculation[] = [
+  {
+    id: 'calc1',
+    seriesId: 's1',
+    periodStart: daysAgo(10),
+    periodEnd: daysAgo(1),
+    totalCost: 1860000,
+    totalFlow: 957000,
+    totalPayment: 327000,
+    recoveryRate: 0.1758,
+    profit: -1533000,
+    status: 'exception',
+    version: 2,
+    calculatedAt: now,
+    costIds: ['c1', 'c2', 'c3', 'c4', 'c5'],
+    flowIds: ['f1', 'f2', 'f3', 'f4'],
+    paymentIds: ['p1', 'p2', 'p3'],
+  },
+  {
+    id: 'calc2',
+    seriesId: 's2',
+    periodStart: daysAgo(7),
+    periodEnd: daysAgo(1),
+    totalCost: 1866000,
+    totalFlow: 412000,
+    totalPayment: 280000,
+    recoveryRate: 0.1501,
+    profit: -1586000,
+    status: 'normal',
+    version: 1,
+    calculatedAt: now,
+    costIds: ['c6', 'c7'],
+    flowIds: ['f5'],
+    paymentIds: ['p4'],
+  },
+  {
+    id: 'calc3',
+    seriesId: 's3',
+    periodStart: daysAgo(30),
+    periodEnd: daysAgo(1),
+    totalCost: 1300000,
+    totalFlow: 580000,
+    totalPayment: 620000,
+    recoveryRate: 0.4769,
+    profit: -680000,
+    status: 'normal',
+    version: 3,
+    calculatedAt: now,
+    costIds: ['c8'],
+    flowIds: ['f6'],
+    paymentIds: ['p5'],
+  },
+  {
+    id: 'calc4',
+    seriesId: 's1',
+    periodStart: daysAgo(20),
+    periodEnd: daysAgo(11),
+    totalCost: 1450000,
+    totalFlow: 520000,
+    totalPayment: 410000,
+    recoveryRate: 0.2828,
+    profit: -1040000,
+    status: 'outdated',
+    version: 1,
+    calculatedAt: daysAgo(10),
+    costIds: [],
+    flowIds: [],
+    paymentIds: [],
+  },
+];
+
+export const mockChangeLogs: ChangeLog[] = [
+  {
+    id: 'log1',
+    seriesId: 's1',
+    calculationId: 'calc1',
+    operator: '张财务',
+    fieldName: 'productionCost',
+    oldValue: '1150000',
+    newValue: '1200000',
+    changeReason: '追加后期制作费用',
+    affectedCalculations: ['calc1', 'calc4'],
+    createdAt: daysAgo(2),
+  },
+  {
+    id: 'log2',
+    seriesId: 's1',
+    calculationId: 'calc1',
+    operator: '李运营',
+    fieldName: 'status',
+    oldValue: 'pending',
+    newValue: 'active',
+    changeReason: '剧集正式上线投放',
+    affectedCalculations: ['calc1'],
+    createdAt: daysAgo(10),
+  },
+  {
+    id: 'log3',
+    seriesId: 's4',
+    operator: '王财务',
+    fieldName: 'episodes',
+    oldValue: '90',
+    newValue: '95',
+    changeReason: '补充5集番外内容',
+    affectedCalculations: [],
+    createdAt: daysAgo(1),
+  },
+  {
+    id: 'log4',
+    seriesId: 's3',
+    calculationId: 'calc3',
+    operator: '张财务',
+    fieldName: 'authorization',
+    oldValue: '未知',
+    newValue: '番茄小说',
+    changeReason: '补充授权信息',
+    affectedCalculations: ['calc3'],
+    createdAt: daysAgo(10),
+  },
+];
+
+export const mockExceptions: Exception[] = [
+  {
+    id: 'e1',
+    calculationId: 'calc1',
+    type: 'cost_delay',
+    severity: 'high',
+    status: 'open',
+    triggerSource: `投流消耗 ${daysAgo(8)} 抖音`,
+    triggerSourceId: 'c3',
+    blockPoint: '消耗数据未及时到账，影响成本核算准确性',
+    nextStep: '请联系渠道确认消耗数据，补录后重新测算',
+    createdAt: daysAgo(7),
+  },
+  {
+    id: 'e2',
+    calculationId: 'calc1',
+    type: 'payment_split',
+    severity: 'medium',
+    status: 'processing',
+    triggerSource: `渠道回款 ${daysAgo(5)} 快手`,
+    triggerSourceId: 'p2',
+    blockPoint: '该笔回款为拆分回款，需确认对应关系',
+    nextStep: '请核对拆分来源，确保回款与剧集对应正确',
+    remark: '已与快手渠道对接，预计明天确认',
+    createdAt: daysAgo(5),
+  },
+];
+
+export const CHANNELS = ['抖音', '快手', '微信视频号', '小红书', 'B站'];
