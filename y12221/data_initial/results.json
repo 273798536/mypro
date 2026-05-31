@@ -1,0 +1,24 @@
+[
+  {
+    "result_id": "RESULT-001",
+    "tournament_id": "TOURNAMENT-SPRING-2024",
+    "team_id": "TEAM-PHOENIX",
+    "rank": 2,
+    "final_score": 2850.5,
+    "result_date": "2024-04-15",
+    "is_rematch_result": false,
+    "original_rank": null,
+    "rematch_reason": null
+  },
+  {
+    "result_id": "RESULT-002",
+    "tournament_id": "TOURNAMENT-SPRING-2024",
+    "team_id": "TEAM-DRAGON",
+    "rank": 2,
+    "final_score": 2850.5,
+    "result_date": "2024-04-15",
+    "is_rematch_result": false,
+    "original_rank": null,
+    "rematch_reason": null
+  }
+]

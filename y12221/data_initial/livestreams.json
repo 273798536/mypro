@@ -1,0 +1,32 @@
+[
+  {
+    "record_id": "LIVE-001",
+    "contract_id": "CTR-2024-001",
+    "stream_date": "2024-03-15",
+    "platform": "虎牙直播",
+    "duration_minutes": 180,
+    "sponsor_mentions": 3,
+    "is_supplementary": false,
+    "source_note": "常规赛第3周"
+  },
+  {
+    "record_id": "LIVE-002",
+    "contract_id": "CTR-2024-001",
+    "stream_date": "2024-03-22",
+    "platform": "虎牙直播",
+    "duration_minutes": 150,
+    "sponsor_mentions": 2,
+    "is_supplementary": false,
+    "source_note": "常规赛第4周"
+  },
+  {
+    "record_id": "LIVE-003",
+    "contract_id": "CTR-2024-002",
+    "stream_date": "2024-03-15",
+    "platform": "斗鱼直播",
+    "duration_minutes": 200,
+    "sponsor_mentions": 4,
+    "is_supplementary": false,
+    "source_note": "常规赛第3周"
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "contract_id": "CTR-2024-001",
+    "sponsor_name": "星际科技有限公司",
+    "team_id": "TEAM-PHOENIX",
+    "tournament_id": "TOURNAMENT-SPRING-2024",
+    "start_date": "2024-01-01",
+    "end_date": "2024-06-30",
+    "exposure_requirements": {
+      "赛服胸前广告": 12,
+      "直播间背景板": 8,
+      "采访口播": 5
+    },
+    "livestream_requirements": {
+      "minimum_duration_minutes": 600,
+      "minimum_mentions": 10
+    },
+    "ranking_bonus": {
+      "1": 50000,
+      "2": 30000,
+      "3": 20000,
+      "4": 10000,
+      "5": 5000
+    },
+    "base_fee": 100000,
+    "tier_rates": {
+      "exposure_赛服胸前广告": 2000,
+      "exposure_直播间背景板": 1500,
+      "exposure_采访口播": 1000,
+      "livestream_per_minute": 50,
+      "mention_per_time": 500
+    },
+    "remarks": "春季赛主赞助合同"
+  },
+  {
+    "contract_id": "CTR-2024-002",
+    "sponsor_name": "荣耀电竞装备",
+    "team_id": "TEAM-DRAGON",
+    "tournament_id": "TOURNAMENT-SPRING-2024",
+    "start_date": "2024-01-01",
+    "end_date": "2024-06-30",
+    "exposure_requirements": {
+      "赛服袖标": 12,
+      "赛事开场鸣谢": 10
+    },
+    "livestream_requirements": {
+      "minimum_duration_minutes": 480,
+      "minimum_mentions": 8
+    },
+    "ranking_bonus": {
+      "1": 40000,
+      "2": 25000,
+      "3": 15000,
+      "4": 8000
+    },
+    "base_fee": 80000,
+    "tier_rates": {
+      "exposure_赛服袖标": 1500,
+      "exposure_赛事开场鸣谢": 1200,
+      "livestream_per_minute": 40,
+      "mention_per_time": 400
+    },
+    "remarks": "装备赞助商"
+  }
+]

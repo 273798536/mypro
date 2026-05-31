@@ -1,0 +1,792 @@
+{
+  "contracts": {
+    "CTR-2024-001": {
+      "contract_id": "CTR-2024-001",
+      "sponsor_name": "星际科技有限公司",
+      "team_id": "TEAM-PHOENIX",
+      "tournament_id": "TOURNAMENT-SPRING-2024",
+      "start_date": "2024-01-01",
+      "end_date": "2024-06-30",
+      "exposure_requirements": {
+        "赛服胸前广告": 12,
+        "直播间背景板": 8,
+        "采访口播": 5
+      },
+      "livestream_requirements": {
+        "minimum_duration_minutes": 600,
+        "minimum_mentions": 10
+      },
+      "ranking_bonus": {
+        "1": 50000,
+        "2": 30000,
+        "3": 20000,
+        "4": 10000,
+        "5": 5000
+      },
+      "base_fee": 100000,
+      "tier_rates": {
+        "exposure_赛服胸前广告": 2000,
+        "exposure_直播间背景板": 1500,
+        "exposure_采访口播": 1000,
+        "livestream_per_minute": 50,
+        "mention_per_time": 500
+      },
+      "created_at": "2026-05-31T16:22:28.480071",
+      "remarks": "春季赛主赞助合同"
+    },
+    "CTR-2024-002": {
+      "contract_id": "CTR-2024-002",
+      "sponsor_name": "荣耀电竞装备",
+      "team_id": "TEAM-DRAGON",
+      "tournament_id": "TOURNAMENT-SPRING-2024",
+      "start_date": "2024-01-01",
+      "end_date": "2024-06-30",
+      "exposure_requirements": {
+        "赛服袖标": 12,
+        "赛事开场鸣谢": 10
+      },
+      "livestream_requirements": {
+        "minimum_duration_minutes": 480,
+        "minimum_mentions": 8
+      },
+      "ranking_bonus": {
+        "1": 40000,
+        "2": 25000,
+        "3": 15000,
+        "4": 8000
+      },
+      "base_fee": 80000,
+      "tier_rates": {
+        "exposure_赛服袖标": 1500,
+        "exposure_赛事开场鸣谢": 1200,
+        "livestream_per_minute": 40,
+        "mention_per_time": 400
+      },
+      "created_at": "2026-05-31T16:22:28.480199",
+      "remarks": "装备赞助商"
+    }
+  },
+  "livestreams": {
+    "CTR-2024-001": [
+      {
+        "record_id": "LIVE-001",
+        "contract_id": "CTR-2024-001",
+        "stream_date": "2024-03-15",
+        "platform": "虎牙直播",
+        "duration_minutes": 180,
+        "sponsor_mentions": 3,
+        "recorded_at": "2026-05-31T16:22:28.482641",
+        "is_supplementary": false,
+        "source_note": "常规赛第3周"
+      },
+      {
+        "record_id": "LIVE-002",
+        "contract_id": "CTR-2024-001",
+        "stream_date": "2024-03-22",
+        "platform": "虎牙直播",
+        "duration_minutes": 150,
+        "sponsor_mentions": 2,
+        "recorded_at": "2026-05-31T16:22:28.483213",
+        "is_supplementary": false,
+        "source_note": "常规赛第4周"
+      }
+    ],
+    "CTR-2024-002": [
+      {
+        "record_id": "LIVE-003",
+        "contract_id": "CTR-2024-002",
+        "stream_date": "2024-03-15",
+        "platform": "斗鱼直播",
+        "duration_minutes": 200,
+        "sponsor_mentions": 4,
+        "recorded_at": "2026-05-31T16:22:28.483299",
+        "is_supplementary": false,
+        "source_note": "常规赛第3周"
+      }
+    ]
+  },
+  "exposures": {
+    "CTR-2024-001": [
+      {
+        "proof_id": "EXP-001",
+        "contract_id": "CTR-2024-001",
+        "exposure_type": "赛服胸前广告",
+        "exposure_date": "2024-03-15",
+        "proof_url": "https://example.com/proof/001",
+        "proof_description": "春季赛第3周比赛赛服截图",
+        "recorded_at": "2026-05-31T16:22:28.484396",
+        "is_supplementary": false,
+        "verified": true
+      },
+      {
+        "proof_id": "EXP-002",
+        "contract_id": "CTR-2024-001",
+        "exposure_type": "赛服胸前广告",
+        "exposure_date": "2024-03-22",
+        "proof_url": "https://example.com/proof/002",
+        "proof_description": "春季赛第4周比赛赛服截图",
+        "recorded_at": "2026-05-31T16:22:28.484436",
+        "is_supplementary": false,
+        "verified": true
+      },
+      {
+        "proof_id": "EXP-003",
+        "contract_id": "CTR-2024-001",
+        "exposure_type": "直播间背景板",
+        "exposure_date": "2024-03-15",
+        "proof_url": "https://example.com/proof/003",
+        "proof_description": "直播间背景板截图",
+        "recorded_at": "2026-05-31T16:22:28.484450",
+        "is_supplementary": false,
+        "verified": true
+      },
+      {
+        "proof_id": "EXP-004",
+        "contract_id": "CTR-2024-001",
+        "exposure_type": "采访口播",
+        "exposure_date": "2024-03-15",
+        "proof_url": "https://example.com/proof/004",
+        "proof_description": "赛后采访口播提及",
+        "recorded_at": "2026-05-31T16:22:28.484461",
+        "is_supplementary": false,
+        "verified": true
+      }
+    ],
+    "CTR-2024-002": [
+      {
+        "proof_id": "EXP-005",
+        "contract_id": "CTR-2024-002",
+        "exposure_type": "赛服袖标",
+        "exposure_date": "2024-03-15",
+        "proof_url": "https://example.com/proof/005",
+        "proof_description": "春季赛第3周比赛袖标截图",
+        "recorded_at": "2026-05-31T16:22:28.484471",
+        "is_supplementary": false,
+        "verified": true
+      },
+      {
+        "proof_id": "EXP-006",
+        "contract_id": "CTR-2024-002",
+        "exposure_type": "赛事开场鸣谢",
+        "exposure_date": "2024-03-15",
+        "proof_url": null,
+        "proof_description": "赛事开场鸣谢名单截图",
+        "recorded_at": "2026-05-31T16:22:28.484482",
+        "is_supplementary": false,
+        "verified": false
+      }
+    ]
+  },
+  "results": {
+    "TOURNAMENT-SPRING-2024_TEAM-PHOENIX": {
+      "result_id": "RESULT-001-REMATCH",
+      "tournament_id": "TOURNAMENT-SPRING-2024",
+      "team_id": "TEAM-PHOENIX",
+      "rank": 1,
+      "final_score": 3100.0,
+      "result_date": "2024-04-25",
+      "is_rematch_result": true,
+      "original_rank": 2,
+      "rematch_reason": "总决赛争议局重赛，TEAM-PHOENIX 胜出",
+      "recorded_at": "2026-05-31T16:22:29.290552"
+    },
+    "TOURNAMENT-SPRING-2024_TEAM-DRAGON": {
+      "result_id": "RESULT-002",
+      "tournament_id": "TOURNAMENT-SPRING-2024",
+      "team_id": "TEAM-DRAGON",
+      "rank": 2,
+      "final_score": 2850.5,
+      "result_date": "2024-04-15",
+      "is_rematch_result": false,
+      "original_rank": null,
+      "rematch_reason": null,
+      "recorded_at": "2026-05-31T16:22:28.705808"
+    }
+  },
+  "settlements": {
+    "CTR-2024-001": {
+      "settlement_id": "SETTLE_CTR-2024-001_7cd58186",
+      "contract_id": "CTR-2024-001",
+      "status": "issues_found",
+      "base_fee": 100000,
+      "exposure_fee": 6500.0,
+      "livestream_fee": 19000,
+      "ranking_bonus": 50000,
+      "total_amount": 175500.0,
+      "deduction_amount": 21300.0,
+      "final_amount": 154200.0,
+      "calculation_details": {
+        "base_breakdown": {
+          "base_fee": 100000,
+          "exposure_fee": 6500.0,
+          "livestream_fee": 19000,
+          "ranking_bonus": 50000
+        },
+        "exposure_details": {
+          "赛服胸前广告": {
+            "required": 12,
+            "actual": 2,
+            "rate_per_unit": 2000,
+            "fee": 4000,
+            "meets_requirement": false
+          },
+          "直播间背景板": {
+            "required": 8,
+            "actual": 1,
+            "rate_per_unit": 1500,
+            "fee": 1500,
+            "meets_requirement": false
+          },
+          "采访口播": {
+            "required": 5,
+            "actual": 1,
+            "rate_per_unit": 1000,
+            "fee": 1000,
+            "meets_requirement": false
+          }
+        },
+        "livestream_details": {
+          "duration": {
+            "required_minutes": 330,
+            "required": 600,
+            "meets_requirement": false,
+            "rate_per_minute": 50,
+            "fee": 16500
+          },
+          "mentions": {
+            "actual": 5,
+            "required": 10,
+            "meets_requirement": false,
+            "rate_per_mention": 500,
+            "fee": 2500
+          },
+          "stream_count": 2
+        },
+        "ranking_details": {
+          "rank": 1,
+          "bonus_amount": 50000,
+          "is_rematch": true,
+          "original_rank": 2,
+          "original_bonus": 30000,
+          "bonus_difference": 20000
+        },
+        "deduction_details": {
+          "exposure_deductions": {
+            "赛服胸前广告": {
+              "missing": 10,
+              "deduction_amount": 10000.0,
+              "rate": 2000
+            },
+            "直播间背景板": {
+              "missing": 7,
+              "deduction_amount": 5250.0,
+              "rate": 1500
+            },
+            "采访口播": {
+              "missing": 4,
+              "deduction_amount": 2000.0,
+              "rate": 1000
+            }
+          },
+          "livestream_deductions": {
+            "duration": {
+              "missing_minutes": 270,
+              "deduction_amount": 4050.0,
+              "rate_per_minute": 50
+            }
+          }
+        }
+      },
+      "issue_ids": [
+        "EXP_CTR-2024-001_赛服胸前广告_f0c20110",
+        "EXP_CTR-2024-001_直播间背景板_b3ebf0ad",
+        "EXP_CTR-2024-001_采访口播_e0f9684a",
+        "TIE_CTR-2024-001_da437902",
+        "LIVE_DUR_CTR-2024-001_a0e4f775",
+        "REMATCH_CTR-2024-001_6a63931e",
+        "EXP_CTR-2024-001_赛服胸前广告_e5c9f2c9",
+        "EXP_CTR-2024-001_直播间背景板_9406a9d5",
+        "EXP_CTR-2024-001_采访口播_a4ef022c",
+        "LIVE_DUR_CTR-2024-001_68e2d75d"
+      ],
+      "created_at": "2026-05-31T16:22:28.906844",
+      "updated_at": "2026-05-31T16:22:29.291126",
+      "version": 2,
+      "version_history": [
+        {
+          "version": 1,
+          "final_amount": 134200.0,
+          "updated_at": "2026-05-31T16:22:28.906849",
+          "changes": {
+            "ranking_bonus": {
+              "old": 30000,
+              "new": 50000,
+              "difference": 20000
+            }
+          }
+        }
+      ]
+    },
+    "CTR-2024-002": {
+      "settlement_id": "SETTLE_CTR-2024-002_7e71a8ab",
+      "contract_id": "CTR-2024-002",
+      "status": "issues_found",
+      "base_fee": 80000,
+      "exposure_fee": 1500.0,
+      "livestream_fee": 9600,
+      "ranking_bonus": 25000,
+      "total_amount": 116100.0,
+      "deduction_amount": 17610.0,
+      "final_amount": 98490.0,
+      "calculation_details": {
+        "base_breakdown": {
+          "base_fee": 80000,
+          "exposure_fee": 1500.0,
+          "livestream_fee": 9600,
+          "ranking_bonus": 25000
+        },
+        "exposure_details": {
+          "赛服袖标": {
+            "required": 12,
+            "actual": 1,
+            "rate_per_unit": 1500,
+            "fee": 1500,
+            "meets_requirement": false
+          },
+          "赛事开场鸣谢": {
+            "required": 10,
+            "actual": 0,
+            "rate_per_unit": 1200,
+            "fee": 0,
+            "meets_requirement": false
+          }
+        },
+        "livestream_details": {
+          "duration": {
+            "required_minutes": 200,
+            "required": 480,
+            "meets_requirement": false,
+            "rate_per_minute": 40,
+            "fee": 8000
+          },
+          "mentions": {
+            "actual": 4,
+            "required": 8,
+            "meets_requirement": false,
+            "rate_per_mention": 400,
+            "fee": 1600
+          },
+          "stream_count": 1
+        },
+        "ranking_details": {
+          "rank": 2,
+          "bonus_amount": 25000,
+          "is_rematch": false
+        },
+        "deduction_details": {
+          "exposure_deductions": {
+            "赛服袖标": {
+              "missing": 11,
+              "deduction_amount": 8250.0,
+              "rate": 1500
+            },
+            "赛事开场鸣谢": {
+              "missing": 10,
+              "deduction_amount": 6000.0,
+              "rate": 1200
+            }
+          },
+          "livestream_deductions": {
+            "duration": {
+              "missing_minutes": 280,
+              "deduction_amount": 3360.0,
+              "rate_per_minute": 40
+            }
+          }
+        }
+      },
+      "issue_ids": [
+        "EXP_CTR-2024-002_赛服袖标_d7bb034c",
+        "EXP_CTR-2024-002_赛事开场鸣谢_e579b9be",
+        "TIE_CTR-2024-002_a5f01197",
+        "LIVE_DUR_CTR-2024-002_d3c27004",
+        "EXP_CTR-2024-002_赛服袖标_0af6b7df",
+        "EXP_CTR-2024-002_赛事开场鸣谢_7a65629e",
+        "LIVE_DUR_CTR-2024-002_607cc7b7"
+      ],
+      "created_at": "2026-05-31T16:22:28.932302",
+      "updated_at": "2026-05-31T16:22:29.291172",
+      "version": 2,
+      "version_history": [
+        {
+          "version": 1,
+          "final_amount": 98490.0,
+          "updated_at": "2026-05-31T16:22:28.932314",
+          "changes": {}
+        }
+      ]
+    }
+  },
+  "issues": {
+    "EXP_CTR-2024-001_赛服胸前广告_f0c20110": {
+      "issue_id": "EXP_CTR-2024-001_赛服胸前广告_f0c20110",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 星际科技有限公司 - 赛服胸前广告",
+      "description": "赛服胸前广告 露出证明不足，缺少 10 份",
+      "root_cause": "合同要求: 12 次 赛服胸前广告 露出\n已提供验证: 2 次\n缺少数量: 10 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 赛服胸前广告\n   - 需要补充: 10 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "赛服胸前广告",
+        "required": 12,
+        "provided": 2,
+        "missing": 10,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:28.719744",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-001_直播间背景板_b3ebf0ad": {
+      "issue_id": "EXP_CTR-2024-001_直播间背景板_b3ebf0ad",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 星际科技有限公司 - 直播间背景板",
+      "description": "直播间背景板 露出证明不足，缺少 7 份",
+      "root_cause": "合同要求: 8 次 直播间背景板 露出\n已提供验证: 1 次\n缺少数量: 7 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 直播间背景板\n   - 需要补充: 7 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "直播间背景板",
+        "required": 8,
+        "provided": 1,
+        "missing": 7,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:28.719789",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-001_采访口播_e0f9684a": {
+      "issue_id": "EXP_CTR-2024-001_采访口播_e0f9684a",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 星际科技有限公司 - 采访口播",
+      "description": "采访口播 露出证明不足，缺少 4 份",
+      "root_cause": "合同要求: 5 次 采访口播 露出\n已提供验证: 1 次\n缺少数量: 4 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 采访口播\n   - 需要补充: 4 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "采访口播",
+        "required": 5,
+        "provided": 1,
+        "missing": 4,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:28.719811",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "TIE_CTR-2024-001_da437902": {
+      "issue_id": "TIE_CTR-2024-001_da437902",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "tie_ranking",
+      "issue_status": "pending_confirmation",
+      "title": "名次并列: 星际科技有限公司 - 第2名",
+      "description": "第2名有 2 支战队并列，需确认奖金分配规则",
+      "root_cause": "当前名次: 第2名\n并列战队: TEAM-PHOENIX, TEAM-DRAGON\n并列数量: 2 支\n合同约定: 按名次发放固定奖金",
+      "handling_suggestion": "=== 处理建议 ===\n1. 并列情况: 第2名共 2 支战队并列\n\n2. 可选方案:\n   方案A: 按原名次奖金全额发放（需赞助商确认）\n   方案B: 名次奖金平均分配（每队 1/2）\n   方案C: 取下一名次奖金标准发放\n\n3. 操作步骤:\n   - 查询赛事规则中关于并列名次的说明\n   - 与赞助商沟通确认处理方式\n   - 形成书面确认文件\n   - 更新结算计算规则\n\n4. 注意事项:\n   - 必须获得赞助商书面确认\n   - 所有并列战队处理方式保持一致",
+      "source_data": {
+        "rank": 2,
+        "tied_teams": [
+          "TEAM-PHOENIX",
+          "TEAM-DRAGON"
+        ],
+        "tie_count": 2,
+        "tournament_id": "TOURNAMENT-SPRING-2024"
+      },
+      "created_at": "2026-05-31T16:22:28.841278",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "LIVE_DUR_CTR-2024-001_a0e4f775": {
+      "issue_id": "LIVE_DUR_CTR-2024-001_a0e4f775",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "insufficient_livestream_duration",
+      "issue_status": "pending_confirmation",
+      "title": "直播时长不足: 星际科技有限公司",
+      "description": "直播总时长不足，缺少 270 分钟",
+      "root_cause": "合同要求: 600 分钟\n实际累计: 330 分钟\n差额: 270 分钟 (4.5 小时)\n直播场次: 2 场",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺口分析: 缺少 270 分钟直播时长\n\n2. 补充方案:\n   - 安排额外的赞助商专访直播\n   - 在后续赛事中增加露出时间\n   - 制作专题回放视频\n\n3. 替代方案（如无法补时）:\n   - 按比例扣减直播权益费用: 扣减比例 4.5%\n   - 或增加其他露出形式补偿\n\n4. 沟通要点:\n   - 提前与赞助商沟通\n   - 提供替代方案供选择\n   - 书面确认处理结果",
+      "source_data": {
+        "required_duration": 600,
+        "actual_duration": 330,
+        "missing_minutes": 270,
+        "stream_count": 2
+      },
+      "created_at": "2026-05-31T16:22:28.841408",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-002_赛服袖标_d7bb034c": {
+      "issue_id": "EXP_CTR-2024-002_赛服袖标_d7bb034c",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 荣耀电竞装备 - 赛服袖标",
+      "description": "赛服袖标 露出证明不足，缺少 11 份",
+      "root_cause": "合同要求: 12 次 赛服袖标 露出\n已提供验证: 1 次\n缺少数量: 11 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 赛服袖标\n   - 需要补充: 11 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "赛服袖标",
+        "required": 12,
+        "provided": 1,
+        "missing": 11,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:28.841464",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-002_赛事开场鸣谢_e579b9be": {
+      "issue_id": "EXP_CTR-2024-002_赛事开场鸣谢_e579b9be",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 荣耀电竞装备 - 赛事开场鸣谢",
+      "description": "赛事开场鸣谢 露出证明不足，缺少 10 份",
+      "root_cause": "合同要求: 10 次 赛事开场鸣谢 露出\n已提供验证: 0 次\n缺少数量: 10 次\n未验证待审核: 1 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 赛事开场鸣谢\n   - 需要补充: 10 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "赛事开场鸣谢",
+        "required": 10,
+        "provided": 0,
+        "missing": 10,
+        "pending_verification": 1
+      },
+      "created_at": "2026-05-31T16:22:28.841486",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "TIE_CTR-2024-002_a5f01197": {
+      "issue_id": "TIE_CTR-2024-002_a5f01197",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "tie_ranking",
+      "issue_status": "pending_confirmation",
+      "title": "名次并列: 荣耀电竞装备 - 第2名",
+      "description": "第2名有 2 支战队并列，需确认奖金分配规则",
+      "root_cause": "当前名次: 第2名\n并列战队: TEAM-PHOENIX, TEAM-DRAGON\n并列数量: 2 支\n合同约定: 按名次发放固定奖金",
+      "handling_suggestion": "=== 处理建议 ===\n1. 并列情况: 第2名共 2 支战队并列\n\n2. 可选方案:\n   方案A: 按原名次奖金全额发放（需赞助商确认）\n   方案B: 名次奖金平均分配（每队 1/2）\n   方案C: 取下一名次奖金标准发放\n\n3. 操作步骤:\n   - 查询赛事规则中关于并列名次的说明\n   - 与赞助商沟通确认处理方式\n   - 形成书面确认文件\n   - 更新结算计算规则\n\n4. 注意事项:\n   - 必须获得赞助商书面确认\n   - 所有并列战队处理方式保持一致",
+      "source_data": {
+        "rank": 2,
+        "tied_teams": [
+          "TEAM-PHOENIX",
+          "TEAM-DRAGON"
+        ],
+        "tie_count": 2,
+        "tournament_id": "TOURNAMENT-SPRING-2024"
+      },
+      "created_at": "2026-05-31T16:22:28.849927",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "LIVE_DUR_CTR-2024-002_d3c27004": {
+      "issue_id": "LIVE_DUR_CTR-2024-002_d3c27004",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "insufficient_livestream_duration",
+      "issue_status": "pending_confirmation",
+      "title": "直播时长不足: 荣耀电竞装备",
+      "description": "直播总时长不足，缺少 280 分钟",
+      "root_cause": "合同要求: 480 分钟\n实际累计: 200 分钟\n差额: 280 分钟 (4.7 小时)\n直播场次: 1 场",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺口分析: 缺少 280 分钟直播时长\n\n2. 补充方案:\n   - 安排额外的赞助商专访直播\n   - 在后续赛事中增加露出时间\n   - 制作专题回放视频\n\n3. 替代方案（如无法补时）:\n   - 按比例扣减直播权益费用: 扣减比例 4.7%\n   - 或增加其他露出形式补偿\n\n4. 沟通要点:\n   - 提前与赞助商沟通\n   - 提供替代方案供选择\n   - 书面确认处理结果",
+      "source_data": {
+        "required_duration": 480,
+        "actual_duration": 200,
+        "missing_minutes": 280,
+        "stream_count": 1
+      },
+      "created_at": "2026-05-31T16:22:28.906578",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "REMATCH_CTR-2024-001_6a63931e": {
+      "issue_id": "REMATCH_CTR-2024-001_6a63931e",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "rematch_recalculation",
+      "issue_status": "pending_confirmation",
+      "title": "补赛追溯: 星际科技有限公司 - 名次变更",
+      "description": "赛事 TOURNAMENT-SPRING-2024 发生补赛，战队 TEAM-PHOENIX 名次发生变更",
+      "root_cause": "补赛原因: 总决赛争议局重赛，TEAM-PHOENIX 胜出\n原名次: 第2名 -> 新名次: 第1名\n结果记录: RESULT-001-REMATCH",
+      "handling_suggestion": "=== 处理建议 ===\n1. 立即通知赞助商:\n   - 向 星际科技有限公司 发送名次变更说明函\n   - 说明从第2名变更为第1名的原因\n\n2. 费用调整说明:\n   - 名次奖金增加: +20000.00 元\n   - 准备补发差额款项\n\n3. 审核流程:\n   - 运营确认补赛结果的正式文件\n   - 财务确认费用调整方案\n   - 双方确认后更新结算状态\n\n4. 文档留存:\n   - 保存补赛官方公告\n   - 保存与赞助商的沟通记录",
+      "source_data": {
+        "tournament_id": "TOURNAMENT-SPRING-2024",
+        "team_id": "TEAM-PHOENIX",
+        "original_rank": 2,
+        "new_rank": 1,
+        "rematch_reason": "总决赛争议局重赛，TEAM-PHOENIX 胜出",
+        "bonus_change": 20000,
+        "result_id": "RESULT-001-REMATCH"
+      },
+      "created_at": "2026-05-31T16:22:29.290748",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-001_赛服胸前广告_e5c9f2c9": {
+      "issue_id": "EXP_CTR-2024-001_赛服胸前广告_e5c9f2c9",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 星际科技有限公司 - 赛服胸前广告",
+      "description": "赛服胸前广告 露出证明不足，缺少 10 份",
+      "root_cause": "合同要求: 12 次 赛服胸前广告 露出\n已提供验证: 2 次\n缺少数量: 10 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 赛服胸前广告\n   - 需要补充: 10 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "赛服胸前广告",
+        "required": 12,
+        "provided": 2,
+        "missing": 10,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:29.290789",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-001_直播间背景板_9406a9d5": {
+      "issue_id": "EXP_CTR-2024-001_直播间背景板_9406a9d5",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 星际科技有限公司 - 直播间背景板",
+      "description": "直播间背景板 露出证明不足，缺少 7 份",
+      "root_cause": "合同要求: 8 次 直播间背景板 露出\n已提供验证: 1 次\n缺少数量: 7 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 直播间背景板\n   - 需要补充: 7 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "直播间背景板",
+        "required": 8,
+        "provided": 1,
+        "missing": 7,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:29.290866",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-001_采访口播_a4ef022c": {
+      "issue_id": "EXP_CTR-2024-001_采访口播_a4ef022c",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 星际科技有限公司 - 采访口播",
+      "description": "采访口播 露出证明不足，缺少 4 份",
+      "root_cause": "合同要求: 5 次 采访口播 露出\n已提供验证: 1 次\n缺少数量: 4 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 采访口播\n   - 需要补充: 4 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "采访口播",
+        "required": 5,
+        "provided": 1,
+        "missing": 4,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:29.290911",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "LIVE_DUR_CTR-2024-001_68e2d75d": {
+      "issue_id": "LIVE_DUR_CTR-2024-001_68e2d75d",
+      "contract_id": "CTR-2024-001",
+      "issue_type": "insufficient_livestream_duration",
+      "issue_status": "pending_confirmation",
+      "title": "直播时长不足: 星际科技有限公司",
+      "description": "直播总时长不足，缺少 270 分钟",
+      "root_cause": "合同要求: 600 分钟\n实际累计: 330 分钟\n差额: 270 分钟 (4.5 小时)\n直播场次: 2 场",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺口分析: 缺少 270 分钟直播时长\n\n2. 补充方案:\n   - 安排额外的赞助商专访直播\n   - 在后续赛事中增加露出时间\n   - 制作专题回放视频\n\n3. 替代方案（如无法补时）:\n   - 按比例扣减直播权益费用: 扣减比例 4.5%\n   - 或增加其他露出形式补偿\n\n4. 沟通要点:\n   - 提前与赞助商沟通\n   - 提供替代方案供选择\n   - 书面确认处理结果",
+      "source_data": {
+        "required_duration": 600,
+        "actual_duration": 330,
+        "missing_minutes": 270,
+        "stream_count": 2
+      },
+      "created_at": "2026-05-31T16:22:29.290951",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-002_赛服袖标_0af6b7df": {
+      "issue_id": "EXP_CTR-2024-002_赛服袖标_0af6b7df",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 荣耀电竞装备 - 赛服袖标",
+      "description": "赛服袖标 露出证明不足，缺少 11 份",
+      "root_cause": "合同要求: 12 次 赛服袖标 露出\n已提供验证: 1 次\n缺少数量: 11 次\n未验证待审核: 0 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 赛服袖标\n   - 需要补充: 11 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "赛服袖标",
+        "required": 12,
+        "provided": 1,
+        "missing": 11,
+        "pending_verification": 0
+      },
+      "created_at": "2026-05-31T16:22:29.290980",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "EXP_CTR-2024-002_赛事开场鸣谢_7a65629e": {
+      "issue_id": "EXP_CTR-2024-002_赛事开场鸣谢_7a65629e",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "missing_exposure_proof",
+      "issue_status": "pending_confirmation",
+      "title": "露出缺证: 荣耀电竞装备 - 赛事开场鸣谢",
+      "description": "赛事开场鸣谢 露出证明不足，缺少 10 份",
+      "root_cause": "合同要求: 10 次 赛事开场鸣谢 露出\n已提供验证: 0 次\n缺少数量: 10 次\n未验证待审核: 1 次",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺失类型: 赛事开场鸣谢\n   - 需要补充: 10 份证明材料\n\n2. 收集渠道:\n   - 联系赛事运营索取官方露出截图\n   - 检查直播回放获取镜头证据\n   - 收集社交媒体露出记录\n\n3. 验证要求:\n   - 截图需包含清晰的品牌标识\n   - 需注明露出时间和位置\n   - 官方渠道露出优先认可\n\n4. 时限提示:\n   - 建议在 3 个工作日内补充完毕\n   - 逾期未补将按合同条款扣减费用",
+      "source_data": {
+        "exposure_type": "赛事开场鸣谢",
+        "required": 10,
+        "provided": 0,
+        "missing": 10,
+        "pending_verification": 1
+      },
+      "created_at": "2026-05-31T16:22:29.290998",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    },
+    "LIVE_DUR_CTR-2024-002_607cc7b7": {
+      "issue_id": "LIVE_DUR_CTR-2024-002_607cc7b7",
+      "contract_id": "CTR-2024-002",
+      "issue_type": "insufficient_livestream_duration",
+      "issue_status": "pending_confirmation",
+      "title": "直播时长不足: 荣耀电竞装备",
+      "description": "直播总时长不足，缺少 280 分钟",
+      "root_cause": "合同要求: 480 分钟\n实际累计: 200 分钟\n差额: 280 分钟 (4.7 小时)\n直播场次: 1 场",
+      "handling_suggestion": "=== 处理建议 ===\n1. 缺口分析: 缺少 280 分钟直播时长\n\n2. 补充方案:\n   - 安排额外的赞助商专访直播\n   - 在后续赛事中增加露出时间\n   - 制作专题回放视频\n\n3. 替代方案（如无法补时）:\n   - 按比例扣减直播权益费用: 扣减比例 4.7%\n   - 或增加其他露出形式补偿\n\n4. 沟通要点:\n   - 提前与赞助商沟通\n   - 提供替代方案供选择\n   - 书面确认处理结果",
+      "source_data": {
+        "required_duration": 480,
+        "actual_duration": 200,
+        "missing_minutes": 280,
+        "stream_count": 1
+      },
+      "created_at": "2026-05-31T16:22:29.291019",
+      "resolved_at": null,
+      "resolution_note": null,
+      "dispute_remarks": null
+    }
+  },
+  "exported_at": "2026-05-31T16:22:30.058280"
+}

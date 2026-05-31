@@ -1,0 +1,61 @@
+[
+  {
+    "proof_id": "EXP-001",
+    "contract_id": "CTR-2024-001",
+    "exposure_type": "赛服胸前广告",
+    "exposure_date": "2024-03-15",
+    "proof_url": "https://example.com/proof/001",
+    "proof_description": "春季赛第3周比赛赛服截图",
+    "is_supplementary": false,
+    "verified": true
+  },
+  {
+    "proof_id": "EXP-002",
+    "contract_id": "CTR-2024-001",
+    "exposure_type": "赛服胸前广告",
+    "exposure_date": "2024-03-22",
+    "proof_url": "https://example.com/proof/002",
+    "proof_description": "春季赛第4周比赛赛服截图",
+    "is_supplementary": false,
+    "verified": true
+  },
+  {
+    "proof_id": "EXP-003",
+    "contract_id": "CTR-2024-001",
+    "exposure_type": "直播间背景板",
+    "exposure_date": "2024-03-15",
+    "proof_url": "https://example.com/proof/003",
+    "proof_description": "直播间背景板截图",
+    "is_supplementary": false,
+    "verified": true
+  },
+  {
+    "proof_id": "EXP-004",
+    "contract_id": "CTR-2024-001",
+    "exposure_type": "采访口播",
+    "exposure_date": "2024-03-15",
+    "proof_url": "https://example.com/proof/004",
+    "proof_description": "赛后采访口播提及",
+    "is_supplementary": false,
+    "verified": true
+  },
+  {
+    "proof_id": "EXP-005",
+    "contract_id": "CTR-2024-002",
+    "exposure_type": "赛服袖标",
+    "exposure_date": "2024-03-15",
+    "proof_url": "https://example.com/proof/005",
+    "proof_description": "春季赛第3周比赛袖标截图",
+    "is_supplementary": false,
+    "verified": true
+  },
+  {
+    "proof_id": "EXP-006",
+    "contract_id": "CTR-2024-002",
+    "exposure_type": "赛事开场鸣谢",
+    "exposure_date": "2024-03-15",
+    "proof_description": "赛事开场鸣谢名单截图",
+    "is_supplementary": false,
+    "verified": false
+  }
+]
