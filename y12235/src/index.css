@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #0A1628;
+  color: #E0E7EF;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F1F3A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3B5F8A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4A017;
+}
+
+.curve-point {
+  cursor: grab;
+  transition: r 0.15s ease;
+}
+
+.curve-point:hover {
+  r: 9;
+}
+
+.curve-point.dragging {
+  cursor: grabbing;
+  r: 11;
+}
+
+@keyframes riskFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.risk-flash {
+  animation: riskFlash 1s ease-in-out infinite;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-enter {
+  animation: cardEnter 0.3s ease-out forwards;
+}
+
+.bond-card-draggable {
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bond-card-draggable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 160, 23, 0.2);
+}
+
+.bond-card-draggable:active {
+  cursor: grabbing;
+  transform: scale(0.97);
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(59, 95, 138, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 95, 138, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.gradient-border {
+  border-image: linear-gradient(135deg, #D4A017, #A67C00) 1;
+}
