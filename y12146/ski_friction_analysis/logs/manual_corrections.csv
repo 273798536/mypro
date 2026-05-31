@@ -1,0 +1,2 @@
+timestamp,corrector,row_id,field,old_value,new_value,reason
+2026-05-31T05:32:04.699538,张教练,20,friction_coeff,original_value,0.025,人工测量冰面摩擦系数
