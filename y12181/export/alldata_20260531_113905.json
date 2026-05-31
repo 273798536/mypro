@@ -1,0 +1,483 @@
+{
+  "work_orders": [
+    {
+      "id": "WO-2026-001",
+      "customer_name": "王先生",
+      "instrument_type": "吉他",
+      "instrument_model": "Yamaha FG800",
+      "issue_description": "琴桥开胶，需要更换琴弦",
+      "status": "可开工",
+      "assigned_technician": "张师傅",
+      "scheduled_date": "2026-06-01",
+      "parts_required": [
+        {
+          "part_name": "吉他琴弦",
+          "quantity": 2,
+          "locked": true,
+          "locked_at": "2026-05-31T11:37:45.112155",
+          "work_order_id": "WO-2026-001"
+        },
+        {
+          "part_name": "吉他琴桥",
+          "quantity": 1,
+          "locked": true,
+          "locked_at": "2026-05-31T11:37:45.112169",
+          "work_order_id": "WO-2026-001"
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.500916",
+      "updated_at": "2026-05-31T11:37:45.112174",
+      "notes": [
+        "客户希望尽快完成，周末要演出",
+        "[2026-05-31 11:37] 所有配件已锁定"
+      ]
+    },
+    {
+      "id": "WO-2026-002",
+      "customer_name": "李小姐",
+      "instrument_type": "小提琴",
+      "instrument_model": "Stradivari 1716",
+      "issue_description": "琴弦断了一根，琴马需要调整",
+      "status": "已检查",
+      "assigned_technician": "陈师傅",
+      "scheduled_date": "2026-06-02",
+      "parts_required": [
+        {
+          "part_name": "小提琴琴弦",
+          "quantity": 2,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        },
+        {
+          "part_name": "小提琴琴马",
+          "quantity": 1,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.500989",
+      "updated_at": "2026-05-31T11:37:34.121134",
+      "notes": [
+        "名贵琴，需要特别小心处理",
+        "[2026-05-31 11:40] 张师傅请假，改派陈师傅"
+      ]
+    },
+    {
+      "id": "WO-2026-003",
+      "customer_name": "赵老师",
+      "instrument_type": "钢琴",
+      "instrument_model": "Steinway & Sons",
+      "issue_description": "低音区琴弦断裂，琴槌磨损严重",
+      "status": "受阻",
+      "assigned_technician": "李师傅",
+      "scheduled_date": "2026-06-03",
+      "parts_required": [
+        {
+          "part_name": "钢琴琴弦",
+          "quantity": 5,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        },
+        {
+          "part_name": "钢琴琴槌",
+          "quantity": 1,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.501014",
+      "updated_at": "2026-05-31T11:37:34.121142",
+      "notes": [
+        "音乐厅用琴，需要紧急维修"
+      ]
+    },
+    {
+      "id": "WO-2026-004",
+      "customer_name": "孙同学",
+      "instrument_type": "萨克斯",
+      "instrument_model": "Selmer Paris",
+      "issue_description": "按键漏气，需要更换按键垫，笛头也想换个新的",
+      "status": "已检查",
+      "assigned_technician": "王师傅",
+      "scheduled_date": "2026-06-03",
+      "parts_required": [
+        {
+          "part_name": "萨克斯按键垫",
+          "quantity": 2,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        },
+        {
+          "part_name": "萨克斯笛头",
+          "quantity": 1,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.501035",
+      "updated_at": "2026-05-31T11:37:34.121180",
+      "notes": [
+        "下周三有考级"
+      ]
+    },
+    {
+      "id": "WO-2026-005",
+      "customer_name": "周乐队",
+      "instrument_type": "架子鼓",
+      "instrument_model": "DW Collector's",
+      "issue_description": "底鼓皮破了，需要更换",
+      "status": "受阻",
+      "assigned_technician": "张师傅",
+      "scheduled_date": "2026-06-04",
+      "parts_required": [
+        {
+          "part_name": "鼓皮",
+          "quantity": 2,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.501055",
+      "updated_at": "2026-05-31T11:37:34.121195",
+      "notes": [
+        "周末有演出，务必周五前完成"
+      ]
+    },
+    {
+      "id": "WO-2026-006",
+      "customer_name": "吴先生",
+      "instrument_type": "吉他",
+      "instrument_model": "Martin D-28",
+      "issue_description": "调音旋钮坏了2个，需要更换",
+      "status": "受阻",
+      "assigned_technician": "王师傅",
+      "scheduled_date": "2026-06-05",
+      "parts_required": [
+        {
+          "part_name": "调音旋钮",
+          "quantity": 1,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.501074",
+      "updated_at": "2026-05-31T11:37:34.121225",
+      "notes": []
+    },
+    {
+      "id": "WO-2026-007",
+      "customer_name": "郑女士",
+      "instrument_type": "小提琴",
+      "instrument_model": "Guarneri del Gesù",
+      "issue_description": "需要全面保养，更换琴弦",
+      "status": "已检查",
+      "assigned_technician": "陈师傅",
+      "scheduled_date": "2026-06-01",
+      "parts_required": [
+        {
+          "part_name": "小提琴琴弦",
+          "quantity": 1,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.501094",
+      "updated_at": "2026-05-31T11:37:34.121238",
+      "notes": [
+        "客户指定陈师傅处理"
+      ]
+    },
+    {
+      "id": "WO-2026-008",
+      "customer_name": "冯校长",
+      "instrument_type": "钢琴",
+      "instrument_model": "Yamaha C7",
+      "issue_description": "学校音乐厅钢琴年度调音和维护",
+      "status": "受阻",
+      "assigned_technician": "李师傅",
+      "scheduled_date": "2026-06-10",
+      "parts_required": [
+        {
+          "part_name": "钢琴琴弦",
+          "quantity": 3,
+          "locked": false,
+          "locked_at": null,
+          "work_order_id": null
+        }
+      ],
+      "created_at": "2026-05-31T11:34:53.501113",
+      "updated_at": "2026-05-31T11:37:34.121246",
+      "notes": [
+        "可以安排在周末"
+      ]
+    }
+  ],
+  "instrument_types": [
+    {
+      "id": "inst-001",
+      "name": "吉他",
+      "category": "弦乐器",
+      "common_parts": [
+        "琴弦",
+        "琴桥",
+        "琴枕",
+        "调音旋钮",
+        "品丝"
+      ],
+      "difficulty_level": 2
+    },
+    {
+      "id": "inst-002",
+      "name": "小提琴",
+      "category": "弦乐器",
+      "common_parts": [
+        "琴弦",
+        "琴马",
+        "腮托",
+        "微调器",
+        "尾钉"
+      ],
+      "difficulty_level": 3
+    },
+    {
+      "id": "inst-003",
+      "name": "钢琴",
+      "category": "键盘乐器",
+      "common_parts": [
+        "琴弦",
+        "琴槌",
+        "击弦机",
+        "踏板",
+        "调音钉"
+      ],
+      "difficulty_level": 5
+    },
+    {
+      "id": "inst-004",
+      "name": "萨克斯",
+      "category": "管乐器",
+      "common_parts": [
+        "笛头",
+        "哨片",
+        "按键垫",
+        "弹簧",
+        "颈带"
+      ],
+      "difficulty_level": 3
+    },
+    {
+      "id": "inst-005",
+      "name": "架子鼓",
+      "category": "打击乐器",
+      "common_parts": [
+        "鼓皮",
+        "鼓槌",
+        "镲片",
+        "硬件螺丝",
+        "踩锤弹簧"
+      ],
+      "difficulty_level": 2
+    }
+  ],
+  "part_inventories": [
+    {
+      "id": "part-001",
+      "name": "吉他琴弦",
+      "stock_quantity": 15,
+      "min_stock": 10,
+      "unit": "套",
+      "supplier": "爱乐乐器配件商行"
+    },
+    {
+      "id": "part-002",
+      "name": "小提琴琴弦",
+      "stock_quantity": 3,
+      "min_stock": 5,
+      "unit": "套",
+      "supplier": "天音提琴配件"
+    },
+    {
+      "id": "part-003",
+      "name": "钢琴琴弦",
+      "stock_quantity": 12,
+      "min_stock": 8,
+      "unit": "根",
+      "supplier": "珠江钢琴配件中心"
+    },
+    {
+      "id": "part-004",
+      "name": "萨克斯按键垫",
+      "stock_quantity": 8,
+      "min_stock": 6,
+      "unit": "套",
+      "supplier": "管乐之家"
+    },
+    {
+      "id": "part-005",
+      "name": "鼓皮",
+      "stock_quantity": 6,
+      "min_stock": 3,
+      "unit": "张",
+      "supplier": "打击乐世界"
+    },
+    {
+      "id": "part-006",
+      "name": "吉他琴桥",
+      "stock_quantity": 20,
+      "min_stock": 5,
+      "unit": "个",
+      "supplier": "爱乐乐器配件商行"
+    },
+    {
+      "id": "part-007",
+      "name": "调音旋钮",
+      "stock_quantity": 3,
+      "min_stock": 4,
+      "unit": "组",
+      "supplier": "爱乐乐器配件商行"
+    },
+    {
+      "id": "part-008",
+      "name": "小提琴琴马",
+      "stock_quantity": 5,
+      "min_stock": 2,
+      "unit": "个",
+      "supplier": "天音提琴配件"
+    },
+    {
+      "id": "part-009",
+      "name": "钢琴琴槌",
+      "stock_quantity": 12,
+      "min_stock": 6,
+      "unit": "套",
+      "supplier": "珠江钢琴配件中心"
+    },
+    {
+      "id": "part-010",
+      "name": "萨克斯笛头",
+      "stock_quantity": 4,
+      "min_stock": 3,
+      "unit": "个",
+      "supplier": "管乐之家"
+    }
+  ],
+  "technicians": [
+    {
+      "id": "tech-001",
+      "name": "张师傅",
+      "skills": [
+        "吉他",
+        "小提琴",
+        "架子鼓"
+      ],
+      "leave_dates": [
+        "2026-06-02",
+        "2026-06-03",
+        "2026-06-10"
+      ]
+    },
+    {
+      "id": "tech-002",
+      "name": "李师傅",
+      "skills": [
+        "钢琴",
+        "键盘乐器"
+      ],
+      "leave_dates": [
+        "2026-06-01",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07"
+      ]
+    },
+    {
+      "id": "tech-003",
+      "name": "王师傅",
+      "skills": [
+        "萨克斯",
+        "管乐器",
+        "吉他"
+      ],
+      "leave_dates": [
+        "2026-06-04",
+        "2026-06-11",
+        "2026-06-12"
+      ]
+    },
+    {
+      "id": "tech-004",
+      "name": "陈师傅",
+      "skills": [
+        "小提琴",
+        "大提琴",
+        "弦乐器"
+      ],
+      "leave_dates": [
+        "2026-06-08",
+        "2026-06-09",
+        "2026-06-15"
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "id": "",
+      "work_order_id": "WO-2026-002",
+      "message": "人员冲突: 【张师傅】在 2026-06-02 请假，可替代: 李师傅, 王师傅, 陈师傅",
+      "type": "technician_conflict",
+      "created_at": "2026-05-31T11:35:16.111768",
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": null
+    },
+    {
+      "id": "",
+      "work_order_id": "WO-2026-003",
+      "message": "配件缺货: 【钢琴琴弦】需求 5根，库存仅 2根，缺口 3根，供应商: 珠江钢琴配件中心",
+      "type": "part_shortage",
+      "created_at": "2026-05-31T11:35:16.111781",
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": null
+    },
+    {
+      "id": "",
+      "work_order_id": "WO-2026-005",
+      "message": "配件缺货: 【鼓皮】需求 2张，库存仅 1张，缺口 1张，供应商: 打击乐世界",
+      "type": "part_shortage",
+      "created_at": "2026-05-31T11:35:16.111786",
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": null
+    },
+    {
+      "id": "",
+      "work_order_id": "WO-2026-006",
+      "message": "配件缺货: 【调音旋钮】需求 1组，库存仅 0组，缺口 1组，供应商: 爱乐乐器配件商行",
+      "type": "part_shortage",
+      "created_at": "2026-05-31T11:35:16.111791",
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": null
+    },
+    {
+      "id": "",
+      "work_order_id": "WO-2026-008",
+      "message": "配件缺货: 【钢琴琴弦】需求 3根，库存仅 2根，缺口 1根，供应商: 珠江钢琴配件中心",
+      "type": "part_shortage",
+      "created_at": "2026-05-31T11:35:16.111795",
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": null
+    }
+  ]
+}
