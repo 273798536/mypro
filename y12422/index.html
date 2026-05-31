@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>农场碳汇收益分配</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f6f0;--card:#fff;--border:#d4d8c8;--primary:#3a6b35;--primary-light:#e8f0e6;--danger:#c0392b;--danger-light:#fce4e1;--warn:#d4820a;--warn-light:#fef5e0;--info:#2471a3;--info-light:#e8f0f8;--text:#2c2c2c;--text2:#666;--text3:#999;--radius:6px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:var(--primary);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:18px;font-weight:600}
+.header .audit-count{font-size:13px;opacity:.85}
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:52px;z-index:99}
+.tab{padding:10px 18px;cursor:pointer;font-size:14px;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s;color:var(--text2)}
+.tab:hover{color:var(--primary);background:var(--primary-light)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.main{max-width:1200px;margin:0 auto;padding:16px}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.card h3{font-size:15px;margin-bottom:10px;color:var(--primary);border-left:3px solid var(--primary);padding-left:8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:3px;min-width:120px}
+.field label{font-size:12px;color:var(--text2)}
+.field input,.field select,.field textarea{padding:6px 10px;border:1px solid var(--border);border-radius:4px;font-size:13px;outline:none;transition:.2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-light)}
+.btn{padding:7px 16px;border:none;border-radius:4px;cursor:pointer;font-size:13px;transition:.2s;display:inline-flex;align-items:center;gap:4px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:#2d5529}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#a93226}
+.btn-warn{background:var(--warn);color:#fff}
+.btn-warn:hover{background:#b8720a}
+.btn-info{background:var(--info);color:#fff}
+.btn-info:hover{background:#1a5c8a}
+.btn-outline{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.btn-sm{padding:4px 10px;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:var(--primary-light);color:var(--primary);font-weight:600;position:sticky;top:0}
+tr:hover td{background:#fafaf5}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.badge-ok{background:#d5f5e3;color:#1e8449}
+.badge-err{background:var(--danger-light);color:var(--danger)}
+.badge-warn{background:var(--warn-light);color:var(--warn)}
+.badge-info{background:var(--info-light);color:var(--info)}
+.alert{padding:10px 14px;border-radius:var(--radius);margin-bottom:10px;font-size:13px}
+.alert-err{background:var(--danger-light);color:var(--danger);border-left:3px solid var(--danger)}
+.alert-warn{background:var(--warn-light);color:var(--warn);border-left:3px solid var(--warn)}
+.alert-info{background:var(--info-light);color:var(--info);border-left:3px solid var(--info)}
+.alert-ok{background:#d5f5e3;color:#1e8449;border-left:3px solid #1e8449}
+.table-wrap{overflow-x:auto;max-height:400px;overflow-y:auto}
+.bad-row{background:#fff5f5!important}
+.issue-tag{display:inline-block;margin:2px 4px 2px 0;padding:2px 6px;border-radius:3px;font-size:11px;background:var(--warn-light);color:var(--warn)}
+.diff-old{text-decoration:line-through;color:var(--danger);opacity:.7}
+.diff-new{color:var(--primary);font-weight:600}
+.explain{font-size:12px;color:var(--text2);margin-top:4px;font-style:italic}
+.empty-state{text-align:center;padding:40px;color:var(--text3);font-size:14px}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:8px;padding:20px;width:90%;max-width:700px;max-height:80vh;overflow-y:auto}
+.modal h3{margin-bottom:14px}
+.log-entry{padding:8px 12px;border-left:3px solid var(--primary-light);margin-bottom:6px;background:#fafaf5;border-radius:0 4px 4px 0;font-size:13px}
+.log-entry .log-time{color:var(--text3);font-size:11px}
+.log-entry .log-action{font-weight:500}
+.log-entry .log-impact{color:var(--warn);font-size:12px;margin-top:2px}
+textarea.import-area{width:100%;min-height:120px;font-family:monospace;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>农场碳汇收益分配</h1>
+  <span class="audit-count" id="auditCount"></span>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-panel="plots">地块档案</div>
+  <div class="tab" data-panel="trees">树龄记录</div>
+  <div class="tab" data-panel="certs">核证批次</div>
+  <div class="tab" data-panel="revenue">收益流水</div>
+  <div class="tab" data-panel="agreements">协议变更</div>
+  <div class="tab" data-panel="aggregate">碳汇归集</div>
+  <div class="tab" data-panel="allocation">收益分配</div>
+  <div class="tab" data-panel="report">导出报告</div>
+  <div class="tab" data-panel="audit">变更日志</div>
+</div>
+
+<div class="main">
+
+<div class="panel active" id="panel-plots">
+  <div class="card">
+    <h3>新增地块</h3>
+    <div class="row">
+      <div class="field"><label>地块编号</label><input id="pId" placeholder="如 PL001"></div>
+      <div class="field"><label>地块名称</label><input id="pName" placeholder="如 南山坡A区"></div>
+      <div class="field"><label>面积(亩)</label><input id="pArea" type="number" step="0.1"></div>
+      <div class="field"><label>边界坐标</label><input id="pBounds" placeholder="如 30.1,120.2;30.1,120.3"></div>
+      <div class="field"><label>权属人</label><input id="pOwner"></div>
+      <button class="btn btn-primary" onclick="addPlot()">添加</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>地块列表</h3>
+    <div class="table-wrap"><table id="plotTable"><thead><tr><th>地块编号</th><th>名称</th><th>面积(亩)</th><th>边界坐标</th><th>权属人</th><th>问题</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <h3>批量导入</h3>
+    <textarea class="import-area" id="plotImport" placeholder="每行一条，格式：地块编号,名称,面积,边界坐标,权属人&#10;空行和缺列会自动标记为坏行"></textarea>
+    <div style="margin-top:8px"><button class="btn btn-outline" onclick="importPlots()">导入</button></div>
+  </div>
+  <div id="plotBadRows" class="card" style="display:none">
+    <h3>坏行记录</h3>
+    <div class="table-wrap"><table id="plotBadTable"><thead><tr><th>原始内容</th><th>原因</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-trees">
+  <div class="card">
+    <h3>新增树龄记录</h3>
+    <div class="row">
+      <div class="field"><label>记录编号</label><input id="tId" placeholder="如 TA001"></div>
+      <div class="field"><label>所属地块</label><select id="tPlot"></select></div>
+      <div class="field"><label>树种</label><input id="tSpecies" placeholder="如 杉木"></div>
+      <div class="field"><label>树龄(年)</label><input id="tAge" type="number"></div>
+      <div class="field"><label>测量日期</label><input id="tDate" type="date"></div>
+      <div class="field"><label>记录人</label><input id="tRecorder"></div>
+      <button class="btn btn-primary" onclick="addTree()">添加</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>树龄记录列表</h3>
+    <div class="table-wrap"><table id="treeTable"><thead><tr><th>记录编号</th><th>地块</th><th>树种</th><th>树龄(年)</th><th>测量日期</th><th>记录人</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <h3>批量导入</h3>
+    <textarea class="import-area" id="treeImport" placeholder="每行一条，格式：记录编号,地块编号,树种,树龄,测量日期,记录人"></textarea>
+    <div style="margin-top:8px"><button class="btn btn-outline" onclick="importTrees()">导入</button></div>
+  </div>
+  <div id="treeBadRows" class="card" style="display:none">
+    <h3>坏行记录</h3>
+    <div class="table-wrap"><table id="treeBadTable"><thead><tr><th>原始内容</th><th>原因</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-certs">
+  <div class="card">
+    <h3>新增核证批次</h3>
+    <div class="row">
+      <div class="field"><label>批次编号</label><input id="cId" placeholder="如 CB001"></div>
+      <div class="field"><label>批次名称</label><input id="cName"></div>
+      <div class="field"><label>核证日期</label><input id="cDate" type="date"></div>
+      <div class="field"><label>状态</label><select id="cStatus"><option value="pending">待核证</option><option value="certified">已核证</option><option value="delayed">核证延迟</option></select></div>
+      <div class="field"><label>涉及地块(逗号分隔)</label><input id="cPlots" placeholder="如 PL001,PL002"></div>
+      <div class="field"><label>碳汇量(tCO2)</label><input id="cCarbon" type="number" step="0.01"></div>
+      <div class="field"><label>备注</label><input id="cRemarks"></div>
+      <button class="btn btn-primary" onclick="addCert()">添加</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>核证批次列表</h3>
+    <div class="table-wrap"><table id="certTable"><thead><tr><th>批次编号</th><th>名称</th><th>核证日期</th><th>状态</th><th>涉及地块</th><th>碳汇量</th><th>备注</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <h3>批量导入</h3>
+    <textarea class="import-area" id="certImport" placeholder="每行一条，格式：批次编号,名称,核证日期,状态,涉及地块(分号分隔),碳汇量,备注"></textarea>
+    <div style="margin-top:8px"><button class="btn btn-outline" onclick="importCerts()">导入</button></div>
+  </div>
+  <div id="certBadRows" class="card" style="display:none">
+    <h3>坏行记录</h3>
+    <div class="table-wrap"><table id="certBadTable"><thead><tr><th>原始内容</th><th>原因</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-revenue">
+  <div class="card">
+    <h3>新增收益流水</h3>
+    <div class="row">
+      <div class="field"><label>流水号</label><input id="rId" placeholder="如 RV001"></div>
+      <div class="field"><label>核证批次</label><select id="rBatch"></select></div>
+      <div class="field"><label>金额(元)</label><input id="rAmount" type="number" step="0.01"></div>
+      <div class="field"><label>到账日期</label><input id="rDate" type="date"></div>
+      <div class="field"><label>来源</label><input id="rSource" placeholder="如 碳交易所"></div>
+      <button class="btn btn-primary" onclick="addRevenue()">添加</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>收益流水列表</h3>
+    <div class="table-wrap"><table id="revenueTable"><thead><tr><th>流水号</th><th>核证批次</th><th>金额(元)</th><th>到账日期</th><th>来源</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <h3>批量导入</h3>
+    <textarea class="import-area" id="revenueImport" placeholder="每行一条，格式：流水号,批次编号,金额,到账日期,来源"></textarea>
+    <div style="margin-top:8px"><button class="btn btn-outline" onclick="importRevenues()">导入</button></div>
+  </div>
+  <div id="revenueBadRows" class="card" style="display:none">
+    <h3>坏行记录</h3>
+    <div class="table-wrap"><table id="revenueBadTable"><thead><tr><th>原始内容</th><th>原因</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-agreements">
+  <div class="card">
+    <h3>新增协议变更</h3>
+    <div class="row">
+      <div class="field"><label>变更编号</label><input id="aId" placeholder="如 AG001"></div>
+      <div class="field"><label>协议名称</label><input id="aName"></div>
+      <div class="field"><label>变更日期</label><input id="aDate" type="date"></div>
+      <div class="field"><label>变更类型</label><select id="aType"><option value="ratio">分成比例调整</option><option value="party">参与方变更</option><option value="scope">范围调整</option><option value="other">其他</option></select></div>
+      <div class="field"><label>变更说明</label><input id="aDesc"></div>
+      <div class="field"><label>影响说明</label><input id="aImpact"></div>
+      <button class="btn btn-primary" onclick="addAgreement()">添加</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>协议变更记录</h3>
+    <div class="table-wrap"><table id="agreementTable"><thead><tr><th>变更编号</th><th>协议名称</th><th>变更日期</th><th>类型</th><th>说明</th><th>影响</th><th>操作</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-aggregate">
+  <div class="card">
+    <h3>碳汇归集</h3>
+    <p class="explain">按核证批次归集各地块碳汇量，自动检测地块重叠、核证延迟、协议变更等问题。归集失败会给出原因，通过会露出依据。</p>
+    <div style="margin:10px 0"><button class="btn btn-primary" onclick="runAggregation()">执行归集</button></div>
+    <div id="aggResults"></div>
+  </div>
+  <div class="card">
+    <h3>归集结果明细</h3>
+    <div class="table-wrap"><table id="aggTable"><thead><tr><th>核证批次</th><th>地块</th><th>碳汇量(tCO2)</th><th>状态</th><th>依据/原因</th><th>涉及问题</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-allocation">
+  <div class="card">
+    <h3>收益分配计算</h3>
+    <p class="explain">基于归集结果和当前协议，计算各权属人应得份额。修改树龄等数据后重新计算，旧结果和新结果都会保留。</p>
+    <div style="margin:10px 0"><button class="btn btn-primary" onclick="runAllocation()">执行分配</button></div>
+    <div id="allocAlerts"></div>
+  </div>
+  <div class="card">
+    <h3>分配结果（当前版本）</h3>
+    <div class="table-wrap"><table id="allocTable"><thead><tr><th>批次</th><th>地块</th><th>权属人</th><th>碳汇量</th><th>收益(元)</th><th>权属人份额</th><th>合作社份额</th><th>依据</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <h3>历史版本对比</h3>
+    <div id="allocDiff"></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-report">
+  <div class="card">
+    <h3>导出报告</h3>
+    <p class="explain">报告包含碳汇归集结果、收益分配明细，以及地块重叠、核证延迟、协议变更等所有已知问题。</p>
+    <div style="margin:10px 0;display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="exportTextReport()">导出文本报告</button>
+      <button class="btn btn-info" onclick="exportJSONReport()">导出JSON数据</button>
+    </div>
+    <div id="reportPreview" class="card" style="display:none;background:#fafaf5;max-height:500px;overflow-y:auto;white-space:pre-wrap;font-size:13px;margin-top:10px"></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-audit">
+  <div class="card">
+    <h3>变更审计日志</h3>
+    <p class="explain">记录所有数据变更：改了什么、谁影响了谁。</p>
+    <div id="auditLog"></div>
+  </div>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3 id="editModalTitle">编辑</h3>
+    <div id="editModalBody"></div>
+    <div style="margin-top:14px;text-align:right"><button class="btn btn-outline" onclick="closeModal()">取消</button> <button class="btn btn-primary" id="editModalSave">保存</button></div>
+  </div>
+</div>
+
+<script>
+var DB_KEY='farm_carbon_sink_db';
+var db=loadDB();
+
+function defaultDB(){return{plots:[],trees:[],certs:[],revenues:[],agreements:[],allocations:[],aggResults:[],auditLog:[],badRows:[]}}
+
+function loadDB(){try{var d=localStorage.getItem(DB_KEY);if(d)return JSON.parse(d)}catch(e){}return defaultDB()}
+function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(db))}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
+function addAudit(action,entity,entityId,oldVal,newVal,impact){
+  db.auditLog.unshift({id:genId(),time:new Date().toLocaleString('zh-CN'),action:action,entity:entity,entityId:entityId,oldValue:oldVal||'',newValue:newVal||'',impact:impact||''});
+  saveDB();
+  updateAuditCount();
+}
+
+function addBadRow(source,raw,reason){
+  db.badRows.push({id:genId(),source:source,raw:raw,reason:reason,time:new Date().toLocaleString('zh-CN')});
+  saveDB();
+}
+
+function updateAuditCount(){
+  var el=document.getElementById('auditCount');
+  if(db.auditLog.length>0)el.textContent='变更记录: '+db.auditLog.length;
+  else el.textContent='';
+}
+
+function statusBadge(s){
+  var m={certified:'badge-ok',pending:'badge-info',delayed:'badge-warn'};
+  var t={certified:'已核证',pending:'待核证',delayed:'核证延迟'};
+  return '<span class="badge '+(m[s]||'badge-info')+'">'+(t[s]||s)+'</span>';
+}
+
+function agreeTypeLabel(t){var m={ratio:'分成比例调整',party:'参与方变更',scope:'范围调整',other:'其他'};return m[t]||t}
+
+function issueTag(text){return '<span class="issue-tag">'+text+'</span>'}
+
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function parseCSVLine(line){var parts=[];var cur='';var inQ=false;for(var i=0;i<line.length;i++){var c=line[i];if(c==='"'){inQ=!inQ}else if(c===','&&!inQ){parts.push(cur.trim());cur=''}else{cur+=c}}parts.push(cur.trim());return parts}
+
+function importLines(text,requiredCols,handler){
+  var lines=text.split('\n');
+  var good=[];var bad=[];
+  lines.forEach(function(line){
+    var trimmed=line.trim();
+    if(!trimmed){bad.push({raw:line,reason:'空行'});return}
+    if(trimmed.startsWith('#')||trimmed.startsWith('//')){bad.push({raw:line,reason:'备注行'});return}
+    var parts=parseCSVLine(trimmed);
+    if(parts.length<requiredCols){bad.push({raw:line,reason:'缺列（需'+requiredCols+'列，实际'+parts.length+'列）'});return}
+    var emptyIdx=[];for(var i=0;i<requiredCols;i++){if(!parts[i])emptyIdx.push(i+1)}
+    if(emptyIdx.length>0){bad.push({raw:line,reason:'第'+emptyIdx.join(',')+'列为空'});return}
+    good.push(parts);
+  });
+  handler(good,bad);
+}
+
+function detectOverlaps(){
+  var issues=[];
+  var plots=db.plots;
+  var boundMap={};
+  plots.forEach(function(p){
+    if(!p.bounds)return;
+    var coords=p.bounds.split(';').map(function(c){return c.trim()}).filter(Boolean);
+    coords.forEach(function(coord){
+      if(!boundMap[coord])boundMap[coord]=[];
+      if(boundMap[coord].indexOf(p.id)===-1)boundMap[coord].push(p.id);
+    });
+  });
+  Object.keys(boundMap).forEach(function(coord){
+    if(boundMap[coord].length>1){
+      issues.push({type:'overlap',desc:'地块 '+boundMap[coord].join('、')+' 在坐标 '+coord+' 重叠',plots:boundMap[coord].slice()});
+    }
+  });
+  var seen={};
+  return issues.filter(function(iss){var k=iss.plots.sort().join(',');if(seen[k])return false;seen[k]=true;return true});
+}
+
+function detectCertDelays(){
+  var issues=[];
+  db.certs.forEach(function(c){
+    if(c.status==='delayed'){
+      issues.push({type:'delay',desc:'核证批次 '+c.id+'（'+c.name+'）核证延迟',certId:c.id});
+    }
+  });
+  return issues;
+}
+
+function detectAgreementChanges(){
+  var issues=[];
+  db.agreements.forEach(function(a){
+    issues.push({type:'agreement_change',desc:'协议变更 '+a.id+'：'+a.desc,agreementId:a.id});
+  });
+  return issues;
+}
+
+function getAllIssues(){
+  return detectOverlaps().concat(detectCertDelays()).concat(detectAgreementChanges());
+}
+
+function getCurrentRatio(){
+  var ratioChanges=db.agreements.filter(function(a){return a.type==='ratio'}).sort(function(a,b){return b.date>a.date?1:-1});
+  if(ratioChanges.length>0){
+    var desc=ratioChanges[0].desc||'';
+    var m=desc.match(/(\d+)[：:](\d+)/);
+    if(m)return{owner:parseInt(m[1]),coop:parseInt(m[2]),basis:'依据协议变更 '+ratioChanges[0].id+'：'+ratioChanges[0].desc};
+  }
+  return{owner:7,coop:3,basis:'默认分成比例 7:3（权属人:合作社）'};
+}
+
+function refreshPlotSelect(){
+  var sel=document.getElementById('tPlot');
+  sel.innerHTML='<option value="">请选择</option>';
+  db.plots.forEach(function(p){sel.innerHTML+='<option value="'+esc(p.id)+'">'+esc(p.id)+' - '+esc(p.name)+'</option>'});
+}
+
+function refreshCertSelect(){
+  var sel=document.getElementById('rBatch');
+  sel.innerHTML='<option value="">请选择</option>';
+  db.certs.forEach(function(c){sel.innerHTML+='<option value="'+esc(c.id)+'">'+esc(c.id)+' - '+esc(c.name)+'</option>'});
+}
+
+function renderPlots(){
+  var tbody=document.querySelector('#plotTable tbody');
+  var overlaps=detectOverlaps();
+  var overlapPlotIds=[];
+  overlaps.forEach(function(o){o.plots.forEach(function(pid){if(overlapPlotIds.indexOf(pid)===-1)overlapPlotIds.push(pid)})});
+  if(db.plots.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-state">暂无地块</td></tr>';return}
+  tbody.innerHTML=db.plots.map(function(p){
+    var isOverlap=overlapPlotIds.indexOf(p.id)!==-1;
+    var issueHtml=isOverlap?issueTag('地块重叠'):'';
+    return '<tr'+(isOverlap?' class="bad-row"':'')+'><td>'+esc(p.id)+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.area)+'</td><td style="font-size:11px">'+esc(p.bounds)+'</td><td>'+esc(p.owner)+'</td><td>'+issueHtml+'</td><td><button class="btn btn-outline btn-sm" onclick="editPlot(\''+p.id+'\')">编辑</button> <button class="btn btn-danger btn-sm" onclick="delPlot(\''+p.id+'\')">删除</button></td></tr>';
+  }).join('');
+}
+
+function renderTrees(){
+  var tbody=document.querySelector('#treeTable tbody');
+  if(db.trees.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-state">暂无树龄记录</td></tr>';return}
+  tbody.innerHTML=db.trees.map(function(t){
+    return '<tr><td>'+esc(t.id)+'</td><td>'+esc(t.plotId)+'</td><td>'+esc(t.species)+'</td><td>'+esc(t.age)+'</td><td>'+esc(t.date)+'</td><td>'+esc(t.recorder)+'</td><td><button class="btn btn-outline btn-sm" onclick="editTree(\''+t.id+'\')">编辑</button> <button class="btn btn-danger btn-sm" onclick="delTree(\''+t.id+'\')">删除</button></td></tr>';
+  }).join('');
+}
+
+function renderCerts(){
+  var tbody=document.querySelector('#certTable tbody');
+  if(db.certs.length===0){tbody.innerHTML='<tr><td colspan="8" class="empty-state">暂无核证批次</td></tr>';return}
+  tbody.innerHTML=db.certs.map(function(c){
+    return '<tr><td>'+esc(c.id)+'</td><td>'+esc(c.name)+'</td><td>'+esc(c.date)+'</td><td>'+statusBadge(c.status)+'</td><td>'+esc(c.plotIds)+'</td><td>'+esc(c.carbon)+'</td><td style="font-size:12px">'+esc(c.remarks)+'</td><td><button class="btn btn-outline btn-sm" onclick="editCert(\''+c.id+'\')">编辑</button> <button class="btn btn-danger btn-sm" onclick="delCert(\''+c.id+'\')">删除</button></td></tr>';
+  }).join('');
+}
+
+function renderRevenues(){
+  var tbody=document.querySelector('#revenueTable tbody');
+  if(db.revenues.length===0){tbody.innerHTML='<tr><td colspan="6" class="empty-state">暂无收益流水</td></tr>';return}
+  tbody.innerHTML=db.revenues.map(function(r){
+    return '<tr><td>'+esc(r.id)+'</td><td>'+esc(r.batchId)+'</td><td>'+esc(r.amount)+'</td><td>'+esc(r.date)+'</td><td>'+esc(r.source)+'</td><td><button class="btn btn-outline btn-sm" onclick="editRevenue(\''+r.id+'\')">编辑</button> <button class="btn btn-danger btn-sm" onclick="delRevenue(\''+r.id+'\')">删除</button></td></tr>';
+  }).join('');
+}
+
+function renderAgreements(){
+  var tbody=document.querySelector('#agreementTable tbody');
+  if(db.agreements.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-state">暂无协议变更</td></tr>';return}
+  tbody.innerHTML=db.agreements.map(function(a){
+    return '<tr><td>'+esc(a.id)+'</td><td>'+esc(a.name)+'</td><td>'+esc(a.date)+'</td><td>'+agreeTypeLabel(a.type)+'</td><td>'+esc(a.desc)+'</td><td>'+esc(a.impact)+'</td><td><button class="btn btn-outline btn-sm" onclick="editAgreement(\''+a.id+'\')">编辑</button> <button class="btn btn-danger btn-sm" onclick="delAgreement(\''+a.id+'\')">删除</button></td></tr>';
+  }).join('');
+}
+
+function renderBadRows(source,containerId,tableId){
+  var rows=db.badRows.filter(function(b){return b.source===source});
+  var container=document.getElementById(containerId);
+  var tbody=document.querySelector('#'+tableId+' tbody');
+  if(rows.length===0){container.style.display='none';return}
+  container.style.display='';
+  tbody.innerHTML=rows.map(function(r){
+    return '<tr class="bad-row"><td>'+esc(r.raw)+'</td><td>'+esc(r.reason)+'</td></tr>';
+  }).join('');
+}
+
+function renderAggResults(){
+  var tbody=document.querySelector('#aggTable tbody');
+  if(db.aggResults.length===0){tbody.innerHTML='<tr><td colspan="6" class="empty-state">请先执行归集</td></tr>';return}
+  var allIssues=getAllIssues();
+  tbody.innerHTML=db.aggResults.map(function(r){
+    var statusHtml=r.status==='ok'?'<span class="badge badge-ok">通过</span>':'<span class="badge badge-err">失败</span>';
+    var relatedIssues=allIssues.filter(function(iss){
+      if(iss.type==='overlap')return iss.plots.indexOf(r.plotId)!==-1;
+      if(iss.type==='delay')return iss.certId===r.certId;
+      return false;
+    });
+    var issueHtml=relatedIssues.map(function(iss){return issueTag(iss.desc)}).join('');
+    return '<tr'+(r.status!=='ok'?' class="bad-row"':'')+'><td>'+esc(r.certId)+'</td><td>'+esc(r.plotId)+'</td><td>'+esc(r.carbon)+'</td><td>'+statusHtml+'</td><td style="font-size:12px">'+esc(r.reason)+'</td><td>'+issueHtml+'</td></tr>';
+  }).join('');
+}
+
+function renderAllocations(){
+  var tbody=document.querySelector('#allocTable tbody');
+  if(db.allocations.length===0){tbody.innerHTML='<tr><td colspan="8" class="empty-state">请先执行分配</td></tr>';return}
+  var latest=db.allocations[db.allocations.length-1];
+  if(!latest||!latest.results){tbody.innerHTML='<tr><td colspan="8" class="empty-state">无分配结果</td></tr>';return}
+  tbody.innerHTML=latest.results.map(function(r){
+    return '<tr><td>'+esc(r.certId)+'</td><td>'+esc(r.plotId)+'</td><td>'+esc(r.owner)+'</td><td>'+esc(r.carbon)+'</td><td>'+esc(r.totalRevenue)+'</td><td>'+esc(r.ownerShare)+'</td><td>'+esc(r.coopShare)+'</td><td style="font-size:12px">'+esc(r.basis)+'</td></tr>';
+  }).join('');
+  renderAllocDiff();
+}
+
+function renderAllocDiff(){
+  var container=document.getElementById('allocDiff');
+  if(db.allocations.length<2){container.innerHTML='<p class="explain">仅有一版分配结果，修改树龄记录后重新分配即可对比。</p>';return}
+  var prev=db.allocations[db.allocations.length-2];
+  var curr=db.allocations[db.allocations.length-1];
+  var html='<div class="alert alert-info">对比：上一次 ('+esc(prev.time)+') vs 当前 ('+esc(curr.time)+')</div>';
+  html+='<div class="table-wrap"><table><thead><tr><th>地块</th><th>权属人</th><th>旧收益</th><th>新收益</th><th>旧权属人份额</th><th>新权属人份额</th><th>旧合作社份额</th><th>新合作社份额</th><th>变化</th></tr></thead><tbody>';
+  curr.results.forEach(function(cr){
+    var pr=prev.results.find(function(p){return p.plotId===cr.plotId&&p.certId===cr.certId});
+    if(pr){
+      var revDiff=cr.totalRevenue-pr.totalRevenue;
+      var changeClass=Math.abs(revDiff)>0.001?'diff-new':'';
+      var changeText=revDiff>0?'↑+'+revDiff.toFixed(2):revDiff<0?'↓'+revDiff.toFixed(2):'=';
+      html+='<tr><td>'+esc(cr.plotId)+'</td><td>'+esc(cr.owner)+'</td><td class="diff-old">'+esc(pr.totalRevenue)+'</td><td>'+esc(cr.totalRevenue)+'</td><td class="diff-old">'+esc(pr.ownerShare)+'</td><td>'+esc(cr.ownerShare)+'</td><td class="diff-old">'+esc(pr.coopShare)+'</td><td>'+esc(cr.coopShare)+'</td><td class="'+changeClass+'">'+changeText+'</td></tr>';
+    }else{
+      html+='<tr><td>'+esc(cr.plotId)+'</td><td>'+esc(cr.owner)+'</td><td>-</td><td>'+esc(cr.totalRevenue)+'</td><td>-</td><td>'+esc(cr.ownerShare)+'</td><td>-</td><td>'+esc(cr.coopShare)+'</td><td class="diff-new">新增</td></tr>';
+    }
+  });
+  prev.results.forEach(function(pr){
+    var exists=curr.results.find(function(c){return c.plotId===pr.plotId&&c.certId===pr.certId});
+    if(!exists){
+      html+='<tr><td>'+esc(pr.plotId)+'</td><td>'+esc(pr.owner)+'</td><td>'+esc(pr.totalRevenue)+'</td><td>-</td><td>'+esc(pr.ownerShare)+'</td><td>-</td><td>'+esc(pr.coopShare)+'</td><td>-</td><td><span class="badge badge-err">消失</span></td></tr>';
+    }
+  });
+  html+='</tbody></table></div>';
+  container.innerHTML=html;
+}
+
+function renderAuditLog(){
+  var container=document.getElementById('auditLog');
+  if(db.auditLog.length===0){container.innerHTML='<p class="explain">暂无变更记录。</p>';return}
+  container.innerHTML=db.auditLog.map(function(l){
+    return '<div class="log-entry"><div><span class="log-time">'+esc(l.time)+'</span> <span class="log-action">['+esc(l.action)+']</span> '+esc(l.entity)+' #'+esc(l.entityId)+'</div>'+((l.oldValue||l.newValue)?'<div>旧值: <span class="diff-old">'+esc(l.oldValue)+'</span> → 新值: <span class="diff-new">'+esc(l.newValue)+'</span></div>':'')+(l.impact?'<div class="log-impact">影响: '+esc(l.impact)+'</div>':'')+'</div>';
+  }).join('');
+}
+
+function renderAll(){
+  renderPlots();renderTrees();renderCerts();renderRevenues();renderAgreements();
+  renderBadRows('plot','plotBadRows','plotBadTable');
+  renderBadRows('tree','treeBadRows','treeBadTable');
+  renderBadRows('cert','certBadRows','certBadTable');
+  renderBadRows('revenue','revenueBadRows','revenueBadTable');
+  renderAggResults();renderAllocations();renderAuditLog();
+  refreshPlotSelect();refreshCertSelect();updateAuditCount();
+}
+
+function addPlot(){
+  var id=document.getElementById('pId').value.trim();
+  var name=document.getElementById('pName').value.trim();
+  var area=document.getElementById('pArea').value.trim();
+  var bounds=document.getElementById('pBounds').value.trim();
+  var owner=document.getElementById('pOwner').value.trim();
+  if(!id||!name||!area){alert('地块编号、名称、面积为必填');return}
+  if(db.plots.find(function(p){return p.id===id})){alert('地块编号已存在');return}
+  db.plots.push({id:id,name:name,area:parseFloat(area),bounds:bounds,owner:owner});
+  saveDB();
+  addAudit('新增','地块',id,'',name,'新增地块，面积'+area+'亩');
+  document.getElementById('pId').value='';document.getElementById('pName').value='';document.getElementById('pArea').value='';document.getElementById('pBounds').value='';document.getElementById('pOwner').value='';
+  renderAll();
+}
+
+function editPlot(id){
+  var p=db.plots.find(function(x){return x.id===id});if(!p)return;
+  document.getElementById('editModalTitle').textContent='编辑地块 '+id;
+  document.getElementById('editModalBody').innerHTML='<div class="row"><div class="field"><label>名称</label><input id="epName" value="'+esc(p.name)+'"></div><div class="field"><label>面积</label><input id="epArea" type="number" step="0.1" value="'+esc(p.area)+'"></div><div class="field"><label>边界坐标</label><input id="epBounds" value="'+esc(p.bounds)+'"></div><div class="field"><label>权属人</label><input id="epOwner" value="'+esc(p.owner)+'"></div></div>';
+  document.getElementById('editModal').classList.add('show');
+  document.getElementById('editModalSave').onclick=function(){
+    var oldVal=JSON.stringify(p);
+    p.name=document.getElementById('epName').value.trim();
+    p.area=parseFloat(document.getElementById('epArea').value);
+    p.bounds=document.getElementById('epBounds').value.trim();
+    p.owner=document.getElementById('epOwner').value.trim();
+    saveDB();
+    var overlaps=detectOverlaps();
+    var impact='修改了地块信息';
+    var overlapThis=overlaps.filter(function(o){return o.plots.indexOf(id)!==-1});
+    if(overlapThis.length>0)impact+='；注意：该地块存在重叠问题';
+    addAudit('修改','地块',id,oldVal,JSON.stringify(p),impact);
+    closeModal();renderAll();
+  };
+}
+
+function delPlot(id){
+  if(!confirm('确认删除地块 '+id+'？'))return;
+  var p=db.plots.find(function(x){return x.id===id});
+  db.plots=db.plots.filter(function(x){return x.id!==id});
+  var relatedTrees=db.trees.filter(function(t){return t.plotId===id});
+  saveDB();
+  addAudit('删除','地块',id,JSON.stringify(p),'','删除地块，关联'+relatedTrees.length+'条树龄记录');
+  renderAll();
+}
+
+function addTree(){
+  var id=document.getElementById('tId').value.trim();
+  var plotId=document.getElementById('tPlot').value;
+  var species=document.getElementById('tSpecies').value.trim();
+  var age=document.getElementById('tAge').value.trim();
+  var date=document.getElementById('tDate').value;
+  var recorder=document.getElementById('tRecorder').value.trim();
+  if(!id||!plotId||!age){alert('记录编号、地块、树龄为必填');return}
+  if(db.trees.find(function(t){return t.id===id})){alert('记录编号已存在');return}
+  db.trees.push({id:id,plotId:plotId,species:species,age:parseInt(age),date:date,recorder:recorder});
+  saveDB();
+  addAudit('新增','树龄记录',id,'','树龄'+age+'年','关联地块 '+plotId);
+  document.getElementById('tId').value='';document.getElementById('tSpecies').value='';document.getElementById('tAge').value='';document.getElementById('tDate').value='';document.getElementById('tRecorder').value='';
+  renderAll();
+}
+
+function editTree(id){
+  var t=db.trees.find(function(x){return x.id===id});if(!t)return;
+  refreshPlotSelect();
+  document.getElementById('editModalTitle').textContent='编辑树龄记录 '+id;
+  document.getElementById('editModalBody').innerHTML='<div class="row"><div class="field"><label>地块</label><select id="etPlot">'+db.plots.map(function(p){return '<option value="'+esc(p.id)+'"'+(p.id===t.plotId?' selected':'')+'>'+esc(p.id)+'</option>'}).join('')+'</select></div><div class="field"><label>树种</label><input id="etSpecies" value="'+esc(t.species)+'"></div><div class="field"><label>树龄(年)</label><input id="etAge" type="number" value="'+esc(t.age)+'"></div><div class="field"><label>测量日期</label><input id="etDate" type="date" value="'+esc(t.date)+'"></div><div class="field"><label>记录人</label><input id="etRecorder" value="'+esc(t.recorder)+'"></div></div>';
+  document.getElementById('editModal').classList.add('show');
+  document.getElementById('editModalSave').onclick=function(){
+    var oldVal=JSON.stringify(t);
+    var oldAge=t.age;
+    t.plotId=document.getElementById('etPlot').value;
+    t.species=document.getElementById('etSpecies').value.trim();
+    t.age=parseInt(document.getElementById('etAge').value);
+    t.date=document.getElementById('etDate').value;
+    t.recorder=document.getElementById('etRecorder').value.trim();
+    saveDB();
+    var impact='修改了树龄记录';
+    if(t.age!==oldAge){
+      impact+='；树龄由 '+oldAge+' 年改为 '+t.age+' 年，可能影响碳汇归集和收益分配';
+      var relatedAllocs=db.allocations.length>0?db.allocations[db.allocations.length-1].results.filter(function(r){return r.plotId===t.plotId}):[];
+      if(relatedAllocs.length>0)impact+='，该地块当前分配收益 '+relatedAllocs[0].totalRevenue+' 元';
+    }
+    addAudit('修改','树龄记录',id,oldVal,JSON.stringify(t),impact);
+    closeModal();renderAll();
+  };
+}
+
+function delTree(id){
+  if(!confirm('确认删除树龄记录 '+id+'？'))return;
+  var t=db.trees.find(function(x){return x.id===id});
+  db.trees=db.trees.filter(function(x){return x.id!==id});
+  saveDB();
+  addAudit('删除','树龄记录',id,JSON.stringify(t),'','删除树龄记录，原关联地块 '+t.plotId);
+  renderAll();
+}
+
+function addCert(){
+  var id=document.getElementById('cId').value.trim();
+  var name=document.getElementById('cName').value.trim();
+  var date=document.getElementById('cDate').value;
+  var status=document.getElementById('cStatus').value;
+  var plotIds=document.getElementById('cPlots').value.trim();
+  var carbon=document.getElementById('cCarbon').value.trim();
+  var remarks=document.getElementById('cRemarks').value.trim();
+  if(!id||!name){alert('批次编号、名称为必填');return}
+  if(db.certs.find(function(c){return c.id===id})){alert('批次编号已存在');return}
+  db.certs.push({id:id,name:name,date:date,status:status,plotIds:plotIds,carbon:carbon?parseFloat(carbon):null,remarks:remarks});
+  saveDB();
+  var impact='新增核证批次';
+  if(status==='delayed')impact+='；注意：该批次核证延迟';
+  addAudit('新增','核证批次',id,'',name,impact);
+  ['cId','cName','cDate','cPlots','cCarbon','cRemarks'].forEach(function(fid){document.getElementById(fid).value=''});
+  document.getElementById('cStatus').value='pending';
+  renderAll();
+}
+
+function editCert(id){
+  var c=db.certs.find(function(x){return x.id===id});if(!c)return;
+  document.getElementById('editModalTitle').textContent='编辑核证批次 '+id;
+  document.getElementById('editModalBody').innerHTML='<div class="row"><div class="field"><label>名称</label><input id="ecName" value="'+esc(c.name)+'"></div><div class="field"><label>核证日期</label><input id="ecDate" type="date" value="'+esc(c.date)+'"></div><div class="field"><label>状态</label><select id="ecStatus"><option value="pending"'+(c.status==='pending'?' selected':'')+'>待核证</option><option value="certified"'+(c.status==='certified'?' selected':'')+'>已核证</option><option value="delayed"'+(c.status==='delayed'?' selected':'')+'>核证延迟</option></select></div><div class="field"><label>涉及地块</label><input id="ecPlots" value="'+esc(c.plotIds)+'"></div><div class="field"><label>碳汇量</label><input id="ecCarbon" type="number" step="0.01" value="'+esc(c.carbon)+'"></div><div class="field"><label>备注</label><input id="ecRemarks" value="'+esc(c.remarks)+'"></div></div>';
+  document.getElementById('editModal').classList.add('show');
+  document.getElementById('editModalSave').onclick=function(){
+    var oldVal=JSON.stringify(c);
+    var oldStatus=c.status;
+    c.name=document.getElementById('ecName').value.trim();
+    c.date=document.getElementById('ecDate').value;
+    c.status=document.getElementById('ecStatus').value;
+    c.plotIds=document.getElementById('ecPlots').value.trim();
+    c.carbon=document.getElementById('ecCarbon').value?parseFloat(document.getElementById('ecCarbon').value):null;
+    c.remarks=document.getElementById('ecRemarks').value.trim();
+    saveDB();
+    var impact='修改了核证批次';
+    if(c.status!==oldStatus)impact+='；状态由 '+oldStatus+' 改为 '+c.status;
+    if(c.status==='delayed')impact+='，核证延迟将影响碳汇归集';
+    addAudit('修改','核证批次',id,oldVal,JSON.stringify(c),impact);
+    closeModal();renderAll();
+  };
+}
+
+function delCert(id){
+  if(!confirm('确认删除核证批次 '+id+'？'))return;
+  var c=db.certs.find(function(x){return x.id===id});
+  db.certs=db.certs.filter(function(x){return x.id!==id});
+  saveDB();
+  addAudit('删除','核证批次',id,JSON.stringify(c),'','删除核证批次');
+  renderAll();
+}
+
+function addRevenue(){
+  var id=document.getElementById('rId').value.trim();
+  var batchId=document.getElementById('rBatch').value;
+  var amount=document.getElementById('rAmount').value.trim();
+  var date=document.getElementById('rDate').value;
+  var source=document.getElementById('rSource').value.trim();
+  if(!id||!batchId||!amount){alert('流水号、批次、金额为必填');return}
+  if(db.revenues.find(function(r){return r.id===id})){alert('流水号已存在');return}
+  db.revenues.push({id:id,batchId:batchId,amount:parseFloat(amount),date:date,source:source});
+  saveDB();
+  addAudit('新增','收益流水',id,'','金额'+amount+'元','关联核证批次 '+batchId);
+  ['rId','rAmount','rDate','rSource'].forEach(function(fid){document.getElementById(fid).value=''});
+  renderAll();
+}
+
+function editRevenue(id){
+  var r=db.revenues.find(function(x){return x.id===id});if(!r)return;
+  refreshCertSelect();
+  document.getElementById('editModalTitle').textContent='编辑收益流水 '+id;
+  document.getElementById('editModalBody').innerHTML='<div class="row"><div class="field"><label>核证批次</label><select id="erBatch">'+db.certs.map(function(c){return '<option value="'+esc(c.id)+'"'+(c.id===r.batchId?' selected':'')+'>'+esc(c.id)+'</option>'}).join('')+'</select></div><div class="field"><label>金额</label><input id="erAmount" type="number" step="0.01" value="'+esc(r.amount)+'"></div><div class="field"><label>到账日期</label><input id="erDate" type="date" value="'+esc(r.date)+'"></div><div class="field"><label>来源</label><input id="erSource" value="'+esc(r.source)+'"></div></div>';
+  document.getElementById('editModal').classList.add('show');
+  document.getElementById('editModalSave').onclick=function(){
+    var oldVal=JSON.stringify(r);
+    r.batchId=document.getElementById('erBatch').value;
+    r.amount=parseFloat(document.getElementById('erAmount').value);
+    r.date=document.getElementById('erDate').value;
+    r.source=document.getElementById('erSource').value.trim();
+    saveDB();
+    addAudit('修改','收益流水',id,oldVal,JSON.stringify(r),'金额变更可能影响收益分配');
+    closeModal();renderAll();
+  };
+}
+
+function delRevenue(id){
+  if(!confirm('确认删除收益流水 '+id+'？'))return;
+  var r=db.revenues.find(function(x){return x.id===id});
+  db.revenues=db.revenues.filter(function(x){return x.id!==id});
+  saveDB();
+  addAudit('删除','收益流水',id,JSON.stringify(r),'','删除收益流水');
+  renderAll();
+}
+
+function addAgreement(){
+  var id=document.getElementById('aId').value.trim();
+  var name=document.getElementById('aName').value.trim();
+  var date=document.getElementById('aDate').value;
+  var type=document.getElementById('aType').value;
+  var desc=document.getElementById('aDesc').value.trim();
+  var impact=document.getElementById('aImpact').value.trim();
+  if(!id||!name){alert('变更编号、协议名称为必填');return}
+  if(db.agreements.find(function(a){return a.id===id})){alert('变更编号已存在');return}
+  db.agreements.push({id:id,name:name,date:date,type:type,desc:desc,impact:impact});
+  saveDB();
+  addAudit('新增','协议变更',id,'',name,'协议变更可能影响收益分成比例和归集结果');
+  ['aId','aName','aDate','aDesc','aImpact'].forEach(function(fid){document.getElementById(fid).value=''});
+  renderAll();
+}
+
+function editAgreement(id){
+  var a=db.agreements.find(function(x){return x.id===id});if(!a)return;
+  document.getElementById('editModalTitle').textContent='编辑协议变更 '+id;
+  document.getElementById('editModalBody').innerHTML='<div class="row"><div class="field"><label>协议名称</label><input id="eaName" value="'+esc(a.name)+'"></div><div class="field"><label>变更日期</label><input id="eaDate" type="date" value="'+esc(a.date)+'"></div><div class="field"><label>变更类型</label><select id="eaType"><option value="ratio"'+(a.type==='ratio'?' selected':'')+'>分成比例调整</option><option value="party"'+(a.type==='party'?' selected':'')+'>参与方变更</option><option value="scope"'+(a.type==='scope'?' selected':'')+'>范围调整</option><option value="other"'+(a.type==='other'?' selected':'')+'>其他</option></select></div><div class="field"><label>变更说明</label><input id="eaDesc" value="'+esc(a.desc)+'"></div><div class="field"><label>影响说明</label><input id="eaImpact" value="'+esc(a.impact)+'"></div></div>';
+  document.getElementById('editModal').classList.add('show');
+  document.getElementById('editModalSave').onclick=function(){
+    var oldVal=JSON.stringify(a);
+    a.name=document.getElementById('eaName').value.trim();
+    a.date=document.getElementById('eaDate').value;
+    a.type=document.getElementById('eaType').value;
+    a.desc=document.getElementById('eaDesc').value.trim();
+    a.impact=document.getElementById('eaImpact').value.trim();
+    saveDB();
+    addAudit('修改','协议变更',id,oldVal,JSON.stringify(a),'协议变更可能影响收益分成');
+    closeModal();renderAll();
+  };
+}
+
+function delAgreement(id){
+  if(!confirm('确认删除协议变更 '+id+'？'))return;
+  var a=db.agreements.find(function(x){return x.id===id});
+  db.agreements=db.agreements.filter(function(x){return x.id!==id});
+  saveDB();
+  addAudit('删除','协议变更',id,JSON.stringify(a),'','删除协议变更记录');
+  renderAll();
+}
+
+function importPlots(){
+  var text=document.getElementById('plotImport').value;
+  if(!text.trim())return;
+  importLines(text,5,function(good,bad){
+    bad.forEach(function(b){addBadRow('plot',b.raw,b.reason)});
+    good.forEach(function(parts){
+      if(db.plots.find(function(p){return p.id===parts[0]}))return;
+      db.plots.push({id:parts[0],name:parts[1],area:parseFloat(parts[2])||0,bounds:parts[3]||'',owner:parts[4]||''});
+    });
+    saveDB();
+    addAudit('批量导入','地块','',good.length+'条','',
+      '成功导入'+good.length+'条'+(bad.length>0?'，'+bad.length+'条坏行已单独记录':''));
+    document.getElementById('plotImport').value='';
+    renderAll();
+  });
+}
+
+function importTrees(){
+  var text=document.getElementById('treeImport').value;
+  if(!text.trim())return;
+  importLines(text,6,function(good,bad){
+    bad.forEach(function(b){addBadRow('tree',b.raw,b.reason)});
+    good.forEach(function(parts){
+      if(db.trees.find(function(t){return t.id===parts[0]}))return;
+      db.trees.push({id:parts[0],plotId:parts[1],species:parts[2],age:parseInt(parts[3])||0,date:parts[4]||'',recorder:parts[5]||''});
+    });
+    saveDB();
+    addAudit('批量导入','树龄记录','',good.length+'条','',
+      '成功导入'+good.length+'条'+(bad.length>0?'，'+bad.length+'条坏行已单独记录':''));
+    document.getElementById('treeImport').value='';
+    renderAll();
+  });
+}
+
+function importCerts(){
+  var text=document.getElementById('certImport').value;
+  if(!text.trim())return;
+  importLines(text,7,function(good,bad){
+    bad.forEach(function(b){addBadRow('cert',b.raw,b.reason)});
+    good.forEach(function(parts){
+      if(db.certs.find(function(c){return c.id===parts[0]}))return;
+      db.certs.push({id:parts[0],name:parts[1],date:parts[2]||'',status:parts[3]||'pending',plotIds:parts[4]||'',carbon:parseFloat(parts[5])||null,remarks:parts[6]||''});
+    });
+    saveDB();
+    addAudit('批量导入','核证批次','',good.length+'条','',
+      '成功导入'+good.length+'条'+(bad.length>0?'，'+bad.length+'条坏行已单独记录':''));
+    document.getElementById('certImport').value='';
+    renderAll();
+  });
+}
+
+function importRevenues(){
+  var text=document.getElementById('revenueImport').value;
+  if(!text.trim())return;
+  importLines(text,5,function(good,bad){
+    bad.forEach(function(b){addBadRow('revenue',b.raw,b.reason)});
+    good.forEach(function(parts){
+      if(db.revenues.find(function(r){return r.id===parts[0]}))return;
+      db.revenues.push({id:parts[0],batchId:parts[1],amount:parseFloat(parts[2])||0,date:parts[3]||'',source:parts[4]||''});
+    });
+    saveDB();
+    addAudit('批量导入','收益流水','',good.length+'条','',
+      '成功导入'+good.length+'条'+(bad.length>0?'，'+bad.length+'条坏行已单独记录':''));
+    document.getElementById('revenueImport').value='';
+    renderAll();
+  });
+}
+
+function runAggregation(){
+  var issues=detectOverlaps().concat(detectCertDelays());
+  var results=[];
+  var resultDiv=document.getElementById('aggResults');
+  var html='';
+
+  if(db.certs.length===0){
+    resultDiv.innerHTML='<div class="alert alert-warn">无核证批次数据，无法归集。</div>';
+    return;
+  }
+
+  db.certs.forEach(function(cert){
+    var plotIds=cert.plotIds.split(/[;；,，]/).map(function(s){return s.trim()}).filter(Boolean);
+    if(cert.status==='delayed'){
+      plotIds.forEach(function(pid){
+        results.push({certId:cert.id,plotId:pid,carbon:null,status:'fail',reason:'核证批次 '+cert.id+' 处于延迟状态，无法归集碳汇量'});
+      });
+      if(plotIds.length===0)results.push({certId:cert.id,plotId:'-',carbon:null,status:'fail',reason:'核证批次 '+cert.id+' 处于延迟状态且未关联地块'});
+      return;
+    }
+    if(cert.status!=='certified'){
+      plotIds.forEach(function(pid){
+        results.push({certId:cert.id,plotId:pid,carbon:null,status:'fail',reason:'核证批次 '+cert.id+' 尚未核证（状态: '+cert.status+'），无法归集'});
+      });
+      if(plotIds.length===0)results.push({certId:cert.id,plotId:'-',carbon:null,status:'fail',reason:'核证批次 '+cert.id+' 未核证且未关联地块'});
+      return;
+    }
+    if(plotIds.length===0){
+      results.push({certId:cert.id,plotId:'-',carbon:null,status:'fail',reason:'核证批次 '+cert.id+' 未关联任何地块'});
+      return;
+    }
+    var overlapPlots=detectOverlaps();
+    plotIds.forEach(function(pid){
+      var plot=db.plots.find(function(p){return p.id===pid});
+      if(!plot){
+        results.push({certId:cert.id,plotId:pid,carbon:null,status:'fail',reason:'地块 '+pid+' 在地块档案中不存在'});
+        return;
+      }
+      var treeRec=db.trees.filter(function(t){return t.plotId===pid});
+      var isOverlap=overlapPlots.some(function(o){return o.plots.indexOf(pid)!==-1});
+      var carbonPerPlot=cert.carbon?(cert.carbon/plotIds.length):0;
+      if(treeRec.length>0){
+        var avgAge=treeRec.reduce(function(s,t){return s+t.age},0)/treeRec.length;
+        var species=treeRec.map(function(t){return t.species}).filter(function(v,i,a){return a.indexOf(v)===i}).join('、');
+        var basis='已核证，地块面积 '+plot.area+' 亩，平均树龄 '+avgAge.toFixed(1)+' 年，树种: '+species;
+        if(isOverlap)basis+='；注意：该地块存在重叠';
+        results.push({certId:cert.id,plotId:pid,carbon:Math.round(carbonPerPlot*100)/100,status:'ok',reason:basis});
+      }else{
+        var basis2='已核证但无树龄记录，按面积均摊碳汇量';
+        if(isOverlap)basis2+='；注意：该地块存在重叠';
+        results.push({certId:cert.id,plotId:pid,carbon:Math.round(carbonPerPlot*100)/100,status:'ok',reason:basis2});
+      }
+    });
+  });
+
+  db.aggResults=results;
+  saveDB();
+
+  var okCount=results.filter(function(r){return r.status==='ok'}).length;
+  var failCount=results.filter(function(r){return r.status==='fail'}).length;
+  html+='<div class="alert '+(failCount>0?'alert-warn':'alert-ok')+'">归集完成：通过 '+okCount+' 条，失败 '+failCount+' 条</div>';
+
+  var overlapIssues=detectOverlaps();
+  var delayIssues=detectCertDelays();
+  if(overlapIssues.length>0){
+    html+='<div class="alert alert-warn">检测到地块重叠问题：<br>';
+    overlapIssues.forEach(function(o){html+='- '+esc(o.desc)+'<br>'});
+    html+='</div>';
+  }
+  if(delayIssues.length>0){
+    html+='<div class="alert alert-warn">检测到核证延迟：<br>';
+    delayIssues.forEach(function(d){html+='- '+esc(d.desc)+'<br>'});
+    html+='</div>';
+  }
+
+  if(failCount>0){
+    html+='<div class="alert alert-err">归集失败明细：<br>';
+    results.filter(function(r){return r.status==='fail'}).forEach(function(r){
+      html+='- ['+esc(r.certId)+' / '+esc(r.plotId)+'] '+esc(r.reason)+'<br>';
+    });
+    html+='</div>';
+  }
+
+  resultDiv.innerHTML=html;
+  addAudit('执行','碳汇归集','','',okCount+'通过/'+failCount+'失败',
+    failCount>0?'存在归集失败项，请查看原因':'归集全部通过');
+  renderAggResults();
+}
+
+function runAllocation(){
+  var alertsDiv=document.getElementById('allocAlerts');
+  var html='';
+
+  if(db.aggResults.length===0){
+    alertsDiv.innerHTML='<div class="alert alert-warn">请先执行碳汇归集。</div>';
+    return;
+  }
+
+  var okResults=db.aggResults.filter(function(r){return r.status==='ok'});
+  if(okResults.length===0){
+    alertsDiv.innerHTML='<div class="alert alert-err">无通过归集的结果，无法执行分配。</div>';
+    return;
+  }
+
+  var ratio=getCurrentRatio();
+  var results=[];
+
+  okResults.forEach(function(ar){
+    var plot=db.plots.find(function(p){return p.id===ar.plotId});
+    if(!plot)return;
+    var relatedRevenue=db.revenues.filter(function(r){return r.batchId===ar.certId});
+    var totalRevenue=relatedRevenue.reduce(function(s,r){return s+r.amount},0);
+    var plotCount=db.aggResults.filter(function(r){return r.certId===ar.certId&&r.status==='ok'}).length;
+    var plotRevenue=totalRevenue>0?(totalRevenue/plotCount):0;
+    var ownerShare=Math.round(plotRevenue*ratio.owner/(ratio.owner+ratio.coop)*100)/100;
+    var coopShare=Math.round(plotRevenue*ratio.coop/(ratio.owner+ratio.coop)*100)/100;
+
+    results.push({
+      certId:ar.certId,
+      plotId:ar.plotId,
+      owner:plot.owner,
+      carbon:ar.carbon,
+      totalRevenue:Math.round(plotRevenue*100)/100,
+      ownerShare:ownerShare,
+      coopShare:coopShare,
+      basis:ratio.basis+(totalRevenue>0?'；收益来源: '+relatedRevenue.map(function(r){return r.source}).join('、'):'')
+    });
+  });
+
+  var newAlloc={id:genId(),time:new Date().toLocaleString('zh-CN'),results:results,ratio:ratio};
+  db.allocations.push(newAlloc);
+  saveDB();
+
+  html+='<div class="alert alert-ok">分配完成，分成比例 权属人:合作社 = '+ratio.owner+':'+ratio.coop+'（'+ratio.basis+'）</div>';
+
+  var agreementChanges=detectAgreementChanges();
+  if(agreementChanges.length>0){
+    html+='<div class="alert alert-warn">当前存在协议变更：<br>';
+    agreementChanges.forEach(function(ac){html+='- '+esc(ac.desc)+'<br>'});
+    html+='</div>';
+  }
+
+  if(db.allocations.length>=2){
+    html+='<div class="alert alert-info">已保留历史版本，可在"历史版本对比"中查看新旧差异。</div>';
+  }
+
+  alertsDiv.innerHTML=html;
+  addAudit('执行','收益分配','','',results.length+'条分配结果',
+    '分成比例 '+ratio.owner+':'+ratio.coop+'，'+ratio.basis);
+  renderAllocations();
+}
+
+function exportTextReport(){
+  var lines=[];
+  lines.push('==============================');
+  lines.push('   农场碳汇收益分配报告');
+  lines.push('   生成时间: '+new Date().toLocaleString('zh-CN'));
+  lines.push('==============================');
+  lines.push('');
+
+  lines.push('一、地块档案');
+  lines.push('----------------------------');
+  if(db.plots.length===0){lines.push('（无数据）')}else{
+    db.plots.forEach(function(p){
+      lines.push(p.id+' | '+p.name+' | '+p.area+'亩 | 权属: '+p.owner+' | 边界: '+(p.bounds||'未填写'));
+    });
+  }
+  lines.push('');
+
+  lines.push('二、树龄记录');
+  lines.push('----------------------------');
+  if(db.trees.length===0){lines.push('（无数据）')}else{
+    db.trees.forEach(function(t){
+      lines.push(t.id+' | 地块: '+t.plotId+' | '+t.species+' | '+t.age+'年 | 测量: '+t.date);
+    });
+  }
+  lines.push('');
+
+  lines.push('三、核证批次');
+  lines.push('----------------------------');
+  if(db.certs.length===0){lines.push('（无数据）')}else{
+    db.certs.forEach(function(c){
+      var st={certified:'已核证',pending:'待核证',delayed:'核证延迟'};
+      lines.push(c.id+' | '+c.name+' | '+c.date+' | '+(st[c.status]||c.status)+' | 碳汇量: '+(c.carbon||'未填写')+' | 地块: '+c.plotIds);
+    });
+  }
+  lines.push('');
+
+  lines.push('四、收益流水');
+  lines.push('----------------------------');
+  if(db.revenues.length===0){lines.push('（无数据）')}else{
+    db.revenues.forEach(function(r){
+      lines.push(r.id+' | 批次: '+r.batchId+' | '+r.amount+'元 | '+r.date+' | 来源: '+r.source);
+    });
+  }
+  lines.push('');
+
+  lines.push('五、碳汇归集结果');
+  lines.push('----------------------------');
+  if(db.aggResults.length===0){lines.push('（未执行归集）')}else{
+    db.aggResults.forEach(function(r){
+      var st=r.status==='ok'?'通过':'失败';
+      lines.push('['+st+'] '+r.certId+' / '+r.plotId+' | 碳汇: '+(r.carbon||'-')+' | '+(r.reason||''));
+    });
+  }
+  lines.push('');
+
+  lines.push('六、收益分配结果');
+  lines.push('----------------------------');
+  if(db.allocations.length===0){lines.push('（未执行分配）')}else{
+    var latest=db.allocations[db.allocations.length-1];
+    lines.push('生成时间: '+latest.time);
+    lines.push('分成依据: '+latest.ratio.basis);
+    lines.push('');
+    latest.results.forEach(function(r){
+      lines.push(r.certId+' / '+r.plotId+' | 权属: '+r.owner+' | 碳汇: '+r.carbon+' | 收益: '+r.totalRevenue+'元 | 权属人份额: '+r.ownerShare+' | 合作社份额: '+r.coopShare);
+      lines.push('  依据: '+r.basis);
+    });
+  }
+  lines.push('');
+
+  lines.push('七、已知问题');
+  lines.push('----------------------------');
+  var allIssues=getAllIssues();
+  if(allIssues.length===0){lines.push('（无已知问题）')}else{
+    allIssues.forEach(function(iss){
+      var typeMap={overlap:'地块重叠',delay:'核证延迟',agreement_change:'协议变更'};
+      lines.push('['+(typeMap[iss.type]||iss.type)+'] '+iss.desc);
+    });
+  }
+  lines.push('');
+
+  lines.push('八、坏行记录');
+  lines.push('----------------------------');
+  if(db.badRows.length===0){lines.push('（无坏行）')}else{
+    db.badRows.forEach(function(b){
+      lines.push('['+b.source+'] '+b.raw+' | 原因: '+b.reason);
+    });
+  }
+  lines.push('');
+
+  lines.push('九、变更审计日志');
+  lines.push('----------------------------');
+  if(db.auditLog.length===0){lines.push('（无变更记录）')}else{
+    db.auditLog.slice(0,50).forEach(function(l){
+      lines.push(l.time+' ['+l.action+'] '+l.entity+' #'+l.entityId+(l.impact?' | 影响: '+l.impact:''));
+    });
+  }
+
+  var report=lines.join('\n');
+  var preview=document.getElementById('reportPreview');
+  preview.style.display='';
+  preview.textContent=report;
+
+  var blob=new Blob([report],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='农场碳汇收益分配报告_'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  addAudit('导出','文本报告','','','导出报告','包含'+allIssues.length+'个已知问题');
+}
+
+function exportJSONReport(){
+  var report={
+    exportTime:new Date().toISOString(),
+    plots:db.plots,
+    trees:db.trees,
+    certs:db.certs,
+    revenues:db.revenues,
+    agreements:db.agreements,
+    aggResults:db.aggResults,
+    allocations:db.allocations,
+    issues:getAllIssues(),
+    badRows:db.badRows,
+    auditLog:db.auditLog.slice(0,100)
+  };
+
+  var json=JSON.stringify(report,null,2);
+  var preview=document.getElementById('reportPreview');
+  preview.style.display='';
+  preview.textContent=json;
+
+  var blob=new Blob([json],{type:'application/json;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='农场碳汇收益分配数据_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  addAudit('导出','JSON数据','','','导出JSON','包含全部数据');
+}
+
+function closeModal(){
+  document.getElementById('editModal').classList.remove('show');
+}
+
+function switchTab(panel){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  var tab=document.querySelector('.tab[data-panel="'+panel+'"]');
+  if(tab)tab.classList.add('active');
+  var panelEl=document.getElementById('panel-'+panel);
+  if(panelEl)panelEl.classList.add('active');
+  location.hash=panel;
+}
+
+document.getElementById('tabs').addEventListener('click',function(e){
+  if(!e.target.classList.contains('tab'))return;
+  switchTab(e.target.getAttribute('data-panel'));
+});
+
+if(location.hash){
+  var h=location.hash.slice(1);
+  if(document.getElementById('panel-'+h))switchTab(h);
+}
+
+renderAll();
+
+if(location.search.indexOf('seed=1')!==-1&&!db.plots.length){
+  db.plots=[
+    {id:'PL001',name:'南山坡A区',area:50,bounds:'30.1,120.2;30.2,120.2',owner:'张三'},
+    {id:'PL002',name:'南山坡B区',area:40,bounds:'30.2,120.2;30.2,120.3',owner:'李四'},
+    {id:'PL003',name:'东坡C区',area:60,bounds:'30.1,120.2;30.1,120.3',owner:'王五'},
+    {id:'PL004',name:'西坡D区',area:35,bounds:'30.3,120.4;30.4,120.4',owner:'赵六'}
+  ];
+  db.trees=[
+    {id:'TA001',plotId:'PL001',species:'杉木',age:15,date:'2025-06-01',recorder:'技术员甲'},
+    {id:'TA002',plotId:'PL002',species:'松树',age:20,date:'2025-06-02',recorder:'技术员乙'},
+    {id:'TA003',plotId:'PL003',species:'杉木',age:12,date:'2025-06-03',recorder:'技术员甲'},
+    {id:'TA004',plotId:'PL004',species:'桉树',age:8,date:'2025-06-04',recorder:'技术员乙'}
+  ];
+  db.certs=[
+    {id:'CB001',name:'2025年第一批核证',date:'2025-03-15',status:'certified',plotIds:'PL001;PL002;PL003',carbon:120.5,remarks:'已通过第三方核证'},
+    {id:'CB002',name:'2025年第二批核证',date:'2025-04-20',status:'delayed',plotIds:'PL004',carbon:null,remarks:'核证材料待补充'}
+  ];
+  db.revenues=[
+    {id:'RV001',batchId:'CB001',amount:36000,date:'2025-05-10',source:'碳排放权交易所'},
+    {id:'RV002',batchId:'CB001',amount:12000,date:'2025-05-25',source:'碳基金回购'}
+  ];
+  db.agreements=[
+    {id:'AG001',name:'南山碳汇合作协议',date:'2024-01-10',type:'ratio',desc:'分成比例调整为6:4',impact:'权属人份额下降至60%'}
+  ];
+  db.badRows=[
+    {id:'br1',source:'cert',raw:'CB999,测试批次,2025-01-01,delayed,PL999',reason:'缺列（需7列，实际5列）',time:'2025-06-01 10:00:00'}
+  ];
+  saveDB();
+  addAudit('种子数据','全部','','','自动填充','自动填充测试数据');
+  renderAll();
+}
+
+if(location.search.indexOf('test=1')!==-1){
+  localStorage.removeItem(DB_KEY);
+  db=loadDB();
+  db.plots=[
+    {id:'PL001',name:'南山坡A区',area:50,bounds:'30.1,120.2;30.2,120.2',owner:'张三'},
+    {id:'PL002',name:'南山坡B区',area:40,bounds:'30.2,120.2;30.2,120.3',owner:'李四'},
+    {id:'PL003',name:'东坡C区',area:60,bounds:'30.1,120.2;30.1,120.3',owner:'王五'},
+    {id:'PL004',name:'西坡D区',area:35,bounds:'30.3,120.4;30.4,120.4',owner:'赵六'}
+  ];
+  db.trees=[
+    {id:'TA001',plotId:'PL001',species:'杉木',age:15,date:'2025-06-01',recorder:'技术员甲'},
+    {id:'TA002',plotId:'PL002',species:'松树',age:20,date:'2025-06-02',recorder:'技术员乙'},
+    {id:'TA003',plotId:'PL003',species:'杉木',age:12,date:'2025-06-03',recorder:'技术员甲'},
+    {id:'TA004',plotId:'PL004',species:'桉树',age:8,date:'2025-06-04',recorder:'技术员乙'}
+  ];
+  db.certs=[
+    {id:'CB001',name:'2025年第一批核证',date:'2025-03-15',status:'certified',plotIds:'PL001;PL002;PL003',carbon:120.5,remarks:'已通过第三方核证'},
+    {id:'CB002',name:'2025年第二批核证',date:'2025-04-20',status:'delayed',plotIds:'PL004',carbon:null,remarks:'核证材料待补充'}
+  ];
+  db.revenues=[
+    {id:'RV001',batchId:'CB001',amount:36000,date:'2025-05-10',source:'碳排放权交易所'},
+    {id:'RV002',batchId:'CB001',amount:12000,date:'2025-05-25',source:'碳基金回购'}
+  ];
+  db.agreements=[
+    {id:'AG001',name:'南山碳汇合作协议',date:'2024-01-10',type:'ratio',desc:'分成比例调整为6:4',impact:'权属人份额下降至60%'}
+  ];
+  saveDB();
+
+  addAudit('测试','数据初始化','','','4地块+4树龄+2核证+2流水+1协议','自动测试初始化');
+
+  runAggregation();
+  runAllocation();
+
+  var allocV1=db.allocations.length>0?db.allocations[db.allocations.length-1]:null;
+  var v1Results=allocV1?JSON.parse(JSON.stringify(allocV1.results)):[];
+  var v1Time=allocV1?allocV1.time:'';
+
+  var tree=db.trees.find(function(t){return t.id==='TA001'});
+  var oldAge=tree.age;
+  tree.age=25;
+  saveDB();
+  addAudit('测试-修改树龄','树龄记录','TA001','age='+oldAge,'age=25',
+    '树龄由 '+oldAge+' 年改为 25 年，验证收益分配是否保留新旧结果差别');
+
+  db.revenues.push({id:'RV003',batchId:'CB001',amount:24000,date:'2025-06-15',source:'碳信用回购'});
+  saveDB();
+  addAudit('测试-新增收益','收益流水','RV003','','金额24000元','新增收益流水，总收益从48000变为72000');
+
+  runAggregation();
+  runAllocation();
+
+  var allocV2=db.allocations.length>0?db.allocations[db.allocations.length-1]:null;
+  var v2Results=allocV2?allocV2.results:[];
+  var v2Time=allocV2?allocV2.time:'';
+
+  renderAll();
+  switchTab('allocation');
+
+  console.log('=== 验收测试结果 ===');
+  console.log('第一版分配('+v1Time+'):');
+  v1Results.forEach(function(r){console.log('  '+r.plotId+' '+r.owner+' 收益:'+r.totalRevenue+' 权属人:'+r.ownerShare+' 合作社:'+r.coopShare)});
+  console.log('第二版分配('+v2Time+'):');
+  v2Results.forEach(function(r){console.log('  '+r.plotId+' '+r.owner+' 收益:'+r.totalRevenue+' 权属人:'+r.ownerShare+' 合作社:'+r.coopShare)});
+  console.log('分配版本数:',db.allocations.length);
+  console.log('审计日志条数:',db.auditLog.length);
+  console.log('坏行数:',db.badRows.length);
+  console.log('地块重叠检测:',detectOverlaps().length,'个');
+  console.log('核证延迟检测:',detectCertDelays().length,'个');
+  console.log('协议变更检测:',detectAgreementChanges().length,'个');
+}
+</script>
+</body>
+</html>
