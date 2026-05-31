@@ -1,0 +1,35 @@
+{
+  "export_timestamp": "20260531_102044",
+  "total_files_exported": 12,
+  "exported_files": [
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_坏行记录.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_坏行记录.xlsx",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_电流缺采记录.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_电流缺采记录.xlsx",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_坡度版本错误.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_坡度版本错误.xlsx",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_原始能量数据.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_区间能量汇总.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_列车能量汇总.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_损失估算明细.csv",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_再生制动能量分析.xlsx",
+    "/Users/mac/pro/solo/workspaces/y12162/output/20260531_102044_能量分析结果.json"
+  ],
+  "data_summary": {
+    "initial_rows": 92,
+    "valid_rows": 68,
+    "bad_rows": 11,
+    "current_missing_groups": 1,
+    "duplicate_sections": 0,
+    "wrong_slope_versions": 1
+  },
+  "energy_summary": {
+    "总数据点": 68,
+    "总列车数": 2,
+    "总区间数": 5,
+    "总制动能量(kWh)": 4.42,
+    "总牵引能量(kWh)": 17.49,
+    "平均能量回收率(%)": 25.27,
+    "制动阶段数": 7
+  }
+}
