@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap');
+
+:root {
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #FFF8F0;
+  color: #5D3A1A;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-milk-400 text-white px-6 py-2 rounded-full font-medium shadow-md
+           hover:bg-milk-500 hover:shadow-lg hover:-translate-y-0.5
+           transition-all duration-200 active:translate-y-0;
+  }
+  .btn-secondary {
+    @apply bg-milk-100 text-milk-700 px-4 py-2 rounded-full font-medium
+           hover:bg-milk-200 transition-all duration-200;
+  }
+  .btn-danger {
+    @apply bg-red-500 text-white px-4 py-2 rounded-full font-medium
+           hover:bg-red-600 transition-all duration-200;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-md border border-milk-200 p-4;
+  }
+  .card-hover {
+    @apply card hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer;
+  }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 149, 108, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(200, 149, 108, 0); }
+}
+
+.animate-slide-in {
+  animation: slideInUp 0.3s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
