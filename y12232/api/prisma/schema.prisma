@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../../data/db.sqlite"
+}
+
+model ImportBatch {
+  id          String   @id @default(uuid())
+  type        String
+  filename    String
+  uploadedBy  String   @default("admin")
+  uploadedAt  DateTime @default(now())
+  recordCount Int      @default(0)
+  status      String   @default("success")
+
+  farmers  Farmer[]
+  areas    AreaDeclaration[]
+  tracks   TrackRecord[]
+  rules    SubsidyRule[]
+}
+
+model Farmer {
+  id        String   @id @default(uuid())
+  batchId   String
+  idCard    String
+  name      String
+  village   String
+  phone     String
+  createdAt DateTime @default(now())
+
+  batch           ImportBatch         @relation(fields: [batchId], references: [id])
+  areaDeclarations AreaDeclaration[]
+  trackRecords    TrackRecord[]
+  verificationRecords VerificationRecord[]
+}
+
+model AreaDeclaration {
+  id              String   @id @default(uuid())
+  batchId         String
+  farmerId        String
+  plotNo          String
+  declaredArea    Decimal
+  cropType        String
+  declareDate     DateTime
+  signatureStatus String   @default("unsigned")
+  createdAt       DateTime @default(now())
+
+  batch    ImportBatch @relation(fields: [batchId], references: [id])
+  farmer   Farmer      @relation(fields: [farmerId], references: [id])
+  verificationRecords VerificationRecord[]
+}
+
+model TrackRecord {
+  id              String   @id @default(uuid())
+  batchId         String
+  farmerId        String
+  trackArea       Decimal
+  trackPointCount Int
+  hasBreakpoint   Boolean  @default(false)
+  breakpointDetail String?
+  trackDate       DateTime
+  createdAt       DateTime @default(now())
+
+  batch    ImportBatch @relation(fields: [batchId], references: [id])
+  farmer   Farmer      @relation(fields: [farmerId], references: [id])
+  verificationRecords VerificationRecord[]
+}
+
+model SubsidyRule {
+  id            String   @id @default(uuid())
+  batchId       String
+  cropType      String
+  subsidyPerMu  Decimal
+  year          Int
+  createdAt     DateTime @default(now())
+
+  batch ImportBatch @relation(fields: [batchId], references: [id])
+}
+
+model VerificationRecord {
+  id           String   @id @default(uuid())
+  farmerId     String
+  areaId       String
+  trackId      String
+  verifiedArea Decimal  @default(0)
+  status       String   @default("pending")
+  hasIssues    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  farmer     Farmer           @relation(fields: [farmerId], references: [id])
+  area       AreaDeclaration  @relation(fields: [areaId], references: [id])
+  track      TrackRecord      @relation(fields: [trackId], references: [id])
+  issues     IssueMark[]
+  histories  StatusHistory[]
+  review     ReviewResult?
+}
+
+model IssueMark {
+  id          String   @id @default(uuid())
+  recordId    String
+  type        String
+  description String
+  severity    String   @default("medium")
+  markedBy    String   @default("system")
+  createdAt   DateTime @default(now())
+
+  record VerificationRecord @relation(fields: [recordId], references: [id])
+}
+
+model StatusHistory {
+  id         String   @id @default(uuid())
+  recordId   String
+  fromStatus String
+  toStatus   String
+  operator   String   @default("admin")
+  remark     String?
+  createdAt  DateTime @default(now())
+
+  record VerificationRecord @relation(fields: [recordId], references: [id])
+}
+
+model ReviewResult {
+  id          String   @id @default(uuid())
+  recordId    String   @unique
+  conclusion  String
+  reviewer    String
+  opinion     String?
+  reviewedAt  DateTime @default(now())
+
+  record VerificationRecord @relation(fields: [recordId], references: [id])
+}
