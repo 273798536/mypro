@@ -1,0 +1,16 @@
+{
+  "audit_id": "3d87faddfcd2",
+  "timestamp": "2026-05-31 15:49:31.411324",
+  "entity_type": "ProjectContract",
+  "entity_id": "c5354ead",
+  "action": "ratio_update",
+  "old_value": {
+    "version": 0
+  },
+  "new_value": {
+    "version": 1
+  },
+  "reason": "初始分成比例",
+  "affected_results": [],
+  "operator": "张三"
+}

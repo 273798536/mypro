@@ -1,0 +1,15 @@
+{
+  "audit_id": "43f83794b40e",
+  "timestamp": "2026-05-31 15:49:31.416613",
+  "entity_type": "SharingResult",
+  "entity_id": "ff1bf8135a51",
+  "action": "calculate",
+  "old_value": null,
+  "new_value": {
+    "project_id": "c5354ead",
+    "version": 2
+  },
+  "reason": "补录数据后重算",
+  "affected_results": [],
+  "operator": "财务小王"
+}

@@ -1,0 +1,16 @@
+{
+  "audit_id": "3753298d9fd8",
+  "timestamp": "2026-05-31 15:49:31.414563",
+  "entity_type": "MeterReading",
+  "entity_id": "8698ffc4b924",
+  "action": "backfill",
+  "old_value": null,
+  "new_value": {
+    "project_id": "c5354ead",
+    "month": "2024-03",
+    "kwh": 36000
+  },
+  "reason": "电表故障补录",
+  "affected_results": [],
+  "operator": "李四"
+}

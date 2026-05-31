@@ -1,0 +1,100 @@
+{
+  "result_id": "ff1bf8135a51",
+  "project_id": "c5354ead",
+  "version": 2,
+  "calculation_time": "2026-05-31 15:49:31.416375",
+  "period_start": "2024-01",
+  "period_end": "2024-03",
+  "ratio_version": 1,
+  "ratio_entries": [
+    {
+      "party": "业主方",
+      "percentage": 40.0
+    },
+    {
+      "party": "节能服务公司",
+      "percentage": 60.0
+    }
+  ],
+  "exclusions": [
+    {
+      "trace_id": "cfe08cba97dc",
+      "month": "2024-03",
+      "reason": "设备检修",
+      "source_refs": [
+        {
+          "entity_type": "MaintenanceRecord",
+          "entity_id": "1cadd3e901ea",
+          "field": "excluded_kwh",
+          "description": "检修剔除: 冷却塔年度大修"
+        }
+      ],
+      "excluded_kwh": 967.741935483871
+    }
+  ],
+  "savings_details": [
+    {
+      "month": "2024-01",
+      "baseline_kwh": 52000.0,
+      "actual_kwh": 35000.0,
+      "baseline_adjustment_kwh": 2000.0,
+      "baseline_adjustment_ref": {
+        "entity_type": "BaselineAdjustment",
+        "entity_id": "a34279248a67",
+        "field": "adjusted_kwh",
+        "description": "基准调整: 1月新增服务器机房，基准电量上调"
+      },
+      "maintenance_exclusion_kwh": 0.0,
+      "maintenance_exclusion_refs": [],
+      "missing_reading": false,
+      "savings_kwh": 17000.0,
+      "savings_revenue": 14450.0
+    },
+    {
+      "month": "2024-02",
+      "baseline_kwh": 50000.0,
+      "actual_kwh": 33000.0,
+      "baseline_adjustment_kwh": 0.0,
+      "baseline_adjustment_ref": null,
+      "maintenance_exclusion_kwh": 0.0,
+      "maintenance_exclusion_refs": [],
+      "missing_reading": false,
+      "savings_kwh": 17000.0,
+      "savings_revenue": 14450.0
+    },
+    {
+      "month": "2024-03",
+      "baseline_kwh": 50000.0,
+      "actual_kwh": 36000.0,
+      "baseline_adjustment_kwh": 0.0,
+      "baseline_adjustment_ref": null,
+      "maintenance_exclusion_kwh": 967.741935483871,
+      "maintenance_exclusion_refs": [
+        {
+          "entity_type": "MaintenanceRecord",
+          "entity_id": "1cadd3e901ea",
+          "field": "excluded_kwh",
+          "description": "检修剔除: 冷却塔年度大修"
+        }
+      ],
+      "missing_reading": false,
+      "savings_kwh": 13032.258064516129,
+      "savings_revenue": 11077.419354838708
+    }
+  ],
+  "total_savings_kwh": 47032.25806451613,
+  "total_revenue": 39977.41935483871,
+  "sharing_breakdown": [
+    {
+      "party": "业主方",
+      "percentage": 40.0,
+      "amount": 15990.967741935487
+    },
+    {
+      "party": "节能服务公司",
+      "percentage": 60.0,
+      "amount": 23986.451612903227
+    }
+  ],
+  "trigger_reason": "补录3月电表读数和检修记录后重算"
+}

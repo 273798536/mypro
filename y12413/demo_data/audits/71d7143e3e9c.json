@@ -1,0 +1,14 @@
+{
+  "audit_id": "71d7143e3e9c",
+  "timestamp": "2026-05-31 15:49:31.410938",
+  "entity_type": "ProjectContract",
+  "entity_id": "c5354ead",
+  "action": "create",
+  "old_value": null,
+  "new_value": {
+    "name": "XX大厦照明节能改造项目"
+  },
+  "reason": "创建项目合同",
+  "affected_results": [],
+  "operator": "张三"
+}

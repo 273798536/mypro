@@ -1,0 +1,40 @@
+{
+  "project_id": "c5354ead",
+  "name": "XX大厦照明节能改造项目",
+  "contract_start": "2024-01-01",
+  "contract_end": "2026-12-31",
+  "baseline_kwh": 50000.0,
+  "baseline_source": "合同附件3-2023年用电明细",
+  "unit_price": 0.85,
+  "sharing_ratios": [
+    {
+      "version": 1,
+      "effective_from": "2024-01-01",
+      "entries": [
+        {
+          "party": "业主方",
+          "percentage": 40.0
+        },
+        {
+          "party": "节能服务公司",
+          "percentage": 60.0
+        }
+      ],
+      "contract_ref": "合同第5.2条",
+      "note": ""
+    }
+  ],
+  "baseline_adjustments": [
+    {
+      "adjustment_id": "a34279248a67",
+      "month": "2024-01",
+      "original_kwh": 50000.0,
+      "adjusted_kwh": 52000.0,
+      "reason": "1月新增服务器机房，基准电量上调",
+      "source_refs": [],
+      "created_at": "2026-05-31 15:49:31.414967"
+    }
+  ],
+  "created_at": "2026-05-31 15:49:31.410460",
+  "updated_at": "2026-05-31 15:49:31.410465"
+}

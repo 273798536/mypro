@@ -1,0 +1,15 @@
+{
+  "audit_id": "651ec0ccf9a3",
+  "timestamp": "2026-05-31 15:49:31.414265",
+  "entity_type": "SharingResult",
+  "entity_id": "05db24855532",
+  "action": "calculate",
+  "old_value": null,
+  "new_value": {
+    "project_id": "c5354ead",
+    "version": 1
+  },
+  "reason": "Q1季度结算",
+  "affected_results": [],
+  "operator": "财务小王"
+}

@@ -1,0 +1,16 @@
+{
+  "audit_id": "118e53282265",
+  "timestamp": "2026-05-31 15:49:31.411986",
+  "entity_type": "MeterReading",
+  "entity_id": "36fd77515e4a",
+  "action": "add",
+  "old_value": null,
+  "new_value": {
+    "project_id": "c5354ead",
+    "month": "2024-01",
+    "kwh": 35000
+  },
+  "reason": "正常抄录",
+  "affected_results": [],
+  "operator": "李四"
+}

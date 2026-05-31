@@ -1,0 +1,11 @@
+{
+  "record_id": "1cadd3e901ea",
+  "project_id": "c5354ead",
+  "start_date": "2024-03-15",
+  "end_date": "2024-03-20",
+  "description": "冷却塔年度大修",
+  "excluded_kwh": 5000.0,
+  "exclusion_reason": "检修期间设备全部停机",
+  "source_ref": "工单WO-2024-0315",
+  "created_at": "2026-05-31 15:49:31.414687"
+}

@@ -1,0 +1,17 @@
+{
+  "alert_id": "459cb2c8167c",
+  "project_id": "c5354ead",
+  "phase": "monthly",
+  "level": "warning",
+  "title": "2024-03 有 1 项检修记录",
+  "message": "设备检修已剔除约 5000.00 kwh 用电量，请确认检修剔除数是否准确",
+  "source_refs": [
+    {
+      "entity_type": "MaintenanceRecord",
+      "entity_id": "1cadd3e901ea",
+      "field": "excluded_kwh",
+      "description": "2024-03-15~2024-03-20: 冷却塔年度大修"
+    }
+  ],
+  "generated_at": "2026-05-31 15:49:31.415675"
+}

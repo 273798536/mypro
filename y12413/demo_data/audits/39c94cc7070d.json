@@ -1,0 +1,17 @@
+{
+  "audit_id": "39c94cc7070d",
+  "timestamp": "2026-05-31 15:49:31.414841",
+  "entity_type": "MaintenanceRecord",
+  "entity_id": "1cadd3e901ea",
+  "action": "add",
+  "old_value": null,
+  "new_value": {
+    "project_id": "c5354ead",
+    "start_date": "2024-03-15",
+    "end_date": "2024-03-20",
+    "excluded_kwh": 5000
+  },
+  "reason": "新增检修记录",
+  "affected_results": [],
+  "operator": "运维主管"
+}

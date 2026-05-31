@@ -1,0 +1,18 @@
+{
+  "audit_id": "d94ae1ad1f00",
+  "timestamp": "2026-05-31 15:49:31.415117",
+  "entity_type": "ProjectContract",
+  "entity_id": "c5354ead",
+  "action": "baseline_adjust",
+  "old_value": {
+    "month": "2024-01",
+    "kwh": 50000
+  },
+  "new_value": {
+    "month": "2024-01",
+    "kwh": 52000
+  },
+  "reason": "新增服务器机房",
+  "affected_results": [],
+  "operator": "运营经理"
+}

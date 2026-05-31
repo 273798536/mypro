@@ -1,0 +1,73 @@
+{
+  "result_id": "05db24855532",
+  "project_id": "c5354ead",
+  "version": 1,
+  "calculation_time": "2026-05-31 15:49:31.413977",
+  "period_start": "2024-01",
+  "period_end": "2024-03",
+  "ratio_version": 1,
+  "ratio_entries": [
+    {
+      "party": "业主方",
+      "percentage": 40.0
+    },
+    {
+      "party": "节能服务公司",
+      "percentage": 60.0
+    }
+  ],
+  "exclusions": [],
+  "savings_details": [
+    {
+      "month": "2024-01",
+      "baseline_kwh": 50000.0,
+      "actual_kwh": 35000.0,
+      "baseline_adjustment_kwh": 0.0,
+      "baseline_adjustment_ref": null,
+      "maintenance_exclusion_kwh": 0.0,
+      "maintenance_exclusion_refs": [],
+      "missing_reading": false,
+      "savings_kwh": 15000.0,
+      "savings_revenue": 12750.0
+    },
+    {
+      "month": "2024-02",
+      "baseline_kwh": 50000.0,
+      "actual_kwh": 33000.0,
+      "baseline_adjustment_kwh": 0.0,
+      "baseline_adjustment_ref": null,
+      "maintenance_exclusion_kwh": 0.0,
+      "maintenance_exclusion_refs": [],
+      "missing_reading": false,
+      "savings_kwh": 17000.0,
+      "savings_revenue": 14450.0
+    },
+    {
+      "month": "2024-03",
+      "baseline_kwh": 50000.0,
+      "actual_kwh": 0.0,
+      "baseline_adjustment_kwh": 0.0,
+      "baseline_adjustment_ref": null,
+      "maintenance_exclusion_kwh": 0.0,
+      "maintenance_exclusion_refs": [],
+      "missing_reading": false,
+      "savings_kwh": 50000.0,
+      "savings_revenue": 42500.0
+    }
+  ],
+  "total_savings_kwh": 82000.0,
+  "total_revenue": 69700.0,
+  "sharing_breakdown": [
+    {
+      "party": "业主方",
+      "percentage": 40.0,
+      "amount": 27880.0
+    },
+    {
+      "party": "节能服务公司",
+      "percentage": 60.0,
+      "amount": 41820.0
+    }
+  ],
+  "trigger_reason": "Q1季度结算"
+}
