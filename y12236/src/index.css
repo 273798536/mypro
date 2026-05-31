@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --color-space-950: #050a14;
+  --color-space-900: #0a1628;
+  --color-space-800: #0f1f3a;
+  --color-space-700: #1a2d50;
+  --color-space-600: #2a3d66;
+  --color-neon-cyan: #00f5ff;
+  --color-neon-red: #ff3366;
+  --color-neon-green: #00ff88;
+  --color-neon-yellow: #ffaa00;
+  --color-neon-purple: #aa66ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-space-950);
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@layer components {
+  .panel-glass {
+    @apply bg-space-800/60 backdrop-blur-md border border-neon-cyan/30 rounded-lg;
+  }
+
+  .panel-glass-red {
+    @apply bg-space-800/60 backdrop-blur-md border border-neon-red/50 rounded-lg;
+  }
+
+  .panel-glass-green {
+    @apply bg-space-800/60 backdrop-blur-md border border-neon-green/50 rounded-lg;
+  }
+
+  .panel-glass-yellow {
+    @apply bg-space-800/60 backdrop-blur-md border border-neon-yellow/50 rounded-lg;
+  }
+
+  .panel-glass-purple {
+    @apply bg-space-800/60 backdrop-blur-md border border-neon-purple/50 rounded-lg;
+  }
+
+  .btn-neon {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 
+           border-2 border-neon-cyan/50 bg-space-700/50 text-neon-cyan
+           hover:border-neon-cyan hover:bg-neon-cyan/10 hover:shadow-neon-cyan
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-neon-red {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 
+           border-2 border-neon-red/50 bg-space-700/50 text-neon-red
+           hover:border-neon-red hover:bg-neon-red/10 hover:shadow-neon-red
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-neon-green {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 
+           border-2 border-neon-green/50 bg-space-700/50 text-neon-green
+           hover:border-neon-green hover:bg-neon-green/10 hover:shadow-neon-green
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-neon-yellow {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 
+           border-2 border-neon-yellow/50 bg-space-700/50 text-neon-yellow
+           hover:border-neon-yellow hover:bg-neon-yellow/10 hover:shadow-neon-yellow
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .gauge-value {
+    @apply font-mono text-2xl font-bold tracking-wider;
+  }
+
+  .data-label {
+    @apply text-xs text-gray-400 uppercase tracking-widest;
+  }
+
+  .scanline-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.3), transparent);
+    animation: scanline 8s linear infinite;
+    pointer-events: none;
+  }
+
+  .crt-effect {
+    position: relative;
+  }
+
+  .crt-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+  }
+
+  .alert-flash {
+    animation: alertFlash 0.5s ease-in-out infinite alternate;
+  }
+
+  .number-scroll {
+    transition: all 0.3s ease-out;
+  }
+}
+
+@keyframes alertFlash {
+  0% { box-shadow: 0 0 5px rgba(255, 51, 102, 0.5); }
+  100% { box-shadow: 0 0 30px rgba(255, 51, 102, 0.8), 0 0 50px rgba(255, 51, 102, 0.4); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.star {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-space-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neon-cyan);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-cyan);
+  opacity: 0.8;
+}
