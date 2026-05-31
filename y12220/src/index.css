@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #1e293b;
+  background-color: #f8fafc;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-500 shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary-700 border border-primary-200 hover:bg-primary-50 focus:ring-primary-500;
+  }
+
+  .btn-success {
+    @apply bg-accent-green-600 text-white hover:bg-accent-green-700 focus:ring-accent-green-500 shadow-sm;
+  }
+
+  .btn-warning {
+    @apply bg-accent-amber-500 text-white hover:bg-accent-amber-600 focus:ring-accent-amber-500 shadow-sm;
+  }
+
+  .btn-danger {
+    @apply bg-accent-red-600 text-white hover:bg-accent-red-700 focus:ring-accent-red-500 shadow-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-sm;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1;
+  }
+
+  .table-head {
+    @apply bg-slate-50 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider px-4 py-3;
+  }
+
+  .table-cell {
+    @apply px-4 py-3 text-sm text-slate-700 border-t border-slate-100;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-slate-50 transition-colors duration-150;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .anomaly-row {
+    @apply bg-accent-amber-50 border-l-4 border-accent-amber-500;
+  }
+
+  .status-draft {
+    @apply bg-slate-100 text-slate-700;
+  }
+
+  .status-pending {
+    @apply bg-accent-amber-100 text-accent-amber-700;
+  }
+
+  .status-approved {
+    @apply bg-accent-green-100 text-accent-green-700;
+  }
+
+  .status-rejected {
+    @apply bg-accent-red-100 text-accent-red-700;
+  }
+
+  .status-settled {
+    @apply bg-primary-100 text-primary-700;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Animation delays for staggered fade-in */
+.animate-fade-in-delay-1 { animation-delay: 50ms; }
+.animate-fade-in-delay-2 { animation-delay: 100ms; }
+.animate-fade-in-delay-3 { animation-delay: 150ms; }
+.animate-fade-in-delay-4 { animation-delay: 200ms; }
+.animate-fade-in-delay-5 { animation-delay: 250ms; }
