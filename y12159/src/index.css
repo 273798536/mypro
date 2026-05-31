@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #1D2129;
+  color: #F2F3F5;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@layer components {
+  .industrial-card {
+    @apply bg-industrial-panel border border-industrial-border/20 rounded-sm;
+    @apply shadow-lg;
+  }
+
+  .industrial-btn {
+    @apply px-4 py-2 border-2 border-primary font-medium transition-all duration-150;
+    @apply hover:bg-primary hover:text-white active:translate-y-0.5 active:shadow-inner;
+  }
+
+  .industrial-btn-primary {
+    @apply industrial-btn bg-primary text-white;
+    @apply hover:bg-primary-600;
+  }
+
+  .industrial-btn-secondary {
+    @apply industrial-btn bg-transparent text-primary;
+    @apply hover:bg-primary/10;
+  }
+
+  .industrial-btn-danger {
+    @apply industrial-btn border-danger text-danger;
+    @apply hover:bg-danger hover:text-white;
+  }
+
+  .industrial-input {
+    @apply w-full px-3 py-2 bg-industrial-bg border border-industrial-border/30 rounded-sm;
+    @apply focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary;
+    @apply font-mono text-sm;
+  }
+
+  .status-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-sm;
+  }
+
+  .status-pass {
+    @apply status-badge bg-success/20 text-success border border-success/30;
+  }
+
+  .status-warning {
+    @apply status-badge bg-warning/20 text-warning border border-warning/30;
+  }
+
+  .status-fail {
+    @apply status-badge bg-danger/20 text-danger border border-danger/30;
+  }
+
+  .status-missing {
+    @apply status-badge bg-industrial-muted/20 text-industrial-muted border border-industrial-muted/30;
+  }
+
+  .data-table {
+    @apply w-full border-collapse;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 text-left text-xs font-medium text-industrial-muted uppercase tracking-wider;
+    @apply bg-industrial-bg border-b border-industrial-border/20;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 text-sm border-b border-industrial-border/10;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-industrial-bg/50;
+  }
+
+  .section-divider {
+    @apply h-px bg-industrial-border/20 my-4;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2A2F3A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #86909C;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C9CDD4;
+}
