@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web3空投税务台账报告</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; }
+    .header h1 { font-size: 28px; margin-bottom: 10px; }
+    .header p { opacity: 0.9; }
+    .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .section h2 { font-size: 20px; margin-bottom: 20px; color: #1a202c; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
+    .section h3 { font-size: 16px; margin: 20px 0 12px; color: #4a5568; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .summary-card { background: #f7fafc; padding: 16px; border-radius: 8px; border-left: 4px solid #667eea; }
+    .summary-card .label { font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; }
+    .summary-card .value { font-size: 24px; font-weight: 700; color: #2d3748; margin-top: 4px; }
+    .summary-card.positive { border-left-color: #48bb78; }
+    .summary-card.warning { border-left-color: #ed8936; }
+    .summary-card.danger { border-left-color: #f56565; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f7fafc; font-weight: 600; color: #4a5568; }
+    tr:hover { background: #f7fafc; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+    .badge-airdrop { background: #e6fffa; color: #234e52; }
+    .badge-unlock { background: #fffaf0; color: #744210; }
+    .badge-disposal { background: #fef5f5; color: #742a2a; }
+    .badge-internal { background: #edf2f7; color: #4a5568; }
+    .badge-price-gap { background: #feebc8; color: #7b341e; }
+    .badge-duplicate { background: #fed7d7; color: #742a2a; }
+    .badge-withdrawn { background: #fce7f3; color: #702459; }
+    .alert { padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+    .alert-warning { background: #fffaf0; border-left: 4px solid #ed8936; }
+    .alert-info { background: #ebf8ff; border-left: 4px solid #3182ce; }
+    .alert-title { font-weight: 600; margin-bottom: 8px; }
+    .alert-content { font-size: 14px; color: #4a5568; }
+    .recommendation-list { list-style: none; }
+    .recommendation-list li { padding: 8px 0; padding-left: 24px; position: relative; }
+    .recommendation-list li:before { content: "💡"; position: absolute; left: 0; }
+    .processing-notes { background: #f7fafc; padding: 16px; border-radius: 8px; font-size: 13px; color: #718096; }
+    .processing-notes code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Web3空投税务台账报告</h1>
+      <p>生成时间: 2026-05-31 16:21:17 | 数据来源: 钱包流水 + 空投公告 + 币价快照</p>
+    </div>
+
+    <div class="section">
+      <h2>📈 执行摘要</h2>
+      <div class="summary-grid">
+        <div class="summary-card positive">
+          <div class="label">空投总收入</div>
+          <div class="value">$3,172.19</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">资产处置总额</div>
+          <div class="value">$3,272.50</div>
+        </div>
+        <div class="summary-card positive">
+          <div class="label">资本利得/损失</div>
+          <div class="value">$2,573.95</div>
+        </div>
+        <div class="summary-card warning">
+          <div class="label">提前解锁价值</div>
+          <div class="value">$0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔒 锁仓追踪</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="label">已解锁代币</div>
+          <div class="value">2050.5000</div>
+        </div>
+        <div class="summary-card warning">
+          <div class="label">仍在锁仓</div>
+          <div class="value">0.0000</div>
+        </div>
+        <div class="summary-card danger">
+          <div class="label">提前解锁</div>
+          <div class="value">0.0000</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+
+    <div class="section">
+      <h2>📋 税务明细记录</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>类型</th>
+            <th>代币</th>
+            <th>数量</th>
+            <th>单价(USD)</th>
+            <th>价值(USD)</th>
+            <th>损益(USD)</th>
+            <th>持有期</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td>2024-01-15</td>
+              <td><span class="badge badge-airdrop">空投收入</span></td>
+              <td>ARB</td>
+              <td>1250.5000</td>
+              <td>$1.40</td>
+              <td>$1747.07</td>
+              <td style="color: #38a169">$1747.07</td>
+              <td>short_term</td>
+              <td>空投收入 - Arbitrum  </td>
+            </tr>
+          
+            <tr>
+              <td>2024-01-31</td>
+              <td><span class="badge badge-disposal">资产处置</span></td>
+              <td>ETH</td>
+              <td>1.5000</td>
+              <td>$1817.93</td>
+              <td>$2726.89</td>
+              <td style="color: #38a169">$2726.89</td>
+              <td>short_term</td>
+              <td>资产处置  </td>
+            </tr>
+          
+            <tr>
+              <td>2024-03-01</td>
+              <td><span class="badge badge-airdrop">空投收入</span></td>
+              <td>OP</td>
+              <td>800.0000</td>
+              <td>$1.78</td>
+              <td>$1425.12</td>
+              <td style="color: #38a169">$1425.12</td>
+              <td>short_term</td>
+              <td>空投收入 - Optimism  </td>
+            </tr>
+          
+            <tr>
+              <td>2024-04-10</td>
+              <td><span class="badge badge-disposal">资产处置</span></td>
+              <td>ARB</td>
+              <td>500.0000</td>
+              <td>$1.09</td>
+              <td>$545.60</td>
+              <td style="color: #e53e3e">$-152.95</td>
+              <td>short_term</td>
+              <td>资产处置  </td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>💡 处理建议与说明</h2>
+      
+      
+
+      
+
+      
+
+      
+
+      <div class="processing-notes">
+        <strong>📝 数据处理说明:</strong>
+        <ul>
+          <li>成本计算方法: <code>FIFO (先进先出)</code></li>
+          <li>长期持有判定: <code>365天</code></li>
+          <li>币价插值最大缺口: <code>7天</code></li>
+          <li>交易-公告匹配窗口: <code>1440分钟</code></li>
+          <li>本报告仅供参考,不构成税务建议。请咨询专业税务顾问。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 按代币汇总</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>代币</th>
+            <th>记录数</th>
+            <th>总价值(USD)</th>
+            <th>总损益(USD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>ARB</strong></td>
+              <td>2</td>
+              <td>$2292.67</td>
+              <td style="color: #38a169">$1594.12</td>
+            </tr>
+          
+            <tr>
+              <td><strong>ETH</strong></td>
+              <td>1</td>
+              <td>$2726.89</td>
+              <td style="color: #38a169">$2726.89</td>
+            </tr>
+          
+            <tr>
+              <td><strong>OP</strong></td>
+              <td>1</td>
+              <td>$1425.12</td>
+              <td style="color: #38a169">$1425.12</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

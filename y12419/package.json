@@ -1,0 +1,24 @@
+{
+  "name": "web3-airdrop-tax-ledger",
+  "version": "1.0.0",
+  "description": "Web3空投税务台账 - 钱包流水、空投公告、币价快照自动对齐",
+  "main": "src/index.js",
+  "bin": {
+    "airdrop-tax": "src/cli.js"
+  },
+  "scripts": {
+    "test": "node test/run-examples.js",
+    "example-basic": "node src/cli.js process --wallet data/wallet.csv --announcements data/announcements.json --prices data/prices.csv --output output/report.html",
+    "example-edge": "node src/cli.js process --wallet data/wallet-edge.csv --announcements data/announcements-edge.json --prices data/prices-edge.csv --output output/edge-report.html --strict"
+  },
+  "keywords": ["web3", "crypto", "tax", "airdrop", "ledger"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^5.5.0",
+    "csv-stringify": "^6.4.0",
+    "date-fns": "^3.0.0",
+    "lodash": "^4.17.21",
+    "yargs": "^17.7.2"
+  }
+}

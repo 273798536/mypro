@@ -1,0 +1,50 @@
+[
+  {
+    "id": "arb-airdrop-2024",
+    "projectName": "Arbitrum",
+    "tokenSymbol": "ARB",
+    "tokenAddress": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    "announcementDate": "2024-01-01T08:00:00+08:00",
+    "claimStartDate": "2024-01-11T08:00:00+08:00",
+    "claimEndDate": "2024-03-01T08:00:00+08:00",
+    "distributionDate": "2024-01-15T08:00:00+08:00",
+    "totalAllocation": 1250.5,
+    "lockupPeriod": 0,
+    "lockupEndDate": null,
+    "eligibilityCriteria": "Early Arbitrum user",
+    "officialUrl": "https://arbitrum.foundation",
+    "status": "completed",
+    "withdrawalReason": ""
+  },
+  {
+    "id": "op-airdrop-2024",
+    "projectName": "Optimism",
+    "tokenSymbol": "OP",
+    "tokenAddress": "0x4200000000000000000000000000000000000042",
+    "announcementDate": "2024-02-15T08:00:00+08:00",
+    "claimStartDate": "2024-02-25T08:00:00+08:00",
+    "claimEndDate": "2024-04-10T08:00:00+08:00",
+    "distributionDate": "2024-03-01T08:00:00+08:00",
+    "totalAllocation": 800,
+    "lockupPeriod": 180,
+    "lockupEndDate": "2024-08-28T08:00:00+08:00",
+    "vestingSchedule": [
+      {
+        "percentage": 50,
+        "daysAfterDistribution": 0
+      },
+      {
+        "percentage": 25,
+        "daysAfterDistribution": 90
+      },
+      {
+        "percentage": 25,
+        "daysAfterDistribution": 180
+      }
+    ],
+    "eligibilityCriteria": "RetroPGF recipient",
+    "officialUrl": "https://optimism.io",
+    "status": "distributed",
+    "withdrawalReason": ""
+  }
+]

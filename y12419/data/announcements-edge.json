@@ -1,0 +1,50 @@
+[
+  {
+    "id": "edge-token-airdrop",
+    "projectName": "Edge Protocol",
+    "tokenSymbol": "EDGE",
+    "tokenAddress": "0xedge123456789012345678901234567890123456",
+    "announcementDate": "2024-01-01T08:00:00+08:00",
+    "claimStartDate": "2024-01-11T08:00:00+08:00",
+    "claimEndDate": "2024-01-31T08:00:00+08:00",
+    "distributionDate": "2024-01-16T08:00:00+08:00",
+    "totalAllocation": 5000,
+    "lockupPeriod": 90,
+    "lockupEndDate": "2024-04-15T08:00:00+08:00",
+    "vestingSchedule": [
+      {
+        "percentage": 40,
+        "daysAfterDistribution": 0
+      },
+      {
+        "percentage": 30,
+        "daysAfterDistribution": 45
+      },
+      {
+        "percentage": 30,
+        "daysAfterDistribution": 90
+      }
+    ],
+    "eligibilityCriteria": "Testnet participant",
+    "officialUrl": "https://edge-protocol.example",
+    "status": "distributed",
+    "withdrawalReason": ""
+  },
+  {
+    "id": "scam-airdrop-withdrawn",
+    "projectName": "Scam Project",
+    "tokenSymbol": "SCAM",
+    "tokenAddress": "0xscam1234567890123456789012345678901234567",
+    "announcementDate": "2024-02-10T08:00:00+08:00",
+    "claimStartDate": "2024-02-15T08:00:00+08:00",
+    "claimEndDate": "2024-03-01T08:00:00+08:00",
+    "distributionDate": "2024-02-20T08:00:00+08:00",
+    "totalAllocation": 10000,
+    "lockupPeriod": 0,
+    "lockupEndDate": null,
+    "eligibilityCriteria": "Twitter follower",
+    "officialUrl": "https://scam-project.example",
+    "status": "withdrawn",
+    "withdrawalReason": "项目团队跑路,空投作废"
+  }
+]
