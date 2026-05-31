@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #E8EDF5;
+  background-color: #0B1220;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply bg-defi-bg text-defi-text min-h-screen;
+  }
+
+  * {
+    @apply border-defi-border;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-defi-card border border-defi-border rounded-xl p-4;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply btn bg-defi-accent text-defi-bg hover:shadow-glow-accent;
+  }
+
+  .btn-secondary {
+    @apply btn bg-defi-card border border-defi-border hover:bg-defi-bg-light;
+  }
+
+  .btn-danger {
+    @apply btn bg-defi-danger text-white hover:shadow-glow-danger;
+  }
+
+  .data-value {
+    @apply font-mono font-semibold;
+  }
+
+  .status-success {
+    @apply text-defi-success;
+  }
+
+  .status-warning {
+    @apply text-defi-warning;
+  }
+
+  .status-danger {
+    @apply text-defi-danger;
+  }
+
+  .maze-node {
+    @apply cursor-pointer transition-all duration-300;
+  }
+
+  .maze-node:hover {
+    @apply scale-110;
+  }
+
+  .maze-node-active {
+    @apply animate-pulse-glow;
+  }
+
+  .grid-bg {
+    background-image: 
+      linear-gradient(rgba(42, 58, 92, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(42, 58, 92, 0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3a5c transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #2a3a5c;
+    border-radius: 3px;
+  }
+}
+
+@layer utilities {
+  .text-shadow-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+}
