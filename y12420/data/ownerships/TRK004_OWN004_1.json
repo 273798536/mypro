@@ -1,0 +1,17 @@
+{
+  "track_id": "TRK004",
+  "track_name": "后会无期",
+  "isrc": "CNM012000004",
+  "right_type": "机械权",
+  "owner_id": "OWN004",
+  "owner_name": "盛世唱片",
+  "ownership_ratio": 1.0,
+  "effective_start": "2024-01-01",
+  "effective_end": null,
+  "territory": "全球",
+  "source_contract_id": "CON004",
+  "version": 1,
+  "status": "已确认",
+  "created_at": "2026-05-31 21:13:37.919825",
+  "updated_at": "2026-05-31 21:13:37.919825"
+}

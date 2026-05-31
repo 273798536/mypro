@@ -1,0 +1,349 @@
+{
+  "batch_id": "BATCH_2024-05_8cdef560",
+  "settlement_month": "2024-05",
+  "generated_at": "2026-05-31",
+  "summary": {
+    "batch_id": "BATCH_2024-05_8cdef560",
+    "settlement_month": "2024-05",
+    "total_revenue": 19166.0,
+    "total_settlement": 44950.5,
+    "tracks_count": 5,
+    "owners_count": 5,
+    "platforms_count": 4,
+    "details_count": 11,
+    "issues_summary": {
+      "total": 14,
+      "high": 5,
+      "medium": 3,
+      "warning": 6,
+      "by_type": {
+        "合同编号重复": 1,
+        "晚到版本": 1,
+        "权属重叠": 1,
+        "播放量补录": 1,
+        "比例过期": 4,
+        "数据不一致": 6
+      }
+    },
+    "supplementary_info": {
+      "count": 2,
+      "amount": 16380.0
+    },
+    "created_at": "2026-05-31 21:13:37.920701",
+    "completed_at": "2026-05-31"
+  },
+  "details_summary": [
+    {
+      "detail_id": "DET_007f6d5f-a0f",
+      "track_id": "TRK001",
+      "track_name": "夜空中最亮的星",
+      "owner_name": "华星音乐",
+      "settlement_amount": 4375.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_1f9ce43d-6c8",
+      "track_id": "TRK001",
+      "track_name": "夜空中最亮的星",
+      "owner_name": "星光工作室",
+      "settlement_amount": 4375.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_a787b651-4f8",
+      "track_id": "TRK001",
+      "track_name": "夜空中最亮的星",
+      "owner_name": "华星音乐",
+      "settlement_amount": 3430.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_229c7bb8-3e6",
+      "track_id": "TRK001",
+      "track_name": "夜空中最亮的星",
+      "owner_name": "星光工作室",
+      "settlement_amount": 3430.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_d3ae4c28-d23",
+      "track_id": "TRK002",
+      "track_name": "春风十里",
+      "owner_name": "华星音乐",
+      "settlement_amount": 2660.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_6cf50a08-2e2",
+      "track_id": "TRK003",
+      "track_name": "平凡之路",
+      "owner_name": "天籁传媒",
+      "settlement_amount": 3276.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_5bed2248-987",
+      "track_id": "TRK004",
+      "track_name": "后会无期",
+      "owner_name": "盛世唱片",
+      "settlement_amount": 1417.5,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_c2927b29-49c",
+      "track_id": "TRK005",
+      "track_name": "岁月神偷",
+      "owner_name": "盛世唱片",
+      "settlement_amount": 2803.5,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_097f3df1-a0b",
+      "track_id": "TRK005",
+      "track_name": "岁月神偷",
+      "owner_name": "独立音乐人A",
+      "settlement_amount": 2803.5,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_a4e440a2-68e",
+      "track_id": "TRK001",
+      "track_name": "夜空中最亮的星",
+      "owner_name": "华星音乐",
+      "settlement_amount": 8190.0,
+      "has_issues": false
+    },
+    {
+      "detail_id": "DET_d55ff33d-81b",
+      "track_id": "TRK001",
+      "track_name": "夜空中最亮的星",
+      "owner_name": "星光工作室",
+      "settlement_amount": 8190.0,
+      "has_issues": false
+    }
+  ],
+  "issues": [
+    {
+      "issue_id": "64444d9f-dac4-4eb8-be20-a9ce8d41d760",
+      "conflict_type": "合同编号重复",
+      "severity": "high",
+      "description": "合同编号 NRC-2024-001 存在 2 份有效合同",
+      "related_records": [
+        "CON001",
+        "CON002"
+      ],
+      "suggestion": "请核实以下合同的有效性：华星音乐录音权合作协议, 华星音乐录音权合作协议V2。建议保留最新版本或实际生效的合同，将其余标记为'已被取代'。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920866",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "13dd98f5-5c89-4e4a-b89e-55e09c088103",
+      "conflict_type": "晚到版本",
+      "severity": "medium",
+      "description": "合同 华星音乐录音权合作协议 (版本 1) 存在更新版本 2",
+      "related_records": [
+        "CON001",
+        "CON002"
+      ],
+      "suggestion": "旧版本合同 华星音乐录音权合作协议 应标记为'已被取代'，新版本 华星音乐录音权合作协议V2 需复核权属信息是否同步更新。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920885",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "0bf6d05f-3998-446a-b7b3-bfdf394afe6c",
+      "conflict_type": "权属重叠",
+      "severity": "high",
+      "description": "曲目 夜空中最亮的星(TRK001) 的 录音权 存在权属重叠，总比例 110.00% 超过100%",
+      "related_records": [
+        "CON001",
+        "CON001"
+      ],
+      "suggestion": "权属方 华星音乐(60.0%) 与 星光工作室(50.0%) 存在重叠。请核实合同约定的分账比例和生效时间，必要时按各自有效时间拆分计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920929",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "d3f66624-0522-422e-aafd-61f8c7acec8c",
+      "conflict_type": "播放量补录",
+      "severity": "medium",
+      "description": "曲目 夜空中最亮的星 在 抖音 存在播放量补录数据",
+      "related_records": [
+        "PB007",
+        "PB_SUPP_001"
+      ],
+      "suggestion": "该数据为补录数据（4月漏算的短综BGM使用量补录），将覆盖或补充原始数据进行分账计算。请确认补录的原因和影响范围。",
+      "affected_amount": 16380.0,
+      "created_at": "2026-05-31 21:13:37.920942",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "846b941c-9f5c-44dd-8bab-3a0affa0319f",
+      "conflict_type": "比例过期",
+      "severity": "high",
+      "description": "合同 华星音乐录音权合作协议 的分账比例已于 2024-12-31 过期",
+      "related_records": [
+        "CON001"
+      ],
+      "suggestion": "该合同已过期，涉及曲目 2 首。请尽快签署新合同或确认是否沿用原比例。本次分账将按原合同比例计算，但请尽快更新合同信息。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920960",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "6530c10c-41d2-4946-b309-665f73a6d5db",
+      "conflict_type": "比例过期",
+      "severity": "high",
+      "description": "合同 华星音乐录音权合作协议V2 的分账比例已于 2025-12-31 过期",
+      "related_records": [
+        "CON002"
+      ],
+      "suggestion": "该合同已过期，涉及曲目 3 首。请尽快签署新合同或确认是否沿用原比例。本次分账将按原合同比例计算，但请尽快更新合同信息。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920967",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "0b7e143e-cb17-461f-86fb-34944a9af454",
+      "conflict_type": "比例过期",
+      "severity": "high",
+      "description": "合同 天籁传媒表演权协议 的分账比例已于 2024-05-31 过期",
+      "related_records": [
+        "CON003"
+      ],
+      "suggestion": "该合同已过期，涉及曲目 4 首。请尽快签署新合同或确认是否沿用原比例。本次分账将按原合同比例计算，但请尽快更新合同信息。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920974",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "bc47ef58-caf5-46c4-a2a2-c5a259fc3232",
+      "conflict_type": "比例过期",
+      "severity": "medium",
+      "description": "曲目 平凡之路 的 表演权 权属比例已于 2024-05-31 过期",
+      "related_records": [
+        "CON003"
+      ],
+      "suggestion": "该权属信息已过期。请确认是否有新的权属协议，本次分账将按原比例计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920983",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "ec3e9ba4-7a6b-4280-b4d0-cd508ff926c5",
+      "conflict_type": "数据不一致",
+      "severity": "warning",
+      "description": "曲目 夜空中最亮的星 的权属比例 60.0% 超过合同约定上限 50.0%",
+      "related_records": [
+        "CON001"
+      ],
+      "suggestion": "权属比例超过合同约定上限，将按合同比例 50.0% 进行分账计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.920993",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "8633f236-9764-4da1-971d-ab5e020af045",
+      "conflict_type": "数据不一致",
+      "severity": "warning",
+      "description": "曲目 春风十里 的权属比例 100.0% 超过合同约定上限 50.0%",
+      "related_records": [
+        "CON001"
+      ],
+      "suggestion": "权属比例超过合同约定上限，将按合同比例 50.0% 进行分账计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.921000",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "99fd0a28-bee3-445d-a4ab-b6d78dca4540",
+      "conflict_type": "数据不一致",
+      "severity": "warning",
+      "description": "曲目 平凡之路 的权属比例 100.0% 超过合同约定上限 30.0%",
+      "related_records": [
+        "CON003"
+      ],
+      "suggestion": "权属比例超过合同约定上限，将按合同比例 30.0% 进行分账计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.921006",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "42cc5492-7887-4e72-9d3f-4696c470e61e",
+      "conflict_type": "数据不一致",
+      "severity": "warning",
+      "description": "曲目 后会无期 的权属比例 100.0% 超过合同约定上限 45.0%",
+      "related_records": [
+        "CON004"
+      ],
+      "suggestion": "权属比例超过合同约定上限，将按合同比例 45.0% 进行分账计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.921013",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "1aeb4c8f-91ed-4a7d-a1c2-afd0b6c68056",
+      "conflict_type": "数据不一致",
+      "severity": "warning",
+      "description": "曲目 岁月神偷 的权属比例 50.0% 超过合同约定上限 45.0%",
+      "related_records": [
+        "CON004"
+      ],
+      "suggestion": "权属比例超过合同约定上限，将按合同比例 45.0% 进行分账计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.921020",
+      "resolved": false,
+      "resolution_note": null
+    },
+    {
+      "issue_id": "ad69c468-a925-4793-b32e-663248bb6b5c",
+      "conflict_type": "数据不一致",
+      "severity": "warning",
+      "description": "曲目 岁月神偷 的权属比例 50.0% 超过合同约定上限 45.0%",
+      "related_records": [
+        "CON004"
+      ],
+      "suggestion": "权属比例超过合同约定上限，将按合同比例 45.0% 进行分账计算。",
+      "affected_amount": 0.0,
+      "created_at": "2026-05-31 21:13:37.921027",
+      "resolved": false,
+      "resolution_note": null
+    }
+  ],
+  "handling_suggestions": [
+    "【比例过期处理】共发现 4 份已过期的合同或权属信息。建议：1) 尽快与合作方签署新合同；2) 确认是否沿用原比例进行后续分账；3) 更新系统中的合同有效期。",
+    "【重复合同处理】存在合同编号重复的情况。建议：1) 核实每份合同的签署背景；2) 标记无效合同为'已被取代'；3) 建立合同版本管理机制。",
+    "【补录数据处理】本期包含播放量补录，影响金额 16380.00 元。建议：1) 确认补录原因的合理性；2) 记录补录对历史分账的影响；3) 与相关合作方沟通补录事宜。",
+    "【晚到版本处理】存在晚到的合同版本。建议：1) 核对新旧版本的差异；2) 确认新版本的生效时间；3) 评估是否需要追溯调整之前的分账。"
+  ],
+  "supplementary_impacts": [
+    {
+      "track_name": "夜空中最亮的星",
+      "platform": "抖音",
+      "owner_name": "华星音乐",
+      "additional_amount": 8190.0,
+      "note": "因补录增加分账金额: 8190.00元"
+    },
+    {
+      "track_name": "夜空中最亮的星",
+      "platform": "抖音",
+      "owner_name": "星光工作室",
+      "additional_amount": 8190.0,
+      "note": "因补录增加分账金额: 8190.00元"
+    }
+  ]
+}

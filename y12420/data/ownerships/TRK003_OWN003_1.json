@@ -1,0 +1,17 @@
+{
+  "track_id": "TRK003",
+  "track_name": "平凡之路",
+  "isrc": "CNM012000003",
+  "right_type": "表演权",
+  "owner_id": "OWN003",
+  "owner_name": "天籁传媒",
+  "ownership_ratio": 1.0,
+  "effective_start": "2024-01-01",
+  "effective_end": "2024-05-31",
+  "territory": "中国大陆",
+  "source_contract_id": "CON003",
+  "version": 1,
+  "status": "已确认",
+  "created_at": "2026-05-31 21:13:37.919822",
+  "updated_at": "2026-05-31 21:13:37.919823"
+}

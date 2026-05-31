@@ -1,0 +1,17 @@
+{
+  "track_id": "TRK001",
+  "track_name": "夜空中最亮的星",
+  "isrc": "CNM012000001",
+  "right_type": "录音权",
+  "owner_id": "OWN002",
+  "owner_name": "星光工作室",
+  "ownership_ratio": 0.5,
+  "effective_start": "2024-01-01",
+  "effective_end": null,
+  "territory": "中国大陆",
+  "source_contract_id": "CON001",
+  "version": 1,
+  "status": "已确认",
+  "created_at": "2026-05-31 21:13:37.919818",
+  "updated_at": "2026-05-31 21:13:37.919819"
+}

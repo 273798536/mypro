@@ -1,0 +1,22 @@
+{
+  "contract_id": "CON004",
+  "contract_no": "NRC-2024-003",
+  "contract_name": "盛世唱片机械权协议",
+  "party_a": "平台公司",
+  "party_b": "盛世唱片",
+  "right_type": "机械权",
+  "tracks_covered": [
+    "TRK004",
+    "TRK005"
+  ],
+  "revenue_sharing_ratio": 0.45,
+  "effective_start": "2024-01-01",
+  "effective_end": null,
+  "territory": "全球",
+  "version": 1,
+  "is_late_arrival": false,
+  "status": "已确认",
+  "signed_date": "2023-11-10",
+  "created_at": "2026-05-31 21:13:37.919811",
+  "updated_at": "2026-05-31 21:13:37.919811"
+}

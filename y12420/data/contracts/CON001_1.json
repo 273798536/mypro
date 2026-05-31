@@ -1,0 +1,22 @@
+{
+  "contract_id": "CON001",
+  "contract_no": "NRC-2024-001",
+  "contract_name": "华星音乐录音权合作协议",
+  "party_a": "平台公司",
+  "party_b": "华星音乐",
+  "right_type": "录音权",
+  "tracks_covered": [
+    "TRK001",
+    "TRK002"
+  ],
+  "revenue_sharing_ratio": 0.5,
+  "effective_start": "2024-01-01",
+  "effective_end": "2024-12-31",
+  "territory": "中国大陆",
+  "version": 1,
+  "is_late_arrival": true,
+  "status": "已确认",
+  "signed_date": "2023-12-15",
+  "created_at": "2026-05-31 21:13:37.919796",
+  "updated_at": "2026-05-31 21:13:37.919801"
+}
