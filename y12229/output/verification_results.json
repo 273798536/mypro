@@ -1,0 +1,252 @@
+{
+  "summary": {
+    "total_bookings": 4,
+    "matched_bookings": 2,
+    "discrepant_bookings": 2,
+    "total_issues": 4,
+    "critical_issues": 1,
+    "warning_issues": 1,
+    "info_issues": 2,
+    "total_discrepancy_amount": -2700.0
+  },
+  "issues": [
+    {
+      "issue_id": "ISS-0001",
+      "issue_type": "锁价过期",
+      "severity": "严重",
+      "booking_no": "BKG-2024-1002",
+      "title": "锁价协议已过期",
+      "description": "订舱开船日期 2024-07-20 超出锁价协议到期日 2024-06-30，过期 20 天",
+      "source_records": [
+        "协议:PLA-2024-001",
+        "订舱:BKG-2024-1002"
+      ],
+      "amount_diff": null,
+      "currency": "USD",
+      "details": {
+        "agreement_expiry": "2024-06-30",
+        "booking_etd": "2024-07-20",
+        "days_overdue": 20
+      }
+    },
+    {
+      "issue_id": "ISS-0002",
+      "issue_type": "箱型替换",
+      "severity": "警告",
+      "booking_no": "BKG-2024-1002",
+      "title": "箱型与锁价协议不符",
+      "description": "订舱箱型 20GP 与协议箱型 40HQ 不符",
+      "source_records": [
+        "协议:PLA-2024-001",
+        "订舱:BKG-2024-1002",
+        "改单:AMD-001"
+      ],
+      "amount_diff": null,
+      "currency": "USD",
+      "details": {
+        "agreement_container": "40HQ",
+        "booking_container": "20GP",
+        "change_history": [
+          "2024-07-01: 40HQ → 20GP"
+        ],
+        "has_amendment": true
+      }
+    },
+    {
+      "issue_id": "ISS-0003",
+      "issue_type": "燃油追补",
+      "severity": "提示",
+      "booking_no": "BKG-2024-1002",
+      "title": "燃油费率差异",
+      "description": "协议燃油费 450.0 USD，实际燃油费 240.0 USD，差异 -210.00 USD",
+      "source_records": [
+        "协议:PLA-2024-001",
+        "订舱:BKG-2024-1002",
+        "费用报告:REP-002"
+      ],
+      "amount_diff": -210.0,
+      "currency": "USD",
+      "details": {
+        "agreed_baf": 450.0,
+        "actual_baf": 240.0,
+        "current_published_baf": 240.0,
+        "difference": -210.0,
+        "rate_effective_date": "2024-07-01",
+        "rate_expiry_date": "2024-09-30"
+      }
+    },
+    {
+      "issue_id": "ISS-0004",
+      "issue_type": "报价版本不符",
+      "severity": "提示",
+      "booking_no": "BKG-2024-1003",
+      "title": "报价版本变更",
+      "description": "订舱使用报价版本 v3，协议版本 v2",
+      "source_records": [
+        "协议:PLA-2024-002",
+        "订舱:BKG-2024-1003",
+        "改单:AMD-003"
+      ],
+      "amount_diff": null,
+      "currency": "USD",
+      "details": {
+        "agreement_version": "v2",
+        "booking_version": "v3",
+        "version_history": [
+          "2024-09-15: v2 → v3 (旺季价格调整)"
+        ],
+        "has_rollback": false
+      }
+    }
+  ],
+  "verification_results": [
+    {
+      "booking_no": "BKG-2024-1001",
+      "agreement_id": "PLA-2024-001",
+      "is_match": true,
+      "issue_count": 0,
+      "expected_base_rate": 2500.0,
+      "expected_baf_rate": 450.0,
+      "actual_base_rate": 2500.0,
+      "actual_baf_rate": 450.0,
+      "base_rate_diff": 0.0,
+      "baf_diff": 0.0,
+      "total_diff": 0.0,
+      "quote_version": "v1",
+      "container_type": "40HQ",
+      "audit_trail": {
+        "initial_base_rate": 2500.0,
+        "initial_baf_rate": 450.0,
+        "rate_adjustments": [],
+        "version_changes": [],
+        "final_base_rate": 2500.0,
+        "final_baf_rate": 450.0,
+        "agreement_link": "PLA-2024-001",
+        "booking_link": "BKG-2024-1001",
+        "cost_report_links": [
+          "REP-001"
+        ]
+      }
+    },
+    {
+      "booking_no": "BKG-2024-1002",
+      "agreement_id": "PLA-2024-001",
+      "is_match": false,
+      "issue_count": 3,
+      "expected_base_rate": 1300.0,
+      "expected_baf_rate": 450.0,
+      "actual_base_rate": 1300.0,
+      "actual_baf_rate": 240.0,
+      "base_rate_diff": 0.0,
+      "baf_diff": -210.0,
+      "total_diff": -2100.0,
+      "quote_version": "v1",
+      "container_type": "20GP",
+      "audit_trail": {
+        "initial_base_rate": 2500.0,
+        "initial_baf_rate": 450.0,
+        "rate_adjustments": [
+          {
+            "date": "2024-07-02",
+            "type": "base_rate",
+            "old": 2500.0,
+            "new": 1300.0,
+            "reason": "箱型变更导致费率调整",
+            "amendment_id": "AMD-002"
+          }
+        ],
+        "version_changes": [],
+        "final_base_rate": 1300.0,
+        "final_baf_rate": 450.0,
+        "agreement_link": "PLA-2024-001",
+        "booking_link": "BKG-2024-1002",
+        "amendment_links": [
+          "AMD-001",
+          "AMD-002"
+        ],
+        "cost_report_links": [
+          "REP-002"
+        ]
+      }
+    },
+    {
+      "booking_no": "BKG-2024-1003",
+      "agreement_id": "PLA-2024-002",
+      "is_match": false,
+      "issue_count": 1,
+      "expected_base_rate": 1200.0,
+      "expected_baf_rate": 280.0,
+      "actual_base_rate": 1150.0,
+      "actual_baf_rate": 300.0,
+      "base_rate_diff": -50.0,
+      "baf_diff": 20.0,
+      "total_diff": -600.0,
+      "quote_version": "v3",
+      "container_type": "20GP",
+      "audit_trail": {
+        "initial_base_rate": 1200.0,
+        "initial_baf_rate": 280.0,
+        "rate_adjustments": [],
+        "version_changes": [
+          {
+            "date": "2024-09-15",
+            "old_version": "v2",
+            "new_version": "v3",
+            "reason": "旺季价格调整",
+            "amendment_id": "AMD-003"
+          }
+        ],
+        "final_base_rate": 1200.0,
+        "final_baf_rate": 280.0,
+        "agreement_link": "PLA-2024-002",
+        "booking_link": "BKG-2024-1003",
+        "amendment_links": [
+          "AMD-003"
+        ],
+        "cost_report_links": [
+          "REP-003"
+        ]
+      }
+    },
+    {
+      "booking_no": "BKG-2024-1004",
+      "agreement_id": "PLA-2024-003",
+      "is_match": true,
+      "issue_count": 0,
+      "expected_base_rate": 3200.0,
+      "expected_baf_rate": 550.0,
+      "actual_base_rate": 3200.0,
+      "actual_baf_rate": 550.0,
+      "base_rate_diff": 0.0,
+      "baf_diff": 0.0,
+      "total_diff": 0.0,
+      "quote_version": "v1",
+      "container_type": "40GP",
+      "audit_trail": {
+        "initial_base_rate": 3200.0,
+        "initial_baf_rate": 520.0,
+        "rate_adjustments": [
+          {
+            "date": "2024-05-20",
+            "type": "baf_rate",
+            "old": 520.0,
+            "new": 550.0,
+            "reason": "市场燃油价格上涨",
+            "amendment_id": "AMD-004"
+          }
+        ],
+        "version_changes": [],
+        "final_base_rate": 3200.0,
+        "final_baf_rate": 550.0,
+        "agreement_link": "PLA-2024-003",
+        "booking_link": "BKG-2024-1004",
+        "amendment_links": [
+          "AMD-004"
+        ],
+        "cost_report_links": [
+          "REP-004"
+        ]
+      }
+    }
+  ]
+}
