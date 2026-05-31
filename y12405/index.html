@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直播MCN保底结算工作台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>直播MCN保底结算工作台</h1>
+            <div class="header-actions">
+                <button id="btn-refresh" class="btn btn-secondary">刷新数据</button>
+                <button id="btn-export" class="btn btn-primary">导出结算单</button>
+            </div>
+        </header>
+
+        <div class="filter-panel">
+            <div class="filter-group">
+                <label>主播</label>
+                <select id="filter-anchor">
+                    <option value="">全部主播</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>结算月份</label>
+                <input type="month" id="filter-month">
+            </div>
+            <div class="filter-group">
+                <label>结算状态</label>
+                <select id="filter-status">
+                    <option value="">全部状态</option>
+                    <option value="ready">可直接结算</option>
+                    <option value="review">需财务确认</option>
+                    <option value="pending">暂不能结算</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>保底触发</label>
+                <select id="filter-minimum">
+                    <option value="">全部</option>
+                    <option value="true">已触发保底</option>
+                    <option value="false">未触发保底</option>
+                </select>
+            </div>
+            <button id="btn-filter" class="btn btn-primary">筛选</button>
+            <button id="btn-reset" class="btn btn-secondary">重置</button>
+        </div>
+
+        <div class="status-summary">
+            <div class="summary-card ready">
+                <div class="summary-label">可直接结算</div>
+                <div class="summary-value" id="summary-ready">0</div>
+            </div>
+            <div class="summary-card review">
+                <div class="summary-label">需财务确认</div>
+                <div class="summary-value" id="summary-review">0</div>
+            </div>
+            <div class="summary-card pending">
+                <div class="summary-label">暂不能结算</div>
+                <div class="summary-value" id="summary-pending">0</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="settlement-list" id="settlement-list">
+            </div>
+        </div>
+
+        <div id="modal-detail" class="modal">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h2>结算单详情</h2>
+                    <button class="modal-close" id="modal-close">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-detail-body">
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-confirm-settlement" class="btn btn-primary">确认结算</button>
+                    <button id="btn-add-note" class="btn btn-secondary">添加复核备注</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-note" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>添加复核备注</h2>
+                    <button class="modal-close" id="modal-note-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>备注类型</label>
+                        <select id="note-type">
+                            <option value="normal">常规备注</option>
+                            <option value="deduction">扣款相关</option>
+                            <option value="receipt">回单问题</option>
+                            <option value="minimum">保底问题</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>备注内容</label>
+                        <textarea id="note-content" rows="4" placeholder="请输入备注内容..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-save-note" class="btn btn-primary">保存</button>
+                    <button id="btn-cancel-note" class="btn btn-secondary">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-export" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>导出结算单</h2>
+                    <button class="modal-close" id="modal-export-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>导出范围</label>
+                        <select id="export-scope">
+                            <option value="all">全部结算单</option>
+                            <option value="filtered">当前筛选结果</option>
+                            <option value="ready">仅可直接结算</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>包含内容</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="export-contract" checked> 合同信息</label>
+                            <label><input type="checkbox" id="export-stream" checked> 直播流水</label>
+                            <label><input type="checkbox" id="export-deduction" checked> 扣款明细</label>
+                            <label><input type="checkbox" id="export-notes" checked> 复核备注</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-do-export" class="btn btn-primary">导出</button>
+                    <button id="btn-cancel-export" class="btn btn-secondary">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data/models.js"></script>
+    <script src="data/sample-data.js"></script>
+    <script src="js/business-logic.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
