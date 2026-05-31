@@ -1,0 +1,38 @@
+[
+  {
+    "file_path": "assets/sfx/jump.wav",
+    "file_name": "jump.wav",
+    "tags": ["sfx", "player", "jump"],
+    "notes": "玩家跳跃音效，版本1"
+  },
+  {
+    "file_path": "assets/sfx/jump_v2.wav",
+    "file_name": "jump_v2.wav",
+    "tags": ["sfx", "player", "jump"],
+    "notes": "玩家跳跃音效，版本2（更高音）"
+  },
+  {
+    "file_path": "assets/bgm/level1.wav",
+    "file_name": "level1.wav",
+    "tags": ["bgm", "level", "forest"],
+    "notes": "第一关背景音乐"
+  },
+  {
+    "file_path": "assets/bgm/level1_fast.wav",
+    "file_name": "level1_fast.wav",
+    "tags": ["bgm", "level", "forest", "boss"],
+    "notes": "第一关战斗版BGM（加速版）"
+  },
+  {
+    "file_path": "assets/ui/click.wav",
+    "file_name": "click.wav",
+    "tags": ["ui", "button", "click"],
+    "notes": "按钮点击音效"
+  },
+  {
+    "file_path": "assets/ui/click_copy.wav",
+    "file_name": "click_copy.wav",
+    "tags": ["ui", "button", "click"],
+    "notes": "按钮点击音效（重复文件）"
+  }
+]
