@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "podcast-level-checker"
+version = "0.1.0"
+description = "播客配乐电平检查工具 - 自动检测人声静音、配乐过响和广告段漏标"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydub>=0.25.1",
+    "numpy>=1.24.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+podcast-level-check = "podcast_level_checker.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["podcast_level_checker*"]

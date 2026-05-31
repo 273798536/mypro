@@ -1,0 +1,1488 @@
+{
+  "report_id": "REP_20260531_111830",
+  "timestamp": "2026-05-31T11:18:30.079474",
+  "input_dir": "/Users/mac/pro/solo/workspaces/y12177/samples",
+  "output_dir": "/Users/mac/pro/solo/workspaces/y12177/output",
+  "parameters": {
+    "frame_ms": 100,
+    "silence_threshold_db": -40.0,
+    "music_loud_threshold_db": -15.0,
+    "min_silence_ms": 500,
+    "min_music_ms": 1000,
+    "voice_reference_db": null
+  },
+  "summary": {
+    "total_files": 4,
+    "total_findings": 13,
+    "findings_by_severity": {
+      "low": 4,
+      "high": 3,
+      "medium": 6
+    },
+    "findings_by_type": {
+      "music_segment": 4,
+      "long_silence": 1,
+      "silence": 3,
+      "advertisement": 2,
+      "loud_music": 2,
+      "low_voice": 1
+    }
+  },
+  "files": [
+    {
+      "source_file": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+      "file_name": "dirty_sample.wav",
+      "duration_ms": 15800,
+      "duration_str": "00:15.800",
+      "total_findings": 7,
+      "findings_by_type": {
+        "music_segment": 4,
+        "long_silence": 1,
+        "silence": 2
+      },
+      "segments": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "duration": "00:02.000",
+          "segment_type": "music",
+          "confidence": 0.7,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "开始说话",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 1
+            }
+          ]
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 4500,
+          "duration": "00:02.500",
+          "segment_type": "silence",
+          "confidence": 0.9,
+          "average_rms_db": -60.15,
+          "evidence": [
+            "电平低于静音阈值 (-40.0dB)"
+          ],
+          "markers": [
+            {
+              "label": "[静音] 这里可能需要剪辑",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 2
+            }
+          ]
+        },
+        {
+          "start_ms": 4500,
+          "end_ms": 7500,
+          "duration": "00:03.000",
+          "segment_type": "music",
+          "confidence": 0.7,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "继续说话",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 3
+            }
+          ]
+        },
+        {
+          "start_ms": 7500,
+          "end_ms": 8300,
+          "duration": "00:00.800",
+          "segment_type": "silence",
+          "confidence": 0.9,
+          "average_rms_db": -60.38,
+          "evidence": [
+            "电平低于静音阈值 (-40.0dB)"
+          ],
+          "markers": [
+            {
+              "label": "短暂停顿",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 4
+            }
+          ]
+        },
+        {
+          "start_ms": 8300,
+          "end_ms": 10300,
+          "duration": "00:02.000",
+          "segment_type": "music",
+          "confidence": 0.7,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "说话中",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 5
+            }
+          ]
+        },
+        {
+          "start_ms": 10300,
+          "end_ms": 11800,
+          "duration": "00:01.500",
+          "segment_type": "silence",
+          "confidence": 0.9,
+          "average_rms_db": -59.55,
+          "evidence": [
+            "电平低于静音阈值 (-40.0dB)"
+          ],
+          "markers": [
+            {
+              "label": "[静音] 呼吸停顿",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 6
+            }
+          ]
+        },
+        {
+          "start_ms": 11800,
+          "end_ms": 15800,
+          "duration": "00:04.000",
+          "segment_type": "music",
+          "confidence": 0.7,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "继续说话",
+              "source_file": "./samples/dirty_sample.srt",
+              "line_number": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source_file": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.wav",
+      "file_name": "ad_missing_sample.wav",
+      "duration_ms": 14000,
+      "duration_str": "00:14.000",
+      "total_findings": 2,
+      "findings_by_type": {
+        "advertisement": 2
+      },
+      "segments": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "duration": "00:02.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.01,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "开场",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 1
+            },
+            {
+              "label": "开场",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 1
+            },
+            {
+              "label": "开场",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 1
+            },
+            {
+              "label": "开场",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 1
+            }
+          ]
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 5000,
+          "duration": "00:03.000",
+          "segment_type": "advertisement",
+          "confidence": 0.85,
+          "average_rms_db": -12.0,
+          "evidence": [
+            "标记包含广告关键词: '广告赞助商 - 这里是广告但电平像人声'",
+            "电平高于配乐阈值 (-15.1dB), 平均电平 -12.0dB"
+          ],
+          "markers": [
+            {
+              "label": "广告赞助商 - 这里是广告但电平像人声",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 2
+            }
+          ]
+        },
+        {
+          "start_ms": 5000,
+          "end_ms": 7000,
+          "duration": "00:02.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "继续节目",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 3
+            },
+            {
+              "label": "继续节目",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 3
+            },
+            {
+              "label": "继续节目",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 3
+            },
+            {
+              "label": "继续节目",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 3
+            }
+          ]
+        },
+        {
+          "start_ms": 7000,
+          "end_ms": 10000,
+          "duration": "00:03.000",
+          "segment_type": "advertisement",
+          "confidence": 0.8,
+          "average_rms_db": -18.0,
+          "evidence": [
+            "标记包含广告关键词: '广告 - 这也是广告'",
+            "标记包含广告关键词: '广告 - 这也是广告'",
+            "标记包含广告关键词: '广告 - 这也是广告'",
+            "标记包含广告关键词: '广告 - 这也是广告'",
+            "标记包含广告关键词: '广告 - 这也是广告'",
+            "标记包含广告关键词: '广告 - 这也是广告'"
+          ],
+          "markers": [
+            {
+              "label": "广告 - 这也是广告",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 4
+            },
+            {
+              "label": "广告 - 这也是广告",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 4
+            },
+            {
+              "label": "广告 - 这也是广告",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 4
+            },
+            {
+              "label": "广告 - 这也是广告",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 4
+            },
+            {
+              "label": "广告 - 这也是广告",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 4
+            },
+            {
+              "label": "广告 - 这也是广告",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 4
+            }
+          ]
+        },
+        {
+          "start_ms": 10000,
+          "end_ms": 14000,
+          "duration": "00:04.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -22.0,
+          "evidence": [
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "过渡",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 5
+            },
+            {
+              "label": "过渡",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 5
+            },
+            {
+              "label": "过渡",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 5
+            },
+            {
+              "label": "过渡",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 5
+            },
+            {
+              "label": "正常内容",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 6
+            },
+            {
+              "label": "正常内容",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 6
+            },
+            {
+              "label": "正常内容",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 6
+            },
+            {
+              "label": "正常内容",
+              "source_file": "./samples/ad_missing_sample.txt",
+              "line_number": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source_file": "/Users/mac/pro/solo/workspaces/y12177/samples/loud_music_sample.wav",
+      "file_name": "loud_music_sample.wav",
+      "duration_ms": 16500,
+      "duration_str": "00:16.500",
+      "total_findings": 2,
+      "findings_by_type": {
+        "loud_music": 2
+      },
+      "segments": [
+        {
+          "start_ms": 0,
+          "end_ms": 2000,
+          "duration": "00:02.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.02,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "开场",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 2
+            },
+            {
+              "label": "开场",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 2
+            },
+            {
+              "label": "开场",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 2
+            },
+            {
+              "label": "开场",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 2
+            }
+          ]
+        },
+        {
+          "start_ms": 2000,
+          "end_ms": 5000,
+          "duration": "00:03.000",
+          "segment_type": "music",
+          "confidence": 0.7,
+          "average_rms_db": -10.0,
+          "evidence": [
+            "电平高于配乐阈值 (-13.6dB), 平均电平 -10.0dB"
+          ],
+          "markers": [
+            {
+              "label": "主题音乐",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 3
+            }
+          ]
+        },
+        {
+          "start_ms": 5000,
+          "end_ms": 12000,
+          "duration": "00:07.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "主持人介绍",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 4
+            },
+            {
+              "label": "主持人介绍",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 4
+            },
+            {
+              "label": "主持人介绍",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 4
+            },
+            {
+              "label": "主持人介绍",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 4
+            },
+            {
+              "label": "过渡音乐",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 5
+            },
+            {
+              "label": "过渡音乐",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 5
+            },
+            {
+              "label": "过渡音乐",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 5
+            },
+            {
+              "label": "过渡音乐",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 5
+            },
+            {
+              "label": "正文",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 6
+            },
+            {
+              "label": "正文",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 6
+            },
+            {
+              "label": "正文",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 6
+            },
+            {
+              "label": "正文",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 6
+            },
+            {
+              "label": "正文",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 6
+            },
+            {
+              "label": "正文",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 6
+            }
+          ]
+        },
+        {
+          "start_ms": 12000,
+          "end_ms": 14500,
+          "duration": "00:02.500",
+          "segment_type": "music",
+          "confidence": 0.7,
+          "average_rms_db": -8.0,
+          "evidence": [
+            "电平高于配乐阈值 (-13.6dB), 平均电平 -8.0dB"
+          ],
+          "markers": [
+            {
+              "label": "结尾音乐",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 7
+            },
+            {
+              "label": "收尾",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 8
+            }
+          ]
+        },
+        {
+          "start_ms": 14500,
+          "end_ms": 16500,
+          "duration": "00:02.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "收尾",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 8
+            },
+            {
+              "label": "收尾",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 8
+            },
+            {
+              "label": "收尾",
+              "source_file": "./samples/loud_music_sample.csv",
+              "line_number": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source_file": "/Users/mac/pro/solo/workspaces/y12177/samples/normal_podcast.wav",
+      "file_name": "normal_podcast.wav",
+      "duration_ms": 17500,
+      "duration_str": "00:17.500",
+      "total_findings": 2,
+      "findings_by_type": {
+        "silence": 1,
+        "low_voice": 1
+      },
+      "segments": [
+        {
+          "start_ms": 0,
+          "end_ms": 3000,
+          "duration": "00:03.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "开场白",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 1
+            },
+            {
+              "label": "开场白",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 1
+            },
+            {
+              "label": "开场白",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 1
+            },
+            {
+              "label": "开场白",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 1
+            },
+            {
+              "label": "开场白",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 1
+            },
+            {
+              "label": "开场白",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 1
+            }
+          ]
+        },
+        {
+          "start_ms": 3000,
+          "end_ms": 3500,
+          "duration": "00:00.500",
+          "segment_type": "silence",
+          "confidence": 0.6,
+          "average_rms_db": -45.47,
+          "evidence": [
+            "电平处于人声区间, 平均 -45.5dB"
+          ],
+          "markers": [
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            }
+          ]
+        },
+        {
+          "start_ms": 3500,
+          "end_ms": 14000,
+          "duration": "00:10.500",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.01,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -22.0dB",
+            "电平处于人声区间, 平均 -25.0dB",
+            "电平处于人声区间, 平均 -25.0dB",
+            "电平处于人声区间, 平均 -25.0dB",
+            "电平处于人声区间, 平均 -23.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "话题介绍",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 2
+            },
+            {
+              "label": "背景音乐",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 3
+            },
+            {
+              "label": "背景音乐",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 3
+            },
+            {
+              "label": "背景音乐",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 3
+            },
+            {
+              "label": "背景音乐",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 3
+            },
+            {
+              "label": "背景音乐",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 3
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            },
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            }
+          ]
+        },
+        {
+          "start_ms": 14000,
+          "end_ms": 14500,
+          "duration": "00:00.500",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -36.16,
+          "evidence": [
+            "电平处于人声区间, 平均 -36.2dB"
+          ],
+          "markers": [
+            {
+              "label": "主要内容",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 4
+            }
+          ]
+        },
+        {
+          "start_ms": 14500,
+          "end_ms": 17500,
+          "duration": "00:03.000",
+          "segment_type": "voice",
+          "confidence": 0.6,
+          "average_rms_db": -20.0,
+          "evidence": [
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB",
+            "电平处于人声区间, 平均 -20.0dB"
+          ],
+          "markers": [
+            {
+              "label": "结束语",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 5
+            },
+            {
+              "label": "结束语",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 5
+            },
+            {
+              "label": "结束语",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 5
+            },
+            {
+              "label": "结束语",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 5
+            },
+            {
+              "label": "结束语",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 5
+            },
+            {
+              "label": "结束语",
+              "source_file": "./samples/normal_podcast.srt",
+              "line_number": 5
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "music_segment",
+      "severity": "low",
+      "message": "检测到配乐段, 电平 -20.0dB",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "time_range": "00:00.000 - 00:02.000",
+      "duration": "00:02.000",
+      "segment_type": "music",
+      "confidence": 0.7,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -20.0,
+            "start_ms": 0,
+            "end_ms": 2000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 1,
+          "details": {
+            "label": "开始说话",
+            "marker_start_ms": 0,
+            "marker_end_ms": 2000
+          }
+        }
+      ],
+      "evidence": [
+        "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "long_silence",
+      "severity": "high",
+      "message": "检测到 00:02.500 的长静音, 可能需要剪辑",
+      "start_ms": 2000,
+      "end_ms": 4500,
+      "time_range": "00:02.000 - 00:04.500",
+      "duration": "00:02.500",
+      "segment_type": "silence",
+      "confidence": 0.9,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -60.15,
+            "start_ms": 2000,
+            "end_ms": 4500
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 2,
+          "details": {
+            "label": "[静音] 这里可能需要剪辑",
+            "marker_start_ms": 2000,
+            "marker_end_ms": 4500
+          }
+        }
+      ],
+      "evidence": [
+        "电平低于静音阈值 (-40.0dB)"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "music_segment",
+      "severity": "low",
+      "message": "检测到配乐段, 电平 -20.0dB",
+      "start_ms": 4500,
+      "end_ms": 7500,
+      "time_range": "00:04.500 - 00:07.500",
+      "duration": "00:03.000",
+      "segment_type": "music",
+      "confidence": 0.7,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -20.0,
+            "start_ms": 4500,
+            "end_ms": 7500
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 3,
+          "details": {
+            "label": "继续说话",
+            "marker_start_ms": 4500,
+            "marker_end_ms": 7500
+          }
+        }
+      ],
+      "evidence": [
+        "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "silence",
+      "severity": "medium",
+      "message": "检测到 00:00.800 的静音段",
+      "start_ms": 7500,
+      "end_ms": 8300,
+      "time_range": "00:07.500 - 00:08.300",
+      "duration": "00:00.800",
+      "segment_type": "silence",
+      "confidence": 0.9,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -60.38,
+            "start_ms": 7500,
+            "end_ms": 8300
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "短暂停顿",
+            "marker_start_ms": 7500,
+            "marker_end_ms": 8300
+          }
+        }
+      ],
+      "evidence": [
+        "电平低于静音阈值 (-40.0dB)"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "music_segment",
+      "severity": "low",
+      "message": "检测到配乐段, 电平 -20.0dB",
+      "start_ms": 8300,
+      "end_ms": 10300,
+      "time_range": "00:08.300 - 00:10.300",
+      "duration": "00:02.000",
+      "segment_type": "music",
+      "confidence": 0.7,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -20.0,
+            "start_ms": 8300,
+            "end_ms": 10300
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 5,
+          "details": {
+            "label": "说话中",
+            "marker_start_ms": 8300,
+            "marker_end_ms": 10300
+          }
+        }
+      ],
+      "evidence": [
+        "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "silence",
+      "severity": "medium",
+      "message": "检测到 00:01.500 的静音段",
+      "start_ms": 10300,
+      "end_ms": 11800,
+      "time_range": "00:10.300 - 00:11.800",
+      "duration": "00:01.500",
+      "segment_type": "silence",
+      "confidence": 0.9,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -59.55,
+            "start_ms": 10300,
+            "end_ms": 11800
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 6,
+          "details": {
+            "label": "[静音] 呼吸停顿",
+            "marker_start_ms": 10300,
+            "marker_end_ms": 11800
+          }
+        }
+      ],
+      "evidence": [
+        "电平低于静音阈值 (-40.0dB)"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "music_segment",
+      "severity": "low",
+      "message": "检测到配乐段, 电平 -20.0dB",
+      "start_ms": 11800,
+      "end_ms": 15800,
+      "time_range": "00:11.800 - 00:15.800",
+      "duration": "00:04.000",
+      "segment_type": "music",
+      "confidence": 0.7,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.wav",
+          "file_name": "dirty_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -20.0,
+            "start_ms": 11800,
+            "end_ms": 15800
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/dirty_sample.srt",
+          "file_name": "dirty_sample.srt",
+          "file_type": "marker",
+          "line_number": 7,
+          "details": {
+            "label": "继续说话",
+            "marker_start_ms": 11800,
+            "marker_end_ms": 15800
+          }
+        }
+      ],
+      "evidence": [
+        "电平高于配乐阈值 (-29.2dB), 平均电平 -20.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "advertisement",
+      "severity": "medium",
+      "message": "检测到广告段, 时长 00:03.000",
+      "start_ms": 2000,
+      "end_ms": 5000,
+      "time_range": "00:02.000 - 00:05.000",
+      "duration": "00:03.000",
+      "segment_type": "advertisement",
+      "confidence": 0.85,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.wav",
+          "file_name": "ad_missing_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -12.0,
+            "start_ms": 2000,
+            "end_ms": 5000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 2,
+          "details": {
+            "label": "广告赞助商 - 这里是广告但电平像人声",
+            "marker_start_ms": 2000,
+            "marker_end_ms": 5000
+          }
+        }
+      ],
+      "evidence": [
+        "标记包含广告关键词: '广告赞助商 - 这里是广告但电平像人声'",
+        "电平高于配乐阈值 (-15.1dB), 平均电平 -12.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "advertisement",
+      "severity": "medium",
+      "message": "检测到广告段, 时长 00:03.000",
+      "start_ms": 7000,
+      "end_ms": 10000,
+      "time_range": "00:07.000 - 00:10.000",
+      "duration": "00:03.000",
+      "segment_type": "advertisement",
+      "confidence": 0.8,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.wav",
+          "file_name": "ad_missing_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -18.0,
+            "start_ms": 7000,
+            "end_ms": 10000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "广告 - 这也是广告",
+            "marker_start_ms": 7000,
+            "marker_end_ms": 10000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "广告 - 这也是广告",
+            "marker_start_ms": 7000,
+            "marker_end_ms": 10000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "广告 - 这也是广告",
+            "marker_start_ms": 7000,
+            "marker_end_ms": 10000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "广告 - 这也是广告",
+            "marker_start_ms": 7000,
+            "marker_end_ms": 10000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "广告 - 这也是广告",
+            "marker_start_ms": 7000,
+            "marker_end_ms": 10000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/ad_missing_sample.txt",
+          "file_name": "ad_missing_sample.txt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "广告 - 这也是广告",
+            "marker_start_ms": 7000,
+            "marker_end_ms": 10000
+          }
+        }
+      ],
+      "evidence": [
+        "标记包含广告关键词: '广告 - 这也是广告'",
+        "标记包含广告关键词: '广告 - 这也是广告'",
+        "标记包含广告关键词: '广告 - 这也是广告'",
+        "标记包含广告关键词: '广告 - 这也是广告'",
+        "标记包含广告关键词: '广告 - 这也是广告'",
+        "标记包含广告关键词: '广告 - 这也是广告'"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "loud_music",
+      "severity": "high",
+      "message": "配度过响 (-10.0dB), 可能盖过人声",
+      "start_ms": 2000,
+      "end_ms": 5000,
+      "time_range": "00:02.000 - 00:05.000",
+      "duration": "00:03.000",
+      "segment_type": "music",
+      "confidence": 0.7,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/loud_music_sample.wav",
+          "file_name": "loud_music_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -10.0,
+            "start_ms": 2000,
+            "end_ms": 5000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/loud_music_sample.csv",
+          "file_name": "loud_music_sample.csv",
+          "file_type": "marker",
+          "line_number": 3,
+          "details": {
+            "label": "主题音乐",
+            "marker_start_ms": 2000,
+            "marker_end_ms": 5000
+          }
+        }
+      ],
+      "evidence": [
+        "电平高于配乐阈值 (-13.6dB), 平均电平 -10.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "loud_music",
+      "severity": "high",
+      "message": "配度过响 (-8.0dB), 可能盖过人声",
+      "start_ms": 12000,
+      "end_ms": 14500,
+      "time_range": "00:12.000 - 00:14.500",
+      "duration": "00:02.500",
+      "segment_type": "music",
+      "confidence": 0.7,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/loud_music_sample.wav",
+          "file_name": "loud_music_sample.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -8.0,
+            "start_ms": 12000,
+            "end_ms": 14500
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/loud_music_sample.csv",
+          "file_name": "loud_music_sample.csv",
+          "file_type": "marker",
+          "line_number": 7,
+          "details": {
+            "label": "结尾音乐",
+            "marker_start_ms": 12000,
+            "marker_end_ms": 14000
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/loud_music_sample.csv",
+          "file_name": "loud_music_sample.csv",
+          "file_type": "marker",
+          "line_number": 8,
+          "details": {
+            "label": "收尾",
+            "marker_start_ms": 14000,
+            "marker_end_ms": 16000
+          }
+        }
+      ],
+      "evidence": [
+        "电平高于配乐阈值 (-13.6dB), 平均电平 -8.0dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "silence",
+      "severity": "medium",
+      "message": "检测到 00:00.500 的静音段",
+      "start_ms": 3000,
+      "end_ms": 3500,
+      "time_range": "00:03.000 - 00:03.500",
+      "duration": "00:00.500",
+      "segment_type": "silence",
+      "confidence": 0.6,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/normal_podcast.wav",
+          "file_name": "normal_podcast.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -45.47,
+            "start_ms": 3000,
+            "end_ms": 3500
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/normal_podcast.srt",
+          "file_name": "normal_podcast.srt",
+          "file_type": "marker",
+          "line_number": 2,
+          "details": {
+            "label": "话题介绍",
+            "marker_start_ms": 3300,
+            "marker_end_ms": 8300
+          }
+        }
+      ],
+      "evidence": [
+        "电平处于人声区间, 平均 -45.5dB"
+      ],
+      "metadata": {}
+    },
+    {
+      "finding_id": "FND_20260531_111830",
+      "finding_type": "low_voice",
+      "severity": "medium",
+      "message": "人声音量偏低 (-36.2dB)",
+      "start_ms": 14000,
+      "end_ms": 14500,
+      "time_range": "00:14.000 - 00:14.500",
+      "duration": "00:00.500",
+      "segment_type": "voice",
+      "confidence": 0.6,
+      "sources": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/normal_podcast.wav",
+          "file_name": "normal_podcast.wav",
+          "file_type": "audio",
+          "line_number": null,
+          "details": {
+            "average_rms_db": -36.16,
+            "start_ms": 14000,
+            "end_ms": 14500
+          }
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y12177/samples/normal_podcast.srt",
+          "file_name": "normal_podcast.srt",
+          "file_type": "marker",
+          "line_number": 4,
+          "details": {
+            "label": "主要内容",
+            "marker_start_ms": 10300,
+            "marker_end_ms": 14300
+          }
+        }
+      ],
+      "evidence": [
+        "电平处于人声区间, 平均 -36.2dB"
+      ],
+      "metadata": {}
+    }
+  ],
+  "corrections": []
+}
