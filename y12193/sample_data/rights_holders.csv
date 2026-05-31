@@ -1,0 +1,5 @@
+id,name,type,royalty_type
+RH001,张三,词曲作者,MECHANICAL
+RH002,李四,词曲作者,PERFORMANCE
+RH003,王五唱片,录音公司,RECORDING
+RH004,星光音乐,发行公司,MECHANICAL

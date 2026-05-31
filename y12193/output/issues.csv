@@ -1,0 +1,3 @@
+﻿record_id,track_name,issue_type,severity,message,source_refs
+REC002,追梦人,合同过期,WARNING,权利人[张三]的合同于 2023-12-31 过期，报告日期为 2024-06-01,合同:contracts.csv
+REC003,海阔天空,比例超百,ERROR,合同比例总和 110.0% 超过100%，涉及 2 份合同,合同:contracts.csv | 合同:contracts.csv

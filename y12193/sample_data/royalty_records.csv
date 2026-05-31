@@ -1,0 +1,4 @@
+id,track_id,track_name,artist,channel,revenue,report_date
+REC001,TRACK01,夜空中最亮的星,逃跑计划,STREAMING,10000.00,2024-06-01
+REC002,TRACK02,追梦人,凤飞飞,STREAMING,15000.00,2024-06-01
+REC003,TRACK03,海阔天空,Beyond,STREAMING,20000.00,2024-06-01

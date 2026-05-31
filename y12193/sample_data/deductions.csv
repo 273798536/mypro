@@ -1,0 +1,5 @@
+id,channel,description,percentage,amount,effective_date
+TRACK01_01,STREAMING,流媒体平台服务费,15,0,2023-01-01
+TRACK02_01,STREAMING,流媒体平台服务费,15,0,2023-01-01
+TRACK02_02,STREAMING,Q1渠道补扣调整,0,500.00,2024-04-01
+TRACK03_01,STREAMING,流媒体平台服务费,15,0,2023-01-01
