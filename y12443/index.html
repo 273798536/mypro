@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抵押率地牢探险 — Web3 DeFi 教学模拟</title>
+<style>
+:root {
+  --bg-deep: #0d0f1a;
+  --bg-panel: #151829;
+  --bg-card: #1c2038;
+  --bg-hover: #252a48;
+  --border: #2a2f52;
+  --border-accent: #4f46e5;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #818cf8;
+  --accent-glow: #6366f1;
+  --danger: #f87171;
+  --danger-bg: rgba(248,113,113,0.12);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251,191,36,0.12);
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.12);
+  --oracle: #c084fc;
+  --oracle-bg: rgba(192,132,252,0.12);
+  --source-tag: #38bdf8;
+  --source-bg: rgba(56,189,248,0.10);
+  --exception: #fb923c;
+  --exception-bg: rgba(251,146,60,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+.app-header{background:linear-gradient(135deg,#1a1c36 0%,#0d0f1a 100%);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px}
+.app-header .logo{font-size:24px;filter:drop-shadow(0 0 8px rgba(129,140,248,0.5))}
+.app-header h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.app-header .subtitle{font-size:12px;color:var(--text-muted);margin-left:auto}
+.tab-bar{display:flex;background:var(--bg-panel);border-bottom:1px solid var(--border);padding:0 16px;gap:4px}
+.tab-btn{padding:10px 20px;background:none;border:none;color:var(--text-secondary);font-size:13px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.tab-btn:hover{color:var(--text-primary);background:var(--bg-hover)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg-hover)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:16px;padding:16px 24px;max-width:1440px;margin:0 auto}
+.panel{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:8px}
+.panel-body{padding:16px}
+.room-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;transition:border-color 0.2s}
+.room-card:hover{border-color:var(--border-accent)}
+.room-card.current{border-color:var(--accent);box-shadow:0 0 16px rgba(99,102,241,0.15)}
+.room-title{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.room-desc{font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6}
+.room-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.meta-tag{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500}
+.tag-collateral{background:var(--success-bg);color:var(--success)}
+.tag-oracle{background:var(--oracle-bg);color:var(--oracle)}
+.tag-debt{background:var(--danger-bg);color:var(--danger)}
+.tag-source{background:var(--source-bg);color:var(--source-tag)}
+.tag-exception{background:var(--exception-bg);color:var(--exception)}
+.tag-warning{background:var(--warning-bg);color:var(--warning)}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.action-btn{padding:10px 12px;background:var(--bg-hover);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:13px;cursor:pointer;transition:all 0.2s;text-align:center}
+.action-btn:hover{background:var(--accent-glow);border-color:var(--accent);transform:translateY(-1px)}
+.action-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.action-btn.danger-btn:hover{background:rgba(248,113,113,0.2);border-color:var(--danger)}
+.oracle-feed{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
+.oracle-feed.stale{border-color:var(--warning);background:var(--warning-bg)}
+.oracle-feed.jumped{border-color:var(--exception);background:var(--exception-bg);animation:pulse-warn 0.6s ease-in-out}
+@keyframes pulse-warn{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px rgba(251,146,60,0.4)}}
+.oracle-label{font-size:11px;color:var(--text-muted);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.oracle-price{font-size:18px;font-weight:700;color:var(--oracle)}
+.oracle-ts{font-size:10px;color:var(--text-muted)}
+.source-label{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 6px;border-radius:3px;background:var(--source-bg);color:var(--source-tag);margin-left:6px}
+.source-label::before{content:'◆';font-size:8px}
+.position-table{width:100%;border-collapse:collapse;font-size:12px}
+.position-table th{text-align:left;padding:6px 8px;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);font-size:11px}
+.position-table td{padding:6px 8px;border-bottom:1px solid rgba(42,47,82,0.5);vertical-align:top}
+.position-table .ratio-safe{color:var(--success);font-weight:600}
+.position-table .ratio-warn{color:var(--warning);font-weight:600}
+.position-table .ratio-danger{color:var(--danger);font-weight:600}
+.exception-item{background:var(--exception-bg);border:1px solid rgba(251,146,60,0.2);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
+.exception-item .exc-type{font-weight:600;color:var(--exception);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.exception-item .exc-detail{color:var(--text-secondary);line-height:1.5}
+.exception-item .exc-step{font-size:10px;color:var(--text-muted);margin-top:4px}
+.replay-timeline{position:relative;padding-left:24px}
+.replay-timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.replay-step{position:relative;margin-bottom:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all 0.2s}
+.replay-step:hover{border-color:var(--accent);background:var(--bg-hover)}
+.replay-step.active-step{border-color:var(--accent);box-shadow:0 0 12px rgba(99,102,241,0.2)}
+.replay-step::before{content:'';position:absolute;left:-20px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--border);border:2px solid var(--bg-deep)}
+.replay-step.active-step::before{background:var(--accent)}
+.replay-step.step-liquidation::before{background:var(--danger)}
+.replay-step.step-oracle-jump::before{background:var(--exception)}
+.replay-step-num{font-size:10px;color:var(--text-muted);margin-bottom:4px}
+.replay-step-action{font-size:13px;font-weight:600;margin-bottom:6px}
+.replay-step-explain{font-size:11px;color:var(--text-secondary);line-height:1.5;background:rgba(0,0,0,0.2);border-radius:6px;padding:8px;margin-top:8px}
+.replay-step-explain .mistake{color:var(--danger);font-weight:600}
+.replay-step-explain .good{color:var(--success);font-weight:600}
+.score-display{text-align:center;padding:20px}
+.score-big{font-size:48px;font-weight:800;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.score-label{font-size:12px;color:var(--text-muted);margin-top:4px}
+.feedback-list{list-style:none}
+.feedback-item{padding:10px 12px;margin-bottom:8px;border-radius:8px;font-size:12px;line-height:1.6;display:flex;gap:8px;align-items:flex-start}
+.feedback-item.mistake{background:var(--danger-bg);border:1px solid rgba(248,113,113,0.2)}
+.feedback-item.insight{background:var(--oracle-bg);border:1px solid rgba(192,132,252,0.2)}
+.feedback-item.correct{background:var(--success-bg);border:1px solid rgba(52,211,153,0.2)}
+.feedback-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.feedback-text{color:var(--text-secondary)}
+.feedback-text strong{color:var(--text-primary)}
+.report-section{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.report-section h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent)}
+.criteria-box{background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:12px;font-size:12px;line-height:1.7;color:var(--text-secondary)}
+.criteria-box strong{color:var(--text-primary)}
+.criteria-box code{background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;font-family:'SF Mono',Monaco,monospace;color:var(--oracle);font-size:11px}
+.copy-btn{padding:8px 16px;background:var(--accent-glow);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.2s}
+.copy-btn:hover{background:var(--accent)}
+.stat-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(42,47,82,0.3);font-size:12px}
+.stat-label{color:var(--text-muted)}
+.stat-value{color:var(--text-primary);font-weight:600}
+.stat-value.danger{color:var(--danger)}
+.stat-value.success{color:var(--success)}
+.stat-value.warning{color:var(--warning)}
+.status-bar{display:flex;gap:16px;padding:12px 16px;background:var(--bg-card);border-radius:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.status-item{font-size:12px;color:var(--text-secondary)}
+.status-item span{color:var(--text-primary);font-weight:600}
+.gas-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px;width:60px}
+.gas-fill{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s}
+.gas-fill.high{background:var(--success)}
+.gas-fill.medium{background:var(--warning)}
+.gas-fill.low{background:var(--danger)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto}
+.modal-box h2{font-size:18px;margin-bottom:16px;color:var(--accent)}
+.start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}
+.start-screen .dungeon-icon{font-size:64px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(129,140,248,0.4))}
+.start-screen h2{font-size:24px;margin-bottom:8px;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.start-screen p{color:var(--text-secondary);font-size:13px;line-height:1.8;max-width:520px;margin-bottom:24px}
+.start-btn{padding:14px 48px;background:linear-gradient(135deg,var(--accent-glow),#7c3aed);color:white;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(99,102,241,0.3)}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(99,102,241,0.4)}
+.difficulty-select{display:flex;gap:12px;margin-bottom:24px}
+.diff-btn{padding:10px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all 0.2s}
+.diff-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.diff-btn.selected{border-color:var(--accent);background:var(--accent-glow);color:white}
+.empty-state{text-align:center;padding:32px;color:var(--text-muted);font-size:13px}
+.hidden{display:none !important}
+.scroll-y{overflow-y:auto}
+.replay-state-diff{font-size:11px;margin-top:6px;padding:6px 8px;background:rgba(0,0,0,0.3);border-radius:4px;line-height:1.6}
+.diff-add{color:var(--success)}
+.diff-remove{color:var(--danger)}
+.diff-change{color:var(--warning)}
+.exc-filter.active-filter{border-color:var(--accent);color:var(--accent)}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <span class="logo">🏰</span>
+  <h1>抵押率地牢探险</h1>
+  <span class="subtitle">Web3 DeFi 清算风险教学模拟 v1.0</span>
+</header>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="game">⚔️ 地牢探险</button>
+  <button class="tab-btn" data-tab="replay">📜 步骤回放</button>
+  <button class="tab-btn" data-tab="exceptions">⚠️ 异常清单</button>
+  <button class="tab-btn" data-tab="report">📊 战报分享</button>
+</nav>
+
+<div id="tab-game" class="tab-content active">
+  <div id="start-screen" class="start-screen">
+    <div class="dungeon-icon">🏰</div>
+    <h2>抵押率地牢探险</h2>
+    <p>
+      你将扮演一名 DeFi 借贷者，在地牢中做出抵押、借贷、清算等决策。<br>
+      预言机可能延迟报价、价格可能突然跳变、Gas 可能不足导致交易失败。<br>
+      每一步都有来源标签，异常事件不会混入正常明细。<br>
+      完成探险后，你会看到详细的错误解析——不只是分数，而是真正理解错在哪。
+    </p>
+    <div class="difficulty-select">
+      <button class="diff-btn selected" data-diff="normal">🟢 普通</button>
+      <button class="diff-btn" data-diff="hard">🔴 困难</button>
+      <button class="diff-btn" data-diff="chaos">💀 混沌</button>
+    </div>
+    <button class="start-btn" id="btn-start">开始探险</button>
+  </div>
+
+  <div id="game-screen" class="main-grid hidden">
+    <div class="left-col">
+      <div class="status-bar" id="status-bar">
+        <div class="status-item">🗺️ 房间 <span id="room-num">1/6</span></div>
+        <div class="status-item">⛽ Gas <span id="gas-display">100%</span>
+          <div class="gas-bar"><div class="gas-fill high" id="gas-fill" style="width:100%"></div></div>
+        </div>
+        <div class="status-item">⏱️ 回合 <span id="turn-num">1</span></div>
+        <div class="status-item">❤️ 健康 <span id="health-display">100</span></div>
+      </div>
+
+      <div id="room-container"></div>
+
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-header">📍 预言机价格源 <span class="meta-tag tag-source">◆ 来源可追溯</span></div>
+        <div class="panel-body" id="oracle-feeds"></div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-header">📋 仓位明细 <span style="font-size:10px;color:var(--source-tag)">◆ 每行带来源标签</span></div>
+        <div class="panel-body scroll-y" style="max-height:240px">
+          <table class="position-table" id="position-table">
+            <thead><tr><th>资产</th><th>数量</th><th>价值(USD)</th><th>类型</th><th>来源</th></tr></thead>
+            <tbody id="position-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="panel">
+        <div class="panel-header">🎯 当前抵押率总览</div>
+        <div class="panel-body">
+          <div style="text-align:center;margin-bottom:12px">
+            <div id="total-ratio" style="font-size:32px;font-weight:800;color:var(--success)">—</div>
+            <div style="font-size:11px;color:var(--text-muted)">总抵押率 (抵押物价值 / 债务价值)</div>
+          </div>
+          <div id="ratio-bar" style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+            <div id="ratio-fill" style="height:100%;width:0;border-radius:4px;transition:all 0.3s;background:var(--success)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px">
+            <span>0%</span><span style="color:var(--danger)">清算线 150%</span><span style="color:var(--warning)">安全线 200%</span><span>300%+</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-header">⚠️ 异常事件 <span class="meta-tag tag-exception" id="exc-count">0</span></div>
+        <div class="panel-body scroll-y exception-list" style="max-height:220px" id="exception-panel">
+          <div class="empty-state">暂无异常</div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-header">📝 最近操作日志</div>
+        <div class="panel-body scroll-y" style="max-height:160px;font-size:11px;line-height:1.7;color:var(--text-secondary)" id="action-log">
+          <div class="empty-state">等待操作...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-screen" class="hidden" style="padding:24px;max-width:900px;margin:0 auto">
+    <div class="score-display">
+      <div class="score-big" id="final-score">0</div>
+      <div class="score-label">探险评分</div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <div class="panel-header">🎓 错误解析 — 不只是分数，理解错在哪</div>
+      <div class="panel-body">
+        <ul class="feedback-list" id="feedback-list"></ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:12px;justify-content:center">
+      <button class="start-btn" onclick="showReportTab()" style="font-size:13px;padding:10px 24px">📊 查看战报</button>
+      <button class="start-btn" onclick="restartGame()" style="font-size:13px;padding:10px 24px;background:linear-gradient(135deg,#059669,#34d399)">🔄 再来一局</button>
+    </div>
+  </div>
+</div>
+
+<div id="tab-replay" class="tab-content">
+  <div style="padding:16px 24px;max-width:900px;margin:0 auto">
+    <div class="panel">
+      <div class="panel-header">📜 步骤回放 — 点击查看每步的状态快照与影响分析</div>
+      <div class="panel-body">
+        <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+          <button class="action-btn" id="replay-prev" style="padding:6px 12px;font-size:12px">◀ 上一步</button>
+          <button class="action-btn" id="replay-next" style="padding:6px 12px;font-size:12px">下一步 ▶</button>
+          <button class="action-btn" id="replay-auto" style="padding:6px 12px;font-size:12px">▶ 自动回放</button>
+          <span style="font-size:12px;color:var(--text-muted)" id="replay-progress">0 / 0</span>
+        </div>
+        <div class="replay-timeline" id="replay-timeline"></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px" id="replay-detail-panel">
+      <div class="panel-header">🔍 选中步骤的状态快照与差异</div>
+      <div class="panel-body" id="replay-detail">
+        <div class="empty-state">请选择一个步骤查看详情</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-exceptions" class="tab-content">
+  <div style="padding:16px 24px;max-width:900px;margin:0 auto">
+    <div class="panel">
+      <div class="panel-header">⚠️ 异常清单 — 预言机跳价 / Gas不足 / 重复清算 不混入正常明细</div>
+      <div class="panel-body">
+        <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="action-btn exc-filter active-filter" data-filter="all" style="padding:6px 12px;font-size:12px">全部</button>
+          <button class="action-btn exc-filter" data-filter="oracle_jump" style="padding:6px 12px;font-size:12px">🔮 预言机跳价</button>
+          <button class="action-btn exc-filter" data-filter="gas_insufficient" style="padding:6px 12px;font-size:12px">⛽ Gas不足</button>
+          <button class="action-btn exc-filter" data-filter="duplicate_liquidation" style="padding:6px 12px;font-size:12px">🔁 重复清算</button>
+        </div>
+        <div id="exceptions-full-list">
+          <div class="empty-state">尚未开始探险，暂无异常记录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-report" class="tab-content">
+  <div style="padding:16px 24px;max-width:900px;margin:0 auto">
+    <div class="panel">
+      <div class="panel-header">📊 战报 & 抵押率判定口径说明</div>
+      <div class="panel-body" id="report-body">
+        <div class="empty-state">完成探险后生成战报</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<script>
+const ASSETS = {
+  ETH: {name:'ETH',icon:'⟠',collateralFactor:0.75,liquidationThreshold:0.80},
+  WBTC: {name:'WBTC',icon:'₿',collateralFactor:0.70,liquidationThreshold:0.75},
+  USDC: {name:'USDC',icon:'💲',collateralFactor:0.00,liquidationThreshold:0.00},
+  DAI: {name:'DAI',icon:'◈',collateralFactor:0.00,liquidationThreshold:0.00},
+  LINK: {name:'LINK',icon:'⬡',collateralFactor:0.55,liquidationThreshold:0.60},
+  AAVE: {name:'AAVE',icon:'👻',collateralFactor:0.50,liquidationThreshold:0.55},
+  STETH: {name:'stETH',icon:'🔗',collateralFactor:0.70,liquidationThreshold:0.75},
+  UNI: {name:'UNI',icon:'🦄',collateralFactor:0.60,liquidationThreshold:0.65}
+};
+const ORACLE_SOURCES = ['Chainlink','Uniswap V3 TWAP','Band Protocol','Pyth Network','MakerOSM'];
+
+const SCENARIOS_NORMAL = [
+  {id:1,title:'🏰 入口大厅 — 基础抵押',desc:'你进入地牢大厅，面前有三个金库。选择存入抵押物并借出稳定币。记住：预言机价格可能已过时。',collateralOptions:[{asset:'ETH',amount:5},{asset:'WBTC',amount:0.3},{asset:'LINK',amount:200}],borrowOptions:[{asset:'USDC',amount:5000},{asset:'DAI',amount:4800},{asset:'USDC',amount:8000}],actionOptions:null,oracleEvent:null},
+  {id:2,title:'🕯️ 回廊 — 延迟预言机',desc:'走廊尽头传来异响。Chainlink 报价已 15 分钟未更新，Uniswap TWAP 还在用 30 分钟前的价格。你需要决定是否继续操作。',collateralOptions:[{asset:'ETH',amount:2},{asset:'STETH',amount:3}],borrowOptions:[{asset:'USDC',amount:3000},{asset:'DAI',amount:2000}],actionOptions:null,oracleEvent:{type:'delay',source:'Chainlink',delayMinutes:15,stalePrice:true}},
+  {id:3,title:'⚔️ 竞技场 — 波动考验',desc:'你进入一个巨大的竞技场，ETH 价格在 5 分钟内从 $3,200 跌至 $2,800。你的抵押率正在逼近清算线。你需要做出反应。',collateralOptions:null,borrowOptions:null,actionOptions:['补充抵押物(+2 ETH)','偿还部分债务(-1500 USDC)','等待价格恢复','紧急退出仓位'],oracleEvent:{type:'price_drop',asset:'ETH',fromPrice:3200,toPrice:2800,durationMin:5}},
+  {id:4,title:'🔮 预言机密室 — 价格跳变',desc:'密室中 Pyth Network 突然报告 ETH 价格为 $1,800（当前市价 $3,100）。这是一个明显的预言机异常跳价，但清算引擎可能已经触发。',collateralOptions:null,borrowOptions:null,actionOptions:['立即补充抵押物','等待预言机修正','主动清算自己减少损失','检查是否为预言机攻击'],oracleEvent:{type:'oracle_jump',source:'Pyth Network',asset:'ETH',realPrice:3100,reportedPrice:1800}},
+  {id:5,title:'⛽ 燃料室 — Gas 危机',desc:'链上拥堵，Gas 飙升至 500 gwei。你的清算保护交易已经提交但尚未确认，而价格还在下跌。你需要决定下一步。',collateralOptions:null,borrowOptions:null,actionOptions:['提高 Gas 价格加速交易','等待当前交易确认','取消交易改为补充抵押','什么都不做'],oracleEvent:{type:'gas_surge',gwei:500,pendingTx:true}},
+  {id:6,title:'🐉 Boss 房 — 综合考验',desc:'最终 Boss 房！ETH 价格暴跌 25%，预言机延迟更新，Gas 飙升，同时有人尝试对你重复清算。你需要在混乱中保住仓位。',collateralOptions:null,borrowOptions:null,actionOptions:['全力补充抵押物','偿还所有债务','分散操作(补抵押+还债)','接受清算减少损失'],oracleEvent:{type:'chaos',priceDrop:0.25,oracleDelay:true,gasSurge:true,duplicateLiq:true}}
+];
+
+const SCENARIOS_HARD = [
+  {id:1,title:'🏰 硬核入口 — stETH 脱锚',desc:'stETH/ETH 池流动性枯竭，stETH 折价 3%。你持有的 stETH 抵押物实际价值已缩水，但预言机仍按 1:1 报价。',collateralOptions:[{asset:'STETH',amount:8},{asset:'ETH',amount:4}],borrowOptions:[{asset:'USDC',amount:10000},{asset:'DAI',amount:9000}],actionOptions:null,oracleEvent:{type:'steth_depeg',discount:0.03,oracleStillOne:true}},
+  {id:2,title:'🕯️ 回廊 — 多预言机分歧',desc:'Chainlink 报 ETH $3,050，Band Protocol 报 $2,950，Pyth 报 $3,100。三个预言机价格分歧超过 5%。协议取中位数 $3,050。',collateralOptions:[{asset:'ETH',amount:3},{asset:'AAVE',amount:50}],borrowOptions:[{asset:'USDC',amount:4000},{asset:'DAI',amount:3500}],actionOptions:null,oracleEvent:{type:'oracle_divergence',prices:{'Chainlink':3050,'Band Protocol':2950,'Pyth Network':3100},medianUsed:3050}},
+  {id:3,title:'⚔️ 竞技场 — 闪电崩盘',desc:'ETH 在 2 分钟内从 $3,000 跌至 $2,200，反弹至 $2,600。预言机采样点正好落在最低点。清算引擎按 $2,200 评估。',collateralOptions:null,borrowOptions:null,actionOptions:['补充抵押物(使用备用 ETH)','等价格反弹','在价格 $2,600 时部分还债','使用闪电贷自清算'],oracleEvent:{type:'flash_crash',asset:'ETH',prices:[3000,2800,2400,2200,2400,2600],sampledAt:2200}},
+  {id:4,title:'🔮 预言机密室 — 操纵攻击',desc:'有人利用闪电贷操纵 Uniswap TWAP，使预言机短暂报告 ETH $800。协议使用此价格作为次要预言机，加权平均后 ETH 价格被拉低 15%。',collateralOptions:null,borrowOptions:null,actionOptions:['紧急补充抵押','质疑预言机有效性','利用价差套利','等待攻击者撤资后恢复'],oracleEvent:{type:'manipulation',attacker:'0x7a25...f3d2',realPrice:3100,manipulatedTWAP:800,weightedAvg:2635}},
+  {id:5,title:'⛽ 燃料室 — 交易卡死',desc:'Gas 800 gwei，你的 3 笔交易在 mempool 排队。其中 1 笔补充抵押的 nonce 比清算交易低，但如果清算先被打包，补充抵押就无意义了。',collateralOptions:null,borrowOptions:null,actionOptions:['替换补充抵押交易(更高Gas)','提交新还债交易(更高nonce)','什么都不做(等mempool自然排序)','取消所有pending交易'],oracleEvent:{type:'tx_stuck',gasGwei:800,pendingTxCount:3,nonceOrderRisk:true}},
+  {id:6,title:'🐉 Boss 房 — DeFi 黑色星期四',desc:'ETH 暴跌 40%，stETH 脱锚 8%，Gas 涨到 2000 gwei，预言机停止更新，清算机器人离线。这是 3.12 重演。你能活下来吗？',collateralOptions:null,borrowOptions:null,actionOptions:['放弃一切(接受全部清算)','只保核心仓位(还部分债)','用剩余ETH全力补充','利用混乱在DEX对冲'],oracleEvent:{type:'black_thursday',ethDrop:0.40,stethDepeg:0.08,gasGwei:2000,oracleDown:true,liquidatorOffline:true}}
+];
+
+function generateChaosScenarios(){
+  const titles=['💀 混沌层 1 — 预言机风暴','💀 混沌层 2 — Gas 地狱','💀 混沌层 3 — 闪电崩盘复刻','💀 混沌层 4 — 操纵者来袭','💀 混沌层 5 — stETH 二次脱锚','💀 混沌层 6 — 清算雪崩','💀 混沌层 7 — 多预言机全面失效','💀 混沌层 8 — 终极混沌 Boss'];
+  const evts=['oracle_jump','flash_crash','manipulation','gas_surge','steth_depeg','black_thursday','oracle_divergence','chaos'];
+  return titles.map((t,i)=>({id:i+1,title:t,desc:`混沌模式：随机事件组合，无安全网。所有参数随机波动，你需要时刻警惕。`,collateralOptions:null,borrowOptions:null,actionOptions:['冒险操作','保守操作','等待观察','紧急退出'],oracleEvent:{type:evts[i],randomSeed:Math.random()}}));
+}
+
+let gameState = null;
+
+function createGameState(difficulty){
+  const baseEth = 3100 + (Math.random()*300-150);
+  const prices = {ETH:baseEth,WBTC:42000+Math.random()*2000-1000,USDC:1.0,DAI:1.0,LINK:15+Math.random()*2-1,AAVE:85+Math.random()*10-5,STETH:baseEth-20+Math.random()*40-20,UNI:8+Math.random()*2-1};
+  const ts={};const src={};
+  Object.keys(prices).forEach(a=>{ts[a]=Date.now();src[a]=ORACLE_SOURCES[Math.floor(Math.random()*ORACLE_SOURCES.length)];});
+  return {difficulty,currentRoom:0,turn:1,gas:100,health:100,score:0,positions:{collateral:[],debt:[]},prices:{current:prices,previous:{...prices}},oracle:{timestamps:ts,sources:src,stale:{},jumped:{}},exceptions:[],stepLog:[],feedback:[],completed:false,scenarios:difficulty==='normal'?SCENARIOS_NORMAL:difficulty==='hard'?SCENARIOS_HARD:generateChaosScenarios()};
+}
+
+function sourceLabel(s){return `<span class="source-label">${s}</span>`;}
+
+function oracleFeedHTML(asset){
+  const g=gameState;const price=g.prices.current[asset];const ts=g.oracle.timestamps[asset];const src=g.oracle.sources[asset];
+  const isStale=g.oracle.stale[asset];const isJumped=g.oracle.jumped[asset];
+  let cls='oracle-feed';if(isStale)cls+=' stale';if(isJumped)cls+=' jumped';
+  const elapsed=Math.round((Date.now()-ts)/60000);
+  const staleTag=isStale?`<span class="meta-tag tag-warning">⚠ 延迟 ${elapsed}min</span>`:'';
+  const jumpTag=isJumped?`<span class="meta-tag tag-exception">⚡ 跳价</span>`:'';
+  return `<div class="${cls}"><div class="oracle-label"><span>${ASSETS[asset]?.icon||''} ${asset}</span>${staleTag}${jumpTag}</div><div style="display:flex;align-items:baseline;gap:8px"><span class="oracle-price">$${price.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>${sourceLabel(src)}</div><div class="oracle-ts">更新于 ${new Date(ts).toLocaleTimeString('zh-CN')}</div></div>`;
+}
+
+function calcTotalCollateralValue(){
+  return gameState.positions.collateral.reduce((s,p)=>s+p.amount*gameState.prices.current[p.asset],0);
+}
+function calcTotalDebtValue(){
+  return gameState.positions.debt.reduce((s,p)=>s+p.amount*gameState.prices.current[p.asset],0);
+}
+function calcCollateralRatio(){
+  const d=calcTotalDebtValue();if(d===0)return Infinity;
+  return (calcTotalCollateralValue()/d)*100;
+}
+function calcLiquidationRatio(){
+  const g=gameState;let wc=0;let td=0;
+  g.positions.collateral.forEach(p=>{wc+=p.amount*g.prices.current[p.asset]*ASSETS[p.asset].liquidationThreshold;});
+  g.positions.debt.forEach(p=>{td+=p.amount*g.prices.current[p.asset];});
+  return td===0?Infinity:(wc/td)*100;
+}
+
+function addException(type,detail,step){
+  const typeLabels={oracle_jump:'🔮 预言机跳价',gas_insufficient:'⛽ Gas不足',duplicate_liquidation:'🔁 重复清算'};
+  gameState.exceptions.push({id:gameState.exceptions.length+1,type,typeLabel:typeLabels[type]||type,detail,step:step||gameState.stepLog.length,timestamp:new Date().toISOString()});
+  renderExceptions();
+}
+
+function logStep(action,detail,snapshot,explanation,isError){
+  const step={id:gameState.stepLog.length+1,action,detail,stateSnapshot:JSON.parse(JSON.stringify(snapshot||{})),explanation:explanation||'',isError:isError||false,timestamp:new Date().toISOString()};
+  gameState.stepLog.push(step);
+  renderActionLog(action,detail);
+  return step;
+}
+
+function takeSnapshot(){
+  const g=gameState;
+  return {prices:{...g.prices.current},positions:{collateral:g.positions.collateral.map(p=>({...p})),debt:g.positions.debt.map(p=>({...p}))},collateralRatio:calcCollateralRatio(),liquidationRatio:calcLiquidationRatio(),gas:g.gas,health:g.health,score:g.score,oracleTimestamps:{...g.oracle.timestamps},oracleStale:{...g.oracle.stale},oracleJumped:{...g.oracle.jumped}};
+}
+
+function renderUI(){
+  const g=gameState;
+  document.getElementById('room-num').textContent=`${g.currentRoom+1}/${g.scenarios.length}`;
+  document.getElementById('gas-display').textContent=`${g.gas}%`;
+  const gf=document.getElementById('gas-fill');gf.style.width=g.gas+'%';gf.className='gas-fill '+(g.gas>50?'high':g.gas>20?'medium':'low');
+  document.getElementById('turn-num').textContent=g.turn;
+  document.getElementById('health-display').textContent=g.health;
+  renderRoom();renderOracles();renderPositions();renderRatio();
+}
+
+function renderRoom(){
+  const g=gameState;const sc=g.scenarios[g.currentRoom];if(!sc)return;
+  const c=document.getElementById('room-container');
+  let ah='';
+  if(sc.actionOptions&&sc.actionOptions.length>0){
+    ah=`<div class="action-grid">${sc.actionOptions.map((a,i)=>`<button class="action-btn ${a.includes('清算')||a.includes('放弃')?'danger-btn':''}" onclick="handleAction(${i})">${a}</button>`).join('')}</div>`;
+  }else{
+    let ch='';if(sc.collateralOptions&&sc.collateralOptions.length>0){ch=`<div style="margin-bottom:8px"><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">存入抵押物：</div><div class="action-grid">${sc.collateralOptions.map((o,i)=>`<button class="action-btn" onclick="handleDeposit(${i})">${ASSETS[o.asset].icon} +${o.amount} ${o.asset}</button>`).join('')}</div></div>`;}
+    let bh='';if(sc.borrowOptions&&sc.borrowOptions.length>0){bh=`<div><div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">借出资产：</div><div class="action-grid">${sc.borrowOptions.map((o,i)=>`<button class="action-btn danger-btn" onclick="handleBorrow(${i})">${ASSETS[o.asset].icon} +${o.amount} ${o.asset}</button>`).join('')}</div></div>`;}
+    ah=ch+bh;
+  }
+  let mt='';
+  if(sc.oracleEvent){
+    const t=sc.oracleEvent.type;
+    if(t.includes('oracle')||t.includes('jump')||t.includes('manipulation')||t.includes('divergence'))mt+='<span class="meta-tag tag-oracle">预言机风险</span>';
+    if(t.includes('gas')||t.includes('tx_stuck'))mt+='<span class="meta-tag tag-warning">Gas风险</span>';
+    if(t.includes('chaos')||t.includes('black')||t.includes('flash'))mt+='<span class="meta-tag tag-exception">极端行情</span>';
+    if(t.includes('duplicate')||t.includes('steth')||t.includes('depeg'))mt+='<span class="meta-tag tag-debt">结构性风险</span>';
+  }
+  c.innerHTML=`<div class="room-card current"><div class="room-title">${sc.title}</div><div class="room-desc">${sc.desc}</div><div class="room-meta">${mt}</div>${ah}</div>`;
+}
+
+function renderOracles(){
+  document.getElementById('oracle-feeds').innerHTML=['ETH','WBTC','LINK','AAVE','STETH'].map(a=>oracleFeedHTML(a)).join('');
+}
+
+function renderPositions(){
+  const g=gameState;const tb=document.getElementById('position-tbody');
+  let h='';
+  g.positions.collateral.forEach(p=>{
+    const price=g.prices.current[p.asset];const info=ASSETS[p.asset];const val=p.amount*price;
+    h+=`<tr><td>${info.icon} ${p.asset}</td><td>${p.amount.toFixed(4)}</td><td>$${val.toLocaleString('en',{minimumFractionDigits:2})} ${sourceLabel(g.oracle.sources[p.asset])}</td><td class="ratio-safe">抵押</td><td>${sourceLabel(p.source||'用户操作')}</td></tr>`;
+  });
+  g.positions.debt.forEach(p=>{
+    const price=g.prices.current[p.asset];const val=p.amount*price;
+    h+=`<tr><td>${ASSETS[p.asset]?.icon||''} ${p.asset}</td><td>${p.amount.toFixed(2)}</td><td>$${val.toLocaleString('en',{minimumFractionDigits:2})} ${sourceLabel('协议定价')}</td><td class="ratio-danger">债务</td><td>${sourceLabel(p.source||'用户操作')}</td></tr>`;
+  });
+  if(!h)h='<tr><td colspan="5" style="color:var(--text-muted);text-align:center">暂无仓位</td></tr>';
+  tb.innerHTML=h;
+}
+
+function renderRatio(){
+  const g=gameState;const r=calcCollateralRatio();const el=document.getElementById('total-ratio');const fl=document.getElementById('ratio-fill');
+  if(r===Infinity){el.textContent='∞';el.style.color='var(--success)';fl.style.width='100%';fl.style.background='var(--success)';}
+  else{const rv=Math.round(r);el.textContent=rv+'%';el.style.color=rv<150?'var(--danger)':rv<200?'var(--warning)':'var(--success)';fl.style.background=rv<150?'var(--danger)':rv<200?'var(--warning)':'var(--success)';fl.style.width=Math.min(rv/3,100)+'%';}
+}
+
+function renderExceptions(){
+  const g=gameState;const p=document.getElementById('exception-panel');const c=document.getElementById('exc-count');
+  c.textContent=g.exceptions.length;
+  if(!g.exceptions.length){p.innerHTML='<div class="empty-state">暂无异常</div>';return;}
+  p.innerHTML=g.exceptions.slice(-5).reverse().map(e=>exceptionItemHTML(e)).join('');
+}
+
+function exceptionItemHTML(e){
+  return `<div class="exception-item" data-type="${e.type}"><div class="exc-type">${e.typeLabel} <span class="meta-tag tag-exception">步骤 ${e.step}</span></div><div class="exc-detail">${e.detail}</div><div class="exc-step">${new Date(e.timestamp).toLocaleTimeString('zh-CN')}</div></div>`;
+}
+
+function renderActionLog(action,detail){
+  const log=document.getElementById('action-log');if(log.querySelector('.empty-state'))log.innerHTML='';
+  const d=document.createElement('div');d.style.cssText='padding:4px 0;border-bottom:1px solid rgba(42,47,82,0.3)';
+  d.innerHTML=`<span style="color:var(--accent)">[${gameState.stepLog.length}]</span> ${action} ${detail?'<span style="color:var(--text-muted)">— '+detail+'</span>':''}`;
+  log.prepend(d);
+}
+
+function handleDeposit(idx){
+  const g=gameState;const sc=g.scenarios[g.currentRoom];const opt=sc.collateralOptions[idx];
+  const snap=takeSnapshot();
+  const src=g.oracle.sources[opt.asset]+' + 用户操作';
+  const ex=g.positions.collateral.find(p=>p.asset===opt.asset);
+  if(ex){ex.amount+=opt.amount;ex.source=src;}else{g.positions.collateral.push({asset:opt.asset,amount:opt.amount,source:src});}
+  g.gas=Math.max(0,g.gas-5);g.score+=10;
+  logStep(`存入 ${opt.amount} ${opt.asset}`,`来源: ${g.oracle.sources[opt.asset]}`,snap,`存入 ${opt.amount} ${opt.asset} 作为抵押物。价值 $${(opt.amount*g.prices.current[opt.asset]).toFixed(2)}。价格来源: ${g.oracle.sources[opt.asset]}。`,false);
+  applyOracleEvent(sc);postAction();
+}
+
+function handleBorrow(idx){
+  const g=gameState;const sc=g.scenarios[g.currentRoom];const opt=sc.borrowOptions[idx];
+  const snap=takeSnapshot();
+  const ratioBefore=calcCollateralRatio();
+  const ex=g.positions.debt.find(p=>p.asset===opt.asset);
+  if(ex){ex.amount+=opt.amount;ex.source='用户借贷';}else{g.positions.debt.push({asset:opt.asset,amount:opt.amount,source:'用户借贷'});}
+  g.gas=Math.max(0,g.gas-5);
+  const ratioAfter=calcCollateralRatio();
+  let expl=`借出 ${opt.amount} ${opt.asset}。抵押率: ${Math.round(ratioBefore)}% → ${Math.round(ratioAfter)}%。`;
+  let isErr=false;
+  if(ratioAfter<150){expl+=` ⚠ 抵押率降至 ${Math.round(ratioAfter)}%，低于清算线！仓位可能被清算。`;g.health-=30;g.score-=20;isErr=true;addException('duplicate_liquidation',`借出后抵押率 ${Math.round(ratioAfter)}%，清算引擎可能已触发。`,g.stepLog.length+1);}
+  else if(ratioAfter<200){expl+=` ⚠ 抵押率 ${Math.round(ratioAfter)}%，接近清算线。`;g.score-=5;isErr=true;}
+  else{g.score+=15;}
+  logStep(`借出 ${opt.amount} ${opt.asset}`,`抵押率: ${Math.round(ratioBefore)}% → ${Math.round(ratioAfter)}%`,snap,expl,isErr);
+  applyOracleEvent(sc);postAction();
+}
+
+function handleAction(idx){
+  const g=gameState;const sc=g.scenarios[g.currentRoom];const action=sc.actionOptions[idx];
+  const snap=takeSnapshot();
+  const ratio=calcCollateralRatio();
+  let expl='';let isErr=false;let gasCost=8;
+
+  if(action.includes('补充抵押')){
+    const bonusAmt=1+Math.random()*2;
+    const ex=g.positions.collateral.find(p=>p.asset==='ETH');
+    if(ex){ex.amount+=bonusAmt;ex.source='紧急补充';}else{g.positions.collateral.push({asset:'ETH',amount:bonusAmt,source:'紧急补充'});}
+    g.score+=15;expl=`补充 ${bonusAmt.toFixed(2)} ETH 抵押物，抵押率提升。正确的防守策略。`;
+  }else if(action.includes('偿还')||action.includes('还债')){
+    const da=g.positions.debt.length>0?g.positions.debt[0].asset:'USDC';
+    const ra=1000+Math.random()*2000;
+    const dp=g.positions.debt.find(p=>p.asset===da);
+    if(dp){dp.amount=Math.max(0,dp.amount-ra);if(dp.amount===0)g.positions.debt=g.positions.debt.filter(p=>p.asset!==da);}
+    g.score+=12;expl=`偿还 ${ra.toFixed(0)} ${da}，降低债务，抵押率改善。`;
+  }else if(action.includes('等待')||action.includes('观察')){
+    const pc=(Math.random()-0.6)*0.1;
+    Object.keys(g.prices.current).forEach(a=>{if(a!=='USDC'&&a!=='DAI')g.prices.current[a]*=(1+pc);});
+    if(pc<0){g.health-=10;g.score-=5;expl=`等待期间价格下跌 ${(pc*100).toFixed(1)}%，被动等待有风险。`;isErr=true;}
+    else{g.score+=5;expl=`等待期间价格小幅上涨，但被动策略并非总是奏效。`;}
+  }else if(action.includes('清算')||action.includes('放弃')){
+    g.health-=25;g.score-=15;isErr=true;
+    expl=`接受清算意味着损失清算罚金（通常 5-15%）。虽然有时是止损的最优解，但应尽量避免。`;
+    const la=g.positions.collateral.length>0?g.positions.collateral[0]:null;
+    if(la){la.amount*=0.85;addException('duplicate_liquidation',`仓位被清算，${la.asset} 损失 15% 罚金。`,g.stepLog.length+1);}
+  }else if(action.includes('提高Gas')||action.includes('加速')){
+    gasCost=20;g.score+=8;expl=`提高 Gas 价格加速交易确认，在紧急情况下是必要的，但 Gas 成本更高。`;
+  }else if(action.includes('取消')){
+    g.gas=Math.min(100,g.gas+5);g.score+=3;expl=`取消 pending 交易释放 nonce，但浪费了已支付的 Gas。`;
+  }else if(action.includes('质疑')){
+    g.score+=20;expl=`质疑预言机有效性是正确做法！发现异常时第一时间验证数据来源比盲目操作更重要。`;
+  }else if(action.includes('对冲')){
+    g.health-=5;g.score+=10;expl=`在 DEX 对冲是高级策略，但滑点和 Gas 成本需要注意。`;
+  }else if(action.includes('分散')){
+    const ba=1+Math.random()*2;const ex=g.positions.collateral.find(p=>p.asset==='ETH');
+    if(ex){ex.amount+=ba;ex.source='分散操作-补抵押';}else{g.positions.collateral.push({asset:'ETH',amount:ba,source:'分散操作-补抵押'});}
+    const da=g.positions.debt.length>0?g.positions.debt[0].asset:'USDC';const dp=g.positions.debt.find(p=>p.asset===da);
+    if(dp){dp.amount=Math.max(0,dp.amount-800);if(dp.amount===0)g.positions.debt=g.positions.debt.filter(p=>p.asset!==da);}
+    g.score+=18;expl=`分散操作（补抵押+还债）是最稳妥的综合策略，兼顾降低风险和减少债务。`;
+  }else if(action.includes('闪电贷')){
+    g.score+=12;expl=`使用闪电贷自清算是高级 DeFi 操作，可以避免清算罚金，但需要精确计算和足够的 Gas。`;
+  }else if(action.includes('套利')){
+    g.score-=10;g.health-=15;isErr=true;expl=`在预言机被操纵时套利极其危险，你可能成为操纵者的对手盘。`;
+  }else if(action.includes('全力')){
+    const ba=2+Math.random()*3;const ex=g.positions.collateral.find(p=>p.asset==='ETH');
+    if(ex){ex.amount+=ba;ex.source='全力补充';}else{g.positions.collateral.push({asset:'ETH',amount:ba,source:'全力补充'});}
+    gasCost=15;g.score+=10;expl=`全力补充抵押物是积极防守，但如果价格继续下跌可能仍然不够。`;
+  }else if(action.includes('保守')){
+    const da=g.positions.debt.length>0?g.positions.debt[0].asset:'USDC';const dp=g.positions.debt.find(p=>p.asset===da);
+    if(dp){dp.amount=Math.max(0,dp.amount-500);if(dp.amount===0)g.positions.debt=g.positions.debt.filter(p=>p.asset!==da);}
+    g.score+=5;expl=`保守操作减少风险敞口，但在某些场景下可能错过最佳窗口。`;
+  }else if(action.includes('冒险')){
+    if(Math.random()>0.5){g.score+=15;expl=`冒险成功！但运气不是策略，同样操作可能下次失败。`;}
+    else{g.health-=20;g.score-=10;isErr=true;expl=`冒险失败，仓位受损。在 DeFi 中，风险管理比赌博更重要。`;}
+  }else if(action.includes('紧急退出')){
+    g.health-=10;g.score+=5;expl=`紧急退出避免了更大损失，但可能错过反弹。是合理的止损选择。`;
+  }else if(action.includes('什么都不')){
+    const pc=(Math.random()-0.5)*0.08;
+    Object.keys(g.prices.current).forEach(a=>{if(a!=='USDC'&&a!=='DAI')g.prices.current[a]*=(1+pc);});
+    g.score-=3;expl=`不作为也是一种选择，但在 DeFi 中不作为往往等于被动接受风险。`;
+  }else if(action.includes('mempool')||action.includes('自然排序')){
+    g.gas=Math.max(0,g.gas-10);g.score+=2;expl=`依赖 mempool 自然排序风险很高，清算机器人可能抢先打包。`;
+  }else if(action.includes('更高nonce')){
+    gasCost=15;g.score+=6;expl=`提交更高 nonce 交易可以绕过卡住的交易，但 Gas 成本增加。`;
+  }else if(action.includes('替换')){
+    gasCost=18;g.score+=10;expl=`替换交易（speedup）是处理卡住交易的标准做法，但需要额外 Gas。`;
+  }else if(action.includes('等待攻击')){
+    g.health-=10;g.score+=8;expl=`等待攻击者撤资是合理判断，但期间你的仓位可能被误清算。`;
+  }else{
+    g.score+=5;expl=`执行操作：${action}`;
+  }
+
+  g.gas=Math.max(0,g.gas-gasCost);
+  if(g.gas<=0){addException('gas_insufficient',`Gas 不足！交易无法提交，仓位处于无保护状态。`,g.stepLog.length+1);g.health-=15;g.score-=10;isErr=true;expl+=' ⚠ Gas 耗尽！后续操作无法执行。';}
+  logStep(action,`Gas -${gasCost}%, 抵押率 ${Math.round(calcCollateralRatio())}%`,snap,expl,isErr);
+  applyOracleEvent(sc);postAction();
+}
+
+function applyOracleEvent(sc){
+  const g=gameState;const ev=sc.oracleEvent;if(!ev)return;
+  switch(ev.type){
+    case 'delay':{
+      g.oracle.stale.ETH=true;g.oracle.timestamps.ETH-=ev.delayMinutes*60000;
+      addException('oracle_jump',`Chainlink ETH 报价延迟 ${ev.delayMinutes} 分钟，当前使用的是过期价格 $${g.prices.current.ETH.toFixed(2)}。`,g.stepLog.length);break;
+    }
+    case 'steth_depeg':{
+      const realSteth=g.prices.current.ETH*(1-ev.discount);g.prices.current.STETH=realSteth;
+      if(ev.oracleStillOne){g.oracle.stale.STETH=true;g.oracle.sources.STETH='MakerOSM (滞后)';
+        addException('oracle_jump',`stETH 实际折价 ${(ev.discount*100).toFixed(0)}% 至 $${realSteth.toFixed(2)}，但预言机仍报 1:1。你的真实抵押率比显示的更低！`,g.stepLog.length);}
+      break;
+    }
+    case 'oracle_divergence':{
+      Object.entries(ev.prices).forEach(([src,price])=>{
+        addException('oracle_jump',`${src} 报 ETH $${price.toLocaleString()}，与中位数 $${ev.medianUsed.toLocaleString()} 偏差 ${((price-ev.medianUsed)/ev.medianUsed*100).toFixed(1)}%`,g.stepLog.length);
+      });break;
+    }
+    case 'price_drop':{
+      const old=g.prices.current[ev.asset];g.prices.previous[ev.asset]=old;g.prices.current[ev.asset]=ev.toPrice;g.oracle.jumped[ev.asset]=true;
+      addException('oracle_jump',`${ev.asset} 在 ${ev.durationMin} 分钟内从 $${ev.fromPrice.toLocaleString()} 跌至 $${ev.toPrice.toLocaleString()}，跌幅 ${((1-ev.toPrice/ev.fromPrice)*100).toFixed(1)}%`,g.stepLog.length);break;
+    }
+    case 'flash_crash':{
+      const old=g.prices.current[ev.asset];g.prices.previous[ev.asset]=old;g.prices.current[ev.asset]=ev.sampledAt;g.oracle.jumped[ev.asset]=true;g.oracle.sources[ev.asset]='Uniswap V3 TWAP (采样点异常)';
+      addException('oracle_jump',`${ev.asset} 闪电崩盘，预言机采样点恰好在最低价 $${ev.sampledAt.toLocaleString()}，当前实际价格可能已反弹。清算引擎按采样价评估！`,g.stepLog.length);break;
+    }
+    case 'oracle_jump':{
+      const old=g.prices.current[ev.asset];g.prices.previous[ev.asset]=old;
+      const r=calcCollateralRatio();
+      if(r<150){g.health-=20;g.score-=15;addException('duplicate_liquidation',`预言机跳价触发清算！${ev.asset} 被报告为 $${ev.reportedPrice.toLocaleString()}（实际 $${ev.realPrice.toLocaleString()}），清算引擎已执行。`,g.stepLog.length);}
+      addException('oracle_jump',`${ev.source} 报告 ${ev.asset} 价格 $${ev.reportedPrice.toLocaleString()}，实际价格 $${ev.realPrice.toLocaleString()}，偏差 ${((1-ev.reportedPrice/ev.realPrice)*100).toFixed(1)}%`,g.stepLog.length);break;
+    }
+    case 'manipulation':{
+      const old=g.prices.current.ETH;g.prices.previous.ETH=old;g.prices.current.ETH=ev.weightedAvg;g.oracle.jumped.ETH=true;
+      addException('oracle_jump',`闪电贷操纵攻击！攻击者 ${ev.attacker} 操纵 TWAP 至 $${ev.manipulatedTWAP}，加权均价降至 $${ev.weightedAvg.toLocaleString()}（实际 $${ev.realPrice}）`,g.stepLog.length);break;
+    }
+    case 'gas_surge':{
+      g.gas=Math.max(0,g.gas-25);addException('gas_insufficient',`Gas 飙升至 ${ev.gwei} gwei${ev.pendingTx?'，pending 交易可能超时':''}`,g.stepLog.length);break;
+    }
+    case 'tx_stuck':{
+      g.gas=Math.max(0,g.gas-30);addException('gas_insufficient',`${ev.pendingTxCount} 笔交易卡在 mempool，Gas ${ev.gasGwei} gwei。nonce 顺序风险：清算可能先于补充抵押被打包。`,g.stepLog.length);break;
+    }
+    case 'chaos':{
+      const oldEth=g.prices.current.ETH;g.prices.previous.ETH=oldEth;g.prices.current.ETH*=(1-ev.priceDrop);g.oracle.jumped.ETH=true;g.oracle.stale.ETH=true;g.gas=Math.max(0,g.gas-30);
+      addException('oracle_jump',`ETH 暴跌 ${(ev.priceDrop*100).toFixed(0)}% 至 $${g.prices.current.ETH.toFixed(2)}，预言机延迟更新`,g.stepLog.length);
+      addException('gas_insufficient',`Gas 飙升，可用 Gas 降至 ${g.gas}%`,g.stepLog.length);
+      if(ev.duplicateLiq){addException('duplicate_liquidation',`检测到重复清算尝试，已有 2 笔清算交易针对你的仓位`,g.stepLog.length);}
+      break;
+    }
+    case 'black_thursday':{
+      const oldEth=g.prices.current.ETH;g.prices.previous.ETH=oldEth;g.prices.current.ETH*=(1-ev.ethDrop);g.prices.current.STETH=g.prices.current.ETH*(1-ev.stethDepeg);g.oracle.jumped.ETH=true;g.oracle.jumped.STETH=true;g.oracle.stale.ETH=true;g.oracle.stale.STETH=true;g.gas=Math.max(0,g.gas-40);
+      addException('oracle_jump',`ETH 暴跌 ${(ev.ethDrop*100).toFixed(0)}% 至 $${g.prices.current.ETH.toFixed(2)}，预言机停止更新`,g.stepLog.length);
+      addException('oracle_jump',`stETH 脱锚 ${(ev.stethDepeg*100).toFixed(0)}% 至 $${g.prices.current.STETH.toFixed(2)}`,g.stepLog.length);
+      addException('gas_insufficient',`Gas 飙升至 ${ev.gasGwei} gwei，可用 Gas 降至 ${g.gas}%${ev.oracleDown?'，预言机已停止更新':''}${ev.liquidatorOffline?'，清算机器人离线':''}`,g.stepLog.length);
+      break;
+    }
+  }
+}
+
+function postAction(){
+  const g=gameState;
+  if(g.health<=0)g.health=0;
+  g.turn++;
+  const ratio=calcCollateralRatio();
+  if(ratio<150&&ratio!==Infinity&&g.positions.debt.length>0){
+    g.feedback.push({type:'mistake',icon:'💀',text:`你的抵押率降至 <strong>${Math.round(ratio)}%</strong>，低于清算线 150%！你的仓位被部分清算，损失了抵押物罚金。`});
+  }
+  if(g.health<=0||g.currentRoom>=g.scenarios.length-1){
+    endGame();return;
+  }
+  g.currentRoom++;
+  renderUI();
+}
+
+function endGame(){
+  const g=gameState;g.completed=true;
+  generateFeedback();
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.remove('hidden');
+  const score=Math.max(0,g.score+g.health);
+  document.getElementById('final-score').textContent=score;
+  const fl=document.getElementById('feedback-list');
+  fl.innerHTML=g.feedback.map(f=>`<li class="feedback-item ${f.type}"><span class="feedback-icon">${f.icon}</span><div class="feedback-text">${f.text}</div></li>`).join('');
+  buildReplay();buildExceptionsFullList();buildReport();
+}
+
+function generateFeedback(){
+  const g=gameState;
+  g.feedback=[];
+  const oracleExcs=g.exceptions.filter(e=>e.type==='oracle_jump');
+  const gasExcs=g.exceptions.filter(e=>e.type==='gas_insufficient');
+  const liqExcs=g.exceptions.filter(e=>e.type==='duplicate_liquidation');
+  const errorSteps=g.stepLog.filter(s=>s.isError);
+  const goodSteps=g.stepLog.filter(s=>!s.isError);
+
+  if(oracleExcs.length>0){
+    g.feedback.push({type:'insight',icon:'🔮',text:`你遭遇了 <strong>${oracleExcs.length} 次</strong>预言机异常。${oracleExcs.length>2?'频繁的预言机异常说明你需要更关注价格来源的可靠性。':'预言机延迟和跳价是 DeFi 中的常见风险，学会识别和应对至关重要。'}关键教训：<strong>永远不要只依赖单一预言机来源</strong>，操作前检查价格更新时间戳。`});
+  }
+  if(gasExcs.length>0){
+    g.feedback.push({type:'insight',icon:'⛽',text:`你遭遇了 <strong>${gasExcs.length} 次</strong>Gas 危机。${gasExcs.length>1?'多次 Gas 不足说明你的操作过于频繁或 Gas 预算管理不当。':'Gas 飙升时，确保你的交易有足够的 Gas 价格被打包，否则可能错过关键的清算保护窗口。'}关键教训：<strong>始终保持 Gas 储备，紧急时宁可多付 Gas 也不要等</strong>。`});
+  }
+  if(liqExcs.length>0){
+    g.feedback.push({type:'mistake',icon:'🔁',text:`你遭遇了 <strong>${liqExcs.length} 次</strong>清算事件。${liqExcs.length>1?'多次清算意味着你的抵押率管理存在系统性问题。':'即使是一次清算也可能导致显著损失。'}关键教训：<strong>保持抵押率在 200% 以上，留出安全缓冲</strong>。`});
+  }
+  if(errorSteps.length>goodSteps.length){
+    g.feedback.push({type:'mistake',icon:'⚠️',text:`你的操作中 <strong>${errorSteps.length} 步存在问题</strong>，仅 ${goodSteps.length} 步操作合理。回顾每一步的决策依据，问自己：是否在操作前检查了预言机价格？是否预留了足够的 Gas？是否考虑了最坏情况？`});
+  }else if(goodSteps.length>0){
+    g.feedback.push({type:'correct',icon:'✅',text:`你的 <strong>${goodSteps.length} 步</strong>操作中大部分是合理的。${errorSteps.length>0?`但仍有 ${errorSteps.length} 步存在风险，回顾这些步骤可以进一步提升。`:'做得很好！但 DeFi 环境永远在变化，保持警惕。'}`});
+  }
+
+  g.feedback.push({type:'insight',icon:'💡',text:`<strong>核心原则总结：</strong>① 永远检查预言机价格来源和更新时间 ② 保持抵押率在安全线以上 ③ 预留 Gas 储备应对紧急情况 ④ 异常发生时优先验证而非盲目操作 ⑤ 分散策略（补抵押+还债）优于单一操作`});
+}
+
+function buildReplay(){
+  const g=gameState;const tl=document.getElementById('replay-timeline');
+  document.getElementById('replay-progress').textContent=`0 / ${g.stepLog.length}`;
+  if(!g.stepLog.length){tl.innerHTML='<div class="empty-state">暂无操作记录</div>';return;}
+  tl.innerHTML=g.stepLog.map((s,i)=>{
+    const stepCls=s.isError?(s.action.includes('清算')?'step-liquidation':'step-oracle-jump'):'';
+    return `<div class="replay-step ${stepCls}" data-idx="${i}" onclick="selectReplayStep(${i})"><div class="replay-step-num">步骤 ${s.id} · ${new Date(s.timestamp).toLocaleTimeString('zh-CN')}</div><div class="replay-step-action">${s.action}</div><div style="font-size:11px;color:var(--text-muted)">${s.detail}</div>${s.explanation?`<div class="replay-step-explain">${s.explanation}</div>`:''}</div>`;
+  }).join('');
+}
+
+let replayAutoTimer=null;
+function selectReplayStep(idx){
+  const g=gameState;if(!g.stepLog.length)return;
+  document.querySelectorAll('.replay-step').forEach(el=>el.classList.remove('active-step'));
+  const el=document.querySelector(`.replay-step[data-idx="${idx}"]`);
+  if(el)el.classList.add('active-step');
+  document.getElementById('replay-progress').textContent=`${idx+1} / ${g.stepLog.length}`;
+  renderReplayDetail(idx);
+}
+
+function renderReplayDetail(idx){
+  const g=gameState;const s=g.stepLog[idx];if(!s)return;
+  const d=document.getElementById('replay-detail');
+  const sn=s.stateSnapshot;if(!sn||!sn.prices){d.innerHTML='<div class="empty-state">该步骤无快照数据</div>';return;}
+  let diffHTML='';
+  if(idx>0){
+    const prev=g.stepLog[idx-1].stateSnapshot;
+    if(prev&&prev.prices){
+      const changes=[];
+      Object.keys(sn.prices).forEach(a=>{
+        if(prev.prices[a]!==undefined&&Math.abs(sn.prices[a]-prev.prices[a])>0.01){
+          const pct=((sn.prices[a]-prev.prices[a])/prev.prices[a]*100).toFixed(2);
+          changes.push(`<span class="${sn.prices[a]>prev.prices[a]?'diff-add':'diff-remove'}">${a}: $${prev.prices[a].toFixed(2)} → $${sn.prices[a].toFixed(2)} (${pct}%)</span>`);
+        }
+      });
+      if(changes.length)diffHTML=`<div class="replay-state-diff"><div style="font-weight:600;margin-bottom:4px">价格变化：</div>${changes.join('<br>')}</div>`;
+    }
+  }
+  let posHTML='';
+  if(sn.positions){
+    posHTML='<div style="margin-top:8px"><div style="font-weight:600;font-size:12px;margin-bottom:4px">仓位快照：</div>';
+    sn.positions.collateral.forEach(p=>{
+      posHTML+=`<div class="stat-row"><span class="stat-label">${ASSETS[p.asset]?.icon||''} ${p.asset} (抵押)</span><span class="stat-value success">${p.amount.toFixed(4)} ${sourceLabel(p.source||'')}</span></div>`;
+    });
+    sn.positions.debt.forEach(p=>{
+      posHTML+=`<div class="stat-row"><span class="stat-label">${ASSETS[p.asset]?.icon||''} ${p.asset} (债务)</span><span class="stat-value danger">${p.amount.toFixed(2)} ${sourceLabel(p.source||'')}</span></div>`;
+    });
+    posHTML+='</div>';
+  }
+  d.innerHTML=`<div class="stat-row"><span class="stat-label">抵押率</span><span class="stat-value ${sn.collateralRatio<150?'danger':sn.collateralRatio<200?'warning':'success'}">${sn.collateralRatio===Infinity?'∞':Math.round(sn.collateralRatio)+'%'}</span></div><div class="stat-row"><span class="stat-label">Gas</span><span class="stat-value">${sn.gas}%</span></div><div class="stat-row"><span class="stat-label">健康</span><span class="stat-value">${sn.health}</span></div><div class="stat-row"><span class="stat-label">得分</span><span class="stat-value">${sn.score}</span></div>${diffHTML}${posHTML}`;
+}
+
+function selectCurrentReplayStep(dir){
+  const g=gameState;if(!g||!g.stepLog.length)return;
+  const active=document.querySelector('.replay-step.active-step');
+  let idx=0;if(active){idx=parseInt(active.dataset.idx);}
+  idx+=dir;
+  if(idx<0)idx=0;if(idx>=g.stepLog.length)idx=g.stepLog.length-1;
+  selectReplayStep(idx);
+}
+
+function toggleAutoReplay(){
+  const btn=document.getElementById('replay-auto');
+  if(replayAutoTimer){clearInterval(replayAutoTimer);replayAutoTimer=null;btn.textContent='▶ 自动回放';}
+  else{btn.textContent='⏸ 暂停';let i=0;const g=gameState;
+    replayAutoTimer=setInterval(()=>{if(i>=g.stepLog.length){clearInterval(replayAutoTimer);replayAutoTimer=null;btn.textContent='▶ 自动回放';return;}selectReplayStep(i);i++;},2000);}
+}
+
+function filterExceptions(type){
+  const g=gameState;const list=document.getElementById('exceptions-full-list');
+  if(!g||!g.exceptions.length){list.innerHTML='<div class="empty-state">暂无异常记录</div>';return;}
+  document.querySelectorAll('.exc-filter').forEach(b=>b.classList.remove('active-filter'));
+  document.querySelector(`.exc-filter[data-filter="${type}"]`).classList.add('active-filter');
+  const excs=type==='all'?g.exceptions:g.exceptions.filter(e=>e.type===type);
+  if(!excs.length){list.innerHTML='<div class="empty-state">该类型暂无异常</div>';return;}
+  list.innerHTML=excs.map(e=>exceptionItemHTML(e)).join('');
+}
+
+function buildExceptionsFullList(){
+  filterExceptions('all');
+}
+
+function buildReport(){
+  const g=gameState;const body=document.getElementById('report-body');
+  const finalScore=Math.max(0,g.score+g.health);
+  const ratio=calcCollateralRatio();
+  const oracleExcs=g.exceptions.filter(e=>e.type==='oracle_jump').length;
+  const gasExcs=g.exceptions.filter(e=>e.type==='gas_insufficient').length;
+  const liqExcs=g.exceptions.filter(e=>e.type==='duplicate_liquidation').length;
+  const totalSteps=g.stepLog.length;
+  const errorSteps=g.stepLog.filter(s=>s.isError).length;
+  const goodSteps=totalSteps-errorSteps;
+
+  const collateralValue=calcTotalCollateralValue();
+  const debtValue=calcTotalDebtValue();
+  const liquidationRatio=calcLiquidationRatio();
+
+  const grade=finalScore>=80?'S':finalScore>=60?'A':finalScore>=40?'B':finalScore>=20?'C':'D';
+  const gradeColor=finalScore>=80?'success':finalScore>=60?'warning':'danger';
+
+  const time=new Date().toLocaleString('zh-CN');
+  const diffLabel={normal:'🟢 普通',hard:'🔴 困难',chaos:'💀 混沌'}[g.difficulty]||g.difficulty;
+
+  const reportHTML=`<div class="report-section">
+    <h3>🏆 探险战报 — ${diffLabel}模式</h3>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:56px;font-weight:800;color:var(--accent)">${grade}</div>
+      <div style="font-size:14px;color:var(--text-muted)">综合评级</div>
+    </div>
+    <div class="stat-row"><span class="stat-label">最终得分</span><span class="stat-value ${gradeColor}">${finalScore}</span></div>
+    <div class="stat-row"><span class="stat-label">健康值</span><span class="stat-value">${g.health}</span></div>
+    <div class="stat-row"><span class="stat-label">剩余 Gas</span><span class="stat-value">${g.gas}%</span></div>
+    <div class="stat-row"><span class="stat-label">探险时长</span><span class="stat-value">${g.turn-1} 回合</span></div>
+    <div class="stat-row"><span class="stat-label">操作步骤</span><span class="stat-value">${totalSteps} 步</span></div>
+    <div class="stat-row"><span class="stat-label">合理操作</span><span class="stat-value success">${goodSteps} 步</span></div>
+    <div class="stat-row"><span class="stat-label">风险操作</span><span class="stat-value danger">${errorSteps} 步</span></div>
+  </div>
+
+  <div class="report-section">
+    <h3>📊 抵押率判定口径说明</h3>
+    <div class="criteria-box">
+      <strong>📖 转发战报时可直接复制本段说明抵押率判定口径：</strong><br><br>
+      <strong>1. 抵押率 (Collateral Ratio)</strong> = <code>抵押物总价值 / 债务总价值 × 100%</code><br>
+      &nbsp;&nbsp;&nbsp;本次计算：<code>$${collateralValue.toLocaleString('en',{maximumFractionDigits:2})} / $${debtValue.toLocaleString('en',{maximumFractionDigits:2})} × 100% = ${ratio===Infinity?'∞':Math.round(ratio)+'%'}</code><br>
+      <strong>2. 清算线</strong> = <code>150%</code> — 低于此值清算引擎会自动执行清算<br>
+      <strong>3. 安全线</strong> = <code>200%</code> — 建议保持在此线以上以抵御波动<br>
+      <strong>4. 清算阈值 (Liquidation Threshold)</strong> — 各资产不同：<br>
+      &nbsp;&nbsp;&nbsp;ETH 80%, WBTC 75%, stETH 75%, LINK 60%, AAVE 55%, UNI 65%<br>
+      <strong>5. 加权清算率</strong> = <code>Σ(抵押物价值 × 清算阈值) / 债务总价值 × 100%</code><br>
+      &nbsp;&nbsp;&nbsp;本次计算：<code>${liquidationRatio===Infinity?'∞':Math.round(liquidationRatio)+'%'}</code><br>
+      <strong>6. 预言机来源</strong>：Chainlink / Uniswap V3 TWAP / Band Protocol / Pyth Network / MakerOSM<br>
+      <strong>7. 价格更新</strong>：每步检查预言机更新时间，延迟超过 5 分钟标记为 stale<br>
+      <strong>8. 异常处理</strong>：预言机跳价、Gas 不足、重复清算单列异常清单，不计入正常明细<br><br>
+      <em>* 本模拟基于真实 DeFi 协议参数（Aave/Compound/MakerDAO），但已简化供教学使用。</em>
+    </div>
+    <div style="margin-top:12px;text-align:right">
+      <button class="copy-btn" onclick="copyCriteria()">📋 复制判定口径</button>
+    </div>
+  </div>
+
+  <div class="report-section">
+    <h3>⚠️ 异常事件汇总</h3>
+    <div class="stat-row"><span class="stat-label">🔮 预言机跳价</span><span class="stat-value ${oracleExcs>2?'danger':oracleExcs>0?'warning':'success'}">${oracleExcs} 次</span></div>
+    <div class="stat-row"><span class="stat-label">⛽ Gas 不足</span><span class="stat-value ${gasExcs>2?'danger':gasExcs>0?'warning':'success'}">${gasExcs} 次</span></div>
+    <div class="stat-row"><span class="stat-label">🔁 重复清算</span><span class="stat-value ${liqExcs>1?'danger':liqExcs>0?'warning':'success'}">${liqExcs} 次</span></div>
+    <div class="stat-row"><span class="stat-label">合计异常</span><span class="stat-value ${g.exceptions.length>3?'danger':g.exceptions.length>0?'warning':'success'}">${g.exceptions.length} 次</span></div>
+  </div>
+
+  <div class="report-section">
+    <h3>🎓 关键教训</h3>
+    <div style="font-size:12px;line-height:1.8;color:var(--text-secondary)">
+      ${g.feedback.map((f,i)=>`<div style="margin-bottom:8px"><span style="font-size:16px">${f.icon}</span> ${f.text}</div>`).join('')}
+    </div>
+  </div>
+
+  <div class="report-section">
+    <h3>📝 仓位详情 (带来源标签)</h3>
+    <table class="position-table">
+      <thead><tr><th>资产</th><th>数量</th><th>价值(USD)</th><th>类型</th><th>来源</th></tr></thead>
+      <tbody>
+        ${g.positions.collateral.map(p=>`<tr><td>${ASSETS[p.asset]?.icon||''} ${p.asset}</td><td>${p.amount.toFixed(4)}</td><td>$${(p.amount*g.prices.current[p.asset]).toLocaleString('en',{maximumFractionDigits:2})} ${sourceLabel(g.oracle.sources[p.asset])}</td><td class="ratio-safe">抵押</td><td>${sourceLabel(p.source||'用户操作')}</td></tr>`).join('')}
+        ${g.positions.debt.map(p=>`<tr><td>${ASSETS[p.asset]?.icon||''} ${p.asset}</td><td>${p.amount.toFixed(2)}</td><td>$${(p.amount*g.prices.current[p.asset]).toLocaleString('en',{maximumFractionDigits:2})} ${sourceLabel('协议定价')}</td><td class="ratio-danger">债务</td><td>${sourceLabel(p.source||'用户操作')}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="report-section">
+    <h3>🔍 预言机价格源</h3>
+    ${['ETH','WBTC','LINK','AAVE','STETH'].map(a=>{
+      const p=g.prices.current[a];const src=g.oracle.sources[a];const ts=g.oracle.timestamps[a];
+      const stale=g.oracle.stale[a]?'<span class="meta-tag tag-warning">⚠ 延迟</span>':'';
+      const jumped=g.oracle.jumped[a]?'<span class="meta-tag tag-exception">⚡ 跳价</span>':'';
+      return `<div class="stat-row"><span class="stat-label">${ASSETS[a]?.icon||''} ${a} $${p.toLocaleString('en',{maximumFractionDigits:2})}</span><span class="stat-value">${sourceLabel(src)} ${stale}${jumped}</span></div>`;
+    }).join('')}
+  </div>
+
+  <div class="report-section">
+    <h3>📌 战报元数据</h3>
+    <div class="stat-row"><span class="stat-label">生成时间</span><span class="stat-value">${time}</span></div>
+    <div class="stat-row"><span class="stat-label">模拟版本</span><span class="stat-value">抵押率地牢探险 v1.0</span></div>
+    <div class="stat-row"><span class="stat-label">最终抵押率</span><span class="stat-value ${ratio<150?'danger':ratio<200?'warning':'success'}">${ratio===Infinity?'∞':Math.round(ratio)+'%'}</span></div>
+    <div style="margin-top:12px;text-align:right">
+      <button class="copy-btn" onclick="copyFullReport()">📋 复制完整战报</button>
+    </div>
+  </div>`;
+
+  body.innerHTML=reportHTML;
+}
+
+function copyToClipboard(text, successMsg){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{alert(successMsg);}).catch(()=>{showFallbackCopy(text, successMsg);});
+  }else{
+    showFallbackCopy(text, successMsg);
+  }
+}
+
+function showFallbackCopy(text, successMsg){
+  const modal=document.getElementById('modal-overlay');
+  const box=document.getElementById('modal-box');
+  box.innerHTML=`<h2>📋 ${successMsg.replace('✅ ','').replace('！','')}</h2>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">浏览器限制无法自动复制，请手动复制以下内容：</p>
+    <textarea id="fallback-textarea" style="width:100%;height:200px;padding:12px;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:'SF Mono',monospace;font-size:11px;resize:none">${text}</textarea>
+    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+      <button class="copy-btn" onclick="document.getElementById('fallback-textarea').select();document.execCommand('copy');alert('✅ 已复制！');">📋 复制</button>
+      <button class="copy-btn" style="background:var(--bg-hover);color:var(--text-primary)" onclick="document.getElementById('modal-overlay').classList.remove('show');">关闭</button>
+    </div>`;
+  modal.classList.add('show');
+}
+
+function copyCriteria(){
+  const text=`【抵押率判定口径】
+
+1. 抵押率 (Collateral Ratio) = 抵押物总价值 / 债务总价值 × 100%
+2. 清算线 = 150% — 低于此值清算引擎会自动执行清算
+3. 安全线 = 200% — 建议保持在此线以上以抵御波动
+4. 清算阈值 (Liquidation Threshold)：ETH 80%, WBTC 75%, stETH 75%, LINK 60%, AAVE 55%, UNI 65%
+5. 加权清算率 = Σ(抵押物价值 × 清算阈值) / 债务总价值 × 100%
+6. 预言机来源：Chainlink / Uniswap V3 TWAP / Band Protocol / Pyth Network / MakerOSM
+7. 价格更新：每步检查预言机更新时间，延迟超过5分钟标记为 stale
+8. 异常处理：预言机跳价、Gas不足、重复清算单列异常清单，不计入正常明细
+
+* 本模拟基于真实DeFi协议参数(Aave/Compound/MakerDAO)，已简化供教学使用。`;
+  copyToClipboard(text, '✅ 抵押率判定口径已复制到剪贴板！');
+}
+
+function copyFullReport(){
+  const g=gameState;const finalScore=Math.max(0,g.score+g.health);
+  const ratio=calcCollateralRatio();
+  const time=new Date().toLocaleString('zh-CN');
+  const diffLabel={normal:'普通',hard:'困难',chaos:'混沌'}[g.difficulty]||g.difficulty;
+  const grade=finalScore>=80?'S':finalScore>=60?'A':finalScore>=40?'B':finalScore>=20?'C':'D';
+  const oracleExcs=g.exceptions.filter(e=>e.type==='oracle_jump').length;
+  const gasExcs=g.exceptions.filter(e=>e.type==='gas_insufficient').length;
+  const liqExcs=g.exceptions.filter(e=>e.type==='duplicate_liquidation').length;
+
+  let text=`🏰 抵押率地牢探险 战报\n`;
+  text+=`════════════════════════════\n`;
+  text+=`评级: ${grade} | 得分: ${finalScore} | 模式: ${diffLabel}\n`;
+  text+=`生成时间: ${time}\n\n`;
+  text+=`【核心指标】\n`;
+  text+=`• 健康值: ${g.health}/100\n`;
+  text+=`• 剩余 Gas: ${g.gas}%\n`;
+  text+=`• 回合数: ${g.turn-1}\n`;
+  text+=`• 最终抵押率: ${ratio===Infinity?'∞':Math.round(ratio)+'%'}\n`;
+  text+=`• 合理/风险操作: ${g.stepLog.filter(s=>!s.isError).length}/${g.stepLog.filter(s=>s.isError).length}\n\n`;
+  text+=`【异常汇总】\n`;
+  text+=`• 预言机跳价: ${oracleExcs} 次\n`;
+  text+=`• Gas 不足: ${gasExcs} 次\n`;
+  text+=`• 重复清算: ${liqExcs} 次\n`;
+  text+=`• 合计异常: ${g.exceptions.length} 次\n\n`;
+  text+=`【抵押率判定口径】\n`;
+  text+=`1. 抵押率 = 抵押物总价值 / 债务总价值 × 100%\n`;
+  text+=`2. 清算线 150%, 安全线 200%\n`;
+  text+=`3. 各资产清算阈值: ETH 80%, WBTC 75%, stETH 75%, LINK 60%, AAVE 55%, UNI 65%\n`;
+  text+=`4. 预言机来源: Chainlink/Uniswap TWAP/Band/Pyth/MakerOSM\n`;
+  text+=`5. 异常事件单列清单，不混入正常明细\n`;
+
+  copyToClipboard(text, '✅ 完整战报已复制到剪贴板！');
+}
+
+function showReportTab(){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="report"]').classList.add('active');
+  document.getElementById('tab-report').classList.add('active');
+}
+
+function restartGame(){
+  gameState=null;
+  document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="game"]').classList.add('active');
+  document.getElementById('tab-game').classList.add('active');
+  document.getElementById('action-log').innerHTML='<div class="empty-state">等待操作...</div>';
+  document.getElementById('exception-panel').innerHTML='<div class="empty-state">暂无异常</div>';
+  document.getElementById('exc-count').textContent='0';
+  if(replayAutoTimer){clearInterval(replayAutoTimer);replayAutoTimer=null;}
+}
+
+function startGame(difficulty){
+  gameState=createGameState(difficulty);
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+  renderUI();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('btn-start').addEventListener('click',()=>{
+    const diff=document.querySelector('.diff-btn.selected').dataset.diff;
+    startGame(diff);
+  });
+  document.querySelectorAll('.diff-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.diff-btn').forEach(x=>x.classList.remove('selected'));
+      b.classList.add('selected');
+    });
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const tab=b.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById('tab-'+tab).classList.add('active');
+    });
+  });
+  document.getElementById('replay-prev').addEventListener('click',()=>selectCurrentReplayStep(-1));
+  document.getElementById('replay-next').addEventListener('click',()=>selectCurrentReplayStep(1));
+  document.getElementById('replay-auto').addEventListener('click',toggleAutoReplay);
+  document.querySelectorAll('.exc-filter').forEach(b=>{
+    b.addEventListener('click',()=>filterExceptions(b.dataset.filter));
+  });
+});
+</script>
+</body>
+</html>
