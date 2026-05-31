@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+:root {
+  font-family: "Noto Sans SC", system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #0C1726;
+  color: #E8EDF3;
+}
+
+@layer components {
+  .card {
+    @apply bg-navy-700/60 border border-navy-400/20 rounded-lg p-4 backdrop-blur-sm;
+  }
+  .card-glow {
+    @apply card shadow-lg shadow-navy-500/10;
+  }
+  .label-text {
+    @apply text-xs text-navy-200 font-medium uppercase tracking-wider;
+  }
+  .value-text {
+    @apply font-mono text-lg font-semibold text-white;
+  }
+  .value-unit {
+    @apply font-mono text-xs text-navy-200 ml-1;
+  }
+  .btn-primary {
+    @apply bg-navy-500 hover:bg-navy-400 text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 active:scale-95;
+  }
+  .btn-secondary {
+    @apply border border-navy-400/30 hover:border-navy-400/60 text-navy-100 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200;
+  }
+  .btn-amber {
+    @apply bg-amber hover:bg-amber-dark text-navy-900 px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 active:scale-95;
+  }
+  .input-field {
+    @apply bg-navy-800/80 border border-navy-400/30 rounded-lg px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber/30 transition-all;
+  }
+  .select-field {
+    @apply bg-navy-800/80 border border-navy-400/30 rounded-lg px-3 py-2 text-navy-100 text-sm focus:outline-none focus:border-amber appearance-none cursor-pointer;
+  }
+  .badge-expired {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30;
+  }
+  .badge-warning {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber/20 text-amber border border-amber/30;
+  }
+  .badge-info {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+    color: #1a1a1a;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(59, 117, 171, 0.3);
+  border-radius: 2px;
+}
