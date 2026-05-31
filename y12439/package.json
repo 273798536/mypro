@@ -1,0 +1,15 @@
+{
+  "name": "volatility-option-parkour",
+  "version": "1.0.0",
+  "description": "波动率期权跑酷 - 金融投教游戏",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "test": "node tests/run-tests.js",
+    "test:samples": "node tests/run-volatility-samples.js"
+  },
+  "keywords": ["option", "volatility", "education", "game"],
+  "author": "投教团队",
+  "license": "MIT"
+}
