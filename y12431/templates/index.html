@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>品牌联名授权回款分析系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px 32px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .container { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
+        .upload-section { background: white; border-radius: 12px; padding: 32px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .upload-section h2 { font-size: 18px; margin-bottom: 16px; color: #1a202c; }
+        .upload-area { border: 2px dashed #cbd5e0; border-radius: 8px; padding: 40px; text-align: center; transition: all 0.3s; cursor: pointer; }
+        .upload-area:hover { border-color: #667eea; background: #f7fafc; }
+        .upload-area.dragover { border-color: #667eea; background: #ebf8ff; }
+        .upload-icon { font-size: 48px; margin-bottom: 16px; }
+        .file-list { margin-top: 16px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f7fafc; border-radius: 6px; margin-bottom: 8px; }
+        .file-item .name { font-weight: 500; }
+        .file-item .remove { color: #e53e3e; cursor: pointer; }
+        .btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 32px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card .label { font-size: 14px; color: #718096; margin-bottom: 8px; }
+        .card .value { font-size: 28px; font-weight: 700; color: #1a202c; }
+        .card .value.anomaly { color: #e53e3e; }
+        .charts-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .chart-box { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .chart-box h3 { font-size: 16px; margin-bottom: 16px; color: #1a202c; }
+        .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .section h2 { font-size: 18px; margin-bottom: 16px; color: #1a202c; display: flex; align-items: center; gap: 8px; }
+        .badge { background: #fed7d7; color: #c53030; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge.success { background: #c6f6d5; color: #276749; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f7fafc; font-weight: 600; color: #4a5568; }
+        tr:hover { background: #f7fafc; }
+        .anomaly-row { background: #fff5f5; }
+        .anomaly-type { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .type-guarantee { background: #fefcbf; color: #744210; }
+        .type-return { background: #fed7d7; color: #c53030; }
+        .type-channel { background: #bee3f8; color: #2b6cb0; }
+        .type-deposit { background: #e9d8fd; color: #6b46c1; }
+        .type-royalty { background: #c6f6d5; color: #276749; }
+        .source-info { font-size: 12px; color: #718096; margin-top: 4px; }
+        .suggestion { background: #f7fafc; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 13px; line-height: 1.6; white-space: pre-line; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+        .tab { padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; color: #718096; }
+        .tab.active { border-bottom-color: #667eea; color: #667eea; font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .loading { text-align: center; padding: 60px; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
+        .export-bar { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 16px; }
+        .btn-secondary { background: white; color: #667eea; border: 1px solid #667eea; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-secondary:hover { background: #f7fafc; }
+        .num { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>品牌联名授权回款分析系统</h1>
+        <p>智能识别保底抵扣、退货跨期、渠道漏报等异常，每条判断追溯原始材料</p>
+    </div>
+    
+    <div class="container">
+        <div class="upload-section">
+            <h2>📁 上传财务材料</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📊</div>
+                <p>拖拽Excel文件到此处，或点击选择文件</p>
+                <p style="font-size: 12px; color: #718096; margin-top: 8px;">支持 .xlsx, .xls, .csv 格式，可同时上传授权合同、保证金记录和回款报告</p>
+            </div>
+            <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv" style="display: none;">
+            <div class="file-list" id="fileList"></div>
+            <div style="margin-top: 16px; text-align: center;">
+                <button class="btn" id="analyzeBtn" onclick="startAnalysis()" disabled>开始分析</button>
+            </div>
+        </div>
+        
+        <div id="loadingSection" class="section hidden">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>正在分析数据...</p>
+                <p style="font-size: 12px; color: #718096; margin-top: 8px;">正在解析授权合同、计算保底抵扣、检测异常...</p>
+            </div>
+        </div>
+        
+        <div id="resultSection" class="hidden">
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="label">授权分成总额</div>
+                    <div class="value num" id="totalRoyalty">0</div>
+                </div>
+                <div class="card">
+                    <div class="label">保底抵扣总额</div>
+                    <div class="value num" id="totalGuarantee">0</div>
+                </div>
+                <div class="card">
+                    <div class="label">保证金核销</div>
+                    <div class="value num" id="totalDeposit">0</div>
+                </div>
+                <div class="card">
+                    <div class="label">最终应收总额</div>
+                    <div class="value num" id="totalFinal">0</div>
+                </div>
+                <div class="card">
+                    <div class="label">异常数量</div>
+                    <div class="value anomaly num" id="anomalyCount">0</div>
+                </div>
+            </div>
+            
+            <div class="charts-section">
+                <div class="chart-box">
+                    <h3>按品牌汇总</h3>
+                    <canvas id="brandChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>按周期汇总</h3>
+                    <canvas id="periodChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>⚠️ 异常详情 <span class="badge" id="anomalyBadge">0</span></h2>
+                <div class="tabs">
+                    <div class="tab active" data-tab="all">全部异常</div>
+                    <div class="tab" data-tab="guarantee">保底不足</div>
+                    <div class="tab" data-tab="return">退货跨期</div>
+                    <div class="tab" data-tab="channel">渠道漏报</div>
+                    <div class="tab" data-tab="deposit">保证金异常</div>
+                    <div class="tab" data-tab="royalty">分成计算错误</div>
+                </div>
+                <div class="tab-content active" id="tab-all">
+                    <table id="anomalyTable">
+                        <thead>
+                            <tr>
+                                <th>异常ID</th>
+                                <th>类型</th>
+                                <th>合同编号</th>
+                                <th>周期</th>
+                                <th>异常描述</th>
+                                <th>预期值</th>
+                                <th>实际值</th>
+                                <th>差异</th>
+                                <th>来源</th>
+                            </tr>
+                        </thead>
+                        <tbody id="anomalyTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="export-bar">
+                    <button class="btn-secondary" onclick="exportExcel()">📥 导出Excel报告</button>
+                </div>
+                <h2>📋 授权分成明细</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>周期</th>
+                            <th>品牌</th>
+                            <th>渠道</th>
+                            <th>销售额</th>
+                            <th>退货额</th>
+                            <th>净销售</th>
+                            <th>计算授权费</th>
+                            <th>实际授权费</th>
+                            <th>保底抵扣</th>
+                            <th>保证金核销</th>
+                            <th>最终应收</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="splitTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentResult = null;
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        let selectedFiles = [];
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (!selectedFiles.find(f => f.name === file.name)) {
+                    selectedFiles.push(file);
+                }
+            }
+            renderFileList();
+        }
+
+        function renderFileList() {
+            fileList.innerHTML = selectedFiles.map((file, idx) => `
+                <div class="file-item">
+                    <span class="name">📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    <span class="remove" onclick="removeFile(${idx})">✕</span>
+                </div>
+            `).join('');
+            analyzeBtn.disabled = selectedFiles.length === 0;
+        }
+
+        function removeFile(idx) {
+            selectedFiles.splice(idx, 1);
+            renderFileList();
+        }
+
+        async function startAnalysis() {
+            document.getElementById('loadingSection').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                currentResult = await response.json();
+                renderResults(currentResult);
+            } catch (error) {
+                alert('分析失败：' + error.message);
+            } finally {
+                document.getElementById('loadingSection').classList.add('hidden');
+            }
+        }
+
+        function renderResults(result) {
+            document.getElementById('resultSection').classList.remove('hidden');
+            
+            document.getElementById('totalRoyalty').textContent = '¥' + result.total_royalty.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+            document.getElementById('totalGuarantee').textContent = '¥' + result.total_guarantee_deduction.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+            document.getElementById('totalDeposit').textContent = '¥' + result.total_deposit_verification.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+            document.getElementById('totalFinal').textContent = '¥' + result.total_final_receivable.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+            document.getElementById('anomalyCount').textContent = result.anomalies.length;
+            document.getElementById('anomalyBadge').textContent = result.anomalies.length;
+            
+            renderBrandChart(result.summary_by_brand);
+            renderPeriodChart(result.summary_by_period);
+            renderAnomalyTable(result.anomalies);
+            renderSplitTable(result.royalty_splits);
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    filterAnomalies(tab.dataset.tab, result.anomalies);
+                });
+            });
+        }
+
+        function renderBrandChart(data) {
+            const labels = Object.keys(data);
+            const ctx = document.getElementById('brandChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '授权分成',
+                        data: labels.map(b => data[b].total_royalty),
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)'
+                    }, {
+                        label: '保底抵扣',
+                        data: labels.map(b => data[b].total_guarantee),
+                        backgroundColor: 'rgba(237, 137, 54, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderPeriodChart(data) {
+            const labels = Object.keys(data).sort();
+            const ctx = document.getElementById('periodChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '最终应收',
+                        data: labels.map(p => data[p].final_receivable),
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }, {
+                        label: '异常笔数',
+                        data: labels.map(p => data[p].anomaly_count),
+                        borderColor: 'rgba(229, 62, 62, 1)',
+                        backgroundColor: 'rgba(229, 62, 62, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        y1: { position: 'right', beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function getTypeClass(type) {
+            const map = {
+                '保底不足': 'type-guarantee',
+                '退货跨期': 'type-return',
+                '渠道漏报': 'type-channel',
+                '保证金不匹配': 'type-deposit',
+                '授权分成计算错误': 'type-royalty'
+            };
+            return map[type] || '';
+        }
+
+        function getTypeFilter(type) {
+            const map = {
+                'guarantee': '保底不足',
+                'return': '退货跨期',
+                'channel': '渠道漏报',
+                'deposit': '保证金不匹配',
+                'royalty': '授权分成计算错误'
+            };
+            return map[type];
+        }
+
+        function renderAnomalyTable(anomalies) {
+            const tbody = document.getElementById('anomalyTbody');
+            tbody.innerHTML = anomalies.map(a => `
+                <tr class="anomaly-row">
+                    <td>${a.id}</td>
+                    <td><span class="anomaly-type ${getTypeClass(a.type)}">${a.type}</span></td>
+                    <td>${a.contract_no}</td>
+                    <td>${a.period || '-'}</td>
+                    <td>
+                        ${a.description}
+                        <div class="source-info">来源：${a.sources.map(s => s.file_name + ':' + s.row_number + '行').join(', ')}</div>
+                        <div class="suggestion">${a.correction_suggestion}</div>
+                    </td>
+                    <td class="num">${a.expected_value !== null ? a.expected_value.toLocaleString('zh-CN', {minimumFractionDigits: 2}) : '-'}</td>
+                    <td class="num">${a.actual_value !== null ? a.actual_value.toLocaleString('zh-CN', {minimumFractionDigits: 2}) : '-'}</td>
+                    <td class="num">${a.difference !== null ? a.difference.toLocaleString('zh-CN', {minimumFractionDigits: 2}) : '-'}</td>
+                    <td><span class="badge">${a.sources.length}份材料</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function filterAnomalies(filterType, allAnomalies) {
+            if (filterType === 'all') {
+                renderAnomalyTable(allAnomalies);
+            } else {
+                const typeName = getTypeFilter(filterType);
+                const filtered = allAnomalies.filter(a => a.type === typeName);
+                renderAnomalyTable(filtered);
+            }
+        }
+
+        function renderSplitTable(splits) {
+            const tbody = document.getElementById('splitTbody');
+            tbody.innerHTML = splits.map(s => `
+                <tr class="${s.is_anomaly ? 'anomaly-row' : ''}">
+                    <td>${s.period}</td>
+                    <td>${s.brand_name}</td>
+                    <td>${s.channel}</td>
+                    <td class="num">${s.sales_amount.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num">${s.return_amount.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num">${s.net_sales.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num">${s.calculated_royalty.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num">${s.actual_royalty.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num">${s.guarantee_deduction.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num">${s.deposit_verification.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                    <td class="num"><strong>${s.final_receivable.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</strong></td>
+                    <td>${s.is_anomaly ? '<span class="badge">异常</span>' : '<span class="badge success">正常</span>'}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function exportExcel() {
+            try {
+                const response = await fetch('/api/export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentResult)
+                });
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `品牌联名授权回款分析_${new Date().toISOString().slice(0,10)}.xlsx`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('导出失败：' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
