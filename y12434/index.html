@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>园区水电押金退补系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f6fa;--card:#fff;--border:#e0e3eb;--primary:#2563eb;--primary-light:#dbeafe;--danger:#dc2626;--danger-light:#fee2e2;--warn:#d97706;--warn-light:#fef3c7;--success:#16a34a;--success-light:#dcfce7;--gray:#6b7280;--text:#1f2937;--text2:#4b5563;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.08)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:#1e293b;color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:600}
+.header .batch-info{font-size:13px;opacity:.8}
+.container{max-width:1400px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:4px;background:#e2e8f0;border-radius:var(--radius);padding:4px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray);transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--card);color:var(--primary);box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.badge-blue{background:var(--primary-light);color:var(--primary)}
+.badge-red{background:var(--danger-light);color:var(--danger)}
+.badge-yellow{background:var(--warn-light);color:var(--warn)}
+.badge-green{background:var(--success-light);color:var(--success)}
+.badge-gray{background:#f3f4f6;color:var(--gray)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:#f8fafc;font-weight:600;color:var(--text2);position:sticky;top:0}
+tr:hover{background:#f8fafc}
+.table-wrap{overflow-x:auto;max-height:420px;overflow-y:auto}
+.btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:13px;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.btn:hover{border-color:var(--primary);color:var(--primary)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover{background:#1d4ed8}
+.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-danger:hover{background:#b91c1c}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.toolbar label{font-size:13px;color:var(--text2)}
+.toolbar select,.toolbar input{padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--card)}
+.alert{padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:12px}
+.alert-error{background:var(--danger-light);color:var(--danger);border:1px solid #fecaca}
+.alert-warn{background:var(--warn-light);color:var(--warn);border:1px solid #fde68a}
+.alert-success{background:var(--success-light);color:var(--success);border:1px solid #bbf7d0}
+.alert-info{background:var(--primary-light);color:var(--primary);border:1px solid #bfdbfe}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--card);border-radius:12px;padding:24px;max-width:800px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal h3{font-size:16px;margin-bottom:16px}
+.modal .form-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.modal .form-group{flex:1;min-width:180px}
+.modal .form-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}
+.modal .form-group input,.modal .form-group select,.modal .form-group textarea{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px}
+.modal .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.compare-container{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.compare-col{border:1px solid var(--border);border-radius:6px;padding:12px}
+.compare-col h4{font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.compare-col.old{background:#fef2f2;border-color:#fecaca}
+.compare-col.new{background:#f0fdf4;border-color:#bbf7d0}
+.field-diff{background:#fef9c3;padding:2px 4px;border-radius:3px;font-weight:600}
+.trace{font-size:12px;color:var(--text2);padding:8px 12px;background:#f8fafc;border-radius:6px;border-left:3px solid var(--primary);margin-top:8px}
+.trace strong{color:var(--text)}
+.empty-state{text-align:center;padding:40px;color:var(--gray);font-size:14px}
+.tag-missing{background:var(--danger-light);color:var(--danger);font-size:11px;padding:1px 6px;border-radius:3px;margin-left:4px}
+.detail-row{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid #f3f4f6;font-size:13px}
+.detail-label{width:120px;color:var(--text2);flex-shrink:0}
+.detail-value{flex:1;word-break:break-all}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot-green{background:var(--success)}
+.dot-red{background:var(--danger)}
+.dot-yellow{background:var(--warn)}
+.dot-gray{background:var(--gray)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>园区水电押金退补系统</h1>
+<div class="batch-info" id="batchInfo">当前批次: -</div>
+</div>
+<div class="container">
+<div class="tabs" id="tabBar">
+<div class="tab active" data-tab="overview" role="tab" tabindex="0">总览</div>
+<div class="tab" data-tab="contracts" role="tab" tabindex="0">租户合同</div>
+<div class="tab" data-tab="deposits" role="tab" tabindex="0">押金流水</div>
+<div class="tab" data-tab="energy" role="tab" tabindex="0">公共能耗</div>
+<div class="tab" data-tab="readings" role="tab" tabindex="0">水电读数</div>
+<div class="tab" data-tab="trial" role="tab" tabindex="0">退补试算</div>
+<div class="tab" data-tab="corrections" role="tab" tabindex="0">手动修正</div>
+</div>
+<div id="tabContent"></div>
+</div>
+<div id="modalRoot"></div>
+
+<script>
+const STORE_KEY='park_utility_deposit_v2';
+let DB={
+contracts:[],
+deposits:[],
+energyRecords:[],
+meterReadings:[],
+trialResults:[],
+corrections:[],
+batchCounter:0,
+lastBatchId:null
+};
+
+function uid(){return Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function money(v){return '¥'+Number(v).toFixed(2)}
+function dateStr(d){if(!d)return'-';return d.slice(0,10)}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(DB))}catch(e){}}
+function load(){try{const s=localStorage.getItem(STORE_KEY);if(s){DB=JSON.parse(s)}}catch(e){}}
+
+function initSampleData(){
+DB.contracts=[
+{id:'C001',tenantName:'鸿远科技',roomNo:'A栋301',startDate:'2024-01-01',endDate:'2025-12-31',depositAmount:30000,status:'active',waterPrice:5.8,elecPrice:1.2},
+{id:'C002',tenantName:'蓝鲸信息',roomNo:'A栋502',startDate:'2024-03-01',endDate:'2025-08-31',depositAmount:20000,status:'active',waterPrice:5.8,elecPrice:1.2},
+{id:'C003',tenantName:'星云传媒',roomNo:'B栋201',startDate:'2023-06-01',endDate:'2025-05-31',depositAmount:25000,status:'active',waterPrice:5.8,elecPrice:1.2},
+{id:'C004',tenantName:'锐思教育',roomNo:'B栋305',startDate:'2024-06-01',endDate:'2026-05-31',depositAmount:15000,status:'active',waterPrice:5.8,elecPrice:1.2},
+{id:'C005',tenantName:'飞驰物流',roomNo:'C栋101',startDate:'2023-01-01',endDate:'2024-12-31',depositAmount:40000,status:'expired',waterPrice:5.8,elecPrice:1.2}
+];
+DB.deposits=[
+{id:'D001',contractId:'C001',type:'缴纳',amount:30000,date:'2024-01-05',reason:'合同签订押金',basis:'C001合同第4条',batchId:null},
+{id:'D002',contractId:'C002',type:'缴纳',amount:20000,date:'2024-03-03',reason:'合同签订押金',basis:'C002合同第4条',batchId:null},
+{id:'D003',contractId:'C003',type:'缴纳',amount:25000,date:'2023-06-02',reason:'合同签订押金',basis:'C003合同第4条',batchId:null},
+{id:'D004',contractId:'C004',type:'缴纳',amount:15000,date:'2024-06-03',reason:'合同签订押金',basis:'C004合同第4条',batchId:null},
+{id:'D005',contractId:'C005',type:'缴纳',amount:40000,date:'2023-01-05',reason:'合同签订押金',basis:'C005合同第4条',batchId:null}
+];
+DB.energyRecords=[
+{id:'E001',contractId:'C001',period:'2025-01',waterUsage:120,elecUsage:3500,publicWaterShare:15,publicElecShare:200,sharedAmount:347,billingAmount:4847},
+{id:'E002',contractId:'C001',period:'2025-02',waterUsage:105,elecUsage:3200,publicWaterShare:14,publicElecShare:180,sharedAmount:310,billingAmount:4450},
+{id:'E003',contractId:'C002',period:'2025-01',waterUsage:80,elecUsage:2100,publicWaterShare:10,publicElecShare:130,sharedAmount:220,billingAmount:2980},
+{id:'E004',contractId:'C002',period:'2025-02',waterUsage:75,elecUsage:1900,publicWaterShare:9,publicElecShare:120,sharedAmount:198,billingAmount:2682},
+{id:'E005',contractId:'C003',period:'2025-01',waterUsage:95,elecUsage:2800,publicWaterShare:12,publicElecShare:170,sharedAmount:287,billingAmount:3927},
+{id:'E006',contractId:'C003',period:'2025-02',waterUsage:88,elecUsage:2500,publicWaterShare:11,publicElecShare:155,sharedAmount:259,billingAmount:3509},
+{id:'E007',contractId:'C004',period:'2025-01',waterUsage:60,elecUsage:1600,publicWaterShare:8,publicElecShare:100,sharedAmount:166,billingAmount:2216},
+{id:'E008',contractId:'C004',period:'2025-02',waterUsage:55,elecUsage:1500,publicWaterShare:7,publicElecShare:95,sharedAmount:155,billingAmount:2065},
+{id:'E009',contractId:'C005',period:'2024-11',waterUsage:150,elecUsage:4200,publicWaterShare:20,publicElecShare:250,sharedAmount:410,billingAmount:5770},
+{id:'E010',contractId:'C005',period:'2024-12',waterUsage:140,elecUsage:4000,publicWaterShare:18,publicElecShare:240,sharedAmount:388,billingAmount:5528}
+];
+DB.meterReadings=[
+{id:'R001',contractId:'C001',readingDate:'2025-01-31',waterReading:5120,elecReading:85000,isSupplementary:false,supplementaryReason:''},
+{id:'R002',contractId:'C001',readingDate:'2025-02-28',waterReading:5245,elecReading:88200,isSupplementary:false,supplementaryReason:''},
+{id:'R003',contractId:'C002',readingDate:'2025-01-31',waterReading:3100,elecReading:51000,isSupplementary:false,supplementaryReason:''},
+{id:'R004',contractId:'C002',readingDate:'2025-02-28',waterReading:3180,elecReading:52900,isSupplementary:false,supplementaryReason:''},
+{id:'R005',contractId:'C003',readingDate:'2025-01-31',waterReading:4250,elecReading:68000,isSupplementary:false,supplementaryReason:''},
+{id:'R006',contractId:'C003',readingDate:'2025-02-28',waterReading:4345,elecReading:70500,isSupplementary:false,supplementaryReason:''},
+{id:'R007',contractId:'C004',readingDate:'2025-01-31',waterReading:2200,elecReading:38000,isSupplementary:false,supplementaryReason:''},
+{id:'R008',contractId:'C004',readingDate:'2025-02-28',waterReading:2260,elecReading:39500,isSupplementary:false,supplementaryReason:''},
+{id:'R009',contractId:'C005',readingDate:'2024-11-30',waterReading:8900,elecReading:120000,isSupplementary:false,supplementaryReason:''},
+{id:'R010',contractId:'C005',readingDate:'2024-12-31',waterReading:9050,elecReading:124000,isSupplementary:false,supplementaryReason:''}
+];
+DB.trialResults=[];
+DB.corrections=[];
+DB.batchCounter=0;
+DB.lastBatchId=null;
+save();
+}
+
+function getContract(id){return DB.contracts.find(c=>c.id===id)}
+function getDepositBalance(contractId){
+let bal=0;
+DB.deposits.filter(d=>d.contractId===contractId).forEach(d=>{
+if(d.type==='缴纳')bal+=d.amount;
+else if(d.type==='退还'||d.type==='转抵')bal-=d.amount;
+else if(d.type==='补缴')bal+=d.amount;
+});
+return bal;
+}
+function getEnergyTotal(contractId,periodStart,periodEnd){
+return DB.energyRecords.filter(e=>e.contractId===contractId&&(!periodStart||e.period>=periodStart)&&(!periodEnd||e.period<=periodEnd))
+.reduce((s,e)=>s+e.billingAmount,0);
+}
+function getReadingsForContract(contractId){return DB.meterReadings.filter(r=>r.contractId===contractId).sort((a,b)=>a.readingDate.localeCompare(b.readingDate))}
+function getLatestReading(contractId){const rs=getReadingsForContract(contractId);return rs.length?rs[rs.length-1]:null}
+function getTrialForContract(contractId,batchId){return DB.trialResults.find(t=>t.contractId===contractId&&t.batchId===batchId)}
+
+function runTrial(contractIds){
+const batchId='BATCH_'+(++DB.batchCounter);
+const results=[];
+
+contractIds.forEach(cid=>{
+const existing=DB.trialResults.find(t=>t.contractId===cid&&t.batchId===batchId);
+if(existing){results.push(existing);return}
+
+const contract=getContract(cid);
+if(!contract){results.push({id:uid(),batchId,contractId:cid,type:'补缴',amount:0,status:'failed',reason:'合同不存在',basis:'',calcDetail:'',createdAt:new Date().toISOString()});return}
+
+const readings=getReadingsForContract(cid);
+if(readings.length<2){results.push({id:uid(),batchId,contractId:cid,type:'补缴',amount:0,status:'failed',reason:'水电读数不足：至少需要2条读数才能计算用量',basis:'',calcDetail:'',createdAt:new Date().toISOString()});return}
+
+const depBalance=getDepositBalance(cid);
+const latestReading=readings[readings.length-1];
+const prevReading=readings[readings.length-2];
+const waterUsed=latestReading.waterReading-prevReading.waterReading;
+const elecUsed=latestReading.elecReading-prevReading.elecReading;
+
+if(waterUsed<0||elecUsed<0){results.push({id:uid(),batchId,contractId:cid,type:'补缴',amount:0,status:'failed',reason:'读数异常：新读数小于旧读数，可能需要补录或修正',basis:'',calcDetail:`旧水表=${prevReading.waterReading}, 新水表=${latestReading.waterReading}, 旧电表=${prevReading.elecReading}, 新电表=${latestReading.elecReading}`,createdAt:new Date().toISOString()});return}
+
+const waterCost=waterUsed*contract.waterPrice;
+const elecCost=elecUsed*contract.elecPrice;
+const energyRecs=DB.energyRecords.filter(e=>e.contractId===cid);
+const publicShare=energyRecs.reduce((s,e)=>s+e.sharedAmount,0);
+const totalOwed=waterCost+elecCost+publicShare;
+
+let lateFee=0;
+const now=new Date();
+const hasOverdue=energyRecs.some(e=>{
+const eDate=new Date(e.period+'-20');
+return now>eDate&&depBalance>0;
+});
+if(hasOverdue&&contract.status==='expired'){lateFee=Math.round(totalOwed*0.03*100)/100}
+
+const totalWithLate=totalOwed+lateFee;
+const gap=totalWithLate-depBalance;
+
+let trialType,trialAmount,trialStatus,trialReason,trialBasis,trialDetail;
+
+const detailParts=[];
+detailParts.push(`水费: ${waterUsed}吨 × ¥${contract.waterPrice} = ${money(waterCost)}`);
+detailParts.push(`电费: ${elecUsed}度 × ¥${contract.elecPrice} = ${money(elecCost)}`);
+detailParts.push(`公共能耗分摊: ${money(publicShare)}`);
+if(lateFee>0)detailParts.push(`滞纳金(3%): ${money(lateFee)}`);
+detailParts.push(`合计应付: ${money(totalWithLate)}`);
+detailParts.push(`押金余额: ${money(depBalance)}`);
+
+if(readings.some(r=>r.isSupplementary)){
+detailParts.push(`⚠ 含补录读数: ${readings.filter(r=>r.isSupplementary).map(r=>r.readingDate+'('+r.supplementaryReason+')').join(', ')}`);
+}
+
+if(gap>0){
+trialType='补缴';
+trialAmount=Math.round(gap*100)/100;
+trialStatus='pending';
+trialReason=`押金余额${money(depBalance)}不足以覆盖应付${money(totalWithLate)}，差额${money(trialAmount)}需补缴`;
+trialBasis=`合同${cid}第6条: 租户应于押金不足时5日内补足`;
+if(lateFee>0){trialReason+=`; 含滞纳金${money(lateFee)}`;trialBasis+=`; 逾期条款第9条: 逾期按3%计收滞纳金`}
+}else if(gap<-0.01){
+trialType='退还';
+trialAmount=Math.round(Math.abs(gap)*100)/100;
+trialStatus='pending';
+trialReason=`押金余额${money(depBalance)}超出应付${money(totalWithLate)}，差额${money(trialAmount)}应退还`;
+trialBasis=`合同${cid}第7条: 合同期满/押金超出应退`;
+if(contract.status==='expired'){trialBasis+=`; 合同已到期，剩余押金全额退还`}
+}else{
+trialType='持平';
+trialAmount=0;
+trialStatus='passed';
+trialReason=`押金余额${money(depBalance)}与应付${money(totalWithLate)}基本持平`;
+trialBasis=`无需退补`;
+}
+
+const result={id:uid(),batchId,contractId:cid,type:trialType,amount:trialAmount,status:trialStatus,reason:trialReason,basis:trialBasis,calcDetail:detailParts.join('\n'),createdAt:new Date().toISOString()};
+results.push(result);
+DB.trialResults.push(result);
+});
+
+DB.lastBatchId=batchId;
+document.getElementById('batchInfo').textContent='当前批次: '+batchId;
+save();
+return{batchId,results};
+}
+
+function approveTrial(resultId){
+const r=DB.trialResults.find(t=>t.id===resultId);
+if(!r)return;
+if(r.status!=='pending')return;
+r.status='passed';
+r.approvedAt=new Date().toISOString();
+if(r.type==='补缴'&&r.amount>0){
+DB.deposits.push({id:uid(),contractId:r.contractId,type:'补缴',amount:r.amount,date:dateStr(new Date().toISOString()),reason:'退补试算通过-补缴',basis:`试算结果${r.id}, 批次${r.batchId}`,batchId:r.batchId});
+}else if(r.type==='退还'&&r.amount>0){
+const contract=getContract(r.contractId);
+const offsetDeposits=DB.deposits.filter(d=>d.contractId===r.contractId&&d.type==='缴纳');
+if(contract&&contract.status==='expired'&&offsetDeposits.length>0){
+DB.deposits.push({id:uid(),contractId:r.contractId,type:'退还',amount:r.amount,date:dateStr(new Date().toISOString()),reason:'退补试算通过-退还',basis:`试算结果${r.id}, 批次${r.batchId}`,batchId:r.batchId});
+}else if(offsetDeposits.length>0){
+DB.deposits.push({id:uid(),contractId:r.contractId,type:'转抵',amount:Math.min(r.amount,offsetDeposits[0].amount),date:dateStr(new Date().toISOString()),reason:'退补试算通过-押金转抵下期',basis:`试算结果${r.id}, 批次${r.batchId}`,batchId:r.batchId});
+}
+}
+save();
+}
+
+function addCorrection(resultId,field,oldVal,newVal,reason){
+DB.corrections.push({id:uid(),resultId,field,oldValue:oldVal,newValue:newVal,reason,correctedAt:new Date().toISOString(),correctedBy:'园区客服财务'});
+const r=DB.trialResults.find(t=>t.id===resultId);
+if(r){
+if(field==='amount')r.amount=Number(newVal);
+if(field==='reason')r.reason=newVal;
+r.corrected=true;
+r.correctionId=DB.corrections[DB.corrections.length-1].id;
+}
+save();
+}
+
+function getAlignmentIssues(){
+const issues=[];
+DB.contracts.forEach(c=>{
+const hasDeposit=DB.deposits.some(d=>d.contractId===c.id);
+const hasEnergy=DB.energyRecords.some(e=>e.contractId===c.id);
+const hasReading=DB.meterReadings.some(r=>r.contractId===c.id);
+if(!hasDeposit)issues.push({contractId:c.id,tenantName:c.tenantName,issue:'缺少押金流水'});
+if(!hasEnergy)issues.push({contractId:c.id,tenantName:c.tenantName,issue:'缺少公共能耗记录'});
+if(!hasReading)issues.push({contractId:c.id,tenantName:c.tenantName,issue:'缺少水电读数'});
+if(hasDeposit){
+const bal=getDepositBalance(c.id);
+const totalEnergy=getEnergyTotal(c.id);
+if(bal<=0&&c.status==='active')issues.push({contractId:c.id,tenantName:c.tenantName,issue:`押金余额为${money(bal)}，合同仍在执行中`});
+}
+});
+return issues;
+}
+
+let currentTab='overview';
+
+function renderTab(){
+const el=document.getElementById('tabContent');
+switch(currentTab){
+case'overview':el.innerHTML=renderOverview();break;
+case'contracts':el.innerHTML=renderContracts();break;
+case'deposits':el.innerHTML=renderDeposits();break;
+case'energy':el.innerHTML=renderEnergy();break;
+case'readings':el.innerHTML=renderReadings();break;
+case'trial':el.innerHTML=renderTrial();break;
+case'corrections':el.innerHTML=renderCorrections();break;
+}
+}
+
+function renderOverview(){
+const issues=getAlignmentIssues();
+const activeContracts=DB.contracts.filter(c=>c.status==='active').length;
+const expiredContracts=DB.contracts.filter(c=>c.status==='expired').length;
+const pendingTrials=DB.trialResults.filter(t=>t.status==='pending').length;
+const passedTrials=DB.trialResults.filter(t=>t.status==='passed').length;
+const failedTrials=DB.trialResults.filter(t=>t.status==='failed').length;
+const totalDeposits=DB.deposits.reduce((s,d)=>s+(d.type==='缴纳'||d.type==='补缴'?d.amount:0),0);
+const totalRefund=DB.deposits.reduce((s,d)=>s+(d.type==='退还'||d.type==='转抵'?d.amount:0),0);
+const corrCount=DB.corrections.length;
+
+let h=`<div class="card"><div class="card-title">系统总览</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+<div style="padding:12px;background:#f0f9ff;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--primary)">${DB.contracts.length}</div><div style="font-size:12px;color:var(--text2)">合同总数 (活跃${activeContracts}/到期${expiredContracts})</div></div>
+<div style="padding:12px;background:#f0fdf4;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--success)">${money(totalDeposits)}</div><div style="font-size:12px;color:var(--text2)">押金总缴纳</div></div>
+<div style="padding:12px;background:#fef2f2;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--danger)">${money(totalRefund)}</div><div style="font-size:12px;color:var(--text2)">已退还/转抵</div></div>
+<div style="padding:12px;background:#fefce8;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--warn)">${pendingTrials}</div><div style="font-size:12px;color:var(--text2)">待审核试算</div></div>
+<div style="padding:12px;background:#f0fdf4;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--success)">${passedTrials}</div><div style="font-size:12px;color:var(--text2)">已通过试算</div></div>
+<div style="padding:12px;background:#fef2f2;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:var(--danger)">${failedTrials}</div><div style="font-size:12px;color:var(--text2)">失败试算</div></div>
+<div style="padding:12px;background:#faf5ff;border-radius:6px;text-align:center"><div style="font-size:24px;font-weight:700;color:#7c3aed">${corrCount}</div><div style="font-size:12px;color:var(--text2)">手动修正次数</div></div>
+</div></div>`;
+
+if(issues.length>0){
+h+=`<div class="card"><div class="card-title"><span class="status-dot dot-red"></span>数据对齐问题 <span class="badge badge-red">${issues.length}</span></div>
+<div class="table-wrap"><table><tr><th>合同号</th><th>租户</th><th>问题</th><th>操作</th></tr>`;
+issues.forEach(i=>{
+h+=`<tr><td>${i.contractId}</td><td>${i.tenantName}</td><td><span class="badge badge-red">${i.issue}</span></td>
+<td><button class="btn btn-sm" onclick="currentTab='contracts';activateTab('contracts');renderTab()">查看合同</button></td></tr>`;
+});
+h+=`</table></div></div>`;
+}else{
+h+=`<div class="alert alert-success">所有合同数据对齐正常，无缺失</div>`;
+}
+
+h+=`<div class="card"><div class="card-title">各合同押金与能耗概览</div>
+<div class="table-wrap"><table><tr><th>合同号</th><th>租户</th><th>房间</th><th>状态</th><th>押金余额</th><th>累计能耗</th><th>读数条数</th><th>对齐</th></tr>`;
+DB.contracts.forEach(c=>{
+const bal=getDepositBalance(c.id);
+const totalE=getEnergyTotal(c.id);
+const rc=DB.meterReadings.filter(r=>r.contractId===c.id).length;
+const hasDep=DB.deposits.some(d=>d.contractId===c.id);
+const hasEn=DB.energyRecords.some(e=>e.contractId===c.id);
+const align=[hasDep?'':'押金',hasEn?'':'能耗',rc>0?'':'读数'].filter(Boolean).join(',');
+h+=`<tr><td>${c.id}</td><td>${c.tenantName}</td><td>${c.roomNo}</td>
+<td><span class="badge ${c.status==='active'?'badge-green':'badge-gray'}">${c.status==='active'?'执行中':'已到期'}</span></td>
+<td>${money(bal)}</td><td>${money(totalE)}</td><td>${rc}</td>
+<td>${align?`<span class="badge badge-red">缺${align}</span>`:'<span class="badge badge-green">完整</span>'}</td></tr>`;
+});
+h+=`</table></div></div>`;
+
+h+=`<div class="card"><div class="card-title">快速操作</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-primary" onclick="currentTab='trial';activateTab('trial');renderTab()">退补试算</button>
+<button class="btn" onclick="initSampleData();renderTab()">重置样例数据</button>
+<button class="btn btn-danger" onclick="if(confirm('确定清除所有数据?')){DB={contracts:[],deposits:[],energyRecords:[],meterReadings:[],trialResults:[],corrections:[],batchCounter:0,lastBatchId:null};save();renderTab()}">清除全部数据</button>
+</div></div>`;
+return h;
+}
+
+function renderContracts(){
+let h=`<div class="card"><div class="card-title">租户合同 <span class="badge badge-blue">${DB.contracts.length}</span></div>
+<div class="toolbar">
+<button class="btn btn-primary" onclick="openContractModal()">+ 新增合同</button>
+</div>
+<div class="table-wrap"><table><tr><th>合同号</th><th>租户</th><th>房间</th><th>起始日</th><th>到期日</th><th>押金</th><th>水价</th><th>电价</th><th>状态</th><th>押金余额</th><th>操作</th></tr>`;
+DB.contracts.forEach(c=>{
+const bal=getDepositBalance(c.id);
+h+=`<tr><td>${c.id}</td><td>${c.tenantName}</td><td>${c.roomNo}</td><td>${dateStr(c.startDate)}</td><td>${dateStr(c.endDate)}</td>
+<td>${money(c.depositAmount)}</td><td>¥${c.waterPrice}/吨</td><td>¥${c.elecPrice}/度</td>
+<td><span class="badge ${c.status==='active'?'badge-green':'badge-gray'}">${c.status==='active'?'执行中':'已到期'}</span></td>
+<td>${money(bal)}${bal<=0&&c.status==='active'?' <span class="tag-missing">不足</span>':''}</td>
+<td><button class="btn btn-sm" onclick="openContractModal('${c.id}')">编辑</button></td></tr>`;
+});
+h+=`</table></div></div>`;
+return h;
+}
+
+function renderDeposits(){
+let h=`<div class="card"><div class="card-title">押金流水 <span class="badge badge-blue">${DB.deposits.length}</span></div>
+<div class="toolbar">
+<button class="btn btn-primary" onclick="openDepositModal()">+ 新增流水</button>
+<select id="depFilterContract" onchange="renderTab()"><option value="">全部合同</option>`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}">${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>`;
+const filterEl=document.getElementById('depFilterContract');
+const filterCid=filterEl?filterEl.value:'';
+const filtered=filterCid?DB.deposits.filter(d=>d.contractId===filterCid):DB.deposits;
+h+=`<div class="table-wrap"><table><tr><th>流水号</th><th>合同号</th><th>类型</th><th>金额</th><th>日期</th><th>事由</th><th>依据</th><th>关联批次</th></tr>`;
+filtered.forEach(d=>{
+const typeBadge=d.type==='缴纳'?'badge-green':d.type==='退还'?'badge-red':d.type==='转抵'?'badge-yellow':d.type==='补缴'?'badge-blue':'badge-gray';
+h+=`<tr><td>${d.id}</td><td>${d.contractId}</td><td><span class="badge ${typeBadge}">${d.type}</span></td>
+<td>${money(d.amount)}</td><td>${dateStr(d.date)}</td><td>${d.reason}</td><td style="font-size:11px">${d.basis||'-'}</td>
+<td>${d.batchId||'-'}</td></tr>`;
+});
+h+=`</table></div></div>`;
+return h;
+}
+
+function renderEnergy(){
+let h=`<div class="card"><div class="card-title">公共能耗 <span class="badge badge-blue">${DB.energyRecords.length}</span></div>
+<div class="toolbar">
+<button class="btn btn-primary" onclick="openEnergyModal()">+ 新增能耗记录</button>
+<select id="energyFilterContract" onchange="renderTab()"><option value="">全部合同</option>`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}">${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>`;
+const filterEl=document.getElementById('energyFilterContract');
+const filterCid=filterEl?filterEl.value:'';
+const filtered=filterCid?DB.energyRecords.filter(e=>e.contractId===filterCid):DB.energyRecords;
+h+=`<div class="table-wrap"><table><tr><th>记录号</th><th>合同号</th><th>账期</th><th>用水量</th><th>用电量</th><th>公共水摊</th><th>公共电摊</th><th>分摊金额</th><th>账单金额</th></tr>`;
+filtered.forEach(e=>{
+h+=`<tr><td>${e.id}</td><td>${e.contractId}</td><td>${e.period}</td><td>${e.waterUsage}吨</td><td>${e.elecUsage}度</td>
+<td>${e.publicWaterShare}吨</td><td>${e.publicElecShare}度</td><td>${money(e.sharedAmount)}</td><td>${money(e.billingAmount)}</td></tr>`;
+});
+h+=`</table></div></div>`;
+return h;
+}
+
+function renderReadings(){
+let h=`<div class="card"><div class="card-title">水电读数 <span class="badge badge-blue">${DB.meterReadings.length}</span></div>
+<div class="toolbar">
+<button class="btn btn-primary" onclick="openReadingModal()">+ 新增读数</button>
+<button class="btn" onclick="openSupplementaryModal()">补录读数</button>
+<select id="readingFilterContract" onchange="renderTab()"><option value="">全部合同</option>`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}">${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>`;
+const filterEl=document.getElementById('readingFilterContract');
+const filterCid=filterEl?filterEl.value:'';
+const filtered=filterCid?DB.meterReadings.filter(r=>r.contractId===filterCid):DB.meterReadings;
+h+=`<div class="table-wrap"><table><tr><th>读数号</th><th>合同号</th><th>读数日期</th><th>水表读数</th><th>电表读数</th><th>补录</th><th>补录原因</th><th>操作</th></tr>`;
+filtered.forEach(r=>{
+h+=`<tr><td>${r.id}</td><td>${r.contractId}</td><td>${dateStr(r.readingDate)}</td><td>${r.waterReading}</td><td>${r.elecReading}</td>
+<td>${r.isSupplementary?'<span class="badge badge-yellow">补录</span>':'-'}</td><td>${r.supplementaryReason||'-'}</td>
+<td><button class="btn btn-sm" onclick="openReadingModal('${r.id}')">编辑</button></td></tr>`;
+});
+h+=`</table></div></div>`;
+return h;
+}
+
+function renderTrial(){
+let h=`<div class="card"><div class="card-title">退补试算</div>
+<div class="toolbar">
+<label>选择合同:</label>
+<div style="display:flex;gap:4px;flex-wrap:wrap">`;
+DB.contracts.forEach(c=>{
+h+=`<label style="font-size:12px;display:flex;align-items:center;gap:2px;cursor:pointer">
+<input type="checkbox" class="trialCheck" value="${c.id}" checked> ${c.id}</label>`;
+});
+h+=`</div>
+<button class="btn btn-primary" onclick="doTrial()">执行试算</button>
+<button class="btn" onclick="doTrialIdempotencyTest()">幂等性测试(同一批跑两次)</button>
+</div>
+<div id="trialAlert"></div>
+</div>`;
+
+const batches=[...new Set(DB.trialResults.map(t=>t.batchId))].reverse();
+if(batches.length>0){
+batches.forEach(bid=>{
+const results=DB.trialResults.filter(t=>t.batchId===bid);
+h+=`<div class="card"><div class="card-title">批次 ${bid} <span class="badge badge-blue">${results.length}条</span>
+<button class="btn btn-sm" onclick="approveAllInBatch('${bid}')">全部通过</button></div>
+<div class="table-wrap"><table><tr><th>合同号</th><th>类型</th><th>金额</th><th>状态</th><th>原因</th><th>依据</th><th>操作</th></tr>`;
+results.forEach(r=>{
+const statusBadge=r.status==='pending'?'badge-yellow':r.status==='passed'?'badge-green':'badge-red';
+h+=`<tr><td>${r.contractId}</td>
+<td><span class="badge ${r.type==='退还'?'badge-red':r.type==='补缴'?'badge-blue':'badge-gray'}">${r.type}</span></td>
+<td>${money(r.amount)}</td>
+<td><span class="badge ${statusBadge}">${r.status==='pending'?'待审核':r.status==='passed'?'已通过':'失败'}</span></td>
+<td style="max-width:200px;font-size:12px">${r.reason}</td>
+<td style="font-size:11px">${r.basis}</td>
+<td>
+<button class="btn btn-sm" onclick="showTrialDetail('${r.id}')">明细</button>
+${r.status==='pending'?`<button class="btn btn-sm btn-primary" onclick="approveTrial('${r.id}');renderTab()">通过</button>`:''}
+${r.status==='failed'?`<button class="btn btn-sm" onclick="openCorrectionModal('${r.id}')">修正</button>`:''}
+<button class="btn btn-sm" onclick="openCorrectionModal('${r.id}')">手动修正</button>
+</td></tr>`;
+});
+h+=`</table></div></div>`;
+});
+}else{
+h+=`<div class="empty-state">暂无试算结果，请选择合同并执行试算</div>`;
+}
+return h;
+}
+
+function renderCorrections(){
+let h=`<div class="card"><div class="card-title">手动修正记录 <span class="badge badge-blue">${DB.corrections.length}</span></div>`;
+if(DB.corrections.length===0){
+h+=`<div class="empty-state">暂无修正记录</div>`;
+}else{
+h+=`<div class="table-wrap"><table><tr><th>修正号</th><th>试算结果</th><th>合同号</th><th>修正字段</th><th>旧值</th><th>新值</th><th>修正原因</th><th>修正人</th><th>修正时间</th><th>操作</th></tr>`;
+DB.corrections.forEach(c=>{
+const r=DB.trialResults.find(t=>t.id===c.resultId);
+h+=`<tr><td>${c.id}</td><td>${c.resultId}</td><td>${r?r.contractId:'-'}</td>
+<td>${c.field}</td><td class="field-diff">${c.oldValue}</td><td class="field-diff">${c.newValue}</td>
+<td>${c.reason}</td><td>${c.correctedBy}</td><td>${dateStr(c.correctedAt)}</td>
+<td><button class="btn btn-sm" onclick="showCompare('${c.resultId}','${c.id}')">新旧对比</button></td></tr>`;
+});
+h+=`</table></div>`;
+}
+h+=`</div>`;
+return h;
+}
+
+function showTrialDetail(resultId){
+const r=DB.trialResults.find(t=>t.id===resultId);
+if(!r)return;
+const contract=getContract(r.contractId);
+const readings=getReadingsForContract(r.contractId);
+const corr=DB.corrections.filter(c=>c.resultId===resultId);
+
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>试算明细 - ${r.contractId}</h3>
+<div class="detail-row"><div class="detail-label">批次号</div><div class="detail-value">${r.batchId}</div></div>
+<div class="detail-row"><div class="detail-label">合同号</div><div class="detail-value">${r.contractId} ${contract?'('+contract.tenantName+')':''}</div></div>
+<div class="detail-row"><div class="detail-label">类型</div><div class="detail-value">${r.type}</div></div>
+<div class="detail-row"><div class="detail-label">金额</div><div class="detail-value">${money(r.amount)}</div></div>
+<div class="detail-row"><div class="detail-label">状态</div><div class="detail-value">${r.status}</div></div>
+<div class="detail-row"><div class="detail-label">原因</div><div class="detail-value">${r.reason}</div></div>
+<div class="detail-row"><div class="detail-label">依据</div><div class="detail-value">${r.basis}</div></div>
+<div style="margin-top:12px;padding:12px;background:#f8fafc;border-radius:6px;border-left:3px solid var(--primary)">
+<strong>计算过程:</strong><pre style="white-space:pre-wrap;font-size:12px;margin-top:4px">${r.calcDetail}</pre>
+</div>`;
+
+if(readings.length>0){
+h+=`<div style="margin-top:12px"><strong>水电读数:</strong><table style="font-size:12px;margin-top:4px"><tr><th>日期</th><th>水表</th><th>电表</th><th>补录</th></tr>`;
+readings.forEach(rd=>{h+=`<tr><td>${dateStr(rd.readingDate)}</td><td>${rd.waterReading}</td><td>${rd.elecReading}</td><td>${rd.isSupplementary?'是('+rd.supplementaryReason+')':'否'}</td></tr>`});
+h+=`</table></div>`;
+}
+
+if(corr.length>0){
+h+=`<div style="margin-top:12px"><strong>修正历史:</strong>`;
+corr.forEach(c=>{h+=`<div class="trace">${c.field}: ${c.oldValue} → ${c.newValue} (${c.reason}) - ${c.correctedBy} @ ${dateStr(c.correctedAt)}</div>`});
+h+=`</div>`;
+}
+
+h+=`<div class="modal-actions"><button class="btn" onclick="this.closest('.modal-overlay').remove()">关闭</button></div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function showCompare(resultId,correctionId){
+const r=DB.trialResults.find(t=>t.id===resultId);
+const c=DB.corrections.find(x=>x.id===correctionId);
+if(!r||!c)return;
+
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>新旧结果并排对比</h3>
+<div class="compare-container">
+<div class="compare-col old"><h4><span class="status-dot dot-red"></span>修正前</h4>
+<div class="detail-row"><div class="detail-label">金额</div><div class="detail-value">${c.field==='amount'?c.oldValue:money(r.amount)}</div></div>
+<div class="detail-row"><div class="detail-label">原因</div><div class="detail-value">${c.field==='reason'?c.oldValue:r.reason}</div></div>
+<div class="detail-row"><div class="detail-label">依据</div><div class="detail-value">${r.basis}</div></div>
+</div>
+<div class="compare-col new"><h4><span class="status-dot dot-green"></span>修正后</h4>
+<div class="detail-row"><div class="detail-label">金额</div><div class="detail-value">${c.field==='amount'?c.newValue:money(r.amount)}</div></div>
+<div class="detail-row"><div class="detail-label">原因</div><div class="detail-value">${c.field==='reason'?c.newValue:r.reason}</div></div>
+<div class="detail-row"><div class="detail-label">依据</div><div class="detail-value">${r.basis}</div></div>
+</div>
+</div>
+<div class="trace" style="margin-top:12px"><strong>修正说明:</strong> ${c.reason}<br><strong>修正人:</strong> ${c.correctedBy}<br><strong>修正时间:</strong> ${dateStr(c.correctedAt)}</div>
+<div class="modal-actions"><button class="btn" onclick="this.closest('.modal-overlay').remove()">关闭</button></div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function openContractModal(editId){
+const c=editId?getContract(editId):null;
+const isEdit=!!c;
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>${isEdit?'编辑':'新增'}合同</h3>
+<div class="form-row">
+<div class="form-group"><label>合同号</label><input id="m_cid" value="${isEdit?c.id:''}" ${isEdit?'readonly':''}></div>
+<div class="form-group"><label>租户名称</label><input id="m_cname" value="${isEdit?c.tenantName:''}"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>房间号</label><input id="m_croom" value="${isEdit?c.roomNo:''}"></div>
+<div class="form-group"><label>状态</label><select id="m_cstatus"><option value="active" ${isEdit&&c.status==='active'?'selected':''}>执行中</option><option value="expired" ${isEdit&&c.status==='expired'?'selected':''}>已到期</option></select></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>起始日</label><input type="date" id="m_cstart" value="${isEdit?c.startDate:''}"></div>
+<div class="form-group"><label>到期日</label><input type="date" id="m_cend" value="${isEdit?c.endDate:''}"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>押金金额</label><input type="number" id="m_cdeposit" value="${isEdit?c.depositAmount:''}"></div>
+<div class="form-group"><label>水价(元/吨)</label><input type="number" step="0.1" id="m_cwater" value="${isEdit?c.waterPrice:'5.8'}"></div>
+<div class="form-group"><label>电价(元/度)</label><input type="number" step="0.1" id="m_celec" value="${isEdit?c.elecPrice:'1.2'}"></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+<button class="btn btn-primary" onclick="saveContract(${isEdit?"'"+editId+"'":'null'})">保存</button>
+</div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function saveContract(editId){
+const id=document.getElementById('m_cid').value.trim();
+const name=document.getElementById('m_cname').value.trim();
+const room=document.getElementById('m_croom').value.trim();
+const status=document.getElementById('m_cstatus').value;
+const start=document.getElementById('m_cstart').value;
+const end=document.getElementById('m_cend').value;
+const deposit=Number(document.getElementById('m_cdeposit').value);
+const water=Number(document.getElementById('m_cwater').value);
+const elec=Number(document.getElementById('m_celec').value);
+if(!id||!name){alert('合同号和租户名称必填');return}
+if(editId){
+const c=getContract(editId);
+if(c){Object.assign(c,{tenantName:name,roomNo:room,status,startDate:start,endDate:end,depositAmount:deposit,waterPrice:water,elecPrice:elec})}
+}else{
+if(getContract(id)){alert('合同号已存在');return}
+DB.contracts.push({id,tenantName:name,roomNo:room,startDate:start,endDate:end,depositAmount:deposit,status,waterPrice:water,elecPrice:elec});
+if(!DB.deposits.some(d=>d.contractId===id)){
+DB.deposits.push({id:uid(),contractId:id,type:'缴纳',amount:deposit,date:start||dateStr(new Date().toISOString()),reason:'合同签订押金',basis:id+'合同第4条',batchId:null});
+}
+}
+save();document.querySelector('.modal-overlay').remove();renderTab();
+}
+
+function openDepositModal(){
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>新增押金流水</h3>
+<div class="form-row">
+<div class="form-group"><label>合同号</label><select id="m_dcid">`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}">${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>
+<div class="form-group"><label>类型</label><select id="m_dtype"><option>缴纳</option><option>退还</option><option>转抵</option><option>补缴</option></select></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>金额</label><input type="number" id="m_damount"></div>
+<div class="form-group"><label>日期</label><input type="date" id="m_ddate" value="${dateStr(new Date().toISOString())}"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>事由</label><input id="m_dreason"></div>
+<div class="form-group"><label>依据</label><input id="m_dbasis"></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+<button class="btn btn-primary" onclick="saveDeposit()">保存</button>
+</div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function saveDeposit(){
+const cid=document.getElementById('m_dcid').value;
+const type=document.getElementById('m_dtype').value;
+const amount=Number(document.getElementById('m_damount').value);
+const date=document.getElementById('m_ddate').value;
+const reason=document.getElementById('m_dreason').value.trim();
+const basis=document.getElementById('m_dbasis').value.trim();
+if(!amount||amount<=0){alert('金额必须大于0');return}
+DB.deposits.push({id:uid(),contractId:cid,type,amount,date,reason,basis,fromTrial:false,batchId:null});
+save();document.querySelector('.modal-overlay').remove();renderTab();
+}
+
+function openEnergyModal(){
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>新增公共能耗记录</h3>
+<div class="form-row">
+<div class="form-group"><label>合同号</label><select id="m_ecid">`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}">${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>
+<div class="form-group"><label>账期</label><input id="m_eperiod" placeholder="2025-03"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>用水量(吨)</label><input type="number" id="m_ewater"></div>
+<div class="form-group"><label>用电量(度)</label><input type="number" id="m_eelec"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>公共水摊(吨)</label><input type="number" id="m_epwater"></div>
+<div class="form-group"><label>公共电摊(度)</label><input type="number" id="m_epelec"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>分摊金额</label><input type="number" id="m_eshare"></div>
+<div class="form-group"><label>账单金额</label><input type="number" id="m_ebill"></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+<button class="btn btn-primary" onclick="saveEnergy()">保存</button>
+</div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function saveEnergy(){
+const cid=document.getElementById('m_ecid').value;
+const period=document.getElementById('m_eperiod').value.trim();
+const w=Number(document.getElementById('m_ewater').value);
+const e=Number(document.getElementById('m_eelec').value);
+const pw=Number(document.getElementById('m_epwater').value);
+const pe=Number(document.getElementById('m_epelec').value);
+const share=Number(document.getElementById('m_eshare').value);
+const bill=Number(document.getElementById('m_ebill').value);
+if(!period){alert('账期必填');return}
+DB.energyRecords.push({id:uid(),contractId:cid,period,waterUsage:w,elecUsage:e,publicWaterShare:pw,publicElecShare:pe,sharedAmount:share,billingAmount:bill});
+save();document.querySelector('.modal-overlay').remove();renderTab();
+}
+
+function openReadingModal(editId){
+const r=editId?DB.meterReadings.find(x=>x.id===editId):null;
+const isEdit=!!r;
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>${isEdit?'编辑':'新增'}水电读数</h3>
+<div class="form-row">
+<div class="form-group"><label>合同号</label><select id="m_rcid" ${isEdit?'disabled':''}>`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}" ${isEdit&&r.contractId===c.id?'selected':''}>${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>
+<div class="form-group"><label>读数日期</label><input type="date" id="m_rdate" value="${isEdit?r.readingDate:''}"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>水表读数</label><input type="number" id="m_rwater" value="${isEdit?r.waterReading:''}"></div>
+<div class="form-group"><label>电表读数</label><input type="number" id="m_relec" value="${isEdit?r.elecReading:''}"></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+<button class="btn btn-primary" onclick="saveReading(${isEdit?"'"+editId+"'":'null'})">保存</button>
+</div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function saveReading(editId){
+const cid=document.getElementById('m_rcid').value;
+const rdate=document.getElementById('m_rdate').value;
+const water=Number(document.getElementById('m_rwater').value);
+const elec=Number(document.getElementById('m_relec').value);
+if(!rdate){alert('读数日期必填');return}
+if(editId){
+const r=DB.meterReadings.find(x=>x.id===editId);
+if(r){r.waterReading=water;r.elecReading=elec;r.readingDate=rdate}
+}else{
+DB.meterReadings.push({id:uid(),contractId:cid,readingDate:rdate,waterReading:water,elecReading:elec,isSupplementary:false,supplementaryReason:''});
+}
+save();document.querySelector('.modal-overlay').remove();renderTab();
+}
+
+function openSupplementaryModal(){
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>读数补录</h3>
+<div class="alert alert-warn">补录读数将标记为补录，并在试算时特别标注。请确保补录原因清晰。</div>
+<div class="form-row">
+<div class="form-group"><label>合同号</label><select id="m_scid">`;
+DB.contracts.forEach(c=>{h+=`<option value="${c.id}">${c.id} ${c.tenantName}</option>`});
+h+=`</select></div>
+<div class="form-group"><label>读数日期</label><input type="date" id="m_sdate"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>水表读数</label><input type="number" id="m_swater"></div>
+<div class="form-group"><label>电表读数</label><input type="number" id="m_selec"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>补录原因</label><textarea id="m_sreason" rows="2" placeholder="如：原读数遗漏、抄表差错等"></textarea></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+<button class="btn btn-primary" onclick="saveSupplementary()">保存补录</button>
+</div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+}
+
+function saveSupplementary(){
+const cid=document.getElementById('m_scid').value;
+const rdate=document.getElementById('m_sdate').value;
+const water=Number(document.getElementById('m_swater').value);
+const elec=Number(document.getElementById('m_selec').value);
+const reason=document.getElementById('m_sreason').value.trim();
+if(!rdate||!reason){alert('读数日期和补录原因必填');return}
+const prevReadings=getReadingsForContract(cid);
+if(prevReadings.length>0){
+const prev=prevReadings[prevReadings.length-1];
+if(water<prev.waterReading||elec<prev.elecReading){
+alert('警告: 补录读数小于前次读数，请核实。水表前次='+prev.waterReading+', 电表前次='+prev.elecReading);
+return;
+}
+}
+DB.meterReadings.push({id:uid(),contractId:cid,readingDate:rdate,waterReading:water,elecReading:elec,isSupplementary:true,supplementaryReason:reason});
+save();document.querySelector('.modal-overlay').remove();renderTab();
+}
+
+function openCorrectionModal(resultId){
+const r=DB.trialResults.find(t=>t.id===resultId);
+if(!r)return;
+let h=`<div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+<div class="modal"><h3>手动修正 - ${r.contractId}</h3>
+<div class="alert alert-info">修正后可在"手动修正"页查看新旧结果并排对比</div>
+<div class="form-row">
+<div class="form-group"><label>修正字段</label><select id="m_corrfield">
+<option value="amount">金额</option>
+<option value="reason">原因</option>
+</select></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>当前值</label><input id="m_corrold" value="${r.amount}" readonly></div>
+<div class="form-group"><label>新值</label><input id="m_corrnew"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>修正原因</label><textarea id="m_corrreason" rows="2" placeholder="说明修正原因"></textarea></div>
+</div>
+<div class="modal-actions">
+<button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+<button class="btn btn-primary" onclick="saveCorrection('${resultId}')">确认修正</button>
+</div></div></div>`;
+document.getElementById('modalRoot').innerHTML=h;
+
+document.getElementById('m_corrfield').addEventListener('change',function(){
+const field=this.value;
+document.getElementById('m_corrold').value=field==='amount'?r.amount:r.reason;
+});
+}
+
+function saveCorrection(resultId){
+const r=DB.trialResults.find(t=>t.id===resultId);
+if(!r)return;
+const field=document.getElementById('m_corrfield').value;
+const newVal=document.getElementById('m_corrnew').value.trim();
+const reason=document.getElementById('m_corrreason').value.trim();
+if(!newVal){alert('新值不能为空');return}
+if(!reason){alert('修正原因必填');return}
+const oldVal=field==='amount'?String(r.amount):r.reason;
+addCorrection(resultId,field,oldVal,newVal,reason);
+document.querySelector('.modal-overlay').remove();
+renderTab();
+}
+
+function doTrial(){
+const checks=document.querySelectorAll('.trialCheck:checked');
+if(checks.length===0){alert('请至少选择一个合同');return}
+const cids=Array.from(checks).map(c=>c.value);
+const{batchId,results}=runTrial(cids);
+let alertHtml='';
+const failed=results.filter(r=>r.status==='failed');
+const pending=results.filter(r=>r.status==='pending');
+const passed=results.filter(r=>r.status==='passed');
+if(failed.length>0){
+alertHtml+=`<div class="alert alert-error">批次${batchId}: ${failed.length}条试算失败 - ${failed.map(f=>f.contractId+': '+f.reason).join('; ')}</div>`;
+}
+if(pending.length>0){
+alertHtml+=`<div class="alert alert-warn">批次${batchId}: ${pending.length}条待审核</div>`;
+}
+if(passed.length>0){
+alertHtml+=`<div class="alert alert-success">批次${batchId}: ${passed.length}条自动通过</div>`;
+}
+const alertEl=document.getElementById('trialAlert');
+if(alertEl)alertEl.innerHTML=alertHtml;
+renderTab();
+}
+
+function doTrialIdempotencyTest(){
+const checks=document.querySelectorAll('.trialCheck:checked');
+if(checks.length===0){alert('请至少选择一个合同');return}
+const cids=Array.from(checks).map(c=>c.value);
+const beforeCount=DB.trialResults.length;
+const{batchId:bid1}=runTrial(cids);
+const afterFirstCount=DB.trialResults.length;
+const{batchId:bid2}=runTrial(cids);
+const afterSecondCount=DB.trialResults.length;
+const addedInSecond=afterSecondCount-afterFirstCount;
+let alertHtml=`<div class="alert alert-info">
+<strong>幂等性测试结果:</strong><br>
+第一次运行(批次${bid1}): 产生 ${afterFirstCount-beforeCount} 条结果<br>
+第二次运行(批次${bid2}): 产生 ${addedInSecond} 条新结果<br>
+${addedInSecond===cids.length?'✅ 第二次运行产生了新的独立批次结果（非重复），符合幂等性要求':'⚠️ 检查结果'}
+</div>`;
+const alertEl=document.getElementById('trialAlert');
+if(alertEl)alertEl.innerHTML=alertHtml;
+renderTab();
+}
+
+function approveAllInBatch(batchId){
+const results=DB.trialResults.filter(t=>t.batchId===batchId&&t.status==='pending');
+if(results.length===0){alert('该批次无待审核结果');return}
+results.forEach(r=>approveTrial(r.id));
+renderTab();
+}
+
+function activateTab(tab){
+currentTab=tab;
+document.querySelectorAll('.tab').forEach(t=>{
+t.classList.toggle('active',t.dataset.tab===tab);
+});
+}
+
+document.getElementById('tabBar').addEventListener('click',function(e){
+if(e.target.classList.contains('tab')){
+activateTab(e.target.dataset.tab);
+renderTab();
+}
+});
+
+load();
+if(DB.contracts.length===0){initSampleData()}
+renderTab();
+</script>
+</body>
+</html>
