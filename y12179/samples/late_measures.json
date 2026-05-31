@@ -1,0 +1,9 @@
+{
+  "measures": [
+    {"index": 4, "start_beat": 16.0, "end_beat": 20.0},
+    {"index": 5, "start_beat": 20.0, "end_beat": 24.0},
+    {"index": 6, "start_beat": 24.0, "end_beat": 28.0},
+    {"index": 7, "start_beat": 28.0, "end_beat": 32.0}
+  ],
+  "arrived_late": true
+}

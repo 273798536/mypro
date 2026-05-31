@@ -1,0 +1,44 @@
+{
+  "fragments": [
+    {
+      "id": "frag_theme_A",
+      "remarks": ["第一乐章主部主题", "取自第1-4小节"],
+      "notes": [
+        {"pitch": 60, "onset": 0.0, "duration": 1.0},
+        {"pitch": 62, "onset": 1.0, "duration": 1.0},
+        {"pitch": 64, "onset": 2.0, "duration": 0.5},
+        {"pitch": 67, "onset": 2.5, "duration": 1.5},
+        {"pitch": 65, "onset": 4.0, "duration": 1.0},
+        {"pitch": 64, "onset": 5.0, "duration": 1.0},
+        {"pitch": 62, "onset": 6.0, "duration": 2.0}
+      ],
+      "motif": {
+        "id": "motif_theme_A",
+        "name": "主部主题A",
+        "tags": ["主部", "第一乐章"]
+      }
+    },
+    {
+      "id": "frag_theme_A_transposed",
+      "remarks": ["再现部移调版本", "注意小节编号可能偏移"],
+      "notes": [
+        {"pitch": 65, "onset": 0.0, "duration": 1.0},
+        {"pitch": 67, "onset": 1.0, "duration": 1.0},
+        {"pitch": 69, "onset": 2.0, "duration": 0.5},
+        {"pitch": 72, "onset": 2.5, "duration": 1.5},
+        {"pitch": 70, "onset": 4.0, "duration": 1.0},
+        {"pitch": 69, "onset": 5.0, "duration": 1.0},
+        {"pitch": 67, "onset": 6.0, "duration": 2.0}
+      ],
+      "measure_offset": 2,
+      "motif": {
+        "id": "motif_theme_A_reprise",
+        "tags": ["再现部", "第一乐章"]
+      }
+    }
+  ],
+  "measures": [
+    {"index": 0, "start_beat": 0.0, "end_beat": 4.0},
+    {"index": 1, "start_beat": 4.0, "end_beat": 8.0}
+  ]
+}

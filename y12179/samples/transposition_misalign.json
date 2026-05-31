@@ -1,0 +1,56 @@
+{
+  "fragments": [
+    {
+      "id": "frag_transposed_misaligned",
+      "remarks": ["展开部变奏", "移调+小节错位混合", "MIDI录制有偏差，起始位置提前约4拍"],
+      "notes": [
+        {"pitch": 67, "onset": -4.0, "duration": 1.0},
+        {"pitch": 69, "onset": -3.0, "duration": 1.0},
+        {"pitch": 71, "onset": -2.0, "duration": 0.5},
+        {"pitch": 74, "onset": -1.5, "duration": 1.5},
+        {"pitch": 72, "onset": 0.0, "duration": 1.0},
+        {"pitch": 71, "onset": 1.0, "duration": 1.0},
+        {"pitch": 69, "onset": 2.0, "duration": 2.0}
+      ],
+      "measure_offset": null,
+      "motif": {
+        "id": "motif_develop_1"
+      }
+    },
+    {
+      "id": "frag_rhythm_stretch",
+      "remarks": ["慢板变奏", "时值拉伸约1.5倍"],
+      "notes": [
+        {"pitch": 60, "onset": 0.0, "duration": 1.5},
+        {"pitch": 62, "onset": 1.5, "duration": 1.5},
+        {"pitch": 64, "onset": 3.0, "duration": 0.75},
+        {"pitch": 67, "onset": 3.75, "duration": 2.25},
+        {"pitch": 65, "onset": 6.0, "duration": 1.5},
+        {"pitch": 64, "onset": 7.5, "duration": 1.5},
+        {"pitch": 62, "onset": 9.0, "duration": 3.0}
+      ],
+      "motif": {
+        "id": "motif_slow_variation",
+        "name": "慢板变奏",
+        "tags": ["慢板", "变奏"]
+      }
+    },
+    {
+      "id": "frag_stretch_plus_misalign",
+      "remarks": ["中段变奏+小节偏移", "这段是从第5小节开始的，但MIDI时间戳没对齐"],
+      "notes": [
+        {"pitch": 60, "onset": 4.5, "duration": 1.5},
+        {"pitch": 62, "onset": 6.0, "duration": 1.5},
+        {"pitch": 64, "onset": 7.5, "duration": 0.75},
+        {"pitch": 67, "onset": 8.25, "duration": 2.25},
+        {"pitch": 65, "onset": 10.5, "duration": 1.5},
+        {"pitch": 64, "onset": 12.0, "duration": 1.5},
+        {"pitch": 62, "onset": 13.5, "duration": 3.0}
+      ],
+      "motif": {
+        "id": "motif_stretch_misalign",
+        "name": ""
+      }
+    }
+  ]
+}

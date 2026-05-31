@@ -1,0 +1,72 @@
+============================================================
+旋律动机检索报告
+============================================================
+查询动机: motif_theme_A
+生成时间: 2026-05-31T11:20:34.550519
+匹配结果数: 4
+
+摘要: 共 4 条匹配，移调 2，节奏拉伸 2，小节错位 2
+
+----------------------------------------
+匹配 #1
+  候选动机: motif_theme_A_reprise
+  变奏类型: transposition
+  置信度: 0.95
+  证据详情: 移调变奏（确定性结论）：C → F，向上移调 5 半音（纯四度），音程序列完全一致
+  移调: 5 半音
+  修正建议:
+    [high] 归一化移调 → motif:motif_theme_A_reprise
+         将 motif_theme_A_reprise 向上移调 5 半音即可与 motif_theme_A 对齐（F → C）。移调后音程序列应完全一致。
+  批注ID: ann_0001
+
+----------------------------------------
+匹配 #2
+  候选动机: motif_develop_1
+  变奏类型: transposition_plus_misalign
+  置信度: 0.72
+  证据详情: 移调 + 小节错位复合变奏：移调 7 半音，错位 -4.0 拍（约 -1 小节）
+  移调: 7 半音
+  小节错位: -4.0 拍
+  错位小节数: -1
+  修正建议:
+    [high] 归一化移调 → motif:motif_develop_1
+         将 motif_develop_1 向上移调 7 半音即可与 motif_theme_A 对齐（G → C）。移调后音程序列应完全一致。
+    [high] 修正小节偏移 → motif:motif_develop_1
+         检测到 -4.00 拍偏移（约 1 小节）。建议将 motif_develop_1 的所有起始位置 延后 4.00 拍，即 加 1 小节。
+    [medium] 检查片段小节标注 → fragment:frag_transposed_misaligned
+         片段 frag_transposed_misaligned 的小节标注可能有误，当前偏移 -4.00 拍。确认原始 MIDI 中的小节编号与实际位置是否对应。
+    [high] 分步修正 → motif:motif_develop_1
+         检测到复合变奏（transposition_plus_misalign），建议按以下顺序修正：1) 先修正小节错位 2) 再修正节奏拉伸 3) 最后归一化移调。每步修正后重新运行匹配确认。
+  批注ID: ann_0002
+
+----------------------------------------
+匹配 #3
+  候选动机: motif_slow_variation
+  变奏类型: rhythm_stretch
+  置信度: 0.80
+  证据详情: 节奏拉伸：均匀全局拉伸：比例 1.5，最大偏差 0.0
+  节奏拉伸比: 1.5
+  修正建议:
+    [high] 全局缩放时值 → motif:motif_slow_variation
+         均匀节奏拉伸，整体时值比 1.5。建议将 motif_slow_variation 所有音符时值乘以 0.667 进行归一化。
+  批注ID: ann_0003
+
+----------------------------------------
+匹配 #4
+  候选动机: motif_stretch_misalign
+  变奏类型: rhythm_stretch_plus_misalign
+  置信度: 0.70
+  证据详情: 节奏拉伸 + 小节错位复合：均匀全局拉伸：比例 1.5，最大偏差 0.0；起始偏移 4.50 拍（约 1 小节）
+  节奏拉伸比: 1.5
+  小节错位: 4.5 拍
+  错位小节数: 1
+  修正建议:
+    [high] 全局缩放时值 → motif:motif_stretch_misalign
+         均匀节奏拉伸，整体时值比 1.5。建议将 motif_stretch_misalign 所有音符时值乘以 0.667 进行归一化。
+    [high] 修正小节偏移 → motif:motif_stretch_misalign
+         检测到 4.50 拍偏移（约 1 小节）。建议将 motif_stretch_misalign 的所有起始位置 提前 4.50 拍，即 减 1 小节。
+    [medium] 检查片段小节标注 → fragment:frag_stretch_plus_misalign
+         片段 frag_stretch_plus_misalign 的小节标注可能有误，当前偏移 4.50 拍。确认原始 MIDI 中的小节编号与实际位置是否对应。
+    [high] 分步修正 → motif:motif_stretch_misalign
+         检测到复合变奏（rhythm_stretch_plus_misalign），建议按以下顺序修正：1) 先修正小节错位 2) 再修正节奏拉伸 3) 最后归一化移调。每步修正后重新运行匹配确认。
+  批注ID: ann_0004

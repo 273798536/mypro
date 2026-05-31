@@ -1,0 +1,352 @@
+{
+  "audit_trail": [
+    {
+      "timestamp": "2026-05-31T11:20:34.547028",
+      "action": "import_fragment",
+      "target_type": "MIDIFragment",
+      "target_id": "frag_theme_A",
+      "before": null,
+      "after": {
+        "note_count": 7,
+        "remarks": [
+          "第一乐章主部主题",
+          "取自第1-4小节"
+        ]
+      },
+      "operator": "system",
+      "detail": "从 basic_motif.json 导入片段，含 7 个音符、2 条备注"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.547054",
+      "action": "extract_motif",
+      "target_type": "Motif",
+      "target_id": "motif_theme_A",
+      "before": null,
+      "after": {
+        "missing_fields": []
+      },
+      "operator": "system",
+      "detail": "从片段 frag_theme_A 提取动机，缺失字段: 无"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.547073",
+      "action": "import_fragment",
+      "target_type": "MIDIFragment",
+      "target_id": "frag_theme_A_transposed",
+      "before": null,
+      "after": {
+        "note_count": 7,
+        "remarks": [
+          "再现部移调版本",
+          "注意小节编号可能偏移"
+        ]
+      },
+      "operator": "system",
+      "detail": "从 basic_motif.json 导入片段，含 7 个音符、2 条备注"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.547088",
+      "action": "extract_motif",
+      "target_type": "Motif",
+      "target_id": "motif_theme_A_reprise",
+      "before": null,
+      "after": {
+        "missing_fields": []
+      },
+      "operator": "system",
+      "detail": "从片段 frag_theme_A_transposed 提取动机，缺失字段: ['name']"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.547109",
+      "action": "import_measures",
+      "target_type": "Measure",
+      "target_id": "batch_2",
+      "before": null,
+      "after": {
+        "count": 2,
+        "arrived_late": false
+      },
+      "operator": "system",
+      "detail": "从 basic_motif.json 导入 2 个小节，晚到: 否"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548269",
+      "action": "import_fragment",
+      "target_type": "MIDIFragment",
+      "target_id": "frag_transposed_misaligned",
+      "before": null,
+      "after": {
+        "note_count": 7,
+        "remarks": [
+          "展开部变奏",
+          "移调+小节错位混合",
+          "MIDI录制有偏差，起始位置提前约4拍"
+        ]
+      },
+      "operator": "system",
+      "detail": "从 transposition_misalign.json 导入片段，含 7 个音符、3 条备注"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548297",
+      "action": "extract_motif",
+      "target_type": "Motif",
+      "target_id": "motif_develop_1",
+      "before": null,
+      "after": {
+        "missing_fields": [
+          "tags"
+        ]
+      },
+      "operator": "system",
+      "detail": "从片段 frag_transposed_misaligned 提取动机，缺失字段: ['name', 'tags']"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548403",
+      "action": "import_fragment",
+      "target_type": "MIDIFragment",
+      "target_id": "frag_rhythm_stretch",
+      "before": null,
+      "after": {
+        "note_count": 7,
+        "remarks": [
+          "慢板变奏",
+          "时值拉伸约1.5倍"
+        ]
+      },
+      "operator": "system",
+      "detail": "从 transposition_misalign.json 导入片段，含 7 个音符、2 条备注"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548421",
+      "action": "extract_motif",
+      "target_type": "Motif",
+      "target_id": "motif_slow_variation",
+      "before": null,
+      "after": {
+        "missing_fields": []
+      },
+      "operator": "system",
+      "detail": "从片段 frag_rhythm_stretch 提取动机，缺失字段: 无"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548437",
+      "action": "import_fragment",
+      "target_type": "MIDIFragment",
+      "target_id": "frag_stretch_plus_misalign",
+      "before": null,
+      "after": {
+        "note_count": 7,
+        "remarks": [
+          "中段变奏+小节偏移",
+          "这段是从第5小节开始的，但MIDI时间戳没对齐"
+        ]
+      },
+      "operator": "system",
+      "detail": "从 transposition_misalign.json 导入片段，含 7 个音符、2 条备注"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548446",
+      "action": "extract_motif",
+      "target_type": "Motif",
+      "target_id": "motif_stretch_misalign",
+      "before": null,
+      "after": {
+        "missing_fields": [
+          "tags"
+        ]
+      },
+      "operator": "system",
+      "detail": "从片段 frag_stretch_plus_misalign 提取动机，缺失字段: ['name', 'tags']"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548547",
+      "action": "manual_correction:name",
+      "target_type": "Motif",
+      "target_id": "motif_theme_A_reprise",
+      "before": "fragment_frag_theme_A_transposed",
+      "after": "再现部主题A",
+      "operator": "cli_user",
+      "detail": "人工修正 Motif motif_theme_A_reprise 的 name：fragment_frag_theme_A_transposed → 再现部主题A。原因: 命令行人工补全"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548565",
+      "action": "manual_correction:name",
+      "target_type": "Motif",
+      "target_id": "motif_develop_1",
+      "before": "fragment_frag_transposed_misaligned",
+      "after": "展开部变奏1",
+      "operator": "cli_user",
+      "detail": "人工修正 Motif motif_develop_1 的 name：fragment_frag_transposed_misaligned → 展开部变奏1。原因: 命令行人工补全"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548587",
+      "action": "manual_correction:name",
+      "target_type": "Motif",
+      "target_id": "motif_stretch_misalign",
+      "before": "fragment_frag_stretch_plus_misalign",
+      "after": "拉伸错位变奏",
+      "operator": "cli_user",
+      "detail": "人工修正 Motif motif_stretch_misalign 的 name：fragment_frag_stretch_plus_misalign → 拉伸错位变奏。原因: 命令行人工补全"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.548999",
+      "action": "apply_measure_offset",
+      "target_type": "MIDIFragment",
+      "target_id": "frag_transposed_misaligned",
+      "before": null,
+      "after": 2,
+      "operator": "cli_user",
+      "detail": "人工设定片段 frag_transposed_misaligned 小节偏移为 2"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.549383",
+      "action": "create_annotation",
+      "target_type": "AnnotationRecord",
+      "target_id": "ann_0001",
+      "before": null,
+      "after": {
+        "fragment_id": "frag_theme_A_transposed",
+        "motif_id": "motif_theme_A_reprise",
+        "variation_type": "transposition",
+        "confidence": 0.95,
+        "detail": "移调变奏（确定性结论）：C → F，向上移调 5 半音（纯四度），音程序列完全一致"
+      },
+      "operator": "system",
+      "detail": "创建批注 ann_0001：transposition，置信度 0.95"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.549819",
+      "action": "create_annotation",
+      "target_type": "AnnotationRecord",
+      "target_id": "ann_0002",
+      "before": null,
+      "after": {
+        "fragment_id": "frag_transposed_misaligned",
+        "motif_id": "motif_develop_1",
+        "variation_type": "transposition_plus_misalign",
+        "confidence": 0.7200000000000001,
+        "detail": "移调 + 小节错位复合变奏：移调 7 半音，错位 -4.0 拍（约 -1 小节）"
+      },
+      "operator": "system",
+      "detail": "创建批注 ann_0002：transposition_plus_misalign，置信度 0.72"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.549984",
+      "action": "create_annotation",
+      "target_type": "AnnotationRecord",
+      "target_id": "ann_0003",
+      "before": null,
+      "after": {
+        "fragment_id": "frag_rhythm_stretch",
+        "motif_id": "motif_slow_variation",
+        "variation_type": "rhythm_stretch",
+        "confidence": 0.8,
+        "detail": "节奏拉伸：均匀全局拉伸：比例 1.5，最大偏差 0.0"
+      },
+      "operator": "system",
+      "detail": "创建批注 ann_0003：rhythm_stretch，置信度 0.80"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.550452",
+      "action": "create_annotation",
+      "target_type": "AnnotationRecord",
+      "target_id": "ann_0004",
+      "before": null,
+      "after": {
+        "fragment_id": "frag_stretch_plus_misalign",
+        "motif_id": "motif_stretch_misalign",
+        "variation_type": "rhythm_stretch_plus_misalign",
+        "confidence": 0.7,
+        "detail": "节奏拉伸 + 小节错位复合：均匀全局拉伸：比例 1.5，最大偏差 0.0；起始偏移 4.50 拍（约 1 小节）"
+      },
+      "operator": "system",
+      "detail": "创建批注 ann_0004：rhythm_stretch_plus_misalign，置信度 0.70"
+    },
+    {
+      "timestamp": "2026-05-31T11:20:34.550462",
+      "action": "search",
+      "target_type": "Motif",
+      "target_id": "motif_theme_A",
+      "before": null,
+      "after": {
+        "match_count": 4
+      },
+      "operator": "system",
+      "detail": "检索动机 motif_theme_A，找到 4 条匹配"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "ann_0001",
+      "fragment_id": "frag_theme_A_transposed",
+      "motif_id": "motif_theme_A_reprise",
+      "variation_type": "transposition",
+      "evidence": {
+        "variation_type": "transposition",
+        "confidence": 0.95,
+        "detail": "移调变奏（确定性结论）：C → F，向上移调 5 半音（纯四度），音程序列完全一致",
+        "transposition_semitones": 5,
+        "stretch_ratio": null,
+        "misalign_beats": null,
+        "misalign_measures": null
+      },
+      "created_at": "2026-05-31T11:20:34.549358",
+      "superseded_by": null,
+      "superseded_at": null
+    },
+    {
+      "id": "ann_0002",
+      "fragment_id": "frag_transposed_misaligned",
+      "motif_id": "motif_develop_1",
+      "variation_type": "transposition_plus_misalign",
+      "evidence": {
+        "variation_type": "transposition_plus_misalign",
+        "confidence": 0.7200000000000001,
+        "detail": "移调 + 小节错位复合变奏：移调 7 半音，错位 -4.0 拍（约 -1 小节）",
+        "transposition_semitones": 7,
+        "stretch_ratio": null,
+        "misalign_beats": -4.0,
+        "misalign_measures": -1
+      },
+      "created_at": "2026-05-31T11:20:34.549804",
+      "superseded_by": null,
+      "superseded_at": null
+    },
+    {
+      "id": "ann_0003",
+      "fragment_id": "frag_rhythm_stretch",
+      "motif_id": "motif_slow_variation",
+      "variation_type": "rhythm_stretch",
+      "evidence": {
+        "variation_type": "rhythm_stretch",
+        "confidence": 0.8,
+        "detail": "节奏拉伸：均匀全局拉伸：比例 1.5，最大偏差 0.0",
+        "transposition_semitones": null,
+        "stretch_ratio": 1.5,
+        "misalign_beats": null,
+        "misalign_measures": null
+      },
+      "created_at": "2026-05-31T11:20:34.549977",
+      "superseded_by": null,
+      "superseded_at": null
+    },
+    {
+      "id": "ann_0004",
+      "fragment_id": "frag_stretch_plus_misalign",
+      "motif_id": "motif_stretch_misalign",
+      "variation_type": "rhythm_stretch_plus_misalign",
+      "evidence": {
+        "variation_type": "rhythm_stretch_plus_misalign",
+        "confidence": 0.7,
+        "detail": "节奏拉伸 + 小节错位复合：均匀全局拉伸：比例 1.5，最大偏差 0.0；起始偏移 4.50 拍（约 1 小节）",
+        "transposition_semitones": null,
+        "stretch_ratio": 1.5,
+        "misalign_beats": 4.5,
+        "misalign_measures": 1
+      },
+      "created_at": "2026-05-31T11:20:34.550439",
+      "superseded_by": null,
+      "superseded_at": null
+    }
+  ]
+}
