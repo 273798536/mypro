@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-navy: #1B2A4A;
+  --color-amber: #D4A843;
+  --color-slate-text: #4A5568;
+  --color-emerald: #38A169;
+  --color-coral: #E53E3E;
+  --color-surface: #F7F8FA;
+  --color-card: #FFFFFF;
+  --color-border: #E2E8F0;
+  --font-serif: 'Noto Serif SC', serif;
+  --font-sans: 'Noto Sans SC', sans-serif;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background-color: #F7F8FA;
+  color: #1B2A4A;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1B2A4A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2D3E5F;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4A5568;
+  background-color: #F7F8FA;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+table td {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+table tbody tr:hover {
+  background-color: #F0F4F8;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
