@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ae81a4a3",
+    "name": "第一版",
+    "timestamp": "2026-05-31T10:55:48.808465",
+    "line_count": 15,
+    "fix_count": 0,
+    "source": "examples/sample_lyrics.txt"
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "主歌1": {
+    "type": "主歌",
+    "lines": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "expected_rhyme": null
+  },
+  "副歌": {
+    "type": "副歌",
+    "lines": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "expected_rhyme": null
+  },
+  "桥段": {
+    "type": "桥段",
+    "lines": [
+      14,
+      15,
+      16,
+      17
+    ],
+    "expected_rhyme": null
+  }
+}
