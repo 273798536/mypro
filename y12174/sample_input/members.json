@@ -1,0 +1,23 @@
+[
+  {"id": "M01", "name": "陈雪琳", "voice_parts": ["S1", "S2"], "skill_level": "advanced"},
+  {"id": "M02", "name": "李思雨", "voice_parts": ["S1", "S2"], "skill_level": "intermediate"},
+  {"id": "M03", "name": "王晓萱", "voice_parts": ["S1"], "skill_level": "beginner"},
+  {"id": "M04", "name": "张语涵", "voice_parts": ["S2", "A1"], "skill_level": "intermediate"},
+  {"id": "M05", "name": "刘雨欣", "voice_parts": ["S2"], "skill_level": "beginner"},
+
+  {"id": "M06", "name": "赵佳怡", "voice_parts": ["A1", "A2"], "skill_level": "advanced"},
+  {"id": "M07", "name": "孙梦琪", "voice_parts": ["A1"], "skill_level": "intermediate"},
+  {"id": "M08", "name": "周诗涵", "voice_parts": ["A2"], "skill_level": "beginner"},
+
+  {"id": "M09", "name": "吴浩然", "voice_parts": ["T1"], "skill_level": "advanced"},
+  {"id": "M10", "name": "郑子轩", "voice_parts": ["T1", "T2"], "skill_level": "advanced"},
+  {"id": "M11", "name": "黄宇辰", "voice_parts": ["T2"], "skill_level": "advanced"},
+  {"id": "M12", "name": "何俊杰", "voice_parts": ["T2", "B1"], "skill_level": "advanced"},
+
+  {"id": "M13", "name": "马天翔", "voice_parts": ["B1"], "skill_level": "intermediate"},
+  {"id": "M14", "name": "林博文", "voice_parts": ["B1", "B2"], "skill_level": "intermediate"},
+  {"id": "M15", "name": "杨子墨", "voice_parts": ["B2"], "skill_level": "beginner"},
+
+  {"id": "M16", "name": "钱逸飞", "voice_parts": ["A1", "T1"], "skill_level": "intermediate"},
+  {"id": "M17", "name": "冯晨曦", "voice_parts": ["A2", "T2"], "skill_level": "beginner"}
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "SONG01",
+    "name": "茉莉花",
+    "required_parts": [
+      {"part": "S1", "count": 2},
+      {"part": "S2", "count": 2},
+      {"part": "A1", "count": 2},
+      {"part": "A2", "count": 2},
+      {"part": "T1", "count": 2},
+      {"part": "T2", "count": 2},
+      {"part": "B1", "count": 2},
+      {"part": "B2", "count": 2}
+    ]
+  },
+  {
+    "id": "SONG02",
+    "name": "在希望的田野上",
+    "required_parts": [
+      {"part": "S1", "count": 1},
+      {"part": "S2", "count": 1},
+      {"part": "A1", "count": 1},
+      {"part": "A2", "count": 1},
+      {"part": "T1", "count": 1},
+      {"part": "T2", "count": 1},
+      {"part": "B1", "count": 1},
+      {"part": "B2", "count": 1}
+    ]
+  }
+]
