@@ -1,0 +1,100 @@
+import { PressureReading, ValveAction, NetworkData } from '@/types';
+
+const RHO = 1000;
+const WAVE_SPEED = 1200;
+const BASE_PRESSURE = 0.3;
+const TIME_STEP = 0.1;
+
+interface WaveEvent {
+  time: number;
+  amplitude: number;
+  decay: number;
+  period: number;
+  nodeIds: string[];
+}
+
+export function generatePressureData(
+  duration: number,
+  valveActions: ValveAction[],
+  network: NetworkData
+): PressureReading[] {
+  const nodeIds = network.nodes.map(n => n.id);
+  const result: PressureReading[] = [];
+  
+  const waveEvents: WaveEvent[] = [];
+  
+  valveActions.forEach(action => {
+    const pipe = network.pipes.find(p => p.id === action.valveId.replace(/V/, 'P'));
+    const pipeLength = pipe?.length || 500;
+    const diameter = pipe?.diameter || 500;
+    const effectiveSpeed = pipe?.diameter ? WAVE_SPEED : WAVE_SPEED * 0.8;
+    const period = (4 * pipeLength) / effectiveSpeed;
+    
+    const amplitude = action.action === 'close' ? 0.8 : -0.6;
+    
+    waveEvents.push({
+      time: action.actualTime,
+      amplitude,
+      decay: 0.15,
+      period,
+      nodeIds: ['N5', 'N6', 'N7'],
+    });
+  });
+  
+  const steps = Math.ceil(duration / TIME_STEP);
+  
+  for (let i = 0; i <= steps; i++) {
+    const t = i * TIME_STEP;
+    const reading: PressureReading = { time: t };
+    
+    nodeIds.forEach(nodeId => {
+      let pressure = BASE_PRESSURE;
+      
+      waveEvents.forEach(event => {
+        if (t >= event.time && event.nodeIds.includes(nodeId)) {
+          const deltaT = t - event.time;
+          const decayFactor = Math.exp(-event.decay * deltaT);
+          const wave = Math.sin(2 * Math.PI * deltaT / event.period);
+          pressure += event.amplitude * decayFactor * wave;
+        }
+      });
+      
+      if (nodeId === 'N6') {
+        const drift = 0.12 * Math.min(1, t / 5);
+        pressure += drift;
+      }
+      
+      reading[nodeId] = Math.max(0, Math.min(1.5, pressure));
+    });
+    
+    result.push(reading);
+  }
+  
+  return result;
+}
+
+export function getPressureAtTime(
+  pressureData: PressureReading[],
+  time: number
+): PressureReading | null {
+  if (pressureData.length === 0) return null;
+  
+  const index = Math.round(time / TIME_STEP);
+  if (index < 0) return pressureData[0];
+  if (index >= pressureData.length) return pressureData[pressureData.length - 1];
+  
+  return pressureData[index];
+}
+
+export function getPressureHistory(
+  pressureData: PressureReading[],
+  nodeId: string,
+  upToTime: number
+): { time: number; pressure: number }[] {
+  const result: { time: number; pressure: number }[] = [];
+  for (const reading of pressureData) {
+    if (reading.time > upToTime) break;
+    result.push({ time: reading.time, pressure: reading[nodeId] });
+  }
+  return result;
+}
