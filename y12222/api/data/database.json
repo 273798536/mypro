@@ -1,0 +1,279 @@
+{
+  "expenditures": [
+    {
+      "id": "395fe35b-6455-4070-aed1-c2e816be9bf4",
+      "title": "小区绿化改造工程",
+      "amount": 58000,
+      "project_name": "2026年小区环境提升项目",
+      "applicant": "张建国",
+      "applicant_role": "物业主任",
+      "status": "pending_review",
+      "description": "对小区公共绿地进行升级改造，包括苗木更新、灌溉系统安装等",
+      "created_at": "2026-05-31T09:07:21.453Z",
+      "updated_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "title": "健身器材采购",
+      "amount": 32000,
+      "project_name": "2026年小区环境提升项目",
+      "applicant": "李为民",
+      "applicant_role": "业委会副主任",
+      "status": "approved",
+      "description": "为小区广场添置户外健身器材6套",
+      "created_at": "2026-05-31T09:07:21.453Z",
+      "updated_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "f2e61290-2f27-4840-ae76-0d26e7e9fc8d",
+      "title": "监控系统升级",
+      "amount": 45000,
+      "project_name": "2026年小区安全建设项目",
+      "applicant": "王平安",
+      "applicant_role": "物业安保主管",
+      "status": "delayed",
+      "description": "新增高清摄像头20台，升级存储设备",
+      "created_at": "2026-05-31T09:07:21.453Z",
+      "updated_at": "2026-05-31T09:07:21.453Z"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "060a71cc-bd4e-43fb-8dea-fb0e946a225e",
+      "invoice_number": "INV-2026-0001",
+      "amount": 28000,
+      "vendor": "绿景园林工程有限公司",
+      "invoice_date": "2026-05-15",
+      "expenditure_id": "395fe35b-6455-4070-aed1-c2e816be9bf4",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "duplicate_status": "none",
+      "verification_status": "verified",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "1cfb51f7-67fb-4c30-935d-21a71bc6ba43",
+      "invoice_number": "INV-2026-0002",
+      "amount": 30000,
+      "vendor": "绿景园林工程有限公司",
+      "invoice_date": "2026-05-18",
+      "expenditure_id": "395fe35b-6455-4070-aed1-c2e816be9bf4",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "duplicate_status": "none",
+      "verification_status": "pending",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "3052ad4c-6cb0-460d-906e-255fba5f65a8",
+      "invoice_number": "INV-2026-0001",
+      "amount": 28000,
+      "vendor": "绿景园林工程有限公司",
+      "invoice_date": "2026-05-15",
+      "expenditure_id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "is_duplicate": true,
+      "duplicate_of": "060a71cc-bd4e-43fb-8dea-fb0e946a225e",
+      "duplicate_status": "confirmed",
+      "verification_status": "pending",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "7c1201a8-ce29-4c9d-9282-ca43769715f3",
+      "invoice_number": "INV-2026-0003",
+      "amount": 32000,
+      "vendor": "康体健身器材厂",
+      "invoice_date": "2026-05-20",
+      "expenditure_id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "duplicate_status": "none",
+      "verification_status": "verified",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "bc805e2b-9cb8-4665-8066-48c38abf21bb",
+      "invoice_number": "INV-2026-0004",
+      "amount": 45000,
+      "vendor": "安视科技有限公司",
+      "invoice_date": "2026-05-10",
+      "expenditure_id": "f2e61290-2f27-4840-ae76-0d26e7e9fc8d",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "duplicate_status": "none",
+      "verification_status": "pending",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    }
+  ],
+  "approvals": [
+    {
+      "id": "1bef5b02-cd7b-48b0-849c-f77c2be09c22",
+      "expenditure_id": "395fe35b-6455-4070-aed1-c2e816be9bf4",
+      "approver": "赵主任",
+      "approver_role": "居委会主任",
+      "step_order": 1,
+      "status": "approved",
+      "comments": "同意",
+      "page_number": "A001",
+      "is_complete": true,
+      "approved_at": "2026-05-31T09:07:21.453Z",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "a7c376c4-dee4-4a2d-bffd-7efe0d640e17",
+      "expenditure_id": "395fe35b-6455-4070-aed1-c2e816be9bf4",
+      "approver": "钱会计",
+      "approver_role": "街道财务",
+      "step_order": 2,
+      "status": "pending",
+      "comments": "",
+      "page_number": null,
+      "is_complete": false,
+      "approved_at": null,
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "22786d15-5572-44c2-a8d2-4df1cdbb9fff",
+      "expenditure_id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "approver": "赵主任",
+      "approver_role": "居委会主任",
+      "step_order": 1,
+      "status": "approved",
+      "comments": "符合采购标准",
+      "page_number": "A002",
+      "is_complete": true,
+      "approved_at": "2026-05-31T09:07:21.453Z",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "2b0654ad-e325-4ed5-af3a-5ce530695365",
+      "expenditure_id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "approver": "钱会计",
+      "approver_role": "街道财务",
+      "step_order": 2,
+      "status": "approved",
+      "comments": "发票齐全，金额无误",
+      "page_number": "A003",
+      "is_complete": true,
+      "approved_at": "2026-05-31T09:07:21.453Z",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "af12e900-8f0f-47ec-b9c0-4e5b3d6bc574",
+      "expenditure_id": "f2e61290-2f27-4840-ae76-0d26e7e9fc8d",
+      "approver": "赵主任",
+      "approver_role": "居委会主任",
+      "step_order": 1,
+      "status": "page_missing",
+      "comments": "缺少第3页审批附件",
+      "page_number": "A004",
+      "is_complete": false,
+      "approved_at": null,
+      "created_at": "2026-05-31T09:07:21.453Z"
+    }
+  ],
+  "opinions": [
+    {
+      "id": "12b1c13a-c420-4530-8bf3-66faa47d75ad",
+      "expenditure_id": "395fe35b-6455-4070-aed1-c2e816be9bf4",
+      "resident_name": "孙大妈",
+      "opinion": "支持绿化改造，希望多种点开花的树",
+      "source_type": "onsite",
+      "approval_id": null,
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "42bde966-4023-40c7-9cb3-cd1caaf29d86",
+      "expenditure_id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "resident_name": "周大爷",
+      "opinion": "健身器材选得好，我们老年人很需要",
+      "source_type": "written",
+      "approval_id": "22786d15-5572-44c2-a8d2-4df1cdbb9fff",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    }
+  ],
+  "delays": [
+    {
+      "id": "b4ecacd8-e5c9-4732-90bc-46b315766be5",
+      "expenditure_id": "f2e61290-2f27-4840-ae76-0d26e7e9fc8d",
+      "original_deadline": "2026-05-30",
+      "new_deadline": "2026-06-30",
+      "reason": "设备供应商产能不足，交货延期",
+      "impact_description": "导致监控安装整体延后，需重新协调施工时间",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    }
+  ],
+  "disclosures": [
+    {
+      "id": "5fb01624-a1f2-4128-91ac-b9bdac20bb12",
+      "expenditure_id": "9266d97e-22ce-429b-b40d-6ab3ef5fae09",
+      "disclosure_date": "2026-05-20",
+      "end_date": "2026-06-03",
+      "status": "published",
+      "public_notice_content": "健身器材采购项目已审批通过，现公示15天。如有异议请向业委会反映。",
+      "created_at": "2026-05-31T09:07:21.453Z",
+      "updated_at": "2026-05-31T09:07:21.453Z"
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "d452212b-4e82-4c69-9028-87cf7701d86b",
+      "entity_type": "invoice",
+      "entity_id": "3052ad4c-6cb0-460d-906e-255fba5f65a8",
+      "action": "duplicate_confirm",
+      "old_value": "{\"duplicate_status\":\"suspected\"}",
+      "new_value": "{\"duplicate_status\":\"confirmed\"}",
+      "operator": "系统自动检测",
+      "impact_description": "发票 INV-2026-0001 被确认为重复发票，关联原始发票记录",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "6549ad77-3084-4bc2-b6fc-df317fc05511",
+      "entity_type": "expenditure",
+      "entity_id": "f2e61290-2f27-4840-ae76-0d26e7e9fc8d",
+      "action": "status_change",
+      "old_value": "{\"status\":\"reviewing\"}",
+      "new_value": "{\"status\":\"delayed\"}",
+      "operator": "张建国",
+      "impact_description": "项目标记为延期，原截止日期2026-05-30，新截止日期2026-06-30",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "id": "66f3ee4f-6aaa-4451-aa48-5cd6b3d33663",
+      "entity_type": "approval",
+      "entity_id": "af12e900-8f0f-47ec-b9c0-4e5b3d6bc574",
+      "action": "status_change",
+      "old_value": "{\"status\":\"pending\"}",
+      "new_value": "{\"status\":\"page_missing\"}",
+      "operator": "赵主任",
+      "impact_description": "审批标记为缺页状态，缺少第3页审批附件",
+      "created_at": "2026-05-31T09:07:21.453Z"
+    },
+    {
+      "entity_type": "disclosure",
+      "entity_id": "da413dbd-7101-4036-963e-14545f49dc1d",
+      "action": "create",
+      "old_value": null,
+      "new_value": "{\"title\":\"测试报告\",\"project_filter\":null,\"includes\":{\"expenditures\":true,\"invoices\":true,\"duplicates\":true,\"approvals\":true,\"delays\":true,\"disclosures\":true},\"id\":\"da413dbd-7101-4036-963e-14545f49dc1d\",\"created_at\":\"2026-05-31T09:07:37.912Z\"}",
+      "operator": "测试用户",
+      "impact_description": "生成报告：测试报告",
+      "id": "04b091e5-27e9-41d0-8201-f41a43431fd9",
+      "created_at": "2026-05-31T09:07:37.916Z"
+    }
+  ],
+  "reports": [
+    {
+      "title": "测试报告",
+      "project_filter": null,
+      "includes": {
+        "expenditures": true,
+        "invoices": true,
+        "duplicates": true,
+        "approvals": true,
+        "delays": true,
+        "disclosures": true
+      },
+      "id": "da413dbd-7101-4036-963e-14545f49dc1d",
+      "created_at": "2026-05-31T09:07:37.912Z"
+    }
+  ]
+}
