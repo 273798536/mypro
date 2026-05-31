@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1E3A5F 0%, #0E1E2B 100%);
+}
+
+@layer components {
+  .card-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .card-shadow-hover {
+    transition: all 0.3s ease;
+  }
+  
+  .card-shadow-hover:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary {
+    @apply bg-accent-500 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:bg-accent-600 hover:shadow-lg active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-white/10 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:bg-white/20 active:scale-95 border border-white/20;
+  }
+
+  .btn-danger {
+    @apply bg-danger-500 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:bg-danger-600 hover:shadow-lg active:scale-95;
+  }
+
+  .btn-success {
+    @apply bg-success-500 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:bg-success-600 hover:shadow-lg active:scale-95;
+  }
+
+  .glass-panel {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
+  }
+
+  .clue-card {
+    @apply bg-white rounded-lg p-4 border-2 border-transparent cursor-grab active:cursor-grabbing transition-all duration-200 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .clue-card-dragging {
+    @apply opacity-50 scale-95 shadow-2xl;
+  }
+
+  .case-slot {
+    @apply min-h-[200px] border-2 border-dashed border-white/30 rounded-xl p-4 transition-all duration-200;
+  }
+
+  .case-slot-active {
+    @apply border-accent-400 bg-accent-500/10;
+  }
+
+  .case-slot-correct {
+    @apply border-success-500 bg-success-500/20 animate-pulse;
+  }
+
+  .case-slot-wrong {
+    @apply border-danger-500 bg-danger-500/20 animate-shake;
+  }
+
+  .risk-item {
+    @apply bg-danger-500/20 border-l-4 border-danger-500 p-4 rounded-r-lg;
+  }
+
+  .verdict-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2;
+  }
+
+  .verdict-btn-approve {
+    @apply border-success-500 text-success-500 hover:bg-success-500 hover:text-white;
+  }
+
+  .verdict-btn-reject {
+    @apply border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-white;
+  }
+
+  .verdict-btn-need-more {
+    @apply border-accent-500 text-accent-500 hover:bg-accent-500 hover:text-white;
+  }
+
+  .score-popup {
+    @apply absolute text-2xl font-bold pointer-events-none animate-float-up;
+  }
+
+  .timer-warning {
+    @apply text-danger-500 animate-pulse-glow;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
