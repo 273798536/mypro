@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --color-bg-primary: #0f0f1a;
+  --color-bg-secondary: #1a1a2e;
+  --color-bg-tertiary: #242440;
+  --color-amber: #f59e0b;
+  --color-amber-dim: #b45309;
+  --color-cyan: #06b6d4;
+  --color-cyan-dim: #0e7490;
+  --color-red: #ef4444;
+  --color-red-dim: #b91c1c;
+  --color-green: #22c55e;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-border: #2d2d4a;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-bg-tertiary) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-bg-tertiary);
+  border-radius: 3px;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.glow-amber {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+.card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.severity-ok {
+  color: var(--color-cyan);
+}
+
+.severity-warning {
+  color: var(--color-amber);
+}
+
+.severity-error {
+  color: var(--color-red);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-ok {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--color-cyan);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--color-amber);
+}
+
+.badge-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-red);
+}
+
+.btn-primary {
+  background: var(--color-amber);
+  color: #0f0f1a;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.875rem;
+}
+
+.btn-primary:hover {
+  background: #fbbf24;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.8125rem;
+}
+
+.btn-secondary:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--color-amber-dim);
+}
+
+.textarea-dark {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  padding: 12px;
+  resize: vertical;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.textarea-dark:focus {
+  border-color: var(--color-amber);
+}
+
+.textarea-dark::placeholder {
+  color: var(--color-text-muted);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.pulse-dot {
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
