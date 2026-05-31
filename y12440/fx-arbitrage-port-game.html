@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外汇套利港口棋</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0b0e1a;color:#d4dae6;overflow-x:hidden}
+:root{--gold:#e2b714;--navy:#16213e;--dark:#0f1129;--blue:#00b4d8;--red:#ff4757;--green:#2ed573;--dim:#4a5568;--card:#1a1f3a}
+.screen{display:none;min-height:100vh;padding:20px}
+.screen.active{display:flex;flex-direction:column;align-items:center}
+h1{font-size:2rem;color:var(--gold);margin-bottom:8px;letter-spacing:2px}
+h2{font-size:1.3rem;color:var(--blue);margin:12px 0 6px}
+h3{font-size:1.05rem;color:var(--gold);margin:8px 0 4px}
+.subtitle{color:var(--dim);font-size:.9rem;margin-bottom:20px}
+.btn{display:inline-block;padding:10px 24px;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--gold);color:#0b0e1a;font-weight:700}
+.btn-primary:hover{background:#f0c930;transform:translateY(-1px)}
+.btn-secondary{background:var(--navy);color:var(--blue);border:1px solid var(--blue)}
+.btn-secondary:hover{background:#1e2d52}
+.btn-danger{background:#5c1a1a;color:var(--red);border:1px solid var(--red)}
+.btn-danger:hover{background:#7a2222}
+.btn-success{background:#1a3c1a;color:var(--green);border:1px solid var(--green)}
+.btn-success:hover{background:#225522}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.card{background:var(--card);border:1px solid #2a3056;border-radius:12px;padding:16px;margin:6px}
+.scenario-card{cursor:pointer;transition:all .2s;width:100%;max-width:340px;text-align:left}
+.scenario-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 20px rgba(226,183,20,.15)}
+.scenario-card .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;margin-right:4px}
+.tag-delay{background:#3a2a0a;color:#f0c930}
+.tag-fee{background:#0a2a3a;color:var(--blue)}
+.tag-path{background:#2a0a3a;color:#c77dff}
+.tag-basic{background:#0a3a1a;color:var(--green)}
+#game-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:1100px;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+#game-header .info{background:var(--card);padding:8px 14px;border-radius:8px;font-size:.85rem}
+#game-main{display:flex;gap:12px;width:100%;max-width:1100px;flex-wrap:wrap}
+#port-area{flex:1;min-width:320px}
+#side-area{flex:1;min-width:320px;display:flex;flex-direction:column;gap:10px}
+.port-map{position:relative;width:100%;aspect-ratio:5/3;min-height:280px;background:linear-gradient(135deg,#0a1628,#101d3a);border-radius:12px;border:1px solid #1e2d52;overflow:hidden}
+.port-map svg{width:100%;height:100%}
+.port-node{cursor:pointer;transition:all .2s}
+.port-node:hover .port-circle{stroke-width:3;filter:brightness(1.3)}
+.port-circle{transition:all .2s}
+.rate-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.rate-table th{color:var(--dim);font-weight:400;text-align:left;padding:4px 6px;border-bottom:1px solid #1e2d52}
+.rate-table td{padding:4px 6px;border-bottom:1px solid #1a1f3a}
+.rate-up{color:var(--green)}
+.rate-down{color:var(--red)}
+.rate-stale{color:#888}
+#action-panel{width:100%;max-width:1100px;margin-top:12px}
+.action-buttons{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+#msg-log{width:100%;max-width:1100px;margin-top:10px;max-height:160px;overflow-y:auto}
+.msg-item{padding:4px 8px;font-size:.82rem;border-left:3px solid var(--dim);margin:2px 0;background:#0d1020;border-radius:0 4px 4px 0}
+.msg-warn{border-left-color:#f0c930;color:#f0c930}
+.msg-err{border-left-color:var(--red);color:var(--red)}
+.msg-ok{border-left-color:var(--green);color:var(--green)}
+.msg-info{border-left-color:var(--blue);color:var(--blue)}
+.dialog-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;justify-content:center;align-items:center}
+.dialog-overlay.active{display:flex}
+.dialog-box{background:var(--dark);border:1px solid var(--gold);border-radius:16px;padding:24px;max-width:480px;width:90%;max-height:85vh;overflow-y:auto}
+.settlement-section{margin:12px 0;padding:12px;background:var(--card);border-radius:8px;border:1px solid #2a3056}
+.settlement-section table{width:100%;border-collapse:collapse;font-size:.85rem}
+.settlement-section th,.settlement-section td{padding:6px 8px;text-align:left;border-bottom:1px solid #1a1f3a}
+.trace-chain{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:8px 0}
+.trace-step{background:var(--navy);padding:4px 10px;border-radius:6px;font-size:.82rem;border:1px solid #2a3056}
+.trace-arrow{color:var(--gold);font-size:1rem}
+.replay-bar{display:flex;align-items:center;gap:8px;margin:8px 0}
+.replay-bar .step-info{color:var(--dim);font-size:.85rem}
+.port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:8px 0}
+.port-card{padding:10px;border-radius:8px;cursor:pointer;transition:all .2s;text-align:center}
+.port-card:hover{transform:translateY(-2px)}
+.port-card.current{border:2px solid var(--gold)}
+.port-card.visited{opacity:.65}
+.help-box{background:#0d1520;border:1px solid #1e2d52;border-radius:8px;padding:12px;font-size:.82rem;margin:8px 0;line-height:1.6}
+.help-box b{color:var(--gold)}
+.order-banner{background:linear-gradient(90deg,#1a1508,#1a1f3a);border:1px solid #3a3020;border-radius:10px;padding:14px;margin:8px 0}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const CURRENCIES = {
+  USD: {name:'美元',symbol:'$',flag:'🇺🇸',color:'#4caf50'},
+  EUR: {name:'欧元',symbol:'€',flag:'🇪🇺',color:'#2196f3'},
+  JPY: {name:'日元',symbol:'¥',flag:'🇯🇵',color:'#ff9800'},
+  GBP: {name:'英镑',symbol:'£',flag:'🇬🇧',color:'#9c27b0'},
+  CNY: {name:'人民币',symbol:'¥',flag:'🇨🇳',color:'#f44336'}
+};
+const PORT_IDS = ['USD','EUR','JPY','GBP','CNY'];
+const PORT_POS = {USD:[.5,.12],EUR:[.15,.48],GBP:[.85,.48],JPY:[.22,.88],CNY:[.78,.88]};
+const COMMISSIONS = {USD:.002,EUR:.003,JPY:.001,GBP:.004,CNY:.002};
+const SPREAD = .0015;
+
+const SCENARIOS = [
+  {
+    id:'s1',title:'三角套利入门',tags:['tag-basic'],
+    desc:'从美元港出发，走 USD→EUR→JPY→USD 三角路线。汇率延迟1回合，掌握"牌面≠成交"的基本意识。',
+    startPort:'USD',startAmount:10000,targetCurrency:'USD',targetProfit:50,
+    maxTurns:6,delay:1,volatility:.003,
+    initRates:{'USD-EUR':.92,'USD-JPY':148,'USD-GBP':.79,'USD-CNY':7.24,
+      'EUR-JPY':163,'EUR-GBP':.86,'EUR-CNY':7.87,'GBP-JPY':187,'GBP-CNY':9.16,'JPY-CNY':.049},
+    hint:'EUR→JPY牌面偏高于均衡值，三角回来有利差。注意延迟——到达时汇率可能已变。'
+  },
+  {
+    id:'s2',title:'汇率延迟陷阱',tags:['tag-delay'],
+    desc:'从英镑港出发，走 GBP→CNY→JPY→GBP。汇率延迟2回合，牌面和实际偏差更大，学会"待确认→取消"止损。',
+    startPort:'GBP',startAmount:10000,targetCurrency:'GBP',targetProfit:30,
+    maxTurns:8,delay:2,volatility:.005,
+    initRates:{'USD-EUR':.92,'USD-JPY':148,'USD-GBP':.79,'USD-CNY':7.24,
+      'EUR-JPY':161,'EUR-GBP':.86,'EUR-CNY':7.87,'GBP-JPY':192,'GBP-CNY':9.35,'JPY-CNY':.049},
+    hint:'GBP→JPY和GBP→CNY牌面高，但2回合延迟下实际汇率大概率回落。看到"待确认"不利时果断取消。'
+  },
+  {
+    id:'s3',title:'手续费暗礁',tags:['tag-fee'],
+    desc:'从人民币港出发，走 CNY→USD→EUR→GBP→CNY 四跳路线。各港口手续费不同，利润容易被手续费吃掉。',
+    startPort:'CNY',startAmount:50000,targetCurrency:'CNY',targetProfit:100,
+    maxTurns:10,delay:1,volatility:.004,
+    initRates:{'USD-EUR':.93,'USD-JPY':149,'USD-GBP':.80,'USD-CNY':7.30,
+      'EUR-JPY':162,'EUR-GBP':.87,'EUR-CNY':7.95,'GBP-JPY':189,'GBP-CNY':9.25,'JPY-CNY':.050},
+    hint:'四跳路线每跳都有手续费。结算前先算清：每跳扣费后还剩多少，别只看汇差。'
+  },
+  {
+    id:'s4',title:'路径重复警示',tags:['tag-path'],
+    desc:'从欧元港出发，目标回到欧元港获利。若路线中出现重复港口，时间扣分会加重。学会规划无重复高效路线。',
+    startPort:'EUR',startAmount:20000,targetCurrency:'EUR',targetProfit:80,
+    maxTurns:8,delay:1,volatility:.004,
+    initRates:{'USD-EUR':.92,'USD-JPY':148,'USD-GBP':.79,'USD-CNY':7.24,
+      'EUR-JPY':164,'EUR-GBP':.87,'EUR-CNY':7.90,'GBP-JPY':190,'GBP-CNY':9.20,'JPY-CNY':.049},
+    hint:'EUR→JPY→GBP→EUR 三角路线无重复；走 EUR→USD→JPY→USD→EUR 会重复USD港，扣分翻倍。'
+  }
+];
+
+let G = {};
+
+function deepCopy(o){return JSON.parse(JSON.stringify(o))}
+
+function getRateKey(a,b){return PORT_IDS.indexOf(a)<PORT_IDS.indexOf(b)?a+'-'+b:b+'-'+a}
+function isRateKeyForward(key,from){return key.startsWith(from)}
+
+function rateFromPair(rates,from,to){
+  const key=getRateKey(from,to);
+  const val=rates[key];
+  if(!val)return null;
+  if(key===from+'-'+to)return val;
+  return 1/val;
+}
+
+function fluctuateRates(rates,volatility){
+  const r=deepCopy(rates);
+  for(const k in r){
+    const shift=1+(Math.random()*2-1)*volatility;
+    r[k]=Math.max(.001,r[k]*shift);
+  }
+  return r;
+}
+
+function generateAllRates(scenario){
+  const history=[deepCopy(scenario.initRates)];
+  for(let i=1;i<=scenario.maxTurns+2;i++){
+    history.push(fluctuateRates(history[i-1],scenario.volatility));
+  }
+  return history;
+}
+
+function initGame(){
+  G={
+    phase:'welcome',
+    scenario:null,scenarioIdx:-1,
+    currentPort:null,holdings:0,holdingsCurrency:null,
+    route:[],turn:0,
+    rateHistory:[],tradeLog:[],actionLog:[],msgLog:[],
+    pendingTrade:null,
+    settlement:null,
+    replayIdx:0
+  };
+  render();
+}
+
+function startScenario(idx){
+  const sc=SCENARIOS[idx];
+  G.scenario=deepCopy(sc);
+  G.scenarioIdx=idx;
+  G.currentPort=sc.startPort;
+  G.holdings=sc.startAmount;
+  G.holdingsCurrency=sc.startPort;
+  G.route=[sc.startPort];
+  G.turn=0;
+  G.rateHistory=generateAllRates(sc);
+  G.tradeLog=[];
+  G.actionLog=[];
+  G.msgLog=[];
+  G.pendingTrade=null;
+  G.settlement=null;
+  G.phase='playing';
+  addMsg('info','船队订单下达：从'+CURRENCIES[sc.startPort].name+'港出发，持有'+fmtAmt(sc.startAmount)+' '+CURRENCIES[sc.startPort].name+'，目标利润 >'+fmtAmt(sc.targetProfit)+' '+CURRENCIES[sc.targetCurrency].name+'，限'+sc.maxTurns+'回合。');
+  if(sc.hint)addMsg('info','💡 '+sc.hint);
+  render();
+}
+
+function currentRates(){return G.rateHistory[G.turn]||G.rateHistory[G.rateHistory.length-1]}
+function displayedRates(){
+  const d=G.scenario.delay;
+  const t=Math.max(0,G.turn-d);
+  return G.rateHistory[t]||G.rateHistory[0];
+}
+
+function fmtAmt(v,cur){
+  cur=cur||G.holdingsCurrency;
+  if(cur==='JPY')return Math.round(v).toLocaleString();
+  return v.toFixed(2);
+}
+
+function fmtRate(v,pair){
+  const[a,b]=pair.split('-');
+  if(b==='JPY')return v.toFixed(2);
+  if(a==='JPY')return v.toFixed(6);
+  return v.toFixed(4);
+}
+
+function addMsg(type,text){
+  G.msgLog.push({type,text,turn:G.turn});
+  if(G.msgLog.length>50)G.msgLog.shift();
+}
+
+function sailTo(port){
+  if(G.phase!=='playing'||G.pendingTrade)return;
+  if(port===G.currentPort){addMsg('warn','已在'+CURRENCIES[port].name+'港，无需航行。');render();return}
+  const from=G.holdingsCurrency;
+  const to=port;
+  if(from===to){addMsg('info','当前持有'+CURRENCIES[to].name+'，直接入港。');G.currentPort=port;G.route.push(port);G.turn++;addMsg('info','第'+G.turn+'回合：抵达'+CURRENCIES[port].name+'港。');checkAutoEnd();render();return}
+  const dRates=displayedRates();
+  const dispRate=rateFromPair(dRates,from,to);
+  if(!dispRate){addMsg('err','无法找到'+from+'/'+to+'汇率。');render();return}
+  const est=G.holdings*dispRate*(1-COMMISSIONS[port]);
+  G.pendingTrade={from,to,amount:G.holdings,dispRate,actRate:null,est,actEst:null,port};
+  G.phase='trade_confirm';
+  addMsg('info','准备从'+CURRENCIES[from].name+'港出发前往'+CURRENCIES[to].name+'港换汇...');
+  render();
+}
+
+function confirmTrade(){
+  if(!G.pendingTrade)return;
+  const cRates=currentRates();
+  const actRate=rateFromPair(cRates,G.pendingTrade.from,G.pendingTrade.to);
+  const comm=COMMISSIONS[G.pendingTrade.port];
+  const actEst=G.pendingTrade.amount*actRate*(1-comm);
+  G.pendingTrade.actRate=actRate;
+  G.pendingTrade.actEst=actEst;
+  G.pendingTrade.comm=comm;
+  G.pendingTrade.commAmt=G.pendingTrade.amount*actRate*comm;
+  G.phase='trade_reveal';
+  render();
+}
+
+function acceptTrade(){
+  if(!G.pendingTrade)return;
+  const t=G.pendingTrade;
+  const prevHoldings=G.holdings;
+  const prevCurrency=G.holdingsCurrency;
+  G.holdings=t.actEst;
+  G.holdingsCurrency=t.to;
+  G.currentPort=t.port;
+  G.route.push(t.port);
+  G.turn++;
+  const rateDiff=((t.actRate-t.dispRate)/t.dispRate*100).toFixed(2);
+  const diffSign=rateDiff>=0?'+':'';
+  const trade={
+    turn:G.turn,from:t.from,to:t.to,
+    amount:t.amount,dispRate:t.dispRate,actRate:t.actRate,
+    rateDiff:diffSign+rateDiff+'%',
+    result:t.actEst,comm:t.comm,commAmt:t.commAmt,
+    port:t.port
+  };
+  G.tradeLog.push(trade);
+  G.actionLog.push({turn:G.turn,action:'trade',detail:trade});
+  addMsg('ok','成交！ '+fmtAmt(t.amount,prevCurrency)+' '+CURRENCIES[prevCurrency].name+' → '+fmtAmt(t.actEst,t.to)+' '+CURRENCIES[t.to].name+'（手续费 '+fmtAmt(t.commAmt,t.to)+'）');
+  if(Math.abs(t.actRate-t.dispRate)>.0001){
+    const dir=t.actRate>t.dispRate?'优于':'劣于';
+    addMsg('warn','实际汇率'+dir+'牌面，偏差'+diffSign+rateDiff+'%。');
+  }
+  G.pendingTrade=null;
+  G.phase='playing';
+  checkAutoEnd();
+  render();
+}
+
+function cancelTrade(){
+  if(!G.pendingTrade)return;
+  G.turn++;
+  addMsg('warn','取消交易。汇率不利，船队留在原地等待，消耗1回合。');
+  G.actionLog.push({turn:G.turn,action:'cancel',from:G.pendingTrade.from,to:G.pendingTrade.to});
+  G.pendingTrade=null;
+  G.phase='playing';
+  checkAutoEnd();
+  render();
+}
+
+function waitTurn(){
+  if(G.phase!=='playing'||G.pendingTrade)return;
+  G.turn++;
+  addMsg('info','第'+G.turn+'回合：观望等待，汇率已更新。');
+  G.actionLog.push({turn:G.turn,action:'wait'});
+  checkAutoEnd();
+  render();
+}
+
+function checkAutoEnd(){
+  if(G.holdingsCurrency===G.scenario.targetCurrency&&G.route.length>1&&G.currentPort===G.scenario.startPort){
+    finishGame();return;
+  }
+  if(G.turn>=G.scenario.maxTurns){
+    addMsg('err','回合已满！强制结算。');
+    finishGame();
+  }
+}
+
+function finishGame(){
+  G.phase='settlement';
+  const sc=G.scenario;
+  const startAmt=sc.startAmount;
+  const endAmt=G.holdings;
+  const cur=sc.targetCurrency;
+  const profit=endAmt-startAmt;
+  const metTarget=profit>=sc.targetProfit;
+  const overTurns=Math.max(0,G.turn-sc.maxTurns);
+  const timePenalty=overTurns*20;
+  const visitedSet=new Set();
+  let dupPenalty=0;let dupPorts=[];
+  G.route.forEach(p=>{
+    if(visitedSet.has(p)&&p!==sc.startPort){dupPenalty+=15;dupPorts.push(p)}
+    visitedSet.add(p);
+  });
+  const baseStartPort=G.route[0];
+  const returnPenalty=G.holdingsCurrency!==sc.targetCurrency||G.currentPort!==sc.startPort?50:0;
+  const totalFees=G.tradeLog.reduce((s,t)=>s+t.commAmt,0);
+  const finalScore=profit-timePenalty-dupPenalty-returnPenalty;
+  G.settlement={
+    startAmt,endAmt,profit,metTarget,
+    overTurns,timePenalty,
+    dupPorts,dupPenalty,
+    returnPenalty,totalFees,finalScore,
+    canReturn:G.holdingsCurrency===sc.targetCurrency&&G.currentPort===sc.startPort
+  };
+  render();
+}
+
+function startReplay(){
+  G.phase='replay';
+  G.replayIdx=0;
+  render();
+}
+
+function replayStep(dir){
+  G.replayIdx=Math.max(0,Math.min(G.actionLog.length,G.replayIdx+dir));
+  render();
+}
+
+function render(){
+  const app=document.getElementById('app');
+  switch(G.phase){
+    case 'welcome':app.innerHTML=renderWelcome();break;
+    case 'scenario_select':app.innerHTML=renderScenarioSelect();break;
+    case 'playing':app.innerHTML=renderPlaying();break;
+    case 'trade_confirm':app.innerHTML=renderPlaying()+renderTradeDialog();break;
+    case 'trade_reveal':app.innerHTML=renderPlaying()+renderTradeDialog();break;
+    case 'settlement':app.innerHTML=renderSettlement();break;
+    case 'replay':app.innerHTML=renderReplay();break;
+  }
+  bindEvents();
+}
+
+function renderWelcome(){
+  return `
+  <div class="screen active" style="justify-content:center;gap:20px">
+    <div style="text-align:center">
+      <h1 style="font-size:2.6rem">⚓ 外汇套利港口棋</h1>
+      <p class="subtitle" style="font-size:1rem">港口换汇 · 汇率延迟 · 三角套利实训</p>
+    </div>
+    <div class="card" style="max-width:640px;width:90%">
+      <h3>📖 规则概要</h3>
+      <div class="help-box">
+        <b>目标</b>：从起始港口出发，沿路线换汇后回到起点，赚取目标利润。<br>
+        <b>回合</b>：每次"航行换汇"或"等待"消耗1回合。超时扣分。<br>
+        <b>汇率延迟</b>：你看到的牌面汇率是<b>${SCENARIOS[0].delay}回合前</b>的，实际成交汇率可能不同——这就是"待确认"分支。<br>
+        <b>手续费</b>：每笔换汇扣除目标港口手续费（0.1%–0.4%），结算时会列出明细。<br>
+        <b>路径重复</b>：重复进入同一港口（除起点外）额外扣分，请找<b>航线调度室</b>核对路径。<br>
+        <b>待确认</b>：确认换汇后会揭示实际汇率，可选择<b>接受成交</b>或<b>取消止损</b>（仍耗1回合）。
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="G.phase='scenario_select';render()" style="font-size:1.1rem;padding:14px 40px">
+      选择任务出海 →
+    </button>
+  </div>`;
+}
+
+function renderScenarioSelect(){
+  let cards=SCENARIOS.map((sc,i)=>{
+    const tags=sc.tags.map(t=>`<span class="tag ${t}">${{'tag-basic':'入门','tag-delay':'延迟','tag-fee':'手续费','tag-path':'路径'}[t]||t}</span>`).join('');
+    return `
+    <div class="card scenario-card" data-scenario="${i}">
+      <h3>${sc.title} ${tags}</h3>
+      <p style="font-size:.85rem;color:#aaa;margin:6px 0">${sc.desc}</p>
+      <p style="font-size:.8rem;color:var(--dim)">起点：${CURRENCIES[sc.startPort].name+'港'} | 资金：${fmtAmt(sc.startAmount,sc.startPort)} ${CURRENCIES[sc.startPort].name} | 目标利润：>${fmtAmt(sc.targetProfit,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name} | 限${sc.maxTurns}回合 | 延迟${sc.delay}回合</p>
+    </div>`;
+  }).join('');
+  return `
+  <div class="screen active" style="gap:12px">
+    <h1>🚢 选择船队订单</h1>
+    <p class="subtitle">每个订单训练不同的套利技能</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:800px">${cards}</div>
+    <button class="btn btn-secondary" onclick="initGame()" style="margin-top:16px">← 返回</button>
+  </div>`;
+}
+
+function renderPlaying(){
+  const sc=G.scenario;
+  const dRates=displayedRates();
+  const cRates=currentRates();
+  const visited=new Set(G.route);
+  const dupInRoute=G.route.filter((p,i)=>G.route.indexOf(p)!==i&&p!==sc.startPort);
+  let rateRows='';
+  PORT_IDS.forEach(a=>{
+    PORT_IDS.forEach(b=>{
+      if(a>=b)return;
+      const key=getRateKey(a,b);
+      const dVal=dRates[key];const cVal=cRates[key];
+      if(!dVal)return;
+      const diff=cVal-dVal;
+      const cls=Math.abs(diff)<.0001?'rate-stale':diff>0?'rate-up':'rate-down';
+      rateRows+=`<tr><td>${CURRENCIES[a].flag}${a}</td><td>${CURRENCIES[b].flag}${b}</td>
+        <td class="rate-stale">${fmtRate(dVal,key)}</td>
+        <td class="${cls}">${fmtRate(cVal,key)}</td></tr>`;
+    });
+  });
+  let routeHtml=G.route.map((p,i)=>`<span class="trace-step" style="border-color:${CURRENCIES[p].color}">${CURRENCIES[p].flag}${CURRENCIES[p].name}港</span>${i<G.route.length-1?'<span class="trace-arrow">→</span>':''}`).join('');
+  let portButtons='';
+  PORT_IDS.forEach(p=>{
+    if(p===G.currentPort)return;
+    const from=G.holdingsCurrency;const to=p;
+    const dRate=rateFromPair(dRates,from,to);
+    const est=dRate?fmtAmt(G.holdings*dRate*(1-COMMISSIONS[p]),to)+' '+CURRENCIES[to].name:'—';
+    portButtons+=`<div class="port-card card${visited.has(p)?' visited':''}" data-sail="${p}" style="border:1px solid ${CURRENCIES[p].color}40">
+      <div style="font-size:1.2rem">${CURRENCIES[p].flag}</div>
+      <div style="font-size:.85rem;font-weight:700;color:${CURRENCIES[p].color}">${CURRENCIES[p].name}港</div>
+      <div style="font-size:.75rem;color:#aaa">手续费 ${(COMMISSIONS[p]*100).toFixed(1)}%</div>
+      <div style="font-size:.75rem;color:var(--blue)">≈${est}</div>
+    </div>`;
+  });
+  let msgHtml=G.msgLog.slice().reverse().slice(0,20).map(m=>`<div class="msg-item msg-${m.type}">${m.text}</div>`).join('');
+  const turnPct=Math.min(100,G.turn/sc.maxTurns*100);
+  const turnColor=G.turn>=sc.maxTurns?'var(--red)':G.turn>=sc.maxTurns-1?'#f0c930':'var(--green)';
+  let warnHtml='';
+  if(dupInRoute.length>0)warnHtml+=`<div class="msg-item msg-warn">⚠ 路径重复：${dupInRoute.map(p=>CURRENCIES[p].name+'港').join('、')}已重复访问，结算时扣分。请找<b>航线调度室</b>核对路径规划。</div>`;
+  if(G.holdingsCurrency!==G.currentPort){
+    warnHtml+=`<div class="msg-item msg-info">ℹ 当前持有${CURRENCIES[G.holdingsCurrency].name}，但身处${CURRENCIES[G.currentPort].name}港。航行到其他港口时可自动换汇。</div>`;
+  }
+  return `
+  <div class="screen active" style="gap:0;padding:12px">
+    <div id="game-header">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">${sc.title}</h2>
+        <span class="tag ${sc.tags[0]}">${{'tag-basic':'入门','tag-delay':'延迟','tag-fee':'手续费','tag-path':'路径'}[sc.tags[0]]}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="info">回合 <b style="color:${turnColor}">${G.turn}/${sc.maxTurns}</b>
+          <div style="height:3px;background:#1a1f3a;border-radius:2px;margin-top:3px"><div style="height:100%;width:${turnPct}%;background:${turnColor};border-radius:2px"></div></div>
+        </div>
+        <div class="info">持有 <b style="color:${CURRENCIES[G.holdingsCurrency].color}">${fmtAmt(G.holdings)} ${CURRENCIES[G.holdingsCurrency].name}</b></div>
+        <div class="info">位于 <b>${CURRENCIES[G.currentPort].flag}${CURRENCIES[G.currentPort].name}港</b></div>
+      </div>
+    </div>
+    <div id="game-main">
+      <div id="port-area">
+        <div class="card" style="padding:8px">
+          <h3 style="margin:0 0 4px">🗺 港口地图</h3>
+          <div class="port-map">
+            <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+              ${Object.entries(PORT_POS).map(([id,[x,y]])=>{
+                const isCur=id===G.currentPort;const isVis=visited.has(id);
+                return `<g class="port-node" data-sail="${id}">
+                  <circle class="port-circle" cx="${x*100}" cy="${y*60}" r="${isCur?5:3.5}" fill="${CURRENCIES[id].color}${isVis?'aa':'44'}" stroke="${isCur?'#e2b714':CURRENCIES[id].color}" stroke-width="${isCur?2:1}"/>
+                  <text x="${x*100}" y="${y*60-7}" text-anchor="middle" fill="#ccc" font-size="4">${id}</text>
+                  ${isCur?`<text x="${x*100}" y="${y*60+11}" text-anchor="middle" fill="#e2b714" font-size="3">⚓ 当前</text>`:''}
+                </g>`;
+              }).join('')}
+              ${Object.entries(PORT_POS).flatMap(([a,[ax,ay]])=>
+                Object.entries(PORT_POS).filter(([b])=>a<b).map(([b,[bx,by]])=>
+                  `<line x1="${ax*100}" y1="${ay*60}" x2="${bx*100}" y2="${by*60}" stroke="#1e2d52" stroke-width=".5" stroke-dasharray="2,2"/>`
+                )
+              ).join('')}
+            </svg>
+          </div>
+        </div>
+        <div class="order-banner">
+          <div style="font-size:.8rem;color:var(--dim)">船队订单 #${G.scenarioIdx+1}</div>
+          <div style="font-size:.9rem">从 <b style="color:${CURRENCIES[sc.startPort].color}">${CURRENCIES[sc.startPort].name}港</b> 出发 → 返回起点获利 <b style="color:var(--gold)">>${fmtAmt(sc.targetProfit,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name}</b></div>
+          <div style="font-size:.8rem;color:#aaa">延迟 ${sc.delay} 回合 | 最大 ${sc.maxTurns} 回合</div>
+        </div>
+        <div style="font-size:.82rem;color:var(--dim)">已走路线：</div>
+        <div class="trace-chain">${routeHtml||'<span class="trace-step">起点</span>'}</div>
+        ${warnHtml}
+      </div>
+      <div id="side-area">
+        <div class="card">
+          <h3 style="margin:0 0 4px">📋 汇率牌 <span style="font-size:.75rem;color:var(--dim)">（牌面/实际）</span></h3>
+          <table class="rate-table">
+            <tr><th>货币对</th><th>牌面<span style="font-size:.7rem;color:var(--dim)">(${sc.delay}回合前)</span></th><th>实际<span style="font-size:.7rem;color:var(--dim)">(当前)</span></th></tr>
+            ${rateRows}
+          </table>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:4px">牌面汇率延迟${sc.delay}回合，实际汇率仅在确认交易后揭示。</div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 4px">🚢 选择下一港</h3>
+          <div class="port-grid">${portButtons}</div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" onclick="waitTurn()">⏳ 观望等待</button>
+          ${G.holdingsCurrency===G.currentPort&&G.route.length>1&&G.currentPort===sc.startPort?
+            `<button class="btn btn-primary" onclick="finishGame()">🏁 提前结算</button>`:''}
+          <button class="btn btn-danger" onclick="if(confirm('确定放弃本次任务？'))initGame()">✕ 放弃</button>
+        </div>
+      </div>
+    </div>
+    <div id="msg-log">${msgHtml}</div>
+  </div>`;
+}
+
+function renderTradeDialog(){
+  if(!G.pendingTrade)return '';
+  const t=G.pendingTrade;
+  const isReveal=G.phase==='trade_reveal';
+  let body='';
+  if(!isReveal){
+    body=`
+      <h3 style="color:var(--gold)">⏳ 待确认换汇</h3>
+      <p style="margin:8px 0">准备将 <b style="color:${CURRENCIES[t.from].color}">${fmtAmt(t.amount,t.from)} ${CURRENCIES[t.from].name}</b> 换为 <b style="color:${CURRENCIES[t.to].color}">${CURRENCIES[t.to].name}</b></p>
+      <table class="rate-table" style="margin:8px 0">
+        <tr><th>项目</th><th>数值</th></tr>
+        <tr><td>牌面汇率</td><td>${fmtRate(t.dispRate,getRateKey(t.from,t.to))}</td></tr>
+        <tr><td>预计金额（扣手续费前）</td><td>${fmtAmt(t.amount*t.dispRate,t.to)} ${CURRENCIES[t.to].name}</td></tr>
+        <tr><td>手续费率 (${CURRENCIES[t.port].name}港)</td><td>${(COMMISSIONS[t.port]*100).toFixed(1)}%</td></tr>
+        <tr><td>预计到账</td><td style="color:var(--blue)">${fmtAmt(t.est,t.to)} ${CURRENCIES[t.to].name}</td></tr>
+      </table>
+      <div class="help-box" style="border-color:#3a3020">
+        <b>⚠ 汇率延迟${G.scenario.delay}回合</b>：牌面汇率未必等于实际成交汇率。<br>确认后将揭示实际汇率，届时可选择接受或取消。
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary" onclick="confirmTrade()">🔍 揭示实际汇率</button>
+        <button class="btn btn-secondary" onclick="G.pendingTrade=null;G.phase='playing';render()">返回</button>
+      </div>`;
+  }else{
+    const diff=t.actRate-t.dispRate;
+    const diffPct=((diff/t.dispRate)*100).toFixed(3);
+    const isWorse=diff<0;
+    body=`
+      <h3 style="color:${isWorse?'var(--red)':'var(--green)'}">${isWorse?'📉 实际汇率劣于牌面':'📈 实际汇率优于牌面'}</h3>
+      <table class="rate-table" style="margin:8px 0">
+        <tr><th>项目</th><th>牌面</th><th>实际</th><th>偏差</th></tr>
+        <tr><td>汇率</td><td>${fmtRate(t.dispRate,getRateKey(t.from,t.to))}</td><td style="color:${isWorse?'var(--red)':'var(--green)'}">${fmtRate(t.actRate,getRateKey(t.from,t.to))}</td><td style="color:${isWorse?'var(--red)':'var(--green)'}">${diffPct}%</td></tr>
+        <tr><td>金额(扣费前)</td><td>${fmtAmt(t.amount*t.dispRate,t.to)}</td><td>${fmtAmt(t.amount*t.actRate,t.to)}</td><td></td></tr>
+        <tr><td>手续费 (${(t.comm*100).toFixed(1)}%)</td><td>—</td><td style="color:var(--red)">-${fmtAmt(t.commAmt,t.to)}</td><td></td></tr>
+        <tr><td><b>到账</b></td><td>${fmtAmt(t.est,t.to)}</td><td style="color:var(--blue);font-weight:700">${fmtAmt(t.actEst,t.to)}</td><td style="color:${isWorse?'var(--red)':'var(--green)'}">${isWorse?'':'+'}${fmtAmt(t.actEst-t.est,t.to)}</td></tr>
+      </table>
+      ${isWorse?`<div class="help-box" style="border-color:#3a1a1a;color:var(--red)">
+        ⚠ 实际汇率偏差 ${diffPct}%，手续费漏扣请找<b>港口结算柜台</b>核对。若偏差过大，建议取消止损。
+      </div>`:`<div class="help-box" style="border-color:#1a3a1a;color:var(--green)">
+        ✅ 实际汇率有利，可以放心成交。
+      </div>`}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-success" onclick="acceptTrade()">✅ 接受成交</button>
+        <button class="btn btn-danger" onclick="cancelTrade()">❌ 取消止损（耗1回合）</button>
+      </div>`;
+  }
+  return `
+  <div class="dialog-overlay active">
+    <div class="dialog-box">${body}</div>
+  </div>`;
+}
+
+function renderSettlement(){
+  const s=G.settlement;const sc=G.scenario;
+  let tradeRows=G.tradeLog.map(t=>`
+    <tr>
+      <td>${t.turn}</td>
+      <td>${CURRENCIES[t.from].flag}${t.from}→${CURRENCIES[t.to].flag}${t.to}</td>
+      <td>${fmtAmt(t.amount,t.from)} ${t.from}</td>
+      <td class="rate-stale">${fmtRate(t.dispRate,getRateKey(t.from,t.to))}</td>
+      <td>${fmtRate(t.actRate,getRateKey(t.from,t.to))}</td>
+      <td>${t.rateDiff}</td>
+      <td style="color:var(--red)">-${fmtAmt(t.commAmt,t.to)} ${t.to}</td>
+      <td style="color:var(--blue)">${fmtAmt(t.result,t.to)} ${t.to}</td>
+    </tr>`).join('');
+  let traceForward=G.route.map((p,i)=>{
+    const t=G.tradeLog.find(t=>t.turn===i+1);
+    return `<span class="trace-step" style="border-color:${CURRENCIES[p].color}">${CURRENCIES[p].flag}${CURRENCIES[p].name}港${t?' ('+fmtAmt(t.result,t.to)+t.to+')':''}</span>${i<G.route.length-1?'<span class="trace-arrow">→</span>':''}`;
+  }).join('');
+  let traceBack=G.route.slice().reverse().map((p,i)=>{
+    const ri=G.route.length-1-i;
+    const t=G.tradeLog.find(t=>t.turn===ri+1);
+    return `<span class="trace-step" style="border-color:${CURRENCIES[p].color}">${CURRENCIES[p].flag}${CURRENCIES[p].name}港${t?' ←收到'+fmtAmt(t.result,t.to)+t.to:''}</span>${i<G.route.length-1?'<span class="trace-arrow">←</span>':''}`;
+  }).join('');
+  const profitColor=s.profit>=0?'var(--green)':'var(--red)';
+  const scoreColor=s.finalScore>=0?'var(--green)':'var(--red)';
+  let feeWarn='';
+  if(s.totalFees>s.profit&&s.profit>0)feeWarn=`<div class="msg-item msg-warn" style="margin:8px 0">⚠ 手续费总额 (${fmtAmt(s.totalFees,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name}) 超过了毛利润！请找<b>港口结算柜台</b>核对手续费扣款明细，确认是否有漏扣或多扣。</div>`;
+  let dupWarn='';
+  if(s.dupPorts.length>0)dupWarn=`<div class="msg-item msg-warn" style="margin:8px 0">⚠ 路径重复：${s.dupPorts.map(p=>CURRENCIES[p].name+'港').join('、')}被重复访问。下次请找<b>航线调度室</b>核对路径规划，避免重复扣分。</div>`;
+  let returnWarn='';
+  if(s.returnPenalty>0)returnWarn=`<div class="msg-item msg-err" style="margin:8px 0">❌ 未返回起始港或未持有目标货币，扣 ${s.returnPenalty} 分。需回到 ${CURRENCIES[sc.startPort].name}港 并持有 ${CURRENCIES[sc.targetCurrency].name}。</div>`;
+  let timeWarn='';
+  if(s.overTurns>0)timeWarn=`<div class="msg-item msg-warn" style="margin:8px 0">⏰ 超时 ${s.overTurns} 回合，每回合扣20分，共扣 ${s.timePenalty} 分。时间推进造成的扣分：每个超时回合意味着汇率再波动一轮，机会成本上升。下次请找<b>航线调度室</b>优化路线。</div>`;
+
+  return `
+  <div class="screen active" style="gap:0;padding:12px;max-width:900px;margin:0 auto">
+    <h1 style="text-align:center">${s.metTarget?'🎉 任务完成':'💔 任务失败'}</h1>
+    <p class="subtitle" style="text-align:center">${sc.title} — 最终得分 <b style="color:${scoreColor};font-size:1.2rem">${s.finalScore>=0?'+':''}${s.finalScore.toFixed(2)}</b></p>
+
+    <div class="settlement-section">
+      <h3>📊 盈亏总览</h3>
+      <table>
+        <tr><td>起始资金</td><td>${fmtAmt(s.startAmt,sc.startPort)} ${CURRENCIES[sc.startPort].name}</td></tr>
+        <tr><td>最终资金</td><td>${fmtAmt(s.endAmt,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name}</td></tr>
+        <tr><td>毛利润</td><td style="color:${profitColor}">${s.profit>=0?'+':''}${fmtAmt(s.profit,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name}</td></tr>
+        <tr><td>目标利润</td><td>>${fmtAmt(sc.targetProfit,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name}</td></tr>
+        <tr><td>是否达标</td><td style="color:${s.metTarget?'var(--green)':'var(--red)'}">${s.metTarget?'✅ 达标':'❌ 未达标'}</td></tr>
+      </table>
+    </div>
+
+    <div class="settlement-section">
+      <h3>⏱ 时间扣分明细</h3>
+      <table>
+        <tr><td>使用回合</td><td>${G.turn} / ${sc.maxTurns}</td></tr>
+        <tr><td>超时回合</td><td style="color:${s.overTurns>0?'var(--red)':'var(--green)'}">${s.overTurns}</td></tr>
+        <tr><td>超时扣分</td><td style="color:var(--red)">-${s.timePenalty} 分（每超时回合 -20 分）</td></tr>
+        <tr><td colspan="2" style="font-size:.78rem;color:#888">时间推进影响：每多耗1回合，汇率多波动1轮，套利窗口可能关闭；手续费多扣1次；路径重复风险增加。</td></tr>
+      </table>
+      ${timeWarn}
+    </div>
+
+    <div class="settlement-section">
+      <h3>💸 手续费明细</h3>
+      <table>
+        <tr><th>回合</th><th>换汇对</th><th>金额</th><th>牌面汇率</th><th>实际汇率</th><th>偏差</th><th>手续费</th><th>到账</th></tr>
+        ${tradeRows||'<tr><td colspan="8" style="text-align:center;color:#888">无交易记录</td></tr>'}
+      </table>
+      <div style="margin-top:6px;font-size:.85rem">手续费合计：<b style="color:var(--red)">${fmtAmt(s.totalFees,sc.targetCurrency)} ${CURRENCIES[sc.targetCurrency].name}</b></div>
+      ${feeWarn}
+    </div>
+
+    <div class="settlement-section">
+      <h3>🛤 路径分析</h3>
+      <table>
+        <tr><td>路线</td><td>${G.route.map(p=>CURRENCIES[p].name+'港').join(' → ')}</td></tr>
+        <tr><td>重复港口</td><td style="color:${s.dupPorts.length?'var(--red)':'var(--green)'}">${s.dupPorts.length?s.dupPorts.map(p=>CURRENCIES[p].name+'港').join('、'):'无'}</td></tr>
+        <tr><td>重复扣分</td><td style="color:var(--red)">-${s.dupPenalty} 分（每重复港口 -15 分）</td></tr>
+        <tr><td>未返回扣分</td><td style="color:var(--red)">-${s.returnPenalty} 分</td></tr>
+      </table>
+      ${dupWarn}${returnWarn}
+    </div>
+
+    <div class="settlement-section">
+      <h3>📈 最终得分计算</h3>
+      <table>
+        <tr><td>毛利润</td><td style="color:${profitColor}">${s.profit>=0?'+':''}${s.profit.toFixed(2)}</td></tr>
+        <tr><td>超时扣分</td><td style="color:var(--red)">-${s.timePenalty}</td></tr>
+        <tr><td>重复路径扣分</td><td style="color:var(--red)">-${s.dupPenalty}</td></tr>
+        <tr><td>未返回扣分</td><td style="color:var(--red)">-${s.returnPenalty}</td></tr>
+        <tr style="border-top:2px solid var(--gold)"><td><b>最终得分</b></td><td style="color:${scoreColor};font-size:1.1rem;font-weight:700">${s.finalScore>=0?'+':''}${s.finalScore.toFixed(2)}</td></tr>
+      </table>
+    </div>
+
+    <div class="settlement-section">
+      <h3>🔍 验证链路</h3>
+      <div style="font-size:.82rem;color:var(--dim);margin-bottom:6px">正向追踪：从船队订单出发，经各港口到结果</div>
+      <div class="trace-chain">${traceForward}</div>
+      <div style="font-size:.82rem;color:var(--dim);margin:8px 0 6px">反向追踪：从结果回查到船队订单</div>
+      <div class="trace-chain">${traceBack}</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;justify-content:center">
+      <button class="btn btn-primary" onclick="startReplay()">🔄 回放过程</button>
+      <button class="btn btn-secondary" onclick="startScenario(${G.scenarioIdx})">🔁 重玩本局</button>
+      <button class="btn btn-secondary" onclick="G.phase='scenario_select';render()">📋 选择其他订单</button>
+      <button class="btn btn-secondary" onclick="initGame()">🏠 返回主页</button>
+    </div>
+  </div>`;
+}
+
+function renderReplay(){
+  const actions=G.actionLog;
+  const total=actions.length;
+  const idx=G.replayIdx;
+  const sc=G.scenario;
+  let steps=actions.slice(0,idx).map((a,i)=>{
+    let detail='';
+    if(a.action==='trade'){
+      const t=a.detail;
+      detail=`<div class="trace-chain">
+        <span class="trace-step">${CURRENCIES[t.from].flag}${t.from}港</span>
+        <span class="trace-arrow">→</span>
+        <span class="trace-step">${CURRENCIES[t.to].flag}${t.to}港</span>
+        <span style="margin-left:8px;font-size:.82rem">
+          ${fmtAmt(t.amount,t.from)}${t.from} → ${fmtAmt(t.result,t.to)}${t.to}
+          | 牌面${fmtRate(t.dispRate,getRateKey(t.from,t.to))} 实际${fmtRate(t.actRate,getRateKey(t.from,t.to))} (${t.rateDiff})
+          | 手续费 -${fmtAmt(t.commAmt,t.to)}${t.to}
+        </span>
+      </div>`;
+    }else if(a.action==='cancel'){
+      detail=`<div style="font-size:.85rem;color:var(--red)">取消交易 ${CURRENCIES[a.from].flag}${a.from}→${CURRENCIES[a.to].flag}${a.to}（汇率不利，止损）</div>`;
+    }else if(a.action==='wait'){
+      detail=`<div style="font-size:.85rem;color:var(--dim)">观望等待</div>`;
+    }
+    return `<div class="msg-item msg-${a.action==='trade'?'ok':a.action==='cancel'?'warn':'info'}" style="margin:4px 0">
+      <b>回合${a.turn}</b> ${a.action==='trade'?'换汇':a.action==='cancel'?'取消':'观望'}
+      ${detail}
+    </div>`;
+  }).join('');
+  const curAction=actions[idx-1];
+  let rateInfo='';
+  if(curAction){
+    const t=idx;
+    const rates=G.rateHistory[t]||G.rateHistory[G.rateHistory.length-1];
+    let rows='';
+    PORT_IDS.forEach(a=>{PORT_IDS.forEach(b=>{if(a>=b)return;const k=getRateKey(a,b);if(!rates[k])return;rows+=`<tr><td>${a}/${b}</td><td>${fmtRate(rates[k],k)}</td></tr>`})});
+    rateInfo=`<div class="card" style="margin-top:8px"><h3>第${t}回合汇率快照</h3><table class="rate-table">${rows}</table></div>`;
+  }
+  return `
+  <div class="screen active" style="gap:0;padding:12px;max-width:800px;margin:0 auto">
+    <h1>🔄 回放</h1>
+    <p class="subtitle">${sc.title} — 逐步复盘</p>
+    <div class="replay-bar">
+      <button class="btn btn-secondary" onclick="replayStep(-10)" ${idx<=0?'disabled':''}>⏪</button>
+      <button class="btn btn-secondary" onclick="replayStep(-1)" ${idx<=0?'disabled':''}>◀</button>
+      <span class="step-info">步骤 ${idx} / ${total}</span>
+      <button class="btn btn-secondary" onclick="replayStep(1)" ${idx>=total?'disabled':''}>▶</button>
+      <button class="btn btn-secondary" onclick="replayStep(10)" ${idx>=total?'disabled':''}>⏩</button>
+    </div>
+    <div style="max-height:50vh;overflow-y:auto">${steps||'<div style="text-align:center;color:#888;padding:20px">尚未开始</div>'}</div>
+    ${rateInfo}
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:center">
+      <button class="btn btn-secondary" onclick="G.phase='settlement';render()">📊 返回结算</button>
+      <button class="btn btn-secondary" onclick="initGame()">🏠 返回主页</button>
+    </div>
+  </div>`;
+}
+
+function bindEvents(){
+  document.querySelectorAll('[data-scenario]').forEach(el=>{
+    el.onclick=()=>startScenario(parseInt(el.dataset.scenario));
+  });
+  document.querySelectorAll('[data-sail]').forEach(el=>{
+    el.onclick=()=>sailTo(el.dataset.sail);
+  });
+}
+
+initGame();
+</script>
+</body>
+</html>
