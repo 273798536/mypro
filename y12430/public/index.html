@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>矿权收益递延分配工作台</title>
+<style>
+:root {
+  --bg: #f5f6fa; --card: #fff; --border: #e2e4ea; --text: #1e2432;
+  --text2: #6b7280; --primary: #2563eb; --primary-light: #dbeafe;
+  --danger: #dc2626; --danger-light: #fee2e2; --warning: #d97706;
+  --warning-light: #fef3c7; --success: #16a34a; --success-light: #dcfce7;
+  --info: #0891b2; --info-light: #cffafe;
+  --radius: 8px; --shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { color: var(--primary); cursor: pointer; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.app-header { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); color: #fff; padding: 16px 32px; display: flex; align-items: center; gap: 16px; }
+.app-header h1 { font-size: 20px; font-weight: 600; }
+.app-header .subtitle { font-size: 13px; opacity: .8; }
+
+.nav-bar { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 0; }
+.nav-tab { padding: 12px 20px; font-size: 14px; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
+.nav-tab:hover { color: var(--primary); }
+.nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+
+.main { max-width: 1280px; margin: 0 auto; padding: 24px 32px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); }
+.stat-card .label { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+.stat-card .value { font-size: 24px; font-weight: 700; }
+.stat-card .sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.stat-card.warn .value { color: var(--warning); }
+.stat-card.danger .value { color: var(--danger); }
+.stat-card.success .value { color: var(--success); }
+.stat-card.info .value { color: var(--info); }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+.card-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-header h3 { font-size: 15px; font-weight: 600; }
+.card-body { padding: 16px 20px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f8f9fb; text-align: left; padding: 10px 12px; font-weight: 600; color: var(--text2); font-size: 12px; text-transform: uppercase; letter-spacing: .3px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+tr:hover td { background: #f8f9fb; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.badge-deferred { background: var(--warning-light); color: var(--warning); }
+.badge-settled { background: var(--success-light); color: var(--success); }
+.badge-frozen { background: var(--info-light); color: var(--info); }
+.badge-released { background: var(--success-light); color: var(--success); }
+.badge-overridden { background: var(--danger-light); color: var(--danger); }
+.badge-confirmed { background: var(--success-light); color: var(--success); }
+.badge-pending { background: var(--warning-light); color: var(--warning); }
+.badge-retro { background: var(--danger-light); color: var(--danger); }
+
+.btn { display: inline-block; padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--text); transition: all .15s; }
+.btn:hover { background: #f0f1f5; }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn-danger:hover { background: #b91c1c; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.toolbar select, .toolbar input { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.detail-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text2); }
+.detail-field { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0f1f3; font-size: 13px; }
+.detail-field .df-label { color: var(--text2); }
+.detail-field .df-value { font-weight: 500; }
+
+.link-back { display: inline-flex; align-items: center; gap: 4px; color: var(--primary); font-size: 12px; cursor: pointer; }
+.link-back:hover { text-decoration: underline; }
+
+.adj-timeline { border-left: 3px solid var(--primary); margin-left: 12px; padding-left: 16px; }
+.adj-item { position: relative; padding: 10px 0; }
+.adj-item::before { content: ''; position: absolute; left: -22px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+.adj-item .adj-type { font-size: 11px; color: var(--text2); }
+.adj-item .adj-desc { font-size: 13px; margin: 2px 0; }
+.adj-item .adj-diff { font-size: 12px; font-family: "SF Mono", "Menlo", monospace; }
+.adj-diff .before { color: var(--danger); text-decoration: line-through; }
+.adj-diff .after { color: var(--success); font-weight: 600; }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--card); border-radius: var(--radius); width: 480px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,.15); }
+.modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 16px; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text2); }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--text2); }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.form-group textarea { resize: vertical; min-height: 60px; }
+
+.empty { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; }
+
+.chart-bar { display: flex; align-items: end; gap: 8px; height: 120px; padding: 8px 0; }
+.chart-bar .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.chart-bar .bar { width: 100%; max-width: 48px; border-radius: 4px 4px 0 0; transition: height .3s; cursor: pointer; position: relative; }
+.chart-bar .bar:hover { opacity: .85; }
+.chart-bar .bar-label { font-size: 10px; color: var(--text2); margin-top: 4px; text-align: center; }
+.chart-bar .bar-value { font-size: 10px; font-weight: 600; margin-bottom: 2px; }
+
+.toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: var(--radius); background: #1e2432; color: #fff; font-size: 13px; z-index: 200; opacity: 0; transition: opacity .3s; }
+.toast.show { opacity: 1; }
+
+.cascade-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; margin-top: 12px; font-size: 12px; }
+.cascade-box .cascade-title { font-weight: 600; color: var(--warning); margin-bottom: 4px; }
+.cascade-box .cascade-item { padding: 2px 0; color: var(--text2); }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.back-link { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 12px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div>
+    <h1>矿权收益递延分配工作台</h1>
+    <div class="subtitle">产量补录 · 保证金冻结 · 收益递延 · 一致可追溯</div>
+  </div>
+</div>
+
+<div class="nav-bar">
+  <div class="nav-tab active" data-view="list">递延分配列表</div>
+  <div class="nav-tab" data-view="history">修正历史</div>
+  <div class="nav-tab" data-view="download">下载导出</div>
+</div>
+
+<div class="main">
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="view active" id="view-list">
+    <div class="toolbar">
+      <select id="filterContract"><option value="">全部合同</option></select>
+      <select id="filterStatus">
+        <option value="">全部状态</option>
+        <option value="deferred">递延中</option>
+        <option value="settled">已结算</option>
+      </select>
+      <input type="text" id="filterSearch" placeholder="搜索编号/合同名…">
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>收益递延分配明细</h3></div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table id="allocTable">
+          <thead><tr>
+            <th>分配编号</th><th>合同</th><th>期间</th><th>总收入</th>
+            <th>分成比例</th><th>分配金额</th><th>递延金额</th>
+            <th>保证金</th><th>比例追溯</th><th>状态</th><th>操作</th>
+          </tr></thead>
+          <tbody id="allocBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-detail">
+    <div class="back-link"><a onclick="showView('list')">← 返回列表</a></div>
+    <div id="detailContent"></div>
+  </div>
+
+  <div class="view" id="view-history">
+    <div class="toolbar">
+      <select id="histFilterType">
+        <option value="">全部类型</option>
+        <option value="productionSupplement">产量补录</option>
+        <option value="marginFreeze">保证金冻结</option>
+        <option value="deferredAllocation">收益递延</option>
+      </select>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>修正与变更历史</h3></div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table>
+          <thead><tr>
+            <th>记录编号</th><th>实体类型</th><th>实体编号</th><th>变更字段</th>
+            <th>变更前</th><th>变更后</th><th>原因</th><th>操作人</th><th>时间</th><th>级联影响</th>
+          </tr></thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-download">
+    <div class="card">
+      <div class="card-header"><h3>数据导出</h3></div>
+      <div class="card-body">
+        <p style="color:var(--text2);font-size:13px;margin-bottom:16px;">导出内容与当前界面展示严格对齐，确保图表、明细和下载结果一致。</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="card" style="flex:1;min-width:240px;">
+            <div class="card-body" style="text-align:center;">
+              <div style="font-size:15px;font-weight:600;margin-bottom:8px;">递延分配报表</div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">含合同、产量补录、保证金关联</div>
+              <button class="btn btn-primary" onclick="doExport('allocations','json')">导出 JSON</button>
+              <button class="btn" onclick="doExport('allocations','csv')" style="margin-left:6px;">导出 CSV</button>
+            </div>
+          </div>
+          <div class="card" style="flex:1;min-width:240px;">
+            <div class="card-body" style="text-align:center;">
+              <div style="font-size:15px;font-weight:600;margin-bottom:8px;">修正历史报表</div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">全部变更记录含级联影响</div>
+              <button class="btn btn-primary" onclick="doExport('history','json')">导出 JSON</button>
+              <button class="btn" onclick="doExport('history','csv')" style="margin-left:6px;">导出 CSV</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverride">
+  <div class="modal">
+    <div class="modal-header"><h3>产量补录改判</h3><button class="modal-close" onclick="closeModal('modalOverride')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>补录编号</label><input id="ovSuppId" readonly></div>
+      <div class="form-group"><label>原始产量</label><input id="ovOriginal" readonly></div>
+      <div class="form-group"><label>补录产量</label><input id="ovSupplemented" readonly></div>
+      <div class="form-group"><label>改判理由 <span style="color:var(--danger)">*</span></label><textarea id="ovReason" placeholder="请说明改判原因"></textarea></div>
+      <div class="form-group"><label>操作人</label><input id="ovOperator" placeholder="姓名"></div>
+      <div id="ovCascadeHint" class="cascade-box" style="display:none;">
+        <div class="cascade-title">⚠ 改判将级联影响</div>
+        <div id="ovCascadeItems"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modalOverride')">取消</button>
+      <button class="btn btn-danger" onclick="submitOverride()">确认改判</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalMargin">
+  <div class="modal">
+    <div class="modal-header"><h3>保证金占用修正</h3><button class="modal-close" onclick="closeModal('modalMargin')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>冻结编号</label><input id="mfId" readonly></div>
+      <div class="form-group"><label>当前冻结金额</label><input id="mfCurrentAmt" readonly></div>
+      <div class="form-group"><label>修正后金额 <span style="color:var(--danger)">*</span></label><input id="mfNewAmt" type="number"></div>
+      <div class="form-group"><label>修正理由 <span style="color:var(--danger)">*</span></label><textarea id="mfReason" placeholder="请说明修正原因"></textarea></div>
+      <div class="form-group"><label>操作人</label><input id="mfOperator" placeholder="姓名"></div>
+      <div id="mfCascadeHint" class="cascade-box" style="display:none;">
+        <div class="cascade-title">⚠ 修正将级联影响收益递延</div>
+        <div id="mfCascadeItems"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modalMargin')">取消</button>
+      <button class="btn btn-primary" onclick="submitMarginCorrect()">确认修正</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let contracts = [], allocations = [], supplements = [], marginFreezes = [], historyList = [];
+let summary = {};
+
+const API = '/api';
+
+async function api(url, opts) {
+  const r = await fetch(API + url, opts);
+  return r.json();
+}
+
+function fmt(n) { return n == null ? '-' : Number(n).toLocaleString('zh-CN'); }
+function fmtMoney(n) { return n == null ? '-' : '¥' + Number(n).toLocaleString('zh-CN'); }
+function fmtDate(s) { return s ? new Date(s).toLocaleString('zh-CN') : '-'; }
+
+function entityTypeName(t) {
+  return { productionSupplement: '产量补录', marginFreeze: '保证金冻结', deferredAllocation: '收益递延' }[t] || t;
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById('view-' + name);
+  if (el) el.classList.add('active');
+  const tab = document.querySelector(`.nav-tab[data-view="${name}"]`);
+  if (tab) tab.classList.add('active');
+}
+
+function showToast(msg, dur) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur || 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+async function loadData() {
+  [contracts, allocations, supplements, marginFreezes, historyList, summary] = await Promise.all([
+    api('/contracts'),
+    api('/deferred-allocations'),
+    api('/production-supplements'),
+    api('/margin-freezes'),
+    api('/amendment-history'),
+    api('/summary')
+  ]);
+}
+
+function renderStats() {
+  const s = summary;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="label">总收入</div><div class="value">${fmtMoney(s.totalGrossRevenue)}</div></div>
+    <div class="stat-card info"><div class="label">分配金额</div><div class="value">${fmtMoney(s.totalAllocationAmount)}</div></div>
+    <div class="stat-card warn"><div class="label">递延金额</div><div class="value">${fmtMoney(s.totalDeferredAmount)}</div><div class="sub">${s.deferredCount} 笔递延中</div></div>
+    <div class="stat-card danger"><div class="label">保证金冻结</div><div class="value">${fmtMoney(s.totalMarginFrozen)}</div></div>
+    <div class="stat-card warn"><div class="label">待确认补录</div><div class="value">${s.pendingSupplements}</div></div>
+    <div class="stat-card danger"><div class="label">改判补录</div><div class="value">${s.overriddenSupplements}</div></div>
+    <div class="stat-card danger"><div class="label">比例追溯标记</div><div class="value">${s.retroFlagCount}</div></div>
+  `;
+}
+
+function renderAllocTable() {
+  const cf = document.getElementById('filterContract').value;
+  const sf = document.getElementById('filterStatus').value;
+  const q = document.getElementById('filterSearch').value.toLowerCase();
+
+  let list = allocations;
+  if (cf) list = list.filter(d => d.contractId === cf);
+  if (sf) list = list.filter(d => d.status === sf);
+  if (q) list = list.filter(d => {
+    const c = contracts.find(x => x.id === d.contractId);
+    return d.id.toLowerCase().includes(q) || (c && c.name.toLowerCase().includes(q));
+  });
+
+  const tbody = document.getElementById('allocBody');
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="11" class="empty">暂无数据</td></tr>'; return; }
+
+  tbody.innerHTML = list.map(d => {
+    const c = contracts.find(x => x.id === d.contractId);
+    const sup = d.supplementId ? supplements.find(x => x.id === d.supplementId) : null;
+    const mf = d.marginFreezeId ? marginFreezes.find(x => x.id === d.marginFreezeId) : null;
+    return `<tr>
+      <td><a onclick="showDetail('${d.id}')">${d.id}</a></td>
+      <td><a onclick="showContractDetail('${d.contractId}')">${c ? c.name : d.contractId}</a></td>
+      <td>${d.period}</td>
+      <td>${fmtMoney(d.grossRevenue)}</td>
+      <td>${(d.royaltyRate * 100).toFixed(1)}%</td>
+      <td>${fmtMoney(d.allocationAmount)}</td>
+      <td>${fmtMoney(d.deferredAmount)}</td>
+      <td>${mf ? `<a onclick="showMarginDetail('${mf.id}')">${fmtMoney(mf.amount)}</a>` : '-'}</td>
+      <td>${d.ratioRetroFlag ? '<span class="badge badge-retro">追溯</span>' : '-'}</td>
+      <td><span class="badge badge-${d.status}">${d.status === 'deferred' ? '递延中' : '已结算'}</span></td>
+      <td>
+        <button class="btn btn-sm" onclick="showDetail('${d.id}')">详情</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderContractFilter() {
+  const sel = document.getElementById('filterContract');
+  sel.innerHTML = '<option value="">全部合同</option>' + contracts.map(c =>
+    `<option value="${c.id}">${c.name}</option>`
+  ).join('');
+}
+
+function showDetail(id) {
+  api('/deferred-allocations/' + id).then(d => {
+    const el = document.getElementById('detailContent');
+    const c = d.contract || {};
+    const sup = d.supplement;
+    const mf = d.marginFreeze;
+    const report = d.productionReport;
+
+    el.innerHTML = `
+      <div class="detail-grid">
+        <div class="card">
+          <div class="card-header"><h3>分配信息</h3></div>
+          <div class="card-body">
+            <div class="detail-field"><span class="df-label">分配编号</span><span class="df-value">${d.id}</span></div>
+            <div class="detail-field"><span class="df-label">期间</span><span class="df-value">${d.period}</span></div>
+            <div class="detail-field"><span class="df-label">总收入</span><span class="df-value">${fmtMoney(d.grossRevenue)}</span></div>
+            <div class="detail-field"><span class="df-label">分成比例</span><span class="df-value">${(d.royaltyRate * 100).toFixed(1)}%</span></div>
+            <div class="detail-field"><span class="df-label">分配金额</span><span class="df-value">${fmtMoney(d.allocationAmount)}</span></div>
+            <div class="detail-field"><span class="df-label">递延金额</span><span class="df-value" style="color:${d.deferredAmount > 0 ? 'var(--warning)' : 'inherit'}">${fmtMoney(d.deferredAmount)}</span></div>
+            <div class="detail-field"><span class="df-label">保证金影响</span><span class="df-value">${fmtMoney(d.marginImpact)}</span></div>
+            <div class="detail-field"><span class="df-label">比例追溯</span><span class="df-value">${d.ratioRetroFlag ? '<span class="badge badge-retro">是-需追溯</span>' : '否'}</span></div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${d.status}">${d.status === 'deferred' ? '递延中' : '已结算'}</span></span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>矿权合同 <span class="link-back" onclick="showContractDetail('${d.contractId}')">→ 查看合同</span></h3></div>
+          <div class="card-body">
+            <div class="detail-field"><span class="df-label">合同编号</span><span class="df-value"><a onclick="showContractDetail('${d.contractId}')">${d.contractId}</a></span></div>
+            <div class="detail-field"><span class="df-label">合同名称</span><span class="df-value">${c.name || '-'}</span></div>
+            <div class="detail-field"><span class="df-label">合作方</span><span class="df-value">${c.partner || '-'}</span></div>
+            <div class="detail-field"><span class="df-label">分成比例</span><span class="df-value">${c.royaltyRate ? (c.royaltyRate * 100).toFixed(1) + '%' : '-'}</span></div>
+            <div class="detail-field"><span class="df-label">合同期限</span><span class="df-value">${c.startDate || '-'} ~ ${c.endDate || '-'}</span></div>
+          </div>
+        </div>
+
+        ${report ? `
+        <div class="card">
+          <div class="card-header"><h3>产量报表 <span class="link-back" onclick="showReportDetail('${report.id}')">→ 查看报表</span></h3></div>
+          <div class="card-body">
+            <div class="detail-field"><span class="df-label">报表编号</span><span class="df-value"><a onclick="showReportDetail('${report.id}')">${report.id}</a></span></div>
+            <div class="detail-field"><span class="df-label">期间</span><span class="df-value">${report.period}</span></div>
+            <div class="detail-field"><span class="df-label">产量</span><span class="df-value">${fmt(report.output)} ${report.unit}</span></div>
+            <div class="detail-field"><span class="df-label">单价</span><span class="df-value">${fmtMoney(report.unitPrice)}</span></div>
+            <div class="detail-field"><span class="df-label">总收入</span><span class="df-value">${fmtMoney(report.grossRevenue)}</span></div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${report.status}">${report.status === 'confirmed' ? '已确认' : report.status}</span></span></div>
+          </div>
+        </div>` : ''}
+
+        ${sup ? `
+        <div class="card">
+          <div class="card-header"><h3>产量补录 <span class="link-back" onclick="showSupplementDetail('${sup.id}')">→ 查看补录</span></h3></div>
+          <div class="card-body">
+            <div class="detail-field"><span class="df-label">补录编号</span><span class="df-value"><a onclick="showSupplementDetail('${sup.id}')">${sup.id}</a></span></div>
+            <div class="detail-field"><span class="df-label">原始产量</span><span class="df-value">${fmt(sup.originalOutput)}</span></div>
+            <div class="detail-field"><span class="df-label">补录产量</span><span class="df-value">${fmt(sup.supplementedOutput)}</span></div>
+            <div class="detail-field"><span class="df-label">差异</span><span class="df-value" style="color:var(--danger)">${fmt(sup.originalOutput - sup.supplementedOutput)}</span></div>
+            <div class="detail-field"><span class="df-label">原因</span><span class="df-value">${sup.reason}</span></div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${sup.status}">${sup.status === 'overridden' ? '已改判' : sup.status === 'confirmed' ? '已确认' : '待确认'}</span></span></div>
+            ${sup.status === 'overridden' ? `
+              <div class="detail-field"><span class="df-label">改判人</span><span class="df-value">${sup.overriddenBy}</span></div>
+              <div class="detail-field"><span class="df-label">改判时间</span><span class="df-value">${fmtDate(sup.overriddenAt)}</span></div>
+              <div class="detail-field"><span class="df-label">改判理由</span><span class="df-value">${sup.overrideReason}</span></div>
+            ` : ''}
+            ${sup.status !== 'overridden' ? `<div style="margin-top:8px;"><button class="btn btn-danger btn-sm" onclick="openOverride('${sup.id}')">改判</button></div>` : ''}
+          </div>
+        </div>` : ''}
+
+        ${mf ? `
+        <div class="card">
+          <div class="card-header"><h3>保证金冻结 <span class="link-back" onclick="showMarginDetail('${mf.id}')">→ 查看冻结</span></h3></div>
+          <div class="card-body">
+            <div class="detail-field"><span class="df-label">冻结编号</span><span class="df-value"><a onclick="showMarginDetail('${mf.id}')">${mf.id}</a></span></div>
+            <div class="detail-field"><span class="df-label">冻结金额</span><span class="df-value">${fmtMoney(mf.amount)}</span></div>
+            <div class="detail-field"><span class="df-label">原因</span><span class="df-value">${mf.reason}</span></div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${mf.status}">${mf.status === 'frozen' ? '冻结中' : '已释放'}</span></span></div>
+            <div class="detail-field"><span class="df-label">改判触发</span><span class="df-value">${mf.flaggedByOverride ? '<span class="badge badge-overridden">是</span>' : '否'}</span></div>
+            <div class="detail-field"><span class="df-label">创建时间</span><span class="df-value">${fmtDate(mf.createdAt)}</span></div>
+            ${mf.status === 'frozen' ? `<div style="margin-top:8px;display:flex;gap:6px;">
+              <button class="btn btn-sm" onclick="openMarginCorrect('${mf.id}')">修正金额</button>
+              <button class="btn btn-sm btn-primary" onclick="releaseMargin('${mf.id}')">释放</button>
+            </div>` : ''}
+          </div>
+        </div>` : ''}
+      </div>
+
+      ${d.adjustments && d.adjustments.length > 0 ? `
+      <div class="card" style="margin-top:16px;">
+        <div class="card-header"><h3>调整记录（前后差别）</h3></div>
+        <div class="card-body">
+          <div class="adj-timeline">
+            ${d.adjustments.map(a => `
+              <div class="adj-item">
+                <div class="adj-type">${a.type === 'supplement_override' ? '产量补录改判联动' : a.type === 'margin_correction' ? '保证金修正联动' : a.type}</div>
+                <div class="adj-desc">${a.reason}</div>
+                <div class="adj-diff">
+                  ${a.field}: <span class="before">${a.before}</span> → <span class="after">${a.after}</span>
+                </div>
+                <div style="font-size:11px;color:var(--text2)">${a.operator} · ${fmtDate(a.timestamp)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>` : ''}
+    `;
+
+    showView('detail');
+  });
+}
+
+function showContractDetail(id) {
+  const c = contracts.find(x => x.id === id);
+  if (!c) return;
+  const relAllocs = allocations.filter(d => d.contractId === id);
+  const relSupps = supplements.filter(s => s.contractId === id);
+  const relMfs = marginFreezes.filter(m => m.contractId === id);
+
+  const el = document.getElementById('detailContent');
+  el.innerHTML = `
+    <div class="back-link"><a onclick="showView('list')">← 返回列表</a></div>
+    <div class="card">
+      <div class="card-header"><h3>矿权合同: ${c.name}</h3></div>
+      <div class="card-body">
+        <div class="detail-grid" style="margin-bottom:0;">
+          <div>
+            <div class="detail-field"><span class="df-label">合同编号</span><span class="df-value">${c.id}</span></div>
+            <div class="detail-field"><span class="df-label">合作方</span><span class="df-value">${c.partner}</span></div>
+            <div class="detail-field"><span class="df-label">分成比例</span><span class="df-value">${(c.royaltyRate * 100).toFixed(1)}%</span></div>
+          </div>
+          <div>
+            <div class="detail-field"><span class="df-label">开始日期</span><span class="df-value">${c.startDate}</span></div>
+            <div class="detail-field"><span class="df-label">结束日期</span><span class="df-value">${c.endDate}</span></div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${c.status === 'active' ? 'confirmed' : c.status}">${c.status === 'active' ? '生效中' : c.status}</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><h3>关联递延分配</h3></div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table>
+          <thead><tr><th>分配编号</th><th>期间</th><th>分配金额</th><th>递延金额</th><th>状态</th></tr></thead>
+          <tbody>${relAllocs.map(a => `<tr>
+            <td><a onclick="showDetail('${a.id}')">${a.id}</a></td>
+            <td>${a.period}</td>
+            <td>${fmtMoney(a.allocationAmount)}</td>
+            <td>${fmtMoney(a.deferredAmount)}</td>
+            <td><span class="badge badge-${a.status}">${a.status === 'deferred' ? '递延中' : '已结算'}</span></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+
+    ${relSupps.length > 0 ? `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><h3>关联产量补录</h3></div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table>
+          <thead><tr><th>补录编号</th><th>原始产量</th><th>补录产量</th><th>原因</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>${relSupps.map(s => `<tr>
+            <td><a onclick="showSupplementDetail('${s.id}')">${s.id}</a></td>
+            <td>${fmt(s.originalOutput)}</td>
+            <td>${fmt(s.supplementedOutput)}</td>
+            <td>${s.reason}</td>
+            <td><span class="badge badge-${s.status}">${s.status === 'overridden' ? '已改判' : s.status === 'confirmed' ? '已确认' : '待确认'}</span></td>
+            <td>${s.status !== 'overridden' ? `<button class="btn btn-sm btn-danger" onclick="openOverride('${s.id}')">改判</button>` : '-'}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>` : ''}
+
+    ${relMfs.length > 0 ? `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><h3>关联保证金冻结</h3></div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table>
+          <thead><tr><th>冻结编号</th><th>金额</th><th>原因</th><th>状态</th><th>改判触发</th><th>操作</th></tr></thead>
+          <tbody>${relMfs.map(m => `<tr>
+            <td><a onclick="showMarginDetail('${m.id}')">${m.id}</a></td>
+            <td>${fmtMoney(m.amount)}</td>
+            <td>${m.reason}</td>
+            <td><span class="badge badge-${m.status}">${m.status === 'frozen' ? '冻结中' : '已释放'}</span></td>
+            <td>${m.flaggedByOverride ? '<span class="badge badge-overridden">是</span>' : '否'}</td>
+            <td>${m.status === 'frozen' ? `<button class="btn btn-sm" onclick="openMarginCorrect('${m.id}')">修正</button>` : '-'}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>` : ''}
+  `;
+  showView('detail');
+}
+
+function showReportDetail(id) {
+  api('/production-reports/' + id).then(r => {
+    const c = contracts.find(x => x.id === r.contractId);
+    const relSupps = supplements.filter(s => s.reportId === id);
+    const el = document.getElementById('detailContent');
+    el.innerHTML = `
+      <div class="back-link"><a onclick="showView('list')">← 返回列表</a></div>
+      <div class="card">
+        <div class="card-header"><h3>产量报表: ${r.id}</h3></div>
+        <div class="card-body">
+          <div class="detail-grid">
+            <div>
+              <div class="detail-field"><span class="df-label">报表编号</span><span class="df-value">${r.id}</span></div>
+              <div class="detail-field"><span class="df-label">所属合同</span><span class="df-value"><a onclick="showContractDetail('${r.contractId}')">${c ? c.name : r.contractId}</a></span></div>
+              <div class="detail-field"><span class="df-label">期间</span><span class="df-value">${r.period}</span></div>
+            </div>
+            <div>
+              <div class="detail-field"><span class="df-label">产量</span><span class="df-value">${fmt(r.output)} ${r.unit}</span></div>
+              <div class="detail-field"><span class="df-label">单价</span><span class="df-value">${fmtMoney(r.unitPrice)}</span></div>
+              <div class="detail-field"><span class="df-label">总收入</span><span class="df-value">${fmtMoney(r.grossRevenue)}</span></div>
+              <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${r.status}">已确认</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${relSupps.length > 0 ? `
+      <div class="card" style="margin-top:16px;">
+        <div class="card-header"><h3>关联产量补录</h3></div>
+        <div class="card-body" style="padding:0;overflow-x:auto;">
+          <table>
+            <thead><tr><th>补录编号</th><th>原始产量</th><th>补录产量</th><th>原因</th><th>状态</th></tr></thead>
+            <tbody>${relSupps.map(s => `<tr>
+              <td><a onclick="showSupplementDetail('${s.id}')">${s.id}</a></td>
+              <td>${fmt(s.originalOutput)}</td>
+              <td>${fmt(s.supplementedOutput)}</td>
+              <td>${s.reason}</td>
+              <td><span class="badge badge-${s.status}">${s.status === 'overridden' ? '已改判' : s.status === 'confirmed' ? '已确认' : '待确认'}</span></td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>` : ''}
+    `;
+    showView('detail');
+  });
+}
+
+function showSupplementDetail(id) {
+  const s = supplements.find(x => x.id === id);
+  if (!s) return;
+  const c = contracts.find(x => x.id === s.contractId);
+  const r = allocations.find(a => a.supplementId === id) ? null : null;
+  const relAlloc = allocations.find(a => a.supplementId === id);
+  const mf = marginFreezes.find(m => m.supplementId === id);
+
+  const el = document.getElementById('detailContent');
+  el.innerHTML = `
+    <div class="back-link"><a onclick="showView('list')">← 返回列表</a></div>
+    <div class="card">
+      <div class="card-header"><h3>产量补录: ${s.id}</h3></div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div>
+            <div class="detail-field"><span class="df-label">补录编号</span><span class="df-value">${s.id}</span></div>
+            <div class="detail-field"><span class="df-label">所属合同</span><span class="df-value"><a onclick="showContractDetail('${s.contractId}')">${c ? c.name : s.contractId}</a></span></div>
+            <div class="detail-field"><span class="df-label">原始产量</span><span class="df-value">${fmt(s.originalOutput)}</span></div>
+            <div class="detail-field"><span class="df-label">补录产量</span><span class="df-value">${fmt(s.supplementedOutput)}</span></div>
+            <div class="detail-field"><span class="df-label">差异</span><span class="df-value" style="color:var(--danger)">${fmt(s.originalOutput - s.supplementedOutput)}</span></div>
+          </div>
+          <div>
+            <div class="detail-field"><span class="df-label">原因</span><span class="df-value">${s.reason}</span></div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${s.status}">${s.status === 'overridden' ? '已改判' : s.status === 'confirmed' ? '已确认' : '待确认'}</span></span></div>
+            ${s.status === 'overridden' ? `
+              <div class="detail-field"><span class="df-label">改判人</span><span class="df-value">${s.overriddenBy}</span></div>
+              <div class="detail-field"><span class="df-label">改判时间</span><span class="df-value">${fmtDate(s.overriddenAt)}</span></div>
+              <div class="detail-field"><span class="df-label">改判理由</span><span class="df-value">${s.overrideReason}</span></div>
+            ` : ''}
+            ${s.status !== 'overridden' ? `<div style="margin-top:8px;"><button class="btn btn-danger" onclick="openOverride('${s.id}')">改判</button></div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><h3>级联影响</h3></div>
+      <div class="card-body">
+        ${mf ? `<div style="margin-bottom:12px;">
+          <strong>保证金冻结：</strong><a onclick="showMarginDetail('${mf.id}')">${mf.id}</a> · ${fmtMoney(mf.amount)} ·
+          <span class="badge badge-${mf.status}">${mf.status === 'frozen' ? '冻结中' : '已释放'}</span>
+          ${mf.flaggedByOverride ? ' · <span class="badge badge-overridden">改判触发</span>' : ''}
+        </div>` : '<div>无保证金冻结</div>'}
+        ${relAlloc ? `<div>
+          <strong>收益递延：</strong><a onclick="showDetail('${relAlloc.id}')">${relAlloc.id}</a> · 递延金额 ${fmtMoney(relAlloc.deferredAmount)} ·
+          <span class="badge badge-${relAlloc.status}">${relAlloc.status === 'deferred' ? '递延中' : '已结算'}</span>
+          ${relAlloc.ratioRetroFlag ? ' · <span class="badge badge-retro">比例追溯</span>' : ''}
+        </div>` : '<div>无递延分配</div>'}
+      </div>
+    </div>
+  `;
+  showView('detail');
+}
+
+function showMarginDetail(id) {
+  const m = marginFreezes.find(x => x.id === id);
+  if (!m) return;
+  const c = contracts.find(x => x.id === m.contractId);
+  const sup = supplements.find(s => s.id === m.supplementId);
+  const relAlloc = allocations.find(a => a.marginFreezeId === id);
+
+  const el = document.getElementById('detailContent');
+  el.innerHTML = `
+    <div class="back-link"><a onclick="showView('list')">← 返回列表</a></div>
+    <div class="card">
+      <div class="card-header"><h3>保证金冻结: ${m.id}</h3></div>
+      <div class="card-body">
+        <div class="detail-grid">
+          <div>
+            <div class="detail-field"><span class="df-label">冻结编号</span><span class="df-value">${m.id}</span></div>
+            <div class="detail-field"><span class="df-label">所属合同</span><span class="df-value"><a onclick="showContractDetail('${m.contractId}')">${c ? c.name : m.contractId}</a></span></div>
+            <div class="detail-field"><span class="df-label">冻结金额</span><span class="df-value" style="color:var(--info)">${fmtMoney(m.amount)}</span></div>
+            <div class="detail-field"><span class="df-label">原因</span><span class="df-value">${m.reason}</span></div>
+          </div>
+          <div>
+            <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${m.status}">${m.status === 'frozen' ? '冻结中' : '已释放'}</span></span></div>
+            <div class="detail-field"><span class="df-label">改判触发</span><span class="df-value">${m.flaggedByOverride ? '<span class="badge badge-overridden">是</span>' : '否'}</span></div>
+            <div class="detail-field"><span class="df-label">创建时间</span><span class="df-value">${fmtDate(m.createdAt)}</span></div>
+            <div class="detail-field"><span class="df-label">释放时间</span><span class="df-value">${fmtDate(m.releasedAt)}</span></div>
+          </div>
+        </div>
+        ${m.status === 'frozen' ? `<div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn" onclick="openMarginCorrect('${m.id}')">修正金额</button>
+          <button class="btn btn-primary" onclick="releaseMargin('${m.id}')">释放保证金</button>
+        </div>` : ''}
+      </div>
+    </div>
+
+    ${sup ? `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><h3>关联产量补录</h3></div>
+      <div class="card-body">
+        <div class="detail-field"><span class="df-label">补录编号</span><span class="df-value"><a onclick="showSupplementDetail('${sup.id}')">${sup.id}</a></span></div>
+        <div class="detail-field"><span class="df-label">原始产量</span><span class="df-value">${fmt(sup.originalOutput)}</span></div>
+        <div class="detail-field"><span class="df-label">补录产量</span><span class="df-value">${fmt(sup.supplementedOutput)}</span></div>
+        <div class="detail-field"><span class="df-label">状态</span><span class="df-value"><span class="badge badge-${sup.status}">${sup.status === 'overridden' ? '已改判' : sup.status === 'confirmed' ? '已确认' : '待确认'}</span></span></div>
+      </div>
+    </div>` : ''}
+
+    ${relAlloc ? `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><h3>级联影响: 收益递延</h3></div>
+      <div class="card-body">
+        <div class="detail-field"><span class="df-label">递延编号</span><span class="df-value"><a onclick="showDetail('${relAlloc.id}')">${relAlloc.id}</a></span></div>
+        <div class="detail-field"><span class="df-label">递延金额</span><span class="df-value">${fmtMoney(relAlloc.deferredAmount)}</span></div>
+        <div class="detail-field"><span class="df-label">保证金影响</span><span class="df-value">${fmtMoney(relAlloc.marginImpact)}</span></div>
+        ${relAlloc.adjustments.length > 0 ? `
+        <div style="margin-top:8px;">
+          <strong>调整记录：</strong>
+          <div class="adj-timeline">
+            ${relAlloc.adjustments.map(a => `
+              <div class="adj-item">
+                <div class="adj-type">${a.type === 'margin_correction' ? '保证金修正联动' : a.type}</div>
+                <div class="adj-desc">${a.reason}</div>
+                <div class="adj-diff">${a.field}: <span class="before">${a.before}</span> → <span class="after">${a.after}</span></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+      </div>
+    </div>` : ''}
+  `;
+  showView('detail');
+}
+
+function openOverride(suppId) {
+  const s = supplements.find(x => x.id === suppId);
+  if (!s) return;
+  document.getElementById('ovSuppId').value = s.id;
+  document.getElementById('ovOriginal').value = fmt(s.originalOutput);
+  document.getElementById('ovSupplemented').value = fmt(s.supplementedOutput);
+  document.getElementById('ovReason').value = '';
+  document.getElementById('ovOperator').value = '';
+
+  const mf = marginFreezes.find(m => m.supplementId === suppId);
+  const da = allocations.find(a => a.supplementId === suppId);
+  const hint = document.getElementById('ovCascadeHint');
+  const items = document.getElementById('ovCascadeItems');
+  if (mf || da) {
+    hint.style.display = 'block';
+    items.innerHTML = '';
+    if (mf) items.innerHTML += `<div class="cascade-item">保证金冻结 ${mf.id} 将标记为"改判触发"</div>`;
+    if (da) items.innerHTML += `<div class="cascade-item">收益递延 ${da.id} 递延金额将重新计算，比例追溯标记将生效</div>`;
+  } else {
+    hint.style.display = 'none';
+  }
+
+  openModal('modalOverride');
+}
+
+async function submitOverride() {
+  const id = document.getElementById('ovSuppId').value;
+  const reason = document.getElementById('ovReason').value.trim();
+  const operator = document.getElementById('ovOperator').value.trim();
+  if (!reason) { showToast('请填写改判理由'); return; }
+
+  try {
+    const res = await api(`/production-supplements/${id}/override`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ overrideReason: reason, operator: operator || '未知' })
+    });
+    closeModal('modalOverride');
+    if (res.cascadedEffects && res.cascadedEffects.length > 0) {
+      showToast(`改判成功，级联影响: ${res.cascadedEffects.join('; ')}`);
+    } else {
+      showToast('改判成功');
+    }
+    await refreshAll();
+  } catch (e) {
+    showToast('操作失败: ' + (e.message || '未知错误'));
+  }
+}
+
+function openMarginCorrect(mfId) {
+  const m = marginFreezes.find(x => x.id === mfId);
+  if (!m) return;
+  document.getElementById('mfId').value = m.id;
+  document.getElementById('mfCurrentAmt').value = fmtMoney(m.amount);
+  document.getElementById('mfNewAmt').value = '';
+  document.getElementById('mfReason').value = '';
+  document.getElementById('mfOperator').value = '';
+
+  const da = allocations.find(a => a.marginFreezeId === mfId);
+  const hint = document.getElementById('mfCascadeHint');
+  const items = document.getElementById('mfCascadeItems');
+  if (da) {
+    hint.style.display = 'block';
+    items.innerHTML = `<div class="cascade-item">收益递延 ${da.id} 的 marginImpact 和 deferredAmount 将同步更新，前后差别将留存在调整记录中</div>`;
+  } else {
+    hint.style.display = 'none';
+  }
+
+  openModal('modalMargin');
+}
+
+async function submitMarginCorrect() {
+  const id = document.getElementById('mfId').value;
+  const newAmt = parseFloat(document.getElementById('mfNewAmt').value);
+  const reason = document.getElementById('mfReason').value.trim();
+  const operator = document.getElementById('mfOperator').value.trim();
+  if (isNaN(newAmt)) { showToast('请输入有效金额'); return; }
+  if (!reason) { showToast('请填写修正理由'); return; }
+
+  try {
+    const res = await api(`/margin-freezes/${id}/correct`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newAmount: newAmt, reason, operator: operator || '未知' })
+    });
+    closeModal('modalMargin');
+    if (res.cascadedEffects && res.cascadedEffects.length > 0) {
+      showToast(`修正成功，级联影响: ${res.cascadedEffects.join('; ')}`);
+    } else {
+      showToast('修正成功');
+    }
+    await refreshAll();
+  } catch (e) {
+    showToast('操作失败: ' + (e.message || '未知错误'));
+  }
+}
+
+async function releaseMargin(mfId) {
+  if (!confirm('确认释放该保证金？')) return;
+  try {
+    await api(`/margin-freezes/${mfId}/release`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: '保证金释放', operator: '操作员' })
+    });
+    showToast('保证金已释放');
+    await refreshAll();
+  } catch (e) {
+    showToast('操作失败');
+  }
+}
+
+function renderHistory() {
+  const typeF = document.getElementById('histFilterType').value;
+  let list = historyList;
+  if (typeF) list = list.filter(h => h.entityType === typeF);
+
+  const tbody = document.getElementById('histBody');
+  if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="10" class="empty">暂无记录</td></tr>'; return; }
+
+  tbody.innerHTML = list.map(h => `<tr>
+    <td>${h.id}</td>
+    <td>${entityTypeName(h.entityType)}</td>
+    <td><a onclick="showHistEntity('${h.entityType}','${h.entityId}')">${h.entityId}</a></td>
+    <td>${h.field}</td>
+    <td style="color:var(--danger)">${h.oldValue}</td>
+    <td style="color:var(--success);font-weight:600">${h.newValue}</td>
+    <td>${h.reason}</td>
+    <td>${h.operator}</td>
+    <td>${fmtDate(h.timestamp)}</td>
+    <td>${(h.cascadedEffects || []).map(e => `<div style="font-size:11px;">${e}</div>`).join('')}</td>
+  </tr>`).join('');
+}
+
+function showHistEntity(type, id) {
+  if (type === 'productionSupplement') showSupplementDetail(id);
+  else if (type === 'marginFreeze') showMarginDetail(id);
+  else if (type === 'deferredAllocation') showDetail(id);
+}
+
+function doExport(type, format) {
+  window.open(`${API}/export?type=${type}&format=${format}`, '_blank');
+  showToast(`${type === 'allocations' ? '递延分配' : '修正历史'}报表已导出 (${format.toUpperCase()})`);
+}
+
+async function refreshAll() {
+  await loadData();
+  renderStats();
+  renderAllocTable();
+  renderHistory();
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const view = tab.dataset.view;
+    showView(view);
+  });
+});
+
+document.getElementById('filterContract').addEventListener('change', renderAllocTable);
+document.getElementById('filterStatus').addEventListener('change', renderAllocTable);
+document.getElementById('filterSearch').addEventListener('input', renderAllocTable);
+document.getElementById('histFilterType').addEventListener('change', renderHistory);
+
+(async function init() {
+  await refreshAll();
+  renderContractFilter();
+})();
+</script>
+</body>
+</html>

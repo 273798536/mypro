@@ -1,0 +1,12 @@
+{
+  "name": "mining-deferred-allocation",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "init-data": "node seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

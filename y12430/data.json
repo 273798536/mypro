@@ -1,0 +1,369 @@
+{
+  "contracts": [
+    {
+      "id": "CT-2024-001",
+      "name": "金岭铁矿采矿权合同",
+      "partner": "金岭矿业有限公司",
+      "royaltyRate": 0.12,
+      "startDate": "2024-01-01",
+      "endDate": "2026-12-31",
+      "status": "active"
+    },
+    {
+      "id": "CT-2024-002",
+      "name": "云顶铜矿采矿权合同",
+      "partner": "云顶资源开发公司",
+      "royaltyRate": 0.15,
+      "startDate": "2024-03-01",
+      "endDate": "2027-02-28",
+      "status": "active"
+    },
+    {
+      "id": "CT-2024-003",
+      "name": "盛达锡矿采矿权合同",
+      "partner": "盛达有色金属集团",
+      "royaltyRate": 0.1,
+      "startDate": "2023-06-01",
+      "endDate": "2026-05-31",
+      "status": "active"
+    }
+  ],
+  "productionReports": [
+    {
+      "id": "PR-2024-001",
+      "contractId": "CT-2024-001",
+      "period": "2024-Q1",
+      "output": 5000,
+      "unit": "吨",
+      "unitPrice": 680,
+      "grossRevenue": 3400000,
+      "status": "confirmed"
+    },
+    {
+      "id": "PR-2024-002",
+      "contractId": "CT-2024-001",
+      "period": "2024-Q2",
+      "output": 6200,
+      "unit": "吨",
+      "unitPrice": 710,
+      "grossRevenue": 4402000,
+      "status": "confirmed"
+    },
+    {
+      "id": "PR-2024-003",
+      "contractId": "CT-2024-002",
+      "period": "2024-Q1",
+      "output": 3200,
+      "unit": "吨",
+      "unitPrice": 5200,
+      "grossRevenue": 16640000,
+      "status": "confirmed"
+    },
+    {
+      "id": "PR-2024-004",
+      "contractId": "CT-2024-002",
+      "period": "2024-Q2",
+      "output": 2800,
+      "unit": "吨",
+      "unitPrice": 5400,
+      "grossRevenue": 15120000,
+      "status": "confirmed"
+    },
+    {
+      "id": "PR-2024-005",
+      "contractId": "CT-2024-003",
+      "period": "2024-Q1",
+      "output": 4500,
+      "unit": "吨",
+      "unitPrice": 1850,
+      "grossRevenue": 8325000,
+      "status": "confirmed"
+    },
+    {
+      "id": "PR-2024-006",
+      "contractId": "CT-2024-003",
+      "period": "2024-Q2",
+      "output": 4100,
+      "unit": "吨",
+      "unitPrice": 1920,
+      "grossRevenue": 7872000,
+      "status": "confirmed"
+    }
+  ],
+  "productionSupplements": [
+    {
+      "id": "PS-2024-001",
+      "reportId": "PR-2024-001",
+      "contractId": "CT-2024-001",
+      "originalOutput": 5000,
+      "supplementedOutput": 4800,
+      "reason": "品位折算修正",
+      "status": "overridden",
+      "overriddenBy": "张矿长",
+      "overriddenAt": "2024-05-12T10:30:00",
+      "overrideReason": "实测品位高于预期，维持原始产量"
+    },
+    {
+      "id": "PS-2024-002",
+      "reportId": "PR-2024-003",
+      "contractId": "CT-2024-002",
+      "originalOutput": 3200,
+      "supplementedOutput": 3500,
+      "reason": "尾矿回采补录",
+      "status": "confirmed",
+      "overriddenBy": null,
+      "overriddenAt": null,
+      "overrideReason": null
+    },
+    {
+      "id": "PS-2024-003",
+      "reportId": "PR-2024-005",
+      "contractId": "CT-2024-003",
+      "originalOutput": 4500,
+      "supplementedOutput": 4200,
+      "reason": "水分扣除修正",
+      "status": "overridden",
+      "overriddenBy": "李财务",
+      "overriddenAt": "2026-05-31T13:59:46.096Z",
+      "overrideReason": "实测水分低于预期，维持原始产量"
+    }
+  ],
+  "marginFreezes": [
+    {
+      "id": "MF-2024-001",
+      "contractId": "CT-2024-001",
+      "supplementId": "PS-2024-001",
+      "amount": 136000,
+      "reason": "产量差异触发保证金冻结",
+      "status": "frozen",
+      "flaggedByOverride": true,
+      "createdAt": "2024-05-12T10:30:00",
+      "releasedAt": null
+    },
+    {
+      "id": "MF-2024-002",
+      "contractId": "CT-2024-002",
+      "supplementId": "PS-2024-002",
+      "amount": 120000,
+      "reason": "尾矿回采产量差异冻结",
+      "status": "frozen",
+      "flaggedByOverride": false,
+      "createdAt": "2024-04-20T09:00:00",
+      "releasedAt": null
+    },
+    {
+      "id": "MF-2024-003",
+      "contractId": "CT-2024-003",
+      "supplementId": "PS-2024-003",
+      "amount": 55500,
+      "reason": "水分扣除待确认冻结",
+      "status": "frozen",
+      "flaggedByOverride": true,
+      "createdAt": "2024-06-01T08:00:00",
+      "releasedAt": null
+    }
+  ],
+  "deferredAllocations": [
+    {
+      "id": "DA-2024-001",
+      "contractId": "CT-2024-001",
+      "period": "2024-Q1",
+      "grossRevenue": 3400000,
+      "royaltyRate": 0.12,
+      "allocationAmount": 408000,
+      "deferredAmount": 136000,
+      "marginImpact": 136000,
+      "supplementId": "PS-2024-001",
+      "marginFreezeId": "MF-2024-001",
+      "ratioRetroFlag": true,
+      "status": "deferred",
+      "adjustments": [
+        {
+          "type": "supplement_override",
+          "field": "deferredAmount",
+          "before": 48000,
+          "after": 136000,
+          "reason": "产量补录改判：品位折算修正被驳回，维持原始产量",
+          "operator": "系统",
+          "timestamp": "2024-05-12T10:30:00"
+        }
+      ]
+    },
+    {
+      "id": "DA-2024-002",
+      "contractId": "CT-2024-001",
+      "period": "2024-Q2",
+      "grossRevenue": 4402000,
+      "royaltyRate": 0.12,
+      "allocationAmount": 528240,
+      "deferredAmount": 0,
+      "marginImpact": 0,
+      "supplementId": null,
+      "marginFreezeId": null,
+      "ratioRetroFlag": false,
+      "status": "settled",
+      "adjustments": []
+    },
+    {
+      "id": "DA-2024-003",
+      "contractId": "CT-2024-002",
+      "period": "2024-Q1",
+      "grossRevenue": 16640000,
+      "royaltyRate": 0.15,
+      "allocationAmount": 2496000,
+      "deferredAmount": 120000,
+      "marginImpact": 120000,
+      "supplementId": "PS-2024-002",
+      "marginFreezeId": "MF-2024-002",
+      "ratioRetroFlag": false,
+      "status": "deferred",
+      "adjustments": [
+        {
+          "type": "margin_correction",
+          "field": "marginImpact",
+          "before": 156000,
+          "after": 120000,
+          "reason": "保证金修正联动：尾矿回采比例下调",
+          "operator": "王会计",
+          "timestamp": "2026-05-31T13:59:57.120Z"
+        },
+        {
+          "type": "margin_correction",
+          "field": "deferredAmount",
+          "before": 156000,
+          "after": 120000,
+          "reason": "保证金修正联动：尾矿回采比例下调",
+          "operator": "王会计",
+          "timestamp": "2026-05-31T13:59:57.120Z"
+        }
+      ]
+    },
+    {
+      "id": "DA-2024-004",
+      "contractId": "CT-2024-002",
+      "period": "2024-Q2",
+      "grossRevenue": 15120000,
+      "royaltyRate": 0.15,
+      "allocationAmount": 2268000,
+      "deferredAmount": 0,
+      "marginImpact": 0,
+      "supplementId": null,
+      "marginFreezeId": null,
+      "ratioRetroFlag": false,
+      "status": "settled",
+      "adjustments": []
+    },
+    {
+      "id": "DA-2024-005",
+      "contractId": "CT-2024-003",
+      "period": "2024-Q1",
+      "grossRevenue": 8325000,
+      "royaltyRate": 0.1,
+      "allocationAmount": 832500,
+      "deferredAmount": 55500,
+      "marginImpact": 55500,
+      "supplementId": "PS-2024-003",
+      "marginFreezeId": "MF-2024-003",
+      "ratioRetroFlag": true,
+      "status": "deferred",
+      "adjustments": [
+        {
+          "type": "supplement_override",
+          "field": "deferredAmount",
+          "before": 55500,
+          "after": 55500,
+          "reason": "产量补录改判：实测水分低于预期，维持原始产量",
+          "operator": "李财务",
+          "timestamp": "2026-05-31T13:59:46.096Z"
+        }
+      ]
+    },
+    {
+      "id": "DA-2024-006",
+      "contractId": "CT-2024-003",
+      "period": "2024-Q2",
+      "grossRevenue": 7872000,
+      "royaltyRate": 0.1,
+      "allocationAmount": 787200,
+      "deferredAmount": 0,
+      "marginImpact": 0,
+      "supplementId": null,
+      "marginFreezeId": null,
+      "ratioRetroFlag": false,
+      "status": "settled",
+      "adjustments": []
+    }
+  ],
+  "amendmentHistory": [
+    {
+      "id": "AH-001",
+      "entityType": "productionSupplement",
+      "entityId": "PS-2024-001",
+      "field": "status",
+      "oldValue": "confirmed",
+      "newValue": "overridden",
+      "reason": "实测品位高于预期，维持原始产量",
+      "operator": "张矿长",
+      "timestamp": "2024-05-12T10:30:00",
+      "cascadedEffects": [
+        "MF-2024-001 flaggedByOverride→true",
+        "DA-2024-001 deferredAmount: 48000→136000",
+        "DA-2024-001 ratioRetroFlag→true"
+      ]
+    },
+    {
+      "id": "AH-002",
+      "entityType": "marginFreeze",
+      "entityId": "MF-2024-001",
+      "field": "amount",
+      "oldValue": "48000",
+      "newValue": "136000",
+      "reason": "产量补录改判联动",
+      "operator": "系统",
+      "timestamp": "2024-05-12T10:30:01",
+      "cascadedEffects": []
+    },
+    {
+      "id": "AH-1780235986096-gja6",
+      "entityType": "deferredAllocation",
+      "entityId": "DA-2024-005",
+      "field": "deferredAmount",
+      "oldValue": "55500",
+      "newValue": "55500",
+      "reason": "产量补录改判联动：实测水分低于预期，维持原始产量",
+      "operator": "李财务",
+      "timestamp": "2026-05-31T13:59:46.096Z",
+      "cascadedEffects": []
+    },
+    {
+      "id": "AH-1780235986096-0lvq",
+      "entityType": "productionSupplement",
+      "entityId": "PS-2024-003",
+      "field": "status",
+      "oldValue": "pending",
+      "newValue": "overridden",
+      "reason": "实测水分低于预期，维持原始产量",
+      "operator": "李财务",
+      "timestamp": "2026-05-31T13:59:46.096Z",
+      "cascadedEffects": [
+        "MF-2024-003 flaggedByOverride→true",
+        "DA-2024-005 deferredAmount: 55500→55500"
+      ]
+    },
+    {
+      "id": "AH-1780235997120-j7cj",
+      "entityType": "marginFreeze",
+      "entityId": "MF-2024-002",
+      "field": "amount",
+      "oldValue": "156000",
+      "newValue": "120000",
+      "reason": "尾矿回采比例下调",
+      "operator": "王会计",
+      "timestamp": "2026-05-31T13:59:57.120Z",
+      "cascadedEffects": [
+        "DA-2024-003 marginImpact: 156000→120000",
+        "DA-2024-003 deferredAmount: 156000→120000"
+      ]
+    }
+  ]
+}
