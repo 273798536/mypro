@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>供应商动态折扣报价系统</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #f0f2f5; }
+    #app { min-height: 100vh; }
+    .app-header { background: #1d1e2c; color: #fff; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+    .app-header h1 { font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+    .app-header .header-sub { font-size: 12px; color: #999; }
+    .app-container { margin-top: 56px; padding: 16px; }
+    .stat-card { text-align: center; padding: 16px; }
+    .stat-card .stat-value { font-size: 28px; font-weight: 700; color: #409eff; }
+    .stat-card .stat-label { font-size: 13px; color: #666; margin-top: 4px; }
+    .trace-link { color: #409eff; cursor: pointer; text-decoration: underline; }
+    .trace-link:hover { color: #66b1ff; }
+    .status-tag { font-weight: 600; }
+    .amount-highlight { color: #e6a23c; font-weight: 700; }
+    .saving-highlight { color: #67c23a; font-weight: 700; }
+    .formula-box { background: #f5f7fa; border: 1px solid #e4e7ed; border-radius: 4px; padding: 12px; margin: 8px 0; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.8; }
+    .trace-timeline .el-timeline-item__content { font-size: 13px; }
+    .el-descriptions__label { font-weight: 600; min-width: 120px; }
+    .el-table .cell { font-size: 13px; }
+    .op-btn { margin-right: 4px; }
+    .red-invoice-badge { background: #f56c6c; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .page-section { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .page-section-title { font-size: 15px; font-weight: 600; color: #303133; margin-bottom: 16px; border-left: 3px solid #409eff; padding-left: 10px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="app-header">
+      <div>
+        <h1>供应商动态折扣报价</h1>
+        <span class="header-sub">来源·判断·结果 一路可追溯</span>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <span style="font-size:12px;color:#999;">操作人: 采购金融专员</span>
+        <el-tag size="small" :type="connected ? 'success' : 'danger'">{{ connected ? 'API已连接' : 'API断开' }}</el-tag>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <el-tabs v-model="activeTab" type="border-card" @tab-click="onTabClick">
+        <el-tab-pane label="发票清单" name="invoices">
+          <invoice-list ref="invoiceList"></invoice-list>
+        </el-tab-pane>
+        <el-tab-pane label="折扣报价" name="quotes">
+          <discount-quote-list ref="quoteList"></discount-quote-list>
+        </el-tab-pane>
+        <el-tab-pane label="付款计划" name="paymentPlans">
+          <payment-plan-list ref="planList"></payment-plan-list>
+        </el-tab-pane>
+        <el-tab-pane label="折扣规则" name="discountRules">
+          <discount-rule-list ref="ruleList"></discount-rule-list>
+        </el-tab-pane>
+        <el-tab-pane label="追溯中心" name="trace">
+          <trace-center ref="traceCenter"></trace-center>
+        </el-tab-pane>
+        <el-tab-pane label="节省汇总" name="summary">
+          <savings-summary ref="savingsSummary"></savings-summary>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
+    <el-dialog v-model="calcDialogVisible" title="折扣试算" width="700px" :close-on-click-modal="false">
+      <div v-if="calcResult" class="page-section">
+        <div class="page-section-title">试算结果（可追溯每一步计算）</div>
+        <el-descriptions :column="2" border size="small">
+          <el-descriptions-item label="发票号">{{ calcResult.invoiceNo }}</el-descriptions-item>
+          <el-descriptions-item label="供应商">{{ calcResult.supplierName }}</el-descriptions-item>
+          <el-descriptions-item label="发票金额">{{ formatMoney(calcResult.originalAmount) }}</el-descriptions-item>
+          <el-descriptions-item label="折扣率">{{ (calcResult.discountRate * 100).toFixed(2) }}%</el-descriptions-item>
+          <el-descriptions-item label="提前天数">{{ calcResult.advanceDays }} 天</el-descriptions-item>
+          <el-descriptions-item label="匹配规则">{{ calcResult.discountRuleName }}</el-descriptions-item>
+          <el-descriptions-item label="折扣金额">
+            <span class="amount-highlight">{{ formatMoney(calcResult.discountAmount) }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="实付金额">{{ formatMoney(calcResult.actualPayAmount) }}</el-descriptions-item>
+          <el-descriptions-item label="节省金额">
+            <span class="saving-highlight">{{ formatMoney(calcResult.savingAmount) }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="原到期日">{{ formatDate(calcResult.originalDueDate) }}</el-descriptions-item>
+          <el-descriptions-item label="拟付款日">{{ formatDate(calcResult.proposedPayDate) }}</el-descriptions-item>
+        </el-descriptions>
+        <div class="formula-box" v-if="calcResult.calculationTrace">
+          <div>{{ calcResult.calculationTrace.advanceDaysTrace }}</div>
+          <div>{{ calcResult.calculationTrace.formula }}</div>
+          <div>{{ calcResult.calculationTrace.savingTrace }}</div>
+          <div style="margin-top:8px;color:#909399;">来源: {{ calcResult.calculationTrace.sourceType }} | ID: {{ calcResult.calculationTrace.sourceId }}</div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="calcDialogVisible = false">关闭</el-button>
+        <el-button type="primary" @click="createQuoteFromCalc" :disabled="!calcResult">基于此试算创建报价</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="traceDialogVisible" title="数据追溯链" width="800px">
+      <div v-if="traceData">
+        <trace-view :trace-data="traceData" @navigate="navigateTo"></trace-view>
+      </div>
+    </el-dialog>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/element-plus/dist/locale/zh-cn.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

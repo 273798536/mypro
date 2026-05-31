@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Invoice {
+  id               String         @id @default(uuid())
+  invoiceNo        String         @unique
+  supplierName     String
+  amount           Float
+  taxAmount        Float
+  totalAmount      Float
+  invoiceDate      DateTime
+  dueDate          DateTime
+  status           String         @default("NORMAL")
+  redInvoiceId     String?
+  paymentPlanId    String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  paymentPlan      PaymentPlan?   @relation(fields: [paymentPlanId], references: [id])
+  redInvoice       Invoice?       @relation("RedInvoiceRelation", fields: [redInvoiceId], references: [id])
+  redInvoiceRel    Invoice[]      @relation("RedInvoiceRelation")
+  discountQuotes   DiscountQuote[]
+  auditLogs        AuditLog[]
+}
+
+model PaymentPlan {
+  id             String         @id @default(uuid())
+  planNo         String         @unique
+  supplierName   String
+  plannedAmount  Float
+  plannedDate    DateTime
+  actualAmount   Float?
+  actualDate     DateTime?
+  status         String         @default("PENDING")
+  sourceType     String
+  sourceId       String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  invoices       Invoice[]
+  discountQuotes DiscountQuote[]
+  auditLogs      AuditLog[]
+}
+
+model DiscountRule {
+  id             String         @id @default(uuid())
+  ruleName       String
+  supplierName   String
+  minAdvanceDays Int
+  maxAdvanceDays Int
+  discountRate   Float
+  effectiveFrom  DateTime
+  effectiveTo    DateTime
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  discountQuotes DiscountQuote[]
+}
+
+model DiscountQuote {
+  id              String          @id @default(uuid())
+  quoteNo         String          @unique
+  invoiceId       String
+  paymentPlanId   String?
+  discountRuleId  String?
+  supplierName    String
+  originalAmount  Float
+  discountRate    Float
+  discountAmount  Float
+  actualPayAmount Float
+  savingAmount    Float
+  originalDueDate DateTime
+  proposedPayDate DateTime
+  advanceDays     Int
+  status          String          @default("DRAFT")
+  sourceType      String
+  sourceId        String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  createdBy       String
+  approvedBy      String?
+  approvedAt      DateTime?
+
+  invoice         Invoice         @relation(fields: [invoiceId], references: [id])
+  paymentPlan     PaymentPlan?    @relation(fields: [paymentPlanId], references: [id])
+  discountRule    DiscountRule?   @relation(fields: [discountRuleId], references: [id])
+  quoteHistories  QuoteHistory[]
+  auditLogs       AuditLog[]
+}
+
+model QuoteHistory {
+  id            String      @id @default(uuid())
+  quoteId       String
+  fieldName     String
+  oldValue      String?
+  newValue      String?
+  operationType String
+  operator      String
+  operationTime DateTime    @default(now())
+  remark        String?
+  sourceType    String
+  sourceId      String
+
+  discountQuote DiscountQuote @relation(fields: [quoteId], references: [id])
+}
+
+model AuditLog {
+  id            String      @id @default(uuid())
+  entityType    String
+  entityId      String
+  operationType String
+  oldValue      String?
+  newValue      String?
+  operator      String
+  operationTime DateTime    @default(now())
+  remark        String?
+  sourceType    String?
+  sourceId      String?
+
+  invoice       Invoice?    @relation(fields: [entityId], references: [id])
+  paymentPlan   PaymentPlan? @relation(fields: [entityId], references: [id])
+  discountQuote DiscountQuote? @relation(fields: [entityId], references: [id])
+}
