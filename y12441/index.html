@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K线烛台修城战 - 财经教学游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🏰 K线烛台修城战</h1>
+            <div class="game-stats">
+                <div class="stat">
+                    <span class="label">关卡:</span>
+                    <span id="level">1</span>
+                </div>
+                <div class="stat">
+                    <span class="label">城池耐久:</span>
+                    <div class="health-bar">
+                        <div id="health-fill" class="health-fill"></div>
+                    </div>
+                    <span id="health-text">100/100</span>
+                </div>
+                <div class="stat">
+                    <span class="label">分数:</span>
+                    <span id="score">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <section class="kline-section">
+                <div class="section-header">
+                    <h2>📊 当前K线战局</h2>
+                    <button id="btn-kline-source" class="btn-small">查看数据来源</button>
+                </div>
+                <div id="kline-chart" class="kline-chart">
+                    <canvas id="kline-canvas" width="600" height="300"></canvas>
+                </div>
+                <div class="kline-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">开盘价 (Open)</span>
+                            <span id="kline-open" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">最高价 (High)</span>
+                            <span id="kline-high" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">最低价 (Low)</span>
+                            <span id="kline-low" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">收盘价 (Close)</span>
+                            <span id="kline-close" class="info-value">-</span>
+                        </div>
+                        <div class="info-item full">
+                            <span class="info-label">成交量 (Volume)</span>
+                            <span id="kline-volume" class="info-value">-</span>
+                            <div class="volume-bar">
+                                <div id="volume-fill" class="volume-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="battle-section">
+                <div class="section-header">
+                    <h2>⚔️ 战场指挥</h2>
+                </div>
+                <div class="castle-visual">
+                    <div id="castle" class="castle">
+                        <div class="castle-wall"></div>
+                        <div class="castle-tower tower-left"></div>
+                        <div class="castle-tower tower-right"></div>
+                        <div class="castle-gate"></div>
+                    </div>
+                    <div id="enemy-forces" class="enemy-forces"></div>
+                </div>
+                
+                <div class="action-panel">
+                    <h3>你的判断与行动</h3>
+                    <div class="judgment-section">
+                        <label>烛台形态判断:</label>
+                        <div id="judgment-options" class="options-grid">
+                        </div>
+                    </div>
+                    <div class="action-section">
+                        <label>战术选择:</label>
+                        <div id="action-options" class="options-grid">
+                        </div>
+                    </div>
+                    <button id="btn-execute" class="btn-primary" disabled>执行战术</button>
+                </div>
+            </section>
+
+            <section class="history-section">
+                <div class="section-header">
+                    <h2>📜 战役记录 (可追溯)</h2>
+                    <button id="btn-clear-history" class="btn-small">清空记录</button>
+                </div>
+                <div id="history-list" class="history-list">
+                    <div class="history-empty">暂无战役记录</div>
+                </div>
+            </section>
+        </main>
+
+        <div id="result-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="result-title">战役结果</h2>
+                <div id="result-content" class="result-content"></div>
+                <div class="result-analysis">
+                    <h3>📝 战役分析</h3>
+                    <div id="result-analysis-content"></div>
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-next" class="btn-primary">下一关</button>
+                    <button id="btn-review" class="btn-secondary">复盘追溯</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="source-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>📊 数据来源追溯</h2>
+                <div id="source-content" class="source-content"></div>
+                <div class="modal-actions">
+                    <button id="btn-close-source" class="btn-secondary">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/kline.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Game.init();
+            UI.init();
+        });
+    </script>
+</body>
+</html>
