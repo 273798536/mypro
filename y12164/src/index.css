@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, #1D2129 0%, #272E3B 100%);
+  color: #E5E6EB;
+  min-height: 100vh;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1D2129;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4E5969;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #86909C;
+}
+
+/* 工业风格边框 */
+.industrial-border {
+  border: 2px solid #4E5969;
+  position: relative;
+}
+
+.industrial-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 1px solid #165DFF;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.industrial-border:hover::before {
+  opacity: 0.5;
+}
+
+/* 发光效果 */
+.glow-primary {
+  box-shadow: 0 0 10px rgba(22, 93, 255, 0.5), 0 0 20px rgba(22, 93, 255, 0.3);
+}
+
+.glow-danger {
+  box-shadow: 0 0 10px rgba(245, 63, 63, 0.5), 0 0 20px rgba(245, 63, 63, 0.3);
+}
+
+.glow-warning {
+  box-shadow: 0 0 10px rgba(255, 125, 0, 0.5), 0 0 20px rgba(255, 125, 0, 0.3);
+}
+
+/* 数据标签样式 */
+.data-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  color: #86909C;
+}
+
+.data-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #E5E6EB;
+}
+
+/* 冲突高亮 */
+.conflict-highlight {
+  background: linear-gradient(90deg, rgba(245, 63, 63, 0.1) 0%, rgba(255, 125, 0, 0.1) 100%);
+  border-left: 3px solid #F53F3F;
+}
+
+/* 缺失负载标记 */
+.missing-load-marker {
+  animation: pulse-danger 2s ease-in-out infinite;
+}
+
+@keyframes pulse-danger {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(245, 63, 63, 0.7);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 10px rgba(245, 63, 63, 0);
+  }
+}
+
+/* 虚线边框用于标记问题区域 */
+.dashed-border-danger {
+  border: 2px dashed #F53F3F;
+}
+
+/* 网格背景 */
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(78, 89, 105, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78, 89, 105, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

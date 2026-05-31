@@ -1,0 +1,90 @@
+/** @type {import('tailwindcss').Config} */
+
+export default {
+  darkMode: "class",
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    container: {
+      center: true,
+    },
+    extend: {
+      colors: {
+        primary: {
+          50: "#E8F3FF",
+          100: "#B9DBFF",
+          200: "#8DC2FF",
+          300: "#5CA6FF",
+          400: "#368BFF",
+          500: "#165DFF",
+          600: "#0E42D2",
+          700: "#0A2BA0",
+          800: "#061180",
+          900: "#030866",
+        },
+        warning: {
+          50: "#FFF7E8",
+          100: "#FFE7B9",
+          200: "#FFD48A",
+          300: "#FFBD5C",
+          400: "#FF9C33",
+          500: "#FF7D00",
+          600: "#D25F00",
+          700: "#A04500",
+          800: "#733100",
+          900: "#532000",
+        },
+        danger: {
+          50: "#FFF0F0",
+          100: "#FFD3D3",
+          200: "#FFA8A8",
+          300: "#FF7D7D",
+          400: "#F53F3F",
+          500: "#F53F3F",
+          600: "#CB2634",
+          700: "#A11830",
+          800: "#8E0A2A",
+          900: "#6B0527",
+        },
+        success: {
+          50: "#E8FFF0",
+          100: "#B9F0C7",
+          200: "#8AE2A5",
+          300: "#5CCE85",
+          400: "#33BE6A",
+          500: "#00B42A",
+          600: "#009A2E",
+          700: "#007D31",
+          800: "#006331",
+          900: "#004A2B",
+        },
+        industrial: {
+          50: "#F2F3F5",
+          100: "#E5E6EB",
+          200: "#C9CDD4",
+          300: "#86909C",
+          400: "#4E5969",
+          500: "#272E3B",
+          600: "#1D2129",
+          700: "#171A1F",
+          800: "#0F1218",
+          900: "#0A0C11",
+        },
+      },
+      fontFamily: {
+        mono: ["JetBrains Mono", "monospace"],
+        sans: ["Inter", "sans-serif"],
+      },
+      animation: {
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "glow": "glow 2s ease-in-out infinite alternate",
+      },
+      keyframes: {
+        glow: {
+          "0%": { boxShadow: "0 0 5px currentColor" },
+          "100%": { boxShadow: "0 0 20px currentColor, 0 0 30px currentColor" },
+        },
+      },
+    },
+  },
+  plugins: [],
+};
