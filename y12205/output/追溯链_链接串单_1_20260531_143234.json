@@ -1,0 +1,76 @@
+{
+  "order_id": "order_001",
+  "item_id": "item_001_01",
+  "product_name": "兰蔻小黑瓶精华",
+  "trace_chain": [
+    {
+      "version": "v1",
+      "trace_id": "trace_248a1596",
+      "commission_amount": 35.76,
+      "subsidy_amount": 20.0,
+      "rule_id": "rule_001",
+      "owner_id": "owner_001",
+      "owner_name": "张小红",
+      "is_active": false,
+      "reason": null,
+      "attribution_time": "2026-05-31 14:32:34",
+      "parent_trace_id": null,
+      "related_anomalies": [
+        {
+          "anomaly_id": "anom_5c653b92",
+          "type": "链接串单",
+          "description": "商品【兰蔻小黑瓶精华】订单存在链接串单风险。追踪链接包含多个群ID: ['group_001', 'group_003', 'group_005']。当前归属群: 美妆好物分享群(group_001)，涉及其他群: 家居生活特惠群(group_003), 数码电子测评群(group_005)",
+          "suggestion": "建议：1) 联系各群主核实真实推广来源；2) 可按首归因原则分给最早的群；3) 或协商按比例拆分佣金。当前商品金额: ¥298.00",
+          "status": "已确认"
+        },
+        {
+          "anomaly_id": "anom_a01d96b3",
+          "type": "补贴追回",
+          "description": "商品【兰蔻小黑瓶精华】补贴版本变更需追回。原补贴: ¥20.00，新补贴: ¥15.00，需追回: ¥5.00。原因: 补贴规则版本从rule_001变更为rule_006",
+          "suggestion": "建议：1) 从群主【张小红】下期结算中扣除¥5.00；2) 关联订单order_001生成扣款记录；3) 通知群主补贴调整原因。",
+          "status": "待复核"
+        }
+      ],
+      "source_refs": {
+        "order": "order_id=order_001",
+        "group_owner": "owner_id=owner_001",
+        "subsidy_rule": "rule_id=rule_001",
+        "process_logs": [
+          "log_c9d0ba73",
+          "log_e4bd0bff",
+          "log_b64d3811"
+        ]
+      }
+    },
+    {
+      "version": "v2",
+      "trace_id": "trace_60610fab",
+      "commission_amount": 35.76,
+      "subsidy_amount": 15.0,
+      "rule_id": "rule_006",
+      "owner_id": "owner_001",
+      "owner_name": "张小红",
+      "is_active": true,
+      "reason": "补贴规则变更，原规则:rule_001 → 新规则:rule_001_v2",
+      "attribution_time": "2026-05-31 14:32:34",
+      "parent_trace_id": null,
+      "related_anomalies": [
+        {
+          "anomaly_id": "anom_a01d96b3",
+          "type": "补贴追回",
+          "description": "商品【兰蔻小黑瓶精华】补贴版本变更需追回。原补贴: ¥20.00，新补贴: ¥15.00，需追回: ¥5.00。原因: 补贴规则版本从rule_001变更为rule_006",
+          "suggestion": "建议：1) 从群主【张小红】下期结算中扣除¥5.00；2) 关联订单order_001生成扣款记录；3) 通知群主补贴调整原因。",
+          "status": "待复核"
+        }
+      ],
+      "source_refs": {
+        "order": "order_id=order_001",
+        "group_owner": "owner_id=owner_001",
+        "subsidy_rule": "rule_id=rule_006",
+        "process_logs": [
+          "log_298b6997"
+        ]
+      }
+    }
+  ]
+}

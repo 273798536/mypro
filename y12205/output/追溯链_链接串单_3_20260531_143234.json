@@ -1,0 +1,37 @@
+{
+  "order_id": "order_004",
+  "item_id": "item_004_01",
+  "product_name": "小龙虾3斤装",
+  "trace_chain": [
+    {
+      "version": "v1",
+      "trace_id": "trace_00b73ab2",
+      "commission_amount": 13.44,
+      "subsidy_amount": 6.0,
+      "rule_id": "rule_004",
+      "owner_id": "owner_004",
+      "owner_name": "赵小云",
+      "is_active": true,
+      "reason": null,
+      "attribution_time": "2026-05-31 14:32:34",
+      "parent_trace_id": null,
+      "related_anomalies": [
+        {
+          "anomaly_id": "anom_9859d16b",
+          "type": "链接串单",
+          "description": "商品【小龙虾3斤装】订单存在链接串单风险。追踪链接包含多个群ID: ['group_004', 'group_002']。当前归属群: 美食探店福利群(group_004)，涉及其他群: 母婴优选团购群(group_002)",
+          "suggestion": "建议：1) 联系各群主核实真实推广来源；2) 可按首归因原则分给最早的群；3) 或协商按比例拆分佣金。当前商品金额: ¥168.00",
+          "status": "待复核"
+        }
+      ],
+      "source_refs": {
+        "order": "order_id=order_004",
+        "group_owner": "owner_id=owner_004",
+        "subsidy_rule": "rule_id=rule_004",
+        "process_logs": [
+          "log_6f80ee63"
+        ]
+      }
+    }
+  ]
+}

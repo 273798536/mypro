@@ -1,0 +1,37 @@
+{
+  "order_id": "order_001",
+  "item_id": "item_001_02",
+  "product_name": "雅诗兰黛眼霜",
+  "trace_chain": [
+    {
+      "version": "v1",
+      "trace_id": "trace_5e8ac3c6",
+      "commission_amount": 23.76,
+      "subsidy_amount": 20.0,
+      "rule_id": "rule_001",
+      "owner_id": "owner_001",
+      "owner_name": "张小红",
+      "is_active": true,
+      "reason": null,
+      "attribution_time": "2026-05-31 14:32:34",
+      "parent_trace_id": null,
+      "related_anomalies": [
+        {
+          "anomaly_id": "anom_96fbd62b",
+          "type": "链接串单",
+          "description": "商品【雅诗兰黛眼霜】订单存在链接串单风险。追踪链接包含多个群ID: ['group_001', 'group_003', 'group_005']。当前归属群: 美妆好物分享群(group_001)，涉及其他群: 家居生活特惠群(group_003), 数码电子测评群(group_005)",
+          "suggestion": "建议：1) 联系各群主核实真实推广来源；2) 可按首归因原则分给最早的群；3) 或协商按比例拆分佣金。当前商品金额: ¥198.00",
+          "status": "待复核"
+        }
+      ],
+      "source_refs": {
+        "order": "order_id=order_001",
+        "group_owner": "owner_id=owner_001",
+        "subsidy_rule": "rule_id=rule_001",
+        "process_logs": [
+          "log_aae94f2b"
+        ]
+      }
+    }
+  ]
+}

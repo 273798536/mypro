@@ -1,0 +1,21 @@
+﻿日志ID,操作类型,动作,订单号,商品ID,归因记录ID,变更前,变更后,原因,操作人,时间戳,来源追溯
+log_c9d0ba73,attribution,create_trace,order_001,item_001_01,trace_248a1596,,"commission=35.76, subsidy=20.0, owner=张小红",初始归因,system,2026-05-31 14:32:34,订单:order_001; 商品:item_001_01; 归因:trace_248a1596
+log_aae94f2b,attribution,create_trace,order_001,item_001_02,trace_5e8ac3c6,,"commission=23.76, subsidy=20.0, owner=张小红",初始归因,system,2026-05-31 14:32:34,订单:order_001; 商品:item_001_02; 归因:trace_5e8ac3c6
+log_b4d9175e,attribution,create_trace,order_002,item_002_01,trace_ad48cadd,,"commission=25.6, subsidy=15.0, owner=李大伟",初始归因,system,2026-05-31 14:32:34,订单:order_002; 商品:item_002_01; 归因:trace_ad48cadd
+log_4843b172,attribution,create_trace,order_002,item_002_02,trace_821cf230,,"commission=20.0, subsidy=15.0, owner=李大伟",初始归因,system,2026-05-31 14:32:34,订单:order_002; 商品:item_002_02; 归因:trace_821cf230
+log_bfe925b3,attribution,create_trace,order_003,item_003_01,trace_13597c62,,"commission=0.0, subsidy=0.0, owner=王美丽",退款回滚，退款金额¥1299.00,system,2026-05-31 14:32:34,订单:order_003; 商品:item_003_01; 归因:trace_13597c62
+log_6f80ee63,attribution,create_trace,order_004,item_004_01,trace_00b73ab2,,"commission=13.44, subsidy=6.0, owner=赵小云",初始归因,system,2026-05-31 14:32:34,订单:order_004; 商品:item_004_01; 归因:trace_00b73ab2
+log_94afb730,attribution,create_trace,order_005,item_005_01,trace_80c89cec,,"commission=593.82, subsidy=98.97, owner=孙建国",初始归因,system,2026-05-31 14:32:34,订单:order_005; 商品:item_005_01; 归因:trace_80c89cec
+log_1a12c89d,attribution,create_trace,order_005,item_005_02,trace_28bd22ab,,"commission=269.82, subsidy=15.0, owner=孙建国",初始归因,system,2026-05-31 14:32:34,订单:order_005; 商品:item_005_02; 归因:trace_28bd22ab
+log_85629fcc,attribution,create_trace,order_006,item_006_01,trace_2d6edac5,,"commission=12.0, subsidy=7.5, owner=李大伟",退款回滚，退款金额¥160.00,system,2026-05-31 14:32:34,订单:order_006; 商品:item_006_01; 归因:trace_2d6edac5
+log_bf05f1e5,attribution,create_trace,order_007,item_007_01,trace_9898dec1,,"commission=119.85, subsidy=50.0, owner=王美丽",初始归因,system,2026-05-31 14:32:34,订单:order_007; 商品:item_007_01; 归因:trace_9898dec1
+log_b9dfb27c,attribution,create_trace,order_008,item_008_01,trace_8f6d2015,,"commission=0.0, subsidy=20.0, owner=未知",初始归因,system,2026-05-31 14:32:34,订单:order_008; 商品:item_008_01; 归因:trace_8f6d2015
+log_ce3dc085,attribution,create_trace,order_009,item_009_01,trace_eeaa989a,,"commission=70.56, subsidy=20.0, owner=张小红",初始归因,system,2026-05-31 14:32:34,订单:order_009; 商品:item_009_01; 归因:trace_eeaa989a
+log_3133f16a,attribution,create_trace,order_010,item_010_01,trace_92ea47e1,,"commission=0.0, subsidy=0.0, owner=李大伟",退款回滚，退款金额¥890.00,system,2026-05-31 14:32:34,订单:order_010; 商品:item_010_01; 归因:trace_92ea47e1
+log_2b0e6bfe,refund_update,update_refund,order_006,,,"refund=160.00, status=partial_refund","refund=240.00, status=partial_refund",财务调整退款金额,财务-李姐,2026-05-31 14:32:34,订单:order_006
+log_29bd6079,attribution_update,deactivate_trace,order_006,item_006_01,trace_2d6edac5,"active, commission=12.0, subsidy=7.5",inactive,新版本v2生成，旧版本v1失效,system,2026-05-31 14:32:34,订单:order_006; 商品:item_006_01; 归因:trace_2d6edac5
+log_b3af2a23,attribution,create_trace,order_006,item_006_01,trace_644db5e7,,"commission=6.0, subsidy=3.75, owner=李大伟",退款回滚，退款金额¥240.00,system,2026-05-31 14:32:34,订单:order_006; 商品:item_006_01; 归因:trace_644db5e7
+log_166beae1,rule_update,update_subsidy_rule,order_001,item_001_01,,rule=rule_001,"rule=rule_001_v2, v2",补贴规则版本更新,运营-王经理,2026-05-31 14:32:34,订单:order_001; 商品:item_001_01
+log_e4bd0bff,attribution_update,deactivate_trace,order_001,item_001_01,trace_248a1596,"active, commission=35.76, subsidy=20.0",inactive,新版本v2生成，旧版本v1失效,system,2026-05-31 14:32:34,订单:order_001; 商品:item_001_01; 归因:trace_248a1596
+log_298b6997,attribution,create_trace,order_001,item_001_01,trace_60610fab,,"commission=35.76, subsidy=15.0, owner=张小红",补贴规则变更，原规则:rule_001 → 新规则:rule_001_v2,system,2026-05-31 14:32:34,订单:order_001; 商品:item_001_01; 归因:trace_60610fab
+log_b64d3811,anomaly_review,update_status,order_001,item_001_01,trace_248a1596,pending,confirmed,已核实该订单确实为多群推广串单，按首归因原则确认归属群001，后续与其他群主协商分配,财务-李姐,2026-05-31 14:32:34,订单:order_001; 商品:item_001_01; 归因:trace_248a1596

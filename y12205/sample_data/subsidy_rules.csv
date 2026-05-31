@@ -1,0 +1,7 @@
+rule_id,rule_name,product_category,min_order_amount,subsidy_type,subsidy_value,effective_date,expiry_date,version,is_active,parent_rule_id
+rule_001,618美妆专项补贴,beauty,100.0,fixed,20.0,2024-06-01T00:00:00,2024-06-30T23:59:59,1,true,
+rule_002,母婴品类通用补贴,baby,0.0,percentage,0.05,2024-01-01T00:00:00,2024-12-31T23:59:59,1,true,
+rule_003,家居大件单品补贴,home,500.0,fixed,50.0,2024-01-01T00:00:00,,1,true,
+rule_004,美食推广激励,food,0.0,per_unit,2.0,2024-03-01T00:00:00,2024-08-31T23:59:59,1,true,
+rule_005,数码新品首销补贴,digital,2000.0,percentage,0.03,2024-05-01T00:00:00,2024-07-31T23:59:59,1,true,
+rule_006,全品类通用满减,,200.0,fixed,15.0,2024-01-01T00:00:00,,1,true,

@@ -1,0 +1,16 @@
+﻿归因记录ID,版本,订单号,商品ID,商品名称,群主ID,群主名称,佣金金额,补贴金额,补贴规则ID,归因时间,状态,变更原因,关联来源
+trace_248a1596,v1,order_001,item_001_01,兰蔻小黑瓶精华,owner_001,张小红,35.76,20.00,rule_001,2026-05-31 14:32:34,已失效,初始归因,订单明细:order_id=order_001;群主档案:owner_id=owner_001;补贴规则:rule_id=rule_001
+trace_5e8ac3c6,v1,order_001,item_001_02,雅诗兰黛眼霜,owner_001,张小红,23.76,20.00,rule_001,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_001;群主档案:owner_id=owner_001;补贴规则:rule_id=rule_001
+trace_ad48cadd,v1,order_002,item_002_01,帮宝适纸尿裤XL,owner_002,李大伟,25.60,15.00,rule_006,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_002;群主档案:owner_id=owner_002;补贴规则:rule_id=rule_006
+trace_821cf230,v1,order_002,item_002_02,贝亲宽口径奶瓶,owner_002,李大伟,20.00,15.00,rule_006,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_002;群主档案:owner_id=owner_002;补贴规则:rule_id=rule_006
+trace_13597c62,v1,order_003,item_003_01,戴森吹风机HD08,owner_003,王美丽,0.00,0.00,rule_003,2026-05-31 14:32:34,有效,退款回滚，退款金额¥1299.00,订单明细:order_id=order_003;群主档案:owner_id=owner_003;补贴规则:rule_id=rule_003
+trace_00b73ab2,v1,order_004,item_004_01,小龙虾3斤装,owner_004,赵小云,13.44,6.00,rule_004,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_004;群主档案:owner_id=owner_004;补贴规则:rule_id=rule_004
+trace_80c89cec,v1,order_005,item_005_01,iPhone 15 128G,owner_005,孙建国,593.82,98.97,rule_005,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_005;群主档案:owner_id=owner_005;补贴规则:rule_id=rule_005
+trace_28bd22ab,v1,order_005,item_005_02,AirPods Pro 2代,owner_005,孙建国,269.82,15.00,rule_006,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_005;群主档案:owner_id=owner_005;补贴规则:rule_id=rule_006
+trace_2d6edac5,v1,order_006,item_006_01,花王纸尿裤L,owner_002,李大伟,12.00,7.50,rule_006,2026-05-31 14:32:34,已失效,退款回滚，退款金额¥160.00,订单明细:order_id=order_006;群主档案:owner_id=owner_002;补贴规则:rule_id=rule_006
+trace_9898dec1,v1,order_007,item_007_01,飞利浦空气炸锅,owner_003,王美丽,119.85,50.00,rule_003,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_007;群主档案:owner_id=owner_003;补贴规则:rule_id=rule_003
+trace_8f6d2015,v1,order_008,item_008_01,SK-II神仙水,UNKNOWN,未知,0.00,20.00,rule_001,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_008;群主档案:owner_id=UNKNOWN;补贴规则:rule_id=rule_001
+trace_eeaa989a,v1,order_009,item_009_01,海蓝之谜面霜,owner_001,张小红,70.56,20.00,rule_001,2026-05-31 14:32:34,有效,初始归因,订单明细:order_id=order_009;群主档案:owner_id=owner_001;补贴规则:rule_id=rule_001
+trace_92ea47e1,v1,order_010,item_010_01,婴儿安全座椅,owner_002,李大伟,0.00,0.00,rule_002,2026-05-31 14:32:34,有效,退款回滚，退款金额¥890.00,订单明细:order_id=order_010;群主档案:owner_id=owner_002;补贴规则:rule_id=rule_002
+trace_644db5e7,v2,order_006,item_006_01,花王纸尿裤L,owner_002,李大伟,6.00,3.75,rule_006,2026-05-31 14:32:34,有效,退款回滚，退款金额¥240.00,订单明细:order_id=order_006;群主档案:owner_id=owner_002;补贴规则:rule_id=rule_006
+trace_60610fab,v2,order_001,item_001_01,兰蔻小黑瓶精华,owner_001,张小红,35.76,15.00,rule_006,2026-05-31 14:32:34,有效,补贴规则变更，原规则:rule_001 → 新规则:rule_001_v2,订单明细:order_id=order_001;群主档案:owner_id=owner_001;补贴规则:rule_id=rule_006
