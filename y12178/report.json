@@ -1,0 +1,529 @@
+{
+  "generated_at": "2026-05-31T11:13:39.521347",
+  "summary": {
+    "total_orders": 11,
+    "total_issues": 9,
+    "signature_duplicates": 5,
+    "gift_out_of_stock": 3,
+    "address_changes": 1,
+    "bad_rows_count": 12
+  },
+  "issues": [
+    {
+      "issue_id": "6ab86050-7251-4a43-b6c9-e53f75875e11",
+      "type": "签名号重复",
+      "order_id": "ORD001",
+      "sku": "VINYL001",
+      "signature_number": "00123",
+      "description": "签名号重复: SKU VINYL001 的签名号 #00123 已被多个订单使用",
+      "source_data": {
+        "duplicate_count": 2,
+        "all_orders": [
+          "ORD001",
+          "ORD002"
+        ],
+        "customer_names": [
+          "张三",
+          "李四"
+        ]
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "b45b4765-cbb0-4545-b23e-96ed9d02234b",
+      "type": "签名号重复",
+      "order_id": "ORD002",
+      "sku": "VINYL001",
+      "signature_number": "00123",
+      "description": "签名号重复: SKU VINYL001 的签名号 #00123 已被多个订单使用",
+      "source_data": {
+        "duplicate_count": 2,
+        "all_orders": [
+          "ORD001",
+          "ORD002"
+        ],
+        "customer_names": [
+          "张三",
+          "李四"
+        ]
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "b669b8ad-4f08-4a58-8e42-c7c476da298f",
+      "type": "签名号重复",
+      "order_id": "ORD001",
+      "sku": "VINYL001",
+      "signature_number": "00123",
+      "description": "签名号重复: SKU VINYL001 的签名号 #00123 已被多个订单使用",
+      "source_data": {
+        "duplicate_count": 3,
+        "all_orders": [
+          "ORD001",
+          "ORD002",
+          "ORD007"
+        ],
+        "customer_names": [
+          "张三",
+          "李四",
+          "周九"
+        ]
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "c152ce58-3fe5-49b0-b254-ee7e6c2ae985",
+      "type": "签名号重复",
+      "order_id": "ORD002",
+      "sku": "VINYL001",
+      "signature_number": "00123",
+      "description": "签名号重复: SKU VINYL001 的签名号 #00123 已被多个订单使用",
+      "source_data": {
+        "duplicate_count": 3,
+        "all_orders": [
+          "ORD001",
+          "ORD002",
+          "ORD007"
+        ],
+        "customer_names": [
+          "张三",
+          "李四",
+          "周九"
+        ]
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "b9a638f3-495e-4565-bebc-24560aeb08f7",
+      "type": "签名号重复",
+      "order_id": "ORD007",
+      "sku": "VINYL001",
+      "signature_number": "00123",
+      "description": "签名号重复: SKU VINYL001 的签名号 #00123 已被多个订单使用",
+      "source_data": {
+        "duplicate_count": 3,
+        "all_orders": [
+          "ORD001",
+          "ORD002",
+          "ORD007"
+        ],
+        "customer_names": [
+          "张三",
+          "李四",
+          "周九"
+        ]
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "f092e381-22fc-46fd-9593-4ade2da011dc",
+      "type": "赠品缺货",
+      "order_id": "ORD003",
+      "sku": "VINYL002",
+      "signature_number": null,
+      "description": "赠品缺货: 订单 ORD003 中商品 《午夜旋律》签名版 的赠品 贴纸(缺货) 缺货",
+      "source_data": {
+        "gift_name": "贴纸(缺货)",
+        "gift_sku": "STICKER001",
+        "gift_quantity": 1
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "3e59a3b3-6727-40e2-8076-59e0b99cf629",
+      "type": "赠品缺货",
+      "order_id": "ORD008",
+      "sku": "VINYL004",
+      "signature_number": null,
+      "description": "赠品缺货: 订单 ORD008 中商品 《星空漫步》特别版 的赠品 缺货(赠品已送完) 缺货",
+      "source_data": {
+        "gift_name": "缺货(赠品已送完)",
+        "gift_sku": "CARD001",
+        "gift_quantity": 1
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "77a6a3db-f8b9-4a46-8308-28d05d3f5fdf",
+      "type": "赠品缺货",
+      "order_id": "ORD012",
+      "sku": "VINYL001",
+      "signature_number": null,
+      "description": "赠品缺货: 订单 ORD012 中商品 《蓝色天空》签名版 的赠品 限量海报(缺货) 缺货",
+      "source_data": {
+        "gift_name": "限量海报(缺货)",
+        "gift_sku": "POSTER001",
+        "gift_quantity": 1
+      },
+      "reviewed": false
+    },
+    {
+      "issue_id": "6dcc77df-025d-4396-9ea3-ffefc2fc78c4",
+      "type": "订单改址",
+      "order_id": "ORD005",
+      "sku": null,
+      "signature_number": null,
+      "description": "订单改址: 订单 ORD005 的收货地址已变更",
+      "source_data": {
+        "original_address": {
+          "street": "老地址唱片弄111号",
+          "city": "杭州",
+          "state": "浙江",
+          "zip_code": "310000",
+          "country": "中国"
+        },
+        "new_address": {
+          "street": "新地址音乐巷999号",
+          "city": "成都",
+          "state": "四川",
+          "zip_code": "610000",
+          "country": "中国"
+        },
+        "customer_name": "钱七"
+      },
+      "reviewed": false
+    }
+  ],
+  "bad_rows": [
+    {
+      "row_number": 2,
+      "raw_data": "# 这是注释行，应该被识别为备注",
+      "issues": [
+        "备注/注释行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 3,
+      "raw_data": ",,,",
+      "issues": [
+        "空数据行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 4,
+      "raw_data": ",,,",
+      "issues": [
+        "空数据行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 7,
+      "raw_data": "",
+      "issues": [
+        "空行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 10,
+      "raw_data": "",
+      "issues": [
+        "空行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 11,
+      "raw_data": "# 以下是改址订单",
+      "issues": [
+        "备注/注释行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 15,
+      "raw_data": "",
+      "issues": [
+        "空行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 16,
+      "raw_data": "-- 这也是注释行",
+      "issues": [
+        "备注/注释行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 19,
+      "raw_data": "",
+      "issues": [
+        "空行"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 20,
+      "raw_data": ",缺少order_id,VINYL005,测试,1",
+      "issues": [
+        "缺失必需列: order_id"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 21,
+      "raw_data": "ORD010,缺少sku的行,,测试,1,12345",
+      "issues": [
+        "缺失必需列: sku"
+      ],
+      "source_file": "demo_data.csv"
+    },
+    {
+      "row_number": 23,
+      "raw_data": "",
+      "issues": [
+        "空行"
+      ],
+      "source_file": "demo_data.csv"
+    }
+  ],
+  "traces": [
+    {
+      "order_id": "ORD001",
+      "order": {
+        "order_id": "ORD001",
+        "customer": "张三",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL001",
+            "title": "《蓝色天空》签名版",
+            "signature_number": "00123",
+            "gifts": [
+              {
+                "name": "限量海报",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 2
+    },
+    {
+      "order_id": "ORD002",
+      "order": {
+        "order_id": "ORD002",
+        "customer": "李四",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL001",
+            "title": "《蓝色天空》签名版",
+            "signature_number": "00123",
+            "gifts": [
+              {
+                "name": "限量海报",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 2
+    },
+    {
+      "order_id": "ORD003",
+      "order": {
+        "order_id": "ORD003",
+        "customer": "王五",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL002",
+            "title": "《午夜旋律》签名版",
+            "signature_number": "00456",
+            "gifts": [
+              {
+                "name": "贴纸(缺货)",
+                "status": "赠品缺货"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 1
+    },
+    {
+      "order_id": "ORD004",
+      "order": {
+        "order_id": "ORD004",
+        "customer": "赵六",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL003",
+            "title": "《日落大道》豪华版",
+            "signature_number": "00789",
+            "gifts": [
+              {
+                "name": "定制徽章",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 0
+    },
+    {
+      "order_id": "ORD005",
+      "order": {
+        "order_id": "ORD005",
+        "customer": "钱七",
+        "status": "地址已变更",
+        "items": [
+          {
+            "sku": "VINYL001",
+            "title": "《蓝色天空》签名版",
+            "signature_number": "00234",
+            "gifts": [
+              {
+                "name": "限量海报",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 1
+    },
+    {
+      "order_id": "ORD006",
+      "order": {
+        "order_id": "ORD006",
+        "customer": "孙八",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL002",
+            "title": "《午夜旋律》签名版",
+            "signature_number": "00457",
+            "gifts": [
+              {
+                "name": "贴纸",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 0
+    },
+    {
+      "order_id": "ORD007",
+      "order": {
+        "order_id": "ORD007",
+        "customer": "周九",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL001",
+            "title": "《蓝色天空》签名版",
+            "signature_number": "00123",
+            "gifts": [
+              {
+                "name": "限量海报",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 1
+    },
+    {
+      "order_id": "ORD008",
+      "order": {
+        "order_id": "ORD008",
+        "customer": "吴十",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL004",
+            "title": "《星空漫步》特别版",
+            "signature_number": "00888",
+            "gifts": [
+              {
+                "name": "缺货(赠品已送完)",
+                "status": "赠品缺货"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 1
+    },
+    {
+      "order_id": "ORD009",
+      "order": {
+        "order_id": "ORD009",
+        "customer": "郑十一",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL003",
+            "title": "《日落大道》豪华版",
+            "signature_number": "00790",
+            "gifts": [
+              {
+                "name": "定制徽章",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 0
+    },
+    {
+      "order_id": "ORD011",
+      "order": {
+        "order_id": "ORD011",
+        "customer": "冯十二",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL005",
+            "title": "《电子梦境》签名版",
+            "signature_number": "00999",
+            "gifts": [
+              {
+                "name": "明信片",
+                "status": "已包含"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 0
+    },
+    {
+      "order_id": "ORD012",
+      "order": {
+        "order_id": "ORD012",
+        "customer": "陈十三",
+        "status": "待处理",
+        "items": [
+          {
+            "sku": "VINYL001",
+            "title": "《蓝色天空》签名版",
+            "signature_number": "00235",
+            "gifts": [
+              {
+                "name": "限量海报(缺货)",
+                "status": "赠品缺货"
+              }
+            ]
+          }
+        ]
+      },
+      "issues_count": 1
+    }
+  ]
+}

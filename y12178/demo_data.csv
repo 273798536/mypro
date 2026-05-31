@@ -1,0 +1,24 @@
+order_id,customer_name,sku,title,quantity,signature_number,gift_name,gift_sku,gift_quantity,street,city,state,zip_code,country,email,phone,order_date,notes,original_street,original_city,original_state,original_zip_code,original_country
+# 这是注释行，应该被识别为备注
+,,,
+,,,
+ORD001,张三,VINYL001,《蓝色天空》签名版,1,00123,限量海报,POSTER001,1,音乐街123号,北京,北京,100001,中国,zhangsan@email.com,13800138001,2024-01-15,客户要求用气泡袋包装
+ORD002,李四,VINYL001,《蓝色天空》签名版,1,00123,限量海报,POSTER001,1,唱片路456号,上海,上海,200001,中国,lisi@email.com,13800138002,2024-01-16,签名号重复测试
+
+ORD003,王五,VINYL002,《午夜旋律》签名版,1,签名: 00456,贴纸(缺货),STICKER001,1,声音大道789号,广州,广东,510000,中国,wangwu@email.com,13800138003,2024-01-17,赠品缺货测试
+ORD004,赵六,VINYL003,《日落大道》豪华版,1,SIG-00789,定制徽章,BADGE001,1,艺术街321号,深圳,广东,518000,中国,zhaoliu@email.com,13800138004,2024-01-18
+
+# 以下是改址订单
+ORD005,钱七,VINYL001,《蓝色天空》签名版,1,#00234,限量海报,POSTER001,1,新地址音乐巷999号,成都,四川,610000,中国,qianqi@email.com,13800138005,2024-01-19,客户改址,老地址唱片弄111号,杭州,浙江,310000,中国
+ORD006,孙八,VINYL002,《午夜旋律》签名版,1,00457,贴纸,STICKER001,1,节奏路555号,杭州,浙江,310000,中国,sunba@email.com,13800138006,2024-01-20
+ORD007,周九,VINYL001,《蓝色天空》签名版,1,00123,限量海报,POSTER001,1,旋律胡同888号,南京,江苏,210000,中国,zhoujiu@email.com,13800138007,2024-01-21,第三个重复签名号
+
+-- 这也是注释行
+ORD008,吴十,VINYL004,《星空漫步》特别版,1,00888,缺货(赠品已送完),CARD001,1,和声街222号,武汉,湖北,430000,中国,wushi@email.com,13800138008,2024-01-22
+ORD009,郑十一,VINYL003,《日落大道》豪华版,1,SIG-00790,定制徽章,BADGE001,1,低音节666号,西安,陕西,710000,中国,zheng11@email.com,13800138009,2024-01-23
+
+,缺少order_id,VINYL005,测试,1
+ORD010,缺少sku的行,,测试,1,12345
+ORD011,冯十二,VINYL005,《电子梦境》签名版,1,00999,明信片,POSTCARD001,1,高音路777号,重庆,重庆,400000,中国,feng12@email.com,13800138010,2024-01-24
+
+ORD012,陈十三,VINYL001,《蓝色天空》签名版,1,00235,限量海报(缺货),POSTER001,1,鼓点街444号,天津,天津,300000,中国,chen13@email.com,13800138011,2024-01-25
