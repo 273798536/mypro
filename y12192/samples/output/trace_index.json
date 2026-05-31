@@ -1,0 +1,272 @@
+{
+  "melody_to_result": {
+    "demo_001": {
+      "key": "C major",
+      "title": "C大调示范旋律",
+      "model": "chord-v2.3",
+      "issue_count": 2,
+      "corrections": 1,
+      "chord_summary": [
+        {
+          "measure": 1,
+          "chord": "C",
+          "confidence": 0.95
+        },
+        {
+          "measure": 2,
+          "chord": "Am",
+          "confidence": 0.88
+        },
+        {
+          "measure": 3,
+          "chord": "F",
+          "confidence": 0.91
+        },
+        {
+          "measure": 4,
+          "chord": "G7",
+          "confidence": 0.87
+        }
+      ]
+    },
+    "demo_002": {
+      "key": "A minor",
+      "title": "A小调示范旋律-含调式歧义",
+      "model": "chord-v2.3",
+      "issue_count": 3,
+      "corrections": 2,
+      "chord_summary": [
+        {
+          "measure": 1,
+          "chord": "Am",
+          "confidence": 0.62
+        },
+        {
+          "measure": 2,
+          "chord": "Dm",
+          "confidence": 0.75
+        },
+        {
+          "measure": 3,
+          "chord": "E7",
+          "confidence": 0.58
+        }
+      ]
+    },
+    "demo_003": {
+      "key": "G major",
+      "title": "G大调示范旋律-含小节错位",
+      "model": "chord-v2.1",
+      "issue_count": 4,
+      "corrections": 0,
+      "chord_summary": [
+        {
+          "measure": 1,
+          "chord": "G",
+          "confidence": 0.93
+        },
+        {
+          "measure": 2,
+          "chord": "C",
+          "confidence": 0.8
+        },
+        {
+          "measure": 3,
+          "chord": "Em",
+          "confidence": 0.7
+        },
+        {
+          "measure": 4,
+          "chord": "D",
+          "confidence": 0.65
+        }
+      ]
+    }
+  },
+  "result_to_chord": {
+    "demo_001:m1:C": {
+      "case_id": "demo_001",
+      "measure": 1,
+      "chord": "C",
+      "confidence": 0.95,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 1,
+          "notes": [
+            "C4",
+            "E4",
+            "G4",
+            "C5"
+          ]
+        }
+      ]
+    },
+    "demo_001:m2:Am": {
+      "case_id": "demo_001",
+      "measure": 2,
+      "chord": "Am",
+      "confidence": 0.88,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 2,
+          "notes": [
+            "A3",
+            "C4",
+            "E4",
+            "A4"
+          ]
+        }
+      ]
+    },
+    "demo_001:m3:F": {
+      "case_id": "demo_001",
+      "measure": 3,
+      "chord": "F",
+      "confidence": 0.91,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 3,
+          "notes": [
+            "F3",
+            "A3",
+            "C4",
+            "F4"
+          ]
+        }
+      ]
+    },
+    "demo_001:m4:G7": {
+      "case_id": "demo_001",
+      "measure": 4,
+      "chord": "G7",
+      "confidence": 0.87,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 4,
+          "notes": [
+            "G3",
+            "B3",
+            "D4",
+            "G4"
+          ]
+        }
+      ]
+    },
+    "demo_002:m1:Am": {
+      "case_id": "demo_002",
+      "measure": 1,
+      "chord": "Am",
+      "confidence": 0.62,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 1,
+          "notes": [
+            "A3",
+            "C4",
+            "E4"
+          ]
+        }
+      ]
+    },
+    "demo_002:m2:Dm": {
+      "case_id": "demo_002",
+      "measure": 2,
+      "chord": "Dm",
+      "confidence": 0.75,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 2,
+          "notes": [
+            "D4",
+            "F4",
+            "A4"
+          ]
+        }
+      ]
+    },
+    "demo_002:m3:E7": {
+      "case_id": "demo_002",
+      "measure": 3,
+      "chord": "E7",
+      "confidence": 0.58,
+      "model_version": "chord-v2.3",
+      "source_measures": [
+        {
+          "measure": 3,
+          "notes": [
+            "E4",
+            "G#4",
+            "B4"
+          ]
+        }
+      ]
+    },
+    "demo_003:m1:G": {
+      "case_id": "demo_003",
+      "measure": 1,
+      "chord": "G",
+      "confidence": 0.93,
+      "model_version": "chord-v2.1",
+      "source_measures": [
+        {
+          "measure": 1,
+          "notes": [
+            "G4",
+            "B4",
+            "D5",
+            "G5"
+          ]
+        }
+      ]
+    },
+    "demo_003:m2:C": {
+      "case_id": "demo_003",
+      "measure": 2,
+      "chord": "C",
+      "confidence": 0.8,
+      "model_version": "chord-v2.1",
+      "source_measures": [
+        {
+          "measure": 2,
+          "notes": [
+            "C5",
+            "E5",
+            "G5",
+            "A5",
+            "G5"
+          ]
+        }
+      ]
+    },
+    "demo_003:m3:Em": {
+      "case_id": "demo_003",
+      "measure": 3,
+      "chord": "Em",
+      "confidence": 0.7,
+      "model_version": "chord-v2.1",
+      "source_measures": [
+        {
+          "measure": 3,
+          "notes": [
+            "D4",
+            "G4"
+          ]
+        }
+      ]
+    },
+    "demo_003:m4:D": {
+      "case_id": "demo_003",
+      "measure": 4,
+      "chord": "D",
+      "confidence": 0.65,
+      "model_version": "chord-v2.1",
+      "source_measures": []
+    }
+  }
+}

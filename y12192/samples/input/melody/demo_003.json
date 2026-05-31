@@ -1,0 +1,36 @@
+{
+  "case_id": "demo_003",
+  "title": "G大调示范旋律-含小节错位",
+  "key_signature": "G",
+  "mode": "major",
+  "time_signature": "4/4",
+  "tempo": 100,
+  "measures": [
+    {
+      "measure_num": 1,
+      "notes": [
+        {"beat": 1, "pitch": "G4", "duration": 1},
+        {"beat": 2, "pitch": "B4", "duration": 1},
+        {"beat": 3, "pitch": "D5", "duration": 1},
+        {"beat": 4, "pitch": "G5", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 2,
+      "notes": [
+        {"beat": 1, "pitch": "C5", "duration": 1},
+        {"beat": 2, "pitch": "E5", "duration": 1},
+        {"beat": 3, "pitch": "G5", "duration": 0.5},
+        {"beat": 3.5, "pitch": "A5", "duration": 0.5},
+        {"beat": 4, "pitch": "G5", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 3,
+      "notes": [
+        {"beat": 1, "pitch": "D4", "duration": 2},
+        {"beat": 3, "pitch": "G4", "duration": 2}
+      ]
+    }
+  ]
+}

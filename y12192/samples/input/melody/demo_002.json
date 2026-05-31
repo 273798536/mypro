@@ -1,0 +1,34 @@
+{
+  "case_id": "demo_002",
+  "title": "A小调示范旋律-含调式歧义",
+  "key_signature": "A",
+  "mode": "minor",
+  "time_signature": "3/4",
+  "tempo": 90,
+  "measures": [
+    {
+      "measure_num": 1,
+      "notes": [
+        {"beat": 1, "pitch": "A3", "duration": 1},
+        {"beat": 2, "pitch": "C4", "duration": 1},
+        {"beat": 3, "pitch": "E4", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 2,
+      "notes": [
+        {"beat": 1, "pitch": "D4", "duration": 1},
+        {"beat": 2, "pitch": "F4", "duration": 1},
+        {"beat": 3, "pitch": "A4", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 3,
+      "notes": [
+        {"beat": 1, "pitch": "E4", "duration": 1},
+        {"beat": 2, "pitch": "G#4", "duration": 1},
+        {"beat": 3, "pitch": "B4", "duration": 1}
+      ]
+    }
+  ]
+}

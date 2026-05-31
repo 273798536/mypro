@@ -1,0 +1,11 @@
+{
+  "case_id": "demo_001",
+  "model_version": "chord-v2.3",
+  "timestamp": "2026-05-28T14:30:00Z",
+  "chords": [
+    {"measure_num": 1, "chord": "C",  "confidence": 0.95},
+    {"measure_num": 2, "chord": "Am", "confidence": 0.88},
+    {"measure_num": 3, "chord": "F",  "confidence": 0.91},
+    {"measure_num": 4, "chord": "G",  "confidence": 0.87}
+  ]
+}

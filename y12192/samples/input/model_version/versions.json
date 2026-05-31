@@ -1,0 +1,23 @@
+[
+  {
+    "model_id": "chord-v2.3",
+    "release_date": "2026-04-15",
+    "trainer": "算法组-张工",
+    "training_data_version": "td-2026q1",
+    "known_issues": ["调式边界case在大调III级和自然小调I级之间仍有歧义"]
+  },
+  {
+    "model_id": "chord-v2.1",
+    "release_date": "2026-02-20",
+    "trainer": "算法组-李工",
+    "training_data_version": "td-2025q4",
+    "known_issues": ["4/4拍第三拍起音时小节对齐偶发偏移", "与v2.3混用会导致和弦风格不一致"]
+  },
+  {
+    "model_id": "chord-v2.0",
+    "release_date": "2025-12-01",
+    "trainer": "算法组-王工",
+    "training_data_version": "td-2025q3",
+    "known_issues": ["已废弃，小节错位严重"]
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "case_id": "demo_001",
+  "title": "C大调示范旋律",
+  "key_signature": "C",
+  "mode": "major",
+  "time_signature": "4/4",
+  "tempo": 120,
+  "measures": [
+    {
+      "measure_num": 1,
+      "notes": [
+        {"beat": 1, "pitch": "C4", "duration": 1},
+        {"beat": 2, "pitch": "E4", "duration": 1},
+        {"beat": 3, "pitch": "G4", "duration": 1},
+        {"beat": 4, "pitch": "C5", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 2,
+      "notes": [
+        {"beat": 1, "pitch": "A3", "duration": 1},
+        {"beat": 2, "pitch": "C4", "duration": 1},
+        {"beat": 3, "pitch": "E4", "duration": 1},
+        {"beat": 4, "pitch": "A4", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 3,
+      "notes": [
+        {"beat": 1, "pitch": "F3", "duration": 1},
+        {"beat": 2, "pitch": "A3", "duration": 1},
+        {"beat": 3, "pitch": "C4", "duration": 1},
+        {"beat": 4, "pitch": "F4", "duration": 1}
+      ]
+    },
+    {
+      "measure_num": 4,
+      "notes": [
+        {"beat": 1, "pitch": "G3", "duration": 1},
+        {"beat": 2, "pitch": "B3", "duration": 1},
+        {"beat": 3, "pitch": "D4", "duration": 1},
+        {"beat": 4, "pitch": "G4", "duration": 1}
+      ]
+    }
+  ]
+}

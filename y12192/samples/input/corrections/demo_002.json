@@ -1,0 +1,24 @@
+{
+  "case_id": "demo_002",
+  "amendments": [
+    {
+      "amendment_id": "amm-001",
+      "timestamp": "2026-05-30T10:00:00Z",
+      "operator": "产品组-赵工",
+      "changes": [
+        {
+          "measure_num": 1,
+          "original_chord": "C",
+          "corrected_chord": "Am",
+          "reason": "旋律为A小调，I级应为Am而非C大调I级"
+        },
+        {
+          "measure_num": 3,
+          "original_chord": "E",
+          "corrected_chord": "E7",
+          "reason": "属和弦应为E7以强化V-i进行"
+        }
+      ]
+    }
+  ]
+}

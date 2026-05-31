@@ -1,0 +1,115 @@
+[
+  {
+    "case_id": "demo_001",
+    "melody_key": "C major",
+    "chord_model": "chord-v2.3",
+    "issue_count": 2,
+    "issues": [
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "模型chord-v2.3已知问题: 调式边界case在大调III级和自然小调I级之间仍有歧义",
+        "next_step": "请联系算法组-张工评估是否影响当前case"
+      },
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "检测到多模型版本混用: chord-v2.1(训练:算法组-李工), chord-v2.3(训练:算法组-张工)，不同版本和弦风格可能不一致",
+        "next_step": "请算法组确认是否为预期混用，若非预期请统一模型版本后重新推理"
+      }
+    ],
+    "corrections_applied": [
+      {
+        "measure": 4,
+        "original": "G",
+        "corrected": "G7",
+        "reason": "终止式需属七和弦"
+      }
+    ],
+    "review_timestamp": "2026-05-31T11:59:10.455070"
+  },
+  {
+    "case_id": "demo_002",
+    "melody_key": "A minor",
+    "chord_model": "chord-v2.3",
+    "issue_count": 3,
+    "issues": [
+      {
+        "category": "调式误判",
+        "status": "待确认",
+        "measure": 3,
+        "detail": "和弦不在Aminor调式内: 小节3(E,置信度0.58)",
+        "next_step": "请调式标注组确认调式归属后重新校验"
+      },
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "模型chord-v2.3已知问题: 调式边界case在大调III级和自然小调I级之间仍有歧义",
+        "next_step": "请联系算法组-张工评估是否影响当前case"
+      },
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "检测到多模型版本混用: chord-v2.1(训练:算法组-李工), chord-v2.3(训练:算法组-张工)，不同版本和弦风格可能不一致",
+        "next_step": "请算法组确认是否为预期混用，若非预期请统一模型版本后重新推理"
+      }
+    ],
+    "corrections_applied": [
+      {
+        "measure": 1,
+        "original": "C",
+        "corrected": "Am",
+        "reason": "旋律为A小调，I级应为Am而非C大调I级"
+      },
+      {
+        "measure": 3,
+        "original": "E",
+        "corrected": "E7",
+        "reason": "属和弦应为E7以强化V-i进行"
+      }
+    ],
+    "review_timestamp": "2026-05-31T11:59:10.455111"
+  },
+  {
+    "case_id": "demo_003",
+    "melody_key": "G major",
+    "chord_model": "chord-v2.1",
+    "issue_count": 4,
+    "issues": [
+      {
+        "category": "小节错位",
+        "status": "待确认",
+        "measure": 4,
+        "detail": "和弦覆盖了小节4，但旋律中无对应小节，可能存在小节错位",
+        "next_step": "请音频对齐组核查小节边界与beat映射"
+      },
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "模型chord-v2.1已知问题: 4/4拍第三拍起音时小节对齐偶发偏移",
+        "next_step": "请联系算法组-李工评估是否影响当前case"
+      },
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "模型chord-v2.1已知问题: 与v2.3混用会导致和弦风格不一致",
+        "next_step": "请联系算法组-李工评估是否影响当前case"
+      },
+      {
+        "category": "模型混用",
+        "status": "待确认",
+        "measure": null,
+        "detail": "检测到多模型版本混用: chord-v2.1(训练:算法组-李工), chord-v2.3(训练:算法组-张工)，不同版本和弦风格可能不一致",
+        "next_step": "请算法组确认是否为预期混用，若非预期请统一模型版本后重新推理"
+      }
+    ],
+    "corrections_applied": [],
+    "review_timestamp": "2026-05-31T11:59:10.455140"
+  }
+]

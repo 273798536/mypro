@@ -1,0 +1,18 @@
+{
+  "case_id": "demo_001",
+  "amendments": [
+    {
+      "amendment_id": "amm-001",
+      "timestamp": "2026-05-31T11:57:49.423474",
+      "operator": "产品组-赵工",
+      "changes": [
+        {
+          "measure_num": 4,
+          "original_chord": "G",
+          "corrected_chord": "G7",
+          "reason": "终止式需属七和弦"
+        }
+      ]
+    }
+  ]
+}
