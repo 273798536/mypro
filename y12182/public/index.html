@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐疗愈播放计划管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-info {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .patient-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .patient-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .patient-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .patient-info {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .tag-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .tag-medium {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .tag-success {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .tag-info {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .table tr:hover {
+            background: #f7fafc;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .score-good {
+            background: #48bb78;
+        }
+
+        .score-medium {
+            background: #ed8936;
+        }
+
+        .score-poor {
+            background: #f56565;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .alert-warning {
+            background: #feebc8;
+            color: #744210;
+        }
+
+        .alert-danger {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .trace-link {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .trace-link:hover {
+            color: #764ba2;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        .close-btn:hover {
+            color: #4a5568;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .emotion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .emotion-calm { background: #c6f6d5; color: #2f855a; }
+        .emotion-happy { background: #fefcbf; color: #744210; }
+        .emotion-sad { background: #bee3f8; color: #2b6cb0; }
+        .emotion-anxious { background: #fed7d7; color: #c53030; }
+        .emotion-angry { background: #feb2b2; color: #9b2c2c; }
+        .emotion-relaxed { background: #e9d8fd; color: #553c9a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 音乐疗愈播放计划管理系统</h1>
+            <p>从样例导入到报告输出，全流程追溯管理</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">概览</button>
+            <button class="tab" onclick="switchTab('patients')">患者档案</button>
+            <button class="tab" onclick="switchTab('playlists')">播放计划</button>
+            <button class="tab" onclick="switchTab('playback')">播放执行</button>
+            <button class="tab" onclick="switchTab('reports')">报告输出</button>
+            <button class="tab" onclick="switchTab('trace')">追溯查询</button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <h2 class="section-title">📊 系统概览</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-patients">0</div>
+                    <div class="stat-label">患者总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-playlists">0</div>
+                    <div class="stat-label">播放计划</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-sessions">0</div>
+                    <div class="stat-label">播放会话</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-reports">0</div>
+                    <div class="stat-label">生成报告</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🚀 快速开始</span>
+                </div>
+                <div class="two-column">
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #4a5568;">演示场景</h4>
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="runDemo('normal')">
+                            ✅ 正常播放流程演示
+                        </button>
+                        <button class="btn btn-warning" style="width: 100%; margin-bottom: 10px;" onclick="runDemo('forbidden')">
+                            ⚠️ 禁忌曲目触发演示
+                        </button>
+                        <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="runDemo('emotional_sudden')">
+                            🚨 情绪突变演示
+                        </button>
+                        <button class="btn btn-info" style="width: 100%;" onclick="runDemo('repeat_issue')">
+                            🔄 重复播放问题演示
+                        </button>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #4a5568;">系统说明</h4>
+                        <ul style="color: #718096; line-height: 1.8;">
+                            <li>✅ 患者档案与睡眠评分管理</li>
+                            <li>✅ 禁忌曲目校验与提醒</li>
+                            <li>✅ 播放计划自动生成</li>
+                            <li>✅ 人工修改全程留痕</li>
+                            <li>✅ 情绪突变实时监测</li>
+                            <li>✅ 重复播放异常检测</li>
+                            <li>✅ 完整报告生成下载</li>
+                            <li>✅ 全链路追溯查询</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">📋 操作日志</span>
+                </div>
+                <div id="activity-log" style="max-height: 300px; overflow-y: auto;">
+                    <p style="color: #718096;">暂无操作记录，开始演示以查看日志...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="patients" class="tab-content">
+            <h2 class="section-title">👤 患者档案管理</h2>
+            <div id="patients-list" class="grid"></div>
+        </div>
+
+        <div id="playlists" class="tab-content">
+            <h2 class="section-title">📋 播放计划管理</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">创建新播放计划</span>
+                </div>
+                <div class="two-column">
+                    <div class="form-group">
+                        <label class="form-label">选择患者</label>
+                        <select class="form-select" id="playlist-patient">
+                            <option value="">请选择患者</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">计划名称</label>
+                        <input type="text" class="form-input" id="playlist-name" placeholder="如：夜间舒缓疗愈">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">治疗师ID</label>
+                        <input type="text" class="form-input" id="playlist-therapist" value="T001">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">偏好情绪</label>
+                        <select class="form-select" id="playlist-mood">
+                            <option value="">不限</option>
+                            <option value="平静">平静</option>
+                            <option value="温柔">温柔</option>
+                            <option value="愉悦">愉悦</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="createPlaylist()">创建播放计划</button>
+            </div>
+
+            <div id="playlists-list"></div>
+        </div>
+
+        <div id="playback" class="tab-content">
+            <h2 class="section-title">▶️ 播放执行</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">选择播放计划</span>
+                </div>
+                <div class="form-group">
+                    <select class="form-select" id="playback-playlist">
+                        <option value="">请先创建播放计划</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="startPlayback()">开始播放</button>
+                    <button class="btn btn-info" onclick="simulatePlayback()">模拟播放</button>
+                    <select class="form-select" id="simulate-scenario" style="width: 200px;">
+                        <option value="normal">正常场景</option>
+                        <option value="forbidden">禁忌曲目场景</option>
+                        <option value="emotional_sudden">情绪突变场景</option>
+                        <option value="repeat_issue">重复播放场景</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="current-session" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">当前播放会话</span>
+                        <span class="tag tag-info" id="session-status">播放中</span>
+                    </div>
+                    <div id="session-info"></div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-danger" onclick="endPlayback()">结束播放</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">记录情绪</span>
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label class="form-label">选择曲目</label>
+                            <select class="form-select" id="emotion-track"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">情绪</label>
+                            <select class="form-select" id="emotion-type">
+                                <option value="平静">平静</option>
+                                <option value="放松">放松</option>
+                                <option value="愉悦">愉悦</option>
+                                <option value="焦虑">焦虑</option>
+                                <option value="悲伤">悲伤</option>
+                                <option value="烦躁">烦躁</option>
+                                <option value="恐惧">恐惧</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">强度 (1-10)</label>
+                            <input type="number" class="form-input" id="emotion-intensity" min="1" max="10" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">备注</label>
+                            <input type="text" class="form-input" id="emotion-notes" placeholder="可选">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="recordEmotion()">记录情绪</button>
+                </div>
+            </div>
+
+            <div id="sessions-list"></div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <h2 class="section-title">📄 报告输出</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">生成新报告</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">选择播放会话</label>
+                    <select class="form-select" id="report-session">
+                        <option value="">请先完成播放会话</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="generateReport()">生成报告</button>
+            </div>
+
+            <div id="reports-list"></div>
+        </div>
+
+        <div id="trace" class="tab-content">
+            <h2 class="section-title">🔍 追溯查询</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">查询入口</span>
+                </div>
+                <div class="two-column">
+                    <div class="form-group">
+                        <label class="form-label">查询类型</label>
+                        <select class="form-select" id="trace-type" onchange="updateTraceOptions()">
+                            <option value="report">按报告查询</option>
+                            <option value="session">按会话查询</option>
+                            <option value="playlist">按播放计划查询</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">选择项目</label>
+                        <select class="form-select" id="trace-id">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="traceQuery()">查询追溯信息</button>
+            </div>
+
+            <div id="trace-result" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📊 追溯结果</span>
+                    </div>
+                    <div id="trace-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">📄 疗愈报告</span>
+                <button class="close-btn" onclick="closeModal('report-modal')">&times;</button>
+            </div>
+            <pre id="report-content" style="background: #f7fafc; padding: 20px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; word-wrap: break-word;"></pre>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="downloadReport()">📥 下载报告</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSession = null;
+        let currentReportId = null;
+        let activityLogs = [];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            if (tabId === 'patients') loadPatients();
+            if (tabId === 'playlists') loadPlaylists();
+            if (tabId === 'playback') loadPlaybackOptions();
+            if (tabId === 'reports') loadReports();
+            if (tabId === 'trace') updateTraceOptions();
+        }
+
+        function addActivityLog(message) {
+            const time = new Date().toLocaleTimeString();
+            activityLogs.unshift({ time, message });
+            if (activityLogs.length > 20) activityLogs.pop();
+            updateActivityLog();
+        }
+
+        function updateActivityLog() {
+            const container = document.getElementById('activity-log');
+            if (activityLogs.length === 0) {
+                container.innerHTML = '<p style="color: #718096;">暂无操作记录，开始演示以查看日志...</p>';
+                return;
+            }
+            container.innerHTML = activityLogs.map(log => `
+                <div style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                    <span style="color: #718096; font-size: 12px;">[${log.time}]</span>
+                    <span style="color: #4a5568;">${log.message}</span>
+                </div>
+            `).join('');
+        }
+
+        async function loadPatients() {
+            const res = await fetch('/api/patients');
+            const patients = await res.json();
+            const container = document.getElementById('patients-list');
+            
+            container.innerHTML = patients.map(p => `
+                <div class="patient-card">
+                    <div class="patient-name">${p.name} <span style="font-size: 12px; color: #718096;">(${p.id})</span></div>
+                    <div class="patient-info">年龄: ${p.age}岁 | 性别: ${p.gender}</div>
+                    <div class="patient-info" style="margin: 10px 0;">
+                        <span class="tag tag-info">${p.diagnosis}</span>
+                    </div>
+                    <div class="patient-info" style="font-size: 12px; color: #718096;">${p.notes}</div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-info btn-sm" onclick="showPatientDetail('${p.id}')">查看详情</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function showPatientDetail(patientId) {
+            const res = await fetch(`/api/patients/${patientId}`);
+            const data = await res.json();
+            
+            const sleepHtml = data.sleepScores.map(s => `
+                <tr>
+                    <td>${s.date}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="score-bar" style="width: 100px;">
+                                <div class="score-fill ${s.score >= 70 ? 'score-good' : s.score >= 50 ? 'score-medium' : 'score-poor'}" style="width: ${s.score}%;"></div>
+                            </div>
+                            <span>${s.score}</span>
+                        </div>
+                    </td>
+                    <td>${s.deepSleep}%</td>
+                    <td>${s.notes || '-'}</td>
+                </tr>
+            `).join('');
+
+            const forbiddenHtml = data.forbiddenTracks.map(f => `
+                <tr>
+                    <td>${f.trackName}</td>
+                    <td>${f.artist}</td>
+                    <td><span class="tag ${f.severity === 'high' ? 'tag-high' : 'tag-medium'}">${f.severity === 'high' ? '严重' : '中度'}</span></td>
+                    <td>${f.reason}</td>
+                </tr>
+            `).join('');
+
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 1000px;">
+                    <div class="modal-header">
+                        <span class="modal-title">👤 ${data.patient.name} - 详细信息</span>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="two-column">
+                        <div>
+                            <h4 style="margin-bottom: 15px;">基本信息</h4>
+                            <p><strong>患者ID:</strong> ${data.patient.id}</p>
+                            <p><strong>年龄:</strong> ${data.patient.age}岁</p>
+                            <p><strong>性别:</strong> ${data.patient.gender}</p>
+                            <p><strong>诊断:</strong> ${data.patient.diagnosis}</p>
+                            <p><strong>备注:</strong> ${data.patient.notes}</p>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 15px;">禁忌曲目 (${data.forbiddenTracks.length}首)</h4>
+                            ${data.forbiddenTracks.length > 0 ? 
+                                `<table class="table">
+                                    <thead><tr><th>曲目</th><th>艺术家</th><th>严重度</th><th>原因</th></tr></thead>
+                                    <tbody>${forbiddenHtml}</tbody>
+                                </table>` : 
+                                '<p style="color: #718096;">暂无禁忌曲目</p>'
+                            }
+                        </div>
+                    </div>
+                    <h4 style="margin: 20px 0 15px;">睡眠评分记录</h4>
+                    ${data.sleepScores.length > 0 ? 
+                        `<table class="table">
+                            <thead><tr><th>日期</th><th>评分</th><th>深睡</th><th>备注</th></tr></thead>
+                            <tbody>${sleepHtml}</tbody>
+                        </table>` : 
+                        '<p style="color: #718096;">暂无睡眠评分</p>'
+                    }
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function loadPlaylists() {
+            const patientRes = await fetch('/api/patients');
+            const patients = await patientRes.json();
+            document.getElementById('playlist-patient').innerHTML = 
+                '<option value="">请选择患者</option>' + 
+                patients.map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`).join('');
+
+            const res = await fetch('/api/playlists');
+            const playlists = await res.json();
+            const container = document.getElementById('playlists-list');
+            
+            if (playlists.length === 0) {
+                container.innerHTML = '<p style="color: #718096;">暂无播放计划，请创建新计划</p>';
+                return;
+            }
+
+            container.innerHTML = await Promise.all(playlists.map(async pl => {
+                const detailRes = await fetch(`/api/playlists/${pl.id}`);
+                const detail = await detailRes.json();
+                const patient = detail.patient;
+                const validation = detail.validationResult;
+                const modifications = detail.modificationLogs || [];
+
+                const tracksHtml = pl.tracks.map((t, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${t.name}</td>
+                        <td>${t.artist}</td>
+                        <td><span class="tag tag-info">${t.mood}</span></td>
+                        <td>${Math.floor(t.duration / 60)}:${String(t.duration % 60).padStart(2, '0')}</td>
+                    </tr>
+                `).join('');
+
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <span class="card-title">${pl.name}</span>
+                                <span style="color: #718096; font-size: 12px; margin-left: 10px;">${pl.id}</span>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                ${validation ? 
+                                    `<span class="tag ${validation.isValid ? 'tag-success' : 'tag-high'}">
+                                        ${validation.isValid ? '校验通过' : '校验失败'}
+                                    </span>` : ''
+                                }
+                                <span class="tag tag-info">${patient ? patient.name : '未知患者'}</span>
+                            </div>
+                        </div>
+                        <p style="color: #718096; margin-bottom: 15px;">
+                            创建时间: ${new Date(pl.createdAt).toLocaleString()} | 
+                            修改次数: ${modifications.length}次 | 
+                            状态: ${pl.status}
+                        </p>
+                        <table class="table">
+                            <thead>
+                                <tr><th>序号</th><th>曲目</th><th>艺术家</th><th>情绪</th><th>时长</th></tr>
+                            </thead>
+                            <tbody>${tracksHtml}</tbody>
+                        </table>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn btn-success btn-sm" onclick="validatePlaylist('${pl.id}')">校验禁忌</button>
+                            <button class="btn btn-warning btn-sm" onclick="showModifications('${pl.id}')">修改记录 (${modifications.length})</button>
+                            <span class="trace-link" onclick="goToTrace('playlist', '${pl.id}')">🔗 追溯此计划</span>
+                        </div>
+                    </div>
+                `;
+            })).then(htmls => htmls.join(''));
+        }
+
+        async function createPlaylist() {
+            const patientId = document.getElementById('playlist-patient').value;
+            const name = document.getElementById('playlist-name').value;
+            const therapistId = document.getElementById('playlist-therapist').value;
+            const mood = document.getElementById('playlist-mood').value;
+
+            if (!patientId || !name) {
+                alert('请选择患者并输入计划名称');
+                return;
+            }
+
+            const res = await fetch('/api/playlists', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    patientId,
+                    name,
+                    therapistId,
+                    preferredMoods: mood ? [mood] : []
+                })
+            });
+
+            const playlist = await res.json();
+            addActivityLog(`创建播放计划: ${playlist.name} (${playlist.id})`);
+            loadPlaylists();
+            loadStats();
+        }
+
+        async function validatePlaylist(playlistId) {
+            const res = await fetch(`/api/playlists/${playlistId}/validate`, {
+                method: 'POST'
+            });
+            const result = await res.json();
+            
+            addActivityLog(`校验播放计划 ${playlistId}: ${result.isValid ? '通过' : '失败'}, ${result.errors.length}个错误, ${result.warnings.length}个警告`);
+            
+            let alertHtml = '';
+            if (result.errors.length > 0) {
+                alertHtml += `<div class="alert alert-danger"><strong>错误 (${result.errors.length}):</strong><ul>`;
+                result.errors.forEach(e => alertHtml += `<li>${e.message}</li>`);
+                alertHtml += `</ul></div>`;
+            }
+            if (result.warnings.length > 0) {
+                alertHtml += `<div class="alert alert-warning"><strong>警告 (${result.warnings.length}):</strong><ul>`;
+                result.warnings.forEach(w => alertHtml += `<li>${w.message}</li>`);
+                alertHtml += `</ul></div>`;
+            }
+            if (result.isValid && result.warnings.length === 0) {
+                alertHtml = `<div class="alert alert-success">✅ 校验通过，未发现禁忌曲目和问题</div>`;
+            }
+
+            alert(alertHtml.replace(/<[^>]*>/g, '\n'));
+            loadPlaylists();
+        }
+
+        async function showModifications(playlistId) {
+            const res = await fetch(`/api/modifications/${playlistId}`);
+            const logs = await res.json();
+            
+            if (logs.length === 0) {
+                alert('暂无修改记录');
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title">📝 修改记录 (${logs.length}条)</span>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="timeline">
+                        ${logs.map(log => `
+                            <div class="timeline-item">
+                                <div class="timeline-time">${new Date(log.timestamp).toLocaleString()}</div>
+                                <div class="timeline-content">
+                                    <strong>操作人:</strong> ${log.operator}<br>
+                                    <strong>修改字段:</strong> ${log.field}<br>
+                                    <strong>原因:</strong> ${log.reason}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function loadPlaybackOptions() {
+            const playlistRes = await fetch('/api/playlists');
+            const playlists = await playlistRes.json();
+            
+            document.getElementById('playback-playlist').innerHTML = 
+                '<option value="">请选择播放计划</option>' + 
+                playlists.map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`).join('');
+
+            const sessionRes = await fetch('/api/sessions');
+        }
+
+        async function startPlayback() {
+            const playlistId = document.getElementById('playback-playlist').value;
+            if (!playlistId) {
+                alert('请选择播放计划');
+                return;
+            }
+
+            const res = await fetch('/api/playback/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playlistId })
+            });
+
+            currentSession = await res.json();
+            addActivityLog(`开始播放会话: ${currentSession.id}`);
+            
+            document.getElementById('current-session').style.display = 'block';
+            document.getElementById('session-status').textContent = '播放中';
+            document.getElementById('session-info').innerHTML = `
+                <p><strong>会话ID:</strong> ${currentSession.id}</p>
+                <p><strong>开始时间:</strong> ${new Date(currentSession.startTime).toLocaleString()}</p>
+            `;
+
+            const playlistRes = await fetch(`/api/playlists/${playlistId}`);
+            const playlist = await playlistRes.json();
+            document.getElementById('emotion-track').innerHTML = 
+                playlist.playlist.tracks.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        }
+
+        async function simulatePlayback() {
+            const playlistId = document.getElementById('playback-playlist').value;
+            const scenario = document.getElementById('simulate-scenario').value;
+            
+            if (!playlistId) {
+                alert('请选择播放计划');
+                return;
+            }
+
+            const scenarioNames = {
+                'normal': '正常场景',
+                'forbidden': '禁忌曲目场景',
+                'emotional_sudden': '情绪突变场景',
+                'repeat_issue': '重复播放场景'
+            };
+
+            addActivityLog(`开始模拟播放: ${scenarioNames[scenario]}`);
+
+            const res = await fetch('/api/playback/simulate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playlistId, scenario })
+            });
+
+            const result = await res.json();
+            addActivityLog(`模拟播放完成: ${result.session.status}, ${result.issues.length}个问题`);
+            
+            loadStats();
+            loadPlaybackOptions();
+            loadReports();
+        }
+
+        async function recordEmotion() {
+            if (!currentSession) {
+                alert('请先开始播放');
+                return;
+            }
+
+            const trackId = document.getElementById('emotion-track').value;
+            const emotion = document.getElementById('emotion-type').value;
+            const intensity = document.getElementById('emotion-intensity').value;
+            const notes = document.getElementById('emotion-notes').value;
+
+            const res = await fetch('/api/playback/emotion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sessionId: currentSession.id,
+                    trackId,
+                    emotion,
+                    intensity,
+                    notes
+                })
+            });
+
+            const record = await res.json();
+            addActivityLog(`记录情绪: ${emotion} (强度${intensity})`);
+        }
+
+        async function endPlayback() {
+            if (!currentSession) return;
+
+            const res = await fetch('/api/playback/end', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: currentSession.id })
+            });
+
+            const session = await res.json();
+            addActivityLog(`结束播放会话: ${session.id}, 状态: ${session.status}`);
+            
+            currentSession = null;
+            document.getElementById('current-session').style.display = 'none';
+            loadStats();
+            loadReports();
+        }
+
+        async function loadReports() {
+            const sessionRes = await fetch('/api/sessions');
+            
+            const res = await fetch('/api/reports');
+            const reports = await res.json();
+            const container = document.getElementById('reports-list');
+
+            const sessionSelect = document.getElementById('report-session');
+            if (reports.length > 0) {
+                sessionSelect.innerHTML = '<option value="">请选择播放会话</option>' +
+                    reports.map(r => `<option value="${r.sessionId}">会话 ${r.sessionId}</option>`).join('');
+            }
+
+            if (reports.length === 0) {
+                container.innerHTML = '<p style="color: #718096;">暂无报告，请先生成</p>';
+                return;
+            }
+
+            container.innerHTML = await Promise.all(reports.map(async r => {
+                const patientRes = await fetch(`/api/patients/${r.patientId}`);
+                const patient = await patientRes.json();
+                
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <span class="card-title">报告 ${r.id}</span>
+                                <span style="color: #718096; font-size: 12px; margin-left: 10px;">
+                                    ${new Date(r.generatedAt).toLocaleString()}
+                                </span>
+                            </div>
+                            <span class="tag tag-info">${patient.patient.name}</span>
+                        </div>
+                        <div class="two-column" style="margin: 15px 0;">
+                            <div>
+                                <p><strong>播放计划:</strong> ${r.summary.playlistName}</p>
+                                <p><strong>会话状态:</strong> ${r.summary.sessionStatus}</p>
+                                <p><strong>播放时长:</strong> ${r.summary.sessionDuration} 分钟</p>
+                            </div>
+                            <div>
+                                <p><strong>主导情绪:</strong> <span class="tag tag-info">${r.emotionAnalysis.dominantEmotion}</span></p>
+                                <p><strong>平均强度:</strong> ${r.emotionAnalysis.averageIntensity}/10</p>
+                                <p><strong>发现问题:</strong> ${r.issues.length} 个</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                            <button class="btn btn-info btn-sm" onclick="viewReport('${r.id}')">查看报告</button>
+                            <button class="btn btn-primary btn-sm" onclick="downloadReportFile('${r.id}')">下载报告</button>
+                            <span class="trace-link" onclick="goToTrace('report', '${r.id}')">🔗 追溯此报告</span>
+                        </div>
+                    </div>
+                `;
+            })).then(htmls => htmls.join(''));
+        }
+
+        async function generateReport() {
+            const sessionId = document.getElementById('report-session').value;
+            if (!sessionId) {
+                alert('请选择播放会话');
+                return;
+            }
+
+            const res = await fetch('/api/reports', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId })
+            });
+
+            const report = await res.json();
+            addActivityLog(`生成报告: ${report.id}`);
+            loadReports();
+            loadStats();
+        }
+
+        async function viewReport(reportId) {
+            currentReportId = reportId;
+            const res = await fetch(`/api/reports/${reportId}/text`);
+            const data = await res.json();
+            document.getElementById('report-content').textContent = data.content;
+            document.getElementById('report-modal').classList.add('active');
+        }
+
+        async function downloadReportFile(reportId) {
+            const a = document.createElement('a');
+            a.href = `/api/reports/${reportId}/download`;
+            a.download = `report_${reportId}.txt`;
+            a.click();
+            addActivityLog(`下载报告: ${reportId}`);
+        }
+
+        function downloadReport() {
+            if (currentReportId) {
+                downloadReportFile(currentReportId);
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function updateTraceOptions() {
+            const type = document.getElementById('trace-type').value;
+            const select = document.getElementById('trace-id');
+            
+            if (type === 'report') {
+                const res = await fetch('/api/reports');
+                const reports = await res.json();
+                select.innerHTML = '<option value="">请选择报告</option>' +
+                    reports.map(r => `<option value="${r.id}">${r.id} - ${r.summary.patientName}</option>`).join('');
+            } else if (type === 'session') {
+                const res = await fetch('/api/sessions');
+            } else if (type === 'playlist') {
+                const res = await fetch('/api/playlists');
+                const playlists = await res.json();
+                select.innerHTML = '<option value="">请选择播放计划</option>' +
+                    playlists.map(p => `<option value="${p.id}">${p.id} - ${p.name}</option>`).join('');
+            }
+        }
+
+        async function traceQuery() {
+            const type = document.getElementById('trace-type').value;
+            const id = document.getElementById('trace-id').value;
+            
+            if (!id) {
+                alert('请选择查询项目');
+                return;
+            }
+
+            addActivityLog(`追溯查询: ${type} ${id}`);
+
+            const res = await fetch(`/api/trace/${type}/${id}`);
+            const data = await res.json();
+            
+            const container = document.getElementById('trace-content');
+            document.getElementById('trace-result').style.display = 'block';
+
+            const emotionHtml = data.emotionRecords && data.emotionRecords.length > 0 
+                ? data.emotionRecords.map(e => `
+                    <span class="emotion-badge emotion-${e.emotion === '平静' ? 'calm' : e.emotion === '放松' ? 'relaxed' : e.emotion === '愉悦' ? 'happy' : 'anxious'}">
+                        ${e.emotion} (${e.intensity})
+                    </span>
+                `).join(' ')
+                : '无情绪记录';
+
+            const issuesHtml = data.session && data.session.issues && data.session.issues.length > 0
+                ? data.session.issues.map((issue, i) => `
+                    <div class="alert ${issue.severity === 'high' ? 'alert-danger' : 'alert-warning'}">
+                        <strong>问题 ${i + 1}:</strong> ${issue.message}<br>
+                        <small>说明: ${issue.explanation || '暂无说明'}</small>
+                    </div>
+                `).join('')
+                : '<div class="alert alert-success">✅ 无异常问题</div>';
+
+            const forbiddenHtml = data.forbiddenTracks && data.forbiddenTracks.length > 0
+                ? data.forbiddenTracks.map(f => `
+                    <span class="tag ${f.severity === 'high' ? 'tag-high' : 'tag-medium'}">
+                        ${f.trackName} - ${f.reason}
+                    </span>
+                `).join(' ')
+                : '无禁忌曲目';
+
+            container.innerHTML = `
+                <div class="two-column">
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #4a5568;">👤 患者信息</h4>
+                        <div class="card" style="padding: 15px; margin-bottom: 20px;">
+                            <p><strong>姓名:</strong> ${data.patient.name}</p>
+                            <p><strong>ID:</strong> ${data.patient.id}</p>
+                            <p><strong>诊断:</strong> ${data.patient.diagnosis}</p>
+                            <p><strong>禁忌曲目:</strong> ${forbiddenHtml}</p>
+                        </div>
+
+                        <h4 style="margin-bottom: 15px; color: #4a5568;">📋 播放计划</h4>
+                        <div class="card" style="padding: 15px; margin-bottom: 20px;">
+                            <p><strong>名称:</strong> ${data.playlist.name}</p>
+                            <p><strong>ID:</strong> ${data.playlist.id}</p>
+                            <p><strong>曲目数:</strong> ${data.playlist.tracks.length} 首</p>
+                            <p><strong>校验结果:</strong> ${data.validationResult ? (data.validationResult.isValid ? '✅ 通过' : '❌ 失败') : '未校验'}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 15px; color: #4a5568;">▶️ 播放会话</h4>
+                        <div class="card" style="padding: 15px; margin-bottom: 20px;">
+                            <p><strong>会话ID:</strong> ${data.session ? data.session.id : '无会话记录'}</p>
+                            <p><strong>状态:</strong> ${data.session ? data.session.status : '-'}</p>
+                            <p><strong>情绪记录:</strong> ${emotionHtml}</p>
+                        </div>
+
+                        <h4 style="margin-bottom: 15px; color: #4a5568;">📄 关联报告</h4>
+                        <div class="card" style="padding: 15px; margin-bottom: 20px;">
+                            <p><strong>报告ID:</strong> ${data.report ? data.report.id : '无报告'}</p>
+                            <p><strong>主导情绪:</strong> ${data.report ? data.report.emotionAnalysis.dominantEmotion : '-'}</p>
+                            <p><strong>建议数:</strong> ${data.report ? data.report.recommendations.length : 0} 条</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="margin: 20px 0 15px; color: #4a5568;">⚠️ 问题与异常</h4>
+                ${issuesHtml}
+
+                <h4 style="margin: 20px 0 15px; color: #4a5568;">📝 修改记录 (${data.modificationLogs ? data.modificationLogs.length : 0}条)</h4>
+                ${data.modificationLogs && data.modificationLogs.length > 0 ? `
+                    <div class="timeline">
+                        ${data.modificationLogs.map(log => `
+                            <div class="timeline-item">
+                                <div class="timeline-time">${new Date(log.timestamp).toLocaleString()}</div>
+                                <div class="timeline-content">
+                                    <strong>${log.operator}</strong> 修改了 <em>${log.field}</em><br>
+                                    原因: ${log.reason}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '<p style="color: #718096;">无修改记录</p>'}
+
+                <h4 style="margin: 20px 0 15px; color: #4a5568;">📊 睡眠评分历史</h4>
+                <table class="table">
+                    <thead>
+                        <tr><th>日期</th><th>评分</th><th>深睡</th><th>浅睡</th><th>REM</th><th>备注</th></tr>
+                    </thead>
+                    <tbody>
+                        ${data.sleepScores && data.sleepScores.length > 0 ? data.sleepScores.map(s => `
+                            <tr>
+                                <td>${s.date}</td>
+                                <td>
+                                    <span class="tag ${s.score >= 70 ? 'tag-success' : s.score >= 50 ? 'tag-medium' : 'tag-high'}">${s.score}</span>
+                                </td>
+                                <td>${s.deepSleep}%</td>
+                                <td>${s.lightSleep}%</td>
+                                <td>${s.remSleep}%</td>
+                                <td>${s.notes || '-'}</td>
+                            </tr>
+                        `).join('') : '<tr><td colspan="6" style="text-align: center; color: #718096;">暂无睡眠数据</td></tr>'}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function goToTrace(type, id) {
+            switchTab('trace');
+            document.getElementById('trace-type').value = type;
+            updateTraceOptions().then(() => {
+                document.getElementById('trace-id').value = id;
+                traceQuery();
+            });
+        }
+
+        async function runDemo(scenario) {
+            const scenarioNames = {
+                'normal': '✅ 正常播放流程',
+                'forbidden': '⚠️ 禁忌曲目触发',
+                'emotional_sudden': '🚨 情绪突变场景',
+                'repeat_issue': '🔄 重复播放问题'
+            };
+
+            addActivityLog(`开始演示: ${scenarioNames[scenario]}`);
+
+            const patientRes = await fetch('/api/patients');
+            const patients = await patientRes.json();
+            const patientId = patients[0].id;
+
+            const playlistRes = await fetch('/api/playlists', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    patientId,
+                    name: `演示计划 - ${scenarioNames[scenario]}`,
+                    therapistId: 'T001',
+                    preferredMoods: []
+                })
+            });
+            const playlist = await playlistRes.json();
+            addActivityLog(`创建播放计划: ${playlist.name}`);
+
+            if (scenario === 'forbidden') {
+                await fetch(`/api/playlists/${playlist.id}/add-track`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        trackId: 'M004',
+                        operator: '演示系统',
+                        reason: '故意添加禁忌曲目用于演示'
+                    })
+                });
+                addActivityLog('人工添加禁忌曲目: 命运交响曲');
+            }
+
+            await fetch(`/api/playlists/${playlist.id}/validate`, { method: 'POST' });
+            addActivityLog('执行禁忌曲目校验');
+
+            const simulateRes = await fetch('/api/playback/simulate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playlistId: playlist.id, scenario })
+            });
+            const simulateResult = await simulateRes.json();
+            addActivityLog(`模拟播放完成: ${simulateResult.session.status}, ${simulateResult.issues.length}个问题`);
+
+            const reportRes = await fetch('/api/reports', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: simulateResult.session.id })
+            });
+            const report = await reportRes.json();
+            addActivityLog(`生成疗愈报告: ${report.id}`);
+
+            loadStats();
+            addActivityLog(`演示完成！可在"报告输出"中查看报告，或在"追溯查询"中追溯全流程`);
+        }
+
+        async function loadStats() {
+            const patientRes = await fetch('/api/patients');
+            const patients = await patientRes.json();
+            
+            const playlistRes = await fetch('/api/playlists');
+            const playlists = await playlistRes.json();
+            
+            const reportRes = await fetch('/api/reports');
+            const reports = await reportRes.json();
+
+            document.getElementById('stat-patients').textContent = patients.length;
+            document.getElementById('stat-playlists').textContent = playlists.length;
+            document.getElementById('stat-reports').textContent = reports.length;
+        }
+
+        loadStats();
+        loadPatients();
+    </script>
+</body>
+</html>
