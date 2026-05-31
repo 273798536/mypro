@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617 0%, #0F172A 50%, #020617 100%);
+  color: #e2e8f0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* 网格背景 */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* 电流动画 */
+.wire-active {
+  stroke-dasharray: 10 5;
+  animation: currentFlow 2s linear infinite;
+}
+
+/* 节点发光效果 */
+.node-powered {
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+.node-anomaly {
+  animation: anomalyPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes anomalyPulse {
+  0% { filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5)); }
+  100% { filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.9)); }
+}
+
+/* 逻辑链连线 */
+.logic-chain-source {
+  stroke: #3B82F6;
+  stroke-width: 3;
+  stroke-dasharray: 100;
+  animation: logicChain 0.8s ease-out forwards;
+}
+
+.logic-chain-judgment {
+  stroke: #F59E0B;
+  stroke-width: 3;
+  stroke-dasharray: 100;
+  animation: logicChain 0.8s ease-out 0.3s forwards;
+}
+
+.logic-chain-result {
+  stroke: #10B981;
+  stroke-width: 3;
+  stroke-dasharray: 100;
+  animation: logicChain 0.8s ease-out 0.6s forwards;
+}
+
+@keyframes logicChain {
+  0% { stroke-dashoffset: 100; opacity: 0; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+/* 工具卡片效果 */
+.tool-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-card:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.2);
+}
+
+.tool-card:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tool-card.used {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* 异常清单条目 */
+.anomaly-item {
+  border-left: 3px solid #EF4444;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  0% { transform: translateX(20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* 时间轴标记 */
+.timeline-marker {
+  transition: all 0.2s ease;
+}
+
+.timeline-marker:hover {
+  transform: scale(1.2);
+}
+
+/* 波纹动画 */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.3);
+  animation: ripple 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
