@@ -1,0 +1,902 @@
+{
+  "BAT-1780195489382-P5LM3B": {
+    "id": "BAT-1780195489382-P5LM3B",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:44:49.382Z",
+    "updatedAt": "2026-05-31T02:44:49.383Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 85.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": 88.5
+      },
+      {
+        "id": "P003",
+        "position": "右上",
+        "temperature": 86.1
+      },
+      {
+        "id": "P004",
+        "position": "左中",
+        "temperature": 82.3
+      },
+      {
+        "id": "P005",
+        "position": "中心",
+        "temperature": 90.2
+      },
+      {
+        "id": "P006",
+        "position": "右中",
+        "temperature": 84.7
+      },
+      {
+        "id": "P007",
+        "position": "左下",
+        "temperature": 79.5
+      },
+      {
+        "id": "P008",
+        "position": "中下",
+        "temperature": 81.2
+      },
+      {
+        "id": "P009",
+        "position": "右下",
+        "temperature": 78.9
+      }
+    ],
+    "powerLevel": 100,
+    "turntableRotation": true,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 91.24,
+      "grade": "A",
+      "pass": true,
+      "details": {
+        "meanTemperature": 84.07,
+        "stdDev": 3.68,
+        "coefficientOfVariation": 4.38,
+        "adjustedCV": 4.38,
+        "validPointCount": 9,
+        "totalPointCount": 9,
+        "adjustmentFactors": [],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [
+        {
+          "id": "P005",
+          "temperature": 90.2,
+          "deviation": 6.13,
+          "position": "中心"
+        },
+        {
+          "id": "P002",
+          "temperature": 88.5,
+          "deviation": 4.43,
+          "position": "中上"
+        }
+      ],
+      "coldspots": [
+        {
+          "id": "P009",
+          "temperature": 78.9,
+          "deviation": 5.17,
+          "position": "右下"
+        },
+        {
+          "id": "P007",
+          "temperature": 79.5,
+          "deviation": 4.57,
+          "position": "左下"
+        }
+      ],
+      "anomalies": [
+        {
+          "type": "power_mismatch",
+          "severity": "low",
+          "message": "5 个测点温度超出该功率档预期范围",
+          "affectedPoints": [
+            "P004",
+            "P006",
+            "P007",
+            "P008",
+            "P009"
+          ],
+          "expectedRange": {
+            "min": 85,
+            "max": 100
+          }
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:44:49.383Z",
+      "inputHash": "6380dd0f"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "power_mismatch",
+        "severity": "low",
+        "message": "5 个测点温度超出该功率档预期范围",
+        "affectedPoints": [
+          "P004",
+          "P006",
+          "P007",
+          "P008",
+          "P009"
+        ],
+        "expectedRange": {
+          "min": 85,
+          "max": 100
+        }
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:44:49.383Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195493360-V93JHN": {
+    "id": "BAT-1780195493360-V93JHN",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:44:53.361Z",
+    "updatedAt": "2026-05-31T02:44:53.362Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 85.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": null
+      },
+      {
+        "id": "P003",
+        "position": "右上",
+        "temperature": 86.1
+      }
+    ],
+    "powerLevel": 80,
+    "turntableRotation": true,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 98.95,
+      "grade": "A",
+      "pass": true,
+      "details": {
+        "meanTemperature": 85.65,
+        "stdDev": 0.45,
+        "coefficientOfVariation": 0.53,
+        "adjustedCV": 0.53,
+        "validPointCount": 2,
+        "totalPointCount": 3,
+        "adjustmentFactors": [],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [],
+      "coldspots": [
+        {
+          "id": "P001",
+          "temperature": 85.2,
+          "deviation": 0.45,
+          "position": "左上"
+        }
+      ],
+      "anomalies": [
+        {
+          "type": "missing_points",
+          "severity": "medium",
+          "message": "发现 1 个测点温度缺失",
+          "affectedPoints": [
+            "P002"
+          ]
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:44:53.362Z",
+      "inputHash": "287d2130"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "missing_points",
+        "severity": "medium",
+        "message": "发现 1 个测点温度缺失",
+        "affectedPoints": [
+          "P002"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:44:53.362Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195493743-BU4CX1": {
+    "id": "BAT-1780195493743-BU4CX1",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:44:53.743Z",
+    "updatedAt": "2026-05-31T02:44:53.749Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 95.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": 92.5
+      },
+      {
+        "id": "P003",
+        "position": "右上",
+        "temperature": 60.1
+      }
+    ],
+    "powerLevel": 100,
+    "turntableRotation": false,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 42.08,
+      "grade": "F",
+      "pass": false,
+      "details": {
+        "meanTemperature": 82.6,
+        "stdDev": 15.95,
+        "coefficientOfVariation": 19.31,
+        "adjustedCV": 28.96,
+        "validPointCount": 3,
+        "totalPointCount": 3,
+        "adjustmentFactors": [
+          {
+            "factor": "turntable_stopped",
+            "description": "转盘停转惩罚",
+            "multiplier": 1.5
+          }
+        ],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [],
+      "coldspots": [
+        {
+          "id": "P003",
+          "temperature": 60.1,
+          "deviation": 22.5,
+          "position": "右上"
+        }
+      ],
+      "anomalies": [
+        {
+          "type": "power_mismatch",
+          "severity": "low",
+          "message": "1 个测点温度超出该功率档预期范围",
+          "affectedPoints": [
+            "P003"
+          ],
+          "expectedRange": {
+            "min": 85,
+            "max": 100
+          }
+        },
+        {
+          "type": "turntable_stopped",
+          "severity": "high",
+          "message": "转盘处于停转状态，可能影响加热均匀性评估",
+          "affectedPoints": [
+            "P001",
+            "P002",
+            "P003"
+          ]
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:44:53.746Z",
+      "inputHash": "50ac7916"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "power_mismatch",
+        "severity": "low",
+        "message": "1 个测点温度超出该功率档预期范围",
+        "affectedPoints": [
+          "P003"
+        ],
+        "expectedRange": {
+          "min": 85,
+          "max": 100
+        }
+      },
+      {
+        "type": "turntable_stopped",
+        "severity": "high",
+        "message": "转盘处于停转状态，可能影响加热均匀性评估",
+        "affectedPoints": [
+          "P001",
+          "P002",
+          "P003"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:44:53.749Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195494147-BGXQ68": {
+    "id": "BAT-1780195494147-BGXQ68",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:44:54.147Z",
+    "updatedAt": "2026-05-31T02:44:54.148Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 45.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": 48.5
+      }
+    ],
+    "powerLevel": 100,
+    "turntableRotation": true,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 92.96,
+      "grade": "A",
+      "pass": true,
+      "details": {
+        "meanTemperature": 46.85,
+        "stdDev": 1.65,
+        "coefficientOfVariation": 3.52,
+        "adjustedCV": 3.52,
+        "validPointCount": 2,
+        "totalPointCount": 2,
+        "adjustmentFactors": [],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [],
+      "coldspots": [],
+      "anomalies": [
+        {
+          "type": "power_mismatch",
+          "severity": "low",
+          "message": "2 个测点温度超出该功率档预期范围",
+          "affectedPoints": [
+            "P001",
+            "P002"
+          ],
+          "expectedRange": {
+            "min": 85,
+            "max": 100
+          }
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:44:54.148Z",
+      "inputHash": "37f212c2"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "power_mismatch",
+        "severity": "low",
+        "message": "2 个测点温度超出该功率档预期范围",
+        "affectedPoints": [
+          "P001",
+          "P002"
+        ],
+        "expectedRange": {
+          "min": 85,
+          "max": 100
+        }
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:44:54.148Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195557198-549OS0": {
+    "id": "BAT-1780195557198-549OS0",
+    "status": "reviewed",
+    "createdAt": "2026-05-31T02:45:57.198Z",
+    "updatedAt": "2026-05-31T02:45:57.500Z",
+    "version": 5,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 87.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": 89.5
+      },
+      {
+        "id": "P003",
+        "position": "右上",
+        "temperature": 88.1
+      },
+      {
+        "id": "P004",
+        "position": "左中",
+        "temperature": 86.3
+      },
+      {
+        "id": "P005",
+        "position": "中心",
+        "temperature": 91.2
+      },
+      {
+        "id": "P006",
+        "position": "右中",
+        "temperature": 87.7
+      },
+      {
+        "id": "P007",
+        "position": "左下",
+        "temperature": 85.5
+      },
+      {
+        "id": "P008",
+        "position": "中下",
+        "temperature": 86.2
+      },
+      {
+        "id": "P009",
+        "position": "右下",
+        "temperature": 84.9
+      }
+    ],
+    "powerLevel": 100,
+    "turntableRotation": true,
+    "foodDimensions": {
+      "width": 20,
+      "depth": 20,
+      "height": 10
+    },
+    "analysis": {
+      "score": 95.69,
+      "grade": "A",
+      "pass": true,
+      "details": {
+        "meanTemperature": 87.4,
+        "stdDev": 1.89,
+        "coefficientOfVariation": 2.16,
+        "adjustedCV": 2.16,
+        "validPointCount": 9,
+        "totalPointCount": 9,
+        "adjustmentFactors": [
+          {
+            "factor": "food_dimensions",
+            "description": "食物尺寸校正",
+            "originalCV": 2.156783450129472,
+            "adjustedCV": 2.156783450129472,
+            "multiplier": 1
+          }
+        ],
+        "foodDimensionsApplied": true
+      },
+      "hotspots": [
+        {
+          "id": "P005",
+          "temperature": 91.2,
+          "deviation": 3.8,
+          "position": "中心"
+        },
+        {
+          "id": "P002",
+          "temperature": 89.5,
+          "deviation": 2.1,
+          "position": "中上"
+        }
+      ],
+      "coldspots": [
+        {
+          "id": "P009",
+          "temperature": 84.9,
+          "deviation": 2.5,
+          "position": "右下"
+        },
+        {
+          "id": "P007",
+          "temperature": 85.5,
+          "deviation": 1.9,
+          "position": "左下"
+        }
+      ],
+      "anomalies": [
+        {
+          "type": "power_mismatch",
+          "severity": "low",
+          "message": "1 个测点温度超出该功率档预期范围",
+          "affectedPoints": [
+            "P009"
+          ],
+          "expectedRange": {
+            "min": 85,
+            "max": 100
+          }
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:45:57.299Z",
+      "inputHash": "61654137"
+    },
+    "reviewNotes": "数据复核完毕，加热均匀性测试结果有效",
+    "anomalies": [
+      {
+        "type": "power_mismatch",
+        "severity": "low",
+        "message": "1 个测点温度超出该功率档预期范围",
+        "affectedPoints": [
+          "P009"
+        ],
+        "expectedRange": {
+          "min": 85,
+          "max": 100
+        }
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:45:57.221Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      },
+      {
+        "version": 2,
+        "timestamp": "2026-05-31T02:45:57.297Z",
+        "changes": [
+          "foodDimensions"
+        ]
+      },
+      {
+        "version": 3,
+        "timestamp": "2026-05-31T02:45:57.300Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      },
+      {
+        "version": 4,
+        "timestamp": "2026-05-31T02:45:57.500Z",
+        "changes": [
+          "reviewNotes",
+          "status"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195557397-UF52QF": {
+    "id": "BAT-1780195557397-UF52QF",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:45:57.397Z",
+    "updatedAt": "2026-05-31T02:45:57.402Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 85.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": null
+      },
+      {
+        "id": "P003",
+        "position": "右上",
+        "temperature": 86.1
+      },
+      {
+        "id": "P004",
+        "position": "左中",
+        "temperature": null
+      }
+    ],
+    "powerLevel": 80,
+    "turntableRotation": true,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 98.95,
+      "grade": "A",
+      "pass": true,
+      "details": {
+        "meanTemperature": 85.65,
+        "stdDev": 0.45,
+        "coefficientOfVariation": 0.53,
+        "adjustedCV": 0.53,
+        "validPointCount": 2,
+        "totalPointCount": 4,
+        "adjustmentFactors": [],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [],
+      "coldspots": [
+        {
+          "id": "P001",
+          "temperature": 85.2,
+          "deviation": 0.45,
+          "position": "左上"
+        }
+      ],
+      "anomalies": [
+        {
+          "type": "missing_points",
+          "severity": "medium",
+          "message": "发现 2 个测点温度缺失",
+          "affectedPoints": [
+            "P002",
+            "P004"
+          ]
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:45:57.399Z",
+      "inputHash": "7adfb23e"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "missing_points",
+        "severity": "medium",
+        "message": "发现 2 个测点温度缺失",
+        "affectedPoints": [
+          "P002",
+          "P004"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:45:57.402Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195557473-T0X0F9": {
+    "id": "BAT-1780195557473-T0X0F9",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:45:57.473Z",
+    "updatedAt": "2026-05-31T02:45:57.475Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 95.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": 92.5
+      },
+      {
+        "id": "P003",
+        "position": "右上",
+        "temperature": 60.1
+      }
+    ],
+    "powerLevel": 100,
+    "turntableRotation": false,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 42.08,
+      "grade": "F",
+      "pass": false,
+      "details": {
+        "meanTemperature": 82.6,
+        "stdDev": 15.95,
+        "coefficientOfVariation": 19.31,
+        "adjustedCV": 28.96,
+        "validPointCount": 3,
+        "totalPointCount": 3,
+        "adjustmentFactors": [
+          {
+            "factor": "turntable_stopped",
+            "description": "转盘停转惩罚",
+            "multiplier": 1.5
+          }
+        ],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [],
+      "coldspots": [
+        {
+          "id": "P003",
+          "temperature": 60.1,
+          "deviation": 22.5,
+          "position": "右上"
+        }
+      ],
+      "anomalies": [
+        {
+          "type": "power_mismatch",
+          "severity": "low",
+          "message": "1 个测点温度超出该功率档预期范围",
+          "affectedPoints": [
+            "P003"
+          ],
+          "expectedRange": {
+            "min": 85,
+            "max": 100
+          }
+        },
+        {
+          "type": "turntable_stopped",
+          "severity": "high",
+          "message": "转盘处于停转状态，可能影响加热均匀性评估",
+          "affectedPoints": [
+            "P001",
+            "P002",
+            "P003"
+          ]
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:45:57.474Z",
+      "inputHash": "50ac7916"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "power_mismatch",
+        "severity": "low",
+        "message": "1 个测点温度超出该功率档预期范围",
+        "affectedPoints": [
+          "P003"
+        ],
+        "expectedRange": {
+          "min": 85,
+          "max": 100
+        }
+      },
+      {
+        "type": "turntable_stopped",
+        "severity": "high",
+        "message": "转盘处于停转状态，可能影响加热均匀性评估",
+        "affectedPoints": [
+          "P001",
+          "P002",
+          "P003"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:45:57.475Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  },
+  "BAT-1780195557482-EMOL5Z": {
+    "id": "BAT-1780195557482-EMOL5Z",
+    "status": "draft",
+    "createdAt": "2026-05-31T02:45:57.483Z",
+    "updatedAt": "2026-05-31T02:45:57.491Z",
+    "version": 2,
+    "temperaturePoints": [
+      {
+        "id": "P001",
+        "position": "左上",
+        "temperature": 45.2
+      },
+      {
+        "id": "P002",
+        "position": "中上",
+        "temperature": 48.5
+      }
+    ],
+    "powerLevel": 100,
+    "turntableRotation": true,
+    "foodDimensions": null,
+    "analysis": {
+      "score": 92.96,
+      "grade": "A",
+      "pass": true,
+      "details": {
+        "meanTemperature": 46.85,
+        "stdDev": 1.65,
+        "coefficientOfVariation": 3.52,
+        "adjustedCV": 3.52,
+        "validPointCount": 2,
+        "totalPointCount": 2,
+        "adjustmentFactors": [],
+        "foodDimensionsApplied": false
+      },
+      "hotspots": [],
+      "coldspots": [],
+      "anomalies": [
+        {
+          "type": "power_mismatch",
+          "severity": "low",
+          "message": "2 个测点温度超出该功率档预期范围",
+          "affectedPoints": [
+            "P001",
+            "P002"
+          ],
+          "expectedRange": {
+            "min": 85,
+            "max": 100
+          }
+        }
+      ],
+      "analyzedAt": "2026-05-31T02:45:57.486Z",
+      "inputHash": "37f212c2"
+    },
+    "reviewNotes": null,
+    "anomalies": [
+      {
+        "type": "power_mismatch",
+        "severity": "low",
+        "message": "2 个测点温度超出该功率档预期范围",
+        "affectedPoints": [
+          "P001",
+          "P002"
+        ],
+        "expectedRange": {
+          "min": 85,
+          "max": 100
+        }
+      }
+    ],
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-05-31T02:45:57.491Z",
+        "changes": [
+          "analysis",
+          "anomalies"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "microwave-uniformity-test",
+  "version": "1.0.0",
+  "description": "微波炉加热均匀性测试系统",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2"
+  }
+}
