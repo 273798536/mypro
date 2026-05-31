@@ -1,0 +1,24 @@
+设备台账 - 校园乐队
+====================
+
+电吉他类:
+- Fender Stratocaster (主音吉他手用)
+- Gibson Les Paul (节奏吉他手用)
+- Ibanez RG550 (备用吉他)
+
+贝斯类:
+- MusicMan StingRay 4弦贝斯
+- Fender Precision Bass
+
+鼓组类:
+- Yamaha Recording Custom 套鼓
+- Zildjian K Custom 镲片套装
+
+键盘类:
+- Roland Juno-60 合成器
+- Nord Stage 3 电钢琴
+
+音响类:
+- Marshall JCM800 吉他音箱
+- Ampeg SVT 贝斯音箱
+- 2x Shure SM58 麦克风
