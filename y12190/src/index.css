@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply bg-jazz-ink-900 text-jazz-ink-100;
+  }
+}
+
+@layer components {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #434343 #1a1a1a;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #434343;
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #515151;
+  }
+}
+
+/* 乐谱相关样式 */
+.staff-line {
+  stroke: #666;
+  stroke-width: 1;
+}
+
+.note-head {
+  fill: #e3e3e3;
+}
+
+.note-accidental {
+  fill: #4A90D9;
+}
+
+.chord-label {
+  font-family: 'Source Code Pro', monospace;
+  font-weight: 600;
+}
