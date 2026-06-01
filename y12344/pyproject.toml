@@ -1,0 +1,20 @@
+[project]
+name = "projectile-estimator"
+version = "0.1.0"
+description = "抛体运动风阻估计与轨迹分析系统"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0",
+    "click>=8.1.0",
+    "jinja2>=3.1.0",
+    "matplotlib>=3.7.0",
+]
+
+[project.scripts]
+pest = "projectile_estimator.cli:cli"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

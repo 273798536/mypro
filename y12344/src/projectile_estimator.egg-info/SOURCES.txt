@@ -1,0 +1,14 @@
+pyproject.toml
+src/projectile_estimator/__init__.py
+src/projectile_estimator/anomaly_detector.py
+src/projectile_estimator/cli.py
+src/projectile_estimator/data_loader.py
+src/projectile_estimator/models.py
+src/projectile_estimator/physics.py
+src/projectile_estimator/report_generator.py
+src/projectile_estimator.egg-info/PKG-INFO
+src/projectile_estimator.egg-info/SOURCES.txt
+src/projectile_estimator.egg-info/dependency_links.txt
+src/projectile_estimator.egg-info/entry_points.txt
+src/projectile_estimator.egg-info/requires.txt
+src/projectile_estimator.egg-info/top_level.txt

@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: projectile-estimator
+Version: 0.1.0
+Summary: 抛体运动风阻估计与轨迹分析系统
+Requires-Python: >=3.9
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: click>=8.1.0
+Requires-Dist: jinja2>=3.1.0
+Requires-Dist: matplotlib>=3.7.0

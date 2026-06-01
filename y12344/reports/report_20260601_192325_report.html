@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>抛体运动风阻估计分析报告 - report_20260601_192325</title>
+<style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 20px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+    h2 { color: #34495e; margin-top: 30px; border-left: 4px solid #3498db; padding-left: 10px; }
+    h3 { color: #555; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #3498db; color: white; }
+    tr:nth-child(even) { background: #f8f9fa; }
+    .anomaly-error { border-left: 4px solid #e74c3c; background: #ffebee; padding: 15px; margin: 10px 0; border-radius: 4px; }
+    .anomaly-warning { border-left: 4px solid #f39c12; background: #fff8e1; padding: 15px; margin: 10px 0; border-radius: 4px; }
+    .metric { display: inline-block; background: #ecf0f1; padding: 10px 15px; margin: 5px; border-radius: 4px; }
+    .metric-value { font-size: 1.2em; font-weight: bold; color: #2980b9; }
+    .metric-label { font-size: 0.9em; color: #7f8c8d; }
+    .formula { background: #f8f9fa; padding: 15px; border-radius: 4px; font-family: 'Courier New', monospace; margin: 10px 0; }
+    .next-step { background: #e8f5e9; border-left: 4px solid #27ae60; padding: 15px; margin-top: 10px; border-radius: 4px; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
+    .tag-error { background: #e74c3c; color: white; }
+    .tag-warning { background: #f39c12; color: white; }
+    .tag-ok { background: #27ae60; color: white; }
+    pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 4px; overflow-x: auto; }
+    .source { color: #7f8c8d; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🚀 抛体运动风阻估计分析报告</h1>
+    <p class="source">报告ID: report_20260601_192325 | 生成时间: 2026-06-01 19:23:25</p>
+
+    <h2>📋 边界配置</h2>
+    <table>
+        <tr><th>参数</th><th>单位</th><th>下限</th><th>上限</th></tr>
+        
+        <tr><td>angle</td><td>deg</td><td>-10.0</td><td>90.0</td></tr>
+        
+        <tr><td>wind_speed</td><td>m/s</td><td>0.0</td><td>30.0</td></tr>
+        
+        <tr><td>coordinate_x</td><td>m</td><td>0.0</td><td>1000.0</td></tr>
+        
+        <tr><td>coordinate_y</td><td>m</td><td>-50.0</td><td>500.0</td></tr>
+        
+        <tr><td>time</td><td>s</td><td>0.0</td><td>60.0</td></tr>
+        
+    </table>
+
+    <h2>📊 事件汇总 (16 个事件)</h2>
+    <table>
+        <tr><th>时间(s)</th><th>轨迹</th><th>角度</th><th>风速</th><th>关联材料</th></tr>
+        
+        <tr>
+            <td>0.00</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>0.20</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>0.40</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>0.60</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>0.80</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>1.00</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>1.20</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>1.40</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>1.60</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>1.80</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>2.00</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>2.20</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>2.40</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>2.60</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>2.80</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+        <tr>
+            <td>3.00</td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td><span class="tag tag-ok">✓</span></td>
+            <td>轨迹文件: trajectory_normal.csv, 角度文件: angle_normal.csv, 风速文件: wind_normal.csv</td>
+        </tr>
+        
+    </table>
+
+    <h2>⚠️ 异常检测 (0 个异常)</h2>
+    
+    <div class="anomaly-error" style="background: #e8f5e9; border-left-color: #27ae60;">
+        <strong>✓ 未检测到任何异常</strong>
+    </div>
+    
+
+    
+    <h2>📈 轨迹拟合结果</h2>
+    <div class="metric">
+        <div class="metric-label">拟合方法</div>
+        <div class="metric-value">physics_based</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">R²</div>
+        <div class="metric-value">1.000000</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">RMSE</div>
+        <div class="metric-value">0.002378 m</div>
+    </div>
+    
+    <div class="metric">
+        <div class="metric-label">估计风阻系数 C_d</div>
+        <div class="metric-value">0.469679</div>
+    </div>
+    
+
+    <h3>拟合公式</h3>
+    <div class="formula">物理模型拟合 (有风阻):<br>x(t) = x₀ + v₀·cos(θ₀)·t<br>y(t) = y₀ + v₀·sin(θ₀)·t - ½·g·t²<br>F_drag = ½·ρ·C_d·A·|v_rel|²<br>a_drag = -F_drag / m · (v_rel / |v_rel|)</div>
+
+    <h3>拟合参数</h3>
+    <table>
+        <tr><th>参数</th><th>值</th><th>单位</th></tr>
+        
+        <tr>
+            <td>v0</td>
+            <td>49.999520</td>
+            <td>m/s</td>
+        </tr>
+        
+        <tr>
+            <td>theta0_deg</td>
+            <td>45.000000</td>
+            <td>deg</td>
+        </tr>
+        
+        <tr>
+            <td>mass</td>
+            <td>0.100000</td>
+            <td>kg</td>
+        </tr>
+        
+        <tr>
+            <td>cross_section_area</td>
+            <td>0.001000</td>
+            <td>m^2</td>
+        </tr>
+        
+        <tr>
+            <td>drag_coeff</td>
+            <td>0.469679</td>
+            <td>dimensionless</td>
+        </tr>
+        
+        <tr>
+            <td>wind_speed</td>
+            <td>1.983125</td>
+            <td>m/s</td>
+        </tr>
+        
+        <tr>
+            <td>wind_direction_deg</td>
+            <td>0.018750</td>
+            <td>deg</td>
+        </tr>
+        
+    </table>
+    
+
+    
+    <h2>🌬️ 风阻估计详情</h2>
+    <div class="metric">
+        <div class="metric-label">估计C_d</div>
+        <div class="metric-value">0.469679</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">R²</div>
+        <div class="metric-value">1.000000</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">RMSE</div>
+        <div class="metric-value">0.002378 m</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">初速度v0</div>
+        <div class="metric-value">50.00 m/s</div>
+    </div>
+    <div class="metric">
+        <div class="metric-label">初始角θ0</div>
+        <div class="metric-value">45.00°</div>
+    </div>
+
+    <h3>中间量计算</h3>
+    <table>
+        <tr><th>中间量</th><th>值</th><th>单位</th></tr>
+        
+        
+        <tr>
+            <td>v0</td>
+            <td>49.999520</td>
+            <td>m/s</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>theta0_deg</td>
+            <td>45.000000</td>
+            <td>deg</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>mass</td>
+            <td>0.100000</td>
+            <td>kg</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>cross_section_area</td>
+            <td>0.001000</td>
+            <td>m^2</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>wind_speed</td>
+            <td>1.983125</td>
+            <td>m/s</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>wind_direction_deg</td>
+            <td>0.018750</td>
+            <td>deg</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>cd_bounds_min</td>
+            <td>0.010000</td>
+            <td>dimensionless</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>cd_bounds_max</td>
+            <td>2.000000</td>
+            <td>dimensionless</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>best_cd</td>
+            <td>0.469679</td>
+            <td>dimensionless</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>r_squared</td>
+            <td>1.000000</td>
+            <td>dimensionless</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>rmse</td>
+            <td>0.002378</td>
+            <td>m</td>
+        </tr>
+        
+        
+        
+        <tr>
+            <td>n_points</td>
+            <td>16.000000</td>
+            <td>count</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <h2>📉 误差分析</h2>
+    <h3>总体误差</h3>
+    <table>
+        <tr><th>指标</th><th>MAE</th><th>RMSE</th><th>MAX</th><th>单位</th></tr>
+        <tr><td>位置</td><td>0.0018</td><td>0.0024</td><td>0.0049</td><td>m</td></tr>
+        <tr><td>速度</td><td>0.0017</td><td>0.0019</td><td>0.0033</td><td>m/s</td></tr>
+        <tr><td>轨迹角</td><td>0.0025</td><td>0.0029</td><td>0.0048</td><td>deg</td></tr>
+    </table>
+
+    
+    <h3>实测角度 vs 模拟角度</h3>
+    <table>
+        <tr><th>时间(s)</th><th>实测角(°)</th><th>模拟角(°)</th><th>误差(°)</th></tr>
+        
+        <tr><td>0.00</td><td>45.00</td><td>45.00</td><td>0.00</td></tr>
+        
+        <tr><td>0.20</td><td>43.27</td><td>43.27</td><td>-0.00</td></tr>
+        
+        <tr><td>0.40</td><td>41.39</td><td>41.40</td><td>-0.01</td></tr>
+        
+        <tr><td>0.60</td><td>39.36</td><td>39.36</td><td>-0.00</td></tr>
+        
+        <tr><td>0.80</td><td>37.16</td><td>37.16</td><td>0.00</td></tr>
+        
+        <tr><td>1.00</td><td>34.77</td><td>34.77</td><td>-0.00</td></tr>
+        
+        <tr><td>1.20</td><td>32.19</td><td>32.19</td><td>-0.00</td></tr>
+        
+        <tr><td>1.40</td><td>29.41</td><td>29.41</td><td>-0.00</td></tr>
+        
+        <tr><td>1.60</td><td>26.42</td><td>26.42</td><td>-0.00</td></tr>
+        
+        <tr><td>1.80</td><td>23.22</td><td>23.22</td><td>-0.00</td></tr>
+        
+        <tr><td>2.00</td><td>19.80</td><td>19.81</td><td>-0.01</td></tr>
+        
+        <tr><td>2.20</td><td>16.18</td><td>16.19</td><td>-0.01</td></tr>
+        
+        <tr><td>2.40</td><td>12.37</td><td>12.38</td><td>-0.01</td></tr>
+        
+        <tr><td>2.60</td><td>8.40</td><td>8.40</td><td>-0.00</td></tr>
+        
+        <tr><td>2.80</td><td>4.29</td><td>4.29</td><td>-0.00</td></tr>
+        
+        <tr><td>3.00</td><td>0.08</td><td>0.08</td><td>-0.00</td></tr>
+        
+    </table>
+    
+    
+
+    <h2>📚 物理公式参考</h2>
+    
+    <h3>无风阻抛体运动</h3>
+    <div class="formula">
+        x(t) = x₀ + v₀·cos(θ₀)·t<br>y(t) = y₀ + v₀·sin(θ₀)·t - ½·g·t²<br>vₓ(t) = v₀·cos(θ₀)<br>vᵧ(t) = v₀·sin(θ₀) - g·t<br>
+    </div>
+    <p><strong>参数说明:</strong></p>
+    <ul>
+    
+        <li><code>x₀</code>: 初始x坐标, 单位: m</li>
+    
+        <li><code>y₀</code>: 初始y坐标, 单位: m</li>
+    
+        <li><code>v₀</code>: 初速度, 单位: m/s</li>
+    
+        <li><code>θ₀</code>: 初始抛射角, 单位: deg</li>
+    
+        <li><code>g</code>: 重力加速度, 单位: m/s² (固定值: 9.81)</li>
+    
+    </ul>
+    
+    <h3>风阻力</h3>
+    <div class="formula">
+        F_drag = ½·ρ·C_d·A·|v_rel|²<br>v_rel = v_projectile - v_wind<br>
+    </div>
+    <p><strong>参数说明:</strong></p>
+    <ul>
+    
+        <li><code>ρ</code>: 空气密度, 单位: kg/m³ (固定值: 1.225)</li>
+    
+        <li><code>C_d</code>: 风阻系数, 无量纲</li>
+    
+        <li><code>A</code>: 横截面积, 单位: m²</li>
+    
+        <li><code>v_rel</code>: 相对速度, 单位: m/s</li>
+    
+    </ul>
+    
+    <h3>风阻加速度</h3>
+    <div class="formula">
+        a_drag = -F_drag / m · (v_rel / |v_rel|)<br>
+    </div>
+    <p><strong>参数说明:</strong></p>
+    <ul>
+    
+        <li><code>m</code>: 质量, 单位: kg</li>
+    
+    </ul>
+    
+    <h3>轨迹角</h3>
+    <div class="formula">
+        θ = arctan2(vᵧ, vₓ)<br>
+    </div>
+    <p><strong>参数说明:</strong></p>
+    <ul>
+    
+        <li><code>vₓ</code>: x方向速度, 单位: m/s</li>
+    
+        <li><code>vᵧ</code>: y方向速度, 单位: m/s</li>
+    
+    </ul>
+    
+
+</div>
+</body>
+</html>

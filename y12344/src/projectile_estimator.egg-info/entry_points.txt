@@ -1,0 +1,2 @@
+[console_scripts]
+pest = projectile_estimator.cli:cli
