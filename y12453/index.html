@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>复利农场播种季</title>
+<style>
+:root {
+  --green-dark: #2d5016;
+  --green-mid: #4a7c23;
+  --green-light: #7cb342;
+  --green-pale: #c5e1a5;
+  --gold: #f9a825;
+  --gold-light: #fdd835;
+  --brown: #5d4037;
+  --brown-light: #8d6e63;
+  --sky-blue: #42a5f5;
+  --storm-gray: #616161;
+  --rain-blue: #1e88e5;
+  --drought-orange: #ef6c00;
+  --red: #e53935;
+  --white: #ffffff;
+  --bg: #f1f8e9;
+  --card-bg: #ffffff;
+  --shadow: 0 2px 12px rgba(0,0,0,0.1);
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: #333;
+  min-height: 100vh;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+.start-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1b5e20 0%, #4a7c23 40%, #8bc34a 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+.start-screen h1 { font-size: 2.8rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+.start-screen .subtitle { font-size: 1.2rem; opacity: 0.9; margin-bottom: 2rem; }
+.start-screen .farm-visual { font-size: 5rem; margin-bottom: 1.5rem; animation: sway 3s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 2rem; border: none; border-radius: 8px;
+  font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--gold); color: var(--brown); }
+.btn-secondary { background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.5); }
+.btn-danger { background: var(--red); color: white; }
+.btn-small { padding: 0.4rem 1rem; font-size: 0.9rem; }
+.game-screen { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.75rem 1rem; background: var(--green-dark); color: white;
+  border-radius: var(--radius); margin-bottom: 1rem;
+}
+.top-bar .round-info { font-size: 1.1rem; font-weight: 600; }
+.top-bar .balance-info { display: flex; gap: 1.5rem; font-size: 0.95rem; }
+.top-bar .balance-info span { display: flex; align-items: center; gap: 0.3rem; }
+.game-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; }
+.main-area { display: flex; flex-direction: column; gap: 1rem; }
+.card {
+  background: var(--card-bg); border-radius: var(--radius);
+  padding: 1.25rem; box-shadow: var(--shadow);
+}
+.card h2 { font-size: 1.15rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+.farm-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 1rem 0; }
+.farm-plot {
+  aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 1.8rem;
+  position: relative; transition: all 0.3s; border: 2px solid transparent;
+}
+.farm-plot.empty { background: #efebe9; border-color: #d7ccc8; }
+.farm-plot.planted { background: #e8f5e9; border-color: var(--green-light); }
+.farm-plot.growing { background: #c8e6c9; border-color: var(--green-mid); }
+.farm-plot.mature { background: var(--green-pale); border-color: var(--green-mid); animation: pulse 2s infinite; }
+.farm-plot.withered { background: #ffebee; border-color: #ef9a9a; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(124,179,66,0.4); } 50% { box-shadow: 0 0 12px 4px rgba(124,179,66,0.3); } }
+.farm-plot .plot-label { font-size: 0.6rem; color: #666; margin-top: 2px; }
+.phase-panel h3 { font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--green-dark); }
+.phase-panel .phase-step {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 0; font-size: 0.95rem; border-bottom: 1px solid #eee;
+}
+.phase-step .step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: #e0e0e0; color: #666;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+}
+.phase-step.active .step-num { background: var(--green-mid); color: white; }
+.phase-step.done .step-num { background: var(--green-light); color: white; }
+.phase-step.done { color: #999; text-decoration: line-through; }
+.action-area { min-height: 200px; }
+.action-area label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--brown); }
+.action-area input[type="range"] { width: 100%; margin: 0.5rem 0; accent-color: var(--green-mid); }
+.action-area .value-display { text-align: center; font-size: 1.5rem; font-weight: 700; color: var(--green-dark); margin: 0.5rem 0; }
+.choice-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0.75rem 0; }
+.choice-btn {
+  flex: 1; min-width: 100px; padding: 0.75rem; border: 2px solid #e0e0e0;
+  border-radius: 8px; background: white; cursor: pointer; text-align: center;
+  transition: all 0.2s; font-size: 0.95rem;
+}
+.choice-btn:hover { border-color: var(--green-mid); background: #f1f8e9; }
+.choice-btn.selected { border-color: var(--green-mid); background: #e8f5e9; font-weight: 600; }
+.choice-btn .choice-icon { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
+.choice-btn .choice-label { font-size: 0.85rem; color: #666; }
+.sidebar { display: flex; flex-direction: column; gap: 1rem; }
+.reminder-card { border-left: 4px solid var(--gold); background: #fffde7; }
+.reminder-card.warning { border-left-color: var(--red); background: #ffebee; }
+.reminder-card.info { border-left-color: var(--sky-blue); background: #e3f2fd; }
+.reminder-card h2 { color: var(--brown); font-size: 1rem; }
+.reminder-card ul { padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6; }
+.reminder-card .phase-tag {
+  display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 600; margin-right: 0.3rem;
+}
+.phase-tag.early { background: #c8e6c9; color: var(--green-dark); }
+.phase-tag.mid { background: #fff9c4; color: #f57f17; }
+.phase-tag.late { background: #ffcdd2; color: #c62828; }
+.round-log { max-height: 300px; overflow-y: auto; font-size: 0.85rem; }
+.round-log .log-entry { padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; }
+.round-log .log-round { font-weight: 700; color: var(--green-dark); margin-bottom: 0.25rem; }
+.log-detail { color: #666; font-size: 0.8rem; line-height: 1.5; }
+.log-detail .positive { color: var(--green-mid); }
+.log-detail .negative { color: var(--red); }
+.settlement-screen { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.settlement-screen h1 { text-align: center; font-size: 2rem; color: var(--green-dark); margin-bottom: 1.5rem; }
+.result-banner {
+  text-align: center; padding: 2rem; border-radius: var(--radius); margin-bottom: 1.5rem;
+}
+.result-banner.win { background: linear-gradient(135deg, #1b5e20, #4caf50); color: white; }
+.result-banner.lose { background: linear-gradient(135deg, #b71c1c, #e53935); color: white; }
+.result-banner .result-icon { font-size: 3rem; }
+.result-banner .result-text { font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem; }
+.result-banner .result-score { font-size: 2.5rem; font-weight: 800; margin-top: 0.5rem; }
+.cause-analysis { margin-bottom: 1.5rem; }
+.cause-analysis h2 { font-size: 1.2rem; color: var(--brown); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.cause-item {
+  display: flex; gap: 1rem; padding: 1rem; margin-bottom: 0.75rem;
+  background: white; border-radius: 8px; box-shadow: var(--shadow); border-left: 4px solid;
+}
+.cause-item.rate-switch { border-left-color: var(--drought-orange); }
+.cause-item.early-redeem { border-left-color: var(--rain-blue); }
+.cause-item.fee-leak { border-left-color: var(--red); }
+.cause-item.good-decision { border-left-color: var(--green-mid); }
+.cause-round { font-weight: 700; color: var(--green-dark); min-width: 60px; }
+.cause-desc { flex: 1; }
+.cause-desc .cause-title { font-weight: 600; margin-bottom: 0.25rem; }
+.cause-desc .cause-detail { font-size: 0.85rem; color: #666; line-height: 1.5; }
+.cause-impact { font-weight: 700; min-width: 80px; text-align: right; }
+.cause-impact.positive { color: var(--green-mid); }
+.cause-impact.negative { color: var(--red); }
+.round-breakdown { margin-bottom: 1.5rem; }
+.round-breakdown table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.round-breakdown th {
+  background: var(--green-dark); color: white; padding: 0.6rem; text-align: left; font-size: 0.85rem;
+}
+.round-breakdown td { padding: 0.6rem; border-bottom: 1px solid #eee; }
+.round-breakdown tr:hover { background: #f1f8e9; }
+.audit-screen { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.audit-screen h1 { font-size: 1.8rem; color: var(--brown); margin-bottom: 1rem; }
+.audit-entry {
+  background: white; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;
+  box-shadow: var(--shadow); border-left: 4px solid var(--gold);
+}
+.audit-entry .audit-time { font-size: 0.8rem; color: #999; }
+.audit-entry .audit-action { font-weight: 600; margin: 0.3rem 0; }
+.audit-entry .audit-reason {
+  font-size: 0.9rem; color: #666; margin: 0.3rem 0;
+  padding: 0.5rem; background: #fffde7; border-radius: 4px;
+}
+.audit-entry .audit-impact { font-size: 0.85rem; color: var(--brown-light); }
+.audit-entry .audit-diff { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.85rem; }
+.audit-entry .diff-old { padding: 0.3rem 0.6rem; background: #ffcdd2; border-radius: 4px; }
+.audit-entry .diff-new { padding: 0.3rem 0.6rem; background: #c8e6c9; border-radius: 4px; }
+.teacher-panel {
+  position: fixed; right: 0; top: 0; width: 360px; height: 100vh;
+  background: white; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+  z-index: 1000; transform: translateX(100%); transition: transform 0.3s;
+  display: flex; flex-direction: column;
+}
+.teacher-panel.open { transform: translateX(0); }
+.teacher-panel .panel-header {
+  padding: 1rem; background: var(--brown); color: white;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.teacher-panel .panel-body { flex: 1; overflow-y: auto; padding: 1rem; }
+.teacher-panel .field-group { margin-bottom: 1rem; }
+.teacher-panel .field-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; color: var(--brown); }
+.teacher-panel .field-group input,
+.teacher-panel .field-group select,
+.teacher-panel .field-group textarea {
+  width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem;
+}
+.teacher-panel .field-group textarea { height: 60px; resize: vertical; }
+.teacher-toggle {
+  position: fixed; right: 1rem; bottom: 1rem; width: 50px; height: 50px;
+  border-radius: 50%; background: var(--brown); color: white; border: none;
+  font-size: 1.3rem; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  z-index: 999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+}
+.teacher-toggle:hover { transform: scale(1.1); }
+.weather-effect {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+}
+.weather-effect.sunny { background: #fff9c4; color: #f57f17; }
+.weather-effect.rainy { background: #e3f2fd; color: #1565c0; }
+.weather-effect.storm { background: #eceff1; color: #37474f; }
+.weather-effect.drought { background: #ffe0b2; color: #e65100; }
+.rules-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 2rem;
+}
+.rules-overlay.hidden { display: none; }
+.rules-content {
+  background: white; border-radius: var(--radius); padding: 2rem;
+  max-width: 600px; max-height: 80vh; overflow-y: auto;
+}
+.rules-content h2 { color: var(--green-dark); margin-bottom: 1rem; }
+.rules-content h3 { color: var(--brown); margin: 1rem 0 0.5rem; }
+.rules-content p, .rules-content li { font-size: 0.95rem; line-height: 1.7; color: #555; }
+.rules-content ul { padding-left: 1.5rem; }
+.toast-container {
+  position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+  z-index: 3000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none;
+}
+.toast {
+  padding: 0.75rem 1.5rem; border-radius: 8px; color: white; font-weight: 600;
+  animation: slideIn 0.3s, fadeOut 0.3s 2.7s; pointer-events: auto;
+}
+.toast.success { background: var(--green-mid); }
+.toast.warning { background: var(--drought-orange); }
+.toast.error { background: var(--red); }
+.toast.info { background: var(--sky-blue); }
+@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; } }
+.formula-display {
+  background: #f5f5f5; padding: 0.75rem; border-radius: 6px;
+  font-family: "Courier New", monospace; font-size: 0.95rem;
+  text-align: center; margin: 0.5rem 0; color: var(--green-dark);
+}
+.compound-visual { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding: 0.5rem 0; }
+.compound-bar {
+  flex: 1; background: var(--green-light); border-radius: 4px 4px 0 0;
+  transition: height 0.5s; min-height: 4px; position: relative;
+}
+.compound-bar .bar-val {
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  font-size: 0.7rem; color: var(--green-dark); white-space: nowrap;
+}
+@media (max-width: 768px) {
+  .game-layout { grid-template-columns: 1fr; }
+  .start-screen h1 { font-size: 2rem; }
+  .teacher-panel { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="rules-overlay hidden" id="rulesOverlay">
+  <div class="rules-content">
+    <h2>🌾 复利农场播种季 — 规则说明</h2>
+    <h3>游戏目标</h3>
+    <p>在6个月的播种季中，通过合理投资让农场资金增长。理解复利的力量，以及提前赎回、利率波动和费用对收益的影响。</p>
+    <h3>核心公式</h3>
+    <div class="formula-display">A = P × (1 + r/n)^(n×t)</div>
+    <p>其中 P=本金，r=年利率，n=复利次数，t=时间（年）</p>
+    <h3>每轮4个阶段</h3>
+    <ul>
+      <li><strong>播种阶段</strong>：决定本轮投入多少本金（种子资金）</li>
+      <li><strong>天气阶段</strong>：利率天气揭晓，影响实际利率</li>
+      <li><strong>生长阶段</strong>：复利自动计算，资金增长</li>
+      <li><strong>赎回阶段</strong>：可选择提前赎回，但有罚金</li>
+    </ul>
+    <h3>利率天气</h3>
+    <ul>
+      <li>☀️ 晴天：利率+1%~+3%</li>
+      <li>🌧️ 雨天：利率不变</li>
+      <li>⛈️ 暴风：利率-1%~-3%</li>
+      <li>🏜️ 干旱：利率-2%~-5%</li>
+    </ul>
+    <h3>提前赎回</h3>
+    <p>每轮末可选择赎回部分或全部资金。提前赎回需支付赎回金额5%~15%的罚金，且失去后续复利增长机会。</p>
+    <h3>费用</h3>
+    <p>每轮可能产生管理费（余额的0.5%），利率切换时可能产生切换费用。费用漏扣可能在任何轮次被发现。</p>
+    <h3>胜负判定</h3>
+    <p>最终资金 ≥ 初始资金×1.3 为丰收；≥ 初始资金×1.1 为保本；&lt; 初始资金×1.1 为歉收。</p>
+    <div style="text-align:center; margin-top:1.5rem;">
+      <button class="btn btn-primary" onclick="document.getElementById('rulesOverlay').classList.add('hidden')">知道了！</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen start-screen active" id="startScreen">
+  <div class="farm-visual">🌾</div>
+  <h1>复利农场播种季</h1>
+  <p class="subtitle">在农场经营中体验复利的力量</p>
+  <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+    <button class="btn btn-primary" onclick="startGame()">开始播种</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('rulesOverlay').classList.remove('hidden')">游戏规则</button>
+  </div>
+  <div style="margin-top:2rem; font-size:0.9rem; opacity:0.8;">
+    <p>💡 每一步选择都影响最终收成</p>
+    <p>📊 结算时会告诉你为什么赢或输</p>
+  </div>
+</div>
+
+<div class="screen game-screen" id="gameScreen">
+  <div class="top-bar">
+    <div class="round-info" id="roundInfo">第 1 月 / 共 6 月</div>
+    <div class="balance-info">
+      <span>💰 总资金: <strong id="totalBalance">10000</strong></span>
+      <span>🌱 在投本金: <strong id="investedPrincipal">0</strong></span>
+      <span>📈 累计收益: <strong id="totalProfit">0</strong></span>
+    </div>
+  </div>
+  <div class="game-layout">
+    <div class="main-area">
+      <div class="card">
+        <h2>🌾 农田</h2>
+        <div class="farm-grid" id="farmGrid"></div>
+        <div class="compound-visual" id="compoundVisual"></div>
+      </div>
+      <div class="card">
+        <h2 id="phaseTitle">播种阶段</h2>
+        <div class="action-area" id="actionArea"></div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="card phase-panel" id="phasePanel">
+        <h2>📋 本轮进度</h2>
+        <div id="phaseSteps"></div>
+      </div>
+      <div class="card reminder-card" id="reminderCard">
+        <h2>💡 提醒</h2>
+        <ul id="reminderList"></ul>
+      </div>
+      <div class="card">
+        <h2>📜 经营日志</h2>
+        <div class="round-log" id="roundLog"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="screen settlement-screen" id="settlementScreen"></div>
+<div class="screen audit-screen" id="auditScreen"></div>
+
+<div class="teacher-panel" id="teacherPanel">
+  <div class="panel-header">
+    <span>🎓 教师控制台</span>
+    <button style="background:none;border:none;color:white;font-size:1.3rem;cursor:pointer;" onclick="toggleTeacherPanel()">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="field-group">
+      <label>当前轮次</label>
+      <select id="teacherRound"></select>
+    </div>
+    <div class="field-group">
+      <label>修改利率 (%)</label>
+      <input type="number" id="teacherRate" step="0.1" />
+    </div>
+    <div class="field-group">
+      <label>修改天气</label>
+      <select id="teacherWeather">
+        <option value="">不修改</option>
+        <option value="sunny">☀️ 晴天</option>
+        <option value="rainy">🌧️ 雨天</option>
+        <option value="storm">⛈️ 暴风</option>
+        <option value="drought">🏜️ 干旱</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>管理费率 (%)</label>
+      <input type="number" id="teacherFeeRate" step="0.1" value="0.5" />
+    </div>
+    <div class="field-group">
+      <label>提前赎回罚金率 (%)</label>
+      <input type="number" id="teacherPenaltyRate" step="1" value="10" />
+    </div>
+    <div class="field-group">
+      <label>修改原因 (必填)</label>
+      <textarea id="teacherReason" placeholder="说明为什么修改此判断..."></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="applyTeacherChange()">应用修改</button>
+    <hr style="margin:1rem 0; border-color:#eee;">
+    <button class="btn btn-small" style="width:100%; background:#f5f5f5;" onclick="showAuditLog()">查看审计日志</button>
+    <button class="btn btn-small" style="width:100%; background:#f5f5f5; margin-top:0.5rem;" onclick="exportGameData()">导出游戏数据</button>
+  </div>
+</div>
+
+<button class="teacher-toggle" onclick="toggleTeacherPanel()">🎓</button>
+
+<script>
+var TOTAL_ROUNDS = 6;
+var INITIAL_BALANCE = 10000;
+var BASE_RATE = 0.05;
+
+var WEATHERS = {
+  sunny:   { icon: '☀️', name: '晴天', rateMod: [0.01, 0.03],  desc: '阳光充足，利率上升' },
+  rainy:   { icon: '🌧️', name: '雨天', rateMod: [0, 0],        desc: '风调雨顺，利率不变' },
+  storm:   { icon: '⛈️', name: '暴风', rateMod: [-0.03, -0.01], desc: '暴风来袭，利率下降' },
+  drought: { icon: '🏜️', name: '干旱', rateMod: [-0.05, -0.02], desc: '严重干旱，利率大幅下降' }
+};
+
+var PHASES = [
+  { id: 'sow',     name: '播种', icon: '🌱' },
+  { id: 'weather', name: '天气', icon: '🌤️' },
+  { id: 'grow',    name: '生长', icon: '📈' },
+  { id: 'redeem',  name: '赎回', icon: '🏦' }
+];
+
+var game = null;
+var redeemChoice = null;
+
+function randRange(min, max) { return min + Math.random() * (max - min); }
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+function formatMoney(val) { return val.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+function showToast(msg, type) {
+  type = type || 'info';
+  var container = document.getElementById('toastContainer');
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(function() { toast.remove(); }, 3000);
+}
+
+function createGame() {
+  game = {
+    currentRound: 0,
+    currentPhase: 0,
+    totalBalance: INITIAL_BALANCE,
+    investedPrincipal: 0,
+    rounds: [],
+    auditLog: [],
+    pendingFees: [],
+    feeLeakDetected: false,
+    completed: false
+  };
+  var weatherSeq = ['sunny', 'sunny', 'rainy', 'sunny', 'storm', 'drought'];
+  for (var i = 0; i < TOTAL_ROUNDS; i++) {
+    var wKey = i < 2 ? 'sunny' : (i < 4 ? randChoice(['sunny', 'rainy', 'storm']) : randChoice(Object.keys(WEATHERS)));
+    var w = WEATHERS[wKey];
+    var rMod = Math.round(randRange(w.rateMod[0], w.rateMod[1]) * 1000) / 1000;
+    var rate = Math.round((BASE_RATE + rMod) * 1000) / 1000;
+    if (rate < 0) rate = 0;
+    game.rounds.push({
+      number: i + 1,
+      seedCapital: 0,
+      weather: wKey,
+      rate: rate,
+      baseRate: BASE_RATE,
+      rateMod: rMod,
+      rateSwitched: false,
+      previousRate: i > 0 ? game.rounds[i - 1].rate : BASE_RATE,
+      growth: 0,
+      compoundAmount: 0,
+      redeemed: false,
+      redeemAmount: 0,
+      redeemPenalty: 0,
+      redeemPenaltyRate: 0.10,
+      fees: [],
+      managementFeeRate: 0.005,
+      managementFee: 0,
+      balanceBefore: 0,
+      balanceAfter: 0,
+      investedBefore: 0,
+      investedAfter: 0,
+      phase: 0,
+      completed: false,
+      feeLeakDetected: false
+    });
+  }
+}
+
+function getReminders() {
+  if (!game) return [];
+  var reminders = [];
+  var round = game.rounds[game.currentRound];
+  if (!round) return [];
+
+  if (game.currentPhase === 0) {
+    reminders.push({
+      phase: 'early',
+      text: '本轮管理费率 ' + (round.managementFeeRate * 100).toFixed(1) + '%，会从在投资金中扣减'
+    });
+    if (game.pendingFees.length > 0) {
+      var totalPending = game.pendingFees.reduce(function(s, f) { return s + f.amount; }, 0);
+      reminders.push({
+        phase: 'early',
+        text: '⚠️ 发现前期费用漏扣！共 ' + formatMoney(totalPending) + ' 元需补扣',
+        type: 'warning'
+      });
+    }
+    if (game.currentRound > 0) {
+      var prevRate = game.rounds[game.currentRound - 1].rate;
+      if (Math.abs(round.rate - prevRate) > 0.005) {
+        round.rateSwitched = true;
+      }
+    }
+  }
+
+  if (game.currentPhase === 1) {
+    if (round.rateSwitched) {
+      reminders.push({
+        phase: 'mid',
+        text: '⚠️ 利率已切换！上轮 ' + (round.previousRate * 100).toFixed(1) + '% → 本轮 ' + (round.rate * 100).toFixed(1) + '%，切换可能产生费用',
+        type: 'warning'
+      });
+    }
+  }
+
+  if (game.currentPhase >= 2) {
+    reminders.push({
+      phase: 'late',
+      text: '提前赎回罚金率 ' + (round.redeemPenaltyRate * 100).toFixed(0) + '%，赎回后失去后续复利增长'
+    });
+  }
+
+  if (game.currentRound >= 4) {
+    reminders.push({
+      phase: 'late',
+      text: '后期轮次利率波动更大，注意风险管理'
+    });
+  }
+
+  if (round.feeLeakDetected) {
+    reminders.push({
+      phase: 'early',
+      text: '🔍 本轮检测到费用漏扣已补正',
+      type: 'info'
+    });
+  }
+
+  return reminders;
+}
+
+function renderReminders() {
+  var reminders = getReminders();
+  var card = document.getElementById('reminderCard');
+  var list = document.getElementById('reminderList');
+  card.className = 'card reminder-card';
+  list.innerHTML = '';
+  if (reminders.length === 0) {
+    list.innerHTML = '<li>暂无提醒</li>';
+    return;
+  }
+  var hasWarning = reminders.some(function(r) { return r.type === 'warning'; });
+  if (hasWarning) card.classList.add('warning');
+  var hasInfo = reminders.some(function(r) { return r.type === 'info'; });
+  if (hasInfo && !hasWarning) card.classList.add('info');
+  reminders.forEach(function(r) {
+    var li = document.createElement('li');
+    var phaseName = r.phase === 'early' ? '初期' : (r.phase === 'mid' ? '中期' : '月末');
+    li.innerHTML = '<span class="phase-tag ' + r.phase + '">' + phaseName + '</span> ' + r.text;
+    list.appendChild(li);
+  });
+}
+
+function renderFarmGrid() {
+  var grid = document.getElementById('farmGrid');
+  grid.innerHTML = '';
+  game.rounds.forEach(function(round, i) {
+    var plot = document.createElement('div');
+    var cls = 'farm-plot ';
+    if (i > game.currentRound || (i === game.currentRound && round.seedCapital === 0)) {
+      cls += 'empty';
+    } else if (round.completed) {
+      cls += (round.redeemed && round.rate < 0.02) ? 'withered' : 'mature';
+    } else if (i === game.currentRound) {
+      cls += game.currentPhase < 2 ? 'planted' : 'growing';
+    } else {
+      cls += 'empty';
+    }
+    plot.className = cls;
+    var icon = '';
+    if (cls.indexOf('empty') >= 0) icon = '🟫';
+    else if (cls.indexOf('planted') >= 0) icon = '🌱';
+    else if (cls.indexOf('growing') >= 0) icon = '🌿';
+    else if (cls.indexOf('mature') >= 0) icon = '🌾';
+    else if (cls.indexOf('withered') >= 0) icon = '枯';
+    plot.innerHTML = icon + '<span class="plot-label">第' + round.number + '月</span>';
+    grid.appendChild(plot);
+  });
+}
+
+function renderCompoundVisual() {
+  var container = document.getElementById('compoundVisual');
+  container.innerHTML = '';
+  var values = game.rounds.map(function(r) { return r.compoundAmount || 0; }).concat([INITIAL_BALANCE / TOTAL_ROUNDS]);
+  var maxVal = Math.max.apply(null, values);
+  game.rounds.forEach(function(round) {
+    var bar = document.createElement('div');
+    bar.className = 'compound-bar';
+    var val = round.compoundAmount || 0;
+    var pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+    pct = Math.max(pct, 3);
+    bar.style.height = pct + '%';
+    if (val > 0) bar.innerHTML = '<span class="bar-val">' + formatMoney(val) + '</span>';
+    container.appendChild(bar);
+  });
+}
+
+function renderPhaseSteps() {
+  var container = document.getElementById('phaseSteps');
+  container.innerHTML = '';
+  PHASES.forEach(function(phase, i) {
+    var div = document.createElement('div');
+    var cls = 'phase-step ';
+    if (i < game.currentPhase) cls += 'done';
+    else if (i === game.currentPhase) cls += 'active';
+    div.className = cls;
+    div.innerHTML = '<span class="step-num">' + (i + 1) + '</span> ' + phase.icon + ' ' + phase.name;
+    container.appendChild(div);
+  });
+}
+
+function renderTopBar() {
+  document.getElementById('roundInfo').textContent = '第 ' + (game.currentRound + 1) + ' 月 / 共 ' + TOTAL_ROUNDS + ' 月';
+  document.getElementById('totalBalance').textContent = formatMoney(game.totalBalance);
+  document.getElementById('investedPrincipal').textContent = formatMoney(game.investedPrincipal);
+  document.getElementById('totalProfit').textContent = formatMoney(game.totalBalance + game.investedPrincipal - INITIAL_BALANCE);
+}
+
+function renderActionArea() {
+  var area = document.getElementById('actionArea');
+  var title = document.getElementById('phaseTitle');
+  var round = game.rounds[game.currentRound];
+  area.innerHTML = '';
+
+  if (game.currentPhase === 0) {
+    title.textContent = '🌱 播种阶段 — 选择本金投入';
+    var maxInvest = Math.floor(game.totalBalance);
+    var defaultInvest = Math.min(Math.floor(game.totalBalance * 0.5), maxInvest);
+    area.innerHTML =
+      '<label>决定本轮投入多少种子资金（本金）</label>' +
+      '<div class="formula-display">本息 = 本金 × (1 + 利率)^期数</div>' +
+      '<div class="value-display" id="sowValue">' + formatMoney(defaultInvest) + ' 元</div>' +
+      '<input type="range" id="sowSlider" min="0" max="' + maxInvest + '" value="' + defaultInvest + '" step="100" />' +
+      '<div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#999;"><span>0 元</span><span>' + formatMoney(maxInvest) + ' 元</span></div>' +
+      '<p style="margin-top:0.5rem;font-size:0.9rem;color:#666;">💡 投入越多，复利收益越高，但风险也越大</p>' +
+      '<div style="margin-top:1rem;text-align:right;"><button class="btn btn-primary" onclick="confirmSow()">确认播种 →</button></div>';
+    document.getElementById('sowSlider').addEventListener('input', function() {
+      document.getElementById('sowValue').textContent = formatMoney(parseInt(this.value)) + ' 元';
+    });
+
+  } else if (game.currentPhase === 1) {
+    title.textContent = '🌤️ 天气阶段 — 利率揭晓';
+    var w = WEATHERS[round.weather];
+    var prevRate = game.currentRound > 0 ? game.rounds[game.currentRound - 1].rate : BASE_RATE;
+    round.previousRate = prevRate;
+    var switched = Math.abs(round.rate - prevRate) > 0.005;
+    round.rateSwitched = switched;
+    area.innerHTML =
+      '<div style="text-align:center;margin:1rem 0;">' +
+        '<div style="font-size:3rem;">' + w.icon + '</div>' +
+        '<div class="weather-effect ' + round.weather + '">' + w.name + ' — ' + w.desc + '</div>' +
+      '</div>' +
+      '<div class="formula-display">本轮利率: ' + (round.rate * 100).toFixed(1) + '% = 基础 ' + (BASE_RATE * 100).toFixed(1) + '% + 天气修正 ' + (round.rateMod > 0 ? '+' : '') + (round.rateMod * 100).toFixed(1) + '%</div>' +
+      (switched ?
+        '<p style="color:var(--drought-orange);font-weight:600;margin-top:0.5rem;">⚠️ 利率切换！上轮 ' + (prevRate * 100).toFixed(1) + '% → 本轮 ' + (round.rate * 100).toFixed(1) + '%</p>' :
+        '<p style="color:var(--green-mid);margin-top:0.5rem;">✅ 利率稳定，无切换</p>') +
+      '<div style="margin-top:1rem;text-align:right;"><button class="btn btn-primary" onclick="confirmWeather()">继续 →</button></div>';
+
+  } else if (game.currentPhase === 2) {
+    title.textContent = '📈 生长阶段 — 复利计算';
+    var capital = round.seedCapital;
+    var rate = round.rate;
+    var amount = capital * Math.pow(1 + rate, 1);
+    round.compoundAmount = amount;
+    var growth = amount - capital;
+    round.growth = growth;
+    round.managementFee = round.investedBefore * round.managementFeeRate;
+    area.innerHTML =
+      '<div class="formula-display">' + formatMoney(capital) + ' × (1 + ' + (rate * 100).toFixed(1) + '%)^1 = ' + formatMoney(amount) + '</div>' +
+      '<div style="display:flex;gap:1rem;margin-top:1rem;">' +
+        '<div style="flex:1;text-align:center;padding:0.75rem;background:#e8f5e9;border-radius:8px;">' +
+          '<div style="font-size:0.85rem;color:#666;">本金</div>' +
+          '<div style="font-size:1.2rem;font-weight:700;color:var(--green-dark);">' + formatMoney(capital) + '</div></div>' +
+        '<div style="flex:1;text-align:center;padding:0.75rem;background:#fff9c4;border-radius:8px;">' +
+          '<div style="font-size:0.85rem;color:#666;">复利收益</div>' +
+          '<div style="font-size:1.2rem;font-weight:700;color:var(--gold);">+' + formatMoney(growth) + '</div></div>' +
+        '<div style="flex:1;text-align:center;padding:0.75rem;background:#ffebee;border-radius:8px;">' +
+          '<div style="font-size:0.85rem;color:#666;">管理费</div>' +
+          '<div style="font-size:1.2rem;font-weight:700;color:var(--red);">-' + formatMoney(round.managementFee) + '</div></div>' +
+      '</div>' +
+      '<p style="margin-top:0.75rem;font-size:0.9rem;color:#666;">💡 复利让利息也产生利息，时间越长增长越快</p>' +
+      '<div style="margin-top:1rem;text-align:right;"><button class="btn btn-primary" onclick="confirmGrow()">继续 →</button></div>';
+
+  } else if (game.currentPhase === 3) {
+    title.textContent = '🏦 赎回阶段 — 是否提前赎回';
+    var maxRedeem = Math.floor(round.investedAfter);
+    var penaltyRate = round.redeemPenaltyRate;
+    area.innerHTML =
+      '<label>是否提前赎回部分或全部在投资金？</label>' +
+      '<p style="font-size:0.9rem;color:#666;margin-bottom:0.5rem;">提前赎回需支付 ' + (penaltyRate * 100).toFixed(0) + '% 罚金，且失去后续复利增长</p>' +
+      '<div class="choice-group">' +
+        '<button class="choice-btn" id="redeemNo" onclick="selectRedeem(false)">' +
+          '<span class="choice-icon">🔄</span>继续投资<span class="choice-label">保留复利增长</span></button>' +
+        '<button class="choice-btn" id="redeemYes" onclick="selectRedeem(true)">' +
+          '<span class="choice-icon">💰</span>提前赎回<span class="choice-label">付罚金取回资金</span></button>' +
+      '</div>' +
+      '<div id="redeemAmountArea" style="display:none;margin-top:0.75rem;">' +
+        '<label>赎回金额</label>' +
+        '<div class="value-display" id="redeemValue">' + formatMoney(maxRedeem) + ' 元</div>' +
+        '<input type="range" id="redeemSlider" min="0" max="' + maxRedeem + '" value="' + maxRedeem + '" step="100" />' +
+        '<div style="display:flex;justify-content:space-between;font-size:0.85rem;color:#999;"><span>0 元</span><span>' + formatMoney(maxRedeem) + ' 元</span></div>' +
+        '<p style="color:var(--red);font-size:0.9rem;margin-top:0.5rem;">罚金: <span id="penaltyDisplay">' + formatMoney(maxRedeem * penaltyRate) + '</span> 元</p>' +
+      '</div>' +
+      '<div style="margin-top:1rem;text-align:right;"><button class="btn btn-primary" id="confirmRedeemBtn" onclick="confirmRedeem()" disabled>确认 →</button></div>';
+  }
+}
+
+function selectRedeem(doRedeem) {
+  redeemChoice = doRedeem;
+  document.getElementById('redeemNo').className = 'choice-btn' + (doRedeem ? '' : ' selected');
+  document.getElementById('redeemYes').className = 'choice-btn' + (doRedeem ? ' selected' : '');
+  document.getElementById('redeemAmountArea').style.display = doRedeem ? 'block' : 'none';
+  document.getElementById('confirmRedeemBtn').disabled = false;
+  if (doRedeem) {
+    var slider = document.getElementById('redeemSlider');
+    var round = game.rounds[game.currentRound];
+    slider.addEventListener('input', function() {
+      var val = parseInt(this.value);
+      document.getElementById('redeemValue').textContent = formatMoney(val) + ' 元';
+      document.getElementById('penaltyDisplay').textContent = formatMoney(val * round.redeemPenaltyRate);
+    });
+  }
+}
+
+function confirmSow() {
+  var val = parseInt(document.getElementById('sowSlider').value);
+  var round = game.rounds[game.currentRound];
+  round.seedCapital = val;
+  round.balanceBefore = game.totalBalance;
+  round.investedBefore = game.investedPrincipal + val;
+  game.totalBalance -= val;
+  game.investedPrincipal += val;
+  game.currentPhase = 1;
+  renderGame();
+  showToast('已播种 ' + formatMoney(val) + ' 元', 'success');
+}
+
+function confirmWeather() {
+  game.currentPhase = 2;
+  var round = game.rounds[game.currentRound];
+  round.investedBefore = game.investedPrincipal;
+  renderGame();
+}
+
+function confirmGrow() {
+  var round = game.rounds[game.currentRound];
+  var netGrowth = round.growth - round.managementFee;
+  game.investedPrincipal += netGrowth;
+  round.investedAfter = game.investedPrincipal;
+  if (game.investedPrincipal < 0) {
+    game.investedPrincipal = 0;
+  }
+
+  if (game.pendingFees.length > 0 && game.currentPhase === 2) {
+    var totalPending = game.pendingFees.reduce(function(s, f) { return s + f.amount; }, 0);
+    game.investedPrincipal = Math.max(0, game.investedPrincipal - totalPending);
+    round.investedAfter = game.investedPrincipal;
+    game.pendingFees = [];
+    game.feeLeakDetected = true;
+    round.feeLeakDetected = true;
+    showToast('已补扣漏扣费用 ' + formatMoney(totalPending) + ' 元', 'warning');
+  }
+
+  game.currentPhase = 3;
+  renderGame();
+  showToast('资金增长 +' + formatMoney(round.growth) + '，管理费 -' + formatMoney(round.managementFee), 'info');
+}
+
+function confirmRedeem() {
+  var round = game.rounds[game.currentRound];
+  round.redeemed = redeemChoice;
+
+  if (redeemChoice) {
+    var slider = document.getElementById('redeemSlider');
+    var val = parseInt(slider.value);
+    val = Math.min(val, Math.floor(round.investedAfter));
+    round.redeemAmount = val;
+    round.redeemPenalty = val * round.redeemPenaltyRate;
+    var returned = val - round.redeemPenalty;
+    game.totalBalance += returned;
+    game.investedPrincipal -= val;
+    if (game.investedPrincipal < 0) game.investedPrincipal = 0;
+    showToast('赎回 ' + formatMoney(val) + ' 元，罚金 ' + formatMoney(round.redeemPenalty) + ' 元', 'warning');
+  }
+
+  round.balanceAfter = game.totalBalance;
+  round.completed = true;
+
+  if (Math.random() < 0.25) {
+    var leakAmount = Math.round(game.investedPrincipal * 0.003);
+    if (leakAmount > 0) {
+      game.pendingFees.push({
+        round: game.currentRound + 1,
+        amount: leakAmount,
+        type: 'management',
+        description: '第' + (game.currentRound + 1) + '月管理费漏扣'
+      });
+      round.feeLeakDetected = true;
+    }
+  }
+
+  game.currentRound++;
+  game.currentPhase = 0;
+  redeemChoice = null;
+
+  if (game.currentRound >= TOTAL_ROUNDS) {
+    finishGame();
+  } else {
+    renderGame();
+  }
+}
+
+function renderGame() {
+  renderTopBar();
+  renderFarmGrid();
+  renderCompoundVisual();
+  renderPhaseSteps();
+  renderActionArea();
+  renderReminders();
+  renderRoundLog();
+  updateTeacherRoundSelect();
+}
+
+function renderRoundLog() {
+  var container = document.getElementById('roundLog');
+  container.innerHTML = '';
+  game.rounds.forEach(function(round) {
+    if (!round.completed && round.seedCapital === 0) return;
+    var entry = document.createElement('div');
+    entry.className = 'log-entry';
+    var details = [];
+    if (round.seedCapital > 0) details.push('投入 <span class="positive">' + formatMoney(round.seedCapital) + '</span>');
+    if (round.growth > 0) details.push('增长 <span class="positive">+' + formatMoney(round.growth) + '</span>');
+    if (round.managementFee > 0) details.push('管理费 <span class="negative">-' + formatMoney(round.managementFee) + '</span>');
+    if (round.redeemed) details.push('赎回 <span class="negative">' + formatMoney(round.redeemAmount) + '</span>，罚金 <span class="negative">-' + formatMoney(round.redeemPenalty) + '</span>');
+    if (round.rateSwitched) details.push('利率切换 ' + (round.previousRate * 100).toFixed(1) + '% → ' + (round.rate * 100).toFixed(1) + '%');
+    entry.innerHTML = '<div class="log-round">第 ' + round.number + ' 月</div><div class="log-detail">' + details.join(' | ') + '</div>';
+    container.appendChild(entry);
+  });
+  container.scrollTop = container.scrollHeight;
+}
+
+function finishGame() {
+  var finalBalance = game.totalBalance + game.investedPrincipal;
+  game.completed = true;
+  showScreen('settlementScreen');
+  renderSettlement(finalBalance);
+}
+
+function renderSettlement(finalBalance) {
+  var target = INITIAL_BALANCE * 1.3;
+  var breakEven = INITIAL_BALANCE * 1.1;
+  var isWin = finalBalance >= target;
+  var isOk = !isWin && finalBalance >= breakEven;
+  var resultClass = isWin ? 'win' : (isOk ? 'win' : 'lose');
+  var resultIcon = isWin ? '🌾' : (isOk ? '🍃' : '枯');
+  var resultText = isWin ? '大丰收！' : (isOk ? '勉强保本' : '歉收…');
+
+  var causes = analyzeCauses();
+
+  var html = '<h1>🌾 播种季结算</h1>' +
+    '<div class="result-banner ' + resultClass + '">' +
+      '<div class="result-icon">' + resultIcon + '</div>' +
+      '<div class="result-text">' + resultText + '</div>' +
+      '<div class="result-score">' + formatMoney(finalBalance) + ' 元</div>' +
+      '<div style="font-size:0.9rem;margin-top:0.5rem;">初始 ' + formatMoney(INITIAL_BALANCE) + ' → 最终 ' + formatMoney(finalBalance) +
+        ' | 收益率 ' + ((finalBalance / INITIAL_BALANCE - 1) * 100).toFixed(1) + '%</div>' +
+    '</div>' +
+    '<div class="cause-analysis card">' +
+      '<h2>🔍 回合经营归因分析</h2>' +
+      '<p style="font-size:0.9rem;color:#666;margin-bottom:1rem;">以下分析展示每个关键决策对最终结果的影响，不只是总分</p>';
+
+  causes.forEach(function(c) {
+    html += '<div class="cause-item ' + c.type + '">' +
+      '<div class="cause-round">' + c.round + '</div>' +
+      '<div class="cause-desc">' +
+        '<div class="cause-title">' + c.title + '</div>' +
+        '<div class="cause-detail">' + c.detail + '</div>' +
+      '</div>' +
+      '<div class="cause-impact ' + (c.impact >= 0 ? 'positive' : 'negative') + '">' +
+        (c.impact >= 0 ? '+' : '') + formatMoney(Math.abs(c.impact)) +
+      '</div></div>';
+  });
+
+  html += '</div>';
+
+  html += '<div class="round-breakdown card">' +
+    '<h2>📊 逐月明细</h2>' +
+    '<table><thead><tr>' +
+      '<th>月份</th><th>投入</th><th>利率</th><th>天气</th><th>增长</th><th>费用</th><th>赎回</th><th>月末余额</th>' +
+    '</tr></thead><tbody>';
+
+  game.rounds.forEach(function(r) {
+    if (!r.completed) return;
+    html += '<tr>' +
+      '<td>第' + r.number + '月</td>' +
+      '<td>' + formatMoney(r.seedCapital) + '</td>' +
+      '<td>' + (r.rate * 100).toFixed(1) + '%' + (r.rateSwitched ? ' ⚡' : '') + '</td>' +
+      '<td>' + WEATHERS[r.weather].icon + '</td>' +
+      '<td style="color:var(--green-mid)">+' + formatMoney(r.growth) + '</td>' +
+      '<td style="color:var(--red)">-' + formatMoney(r.managementFee + r.redeemPenalty) + '</td>' +
+      '<td>' + (r.redeemed ? formatMoney(r.redeemAmount) : '—') + '</td>' +
+      '<td>' + formatMoney(r.balanceAfter) + '</td>' +
+    '</tr>';
+  });
+
+  html += '<tr style="font-weight:700;background:#f1f8e9;"><td colspan="7">最终总资金</td><td>' + formatMoney(finalBalance) + '</td></tr>';
+  html += '</tbody></table></div>';
+
+  html += '<div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;">' +
+    '<button class="btn btn-primary" onclick="restartGame()">重新开始</button>' +
+    '<button class="btn btn-small" style="background:#f5f5f5;" onclick="showAuditLog()">查看审计日志</button>' +
+  '</div>';
+
+  document.getElementById('settlementScreen').innerHTML = html;
+}
+
+function analyzeCauses() {
+  var causes = [];
+
+  game.rounds.forEach(function(round, i) {
+    if (!round.completed) return;
+
+    if (round.rateSwitched) {
+      var lossFromSwitch = round.seedCapital * (round.previousRate - round.rate);
+      causes.push({
+        type: 'rate-switch',
+        round: '第' + round.number + '月',
+        title: '利率切换',
+        detail: '上轮利率 ' + (round.previousRate * 100).toFixed(1) + '% → 本轮 ' + (round.rate * 100).toFixed(1) + '%。' +
+          '利率下降导致本金 ' + formatMoney(round.seedCapital) + ' 的增长减少。' +
+          '如果保持原利率，可多增长 ' + formatMoney(Math.abs(lossFromSwitch)) + ' 元。' +
+          '这直接影响了第' + round.number + '月的经营成果，后续复利基数也因此缩小。',
+        impact: -Math.abs(lossFromSwitch)
+      });
+    }
+
+    if (round.redeemed && round.redeemAmount > 0) {
+      var remainingRounds = TOTAL_ROUNDS - i - 1;
+      var lostCompound = 0;
+      var temp = round.redeemAmount;
+      for (var j = 0; j < remainingRounds; j++) {
+        var r = game.rounds[i + 1 + j];
+        if (!r) break;
+        var gr = temp * r.rate;
+        lostCompound += gr;
+        temp = temp * (1 + r.rate);
+      }
+      causes.push({
+        type: 'early-redeem',
+        round: '第' + round.number + '月',
+        title: '提前赎回',
+        detail: '赎回 ' + formatMoney(round.redeemAmount) + ' 元，罚金 ' + formatMoney(round.redeemPenalty) + ' 元。' +
+          '如果继续投资，后续 ' + remainingRounds + ' 个月可额外获得复利收益约 ' + formatMoney(lostCompound) + ' 元。' +
+          '提前赎回让你失去了这部分增长，这是第' + round.number + '月决策对后续回合经营的核心影响。',
+        impact: -(lostCompound + round.redeemPenalty)
+      });
+    }
+
+    if (round.managementFee > 0 && round.feeLeakDetected) {
+      causes.push({
+        type: 'fee-leak',
+        round: '第' + round.number + '月',
+        title: '费用漏扣补正',
+        detail: '本轮检测到前期管理费漏扣并已补正。费用漏扣会使账面虚高，补正后实际余额下降。费用从早期轮次就可能存在，但只在后续阶段才被发现——这正是分阶段提醒的价值。',
+        impact: -round.managementFee
+      });
+    }
+
+    if (!round.rateSwitched && !round.redeemed && round.growth > 0 && round.rate > BASE_RATE) {
+      causes.push({
+        type: 'good-decision',
+        round: '第' + round.number + '月',
+        title: '优质决策',
+        detail: '利率高于基准(' + (round.rate * 100).toFixed(1) + '% > ' + (BASE_RATE * 100).toFixed(1) + '%)且未赎回，充分享受了复利增长。本金 ' + formatMoney(round.seedCapital) + ' 增长 ' + formatMoney(round.growth) + ' 元。',
+        impact: round.growth
+      });
+    }
+  });
+
+  if (game.pendingFees.length > 0) {
+    var totalPending = game.pendingFees.reduce(function(s, f) { return s + f.amount; }, 0);
+    causes.push({
+      type: 'fee-leak',
+      round: '跨月',
+      title: '费用漏扣累计',
+      detail: '游戏过程中检测到 ' + game.pendingFees.length + ' 次管理费漏扣，共计 ' + formatMoney(totalPending) + ' 元。费用漏扣从早期就可能存在，但只在后续才被发现，这是分阶段提醒的价值。',
+      impact: -totalPending
+    });
+  }
+
+  causes.sort(function(a, b) { return a.impact - b.impact; });
+  return causes;
+}
+
+function startGame() {
+  createGame();
+  showScreen('gameScreen');
+  renderGame();
+  showToast('播种季开始！共 ' + TOTAL_ROUNDS + ' 个月', 'success');
+}
+
+function restartGame() {
+  createGame();
+  showScreen('gameScreen');
+  renderGame();
+  showToast('新的播种季开始！', 'success');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function toggleTeacherPanel() {
+  document.getElementById('teacherPanel').classList.toggle('open');
+}
+
+function updateTeacherRoundSelect() {
+  var select = document.getElementById('teacherRound');
+  select.innerHTML = '';
+  game.rounds.forEach(function(r) {
+    var opt = document.createElement('option');
+    opt.value = r.number;
+    opt.textContent = '第 ' + r.number + ' 月';
+    select.appendChild(opt);
+  });
+  select.value = game.currentRound + 1;
+}
+
+function applyTeacherChange() {
+  var reason = document.getElementById('teacherReason').value.trim();
+  if (!reason) {
+    showToast('必须填写修改原因', 'error');
+    return;
+  }
+  var roundNum = parseInt(document.getElementById('teacherRound').value);
+  var round = game.rounds[roundNum - 1];
+  var changes = [];
+  var prevSnapshot = JSON.parse(JSON.stringify(round));
+
+  var newRate = document.getElementById('teacherRate').value;
+  if (newRate !== '') {
+    var rateVal = parseFloat(newRate) / 100;
+    if (!isNaN(rateVal) && rateVal !== round.rate) {
+      var oldRate = round.rate;
+      round.rate = clamp(rateVal, 0, 0.2);
+      round.rateMod = round.rate - BASE_RATE;
+      if (roundNum > 1) {
+        round.previousRate = game.rounds[roundNum - 2].rate;
+        round.rateSwitched = Math.abs(round.rate - round.previousRate) > 0.005;
+      }
+      changes.push('利率: ' + (oldRate * 100).toFixed(1) + '% → ' + (round.rate * 100).toFixed(1) + '%');
+    }
+  }
+
+  var newWeather = document.getElementById('teacherWeather').value;
+  if (newWeather && newWeather !== round.weather) {
+    var oldWeather = round.weather;
+    round.weather = newWeather;
+    var w = WEATHERS[newWeather];
+    round.rateMod = Math.round(randRange(w.rateMod[0], w.rateMod[1]) * 1000) / 1000;
+    round.rate = Math.round((BASE_RATE + round.rateMod) * 1000) / 1000;
+    if (round.rate < 0) round.rate = 0;
+    changes.push('天气: ' + WEATHERS[oldWeather].name + ' → ' + w.name);
+  }
+
+  var newFeeRate = document.getElementById('teacherFeeRate').value;
+  if (newFeeRate !== '') {
+    var feeVal = parseFloat(newFeeRate) / 100;
+    if (!isNaN(feeVal) && feeVal !== round.managementFeeRate) {
+      var oldFee = round.managementFeeRate;
+      round.managementFeeRate = clamp(feeVal, 0, 0.05);
+      changes.push('管理费率: ' + (oldFee * 100).toFixed(1) + '% → ' + (round.managementFeeRate * 100).toFixed(1) + '%');
+    }
+  }
+
+  var newPenaltyRate = document.getElementById('teacherPenaltyRate').value;
+  if (newPenaltyRate !== '') {
+    var penVal = parseFloat(newPenaltyRate) / 100;
+    if (!isNaN(penVal) && penVal !== round.redeemPenaltyRate) {
+      var oldPen = round.redeemPenaltyRate;
+      round.redeemPenaltyRate = clamp(penVal, 0, 0.3);
+      changes.push('赎回罚金率: ' + (oldPen * 100).toFixed(0) + '% → ' + (round.redeemPenaltyRate * 100).toFixed(0) + '%');
+    }
+  }
+
+  if (changes.length === 0) {
+    showToast('没有检测到任何修改', 'warning');
+    return;
+  }
+
+  var affectedRounds = [roundNum];
+  for (var i = roundNum; i < TOTAL_ROUNDS; i++) {
+    affectedRounds.push(i + 1);
+  }
+
+  var entry = {
+    timestamp: new Date().toISOString(),
+    teacherId: 'current',
+    round: roundNum,
+    action: changes.join('; '),
+    previousValue: prevSnapshot,
+    newValue: JSON.parse(JSON.stringify(round)),
+    reason: reason,
+    affectedRounds: affectedRounds,
+    affectedResults: changes.map(function(c) {
+      return c.split(':')[0].trim() + ' 变更影响第 ' + affectedRounds.join(', ') + ' 月';
+    })
+  };
+
+  game.auditLog.push(entry);
+  showToast('修改已应用，已记录审计日志', 'success');
+  document.getElementById('teacherReason').value = '';
+  renderGame();
+}
+
+function showAuditLog() {
+  showScreen('auditScreen');
+  var html = '<h1>📋 审计日志</h1>' +
+    '<button class="btn btn-small" style="margin-bottom:1rem;background:#f5f5f5;" onclick="goBackFromAudit()">返回</button>';
+  if (game.auditLog.length === 0) {
+    html += '<div class="card"><p style="text-align:center;color:#999;padding:2rem;">暂无教师修改记录</p></div>';
+  } else {
+    game.auditLog.forEach(function(entry) {
+      html += '<div class="audit-entry">' +
+        '<div class="audit-time">🕐 ' + new Date(entry.timestamp).toLocaleString('zh-CN') + '</div>' +
+        '<div class="audit-action">📝 第 ' + entry.round + ' 月: ' + entry.action + '</div>' +
+        '<div class="audit-reason">💡 修改原因: ' + entry.reason + '</div>' +
+        '<div class="audit-impact">🎯 影响轮次: 第 ' + entry.affectedRounds.join(', ') + ' 月</div>' +
+        '<div class="audit-diff"><span class="diff-old">修改前</span><span class="diff-new">修改后</span></div>' +
+        '<div style="font-size:0.8rem;color:#999;margin-top:0.5rem;">影响分析: ' + entry.affectedResults.join('; ') + '</div>' +
+      '</div>';
+    });
+  }
+  document.getElementById('auditScreen').innerHTML = html;
+}
+
+function goBackFromAudit() {
+  if (game.completed) {
+    showScreen('settlementScreen');
+  } else {
+    showScreen('gameScreen');
+  }
+}
+
+function exportGameData() {
+  var data = {
+    game: game,
+    exportTime: new Date().toISOString(),
+    summary: {
+      initialBalance: INITIAL_BALANCE,
+      finalBalance: game.totalBalance + game.investedPrincipal,
+      roundsPlayed: game.rounds.filter(function(r) { return r.completed; }).length,
+      auditLogCount: game.auditLog.length
+    }
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'compound-farm-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出', 'success');
+}
+</script>
+</body>
+</html>
