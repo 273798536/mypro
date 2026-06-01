@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组合几何剖分模型</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="toolbar">
+            <h1>组合几何剖分模型</h1>
+            <div class="toolbar-actions">
+                <button id="addGeometryBtn" class="btn btn-primary">添加几何体</button>
+                <button id="addCutPlaneBtn" class="btn btn-secondary">添加剖分面</button>
+                <button id="saveVersionBtn" class="btn btn-success">保存版本</button>
+                <button id="exportBtn" class="btn btn-info">导出视角</button>
+                <button id="validateBtn" class="btn btn-warning">验证模型</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3>几何体列表</h3>
+                    <div id="geometryList" class="list-container"></div>
+                </div>
+                <div class="panel">
+                    <h3>剖分面列表</h3>
+                    <div id="cutPlaneList" class="list-container"></div>
+                </div>
+                <div class="panel">
+                    <h3>体积读数</h3>
+                    <div id="volumeReadings" class="volume-panel"></div>
+                </div>
+                <div class="panel">
+                    <h3>验证结果</h3>
+                    <div id="validationResults" class="validation-panel"></div>
+                </div>
+            </aside>
+
+            <main class="viewport">
+                <canvas id="threeCanvas"></canvas>
+                <div id="infoCard" class="info-card hidden">
+                    <div class="card-header">
+                        <span id="cardTitle">对象信息</span>
+                        <button id="closeCardBtn" class="close-btn">&times;</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="cardContent"></div>
+                        <div class="card-notes">
+                            <label>讲解备注：</label>
+                            <textarea id="cardNotes" placeholder="输入讲解备注..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="sidebar right">
+                <div class="panel">
+                    <h3>版本历史</h3>
+                    <div id="versionHistory" class="version-list"></div>
+                </div>
+                <div class="panel">
+                    <h3>属性编辑</h3>
+                    <div id="propertyPanel" class="property-panel">
+                        <p class="hint">选择对象以编辑属性</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">标题</h3>
+                <button id="closeModalBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button id="modalCancelBtn" class="btn btn-secondary">取消</button>
+                <button id="modalConfirmBtn" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
