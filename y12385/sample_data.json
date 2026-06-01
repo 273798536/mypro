@@ -1,0 +1,178 @@
+{
+  "clients": [
+    {
+      "client_id": "cli_001",
+      "name": "张小明",
+      "age": 28,
+      "notes": "来访者有焦虑症状，每周一次治疗"
+    },
+    {
+      "client_id": "cli_002",
+      "name": "李华",
+      "age": 35,
+      "notes": "抑郁情绪，需关注睡眠质量"
+    }
+  ],
+  "tracks": [
+    {
+      "track_id": "trk_001",
+      "title": "月光奏鸣曲",
+      "artist": "贝多芬",
+      "duration": 300,
+      "genre": "古典",
+      "tags": ["放松", "钢琴"]
+    },
+    {
+      "track_id": "trk_002",
+      "title": "Canon in D",
+      "artist": "帕赫贝尔",
+      "duration": 240,
+      "genre": "古典",
+      "tags": ["舒缓", "弦乐"]
+    },
+    {
+      "track_id": "trk_003",
+      "title": "森林之声",
+      "artist": "自然音效",
+      "duration": 180,
+      "genre": "自然",
+      "tags": ["自然", "白噪音"]
+    },
+    {
+      "track_id": "trk_004",
+      "title": "海浪",
+      "artist": "自然音效",
+      "duration": 200,
+      "genre": "自然",
+      "tags": ["海洋", "放松"]
+    }
+  ],
+  "plans": [
+    {
+      "plan_id": "pln_001",
+      "client_id": "cli_001",
+      "title": "焦虑缓解计划A",
+      "planned_tracks": ["trk_001", "trk_003"],
+      "goals": ["降低焦虑水平", "提升情绪稳定性"]
+    },
+    {
+      "plan_id": "pln_002",
+      "client_id": "cli_002",
+      "title": "抑郁情绪调节计划",
+      "planned_tracks": ["trk_002", "trk_004"],
+      "goals": ["改善情绪", "促进积极思维"]
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "sess_normal_001",
+      "client_id": "cli_001",
+      "plan_id": "pln_001",
+      "start_time": "2026-05-20T14:00:00",
+      "end_time": "2026-05-20T15:00:00",
+      "emotion": {
+        "before": 2,
+        "during": 3,
+        "after": 4
+      },
+      "played_tracks": [
+        {
+          "track_id": "trk_001",
+          "start_time": "2026-05-20T14:05:00",
+          "end_time": "2026-05-20T14:10:00",
+          "notes": "来访者表示音乐很舒缓"
+        },
+        {
+          "track_id": "trk_003",
+          "start_time": "2026-05-20T14:15:00",
+          "end_time": "2026-05-20T14:18:00",
+          "notes": "自然音效帮助放松"
+        }
+      ],
+      "private_notes": "来访者本周工作压力较大，但配合度良好",
+      "public_notes": "本次治疗进展顺利，来访者反馈放松效果明显"
+    },
+    {
+      "session_id": "sess_privacy_leak_001",
+      "client_id": "cli_002",
+      "plan_id": "pln_002",
+      "start_time": "2026-05-21T10:00:00",
+      "end_time": "2026-05-21T11:00:00",
+      "emotion": {
+        "before": 1,
+        "during": 2,
+        "after": 2
+      },
+      "played_tracks": [
+        {
+          "track_id": "trk_002",
+          "start_time": "2026-05-21T10:05:00",
+          "end_time": "2026-05-21T10:09:00",
+          "notes": ""
+        },
+        {
+          "track_id": "trk_004",
+          "start_time": "2026-05-21T10:10:00",
+          "end_time": "2026-05-21T10:13:20",
+          "notes": "来访者提到家人电话，情绪有波动"
+        }
+      ],
+      "private_notes": "来访者配偶信息：电话号码13800138000，家庭住址在北京市朝阳区",
+      "public_notes": "注意：来访者身份证号110101199001011234，需要保密。工作单位是某科技公司。"
+    },
+    {
+      "session_id": "sess_emotion_missing_001",
+      "client_id": "cli_001",
+      "plan_id": "pln_001",
+      "start_time": "2026-05-22T14:00:00",
+      "end_time": "2026-05-22T15:00:00",
+      "emotion": {
+        "before": 3
+      },
+      "played_tracks": [
+        {
+          "track_id": "trk_001",
+          "start_time": "2026-05-22T14:05:00",
+          "end_time": "2026-05-22T14:10:00",
+          "notes": ""
+        }
+      ],
+      "private_notes": "治疗中情绪和治疗后情绪未记录",
+      "public_notes": "常规治疗"
+    },
+    {
+      "session_id": "sess_duplicate_001",
+      "client_id": "cli_002",
+      "plan_id": "pln_002",
+      "start_time": "2026-05-23T09:00:00",
+      "end_time": "2026-05-23T10:00:00",
+      "emotion": {
+        "before": 2,
+        "during": 3,
+        "after": 3
+      },
+      "played_tracks": [
+        {
+          "track_id": "trk_002",
+          "start_time": "2026-05-23T09:05:00",
+          "end_time": "2026-05-23T09:09:00",
+          "notes": "第一次播放"
+        },
+        {
+          "track_id": "trk_002",
+          "start_time": "2026-05-23T09:15:00",
+          "end_time": "2026-05-23T09:19:00",
+          "notes": "来访者要求重复播放"
+        },
+        {
+          "track_id": "trk_004",
+          "start_time": "2026-05-23T09:25:00",
+          "end_time": "2026-05-23T09:28:20",
+          "notes": ""
+        }
+      ],
+      "private_notes": "来访者特别喜欢Canon，重复播放了两次",
+      "public_notes": "治疗效果良好"
+    }
+  ]
+}
