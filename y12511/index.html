@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电力潮流变电站图</title>
+<style>
+:root{--bg0:#0a1628;--bg1:#111d33;--bg2:#162038;--bg3:#1a2744;--bd:#2a3a5c;--t1:#e8edf5;--t2:#8899b8;--t3:#5a6f94;--ab:#3b8bff;--ac:#00d4ff;--gn:#00e676;--yw:#ffc107;--rd:#ff3d57;--or:#ff8f00;--pp:#b388ff;--gy:#607d8b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg0);color:var(--t1);overflow:hidden;height:100vh}
+.hdr{height:48px;background:var(--bg1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:16px}
+.htitle{font-size:15px;font-weight:600;color:var(--ac);white-space:nowrap;letter-spacing:1px}
+.hctrl{display:flex;align-items:center;gap:12px;flex:1}
+.ssel{background:var(--bg3);border:1px solid var(--bd);color:var(--t1);padding:4px 10px;border-radius:4px;font-size:13px;cursor:pointer}
+.tctl{display:flex;align-items:center;gap:6px;margin-left:8px}
+.tbtn{background:var(--bg3);border:1px solid var(--bd);color:var(--t1);width:28px;height:28px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.tbtn:hover,.tbtn.on{background:var(--ab);border-color:var(--ab)}
+.tdisp{font-size:13px;color:var(--ac);font-variant-numeric:tabular-nums;min-width:56px;text-align:center}
+.tslider{width:140px;height:4px;-webkit-appearance:none;background:var(--bd);border-radius:2px;outline:none}
+.tslider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--ac);border-radius:50%;cursor:pointer}
+.hact{display:flex;align-items:center;gap:8px}
+.abtn{background:var(--bg3);border:1px solid var(--bd);color:var(--t1);padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap}
+.abtn:hover{background:var(--ab);border-color:var(--ab)}
+.abtn.exp:hover{background:#1b5e20;border-color:var(--gn)}
+.cbdg{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.cbdg.ok{background:rgba(0,230,118,.15);color:var(--gn)}
+.cbdg.err{background:rgba(255,61,87,.15);color:var(--rd)}
+.mlay{display:grid;grid-template-columns:1fr 340px;grid-template-rows:1fr 220px;height:calc(100vh - 48px);gap:1px;background:var(--bd)}
+.dpanel{grid-row:1;grid-column:1;background:var(--bg0);position:relative;overflow:hidden}
+.dsvg{width:100%;height:100%}
+.rpanel{grid-row:1/3;grid-column:2;background:var(--bg1);display:flex;flex-direction:column;overflow:hidden}
+.ptabs{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0}
+.ptab{flex:1;padding:8px;text-align:center;font-size:12px;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.ptab:hover{color:var(--t1)}
+.ptab.on{color:var(--ac);border-bottom-color:var(--ac);background:rgba(0,212,255,.05)}
+.pcont{flex:1;overflow-y:auto;padding:10px}
+.pcont::-webkit-scrollbar{width:4px}
+.pcont::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.lchart{width:100%;height:180px;margin-bottom:10px;background:var(--bg3);border-radius:6px;border:1px solid var(--bd);overflow:hidden}
+.lchart svg{width:100%;height:100%}
+.bpanel{grid-row:2;grid-column:1;background:var(--bg1);display:flex;overflow:hidden}
+.dsec{flex:1;border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.shdr{padding:6px 12px;font-size:12px;font-weight:600;color:var(--t2);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.cbdg2{background:var(--rd);color:#fff;font-size:10px;padding:0 5px;border-radius:8px;min-width:16px;text-align:center}
+.dlist{flex:1;overflow-y:auto;overflow-x:auto;padding:6px;display:flex;gap:6px;flex-wrap:nowrap}
+.dlist::-webkit-scrollbar{height:4px;width:4px}
+.dlist::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.dcard{min-width:220px;max-width:280px;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;font-size:11px;flex-shrink:0}
+.dcard .did{color:var(--t3);font-size:10px;margin-bottom:3px}
+.dcard .dconc{font-weight:700;margin-bottom:2px}
+.dcard .dconc.mis{color:var(--rd)}.dcard .dconc.ovl{color:var(--or)}.dcard .dconc.conf{color:var(--pp)}.dcard .dconc.norm{color:var(--gn)}
+.dcard .ddet{color:var(--t2);line-height:1.4;margin-top:2px}
+.dcard .dfix{margin-top:4px;padding:4px 6px;background:rgba(0,230,118,.06);border-radius:3px;border:1px solid rgba(0,230,118,.15);color:var(--gn);font-size:10px;line-height:1.4}
+.ssec{width:260px;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.slist{flex:1;overflow-y:auto;padding:6px}
+.slist::-webkit-scrollbar{width:4px}
+.slist::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.sitem{display:flex;align-items:center;gap:6px;padding:4px 8px;font-size:11px;border-radius:4px;margin-bottom:2px;transition:background .2s}
+.sitem:hover{background:rgba(255,255,255,.03)}
+.sico{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.sico.mdl{background:rgba(0,212,255,.2);color:var(--ac)}.sico.crv{background:rgba(255,143,0,.2);color:var(--or)}.sico.rpt{background:rgba(179,136,255,.2);color:var(--pp)}
+.snm{color:var(--t1);flex:1}.stm{color:var(--t3);font-size:10px;white-space:nowrap}
+.ttip{position:absolute;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;padding:10px;font-size:11px;pointer-events:none;z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:260px;display:none}
+.ttip .tt{font-weight:700;margin-bottom:4px;color:var(--ac)}
+.ttip .tr{display:flex;justify-content:space-between;gap:12px;padding:1px 0}
+.ttip .tl{color:var(--t3)}.ttip .tv{color:var(--t1);font-weight:500}
+.ttip .ts{margin-top:6px;padding-top:6px;border-top:1px dashed var(--bd);color:var(--t3);font-size:10px}
+.alist{display:flex;flex-direction:column;gap:8px}
+.acard{background:var(--bg3);border-radius:6px;padding:10px;border-left:3px solid;font-size:12px;cursor:pointer;transition:all .2s}
+.acard:hover{background:rgba(255,255,255,.05)}
+.acard.crt{border-left-color:var(--rd)}.acard.wrn{border-left-color:var(--yw)}.acard.inf{border-left-color:var(--ab)}.acard.mnt{border-left-color:var(--pp)}
+.ahdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.atag{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:600}
+.atag.crt{background:rgba(255,61,87,.2);color:var(--rd)}.atag.wrn{background:rgba(255,193,7,.2);color:var(--yw)}.atag.inf{background:rgba(59,139,255,.2);color:var(--ab)}.atag.mnt{background:rgba(179,136,255,.2);color:var(--pp)}
+.anm{font-weight:600;color:var(--t1)}.adet{color:var(--t2);margin-top:4px;line-height:1.5}
+.asrc{margin-top:6px;padding-top:6px;border-top:1px dashed var(--bd);color:var(--t3);font-size:10px}
+.arec{margin-top:6px;padding:6px 8px;background:rgba(0,230,118,.08);border-radius:4px;border:1px solid rgba(0,230,118,.2)}
+.arec .rl{color:var(--gn);font-weight:600;font-size:10px;display:block;margin-bottom:2px}
+.arec .rv{color:var(--t1);font-size:11px;line-height:1.4}
+.sstats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.scard{background:var(--bg3);border:1px solid var(--bd);border-radius:6px;padding:8px 10px}
+.scard .sl{font-size:10px;color:var(--t3)}.scard .sv{font-size:18px;font-weight:700;margin-top:2px}
+.scard .sv.gn{color:var(--gn)}.scard .sv.yw{color:var(--yw)}.scard .sv.rd{color:var(--rd)}.scard .sv.cn{color:var(--ac)}
+.bsel{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.bchip{font-size:10px;padding:2px 8px;border-radius:10px;cursor:pointer;border:1px solid var(--bd);background:var(--bg3);color:var(--t2);transition:all .2s}
+.bchip:hover{border-color:var(--ac);color:var(--t1)}
+.bchip.on{background:rgba(0,212,255,.15);border-color:var(--ac);color:var(--ac)}
+.dtbl{width:100%;border-collapse:collapse;font-size:11px}
+.dtbl th{text-align:left;padding:4px 6px;color:var(--t3);font-weight:600;border-bottom:1px solid var(--bd)}
+.dtbl td{padding:4px 6px;border-bottom:1px solid rgba(42,58,92,.4);color:var(--t2)}
+.dtbl td.v{color:var(--t1);font-weight:500}
+.emodal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200}
+.emodal.show{display:flex}
+.edlg{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:24px;width:400px}
+.edlg h3{font-size:16px;margin-bottom:16px;color:var(--ac)}
+.eopt{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.eopt:hover{border-color:var(--ab);background:rgba(59,139,255,.05)}
+.eopt.sel{border-color:var(--ac);background:rgba(0,212,255,.05)}
+.eopt .eoi{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.eopt .eot{font-weight:600;font-size:13px}.eopt .eod{color:var(--t2);font-size:11px;margin-top:2px}
+.eacts{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.eacts button{padding:6px 16px;border-radius:4px;font-size:13px;cursor:pointer;border:1px solid var(--bd);transition:all .2s}
+.eacts .cbtn{background:var(--bg3);color:var(--t1)}.eacts .cbtn:hover{background:var(--bd)}
+.eacts .fbtn{background:var(--ab);color:#fff;border-color:var(--ab)}.eacts .fbtn:hover{opacity:.9}
+.svg-bus{cursor:pointer;transition:filter .2s}.svg-bus:hover{filter:brightness(1.3)}
+.svg-sw{cursor:pointer}.svg-sw:hover{filter:brightness(1.3)}
+.farr{animation:fp 2s infinite}
+@keyframes fp{0%,100%{opacity:.8}50%{opacity:1}}
+.glow-n{filter:drop-shadow(0 0 4px rgba(0,230,118,.4))}
+.glow-w{filter:drop-shadow(0 0 4px rgba(255,193,7,.5))}
+.glow-c{filter:drop-shadow(0 0 6px rgba(255,61,87,.6))}
+.glow-o{filter:drop-shadow(0 0 5px rgba(255,143,0,.5))}
+.glow-m{filter:drop-shadow(0 0 4px rgba(179,136,255,.5))}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htitle">⚡ 电力潮流变电站图</div>
+  <div class="hctrl">
+    <select class="ssel" id="scenSel">
+      <option value="normal">正常运行方式</option>
+      <option value="n1">N-1 故障方式</option>
+      <option value="maintenance">检修方式</option>
+      <option value="peak">高峰负荷方式</option>
+    </select>
+    <div class="tctl">
+      <button class="tbtn" id="bPrev">◀</button>
+      <button class="tbtn" id="bPlay">▶</button>
+      <button class="tbtn" id="bNext">►</button>
+      <span class="tdisp" id="tDisp">08:00</span>
+      <input type="range" class="tslider" id="tSlider" min="0" max="23" value="8">
+    </div>
+  </div>
+  <div class="hact">
+    <span class="cbdg ok" id="cBdg">数据一致 ✓</span>
+    <button class="abtn exp" id="expBtn">📊 导出报告</button>
+  </div>
+</div>
+<div class="mlay">
+  <div class="dpanel">
+    <svg class="dsvg" id="dSvg" viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="ttip" id="ttip"></div>
+  </div>
+  <div class="rpanel">
+    <div class="ptabs">
+      <div class="ptab on" data-tab="load">负荷曲线</div>
+      <div class="ptab" data-tab="alerts">告警信息</div>
+      <div class="ptab" data-tab="detail">设备详情</div>
+    </div>
+    <div class="pcont" id="pCont"></div>
+  </div>
+  <div class="bpanel">
+    <div class="dsec">
+      <div class="shdr">诊断结论 <span class="cbdg2" id="dCnt">0</span></div>
+      <div class="dlist" id="dList"></div>
+    </div>
+    <div class="ssec">
+      <div class="shdr">数据溯源</div>
+      <div class="slist" id="sList"></div>
+    </div>
+  </div>
+</div>
+<div class="emodal" id="eModal">
+  <div class="edlg">
+    <h3>📊 导出报告</h3>
+    <div class="eopt sel" data-fmt="summary">
+      <div class="eoi" style="background:rgba(0,212,255,.15);color:var(--ac)">📋</div>
+      <div><div class="eot">综合摘要报告</div><div class="eod">含拓扑状态、告警汇总、诊断结论及修正建议</div></div>
+    </div>
+    <div class="eopt" data-fmt="detail">
+      <div class="eoi" style="background:rgba(255,143,0,.15);color:var(--or)">📊</div>
+      <div><div class="eot">详细数据报告</div><div class="eod">含全部设备参数、负荷曲线数据、潮流计算结果</div></div>
+    </div>
+    <div class="eopt" data-fmt="diagnosis">
+      <div class="eoi" style="background:rgba(255,61,87,.15);color:var(--rd)">🔍</div>
+      <div><div class="eot">诊断专项报告</div><div class="eod">仅含开关误位、负荷超限、检修冲突诊断及建议</div></div>
+    </div>
+    <div class="eacts">
+      <button class="cbtn" id="eCancel">取消</button>
+      <button class="fbtn" id="eConfirm">导出</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+var D={
+sources:[
+{id:'S1',type:'model',name:'变电站模型_2026Q2',time:'2026-05-28 14:30'},
+{id:'S2',type:'curve',name:'负荷曲线_06月预测',time:'2026-06-01 09:00'},
+{id:'S3',type:'report',name:'潮流计算报告_0602',time:'2026-06-02 07:45'},
+{id:'S4',type:'model',name:'开关状态采集_SCADA',time:'2026-06-02 08:00'},
+{id:'S5',type:'report',name:'检修计划_6月排程',time:'2026-05-30 16:00'},
+{id:'S6',type:'curve',name:'实时负荷采集_PMS',time:'2026-06-02 08:00'}
+],
+substations:[
+{id:'SS1',name:'220kV 龙泉站',v:220,x:500,y:60,src:'S1'},
+{id:'SS2',name:'110kV 东城站',v:110,x:180,y:240,src:'S1'},
+{id:'SS3',name:'110kV 西湖站',v:110,x:500,y:240,src:'S1'},
+{id:'SS4',name:'110kV 南苑站',v:110,x:820,y:240,src:'S1'},
+{id:'SS5',name:'35kV 科技园站',v:35,x:120,y:430,src:'S1'},
+{id:'SS6',name:'35kV 大学城站',v:35,x:380,y:430,src:'S1'},
+{id:'SS7',name:'35kV 工业区站',v:35,x:620,y:430,src:'S1'},
+{id:'SS8',name:'35kV 新区站',v:35,x:880,y:430,src:'S1'}
+],
+lines:[
+{id:'L1',from:'SS1',to:'SS2',name:'龙东I线',cap:300,src:'S1'},
+{id:'L2',from:'SS1',to:'SS3',name:'龙西I线',cap:300,src:'S1'},
+{id:'L3',from:'SS1',to:'SS4',name:'龙南I线',cap:300,src:'S1'},
+{id:'L4',from:'SS2',to:'SS3',name:'东西联络线',cap:150,src:'S1'},
+{id:'L5',from:'SS3',to:'SS4',name:'西联联络线',cap:150,src:'S1'},
+{id:'L6',from:'SS2',to:'SS5',name:'东科线',cap:80,src:'S1'},
+{id:'L7',from:'SS2',to:'SS6',name:'东大线',cap:80,src:'S1'},
+{id:'L8',from:'SS3',to:'SS6',name:'西大线',cap:80,src:'S1'},
+{id:'L9',from:'SS3',to:'SS7',name:'西工线',cap:100,src:'S1'},
+{id:'L10',from:'SS4',to:'SS7',name:'南工线',cap:100,src:'S1'},
+{id:'L11',from:'SS4',to:'SS8',name:'南新线',cap:80,src:'S1'}
+],
+switches:[
+{id:'SW1',name:'龙东I线断路器',line:'L1',bus:'SS2',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW2',name:'龙西I线断路器',line:'L2',bus:'SS3',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW3',name:'龙南I线断路器',line:'L3',bus:'SS4',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW4',name:'东西联络断路器',line:'L4',bus:'SS2',pos:'open',exp:'open',src:'S4'},
+{id:'SW5',name:'西联联络断路器',line:'L5',bus:'SS3',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW6',name:'东科线断路器',line:'L6',bus:'SS5',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW7',name:'东大线断路器',line:'L7',bus:'SS6',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW8',name:'西大线断路器',line:'L8',bus:'SS6',pos:'open',exp:'open',src:'S4'},
+{id:'SW9',name:'西工线断路器',line:'L9',bus:'SS7',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW10',name:'南工线断路器',line:'L10',bus:'SS7',pos:'closed',exp:'closed',src:'S4'},
+{id:'SW11',name:'南新线断路器',line:'L11',bus:'SS8',pos:'closed',exp:'closed',src:'S4'}
+],
+loads:{SS1:{cap:600,src:'S2'},SS2:{cap:150,src:'S2'},SS3:{cap:150,src:'S2'},SS4:{cap:150,src:'S2'},SS5:{cap:60,src:'S2'},SS6:{cap:50,src:'S2'},SS7:{cap:80,src:'S2'},SS8:{cap:60,src:'S2'}},
+curves:{
+SS1:[300,280,260,250,260,300,380,480,520,540,530,500,490,500,510,530,550,560,540,500,450,400,360,320],
+SS2:[70,65,60,58,62,75,90,120,135,140,138,130,128,130,132,138,142,145,140,130,118,105,90,75],
+SS3:[68,62,58,55,60,72,88,115,128,133,130,122,120,122,124,130,135,138,132,122,110,98,82,70],
+SS4:[72,66,62,60,64,78,95,125,140,145,142,135,132,134,136,142,148,152,146,135,120,108,92,78],
+SS5:[28,26,24,22,24,30,38,50,56,58,56,52,50,52,53,56,58,60,56,50,44,38,32,28],
+SS6:[22,20,18,16,18,22,30,42,48,50,48,44,42,44,45,48,50,52,48,42,36,30,26,22],
+SS7:[35,32,30,28,30,38,50,68,76,80,78,72,70,72,74,78,82,86,80,72,62,54,46,38],
+SS8:[25,23,20,18,20,26,35,48,54,56,54,50,48,50,51,54,56,58,54,48,42,36,30,26]
+},
+maint:[
+{id:'M1',eq:'L9',name:'西工线检修',s:6,e:18,src:'S5',st:'planned'},
+{id:'M2',eq:'SW5',name:'西联联络断路器检修',s:0,e:24,src:'S5',st:'active'}
+]
+};
+
+var SC={
+normal:{name:'正常运行方式',swOvr:{},lm:1.0,flows:{
+L1:[140,130,120,115,120,140,180,230,250,260,255,240,235,240,245,255,265,270,260,240,215,190,170,150],
+L2:[145,135,125,118,125,145,185,235,258,268,260,245,240,245,250,260,270,275,265,245,218,195,172,152],
+L3:[148,138,128,120,128,148,190,240,265,275,268,252,248,252,258,268,278,285,272,252,225,200,178,155],
+L4:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L5:[18,17,16,15,16,18,22,28,30,32,30,28,27,28,29,30,32,34,32,28,25,22,20,18],
+L6:[28,26,24,22,24,30,38,50,56,58,56,52,50,52,53,56,58,60,56,50,44,38,32,28],
+L7:[15,14,12,11,12,15,19,25,28,29,28,26,25,26,26,28,29,30,28,26,23,20,18,15],
+L8:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L9:[30,28,26,24,26,32,42,58,65,68,66,60,58,60,62,65,68,72,66,60,52,46,38,32],
+L10:[18,16,14,13,14,18,22,30,34,36,35,32,31,32,33,35,36,38,35,32,28,24,20,18],
+L11:[25,23,20,18,20,26,35,48,54,56,54,50,48,50,51,54,56,58,54,48,42,36,30,26]}},
+n1:{name:'N-1 故障方式',swOvr:{SW2:'open'},lm:1.0,flows:{
+L1:[190,180,165,155,165,195,255,330,360,375,365,345,335,345,350,365,380,390,375,345,305,270,240,205],
+L2:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L3:[170,158,148,138,148,175,225,285,315,325,315,298,292,298,305,318,330,340,325,298,265,235,208,182],
+L4:[65,60,55,52,55,65,85,108,118,122,118,110,108,110,112,118,122,128,118,108,96,85,75,65],
+L5:[55,50,46,44,46,55,70,88,96,100,96,90,88,90,92,96,100,105,100,90,80,72,62,55],
+L6:[28,26,24,22,24,30,38,50,56,58,56,52,50,52,53,56,58,60,56,50,44,38,32,28],
+L7:[45,42,38,36,38,45,58,76,84,88,84,78,75,78,80,84,88,92,84,76,66,58,50,42],
+L8:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L9:[30,28,26,24,26,32,42,58,65,68,66,60,58,60,62,65,68,72,66,60,52,46,38,32],
+L10:[45,42,38,35,38,48,60,80,90,94,90,84,82,84,86,90,94,98,90,82,72,62,54,45],
+L11:[25,23,20,18,20,26,35,48,54,56,54,50,48,50,51,54,56,58,54,48,42,36,30,26]}},
+maintenance:{name:'检修方式',swOvr:{SW5:'open',SW9:'open'},lm:0.85,flows:{
+L1:[130,120,110,105,110,130,165,210,228,238,232,218,213,218,223,232,242,248,238,218,195,172,153,135],
+L2:[150,140,128,122,128,150,195,248,272,282,275,258,252,258,262,275,285,295,280,258,230,205,180,158],
+L3:[138,128,118,112,118,138,175,225,248,258,250,238,232,238,242,252,260,268,258,238,212,188,168,145],
+L4:[22,20,18,17,18,22,28,35,38,40,38,35,34,35,36,38,40,42,38,35,30,27,24,20],
+L5:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L6:[24,22,20,18,20,25,32,42,48,50,48,44,42,44,45,48,50,52,48,42,38,32,28,24],
+L7:[12,11,10,9,10,12,16,20,23,24,23,22,21,22,22,24,25,26,24,22,19,17,15,12],
+L8:[8,7,6,5,6,8,10,14,16,17,16,15,15,15,15,16,17,18,16,15,13,11,10,8],
+L9:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L10:[68,62,56,52,56,68,85,110,122,128,122,115,112,115,118,122,128,135,122,110,98,86,76,65],
+L11:[22,20,18,16,18,22,30,42,48,50,48,44,42,44,45,48,50,52,48,42,36,30,26,22]}},
+peak:{name:'高峰负荷方式',swOvr:{},lm:1.2,flows:{
+L1:[168,156,144,138,144,168,216,276,300,312,306,288,282,288,294,306,318,324,312,288,258,228,204,180],
+L2:[174,162,150,142,150,174,222,282,310,322,312,294,288,294,300,312,324,330,318,294,262,234,206,182],
+L3:[178,166,154,144,154,178,228,288,318,330,322,302,298,302,310,322,334,342,326,302,270,240,214,186],
+L4:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L5:[22,20,19,18,19,22,26,34,36,38,36,34,32,34,35,36,38,40,38,34,30,26,24,22],
+L6:[34,31,29,26,29,36,46,60,67,70,67,62,60,62,64,67,70,72,67,60,53,46,38,34],
+L7:[18,17,14,13,14,18,23,30,34,35,34,31,30,31,31,34,35,36,34,31,28,24,22,18],
+L8:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+L9:[36,34,31,29,31,38,50,70,78,82,79,72,70,72,74,78,82,86,79,72,62,55,46,38],
+L10:[22,19,17,16,17,22,26,36,41,43,42,38,37,38,40,42,43,46,42,38,34,29,24,22],
+L11:[30,28,24,22,24,31,42,58,65,67,65,60,58,60,61,65,67,70,65,58,50,43,36,31]}}
+};
+
+var S={scen:'normal',hr:8,playing:false,pIv:null,selBus:null,tab:'load',expFmt:'summary'};
+
+function fSrc(id){return D.sources.find(function(x){return x.id===id})}
+function fSS(id){return D.substations.find(function(x){return x.id===id})}
+function gSC(){return SC[S.scen]}
+function swSt(sw){var o=gSC().swOvr[sw.id];return o!==undefined?o:sw.pos}
+function ldAt(id,hr){var c=D.curves[id];return c?Math.round(c[hr]*gSC().lm):0}
+function flAt(lid,hr){var f=gSC().flows[lid];return f?f[hr]:0}
+function lnSt(lid,hr){var f=flAt(lid,hr),l=D.lines.find(function(x){return x.id===lid});if(f===0)return'outage';var r=f/l.cap;if(r>=1)return'critical';if(r>=.9)return'overload';if(r>=.75)return'warning';return'normal'}
+function bSt(id,hr){var ld=ldAt(id,hr),cp=D.loads[id].cap*gSC().lm,r=ld/cp;if(r>=1)return'critical';if(r>=.9)return'overload';if(r>=.75)return'warning';return'normal'}
+function sCol(s){return{normal:'var(--gn)',warning:'var(--yw)',overload:'var(--or)',critical:'var(--rd)',maintenance:'var(--pp)',outage:'var(--gy)'}[s]||'var(--t3)'}
+function sLbl(s){return{normal:'正常',warning:'警告',overload:'逼近限值',critical:'超限',maintenance:'检修中',outage:'停运'}[s]||s}
+function vCol(v){return v>=220?'#ff6b6b':v>=110?'#ffd93d':'#6bcb77'}
+function p2(n){return n<10?'0'+n:''+n}
+
+function diagnose(hr){
+var R=[],scenario=gSC();
+D.switches.forEach(function(sw){
+var act=swSt(sw),exp=sw.exp;
+if(act!==exp){
+var inSc=scenario.swOvr[sw.id]!==undefined;
+var isMt=D.maint.some(function(m){return m.eq===sw.id||m.eq===sw.line});
+var conc,det,fix;
+if(inSc){conc='场景指定操作';det=sw.name+'在「'+scenario.name+'」中被指定为'+(act==='open'?'分闸':'合闸')+'，属场景预设，非误位。';fix=null}
+else if(isMt){conc='检修配套操作';det=sw.name+'因关联检修计划而断开，属预期操作。';fix=null}
+else{conc='⚠ 开关误位';det=sw.name+'实际状态为'+(act==='open'?'分闸':'合闸')+'，预期应为'+(exp==='open'?'分闸':'合闸')+'。偏差原因未在检修计划或场景配置中体现。';fix='立即核查SCADA采集信号是否正常；若确认误位，执行'+(exp==='closed'?'合闸':'分闸')+'操作并记录操作票。'}
+R.push({id:'D'+(R.length+1),type:'misposition',sev:conc.indexOf('⚠')>=0?'critical':'info',eq:sw.name,conc:conc,det:det,fix:fix,src:sw.src})
+}});
+D.lines.forEach(function(ln){
+var flow=flAt(ln.id,hr);if(flow===0)return;
+var ratio=flow/ln.cap;
+if(ratio>=.9){
+var fS=fSS(ln.from),tS=fSS(ln.to),conc,fix;
+if(ratio>=1){conc='🔴 负荷超限';fix='1. 立即削减'+tS.name+'非重要负荷'+Math.round(flow-ln.cap)+'MW；2. 投入'+fS.name+'备用出力；3. 转移部分负荷至联络线供电。'}
+else{conc='🟠 负荷逼近限值';fix='1. 监视'+ln.name+'潮流变化；2. 预安排'+tS.name+'负荷转移方案；3. 确认备用出力可随时投入。'}
+R.push({id:'D'+(R.length+1),type:'overlimit',sev:ratio>=1?'critical':'warning',eq:ln.name,conc:conc,det:ln.name+'当前潮流'+flow+'MW，线路容量'+ln.cap+'MW，负载率'+(ratio*100).toFixed(1)+'%。'+fS.name+'→'+tS.name+'。',fix:fix,src:ln.src})
+}});
+D.substations.forEach(function(s){
+var ld=ldAt(s.id,hr),cp=D.loads[s.id].cap*scenario.lm,ratio=ld/cp;
+if(ratio>=.95){
+var conc,fix;
+if(ratio>=1){conc='🔴 变电站超载';fix='1. 立即执行'+s.name+'限电序位表；2. 通知重要用户减负荷；3. 启动应急调度方案。'}
+else{conc='🟠 变电站高负载';fix='1. 加强'+s.name+'设备巡视；2. 预安排负荷转移；3. 通知相关用户做好限电准备。'}
+R.push({id:'D'+(R.length+1),type:'overlimit',sev:ratio>=1?'critical':'warning',eq:s.name,conc:conc,det:s.name+'当前负荷'+ld+'MW，额定容量'+Math.round(cp)+'MW，负载率'+(ratio*100).toFixed(1)+'%。',fix:fix,src:D.loads[s.id].src})
+}});
+D.maint.forEach(function(m){
+var eq=D.lines.find(function(l){return l.id===m.eq})||D.switches.find(function(x){return x.id===m.eq});
+if(!eq)return;
+var inW=hr>=m.s&&hr<m.e;
+var line=D.lines.find(function(l){return l.id===m.eq});
+if(line&&inW){
+var flow=flAt(m.eq,hr);
+if(flow>0)R.push({id:'D'+(R.length+1),type:'conflict',sev:'critical',eq:eq.name||eq.id,conc:'🔴 检修与潮流冲突',det:m.name+'计划于'+p2(m.s)+':00-'+p2(m.e)+':00执行，但'+eq.name+'当前仍有'+flow+'MW潮流通过。检修前需先转移全部负荷。',fix:'1. 立即将'+eq.name+'负荷转移至联络线；2. 确认转移后潮流为零方可执行检修；3. 如无法转移，推迟检修至低负荷时段。',src:m.src});
+var aff=[];
+D.lines.forEach(function(l){if(l.id===m.eq)aff.push(fSS(l.to).name)});
+if(aff.length>0)R.push({id:'D'+(R.length+1),type:'conflict',sev:'warning',eq:eq.name||eq.id,conc:'🟣 检修影响供电',det:m.name+'执行期间，'+aff.join('、')+'由单电源供电，N-1安全性降低。',fix:'1. 检修期间加强相关线路巡检；2. 预安排应急转供方案；3. 通知受影响用户做好备自投准备。',src:m.src})
+}});
+R.sort(function(a,b){var o={critical:0,warning:1,info:2};return(o[a.sev]||2)-(o[b.sev]||2)});
+return R
+}
+
+function renderDiagram(){
+var svg=document.getElementById('dSvg'),scenario=gSC(),hr=S.hr,h='';
+h+='<defs>';
+h+='<marker id="aG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0,0 8,3 0,6" fill="#6bcb77" opacity="0.8"/></marker>';
+h+='<marker id="aY" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0,0 8,3 0,6" fill="#ffc107" opacity="0.9"/></marker>';
+h+='<marker id="aO" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0,0 8,3 0,6" fill="#ff8f00"/></marker>';
+h+='<marker id="aR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0,0 8,3 0,6" fill="#ff3d57"/></marker>';
+h+='<pattern id="grd" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a2744" stroke-width="0.5"/></pattern>';
+h+='</defs>';
+h+='<rect width="1000" height="520" fill="#0a1628"/>';
+h+='<rect width="1000" height="520" fill="url(#grd)" opacity="0.5"/>';
+var aM=D.maint.filter(function(m){return hr>=m.s&&hr<m.e});
+D.lines.forEach(function(ln){
+var fr=fSS(ln.from),to=fSS(ln.to),flow=flAt(ln.id,hr),st=lnSt(ln.id,hr),col=sCol(st);
+var isM=aM.some(function(m){return m.eq===ln.id});
+var dx=to.x-fr.x,dy=to.y-fr.y,len=Math.sqrt(dx*dx+dy*dy),ux=dx/len,uy=dy/len;
+var sx=fr.x+ux*35,sy=fr.y+uy*35,ex=to.x-ux*35,ey=to.y-uy*35;
+var w=Math.max(1.5,Math.min(5,(flow/ln.cap)*4));
+var lc=col,da='',op=.9;
+if(isM){lc='var(--pp)';da='8,4';op=.7}
+if(flow===0){op=.3;da='4,6'}
+var am={normal:'aG',warning:'aY',overload:'aO',critical:'aR'};
+var mk=flow>0&&am[st]?' marker-end="url(#'+am[st]+')"':'';
+var daA=da?' stroke-dasharray="'+da+'"':'';
+h+='<line x1="'+sx+'" y1="'+sy+'" x2="'+ex+'" y2="'+ey+'" stroke="'+lc+'" stroke-width="'+w+'" opacity="'+op+'"'+daA+' class="farr"'+mk+'/>';
+if(flow>0){
+var mx=(sx+ex)/2,my=(sy+ey)/2,ox=-uy*14,oy=ux*14;
+h+='<text x="'+(mx+ox)+'" y="'+(my+oy)+'" fill="'+lc+'" font-size="10" text-anchor="middle" font-weight="600" opacity="'+op+'">'+flow+'MW</text>';
+}
+var lo=flow>0?24:-12;
+h+='<text x="'+((sx+ex)/2+(-uy*lo||-12))+'" y="'+((sy+ey)/2+(ux*lo||-8))+'" fill="var(--t3)" font-size="8" text-anchor="middle" opacity="0.7">'+ln.name+'</text>';
+});
+D.switches.forEach(function(sw){
+var ln=D.lines.find(function(l){return l.id===sw.line});if(!ln)return;
+var bus=fSS(sw.bus),other=fSS(ln.from===sw.bus?ln.to:ln.from);
+var dx=other.x-bus.x,dy=other.y-bus.y,len=Math.sqrt(dx*dx+dy*dy);
+var sx2=bus.x+(dx/len)*38,sy2=bus.y+(dy/len)*38;
+var act=swSt(sw),isMis=act!==sw.exp&&!scenario.swOvr[sw.id];
+var swC=act==='closed'?(isMis?'var(--rd)':'var(--gn)'):(isMis?'var(--rd)':'var(--gy)');
+h+='<g class="svg-sw" data-sw="'+sw.id+'" onmouseenter="window._stt(event,\''+sw.id+'\')" onmouseleave="window._htt()">';
+if(act==='closed'){h+='<rect x="'+(sx2-5)+'" y="'+(sy2-5)+'" width="10" height="10" rx="2" fill="'+swC+'" opacity="0.9"/>'}
+else{h+='<rect x="'+(sx2-5)+'" y="'+(sy2-5)+'" width="10" height="10" rx="2" fill="none" stroke="'+swC+'" stroke-width="1.5"/>';
+h+='<line x1="'+sx2+'" y1="'+(sy2-5)+'" x2="'+(sx2+5)+'" y2="'+(sy2+5)+'" stroke="'+swC+'" stroke-width="1.5"/>'}
+if(isMis){h+='<circle cx="'+sx2+'" cy="'+(sy2-10)+'" r="4" fill="var(--rd)" opacity="0.8"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.5s" repeatCount="indefinite"/></circle>'}
+h+='</g>';
+});
+D.substations.forEach(function(s){
+var st=bSt(s.id,hr),col=sCol(st),ld=ldAt(s.id,hr),cp=D.loads[s.id].cap*scenario.lm,vc=vCol(s.v),sel=S.selBus===s.id;
+var w=s.v>=220?120:s.v>=110?110:100,ht=s.v>=220?50:s.v>=110?44:38;
+h+='<g class="svg-bus" data-bus="'+s.id+'" onmouseenter="window._btt(event,\''+s.id+'\')" onmouseleave="window._htt()" onclick="window._sb(\''+s.id+'\')">';
+var gc='';if(st==='normal')gc='glow-n';else if(st==='warning')gc='glow-w';else if(st==='critical')gc='glow-c';else if(st==='overload')gc='glow-o';else if(st==='maintenance')gc='glow-m';
+h+='<rect x="'+(s.x-w/2)+'" y="'+(s.y-ht/2)+'" width="'+w+'" height="'+ht+'" rx="6" fill="var(--bg3)" stroke="'+col+'" stroke-width="'+(sel?3:1.5)+'" class="'+gc+'"/>';
+h+='<rect x="'+(s.x-w/2)+'" y="'+(s.y-ht/2)+'" width="'+w+'" height="3" rx="6" fill="'+vc+'"/>';
+h+='<text x="'+s.x+'" y="'+(s.y-6)+'" text-anchor="middle" fill="'+col+'" font-size="11" font-weight="700">'+s.name+'</text>';
+var ratio=ld/cp,bw=w-16,bh=5,bx=s.x-bw/2,by=s.y+10,fw=bw*Math.min(ratio,1.2);
+h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="var(--bd)" opacity="0.5"/>';
+h+='<rect x="'+bx+'" y="'+by+'" width="'+fw+'" height="'+bh+'" rx="2" fill="'+col+'" opacity="0.8"/>';
+h+='<text x="'+s.x+'" y="'+(by+bh+10)+'" text-anchor="middle" fill="var(--t2)" font-size="9">'+ld+'/'+Math.round(cp)+'MW '+(ratio*100|0)+'%</text>';
+h+='</g>';
+});
+var ly=500;
+[{c:'var(--gn)',l:'正常'},{c:'var(--yw)',l:'警告≥75%'},{c:'var(--or)',l:'逼近限值≥90%'},{c:'var(--rd)',l:'超限≥100%'},{c:'var(--pp)',l:'检修中'},{c:'var(--gy)',l:'停运/分闸'}].forEach(function(l2,i){
+var x=20+i*158;
+h+='<rect x="'+x+'" y="'+ly+'" width="8" height="8" rx="2" fill="'+l2.c+'"/>';
+h+='<text x="'+(x+12)+'" y="'+(ly+7)+'" fill="var(--t2)" font-size="9">'+l2.l+'</text>';
+});
+h+='<text x="980" y="'+(ly+7)+'" text-anchor="end" fill="var(--t3)" font-size="9">场景: '+scenario.name+' | 时刻: '+p2(hr)+':00</text>';
+svg.innerHTML=h;
+}
+
+window._btt=function(ev,id){
+var s=fSS(id),hr=S.hr,ld=ldAt(id,hr),cp=D.loads[id].cap*gSC().lm,ratio=ld/cp,st=bSt(id,hr),so=fSrc(D.loads[id].src);
+var t=document.getElementById('ttip');
+t.innerHTML='<div class="tt">'+s.name+'</div><div class="tr"><span class="tl">电压等级</span><span class="tv">'+s.v+'kV</span></div><div class="tr"><span class="tl">当前负荷</span><span class="tv" style="color:'+sCol(st)+'">'+ld+'MW</span></div><div class="tr"><span class="tl">额定容量</span><span class="tv">'+Math.round(cp)+'MW</span></div><div class="tr"><span class="tl">负载率</span><span class="tv" style="color:'+sCol(st)+'">'+(ratio*100).toFixed(1)+'%</span></div><div class="tr"><span class="tl">运行状态</span><span class="tv" style="color:'+sCol(st)+'">'+sLbl(st)+'</span></div><div class="ts">来源: '+so.name+' | '+so.time+'</div>';
+posTT(ev);t.style.display='block';
+};
+window._stt=function(ev,id){
+var sw2=D.switches.find(function(x){return x.id===id}),act=swSt(sw2),isMis=act!==sw2.exp&&!gSC().swOvr[sw2.id],so=fSrc(sw2.src);
+var t=document.getElementById('ttip');
+t.innerHTML='<div class="tt">'+sw2.name+'</div><div class="tr"><span class="tl">实际状态</span><span class="tv" style="color:'+(act==='closed'?'var(--gn)':'var(--gy)')+'">'+(act==='closed'?'合闸':'分闸')+'</span></div><div class="tr"><span class="tl">预期状态</span><span class="tv">'+(sw2.exp==='closed'?'合闸':'分闸')+'</span></div>'+(isMis?'<div class="tr"><span class="tl">判定</span><span class="tv" style="color:var(--rd);font-weight:700">⚠ 开关误位</span></div>':'')+'<div class="ts">来源: '+so.name+' | '+so.time+'</div>';
+posTT(ev);t.style.display='block';
+};
+function posTT(ev){var t=document.getElementById('ttip'),p=document.querySelector('.dpanel'),r=p.getBoundingClientRect(),x=ev.clientX-r.left+15,y=ev.clientY-r.top-10;if(x+260>r.width)x-=275;if(y+200>r.height)y-=180;t.style.left=x+'px';t.style.top=y+'px'}
+window._htt=function(){document.getElementById('ttip').style.display='none'};
+window._sb=function(id){S.selBus=S.selBus===id?null:id;renderDiagram();renderPanel()};
+
+function chartSVG(sid){
+var scenario=gSC(),hr=S.hr,curve=D.curves[sid],cap=D.loads[sid].cap*scenario.lm;
+if(!curve)return'';
+var scaled=curve.map(function(v){return Math.round(v*scenario.lm)});
+var maxV=Math.max.apply(null,scaled.concat([cap]))*1.15;
+var cW=308,cH=140,pad=30,pW=cW-pad-10,pH=cH-pad-10;
+var h='<svg viewBox="0 0 '+cW+' '+cH+'">';
+for(var i=0;i<=4;i++){var y=pad+pH-pH*i/4,v=Math.round(maxV*i/4);h+='<line x1="'+pad+'" y1="'+y+'" x2="'+(pad+pW)+'" y2="'+y+'" stroke="#2a3a5c" stroke-width="0.5"/>';h+='<text x="'+(pad-4)+'" y="'+(y+3)+'" fill="#5a6f94" font-size="8" text-anchor="end">'+v+'</text>'}
+for(var i=0;i<24;i++){var x=pad+pW*i/23;if(i%3===0){h+='<line x1="'+x+'" y1="'+pad+'" x2="'+x+'" y2="'+(pad+pH)+'" stroke="#2a3a5c" stroke-width="0.5"/>';h+='<text x="'+x+'" y="'+(pad+pH+10)+'" fill="#5a6f94" font-size="7" text-anchor="middle">'+p2(i)+'</text>'}}
+var capY=pad+pH-pH*(cap/maxV);
+h+='<line x1="'+pad+'" y1="'+capY+'" x2="'+(pad+pW)+'" y2="'+capY+'" stroke="#ff3d57" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>';
+h+='<text x="'+(pad+pW+3)+'" y="'+(capY+3)+'" fill="#ff3d57" font-size="7">限值</text>';
+var pts='';for(var i=0;i<24;i++){var x=pad+pW*i/23,y=pad+pH-pH*(scaled[i]/maxV);pts+=(i===0?'':' ')+x+','+y}
+h+='<polyline points="'+pts+'" fill="none" stroke="#00d4ff" stroke-width="1.5"/>';
+var area='';for(var i=0;i<24;i++){var x=pad+pW*i/23,y=pad+pH-pH*(scaled[i]/maxV);area+=(i===0?'M':'L')+x+' '+y+' '}
+area+='L'+(pad+pW)+' '+(pad+pH)+' L'+pad+' '+(pad+pH)+' Z';
+h+='<path d="'+area+'" fill="rgba(0,212,255,0.1)"/>';
+var cx=pad+pW*hr/23,cy=pad+pH-pH*(scaled[hr]/maxV);
+h+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#00d4ff" stroke="#0a1628" stroke-width="1.5"/>';
+h+='<line x1="'+cx+'" y1="'+pad+'" x2="'+cx+'" y2="'+(pad+pH)+'" stroke="#00d4ff" stroke-width="0.5" opacity="0.5" stroke-dasharray="3,3"/>';
+h+='<text x="'+cx+'" y="'+(cy-8)+'" fill="#00d4ff" font-size="9" text-anchor="middle" font-weight="700">'+scaled[hr]+'MW</text>';
+h+='</svg>';return h
+}
+
+function renderPanel(){
+var c=document.getElementById('pCont'),hr=S.hr,scenario=gSC();
+if(S.tab==='load'){
+var sid=S.selBus||'SS1',s=fSS(sid),ld=ldAt(sid,hr),cp=D.loads[sid].cap*scenario.lm,st=bSt(sid,hr);
+var curve=D.curves[sid],scaled=curve.map(function(v){return Math.round(v*scenario.lm)});
+var sc2=st==='normal'?'cn':st==='critical'?'rd':st==='overload'?'yw':'cn';
+var h='<div class="bsel">';
+D.substations.forEach(function(s2){h+='<span class="bchip'+(sid===s2.id?' on':'')+'" onclick="window._sb(\''+s2.id+'\')">'+s2.name+'</span>'});
+h+='</div>';
+h+='<div class="sstats"><div class="scard"><div class="sl">当前负荷</div><div class="sv '+sc2+'">'+ld+'MW</div></div>';
+h+='<div class="scard"><div class="sl">负载率</div><div class="sv '+sc2+'">'+(ld/cp*100).toFixed(1)+'%</div></div>';
+h+='<div class="scard"><div class="sl">额定容量</div><div class="sv gn">'+Math.round(cp)+'MW</div></div>';
+h+='<div class="scard"><div class="sl">最大负荷</div><div class="sv yw">'+Math.max.apply(null,scaled)+'MW</div></div></div>';
+h+='<div class="lchart">'+chartSVG(sid)+'</div>';
+h+='<div style="font-size:11px;color:var(--t2);margin-top:4px">各时刻负荷（MW）：</div>';
+h+='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin-top:4px">';
+scaled.forEach(function(v,i){
+var bg=v>=cp?'rgba(255,61,87,0.15)':v>=cp*.9?'rgba(255,143,0,0.1)':'rgba(0,212,255,0.05)';
+var col=v>=cp?'var(--rd)':v>=cp*.9?'var(--or)':'var(--t2)';
+h+='<div style="background:'+bg+';padding:2px 4px;border-radius:3px;font-size:10px;text-align:center;color:'+col+'">'+p2(i)+' '+v+'</div>';
+});
+h+='</div>';
+h+='<div style="margin-top:8px;font-size:10px;color:var(--t3)">来源: '+fSrc(D.loads[sid].src).name+' | '+fSrc(D.loads[sid].src).time+'</div>';
+c.innerHTML=h;
+}else if(S.tab==='alerts'){
+var diag=diagnose(hr);
+if(diag.length===0){c.innerHTML='<div style="text-align:center;color:var(--gn);padding:40px 0;font-size:14px">✅ 当前无告警</div>';return}
+var h='<div class="alist">';
+diag.forEach(function(d){
+var cls=d.sev==='critical'?'crt':d.sev==='warning'?'wrn':d.type==='conflict'?'mnt':'inf';
+var tag=d.sev==='critical'?'紧急':d.sev==='warning'?'警告':'提示';
+h+='<div class="acard '+cls+'"><div class="ahdr"><span class="anm">'+d.eq+'</span><span class="atag '+cls+'">'+tag+'</span></div>';
+h+='<div style="font-weight:600;color:'+sCol(d.sev==='critical'?'critical':d.sev==='warning'?'warning':'normal')+'">'+d.conc+'</div>';
+h+='<div class="adet">'+d.det+'</div>';
+if(d.fix)h+='<div class="arec"><span class="rl">🔧 修正建议</span><span class="rv">'+d.fix+'</span></div>';
+var so=fSrc(d.src);
+h+='<div class="asrc">来源: '+(so?so.name+' | '+so.time:'—')+'</div></div>';
+});
+h+='</div>';c.innerHTML=h;
+}else if(S.tab==='detail'){
+var sid=S.selBus||'SS1',s2=fSS(sid);
+var h='<div style="font-size:13px;font-weight:700;color:var(--ac);margin-bottom:8px">'+s2.name+' 设备详情</div>';
+var relL=D.lines.filter(function(l){return l.from===sid||l.to===sid});
+var relSw=D.switches.filter(function(sw2){return sw2.bus===sid});
+h+='<table class="dtbl"><tr><th>设备</th><th>类型</th><th>状态</th><th>数值</th></tr>';
+h+='<tr><td>'+s2.name+'</td><td>变电站</td><td class="v" style="color:'+sCol(bSt(sid,hr))+'">'+sLbl(bSt(sid,hr))+'</td><td class="v">'+ldAt(sid,hr)+'/'+Math.round(D.loads[sid].cap*gSC().lm)+'MW</td></tr>';
+relL.forEach(function(ln){var flow=flAt(ln.id,hr),st=lnSt(ln.id,hr);h+='<tr><td>'+ln.name+'</td><td>线路</td><td class="v" style="color:'+sCol(st)+'">'+sLbl(st)+'</td><td class="v">'+flow+'/'+ln.cap+'MW</td></tr>'});
+relSw.forEach(function(sw2){var act=swSt(sw2),isMis=act!==sw2.exp&&!gSC().swOvr[sw2.id];h+='<tr><td>'+sw2.name+'</td><td>断路器</td><td class="v" style="color:'+(isMis?'var(--rd)':act==='closed'?'var(--gn)':'var(--gy)')+'">'+(act==='closed'?'合闸':'分闸')+(isMis?' ⚠误位':'')+'</td><td class="v">'+(act===sw2.exp?'正常':'偏差')+'</td></tr>'});
+h+='</table>';
+var so=fSrc(D.loads[sid].src);
+h+='<div style="margin-top:10px;font-size:10px;color:var(--t3)">数据来源: '+(so?so.name+' | '+so.time:'—')+'</div>';
+c.innerHTML=h;
+}}
+
+function renderDiag(){
+var diag=diagnose(S.hr),dl=document.getElementById('dList'),dc=document.getElementById('dCnt');
+dc.textContent=diag.length;
+if(diag.length===0){dl.innerHTML='<div style="color:var(--gn);padding:16px;font-size:12px">✅ 当前无诊断问题</div>';return}
+var h='';
+diag.forEach(function(d){
+var cc=d.type==='misposition'?'mis':d.type==='overlimit'?'ovl':'conf';
+h+='<div class="dcard"><div class="did">'+d.id+' | '+d.eq+'</div>';
+h+='<div class="dconc '+cc+'">'+d.conc+'</div>';
+h+='<div class="ddet">'+d.det+'</div>';
+if(d.fix)h+='<div class="dfix">🔧 '+d.fix+'</div>';
+var so=fSrc(d.src);
+h+='<div style="margin-top:4px;font-size:9px;color:var(--t3)">来源: '+(so?so.name:'—')+'</div></div>';
+});
+dl.innerHTML=h;
+}
+
+function renderSources(){
+var sl=document.getElementById('sList'),h='';
+D.sources.forEach(function(s){
+var tc=s.type==='model'?'mdl':s.type==='curve'?'crv':'rpt';
+var tl=s.type==='model'?'模':s.type==='curve'?'曲':'报';
+h+='<div class="sitem"><div class="sico '+tc+'">'+tl+'</div><span class="snm">'+s.name+'</span><span class="stm">'+s.time.split(' ')[1]+'</span></div>';
+});
+sl.innerHTML=h;
+}
+
+function checkConsist(){
+var hr=S.hr,scenario=gSC(),ok=true;
+D.substations.forEach(function(s){
+var ld=ldAt(s.id,hr),infl=0;
+D.lines.forEach(function(ln){if(ln.to===s.id){var f=flAt(ln.id,hr);if(f>0)infl+=f}});
+var diff=Math.abs(ld-infl);
+if(diff>ld*0.1)ok=false;
+});
+var bdg=document.getElementById('cBdg');
+if(ok){bdg.className='cbdg ok';bdg.textContent='数据一致 ✓'}
+else{bdg.className='cbdg err';bdg.textContent='数据偏差 ⚠'}
+}
+
+function doExport(){
+var hr=S.hr,scenario=gSC(),diag=diagnose(hr);
+var txt='========================================\n';
+txt+='  电力潮流变电站图 - '+scenario.name+'\n';
+txt+='  时刻: '+p2(hr)+':00\n';
+txt+='  导出时间: '+new Date().toLocaleString('zh-CN')+'\n';
+txt+='========================================\n\n';
+if(S.expFmt==='summary'||S.expFmt==='detail'){
+txt+='【变电站状态总览】\n';
+D.substations.forEach(function(s){
+var ld=ldAt(s.id,hr),cp=D.loads[s.id].cap*scenario.lm,st=bSt(s.id,hr);
+txt+=s.name+' | 负荷:'+ld+'MW | 容量:'+Math.round(cp)+'MW | 负载率:'+(ld/cp*100).toFixed(1)+'% | 状态:'+sLbl(st)+'\n';
+});
+txt+='\n【线路潮流】\n';
+D.lines.forEach(function(ln){
+var flow=flAt(ln.id,hr),st=lnSt(ln.id,hr);
+txt+=ln.name+' | 潮流:'+flow+'MW | 容量:'+ln.cap+'MW | 状态:'+sLbl(st)+'\n';
+});
+txt+='\n【开关状态】\n';
+D.switches.forEach(function(sw2){
+var act=swSt(sw2),isMis=act!==sw2.exp&&!scenario.swOvr[sw2.id];
+txt+=sw2.name+' | 实际:'+(act==='closed'?'合闸':'分闸')+' | 预期:'+(sw2.exp==='closed'?'合闸':'分闸')+(isMis?' | ⚠误位':'')+'\n';
+});
+}
+if(S.expFmt==='detail'){
+txt+='\n【负荷曲线数据（MW）】\n';
+D.substations.forEach(function(s){
+var curve=D.curves[s.id],scaled=curve.map(function(v){return Math.round(v*scenario.lm)});
+txt+=s.name+': '+scaled.join(',')+'\n';
+});
+}
+if(S.expFmt!=='detail'){
+txt+='\n【诊断结论】\n';
+if(diag.length===0)txt+='✅ 当前无诊断问题\n';
+diag.forEach(function(d){
+txt+='\n'+d.id+' | '+d.eq+'\n';
+txt+='  结论: '+d.conc+'\n';
+txt+='  详情: '+d.det+'\n';
+if(d.fix)txt+='  建议: '+d.fix+'\n';
+var so=fSrc(d.src);txt+='  来源: '+(so?so.name+' | '+so.time:'—')+'\n';
+});
+}
+txt+='\n【数据溯源】\n';
+D.sources.forEach(function(s){txt+='['+s.id+'] '+s.name+' | '+s.time+'\n'});
+var blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');a.href=url;
+a.download='电力潮流报告_'+scenario.name+'_'+p2(hr)+'00.txt';
+document.body.appendChild(a);a.click();document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+
+function updateAll(){
+renderDiagram();renderPanel();renderDiag();checkConsist();
+document.getElementById('tDisp').textContent=p2(S.hr)+':00';
+document.getElementById('tSlider').value=S.hr;
+}
+
+document.getElementById('scenSel').addEventListener('change',function(){S.scen=this.value;updateAll()});
+document.getElementById('bPrev').addEventListener('click',function(){S.hr=(S.hr+23)%24;updateAll()});
+document.getElementById('bNext').addEventListener('click',function(){S.hr=(S.hr+1)%24;updateAll()});
+document.getElementById('bPlay').addEventListener('click',function(){
+S.playing=!S.playing;
+var btn=document.getElementById('bPlay');
+if(S.playing){btn.textContent='⏸';btn.classList.add('on');S.pIv=setInterval(function(){S.hr=(S.hr+1)%24;updateAll()},1500)}
+else{btn.textContent='▶';btn.classList.remove('on');clearInterval(S.pIv)}
+});
+document.getElementById('tSlider').addEventListener('input',function(){S.hr=parseInt(this.value);updateAll()});
+document.querySelectorAll('.ptab').forEach(function(t){
+t.addEventListener('click',function(){
+document.querySelectorAll('.ptab').forEach(function(x){x.classList.remove('on')});
+this.classList.add('on');S.tab=this.getAttribute('data-tab');renderPanel();
+})
+});
+document.getElementById('expBtn').addEventListener('click',function(){document.getElementById('eModal').classList.add('show')});
+document.getElementById('eCancel').addEventListener('click',function(){document.getElementById('eModal').classList.remove('show')});
+document.querySelectorAll('.eopt').forEach(function(o){
+o.addEventListener('click',function(){
+document.querySelectorAll('.eopt').forEach(function(x){x.classList.remove('sel')});
+this.classList.add('sel');S.expFmt=this.getAttribute('data-fmt');
+})
+});
+document.getElementById('eConfirm').addEventListener('click',function(){doExport();document.getElementById('eModal').classList.remove('show')});
+
+renderSources();
+updateAll();
+})();
+</script>
+</body>
+</html>
