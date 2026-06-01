@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拓扑路径连通审计系统</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>拓扑路径连通审计系统</h1>
+            <div class="actions">
+                <label class="btn btn-secondary">
+                    <input type="file" id="fileUpload" multiple accept=".csv" style="display: none;">
+                    上传数据
+                </label>
+                <button class="btn btn-primary" onclick="exportReport('text')">导出文本报告</button>
+                <button class="btn btn-primary" onclick="exportReport('json')">导出JSON报告</button>
+                <button class="btn btn-primary" onclick="exportReport('csv')">导出CSV报告</button>
+            </div>
+        </header>
+
+        <div class="summary-cards">
+            <div class="card">
+                <h3>节点总数</h3>
+                <p id="totalNodes">0</p>
+            </div>
+            <div class="card">
+                <h3>边总数</h3>
+                <p id="totalEdges">0</p>
+            </div>
+            <div class="card warning">
+                <h3>孤立节点</h3>
+                <p id="isolatedNodes">0</p>
+            </div>
+            <div class="card error">
+                <h3>跨层错连</h3>
+                <p id="crossLayerIssues">0</p>
+            </div>
+            <div class="card warning">
+                <h3>方向边反</h3>
+                <p id="directionIssues">0</p>
+            </div>
+            <div class="card error">
+                <h3>路径中断</h3>
+                <p id="brokenPaths">0</p>
+            </div>
+        </div>
+
+        <div class="source-info">
+            <p><strong>数据源:</strong></p>
+            <p>节点文件: <span id="sourceNodes">-</span></p>
+            <p>边文件: <span id="sourceEdges">-</span></p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('nodes')">节点列表</button>
+            <button class="tab-btn" onclick="switchTab('edges')">边关系</button>
+            <button class="tab-btn" onclick="switchTab('issues')">问题详情</button>
+            <button class="tab-btn" onclick="switchTab('paths')">路径明细</button>
+            <button class="tab-btn" onclick="switchTab('compare')">变更对比</button>
+        </div>
+
+        <div class="tab-content">
+            <div id="nodes-tab" class="tab-panel active">
+                <div class="panel-header">
+                    <h2>节点列表</h2>
+                    <span class="source-label">来源: 节点列表</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>节点ID</th>
+                                <th>名称</th>
+                                <th>层级</th>
+                                <th>标签</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nodesTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="edges-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>边关系</h2>
+                    <span class="source-label">来源: 边关系</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>边ID</th>
+                                <th>源节点</th>
+                                <th>目标节点</th>
+                                <th>方向</th>
+                                <th>层级</th>
+                                <th>问题</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="edgesTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="issues-tab" class="tab-panel">
+                <div class="issues-container">
+                    <div class="issue-section">
+                        <div class="panel-header">
+                            <h3>孤立节点</h3>
+                            <span class="source-label">来源: 节点列表分析</span>
+                        </div>
+                        <div id="isolatedIssues" class="issue-list"></div>
+                    </div>
+                    
+                    <div class="issue-section">
+                        <div class="panel-header">
+                            <h3>跨层错连</h3>
+                            <span class="source-label">来源: 边关系分析</span>
+                        </div>
+                        <div id="crossLayerIssuesList" class="issue-list"></div>
+                    </div>
+                    
+                    <div class="issue-section">
+                        <div class="panel-header">
+                            <h3>方向边反</h3>
+                            <span class="source-label">来源: 边关系分析</span>
+                        </div>
+                        <div id="directionIssuesList" class="issue-list"></div>
+                    </div>
+                    
+                    <div class="issue-section">
+                        <div class="panel-header">
+                            <h3>路径中断</h3>
+                            <span class="source-label">来源: 路径查询</span>
+                        </div>
+                        <div id="brokenPathsList" class="issue-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="paths-tab" class="tab-panel">
+                <div class="panel-header">
+                    <h2>路径明细</h2>
+                    <span class="source-label">来源: 路径查询</span>
+                </div>
+                <div id="pathsList" class="paths-list"></div>
+            </div>
+
+            <div id="compare-tab" class="tab-panel">
+                <div id="compareSection">
+                    <div class="panel-header">
+                        <h2>变更对比</h2>
+                        <span class="source-label">来源: 版本对比</span>
+                    </div>
+                    <div id="noPrevious" style="display: none;">
+                        <p>暂无历史版本数据，修改边关系后可查看变更对比。</p>
+                    </div>
+                    <div id="compareContent">
+                        <div class="compare-section">
+                            <h3>节点变更</h3>
+                            <div id="nodeChanges" class="change-list"></div>
+                        </div>
+                        <div class="compare-section">
+                            <h3>边关系变更</h3>
+                            <div id="edgeChanges" class="change-list"></div>
+                        </div>
+                        <div class="compare-section">
+                            <h3>断点检测</h3>
+                            <div id="breakpoints" class="change-list"></div>
+                        </div>
+                        <div class="compare-section">
+                            <h3>问题变更</h3>
+                            <div id="issueChanges" class="change-list"></div>
+                        </div>
+                        <div class="compare-section">
+                            <h3>路径变更</h3>
+                            <div id="pathChanges" class="change-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑边关系</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editEdgeId">
+                    <div class="form-group">
+                        <label>源节点</label>
+                        <select id="editSource" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>目标节点</label>
+                        <select id="editTarget" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>方向</label>
+                        <select id="editDirection" class="form-control">
+                            <option value="forward">正向</option>
+                            <option value="reverse">反向</option>
+                            <option value="bidirectional">双向</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveEdge()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
