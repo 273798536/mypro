@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音乐版权关系宇宙</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--panel-bg:#111827;--card-bg:#1e293b;--border:#334155;
+  --text:#e2e8f0;--text-dim:#94a3b8;--accent:#6366f1;--accent2:#8b5cf6;
+  --danger:#ef4444;--warn:#f59e0b;--success:#22c55e;--info:#3b82f6;
+  --overlap:#f472b6;--revoked:#fb923c;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+#app{display:grid;grid-template-columns:1fr 380px;grid-template-rows:56px 1fr;height:100vh}
+#toolbar{grid-column:1/-1;background:var(--panel-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:10}
+#toolbar h1{font-size:16px;font-weight:600;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.toolbar-sep{width:1px;height:28px;background:var(--border);margin:0 4px}
+.toolbar-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-size:12px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.toolbar-btn:hover{border-color:var(--accent);background:#1e293bee}
+.toolbar-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.toolbar-btn.export-btn{border-color:var(--success);color:var(--success)}
+.toolbar-btn.export-btn:hover{background:var(--success);color:#fff}
+.toolbar-badge{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600}
+.badge-danger{background:var(--danger);color:#fff}
+.badge-warn{background:var(--warn);color:#000}
+.badge-info{background:var(--info);color:#fff}
+#graph-area{position:relative;overflow:hidden;background:var(--bg)}
+#graph-area svg{width:100%;height:100%}
+#graph-bg{position:absolute;inset:0;pointer-events:none;opacity:.03;background-image:radial-gradient(circle,var(--text) 1px,transparent 1px);background-size:32px 32px}
+#side-panel{background:var(--panel-bg);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-tab{flex:1;padding:12px 8px;text-align:center;font-size:12px;font-weight:500;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.panel-tab:hover{color:var(--text)}
+.panel-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.panel-content{flex:1;overflow-y:auto;padding:16px}
+.panel-content::-webkit-scrollbar{width:4px}
+.panel-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.panel-section{margin-bottom:20px}
+.panel-section-title{font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.panel-card{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;transition:border-color .2s}
+.panel-card:hover{border-color:var(--accent)}
+.panel-card.highlighted{border-color:var(--overlap);box-shadow:0 0 12px rgba(244,114,182,.2)}
+.panel-card.revoked{border-color:var(--revoked);box-shadow:0 0 12px rgba(251,146,60,.2)}
+.panel-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0}
+.panel-row .label{color:var(--text-dim)}
+.panel-row .value{font-weight:500;font-variant-numeric:tabular-nums}
+.mismatch-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.cause-ownership{background:rgba(239,68,68,.15);color:var(--danger)}
+.cause-contract{background:rgba(245,158,11,.15);color:var(--warn)}
+.node-type-track{color:var(--accent)}
+.node-type-rights{color:var(--success)}
+.node-type-platform{color:var(--info)}
+.node-type-contract{color:var(--warn)}
+.anomaly-item{display:flex;gap:10px;padding:10px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.anomaly-item:hover{border-color:var(--accent);transform:translateX(2px)}
+.anomaly-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.anomaly-icon.mismatch{background:rgba(239,68,68,.15);color:var(--danger)}
+.anomaly-icon.overlap{background:rgba(244,114,182,.15);color:var(--overlap)}
+.anomaly-icon.expired{background:rgba(245,158,11,.15);color:var(--warn)}
+.anomaly-icon.break{background:rgba(239,68,68,.15);color:var(--danger)}
+.anomaly-icon.revoked{background:rgba(251,146,60,.15);color:var(--revoked)}
+.anomaly-detail{flex:1;min-width:0}
+.anomaly-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.anomaly-desc{font-size:11px;color:var(--text-dim)}
+.anomaly-cause{font-size:10px;margin-top:4px}
+.link-label{font-size:10px;fill:var(--text-dim);pointer-events:none}
+.node-remark{font-size:9px;fill:var(--text-dim)}
+.tooltip{position:absolute;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;pointer-events:none;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:280px}
+.version-tag{font-size:10px;padding:1px 6px;border-radius:3px;background:rgba(99,102,241,.15);color:var(--accent);font-weight:600}
+.revoked-tag{font-size:10px;padding:1px 6px;border-radius:3px;background:rgba(251,146,60,.15);color:var(--revoked);font-weight:600}
+.overlap-pulse{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.export-status{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card-bg);border:1px solid var(--success);border-radius:8px;padding:10px 20px;font-size:12px;color:var(--success);z-index:100;opacity:0;transition:opacity .3s}
+.export-status.show{opacity:1}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-dim)}
+.empty-state svg{margin-bottom:12px;opacity:.3}
+.empty-state p{font-size:13px;line-height:1.6}
+.consistency-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600}
+.consistent{background:rgba(34,197,94,.15);color:var(--success)}
+.inconsistent{background:rgba(239,68,68,.15);color:var(--danger)}
+.filter-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;font-size:11px;border:1px solid var(--border);cursor:pointer;transition:all .2s;margin:2px}
+.filter-chip:hover{border-color:var(--accent)}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.detail-path{font-size:11px;color:var(--text-dim);padding:6px 0;border-bottom:1px solid var(--border)}
+.detail-path:last-child{border-bottom:none}
+.detail-path span{color:var(--accent);font-weight:500}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="toolbar">
+    <h1>音乐版权关系宇宙</h1>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" id="btn-overlap" title="高亮权属重叠">重叠 <span class="toolbar-badge badge-danger" id="overlap-count">0</span></button>
+    <button class="toolbar-btn" id="btn-mismatch" title="数字不一致">差异 <span class="toolbar-badge badge-warn" id="mismatch-count">0</span></button>
+    <button class="toolbar-btn" id="btn-revoked" title="到期撤回影响">撤回 <span class="toolbar-badge badge-info" id="revoked-count">0</span></button>
+    <button class="toolbar-btn" id="btn-expired" title="合同过期">过期 <span class="toolbar-badge badge-warn" id="expired-count">0</span></button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" id="btn-reset">重置视图</button>
+    <button class="toolbar-btn export-btn" id="btn-export">截图导出</button>
+  </div>
+  <div id="graph-area">
+    <div id="graph-bg"></div>
+    <svg id="graph-svg"></svg>
+    <div class="export-status" id="export-status">截图已生成，正在导出...</div>
+  </div>
+  <div id="side-panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" data-tab="detail">明细</div>
+      <div class="panel-tab" data-tab="version">版本</div>
+      <div class="panel-tab" data-tab="anomaly">异常</div>
+    </div>
+    <div class="panel-content" id="panel-detail">
+      <div class="empty-state" id="detail-empty">
+        <p>点击图谱中的节点或边<br>查看详细信息</p>
+      </div>
+      <div id="detail-content" style="display:none"></div>
+    </div>
+    <div class="panel-content" id="panel-version" style="display:none">
+      <div id="version-content"></div>
+    </div>
+    <div class="panel-content" id="panel-anomaly" style="display:none">
+      <div id="anomaly-content"></div>
+    </div>
+  </div>
+</div>
+<div class="tooltip" id="tooltip" style="display:none"></div>
+
+<script>
+const DATA = {
+  nodes: [
+    {id:'t1',name:'星辰大海',type:'track',version:'v3',remark:'原备注:词曲同步',expectedCount:3,actualCount:4,platformLabel:'网易云',platformVersion:'v2'},
+    {id:'t2',name:'晚风说',type:'track',version:'v2',remark:'改备注:增加编曲权',expectedCount:2,actualCount:2,platformLabel:'QQ音乐',platformVersion:'v1'},
+    {id:'t3',name:'光阴错',type:'track',version:'v4',remark:'备注已更新',expectedCount:4,actualCount:5,platformLabel:'酷狗',platformVersion:'v3'},
+    {id:'t4',name:'南屏晚钟',type:'track',version:'v1',remark:'原始备注',expectedCount:2,actualCount:2,platformLabel:'网易云',platformVersion:'v1'},
+    {id:'r1',name:'词著作权',type:'rights',version:'v2'},
+    {id:'r2',name:'曲著作权',type:'rights',version:'v2'},
+    {id:'r3',name:'编曲权',type:'rights',version:'v1'},
+    {id:'r4',name:'录音制作者权',type:'rights',version:'v3'},
+    {id:'r5',name:'表演者权',type:'rights',version:'v1'},
+    {id:'p1',name:'云音乐平台',type:'platform',version:'v2'},
+    {id:'p2',name:'QQ音乐平台',type:'platform',version:'v1'},
+    {id:'p3',name:'酷狗平台',type:'platform',version:'v3'},
+    {id:'c1',name:'独家授权合同A',type:'contract',version:'v2',expiryDate:'2025-12-31',revoked:false,status:'active'},
+    {id:'c2',name:'非独家授权合同B',type:'contract',version:'v1',expiryDate:'2024-06-30',revoked:true,revokedDate:'2025-03-15',status:'revoked'},
+    {id:'c3',name:'转让协议C',type:'contract',version:'v3',expiryDate:'2026-06-30',revoked:false,status:'active'},
+    {id:'c4',name:'合作分成合同D',type:'contract',version:'v1',expiryDate:'2024-01-15',revoked:false,status:'expired'},
+  ],
+  edges: [
+    {id:'e1',source:'t1',target:'r1',edgeType:'ownership',label:'词权属',version:'v2',contractId:'c3',overlap:false},
+    {id:'e2',source:'t1',target:'r2',edgeType:'ownership',label:'曲权属',version:'v1',contractId:'c1',overlap:true,overlapWith:'e3'},
+    {id:'e3',source:'t1',target:'r2',edgeType:'ownership',label:'曲权属(转)',version:'v2',contractId:'c3',overlap:true,overlapWith:'e2'},
+    {id:'e4',source:'t1',target:'r4',edgeType:'ownership',label:'录音权属',version:'v1',contractId:'c2',overlap:false},
+    {id:'e5',source:'t2',target:'r1',edgeType:'ownership',label:'词权属',version:'v1',contractId:'c1',overlap:false},
+    {id:'e6',source:'t2',target:'r3',edgeType:'ownership',label:'编曲权属',version:'v1',contractId:'c4',overlap:false,expired:true},
+    {id:'e7',source:'t3',target:'r2',edgeType:'ownership',label:'曲权属',version:'v2',contractId:'c3',overlap:false},
+    {id:'e8',source:'t3',target:'r4',edgeType:'ownership',label:'录音权属',version:'v1',contractId:'c1',overlap:true,overlapWith:'e9'},
+    {id:'e9',source:'t3',target:'r4',edgeType:'ownership',label:'录音权属(平台)',version:'v2',contractId:'c2',overlap:true,overlapWith:'e8'},
+    {id:'e10',source:'t3',target:'r5',edgeType:'ownership',label:'表演权属',version:'v1',contractId:'c1',overlap:false},
+    {id:'e11',source:'t3',target:'r1',edgeType:'ownership',label:'词权属',version:'v1',contractId:'c3',overlap:false},
+    {id:'e12',source:'t4',target:'r2',edgeType:'ownership',label:'曲权属',version:'v1',contractId:'c4',overlap:false,expired:true},
+    {id:'e13',source:'t4',target:'r5',edgeType:'ownership',label:'表演权属',version:'v1',contractId:'c1',overlap:false},
+    {id:'e14',source:'r1',target:'p1',edgeType:'license',label:'授权',version:'v1',contractId:'c1'},
+    {id:'e15',source:'r2',target:'p2',edgeType:'license',label:'授权',version:'v2',contractId:'c1'},
+    {id:'e16',source:'r4',target:'p1',edgeType:'license',label:'授权',version:'v1',contractId:'c2'},
+    {id:'e17',source:'r4',target:'p3',edgeType:'license',label:'授权',version:'v2',contractId:'c2'},
+    {id:'e18',source:'r3',target:'p2',edgeType:'license',label:'授权',version:'v1',contractId:'c4',pathBreak:true},
+    {id:'e19',source:'r5',target:'p1',edgeType:'license',label:'授权',version:'v1',contractId:'c1'},
+  ]
+};
+
+function getNode(id){return DATA.nodes.find(n=>n.id===id)}
+function getEdge(id){return DATA.edges.find(e=>e.id===id)}
+function getContract(id){return DATA.nodes.find(n=>n.id===id&&n.type==='contract')}
+
+function detectAnomalies(){
+  const anomalies=[];
+  DATA.nodes.filter(n=>n.type==='track').forEach(t=>{
+    if(t.expectedCount!==t.actualCount){
+      const relatedEdges=DATA.edges.filter(e=>e.source===t.id||e.target===t.id);
+      const overlapEdges=relatedEdges.filter(e=>e.overlap);
+      const contractEdges=relatedEdges.filter(e=>{
+        const c=getContract(e.contractId);
+        return c&&(c.status==='expired'||c.status==='revoked');
+      });
+      let cause='ownership';
+      if(contractEdges.length>0&&overlapEdges.length===0) cause='contract';
+      else if(contractEdges.length>0&&overlapEdges.length>0) cause='both';
+      anomalies.push({
+        type:'mismatch',nodeId:t.id,
+        title:`${t.name} 数字不一致`,
+        desc:`关系报告期望 ${t.expectedCount} 条，实际 ${t.actualCount} 条`,
+        cause,causeLabel:cause==='ownership'?'权属边差异':cause==='contract'?'合同版本差异':'权属边+合同版本',
+        affectedEdges:relatedEdges.map(e=>e.id)
+      });
+    }
+  });
+  DATA.edges.filter(e=>e.overlap).forEach(e=>{
+    const src=getNode(typeof e.source==='object'?e.source.id:e.source);
+    const tgt=getNode(typeof e.target==='object'?e.target.id:e.target);
+    anomalies.push({
+      type:'overlap',edgeId:e.id,
+      title:`${src?src.name:'?'} → ${tgt?tgt.name:'?'} 权属重叠`,
+      desc:`${e.label} 与 ${e.overlapWith} 存在权属重叠`,
+      cause:'ownership',causeLabel:'权属边',
+      affectedEdges:[e.id,e.overlapWith]
+    });
+  });
+  DATA.edges.filter(e=>e.expired).forEach(e=>{
+    const src=getNode(typeof e.source==='object'?e.source.id:e.source);
+    anomalies.push({
+      type:'expired',edgeId:e.id,
+      title:`${src?src.name:'?'} 授权过期`,
+      desc:`${e.label} 对应的合同已过期`,
+      cause:'contract',causeLabel:'合同版本',
+      affectedEdges:[e.id]
+    });
+  });
+  DATA.edges.filter(e=>e.pathBreak).forEach(e=>{
+    const src=getNode(typeof e.source==='object'?e.source.id:e.source);
+    anomalies.push({
+      type:'break',edgeId:e.id,
+      title:`${src?src.name:'?'} 路径断裂`,
+      desc:`${e.label} 授权路径已断裂`,
+      cause:'contract',causeLabel:'合同版本',
+      affectedEdges:[e.id]
+    });
+  });
+  DATA.nodes.filter(n=>n.type==='contract'&&n.revoked).forEach(c=>{
+    const affectedEdges=DATA.edges.filter(e=>e.contractId===c.id);
+    const affectedNodes=new Set();
+    affectedEdges.forEach(e=>{
+      const s=typeof e.source==='object'?e.source.id:e.source;
+      const t=typeof e.target==='object'?e.target.id:e.target;
+      affectedNodes.add(s);affectedNodes.add(t);
+    });
+    anomalies.push({
+      type:'revoked',contractId:c.id,
+      title:`${c.name} 到期撤回`,
+      desc:`到期日 ${c.expiryDate} 于 ${c.revokedDate} 撤回，影响 ${affectedEdges.length} 条关系`,
+      cause:'contract',causeLabel:'合同版本',
+      affectedEdges:affectedEdges.map(e=>e.id),
+      affectedNodes:[...affectedNodes],
+      oldResults:affectedEdges.map(e=>({edgeId:e.id,label:e.label}))
+    });
+  });
+  return anomalies;
+}
+
+const anomalies=detectAnomalies();
+
+function updateToolbarBadges(){
+  document.getElementById('overlap-count').textContent=anomalies.filter(a=>a.type==='overlap').length;
+  document.getElementById('mismatch-count').textContent=anomalies.filter(a=>a.type==='mismatch').length;
+  document.getElementById('revoked-count').textContent=anomalies.filter(a=>a.type==='revoked').length;
+  document.getElementById('expired-count').textContent=anomalies.filter(a=>a.type==='expired').length;
+}
+updateToolbarBadges();
+
+const TYPE_COLORS={track:'#6366f1',rights:'#22c55e',platform:'#3b82f6',contract:'#f59e0b'};
+const TYPE_RADIUS={track:28,rights:22,platform:22,contract:20};
+const TYPE_LABEL={track:'曲目',rights:'权属',platform:'平台',contract:'合同'};
+
+let svg, simulation, linkGroup, nodeGroup, labelGroup;
+let selectedElement=null;
+let activeFilter=null;
+let highlightedEdges=new Set();
+let highlightedNodes=new Set();
+let revokedHighlight=new Set();
+
+function initGraph(){
+  const container=document.getElementById('graph-area');
+  const width=container.clientWidth;
+  const height=container.clientHeight;
+
+  svg=d3.select('#graph-svg').attr('width',width).attr('height',height);
+
+  svg.append('defs')
+    .append('marker')
+    .attr('id','arrowhead')
+    .attr('viewBox','0 -5 10 10')
+    .attr('refX',20).attr('refY',0)
+    .attr('markerWidth',6).attr('markerHeight',6)
+    .attr('orient','auto')
+    .append('path').attr('d','M0,-5L10,0L0,5').attr('fill','#475569');
+
+  svg.append('defs')
+    .append('marker')
+    .attr('id','arrowhead-active')
+    .attr('viewBox','0 -5 10 10')
+    .attr('refX',20).attr('refY',0)
+    .attr('markerWidth',6).attr('markerHeight',6)
+    .attr('orient','auto')
+    .append('path').attr('d','M0,-5L10,0L0,5').attr('fill','#6366f1');
+
+  svg.append('defs')
+    .append('marker')
+    .attr('id','arrowhead-overlap')
+    .attr('viewBox','0 -5 10 10')
+    .attr('refX',20).attr('refY',0)
+    .attr('markerWidth',6).attr('markerHeight',6)
+    .attr('orient','auto')
+    .append('path').attr('d','M0,-5L10,0L0,5').attr('fill','#f472b6');
+
+  const g=svg.append('g').attr('id','main-group');
+
+  linkGroup=g.append('g').attr('class','links');
+  nodeGroup=g.append('g').attr('class','nodes');
+  labelGroup=g.append('g').attr('class','labels');
+
+  const nodes=DATA.nodes.map(n=>({...n}));
+  const edges=DATA.edges.map(e=>({...e}));
+
+  simulation=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(edges).id(d=>d.id).distance(d=>{
+      if(d.edgeType==='license') return 120;
+      return 90;
+    }).strength(0.6))
+    .force('charge',d3.forceManyBody().strength(-400))
+    .force('center',d3.forceCenter(width/2,height/2))
+    .force('collision',d3.forceCollide().radius(d=>TYPE_RADIUS[d.type]+10));
+
+  const links=linkGroup.selectAll('line')
+    .data(edges).join('line')
+    .attr('stroke',d=>{
+      if(d.overlap) return '#f472b6';
+      if(d.expired) return '#f59e0b';
+      if(d.pathBreak) return '#ef4444';
+      return '#334155';
+    })
+    .attr('stroke-width',d=>d.overlap?2.5:d.expired||d.pathBreak?2:1.5)
+    .attr('stroke-dasharray',d=>{
+      if(d.pathBreak) return '6,3';
+      if(d.expired) return '4,4';
+      if(d.overlap) return '2,2';
+      return 'none';
+    })
+    .attr('marker-end',d=>{
+      if(d.overlap) return 'url(#arrowhead-overlap)';
+      return 'url(#arrowhead)';
+    })
+    .attr('data-id',d=>d.id)
+    .style('cursor','pointer')
+    .on('click',(ev,d)=>selectEdge(d))
+    .on('mouseover',(ev,d)=>showTooltip(ev,edgeTooltip(d)))
+    .on('mouseout',hideTooltip);
+
+  const nodesSel=nodeGroup.selectAll('g')
+    .data(nodes).join('g')
+    .style('cursor','pointer')
+    .call(d3.drag()
+      .on('start',dragStarted)
+      .on('drag',dragged)
+      .on('end',dragEnded))
+    .on('click',(ev,d)=>selectNode(d))
+    .on('dblclick',(ev,d)=>focusNode(d))
+    .on('mouseover',(ev,d)=>showTooltip(ev,nodeTooltip(d)))
+    .on('mouseout',hideTooltip);
+
+  nodesSel.append('circle')
+    .attr('r',d=>TYPE_RADIUS[d.type])
+    .attr('fill',d=>{
+      const c=TYPE_COLORS[d.type];
+      return d3.color(c).copy({opacity:0.15});
+    })
+    .attr('stroke',d=>TYPE_COLORS[d.type])
+    .attr('stroke-width',2)
+    .attr('data-id',d=>d.id);
+
+  nodesSel.append('text')
+    .attr('text-anchor','middle')
+    .attr('dy','-2px')
+    .attr('font-size',d=>d.type==='track'?'11px':'10px')
+    .attr('font-weight',d=>d.type==='track'?'600':'500')
+    .attr('fill',d=>TYPE_COLORS[d.type])
+    .text(d=>d.name.length>6?d.name.slice(0,6)+'…':d.name);
+
+  nodesSel.append('text')
+    .attr('text-anchor','middle')
+    .attr('dy','12px')
+    .attr('font-size','9px')
+    .attr('fill','#64748b')
+    .text(d=>TYPE_LABEL[d.type]);
+
+  const edgeLabels=labelGroup.selectAll('text')
+    .data(edges).join('text')
+    .attr('class','link-label')
+    .attr('text-anchor','middle')
+    .attr('font-size','9px')
+    .attr('fill',d=>d.overlap?'#f472b6':d.expired?'#f59e0b':d.pathBreak?'#ef4444':'#64748b')
+    .text(d=>d.label);
+
+  simulation.on('tick',()=>{
+    links
+      .attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+      .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    nodesSel.attr('transform',d=>`translate(${d.x},${d.y})`);
+    edgeLabels
+      .attr('x',d=>(d.source.x+d.target.x)/2)
+      .attr('y',d=>(d.source.y+d.target.y)/2-6);
+  });
+
+  const zoom=d3.zoom()
+    .scaleExtent([0.3,3])
+    .on('zoom',(ev)=>{
+      g.attr('transform',ev.transform);
+    });
+  svg.call(zoom);
+
+  window.addEventListener('resize',()=>{
+    const w=container.clientWidth;
+    const h=container.clientHeight;
+    svg.attr('width',w).attr('height',h);
+    simulation.force('center',d3.forceCenter(w/2,h/2));
+    simulation.alpha(0.3).restart();
+  });
+}
+
+function dragStarted(ev,d){
+  if(!ev.active) simulation.alphaTarget(0.3).restart();
+  d.fx=d.x;d.fy=d.y;
+}
+function dragged(ev,d){d.fx=ev.x;d.fy=ev.y}
+function dragEnded(ev,d){
+  if(!ev.active) simulation.alphaTarget(0);
+  d.fx=null;d.fy=null;
+}
+
+function nodeTooltip(n){
+  let html=`<strong>${n.name}</strong> <span class="version-tag">${n.version}</span>`;
+  html+=`<br><span style="color:var(--text-dim)">类型:</span> ${TYPE_LABEL[n.type]}`;
+  if(n.type==='track'){
+    html+=`<br><span style="color:var(--text-dim)">备注:</span> ${n.remark}`;
+    html+=`<br><span style="color:var(--text-dim)">平台标签:</span> ${n.platformLabel} (${n.platformVersion})`;
+    if(n.expectedCount!==n.actualCount)
+      html+=`<br><span style="color:var(--danger)">期望${n.expectedCount}条/实际${n.actualCount}条</span>`;
+  }
+  if(n.type==='contract'){
+    html+=`<br><span style="color:var(--text-dim)">到期:</span> ${n.expiryDate}`;
+    if(n.revoked) html+=` <span class="revoked-tag">已撤回 ${n.revokedDate}</span>`;
+  }
+  return html;
+}
+
+function edgeTooltip(e){
+  const src=typeof e.source==='object'?e.source:getNode(e.source);
+  const tgt=typeof e.target==='object'?e.target:getNode(e.target);
+  let html=`<strong>${e.label}</strong> <span class="version-tag">${e.version}</span>`;
+  html+=`<br>${src?.name} → ${tgt?.name}`;
+  if(e.overlap) html+=`<br><span style="color:var(--overlap)">⚠ 权属重叠</span>`;
+  if(e.expired) html+=`<br><span style="color:var(--warn)">⚠ 已过期</span>`;
+  if(e.pathBreak) html+=`<br><span style="color:var(--danger)">⚠ 路径断裂</span>`;
+  return html;
+}
+
+function showTooltip(ev,html){
+  const tt=document.getElementById('tooltip');
+  tt.innerHTML=html;
+  tt.style.display='block';
+  tt.style.left=(ev.pageX+12)+'px';
+  tt.style.top=(ev.pageY-10)+'px';
+}
+function hideTooltip(){document.getElementById('tooltip').style.display='none'}
+
+function selectNode(d){
+  selectedElement={type:'node',data:d};
+  clearHighlights();
+  highlightConnected(d.id);
+  renderDetail();
+}
+
+function selectEdge(d){
+  selectedElement={type:'edge',data:d};
+  clearHighlights();
+  highlightEdge(d.id);
+  renderDetail();
+}
+
+function clearHighlights(){
+  highlightedEdges.clear();
+  highlightedNodes.clear();
+  revokedHighlight.clear();
+  d3.selectAll('.nodes circle').attr('stroke-width',2).attr('opacity',1);
+  d3.selectAll('.links line').attr('opacity',1).attr('stroke-width',d=>{
+    if(d.overlap) return 2.5;
+    if(d.expired||d.pathBreak) return 2;
+    return 1.5;
+  });
+  d3.selectAll('.labels text').attr('opacity',1);
+}
+
+function highlightConnected(nodeId){
+  highlightedNodes.add(nodeId);
+  DATA.edges.forEach(e=>{
+    const s=typeof e.source==='object'?e.source.id:e.source;
+    const t=typeof e.target==='object'?e.target.id:e.target;
+    if(s===nodeId||t===nodeId){
+      highlightedEdges.add(e.id);
+      highlightedNodes.add(s);
+      highlightedNodes.add(t);
+    }
+  });
+  applyHighlights();
+}
+
+function highlightEdge(edgeId){
+  highlightedEdges.add(edgeId);
+  const e=DATA.edges.find(x=>x.id===edgeId);
+  if(e){
+    const s=typeof e.source==='object'?e.source.id:e.source;
+    const t=typeof e.target==='object'?e.target.id:e.target;
+    highlightedNodes.add(s);
+    highlightedNodes.add(t);
+  }
+  applyHighlights();
+}
+
+function applyHighlights(){
+  d3.selectAll('.nodes circle').each(function(d){
+    const el=d3.select(this);
+    if(highlightedNodes.has(d.id)){
+      el.attr('stroke-width',3).attr('opacity',1);
+    }else{
+      el.attr('opacity',0.2).attr('stroke-width',1);
+    }
+  });
+  d3.selectAll('.links line').each(function(d){
+    const el=d3.select(this);
+    if(highlightedEdges.has(d.id)){
+      el.attr('opacity',1).attr('stroke-width',3);
+    }else{
+      el.attr('opacity',0.1).attr('stroke-width',0.5);
+    }
+  });
+  d3.selectAll('.labels text').each(function(d){
+    const isEdgeLabel=d.edgeType!==undefined;
+    if(isEdgeLabel){
+      d3.select(this).attr('opacity',highlightedEdges.has(d.id)?1:0.1);
+    }else{
+      d3.select(this).attr('opacity',highlightedNodes.has(d.id)?1:0.1);
+    }
+  });
+}
+
+function highlightAnomalySet(edgeIds,nodeIds,isRevoked=false){
+  clearHighlights();
+  edgeIds.forEach(id=>highlightedEdges.add(id));
+  nodeIds.forEach(id=>highlightedNodes.add(id));
+  if(isRevoked) nodeIds.forEach(id=>revokedHighlight.add(id));
+  applyHighlights();
+  if(isRevoked){
+    d3.selectAll('.nodes circle').each(function(d){
+      if(revokedHighlight.has(d.id)){
+        d3.select(this)
+          .attr('stroke',var_=>'#fb923c')
+          .attr('stroke-width',4)
+          .classed('overlap-pulse',true);
+      }
+    });
+    d3.selectAll('.links line').each(function(d){
+      if(edgeIds.includes(d.id)){
+        d3.select(this).attr('stroke','#fb923c').attr('stroke-width',3);
+      }
+    });
+  }else if(edgeIds.some(id=>{
+    const e=DATA.edges.find(x=>x.id===id);
+    return e&&e.overlap;
+  })){
+    d3.selectAll('.links line').each(function(d){
+      if(edgeIds.includes(d.id)){
+        d3.select(this).attr('stroke','#f472b6').attr('stroke-width',3);
+      }
+    });
+  }
+}
+
+function focusNode(d){
+  const container=document.getElementById('graph-area');
+  const w=container.clientWidth;
+  const h=container.clientHeight;
+  svg.transition().duration(750).call(
+    d3.zoom().transform,
+    d3.zoomIdentity.translate(w/2-d.x*1.5,h/2-d.y*1.5).scale(1.5)
+  );
+}
+
+function renderDetail(){
+  const empty=document.getElementById('detail-empty');
+  const content=document.getElementById('detail-content');
+  empty.style.display='none';
+  content.style.display='block';
+
+  if(selectedElement.type==='node'){
+    renderNodeDetail(selectedElement.data);
+  }else{
+    renderEdgeDetail(selectedElement.data);
+  }
+  switchTab('detail');
+}
+
+function renderNodeDetail(d){
+  const el=document.getElementById('detail-content');
+  const node=getNode(d.id);
+  if(!node) return;
+  let html=`<div class="panel-section">
+    <div class="panel-section-title">
+      <span style="color:${TYPE_COLORS[node.type]}">●</span> ${node.name}
+      <span class="version-tag">${node.version}</span>
+    </div>
+    <div class="panel-card">
+      <div class="panel-row"><span class="label">类型</span><span class="value">${TYPE_LABEL[node.type]}</span></div>
+      <div class="panel-row"><span class="label">ID</span><span class="value">${node.id}</span></div>`;
+
+  if(node.type==='track'){
+    const isMismatch=node.expectedCount!==node.actualCount;
+    html+=`<div class="panel-row"><span class="label">备注</span><span class="value">${node.remark}</span></div>
+      <div class="panel-row"><span class="label">平台标签</span><span class="value">${node.platformLabel} (${node.platformVersion})</span></div>
+      <div class="panel-row"><span class="label">关系报告期望</span><span class="value">${node.expectedCount}</span></div>
+      <div class="panel-row"><span class="label">实际关系数</span><span class="value" style="color:${isMismatch?'var(--danger)':'var(--success)'}">${node.actualCount}</span></div>`;
+    if(isMismatch){
+      const anomaly=anomalies.find(a=>a.type==='mismatch'&&a.nodeId===node.id);
+      html+=`<div style="margin-top:8px">
+        <span class="mismatch-badge ${anomaly?.cause==='ownership'?'cause-ownership':'cause-contract'}">
+          ${anomaly?.causeLabel||'差异'}: 差${node.actualCount-node.expectedCount}条
+        </span>
+      </div>`;
+    }
+  }
+
+  if(node.type==='contract'){
+    html+=`<div class="panel-row"><span class="label">到期日</span><span class="value">${node.expiryDate}</span></div>
+      <div class="panel-row"><span class="label">状态</span><span class="value" style="color:${node.status==='active'?'var(--success)':node.status==='revoked'?'var(--revoked)':'var(--warn)'}">${node.status==='active'?'有效':node.status==='revoked'?'已撤回':'已过期'}</span></div>`;
+    if(node.revoked){
+      html+=`<div class="panel-row"><span class="label">撤回日期</span><span class="value" style="color:var(--revoked)">${node.revokedDate}</span></div>`;
+    }
+  }
+  html+=`</div></div>`;
+
+  const relatedEdges=DATA.edges.filter(e=>{
+    const s=typeof e.source==='object'?e.source.id:e.source;
+    const t=typeof e.target==='object'?e.target.id:e.target;
+    return s===node.id||t===node.id;
+  });
+
+  if(relatedEdges.length>0){
+    html+=`<div class="panel-section">
+      <div class="panel-section-title">关联关系 (${relatedEdges.length})</div>`;
+    relatedEdges.forEach(e=>{
+      const s=getNode(typeof e.source==='object'?e.source.id:e.source);
+      const t=getNode(typeof e.target==='object'?e.target.id:e.target);
+      const contract=getContract(e.contractId);
+      let tags='';
+      if(e.overlap) tags+=`<span style="color:var(--overlap);font-size:10px;margin-left:4px">⚠重叠</span>`;
+      if(e.expired) tags+=`<span style="color:var(--warn);font-size:10px;margin-left:4px">⚠过期</span>`;
+      if(e.pathBreak) tags+=`<span style="color:var(--danger);font-size:10px;margin-left:4px">⚠断裂</span>`;
+      const isRevokedEdge=contract&&contract.revoked;
+      if(isRevokedEdge) tags+=`<span class="revoked-tag" style="margin-left:4px">撤回影响</span>`;
+
+      html+=`<div class="panel-card ${isRevokedEdge?'revoked':''}" style="cursor:pointer" onclick="selectEdgeById('${e.id}')">
+        <div class="panel-row"><span class="label">${e.label}</span><span class="value"><span class="version-tag">${e.version}</span>${tags}</span></div>
+        <div class="panel-row"><span class="label">路径</span><span class="value">${s?.name} → ${t?.name}</span></div>
+        ${contract?`<div class="panel-row"><span class="label">合同</span><span class="value">${contract.name} (${contract.version})</span></div>`:''}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(node.type==='track'){
+    html+=renderPathTrace(node.id);
+  }
+
+  el.innerHTML=html;
+}
+
+function renderEdgeDetail(d){
+  const el=document.getElementById('detail-content');
+  const edge=DATA.edges.find(e=>e.id===d.id);
+  if(!edge) return;
+  const src=getNode(typeof edge.source==='object'?edge.source.id:edge.source);
+  const tgt=getNode(typeof edge.target==='object'?edge.target.id:edge.target);
+  const contract=getContract(edge.contractId);
+
+  let html=`<div class="panel-section">
+    <div class="panel-section-title">关系详情</div>
+    <div class="panel-card">
+      <div class="panel-row"><span class="label">标签</span><span class="value">${edge.label} <span class="version-tag">${edge.version}</span></span></div>
+      <div class="panel-row"><span class="label">类型</span><span class="value">${edge.edgeType==='ownership'?'权属':'授权'}</span></div>
+      <div class="panel-row"><span class="label">源</span><span class="value" style="color:${TYPE_COLORS[src?.type]}">${src?.name}</span></div>
+      <div class="panel-row"><span class="label">目标</span><span class="value" style="color:${TYPE_COLORS[tgt?.type]}">${tgt?.name}</span></div>`;
+
+  if(contract){
+    html+=`<div class="panel-row"><span class="label">合同</span><span class="value">${contract.name} (${contract.version})</span></div>
+      <div class="panel-row"><span class="label">合同状态</span><span class="value" style="color:${contract.status==='active'?'var(--success)':contract.status==='revoked'?'var(--revoked)':'var(--warn)'}">${contract.status==='active'?'有效':contract.status==='revoked'?'已撤回':'已过期'}</span></div>`;
+  }
+
+  if(edge.overlap){
+    const otherEdge=getEdge(edge.overlapWith);
+    html+=`<div style="margin-top:8px">
+      <span class="mismatch-badge cause-ownership">⚠ 权属重叠 — 与 ${otherEdge?.label||edge.overlapWith} 重叠</span>
+    </div>`;
+  }
+  if(edge.expired){
+    html+=`<div style="margin-top:8px"><span class="mismatch-badge cause-contract">⚠ 合同过期</span></div>`;
+  }
+  if(edge.pathBreak){
+    html+=`<div style="margin-top:8px"><span class="mismatch-badge cause-contract">⚠ 路径断裂</span></div>`;
+  }
+  if(contract&&contract.revoked){
+    html+=`<div style="margin-top:8px"><span class="revoked-tag">到期撤回影响: ${contract.revokedDate} 撤回了到期日 ${contract.expiryDate}</span></div>`;
+  }
+  html+=`</div></div>`;
+  el.innerHTML=html;
+}
+
+function renderPathTrace(trackId){
+  const track=getNode(trackId);
+  if(!track||track.type!=='track') return '';
+
+  const paths=[];
+  function trace(currentId,visited,path){
+    if(visited.has(currentId)) return;
+    visited.add(currentId);
+    const node=getNode(currentId);
+    if(!node) return;
+    path.push(node.name);
+    const outEdges=DATA.edges.filter(e=>{
+      const s=typeof e.source==='object'?e.source.id:e.source;
+      return s===currentId;
+    });
+    if(outEdges.length===0){
+      paths.push({path:path.slice(),nodes:[...visited]});
+      path.pop();
+      return;
+    }
+    outEdges.forEach(e=>{
+      const t=typeof e.target==='object'?e.target.id:e.target;
+      trace(t,new Set(visited),path.slice());
+    });
+  }
+  trace(trackId,new Set(),[]);
+
+  let html=`<div class="panel-section">
+    <div class="panel-section-title">路径追踪 (曲目→导出)</div>`;
+  paths.slice(0,10).forEach(p=>{
+    const pathStr=p.path.map(n=>`<span>${n}</span>`).join(' → ');
+    html+=`<div class="detail-path">${pathStr}</div>`;
+  });
+  if(paths.length>10) html+=`<div style="font-size:11px;color:var(--text-dim);padding:4px">...还有 ${paths.length-10} 条路径</div>`;
+  html+=`</div>`;
+  return html;
+}
+
+function selectEdgeById(edgeId){
+  const edge=DATA.edges.find(e=>e.id===edgeId);
+  if(edge){
+    const d={id:edge.id,source:edge.source,target:edge.target,edgeType:edge.edgeType,label:edge.label,version:edge.version,overlap:edge.overlap,expired:edge.expired,pathBreak:edge.pathBreak,contractId:edge.contractId,overlapWith:edge.overlapWith};
+    selectEdge(d);
+  }
+}
+
+function renderVersionPanel(){
+  const el=document.getElementById('version-content');
+  let html=`<div class="panel-section">
+    <div class="panel-section-title">版本变更记录</div>`;
+
+  const trackNodes=DATA.nodes.filter(n=>n.type==='track');
+  trackNodes.forEach(t=>{
+    const relatedEdges=DATA.edges.filter(e=>{
+      const s=typeof e.source==='object'?e.source.id:e.source;
+      return s===t.id;
+    });
+    const hasVersionMismatch=relatedEdges.some(e=>{
+      const contract=getContract(e.contractId);
+      return contract&&contract.version!==e.version;
+    });
+    const hasOverlap=relatedEdges.some(e=>e.overlap);
+    const hasExpired=relatedEdges.some(e=>e.expired);
+    const hasRevoked=relatedEdges.some(e=>{
+      const c=getContract(e.contractId);
+      return c&&c.revoked;
+    });
+
+    html+=`<div class="panel-card" style="cursor:pointer" onclick="selectNodeById('${t.id}')">
+      <div class="panel-row">
+        <span class="label" style="color:${TYPE_COLORS.track}">${t.name}</span>
+        <span>
+          <span class="version-tag">${t.version}</span>
+          ${hasVersionMismatch?'<span class="consistency-badge inconsistent">版本不一致</span>':'<span class="consistency-badge consistent">一致</span>'}
+        </span>
+      </div>
+      <div class="panel-row"><span class="label">备注</span><span class="value" style="font-size:11px">${t.remark}</span></div>
+      <div class="panel-row"><span class="label">平台标签</span><span class="value">${t.platformLabel} (${t.platformVersion})</span></div>`;
+
+    if(hasOverlap) html+=`<div style="margin-top:4px"><span style="color:var(--overlap);font-size:11px">⚠ 存在权属重叠</span></div>`;
+    if(hasExpired) html+=`<div><span style="color:var(--warn);font-size:11px">⚠ 存在过期合同</span></div>`;
+    if(hasRevoked) html+=`<div><span style="color:var(--revoked);font-size:11px">⚠ 受撤回影响</span></div>`;
+
+    html+=`</div>`;
+  });
+
+  html+=`</div><div class="panel-section">
+    <div class="panel-section-title">合同版本</div>`;
+
+  DATA.nodes.filter(n=>n.type==='contract').forEach(c=>{
+    const contractEdges=DATA.edges.filter(e=>e.contractId===c.id);
+    html+=`<div class="panel-card ${c.revoked?'revoked':''}">
+      <div class="panel-row"><span class="label">${c.name}</span><span class="value"><span class="version-tag">${c.version}</span></span></div>
+      <div class="panel-row"><span class="label">到期日</span><span class="value">${c.expiryDate}</span></div>
+      <div class="panel-row"><span class="label">状态</span><span class="value" style="color:${c.status==='active'?'var(--success)':c.status==='revoked'?'var(--revoked)':'var(--warn)'}">${c.status==='active'?'有效':c.status==='revoked'?'已撤回':'已过期'}</span></div>`;
+    if(c.revoked){
+      html+=`<div class="panel-row"><span class="label">撤回日期</span><span class="value" style="color:var(--revoked)">${c.revokedDate}</span></div>`;
+    }
+    html+=`<div class="panel-row"><span class="label">关联关系</span><span class="value">${contractEdges.length}条</span></div>`;
+
+    const expiredHandling=contractEdges.filter(e=>e.expired);
+    const breakHandling=contractEdges.filter(e=>e.pathBreak);
+    if(expiredHandling.length>0&&breakHandling.length>0){
+      const consistent=checkExpiryBreakConsistency(expiredHandling,breakHandling);
+      html+=`<div style="margin-top:6px">
+        <span class="consistency-badge ${consistent?'consistent':'inconsistent'}">
+          ${consistent?'过期/断裂口径一致':'⚠ 过期/断裂口径不一致'}
+        </span>
+      </div>`;
+    }
+    html+=`</div>`;
+  });
+
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+
+function checkExpiryBreakConsistency(expiredEdges,breakEdges){
+  const expiredContracts=new Set(expiredEdges.map(e=>e.contractId));
+  const breakContracts=new Set(breakEdges.map(e=>e.contractId));
+  return expiredContracts.size===0||breakContracts.size===0||[...expiredContracts].some(c=>breakContracts.has(c));
+}
+
+function renderAnomalyPanel(){
+  const el=document.getElementById('anomaly-content');
+  let html=`<div class="panel-section">
+    <div class="panel-section-title">异常汇总 (${anomalies.length})</div>`;
+
+  anomalies.forEach((a,i)=>{
+    const iconMap={mismatch:'✕',overlap:'⬡',expired:'⏰',break:'⚡',revoked:'↩'};
+    html+=`<div class="anomaly-item" onclick="jumpToAnomaly(${i})">
+      <div class="anomaly-icon ${a.type}">${iconMap[a.type]||'!'}</div>
+      <div class="anomaly-detail">
+        <div class="anomaly-title">${a.title}</div>
+        <div class="anomaly-desc">${a.desc}</div>
+        <div class="anomaly-cause"><span class="mismatch-badge ${a.cause==='ownership'?'cause-ownership':'cause-contract'}">${a.causeLabel}</span></div>
+      </div>
+    </div>`;
+  });
+
+  if(anomalies.length===0){
+    html+=`<div class="empty-state"><p>暂无异常</p></div>`;
+  }
+
+  html+=`</div>`;
+
+  const overlapAnomalies=anomalies.filter(a=>a.type==='overlap');
+  const expiredAnomalies=anomalies.filter(a=>a.type==='expired');
+  const breakAnomalies=anomalies.filter(a=>a.type==='break');
+
+  if(overlapAnomalies.length>0&&(expiredAnomalies.length>0||breakAnomalies.length>0)){
+    html+=`<div class="panel-section">
+      <div class="panel-section-title">口径一致性检查</div>
+      <div class="panel-card">`;
+    const overlapContracts=new Set();
+    overlapAnomalies.forEach(a=>{
+      const edge=getEdge(a.edgeId);
+      if(edge) overlapContracts.add(edge.contractId);
+    });
+    const expiredBreakContracts=new Set();
+    [...expiredAnomalies,...breakAnomalies].forEach(a=>{
+      const edge=getEdge(a.edgeId);
+      if(edge) expiredBreakContracts.add(edge.contractId);
+    });
+    const hasIntersect=[...overlapContracts].some(c=>expiredBreakContracts.has(c));
+    if(!hasIntersect){
+      html+=`<div style="font-size:12px;color:var(--success)">✓ 权属重叠与合同过期/路径断裂无交叉，口径一致</div>`;
+    }else{
+      html+=`<div style="font-size:12px;color:var(--danger)">⚠ 权属重叠与合同过期/路径断裂存在交叉合同，需确认处理口径</div>`;
+      const crossContracts=[...overlapContracts].filter(c=>expiredBreakContracts.has(c));
+      crossContracts.forEach(cid=>{
+        const c=getContract(cid);
+        if(c) html+=`<div style="font-size:11px;color:var(--text-dim);margin-top:4px">— ${c.name} (${c.version})</div>`;
+      });
+    }
+    html+=`</div></div>`;
+  }
+
+  const revokedAnomalies=anomalies.filter(a=>a.type==='revoked');
+  if(revokedAnomalies.length>0){
+    html+=`<div class="panel-section">
+      <div class="panel-section-title">到期撤回影响</div>`;
+    revokedAnomalies.forEach(a=>{
+      html+=`<div class="panel-card revoked">
+        <div class="panel-row"><span class="label">${a.title}</span><span class="revoked-tag">撤回影响</span></div>
+        <div class="panel-row"><span class="label">描述</span><span class="value" style="font-size:11px">${a.desc}</span></div>
+        <div class="panel-section-title" style="margin-top:8px">受影响的旧结果</div>`;
+      a.oldResults.forEach(r=>{
+        const e=getEdge(r.edgeId);
+        html+=`<div class="detail-path">${r.label} <span style="color:var(--revoked)">(受撤回影响)</span></div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+function jumpToAnomaly(index){
+  const a=anomalies[index];
+  if(!a) return;
+
+  const allEdges=a.affectedEdges||[];
+  const allNodes=a.affectedNodes||[];
+
+  if(a.nodeId) allNodes.push(a.nodeId);
+  if(a.edgeId){
+    allEdges.push(a.edgeId);
+    const e=DATA.edges.find(x=>x.id===a.edgeId);
+    if(e){
+      const s=typeof e.source==='object'?e.source.id:e.source;
+      const t=typeof e.target==='object'?e.target.id:e.target;
+      allNodes.push(s,t);
+    }
+  }
+
+  highlightAnomalySet(allEdges,allNodes,a.type==='revoked');
+  renderAnomalyDetail(a);
+  switchTab('detail');
+}
+
+function renderAnomalyDetail(a){
+  const el=document.getElementById('detail-content');
+  document.getElementById('detail-empty').style.display='none';
+  el.style.display='block';
+
+  let html=`<div class="panel-section">
+    <div class="panel-section-title">异常详情</div>
+    <div class="panel-card ${a.type==='revoked'?'revoked':''}">
+      <div class="panel-row"><span class="label">类型</span><span class="value">${a.title}</span></div>
+      <div class="panel-row"><span class="label">描述</span><span class="value" style="font-size:11px">${a.desc}</span></div>
+      <div class="panel-row"><span class="label">原因</span><span class="mismatch-badge ${a.cause==='ownership'?'cause-ownership':'cause-contract'}">${a.causeLabel}</span></div>
+    </div>
+  </div>`;
+
+  if(a.type==='revoked'&&a.oldResults){
+    html+=`<div class="panel-section">
+      <div class="panel-section-title">受影响的旧结果</div>`;
+    a.oldResults.forEach(r=>{
+      const e=getEdge(r.edgeId);
+      const s=e?getNode(typeof e.source==='object'?e.source.id:e.source):null;
+      const t=e?getNode(typeof e.target==='object'?e.target.id:e.target):null;
+      html+=`<div class="panel-card revoked" style="cursor:pointer" onclick="selectEdgeById('${r.edgeId}')">
+        <div class="panel-row"><span class="label">${r.label}</span><span class="revoked-tag">受撤回影响</span></div>
+        ${s&&t?`<div class="panel-row"><span class="label">路径</span><span class="value">${s.name} → ${t.name}</span></div>`:''}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(a.affectedEdges){
+    html+=`<div class="panel-section">
+      <div class="panel-section-title">涉及的关系边</div>`;
+    a.affectedEdges.forEach(eid=>{
+      const e=getEdge(eid);
+      if(e){
+        const s=getNode(typeof e.source==='object'?e.source.id:e.source);
+        const t=getNode(typeof e.target==='object'?e.target.id:e.target);
+        html+=`<div class="panel-card" style="cursor:pointer" onclick="selectEdgeById('${eid}')">
+          <div class="panel-row"><span class="label">${e.label}</span><span class="version-tag">${e.version}</span></div>
+          <div class="panel-row"><span class="label">路径</span><span class="value">${s?.name||'?'} → ${t?.name||'?'}</span></div>
+        </div>`;
+      }
+    });
+    html+=`</div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+function selectNodeById(nodeId){
+  const node=getNode(nodeId);
+  if(node){
+    selectNode(node);
+    focusNode(node);
+  }
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.panel-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.tab===tab);
+  });
+  document.querySelectorAll('.panel-content').forEach(c=>c.style.display='none');
+  document.getElementById(`panel-${tab}`).style.display='block';
+
+  if(tab==='version') renderVersionPanel();
+  if(tab==='anomaly') renderAnomalyPanel();
+}
+
+document.querySelectorAll('.panel-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
+});
+
+document.getElementById('btn-overlap').addEventListener('click',function(){
+  toggleFilter('overlap',this);
+});
+
+document.getElementById('btn-mismatch').addEventListener('click',function(){
+  toggleFilter('mismatch',this);
+});
+
+document.getElementById('btn-revoked').addEventListener('click',function(){
+  toggleFilter('revoked',this);
+});
+
+document.getElementById('btn-expired').addEventListener('click',function(){
+  toggleFilter('expired',this);
+});
+
+function toggleFilter(type,btn){
+  if(activeFilter===type){
+    activeFilter=null;
+    btn.classList.remove('active');
+    clearHighlights();
+    return;
+  }
+  activeFilter=type;
+  document.querySelectorAll('.toolbar-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  clearHighlights();
+
+  const filtered=anomalies.filter(a=>a.type===type);
+  const edgeSet=new Set();
+  const nodeSet=new Set();
+
+  filtered.forEach(a=>{
+    (a.affectedEdges||[]).forEach(id=>edgeSet.add(id));
+    (a.affectedNodes||[]).forEach(id=>nodeSet.add(id));
+    if(a.nodeId) nodeSet.add(a.nodeId);
+    if(a.edgeId){
+      edgeSet.add(a.edgeId);
+      const e=DATA.edges.find(x=>x.id===a.edgeId);
+      if(e){
+        const s=typeof e.source==='object'?e.source.id:e.source;
+        const t=typeof e.target==='object'?e.target.id:e.target;
+        nodeSet.add(s);nodeSet.add(t);
+      }
+    }
+  });
+
+  highlightAnomalySet([...edgeSet],[...nodeSet],type==='revoked');
+}
+
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  activeFilter=null;
+  selectedElement=null;
+  document.querySelectorAll('.toolbar-btn').forEach(b=>b.classList.remove('active'));
+  clearHighlights();
+  document.getElementById('detail-empty').style.display='block';
+  document.getElementById('detail-content').style.display='none';
+  const container=document.getElementById('graph-area');
+  svg.transition().duration(500).call(
+    d3.zoom().transform,
+    d3.zoomIdentity
+  );
+});
+
+document.getElementById('btn-export').addEventListener('click',async()=>{
+  const status=document.getElementById('export-status');
+  status.classList.add('show');
+
+  try{
+    const graphArea=document.getElementById('graph-area');
+    const canvas=await html2canvas(graphArea,{
+      backgroundColor:'#0a0e1a',
+      scale:2,
+      useCORS:true,
+      logging:false
+    });
+    const link=document.createElement('a');
+    link.download=`音乐版权关系宇宙_${new Date().toISOString().slice(0,10)}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    status.textContent='截图导出完成！';
+    status.style.borderColor='var(--success)';
+    status.style.color='var(--success)';
+  }catch(err){
+    status.textContent='导出失败: '+err.message;
+    status.style.borderColor='var(--danger)';
+    status.style.color='var(--danger)';
+  }
+
+  setTimeout(()=>{
+    status.classList.remove('show');
+    status.textContent='截图已生成，正在导出...';
+    status.style.borderColor='var(--success)';
+    status.style.color='var(--success)';
+  },3000);
+});
+
+initGraph();
+renderVersionPanel();
+renderAnomalyPanel();
+</script>
+</body>
+</html>
