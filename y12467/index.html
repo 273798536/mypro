@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>几何光学反射迷宫</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #0d1117; color: #e6edf3; overflow: hidden; height: 100vh; }
+#app { display: flex; height: 100vh; }
+#sidebar { width: 320px; background: #161b22; border-right: 1px solid #30363d; display: flex; flex-direction: column; overflow-y: auto; }
+#sidebar h1 { font-size: 18px; padding: 16px; border-bottom: 1px solid #30363d; color: #58a6ff; }
+.panel { padding: 12px 16px; border-bottom: 1px solid #30363d; }
+.panel h3 { font-size: 13px; color: #8b949e; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.tool-btn { display: inline-block; padding: 6px 12px; margin: 3px; border: 1px solid #30363d; border-radius: 6px; background: #21262d; color: #e6edf3; cursor: pointer; font-size: 13px; transition: all .2s; }
+.tool-btn:hover { border-color: #58a6ff; background: #30363d; }
+.tool-btn.active { border-color: #58a6ff; background: #1f6feb; color: #fff; }
+.info-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+.info-label { color: #8b949e; }
+.info-value { color: #e6edf3; font-weight: 600; }
+.score-bar { height: 6px; background: #21262d; border-radius: 3px; margin-top: 6px; }
+.score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #3fb950, #58a6ff); transition: width .3s; }
+#canvas-wrap { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+canvas { border: 1px solid #30363d; border-radius: 8px; cursor: crosshair; }
+#right-panel { width: 380px; background: #161b22; border-left: 1px solid #30363d; display: flex; flex-direction: column; overflow: hidden; }
+.tab-bar { display: flex; border-bottom: 1px solid #30363d; }
+.tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #8b949e; transition: all .2s; }
+.tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+.tab-content { flex: 1; overflow-y: auto; padding: 12px; display: none; }
+.tab-content.active { display: block; }
+.report-item { background: #21262d; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #30363d; }
+.report-item.error { border-left-color: #f85149; }
+.report-item.warn { border-left-color: #d29922; }
+.report-item.info { border-left-color: #58a6ff; }
+.report-item.ok { border-left-color: #3fb950; }
+.report-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.report-detail { font-size: 12px; color: #8b949e; line-height: 1.6; }
+.report-formula { background: #0d1117; padding: 6px 10px; border-radius: 4px; font-family: "SF Mono", "Fira Code", monospace; font-size: 12px; color: #79c0ff; margin: 6px 0; }
+.replay-step { display: flex; align-items: center; padding: 8px 12px; margin-bottom: 4px; border-radius: 6px; background: #21262d; cursor: pointer; transition: all .2s; }
+.replay-step:hover { background: #30363d; }
+.replay-step.current { border: 1px solid #58a6ff; }
+.replay-step .step-num { width: 28px; height: 28px; border-radius: 50%; background: #30363d; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 10px; }
+.replay-step .step-info { flex: 1; }
+.replay-step .step-action { font-size: 12px; color: #e6edf3; }
+.replay-step .step-time { font-size: 11px; color: #8b949e; }
+.replay-step .step-trigger { font-size: 11px; color: #d29922; }
+.btn { padding: 8px 16px; border: 1px solid #30363d; border-radius: 6px; background: #21262d; color: #e6edf3; cursor: pointer; font-size: 13px; transition: all .2s; }
+.btn:hover { border-color: #58a6ff; }
+.btn.primary { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+.btn.primary:hover { background: #388bfd; }
+.btn-row { display: flex; gap: 8px; margin-top: 8px; }
+.conflict-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.conflict-badge.beam { background: rgba(248,81,73,.2); color: #f85149; }
+.conflict-badge.lens { background: rgba(210,153,34,.2); color: #d29922; }
+.conflict-badge.target { background: rgba(63,185,80,.2); color: #3fb950; }
+.test-btn { display: block; width: 100%; padding: 8px; margin-bottom: 6px; border: 1px solid #30363d; border-radius: 6px; background: #21262d; color: #e6edf3; cursor: pointer; font-size: 12px; text-align: left; transition: all .2s; }
+.test-btn:hover { border-color: #58a6ff; background: #30363d; }
+.test-btn .test-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; margin-right: 4px; }
+.tag-normal { background: rgba(63,185,80,.2); color: #3fb950; }
+.tag-supplement { background: rgba(88,166,255,.2); color: #58a6ff; }
+.tag-conflict { background: rgba(248,81,73,.2); color: #f85149; }
+.tag-export { background: rgba(210,153,34,.2); color: #d29922; }
+#angle-hint { position: absolute; background: rgba(22,27,34,.95); border: 1px solid #30363d; border-radius: 6px; padding: 6px 10px; font-size: 12px; pointer-events: none; display: none; z-index: 10; }
+#angle-hint .angle-val { color: #58a6ff; font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <h1>🔦 几何光学反射迷宫</h1>
+    <div class="panel">
+      <h3>工具箱</h3>
+      <button class="tool-btn active" data-tool="select">选择</button>
+      <button class="tool-btn" data-tool="mirror">平面镜</button>
+      <button class="tool-btn" data-tool="lens">凸透镜</button>
+      <button class="tool-btn" data-tool="concave">凹透镜</button>
+      <button class="tool-btn" data-tool="wall">墙壁</button>
+      <button class="tool-btn" data-tool="eraser">橡皮擦</button>
+    </div>
+    <div class="panel">
+      <h3>属性面板</h3>
+      <div id="prop-panel">
+        <div class="info-row"><span class="info-label">选中类型</span><span class="info-value" id="prop-type">无</span></div>
+        <div class="info-row"><span class="info-label">角度 /°</span><span class="info-value" id="prop-angle">—</span></div>
+        <div class="info-row"><span class="info-label">焦距 /cm</span><span class="info-value" id="prop-focal">—</span></div>
+        <div id="angle-control" style="display:none;margin-top:8px;">
+          <label style="font-size:12px;color:#8b949e;">调节角度</label>
+          <input type="range" id="angle-slider" min="0" max="360" value="45" style="width:100%;">
+          <span id="angle-display" style="font-size:12px;color:#58a6ff;">45°</span>
+        </div>
+        <div id="focal-control" style="display:none;margin-top:8px;">
+          <label style="font-size:12px;color:#8b949e;">焦距 (cm)</label>
+          <input type="number" id="focal-input" min="1" max="50" value="10" style="width:100%;padding:4px 8px;background:#0d1117;border:1px solid #30363d;border-radius:4px;color:#e6edf3;font-size:13px;">
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>得分</h3>
+      <div class="info-row"><span class="info-label">总得分</span><span class="info-value" id="score-total">0</span></div>
+      <div class="score-bar"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
+      <div class="info-row" style="margin-top:8px;"><span class="info-label">反射角正确率</span><span class="info-value" id="score-reflect">—</span></div>
+      <div class="info-row"><span class="info-label">透镜焦距准确率</span><span class="info-value" id="score-focal">—</span></div>
+      <div class="info-row"><span class="info-label">光束合规率</span><span class="info-value" id="score-beam">—</span></div>
+    </div>
+    <div class="panel">
+      <h3>操作</h3>
+      <div class="btn-row">
+        <button class="btn primary" id="btn-check">验算光路</button>
+        <button class="btn" id="btn-reset">重置迷宫</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="btn-export">导出报告</button>
+        <button class="btn" id="btn-replay">回放本局</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>测试场景</h3>
+      <button class="test-btn" data-test="normal"><span class="test-tag tag-normal">正常</span>正常光路 — 镜面反射达标</button>
+      <button class="test-btn" data-test="supplement"><span class="test-tag tag-supplement">补录</span>补录透镜 — 事后补充焦距</button>
+      <button class="test-btn" data-test="conflict"><span class="test-tag tag-conflict">冲突</span>冲突场景 — 光束/透镜/靶冲突</button>
+      <button class="test-btn" data-test="export"><span class="test-tag tag-export">导出</span>导出验证 — 完整报告输出</button>
+    </div>
+  </div>
+  <div id="canvas-wrap">
+    <canvas id="maze-canvas"></canvas>
+    <div id="angle-hint">入射角: <span class="angle-val" id="hint-incident">—</span>  反射角: <span class="angle-val" id="hint-reflect">—</span></div>
+  </div>
+  <div id="right-panel">
+    <div class="tab-bar">
+      <div class="tab active" data-tab="report">诊断报告</div>
+      <div class="tab" data-tab="replay">步进回放</div>
+      <div class="tab" data-tab="conflict">冲突明细</div>
+    </div>
+    <div class="tab-content active" id="tab-report">
+      <div id="report-list"><div class="report-item info"><div class="report-title">等待验算</div><div class="report-detail">点击「验算光路」查看诊断报告</div></div></div>
+    </div>
+    <div class="tab-content" id="tab-replay">
+      <div id="replay-controls" style="margin-bottom:12px;">
+        <button class="btn" id="btn-replay-prev">◀ 上一步</button>
+        <button class="btn primary" id="btn-replay-play">▶ 自动回放</button>
+        <button class="btn" id="btn-replay-next">下一步 ▶</button>
+        <span id="replay-progress" style="font-size:12px;color:#8b949e;margin-left:8px;">0 / 0</span>
+      </div>
+      <div id="replay-list"></div>
+    </div>
+    <div class="tab-content" id="tab-conflict">
+      <div id="conflict-list"><div class="report-item info"><div class="report-title">无冲突</div><div class="report-detail">尚未检测到光束/透镜/靶冲突</div></div></div>
+    </div>
+  </div>
+</div>
+<script src="src/physics.js"></script>
+<script src="src/maze.js"></script>
+<script src="src/report.js"></script>
+<script src="src/replay.js"></script>
+<script src="src/renderer.js"></script>
+<script src="src/test-data.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
