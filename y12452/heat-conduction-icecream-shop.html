@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>热传导冰淇淋店</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#fef9f0;--card:#fff;--accent:#e8734a;--cool:#3da9fc;--warm:#f9a826;--danger:#e63946;--success:#2a9d8f;--text:#2b2d42;--muted:#8d99ae;--border:#e0e0e0;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,.08)}
+body{font-family:'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh;padding:24px;max-width:900px;margin:0 auto}
+.screen.active{display:flex;flex-direction:column;align-items:center}
+h1{font-size:2.2rem;font-weight:800;color:var(--accent);margin-bottom:8px;text-align:center}
+h2{font-size:1.5rem;font-weight:700;margin-bottom:12px}
+h3{font-size:1.15rem;font-weight:600;margin-bottom:8px}
+h4{font-size:1rem;font-weight:600;margin-bottom:6px}
+.subtitle{color:var(--muted);font-size:1rem;margin-bottom:24px;text-align:center}
+.btn{padding:12px 32px;border:none;border-radius:var(--radius);font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#d4623a;transform:translateY(-2px)}
+.btn-secondary{background:var(--cool);color:#fff}
+.btn-secondary:hover{background:#2d8fd8}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#228b7e}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-outline{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+.btn-outline:hover{background:var(--accent);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;width:100%;margin-bottom:16px}
+.card-selectable{cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;overflow:hidden}
+.card-selectable:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.card-selectable.selected{border-color:var(--accent);background:#fff5f0}
+.grid{display:grid;gap:16px;width:100%}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.flex-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.flex-center{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.mt-1{margin-top:8px}.mt-2{margin-top:16px}.mt-3{margin-top:24px}.mt-4{margin-top:32px}
+.mb-1{margin-bottom:8px}.mb-2{margin-bottom:16px}.mb-3{margin-bottom:24px}
+.text-center{text-align:center}
+.text-danger{color:var(--danger)}.text-success{color:var(--success)}.text-cool{color:var(--cool)}.text-warm{color:var(--warm)}.text-muted{color:var(--muted)}
+.text-sm{font-size:.85rem}.text-xs{font-size:.75rem}.text-lg{font-size:1.2rem}
+.font-bold{font-weight:700}.font-mono{font-family:'SF Mono',Menlo,monospace}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.tag-danger{background:#fde8e8;color:var(--danger)}
+.tag-success{background:#e6f5f0;color:var(--success)}
+.tag-warn{background:#fef3e0;color:var(--warm)}
+.tag-info{background:#e8f4fd;color:var(--cool)}
+#start-screen{justify-content:center;padding-top:10vh}
+.shop-icon{font-size:5rem;margin-bottom:16px}
+.formula-box{background:#f0f7ff;border:2px dashed var(--cool);border-radius:var(--radius);padding:16px;text-align:center;margin:16px 0}
+.formula-box .formula{font-size:1.3rem;font-weight:700;color:var(--cool);font-family:'SF Mono',Menlo,monospace}
+.formula-box .desc{font-size:.85rem;color:var(--muted);margin-top:6px}
+.order-card{border-left:4px solid var(--warm);padding:20px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
+.order-card .customer{font-size:1.1rem;font-weight:600;margin-bottom:8px}
+.order-card .ice-cream-name{font-size:1.3rem;font-weight:700;color:var(--accent);margin-bottom:12px}
+.requirement{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.9rem}
+.cup-card{padding:16px;text-align:center}
+.cup-card .cup-icon{font-size:2.5rem;margin-bottom:8px}
+.cup-card .cup-name{font-size:1.05rem;font-weight:700;margin-bottom:4px}
+.cup-card .cup-k{font-size:.9rem;color:var(--cool);font-family:'SF Mono',Menlo,monospace;margin-bottom:4px}
+.cup-card .cup-desc{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.cup-card .cup-cost{font-size:.85rem;color:var(--warm);font-weight:600}
+.sim-panel{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%}
+@media(max-width:600px){.sim-panel{grid-template-columns:1fr}}
+.sim-info{display:flex;flex-direction:column;gap:12px}
+.temp-display{background:linear-gradient(135deg,#e8f4fd,#f0f7ff);border-radius:var(--radius);padding:20px;text-align:center}
+.temp-display .temp-value{font-size:2.8rem;font-weight:800;font-family:'SF Mono',Menlo,monospace}
+.temp-display .temp-label{font-size:.85rem;color:var(--muted);margin-top:4px}
+.temp-display.danger{background:linear-gradient(135deg,#fde8e8,#fff0f0)}
+.temp-display.danger .temp-value{color:var(--danger)}
+.temp-display.safe .temp-value{color:var(--success)}
+.temp-display.cool .temp-value{color:var(--cool)}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.stat-row:last-child{border-bottom:none}
+.stat-label{font-size:.85rem;color:var(--muted)}
+.stat-value{font-size:.9rem;font-weight:600;font-family:'SF Mono',Menlo,monospace}
+.canvas-container{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;position:relative}
+.canvas-container canvas{width:100%;height:200px;display:block}
+.stir-btn{width:100%;padding:20px;font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,var(--cool),#6dc1f7);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:all .15s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.stir-btn:active,.stir-btn.pressing{background:linear-gradient(135deg,#2d8fd8,var(--cool));transform:scale(.97);box-shadow:inset 0 4px 12px rgba(0,0,0,.2)}
+.stir-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.stir-indicator{font-size:.85rem;color:var(--cool);text-align:center;margin-top:6px;min-height:20px}
+.serve-btn{width:100%;padding:16px;font-size:1.1rem;font-weight:700;background:linear-gradient(135deg,var(--success),#3dc4b0);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s}
+.serve-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,157,143,.3)}
+.serve-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.ambient-control{display:flex;align-items:center;gap:12px;padding:12px;background:#fef9f0;border-radius:var(--radius);border:1px solid var(--border)}
+.ambient-control input[type=range]{flex:1;accent-color:var(--warm)}
+.ambient-control .temp-readout{font-family:'SF Mono',Menlo,monospace;font-weight:600;color:var(--warm);min-width:50px;text-align:right}
+.result-icon{font-size:4rem;margin-bottom:16px}
+.result-title{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.error-list{width:100%}
+.error-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#fde8e8;border-radius:var(--radius);margin-bottom:8px}
+.error-item .error-icon{font-size:1.3rem;flex-shrink:0}
+.error-item .error-text{font-size:.9rem;line-height:1.5}
+.error-item .error-time{font-size:.8rem;color:var(--danger);font-weight:600;font-family:'SF Mono',Menlo,monospace}
+.success-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#e6f5f0;border-radius:var(--radius);margin-bottom:8px}
+.success-item .success-icon{font-size:1.3rem;flex-shrink:0}
+.success-item .success-text{font-size:.9rem;line-height:1.5}
+.review-canvas-container{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;width:100%}
+.review-canvas-container canvas{width:100%;height:250px;display:block}
+.review-section{margin-bottom:20px;width:100%}
+.explanation-box{background:#f0f7ff;border-radius:var(--radius);padding:16px;margin-bottom:12px;border-left:4px solid var(--cool)}
+.explanation-box h4{color:var(--cool);margin-bottom:8px;font-size:1rem}
+.explanation-box p{font-size:.9rem;line-height:1.7;color:var(--text)}
+.customer-feedback{background:#fef9f0;border-radius:var(--radius);padding:16px;border-left:4px solid var(--warm)}
+.customer-feedback h4{color:var(--warm);margin-bottom:8px}
+.customer-feedback p{font-size:.9rem;line-height:1.7}
+.report-section{margin-bottom:20px;width:100%}
+.summary-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.summary-table th{background:#f0f7ff;padding:8px 6px;text-align:left;font-weight:600;border-bottom:2px solid var(--cool);white-space:nowrap}
+.summary-table td{padding:8px 6px;border-bottom:1px solid var(--border)}
+.summary-table tr:hover{background:#fafafa}
+.violation-highlight{background:#fde8e8;font-weight:600;color:var(--danger)}
+.report-summary-box{padding:16px;border-radius:var(--radius);margin-bottom:16px}
+.report-summary-box.has-violations{background:#fde8e8;border:2px solid var(--danger)}
+.report-summary-box.no-violations{background:#e6f5f0;border:2px solid var(--success)}
+.timeline{width:100%;margin-bottom:16px}
+.timeline-item{display:flex;gap:12px;padding:8px 0;position:relative}
+.timeline-item::before{content:'';position:absolute;left:11px;top:28px;bottom:-8px;width:2px;background:var(--border)}
+.timeline-item:last-child::before{display:none}
+.timeline-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;z-index:1}
+.timeline-dot.ok{background:#e6f5f0;color:var(--success)}
+.timeline-dot.warn{background:#fef3e0;color:var(--warm)}
+.timeline-dot.err{background:#fde8e8;color:var(--danger)}
+.timeline-content{flex:1;font-size:.85rem;line-height:1.5}
+.timeline-time{font-family:'SF Mono',Menlo,monospace;font-size:.8rem;color:var(--muted)}
+.ice-cream-visual{font-size:3rem;text-align:center;margin:8px 0;transition:all .3s}
+.progress-bar{width:100%;height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:8px;position:relative}
+.progress-bar .fill{height:100%;border-radius:4px;transition:width .3s}
+.progress-bar .fill.danger{background:var(--danger)}
+.progress-bar .fill.warn{background:var(--warm)}
+.progress-bar .fill.safe{background:var(--success)}
+.fade-in{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.replay-controls{display:flex;gap:8px;align-items:center;justify-content:center;margin:12px 0}
+.replay-controls .btn{padding:8px 16px;font-size:.85rem}
+</style>
+</head>
+<body>
+
+<div id="start-screen" class="screen active">
+  <div class="shop-icon">🍦</div>
+  <h1>热传导冰淇淋店</h1>
+  <p class="subtitle">用物理知识经营你的冰淇淋店——选对杯材，控好温度，别让冰淇淋化了！</p>
+  <div class="formula-box">
+    <div class="formula">Q = k · A · (T₂ - T₁) / d · Δt</div>
+    <div class="desc">热传导公式：热量与材料导热系数k、温差、面积成正比，与壁厚成反比</div>
+  </div>
+  <div class="card" style="max-width:500px;text-align:center">
+    <h3>游戏规则</h3>
+    <p style="font-size:.9rem;line-height:1.8;color:var(--muted)">
+      顾客下单后，选择合适的杯材来控制冰淇淋的融化速度。<br>
+      冰淇淋起始温度在目标下限，热量不断传入，你的任务是防止它化掉。<br>
+      模拟过程中可以搅拌来减缓融化，在温度合适时点击"出餐"。<br>
+      ⚠️ 温度超出目标范围 → 直接失败<br>
+      ⚠️ 热量守恒校验失败 → 记录错误<br>
+      ⚠️ 订单超时 → 顾客不满意
+    </p>
+  </div>
+  <button class="btn btn-primary mt-3" onclick="startGame()" style="font-size:1.15rem;padding:14px 48px">🏪 开店营业</button>
+</div>
+
+<div id="order-screen" class="screen">
+  <div id="order-content"></div>
+  <button class="btn btn-primary mt-3" onclick="showCupSelection()">选择杯材 →</button>
+</div>
+
+<div id="cup-screen" class="screen">
+  <h2>选择杯材</h2>
+  <p class="subtitle mb-2">不同材料的导热系数k差异巨大，选对杯子是关键！</p>
+  <div id="cup-cards" class="grid grid-3"></div>
+  <div class="flex-center mt-3">
+    <button class="btn btn-outline" onclick="showOrderScreen()">← 返回订单</button>
+    <button class="btn btn-primary" id="confirm-cup-btn" onclick="confirmCup()" disabled>确认选择 →</button>
+  </div>
+</div>
+
+<div id="sim-screen" class="screen">
+  <div class="sim-panel">
+    <div class="sim-info">
+      <div id="sim-order-brief" class="card" style="padding:12px"></div>
+      <div class="temp-display cool" id="temp-display">
+        <div class="temp-value" id="temp-value">-5.0°C</div>
+        <div class="temp-label">冰淇淋当前温度</div>
+      </div>
+      <div id="ice-cream-visual" class="ice-cream-visual">🍦</div>
+      <div class="card" style="padding:12px">
+        <div class="stat-row"><span class="stat-label">环境温度</span><span class="stat-value text-warm" id="stat-ambient">32°C</span></div>
+        <div class="stat-row"><span class="stat-label">杯材导热k</span><span class="stat-value text-cool" id="stat-k">0.20</span></div>
+        <div class="stat-row"><span class="stat-label">剩余时间</span><span class="stat-value" id="stat-time">60s</span></div>
+        <div class="stat-row"><span class="stat-label">热流量Q̇</span><span class="stat-value" id="stat-heatflow">0 W</span></div>
+        <div class="stat-row"><span class="stat-label">累计吸热</span><span class="stat-value" id="stat-total-q">0 J</span></div>
+        <div class="stat-row"><span class="stat-label">搅拌状态</span><span class="stat-value" id="stat-stir">未搅拌</span></div>
+      </div>
+      <div id="temp-bar-container" style="padding:0 12px">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:4px">
+          <span>温度范围</span><span id="temp-range-label">-8°C ~ -2°C</span>
+        </div>
+        <div class="progress-bar" style="height:12px">
+          <div class="fill safe" id="temp-bar-fill" style="width:50%"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="canvas-container">
+        <canvas id="sim-canvas"></canvas>
+      </div>
+      <div class="mt-2">
+        <div class="ambient-control">
+          <span style="font-size:.85rem;white-space:nowrap">🌡️ 环境</span>
+          <input type="range" id="ambient-slider" min="20" max="42" value="32" step="1">
+          <span class="temp-readout" id="ambient-readout">32°C</span>
+        </div>
+      </div>
+      <button class="stir-btn mt-2" id="stir-btn"
+        onmousedown="startStir()" onmouseup="stopStir()" onmouseleave="stopStir()"
+        ontouchstart="startStir()" ontouchend="stopStir()">
+        🥄 按住搅拌
+      </button>
+      <div class="stir-indicator" id="stir-indicator"></div>
+      <button class="serve-btn mt-2" id="serve-btn" onclick="serveIceCream()">✅ 出餐！</button>
+    </div>
+  </div>
+</div>
+
+<div id="result-screen" class="screen">
+  <div id="result-content" style="max-width:600px;width:100%"></div>
+</div>
+
+<div id="review-screen" class="screen">
+  <h2>📋 复盘分析</h2>
+  <p class="subtitle">看看热传导发生了什么，顾客怎么说</p>
+  <div id="review-content" style="width:100%"></div>
+  <div class="flex-center mt-3">
+    <button class="btn btn-outline" onclick="showReport()">📝 实验报告</button>
+    <button class="btn btn-secondary" id="next-order-btn" onclick="nextOrder()">下一单 →</button>
+  </div>
+</div>
+
+<div id="report-screen" class="screen">
+  <h2>📝 实验报告</h2>
+  <p class="subtitle">所有订单的热传导实验记录</p>
+  <div id="report-content" style="width:100%"></div>
+  <div class="flex-center mt-3" id="report-actions"></div>
+</div>
+
+<script>
+var CUP_MATERIALS = [
+  {id:'foam',name:'泡沫杯',icon:'🥤',k:0.03,thickness:0.005,cost:1,desc:'隔热冠军，k极低',color:'#a8d8ea'},
+  {id:'paper',name:'纸杯',icon:'🧃',k:0.05,thickness:0.004,cost:1,desc:'轻便常见，隔热不错',color:'#f6d186'},
+  {id:'plastic',name:'塑料杯',icon:'🥛',k:0.15,thickness:0.003,cost:2,desc:'薄壁导热较快',color:'#c3e8bd'},
+  {id:'glass',name:'玻璃杯',icon:'🫙',k:0.50,thickness:0.006,cost:3,desc:'厚壁但导热强',color:'#d4a5e5'},
+  {id:'ceramic',name:'陶瓷杯',icon:'🍵',k:1.00,thickness:0.008,cost:3,desc:'导热很强，冰淇淋杀手',color:'#f5c6aa'},
+  {id:'metal',name:'不锈钢杯',icon:'🪣',k:3.00,thickness:0.004,cost:4,desc:'导热极强，秒化冰淇淋',color:'#b8b8b8'}
+];
+
+var ORDERS = [
+  {id:1,customer:'小明',avatar:'👦',iceCream:'香草冰淇淋 🍦',targetMin:-8,targetMax:-2,timeLimit:120,baseAmbient:32,desc:'经典口味，温度要稳！'},
+  {id:2,customer:'小红',avatar:'👧',iceCream:'巧克力雪糕 🍫',targetMin:-12,targetMax:-5,timeLimit:140,baseAmbient:35,desc:'大热天的，巧克力容易化……'},
+  {id:3,customer:'老王',avatar:'👨',iceCream:'芒果冰沙 🥭',targetMin:-6,targetMax:0,timeLimit:150,baseAmbient:30,desc:'冰沙可以稍暖，但别化成水'},
+  {id:4,customer:'李老师',avatar:'👩‍🏫',iceCream:'薄荷冰淇淋 🌿',targetMin:-10,targetMax:-3,timeLimit:100,baseAmbient:38,desc:'物理老师亲自来了，别丢人！'}
+];
+
+var SIM = {
+  surfaceArea: 0.012,
+  mass: 0.15,
+  specificHeat: 2100,
+  stirReduction: 0.4,
+  dt: 0.1,
+  timeScale: 3,
+  conservationThreshold: 2.0
+};
+
+var G = {
+  orderIdx: 0,
+  cupId: null,
+  running: false,
+  interval: null,
+  history: [],
+  events: [],
+  simTime: 0,
+  temp: 0,
+  ambient: 32,
+  stirring: false,
+  stirTime: 0,
+  totalQ: 0,
+  results: [],
+  cup: null,
+  order: null,
+  violations: [],
+  conservErrs: [],
+  timeout: false,
+  served: false,
+  servedOK: false
+};
+
+function startGame() {
+  G.orderIdx = 0;
+  G.results = [];
+  showOrderScreen();
+}
+
+function restartGame() {
+  G.orderIdx = 0;
+  G.results = [];
+  showScreen('start-screen');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showOrderScreen() {
+  var o = ORDERS[G.orderIdx];
+  G.order = o;
+  document.getElementById('order-content').innerHTML =
+    '<div class="fade-in">' +
+    '<div style="text-align:center;margin-bottom:16px"><span style="font-size:1rem;color:var(--muted)">订单 ' + o.id + ' / ' + ORDERS.length + '</span></div>' +
+    '<div class="order-card">' +
+    '<div class="customer">' + o.avatar + ' ' + o.customer + '</div>' +
+    '<div class="ice-cream-name">' + o.iceCream + '</div>' +
+    '<div class="requirement"><span>🌡️</span> 目标温度：' + o.targetMin + '°C ~ ' + o.targetMax + '°C</div>' +
+    '<div class="requirement"><span>⏱️</span> 时限：' + o.timeLimit + ' 秒</div>' +
+    '<div class="requirement"><span>☀️</span> 环境基准：' + o.baseAmbient + '°C</div>' +
+    '<div class="requirement"><span>💬</span> "' + o.desc + '"</div>' +
+    '</div></div>';
+  G.cupId = null;
+  showScreen('order-screen');
+}
+
+function showCupSelection() {
+  var c = document.getElementById('cup-cards');
+  c.innerHTML = '';
+  CUP_MATERIALS.forEach(function(cup) {
+    var d = document.createElement('div');
+    d.className = 'card card-selectable cup-card';
+    d.setAttribute('role', 'button');
+    d.setAttribute('tabindex', '0');
+    d.setAttribute('aria-label', cup.name + ' k=' + cup.k);
+    d.setAttribute('data-cup-id', cup.id);
+    d.innerHTML =
+      '<div class="cup-icon">' + cup.icon + '</div>' +
+      '<div class="cup-name">' + cup.name + '</div>' +
+      '<div class="cup-k">k = ' + cup.k + ' W/(m·K)</div>' +
+      '<div class="cup-desc">' + cup.desc + '</div>' +
+      '<div class="cup-cost">费用：' + '\u{1F4B0}'.repeat(cup.cost) + '</div>';
+    d.onclick = function(){selectCup(cup.id)};
+    c.appendChild(d);
+  });
+  document.getElementById('confirm-cup-btn').disabled = true;
+  showScreen('cup-screen');
+}
+
+function selectCup(id) {
+  G.cupId = id;
+  document.querySelectorAll('.cup-card').forEach(function(c){
+    c.classList.toggle('selected', c.getAttribute('data-cup-id') === id);
+  });
+  document.getElementById('confirm-cup-btn').disabled = false;
+}
+
+function confirmCup() {
+  if (!G.cupId) return;
+  G.cup = CUP_MATERIALS.find(function(c){return c.id===G.cupId});
+  startSim();
+}
+
+function startSim() {
+  var o = G.order, cup = G.cup;
+  G.running = true;
+  G.simTime = 0;
+  G.temp = o.targetMin;
+  G.ambient = o.baseAmbient;
+  G.stirring = false;
+  G.stirTime = 0;
+  G.totalQ = 0;
+  G.history = [{time:0,temp:G.temp,stirring:false,q:0}];
+  G.events = [{time:0,type:'start',desc:'模拟开始，初始温度 ' + G.temp.toFixed(1) + '°C'}];
+  G.violations = [];
+  G.conservErrs = [];
+  G.timeout = false;
+  G.served = false;
+  G.servedOK = false;
+
+  document.getElementById('sim-order-brief').innerHTML =
+    '<div style="font-size:.85rem"><strong>' + o.avatar + ' ' + o.customer + '</strong> · ' + o.iceCream +
+    '<br>目标：' + o.targetMin + '°C ~ ' + o.targetMax + '°C · 杯材：' + cup.icon + cup.name + '</div>';
+
+  document.getElementById('ambient-slider').value = o.baseAmbient;
+  document.getElementById('ambient-readout').textContent = o.baseAmbient + '°C';
+  document.getElementById('temp-range-label').textContent = o.targetMin + '°C ~ ' + o.targetMax + '°C';
+  document.getElementById('serve-btn').disabled = false;
+  document.getElementById('serve-btn').textContent = '✅ 出餐！';
+
+  showScreen('sim-screen');
+  initCanvas();
+  if (G.interval) clearInterval(G.interval);
+  G.interval = setInterval(simTick, 100);
+}
+
+function initCanvas() {
+  var cv = document.getElementById('sim-canvas');
+  var ct = cv.parentElement;
+  cv.width = ct.clientWidth - 32;
+  cv.height = 200;
+}
+
+function simTick() {
+  if (!G.running) return;
+  var o = G.order, cup = G.cup;
+  var dt = SIM.dt * SIM.timeScale;
+  G.simTime += dt;
+
+  var Tamb = parseFloat(document.getElementById('ambient-slider').value);
+  G.ambient = Tamb;
+  document.getElementById('ambient-readout').textContent = Tamb.toFixed(0) + '°C';
+
+  var ek = G.stirring ? cup.k * (1 - SIM.stirReduction) : cup.k;
+  var dT = Tamb - G.temp;
+  var Qdot = ek * SIM.surfaceArea * dT / cup.thickness;
+  var dQ = Qdot * dt;
+  G.totalQ += dQ;
+  if (G.stirring) G.stirTime += dt;
+
+  var deltaT = dQ / (SIM.mass * SIM.specificHeat);
+  G.temp += deltaT;
+
+  G.history.push({time:G.simTime,temp:G.temp,stirring:G.stirring,q:Qdot});
+
+  if (G.simTime >= o.timeLimit && !G.timeout) {
+    G.timeout = true;
+    G.events.push({time:G.simTime,type:'timeout',desc:'订单超时！时间用完（' + o.timeLimit + 's）'});
+    endSim(false, 'timeout');
+    return;
+  }
+
+  if (G.temp > o.targetMax) {
+    G.violations.push({time:G.simTime,temp:G.temp,type:'upper',desc:'温度越界上限 ' + G.temp.toFixed(1) + '°C > ' + o.targetMax + '°C'});
+    G.events.push({time:G.simTime,type:'violation_upper',desc:'温度超过上限！' + G.temp.toFixed(1) + '°C > ' + o.targetMax + '°C'});
+    endSim(false, 'temp_upper');
+    return;
+  }
+
+  if (G.temp < o.targetMin && G.simTime > 3) {
+    G.violations.push({time:G.simTime,temp:G.temp,type:'lower',desc:'温度越界下限 ' + G.temp.toFixed(1) + '°C < ' + o.targetMin + '°C'});
+    G.events.push({time:G.simTime,type:'violation_lower',desc:'温度低于下限！' + G.temp.toFixed(1) + '°C < ' + o.targetMin + '°C'});
+    endSim(false, 'temp_lower');
+    return;
+  }
+
+  var expectedT = G.order.targetMin + G.totalQ / (SIM.mass * SIM.specificHeat);
+  var cerr = Math.abs(G.temp - expectedT);
+  if (cerr > SIM.conservationThreshold) {
+    G.conservErrs.push({time:G.simTime,expected:expectedT,actual:G.temp,error:cerr});
+    G.events.push({time:G.simTime,type:'conservation',desc:'热量守恒偏差 ' + cerr.toFixed(2) + '°C（期望 ' + expectedT.toFixed(1) + '°C，实际 ' + G.temp.toFixed(1) + '°C）'});
+  }
+
+  updateSimUI();
+  drawCanvas();
+}
+
+function updateSimUI() {
+  var o = G.order, cup = G.cup;
+  var tl = Math.max(0, o.timeLimit - G.simTime);
+
+  document.getElementById('temp-value').textContent = G.temp.toFixed(1) + '°C';
+  var td = document.getElementById('temp-display');
+  td.className = 'temp-display';
+  if (G.temp > o.targetMax || G.temp < o.targetMin) td.classList.add('danger');
+  else if (G.temp > o.targetMax - 2 || G.temp < o.targetMin + 2) td.classList.add('cool');
+  else td.classList.add('safe');
+
+  var ic = document.getElementById('ice-cream-visual');
+  if (G.temp > -2) { ic.textContent = '\u{1FAE0}'; ic.className = 'ice-cream-visual melting'; }
+  else if (G.temp > -5) { ic.textContent = '\u{1F3A8}'; ic.className = 'ice-cream-visual'; }
+  else { ic.textContent = '\u{1F366}'; ic.className = 'ice-cream-visual'; }
+
+  document.getElementById('stat-ambient').textContent = G.ambient.toFixed(0) + '°C';
+  document.getElementById('stat-k').textContent = cup.k.toFixed(2);
+  document.getElementById('stat-time').textContent = tl.toFixed(1) + 's';
+  var lastH = G.history[G.history.length - 1];
+  document.getElementById('stat-heatflow').textContent = (lastH ? lastH.q.toFixed(2) : '0') + ' W';
+  document.getElementById('stat-total-q').textContent = G.totalQ.toFixed(1) + ' J';
+  document.getElementById('stat-stir').textContent = G.stirring ? '搅拌中 \u{1F4AA}' : '未搅拌';
+  document.getElementById('stat-stir').className = 'stat-value ' + (G.stirring ? 'text-cool' : '');
+
+  var range = o.targetMax - o.targetMin;
+  var pos = (G.temp - o.targetMin) / range;
+  pos = Math.max(0, Math.min(1, pos));
+  var bar = document.getElementById('temp-bar-fill');
+  bar.style.width = (pos * 100) + '%';
+  bar.className = 'fill ' + (pos > 0.85 || pos < 0.15 ? 'danger' : pos > 0.7 || pos < 0.3 ? 'warn' : 'safe');
+
+  var timeEl = document.getElementById('stat-time');
+  if (tl < 10) timeEl.classList.add('text-danger');
+  else timeEl.classList.remove('text-danger');
+
+  var serveBtn = document.getElementById('serve-btn');
+  if (G.temp < o.targetMin) {
+    serveBtn.disabled = true;
+    serveBtn.textContent = '❄️ 等待升温…';
+  } else {
+    serveBtn.disabled = false;
+    serveBtn.textContent = '✅ 出餐！';
+  }
+}
+
+function drawCanvas() {
+  var cv = document.getElementById('sim-canvas');
+  var ctx = cv.getContext('2d');
+  var w = cv.width, h = cv.height, o = G.order;
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#fafafa';
+  ctx.fillRect(0,0,w,h);
+
+  var pad = {top:20,right:20,bottom:30,left:50};
+  var gw = w - pad.left - pad.right;
+  var gh = h - pad.top - pad.bottom;
+
+  var tMin = Math.min(o.targetMin - 5, -15);
+  var tMax = Math.max(o.targetMax + 5, 5);
+
+  var yTop = pad.top + gh * (1 - (o.targetMax - tMin) / (tMax - tMin));
+  var yBot = pad.top + gh * (1 - (o.targetMin - tMin) / (tMax - tMin));
+
+  ctx.fillStyle = 'rgba(42,157,143,0.08)';
+  ctx.fillRect(pad.left, yTop, gw, yBot - yTop);
+
+  ctx.strokeStyle = '#2a9d8f'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.left, yTop); ctx.lineTo(pad.left + gw, yTop);
+  ctx.moveTo(pad.left, yBot); ctx.lineTo(pad.left + gw, yBot);
+  ctx.stroke(); ctx.setLineDash([]);
+
+  ctx.font = '11px sans-serif'; ctx.fillStyle = '#2a9d8f'; ctx.textAlign = 'right';
+  ctx.fillText(o.targetMax + '°C', pad.left - 4, yTop + 4);
+  ctx.fillText(o.targetMin + '°C', pad.left - 4, yBot + 4);
+
+  for (var t = Math.ceil(tMin/5)*5; t <= tMax; t += 5) {
+    var y = pad.top + gh * (1 - (t - tMin) / (tMax - tMin));
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gw, y); ctx.stroke();
+    ctx.fillStyle = '#8d99ae'; ctx.textAlign = 'right'; ctx.fillText(t + '°', pad.left - 4, y + 4);
+  }
+
+  if (G.history.length > 1) {
+    ctx.beginPath(); ctx.strokeStyle = '#3da9fc'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    for (var i = 0; i < G.history.length; i++) {
+      var pt = G.history[i];
+      var x = pad.left + (pt.time / o.timeLimit) * gw;
+      var y = pad.top + gh * (1 - (pt.temp - tMin) / (tMax - tMin));
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    var last = G.history[G.history.length - 1];
+    var lx = pad.left + (last.time / o.timeLimit) * gw;
+    var ly = pad.top + gh * (1 - (last.temp - tMin) / (tMax - tMin));
+    ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI*2); ctx.fillStyle = '#3da9fc'; ctx.fill();
+  }
+
+  ctx.fillStyle = '#8d99ae'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+  for (var s = 0; s <= o.timeLimit; s += 10) {
+    var x = pad.left + (s / o.timeLimit) * gw;
+    ctx.fillText(s + 's', x, h - 8);
+  }
+
+  ctx.save(); ctx.translate(14, pad.top + gh/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center'; ctx.fillText('温度 (°C)', 0, 0); ctx.restore();
+}
+
+function startStir() {
+  if (!G.running) return;
+  G.stirring = true;
+  document.getElementById('stir-btn').classList.add('pressing');
+  document.getElementById('stir-indicator').textContent = '搅拌中……导热速率降低 40%';
+  G.events.push({time:G.simTime,type:'stir_start',desc:'开始搅拌'});
+}
+
+function stopStir() {
+  if (!G.stirring) return;
+  G.stirring = false;
+  document.getElementById('stir-btn').classList.remove('pressing');
+  document.getElementById('stir-indicator').textContent = '';
+  G.events.push({time:G.simTime,type:'stir_stop',desc:'停止搅拌'});
+}
+
+function serveIceCream() {
+  if (!G.running) return;
+  var o = G.order;
+  G.served = true;
+  G.servedOK = G.temp >= o.targetMin && G.temp <= o.targetMax;
+  G.events.push({time:G.simTime,type:'serve',desc:'出餐！温度 ' + G.temp.toFixed(1) + '°C'});
+  endSim(G.servedOK && G.simTime <= o.timeLimit, G.servedOK ? 'served' : 'served_bad');
+}
+
+function endSim(success, reason) {
+  G.running = false;
+  if (G.interval) { clearInterval(G.interval); G.interval = null; }
+  stopStir();
+
+  var o = G.order;
+  var expectedT = G.order.targetMin + G.totalQ / (SIM.mass * SIM.specificHeat);
+
+  var result = {
+    order: o,
+    cup: G.cup,
+    success: success,
+    reason: reason,
+    finalTemp: G.temp,
+    totalTime: G.simTime,
+    totalQ: G.totalQ,
+    history: G.history.slice(),
+    events: G.events.slice(),
+    violations: G.violations.slice(),
+    conservErrs: G.conservErrs.slice(),
+    timeout: G.timeout,
+    ambientUsed: G.ambient,
+    stirRatio: G.simTime > 0 ? G.stirTime / G.simTime : 0,
+    expectedTemp: expectedT
+  };
+
+  G.results.push(result);
+  showResultScreen(result);
+}
+
+function showResultScreen(r) {
+  var el = document.getElementById('result-content');
+  var html = '<div class="fade-in text-center">';
+  if (r.success) {
+    html += '<div class="result-icon">🎉</div>';
+    html += '<div class="result-title text-success">出餐成功！</div>';
+    html += '<p class="subtitle">' + r.order.customer + ' 满意地接过了 ' + r.order.iceCream + '</p>';
+  } else {
+    html += '<div class="result-icon">😢</div>';
+    html += '<div class="result-title text-danger">出餐失败</div>';
+    html += '<p class="subtitle">';
+    if (r.reason === 'timeout') html += '订单超时，顾客等不及走了';
+    else if (r.reason === 'temp_upper') html += '冰淇淋化了！温度超出上限';
+    else if (r.reason === 'temp_lower') html += '冰淇淋太冷了！温度低于下限';
+    else if (r.reason === 'served_bad') html += '温度不在目标范围内就出餐了';
+    html += '</p>';
+  }
+  html += '</div>';
+
+  html += '<div class="card mt-2"><h3>关键数据</h3>';
+  html += '<div class="stat-row"><span class="stat-label">最终温度</span><span class="stat-value ' + (r.success ? 'text-success' : 'text-danger') + '">' + r.finalTemp.toFixed(1) + '°C</span></div>';
+  html += '<div class="stat-row"><span class="stat-label">目标范围</span><span class="stat-value">' + r.order.targetMin + '°C ~ ' + r.order.targetMax + '°C</span></div>';
+  html += '<div class="stat-row"><span class="stat-label">用时</span><span class="stat-value">' + r.totalTime.toFixed(1) + 's / ' + r.order.timeLimit + 's</span></div>';
+  html += '<div class="stat-row"><span class="stat-label">杯材</span><span class="stat-value">' + r.cup.icon + r.cup.name + ' (k=' + r.cup.k + ')</span></div>';
+  html += '<div class="stat-row"><span class="stat-label">环境温度</span><span class="stat-value text-warm">' + r.ambientUsed.toFixed(0) + '°C</span></div>';
+  html += '<div class="stat-row"><span class="stat-label">累计吸热</span><span class="stat-value">' + r.totalQ.toFixed(1) + ' J</span></div>';
+  html += '<div class="stat-row"><span class="stat-label">搅拌占比</span><span class="stat-value">' + (r.stirRatio * 100).toFixed(0) + '%</span></div>';
+  html += '</div>';
+
+  if (r.violations.length > 0 || r.conservErrs.length > 0 || r.timeout) {
+    html += '<div class="error-list mt-2"><h3>⚠️ 问题记录</h3>';
+    r.violations.forEach(function(v) {
+      html += '<div class="error-item"><span class="error-icon">🌡️</span><div><div class="error-text">' + v.desc + '</div><div class="error-time">@ ' + v.time.toFixed(1) + 's</div></div></div>';
+    });
+    r.conservErrs.forEach(function(e) {
+      html += '<div class="error-item"><span class="error-icon">⚖️</span><div><div class="error-text">热量守恒偏差 ' + e.error.toFixed(2) + '°C</div><div class="error-time">@ ' + e.time.toFixed(1) + 's</div></div></div>';
+    });
+    if (r.timeout) {
+      html += '<div class="error-item"><span class="error-icon">⏱️</span><div><div class="error-text">订单超时（限额 ' + r.order.timeLimit + 's）</div></div></div>';
+    }
+    html += '</div>';
+  }
+
+  if (r.success) {
+    html += '<div class="success-item mt-2"><span class="success-icon">✅</span><div class="success-text">温度始终在目标范围内，热量守恒，按时出餐！</div></div>';
+  }
+
+  html += '<div class="flex-center mt-3"><button class="btn btn-secondary" onclick="showReview()">📋 复盘分析</button></div>';
+  el.innerHTML = html;
+  showScreen('result-screen');
+}
+
+function showReview() {
+  var r = G.results[G.results.length - 1];
+  var el = document.getElementById('review-content');
+  var html = '';
+
+  html += '<div class="review-canvas-container"><canvas id="review-canvas"></canvas></div>';
+
+  html += '<div class="review-section">';
+  html += '<div class="explanation-box"><h4>🔬 热传导模拟解读</h4><p>';
+  html += '你选了 <strong>' + r.cup.icon + r.cup.name + '</strong>（导热系数 k = ' + r.cup.k + ' W/(m·K)），';
+  html += '环境温度 ' + r.ambientUsed.toFixed(0) + '°C，冰淇淋起始温度 ' + r.order.targetMin + '°C。<br><br>';
+
+  if (r.cup.k < 0.1) {
+    html += 'k 值很低，意味着热量从环境穿过杯壁传给冰淇淋的速度很慢——这对保温是好事，冰淇淋不容易化。';
+  } else if (r.cup.k < 1.0) {
+    html += 'k 值中等，热量传递速度一般。在较高环境温度下可能需要配合搅拌来延缓升温。';
+  } else {
+    html += 'k 值很高，热量飞速传入！冰淇淋温度会快速上升，很难控制在目标范围内。';
+  }
+  html += '<br><br>';
+
+  if (r.stirRatio > 0.01) {
+    html += '你搅拌了 ' + (r.stirRatio * 100).toFixed(0) + '% 的时间，搅拌时有效导热系数降低了 40%，相当于给杯壁加了一层"动态隔热"。';
+  } else {
+    html += '你没有搅拌。搅拌可以降低有效导热系数 40%，是延缓融化的重要手段。';
+  }
+
+  html += '<br><br>根据公式 Q = k·A·(T₂-T₁)/d·Δt：';
+  html += '<br>· 温差 (T₂-T₁) = ' + r.ambientUsed.toFixed(0) + ' - (' + r.order.targetMin + ') = ' + (r.ambientUsed - r.order.targetMin).toFixed(0) + '°C';
+  html += '<br>· 杯壁厚度 d = ' + (r.cup.thickness * 1000).toFixed(1) + ' mm';
+  html += '<br>· 接触面积 A = ' + SIM.surfaceArea + ' m²';
+  html += '<br>· 冰淇淋质量 m = ' + SIM.mass + ' kg，比热 c = ' + SIM.specificHeat + ' J/(kg·K)';
+  html += '</p></div>';
+
+  html += '<div class="customer-feedback"><h4>💬 顾客反馈</h4><p>';
+  if (r.success) {
+    html += r.order.avatar + ' ' + r.order.customer + '："太好了！冰淇淋温度刚刚好，';
+    html += r.finalTemp > r.order.targetMax - 2 ? '虽然快到上限了但还行' : '口感完美';
+    html += '。下次还来！"';
+  } else {
+    if (r.reason === 'timeout') {
+      html += r.order.avatar + ' ' + r.order.customer + '："等了半天都没好，我赶时间先走了……"';
+    } else if (r.reason === 'temp_upper') {
+      html += r.order.avatar + ' ' + r.order.customer + '："我的冰淇淋都化了！这还怎么吃？"';
+    } else if (r.reason === 'temp_lower') {
+      html += r.order.avatar + ' ' + r.order.customer + '："冰淇淋冻得跟石头似的，咬不动啊！"';
+    } else {
+      html += r.order.avatar + ' ' + r.order.customer + '："温度不对，这没法吃……"';
+    }
+  }
+  html += '</p></div></div>';
+
+  html += '<div class="review-section"><h3>📊 事件时间线</h3><div class="timeline">';
+  r.events.forEach(function(ev) {
+    var dc = (ev.type.indexOf('violation') >= 0 || ev.type === 'timeout') ? 'err' : ev.type === 'conservation' ? 'warn' : 'ok';
+    html += '<div class="timeline-item">';
+    html += '<div class="timeline-dot ' + dc + '">' + (dc === 'err' ? '\u2715' : dc === 'warn' ? '!' : '\u25CF') + '</div>';
+    html += '<div class="timeline-content"><div class="timeline-time">' + ev.time.toFixed(1) + 's</div>' + ev.desc + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  el.innerHTML = html;
+
+  var nob = document.getElementById('next-order-btn');
+  if (G.orderIdx >= ORDERS.length - 1) {
+    nob.textContent = '查看最终报告 →';
+    nob.onclick = function(){showReport()};
+  } else {
+    nob.textContent = '下一单 →';
+    nob.onclick = function(){nextOrder()};
+  }
+
+  showScreen('review-screen');
+  setTimeout(function(){drawReviewCanvas(r)}, 50);
+}
+
+function drawReviewCanvas(r) {
+  var cv = document.getElementById('review-canvas');
+  if (!cv) return;
+  var ct = cv.parentElement;
+  cv.width = ct.clientWidth - 40;
+  cv.height = 250;
+  var ctx = cv.getContext('2d');
+  var w = cv.width, h = cv.height, o = r.order;
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = '#fafafa'; ctx.fillRect(0,0,w,h);
+
+  var pad = {top:25,right:20,bottom:35,left:55};
+  var gw = w - pad.left - pad.right;
+  var gh = h - pad.top - pad.bottom;
+
+  var allT = r.history.map(function(p){return p.temp});
+  var tMin = Math.min(Math.min.apply(null, allT) - 3, o.targetMin - 5);
+  var tMax = Math.max(Math.max.apply(null, allT) + 3, o.targetMax + 5);
+
+  var yTop = pad.top + gh * (1 - (o.targetMax - tMin) / (tMax - tMin));
+  var yBot = pad.top + gh * (1 - (o.targetMin - tMin) / (tMax - tMin));
+  ctx.fillStyle = 'rgba(42,157,143,0.08)';
+  ctx.fillRect(pad.left, yTop, gw, yBot - yTop);
+
+  ctx.strokeStyle = '#2a9d8f'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.left, yTop); ctx.lineTo(pad.left + gw, yTop);
+  ctx.moveTo(pad.left, yBot); ctx.lineTo(pad.left + gw, yBot);
+  ctx.stroke(); ctx.setLineDash([]);
+
+  ctx.font = '11px sans-serif'; ctx.fillStyle = '#2a9d8f'; ctx.textAlign = 'right';
+  ctx.fillText(o.targetMax + '°C', pad.left - 4, yTop + 4);
+  ctx.fillText(o.targetMin + '°C', pad.left - 4, yBot + 4);
+
+  for (var t = Math.ceil(tMin/5)*5; t <= tMax; t += 5) {
+    var y = pad.top + gh * (1 - (t - tMin) / (tMax - tMin));
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + gw, y); ctx.stroke();
+    ctx.fillStyle = '#8d99ae'; ctx.textAlign = 'right'; ctx.fillText(t + '\u00B0', pad.left - 4, y + 4);
+  }
+
+  if (r.history.length > 1) {
+    r.history.forEach(function(pt) {
+      if (pt.stirring) {
+        var sx = pad.left + (pt.time / o.timeLimit) * gw;
+        ctx.fillStyle = 'rgba(61,169,252,0.1)';
+        ctx.fillRect(sx - 0.5, pad.top, 1, gh);
+      }
+    });
+
+    ctx.beginPath(); ctx.strokeStyle = '#3da9fc'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+    for (var i = 0; i < r.history.length; i++) {
+      var pt = r.history[i];
+      var x = pad.left + (pt.time / o.timeLimit) * gw;
+      var y = pad.top + gh * (1 - (pt.temp - tMin) / (tMax - tMin));
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    r.violations.forEach(function(v) {
+      var vx = pad.left + (v.time / o.timeLimit) * gw;
+      var vy = pad.top + gh * (1 - (v.temp - tMin) / (tMax - tMin));
+      ctx.beginPath(); ctx.arc(vx, vy, 6, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(230,57,70,0.3)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(vx, vy, 3, 0, Math.PI*2);
+      ctx.fillStyle = '#e63946'; ctx.fill();
+    });
+
+    r.conservErrs.forEach(function(e) {
+      var ex = pad.left + (e.time / o.timeLimit) * gw;
+      var ey = pad.top + gh * (1 - (e.actual - tMin) / (tMax - tMin));
+      ctx.beginPath(); ctx.arc(ex, ey, 5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(249,168,38,0.4)'; ctx.fill();
+    });
+  }
+
+  ctx.fillStyle = '#8d99ae'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+  for (var s = 0; s <= o.timeLimit; s += 10) {
+    var x = pad.left + (s / o.timeLimit) * gw;
+    ctx.fillText(s + 's', x, h - 8);
+  }
+
+  ctx.save(); ctx.translate(14, pad.top + gh/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center'; ctx.fillText('温度 (°C)', 0, 0); ctx.restore();
+
+  var ly = 12;
+  ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#3da9fc'; ctx.fillRect(pad.left, ly, 16, 3);
+  ctx.fillText('温度曲线', pad.left + 20, ly + 5);
+  ctx.fillStyle = 'rgba(61,169,252,0.2)'; ctx.fillRect(pad.left + 90, ly, 16, 8);
+  ctx.fillStyle = '#8d99ae'; ctx.fillText('搅拌', pad.left + 110, ly + 5);
+  ctx.beginPath(); ctx.arc(pad.left + 155, ly + 2, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#e63946'; ctx.fill();
+  ctx.fillStyle = '#8d99ae'; ctx.fillText('越界', pad.left + 163, ly + 5);
+}
+
+function showReport() {
+  var el = document.getElementById('report-content');
+  var html = '';
+
+  var tv = 0, tc = 0, tt = 0, ts = 0;
+  G.results.forEach(function(r) {
+    tv += r.violations.length;
+    tc += r.conservErrs.length;
+    if (r.timeout) tt++;
+    if (r.success) ts++;
+  });
+
+  var hasIssues = tv > 0 || tc > 0 || tt > 0;
+
+  html += '<div class="report-section">';
+  html += '<div class="report-summary-box ' + (hasIssues ? 'has-violations' : 'no-violations') + '">';
+  html += '<h3>' + (hasIssues ? '⚠️ 实验摘要 — 发现问题' : '✅ 实验摘要 — 全部通过') + '</h3>';
+  html += '<p style="font-size:.95rem;line-height:1.8">';
+  html += '完成订单：' + G.results.length + ' / ' + ORDERS.length + '<br>';
+  html += '成功出餐：' + ts + ' 单<br>';
+  if (tv > 0) html += '<strong class="text-danger">🌡️ 温度越界：' + tv + ' 次</strong><br>';
+  else html += '🌡️ 温度越界：0 次 ✅<br>';
+  if (tc > 0) html += '<strong class="text-danger">⚖️ 热量守恒偏差：' + tc + ' 次</strong><br>';
+  else html += '⚖️ 热量守恒偏差：0 次 ✅<br>';
+  if (tt > 0) html += '<strong class="text-danger">⏱️ 订单超时：' + tt + ' 次</strong><br>';
+  else html += '⏱️ 订单超时：0 次 ✅<br>';
+  html += '</p></div></div>';
+
+  html += '<div class="report-section"><h3>📋 逐单汇总</h3>';
+  html += '<div style="overflow-x:auto"><table class="summary-table"><thead><tr>';
+  html += '<th>订单</th><th>杯材</th><th>k</th><th>环境</th><th>最终温度</th><th>目标</th><th>越界</th><th>守恒偏差</th><th>超时</th><th>结果</th>';
+  html += '</tr></thead><tbody>';
+  G.results.forEach(function(r) {
+    var vn = r.violations.length, cn = r.conservErrs.length;
+    html += '<tr>';
+    html += '<td>' + r.order.avatar + ' ' + r.order.customer + '</td>';
+    html += '<td>' + r.cup.icon + r.cup.name + '</td>';
+    html += '<td class="font-mono">' + r.cup.k + '</td>';
+    html += '<td>' + r.ambientUsed.toFixed(0) + '°C</td>';
+    html += '<td class="' + (r.success ? '' : 'violation-highlight') + ' font-mono">' + r.finalTemp.toFixed(1) + '°C</td>';
+    html += '<td>' + r.order.targetMin + '~' + r.order.targetMax + '°C</td>';
+    html += '<td class="' + (vn > 0 ? 'violation-highlight' : '') + '">' + vn + '</td>';
+    html += '<td class="' + (cn > 0 ? 'violation-highlight' : '') + '">' + cn + '</td>';
+    html += '<td class="' + (r.timeout ? 'violation-highlight' : '') + '">' + (r.timeout ? '是' : '否') + '</td>';
+    html += '<td><span class="tag ' + (r.success ? 'tag-success' : 'tag-danger') + '">' + (r.success ? '成功' : '失败') + '</span></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></div>';
+
+  G.results.forEach(function(r, idx) {
+    html += '<div class="report-section">';
+    html += '<h3>📝 订单 ' + (idx + 1) + '：' + r.order.customer + ' — ' + r.order.iceCream + '</h3>';
+
+    html += '<div class="card">';
+    html += '<div class="stat-row"><span class="stat-label">杯材</span><span class="stat-value">' + r.cup.icon + r.cup.name + ' (k=' + r.cup.k + ' W/(m·K), d=' + (r.cup.thickness*1000).toFixed(1) + 'mm)</span></div>';
+    html += '<div class="stat-row"><span class="stat-label">环境温度</span><span class="stat-value text-warm">' + r.ambientUsed.toFixed(0) + '°C</span></div>';
+    html += '<div class="stat-row"><span class="stat-label">起始温度</span><span class="stat-value">' + r.order.targetMin.toFixed(1) + '°C</span></div>';
+    html += '<div class="stat-row"><span class="stat-label">最终温度</span><span class="stat-value ' + (r.success ? 'text-success' : 'text-danger') + '">' + r.finalTemp.toFixed(1) + '°C</span></div>';
+    html += '<div class="stat-row"><span class="stat-label">守恒期望温度</span><span class="stat-value">' + r.expectedTemp.toFixed(1) + '°C</span></div>';
+    html += '<div class="stat-row"><span class="stat-label">累计吸热</span><span class="stat-value">' + r.totalQ.toFixed(1) + ' J</span></div>';
+    html += '<div class="stat-row"><span class="stat-label">搅拌占比</span><span class="stat-value">' + (r.stirRatio*100).toFixed(0) + '%</span></div>';
+    html += '</div>';
+
+    if (r.violations.length > 0) {
+      html += '<div class="mt-2"><h4 class="text-danger">🌡️ 温度越界记录（摘要）</h4>';
+      r.violations.forEach(function(v) {
+        html += '<div class="error-item"><span class="error-icon">🌡️</span><div><div class="error-text">' + v.desc + '</div><div class="error-time">@ ' + v.time.toFixed(1) + 's</div></div></div>';
+      });
+      html += '</div>';
+    }
+
+    if (r.conservErrs.length > 0) {
+      html += '<div class="mt-2"><h4 class="text-warm">⚖️ 热量守恒偏差记录（摘要）</h4>';
+      r.conservErrs.forEach(function(e) {
+        html += '<div class="error-item" style="background:#fef3e0"><span class="error-icon">⚖️</span><div><div class="error-text">偏差 ' + e.error.toFixed(2) + '°C</div><div class="error-time">@ ' + e.time.toFixed(1) + 's · 期望 ' + e.expected.toFixed(1) + '°C / 实际 ' + e.actual.toFixed(1) + '°C</div></div></div>';
+      });
+      html += '</div>';
+    }
+
+    if (r.timeout) {
+      html += '<div class="error-item mt-2"><span class="error-icon">⏱️</span><div><div class="error-text">订单超时（限额 ' + r.order.timeLimit + 's）</div></div></div>';
+    }
+
+    html += '</div>';
+  });
+
+  html += '<div class="report-section">';
+  html += '<h3>🔬 物理公式回顾</h3>';
+  html += '<div class="formula-box">';
+  html += '<div class="formula">Q = k · A · (T₂ - T₁) / d · Δt</div>';
+  html += '<div class="desc" style="margin-top:8px">';
+  html += 'Q = 传导热量 (J) &nbsp;|&nbsp; k = 导热系数 W/(m·K) &nbsp;|&nbsp; A = 接触面积 (m²)<br>';
+  html += 'T₂ = 环境温度 &nbsp;|&nbsp; T₁ = 冰淇淋温度 &nbsp;|&nbsp; d = 杯壁厚度 (m) &nbsp;|&nbsp; Δt = 时间 (s)';
+  html += '</div></div>';
+
+  html += '<div class="explanation-box"><h4>为什么杯材这么重要？</h4><p>';
+  html += '从公式可以看出，Q 和 k 成正比。泡沫杯 k=0.03 vs 不锈钢杯 k=3.0，导热能力差了 100 倍！<br>';
+  html += '也就是说，同样的温差和时间内，不锈钢杯传入的热量是泡沫杯的 100 倍——冰淇淋当然秒化。<br><br>';
+  html += '搅拌的效果相当于把 k 乘以 0.6（降低 40%），虽然不如选对杯材，但在紧急时刻很有用。<br>';
+  html += '壁厚 d 也很关键：d 越大，Q 越小——这就是为什么保温杯壁都做得很厚。';
+  html += '</p></div></div>';
+
+  el.innerHTML = html;
+
+  var actions = document.getElementById('report-actions');
+  if (G.orderIdx >= ORDERS.length - 1) {
+    actions.innerHTML =
+      '<button class="btn btn-outline" onclick="backToReview()">← 返回复盘</button>' +
+      '<button class="btn btn-success" onclick="restartGame()">🔄 重新开店</button>';
+  } else {
+    actions.innerHTML =
+      '<button class="btn btn-outline" onclick="backToReview()">← 返回复盘</button>' +
+      '<button class="btn btn-secondary" onclick="nextOrder()">下一单 →</button>';
+  }
+
+  showScreen('report-screen');
+}
+
+function nextOrder() {
+  G.orderIdx++;
+  if (G.orderIdx >= ORDERS.length) {
+    showReport();
+  } else {
+    showOrderScreen();
+  }
+}
+
+function backToReview() {
+  if (G.results.length > 0) showReview();
+  else showScreen('start-screen');
+}
+
+window.addEventListener('resize', function() {
+  if (document.getElementById('sim-screen').classList.contains('active') && G.running) {
+    initCanvas();
+  }
+});
+
+document.getElementById('stir-btn').addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  startStir();
+}, {passive: false});
+
+document.getElementById('stir-btn').addEventListener('touchend', function(e) {
+  e.preventDefault();
+  stopStir();
+}, {passive: false});
+</script>
+</body>
+</html>
