@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核磁扫描参数舱 - MRI Parameter Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        #canvas-container canvas { display: block; }
+        .param-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #3b82f6; cursor: pointer; }
+        .artifact-tag { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .glass-panel { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(100, 116, 139, 0.3); }
+        .scan-line { animation: scan 3s linear infinite; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen overflow-hidden">
+    <!-- 顶部导航 -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                </svg>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">核磁扫描参数舱</h1>
+            </div>
+            <span class="text-xs text-slate-400 bg-slate-700/50 px-2 py-1 rounded">v1.2.0</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="version-label" class="text-xs text-slate-400">参数版本: 2026.06.02.001</span>
+            <button onclick="app.takeScreenshot()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                截图
+            </button>
+            <button onclick="app.generateReport()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-sm flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                课堂报告
+            </button>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-14">
+        <!-- 左侧3D视图 -->
+        <div class="flex-1 relative">
+            <div id="canvas-container" class="w-full h-full"></div>
+            
+            <!-- 3D视图控制浮层 -->
+            <div class="absolute bottom-6 left-6 glass-panel rounded-lg p-3 flex gap-2">
+                <button onclick="app.resetCamera()" class="p-2 hover:bg-slate-700 rounded" title="重置视角">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+                <button onclick="app.toggleAutoRotate()" id="rotate-btn" class="p-2 hover:bg-slate-700 rounded" title="自动旋转">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+                <button onclick="app.toggleWireframe()" class="p-2 hover:bg-slate-700 rounded" title="线框模式">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                </button>
+                <div class="w-px bg-slate-600 mx-1"></div>
+                <button onclick="app.setView('front')" class="p-2 hover:bg-slate-700 rounded text-xs" title="前视图">前</button>
+                <button onclick="app.setView('side')" class="p-2 hover:bg-slate-700 rounded text-xs" title="侧视图">侧</button>
+                <button onclick="app.setView('top')" class="p-2 hover:bg-slate-700 rounded text-xs" title="顶视图">顶</button>
+            </div>
+
+            <!-- 选中对象信息面板 -->
+            <div id="object-info" class="absolute top-6 left-6 glass-panel rounded-lg p-4 w-72 hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 id="obj-title" class="font-semibold text-blue-400">设备名称</h3>
+                    <button onclick="app.closeObjectInfo()" class="text-slate-400 hover:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div id="obj-details" class="text-sm text-slate-300 space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- 右侧参数面板 -->
+        <div class="w-96 glass-panel overflow-y-auto">
+            <div class="p-4 space-y-6">
+                <!-- 筛选器 -->
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400">参数筛选</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="filter-sequence" onchange="app.applyFilters()" class="bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
+                            <option value="">全部序列</option>
+                            <option value="T1">T1加权</option>
+                            <option value="T2">T2加权</option>
+                            <option value="PD">质子密度</option>
+                            <option value="DWI">弥散加权</option>
+                        </select>
+                        <select id="filter-region" onchange="app.applyFilters()" class="bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm">
+                            <option value="">全部部位</option>
+                            <option value="brain">脑部</option>
+                            <option value="spine">脊柱</option>
+                            <option value="abdomen">腹部</option>
+                            <option value="knee">膝关节</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 扫描参数 -->
+                <div class="space-y-4">
+                    <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        扫描参数
+                    </h3>
+                    
+                    <!-- 信噪比 SNR -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <label class="text-slate-300">信噪比 (SNR)</label>
+                            <span id="snr-value" class="text-blue-400 font-mono">45.2 dB</span>
+                        </div>
+                        <input type="range" id="snr-slider" min="10" max="80" value="45" step="0.1" 
+                            class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer param-slider"
+                            oninput="app.updateParam('snr', this.value)">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>低</span>
+                            <span>高</span>
+                        </div>
+                    </div>
+
+                    <!-- 扫描时间 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <label class="text-slate-300">扫描时间</label>
+                            <span id="time-value" class="text-emerald-400 font-mono">5:30</span>
+                        </div>
+                        <input type="range" id="time-slider" min="60" max="600" value="330" step="10"
+                            class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer param-slider"
+                            oninput="app.updateParam('scanTime', this.value)">
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>1:00</span>
+                            <span>10:00</span>
+                        </div>
+                    </div>
+
+                    <!-- TR 重复时间 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <label class="text-slate-300">重复时间 (TR)</label>
+                            <span id="tr-value" class="text-amber-400 font-mono">2000 ms</span>
+                        </div>
+                        <input type="range" id="tr-slider" min="200" max="6000" value="2000" step="50"
+                            class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer param-slider"
+                            oninput="app.updateParam('tr', this.value)">
+                    </div>
+
+                    <!-- TE 回波时间 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <label class="text-slate-300">回波时间 (TE)</label>
+                            <span id="te-value" class="text-purple-400 font-mono">100 ms</span>
+                        </div>
+                        <input type="range" id="te-slider" min="10" max="500" value="100" step="5"
+                            class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer param-slider"
+                            oninput="app.updateParam('te', this.value)">
+                    </div>
+
+                    <!-- 层厚 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <label class="text-slate-300">层厚</label>
+                            <span id="slice-value" class="text-cyan-400 font-mono">5 mm</span>
+                        </div>
+                        <input type="range" id="slice-slider" min="1" max="20" value="5" step="0.5"
+                            class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer param-slider"
+                            oninput="app.updateParam('sliceThickness', this.value)">
+                    </div>
+
+                    <!-- 磁场强度 -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <label class="text-slate-300">磁场强度</label>
+                            <span id="field-value" class="text-rose-400 font-mono">1.5 T</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="app.setFieldStrength(1.5)" class="flex-1 py-1.5 rounded text-sm bg-slate-700 hover:bg-slate-600 field-btn data-[active=true]:bg-rose-600" data-field="1.5">1.5T</button>
+                            <button onclick="app.setFieldStrength(3.0)" class="flex-1 py-1.5 rounded text-sm bg-slate-700 hover:bg-slate-600 field-btn data-[active=true]:bg-rose-600" data-field="3.0">3.0T</button>
+                            <button onclick="app.setFieldStrength(7.0)" class="flex-1 py-1.5 rounded text-sm bg-slate-700 hover:bg-slate-600 field-btn data-[active=true]:bg-rose-600" data-field="7.0">7.0T</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 伪影检测 -->
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-500 rounded-full artifact-tag"></span>
+                        伪影检测
+                        <span id="artifact-count" class="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">0</span>
+                    </h3>
+                    <div id="artifact-list" class="space-y-2 text-sm max-h-40 overflow-y-auto">
+                        <div class="text-slate-500 text-center py-4">暂无伪影检测</div>
+                    </div>
+                </div>
+
+                <!-- 图像预览 -->
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                        组织切片预览
+                    </h3>
+                    <div class="relative bg-black rounded-lg overflow-hidden aspect-square">
+                        <canvas id="preview-canvas" class="w-full h-full"></canvas>
+                        <div class="scan-line absolute w-full h-0.5 bg-cyan-400/30"></div>
+                        <div class="absolute bottom-2 right-2 text-xs font-mono text-cyan-400 bg-black/50 px-2 py-1 rounded">
+                            <span id="preview-info">AXIAL T2</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="app.setSliceView('axial')" class="flex-1 py-1.5 rounded text-xs bg-slate-700 hover:bg-slate-600 slice-btn data-[active=true]:bg-cyan-600" data-view="axial">轴位</button>
+                        <button onclick="app.setSliceView('sagittal')" class="flex-1 py-1.5 rounded text-xs bg-slate-700 hover:bg-slate-600 slice-btn data-view="sagittal">矢状位</button>
+                        <button onclick="app.setSliceView('coronal')" class="flex-1 py-1.5 rounded text-xs bg-slate-700 hover:bg-slate-600 slice-btn data-view="coronal">冠状位</button>
+                    </div>
+                </div>
+
+                <!-- 参数联动关系 -->
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400">参数联动关系</h3>
+                    <div class="bg-slate-800/50 rounded-lg p-3 text-xs space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-amber-400">↑</span>
+                            <span class="text-slate-300">TR ↑</span>
+                            <span class="text-slate-500">→</span>
+                            <span class="text-slate-300">SNR ↑</span>
+                            <span class="text-slate-500">→</span>
+                            <span class="text-slate-300">时间 ↑</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-rose-400">↑</span>
+                            <span class="text-slate-300">TE ↑</span>
+                            <span class="text-slate-500">→</span>
+                            <span class="text-slate-300">T2对比 ↑</span>
+                            <span class="text-slate-500">→</span>
+                            <span class="text-slate-300">SNR ↓</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-emerald-400">↑</span>
+                            <span class="text-slate-300">层厚 ↑</span>
+                            <span class="text-slate-500">→</span>
+                            <span class="text-slate-300">SNR ↑</span>
+                            <span class="text-slate-500">→</span>
+                            <span class="text-slate-300">分辨率 ↓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 历史记录 -->
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+                            参数历史
+                        </span>
+                        <button onclick="app.clearHistory()" class="text-xs text-slate-500 hover:text-slate-300">清空</button>
+                    </h3>
+                    <div id="history-list" class="space-y-2 max-h-32 overflow-y-auto text-sm">
+                    </div>
+                </div>
+
+                <!-- 元数据 -->
+                <div class="space-y-2 text-xs text-slate-500 border-t border-slate-700 pt-4">
+                    <div class="flex justify-between">
+                        <span>模型来源</span>
+                        <span class="text-slate-400">Siemens Prisma 3T</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>数据版本</span>
+                        <span class="text-slate-400">2026.06.02.001</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>生成时间</span>
+                        <span id="gen-time" class="text-slate-400">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报告模态框 -->
+    <div id="report-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70" onclick="app.closeReport()"></div>
+        <div class="absolute inset-4 md:inset-10 bg-slate-900 rounded-xl overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="text-lg font-semibold">课堂报告 - 核磁扫描参数分析</h2>
+                <div class="flex gap-2">
+                    <button onclick="app.downloadReport()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm">下载PDF</button>
+                    <button onclick="app.closeReport()" class="p-1.5 hover:bg-slate-700 rounded">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="report-content" class="flex-1 overflow-auto p-6">
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
