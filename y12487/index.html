@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多面体截面练习馆</title>
+<style>
+:root {
+  --bg: #1a1a2e;
+  --fg: #e0e0e0;
+  --muted: #8888aa;
+  --accent: #00d4aa;
+  --accent2: #ff6b6b;
+  --card: #16213e;
+  --border: #2a2a4a;
+  --warn: #f0a500;
+  --info: #4fc3f7;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: "PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--fg); overflow:hidden; height:100vh; }
+.layout { display:flex; height:100vh; }
+.sidebar { width:340px; min-width:340px; background:var(--card); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.sidebar-header { padding:16px 20px; border-bottom:1px solid var(--border); }
+.sidebar-header h1 { font-size:18px; font-weight:600; color:var(--accent); letter-spacing:1px; }
+.sidebar-header p { font-size:12px; color:var(--muted); margin-top:4px; }
+.sidebar-body { flex:1; overflow-y:auto; padding:12px 16px; }
+.sidebar-body::-webkit-scrollbar { width:4px; }
+.sidebar-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.section-title { font-size:13px; font-weight:600; color:var(--info); margin:16px 0 8px; text-transform:uppercase; letter-spacing:1px; }
+.section-title:first-child { margin-top:0; }
+.ctrl-row { margin-bottom:10px; }
+.ctrl-row label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+.ctrl-row select, .ctrl-row input[type=range] { width:100%; }
+.ctrl-row select { background:var(--bg); color:var(--fg); border:1px solid var(--border); padding:6px 8px; border-radius:4px; font-size:13px; cursor:pointer; }
+.ctrl-row input[type=range] { accent-color:var(--accent); }
+.range-val { font-size:11px; color:var(--accent); float:right; }
+.btn { display:inline-block; padding:7px 14px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--fg); font-size:12px; cursor:pointer; transition:all .15s; }
+.btn:hover { border-color:var(--accent); color:var(--accent); }
+.btn-accent { background:var(--accent); color:#111; border-color:var(--accent); font-weight:600; }
+.btn-accent:hover { background:#00b894; }
+.btn-warn { border-color:var(--accent2); color:var(--accent2); }
+.btn-warn:hover { background:var(--accent2); color:#fff; }
+.btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.main-area { flex:1; display:flex; flex-direction:column; position:relative; }
+#canvas3d { flex:1; display:block; }
+.info-bar { position:absolute; top:12px; left:12px; background:rgba(22,33,62,.88); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:12px; pointer-events:none; max-width:320px; line-height:1.7; }
+.info-bar .tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:11px; margin-right:4px; }
+.tag-ok { background:#00d4aa22; color:#00d4aa; }
+.tag-warn { background:#f0a50022; color:#f0a500; }
+.tag-err { background:#ff6b6b22; color:#ff6b6b; }
+.tag-info { background:#4fc3f722; color:#4fc3f7; }
+.bottom-panel { height:260px; min-height:200px; background:var(--card); border-top:1px solid var(--border); display:flex; flex-direction:column; }
+.bottom-tabs { display:flex; border-bottom:1px solid var(--border); }
+.bottom-tab { padding:8px 18px; font-size:12px; cursor:pointer; color:var(--muted); border-bottom:2px solid transparent; transition:all .15s; }
+.bottom-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.bottom-tab:hover { color:var(--fg); }
+.bottom-body { flex:1; overflow-y:auto; padding:10px 16px; font-size:12px; }
+.bottom-body::-webkit-scrollbar { width:4px; }
+.bottom-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+table { width:100%; border-collapse:collapse; }
+th,td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--border); font-size:12px; white-space:nowrap; }
+th { color:var(--muted); font-weight:500; position:sticky; top:0; background:var(--card); }
+.missing { color:var(--accent2); font-style:italic; }
+.late { color:var(--warn); }
+.remarked { color:var(--info); text-decoration:underline; text-decoration-style:dotted; }
+.break-indicator { color:var(--accent2); font-weight:600; }
+.detail-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100; justify-content:center; align-items:center; }
+.detail-modal.show { display:flex; }
+.detail-card { background:var(--card); border:1px solid var(--border); border-radius:8px; width:560px; max-height:80vh; overflow-y:auto; padding:24px; }
+.detail-card h2 { font-size:16px; margin-bottom:12px; color:var(--accent); }
+.detail-card .field { margin-bottom:10px; }
+.detail-card .field-label { font-size:11px; color:var(--muted); margin-bottom:2px; }
+.detail-card .field-value { font-size:13px; padding:4px 0; }
+.detail-card .break-note { background:var(--accent2)11; border:1px solid var(--accent2)44; border-radius:4px; padding:8px 12px; margin:8px 0; color:var(--accent2); font-size:12px; }
+.detail-card .close-btn { float:right; cursor:pointer; color:var(--muted); font-size:18px; }
+.detail-card .close-btn:hover { color:var(--fg); }
+.legend { display:flex; gap:12px; flex-wrap:wrap; margin:8px 0; }
+.legend-item { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--muted); }
+.legend-dot { width:10px; height:10px; border-radius:50%; }
+.scheme-cards { display:flex; gap:10px; flex-wrap:wrap; }
+.scheme-card { flex:1; min-width:120px; padding:10px; border:1px solid var(--border); border-radius:6px; cursor:pointer; transition:all .15s; text-align:center; }
+.scheme-card:hover { border-color:var(--accent); }
+.scheme-card.active { border-color:var(--accent); background:var(--accent)11; }
+.scheme-card .name { font-size:13px; font-weight:600; margin-bottom:4px; }
+.scheme-card .est { font-size:11px; color:var(--accent); }
+.export-area { white-space:pre-wrap; font-family:monospace; background:var(--bg); border:1px solid var(--border); border-radius:4px; padding:12px; font-size:11px; max-height:200px; overflow-y:auto; color:var(--fg); line-height:1.6; }
+.toast { position:fixed; bottom:20px; right:20px; background:var(--accent); color:#111; padding:10px 20px; border-radius:6px; font-size:13px; font-weight:600; z-index:200; opacity:0; transition:opacity .3s; pointer-events:none; }
+.toast.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>多面体截面练习馆</h1>
+      <p>讲解 / 评审用 &mdash; 颜色、位置、标签均服务于教学说明</p>
+    </div>
+    <div class="sidebar-body">
+      <div class="section-title">多面体模型</div>
+      <div class="ctrl-row">
+        <label>选择多面体</label>
+        <select id="polySelect">
+          <option value="cube">正方体</option>
+          <option value="tetrahedron">正四面体</option>
+          <option value="octahedron">正八面体</option>
+          <option value="dodecahedron">正十二面体</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <label>模型缩放 <span class="range-val" id="scaleVal">1.0</span></label>
+        <input type="range" id="scaleRange" min="0.5" max="2.0" step="0.1" value="1.0">
+      </div>
+
+      <div class="section-title">截面平面</div>
+      <div class="ctrl-row">
+        <label>方案选择</label>
+        <div class="scheme-cards" id="schemeCards"></div>
+      </div>
+      <div class="ctrl-row">
+        <label>平面法向量 X <span class="range-val" id="nxVal">0.00</span></label>
+        <input type="range" id="nxRange" min="-1" max="1" step="0.01" value="0">
+      </div>
+      <div class="ctrl-row">
+        <label>平面法向量 Y <span class="range-val" id="nyVal">1.00</span></label>
+        <input type="range" id="nyRange" min="-1" max="1" step="0.01" value="1">
+      </div>
+      <div class="ctrl-row">
+        <label>平面法向量 Z <span class="range-val" id="nzVal">0.00</span></label>
+        <input type="range" id="nzRange" min="-1" max="1" step="0.01" value="0">
+      </div>
+      <div class="ctrl-row">
+        <label>平面偏移 (d) <span class="range-val" id="dVal">0.00</span></label>
+        <input type="range" id="dRange" min="-2" max="2" step="0.01" value="0">
+      </div>
+
+      <div class="section-title">显示控制</div>
+      <div class="ctrl-row">
+        <label>截面平面透明度 <span class="range-val" id="alphaVal">0.30</span></label>
+        <input type="range" id="alphaRange" min="0.05" max="0.8" step="0.01" value="0.3">
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="toggleEdge">显示/隐藏棱</button>
+        <button class="btn" id="toggleVertex">显示/隐藏顶点标签</button>
+        <button class="btn" id="toggleSectionLine">显示/隐藏截线</button>
+      </div>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn btn-accent" id="screenshotBtn">截图导出 (当前方案)</button>
+        <button class="btn btn-warn" id="triggerOverflow">触发平面越界</button>
+      </div>
+
+      <div class="section-title">图例</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div>多面体面</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f0a500"></div>截面平面</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>截线/断裂</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>顶点/标签</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e040fb"></div>越界区域</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <canvas id="canvas3d"></canvas>
+    <div class="info-bar" id="infoBar"></div>
+
+    <div class="bottom-panel">
+      <div class="bottom-tabs">
+        <div class="bottom-tab active" data-tab="records">样例记录</div>
+        <div class="bottom-tab" data-tab="details">截面详情</div>
+        <div class="bottom-tab" data-tab="export">导出预览</div>
+      </div>
+      <div class="bottom-body" id="bottomBody">
+        <div id="tab-records"></div>
+        <div id="tab-details" style="display:none"></div>
+        <div id="tab-export" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-modal" id="detailModal">
+  <div class="detail-card" id="detailCard"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const POLY_CONFIGS = {
+  cube: {
+    name: '正方体',
+    create: () => {
+      const geo = new THREE.BoxGeometry(2, 2, 2);
+      return geo;
+    },
+    vertexLabels: [
+      'A(1,1,1)','B(-1,1,1)','C(-1,-1,1)','D(1,-1,1)',
+      'E(1,1,-1)','F(-1,1,-1)','G(-1,-1,-1)','H(1,-1,-1)'
+    ],
+    vertexPositions: [
+      [1,1,1],[-1,1,1],[-1,-1,1],[1,-1,1],
+      [1,1,-1],[-1,1,-1],[-1,-1,-1],[1,-1,-1]
+    ]
+  },
+  tetrahedron: {
+    name: '正四面体',
+    create: () => new THREE.TetrahedronGeometry(1.6),
+    vertexLabels: ['A','B','C','D'],
+    vertexPositions: [
+      [0,1.6,0],[1.5,-0.5,0],[-0.75,-0.5,1.3],[-0.75,-0.5,-1.3]
+    ]
+  },
+  octahedron: {
+    name: '正八面体',
+    create: () => new THREE.OctahedronGeometry(1.5),
+    vertexLabels: ['T(0,1.5,0)','B(0,-1.5,0)','L(-1.5,0,0)','R(1.5,0,0)','F(0,0,1.5)','K(0,0,-1.5)'],
+    vertexPositions: [
+      [0,1.5,0],[0,-1.5,0],[-1.5,0,0],[1.5,0,0],[0,0,1.5],[0,0,-1.5]
+    ]
+  },
+  dodecahedron: {
+    name: '正十二面体',
+    create: () => new THREE.DodecahedronGeometry(1.4),
+    vertexLabels: [],
+    vertexPositions: []
+  }
+};
+
+const SCHEMES = {
+  cube: [
+    { name: '水平切', nx:0, ny:1, nz:0, d:0.3, desc:'平行于底面的截面' },
+    { name: '对角切', nx:1, ny:1, nz:0, d:0, desc:'过对角线的截面' },
+    { name: '斜切', nx:0.3, ny:1, nz:0.5, d:-0.2, desc:'一般斜截面' }
+  ],
+  tetrahedron: [
+    { name: '平行底面', nx:0, ny:1, nz:0, d:0.3, desc:'平行于底面的截面' },
+    { name: '过中点', nx:1, ny:1, nz:0, d:0, desc:'过棱中点的截面' },
+    { name: '斜切', nx:0.5, ny:1, nz:0.3, d:0, desc:'一般斜截面' }
+  ],
+  octahedron: [
+    { name: '赤道面', nx:0, ny:1, nz:0, d:0, desc:'过中心的水平截面' },
+    { name: '斜切', nx:1, ny:1, nz:0, d:0, desc:'对角截面' },
+    { name: '偏移切', nx:0, ny:1, nz:0, d:0.5, desc:'偏移水平截面' }
+  ],
+  dodecahedron: [
+    { name: '水平切', nx:0, ny:1, nz:0, d:0.2, desc:'水平截面' },
+    { name: '对角切', nx:1, ny:1, nz:0, d:0, desc:'对角截面' },
+    { name: '斜切', nx:0.3, ny:1, nz:0.7, d:0, desc:'一般斜截面' }
+  ]
+};
+
+const SAMPLE_RECORDS = [
+  {
+    id: 1,
+    polyType: 'cube',
+    schemeName: '水平切',
+    planeParams: 'n=(0,1,0), d=0.3',
+    sectionShape: '正方形',
+    areaEstimate: 4.00,
+    hasBreak: false,
+    breakNote: '',
+    vertexCoincidence: false,
+    overflow: false,
+    screenshotReady: true,
+    remark: '标准水平截面',
+    status: 'complete',
+    filledLate: false,
+    remarkModified: false,
+    missingFields: []
+  },
+  {
+    id: 2,
+    polyType: 'cube',
+    schemeName: '对角切',
+    planeParams: 'n=(1,1,0), d=0',
+    sectionShape: '矩形',
+    areaEstimate: 2.83,
+    hasBreak: false,
+    breakNote: '',
+    vertexCoincidence: true,
+    overflow: false,
+    screenshotReady: false,
+    remark: '',
+    status: 'incomplete',
+    filledLate: false,
+    remarkModified: false,
+    missingFields: ['screenshotReady', 'remark']
+  },
+  {
+    id: 3,
+    polyType: 'tetrahedron',
+    schemeName: '过中点',
+    planeParams: 'n=(1,1,0), d=0',
+    sectionShape: '三角形',
+    areaEstimate: null,
+    hasBreak: true,
+    breakNote: '截线在顶点B处断裂：平面恰好过棱上顶点，截线段在该处断开，影响后续面积估算',
+    vertexCoincidence: true,
+    overflow: false,
+    screenshotReady: true,
+    remark: '顶点重合导致截线断裂',
+    status: 'incomplete',
+    filledLate: true,
+    remarkModified: false,
+    missingFields: ['areaEstimate']
+  },
+  {
+    id: 4,
+    polyType: 'octahedron',
+    schemeName: '偏移切',
+    planeParams: 'n=(0,1,0), d=0.5',
+    sectionShape: '正方形',
+    areaEstimate: 2.00,
+    hasBreak: false,
+    breakNote: '',
+    vertexCoincidence: false,
+    overflow: true,
+    screenshotReady: true,
+    remark: '平面部分越出多面体范围，截线不封闭',
+    status: 'complete',
+    filledLate: false,
+    remarkModified: true,
+    missingFields: []
+  },
+  {
+    id: 5,
+    polyType: 'cube',
+    schemeName: '斜切',
+    planeParams: 'n=(0.3,1,0.5), d=-0.2',
+    sectionShape: '六边形',
+    areaEstimate: 3.10,
+    hasBreak: true,
+    breakNote: '截线在棱AD与棱EH处同时断裂：平面同时过两条棱上的顶点，截线分为三段，需分别计算后合并',
+    vertexCoincidence: true,
+    overflow: true,
+    screenshotReady: false,
+    remark: '越界+顶点重合叠加情形',
+    status: 'incomplete',
+    filledLate: true,
+    remarkModified: true,
+    missingFields: ['screenshotReady']
+  },
+  {
+    id: 6,
+    polyType: 'dodecahedron',
+    schemeName: '对角切',
+    planeParams: 'n=(1,1,0), d=0',
+    sectionShape: '十边形',
+    areaEstimate: 5.20,
+    hasBreak: false,
+    breakNote: '',
+    vertexCoincidence: false,
+    overflow: false,
+    screenshotReady: true,
+    remark: '',
+    status: 'complete',
+    filledLate: false,
+    remarkModified: false,
+    missingFields: ['remark']
+  }
+];
+
+let scene, camera, renderer, controls;
+let polyMesh, polyEdges, sectionPlaneMesh, sectionLineMesh, overflowMesh;
+let vertexSprites = [];
+let currentPoly = 'cube';
+let currentSchemeIdx = 0;
+let showEdges = true, showVertexLabels = true, showSectionLine = true;
+
+const planeState = { nx: 0, ny: 1, nz: 0, d: 0, alpha: 0.3 };
+
+function init() {
+  const canvas = document.getElementById('canvas3d');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x0f0f1e);
+
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+  camera.position.set(3.5, 2.5, 3.5);
+
+  controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+
+  const ambLight = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(5, 8, 5);
+  scene.add(dirLight);
+
+  const gridHelper = new THREE.GridHelper(6, 12, 0x2a2a4a, 0x1a1a2e);
+  scene.add(gridHelper);
+
+  const axesHelper = new THREE.AxesHelper(3);
+  scene.add(axesHelper);
+
+  buildPolyhedron();
+  buildSectionPlane();
+  updateInfoBar();
+
+  window.addEventListener('resize', onResize);
+  onResize();
+  animate();
+}
+
+function onResize() {
+  const container = document.getElementById('canvas3d').parentElement;
+  const w = container.clientWidth;
+  const h = container.clientHeight - 260;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+function buildPolyhedron() {
+  if (polyMesh) { scene.remove(polyMesh); polyMesh.geometry.dispose(); }
+  if (polyEdges) { scene.remove(polyEdges); polyEdges.geometry.dispose(); }
+  vertexSprites.forEach(s => scene.remove(s));
+  vertexSprites = [];
+
+  const cfg = POLY_CONFIGS[currentPoly];
+  const geo = cfg.create();
+  const scale = parseFloat(document.getElementById('scaleRange').value);
+  geo.scale(scale, scale, scale);
+
+  const mat = new THREE.MeshPhongMaterial({
+    color: 0x4fc3f7,
+    transparent: true,
+    opacity: 0.25,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  polyMesh = new THREE.Mesh(geo, mat);
+  scene.add(polyMesh);
+
+  const edgeGeo = new THREE.EdgesGeometry(geo);
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x4fc3f7, linewidth: 1 });
+  polyEdges = new THREE.LineSegments(edgeGeo, edgeMat);
+  polyEdges.visible = showEdges;
+  scene.add(polyEdges);
+
+  if (cfg.vertexPositions.length > 0 && showVertexLabels) {
+    cfg.vertexPositions.forEach((pos, i) => {
+      const label = cfg.vertexLabels[i] || `V${i}`;
+      const sprite = makeTextSprite(label, { color: '#00d4aa' });
+      sprite.position.set(pos[0] * scale, pos[1] * scale, pos[2] * scale);
+      scene.add(sprite);
+      vertexSprites.push(sprite);
+    });
+  }
+
+  updateSectionCut();
+}
+
+function makeTextSprite(text, opts = {}) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 256;
+  canvas.height = 64;
+  ctx.font = 'bold 28px sans-serif';
+  ctx.fillStyle = opts.color || '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 32);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.scale.set(1.2, 0.3, 1);
+  return sprite;
+}
+
+function buildSectionPlane() {
+  if (sectionPlaneMesh) { scene.remove(sectionPlaneMesh); sectionPlaneMesh.geometry.dispose(); }
+  if (sectionLineMesh) { scene.remove(sectionLineMesh); if (sectionLineMesh.geometry) sectionLineMesh.geometry.dispose(); }
+  if (overflowMesh) { scene.remove(overflowMesh); if (overflowMesh.geometry) overflowMesh.geometry.dispose(); }
+
+  const planeGeo = new THREE.PlaneGeometry(6, 6);
+  const planeMat = new THREE.MeshBasicMaterial({
+    color: 0xf0a500,
+    transparent: true,
+    opacity: planeState.alpha,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  sectionPlaneMesh = new THREE.Mesh(planeGeo, planeMat);
+  scene.add(sectionPlaneMesh);
+
+  updateSectionCut();
+}
+
+function updateSectionCut() {
+  if (!sectionPlaneMesh || !polyMesh) return;
+
+  const nx = planeState.nx, ny = planeState.ny, nz = planeState.nz, d = planeState.d;
+  const len = Math.sqrt(nx*nx + ny*ny + nz*nz);
+  if (len < 0.001) return;
+  const nnx = nx/len, nny = ny/len, nnz = nz/len;
+
+  sectionPlaneMesh.position.set(nnx*d, nny*d, nnz*d);
+  const target = new THREE.Vector3(nnx, nny, nnz);
+  const up = new THREE.Vector3(0, 1, 0);
+  if (Math.abs(target.dot(up)) > 0.99) up.set(1, 0, 0);
+  const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), target.normalize());
+  sectionPlaneMesh.quaternion.copy(quat);
+  sectionPlaneMesh.material.opacity = planeState.alpha;
+
+  computeIntersectionLine();
+  updateInfoBar();
+  updateDetailTab();
+  updateExportTab();
+}
+
+function computeIntersectionLine() {
+  if (sectionLineMesh) { scene.remove(sectionLineMesh); sectionLineMesh.geometry.dispose(); sectionLineMesh = null; }
+  if (overflowMesh) { scene.remove(overflowMesh); if (overflowMesh.geometry) overflowMesh.geometry.dispose(); overflowMesh = null; }
+
+  if (!showSectionLine || !polyMesh) return;
+
+  const geo = polyMesh.geometry;
+  const pos = geo.attributes.position;
+  const idx = geo.index;
+  const nx = planeState.nx, ny = planeState.ny, nz = planeState.nz, d = planeState.d;
+  const len = Math.sqrt(nx*nx + ny*ny + nz*nz);
+  if (len < 0.001) return;
+  const nnx = nx/len, nny = ny/len, nnz = nz/len;
+
+  const normal = new THREE.Vector3(nnx, nny, nnz);
+  const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, new THREE.Vector3(nnx*d, nny*d, nnz*d));
+
+  const points = [];
+  const breakPoints = [];
+
+  const triangles = idx ? idx.count / 3 : pos.count / 3;
+  for (let t = 0; t < triangles; t++) {
+    const i0 = idx ? idx.getX(t*3) : t*3;
+    const i1 = idx ? idx.getX(t*3+1) : t*3+1;
+    const i2 = idx ? idx.getX(t*3+2) : t*3+2;
+
+    const v0 = new THREE.Vector3().fromBufferAttribute(pos, i0);
+    const v1 = new THREE.Vector3().fromBufferAttribute(pos, i1);
+    const v2 = new THREE.Vector3().fromBufferAttribute(pos, i2);
+
+    const d0 = plane.distanceToPoint(v0);
+    const d1 = plane.distanceToPoint(v1);
+    const d2 = plane.distanceToPoint(v2);
+
+    const eps = 0.02;
+    const segPts = [];
+
+    [[v0,v1,d0,d1],[v1,v2,d1,d2],[v2,v0,d2,d0]].forEach(([va,vb,da,db]) => {
+      const aOnPlane = Math.abs(da) < eps;
+      const bOnPlane = Math.abs(db) < eps;
+      const crosses = (da > 0 && db < 0) || (da < 0 && db > 0);
+
+      if (aOnPlane) {
+        segPts.push(va.clone());
+        breakPoints.push(va.clone());
+      }
+      if (crosses) {
+        const t = da / (da - db);
+        segPts.push(va.clone().lerp(vb.clone(), t));
+      }
+    });
+
+    const unique = [];
+    segPts.forEach(p => {
+      if (!unique.some(u => u.distanceTo(p) < 0.01)) unique.push(p);
+    });
+    if (unique.length === 2) {
+      points.push(unique[0], unique[1]);
+    }
+  }
+
+  if (points.length >= 2) {
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xff6b6b, linewidth: 2 });
+    sectionLineMesh = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(sectionLineMesh);
+  }
+
+  const isOverflow = checkOverflow();
+  if (isOverflow) {
+    const overGeo = new THREE.RingGeometry(2.5, 3.0, 32);
+    const overMat = new THREE.MeshBasicMaterial({
+      color: 0xe040fb,
+      transparent: true,
+      opacity: 0.15,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    overflowMesh = new THREE.Mesh(overGeo, overMat);
+    overflowMesh.position.copy(sectionPlaneMesh.position);
+    overflowMesh.quaternion.copy(sectionPlaneMesh.quaternion);
+    scene.add(overflowMesh);
+  }
+}
+
+function checkOverflow() {
+  const geo = polyMesh.geometry;
+  const pos = geo.attributes.position;
+  const nx = planeState.nx, ny = planeState.ny, nz = planeState.nz, d = planeState.d;
+  const len = Math.sqrt(nx*nx+ny*ny+nz*nz);
+  if (len < 0.001) return false;
+  const nnx=nx/len, nny=ny/len, nnz=nz/len;
+
+  let minDist = Infinity, maxDist = -Infinity;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const dist = nnx*x + nny*y + nnz*z;
+    if (dist < minDist) minDist = dist;
+    if (dist > maxDist) maxDist = dist;
+  }
+  return d < minDist - 0.01 || d > maxDist + 0.01;
+}
+
+function checkVertexCoincidence() {
+  const geo = polyMesh.geometry;
+  const pos = geo.attributes.position;
+  const nx = planeState.nx, ny = planeState.ny, nz = planeState.nz, d = planeState.d;
+  const len = Math.sqrt(nx*nx+ny*ny+nz*nz);
+  if (len < 0.001) return { coincidence: false, vertices: [] };
+  const nnx=nx/len, nny=ny/len, nnz=nz/len;
+  const eps = 0.05;
+  const coincident = [];
+
+  const cfg = POLY_CONFIGS[currentPoly];
+  const positions = cfg.vertexPositions.length > 0 ? cfg.vertexPositions : (() => {
+    const p = [];
+    for (let i = 0; i < pos.count; i++) p.push([pos.getX(i), pos.getY(i), pos.getZ(i)]);
+    return p;
+  })();
+
+  const scale = parseFloat(document.getElementById('scaleRange').value);
+  positions.forEach((v, i) => {
+    const dist = nnx*v[0]*scale + nny*v[1]*scale + nnz*v[2]*scale;
+    if (Math.abs(dist - d) < eps) {
+      coincident.push(cfg.vertexLabels[i] || `V${i}`);
+    }
+  });
+
+  return { coincidence: coincident.length > 0, vertices: coincident };
+}
+
+function estimateArea() {
+  const geo = polyMesh.geometry;
+  const pos = geo.attributes.position;
+  const idx = geo.index;
+  const nx = planeState.nx, ny = planeState.ny, nz = planeState.nz, d = planeState.d;
+  const len = Math.sqrt(nx*nx+ny*ny+nz*nz);
+  if (len < 0.001) return { area: 0, shape: '—', hasBreak: false, breakNote: '' };
+  const nnx=nx/len, nny=ny/len, nnz=nz/len;
+  const normal = new THREE.Vector3(nnx, nny, nnz);
+  const plane3 = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, new THREE.Vector3(nnx*d, nny*d, nnz*d));
+
+  const eps = 0.02;
+  const segments = [];
+  const triangles = idx ? idx.count / 3 : pos.count / 3;
+
+  for (let t = 0; t < triangles; t++) {
+    const i0 = idx ? idx.getX(t*3) : t*3;
+    const i1 = idx ? idx.getX(t*3+1) : t*3+1;
+    const i2 = idx ? idx.getX(t*3+2) : t*3+2;
+    const v0 = new THREE.Vector3().fromBufferAttribute(pos, i0);
+    const v1 = new THREE.Vector3().fromBufferAttribute(pos, i1);
+    const v2 = new THREE.Vector3().fromBufferAttribute(pos, i2);
+    const d0 = plane3.distanceToPoint(v0);
+    const d1 = plane3.distanceToPoint(v1);
+    const d2 = plane3.distanceToPoint(v2);
+
+    const segPts = [];
+    [[v0,v1,d0,d1],[v1,v2,d1,d2],[v2,v0,d2,d0]].forEach(([va,vb,da,db]) => {
+      if (Math.abs(da) < eps) segPts.push(va.clone());
+      if ((da > 0 && db < 0) || (da < 0 && db > 0)) {
+        const t = da / (da - db);
+        segPts.push(va.clone().lerp(vb.clone(), t));
+      }
+    });
+    const unique = [];
+    segPts.forEach(p => {
+      if (!unique.some(u => u.distanceTo(p) < 0.01)) unique.push(p);
+    });
+    if (unique.length === 2) segments.push(unique);
+  }
+
+  if (segments.length === 0) return { area: 0, shape: '无截面', hasBreak: false, breakNote: '' };
+
+  const vc = checkVertexCoincidence();
+  const isOverflow = checkOverflow();
+  let hasBreak = false;
+  let breakNote = '';
+
+  if (vc.coincidence) {
+    hasBreak = true;
+    breakNote = `截线在顶点 ${vc.vertices.join('、')} 处断裂：平面恰好过棱上顶点，截线段在该处断开`;
+  }
+  if (isOverflow) {
+    if (hasBreak) {
+      breakNote += '；同时平面越界，截线不封闭';
+    } else {
+      hasBreak = true;
+      breakNote = '平面越界：截面平面部分超出多面体范围，截线不封闭';
+    }
+  }
+
+  const allPts = [];
+  segments.forEach(([a, b]) => { allPts.push(a, b); });
+
+  let area = 0;
+  if (allPts.length >= 3) {
+    const centroid = new THREE.Vector3();
+    allPts.forEach(p => centroid.add(p));
+    centroid.divideScalar(allPts.length);
+
+    for (let i = 0; i < segments.length; i++) {
+      const [a, b] = segments[i];
+      const v1 = a.clone().sub(centroid);
+      const v2 = b.clone().sub(centroid);
+      area += v1.cross(v2).length() / 2;
+    }
+  }
+
+  let shape = '多边形';
+  const n = segments.length;
+  if (n === 3) shape = '三角形';
+  else if (n === 4) shape = '四边形';
+  else if (n === 5) shape = '五边形';
+  else if (n === 6) shape = '六边形';
+  else if (n > 6) shape = `${n}边形`;
+
+  if (hasBreak) shape += '(断裂)';
+
+  return { area: Math.round(area * 100) / 100, shape, hasBreak, breakNote };
+}
+
+function updateInfoBar() {
+  const est = estimateArea();
+  const vc = checkVertexCoincidence();
+  const overflow = checkOverflow();
+  const bar = document.getElementById('infoBar');
+
+  let html = `<div><strong>${POLY_CONFIGS[currentPoly].name}</strong>`;
+  const scheme = SCHEMES[currentPoly][currentSchemeIdx];
+  html += ` &middot; 方案: ${scheme ? scheme.name : '自定义'}</div>`;
+  html += `<div>截面形状: ${est.shape} &middot; 面积估算: ${est.area.toFixed(2)}</div>`;
+
+  if (est.hasBreak) {
+    html += `<div><span class="tag tag-err">截线断裂</span> ${est.breakNote}</div>`;
+  }
+  if (vc.coincidence) {
+    html += `<div><span class="tag tag-warn">顶点重合</span> ${vc.vertices.join('、')}</div>`;
+  }
+  if (overflow) {
+    html += `<div><span class="tag tag-err">平面越界</span> 截面平面部分超出多面体</div>`;
+  }
+  if (!est.hasBreak && !vc.coincidence && !overflow) {
+    html += `<div><span class="tag tag-ok">正常</span> 截面完整，无越界</div>`;
+  }
+
+  bar.innerHTML = html;
+}
+
+function renderSchemeCards() {
+  const container = document.getElementById('schemeCards');
+  const schemes = SCHEMES[currentPoly];
+  container.innerHTML = schemes.map((s, i) => `
+    <div class="scheme-card ${i === currentSchemeIdx ? 'active' : ''}" data-idx="${i}">
+      <div class="name">${s.name}</div>
+      <div class="est">${s.desc}</div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.scheme-card').forEach(card => {
+    card.addEventListener('click', () => {
+      currentSchemeIdx = parseInt(card.dataset.idx);
+      applyScheme(currentSchemeIdx);
+      renderSchemeCards();
+    });
+  });
+}
+
+function applyScheme(idx) {
+  const scheme = SCHEMES[currentPoly][idx];
+  planeState.nx = scheme.nx;
+  planeState.ny = scheme.ny;
+  planeState.nz = scheme.nz;
+  planeState.d = scheme.d;
+
+  document.getElementById('nxRange').value = scheme.nx;
+  document.getElementById('nyRange').value = scheme.ny;
+  document.getElementById('nzRange').value = scheme.nz;
+  document.getElementById('dRange').value = scheme.d;
+  document.getElementById('nxVal').textContent = scheme.nx.toFixed(2);
+  document.getElementById('nyVal').textContent = scheme.ny.toFixed(2);
+  document.getElementById('nzVal').textContent = scheme.nz.toFixed(2);
+  document.getElementById('dVal').textContent = scheme.d.toFixed(2);
+
+  updateSectionCut();
+}
+
+function renderRecordsTab() {
+  const container = document.getElementById('tab-records');
+  let html = `<table>
+    <thead><tr>
+      <th>#</th><th>多面体</th><th>方案</th><th>截面形状</th><th>面积</th>
+      <th>截线断裂</th><th>越界</th><th>截图</th><th>备注</th><th>状态</th>
+    </tr></thead><tbody>`;
+
+  SAMPLE_RECORDS.forEach(r => {
+    const areaText = r.areaEstimate !== null ? r.areaEstimate.toFixed(2) : '<span class="missing">缺失</span>';
+    const screenshotText = r.screenshotReady ? '✓' : '<span class="missing">未准备</span>';
+    const remarkText = r.remark
+      ? (r.remarkModified ? `<span class="remarked" title="备注已修改">${r.remark}</span>` : r.remark)
+      : '<span class="missing">—</span>';
+    const breakText = r.hasBreak
+      ? `<span class="break-indicator">断裂</span>`
+      : '正常';
+    const overflowText = r.overflow ? '<span class="tag tag-err">越界</span>' : '—';
+    const lateTag = r.filledLate ? ' <span class="tag tag-warn">晚补</span>' : '';
+    const missingTag = r.missingFields.length > 0 ? ` <span class="tag tag-err">缺${r.missingFields.length}字段</span>` : '';
+    const modTag = r.remarkModified ? ' <span class="tag tag-info">备注改</span>' : '';
+    const statusTag = r.status === 'complete'
+      ? '<span class="tag tag-ok">完整</span>'
+      : '<span class="tag tag-warn">不完整</span>';
+
+    html += `<tr style="cursor:pointer" data-id="${r.id}">
+      <td>${r.id}</td>
+      <td>${POLY_CONFIGS[r.polyType]?.name || r.polyType}</td>
+      <td>${r.schemeName}</td>
+      <td>${r.sectionShape}</td>
+      <td>${areaText}</td>
+      <td>${breakText}</td>
+      <td>${overflowText}</td>
+      <td>${screenshotText}</td>
+      <td>${remarkText}</td>
+      <td>${statusTag}${lateTag}${missingTag}${modTag}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  container.querySelectorAll('tr[data-id]').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const id = parseInt(tr.dataset.id);
+      showDetailModal(id);
+    });
+  });
+}
+
+function showDetailModal(id) {
+  const r = SAMPLE_RECORDS.find(x => x.id === id);
+  if (!r) return;
+  const card = document.getElementById('detailCard');
+  const missingInfo = r.missingFields.length > 0
+    ? `<div style="color:var(--accent2);margin-top:6px;font-size:12px;">缺失字段: ${r.missingFields.join(', ')}</div>`
+    : '';
+  const lateInfo = r.filledLate
+    ? '<div style="color:var(--warn);margin-top:4px;font-size:12px;">此记录有字段为后期补充</div>'
+    : '';
+  const modInfo = r.remarkModified
+    ? '<div style="color:var(--info);margin-top:4px;font-size:12px;">备注已经过修改</div>'
+    : '';
+
+  let breakHtml = '';
+  if (r.hasBreak && r.breakNote) {
+    breakHtml = `<div class="break-note">
+      <strong>截线断裂说明:</strong><br>${r.breakNote}
+      <br><br><em>此说明同时出现在详情视图和导出数据中，不会仅隐藏在日志里。</em>
+    </div>`;
+  }
+
+  card.innerHTML = `
+    <span class="close-btn" id="closeDetail">&times;</span>
+    <h2>记录 #${r.id} 详情</h2>
+    <div class="field"><div class="field-label">多面体</div><div class="field-value">${POLY_CONFIGS[r.polyType]?.name || r.polyType}</div></div>
+    <div class="field"><div class="field-label">方案</div><div class="field-value">${r.schemeName}</div></div>
+    <div class="field"><div class="field-label">平面参数</div><div class="field-value">${r.planeParams}</div></div>
+    <div class="field"><div class="field-label">截面形状</div><div class="field-value">${r.sectionShape}</div></div>
+    <div class="field"><div class="field-label">面积估算</div><div class="field-value">${r.areaEstimate !== null ? r.areaEstimate.toFixed(2) : '<span class="missing">缺失 (未计算)</span>'}</div></div>
+    <div class="field"><div class="field-label">截线断裂</div><div class="field-value">${r.hasBreak ? '<span class="break-indicator">是</span>' : '否'}</div></div>
+    <div class="field"><div class="field-label">顶点重合</div><div class="field-value">${r.vertexCoincidence ? '是' : '否'}</div></div>
+    <div class="field"><div class="field-label">平面越界</div><div class="field-value">${r.overflow ? '<span style="color:var(--accent2)">是</span>' : '否'}</div></div>
+    <div class="field"><div class="field-label">截图准备</div><div class="field-value">${r.screenshotReady ? '是' : '<span class="missing">未准备</span>'}</div></div>
+    <div class="field"><div class="field-label">备注</div><div class="field-value">${r.remark || '<span class="missing">—</span>'}${r.remarkModified ? ' <span class="tag tag-info">已修改</span>' : ''}</div></div>
+    ${breakHtml}
+    ${missingInfo}${lateInfo}${modInfo}
+  `;
+
+  document.getElementById('detailModal').classList.add('show');
+  document.getElementById('closeDetail').addEventListener('click', () => {
+    document.getElementById('detailModal').classList.remove('show');
+  });
+}
+
+document.getElementById('detailModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('detailModal')) {
+    document.getElementById('detailModal').classList.remove('show');
+  }
+});
+
+function updateDetailTab() {
+  const est = estimateArea();
+  const vc = checkVertexCoincidence();
+  const overflow = checkOverflow();
+  const container = document.getElementById('tab-details');
+
+  let breakSection = '';
+  if (est.hasBreak) {
+    breakSection = `
+      <div style="background:var(--accent2)11;border:1px solid var(--accent2)44;border-radius:4px;padding:10px;margin-top:10px;">
+        <strong style="color:var(--accent2)">截线断裂说明</strong>
+        <p style="margin-top:4px;color:var(--fg);line-height:1.6;">${est.breakNote}</p>
+        <p style="margin-top:6px;color:var(--muted);font-size:11px;">此说明同时显示于详情视图与导出数据，不会仅隐藏在日志中。</p>
+      </div>`;
+  }
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><strong>当前多面体:</strong> ${POLY_CONFIGS[currentPoly].name}</div>
+      <div><strong>方案:</strong> ${SCHEMES[currentPoly][currentSchemeIdx]?.name || '自定义'}</div>
+      <div><strong>截面形状:</strong> ${est.shape}</div>
+      <div><strong>面积估算:</strong> ${est.area.toFixed(2)}</div>
+      <div><strong>顶点重合:</strong> ${vc.coincidence ? `是 (${vc.vertices.join(', ')})` : '否'}</div>
+      <div><strong>平面越界:</strong> ${overflow ? '是' : '否'}</div>
+      <div><strong>截线断裂:</strong> ${est.hasBreak ? '是' : '否'}</div>
+      <div><strong>截线段数:</strong> ${est.hasBreak ? '多段' : '1段'}</div>
+    </div>
+    ${breakSection}
+    <div style="margin-top:12px;color:var(--muted);font-size:11px;">
+      切换方案后，面积估算和截面形状会自动更新。截线断裂信息在详情和导出中均可查看。
+    </div>
+  `;
+}
+
+function updateExportTab() {
+  const est = estimateArea();
+  const vc = checkVertexCoincidence();
+  const overflow = checkOverflow();
+  const scheme = SCHEMES[currentPoly][currentSchemeIdx];
+
+  const exportData = {
+    多面体: POLY_CONFIGS[currentPoly].name,
+    方案: scheme?.name || '自定义',
+    方案描述: scheme?.desc || '自定义参数',
+    平面参数: {
+      法向量: `(${planeState.nx.toFixed(2)}, ${planeState.ny.toFixed(2)}, ${planeState.nz.toFixed(2)})`,
+      偏移: planeState.d.toFixed(2)
+    },
+    截面形状: est.shape,
+    面积估算: est.area.toFixed(2),
+    截线断裂: est.hasBreak,
+    截线断裂说明: est.breakNote || '无',
+    顶点重合: vc.coincidence,
+    重合顶点: vc.vertices,
+    平面越界: overflow,
+    导出时间: new Date().toISOString()
+  };
+
+  const container = document.getElementById('tab-export');
+  container.innerHTML = `
+    <div style="margin-bottom:8px;color:var(--muted);font-size:11px;">
+      以下为当前方案的导出数据。方案切换后，面积估算和截图导出内容自动更新。
+      截线断裂信息同时出现在此处，不会仅隐藏在日志中。
+    </div>
+    <div class="export-area" id="exportContent">${JSON.stringify(exportData, null, 2)}</div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-accent" id="copyExport">复制导出数据</button>
+      <button class="btn" id="downloadExport">下载 JSON</button>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const copyBtn = document.getElementById('copyExport');
+    const dlBtn = document.getElementById('downloadExport');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
+        showToast('导出数据已复制');
+      });
+    }
+    if (dlBtn) {
+      dlBtn.addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `截面导出_${POLY_CONFIGS[currentPoly].name}_${scheme.name}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('JSON 文件已下载');
+      });
+    }
+  }, 0);
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+document.getElementById('polySelect').addEventListener('change', (e) => {
+  currentPoly = e.target.value;
+  currentSchemeIdx = 0;
+  buildPolyhedron();
+  renderSchemeCards();
+  applyScheme(0);
+});
+
+document.getElementById('scaleRange').addEventListener('input', (e) => {
+  document.getElementById('scaleVal').textContent = parseFloat(e.target.value).toFixed(1);
+  buildPolyhedron();
+});
+
+['nx','ny','nz'].forEach(axis => {
+  document.getElementById(`${axis}Range`).addEventListener('input', (e) => {
+    planeState[axis] = parseFloat(e.target.value);
+    document.getElementById(`${axis}Val`).textContent = parseFloat(e.target.value).toFixed(2);
+    currentSchemeIdx = -1;
+    renderSchemeCards();
+    updateSectionCut();
+  });
+});
+
+document.getElementById('dRange').addEventListener('input', (e) => {
+  planeState.d = parseFloat(e.target.value);
+  document.getElementById('dVal').textContent = parseFloat(e.target.value).toFixed(2);
+  currentSchemeIdx = -1;
+  renderSchemeCards();
+  updateSectionCut();
+});
+
+document.getElementById('alphaRange').addEventListener('input', (e) => {
+  planeState.alpha = parseFloat(e.target.value);
+  document.getElementById('alphaVal').textContent = parseFloat(e.target.value).toFixed(2);
+  updateSectionCut();
+});
+
+document.getElementById('toggleEdge').addEventListener('click', () => {
+  showEdges = !showEdges;
+  if (polyEdges) polyEdges.visible = showEdges;
+});
+
+document.getElementById('toggleVertex').addEventListener('click', () => {
+  showVertexLabels = !showVertexLabels;
+  buildPolyhedron();
+});
+
+document.getElementById('toggleSectionLine').addEventListener('click', () => {
+  showSectionLine = !showSectionLine;
+  updateSectionCut();
+});
+
+document.getElementById('screenshotBtn').addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const dataUrl = document.getElementById('canvas3d').toDataURL('image/png');
+  const a = document.createElement('a');
+  const scheme = SCHEMES[currentPoly][currentSchemeIdx >= 0 ? currentSchemeIdx : 0];
+  a.download = `截面截图_${POLY_CONFIGS[currentPoly].name}_${scheme?.name || '自定义'}.png`;
+  a.href = dataUrl;
+  a.click();
+  showToast('截图已导出 (当前方案)');
+});
+
+document.getElementById('triggerOverflow').addEventListener('click', () => {
+  planeState.d = 2.5;
+  document.getElementById('dRange').value = 2.5;
+  document.getElementById('dVal').textContent = '2.50';
+  currentSchemeIdx = -1;
+  renderSchemeCards();
+  updateSectionCut();
+  showToast('平面已越界：d=2.50，超出多面体范围');
+});
+
+document.querySelectorAll('.bottom-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.getElementById('tab-records').style.display = target === 'records' ? '' : 'none';
+    document.getElementById('tab-details').style.display = target === 'details' ? '' : 'none';
+    document.getElementById('tab-export').style.display = target === 'export' ? '' : 'none';
+  });
+});
+
+init();
+renderSchemeCards();
+applyScheme(0);
+renderRecordsTab();
+updateDetailTab();
+updateExportTab();
+</script>
+</body>
+</html>
