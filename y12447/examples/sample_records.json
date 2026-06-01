@@ -1,0 +1,104 @@
+{
+  "sample_records": [
+    {
+      "id": "rec-001",
+      "timestamp": "2024-01-15T10:30:00",
+      "type": "observation",
+      "content": "低频洋葱波形清晰，振幅稳定在1.0",
+      "fields": {
+        "frequency": 1,
+        "amplitude": 1.0,
+        "phase": 0
+      },
+      "missing_fields": [],
+      "is_late": false,
+      "note_modified": false,
+      "phase_info": ""
+    },
+    {
+      "id": "rec-002",
+      "timestamp": "2024-01-15T10:35:00",
+      "type": "observation",
+      "content": "中频番茄加入后出现拍频现象，缺相位数据",
+      "fields": {
+        "frequency": 3,
+        "amplitude": 0.8
+      },
+      "missing_fields": ["phase"],
+      "is_late": false,
+      "note_modified": false,
+      "phase_info": ""
+    },
+    {
+      "id": "rec-003",
+      "timestamp": "2024-01-15T10:40:00",
+      "type": "correction",
+      "content": "更正：中频番茄实际振幅为0.85，之前记录有误",
+      "fields": {
+        "frequency": 3,
+        "amplitude": 0.85,
+        "phase": 0
+      },
+      "missing_fields": [],
+      "is_late": false,
+      "note_modified": true,
+      "original_note": "振幅0.8",
+      "phase_info": ""
+    },
+    {
+      "id": "rec-004",
+      "timestamp": "2024-01-15T10:50:00",
+      "type": "observation",
+      "content": "晚补：采样锅-8Hz处理高频辣椒时出现混叠",
+      "fields": {
+        "frequency": 5,
+        "amplitude": 0.5
+      },
+      "missing_fields": [],
+      "is_late": true,
+      "note_modified": false,
+      "phase_info": ""
+    },
+    {
+      "id": "rec-005",
+      "timestamp": "2024-01-15T11:00:00",
+      "type": "observation",
+      "content": "反相生姜加入后，波形出现抵消效果，注意后续叠加",
+      "fields": {
+        "frequency": 3,
+        "amplitude": 0.8,
+        "phase": 3.14159
+      },
+      "missing_fields": [],
+      "is_late": false,
+      "note_modified": false,
+      "phase_info": "相位反转影响波形叠加，与相同频率正相食材会产生抵消"
+    },
+    {
+      "id": "rec-006",
+      "timestamp": "2024-01-15T11:10:00",
+      "type": "observation",
+      "content": "低通锅-2Hz过滤后，缺少高频成分，缺采样率字段",
+      "fields": {
+        "filter_cutoff": 2
+      },
+      "missing_fields": ["sample_rate", "frequency"],
+      "is_late": false,
+      "note_modified": false,
+      "phase_info": ""
+    }
+  ],
+  "aliasing_trigger": {
+    "description": "频率混叠触发条件",
+    "ingredient": "高频辣椒 (5Hz)",
+    "pot": "采样锅-8Hz",
+    "nyquist_frequency": 4,
+    "explanation": "5Hz > 4Hz (奈奎斯特频率)，触发混叠"
+  },
+  "over_filtering_trigger": {
+    "description": "过度滤波触发条件",
+    "ingredients": ["低频洋葱", "中频番茄", "高频辣椒"],
+    "pot": "低通锅-2Hz",
+    "explanation": "滤波后损失超过50%信号能量"
+  }
+}

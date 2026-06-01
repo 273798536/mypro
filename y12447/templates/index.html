@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>傅里叶厨房配方赛</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        
+        .game-layout { display: grid; grid-template-columns: 250px 1fr 300px; gap: 20px; }
+        
+        .panel { background: white; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .panel h2 { font-size: 16px; color: #34495e; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #3498db; }
+        
+        .recipe-select { width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #219a52; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-warning:hover { background: #e67e22; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .ingredient-list { display: flex; flex-direction: column; gap: 8px; }
+        .ingredient { padding: 10px; background: #f8f9fa; border-radius: 4px; cursor: pointer; transition: all 0.2s; border-left: 4px solid #3498db; }
+        .ingredient:hover { background: #e9ecef; transform: translateX(4px); }
+        .ingredient.phase-inverted { border-left-color: #e74c3c; }
+        .ingredient-name { font-weight: 600; color: #2c3e50; }
+        .ingredient-info { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+        
+        .pot-list { display: flex; flex-direction: column; gap: 8px; }
+        .pot { padding: 10px; background: #f8f9fa; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .pot:hover { background: #e9ecef; }
+        .pot.selected { background: #3498db; color: white; }
+        .pot-name { font-weight: 600; }
+        .pot-info { font-size: 12px; opacity: 0.8; }
+        
+        .wave-display { height: 300px; background: #fafafa; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 16px; position: relative; }
+        .wave-canvas { width: 100%; height: 100%; }
+        
+        .score-display { text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; margin-bottom: 16px; }
+        .score-value { font-size: 48px; font-weight: bold; }
+        .score-label { font-size: 14px; opacity: 0.9; }
+        
+        .alert { padding: 12px; border-radius: 4px; margin-bottom: 12px; }
+        .alert-danger { background: #fee; color: #c0392b; border: 1px solid #e74c3c; }
+        .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .current-ingredients { min-height: 100px; background: #f8f9fa; border-radius: 4px; padding: 12px; margin-bottom: 16px; }
+        .current-ingredient { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: white; border-radius: 4px; margin-bottom: 4px; }
+        .remove-btn { background: #e74c3c; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 14px; }
+        
+        .steps-log { max-height: 300px; overflow-y: auto; font-size: 12px; }
+        .step-item { padding: 8px; border-bottom: 1px solid #eee; }
+        .step-time { color: #999; font-size: 11px; }
+        
+        .records-section { margin-top: 20px; }
+        .record-input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; resize: vertical; min-height: 60px; }
+        .record-item { padding: 10px; background: #f8f9fa; border-radius: 4px; margin-bottom: 8px; font-size: 13px; }
+        .record-meta { font-size: 11px; color: #7f8c8d; margin-top: 4px; }
+        .record-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-right: 4px; }
+        .badge-late { background: #ffeeba; color: #856404; }
+        .badge-missing { background: #f8d7da; color: #721c24; }
+        .badge-modified { background: #d1ecf1; color: #0c5460; }
+        .badge-phase { background: #e2e3e5; color: #383d41; }
+        
+        .controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        
+        .result-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .result-modal.show { display: flex; }
+        .result-content { background: white; padding: 32px; border-radius: 12px; text-align: center; max-width: 500px; }
+        .result-title { font-size: 32px; margin-bottom: 16px; }
+        .result-title.win { color: #27ae60; }
+        .result-title.lose { color: #e74c3c; }
+        
+        .phase-info { background: #fff3cd; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍲 傅里叶厨房配方赛</h1>
+        
+        <div class="game-layout" id="gameArea" style="display: none;">
+            <div class="panel">
+                <h2>📋 配方任务</h2>
+                <div id="recipeInfo">
+                    <div class="recipe-name" style="font-weight: bold; font-size: 18px; margin-bottom: 8px;"></div>
+                    <div class="recipe-desc" style="color: #666; font-size: 14px; margin-bottom: 12px;"></div>
+                    <div class="recipe-difficulty" style="font-size: 13px;">难度: <span id="diffLevel"></span></div>
+                </div>
+                
+                <h2 style="margin-top: 20px;">🥘 波形锅</h2>
+                <div class="pot-list" id="potList"></div>
+                
+                <h2 style="margin-top: 20px;">🥕 频率食材</h2>
+                <div class="ingredient-list" id="ingredientList"></div>
+            </div>
+            
+            <div class="panel">
+                <div class="controls">
+                    <button class="btn btn-warning" onclick="pauseGame()">⏸️ 暂停</button>
+                    <button class="btn btn-danger" onclick="exportGame()">📤 导出</button>
+                </div>
+                
+                <div class="score-display">
+                    <div class="score-label">当前得分</div>
+                    <div class="score-value" id="scoreValue">0</div>
+                </div>
+                
+                <div id="alerts"></div>
+                
+                <div class="wave-display">
+                    <canvas class="wave-canvas" id="waveCanvas"></canvas>
+                </div>
+                
+                <div class="current-ingredients">
+                    <h3 style="font-size: 14px; margin-bottom: 10px;">🍳 已加入食材</h3>
+                    <div id="currentIngredients"></div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-success" onclick="cook()" id="cookBtn" disabled>🍳 烹饪</button>
+                </div>
+                
+                <div id="phaseInfo" class="phase-info" style="display: none;">
+                    ⚠️ <strong>相位反转检测</strong>：已添加反相食材，这会影响波形叠加结果。详情请查看导出记录。
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>📝 操作记录</h2>
+                <div class="steps-log" id="stepsLog"></div>
+                
+                <div class="records-section">
+                    <h2>📒 实验记录</h2>
+                    <textarea class="record-input" id="recordInput" placeholder="添加实验记录..."></textarea>
+                    <div style="display: flex; gap: 4px; margin-bottom: 12px;">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="addRecord(false)">添加</button>
+                        <button class="btn btn-warning" onclick="addRecord(true)">晚补</button>
+                    </div>
+                    <div id="recordsList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="startScreen" class="panel" style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <h2>选择配方开始游戏</h2>
+            <select class="recipe-select" id="recipeSelect">
+                {% for recipe in recipes %}
+                <option value="{{ recipe.id }}">{{ recipe.name }} - 难度{{ recipe.difficulty }}</option>
+                {% endfor %}
+            </select>
+            <p style="margin: 16px 0; color: #666;">
+                选择频率食材，放入波形锅，烹饪出与目标波形匹配的结果。<br>
+                注意频率混叠和过度滤波！
+            </p>
+            <button class="btn btn-primary btn-lg" onclick="startGame()" style="font-size: 18px; padding: 14px 32px;">
+                🚀 开始游戏
+            </button>
+        </div>
+    </div>
+    
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <div class="result-title" id="resultTitle">游戏结束</div>
+            <div id="resultReason" style="margin: 16px 0; font-size: 16px;"></div>
+            <div id="resultDetails" style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin: 16px 0;"></div>
+            <button class="btn btn-primary" onclick="restartGame()">再来一局</button>
+        </div>
+    </div>
+
+    <script>
+        let gameId = null;
+        let currentGame = null;
+        let selectedPot = null;
+        let addedIngredients = [];
+        let lastWaveData = null;
+
+        function startGame() {
+            const recipeId = document.getElementById('recipeSelect').value;
+            fetch('/api/new_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipe_id: recipeId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                gameId = data.game_id;
+                currentGame = data.game;
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('gameArea').style.display = 'grid';
+                initUI();
+            });
+        }
+
+        function initUI() {
+            const recipe = currentGame.current_recipe;
+            document.querySelector('.recipe-name').textContent = recipe.name;
+            document.querySelector('.recipe-desc').textContent = recipe.description;
+            document.getElementById('diffLevel').textContent = '⭐'.repeat(recipe.difficulty);
+            
+            renderPots();
+            renderIngredients();
+            updateCurrentIngredients();
+            updateStepsLog();
+            updateRecordsList();
+            clearCanvas();
+        }
+
+        function renderPots() {
+            const container = document.getElementById('potList');
+            container.innerHTML = '';
+            const pots = {{ pots|tojson }};
+            pots.forEach(pot => {
+                const div = document.createElement('div');
+                div.className = 'pot' + (selectedPot && selectedPot.id === pot.id ? ' selected' : '');
+                div.innerHTML = `
+                    <div class="pot-name">${pot.name}</div>
+                    <div class="pot-info">采样率: ${pot.sample_rate}Hz ${pot.filter_cutoff ? '| 低通: ' + pot.filter_cutoff + 'Hz' : ''}</div>
+                `;
+                div.onclick = () => selectPot(pot);
+                container.appendChild(div);
+            });
+        }
+
+        function renderIngredients() {
+            const container = document.getElementById('ingredientList');
+            container.innerHTML = '';
+            const ingredients = {{ ingredients|tojson }};
+            ingredients.forEach(ing => {
+                const div = document.createElement('div');
+                div.className = 'ingredient' + (ing.phase !== 0 ? ' phase-inverted' : '');
+                const phaseText = ing.phase !== 0 ? ' | 相位: π' : '';
+                div.innerHTML = `
+                    <div class="ingredient-name">${ing.name}</div>
+                    <div class="ingredient-info">频率: ${ing.freq}Hz | 振幅: ${ing.amplitude}${phaseText}</div>
+                `;
+                div.onclick = () => addIngredient(ing);
+                container.appendChild(div);
+            });
+        }
+
+        function selectPot(pot) {
+            fetch('/api/select_pot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId, pot_id: pot.id })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                selectedPot = pot;
+                renderPots();
+                updateCookButton();
+                updateStepsLog();
+            });
+        }
+
+        function addIngredient(ingredient) {
+            fetch('/api/add_ingredient', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId, ingredient_id: ingredient.id })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                addedIngredients = currentGame.added_ingredients;
+                updateCurrentIngredients();
+                updateCookButton();
+                updateStepsLog();
+                updatePhaseInfo();
+            });
+        }
+
+        function removeIngredient(index) {
+            fetch('/api/remove_ingredient', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId, index: index })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                addedIngredients = currentGame.added_ingredients;
+                updateCurrentIngredients();
+                updateCookButton();
+                updateStepsLog();
+                updatePhaseInfo();
+            });
+        }
+
+        function updateCurrentIngredients() {
+            const container = document.getElementById('currentIngredients');
+            if (addedIngredients.length === 0) {
+                container.innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">点击左侧食材添加</div>';
+                return;
+            }
+            container.innerHTML = addedIngredients.map((ing, i) => `
+                <div class="current-ingredient">
+                    <span>${ing.name} (${ing.freq}Hz)</span>
+                    <button class="remove-btn" onclick="removeIngredient(${i})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function updateCookButton() {
+            const btn = document.getElementById('cookBtn');
+            btn.disabled = !selectedPot || addedIngredients.length === 0;
+        }
+
+        function updatePhaseInfo() {
+            const phaseInfo = document.getElementById('phaseInfo');
+            phaseInfo.style.display = currentGame.phase_inverted ? 'block' : 'none';
+        }
+
+        function cook() {
+            fetch('/api/cook', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                lastWaveData = data;
+                
+                document.getElementById('scoreValue').textContent = Math.round(data.score);
+                drawWaves(data.time, data.output_wave, data.target_wave);
+                
+                const alerts = document.getElementById('alerts');
+                alerts.innerHTML = '';
+                
+                if (data.aliasing) {
+                    alerts.innerHTML += `<div class="alert alert-danger">⚠️ <strong>频率混叠!</strong> 频率${data.alias_freq}Hz超过奈奎斯特频率${data.nyquist}Hz</div>`;
+                }
+                
+                if (currentGame.over_filtering) {
+                    alerts.innerHTML += `<div class="alert alert-warning">🔇 <strong>过度滤波</strong>：滤波损失超过50%信号能量</div>`;
+                }
+                
+                updateStepsLog();
+                
+                if (currentGame.status !== 'playing') {
+                    showResult(currentGame.status);
+                }
+            });
+        }
+
+        function drawWaves(time, output, target) {
+            const canvas = document.getElementById('waveCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = canvas.height / 4 * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            const centerY = canvas.height / 2;
+            ctx.strokeStyle = '#ccc';
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.stroke();
+            
+            const maxVal = Math.max(Math.abs(Math.max(...output)), Math.abs(Math.min(...output)), 
+                                    Math.abs(Math.max(...target)), Math.abs(Math.min(...target)), 1);
+            
+            ctx.strokeStyle = '#27ae60';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            target.forEach((v, i) => {
+                const x = (i / (target.length - 1)) * canvas.width;
+                const y = centerY - (v / maxVal) * (canvas.height / 2 - 20);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            output.forEach((v, i) => {
+                const x = (i / (output.length - 1)) * canvas.width;
+                const y = centerY - (v / maxVal) * (canvas.height / 2 - 20);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            
+            ctx.fillStyle = '#27ae60';
+            ctx.fillRect(10, 10, 12, 12);
+            ctx.fillStyle = '#333';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('目标波形', 28, 20);
+            
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(100, 10, 12, 12);
+            ctx.fillStyle = '#333';
+            ctx.fillText('输出波形', 118, 20);
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('waveCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#999';
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('点击"烹饪"查看波形对比', canvas.width / 2, canvas.height / 2);
+        }
+
+        function updateStepsLog() {
+            const container = document.getElementById('stepsLog');
+            container.innerHTML = currentGame.steps.slice().reverse().map(step => {
+                let desc = '';
+                switch (step.type) {
+                    case 'select_pot':
+                        desc = `🫕 ${step.note}`;
+                        break;
+                    case 'add_ingredient':
+                        const phaseNote = step.phase !== 0 ? ' ⚠️反相' : '';
+                        desc = `➕ 添加 ${step.ingredient_name}${phaseNote}`;
+                        break;
+                    case 'remove_ingredient':
+                        desc = `➖ 移除 ${step.ingredient_name}`;
+                        break;
+                    case 'cook':
+                        const aliasNote = step.aliasing ? ' ❌混叠' : '';
+                        desc = `🍳 烹饪 得分: ${Math.round(step.score)}${aliasNote}`;
+                        break;
+                }
+                return `<div class="step-item">${desc}<div class="step-time">${new Date(step.timestamp).toLocaleTimeString()}</div></div>`;
+            }).join('');
+        }
+
+        function addRecord(isLate) {
+            const input = document.getElementById('recordInput');
+            const content = input.value.trim();
+            if (!content) return;
+            
+            const missingFields = content.includes('缺') ? ['frequency', 'amplitude'] : [];
+            const noteModified = content.includes('改');
+            
+            fetch('/api/add_record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    game_id: gameId,
+                    record: {
+                        type: 'observation',
+                        content: content,
+                        missing_fields: missingFields,
+                        is_late: isLate,
+                        note_modified: noteModified,
+                        original_note: noteModified ? '原始记录' : '',
+                        phase_info: currentGame.phase_inverted ? '相位反转影响波形叠加' : ''
+                    }
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                input.value = '';
+                updateRecordsList();
+            });
+        }
+
+        function updateRecordsList() {
+            const container = document.getElementById('recordsList');
+            container.innerHTML = currentGame.records.map(rec => {
+                const badges = [];
+                if (rec.is_late) badges.push('<span class="record-badge badge-late">晚补</span>');
+                if (rec.missing_fields.length > 0) badges.push(`<span class="record-badge badge-missing">缺字段</span>`);
+                if (rec.note_modified) badges.push('<span class="record-badge badge-modified">已修改</span>');
+                if (rec.phase_info) badges.push('<span class="record-badge badge-phase">相位</span>');
+                
+                return `
+                    <div class="record-item">
+                        ${badges.join('')}
+                        <div>${rec.content}</div>
+                        ${rec.phase_info ? `<div style="color: #e74c3c; font-size: 11px; margin-top: 4px;">⚠️ ${rec.phase_info}</div>` : ''}
+                        <div class="record-meta">${new Date(rec.timestamp).toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function pauseGame() {
+            fetch('/api/pause_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                if (confirm('游戏已暂停。继续时是否清除当前状态？')) {
+                    resumeGame(true);
+                } else {
+                    resumeGame(false);
+                }
+            });
+        }
+
+        function resumeGame(cleanState) {
+            fetch('/api/resume_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId, clean_state: cleanState })
+            })
+            .then(r => r.json())
+            .then(data => {
+                currentGame = data.game;
+                addedIngredients = currentGame.added_ingredients;
+                selectedPot = currentGame.selected_pot;
+                updateCurrentIngredients();
+                updateCookButton();
+                updateStepsLog();
+                updateRecordsList();
+                updatePhaseInfo();
+                
+                if (cleanState) {
+                    clearCanvas();
+                    document.getElementById('scoreValue').textContent = '0';
+                    document.getElementById('alerts').innerHTML = '';
+                    renderPots();
+                }
+            });
+        }
+
+        function exportGame() {
+            fetch('/api/export_game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ game_id: gameId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fourier-kitchen-${gameId.slice(0, 8)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function showResult(status) {
+            const modal = document.getElementById('resultModal');
+            const title = document.getElementById('resultTitle');
+            const reason = document.getElementById('resultReason');
+            const details = document.getElementById('resultDetails');
+            
+            title.className = 'result-title ' + (status === 'won' ? 'win' : 'lose');
+            title.textContent = status === 'won' ? '🎉 成功!' : '😢 失败';
+            
+            let reasonText = '';
+            if (status === 'won') {
+                reasonText = `得分 ${Math.round(currentGame.score)}，完美达成配方！`;
+            } else {
+                reasonText = '尝试次数过多，请重新开始。';
+            }
+            reason.textContent = reasonText;
+            
+            details.innerHTML = `
+                <h4>分析报告:</h4>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li>最终得分: ${Math.round(currentGame.score)}/100</li>
+                    <li>频率混叠: ${currentGame.aliasing_detected ? '❌ 发生' : '✅ 未发生'}</li>
+                    <li>过度滤波: ${currentGame.over_filtering ? '❌ 发生' : '✅ 未发生'}</li>
+                    <li>相位反转: ${currentGame.phase_inverted ? '⚠️ 存在' : '正常'}</li>
+                    <li>操作步数: ${currentGame.steps.length}</li>
+                    <li>使用食材: ${currentGame.added_ingredients.map(i => i.name).join(', ') || '无'}</li>
+                </ul>
+                ${currentGame.phase_inverted ? '<p style="margin-top: 12px; padding: 8px; background: #fff3cd; border-radius: 4px;"><strong>注意:</strong> 相位反转会影响后续波形叠加效果，已在导出文件中记录。</p>' : ''}
+            `;
+            
+            modal.classList.add('show');
+        }
+
+        function restartGame() {
+            document.getElementById('resultModal').classList.remove('show');
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+            gameId = null;
+            currentGame = null;
+            selectedPot = null;
+            addedIngredients = [];
+            lastWaveData = null;
+        }
+    </script>
+</body>
+</html>
