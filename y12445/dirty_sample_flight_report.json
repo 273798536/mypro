@@ -1,0 +1,945 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-06-01T20:59:32.347277",
+    "mission_duration": 150000.0,
+    "simulation_time_steps": 15000
+  },
+  "mission_overview": {
+    "final_position": {
+      "x": 4179161649.1252923,
+      "y": 2207976721.3949633
+    },
+    "final_velocity": 31439.390010911153,
+    "total_delta_v": 50.00000000000001,
+    "total_events": 20,
+    "event_types": {
+      "launch": 1,
+      "collision_risk": 16,
+      "window_miss": 2,
+      "fuel_depleted": 1
+    },
+    "success_criteria": {
+      "windows_captured": 0,
+      "total_windows": 2,
+      "had_collision": false,
+      "fuel_remaining_ratio": 0.0,
+      "mission_success": false
+    }
+  },
+  "flight_chain": {
+    "total_phases": 1,
+    "phases": [
+      {
+        "phase": "发射阶段",
+        "start_time": 0.0,
+        "end_time": 150000.0,
+        "duration": 150000.0,
+        "delta_v_used": 50.00000000000001,
+        "fuel_used": 500.0,
+        "max_velocity": 32649.655434629014,
+        "events_count": 20,
+        "events": [
+          {
+            "time": 0.0,
+            "event_type": "launch",
+            "position": {
+              "x": 10000000,
+              "y": 0
+            },
+            "velocity": {
+              "x": 29000,
+              "y": 15000
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "initial_position": {
+                "x": 10000000,
+                "y": 0
+              },
+              "initial_velocity": {
+                "x": 29000,
+                "y": 15000
+              }
+            }
+          },
+          {
+            "time": 10.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 10289601.410824506,
+              "y": 150000.00000262485
+            },
+            "velocity": {
+              "x": 28960.141082450533,
+              "y": 15000.000000262486
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 10290694.689555338,
+              "severity": "danger",
+              "safe_distance": 12742000,
+              "warning": "距离地球过近！有碰撞风险"
+            }
+          },
+          {
+            "time": 70.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 12019978.261675574,
+              "y": 1049747.8073461943
+            },
+            "velocity": {
+              "x": 28762.443526966592,
+              "y": 14991.1512414617
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 12065730.308198567,
+              "severity": "danger",
+              "safe_distance": 12742000,
+              "warning": "距离地球过近！有碰撞风险"
+            }
+          },
+          {
+            "time": 130.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 13740433.257668383,
+              "y": 1948674.5178037414
+            },
+            "velocity": {
+              "x": 28617.08129186882,
+              "y": 14975.173871507428
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 13877926.303478377,
+              "severity": "danger",
+              "safe_distance": 12742000,
+              "warning": "距离地球过近！有碰撞风险"
+            }
+          },
+          {
+            "time": 190.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 15453449.247755764,
+              "y": 2846569.177157133
+            },
+            "velocity": {
+              "x": 28506.494626693122,
+              "y": 14957.548004820872
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 15713435.32564742,
+              "severity": "danger",
+              "safe_distance": 12742000,
+              "warning": "距离地球过近！有碰撞风险"
+            }
+          },
+          {
+            "time": 250.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 17160710.677487142,
+              "y": 3743416.3255142304
+            },
+            "velocity": {
+              "x": 28419.895940868086,
+              "y": 14940.377892791992
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 17564257.93315925,
+              "severity": "danger",
+              "safe_distance": 12742000,
+              "warning": "距离地球过近！有碰撞风险"
+            }
+          },
+          {
+            "time": 300.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 18579897.94567787,
+              "y": 4490029.6098722955
+            },
+            "velocity": {
+              "x": 28361.02390208752,
+              "y": 14926.983876629758
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 19114731.84664997,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 360.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 20279448.38877199,
+              "y": 5385124.488914086
+            },
+            "velocity": {
+              "x": 28302.288382572395,
+              "y": 14912.207689888104
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 20982268.531166237,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 420.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 21975835.981299568,
+              "y": 6279382.503205295
+            },
+            "velocity": {
+              "x": 28253.498534616287,
+              "y": 14898.842735351043
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 22855371.615848683,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 480.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 23669573.26854917,
+              "y": 7172885.198232584
+            },
+            "velocity": {
+              "x": 28212.358152463865,
+              "y": 14886.791665643259
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 24732549.0150579,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 540.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 25361058.97210863,
+              "y": 8065706.909192469
+            },
+            "velocity": {
+              "x": 28177.21877202131,
+              "y": 14875.924083308666
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 26612758.972563643,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 600.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 27050609.00499135,
+              "y": 8957913.943151673
+            },
+            "velocity": {
+              "x": 28146.86893262358,
+              "y": 14866.106317263613
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 28495256.969429668,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 660.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 28738477.704960022,
+              "y": 9849564.863694351
+            },
+            "velocity": {
+              "x": 28120.39978375937,
+              "y": 14857.213583922776
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 30379500.140762795,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 720.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 30424872.73205591,
+              "y": 10740711.196604552
+            },
+            "velocity": {
+              "x": 28097.11695209287,
+              "y": 14849.134200666604
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 32265085.739397403,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 780.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 32109965.75213603,
+              "y": 11631398.25024996
+            },
+            "velocity": {
+              "x": 28076.48126678633,
+              "y": 14841.770254990759
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 34151710.43826746,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 840.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 33793900.24978502,
+              "y": 12521665.916994862
+            },
+            "velocity": {
+              "x": 28058.067974739766,
+              "y": 14835.036771831632
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 36039142.76768041,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 900.0,
+            "event_type": "collision_risk",
+            "position": {
+              "x": 35476797.34306303,
+              "y": 13411549.402358813
+            },
+            "velocity": {
+              "x": 28041.538094783275,
+              "y": 14828.860330821894
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "地球",
+              "distance": 37927204.05055815,
+              "severity": "warning",
+              "safe_distance": 12742000,
+              "warning": "接近地球，注意轨道调整"
+            }
+          },
+          {
+            "time": 4010.0,
+            "event_type": "window_miss",
+            "position": {
+              "x": 122197980.33247715,
+              "y": 59324566.22880384
+            },
+            "velocity": {
+              "x": 27819.465188581533,
+              "y": 14733.28513862281
+            },
+            "fuel_remaining": 500.0,
+            "details": {
+              "planet": "火星",
+              "window": "火星引力弹弓窗口",
+              "closest_approach": 224877809844.81537,
+              "closest_approach_time": 4010.0,
+              "required_distance": 50000000,
+              "distance_at_window_end": 224877809844.81537,
+              "miss_reason": "轨道偏离过大，未能进入有效范围"
+            }
+          },
+          {
+            "time": 5000.0,
+            "event_type": "fuel_depleted",
+            "position": {
+              "x": 149730884.59186602,
+              "y": 73906433.74102493
+            },
+            "velocity": {
+              "x": 27848.528285699573,
+              "y": 14747.981201780047
+            },
+            "fuel_remaining": 0.0,
+            "details": {
+              "maneuver": "霍曼转移初始加速",
+              "planned_delta_v": 1118.033988749895,
+              "achieved_delta_v": 50.00000000000001,
+              "fuel_shortage": 10680.339887498949
+            }
+          },
+          {
+            "time": 12010.0,
+            "event_type": "window_miss",
+            "position": {
+              "x": 344776294.92121935,
+              "y": 177203179.68319818
+            },
+            "velocity": {
+              "x": 27809.931886001847,
+              "y": 14728.538932280659
+            },
+            "fuel_remaining": 0.0,
+            "details": {
+              "planet": "木星",
+              "window": "木星引力弹弓窗口",
+              "closest_approach": 784035865073.0375,
+              "closest_approach_time": 12010.0,
+              "required_distance": 150000000,
+              "distance_at_window_end": 784035865073.0375,
+              "miss_reason": "轨道偏离过大，未能进入有效范围"
+            }
+          }
+        ]
+      }
+    ],
+    "critical_path": [
+      {
+        "time": 10.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 10289601.410824506,
+          "y": 150000.00000262485
+        },
+        "velocity": {
+          "x": 28960.141082450533,
+          "y": 15000.000000262486
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 10290694.689555338,
+          "severity": "danger",
+          "safe_distance": 12742000,
+          "warning": "距离地球过近！有碰撞风险"
+        }
+      },
+      {
+        "time": 70.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 12019978.261675574,
+          "y": 1049747.8073461943
+        },
+        "velocity": {
+          "x": 28762.443526966592,
+          "y": 14991.1512414617
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 12065730.308198567,
+          "severity": "danger",
+          "safe_distance": 12742000,
+          "warning": "距离地球过近！有碰撞风险"
+        }
+      },
+      {
+        "time": 130.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 13740433.257668383,
+          "y": 1948674.5178037414
+        },
+        "velocity": {
+          "x": 28617.08129186882,
+          "y": 14975.173871507428
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 13877926.303478377,
+          "severity": "danger",
+          "safe_distance": 12742000,
+          "warning": "距离地球过近！有碰撞风险"
+        }
+      },
+      {
+        "time": 190.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 15453449.247755764,
+          "y": 2846569.177157133
+        },
+        "velocity": {
+          "x": 28506.494626693122,
+          "y": 14957.548004820872
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 15713435.32564742,
+          "severity": "danger",
+          "safe_distance": 12742000,
+          "warning": "距离地球过近！有碰撞风险"
+        }
+      },
+      {
+        "time": 250.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 17160710.677487142,
+          "y": 3743416.3255142304
+        },
+        "velocity": {
+          "x": 28419.895940868086,
+          "y": 14940.377892791992
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 17564257.93315925,
+          "severity": "danger",
+          "safe_distance": 12742000,
+          "warning": "距离地球过近！有碰撞风险"
+        }
+      },
+      {
+        "time": 300.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 18579897.94567787,
+          "y": 4490029.6098722955
+        },
+        "velocity": {
+          "x": 28361.02390208752,
+          "y": 14926.983876629758
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 19114731.84664997,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 360.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 20279448.38877199,
+          "y": 5385124.488914086
+        },
+        "velocity": {
+          "x": 28302.288382572395,
+          "y": 14912.207689888104
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 20982268.531166237,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 420.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 21975835.981299568,
+          "y": 6279382.503205295
+        },
+        "velocity": {
+          "x": 28253.498534616287,
+          "y": 14898.842735351043
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 22855371.615848683,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 480.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 23669573.26854917,
+          "y": 7172885.198232584
+        },
+        "velocity": {
+          "x": 28212.358152463865,
+          "y": 14886.791665643259
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 24732549.0150579,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 540.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 25361058.97210863,
+          "y": 8065706.909192469
+        },
+        "velocity": {
+          "x": 28177.21877202131,
+          "y": 14875.924083308666
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 26612758.972563643,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 600.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 27050609.00499135,
+          "y": 8957913.943151673
+        },
+        "velocity": {
+          "x": 28146.86893262358,
+          "y": 14866.106317263613
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 28495256.969429668,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 660.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 28738477.704960022,
+          "y": 9849564.863694351
+        },
+        "velocity": {
+          "x": 28120.39978375937,
+          "y": 14857.213583922776
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 30379500.140762795,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 720.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 30424872.73205591,
+          "y": 10740711.196604552
+        },
+        "velocity": {
+          "x": 28097.11695209287,
+          "y": 14849.134200666604
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 32265085.739397403,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 780.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 32109965.75213603,
+          "y": 11631398.25024996
+        },
+        "velocity": {
+          "x": 28076.48126678633,
+          "y": 14841.770254990759
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 34151710.43826746,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 840.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 33793900.24978502,
+          "y": 12521665.916994862
+        },
+        "velocity": {
+          "x": 28058.067974739766,
+          "y": 14835.036771831632
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 36039142.76768041,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 900.0,
+        "event_type": "collision_risk",
+        "position": {
+          "x": 35476797.34306303,
+          "y": 13411549.402358813
+        },
+        "velocity": {
+          "x": 28041.538094783275,
+          "y": 14828.860330821894
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "地球",
+          "distance": 37927204.05055815,
+          "severity": "warning",
+          "safe_distance": 12742000,
+          "warning": "接近地球，注意轨道调整"
+        }
+      },
+      {
+        "time": 4010.0,
+        "event_type": "window_miss",
+        "position": {
+          "x": 122197980.33247715,
+          "y": 59324566.22880384
+        },
+        "velocity": {
+          "x": 27819.465188581533,
+          "y": 14733.28513862281
+        },
+        "fuel_remaining": 500.0,
+        "details": {
+          "planet": "火星",
+          "window": "火星引力弹弓窗口",
+          "closest_approach": 224877809844.81537,
+          "closest_approach_time": 4010.0,
+          "required_distance": 50000000,
+          "distance_at_window_end": 224877809844.81537,
+          "miss_reason": "轨道偏离过大，未能进入有效范围"
+        }
+      },
+      {
+        "time": 5000.0,
+        "event_type": "fuel_depleted",
+        "position": {
+          "x": 149730884.59186602,
+          "y": 73906433.74102493
+        },
+        "velocity": {
+          "x": 27848.528285699573,
+          "y": 14747.981201780047
+        },
+        "fuel_remaining": 0.0,
+        "details": {
+          "maneuver": "霍曼转移初始加速",
+          "planned_delta_v": 1118.033988749895,
+          "achieved_delta_v": 50.00000000000001,
+          "fuel_shortage": 10680.339887498949
+        }
+      },
+      {
+        "time": 12010.0,
+        "event_type": "window_miss",
+        "position": {
+          "x": 344776294.92121935,
+          "y": 177203179.68319818
+        },
+        "velocity": {
+          "x": 27809.931886001847,
+          "y": 14728.538932280659
+        },
+        "fuel_remaining": 0.0,
+        "details": {
+          "planet": "木星",
+          "window": "木星引力弹弓窗口",
+          "closest_approach": 784035865073.0375,
+          "closest_approach_time": 12010.0,
+          "required_distance": 150000000,
+          "distance_at_window_end": 784035865073.0375,
+          "miss_reason": "轨道偏离过大，未能进入有效范围"
+        }
+      }
+    ]
+  },
+  "fuel_analysis": {
+    "initial": 500.0,
+    "remaining": 0.0,
+    "used": 500.0,
+    "ratio_remaining": 0.0,
+    "depleted": true,
+    "burn_count": 1,
+    "burns": [
+      {
+        "time": 5000.0,
+        "delta_v": 50.00000000000001,
+        "fuel_used": 500.0,
+        "fuel_before": 500.0,
+        "fuel_after": 0.0,
+        "reason": "霍曼转移初始加速 (partial - fuel depleted)"
+      }
+    ],
+    "efficiency": {
+      "delta_v_per_fuel": 0.10000000000000002,
+      "rating": "良好",
+      "description": "单位燃料获得的速度增量"
+    }
+  },
+  "window_analysis": {
+    "火星": {
+      "window_description": "火星引力弹弓窗口",
+      "entered": false,
+      "exited": false,
+      "missed": true,
+      "enter_time": null,
+      "exit_time": null,
+      "closest_approach": 220831876800.39618,
+      "closest_approach_time": 150000.0,
+      "success": false
+    },
+    "木星": {
+      "window_description": "木星引力弹弓窗口",
+      "entered": false,
+      "exited": false,
+      "missed": true,
+      "enter_time": null,
+      "exit_time": null,
+      "closest_approach": 779975621210.6721,
+      "closest_approach_time": 150000.0,
+      "success": false
+    }
+  },
+  "collision_analysis": {
+    "total_checks": 45000,
+    "collision_count": 0,
+    "danger_count": 29,
+    "warning_count": 61,
+    "safe_count": 44910,
+    "closest_approach": {
+      "地球": 10290694.689555338,
+      "火星": 220831876800.39618,
+      "木星": 779975621210.6721
+    },
+    "had_collision": false,
+    "independence_verification": {
+      "independent_events": true,
+      "merged_events_detected": [],
+      "details": []
+    }
+  },
+  "causality_chain": {
+    "root_cause": "燃料耗尽",
+    "contributing_factors": [
+      "燃料在关键机动前耗尽",
+      "燃料不足导致无法进行轨道修正以捕获窗口"
+    ],
+    "outcome": "任务受限 - 燃料不足",
+    "evidence": [
+      "t=5000.0: fuel_depleted - {'maneuver': '霍曼转移初始加速', 'planned_delta_v': 1118.033988749895, 'achieved_delta_v': 50.00000000000001, 'fuel_shortage': 10680.339887498949}"
+    ]
+  },
+  "score_breakdown": {
+    "base_score": 1000,
+    "total_penalties": 2150,
+    "final_score": 0,
+    "penalty_details": [
+      {
+        "item": "窗口错过 - 火星",
+        "penalty": 200,
+        "reason": "未能在时间窗口内到达目标行星",
+        "related_to_orbit": "轨道推进不足或时机不对导致窗口错过"
+      },
+      {
+        "item": "窗口错过 - 木星",
+        "penalty": 200,
+        "reason": "未能在时间窗口内到达目标行星",
+        "related_to_orbit": "轨道推进不足或时机不对导致窗口错过"
+      },
+      {
+        "item": "碰撞危险警告",
+        "penalty": 1450,
+        "count": 29,
+        "reason": "多次接近危险距离",
+        "related_to_orbit": "轨道精确度不足"
+      },
+      {
+        "item": "燃料耗尽",
+        "penalty": 300,
+        "reason": "飞行过程中燃料完全耗尽",
+        "related_to_orbit": "可能导致后续轨道机动无法执行"
+      }
+    ]
+  }
+}
