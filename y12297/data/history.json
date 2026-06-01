@@ -1,0 +1,318 @@
+{
+  "records": [
+    {
+      "id": "hist-1780298903854-3im38gnun",
+      "timestamp": 1780298903854,
+      "action": "快照 - 2026/6/1 15:28:23",
+      "productIds": [
+        "prod-001",
+        "prod-002",
+        "prod-003",
+        "prod-004",
+        "prod-005",
+        "prod-006",
+        "prod-007",
+        "prod-008",
+        "prod-009",
+        "prod-010"
+      ],
+      "snapshot": {
+        "products": [
+          {
+            "id": "prod-001",
+            "name": "稳健增值混合型基金A",
+            "type": "fund",
+            "riskLevel": 3,
+            "issuer": "华夏基金管理有限公司",
+            "code": "HX001",
+            "createTime": 1777706869620,
+            "sourceMaterial": "产品说明书_2024版.pdf",
+            "maturityDate": "2029-06-01",
+            "term": "5年"
+          },
+          {
+            "id": "prod-002",
+            "name": "鑫享人生年金保险",
+            "type": "insurance",
+            "riskLevel": 2,
+            "issuer": "平安人寿保险股份有限公司",
+            "code": "PA-XS2024",
+            "createTime": 1778138869620,
+            "sourceMaterial": "保险条款_鑫享人生V3.docx",
+            "term": "终身"
+          },
+          {
+            "id": "prod-003",
+            "name": "国债2024年第三期",
+            "type": "bond",
+            "riskLevel": 1,
+            "issuer": "中华人民共和国财政部",
+            "code": "GZ2024-03",
+            "createTime": 1778570869620,
+            "sourceMaterial": "国债发行公告202403.pdf",
+            "maturityDate": "2027-06-01",
+            "term": "3年"
+          },
+          {
+            "id": "prod-004",
+            "name": "沪深300指数增强基金",
+            "type": "fund",
+            "riskLevel": 4,
+            "issuer": "易方达基金管理有限公司",
+            "code": "YFD-HS300",
+            "createTime": 1779002869620,
+            "sourceMaterial": "基金招募说明书_增强版.pdf"
+          },
+          {
+            "id": "prod-005",
+            "name": "50ETF期权合约202406",
+            "type": "derivative",
+            "riskLevel": 5,
+            "issuer": "上海证券交易所",
+            "code": "50ETF-C-202406",
+            "createTime": 1779434869620,
+            "sourceMaterial": "期权合约规格说明书.pdf",
+            "maturityDate": "2024-06-28",
+            "term": "6个月"
+          },
+          {
+            "id": "prod-006",
+            "name": "结构性存款-汇盈系列",
+            "type": "structured",
+            "riskLevel": 3,
+            "issuer": "招商银行股份有限公司",
+            "code": "CMB-HY202406",
+            "createTime": 1779866869620,
+            "sourceMaterial": "结构性存款说明书V2.1.pdf",
+            "maturityDate": "2024-12-01",
+            "term": "6个月"
+          },
+          {
+            "id": "prod-007",
+            "name": "成长先锋股票型基金",
+            "type": "fund",
+            "riskLevel": 5,
+            "issuer": "汇添富基金管理有限公司",
+            "code": "HTF-CZ001",
+            "createTime": 1780039669620,
+            "sourceMaterial": "基金合同_成长先锋.pdf",
+            "maturityDate": "2029-06-01",
+            "term": "5年"
+          },
+          {
+            "id": "prod-008",
+            "name": "万能型终身寿险",
+            "type": "insurance",
+            "riskLevel": 3,
+            "issuer": "中国人寿保险股份有限公司",
+            "code": "CLIC-WN2024",
+            "createTime": 1780126069620,
+            "sourceMaterial": "万能险产品说明书2024.pdf"
+          },
+          {
+            "id": "prod-009",
+            "name": "企业债-华能集团2024",
+            "type": "bond",
+            "riskLevel": 2,
+            "issuer": "中国华能集团有限公司",
+            "code": "HN-2024-QYZ",
+            "createTime": 1780212469620,
+            "sourceMaterial": "企业债募集说明书.pdf",
+            "maturityDate": "2027-06-01",
+            "term": "3年"
+          },
+          {
+            "id": "prod-010",
+            "name": "商品期货CTA策略产品",
+            "type": "derivative",
+            "riskLevel": 5,
+            "issuer": "南华期货股份有限公司",
+            "code": "NH-CTA-2024",
+            "createTime": 1780298869620,
+            "sourceMaterial": "CTA策略产品手册V1.0.pdf",
+            "maturityDate": "2025-06-01",
+            "term": "1年"
+          }
+        ],
+        "yields": [
+          {
+            "productId": "prod-001",
+            "expectedMin": 4.5,
+            "expectedMax": 7.5,
+            "historicalMin": 3.2,
+            "historicalMax": 8.8,
+            "benchmark": 5,
+            "sourceMaterial": "产品说明书_2024版.pdf"
+          },
+          {
+            "productId": "prod-002",
+            "expectedMin": 3,
+            "expectedMax": 4.5,
+            "historicalMin": 2.8,
+            "historicalMax": 4.2,
+            "benchmark": 3.5,
+            "sourceMaterial": "保险条款_鑫享人生V3.docx"
+          },
+          {
+            "productId": "prod-003",
+            "expectedMin": 2.85,
+            "expectedMax": 2.85,
+            "historicalMin": 2.85,
+            "historicalMax": 2.85,
+            "benchmark": 2.85,
+            "sourceMaterial": "国债发行公告202403.pdf"
+          },
+          {
+            "productId": "prod-004",
+            "expectedMin": -5,
+            "expectedMax": 15,
+            "historicalMin": -12.3,
+            "historicalMax": 22.5,
+            "benchmark": 8,
+            "sourceMaterial": "基金招募说明书_增强版.pdf"
+          },
+          {
+            "productId": "prod-005",
+            "expectedMin": -100,
+            "expectedMax": 50,
+            "historicalMin": -85,
+            "historicalMax": 45,
+            "benchmark": -10,
+            "sourceMaterial": "期权合约规格说明书.pdf"
+          },
+          {
+            "productId": "prod-006",
+            "expectedMin": 1.5,
+            "expectedMax": 6,
+            "historicalMin": 2.1,
+            "historicalMax": 5.2,
+            "benchmark": 3.5,
+            "sourceMaterial": "结构性存款说明书V2.1.pdf"
+          },
+          {
+            "productId": "prod-007",
+            "expectedMin": -10,
+            "expectedMax": 20,
+            "historicalMin": -18.5,
+            "historicalMax": 28.3,
+            "benchmark": 10,
+            "sourceMaterial": "基金合同_成长先锋.pdf"
+          },
+          {
+            "productId": "prod-008",
+            "expectedMin": 2.5,
+            "expectedMax": 4,
+            "historicalMin": 3,
+            "historicalMax": 3.8,
+            "benchmark": 3.2,
+            "sourceMaterial": "万能险产品说明书2024.pdf"
+          },
+          {
+            "productId": "prod-009",
+            "expectedMin": 3.25,
+            "expectedMax": 3.25,
+            "historicalMin": 3.25,
+            "historicalMax": 3.25,
+            "benchmark": 3.25,
+            "sourceMaterial": "企业债募集说明书.pdf"
+          },
+          {
+            "productId": "prod-010",
+            "expectedMin": -15,
+            "expectedMax": 25,
+            "historicalMin": -12,
+            "historicalMax": 18.5,
+            "benchmark": 8,
+            "sourceMaterial": "CTA策略产品手册V1.0.pdf"
+          }
+        ],
+        "reports": [
+          {
+            "productId": "prod-001",
+            "content": "本产品为混合型基金，历史业绩表现优异，近三年年化收益率达到8.5%，预计未来一年收益率可达9%-12%。基金经理从业经验超过15年，管理规模超500亿。",
+            "reporter": "张经理",
+            "reportTime": 1777879669620,
+            "sourceMaterial": "路演材料_2024Q2.pptx",
+            "claimedYield": 10.5
+          },
+          {
+            "productId": "prod-002",
+            "content": "鑫享人生年金保险是一款稳健型保险产品，保底收益3%，浮动收益部分预计可达4.5%-5.5%，是家庭资产配置的理想选择。",
+            "reporter": "李总监",
+            "reportTime": 1778311669620,
+            "sourceMaterial": "客户推介会演讲稿V2.docx",
+            "claimedYield": 5
+          },
+          {
+            "productId": "prod-003",
+            "content": "2024年第三期国债，票面利率2.85%，按年付息，国家信用背书，无任何风险，适合追求稳健收益的投资者。",
+            "reporter": "王分析师",
+            "reportTime": 1778743669620,
+            "sourceMaterial": "国债投资指南.pdf",
+            "claimedYield": 2.85
+          },
+          {
+            "productId": "prod-004",
+            "content": "沪深300指数增强基金，通过量化模型实现超额收益，近一年跑赢指数12个百分点，预期年化收益可达15%-20%。",
+            "reporter": "赵经理",
+            "reportTime": 1779175669620,
+            "sourceMaterial": "基金推介材料_高净值版.pdf",
+            "claimedYield": 17.5
+          },
+          {
+            "productId": "prod-005",
+            "content": "50ETF期权合约，杠杆效应明显，在市场波动时可获得超额收益，预计6个月内收益可达30%-50%。",
+            "reporter": "孙交易员",
+            "reportTime": 1779607669620,
+            "sourceMaterial": "期权策略培训材料.pptx",
+            "claimedYield": 40
+          },
+          {
+            "productId": "prod-006",
+            "content": "招商银行汇盈系列结构性存款，保本保息，预期最高收益可达6%，挂钩沪深300指数，上涨即可获得高收益。",
+            "reporter": "周理财师",
+            "reportTime": 1779953269620,
+            "sourceMaterial": "支行产品培训资料.docx",
+            "claimedYield": 6
+          },
+          {
+            "productId": "prod-007",
+            "content": "成长先锋股票型基金聚焦新能源、半导体等高成长赛道，今年以来已上涨25%，预计年底前还有30%上涨空间，目标收益率40%以上。",
+            "reporter": "吴基金经理",
+            "reportTime": 1780126069620,
+            "sourceMaterial": "内部路演_成长板块机会.pdf",
+            "claimedYield": 35
+          },
+          {
+            "productId": "prod-008",
+            "content": "万能型终身寿险，保底利率2.5%，实际结算利率连续36个月维持在4.5%以上，灵活支取，兼顾保障与投资。",
+            "reporter": "郑保险顾问",
+            "reportTime": 1780212469620,
+            "sourceMaterial": "高端客户专属方案.docx",
+            "claimedYield": 4.5
+          },
+          {
+            "productId": "prod-009",
+            "content": "华能集团企业债，AAA评级，央企背景，票面利率3.25%，按季付息，安全性堪比国债，收益高于同期定存。",
+            "reporter": "冯债券分析师",
+            "reportTime": 1780298869620,
+            "sourceMaterial": "固定收益产品周报.pdf",
+            "claimedYield": 3.25
+          },
+          {
+            "productId": "prod-010",
+            "content": "商品期货CTA策略，与股票市场低相关性，在市场动荡时表现优异，历史最大回撤12%，年化收益稳定在15%-20%。",
+            "reporter": "陈投资顾问",
+            "reportTime": 1780298869620,
+            "sourceMaterial": "另类投资策略手册.pdf",
+            "claimedYield": 17.5
+          }
+        ]
+      },
+      "checksum": "0940ad65a3fd262afe20b7744e77986e14919f6e9d19524bf01ba87c37a381b9"
+    }
+  ],
+  "checksumIndex": {
+    "0940ad65a3fd262afe20b7744e77986e14919f6e9d19524bf01ba87c37a381b9": "hist-1780298903854-3im38gnun"
+  }
+}
