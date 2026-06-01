@@ -1,0 +1,114 @@
+{
+  "title": "太阳高度角影长计算报告",
+  "generated_at": "2026-06-01T19:41:07.484821",
+  "source": {
+    "name": "sample.json",
+    "version": "2025-v2",
+    "imported_at": "2026-06-01T19:41:07.483872"
+  },
+  "observations": [
+    {
+      "site_name": "武汉黄鹤楼",
+      "latitude": 30.5449,
+      "longitude": 114.3025,
+      "obs_date": "2025-09-23",
+      "obs_time": "12:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 3.2,
+      "pole_height": 2.0,
+      "weather": "clear",
+      "source": {
+        "name": "sample.json",
+        "version": "2025-v2",
+        "imported_at": "2026-06-01T19:41:07.483872"
+      },
+      "notes": "秋分正午"
+    },
+    {
+      "site_name": "乌鲁木齐红山",
+      "latitude": 43.793,
+      "longitude": 87.6168,
+      "obs_date": "2025-06-21",
+      "obs_time": "13:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 2.5,
+      "pole_height": 2.0,
+      "weather": "partly_cloudy",
+      "source": {
+        "name": "sample.json",
+        "version": "2025-v2",
+        "imported_at": "2026-06-01T19:41:07.483872"
+      },
+      "notes": "北京时区但经度偏西，时区偏差大"
+    }
+  ],
+  "validation": {
+    "total_observations": 2,
+    "total_errors": 0,
+    "total_warnings": 1,
+    "details": [
+      {
+        "passed": true,
+        "issue_count": 0,
+        "issues": []
+      },
+      {
+        "passed": true,
+        "issue_count": 1,
+        "issues": [
+          {
+            "code": "TIMEZONE_MISMATCH",
+            "severity": "warning",
+            "message": "时区偏差: 记录 UTC+8.0 vs 预期 UTC+6",
+            "affected_fields": [
+              "solar_elevation_angle",
+              "azimuth",
+              "datetime_interpretation"
+            ],
+            "explanation": "经度 87.6168° 对应标准时区 UTC+6，但记录时区为 UTC+8.0，偏差 2.0 小时。时区偏差直接影响太阳角与方位角计算中当地时→太阳时的转换，同时导致日期时间解读偏移。"
+          }
+        ]
+      }
+    ]
+  },
+  "calculations": [
+    {
+      "observation_index": 0,
+      "site_name": "武汉黄鹤楼",
+      "obs_date": "2025-09-23",
+      "obs_time": "12:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 32.0054,
+      "solar_elevation_angle_rad": 0.558599,
+      "azimuth_deg": 172.6092,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 3.2,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 0.0011,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。晴天条件，使用基准误差。 影长法(32.01°)与天文法(59.09°)偏差27.08°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 1,
+      "site_name": "乌鲁木齐红山",
+      "obs_date": "2025-06-21",
+      "obs_time": "13:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 38.6598,
+      "solar_elevation_angle_rad": 0.674741,
+      "azimuth_deg": 138.4816,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 2.5,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 1.5023,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。多云条件，误差乘以1.5倍。 时区偏差额外增加±1.5°不确定性。 影长法(38.66°)与天文法(64.92°)偏差26.26°，建议复查数据。",
+      "skip_reason": ""
+    }
+  ],
+  "summary": "共导入 2 条观测记录\n成功计算 2 条，跳过 0 条\n验证错误 0 项，警告 1 项\n太阳高度角范围: 32.01° ~ 38.66°",
+  "datetime_conclusion": "[#0] 武汉黄鹤楼 | 2025-09-23 12:00:00 UTC+8.0 | 太阳高度角=32.0054°\n[#1] 乌鲁木齐红山 | 2025-06-21 13:00:00 UTC+8.0 | 太阳高度角=38.6598°"
+}

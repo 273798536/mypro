@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "source": "地理课实验记录",
+    "version": "2025-v2"
+  },
+  "observations": [
+    {
+      "site_name": "武汉黄鹤楼",
+      "latitude": 30.5449,
+      "longitude": 114.3025,
+      "obs_date": "2025-09-23",
+      "obs_time": "12:00:00",
+      "timezone_offset": 8,
+      "shadow_length": 3.20,
+      "pole_height": 2.0,
+      "weather": "clear",
+      "notes": "秋分正午"
+    },
+    {
+      "site_name": "乌鲁木齐红山",
+      "latitude": 43.7930,
+      "longitude": 87.6168,
+      "obs_date": "2025-06-21",
+      "obs_time": "13:00:00",
+      "timezone_offset": 8,
+      "shadow_length": 2.50,
+      "pole_height": 2.0,
+      "weather": "partly_cloudy",
+      "notes": "北京时区但经度偏西，时区偏差大"
+    }
+  ]
+}

@@ -1,0 +1,355 @@
+{
+  "title": "太阳高度角影长计算报告",
+  "generated_at": "2026-06-01T19:40:29.946739",
+  "source": {
+    "name": "sample.csv",
+    "version": "课堂实验v1",
+    "imported_at": "2026-06-01T19:40:29.943771"
+  },
+  "observations": [
+    {
+      "site_name": "北京天安门",
+      "latitude": 39.9087,
+      "longitude": 116.3975,
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 3.82,
+      "pole_height": 2.0,
+      "weather": "clear",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "夏至正午"
+    },
+    {
+      "site_name": "上海外滩",
+      "latitude": 31.2304,
+      "longitude": 121.4737,
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 2.15,
+      "pole_height": 1.5,
+      "weather": "partly_cloudy",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "夏至多云"
+    },
+    {
+      "site_name": "广州塔",
+      "latitude": 23.1066,
+      "longitude": 113.3245,
+      "obs_date": "2025-12-22",
+      "obs_time": "12:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 5.1,
+      "pole_height": 2.0,
+      "weather": "overcast",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "冬至阴天"
+    },
+    {
+      "site_name": "拉萨布达拉宫",
+      "latitude": 29.652,
+      "longitude": 91.1172,
+      "obs_date": "2025-03-21",
+      "obs_time": "10:30:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 4.5,
+      "pole_height": 2.0,
+      "weather": "clear",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "春分上午"
+    },
+    {
+      "site_name": "哈尔滨中央大街",
+      "latitude": 45.75,
+      "longitude": 126.65,
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 2.8,
+      "pole_height": 2.0,
+      "weather": "clear",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "夏至高纬度"
+    },
+    {
+      "site_name": "时区错误测点",
+      "latitude": 39.9087,
+      "longitude": 116.3975,
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_offset": 5.0,
+      "timezone_label": "UTC+5.0",
+      "shadow_length": 3.82,
+      "pole_height": 2.0,
+      "weather": "clear",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "时区偏小3小时"
+    },
+    {
+      "site_name": "杆高缺失测点",
+      "latitude": 30.5728,
+      "longitude": 104.0668,
+      "obs_date": "2025-06-21",
+      "obs_time": "14:00:00",
+      "timezone_offset": 8.0,
+      "timezone_label": "UTC+8.0",
+      "shadow_length": 3.0,
+      "pole_height": null,
+      "weather": "unknown",
+      "source": {
+        "name": "sample.csv",
+        "version": "课堂实验v1",
+        "imported_at": "2026-06-01T19:40:29.943771"
+      },
+      "notes": "杆高未记录"
+    }
+  ],
+  "validation": {
+    "total_observations": 7,
+    "total_errors": 1,
+    "total_warnings": 3,
+    "details": [
+      {
+        "passed": true,
+        "issue_count": 0,
+        "issues": []
+      },
+      {
+        "passed": true,
+        "issue_count": 0,
+        "issues": []
+      },
+      {
+        "passed": true,
+        "issue_count": 1,
+        "issues": [
+          {
+            "code": "OVERCAST_CONDITION",
+            "severity": "warning",
+            "message": "阴天观测，影长测量精度受影响",
+            "affected_fields": [
+              "solar_elevation_angle"
+            ],
+            "explanation": "阴天条件下影子边界模糊，影长测量误差显著增大。计算所得太阳高度角的误差范围将扩大，建议将误差估计乘以2~3倍。太阳方位角受影响较小。"
+          }
+        ]
+      },
+      {
+        "passed": true,
+        "issue_count": 1,
+        "issues": [
+          {
+            "code": "TIMEZONE_MISMATCH",
+            "severity": "warning",
+            "message": "时区偏差: 记录 UTC+8.0 vs 预期 UTC+6",
+            "affected_fields": [
+              "solar_elevation_angle",
+              "azimuth",
+              "datetime_interpretation"
+            ],
+            "explanation": "经度 91.1172° 对应标准时区 UTC+6，但记录时区为 UTC+8.0，偏差 2.0 小时。时区偏差直接影响太阳角与方位角计算中当地时→太阳时的转换，同时导致日期时间解读偏移。"
+          }
+        ]
+      },
+      {
+        "passed": true,
+        "issue_count": 0,
+        "issues": []
+      },
+      {
+        "passed": true,
+        "issue_count": 1,
+        "issues": [
+          {
+            "code": "TIMEZONE_MISMATCH",
+            "severity": "warning",
+            "message": "时区偏差: 记录 UTC+5.0 vs 预期 UTC+8",
+            "affected_fields": [
+              "solar_elevation_angle",
+              "azimuth",
+              "datetime_interpretation"
+            ],
+            "explanation": "经度 116.3975° 对应标准时区 UTC+8，但记录时区为 UTC+5.0，偏差 3.0 小时。时区偏差直接影响太阳角与方位角计算中当地时→太阳时的转换，同时导致日期时间解读偏移。"
+          }
+        ]
+      },
+      {
+        "passed": false,
+        "issue_count": 2,
+        "issues": [
+          {
+            "code": "POLE_HEIGHT_MISSING",
+            "severity": "error",
+            "message": "杆高缺失或无效: None",
+            "affected_fields": [
+              "solar_elevation_angle"
+            ],
+            "explanation": "杆高缺失或无效，无法通过 arctan(杆高/影长) 计算太阳高度角。该观测记录的太阳高度角将被跳过，仅保留天文算法估算结果。"
+          },
+          {
+            "code": "WEATHER_UNKNOWN",
+            "severity": "info",
+            "message": "天气状况未记录",
+            "affected_fields": [
+              "solar_elevation_angle"
+            ],
+            "explanation": "天气状况未知，无法评估影长测量精度。建议补充天气信息以确定误差范围。"
+          }
+        ]
+      }
+    ]
+  },
+  "calculations": [
+    {
+      "observation_index": 0,
+      "site_name": "北京天安门",
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 27.6348,
+      "solar_elevation_angle_rad": 0.482318,
+      "azimuth_deg": 167.0697,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 3.82,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 0.0009,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。晴天条件，使用基准误差。 影长法(27.63°)与天文法(73.18°)偏差45.54°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 1,
+      "site_name": "上海外滩",
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 34.9025,
+      "solar_elevation_angle_rad": 0.609163,
+      "azimuth_deg": 186.9331,
+      "pole_height_used": 1.5,
+      "shadow_length_used": 2.15,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 0.0026,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。多云条件，误差乘以1.5倍。 影长法(34.90°)与天文法(82.15°)偏差47.25°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 2,
+      "site_name": "广州塔",
+      "obs_date": "2025-12-22",
+      "obs_time": "12:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 21.413,
+      "solar_elevation_angle_rad": 0.373727,
+      "azimuth_deg": 172.0828,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 5.1,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 0.0016,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。阴天条件，误差乘以3倍。 影长法(21.41°)与天文法(43.06°)偏差21.64°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 3,
+      "site_name": "拉萨布达拉宫",
+      "obs_date": "2025-03-21",
+      "obs_time": "10:30:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 23.9625,
+      "solar_elevation_angle_rad": 0.418224,
+      "azimuth_deg": 110.0466,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 4.5,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 1.5007,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。晴天条件，使用基准误差。 时区偏差额外增加±1.5°不确定性。 影长法(23.96°)与天文法(31.56°)偏差7.59°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 4,
+      "site_name": "哈尔滨中央大街",
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 35.5377,
+      "solar_elevation_angle_rad": 0.620249,
+      "azimuth_deg": 194.7835,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 2.8,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 0.0014,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。晴天条件，使用基准误差。 影长法(35.54°)与天文法(67.13°)偏差31.59°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 5,
+      "site_name": "时区错误测点",
+      "obs_date": "2025-06-21",
+      "obs_time": "12:00:00",
+      "timezone_label": "UTC+5.0",
+      "solar_elevation_angle_deg": 27.6348,
+      "solar_elevation_angle_rad": 0.482318,
+      "azimuth_deg": 256.9383,
+      "pole_height_used": 2.0,
+      "shadow_length_used": 3.82,
+      "angle_source": "arctan(杆高/影长) + 天文算法校验",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 1.5009,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。晴天条件，使用基准误差。 时区偏差额外增加±1.5°不确定性。 影长法(27.63°)与天文法(51.88°)偏差24.25°，建议复查数据。",
+      "skip_reason": ""
+    },
+    {
+      "observation_index": 6,
+      "site_name": "杆高缺失测点",
+      "obs_date": "2025-06-21",
+      "obs_time": "14:00:00",
+      "timezone_label": "UTC+8.0",
+      "solar_elevation_angle_deg": 75.9423,
+      "solar_elevation_angle_rad": 1.325443,
+      "azimuth_deg": 242.787,
+      "pole_height_used": null,
+      "shadow_length_used": null,
+      "angle_source": "天文算法估算（无实测影长）",
+      "unit_source": "1° = π/180 rad; 来源: 国际单位制(SI)",
+      "error_estimate_deg": 1.0,
+      "error_explanation": "基准误差来源: 影长测量±0.005m + 杆高测量±0.003m。天气未知，误差乘以2倍。",
+      "skip_reason": ""
+    }
+  ],
+  "summary": "共导入 7 条观测记录\n成功计算 7 条，跳过 0 条\n验证错误 1 项，警告 3 项\n太阳高度角范围: 21.41° ~ 75.94°",
+  "datetime_conclusion": "[#0] 北京天安门 | 2025-06-21 12:00:00 UTC+8.0 | 太阳高度角=27.6348°\n[#1] 上海外滩 | 2025-06-21 12:00:00 UTC+8.0 | 太阳高度角=34.9025°\n[#2] 广州塔 | 2025-12-22 12:00:00 UTC+8.0 | 太阳高度角=21.413°\n[#3] 拉萨布达拉宫 | 2025-03-21 10:30:00 UTC+8.0 | 太阳高度角=23.9625°\n[#4] 哈尔滨中央大街 | 2025-06-21 12:00:00 UTC+8.0 | 太阳高度角=35.5377°\n[#5] 时区错误测点 | 2025-06-21 12:00:00 UTC+5.0 | 太阳高度角=27.6348°\n[#6] 杆高缺失测点 | 2025-06-21 14:00:00 UTC+8.0 | 太阳高度角=75.9423°"
+}
