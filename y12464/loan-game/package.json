@@ -1,0 +1,8 @@
+{
+  "name": "loan-approval-game",
+  "version": "1.0.0",
+  "description": "贷款审批闯关室 - 金融培训小游戏",
+  "scripts": {
+    "start": "npx serve . -p 3000 -s"
+  }
+}

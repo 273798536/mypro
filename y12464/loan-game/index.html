@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贷款审批闯关室</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="start-screen" class="screen active">
+    <div class="start-title">贷款审批闯关室</div>
+    <div class="start-subtitle">
+      你是一名银行审批官，面对5份贷款申请，需要在时间压力下审查客户卡、流水线索和逾期记录，做出正确的审批决策。<br>
+      小心逾期遮盖、担保过期和流水断档——它们不会一路绿灯通过。
+    </div>
+    <div class="rules-box">
+      <h2>闯关规则</h2>
+      <ul>
+        <li>每份申请经过「客户卡 → 流水线索 → 逾期揭示」三个阶段，可随时提交决策</li>
+        <li>逾期记录可能被遮盖（显示为████），需从间接线索推断，也可选择揭示</li>
+        <li>担保过期、流水断档等风险必须识别——它们会影响审批结论、担保要求等多项结果</li>
+        <li>三个决策选项：批准、有条件批准、拒绝——选错扣分，选对加分</li>
+        <li>每案限时90秒，60秒内完成获时间奖励，超时则扣分</li>
+        <li>新线索出现不会抹掉你的前期判断，判断记录全程保留</li>
+      </ul>
+    </div>
+    <button class="btn btn-primary" onclick="game.startGame()">开始闯关 ▶</button>
+  </div>
+
+  <div id="game-screen" class="screen">
+    <div class="game-header">
+      <div class="header-left">
+        <span class="case-badge" id="case-badge">案件 1/5</span>
+        <span class="difficulty-badge" id="difficulty-badge">难度 ★</span>
+      </div>
+      <div class="timer" id="timer">1:30</div>
+      <div class="score-display" id="score">得分 0</div>
+    </div>
+    <div class="game-body">
+      <div class="left-panel" id="left-panel"></div>
+      <div class="center-panel" id="center-panel"></div>
+      <div class="right-panel" id="right-panel"></div>
+    </div>
+  </div>
+
+  <div id="feedback-overlay" class="feedback-overlay">
+    <div id="feedback-content"></div>
+  </div>
+
+  <div id="settlement-screen" class="screen">
+    <div id="settlement-content"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="engine.js"></script>
+  <script src="state.js"></script>
+  <script src="ui.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
