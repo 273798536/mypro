@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电磁列车调度员</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>🚄 电磁列车调度员</h1>
+            <div class="game-controls">
+                <button id="btn-import" class="btn btn-secondary">📥 导入数据</button>
+                <button id="btn-start" class="btn btn-primary">▶️ 开始</button>
+                <button id="btn-pause" class="btn btn-warning" disabled>⏸️ 暂停</button>
+                <button id="btn-reset" class="btn btn-danger">🔄 重开</button>
+                <button id="btn-review" class="btn btn-info" disabled>📊 复盘</button>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <section class="game-area">
+                <div class="track-container" id="track-container"></div>
+                <div class="train-container" id="train-container">
+                    <div class="train" id="train"></div>
+                </div>
+            </section>
+
+            <section class="info-panel">
+                <div class="panel-section">
+                    <h3>实时状态</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="label">当前速度</span>
+                            <span class="value" id="speed-display">0 km/h</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">目标速度</span>
+                            <span class="value" id="target-speed">120 km/h</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">当前位置</span>
+                            <span class="value" id="position-display">0 m</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">运行时间</span>
+                            <span class="value" id="time-display">00:00</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">总能耗</span>
+                            <span class="value" id="energy-display">0 kJ</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">当前得分</span>
+                            <span class="value" id="score-display">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>线圈控制</h3>
+                    <div class="coil-controls" id="coil-controls"></div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>事件日志</h3>
+                    <div class="event-log" id="event-log"></div>
+                </div>
+            </section>
+        </main>
+
+        <div id="import-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>📥 导入运行数据</h2>
+                <p class="modal-hint">支持导入包含线圈轨道、小车、供电开关的数据（可包含空值和旧备注）</p>
+                <textarea id="import-data" placeholder="粘贴JSON数据或轨道配置..."></textarea>
+                <div class="modal-buttons">
+                    <button id="btn-import-confirm" class="btn btn-primary">确认导入</button>
+                    <button id="btn-import-cancel" class="btn btn-secondary">取消</button>
+                    <button id="btn-load-demo" class="btn btn-info">加载示例数据</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-modal" class="modal hidden">
+            <div class="modal-content large">
+                <h2>🏁 运行结算</h2>
+                <div class="result-summary" id="result-summary"></div>
+                <div class="result-details">
+                    <div class="result-section">
+                        <h3>📈 时序事件</h3>
+                        <div class="timeline" id="timeline"></div>
+                    </div>
+                    <div class="result-section">
+                        <h3>⚡ 能量结算</h3>
+                        <div class="energy-breakdown" id="energy-breakdown"></div>
+                    </div>
+                    <div class="result-section">
+                        <h3>📊 扣分明细</h3>
+                        <div class="penalty-details" id="penalty-details"></div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="btn-export-report" class="btn btn-primary">📤 导出报告</button>
+                    <button id="btn-close-result" class="btn btn-secondary">关闭</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="review-modal" class="modal hidden">
+            <div class="modal-content large">
+                <h2>🔍 运行复盘</h2>
+                <div class="review-controls">
+                    <button id="btn-review-play" class="btn btn-primary">▶️ 播放</button>
+                    <button id="btn-review-pause" class="btn btn-warning">⏸️ 暂停</button>
+                    <input type="range" id="review-slider" min="0" max="100" value="0">
+                    <span id="review-time">00:00</span>
+                </div>
+                <div class="review-track" id="review-track"></div>
+                <div class="review-stats" id="review-stats"></div>
+                <div class="modal-buttons">
+                    <button id="btn-close-review" class="btn btn-secondary">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="file-input" accept=".json,.txt" style="display: none;">
+
+    <script src="game.js"></script>
+</body>
+</html>
