@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>节奏炼金工坊</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
+  --accent:#f0883e;--accent2:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;
+  --purple:#bc8cff;--original:#58a6ff;--supplement:#f0883e;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{background:linear-gradient(135deg,#1a1e2e 0%,#0d1117 100%);padding:20px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.header h1{font-size:24px;background:linear-gradient(90deg,var(--accent),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .subtitle{color:var(--muted);font-size:13px;margin-left:auto}
+
+.tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px}
+.tab-btn{padding:12px 24px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:24px 32px}
+.tab-content.active{display:block}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:16px}
+.panel-title{font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge-original{background:rgba(88,166,255,.15);color:var(--original)}
+.badge-supplement{background:rgba(240,136,62,.15);color:var(--supplement)}
+.badge-syncopation{background:rgba(248,81,73,.15);color:var(--red)}
+.badge-rest{background:rgba(188,140,255,.15);color:var(--purple)}
+.badge-speed{background:rgba(63,185,80,.15);color:var(--green)}
+.badge-perfect{background:rgba(63,185,80,.15);color:var(--green)}
+.badge-good{background:rgba(210,153,34,.15);color:var(--yellow)}
+.badge-miss{background:rgba(248,81,73,.15);color:var(--red)}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+.btn{padding:8px 20px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:13px;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:#e07830;border-color:#e07830}
+.btn-danger{background:rgba(248,81,73,.15);border-color:var(--red);color:var(--red)}
+.btn-sm{padding:4px 12px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.game-area{position:relative;width:100%;height:420px;background:linear-gradient(180deg,#0d1117 0%,#161b22 100%);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.judge-line{position:absolute;bottom:80px;left:0;right:0;height:2px;background:var(--accent);opacity:.7}
+.lane{position:absolute;top:0;bottom:0;width:25%;border-right:1px solid rgba(48,54,61,.5)}
+.lane:nth-child(1){left:0}.lane:nth-child(2){left:25%}.lane:nth-child(3){left:50%}.lane:nth-child(4){left:75%}
+.lane-label{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:20px;font-weight:700;color:var(--muted);opacity:.5}
+
+.note{position:absolute;left:50%;transform:translateX(-50%);width:60%;height:20px;border-radius:4px;transition:none}
+.note-regular{background:linear-gradient(90deg,var(--accent2),#79c0ff)}
+.note-syncopation{background:linear-gradient(90deg,var(--red),#ff7b72)}
+.note-rest{background:linear-gradient(90deg,var(--purple),#d2a8ff);border:2px dashed rgba(255,255,255,.3);height:16px}
+
+.judge-text{position:absolute;left:50%;transform:translateX(-50%);font-size:22px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none}
+.judge-text.show{opacity:1}
+
+.score-display{position:absolute;top:12px;right:16px;font-size:20px;font-weight:700;color:var(--accent)}
+.combo-display{position:absolute;top:40px;right:16px;font-size:14px;color:var(--yellow)}
+.bpm-display{position:absolute;top:12px;left:16px;font-size:13px;color:var(--muted)}
+
+.speed-hud{position:absolute;bottom:50px;left:16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.speed-hud .dot{width:8px;height:8px;border-radius:50%}
+.speed-change-flag{position:absolute;top:38px;left:16px;font-size:11px;color:var(--supplement);opacity:0;transition:opacity .5s}
+.speed-change-flag.show{opacity:1}
+
+.material-card{background:rgba(13,17,23,.6);border:1px solid var(--border);border-radius:6px;padding:14px;cursor:pointer;transition:all .2s}
+.material-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.material-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.material-card .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.material-card .card-name{font-weight:600;font-size:14px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-weight:500}
+td{padding:8px 12px;border-bottom:1px solid rgba(48,54,61,.4)}
+tr:hover td{background:rgba(88,166,255,.04)}
+
+.summary-bar{display:flex;gap:24px;padding:16px;background:rgba(13,17,23,.6);border-radius:8px;margin-bottom:16px;flex-wrap:wrap}
+.summary-item{text-align:center;min-width:80px}
+.summary-item .val{font-size:28px;font-weight:700}
+.summary-item .label{font-size:11px;color:var(--muted);margin-top:2px}
+
+.syncopation-alert{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:8px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.syncopation-alert .icon{font-size:24px}
+.syncopation-alert .info{flex:1}
+.syncopation-alert .info .title{font-weight:600;color:var(--red);margin-bottom:4px}
+.syncopation-alert .info .desc{font-size:13px;color:var(--muted)}
+
+.detail-row{display:flex;gap:12px;padding:10px 14px;border-radius:6px;margin-bottom:6px;font-size:13px;border:1px solid transparent;transition:all .2s}
+.detail-row:hover{background:rgba(88,166,255,.04);border-color:var(--border)}
+.detail-row .step{color:var(--muted);min-width:40px}
+.detail-row .judgment{min-width:60px}
+.detail-row .source{min-width:70px}
+.detail-row .impact{min-width:60px;text-align:right}
+.detail-row.affected-by-rest{border-left:3px solid var(--purple);background:rgba(188,140,255,.04)}
+.detail-row.speed-from-supplement{border-left:3px solid var(--supplement);background:rgba(240,136,62,.04)}
+.detail-row.syncopation-from-original{border-left:3px solid var(--red);background:rgba(248,81,73,.04)}
+
+.replay-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:16px}
+.replay-bar .progress{flex:1;height:6px;background:var(--border);border-radius:3px;cursor:pointer;position:relative}
+.replay-bar .progress-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .1s}
+.replay-bar .step-info{font-size:12px;color:var(--muted);min-width:100px;text-align:right}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:680px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h3{margin-bottom:16px;font-size:18px}
+
+select,input[type=number]{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:4px;font-size:13px}
+select:focus,input:focus{outline:none;border-color:var(--accent)}
+
+.source-legend{display:flex;gap:16px;margin-bottom:12px;font-size:12px;color:var(--muted)}
+.source-legend span{display:flex;align-items:center;gap:4px}
+.source-legend .dot{width:10px;height:10px;border-radius:2px}
+
+.affected-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:rgba(188,140,255,.15);color:var(--purple);margin-left:6px}
+
+@media(max-width:768px){.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>节奏炼金工坊</h1>
+  <span class="subtitle">切分音漏拍追踪 · 补录溯源 · 判定回看</span>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="prepare">备料区</button>
+  <button class="tab-btn" data-tab="play">炼金台</button>
+  <button class="tab-btn" data-tab="review">回看台</button>
+  <button class="tab-btn" data-tab="report">成绩报告</button>
+</div>
+
+<div class="tab-content active" id="tab-prepare">
+  <div class="grid-3">
+    <div class="panel" id="note-bottles-panel">
+      <div class="panel-title">音符瓶 <span class="badge badge-original">入口材料</span></div>
+      <div id="note-bottle-list"></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="addNoteBottle('original')">+ 原始音符瓶</button>
+        <button class="btn btn-sm" onclick="addNoteBottle('supplement')">+ 补录音符瓶</button>
+      </div>
+    </div>
+    <div class="panel" id="speed-gears-panel">
+      <div class="panel-title">速度档 <span class="badge badge-speed">入口材料</span></div>
+      <div id="speed-gear-list"></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="addSpeedGear('original')">+ 原始速度档</button>
+        <button class="btn btn-sm" onclick="addSpeedGear('supplement')">+ 补录速度档</button>
+      </div>
+    </div>
+    <div class="panel" id="score-sheets-panel">
+      <div class="panel-title">成绩单 <span class="badge badge-perfect">入口材料</span></div>
+      <div id="score-sheet-list"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-sm" onclick="generateScoreSheet()">生成成绩单模板</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-title">当前关卡配方</div>
+    <div class="grid-2">
+      <div>
+        <div style="margin-bottom:8px;font-size:13px;color:var(--muted)">选用音符瓶</div>
+        <select id="sel-note-bottle" style="width:100%"></select>
+      </div>
+      <div>
+        <div style="margin-bottom:8px;font-size:13px;color:var(--muted)">选用速度档</div>
+        <select id="sel-speed-gear" style="width:100%"></select>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="startGame()">开炉炼金</button>
+      <button class="btn" onclick="loadDemoPreset()">载入演示配方</button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-play">
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button class="btn btn-primary" id="btn-start" onclick="beginPlay()">开始演奏</button>
+    <button class="btn" id="btn-pause" onclick="togglePause()" disabled>暂停</button>
+    <button class="btn btn-danger" id="btn-stop" onclick="stopPlay()" disabled>终止</button>
+    <span style="margin-left:auto;font-size:13px;color:var(--muted);line-height:34px">按键: D F J K 对应四轨道</span>
+  </div>
+
+  <div class="game-area" id="game-area">
+    <div class="lane"><span class="lane-label">D</span></div>
+    <div class="lane"><span class="lane-label">F</span></div>
+    <div class="lane"><span class="lane-label">J</span></div>
+    <div class="lane"><span class="lane-label">K</span></div>
+    <div class="judge-line"></div>
+    <div class="score-display" id="score-display">0</div>
+    <div class="combo-display" id="combo-display"></div>
+    <div class="bpm-display" id="bpm-display"></div>
+    <div class="speed-hud" id="speed-hud"></div>
+    <div class="speed-change-flag" id="speed-change-flag">⚡ 补录速度突变</div>
+    <div class="judge-text" id="judge-text-0" style="bottom:90px;left:12.5%"></div>
+    <div class="judge-text" id="judge-text-1" style="bottom:90px;left:37.5%"></div>
+    <div class="judge-text" id="judge-text-2" style="bottom:90px;left:62.5%"></div>
+    <div class="judge-text" id="judge-text-3" style="bottom:90px;left:87.5%"></div>
+  </div>
+
+  <div class="panel" style="margin-top:12px">
+    <div class="panel-title">实时判定日志</div>
+    <div id="live-judge-log" style="max-height:160px;overflow-y:auto;font-size:12px"></div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-review">
+  <div class="panel">
+    <div class="panel-title">关卡回放控制</div>
+    <div class="replay-bar">
+      <button class="btn btn-sm" id="replay-prev" onclick="replayStep(-1)">◀ 上一步</button>
+      <div class="progress" id="replay-progress" onclick="replaySeek(event)">
+        <div class="progress-fill" id="replay-fill" style="width:0%"></div>
+      </div>
+      <button class="btn btn-sm" id="replay-next" onclick="replayStep(1)">下一步 ▶</button>
+      <div class="step-info" id="replay-step-info">0 / 0</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">当前步骤详情</div>
+      <div id="replay-step-detail"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">对成绩的影响</div>
+      <div id="replay-score-impact"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">完整判定明细</div>
+    <div class="source-legend">
+      <span><span class="dot" style="background:var(--red)"></span> 切分音漏拍(原始)</span>
+      <span><span class="dot" style="background:var(--supplement)"></span> 速度突变(补录)</span>
+      <span><span class="dot" style="background:var(--purple)"></span> 受休止符补录影响</span>
+      <span><span class="dot" style="background:var(--green)"></span> 正常判定</span>
+    </div>
+    <div id="review-detail-list"></div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-report">
+  <div class="summary-bar" id="report-summary"></div>
+  <div id="report-syncopation-summary"></div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">音符瓶详情</div>
+      <div id="report-note-bottles"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">速度档详情</div>
+      <div id="report-speed-gears"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">成绩单详情</div>
+    <div id="report-score-sheet"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">休止符补录影响追踪</div>
+    <div id="report-rest-impact"></div>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button class="btn btn-primary" onclick="exportReport()">导出报告</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal" id="detail-modal-content"></div>
+</div>
+
+<script>
+const NOTE_TYPES = {regular:'常规音符',syncopation:'切分音',rest:'休止符'};
+const SOURCES = {original:'原始',supplement:'补录'};
+const JUDGMENTS = {perfect:'Perfect',good:'Good',miss:'Miss',syncopation_miss:'切分音漏拍'};
+
+let state = {
+  noteBottles: [],
+  speedGears: [],
+  scoreSheets: [],
+  currentGame: null,
+  gameResults: null,
+  replayIndex: 0
+};
+
+let noteBottleId = 0;
+let speedGearId = 0;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
+function addNoteBottle(source){
+  const id = ++noteBottleId;
+  const types = ['regular','syncopation','rest'];
+  const notes = [];
+  const count = 6 + Math.floor(Math.random()*6);
+  for(let i=0;i<count;i++){
+    const type = types[Math.random()<0.6?0:Math.random()<0.7?1:2];
+    notes.push({
+      id: uid(),
+      beat: i,
+      lane: Math.floor(Math.random()*4),
+      type,
+      duration: type==='syncopation'?0.5:1,
+      source
+    });
+  }
+  state.noteBottles.push({id,name:`音符瓶#${id}`,source,notes});
+  renderPrepare();
+}
+
+function addSpeedGear(source){
+  const id = ++speedGearId;
+  const bpm = source==='original'?120:Math.random()<0.5?120:160;
+  state.speedGears.push({id,name:`速度档#${id}`,source,bpm});
+  renderPrepare();
+}
+
+function generateScoreSheet(){
+  const id = uid();
+  state.scoreSheets.push({id,name:`成绩单#${id.slice(0,5)}`,created:new Date().toLocaleString()});
+  renderPrepare();
+}
+
+function loadDemoPreset(){
+  state.noteBottles = [];
+  state.speedGears = [];
+  state.scoreSheets = [];
+  noteBottleId = 0;
+  speedGearId = 0;
+
+  const ob = ++noteBottleId;
+  const origNotes = [
+    {id:uid(),beat:0,lane:0,type:'regular',duration:1,source:'original'},
+    {id:uid(),beat:1,lane:1,type:'regular',duration:1,source:'original'},
+    {id:uid(),beat:2,lane:2,type:'syncopation',duration:0.5,source:'original'},
+    {id:uid(),beat:2.5,lane:3,type:'regular',duration:0.5,source:'original'},
+    {id:uid(),beat:3,lane:0,type:'regular',duration:1,source:'original'},
+    {id:uid(),beat:4,lane:1,type:'syncopation',duration:0.5,source:'original'},
+    {id:uid(),beat:5,lane:2,type:'regular',duration:1,source:'original'},
+    {id:uid(),beat:6,lane:3,type:'regular',duration:1,source:'original'},
+    {id:uid(),beat:7,lane:0,type:'syncopation',duration:0.5,source:'original'},
+    {id:uid(),beat:7.5,lane:1,type:'regular',duration:0.5,source:'original'},
+    {id:uid(),beat:8,lane:2,type:'regular',duration:1,source:'original'},
+    {id:uid(),beat:9,lane:3,type:'regular',duration:1,source:'original'},
+  ];
+  state.noteBottles.push({id:ob,name:'音符瓶#1',source:'original',notes:origNotes});
+
+  const sb = ++noteBottleId;
+  const suppNotes = [
+    {id:uid(),beat:5.5,lane:0,type:'rest',duration:0.5,source:'supplement'},
+    {id:uid(),beat:10,lane:1,type:'regular',duration:1,source:'supplement'},
+    {id:uid(),beat:11,lane:2,type:'syncopation',duration:0.5,source:'supplement'},
+  ];
+  state.noteBottles.push({id:sb,name:'音符瓶#2',source:'supplement',notes:suppNotes});
+
+  const og = ++speedGearId;
+  state.speedGears.push({id:og,name:'速度档#1',source:'original',bpm:120});
+
+  const sg = ++speedGearId;
+  state.speedGears.push({id:sg,name:'速度档#2',source:'supplement',bpm:160});
+
+  state.scoreSheets.push({id:uid(),name:'成绩单#demo',created:new Date().toLocaleString()});
+
+  renderPrepare();
+}
+
+function renderPrepare(){
+  const nbl = document.getElementById('note-bottle-list');
+  nbl.innerHTML = state.noteBottles.map(b=>`
+    <div class="material-card" onclick="showBottleDetail('${b.id}')">
+      <div class="card-header">
+        <span class="card-name">${b.name}</span>
+        <span class="badge badge-${b.source==='original'?'original':'supplement'}">${SOURCES[b.source]}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">${b.notes.length}个音符 · 切分音${b.notes.filter(n=>n.type==='syncopation').length}个 · 休止符${b.notes.filter(n=>n.type==='rest').length}个</div>
+    </div>
+  `).join('');
+
+  const sgl = document.getElementById('speed-gear-list');
+  sgl.innerHTML = state.speedGears.map(g=>`
+    <div class="material-card" onclick="showGearDetail('${g.id}')">
+      <div class="card-header">
+        <span class="card-name">${g.name}</span>
+        <span class="badge badge-${g.source==='original'?'original':'supplement'}">${SOURCES[g.source]}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">BPM: ${g.bpm}</div>
+    </div>
+  `).join('');
+
+  const ssl = document.getElementById('score-sheet-list');
+  ssl.innerHTML = state.scoreSheets.map(s=>`
+    <div class="material-card">
+      <div class="card-header">
+        <span class="card-name">${s.name}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">创建: ${s.created}</div>
+    </div>
+  `).join('');
+
+  const sel1 = document.getElementById('sel-note-bottle');
+  sel1.innerHTML = state.noteBottles.map(b=>`<option value="${b.id}">${b.name} (${SOURCES[b.source]})</option>`).join('');
+
+  const sel2 = document.getElementById('sel-speed-gear');
+  sel2.innerHTML = state.speedGears.map(g=>`<option value="${g.id}">${g.name} - ${g.bpm}BPM (${SOURCES[g.source]})</option>`).join('');
+}
+
+function showBottleDetail(id){
+  const b = state.noteBottles.find(x=>x.id===id);
+  if(!b) return;
+  const html = `
+    <h3>${b.name} 详情</h3>
+    <div style="margin-bottom:12px"><span class="badge badge-${b.source==='original'?'original':'supplement'}">来源: ${SOURCES[b.source]}</span></div>
+    <table>
+      <tr><th>拍位</th><th>轨道</th><th>类型</th><th>时值</th></tr>
+      ${b.notes.map(n=>`<tr>
+        <td>${n.beat}</td>
+        <td>${['D','F','J','K'][n.lane]}</td>
+        <td><span class="badge badge-${n.type==='syncopation'?'syncopation':n.type==='rest'?'rest':'perfect'}">${NOTE_TYPES[n.type]}</span></td>
+        <td>${n.duration}</td>
+      </tr>`).join('')}
+    </table>
+    <div style="margin-top:16px;text-align:right"><button class="btn btn-sm" onclick="closeModal()">关闭</button></div>
+  `;
+  openModal(html);
+}
+
+function showGearDetail(id){
+  const g = state.speedGears.find(x=>x.id===id);
+  if(!g) return;
+  const html = `
+    <h3>${g.name} 详情</h3>
+    <div style="margin-bottom:12px"><span class="badge badge-${g.source==='original'?'original':'supplement'}">来源: ${SOURCES[g.source]}</span></div>
+    <p>BPM: ${g.bpm}</p>
+    ${g.source==='supplement'?`<p style="margin-top:8px;color:var(--supplement);font-size:13px">⚠ 此速度档为补录来源，如启用将在关卡中造成速度突变</p>`:''}
+    <div style="margin-top:16px;text-align:right"><button class="btn btn-sm" onclick="closeModal()">关闭</button></div>
+  `;
+  openModal(html);
+}
+
+function openModal(html){
+  const m = document.getElementById('detail-modal');
+  document.getElementById('detail-modal-content').innerHTML = html;
+  m.classList.add('show');
+}
+function closeModal(){
+  document.getElementById('detail-modal').classList.remove('show');
+}
+document.getElementById('detail-modal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+
+function startGame(){
+  const selBottle = document.getElementById('sel-note-bottle').value;
+  const selGear = document.getElementById('sel-speed-gear').value;
+  if(!selBottle||!selGear){alert('请先选择音符瓶和速度档');return}
+  switchTab('play');
+}
+
+let game = null;
+let animFrame = null;
+let paused = false;
+
+function beginPlay(){
+  const selBottle = document.getElementById('sel-note-bottle').value;
+  const selGear = document.getElementById('sel-speed-gear').value;
+  const bottle = state.noteBottles.find(b=>String(b.id)===selBottle);
+  const gear = state.speedGears.find(g=>String(g.id)===selGear);
+  if(!bottle||!gear) return;
+
+  const allBottles = [bottle, ...state.noteBottles.filter(b=>String(b.id)!==selBottle)];
+  const allNotes = allBottles.flatMap(b=>b.notes.map(n=>({...n,bottleName:b.name,bottleSource:b.source})));
+  allNotes.sort((a,b)=>a.beat-b.beat);
+
+  const allGears = [gear, ...state.speedGears.filter(g=>String(g.id)!==selGear)];
+  const gearChanges = [];
+  let currentBpm = gear.bpm;
+  allGears.forEach((g,i)=>{
+    if(i===0){
+      gearChanges.push({beat:0,bpm:g.bpm,source:g.source,gearName:g.name});
+      currentBpm = g.bpm;
+    } else {
+      const changeBeat = Math.floor(allNotes.length/2);
+      gearChanges.push({beat:changeBeat,bpm:g.bpm,source:g.source,gearName:g.name});
+    }
+  });
+
+  const restNotes = allNotes.filter(n=>n.type==='rest'&&n.source==='supplement');
+  const affectedByRest = new Set();
+  restNotes.forEach(rn=>{
+    allNotes.forEach((n,i)=>{
+      if(n.type!=='rest' && Math.abs(n.beat-rn.beat)<=1){
+        affectedByRest.add(i);
+      }
+    });
+  });
+
+  game = {
+    notes: allNotes,
+    gearChanges,
+    affectedByRest,
+    score: 0,
+    combo: 0,
+    maxCombo: 0,
+    judgments: [],
+    startTime: null,
+    currentBeat: 0,
+    running: false,
+    noteElements: {},
+    baseBpm: gear.bpm,
+    currentBpm: gear.bpm,
+    speedChangeTriggered: false
+  };
+
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-pause').disabled = false;
+  document.getElementById('btn-stop').disabled = false;
+  document.getElementById('live-judge-log').innerHTML = '';
+  document.getElementById('score-display').textContent = '0';
+  document.getElementById('combo-display').textContent = '';
+  document.getElementById('bpm-display').textContent = `BPM: ${gear.bpm}`;
+  document.getElementById('speed-hud').innerHTML = `<span class="dot" style="background:${gear.source==='original'?'var(--original)':'var(--supplement)'}"></span>${gear.name}`;
+
+  const area = document.getElementById('game-area');
+  area.querySelectorAll('.note').forEach(el=>el.remove());
+
+  game.running = true;
+  game.startTime = performance.now();
+  paused = false;
+  gameLoop();
+}
+
+function togglePause(){
+  if(!game) return;
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused?'继续':'暂停';
+  if(!paused){
+    game.startTime = performance.now() - game.elapsed;
+    gameLoop();
+  }
+}
+
+function stopPlay(){
+  if(!game) return;
+  game.running = false;
+  if(animFrame) cancelAnimationFrame(animFrame);
+  finishGame();
+}
+
+function getBpmAtBeat(beat){
+  let bpm = game.baseBpm;
+  let lastChange = null;
+  for(const gc of game.gearChanges){
+    if(gc.beat<=beat){
+      bpm = gc.bpm;
+      lastChange = gc;
+    }
+  }
+  return {bpm, change:lastChange};
+}
+
+function gameLoop(){
+  if(!game||!game.running||paused) return;
+
+  const now = performance.now();
+  game.elapsed = now - game.startTime;
+  const baseMsPerBeat = 60000/game.baseBpm;
+  game.currentBeat = game.elapsed / baseMsPerBeat;
+
+  const {bpm,change} = getBpmAtBeat(game.currentBeat);
+  if(bpm!==game.currentBpm){
+    game.currentBpm = bpm;
+    document.getElementById('bpm-display').textContent = `BPM: ${bpm}`;
+    if(change && change.source==='supplement'){
+      game.speedChangeTriggered = true;
+      const flag = document.getElementById('speed-change-flag');
+      flag.classList.add('show');
+      setTimeout(()=>flag.classList.remove('show'),2000);
+    }
+  }
+
+  const maxBeat = Math.max(...game.notes.map(n=>n.beat+n.duration));
+  const areaHeight = document.getElementById('game-area').offsetHeight;
+  const judgeLineY = areaHeight - 80;
+  const travelBeats = 4;
+
+  game.notes.forEach((note,i)=>{
+    if(note.judged) return;
+    const noteY = judgeLineY - ((note.beat - game.currentBeat + travelBeats) / travelBeats) * judgeLineY;
+    if(noteY > areaHeight + 30 || noteY < -30){
+      if(!note.judged){
+        note.judged = true;
+        note.judgment = 'miss';
+        note.judgedBeat = game.currentBeat;
+        recordJudgment(note,i);
+      }
+      return;
+    }
+
+    let el = game.noteElements[i];
+    if(!el){
+      el = document.createElement('div');
+      el.className = `note note-${note.type}`;
+      const laneWidth = 25;
+      el.style.left = (note.lane*laneWidth + laneWidth/2) + '%';
+      document.getElementById('game-area').appendChild(el);
+      game.noteElements[i] = el;
+    }
+    el.style.top = noteY + 'px';
+    el.style.opacity = noteY < 0 ? 0 : 1;
+  });
+
+  game.notes.forEach((note,i)=>{
+    if(note.judged) return;
+    if(game.currentBeat > note.beat + note.duration + 0.8){
+      note.judged = true;
+      note.judgment = 'miss';
+      note.judgedBeat = game.currentBeat;
+      recordJudgment(note,i);
+    }
+  });
+
+  if(game.currentBeat > maxBeat + 2){
+    game.running = false;
+    finishGame();
+    return;
+  }
+
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+function handleKeyHit(lane){
+  if(!game||!game.running||paused) return;
+
+  let closest = null;
+  let closestDist = Infinity;
+  let closestIdx = -1;
+
+  game.notes.forEach((note,i)=>{
+    if(note.judged || note.lane!==lane || note.type==='rest') return;
+    const dist = Math.abs(game.currentBeat - note.beat);
+    if(dist < closestDist && dist < 1.0){
+      closestDist = dist;
+      closest = note;
+      closestIdx = i;
+    }
+  });
+
+  if(!closest) return;
+
+  closest.judged = true;
+  closest.judgedBeat = game.currentBeat;
+
+  let judgment;
+  let points;
+  if(closestDist < 0.15){
+    judgment = 'perfect'; points = 100;
+  } else if(closestDist < 0.4){
+    judgment = 'good'; points = 60;
+  } else {
+    judgment = 'miss'; points = 0;
+  }
+
+  if(closest.type==='syncopation' && judgment==='miss'){
+    judgment = 'syncopation_miss';
+    points = -20;
+  }
+
+  closest.judgment = judgment;
+  closest.points = points;
+
+  if(points > 0){
+    game.combo++;
+    game.maxCombo = Math.max(game.maxCombo,game.combo);
+    game.score += points + Math.floor(game.combo * 2);
+  } else {
+    game.combo = 0;
+  }
+
+  document.getElementById('score-display').textContent = game.score;
+  document.getElementById('combo-display').textContent = game.combo > 1 ? `${game.combo} Combo` : '';
+
+  const jtEl = document.getElementById(`judge-text-${lane}`);
+  const colors = {perfect:'var(--green)',good:'var(--yellow)',miss:'var(--red)',syncopation_miss:'var(--red)'};
+  jtEl.style.color = colors[judgment];
+  jtEl.textContent = judgment==='syncopation_miss'?'切分音漏拍!':judgment.toUpperCase();
+  jtEl.classList.add('show');
+  setTimeout(()=>jtEl.classList.remove('show'),500);
+
+  recordJudgment(closest,closestIdx);
+
+  if(game.noteElements[closestIdx]){
+    game.noteElements[closestIdx].style.display = 'none';
+  }
+}
+
+function recordJudgment(note,idx){
+  const {bpm,change} = getBpmAtBeat(note.beat);
+  const speedSourceAtBeat = change ? change.source : 'original';
+
+  const isAffectedByRest = game.affectedByRest.has(idx);
+  const isSpeedFromSupplement = speedSourceAtBeat === 'supplement';
+  const isSyncopationFromOriginal = note.type==='syncopation' && note.source==='original';
+
+  const entry = {
+    step: game.judgments.length + 1,
+    noteIndex: idx,
+    beat: note.beat,
+    lane: note.lane,
+    noteType: note.type,
+    noteSource: note.source,
+    judgment: note.judgment,
+    points: note.points || 0,
+    speedSourceAtBeat,
+    speedBpm: bpm,
+    gearName: change ? change.gearName : '-',
+    affectedByRest: isAffectedByRest,
+    isSpeedFromSupplement,
+    isSyncopationFromOriginal,
+    combo: game.combo
+  };
+  game.judgments.push(entry);
+
+  const log = document.getElementById('live-judge-log');
+  const sourceTag = note.source==='supplement'?'<span class="badge badge-supplement">补录</span>':'<span class="badge badge-original">原始</span>';
+  const typeTag = note.type==='syncopation'?'<span class="badge badge-syncopation">切分音</span>':note.type==='rest'?'<span class="badge badge-rest">休止符</span>':'';
+  const jTag = `<span class="badge badge-${note.judgment==='perfect'?'perfect':note.judgment==='good'?'good':'miss'}">${JUDGMENTS[note.judgment]||note.judgment}</span>`;
+  const restTag = isAffectedByRest?'<span class="affected-tag">受休止符影响</span>':'';
+  const speedTag = isSpeedFromSupplement?'<span class="badge badge-supplement" style="font-size:10px">速度突变</span>':'';
+
+  log.innerHTML = `<div class="detail-row${isSyncopationFromOriginal?' syncopation-from-original':''}${isSpeedFromSupplement?' speed-from-supplement':''}${isAffectedByRest?' affected-by-rest':''}">
+    <span class="step">#${entry.step}</span>
+    <span>拍${note.beat} 轨道${['D','F','J','K'][note.lane]}</span>
+    ${typeTag}${sourceTag}
+    ${jTag}${restTag}${speedTag}
+    <span class="impact">${entry.points>0?'+':''}${entry.points}</span>
+  </div>` + log.innerHTML;
+}
+
+document.addEventListener('keydown',e=>{
+  const map = {d:0,f:1,j:2,k:3,D:0,F:1,J:2,K:3};
+  if(map[e.key]!==undefined){
+    e.preventDefault();
+    handleKeyHit(map[e.key]);
+  }
+});
+
+function finishGame(){
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled = true;
+
+  state.gameResults = {
+    score: game.score,
+    maxCombo: game.maxCombo,
+    judgments: [...game.judgments],
+    notes: [...game.notes],
+    gearChanges: [...game.gearChanges],
+    affectedByRest: new Set(game.affectedByRest),
+    noteBottles: state.noteBottles.map(b=>({...b})),
+    speedGears: state.speedGears.map(g=>({...g})),
+    baseBpm: game.baseBpm
+  };
+
+  renderReview();
+  renderReport();
+  switchTab('review');
+}
+
+function renderReview(){
+  const r = state.gameResults;
+  if(!r) return;
+  state.replayIndex = 0;
+  updateReplayView();
+  renderReviewDetails();
+}
+
+function replayStep(dir){
+  const r = state.gameResults;
+  if(!r) return;
+  state.replayIndex = Math.max(0,Math.min(r.judgments.length-1,state.replayIndex+dir));
+  updateReplayView();
+}
+
+function replaySeek(e){
+  const r = state.gameResults;
+  if(!r||!r.judgments.length) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left)/rect.width;
+  state.replayIndex = Math.floor(pct * r.judgments.length);
+  state.replayIndex = Math.max(0,Math.min(r.judgments.length-1,state.replayIndex));
+  updateReplayView();
+}
+
+function updateReplayView(){
+  const r = state.gameResults;
+  if(!r||!r.judgments.length) return;
+  const j = r.judgments[state.replayIndex];
+  const total = r.judgments.length;
+
+  document.getElementById('replay-fill').style.width = ((state.replayIndex+1)/total*100)+'%';
+  document.getElementById('replay-step-info').textContent = `${state.replayIndex+1} / ${total}`;
+
+  const typeLabel = NOTE_TYPES[j.noteType]||j.noteType;
+  const sourceLabel = SOURCES[j.noteSource]||j.noteSource;
+  const judgeLabel = JUDGMENTS[j.judgment]||j.judgment;
+
+  let detailHtml = `
+    <div style="font-size:13px;line-height:1.8">
+      <div><strong>步骤 #${j.step}</strong> · 拍位 ${j.beat} · 轨道 ${['D','F','J','K'][j.lane]}</div>
+      <div>音符类型: <span class="badge badge-${j.noteType==='syncopation'?'syncopation':j.noteType==='rest'?'rest':'perfect'}">${typeLabel}</span></div>
+      <div>数据来源: <span class="badge badge-${j.noteSource==='original'?'original':'supplement'}">${sourceLabel}</span></div>
+      <div>判定: <span class="badge badge-${j.judgment==='perfect'?'perfect':j.judgment==='good'?'good':'miss'}">${judgeLabel}</span></div>
+      <div>当时BPM: ${j.speedBpm} <span class="badge badge-${j.speedSourceAtBeat==='original'?'original':'supplement'}">${SOURCES[j.speedSourceAtBeat]}</span></div>
+      ${j.isSyncopationFromOriginal?'<div style="color:var(--red);margin-top:4px">⚠ 切分音漏拍来自原始材料</div>':''}
+      ${j.isSpeedFromSupplement?'<div style="color:var(--supplement);margin-top:4px">⚠ 速度突变来自补录速度档</div>':''}
+      ${j.affectedByRest?'<div style="color:var(--purple);margin-top:4px">🔷 受休止符补录影响</div>':''}
+    </div>
+  `;
+  document.getElementById('replay-step-detail').innerHTML = detailHtml;
+
+  let impactHtml = `
+    <div style="font-size:13px;line-height:1.8">
+      <div>得分变化: <strong style="color:${j.points>=0?'var(--green)':'var(--red)'}">${j.points>0?'+':''}${j.points}</strong></div>
+      <div>当时连击: ${j.combo}</div>
+  `;
+
+  if(j.isSyncopationFromOriginal){
+    impactHtml += `<div style="margin-top:8px;color:var(--red)">此切分音来自<strong>原始材料</strong>，漏拍扣分 ${j.points} 反映的是原始谱面的节奏难度，非补录导致。</div>`;
+  }
+  if(j.isSpeedFromSupplement){
+    impactHtml += `<div style="margin-top:8px;color:var(--supplement)">此处速度突变来自<strong>补录速度档</strong>，判定窗口收窄可能是补录造成的，并非原始材料难度。</div>`;
+  }
+  if(j.affectedByRest){
+    impactHtml += `<div style="margin-top:8px;color:var(--purple)">休止符补录出现在拍位附近，影响了此步骤的节奏感知。</div>`;
+  }
+  if(!j.isSyncopationFromOriginal && !j.isSpeedFromSupplement && !j.affectedByRest){
+    impactHtml += `<div style="margin-top:8px;color:var(--green)">正常判定，无补录干扰。</div>`;
+  }
+
+  impactHtml += '</div>';
+  document.getElementById('replay-score-impact').innerHTML = impactHtml;
+}
+
+function renderReviewDetails(){
+  const r = state.gameResults;
+  if(!r) return;
+  const list = document.getElementById('review-detail-list');
+  list.innerHTML = r.judgments.map(j=>{
+    const typeTag = j.noteType==='syncopation'?'<span class="badge badge-syncopation">切分音</span>':j.noteType==='rest'?'<span class="badge badge-rest">休止符</span>':'';
+    const sourceTag = `<span class="badge badge-${j.noteSource==='original'?'original':'supplement'}">${SOURCES[j.noteSource]}</span>`;
+    const judgeTag = `<span class="badge badge-${j.judgment==='perfect'?'perfect':j.judgment==='good'?'good':'miss'}">${JUDGMENTS[j.judgment]||j.judgment}</span>`;
+    const restTag = j.affectedByRest?'<span class="affected-tag">受休止符影响</span>':'';
+    const speedTag = j.isSpeedFromSupplement?'<span class="badge badge-supplement" style="font-size:10px">速度突变(补录)</span>':'';
+    const syncTag = j.isSyncopationFromOriginal?'<span class="badge badge-syncopation" style="font-size:10px">切分音漏拍(原始)</span>':'';
+
+    let cls = '';
+    if(j.isSyncopationFromOriginal) cls = 'syncopation-from-original';
+    else if(j.isSpeedFromSupplement) cls = 'speed-from-supplement';
+    else if(j.affectedByRest) cls = 'affected-by-rest';
+
+    return `<div class="detail-row ${cls}" onclick="jumpReplay(${j.step-1})">
+      <span class="step">#${j.step}</span>
+      <span>拍${j.beat} ${['D','F','J','K'][j.lane]}</span>
+      ${typeTag}${sourceTag}${judgeTag}
+      ${syncTag}${speedTag}${restTag}
+      <span class="impact">${j.points>0?'+':''}${j.points}</span>
+    </div>`;
+  }).join('');
+}
+
+function jumpReplay(idx){
+  state.replayIndex = idx;
+  updateReplayView();
+}
+
+function renderReport(){
+  const r = state.gameResults;
+  if(!r) return;
+
+  const perfectCount = r.judgments.filter(j=>j.judgment==='perfect').length;
+  const goodCount = r.judgments.filter(j=>j.judgment==='good').length;
+  const missCount = r.judgments.filter(j=>j.judgment==='miss').length;
+  const syncMissCount = r.judgments.filter(j=>j.judgment==='syncopation_miss').length;
+  const totalNotes = r.judgments.filter(j=>j.noteType!=='rest').length;
+  const accuracy = totalNotes>0?Math.round((perfectCount+goodCount)/totalNotes*100):0;
+
+  const syncFromOriginal = r.judgments.filter(j=>j.isSyncopationFromOriginal);
+  const speedFromSupp = r.judgments.filter(j=>j.isSpeedFromSupplement);
+  const affectedByRest = r.judgments.filter(j=>j.affectedByRest);
+
+  document.getElementById('report-summary').innerHTML = `
+    <div class="summary-item"><div class="val" style="color:var(--accent)">${r.score}</div><div class="label">总分</div></div>
+    <div class="summary-item"><div class="val" style="color:var(--green)">${perfectCount}</div><div class="label">Perfect</div></div>
+    <div class="summary-item"><div class="val" style="color:var(--yellow)">${goodCount}</div><div class="label">Good</div></div>
+    <div class="summary-item"><div class="val" style="color:var(--red)">${missCount}</div><div class="label">Miss</div></div>
+    <div class="summary-item"><div class="val" style="color:var(--red)">${syncMissCount}</div><div class="label">切分音漏拍</div></div>
+    <div class="summary-item"><div class="val" style="color:var(--accent2)">${accuracy}%</div><div class="label">准确率</div></div>
+    <div class="summary-item"><div class="val" style="color:var(--yellow)">${r.maxCombo}</div><div class="label">最大连击</div></div>
+  `;
+
+  let syncSummaryHtml = '';
+  if(syncFromOriginal.length>0){
+    syncSummaryHtml += `
+      <div class="syncopation-alert">
+        <div class="icon">⚠</div>
+        <div class="info">
+          <div class="title">切分音漏拍 × ${syncFromOriginal.length}（来自原始材料）</div>
+          <div class="desc">
+            步骤: ${syncFromOriginal.map(j=>`#${j.step}(拍${j.beat})`).join('、')}
+            <br>这些漏拍来自原始谱面材料，非补录导致，扣分合计 ${syncFromOriginal.reduce((s,j)=>s+Math.abs(j.points),0)}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  if(speedFromSupp.length>0){
+    syncSummaryHtml += `
+      <div class="syncopation-alert" style="border-color:rgba(240,136,62,.3);background:rgba(240,136,62,.08)">
+        <div class="icon">⚡</div>
+        <div class="info">
+          <div class="title" style="color:var(--supplement)">速度突变 × ${speedFromSupp.length}（来自补录速度档）</div>
+          <div class="desc">
+            步骤: ${speedFromSupp.map(j=>`#${j.step}(拍${j.beat},BPM${j.speedBpm})`).join('、')}
+            <br>这些速度变化来自补录速度档，非原始材料
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById('report-syncopation-summary').innerHTML = syncSummaryHtml;
+
+  document.getElementById('report-note-bottles').innerHTML = r.noteBottles.map(b=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong>${b.name}</strong>
+        <span class="badge badge-${b.source==='original'?'original':'supplement'}">${SOURCES[b.source]}</span>
+      </div>
+      <table>
+        <tr><th>拍位</th><th>轨道</th><th>类型</th><th>时值</th></tr>
+        ${b.notes.map(n=>`<tr>
+          <td>${n.beat}</td>
+          <td>${['D','F','J','K'][n.lane]}</td>
+          <td><span class="badge badge-${n.type==='syncopation'?'syncopation':n.type==='rest'?'rest':'perfect'}">${NOTE_TYPES[n.type]}</span></td>
+          <td>${n.duration}</td>
+        </tr>`).join('')}
+      </table>
+    </div>
+  `).join('');
+
+  document.getElementById('report-speed-gears').innerHTML = r.speedGears.map(g=>`
+    <div style="margin-bottom:8px;padding:10px;background:rgba(13,17,23,.4);border-radius:4px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span>${g.name}</span>
+        <span><span class="badge badge-${g.source==='original'?'original':'supplement'}">${SOURCES[g.source]}</span> ${g.bpm} BPM</span>
+      </div>
+      ${g.source==='supplement'?'<div style="margin-top:4px;font-size:11px;color:var(--supplement)">⚡ 补录来源 — 启用后造成速度突变</div>':''}
+    </div>
+  `).join('');
+
+  document.getElementById('report-score-sheet').innerHTML = `
+    <table>
+      <tr><th>步骤</th><th>拍位</th><th>轨道</th><th>判定</th><th>来源</th><th>速度来源</th><th>得分</th><th>标记</th></tr>
+      ${r.judgments.map(j=>`<tr>
+        <td>#${j.step}</td>
+        <td>${j.beat}</td>
+        <td>${['D','F','J','K'][j.lane]}</td>
+        <td><span class="badge badge-${j.judgment==='perfect'?'perfect':j.judgment==='good'?'good':'miss'}">${JUDGMENTS[j.judgment]||j.judgment}</span></td>
+        <td><span class="badge badge-${j.noteSource==='original'?'original':'supplement'}">${SOURCES[j.noteSource]}</span></td>
+        <td><span class="badge badge-${j.speedSourceAtBeat==='original'?'original':'supplement'}">${SOURCES[j.speedSourceAtBeat]}</span></td>
+        <td style="color:${j.points>=0?'var(--green)':'var(--red)'}">${j.points>0?'+':''}${j.points}</td>
+        <td>${j.isSyncopationFromOriginal?'<span class="badge badge-syncopation" style="font-size:10px">切分音漏拍</span>':''}${j.isSpeedFromSupplement?'<span class="badge badge-supplement" style="font-size:10px">速度突变</span>':''}${j.affectedByRest?'<span class="affected-tag">休止符影响</span>':''}</td>
+      </tr>`).join('')}
+    </table>
+  `;
+
+  if(affectedByRest.length>0){
+    const restNotes = r.notes.filter(n=>n.type==='rest'&&n.source==='supplement');
+    document.getElementById('report-rest-impact').innerHTML = `
+      <div style="margin-bottom:12px;color:var(--purple)">
+        <strong>补录休止符:</strong> ${restNotes.map(n=>`拍${n.beat} 轨道${['D','F','J','K'][n.lane]}`).join('、')}
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">以下判定明细受到休止符补录的影响：</div>
+      ${affectedByRest.map(j=>`
+        <div class="detail-row affected-by-rest">
+          <span class="step">#${j.step}</span>
+          <span>拍${j.beat} ${['D','F','J','K'][j.lane]}</span>
+          <span class="badge badge-${j.judgment==='perfect'?'perfect':j.judgment==='good'?'good':'miss'}">${JUDGMENTS[j.judgment]||j.judgment}</span>
+          <span class="affected-tag">休止符影响</span>
+          <span class="impact">${j.points>0?'+':''}${j.points}</span>
+        </div>
+      `).join('')}
+    `;
+  } else {
+    document.getElementById('report-rest-impact').innerHTML = '<div style="color:var(--muted);font-size:13px">本局无补录休止符影响</div>';
+  }
+}
+
+function exportReport(){
+  const r = state.gameResults;
+  if(!r) return;
+
+  const perfectCount = r.judgments.filter(j=>j.judgment==='perfect').length;
+  const goodCount = r.judgments.filter(j=>j.judgment==='good').length;
+  const missCount = r.judgments.filter(j=>j.judgment==='miss').length;
+  const syncMissCount = r.judgments.filter(j=>j.judgment==='syncopation_miss').length;
+  const syncFromOriginal = r.judgments.filter(j=>j.isSyncopationFromOriginal);
+  const speedFromSupp = r.judgments.filter(j=>j.isSpeedFromSupplement);
+
+  let text = `=== 节奏炼金工坊 成绩报告 ===\n\n`;
+  text += `总分: ${r.score}\n`;
+  text += `Perfect: ${perfectCount} | Good: ${goodCount} | Miss: ${missCount} | 切分音漏拍: ${syncMissCount}\n`;
+  text += `最大连击: ${r.maxCombo}\n\n`;
+
+  if(syncFromOriginal.length>0){
+    text += `【切分音漏拍(原始材料)】\n`;
+    syncFromOriginal.forEach(j=>{text += `  步骤#${j.step} 拍${j.beat} 轨道${['D','F','J','K'][j.lane]} 得分${j.points}\n`});
+    text += '\n';
+  }
+  if(speedFromSupp.length>0){
+    text += `【速度突变(补录)】\n`;
+    speedFromSupp.forEach(j=>{text += `  步骤#${j.step} 拍${j.beat} BPM${j.speedBpm} 得分${j.points}\n`});
+    text += '\n';
+  }
+
+  text += `【完整判定明细】\n`;
+  r.judgments.forEach(j=>{
+    const marks = [];
+    if(j.isSyncopationFromOriginal) marks.push('切分音漏拍(原始)');
+    if(j.isSpeedFromSupplement) marks.push('速度突变(补录)');
+    if(j.affectedByRest) marks.push('受休止符影响');
+    text += `  #${j.step} 拍${j.beat} ${['D','F','J','K'][j.lane]} ${JUDGMENTS[j.judgment]||j.judgment} ${j.points>0?'+':''}${j.points} 来源:${SOURCES[j.noteSource]} 速度:${SOURCES[j.speedSourceAtBeat]}${marks.length?' '+marks.join(','):''}\n`;
+  });
+
+  const blob = new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `节奏炼金工坊_报告_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab-'+name));
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
+});
+
+loadDemoPreset();
+</script>
+</body>
+</html>
