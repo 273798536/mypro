@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #102a43;
+  background-color: #f0f4f8;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-lg border border-primary-100 shadow-sm;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+  
+  .btn {
+    @apply px-4 py-2 rounded text-sm font-medium transition-all duration-200 border;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-800 text-white border-primary-800 hover:bg-primary-700 hover:shadow-md;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-primary-800 border-primary-200 hover:bg-primary-50;
+  }
+  
+  .btn-danger {
+    @apply btn bg-conflict text-white border-conflict hover:bg-conflict-dark;
+  }
+  
+  .btn-success {
+    @apply btn bg-success text-white border-success hover:bg-success-dark;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-conflict {
+    @apply badge bg-conflict-light text-conflict-dark border border-conflict/20;
+  }
+  
+  .badge-success {
+    @apply badge bg-success-light text-success-dark border border-success/20;
+  }
+  
+  .badge-warning {
+    @apply badge bg-warning-light text-warning-dark border border-warning/20;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary-50 text-primary-800 border border-primary-200;
+  }
+  
+  .conflict-pattern {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(231, 76, 60, 0.15) 4px,
+      rgba(231, 76, 60, 0.15) 8px
+    );
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #bcccdc transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #bcccdc;
+    border-radius: 3px;
+  }
+}
