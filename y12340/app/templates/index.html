@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弹簧阻尼实验台</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .table tr:hover {
+            background: #f8fafc;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-draft { background: #e2e8f0; color: #475569; }
+        .status-validating { background: #fef3c7; color: #92400e; }
+        .status-validated { background: #dbeafe; color: #1e40af; }
+        .status-fitting { background: #ede9fe; color: #5b21b6; }
+        .status-completed { background: #dcfce7; color: #166534; }
+        .status-archived { background: #f1f5f9; color: #64748b; }
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid;
+        }
+        .alert-error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            color: #166534;
+        }
+        .alert-info {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .data-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th, .data-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .data-table th {
+            background: #f8fafc;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .data-table input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 1000px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .modal-body {
+            padding: 24px;
+        }
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            color: #64748b;
+        }
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+        .param-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .param-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .param-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        .param-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .param-unit {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 24px;
+            color: #64748b;
+        }
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb-sep {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>🔬 弹簧阻尼实验台</h1>
+            <div class="subtitle">数据校验 · 参数拟合 · 报告导出</div>
+        </div>
+        <button class="btn btn-primary" onclick="showCreateModal()">+ 新建实验</button>
+    </div>
+
+    <div class="container">
+        <div id="list-view">
+            <div class="card">
+                <div class="card-title">📋 实验列表</div>
+                <div id="experiment-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>暂无实验数据，点击右上角"新建实验"开始</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="detail-view" style="display: none;">
+            <div class="breadcrumb">
+                <a onclick="showListView()">实验列表</a>
+                <span class="breadcrumb-sep">/</span>
+                <span id="detail-title">实验详情</span>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span>📊 实验概览</span>
+                    <span id="detail-status" class="status-badge"></span>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">实验名称</label>
+                        <input type="text" class="form-input" id="edit-name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">物体质量</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" step="any" class="form-input" id="edit-mass" style="flex: 1;">
+                            <select class="form-select" id="edit-mass-unit" style="width: 100px;">
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">数据来源</label>
+                        <input type="text" class="form-input" id="edit-source">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">状态</label>
+                        <select class="form-select" id="edit-status">
+                            <option value="draft">草稿</option>
+                            <option value="validating">校验中</option>
+                            <option value="validated">已校验</option>
+                            <option value="fitting">拟合中</option>
+                            <option value="completed">已完成</option>
+                            <option value="archived">已归档</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">描述</label>
+                    <textarea class="form-input" id="edit-description" rows="2"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-success" onclick="saveExperiment()">💾 保存更改</button>
+                    <button class="btn btn-warning" onclick="validateExperiment()">✅ 数据校验</button>
+                    <button class="btn btn-primary" onclick="fitExperiment()">📈 参数拟合</button>
+                    <button class="btn btn-secondary" onclick="exportReport()">📄 导出报告</button>
+                    <button class="btn btn-danger" onclick="deleteExperiment()">🗑️ 删除实验</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('data')">📊 数据点</div>
+                    <div class="tab" onclick="switchTab('validation')">✅ 校验结果</div>
+                    <div class="tab" onclick="switchTab('fitting')">📈 拟合结果</div>
+                </div>
+                
+                <div id="tab-data" class="tab-content active">
+                    <div style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
+                        <button class="btn btn-small btn-primary" onclick="addDataRow()">+ 添加数据行</button>
+                        <button class="btn btn-small btn-secondary" onclick="loadSampleData()">📋 加载示例数据</button>
+                        <span style="font-size: 13px; color: #64748b;">共 <span id="data-count">0</span> 个数据点</span>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table" id="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>时间</th>
+                                    <th>单位</th>
+                                    <th>位移</th>
+                                    <th>单位</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-validation" class="tab-content">
+                    <div id="validation-results"></div>
+                </div>
+
+                <div id="tab-fitting" class="tab-content">
+                    <div id="fitting-results"></div>
+                    <div class="chart-container">
+                        <canvas id="fitting-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">新建实验</h2>
+                <button class="close-btn" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">实验名称 *</label>
+                    <input type="text" class="form-input" id="new-name" placeholder="例如：弹簧阻尼实验-第1组">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">物体质量 *</label>
+                        <input type="number" step="any" class="form-input" id="new-mass" placeholder="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">质量单位</label>
+                        <select class="form-select" id="new-mass-unit">
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">数据来源</label>
+                    <input type="text" class="form-input" id="new-source" placeholder="例如：学生实验记录、传感器导出">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">记录人</label>
+                    <input type="text" class="form-input" id="new-creator" placeholder="张三">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">数据（按回车添加）</label>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <input type="number" step="any" class="form-input" id="new-time" placeholder="时间" style="flex: 1;">
+                        <input type="number" step="any" class="form-input" id="new-disp" placeholder="位移" style="flex: 1;">
+                        <button class="btn btn-primary" onclick="addTempData()">添加</button>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table" id="temp-data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>时间 (s)</th>
+                                    <th>位移 (m)</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="temp-data-body"></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <button class="btn btn-small btn-secondary" onclick="loadSampleDataToTemp()">📋 加载示例数据</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCreateModal()">取消</button>
+                <button class="btn btn-primary" onclick="createExperiment()">创建实验</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentExperimentId = null;
+        let tempDataPoints = [];
+        let dataPoints = [];
+        let chart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadExperiments();
+        });
+
+        async function loadExperiments() {
+            const res = await fetch('/api/v1/experiments/');
+            const experiments = await res.json();
+            
+            const container = document.getElementById('experiment-list');
+            
+            if (experiments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>暂无实验数据，点击右上角"新建实验"开始</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>实验名称</th>
+                            <th>状态</th>
+                            <th>质量</th>
+                            <th>数据点</th>
+                            <th>版本</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${experiments.map(exp => `
+                            <tr>
+                                <td><strong>${exp.name}</strong></td>
+                                <td><span class="status-badge status-${exp.status}">${getStatusText(exp.status)}</span></td>
+                                <td>${exp.mass} ${exp.mass_unit}</td>
+                                <td>${exp.data_points_count}</td>
+                                <td>v${exp.version}</td>
+                                <td>${new Date(exp.created_at).toLocaleString('zh-CN')}</td>
+                                <td>
+                                    <button class="btn btn-small btn-primary" onclick="showDetailView(${exp.id})">查看</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function getStatusText(status) {
+            const map = {
+                'draft': '草稿',
+                'validating': '校验中',
+                'validated': '已校验',
+                'fitting': '拟合中',
+                'completed': '已完成',
+                'archived': '已归档'
+            };
+            return map[status] || status;
+        }
+
+        function showListView() {
+            document.getElementById('list-view').style.display = 'block';
+            document.getElementById('detail-view').style.display = 'none';
+            loadExperiments();
+        }
+
+        async function showDetailView(id) {
+            currentExperimentId = id;
+            const res = await fetch(`/api/v1/experiments/${id}`);
+            const exp = await res.json();
+            
+            document.getElementById('list-view').style.display = 'none';
+            document.getElementById('detail-view').style.display = 'block';
+            document.getElementById('detail-title').textContent = exp.name;
+            document.getElementById('detail-status').textContent = getStatusText(exp.status);
+            document.getElementById('detail-status').className = `status-badge status-${exp.status}`;
+            
+            document.getElementById('edit-name').value = exp.name;
+            document.getElementById('edit-description').value = exp.description || '';
+            document.getElementById('edit-mass').value = exp.mass;
+            document.getElementById('edit-mass-unit').value = exp.mass_unit;
+            document.getElementById('edit-source').value = exp.data_source || '';
+            document.getElementById('edit-status').value = exp.status;
+            
+            dataPoints = exp.data_points.map(dp => ({
+                timestamp: dp.timestamp,
+                timestamp_unit: dp.timestamp_unit,
+                displacement: dp.displacement,
+                displacement_unit: dp.displacement_unit
+            }));
+            
+            renderDataTable();
+            await loadValidationResults();
+            await loadFittingResults();
+        }
+
+        function showCreateModal() {
+            tempDataPoints = [];
+            renderTempDataTable();
+            document.getElementById('create-modal').classList.add('active');
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-mass').value = '';
+            document.getElementById('new-source').value = '';
+            document.getElementById('new-creator').value = '';
+            document.getElementById('new-time').value = '';
+            document.getElementById('new-disp').value = '';
+        }
+
+        function closeCreateModal() {
+            document.getElementById('create-modal').classList.remove('active');
+        }
+
+        function addTempData() {
+            const time = parseFloat(document.getElementById('new-time').value);
+            const disp = parseFloat(document.getElementById('new-disp').value);
+            
+            if (isNaN(time) || isNaN(disp)) return;
+            
+            tempDataPoints.push({ timestamp: time, displacement: disp });
+            renderTempDataTable();
+            document.getElementById('new-time').value = '';
+            document.getElementById('new-disp').value = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.getElementById('create-modal').classList.contains('active')) {
+                if (document.activeElement.id === 'new-disp') {
+                    addTempData();
+                    document.getElementById('new-time').focus();
+                }
+            }
+        });
+
+        function removeTempData(index) {
+            tempDataPoints.splice(index, 1);
+            renderTempDataTable();
+        }
+
+        function renderTempDataTable() {
+            const tbody = document.getElementById('temp-data-body');
+            tbody.innerHTML = tempDataPoints.map((dp, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${dp.timestamp}</td>
+                    <td>${dp.displacement}</td>
+                    <td><button class="btn btn-small btn-danger" onclick="removeTempData(${i})">删除</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function loadSampleDataToTemp() {
+            const t = [];
+            for (let i = 0; i <= 50; i++) {
+                const time = i * 0.1;
+                const disp = 0.1 * Math.exp(-0.3 * time) * Math.cos(5 * time);
+                t.push({ timestamp: time, displacement: disp });
+            }
+            tempDataPoints = t;
+            renderTempDataTable();
+        }
+
+        async function createExperiment() {
+            const name = document.getElementById('new-name').value;
+            const mass = parseFloat(document.getElementById('new-mass').value);
+            const massUnit = document.getElementById('new-mass-unit').value;
+            const source = document.getElementById('new-source').value;
+            const creator = document.getElementById('new-creator').value;
+            
+            if (!name || isNaN(mass) || tempDataPoints.length === 0) {
+                alert('请填写实验名称、质量和至少一个数据点');
+                return;
+            }
+            
+            const res = await fetch('/api/v1/experiments/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    mass,
+                    mass_unit: massUnit,
+                    data_source: source,
+                    created_by: creator,
+                    data_points: tempDataPoints.map(dp => ({
+                        timestamp: dp.timestamp,
+                        displacement: dp.displacement
+                    }))
+                })
+            });
+            
+            closeCreateModal();
+            loadExperiments();
+        }
+
+        function addDataRow() {
+            dataPoints.push({ timestamp: 0, timestamp_unit: 's', displacement: 0, displacement_unit: 'm' });
+            renderDataTable();
+        }
+
+        function removeDataRow(index) {
+            dataPoints.splice(index, 1);
+            renderDataTable();
+        }
+
+        function renderDataTable() {
+            const tbody = document.getElementById('data-table-body');
+            tbody.innerHTML = dataPoints.map((dp, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><input type="number" step="any" value="${dp.timestamp}" onchange="updateDataPoint(${i}, 'timestamp', this.value)"></td>
+                    <td>
+                        <select onchange="updateDataPoint(${i}, 'timestamp_unit', this.value)">
+                            <option value="s" ${dp.timestamp_unit === 's' ? 'selected' : ''}>s</option>
+                            <option value="ms" ${dp.timestamp_unit === 'ms' ? 'selected' : ''}>ms</option>
+                        </select>
+                    </td>
+                    <td><input type="number" step="any" value="${dp.displacement}" onchange="updateDataPoint(${i}, 'displacement', this.value)"></td>
+                    <td>
+                        <select onchange="updateDataPoint(${i}, 'displacement_unit', this.value)">
+                            <option value="m" ${dp.displacement_unit === 'm' ? 'selected' : ''}>m</option>
+                            <option value="cm" ${dp.displacement_unit === 'cm' ? 'selected' : ''}>cm</option>
+                            <option value="mm" ${dp.displacement_unit === 'mm' ? 'selected' : ''}>mm</option>
+                        </select>
+                    </td>
+                    <td><button class="btn btn-small btn-danger" onclick="removeDataRow(${i})">删除</button></td>
+                </tr>
+            `).join('');
+            document.getElementById('data-count').textContent = dataPoints.length;
+        }
+
+        function updateDataPoint(index, field, value) {
+            if (field === 'timestamp' || field === 'displacement') {
+                dataPoints[index][field] = parseFloat(value);
+            } else {
+                dataPoints[index][field] = value;
+            }
+        }
+
+        function loadSampleData() {
+            const t = [];
+            for (let i = 0; i <= 50; i++) {
+                const time = i * 0.1;
+                const disp = 0.1 * Math.exp(-0.3 * time) * Math.cos(5 * time);
+                t.push({ timestamp: time, timestamp_unit: 's', displacement: disp, displacement_unit: 'm' });
+            }
+            dataPoints = t;
+            renderDataTable();
+        }
+
+        async function saveExperiment() {
+            const res = await fetch(`/api/v1/experiments/${currentExperimentId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: document.getElementById('edit-name').value,
+                    description: document.getElementById('edit-description').value,
+                    mass: parseFloat(document.getElementById('edit-mass').value),
+                    mass_unit: document.getElementById('edit-mass-unit').value,
+                    status: document.getElementById('edit-status').value,
+                    data_points: dataPoints,
+                    change_description: '更新实验数据'
+                })
+            });
+            
+            if (res.ok) {
+                alert('保存成功');
+                showDetailView(currentExperimentId);
+            }
+        }
+
+        async function validateExperiment() {
+            const res = await fetch(`/api/v1/experiments/${currentExperimentId}/validate`, {
+                method: 'POST'
+            });
+            await loadValidationResults();
+            switchTab('validation');
+        }
+
+        async function loadValidationResults() {
+            const res = await fetch(`/api/v1/experiments/${currentExperimentId}/validation`);
+            const results = await res.json();
+            
+            const container = document.getElementById('validation-results');
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>暂无校验结果，点击"数据校验"按钮开始</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = results.map(r => {
+                const typeNames = {
+                    'unit_consistency': '单位一致性检查',
+                    'sampling_gaps': '采样间隔检查',
+                    'damping_anomaly': '阻尼异常检查',
+                    'outliers': '异常点检测'
+                };
+                return `
+                    <div class="alert ${r.passed ? 'alert-success' : (r.severity === 'error' ? 'alert-error' : 'alert-warning')}">
+                        <strong>${typeNames[r.check_type] || r.check_type}</strong>
+                        <br>
+                        ${r.message}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function fitExperiment() {
+            const res = await fetch(`/api/v1/experiments/${currentExperimentId}/fit`, {
+                method: 'POST'
+            });
+            await loadFittingResults();
+            switchTab('fitting');
+        }
+
+        async function loadFittingResults() {
+            try {
+                const res = await fetch(`/api/v1/experiments/${currentExperimentId}/fitting`);
+                if (!res.ok) throw new Error('No fitting data');
+                const result = await res.json();
+                
+                document.getElementById('fitting-results').innerHTML = `
+                    <div class="param-grid">
+                        <div class="param-card">
+                            <div class="param-label">弹簧常数 k</div>
+                            <div class="param-value">${result.spring_constant.toFixed(3)}</div>
+                            <div class="param-unit">N/m</div>
+                        </div>
+                        <div class="param-card">
+                            <div class="param-label">阻尼系数 c</div>
+                            <div class="param-value">${result.damping_coefficient.toFixed(4)}</div>
+                            <div class="param-unit">Ns/m</div>
+                        </div>
+                        <div class="param-card">
+                            <div class="param-label">固有频率</div>
+                            <div class="param-value">${result.natural_frequency.toFixed(3)}</div>
+                            <div class="param-unit">Hz</div>
+                        </div>
+                        <div class="param-card">
+                            <div class="param-label">阻尼比 ζ</div>
+                            <div class="param-value">${result.damping_ratio.toFixed(4)}</div>
+                            <div class="param-unit">无量纲</div>
+                        </div>
+                        <div class="param-card">
+                            <div class="param-label">拟合优度 R²</div>
+                            <div class="param-value">${result.r_squared.toFixed(4)}</div>
+                            <div class="param-unit">越接近1越好</div>
+                        </div>
+                    </div>
+                    <div style="padding: 16px; background: #f1f5f9; border-radius: 10px; font-family: monospace; font-size: 13px;">
+                        <strong>拟合方程：</strong><br>
+                        ${result.fitted_equation}
+                    </div>
+                `;
+                
+                renderChart(result);
+            } catch (e) {
+                document.getElementById('fitting-results').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📈</div>
+                        <p>暂无拟合结果，点击"参数拟合"按钮开始</p>
+                    </div>
+                `;
+                if (chart) {
+                    chart.destroy();
+                    chart = null;
+                }
+            }
+        }
+
+        function renderChart(fittingResult) {
+            const ctx = document.getElementById('fitting-chart').getContext('2d');
+            
+            if (chart) chart.destroy();
+            
+            const sortedPoints = [...dataPoints].sort((a, b) => a.timestamp - b.timestamp);
+            const times = sortedPoints.map(dp => dp.timestamp);
+            const disps = sortedPoints.map(dp => dp.displacement);
+            
+            const A = fittingResult.spring_constant ? 
+                Math.max(...disps.map(Math.abs)) : 0.1;
+            const zeta = fittingResult.damping_ratio;
+            const omega_n = fittingResult.natural_frequency * 2 * Math.PI;
+            
+            const fineTimes = [];
+            const fitDisps = [];
+            const tMin = Math.min(...times);
+            const tMax = Math.max(...times);
+            
+            for (let t = tMin; t <= tMax; t += (tMax - tMin) / 200) {
+                fineTimes.push(t);
+                const omega_d = omega_n * Math.sqrt(1 - zeta * zeta);
+                const fit = A * Math.exp(-zeta * omega_n * t) * Math.cos(omega_d * t);
+                fitDisps.push(fit);
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: '实验数据',
+                            data: times.map((t, i) => ({ x: t, y: disps[i] })),
+                            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            pointRadius: 5
+                        },
+                        {
+                            label: '拟合曲线',
+                            data: fineTimes.map((t, i) => ({ x: t, y: fitDisps[i] })),
+                            type: 'line',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '弹簧阻尼振动曲线'
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '时间 (s)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '位移 (m)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        async function deleteExperiment() {
+            if (!confirm('确定要删除这个实验吗？此操作不可恢复。')) return;
+            
+            await fetch(`/api/v1/experiments/${currentExperimentId}`, {
+                method: 'DELETE'
+            });
+            
+            showListView();
+        }
+
+        function exportReport() {
+            window.open(`/api/v1/experiments/${currentExperimentId}/report`, '_blank');
+        }
+    </script>
+</body>
+</html>
