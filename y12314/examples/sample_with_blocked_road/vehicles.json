@@ -1,0 +1,17 @@
+[
+  {
+    "id": "V001",
+    "plate_number": "京A12345",
+    "capacity": 50
+  },
+  {
+    "id": "V002",
+    "plate_number": "京B67890",
+    "capacity": 80
+  },
+  {
+    "id": "V003",
+    "plate_number": "京C11111",
+    "capacity": 30
+  }
+]

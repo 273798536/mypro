@@ -1,0 +1,16 @@
+[
+  {
+    "id": "R001",
+    "from": "CENTER",
+    "to": "POINT1",
+    "distance": 5.0,
+    "status": "BLOCKED"
+  },
+  {
+    "id": "R002",
+    "from": "CENTER",
+    "to": "POINT2",
+    "distance": 10.0,
+    "status": "OPEN"
+  }
+]

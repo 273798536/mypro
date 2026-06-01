@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "context_id": "45ed80ce-198e-4572-ae60-8af37f3969ce",
+    "context_name": "test_error_scenarios",
+    "generated_at": "2026-06-01T17:21:43.667849",
+    "overview": {
+      "total_warehouses": 1,
+      "total_roads": 2,
+      "total_vehicles": 1,
+      "total_demands": 3,
+      "assigned_demands": 0,
+      "failed_demands": 3,
+      "unassigned_demands": 3,
+      "total_distance": 0.0,
+      "success_rate": 0.0
+    }
+  },
+  "errors": [
+    {
+      "error_id": "overload_V001",
+      "error_type": "vehicle_overload",
+      "error_type_name": "车辆超载",
+      "source_file": "test_error_scenarios",
+      "location": "depot",
+      "timestamp": "2026-06-01T17:21:43.667786",
+      "details": {
+        "vehicle_id": "V001",
+        "plate_number": "TEST-001",
+        "capacity": 10,
+        "requested_load": 20,
+        "demand_id": "DEM003"
+      },
+      "next_step": "请使用更大容量的车辆，或拆分需求ID DEM003 进行分批配送",
+      "severity": "high"
+    },
+    {
+      "error_id": "dup_DEM001",
+      "error_type": "duplicate_demand",
+      "error_type_name": "需求重复",
+      "source_file": "test_error_scenarios",
+      "location": "POINT2",
+      "timestamp": "2026-06-01T17:21:43.667790",
+      "details": {
+        "demand_id": "DEM001",
+        "duplicate_with": "DEM002",
+        "items": {
+          "物资A": 5
+        }
+      },
+      "next_step": "请核对需求清单，移除重复的需求条目或更新需求ID",
+      "severity": "medium"
+    },
+    {
+      "error_id": "dup_DEM002",
+      "error_type": "duplicate_demand",
+      "error_type_name": "需求重复",
+      "source_file": "test_error_scenarios",
+      "location": "POINT2",
+      "timestamp": "2026-06-01T17:21:43.667793",
+      "details": {
+        "demand_id": "DEM002",
+        "duplicate_with": "DEM001",
+        "items": {
+          "物资A": 5
+        }
+      },
+      "next_step": "请核对需求清单，移除重复的需求条目或更新需求ID",
+      "severity": "medium"
+    }
+  ],
+  "routes": [],
+  "blocked_roads": [
+    {
+      "road_id": "R001",
+      "from": "CENTER",
+      "to": "POINT1",
+      "distance": 5.0,
+      "status": "blocked"
+    }
+  ],
+  "unassigned_demands": [
+    "DEM003",
+    "DEM001",
+    "DEM002"
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "WH001",
+    "name": "中心仓库",
+    "location": "CENTER",
+    "x": 0,
+    "y": 0,
+    "inventory": {
+      "物资A": 100
+    }
+  }
+]

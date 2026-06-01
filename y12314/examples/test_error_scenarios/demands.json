@@ -1,0 +1,32 @@
+[
+  {
+    "id": "DEM001",
+    "location": "POINT2",
+    "x": 10,
+    "y": 0,
+    "items": {
+      "物资A": 5
+    },
+    "priority": 1
+  },
+  {
+    "id": "DEM002",
+    "location": "POINT2",
+    "x": 10,
+    "y": 0,
+    "items": {
+      "物资A": 5
+    },
+    "priority": 1
+  },
+  {
+    "id": "DEM003",
+    "location": "POINT2",
+    "x": 10,
+    "y": 0,
+    "items": {
+      "物资A": 20
+    },
+    "priority": 2
+  }
+]

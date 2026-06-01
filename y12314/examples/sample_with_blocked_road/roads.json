@@ -1,0 +1,37 @@
+[
+  {
+    "id": "R001",
+    "from": "LOC_A",
+    "to": "LOC_C",
+    "distance": 5.0,
+    "status": "OPEN"
+  },
+  {
+    "id": "R002",
+    "from": "LOC_C",
+    "to": "LOC_D",
+    "distance": 3.0,
+    "status": "BLOCKED"
+  },
+  {
+    "id": "R003",
+    "from": "LOC_B",
+    "to": "LOC_D",
+    "distance": 8.0,
+    "status": "OPEN"
+  },
+  {
+    "id": "R004",
+    "from": "LOC_A",
+    "to": "LOC_B",
+    "distance": 10.0,
+    "status": "OPEN"
+  },
+  {
+    "id": "R005",
+    "from": "LOC_D",
+    "to": "LOC_E",
+    "distance": 4.0,
+    "status": "OPEN"
+  }
+]

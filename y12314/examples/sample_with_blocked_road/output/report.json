@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "context_id": "cc9d8627-88bc-422e-a56e-de4a77789bb3",
+    "context_name": "sample_with_blocked_road",
+    "generated_at": "2026-06-01T17:20:38.778798",
+    "overview": {
+      "total_warehouses": 2,
+      "total_roads": 5,
+      "total_vehicles": 3,
+      "total_demands": 2,
+      "assigned_demands": 2,
+      "failed_demands": 0,
+      "unassigned_demands": 0,
+      "total_distance": 30.0,
+      "success_rate": 100.0
+    }
+  },
+  "errors": [],
+  "routes": [
+    {
+      "route_no": 1,
+      "demand_id": "DEM002",
+      "warehouse": {
+        "id": "WH001",
+        "name": "中心仓库A"
+      },
+      "vehicle": {
+        "id": "V001",
+        "plate": "京A12345"
+      },
+      "path": "R004 -> R003 -> R005",
+      "path_locations": [
+        "R004",
+        "R003",
+        "R005"
+      ],
+      "road_ids": [
+        "R004",
+        "R003",
+        "R005"
+      ],
+      "distance": 22.0,
+      "items": {
+        "饮用水": 15,
+        "帐篷": 5
+      }
+    },
+    {
+      "route_no": 2,
+      "demand_id": "DEM001",
+      "warehouse": {
+        "id": "WH002",
+        "name": "分仓库B"
+      },
+      "vehicle": {
+        "id": "V002",
+        "plate": "京B67890"
+      },
+      "path": "R003",
+      "path_locations": [
+        "R003"
+      ],
+      "road_ids": [
+        "R003"
+      ],
+      "distance": 8.0,
+      "items": {
+        "饮用水": 20,
+        "急救包": 10
+      }
+    }
+  ],
+  "blocked_roads": [
+    {
+      "road_id": "R002",
+      "from": "LOC_C",
+      "to": "LOC_D",
+      "distance": 3.0,
+      "status": "blocked"
+    }
+  ],
+  "unassigned_demands": []
+}
