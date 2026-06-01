@@ -1,0 +1,66 @@
+{
+  "groups": [
+    {
+      "group_id": "ctrl",
+      "group_name": "对照组",
+      "is_control": true,
+      "traffic_ratio": 0.5,
+      "channel_ids": ["ch_main"],
+      "city_ids": ["bj", "sh", "gz"]
+    },
+    {
+      "group_id": "treat",
+      "group_name": "实验组",
+      "is_control": false,
+      "traffic_ratio": 0.5,
+      "channel_ids": ["ch_new"],
+      "city_ids": ["bj", "sh", "gz"]
+    }
+  ],
+  "metrics": [
+    {
+      "metric_id": "gmv",
+      "metric_name": "GMV",
+      "unit": "元",
+      "control_mean": 128.5,
+      "control_std": 45.2,
+      "treatment_mean": 135.3,
+      "treatment_std": 48.1,
+      "control_n": 8000,
+      "treatment_n": 7800,
+      "delay_hours": 0,
+      "source_channel": "ch_main",
+      "source_city": "bj"
+    },
+    {
+      "metric_id": "order_cvr",
+      "metric_name": "下单转化率",
+      "unit": "比例",
+      "control_mean": 0.082,
+      "control_std": 0.024,
+      "treatment_mean": 0.089,
+      "treatment_std": 0.025,
+      "control_n": 8000,
+      "treatment_n": 7800,
+      "delay_hours": 8,
+      "source_channel": "ch_new",
+      "source_city": "sh"
+    }
+  ],
+  "sample_infos": [
+    {
+      "group_id": "ctrl",
+      "required_n": 8000,
+      "actual_n": 8000,
+      "min_detectable_effect": 0.01,
+      "unit": "observations"
+    },
+    {
+      "group_id": "treat",
+      "required_n": 8000,
+      "actual_n": 7800,
+      "min_detectable_effect": 0.01,
+      "unit": "observations"
+    }
+  ]
+}
