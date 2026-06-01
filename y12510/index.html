@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融盘口深度峡谷</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0e17;
+  --panel-bg: #111827;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --buy: #34d399;
+  --sell: #f87171;
+  --warn: #fbbf24;
+  --anomaly: #fb923c;
+  --cancel: #c084fc;
+  --dup: #f472b6;
+  --misorder: #fb923c;
+}
+body { background: var(--bg); color: var(--text); font-family: "SF Mono", "Menlo", "Consolas", monospace; font-size: 13px; overflow: hidden; height: 100vh; }
+
+.app-layout { display: grid; grid-template-columns: 1fr 340px; grid-template-rows: auto 1fr auto; height: 100vh; }
+
+.header { grid-column: 1 / -1; background: var(--panel-bg); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 20px; }
+.header h1 { font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+.header .version { color: var(--text-muted); font-size: 11px; }
+.header .legend { display: flex; gap: 14px; margin-left: auto; font-size: 11px; flex-wrap: wrap; }
+.header .legend span { display: flex; align-items: center; gap: 4px; }
+.header .legend .dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.dot-buy { background: var(--buy); }
+.dot-sell { background: var(--sell); }
+.dot-cancel { background: var(--cancel); }
+.dot-misorder { background: var(--misorder); }
+.dot-dup { background: var(--dup); }
+
+.main-3d { position: relative; overflow: hidden; background: var(--bg); }
+#canvas3d { width: 100%; height: 100%; display: block; }
+.annotation-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.annotation-label { position: absolute; font-size: 10px; padding: 2px 6px; border-radius: 3px; white-space: nowrap; pointer-events: auto; cursor: pointer; transition: transform 0.1s; }
+.annotation-label:hover { transform: scale(1.1); }
+.annotation-label.anomaly-cancel { background: rgba(192,132,252,0.25); border: 1px solid var(--cancel); color: var(--cancel); }
+.annotation-label.anomaly-misorder { background: rgba(251,146,60,0.25); border: 1px solid var(--misorder); color: var(--misorder); }
+.annotation-label.anomaly-dup { background: rgba(244,114,182,0.25); border: 1px solid var(--dup); color: var(--dup); }
+.annotation-label.level-info { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: var(--accent); }
+.annotation-label.spread-info { background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.5); color: var(--warn); }
+
+.side-panel { background: var(--panel-bg); border-left: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+.panel-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.panel-section h3 { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; }
+.stat-item .label { font-size: 10px; color: var(--text-muted); }
+.stat-item .value { font-size: 15px; font-weight: 600; margin-top: 2px; }
+.stat-item .value.buy { color: var(--buy); }
+.stat-item .value.sell { color: var(--sell); }
+.stat-item .value.warn { color: var(--warn); }
+
+.anomaly-list { display: flex; flex-direction: column; gap: 6px; }
+.anomaly-item { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; cursor: pointer; transition: border-color 0.2s; }
+.anomaly-item:hover { border-color: var(--accent); }
+.anomaly-item .tag { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 2px; margin-right: 4px; font-weight: 600; }
+.tag-cancel { background: rgba(192,132,252,0.2); color: var(--cancel); }
+.tag-misorder { background: rgba(251,146,60,0.2); color: var(--misorder); }
+.tag-dup { background: rgba(244,114,182,0.2); color: var(--dup); }
+.tag-overridden { background: rgba(251,191,36,0.2); color: var(--warn); }
+.anomaly-item .desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.anomaly-item .status-line { font-size: 10px; margin-top: 3px; }
+.status-auto { color: var(--sell); }
+.status-overridden { color: var(--warn); }
+.status-cleared { color: var(--buy); }
+
+.footer { grid-column: 1 / -1; background: var(--panel-bg); border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; height: 240px; overflow: hidden; }
+.footer-tab { border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+.footer-tab:last-child { border-right: none; }
+.footer-tab .tab-header { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+.footer-tab .tab-header span { font-size: 11px; font-weight: 600; color: var(--accent); }
+.footer-tab .tab-header .count { font-size: 10px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 8px; }
+.footer-tab .tab-body { overflow-y: auto; flex: 1; }
+
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 10px; color: var(--text-muted); text-align: left; padding: 4px 8px; position: sticky; top: 0; background: var(--panel-bg); border-bottom: 1px solid var(--border); font-weight: 500; z-index: 1; }
+td { font-size: 11px; padding: 3px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+tr.highlight-cancel td { background: rgba(192,132,252,0.08); }
+tr.highlight-misorder td { background: rgba(251,146,60,0.08); }
+tr.highlight-dup td { background: rgba(244,114,182,0.08); }
+tr.highlight-overridden td { background: rgba(251,191,36,0.08); }
+tr.highlight-active td { outline: 1px solid var(--accent); outline-offset: -1px; }
+td .cell-tag { font-size: 9px; padding: 0 4px; border-radius: 2px; margin-left: 4px; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; width: 560px; max-height: 80vh; overflow-y: auto; }
+.modal-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 14px; }
+.modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; }
+.modal-body { padding: 16px 20px; }
+.modal-body .field { margin-bottom: 12px; }
+.modal-body .field label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.modal-body .field select, .modal-body .field textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 6px 8px; font-family: inherit; font-size: 12px; }
+.modal-body .field textarea { height: 60px; resize: vertical; }
+.modal-actions { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+.btn { padding: 6px 16px; border-radius: 4px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; font-family: inherit; font-size: 12px; }
+.btn:hover { background: rgba(255,255,255,0.1); }
+.btn-primary { background: rgba(56,189,248,0.15); border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: rgba(248,113,113,0.15); border-color: var(--sell); color: var(--sell); }
+
+.toolbar { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; z-index: 10; }
+.toolbar .btn { font-size: 11px; padding: 4px 10px; }
+
+.toast { position: fixed; bottom: 260px; right: 360px; background: rgba(17,24,39,0.95); border: 1px solid var(--accent); border-radius: 6px; padding: 10px 16px; font-size: 12px; color: var(--accent); z-index: 200; display: none; }
+.toast.show { display: block; animation: fadeInOut 2.5s ease; }
+@keyframes fadeInOut { 0% { opacity: 0; transform: translateY(8px); } 15% { opacity: 1; transform: translateY(0); } 85% { opacity: 1; } 100% { opacity: 0; } }
+
+.depth-report { padding: 14px 16px; flex: 1; overflow-y: auto; }
+.depth-report h3 { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.report-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+.report-item:hover { background: rgba(56,189,248,0.05); }
+.report-item .ri-num { font-size: 16px; font-weight: 600; min-width: 36px; }
+.report-item .ri-label { font-size: 11px; color: var(--text-muted); }
+.report-item .ri-link { font-size: 10px; color: var(--accent); margin-left: auto; text-decoration: underline; }
+
+.export-bar { padding: 8px 16px; border-top: 1px solid var(--border); display: flex; gap: 6px; }
+
+.canyon-axis-label { position: absolute; font-size: 10px; color: var(--text-muted); pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <header class="header">
+    <h1>金融盘口深度峡谷</h1>
+    <span class="version" id="versionLabel"></span>
+    <div class="legend">
+      <span><span class="dot dot-buy"></span>买盘</span>
+      <span><span class="dot dot-sell"></span>卖盘</span>
+      <span><span class="dot dot-cancel"></span>撤单延迟</span>
+      <span><span class="dot dot-misorder"></span>档位错序</span>
+      <span><span class="dot dot-dup"></span>成交重复</span>
+    </div>
+  </header>
+
+  <div class="main-3d" id="main3d">
+    <canvas id="canvas3d"></canvas>
+    <div class="annotation-overlay" id="annotationOverlay"></div>
+    <div class="toolbar">
+      <button class="btn" id="btnResetCam">复位视角</button>
+      <button class="btn" id="btnToggleAnno">标注:开</button>
+    </div>
+  </div>
+
+  <aside class="side-panel">
+    <div class="panel-section">
+      <h3>盘口数值</h3>
+      <div class="stat-grid" id="statGrid"></div>
+    </div>
+    <div class="panel-section">
+      <h3>版本信息</h3>
+      <div id="versionInfo" style="font-size:11px; color: var(--text-muted); line-height:1.8;"></div>
+    </div>
+    <div class="panel-section" style="flex:1; overflow-y:auto;">
+      <h3>异常说明</h3>
+      <div class="anomaly-list" id="anomalyList"></div>
+    </div>
+    <div class="depth-report">
+      <h3>深度报告</h3>
+      <div id="depthReport"></div>
+    </div>
+    <div class="export-bar">
+      <button class="btn btn-primary" id="btnExportCSV">导出CSV</button>
+      <button class="btn" id="btnExportJSON">导出JSON</button>
+    </div>
+  </aside>
+
+  <footer class="footer">
+    <div class="footer-tab">
+      <div class="tab-header">
+        <span>买卖盘档位</span>
+        <span class="count" id="orderCount"></span>
+      </div>
+      <div class="tab-body"><table id="orderTable"><thead><tr>
+        <th>档位</th><th>方向</th><th>价格</th><th>数量</th><th>时间戳</th><th>标记</th>
+      </tr></thead><tbody id="orderBody"></tbody></table></div>
+    </div>
+    <div class="footer-tab">
+      <div class="tab-header">
+        <span>撤单记录</span>
+        <span class="count" id="cancelCount"></span>
+      </div>
+      <div class="tab-body"><table id="cancelTable"><thead><tr>
+        <th>撤单ID</th><th>原档位</th><th>方向</th><th>延迟(ms)</th><th>状态</th><th>标记</th>
+      </tr></thead><tbody id="cancelBody"></tbody></table></div>
+    </div>
+    <div class="footer-tab">
+      <div class="tab-header">
+        <span>成交记录</span>
+        <span class="count" id="tradeCount"></span>
+      </div>
+      <div class="tab-body"><table id="tradeTable"><thead><tr>
+        <th>成交ID</th><th>方向</th><th>价格</th><th>数量</th><th>标记</th>
+      </tr></thead><tbody id="tradeBody"></tbody></table></div>
+    </div>
+  </footer>
+</div>
+
+<div class="modal-overlay" id="overrideModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>人工改判 - 撤单延迟</h3>
+      <button class="modal-close" id="btnCloseModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>撤单记录</label>
+        <div id="overrideTarget" style="font-size:12px; color:var(--accent);"></div>
+      </div>
+      <div class="field">
+        <label>改判结果</label>
+        <select id="overrideVerdict">
+          <option value="cleared">清除延迟（改判正常）</option>
+          <option value="confirmed">确认延迟（维持）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>改判原因</label>
+        <textarea id="overrideReason" placeholder="填写改判原因..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="btnCancelOverride">取消</button>
+      <button class="btn btn-primary" id="btnSubmitOverride">提交改判</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+
+var DATA_VERSION = "v2.3.1";
+var SNAPSHOT_TIME = "2026-06-02T14:32:08+08:00";
+var DELAY_THRESHOLD = 500;
+
+var orderBook = [
+  { id: "B1", level: 1, side: "buy",  price: 3120.50, qty: 480,  ts: "14:32:01.200" },
+  { id: "B2", level: 2, side: "buy",  price: 3120.00, qty: 920,  ts: "14:32:01.350" },
+  { id: "B3", level: 3, side: "buy",  price: 3119.50, qty: 1560, ts: "14:32:01.500" },
+  { id: "B4", level: 4, side: "buy",  price: 3119.00, qty: 2100, ts: "14:32:02.100" },
+  { id: "B5", level: 5, side: "buy",  price: 3118.50, qty: 3200, ts: "14:32:02.800" },
+  { id: "B6", level: 6, side: "buy",  price: 3118.00, qty: 2800, ts: "14:32:03.500" },
+  { id: "B7", level: 7, side: "buy",  price: 3117.50, qty: 4100, ts: "14:32:04.200" },
+  { id: "S1", level: 1, side: "sell", price: 3121.00, qty: 360,  ts: "14:32:01.150" },
+  { id: "S2", level: 2, side: "sell", price: 3121.50, qty: 750,  ts: "14:32:01.400" },
+  { id: "S3", level: 3, side: "sell", price: 3122.00, qty: 1200, ts: "14:32:01.600" },
+  { id: "S4", level: 4, side: "sell", price: 3122.50, qty: 1800, ts: "14:32:02.300" },
+  { id: "S5", level: 5, side: "sell", price: 3123.00, qty: 2600, ts: "14:32:03.100" },
+  { id: "S6", level: 6, side: "sell", price: 3123.50, qty: 3500, ts: "14:32:03.800" },
+  { id: "S7", level: 7, side: "sell", price: 3124.00, qty: 4800, ts: "14:32:04.500" }
+];
+
+var cancelRecords = [
+  { id: "CX001", orderId: "B2", origLevel: 2, side: "buy",  delay: 850,  ts: "14:32:02.200", status: "auto",  verdict: "delayed",  reason: "" },
+  { id: "CX002", orderId: "S3", origLevel: 3, side: "sell", delay: 320,  ts: "14:32:01.920", status: "auto",  verdict: "normal",   reason: "" },
+  { id: "CX003", orderId: "B5", origLevel: 5, side: "buy",  delay: 1200, ts: "14:32:03.900", status: "auto",  verdict: "delayed",  reason: "" },
+  { id: "CX004", orderId: "S2", origLevel: 2, side: "sell", delay: 480,  ts: "14:32:01.880", status: "auto",  verdict: "normal",   reason: "" },
+  { id: "CX005", orderId: "B4", origLevel: 4, side: "buy",  delay: 2100, ts: "14:32:04.200", status: "auto",  verdict: "delayed",  reason: "" }
+];
+
+var tradeRecords = [
+  { id: "T001", side: "buy",  price: 3120.50, qty: 100, ts: "14:32:01.200" },
+  { id: "T002", side: "sell", price: 3121.00, qty: 160, ts: "14:32:01.350" },
+  { id: "T003", side: "buy",  price: 3120.50, qty: 100, ts: "14:32:01.200" },
+  { id: "T004", side: "sell", price: 3121.50, qty: 200, ts: "14:32:01.500" },
+  { id: "T005", side: "buy",  price: 3120.00, qty: 300, ts: "14:32:01.800" },
+  { id: "T006", side: "sell", price: 3121.00, qty: 200, ts: "14:32:02.100" }
+];
+
+var anomalies = [];
+var annotationElements = [];
+var annotationsVisible = true;
+var currentOverrideCancelId = null;
+
+var scene, camera, renderer, depthGroup;
+var mouseDown = false, mouseX = 0, mouseY = 0;
+var rotX = -0.4, rotY = 0.3;
+var camDist = 18;
+var LEVEL_WIDTH = 1.4;
+var LEVEL_GAP = 0.3;
+var WALL_DEPTH = 0.8;
+var MAX_HEIGHT = 7;
+var CENTER_Z = -1.5;
+
+function detectAnomalies() {
+  anomalies = [];
+
+  cancelRecords.forEach(function(c) {
+    if (c.verdict === "delayed") {
+      anomalies.push({
+        type: "cancel_delay",
+        tag: "撤单延迟",
+        cancelId: c.id,
+        orderId: c.orderId,
+        level: c.origLevel,
+        side: c.side,
+        delay: c.delay,
+        status: c.status,
+        verdict: c.verdict,
+        desc: (c.side === "buy" ? "买" : "卖") + "盘第" + c.origLevel + "档 撤单延迟" + c.delay + "ms (>" + DELAY_THRESHOLD + "ms)",
+        relatedMisorder: [],
+        relatedDup: []
+      });
+    }
+  });
+
+  var buyLevels = orderBook.filter(function(o) { return o.side === "buy"; }).sort(function(a, b) { return b.price - a.price; });
+  for (var i = 1; i < buyLevels.length; i++) {
+    if (buyLevels[i].price >= buyLevels[i - 1].price) {
+      anomalies.push({
+        type: "misorder",
+        tag: "档位错序",
+        level: buyLevels[i].level,
+        side: "buy",
+        desc: "买盘L" + buyLevels[i].level + "价格" + buyLevels[i].price.toFixed(2) + " >= L" + buyLevels[i - 1].level + "价格" + buyLevels[i - 1].price.toFixed(2),
+        relatedCancelIds: [],
+        status: "auto",
+        verdict: "misordered"
+      });
+    }
+  }
+
+  var sellLevels = orderBook.filter(function(o) { return o.side === "sell"; }).sort(function(a, b) { return a.price - b.price; });
+  for (var i = 1; i < sellLevels.length; i++) {
+    if (sellLevels[i].price <= sellLevels[i - 1].price) {
+      anomalies.push({
+        type: "misorder",
+        tag: "档位错序",
+        level: sellLevels[i].level,
+        side: "sell",
+        desc: "卖盘L" + sellLevels[i].level + "价格" + sellLevels[i].price.toFixed(2) + " <= L" + sellLevels[i - 1].level + "价格" + sellLevels[i - 1].price.toFixed(2),
+        relatedCancelIds: [],
+        status: "auto",
+        verdict: "misordered"
+      });
+    }
+  }
+
+  var tradeMap = {};
+  tradeRecords.forEach(function(t) {
+    var key = t.side + ":" + t.price + ":" + t.qty + ":" + t.ts;
+    if (!tradeMap[key]) tradeMap[key] = [];
+    tradeMap[key].push(t);
+  });
+  Object.keys(tradeMap).forEach(function(key) {
+    if (tradeMap[key].length > 1) {
+      tradeMap[key].forEach(function(t) {
+        anomalies.push({
+          type: "dup_trade",
+          tag: "成交重复",
+          tradeId: t.id,
+          side: t.side,
+          price: t.price,
+          qty: t.qty,
+          desc: "成交" + t.id + " " + (t.side === "buy" ? "买" : "卖") + " " + t.price.toFixed(2) + " x" + t.qty + " 重复键[" + key + "]",
+          relatedCancelIds: [],
+          status: "auto",
+          verdict: "duplicate"
+        });
+      });
+    }
+  });
+
+  linkAnomalies();
+}
+
+function linkAnomalies() {
+  anomalies.forEach(function(a) {
+    if (a.type === "misorder" || a.type === "dup_trade") {
+      a.relatedCancelIds = [];
+      anomalies.forEach(function(ca) {
+        if (ca.type === "cancel_delay" && ca.verdict === "delayed") {
+          if (a.side === ca.side && a.level === ca.level) {
+            a.relatedCancelIds.push(ca.cancelId);
+          }
+        }
+      });
+    }
+    if (a.type === "cancel_delay") {
+      a.relatedMisorder = [];
+      a.relatedDup = [];
+      anomalies.forEach(function(ra) {
+        if (ra.type === "misorder" && ra.side === a.side && ra.level === a.level) {
+          a.relatedMisorder.push({ idx: anomalies.indexOf(ra), desc: ra.desc });
+        }
+        if (ra.type === "dup_trade" && ra.side === a.side) {
+          a.relatedDup.push({ idx: anomalies.indexOf(ra), desc: ra.desc });
+        }
+      });
+    }
+  });
+}
+
+function applyOverride(cancelId, newVerdict, reason) {
+  var c = cancelRecords.find(function(r) { return r.id === cancelId; });
+  if (!c) return;
+  c.status = "overridden";
+  c.verdict = newVerdict === "cleared" ? "normal" : "delayed";
+  c.reason = reason || "";
+
+  detectAnomalies();
+  buildCanyon();
+  renderAll();
+}
+
+// ===== Rendering =====
+
+function renderStats() {
+  var totalBuy = orderBook.filter(function(o) { return o.side === "buy"; }).reduce(function(s, o) { return s + o.qty; }, 0);
+  var totalSell = orderBook.filter(function(o) { return o.side === "sell"; }).reduce(function(s, o) { return s + o.qty; }, 0);
+  var cancelDelayed = cancelRecords.filter(function(c) { return c.verdict === "delayed"; }).length;
+  var cancelTotal = cancelRecords.length;
+  var misorderCount = anomalies.filter(function(a) { return a.type === "misorder"; }).length;
+  var dupCount = anomalies.filter(function(a) { return a.type === "dup_trade"; }).length;
+  var b1 = orderBook.find(function(o) { return o.side === "buy" && o.level === 1; });
+  var s1 = orderBook.find(function(o) { return o.side === "sell" && o.level === 1; });
+  var spread = s1 && b1 ? (s1.price - b1.price).toFixed(2) : "-";
+
+  document.getElementById("statGrid").innerHTML =
+    '<div class="stat-item"><div class="label">买盘总量</div><div class="value buy">' + totalBuy.toLocaleString() + '</div></div>' +
+    '<div class="stat-item"><div class="label">卖盘总量</div><div class="value sell">' + totalSell.toLocaleString() + '</div></div>' +
+    '<div class="stat-item"><div class="label">买卖价差</div><div class="value">' + spread + '</div></div>' +
+    '<div class="stat-item"><div class="label">撤单延迟</div><div class="value warn">' + cancelDelayed + '/' + cancelTotal + '</div></div>' +
+    '<div class="stat-item"><div class="label">档位错序</div><div class="value" style="color:var(--misorder)">' + misorderCount + '</div></div>' +
+    '<div class="stat-item"><div class="label">成交重复</div><div class="value" style="color:var(--dup)">' + dupCount + '</div></div>';
+}
+
+function renderVersion() {
+  document.getElementById("versionLabel").textContent = DATA_VERSION + " | " + SNAPSHOT_TIME;
+  document.getElementById("versionInfo").innerHTML =
+    "数据版本: " + DATA_VERSION + "<br>" +
+    "快照时间: " + SNAPSHOT_TIME + "<br>" +
+    "延迟阈值: " + DELAY_THRESHOLD + "ms<br>" +
+    "买盘档位数: " + orderBook.filter(function(o) { return o.side === "buy"; }).length + "<br>" +
+    "卖盘档位数: " + orderBook.filter(function(o) { return o.side === "sell"; }).length + "<br>" +
+    "撤单记录数: " + cancelRecords.length + "<br>" +
+    "成交记录数: " + tradeRecords.length + "<br>" +
+    "改判次数: " + cancelRecords.filter(function(c) { return c.status === "overridden"; }).length;
+}
+
+function renderAnomalyList() {
+  var html = "";
+  anomalies.forEach(function(a, idx) {
+    var tagClass = a.type === "cancel_delay" ? "tag-cancel" : a.type === "misorder" ? "tag-misorder" : "tag-dup";
+    var statusText, statusClass;
+    if (a.status === "auto") {
+      statusText = "自动判定";
+      statusClass = "status-auto";
+    } else if (a.status === "overridden_cleared") {
+      statusText = "改判清除";
+      statusClass = "status-cleared";
+    } else {
+      statusText = "已改判";
+      statusClass = "status-overridden";
+    }
+
+    html += '<div class="anomaly-item" data-idx="' + idx + '">';
+    html += '<span class="tag ' + tagClass + '">' + a.tag + '</span>';
+    html += '<span style="font-size:11px">' + a.desc + '</span>';
+    html += '<div class="status-line ' + statusClass + '">' + statusText;
+
+    if (a.type === "cancel_delay" && a.verdict === "delayed") {
+      html += ' <span class="override-link" style="cursor:pointer;color:var(--accent);margin-left:6px;" data-cancel-id="' + a.cancelId + '">[改判]</span>';
+    }
+
+    if (a.relatedCancelIds && a.relatedCancelIds.length > 0) {
+      html += ' <span style="color:var(--text-muted);margin-left:4px;">关联撤单: ' + a.relatedCancelIds.join(", ") + '</span>';
+    }
+    if (a.relatedMisorder && a.relatedMisorder.length > 0) {
+      html += ' <span style="color:var(--misorder);margin-left:4px;">关联错序: ' + a.relatedMisorder.length + '条</span>';
+    }
+    if (a.relatedDup && a.relatedDup.length > 0) {
+      html += ' <span style="color:var(--dup);margin-left:4px;">关联重复: ' + a.relatedDup.length + '条</span>';
+    }
+
+    html += '</div></div>';
+  });
+  document.getElementById("anomalyList").innerHTML = html;
+
+  document.querySelectorAll(".anomaly-item").forEach(function(el) {
+    el.addEventListener("click", function() {
+      var idx = parseInt(el.dataset.idx);
+      highlightAnomaly(idx);
+    });
+  });
+
+  document.querySelectorAll(".override-link").forEach(function(el) {
+    el.addEventListener("click", function(e) {
+      e.stopPropagation();
+      openOverrideModal(el.dataset.cancelId);
+    });
+  });
+}
+
+function renderDepthReport() {
+  var cancelDelayed = anomalies.filter(function(a) { return a.type === "cancel_delay"; });
+  var misorders = anomalies.filter(function(a) { return a.type === "misorder"; });
+  var dups = anomalies.filter(function(a) { return a.type === "dup_trade"; });
+  var overriddenCount = cancelRecords.filter(function(c) { return c.status === "overridden"; }).length;
+
+  var html = "";
+  html += '<div class="report-item" data-tab="cancel">';
+  html += '<span class="ri-num" style="color:var(--cancel)">' + cancelDelayed.length + '</span>';
+  html += '<span class="ri-label">撤单延迟</span>';
+  html += '<span class="ri-link">→ 撤单记录</span></div>';
+
+  html += '<div class="report-item" data-tab="order">';
+  html += '<span class="ri-num" style="color:var(--misorder)">' + misorders.length + '</span>';
+  html += '<span class="ri-label">档位错序</span>';
+  html += '<span class="ri-link">→ 买卖盘档位</span></div>';
+
+  html += '<div class="report-item" data-tab="trade">';
+  html += '<span class="ri-num" style="color:var(--dup)">' + dups.length + '</span>';
+  html += '<span class="ri-label">成交重复</span>';
+  html += '<span class="ri-link">→ 成交记录</span></div>';
+
+  if (overriddenCount > 0) {
+    html += '<div class="report-item" data-tab="cancel">';
+    html += '<span class="ri-num" style="color:var(--warn)">' + overriddenCount + '</span>';
+    html += '<span class="ri-label">人工改判</span>';
+    html += '<span class="ri-link">→ 撤单记录</span></div>';
+  }
+
+  document.getElementById("depthReport").innerHTML = html;
+
+  document.querySelectorAll(".report-item").forEach(function(el) {
+    el.addEventListener("click", function() {
+      scrollToTab(el.dataset.tab);
+    });
+  });
+}
+
+function renderOrderTable() {
+  var html = "";
+  orderBook.forEach(function(o) {
+    var rowClass = "";
+    var markHtml = "";
+    anomalies.forEach(function(a) {
+      if (a.type === "misorder" && a.side === o.side && a.level === o.level) {
+        rowClass = a.verdict === "cleared" ? "highlight-overridden" : "highlight-misorder";
+        var tagClass = a.verdict === "cleared" ? "tag-overridden" : "tag-misorder";
+        markHtml += '<span class="cell-tag ' + tagClass + '">错序' + (a.verdict === "cleared" ? "(已清)" : "") + '</span>';
+      }
+    });
+    cancelRecords.forEach(function(c) {
+      if (c.orderId === o.id && c.verdict === "delayed") {
+        if (!rowClass) rowClass = "highlight-cancel";
+        markHtml += '<span class="cell-tag tag-cancel">撤单延迟</span>';
+      }
+    });
+    html += '<tr class="' + rowClass + '" id="order-row-' + o.id + '">';
+    html += '<td>L' + o.level + '</td><td>' + (o.side === "buy" ? "买" : "卖") + '</td>';
+    html += '<td>' + o.price.toFixed(2) + '</td><td>' + o.qty + '</td><td>' + o.ts + '</td><td>' + markHtml + '</td></tr>';
+  });
+  document.getElementById("orderBody").innerHTML = html;
+  document.getElementById("orderCount").textContent = orderBook.length;
+}
+
+function renderCancelTable() {
+  var html = "";
+  cancelRecords.forEach(function(c) {
+    var rowClass = "";
+    if (c.verdict === "delayed" && c.status !== "overridden") rowClass = "highlight-cancel";
+    if (c.status === "overridden") rowClass = "highlight-overridden";
+    var markHtml = "";
+    if (c.verdict === "delayed") markHtml += '<span class="cell-tag tag-cancel">延迟</span>';
+    if (c.status === "overridden") markHtml += '<span class="cell-tag tag-overridden">改判' + (c.verdict === "normal" ? "→正常" : "→维持") + '</span>';
+    var statusText = c.status === "auto" ? "自动" : "改判";
+    html += '<tr class="' + rowClass + '" id="cancel-row-' + c.id + '">';
+    html += '<td>' + c.id + '</td><td>L' + c.origLevel + '</td><td>' + (c.side === "buy" ? "买" : "卖") + '</td>';
+    html += '<td>' + c.delay + '</td><td>' + statusText + '</td><td>' + markHtml + '</td></tr>';
+  });
+  document.getElementById("cancelBody").innerHTML = html;
+  document.getElementById("cancelCount").textContent = cancelRecords.length;
+}
+
+function renderTradeTable() {
+  var html = "";
+  tradeRecords.forEach(function(t) {
+    var rowClass = "";
+    var markHtml = "";
+    anomalies.forEach(function(a) {
+      if (a.type === "dup_trade" && a.tradeId === t.id) {
+        rowClass = a.verdict === "cleared" ? "highlight-overridden" : "highlight-dup";
+        var tagClass = a.verdict === "cleared" ? "tag-overridden" : "tag-dup";
+        markHtml = '<span class="cell-tag ' + tagClass + '">重复' + (a.verdict === "cleared" ? "(已清)" : "") + '</span>';
+      }
+    });
+    html += '<tr class="' + rowClass + '" id="trade-row-' + t.id + '">';
+    html += '<td>' + t.id + '</td><td>' + (t.side === "buy" ? "买" : "卖") + '</td>';
+    html += '<td>' + t.price.toFixed(2) + '</td><td>' + t.qty + '</td><td>' + markHtml + '</td></tr>';
+  });
+  document.getElementById("tradeBody").innerHTML = html;
+  document.getElementById("tradeCount").textContent = tradeRecords.length;
+}
+
+function highlightAnomaly(idx) {
+  var a = anomalies[idx];
+  if (!a) return;
+  document.querySelectorAll("tr.highlight-active").forEach(function(tr) { tr.classList.remove("highlight-active"); });
+
+  if (a.type === "cancel_delay") {
+    var el = document.getElementById("cancel-row-" + a.cancelId);
+    if (el) { el.classList.add("highlight-active"); el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    var oel = document.getElementById("order-row-" + a.orderId);
+    if (oel) oel.classList.add("highlight-active");
+    a.relatedMisorder.forEach(function(rm) {
+      var morders = orderBook.filter(function(o) { return o.side === a.side; });
+      var tgt = morders.find(function(o) { return o.level === a.level; });
+      if (tgt) {
+        var mel = document.getElementById("order-row-" + tgt.id);
+        if (mel) mel.classList.add("highlight-active");
+      }
+    });
+  } else if (a.type === "misorder") {
+    var sideOrders = orderBook.filter(function(o) { return o.side === a.side; });
+    var tgt = sideOrders.find(function(o) { return o.level === a.level; });
+    if (tgt) {
+      var el = document.getElementById("order-row-" + tgt.id);
+      if (el) { el.classList.add("highlight-active"); el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    }
+  } else if (a.type === "dup_trade") {
+    var el = document.getElementById("trade-row-" + a.tradeId);
+    if (el) { el.classList.add("highlight-active"); el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  }
+}
+
+function scrollToTab(tab) {
+  var body;
+  if (tab === "order") body = document.getElementById("orderBody");
+  else if (tab === "cancel") body = document.getElementById("cancelBody");
+  else if (tab === "trade") body = document.getElementById("tradeBody");
+  if (body && body.firstChild) body.firstChild.scrollIntoView({ behavior: "smooth" });
+}
+
+function openOverrideModal(cancelId) {
+  currentOverrideCancelId = cancelId;
+  document.getElementById("overrideTarget").textContent = cancelId;
+  document.getElementById("overrideVerdict").value = "cleared";
+  document.getElementById("overrideReason").value = "";
+  document.getElementById("overrideModal").classList.add("active");
+}
+
+function closeOverrideModal() {
+  document.getElementById("overrideModal").classList.remove("active");
+  currentOverrideCancelId = null;
+}
+
+function submitOverride() {
+  if (!currentOverrideCancelId) return;
+  var verdict = document.getElementById("overrideVerdict").value;
+  var reason = document.getElementById("overrideReason").value;
+  applyOverride(currentOverrideCancelId, verdict, reason);
+  closeOverrideModal();
+  showToast("改判已提交: " + currentOverrideCancelId + " → " + (verdict === "cleared" ? "清除延迟" : "确认延迟"));
+}
+
+function showToast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.remove("show");
+  void t.offsetWidth;
+  t.classList.add("show");
+}
+
+function renderAll() {
+  renderStats();
+  renderVersion();
+  renderAnomalyList();
+  renderDepthReport();
+  renderOrderTable();
+  renderCancelTable();
+  renderTradeTable();
+  updateAnnotations();
+}
+
+// ===== 3D Depth Canyon =====
+
+function init3D() {
+  var container = document.getElementById("main3d");
+  var canvas = document.getElementById("canvas3d");
+
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0e17, 0.012);
+
+  camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 200);
+  camera.position.set(0, 8, camDist);
+  camera.lookAt(0, 0, 0);
+
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x0a0e17, 1);
+
+  var ambient = new THREE.AmbientLight(0x404060, 0.6);
+  scene.add(ambient);
+  var dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(5, 10, 7);
+  scene.add(dirLight);
+  var pointLight = new THREE.PointLight(0x38bdf8, 0.4, 30);
+  pointLight.position.set(-3, 6, 3);
+  scene.add(pointLight);
+
+  buildCanyon();
+
+  var grid = new THREE.GridHelper(24, 24, 0x1e293b, 0x1e293b);
+  grid.material.transparent = true;
+  grid.material.opacity = 0.3;
+  scene.add(grid);
+
+  canvas.addEventListener("mousedown", function(e) { mouseDown = true; mouseX = e.clientX; mouseY = e.clientY; });
+  canvas.addEventListener("mousemove", function(e) {
+    if (!mouseDown) return;
+    var dx = e.clientX - mouseX, dy = e.clientY - mouseY;
+    rotY += dx * 0.005;
+    rotX += dy * 0.005;
+    rotX = Math.max(-1.2, Math.min(0.3, rotX));
+    mouseX = e.clientX; mouseY = e.clientY;
+  });
+  canvas.addEventListener("mouseup", function() { mouseDown = false; });
+  canvas.addEventListener("mouseleave", function() { mouseDown = false; });
+  canvas.addEventListener("wheel", function(e) {
+    camDist += e.deltaY * 0.01;
+    camDist = Math.max(6, Math.min(35, camDist));
+    e.preventDefault();
+  }, { passive: false });
+
+  window.addEventListener("resize", function() {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  animate3D();
+}
+
+function getXForOrder(order) {
+  var sideOrders = orderBook.filter(function(o) { return o.side === order.side; }).sort(function(a, b) { return a.level - b.level; });
+  var idx = sideOrders.indexOf(order);
+  var sign = order.side === "buy" ? -1 : 1;
+  return sign * idx * (LEVEL_WIDTH + LEVEL_GAP);
+}
+
+function getMaxQty() {
+  return Math.max.apply(null, orderBook.map(function(o) { return o.qty; }));
+}
+
+function buildCanyon() {
+  if (depthGroup) scene.remove(depthGroup);
+  depthGroup = new THREE.Group();
+
+  var maxQty = getMaxQty();
+
+  orderBook.forEach(function(o) {
+    var h = (o.qty / maxQty) * MAX_HEIGHT;
+    var x = getXForOrder(o);
+    var isBuy = o.side === "buy";
+    var color = isBuy ? 0x34d399 : 0xf87171;
+
+    var geo = new THREE.BoxGeometry(LEVEL_WIDTH, Math.max(0.1, h), WALL_DEPTH);
+    var mat = new THREE.MeshPhongMaterial({ color: color, transparent: true, opacity: 0.75, shininess: 30 });
+    var mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, h / 2, CENTER_Z);
+    mesh.userData = { orderId: o.id, level: o.level, side: o.side, price: o.price, qty: o.qty };
+    depthGroup.add(mesh);
+
+    var edgeGeo = new THREE.EdgesGeometry(geo);
+    var edgeMat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.4 });
+    var edges = new THREE.LineSegments(edgeGeo, edgeMat);
+    edges.position.copy(mesh.position);
+    depthGroup.add(edges);
+
+    var isCancelDelayed = cancelRecords.some(function(c) { return c.orderId === o.id && c.verdict === "delayed"; });
+    if (isCancelDelayed) {
+      var ringGeo = new THREE.RingGeometry(0.3, 0.45, 16);
+      var ringMat = new THREE.MeshBasicMaterial({ color: 0xc084fc, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+      var ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.set(x, h + 0.5, CENTER_Z);
+      ring.userData = { isAnnotation: true, type: "cancel_delay" };
+      depthGroup.add(ring);
+    }
+  });
+
+  var floorGeo = new THREE.PlaneGeometry(20, 6);
+  var floorMat = new THREE.MeshPhongMaterial({ color: 0x111827, transparent: true, opacity: 0.6 });
+  var floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.01;
+  floor.position.z = CENTER_Z;
+  depthGroup.add(floor);
+
+  var b1 = orderBook.find(function(o) { return o.side === "buy" && o.level === 1; });
+  var s1 = orderBook.find(function(o) { return o.side === "sell" && o.level === 1; });
+  if (b1 && s1) {
+    var spreadX1 = getXForOrder(b1);
+    var spreadX2 = getXForOrder(s1);
+    var spreadLine = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.6 });
+    var spreadGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(spreadX1, 0.02, CENTER_Z),
+      new THREE.Vector3(spreadX2, 0.02, CENTER_Z)
+    ]);
+    var spreadMesh = new THREE.Line(spreadGeo, spreadLine);
+    depthGroup.add(spreadMesh);
+  }
+
+  anomalies.forEach(function(a) {
+    if (a.type === "misorder") {
+      var sideOrders = orderBook.filter(function(o) { return o.side === a.side; }).sort(function(oi, oj) { return oi.level - oj.level; });
+      var tgt = sideOrders.find(function(o) { return o.level === a.level; });
+      if (tgt) {
+        var xPos = getXForOrder(tgt);
+        var h = (tgt.qty / maxQty) * MAX_HEIGHT;
+        var markerGeo = new THREE.ConeGeometry(0.25, 0.5, 8);
+        var markerColor = a.verdict === "cleared" ? 0xfbbf24 : 0xfb923c;
+        var markerMat = new THREE.MeshBasicMaterial({ color: markerColor });
+        var marker = new THREE.Mesh(markerGeo, markerMat);
+        marker.position.set(xPos, h + 1.0, CENTER_Z);
+        marker.userData = { isAnnotation: true, type: "misorder" };
+        depthGroup.add(marker);
+      }
+    }
+    if (a.type === "dup_trade") {
+      var markerGeo = new THREE.OctahedronGeometry(0.2);
+      var markerColor = a.verdict === "cleared" ? 0xfbbf24 : 0xf472b6;
+      var markerMat = new THREE.MeshBasicMaterial({ color: markerColor });
+      var marker = new THREE.Mesh(markerGeo, markerMat);
+      marker.position.set(0, 8 + anomalies.indexOf(a) * 0.5, CENTER_Z);
+      marker.userData = { isAnnotation: true, type: "dup_trade" };
+      depthGroup.add(marker);
+    }
+  });
+
+  scene.add(depthGroup);
+}
+
+function animate3D() {
+  requestAnimationFrame(animate3D);
+  camera.position.x = camDist * Math.sin(rotY) * Math.cos(rotX);
+  camera.position.y = camDist * Math.sin(-rotX) + 5;
+  camera.position.z = camDist * Math.cos(rotY) * Math.cos(rotX);
+  camera.lookAt(0, 2, CENTER_Z);
+
+  if (depthGroup) {
+    depthGroup.children.forEach(function(child) {
+      if (child.userData && child.userData.isAnnotation) {
+        child.lookAt(camera.position);
+      }
+    });
+  }
+
+  renderer.render(scene, camera);
+}
+
+function resetCamera() {
+  rotX = -0.4; rotY = 0.3; camDist = 18;
+}
+
+function toggleAnnotations() {
+  annotationsVisible = !annotationsVisible;
+  var btn = document.getElementById("btnToggleAnno");
+  btn.textContent = annotationsVisible ? "标注:开" : "标注:关";
+  document.getElementById("annotationOverlay").style.display = annotationsVisible ? "block" : "none";
+  if (depthGroup) {
+    depthGroup.children.forEach(function(child) {
+      if (child.userData && child.userData.isAnnotation) {
+        child.visible = annotationsVisible;
+      }
+    });
+  }
+  if (annotationsVisible) {
+    requestAnimationFrame(positionAnnotations);
+  }
+}
+
+function updateAnnotations() {
+  var overlay = document.getElementById("annotationOverlay");
+  overlay.innerHTML = "";
+  annotationElements = [];
+
+  if (!depthGroup) return;
+
+  var maxQty = getMaxQty();
+
+  orderBook.forEach(function(o) {
+    var x = getXForOrder(o);
+    var h = (o.qty / maxQty) * MAX_HEIGHT;
+    addLevelLabel(overlay, x, h + 0.3, o);
+  });
+
+  anomalies.forEach(function(a, aIdx) {
+    if (a.type === "cancel_delay") {
+      var sideOrders = orderBook.filter(function(o) { return o.side === a.side; }).sort(function(oi, oj) { return oi.level - oj.level; });
+      var tgt = sideOrders.find(function(o) { return o.id === a.orderId; });
+      if (tgt) {
+        var xPos = getXForOrder(tgt);
+        var h = (tgt.qty / maxQty) * MAX_HEIGHT;
+        var clearedMark = a.verdict === "cleared" ? "[已清]" : "";
+        addAnnoLabel(overlay, xPos, h + 1.5, "anomaly-cancel", "撤单延迟 " + a.delay + "ms" + clearedMark, function() { highlightAnomaly(aIdx); });
+      }
+    }
+    if (a.type === "misorder") {
+      var sideOrders = orderBook.filter(function(o) { return o.side === a.side; }).sort(function(oi, oj) { return oi.level - oj.level; });
+      var tgt = sideOrders.find(function(o) { return o.level === a.level; });
+      if (tgt) {
+        var xPos = getXForOrder(tgt);
+        var h = (tgt.qty / maxQty) * MAX_HEIGHT;
+        var clearedMark = a.verdict === "cleared" ? "[已清]" : "";
+        addAnnoLabel(overlay, xPos, h + 1.8, "anomaly-misorder", "档位错序" + clearedMark, function() { highlightAnomaly(aIdx); });
+      }
+    }
+    if (a.type === "dup_trade") {
+      var clearedMark = a.verdict === "cleared" ? "[已清]" : "";
+      addAnnoLabel(overlay, 0, 9 + aIdx * 0.4, "anomaly-dup", "成交重复 " + a.tradeId + clearedMark, function() { highlightAnomaly(aIdx); });
+    }
+  });
+
+  var b1 = orderBook.find(function(o) { return o.side === "buy" && o.level === 1; });
+  var s1 = orderBook.find(function(o) { return o.side === "sell" && o.level === 1; });
+  if (b1 && s1) {
+    var midX = (getXForOrder(b1) + getXForOrder(s1)) / 2;
+    addAnnoLabel(overlay, midX, 0.3, "spread-info", "价差 " + (s1.price - b1.price).toFixed(2), null);
+  }
+
+  if (annotationsVisible) requestAnimationFrame(positionAnnotations);
+}
+
+function addLevelLabel(overlay, x, y, order) {
+  var el = document.createElement("div");
+  el.className = "annotation-label level-info";
+  el.textContent = "L" + order.level + " " + order.price.toFixed(2) + " x" + order.qty;
+  el.dataset.wx = x;
+  el.dataset.wy = y;
+  el.dataset.wz = CENTER_Z;
+  overlay.appendChild(el);
+  annotationElements.push(el);
+}
+
+function addAnnoLabel(overlay, x, y, cls, text, onclick) {
+  var el = document.createElement("div");
+  el.className = "annotation-label " + cls;
+  el.textContent = text;
+  el.dataset.wx = x;
+  el.dataset.wy = y;
+  el.dataset.wz = CENTER_Z;
+  if (onclick) {
+    el.addEventListener("click", onclick);
+    el.style.pointerEvents = "auto";
+  }
+  overlay.appendChild(el);
+  annotationElements.push(el);
+}
+
+function positionAnnotations() {
+  if (!renderer || !camera || !annotationsVisible) return;
+  var w = renderer.domElement.clientWidth;
+  var h = renderer.domElement.clientHeight;
+
+  annotationElements.forEach(function(el) {
+    var wx = parseFloat(el.dataset.wx);
+    var wy = parseFloat(el.dataset.wy);
+    var wz = parseFloat(el.dataset.wz);
+    var pos = new THREE.Vector3(wx, wy, wz);
+    pos.project(camera);
+    if (pos.z > 1) {
+      el.style.display = "none";
+    } else {
+      el.style.display = "block";
+      var sx = (pos.x * 0.5 + 0.5) * w;
+      var sy = (-pos.y * 0.5 + 0.5) * h;
+      el.style.left = sx + "px";
+      el.style.top = sy + "px";
+    }
+  });
+
+  requestAnimationFrame(positionAnnotations);
+}
+
+// ===== Export =====
+
+function buildExportData() {
+  var rows = [];
+  rows.push({ type: "档位", id: "", side: "", detail: "", qty: "", delay: "", status: "", marks: "" });
+  orderBook.forEach(function(o) {
+    var marks = [];
+    anomalies.forEach(function(a) {
+      if (a.type === "misorder" && a.side === o.side && a.level === o.level) {
+        marks.push("档位错序" + (a.verdict === "cleared" ? "(已清)" : ""));
+      }
+    });
+    cancelRecords.forEach(function(c) {
+      if (c.orderId === o.id && c.verdict === "delayed") marks.push("撤单延迟");
+    });
+    rows.push({ type: "档位", id: o.id, side: o.side === "buy" ? "买" : "卖", detail: "L" + o.level + " " + o.price.toFixed(2), qty: String(o.qty), delay: "", status: "", marks: marks.join(";") });
+  });
+  cancelRecords.forEach(function(c) {
+    var vLabel = c.verdict === "delayed" ? "延迟" : c.verdict === "normal" ? "正常" : c.verdict;
+    rows.push({ type: "撤单", id: c.id, side: c.side === "buy" ? "买" : "卖", detail: "L" + c.origLevel, qty: "", delay: String(c.delay), status: c.status === "auto" ? "自动" : "改判", marks: vLabel });
+  });
+  tradeRecords.forEach(function(t) {
+    var marks = [];
+    anomalies.forEach(function(a) {
+      if (a.type === "dup_trade" && a.tradeId === t.id) {
+        marks.push("成交重复" + (a.verdict === "cleared" ? "(已清)" : ""));
+      }
+    });
+    rows.push({ type: "成交", id: t.id, side: t.side === "buy" ? "买" : "卖", detail: t.price.toFixed(2), qty: String(t.qty), delay: "", status: "", marks: marks.join(";") });
+  });
+  return rows;
+}
+
+function exportCSV() {
+  var rows = buildExportData();
+  var lines = ["类型,ID,方向,档位/价格,数量,延迟(ms),状态,标记"];
+  rows.forEach(function(r) {
+    lines.push([r.type, r.id, r.side, r.detail, r.qty, r.delay, r.status, r.marks].join(","));
+  });
+  downloadFile("depth_canyon_report.csv", lines.join("\n"), "text/csv");
+  showToast("CSV已导出");
+}
+
+function exportJSON() {
+  var data = {
+    version: DATA_VERSION,
+    snapshot: SNAPSHOT_TIME,
+    delayThreshold: DELAY_THRESHOLD,
+    orderBook: orderBook,
+    cancelRecords: cancelRecords,
+    tradeRecords: tradeRecords,
+    anomalies: anomalies.map(function(a) {
+      return { type: a.type, tag: a.tag, desc: a.desc, status: a.status, verdict: a.verdict, cancelId: a.cancelId || "", orderId: a.orderId || "", tradeId: a.tradeId || "", level: a.level || "" };
+    })
+  };
+  downloadFile("depth_canyon_report.json", JSON.stringify(data, null, 2), "application/json");
+  showToast("JSON已导出");
+}
+
+function downloadFile(name, content, mime) {
+  var blob = new Blob(["\uFEFF" + content], { type: mime + ";charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===== Wire Events =====
+
+document.getElementById("btnResetCam").addEventListener("click", resetCamera);
+document.getElementById("btnToggleAnno").addEventListener("click", toggleAnnotations);
+document.getElementById("btnExportCSV").addEventListener("click", exportCSV);
+document.getElementById("btnExportJSON").addEventListener("click", exportJSON);
+document.getElementById("btnCloseModal").addEventListener("click", closeOverrideModal);
+document.getElementById("btnCancelOverride").addEventListener("click", closeOverrideModal);
+document.getElementById("btnSubmitOverride").addEventListener("click", submitOverride);
+
+document.getElementById("overrideModal").addEventListener("click", function(e) {
+  if (e.target === this) closeOverrideModal();
+});
+
+// ===== Init =====
+detectAnomalies();
+renderAll();
+init3D();
+
+})();
+</script>
+</body>
+</html>
