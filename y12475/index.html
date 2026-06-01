@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音乐频谱钓鱼赛</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="start-overlay" id="startOverlay">
+  <div class="start-card">
+    <h2>🎣 音乐频谱钓鱼赛</h2>
+    <p>频谱海里游着各种频率的"鱼"，你需要操作<b style="color:var(--accent-cyan)">滤波网</b>来捕获目标频段的鱼。但要注意——</p>
+    <p><span class="rule-tag" style="background:rgba(255,82,82,.15);color:var(--accent-red)">频段混叠</span> 相邻频段会重叠，误捕混叠鱼扣5分，这是取舍的关键。</p>
+    <p><span class="rule-tag" style="background:rgba(255,171,64,.15);color:var(--accent-orange)">节拍错位</span> 节拍偏移会影响频域判定精度，加剧判定偏差扣3分。</p>
+    <p><span class="rule-tag" style="background:rgba(179,136,255,.15);color:var(--accent-purple)">判定矛盾</span> 频谱海和滤波网结论不一致时，<b style="color:var(--accent-gold)">节拍轨</b>作为补充证据。</p>
+    <p><span class="rule-tag" style="background:rgba(105,240,174,.15);color:var(--accent-green)">回看&修正</span> 赛后老师可回看每步判定、错因提示，还能手动修正滤波网并对比新旧结果。</p>
+    <button class="start-btn" id="startBtn">开始比赛</button>
+  </div>
+</div>
+<div class="app-header">
+  <h1>🎣 音乐频谱钓鱼赛</h1>
+  <div class="header-info">
+    <span>回合 <strong id="roundNum">0</strong>/8</span>
+    <span>得分 <strong id="totalScore">0</strong></span>
+    <span>频段混叠 <strong id="aliasCount" style="color:var(--accent-red)">0</strong></span>
+    <span>节拍错位 <strong id="beatErrCount" style="color:var(--accent-orange)">0</strong></span>
+  </div>
+</div>
+<div class="main-layout">
+  <div class="spectrum-panel">
+    <span class="panel-title">🌊 频谱海</span>
+    <canvas id="spectrumCanvas"></canvas>
+    <div class="round-banner" id="roundBanner"></div>
+  </div>
+  <div class="beat-panel">
+    <div class="panel-title">🥁 节拍轨</div>
+    <canvas id="beatCanvas"></canvas>
+    <div class="beat-info">
+      <div>BPM: <span class="bpm-val" id="bpmDisplay">120</span> | 节拍偏移: <span class="offset-val" id="offsetDisplay">0ms</span></div>
+      <div id="beatStatus" style="margin-top:4px;font-size:12px;color:var(--text-dim)">等待开局...</div>
+    </div>
+    <div class="judgment-section" id="judgmentSection" style="display:none">
+      <h4>⚖️ 判定详情</h4>
+      <div id="judgmentList"></div>
+    </div>
+  </div>
+  <div class="filter-panel">
+    <div class="panel-title">🪤 滤波网</div>
+    <div class="filter-controls">
+      <div class="filter-group"><label>滤波类型</label><select id="filterType"><option value="lowpass">低通</option><option value="highpass">高通</option><option value="bandpass">带通</option><option value="notch">陷波</option></select></div>
+      <div class="filter-group"><label>截止频率</label><input type="range" id="cutoffFreq" min="100" max="8000" value="1000" step="50"><span class="freq-display" id="cutoffDisplay">1000 Hz</span></div>
+      <div class="filter-group"><label>Q 值</label><input type="range" id="filterQ" min="0.1" max="12" value="1" step="0.1"><span class="freq-display" id="qDisplay">1.0</span></div>
+      <button class="cast-btn" id="castBtn" disabled>🎣 甩网捕鱼</button>
+    </div>
+  </div>
+  <div class="sidebar-panel">
+    <div class="panel-title">📋 操作历史</div>
+    <div class="tab-bar"><button class="tab-btn active" data-tab="history">历史</button><button class="tab-btn" data-tab="timeline">时序</button></div>
+    <div id="historyList"></div>
+    <div id="timelineList" style="display:none"></div>
+  </div>
+</div>
+<div class="review-panel" id="reviewPanel">
+  <div class="review-card">
+    <div class="review-header"><h2>🔍 回看 — 频谱判定追踪</h2><button class="close-btn" id="closeReview">&times;</button></div>
+    <div class="review-body" id="reviewBody"></div>
+  </div>
+</div>
+<div class="correction-panel" id="correctionPanel">
+  <div class="correction-card">
+    <div class="correction-header"><h2>✏️ 手动修正 — 滤波网调整</h2><button class="close-btn" id="closeCorrection">&times;</button></div>
+    <div class="correction-body">
+      <div class="compare-grid">
+        <div class="compare-col old"><h3>原始结果</h3><div id="oldResult"></div></div>
+        <div class="compare-col new"><h3>修正后结果</h3><div id="newResult"></div></div>
+      </div>
+      <div class="correction-form">
+        <h3>调整滤波网参数</h3>
+        <div class="cf-row"><label>滤波类型</label><select id="corrFilterType"><option value="lowpass">低通</option><option value="highpass">高通</option><option value="bandpass">带通</option><option value="notch">陷波</option></select></div>
+        <div class="cf-row"><label>截止频率</label><input type="range" id="corrCutoff" min="100" max="8000" value="1000" step="50"><span class="freq-display" id="corrCutoffDisplay">1000 Hz</span></div>
+        <div class="cf-row"><label>Q 值</label><input type="range" id="corrQ" min="0.1" max="12" value="1" step="0.1"><span class="freq-display" id="corrQDisplay">1.0</span></div>
+        <button class="apply-correction-btn" id="applyCorrection">应用修正</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="end-overlay" id="endOverlay">
+  <div class="end-card">
+    <h2>🏁 比赛结束</h2>
+    <div class="final-score" id="finalScore">0</div>
+    <div id="endSummary" style="color:var(--text-secondary);font-size:14px;margin-bottom:12px"></div>
+    <div class="end-actions">
+      <button class="btn-review" id="endReviewBtn">🔍 回看判定</button>
+      <button class="btn-correct" id="endCorrectBtn">✏️ 手动修正</button>
+      <button class="btn-restart" id="endRestartBtn">🔄 再来一局</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="game.js"></script>
+</body>
+</html>
