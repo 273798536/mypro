@@ -1,0 +1,486 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+}
+
+#app {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 28px;
+    color: #00d9ff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+}
+
+.status-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 16px;
+}
+
+.status-bar span {
+    background: #16213e;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #0f3460;
+}
+
+.game-area {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.stage-container {
+    position: relative;
+    flex: 1;
+}
+
+#stage-canvas {
+    background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+    border-radius: 10px;
+    border: 2px solid #0f3460;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.problem-indicator {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 68, 68, 0.9);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.control-panel {
+    width: 380px;
+    background: #16213e;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #0f3460;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.panel-section {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #0f3460;
+}
+
+.panel-section:last-child {
+    border-bottom: none;
+}
+
+.panel-section h3 {
+    color: #00d9ff;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.source-list, .mic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.source-item, .mic-item {
+    background: #0f3460;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.source-item.active {
+    border: 2px solid #00d9ff;
+}
+
+.mic-item.warning {
+    border: 2px solid #ffcc00;
+}
+
+.mic-item.error {
+    border: 2px solid #ff4444;
+}
+
+.remove-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.remove-btn:hover {
+    background: #cc0000;
+}
+
+.feedback-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.feedback-control input[type="range"] {
+    flex: 1;
+}
+
+.feedback-effect {
+    background: #0f3460;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.feedback-effect .highlight {
+    color: #00d9ff;
+    font-weight: bold;
+}
+
+.sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.slider-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider-group label {
+    width: 80px;
+    font-size: 13px;
+}
+
+.slider-group input[type="range"] {
+    flex: 1;
+}
+
+.slider-group span {
+    width: 40px;
+    text-align: right;
+    font-size: 13px;
+    color: #00d9ff;
+}
+
+.problem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.problem-item {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.problem-item.howling {
+    background: rgba(255, 68, 68, 0.2);
+    border: 1px solid #ff4444;
+}
+
+.problem-item.howling:hover {
+    background: rgba(255, 68, 68, 0.4);
+}
+
+.problem-item.reverb {
+    background: rgba(255, 204, 0, 0.2);
+    border: 1px solid #ffcc00;
+}
+
+.problem-item.reverb:hover {
+    background: rgba(255, 204, 0, 0.4);
+}
+
+.problem-item.occlusion {
+    background: rgba(153, 102, 255, 0.2);
+    border: 1px solid #9966ff;
+}
+
+.problem-item.occlusion:hover {
+    background: rgba(153, 102, 255, 0.4);
+}
+
+.problem-item .problem-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.problem-item .problem-desc {
+    font-size: 11px;
+    color: #aaa;
+}
+
+.problem-item.resolved {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.problem-tip {
+    background: #0f3460;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #ffcc00;
+    margin-top: 8px;
+}
+
+.panel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #0f3460;
+    color: #eee;
+    border: 1px solid #1a1a2e;
+}
+
+.btn:hover {
+    background: #1a4a7a;
+}
+
+.btn-primary {
+    background: #00d9ff;
+    color: #1a1a2e;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background: #00b8d9;
+}
+
+.btn-success {
+    background: #00cc88;
+    color: #1a1a2e;
+    font-weight: bold;
+}
+
+.btn-success:hover {
+    background: #00aa66;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #16213e;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 2px solid #0f3460;
+}
+
+.modal-content h2 {
+    color: #00d9ff;
+    margin-bottom: 20px;
+}
+
+.fail-content h2 {
+    color: #ff4444;
+}
+
+.success-content h2 {
+    color: #00cc88;
+}
+
+#fail-reason, #success-info, #replay-content {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.replay-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #0f3460;
+    border-radius: 6px;
+}
+
+.replay-section h3 {
+    color: #00d9ff;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.replay-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.replay-table th, .replay-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #1a1a2e;
+}
+
+.replay-table th {
+    color: #00d9ff;
+    font-weight: normal;
+}
+
+.replay-table .original {
+    color: #ff6666;
+    text-decoration: line-through;
+}
+
+.replay-table .current {
+    color: #66ff66;
+    font-weight: bold;
+}
+
+.score-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.score-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #1a1a2e;
+    border-radius: 4px;
+}
+
+.score-item.total {
+    background: #0f3460;
+    font-size: 16px;
+    font-weight: bold;
+    color: #00d9ff;
+}
+
+.coverage-bar {
+    height: 20px;
+    background: #1a1a2e;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.coverage-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4444 0%, #ffcc00 50%, #00cc88 100%);
+    transition: width 0.5s;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.value-compare {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.original-value {
+    color: #ff6666;
+    text-decoration: line-through;
+    font-size: 12px;
+}
+
+.current-value {
+    color: #66ff66;
+    font-weight: bold;
+}
+
+.feedback-impact {
+    background: rgba(0, 217, 255, 0.1);
+    border-left: 3px solid #00d9ff;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.feedback-impact .impact-item {
+    margin: 4px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.impact-positive {
+    color: #00cc88;
+}
+
+.impact-negative {
+    color: #ff4444;
+}
+
+@media (max-width: 1200px) {
+    .game-area {
+        flex-direction: column;
+    }
+    
+    .control-panel {
+        width: 100%;
+        max-height: none;
+    }
+}
