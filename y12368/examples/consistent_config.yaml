@@ -1,0 +1,23 @@
+description: 完全一致的理想测试数据 - 声源位于(3,4)
+speed_of_sound: 343.0
+microphones:
+- id: MIC1
+  x: 0.0
+  y: 0.0
+- id: MIC2
+  x: 10.0
+  y: 0.0
+- id: MIC3
+  x: 5.0
+  y: 8.0
+time_differences:
+- mic1: MIC1
+  mic2: MIC2
+  delta_t: -0.008928
+  confidence: 1.0
+  notes: 声源距MIC2更远
+- mic1: MIC1
+  mic2: MIC3
+  delta_t: 0.001539
+  confidence: 1.0
+  notes: 声源距MIC3更近
