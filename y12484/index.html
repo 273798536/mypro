@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鼓组麦克风摆位室</title>
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="header-left">
+        <h1>🥁 鼓组麦克风摆位室</h1>
+        <span class="subtitle">Drum Mic Positioning Studio</span>
+      </div>
+      <div class="header-right">
+        <button id="screenshotBtn" class="btn btn-primary">📸 截图</button>
+        <button id="reportBtn" class="btn btn-secondary">📋 生成报告</button>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <aside class="sidebar left">
+        <div class="panel">
+          <h3>🎛️ 项目信息</h3>
+          <div class="form-group">
+            <label>曲目名称</label>
+            <input type="text" id="trackName" placeholder="输入曲目名称...">
+          </div>
+          <div class="form-group">
+            <label>鼓组型号</label>
+            <select id="drumKitModel">
+              <option value="standard">标准五鼓组</option>
+              <option value="jazz">爵士四鼓组</option>
+              <option value="metal">金属八鼓组</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <textarea id="notes" rows="3" placeholder="录音备注..."></textarea>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🔍 筛选器</h3>
+          <div class="filter-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterKick" checked> 底鼓
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterSnare" checked> 军鼓
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterToms" checked> 通鼓
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterHiHat" checked> 踩镲
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterCymbals" checked> 镲片
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterRoom" checked> 房间麦
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="filterOverheads" checked> 顶置麦
+            </label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>⚠️ 相位警告</h3>
+          <div id="phaseWarnings" class="warnings-container">
+            <p class="no-warnings">暂无相位问题</p>
+          </div>
+        </div>
+      </aside>
+
+      <section class="canvas-container">
+        <canvas id="sceneCanvas"></canvas>
+        <div id="tooltip" class="tooltip hidden"></div>
+        <div id="boundaryWarning" class="boundary-warning hidden">
+          <span>⚠️ 注意：部分麦克风位置已超出推荐范围</span>
+        </div>
+      </section>
+
+      <aside class="sidebar right">
+        <div class="panel" id="detailPanel">
+          <h3>📋 选中对象详情</h3>
+          <div id="detailContent">
+            <p class="placeholder">点击3D场景中的对象查看详情</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🎤 麦克风列表</h3>
+          <div id="micList" class="mic-list"></div>
+        </div>
+
+        <div class="panel">
+          <h3>📐 声场提示口径</h3>
+          <div class="soundfield-guide">
+            <div class="guide-item">
+              <span class="guide-icon">🎯</span>
+              <div>
+                <strong>近距离 (5-15cm)</strong>
+                <p>贴身收音，冲击力强，细节丰富</p>
+              </div>
+            </div>
+            <div class="guide-item">
+              <span class="guide-icon">🎯</span>
+              <div>
+                <strong>中距离 (15-45cm)</strong>
+                <p>平衡音色，兼顾质感与空间</p>
+              </div>
+            </div>
+            <div class="guide-item">
+              <span class="guide-icon">🎯</span>
+              <div>
+                <strong>远距离 (45cm+)</strong>
+                <p>房间氛围，自然混响感</p>
+              </div>
+            </div>
+            <div class="guide-item warning">
+              <span class="guide-icon">⚠️</span>
+              <div>
+                <strong>相位危险区</strong>
+                <p>两麦距离差 &lt; 34cm 可能产生相位抵消</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
