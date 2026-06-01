@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电路RC充放电拟合分析系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="top-bar">
+            <h1>🔬 电路RC充放电拟合分析系统</h1>
+            <div class="toolbar">
+                <button id="btn-import" class="btn-primary">📥 导入数据</button>
+                <button id="btn-screenshot" class="btn-secondary">📷 截图</button>
+                <button id="btn-export" class="btn-success">📄 导出报告</button>
+                <select id="time-unit-selector" class="selector">
+                    <option value="ms">时间单位: ms</option>
+                    <option value="s">时间单位: s</option>
+                    <option value="us">时间单位: μs</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧3D视图 -->
+            <section class="viewer-panel">
+                <div class="panel-header">
+                    <h2>3D指数拟合视图</h2>
+                    <div class="view-controls">
+                        <button id="view-reset" title="重置视角">🔄</button>
+                        <button id="view-top" title="顶视图">⬆️</button>
+                        <button id="view-front" title="正视图">▶️</button>
+                    </div>
+                </div>
+                <div id="three-container" class="three-canvas"></div>
+                <div class="fit-info">
+                    <span id="fit-quality">拟合优度: --</span>
+                    <span id="time-constant">τ (时间常数): --</span>
+                </div>
+            </section>
+
+            <!-- 右侧侧边栏 -->
+            <aside class="sidebar">
+                <!-- 时间常数面板 -->
+                <div class="sidebar-panel">
+                    <h3>⏱️ 时间常数分析</h3>
+                    <div class="parameter-group">
+                        <label>电阻 R (Ω):</label>
+                        <input type="number" id="input-r" value="1000" step="100">
+                    </div>
+                    <div class="parameter-group">
+                        <label>电容 C (F):</label>
+                        <input type="number" id="input-c" value="0.001" step="0.0001">
+                        <span id="c-warning" class="warning-text" style="display:none">⚠️ 电容值异常</span>
+                    </div>
+                    <div class="parameter-group">
+                        <label>采样间隔 (s):</label>
+                        <input type="number" id="input-sample" value="0.001" step="0.0001">
+                    </div>
+                    <div class="calculated-results">
+                        <div class="result-item">
+                            <span class="label">理论 τ:</span>
+                            <span id="theoretical-tau" class="value">--</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">实测 τ:</span>
+                            <span id="measured-tau" class="value">--</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">偏差:</span>
+                            <span id="tau-deviation" class="value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 异常隔离面板 -->
+                <div class="sidebar-panel">
+                    <h3>🚨 异常检测</h3>
+                    <div id="anomaly-list" class="anomaly-list">
+                        <div class="anomaly-item normal">
+                            <span class="status-badge">✓</span>
+                            <span class="anomaly-text">暂无异常</span>
+                        </div>
+                    </div>
+                    <div class="conflict-log">
+                        <h4>📋 冲突留痕记录</h4>
+                        <div id="conflict-log-content">
+                            <p class="empty-log">暂无冲突记录</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据筛选面板 -->
+                <div class="sidebar-panel">
+                    <h3>🔍 数据筛选</h3>
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="filter-show-normal" checked>
+                            正常数据
+                        </label>
+                        <label>
+                            <input type="checkbox" id="filter-show-anomaly" checked>
+                            异常数据
+                        </label>
+                        <label>
+                            <input type="checkbox" id="filter-show-fit" checked>
+                            拟合曲线
+                        </label>
+                    </div>
+                    <div class="filter-group">
+                        <label>时间范围:</label>
+                        <input type="range" id="time-range-start" min="0" max="100" value="0">
+                        <input type="range" id="time-range-end" min="0" max="100" value="100">
+                        <span id="time-range-display">0% - 100%</span>
+                    </div>
+                </div>
+
+                <!-- 2D对比图 -->
+                <div class="sidebar-panel">
+                    <h3>📊 2D拟合对比</h3>
+                    <canvas id="chart-2d" width="300" height="200"></canvas>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 详情弹窗 -->
+        <div id="detail-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">数据点详情</h3>
+                    <button id="modal-close" class="close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="detail-section">
+                        <h4>基本信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">时间戳:</span>
+                                <span id="detail-time" class="value">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">电压值:</span>
+                                <span id="detail-voltage" class="value">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">数据类型:</span>
+                                <span id="detail-type" class="value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4>拟合信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">理论值:</span>
+                                <span id="detail-theoretical" class="value">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">残差:</span>
+                                <span id="detail-residual" class="value">--</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">拟合状态:</span>
+                                <span id="detail-status" class="value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4>溯源信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item full-width">
+                                <span class="label">电压序列索引:</span>
+                                <span id="detail-sequence-index" class="value">--</span>
+                            </div>
+                            <div class="detail-item full-width">
+                                <span class="label">关联报告编号:</span>
+                                <span id="detail-report-id" class="value">--</span>
+                            </div>
+                            <div class="detail-item full-width">
+                                <span class="label">RC参数快照:</span>
+                                <span id="detail-rc-snapshot" class="value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 报告预览弹窗 -->
+        <div id="report-modal" class="modal hidden">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h3>📄 分析报告</h3>
+                    <button id="report-close" class="close-btn">×</button>
+                </div>
+                <div class="modal-body" id="report-content">
+                </div>
+                <div class="modal-footer">
+                    <button id="report-download" class="btn-success">📥 下载PDF</button>
+                    <button id="report-copy" class="btn-secondary">📋 复制文本</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 隐藏的导入输入框 -->
+        <input type="file" id="file-input" accept=".csv,.json" style="display:none">
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
