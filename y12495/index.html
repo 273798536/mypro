@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数学向量投影工坊</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+    #canvas-container { flex: 1; position: relative; }
+    #canvas-container canvas { display: block; }
+    
+    #sidebar {
+      width: 380px;
+      background: #1a1a2e;
+      color: #eaeaea;
+      padding: 20px;
+      overflow-y: auto;
+      border-left: 1px solid #333;
+    }
+    
+    #sidebar h1 { font-size: 18px; margin-bottom: 20px; color: #4fc3f7; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    .section { margin-bottom: 20px; }
+    .section h2 { font-size: 14px; margin-bottom: 12px; color: #81c784; }
+    
+    .input-group { margin-bottom: 12px; }
+    .input-group label { display: block; font-size: 12px; margin-bottom: 4px; color: #aaa; }
+    .input-row { display: flex; gap: 8px; }
+    .input-row input {
+      flex: 1;
+      background: #2d2d44;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .input-row input:focus { outline: none; border-color: #4fc3f7; }
+    
+    select, button {
+      width: 100%;
+      background: #2d2d44;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    select:hover, button:hover { border-color: #4fc3f7; }
+    button.primary { background: #1976d2; border-color: #1976d2; }
+    button.primary:hover { background: #1565c0; }
+    button.success { background: #388e3c; border-color: #388e3c; margin-top: 8px; }
+    button.success:hover { background: #2e7d32; }
+    
+    .result-box {
+      background: #252538;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .result-box h3 { font-size: 13px; color: #ffb74d; margin-bottom: 8px; }
+    .result-item { font-size: 12px; padding: 4px 0; display: flex; justify-content: space-between; }
+    .result-item .label { color: #888; }
+    .result-item .value { color: #4fc3f7; font-family: monospace; }
+    
+    .diagnosis {
+      background: #252538;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .diagnosis h3 { font-size: 13px; color: #ef5350; margin-bottom: 10px; }
+    .diagnosis-item {
+      font-size: 12px;
+      padding: 8px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      border-left: 3px solid;
+    }
+    .diagnosis-item.warning { background: rgba(255, 152, 0, 0.15); border-color: #ff9800; color: #ffb74d; }
+    .diagnosis-item.error { background: rgba(244, 67, 54, 0.15); border-color: #f44336; color: #ef9a9a; }
+    .diagnosis-item.info { background: rgba(33, 150, 243, 0.15); border-color: #2196f3; color: #90caf9; }
+    .diagnosis-item.success { background: rgba(76, 175, 80, 0.15); border-color: #4caf50; color: #a5d6a7; }
+    
+    .annotation-toggle { display: flex; gap: 8px; margin-top: 10px; }
+    .annotation-toggle button { flex: 1; font-size: 11px; padding: 6px; }
+    .annotation-toggle button.active { background: #1976d2; border-color: #1976d2; }
+    
+    #labels-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .label-tag {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+    }
+    .label-tag.vector { border-left: 3px solid #4fc3f7; }
+    .label-tag.projection { border-left: 3px solid #81c784; }
+    .label-tag.base { border-left: 3px solid #ffb74d; }
+    
+    .scheme-indicator {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .scheme-indicator .scheme-name { color: #4fc3f7; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <div class="scheme-indicator">
+      当前投影方案: <span class="scheme-name" id="scheme-name">正交投影</span>
+    </div>
+    <div id="labels-overlay"></div>
+  </div>
+  
+  <div id="sidebar">
+    <h1>📐 数学向量投影工坊</h1>
+    
+    <div class="section">
+      <h2>📊 投影方案</h2>
+      <select id="projection-scheme">
+        <option value="orthogonal">正交投影 (标准正交基)</option>
+        <option value="oblique">斜投影 (非正交基)</option>
+        <option value="axis">坐标轴投影</option>
+      </select>
+    </div>
+    
+    <div class="section">
+      <h2>📌 原始向量 V (保留原始值)</h2>
+      <div class="input-row">
+        <div class="input-group" style="flex:1">
+          <label>Vx</label>
+          <input type="number" id="vec-vx" value="3" step="0.1">
+        </div>
+        <div class="input-group" style="flex:1">
+          <label>Vy</label>
+          <input type="number" id="vec-vy" value="4" step="0.1">
+        </div>
+        <div class="input-group" style="flex:1">
+          <label>Vz</label>
+          <input type="number" id="vec-vz" value="2" step="0.1">
+        </div>
+      </div>
+    </div>
+    
+    <div class="section" id="base-vectors-section">
+      <h2>🔷 基底向量</h2>
+      <div class="input-group">
+        <label>基向量 e₁</label>
+        <div class="input-row">
+          <input type="number" id="base-e1x" value="1" step="0.1">
+          <input type="number" id="base-e1y" value="0" step="0.1">
+          <input type="number" id="base-e1z" value="0" step="0.1">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>基向量 e₂</label>
+        <div class="input-row">
+          <input type="number" id="base-e2x" value="0" step="0.1">
+          <input type="number" id="base-e2y" value="1" step="0.1">
+          <input type="number" id="base-e2z" value="0" step="0.1">
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>👁️ 读数标注</h2>
+      <div class="annotation-toggle">
+        <button id="toggle-coords" class="active">坐标值</button>
+        <button id="toggle-lengths" class="active">长度</button>
+        <button id="toggle-angles">夹角</button>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>📤 导出</h2>
+      <button class="primary" id="btn-screenshot">📸 导出截图</button>
+      <button class="success" id="btn-reset">🔄 重置视图</button>
+    </div>
+    
+    <div class="section">
+      <h2>📋 计算结果</h2>
+      <div class="result-box">
+        <h3>原始向量</h3>
+        <div class="result-item"><span class="label">坐标:</span><span class="value" id="res-v-coord">(-, -, -)</span></div>
+        <div class="result-item"><span class="label">模长:</span><span class="value" id="res-v-len">-</span></div>
+      </div>
+      <div class="result-box">
+        <h3>投影向量 p</h3>
+        <div class="result-item"><span class="label">坐标:</span><span class="value" id="res-p-coord">(-, -, -)</span></div>
+        <div class="result-item"><span class="label">模长:</span><span class="value" id="res-p-len">-</span></div>
+      </div>
+      <div class="result-box">
+        <h3>投影分量</h3>
+        <div class="result-item"><span class="label">e₁方向系数:</span><span class="value" id="res-c1">-</span></div>
+        <div class="result-item"><span class="label">e₂方向系数:</span><span class="value" id="res-c2">-</span></div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>🔍 诊断信息</h2>
+      <div class="diagnosis" id="diagnosis-container"></div>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

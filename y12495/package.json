@@ -1,0 +1,16 @@
+{
+  "name": "vector-projection-workshop",
+  "version": "1.0.0",
+  "description": "数学向量投影工坊 - Three.js 交互式教学工具",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
