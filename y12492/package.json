@@ -1,0 +1,19 @@
+{
+  "name": "stage-lighting-sandbox",
+  "version": "1.0.0",
+  "description": "舞台灯光遮挡沙盘 - 3D空间关系分析工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}
