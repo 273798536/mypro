@@ -1,0 +1,16 @@
+{
+  "name": "concert-evacuation-chess",
+  "version": "1.0.0",
+  "description": "音乐会场疏散棋 - 安保人员疏散模拟训练系统",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node tests/run-tests.js",
+    "test:smooth": "node tests/run-tests.js --type smooth",
+    "test:broadcast": "node tests/run-tests.js --type broadcast",
+    "demo": "node src/demo.js"
+  },
+  "keywords": ["evacuation", "simulation", "training", "security"],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,64 @@
+{
+  "smooth": {
+    "type": "顺利材料",
+    "count": 3,
+    "averageScore": 83,
+    "totalErrors": 5,
+    "averageExitTime": 16,
+    "exitRate": 100,
+    "details": [
+      {
+        "name": "顺利疏散-标准布局",
+        "score": 70,
+        "errors": 3,
+        "exitedCount": 50,
+        "totalAudience": 50
+      },
+      {
+        "name": "顺利疏散-满场",
+        "score": 90,
+        "errors": 1,
+        "exitedCount": 80,
+        "totalAudience": 80
+      },
+      {
+        "name": "顺利疏散-特殊需要人群",
+        "score": 90,
+        "errors": 1,
+        "exitedCount": 60,
+        "totalAudience": 60
+      }
+    ]
+  },
+  "broadcast": {
+    "type": "广播冷却材料",
+    "count": 3,
+    "averageScore": 80,
+    "totalErrors": 6,
+    "averageExitTime": 14,
+    "exitRate": 100,
+    "details": [
+      {
+        "name": "广播冷却-快速连续广播",
+        "score": 70,
+        "errors": 3,
+        "exitedCount": 40,
+        "totalAudience": 40
+      },
+      {
+        "name": "广播冷却-临界间隔",
+        "score": 80,
+        "errors": 2,
+        "exitedCount": 40,
+        "totalAudience": 40
+      },
+      {
+        "name": "广播冷却-正确间隔",
+        "score": 90,
+        "errors": 1,
+        "exitedCount": 40,
+        "totalAudience": 40
+      }
+    ]
+  }
+}
