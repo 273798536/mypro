@@ -1,0 +1,82 @@
+[
+  {
+    "exportId": "id_kmokn18ck",
+    "exportedAt": "2026-06-01T17:32:40.769Z",
+    "analysisId": "id_iofqnl17q",
+    "audioFile": "20240520_blues_for_alice.wav",
+    "chordProgression": [
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 1,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 2,
+        "beat": 1
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 3,
+        "beat": 1
+      },
+      {
+        "name": "Fmaj7",
+        "root": "F",
+        "quality": "maj7",
+        "bar": 4,
+        "beat": 1
+      },
+      {
+        "name": "Bbm7",
+        "root": "Bb",
+        "quality": "dom7",
+        "bar": 5,
+        "beat": 1
+      },
+      {
+        "name": "Eb7",
+        "root": "Eb",
+        "quality": "dom7",
+        "bar": 6,
+        "beat": 1
+      },
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 7,
+        "beat": 1
+      },
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 2
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 9,
+        "beat": 1
+      }
+    ],
+    "reportFile": "id_iofqnl17q_Blues_for_Alice.txt",
+    "status": "corrected"
+  }
+]

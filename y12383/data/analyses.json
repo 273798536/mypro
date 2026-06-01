@@ -1,0 +1,607 @@
+[
+  {
+    "id": "id_fqahghsam",
+    "audioFile": "20240515_autumn_leaves.wav",
+    "title": "Autumn Leaves 即兴练习",
+    "artist": "",
+    "dateRecorded": "",
+    "dateAnalyzed": "2026-06-01T17:32:20.181Z",
+    "chordProgression": [
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 1,
+        "beat": 1
+      },
+      {
+        "name": "D7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 2,
+        "beat": 1
+      },
+      {
+        "name": "Gmaj7",
+        "root": "G",
+        "quality": "maj7",
+        "bar": 3,
+        "beat": 1
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 4,
+        "beat": 1
+      },
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 5,
+        "beat": 1
+      },
+      {
+        "name": "D7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 6,
+        "beat": 1
+      },
+      {
+        "name": "Gmaj7",
+        "root": "G",
+        "quality": "maj7",
+        "bar": 7,
+        "beat": 1
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 8,
+        "beat": 1
+      }
+    ],
+    "motifs": [],
+    "beatDrifts": [
+      {
+        "id": "id_fhjudq2br",
+        "bar": 3,
+        "beat": 2,
+        "driftAmount": 0.05,
+        "severity": "minor",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第3小节第2拍检测到轻微节拍漂移"
+      },
+      {
+        "id": "id_v0xr15saw",
+        "bar": 6,
+        "beat": 4,
+        "driftAmount": 0.2,
+        "severity": "moderate",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第6小节第4拍检测到中等节拍漂移"
+      }
+    ],
+    "harmonyIssues": [],
+    "segments": [],
+    "status": "draft",
+    "notes": "",
+    "history": [
+      {
+        "id": "id_5dg8ae8k8",
+        "timestamp": "2026-06-01T17:32:20.182Z",
+        "action": "created",
+        "author": "system",
+        "description": "创建分析记录"
+      }
+    ],
+    "hasMissingFields": true,
+    "isLateEntry": false
+  },
+  {
+    "id": "id_hob5m8p9a",
+    "audioFile": "20240510_someday_my_prince.mp3",
+    "title": "Someday My Prince Will Come",
+    "artist": "张三",
+    "dateRecorded": "2024-05-10",
+    "dateAnalyzed": "2026-05-27T17:32:20.182Z",
+    "chordProgression": [
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 1,
+        "beat": 1
+      },
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 2,
+        "beat": 1
+      },
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 3,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 4,
+        "beat": 1
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 5,
+        "beat": 1
+      },
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 6,
+        "beat": 1
+      },
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 7,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 1
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 9,
+        "beat": 1
+      }
+    ],
+    "motifs": [],
+    "beatDrifts": [
+      {
+        "id": "id_43erq8pzv",
+        "bar": 4,
+        "beat": 1,
+        "driftAmount": 0.4,
+        "severity": "severe",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第4小节第1拍检测到严重节拍漂移"
+      },
+      {
+        "id": "id_me0u6q44b",
+        "bar": 7,
+        "beat": 3,
+        "driftAmount": 0.2,
+        "severity": "moderate",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第7小节第3拍检测到中等节拍漂移"
+      }
+    ],
+    "harmonyIssues": [],
+    "segments": [],
+    "status": "corrected",
+    "notes": "晚补记录：学生临时提交，需要重点检查第4小节的节拍问题",
+    "history": [
+      {
+        "id": "id_920twq200",
+        "timestamp": "2026-05-27T17:32:20.182Z",
+        "action": "created",
+        "author": "system",
+        "description": "创建分析记录"
+      },
+      {
+        "id": "id_epk2euuxb",
+        "timestamp": "2026-05-29T17:32:20.182Z",
+        "action": "noted",
+        "author": "李老师",
+        "description": "添加备注：晚补记录"
+      }
+    ],
+    "hasMissingFields": false,
+    "isLateEntry": true
+  },
+  {
+    "id": "id_iofqnl17q",
+    "audioFile": "20240520_blues_for_alice.wav",
+    "title": "Blues for Alice",
+    "artist": "李四",
+    "dateRecorded": "2024-05-20",
+    "dateAnalyzed": "2026-06-01T17:32:20.182Z",
+    "chordProgression": [
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 1,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 2,
+        "beat": 1
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 3,
+        "beat": 1
+      },
+      {
+        "name": "Fmaj7",
+        "root": "F",
+        "quality": "maj7",
+        "bar": 4,
+        "beat": 1
+      },
+      {
+        "name": "Bbm7",
+        "root": "Bb",
+        "quality": "dom7",
+        "bar": 5,
+        "beat": 1
+      },
+      {
+        "name": "Eb7",
+        "root": "Eb",
+        "quality": "dom7",
+        "bar": 6,
+        "beat": 1
+      },
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 7,
+        "beat": 1
+      },
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 2
+      },
+      {
+        "name": "Cmaj7",
+        "root": "C",
+        "quality": "maj7",
+        "bar": 9,
+        "beat": 1
+      }
+    ],
+    "motifs": [],
+    "beatDrifts": [],
+    "harmonyIssues": [],
+    "segments": [],
+    "status": "corrected",
+    "notes": "",
+    "history": [
+      {
+        "id": "id_ubg61rd11",
+        "timestamp": "2026-06-01T17:32:20.182Z",
+        "action": "created",
+        "author": "system",
+        "description": "创建分析记录"
+      },
+      {
+        "id": "id_djdjrqo3q",
+        "timestamp": "2026-06-01T17:32:31.822Z",
+        "action": "corrected",
+        "author": "李老师",
+        "description": "手动修正和弦进行",
+        "chordProgression": [
+          {
+            "name": "Dm7",
+            "root": "D",
+            "quality": "dom7",
+            "bar": 1,
+            "beat": 1
+          },
+          {
+            "name": "G7",
+            "root": "G",
+            "quality": "dom7",
+            "bar": 2,
+            "beat": 1
+          },
+          {
+            "name": "Cmaj7",
+            "root": "C",
+            "quality": "maj7",
+            "bar": 3,
+            "beat": 1
+          },
+          {
+            "name": "Fmaj7",
+            "root": "F",
+            "quality": "maj7",
+            "bar": 4,
+            "beat": 1
+          },
+          {
+            "name": "Bdim7",
+            "root": "B",
+            "quality": "dom7",
+            "bar": 5,
+            "beat": 1
+          },
+          {
+            "name": "E7",
+            "root": "E",
+            "quality": "dom7",
+            "bar": 6,
+            "beat": 1
+          },
+          {
+            "name": "Am7",
+            "root": "A",
+            "quality": "dom7",
+            "bar": 7,
+            "beat": 1
+          },
+          {
+            "name": "Dm7",
+            "root": "D",
+            "quality": "dom7",
+            "bar": 8,
+            "beat": 1
+          },
+          {
+            "name": "G7",
+            "root": "G",
+            "quality": "dom7",
+            "bar": 8,
+            "beat": 2
+          }
+        ]
+      }
+    ],
+    "hasMissingFields": false,
+    "isLateEntry": false
+  },
+  {
+    "id": "id_lxxufu2sq",
+    "audioFile": "20240512_all_the_things.mp3",
+    "title": "All the Things You Are",
+    "artist": "王五",
+    "dateRecorded": "2024-05-12",
+    "dateAnalyzed": "2026-05-30T17:32:20.182Z",
+    "chordProgression": [
+      {
+        "name": "Fmaj7",
+        "root": "F",
+        "quality": "maj7",
+        "bar": 1,
+        "beat": 1
+      },
+      {
+        "name": "Gm7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 2,
+        "beat": 1
+      },
+      {
+        "name": "Am7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 3,
+        "beat": 1
+      },
+      {
+        "name": "Bbmaj7",
+        "root": "Bb",
+        "quality": "maj7",
+        "bar": 4,
+        "beat": 1
+      },
+      {
+        "name": "C7",
+        "root": "C",
+        "quality": "dom7",
+        "bar": 5,
+        "beat": 1
+      },
+      {
+        "name": "Fmaj7",
+        "root": "F",
+        "quality": "maj7",
+        "bar": 6,
+        "beat": 1
+      },
+      {
+        "name": "Dm7",
+        "root": "D",
+        "quality": "dom7",
+        "bar": 7,
+        "beat": 1
+      },
+      {
+        "name": "G7",
+        "root": "G",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 1
+      }
+    ],
+    "motifs": [],
+    "beatDrifts": [
+      {
+        "id": "id_z08e9bk4d",
+        "bar": 2,
+        "beat": 3,
+        "driftAmount": 0.05,
+        "severity": "minor",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第2小节第3拍检测到轻微节拍漂移"
+      }
+    ],
+    "harmonyIssues": [],
+    "segments": [],
+    "status": "reviewed",
+    "notes": "备注已修改：第2小节的动机发展很好，建议保持这个律动。原备注：需要多练习",
+    "history": [
+      {
+        "id": "id_6ox50p1um",
+        "timestamp": "2026-05-30T17:32:20.182Z",
+        "action": "created",
+        "author": "system",
+        "description": "创建分析记录"
+      },
+      {
+        "id": "id_8p7eeklls",
+        "timestamp": "2026-05-31T17:32:20.182Z",
+        "action": "noted",
+        "author": "王老师",
+        "description": "添加备注：需要多练习"
+      },
+      {
+        "id": "id_pujbpyydu",
+        "timestamp": "2026-06-01T17:32:20.182Z",
+        "action": "corrected",
+        "author": "王老师",
+        "description": "修改备注为鼓励性评语"
+      }
+    ],
+    "hasMissingFields": false,
+    "isLateEntry": false
+  },
+  {
+    "id": "id_vdfg6nw5x",
+    "audioFile": "20240518_giant_steps.wav",
+    "title": "Giant Steps 片段",
+    "artist": "",
+    "dateRecorded": "2024-05-18",
+    "dateAnalyzed": "2026-06-01T17:32:20.182Z",
+    "chordProgression": [
+      {
+        "name": "Bb7",
+        "root": "Bb",
+        "quality": "dom7",
+        "bar": 1,
+        "beat": 1
+      },
+      {
+        "name": "Eb7",
+        "root": "Eb",
+        "quality": "dom7",
+        "bar": 2,
+        "beat": 1
+      },
+      {
+        "name": "Abmaj7",
+        "root": "Ab",
+        "quality": "maj7",
+        "bar": 3,
+        "beat": 1
+      },
+      {
+        "name": "Db7",
+        "root": "Db",
+        "quality": "dom7",
+        "bar": 4,
+        "beat": 1
+      },
+      {
+        "name": "Gb7",
+        "root": "Gb",
+        "quality": "dom7",
+        "bar": 5,
+        "beat": 1
+      },
+      {
+        "name": "Bmaj7",
+        "root": "B",
+        "quality": "maj7",
+        "bar": 6,
+        "beat": 1
+      },
+      {
+        "name": "E7",
+        "root": "E",
+        "quality": "dom7",
+        "bar": 7,
+        "beat": 1
+      },
+      {
+        "name": "A7",
+        "root": "A",
+        "quality": "dom7",
+        "bar": 8,
+        "beat": 1
+      }
+    ],
+    "motifs": [],
+    "beatDrifts": [
+      {
+        "id": "id_rod5y7rmk",
+        "bar": 1,
+        "beat": 1,
+        "driftAmount": 0.4,
+        "severity": "severe",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第1小节第1拍检测到严重节拍漂移"
+      },
+      {
+        "id": "id_xh0izv1uo",
+        "bar": 4,
+        "beat": 2,
+        "driftAmount": 0.4,
+        "severity": "severe",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第4小节第2拍检测到严重节拍漂移"
+      },
+      {
+        "id": "id_rg7v387lj",
+        "bar": 6,
+        "beat": 3,
+        "driftAmount": 0.2,
+        "severity": "moderate",
+        "detectedAt": "2026-06-01T17:32:20.182Z",
+        "description": "第6小节第3拍检测到中等节拍漂移"
+      }
+    ],
+    "harmonyIssues": [],
+    "segments": [],
+    "status": "draft",
+    "notes": "和弦变化太快，需要逐小节确认",
+    "history": [
+      {
+        "id": "id_nlq1rumke",
+        "timestamp": "2026-06-01T17:32:20.182Z",
+        "action": "created",
+        "author": "system",
+        "description": "创建分析记录"
+      }
+    ],
+    "hasMissingFields": true,
+    "isLateEntry": false
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "name": "jazz-solo-analyzer",
+  "version": "1.0.0",
+  "description": "爵士即兴Solo结构分析命令行工具",
+  "main": "dist/index.js",
+  "bin": {
+    "jazz-analyze": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "node dist/cli.js list"
+  },
+  "keywords": ["jazz", "solo", "analysis", "music"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0"
+  }
+}
