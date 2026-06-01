@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组合数学排队局</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#242836;--border:#2e3348;
+  --text:#e4e6f0;--text2:#9498ad;--accent:#6c7bf0;--accent2:#8b9cf7;
+  --green:#4ade80;--red:#f87171;--orange:#fb923c;--yellow:#facc15;
+  --blue:#38bdf8;--purple:#c084fc;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;overflow-x:hidden;min-height:100vh}
+.screen{display:none;width:100%;min-height:100vh}.screen.active{display:flex;flex-direction:column}
+
+#startScreen{align-items:center;justify-content:center;gap:32px;text-align:center}
+#startScreen h1{font-size:48px;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+#startScreen .subtitle{color:var(--text2);font-size:18px;max-width:520px;line-height:1.7}
+.btn{padding:12px 32px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border)}
+.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{opacity:.85}
+.btn-success{background:var(--green);color:#000}.btn-success:hover{opacity:.85}
+.btn-small{padding:8px 18px;font-size:13px;border-radius:8px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.topbar .left{display:flex;align-items:center;gap:16px}
+.topbar .center{display:flex;align-items:center;gap:12px}
+.topbar .right{display:flex;align-items:center;gap:10px}
+.timer{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--yellow);min-width:60px}
+.level-badge{background:var(--surface2);padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border)}
+.category-tag{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600}
+.tag-smooth{background:#4ade8022;color:var(--green)}.tag-restricted{background:#fb923c22;color:var(--orange)}
+
+.game-body{display:flex;flex:1;overflow:hidden}
+.panel{display:flex;flex-direction:column;padding:16px;overflow-y:auto}
+.panel-left{width:280px;border-right:1px solid var(--border);background:var(--surface)}
+.panel-center{flex:1;background:var(--bg)}
+.panel-right{width:320px;border-left:1px solid var(--border);background:var(--surface)}
+
+.problem-box{background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:16px;border:1px solid var(--border)}
+.problem-box h3{font-size:13px;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.problem-text{font-size:16px;line-height:1.8;font-weight:500}
+.student-answer{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:14px;color:var(--text2)}
+.student-answer span{color:var(--orange);font-weight:700;font-size:18px}
+
+.char-card{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:10px 14px;cursor:grab;transition:all .2s;margin:4px;user-select:none}
+.char-card:active{cursor:grabbing}
+.char-card.dragging{opacity:.4;transform:scale(.95)}
+.char-card .avatar{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff}
+.char-card .info{display:flex;flex-direction:column;gap:2px}
+.char-card .name{font-weight:700;font-size:15px}
+.char-card .restriction{font-size:11px;color:var(--red);background:var(--red)11;padding:2px 6px;border-radius:4px}
+
+.cards-area{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
+
+.seats-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:24px}
+.seat{width:72px;height:72px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .2s;position:relative;background:var(--surface)}
+.seat.drag-over{border-color:var(--accent);background:var(--accent)11;transform:scale(1.05)}
+.seat.occupied{border-style:solid;border-color:var(--accent);background:var(--surface2)}
+.seat .pos-label{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;background:var(--surface2);padding:1px 6px;border-radius:4px;color:var(--text2)}
+.seat .person{font-weight:800;font-size:22px}
+.seat.empty-mark .person{color:var(--text2);font-size:14px}
+.seat.violation{border-color:var(--red)!important;box-shadow:0 0 12px var(--red)44}
+.seat.circular-seat{border-radius:50%}
+
+.baskets-area{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.basket{background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:12px;min-height:80px;transition:all .2s}
+.basket.drag-over{border-color:var(--purple);background:var(--purple)11}
+.basket h4{font-size:13px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.basket h4 .count{background:var(--accent);color:#fff;padding:1px 8px;border-radius:10px;font-size:11px}
+.basket-items{display:flex;flex-wrap:wrap;gap:4px;min-height:30px}
+.basket-item{background:var(--bg);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.basket-item:hover{border-color:var(--accent)}
+.basket-item.duplicate{border-color:var(--red);background:var(--red)11;color:var(--red)}
+.basket-item .remove-btn{margin-left:6px;color:var(--text2);cursor:pointer}.basket-item .remove-btn:hover{color:var(--red)}
+
+.conflict-log{margin-top:12px}
+.conflict-log h4{font-size:13px;color:var(--text2);margin-bottom:8px}
+.conflict-entry{background:var(--yellow)11;border:1px solid var(--yellow)44;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;line-height:1.5}
+.conflict-entry .trace{color:var(--yellow);font-weight:600}
+.conflict-entry .judge{color:var(--text2);font-style:italic}
+
+.submit-area{padding:16px 24px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.answer-input{background:var(--surface2);border:2px solid var(--border);border-radius:8px;padding:10px 16px;font-size:18px;font-weight:700;color:var(--text);width:120px;text-align:center;font-family:inherit}
+.answer-input:focus{outline:none;border-color:var(--accent)}
+.error-type-select{background:var(--surface2);border:2px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);font-family:inherit;min-width:160px}
+.error-type-select:focus{outline:none;border-color:var(--accent)}
+
+#settlementScreen{align-items:center;justify-content:center;gap:24px}
+.settlement-card{background:var(--surface);border-radius:16px;padding:40px;max-width:600px;width:90%;border:1px solid var(--border)}
+.settlement-card h2{font-size:28px;margin-bottom:24px;text-align:center}
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.score-row:last-child{border-bottom:none}
+.score-label{color:var(--text2);font-size:14px}.score-value{font-weight:700;font-size:18px}
+.score-correct{color:var(--green)}.score-wrong{color:var(--red)}.score-partial{color:var(--orange)}
+.total-score{font-size:36px;font-weight:800;text-align:center;margin:20px 0 8px;color:var(--accent)}
+.total-label{text-align:center;color:var(--text2);font-size:14px;margin-bottom:20px}
+.settlement-actions{display:flex;gap:12px;justify-content:center;margin-top:24px}
+
+#reviewScreen{padding:24px;overflow-y:auto}
+.review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.review-header h2{font-size:24px}
+.review-content{max-width:900px;margin:0 auto}
+.review-section{background:var(--surface);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)}
+.review-section h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.review-section h3 .icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.icon-problem{background:var(--blue)22;color:var(--blue)}
+.icon-student{background:var(--orange)22;color:var(--orange)}
+.icon-correct{background:var(--green)22;color:var(--green)}
+.icon-error{background:var(--red)22;color:var(--red)}
+
+.review-arrangement{display:flex;gap:6px;margin:8px 0}
+.review-seat{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;border:2px solid var(--border);background:var(--surface2)}
+.review-seat.highlight{border-color:var(--green);color:var(--green)}
+.review-seat.error{border-color:var(--red);color:var(--red)}
+
+.error-hint{background:var(--red)11;border:1px solid var(--red)33;border-radius:10px;padding:14px;margin:8px 0}
+.error-hint .hint-type{font-weight:700;color:var(--red);font-size:14px;margin-bottom:4px}
+.error-hint .hint-desc{color:var(--text2);font-size:13px;line-height:1.6}
+
+.drag-verify-area{margin-top:12px}
+.drag-verify-area h4{font-size:14px;color:var(--text2);margin-bottom:8px}
+.verify-seats{display:flex;gap:8px;flex-wrap:wrap;min-height:60px;padding:12px;background:var(--bg);border-radius:10px;border:2px dashed var(--border)}
+.verify-seats.drag-over{border-color:var(--accent);background:var(--accent)08}
+.verify-seat{width:50px;height:50px;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;background:var(--surface2)}
+.verify-seat.filled{border-style:solid;border-color:var(--accent)}
+.verify-seat.correct-pos{border-color:var(--green)!important;background:var(--green)11}
+.verify-seat.wrong-pos{border-color:var(--red)!important;background:var(--red)11}
+.verify-cards{display:flex;gap:6px;margin-top:8px}
+
+#historyScreen{padding:24px;overflow-y:auto}
+.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.history-header h2{font-size:24px}
+.history-tabs{display:flex;gap:8px;margin-bottom:20px}
+.history-tab{padding:8px 20px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;font-size:14px;font-weight:600;transition:all .2s}
+.history-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.history-tab:hover:not(.active){background:var(--border)}
+.history-content{max-width:900px;margin:0 auto}
+.history-record{background:var(--surface);border-radius:12px;padding:20px;margin-bottom:12px;border:1px solid var(--border)}
+.history-record h4{font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.history-record .meta{font-size:12px;color:var(--text2)}
+.history-section{margin-top:12px;padding:12px;border-radius:8px;background:var(--surface2)}
+.history-section h5{font-size:12px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.history-section p{font-size:13px;line-height:1.7}
+
+.report-section{background:var(--surface);border-radius:12px;padding:24px;margin-bottom:16px;border:1px solid var(--border)}
+.report-section h3{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.report-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
+.report-row:last-child{border-bottom:none}
+
+.pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:20px}
+.pause-overlay.active{display:flex}
+.pause-overlay h2{font-size:36px;font-weight:800;color:var(--text)}
+.pause-overlay p{color:var(--text2)}
+
+.toast{position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;z-index:200;animation:slideIn .3s ease;max-width:400px}
+.toast-success{background:var(--green);color:#000}.toast-error{background:var(--red);color:#fff}.toast-warning{background:var(--orange);color:#000}.toast-info{background:var(--accent);color:#fff}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.nav-buttons{display:flex;gap:12px;justify-content:center;margin-top:20px}
+.empty-state{text-align:center;color:var(--text2);padding:40px;font-size:14px}
+
+.avatar-colors{--c1:#6c7bf0;--c2:#f87171;--c3:#4ade80;--c4:#fb923c;--c5:#c084fc;--c6:#38bdf8}
+</style>
+</head>
+<body>
+
+<div id="startScreen" class="screen active">
+  <h1>组合数学排队局</h1>
+  <p class="subtitle">每次计数器晚到，教练都要重看组合计数。拖人物卡、排座位格、分分组篮——重复计数、限制漏看、空位误算，一个都不能漏。</p>
+  <div style="display:flex;gap:16px">
+    <button class="btn btn-primary" onclick="startGame()">开始对局</button>
+    <button class="btn btn-secondary" onclick="showHistory()">历史记录</button>
+  </div>
+  <div style="margin-top:32px;display:flex;gap:24px">
+    <div style="text-align:center"><div style="font-size:32px;margin-bottom:4px">🃏</div><div style="font-size:12px;color:var(--text2)">人物卡</div></div>
+    <div style="text-align:center"><div style="font-size:32px;margin-bottom:4px">💺</div><div style="font-size:12px;color:var(--text2)">座位格</div></div>
+    <div style="text-align:center"><div style="font-size:32px;margin-bottom:4px">🧺</div><div style="font-size:12px;color:var(--text2)">分组篮</div></div>
+  </div>
+</div>
+
+<div id="gameScreen" class="screen">
+  <div class="topbar">
+    <div class="left">
+      <span class="level-badge" id="levelBadge"></span>
+      <span class="category-tag" id="categoryTag"></span>
+    </div>
+    <div class="center">
+      <span class="timer" id="timerDisplay">00:00</span>
+    </div>
+    <div class="right">
+      <button class="btn btn-secondary btn-small" onclick="togglePause()">暂停</button>
+      <button class="btn btn-secondary btn-small" onclick="restartLevel()">重开</button>
+    </div>
+  </div>
+  <div class="game-body">
+    <div class="panel panel-left">
+      <div class="problem-box">
+        <h3>题目</h3>
+        <div class="problem-text" id="problemText"></div>
+        <div class="student-answer" id="studentAnswer"></div>
+      </div>
+      <h3 style="font-size:13px;color:var(--text2);margin-bottom:8px">人物卡</h3>
+      <div class="cards-area" id="cardsArea"></div>
+    </div>
+    <div class="panel panel-center">
+      <h3 style="font-size:13px;color:var(--text2);margin-bottom:4px;text-align:center">座位格 — 拖入人物卡排座</h3>
+      <div class="seats-grid" id="seatsGrid"></div>
+    </div>
+    <div class="panel panel-right">
+      <h3 style="font-size:13px;color:var(--text2);margin-bottom:8px">分组篮 — 将排列拖入对应分组</h3>
+      <div class="baskets-area" id="basketsArea"></div>
+      <div class="conflict-log" id="conflictLog" style="display:none">
+        <h4>⚠️ 冲突留痕</h4>
+        <div id="conflictEntries"></div>
+      </div>
+    </div>
+  </div>
+  <div class="submit-area">
+    <label style="font-size:14px;color:var(--text2)">你的答案：</label>
+    <input type="number" class="answer-input" id="answerInput" placeholder="?">
+    <label style="font-size:14px;color:var(--text2)">错因判断：</label>
+    <select class="error-type-select" id="errorTypeSelect">
+      <option value="none">答案正确，无错因</option>
+      <option value="限制漏看">限制漏看</option>
+      <option value="重复计数">重复计数</option>
+      <option value="空位误算">空位误算</option>
+    </select>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="submitAnswer()">提交</button>
+  </div>
+</div>
+
+<div id="settlementScreen" class="screen">
+  <div class="settlement-card" id="settlementCard"></div>
+</div>
+
+<div id="reviewScreen" class="screen">
+  <div class="review-header">
+    <h2>复盘</h2>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary btn-small" onclick="exportGrades()">导出成绩</button>
+      <button class="btn btn-primary btn-small" onclick="nextFromReview()">继续</button>
+    </div>
+  </div>
+  <div class="review-content" id="reviewContent"></div>
+</div>
+
+<div id="historyScreen" class="screen">
+  <div class="history-header">
+    <h2>历史记录</h2>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary btn-small" onclick="exportHistory()">导出全部</button>
+      <button class="btn btn-secondary btn-small" onclick="showStart()">返回</button>
+    </div>
+  </div>
+  <div class="history-tabs">
+    <div class="history-tab active" data-tab="original" onclick="switchHistoryTab('original')">原始材料</div>
+    <div class="history-tab" data-tab="conclusion" onclick="switchHistoryTab('conclusion')">处理结论</div>
+    <div class="history-tab" data-tab="correction" onclick="switchHistoryTab('correction')">人工修正</div>
+  </div>
+  <div class="history-content" id="historyContent"></div>
+</div>
+
+<div class="pause-overlay" id="pauseOverlay">
+  <h2>已暂停</h2>
+  <p>点击继续恢复对局</p>
+  <button class="btn btn-primary" onclick="togglePause()">继续</button>
+</div>
+
+<script>
+const LEVELS=[
+  {
+    id:1,title:"顺利样例",category:"smooth",
+    problem:"甲、乙、丙三人排成一排，有多少种排法？",
+    characters:[
+      {id:"甲",color:"#6c7bf0",restrictions:[]},
+      {id:"乙",color:"#f87171",restrictions:[]},
+      {id:"丙",color:"#4ade80",restrictions:[]}
+    ],
+    seats:3,isCircular:false,
+    restrictions:[],
+    studentAnswer:6,correctAnswer:6,
+    errorType:null,
+    explanation:"3人全排列：3! = 3×2×1 = 6 种",
+    arrangements:[["甲","乙","丙"],["甲","丙","乙"],["乙","甲","丙"],["乙","丙","甲"],["丙","甲","乙"],["丙","乙","甲"]],
+    basketLabels:["甲在首位","乙在首位","丙在首位"],
+    basketGroups:[
+      [["甲","乙","丙"],["甲","丙","乙"]],
+      [["乙","甲","丙"],["乙","丙","甲"]],
+      [["丙","甲","乙"],["丙","乙","甲"]]
+    ]
+  },
+  {
+    id:2,title:"限制漏看",category:"restricted",
+    problem:"甲、乙、丙、丁四人排成一排，甲不在两端，有多少种排法？",
+    characters:[
+      {id:"甲",color:"#6c7bf0",restrictions:["不在两端"]},
+      {id:"乙",color:"#f87171",restrictions:[]},
+      {id:"丙",color:"#4ade80",restrictions:[]},
+      {id:"丁",color:"#fb923c",restrictions:[]}
+    ],
+    seats:4,isCircular:false,
+    restrictions:[{person:"甲",type:"not_at_end",desc:"甲不在两端"}],
+    studentAnswer:24,correctAnswer:12,
+    errorType:"限制漏看",
+    explanation:"甲只能在中间2个位置（位2或位3），每种2×3!=12种。学生算4!=24，漏看了甲不在两端的限制。",
+    arrangements:null,
+    basketLabels:["甲在位2","甲在位3"],
+    basketGroups:[
+      [["乙","甲","丙","丁"],["乙","甲","丁","丙"],["丙","甲","乙","丁"],["丙","甲","丁","乙"],["丁","甲","乙","丙"],["丁","甲","丙","乙"]],
+      [["乙","丙","甲","丁"],["乙","丁","甲","丙"],["丙","乙","甲","丁"],["丙","丁","甲","乙"],["丁","乙","甲","丙"],["丁","丙","甲","乙"]]
+    ]
+  },
+  {
+    id:3,title:"重复计数",category:"restricted",
+    problem:"甲、乙、丙、丁、戊五人围坐圆桌，有多少种坐法？",
+    characters:[
+      {id:"甲",color:"#6c7bf0",restrictions:["圆桌旋转等价"]},
+      {id:"乙",color:"#f87171",restrictions:[]},
+      {id:"丙",color:"#4ade80",restrictions:[]},
+      {id:"丁",color:"#fb923c",restrictions:[]},
+      {id:"戊",color:"#c084fc",restrictions:[]}
+    ],
+    seats:5,isCircular:true,
+    restrictions:[{type:"circular",desc:"圆桌排列，旋转相同算一种"}],
+    studentAnswer:120,correctAnswer:24,
+    errorType:"重复计数",
+    explanation:"圆桌排列：固定1人后排其余4人，(5-1)!=4!=24种。学生算5!=120，把旋转等价的排列重复计数了5次。",
+    arrangements:null,
+    basketLabels:["固定甲后排4人"],
+    basketGroups:[
+      [["甲","乙","丙","丁","戊"],["甲","乙","丙","戊","丁"],["甲","乙","丁","丙","戊"],["甲","乙","丁","戊","丙"],["甲","乙","戊","丙","丁"],["甲","乙","戊","丁","丙"]]
+    ]
+  },
+  {
+    id:4,title:"空位误算",category:"restricted",
+    problem:"甲、乙、丙三人坐在5个排成一排的座位上，每人一个座位，有多少种坐法？",
+    characters:[
+      {id:"甲",color:"#6c7bf0",restrictions:[]},
+      {id:"乙",color:"#f87171",restrictions:[]},
+      {id:"丙",color:"#4ade80",restrictions:[]}
+    ],
+    seats:5,isCircular:false,emptySeats:2,
+    restrictions:[{type:"empty_seats",count:2,desc:"5个座位中有2个空位需先选座位"}],
+    studentAnswer:6,correctAnswer:60,
+    errorType:"空位误算",
+    explanation:"先从5个座位中选3个给三人C(5,3)=10，再排列3!=6，共10×6=60种。学生只算了3!=6，漏算了选座位的步骤。",
+    arrangements:null,
+    basketLabels:["甲在位1","甲在位2","甲在位3","甲在位4","甲在位5"],
+    basketGroups:[
+      [["甲","乙","丙","_","_"],["甲","乙","_","丙","_"],["甲","乙","_","_","丙"],["甲","丙","乙","_","_"],["甲","丙","_","乙","_"],["甲","丙","_","_","乙"],["甲","_","乙","丙","_"],["甲","_","乙","_","丙"],["甲","_","丙","乙","_"],["甲","_","丙","_","乙"],["甲","_","_","乙","丙"],["甲","_","_","丙","乙"]],
+      [["乙","甲","丙","_","_"],["丙","甲","乙","_","_"],["_","甲","乙","丙","_"],["_","甲","丙","乙","_"],["乙","甲","_","丙","_"],["丙","甲","_","乙","_"],["_","甲","乙","_","丙"],["_","甲","丙","_","乙"],["乙","甲","_","_","丙"],["丙","甲","_","_","乙"],["_","甲","_","乙","丙"],["_","甲","_","丙","乙"]],
+      [["乙","丙","甲","_","_"],["丙","乙","甲","_","_"],["乙","_","甲","丙","_"],["丙","_","甲","乙","_"],["乙","丙","甲","_","_"],["_","乙","甲","丙","_"],["_","丙","甲","乙","_"],["乙","_","甲","_","丙"],["丙","_","甲","_","乙"],["_","乙","甲","_","丙"],["_","丙","甲","_","乙"]],
+      [["乙","丙","_","甲","_"],["丙","乙","_","甲","_"],["乙","_","丙","甲","_"],["丙","_","乙","甲","_"],["_","乙","丙","甲","_"],["_","丙","乙","甲","_"],["乙","丙","_","甲","_"],["_","乙","_","甲","丙"],["_","丙","_","甲","乙"],["乙","_","_","甲","丙"],["丙","_","_","甲","乙"],["_","乙","_","甲","丙"]],
+      [["乙","丙","_","_","甲"],["丙","乙","_","_","甲"],["乙","_","丙","_","甲"],["丙","_","乙","_","甲"],["_","乙","丙","_","甲"],["_","丙","乙","_","甲"],["乙","_","_","丙","甲"],["丙","_","_","乙","甲"],["_","乙","_","丙","甲"],["_","丙","_","乙","甲"],["_","_","乙","丙","甲"],["_","_","丙","乙","甲"]]
+    ]
+  }
+];
+
+const AVATAR_COLORS=["#6c7bf0","#f87171","#4ade80","#fb923c","#c084fc","#38bdf8"];
+
+let state={
+  currentLevel:0,
+  paused:false,
+  timerSeconds:0,
+  timerInterval:null,
+  seatOccupants:[],
+  basketContents:[],
+  conflictTraces:[],
+  history:[],
+  currentHistoryTab:"original",
+  levelScores:[],
+  arrangementsFound:[],
+  draggedCharId:null,
+  draggedBasketArrangement:null,
+  verifySeats:[],
+  verifyCards:[]
+};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showStart(){showScreen('startScreen')}
+
+function startGame(){
+  state.currentLevel=0;
+  state.levelScores=[];
+  state.history=[];
+  loadLevel(0);
+}
+
+function loadLevel(idx){
+  if(idx>=LEVELS.length){
+    showFinalReport();
+    return;
+  }
+  state.currentLevel=idx;
+  state.paused=false;
+  state.timerSeconds=0;
+  state.seatOccupants=new Array(LEVELS[idx].seats).fill(null);
+  state.basketContents=LEVELS[idx].basketLabels.map(()=>[]);
+  state.conflictTraces=[];
+  state.arrangementsFound=[];
+  state.draggedCharId=null;
+  clearInterval(state.timerInterval);
+  state.timerInterval=setInterval(()=>{
+    if(!state.paused){
+      state.timerSeconds++;
+      updateTimer();
+    }
+  },1000);
+  renderGame();
+  showScreen('gameScreen');
+}
+
+function updateTimer(){
+  const m=String(Math.floor(state.timerSeconds/60)).padStart(2,'0');
+  const s=String(state.timerSeconds%60).padStart(2,'0');
+  document.getElementById('timerDisplay').textContent=m+':'+s;
+}
+
+function togglePause(){
+  state.paused=!state.paused;
+  document.getElementById('pauseOverlay').classList.toggle('active',state.paused);
+}
+
+function restartLevel(){
+  loadLevel(state.currentLevel);
+  showToast('已重开本关','info');
+}
+
+function renderGame(){
+  const lv=LEVELS[state.currentLevel];
+  document.getElementById('levelBadge').textContent='第'+lv.id+'关 · '+lv.title;
+  const ctag=document.getElementById('categoryTag');
+  ctag.textContent=lv.category==='smooth'?'顺利样例':'限制漏看材料';
+  ctag.className='category-tag '+(lv.category==='smooth'?'tag-smooth':'tag-restricted');
+  document.getElementById('problemText').textContent=lv.problem;
+  const sa=document.getElementById('studentAnswer');
+  sa.innerHTML='学生答案：<span>'+lv.studentAnswer+' 种</span>';
+  renderCards();
+  renderSeats();
+  renderBaskets();
+  document.getElementById('conflictLog').style.display='none';
+  document.getElementById('conflictEntries').innerHTML='';
+  document.getElementById('answerInput').value='';
+  document.getElementById('errorTypeSelect').value='none';
+}
+
+function renderCards(){
+  const lv=LEVELS[state.currentLevel];
+  const area=document.getElementById('cardsArea');
+  area.innerHTML='';
+  lv.characters.forEach(ch=>{
+    const card=document.createElement('div');
+    card.className='char-card';
+    card.draggable=true;
+    card.dataset.charId=ch.id;
+    const restHTML=ch.restrictions.length?ch.restrictions.map(r=>'<span class="restriction">'+r+'</span>').join(''):'';
+    card.innerHTML='<div class="avatar" style="background:'+ch.color+'">'+ch.id+'</div><div class="info"><span class="name">'+ch.id+'</span>'+restHTML+'</div>';
+    card.addEventListener('dragstart',e=>{
+      state.draggedCharId=ch.id;
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain',ch.id);
+      e.dataTransfer.effectAllowed='move';
+    });
+    card.addEventListener('dragend',()=>{
+      card.classList.remove('dragging');
+      state.draggedCharId=null;
+    });
+    area.appendChild(card);
+  });
+}
+
+function renderSeats(){
+  const lv=LEVELS[state.currentLevel];
+  const grid=document.getElementById('seatsGrid');
+  grid.innerHTML='';
+  for(let i=0;i<lv.seats;i++){
+    const seat=document.createElement('div');
+    seat.className='seat'+(lv.isCircular?' circular-seat':'');
+    seat.dataset.pos=i;
+    const occupant=state.seatOccupants[i];
+    if(occupant){
+      const ch=lv.characters.find(c=>c.id===occupant);
+      seat.classList.add('occupied');
+      seat.innerHTML='<span class="pos-label">位'+(i+1)+'</span><span class="person" style="color:'+ch.color+'">'+occupant+'</span>';
+      const violation=checkViolation(occupant,i);
+      if(violation)seat.classList.add('violation');
+    }else{
+      const isEmpty=lv.emptySeats&&state.seatOccupants.filter(o=>o===null).length<=lv.emptySeats;
+      seat.innerHTML='<span class="pos-label">位'+(i+1)+'</span><span class="person" style="color:var(--text2)">空</span>';
+      if(lv.emptySeats)seat.classList.add('empty-mark');
+    }
+    seat.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';seat.classList.add('drag-over')});
+    seat.addEventListener('dragleave',()=>seat.classList.remove('drag-over'));
+    seat.addEventListener('drop',e=>{
+      e.preventDefault();
+      seat.classList.remove('drag-over');
+      const charId=e.dataTransfer.getData('text/plain');
+      if(!charId)return;
+      handleSeatDrop(charId,i);
+    });
+    seat.addEventListener('click',()=>{
+      if(state.seatOccupants[i]){
+        const removed=state.seatOccupants[i];
+        state.seatOccupants[i]=null;
+        renderSeats();
+        renderCards();
+        checkConflicts();
+      }
+    });
+    grid.appendChild(seat);
+  }
+}
+
+function handleSeatDrop(charId,pos){
+  const lv=LEVELS[state.currentLevel];
+  const prevPos=state.seatOccupants.indexOf(charId);
+  if(prevPos!==-1)state.seatOccupants[prevPos]=null;
+  if(state.seatOccupants[pos]!==null){
+    const displaced=state.seatOccupants[pos];
+    if(prevPos!==-1){state.seatOccupants[prevPos]=displaced;}
+    else{
+      state.seatOccupants[pos]=null;
+    }
+  }
+  state.seatOccupants[pos]=charId;
+  renderSeats();
+  renderCards();
+  checkConflicts();
+  if(state.seatOccupants.every(o=>o!==null)&&!lv.emptySeats){
+    addCurrentArrangement();
+  }
+}
+
+function checkViolation(charId,pos){
+  const lv=LEVELS[state.currentLevel];
+  for(const r of lv.restrictions){
+    if(r.person===charId&&r.type==='not_at_end'){
+      if(pos===0||pos===lv.seats-1)return true;
+    }
+  }
+  return false;
+}
+
+function addCurrentArrangement(){
+  const lv=LEVELS[state.currentLevel];
+  const arr=[...state.seatOccupants];
+  const key=arr.join(',');
+  if(state.arrangementsFound.find(a=>a.join(',')===key))return;
+  state.arrangementsFound.push(arr);
+  renderBaskets();
+}
+
+function renderBaskets(){
+  const lv=LEVELS[state.currentLevel];
+  const area=document.getElementById('basketsArea');
+  area.innerHTML='';
+  lv.basketLabels.forEach((label,bi)=>{
+    const basket=document.createElement('div');
+    basket.className='basket';
+    basket.dataset.basketIndex=bi;
+    const items=state.basketContents[bi]||[];
+    const count=items.length;
+    basket.innerHTML='<h4>'+label+' <span class="count">'+count+'种</span></h4><div class="basket-items" data-basket="'+bi+'"></div>';
+    const itemsEl=basket.querySelector('.basket-items');
+    items.forEach((arr,ai)=>{
+      const item=document.createElement('div');
+      item.className='basket-item';
+      item.textContent=arr.join(' ');
+      const isDup=state.arrangementsFound.filter(a=>a.join(',')===arr.join(',')).length>1;
+      if(isDup)item.classList.add('duplicate');
+      const rm=document.createElement('span');
+      rm.className='remove-btn';
+      rm.textContent='×';
+      rm.addEventListener('click',()=>{
+        state.basketContents[bi].splice(ai,1);
+        state.arrangementsFound=state.arrangementsFound.filter(a=>a.join(',')!==arr.join(','));
+        renderBaskets();
+      });
+      item.appendChild(rm);
+      item.addEventListener('dragstart',e=>{
+        state.draggedBasketArrangement={basket:bi,index:ai,arr:arr};
+        e.dataTransfer.setData('text/plain','basket-item');
+      });
+      itemsEl.appendChild(item);
+    });
+    basket.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      basket.classList.add('drag-over');
+    });
+    basket.addEventListener('dragleave',()=>basket.classList.remove('drag-over'));
+    basket.addEventListener('drop',e=>{
+      e.preventDefault();
+      basket.classList.remove('drag-over');
+      const data=e.dataTransfer.getData('text/plain');
+      if(data==='basket-item'&&state.draggedBasketArrangement){
+        const{basket:fromBi,index:fromAi,arr}=state.draggedBasketArrangement;
+        state.basketContents[fromBi].splice(fromAi,1);
+        state.basketContents[bi].push(arr);
+        state.draggedBasketArrangement=null;
+        renderBaskets();
+        checkConflicts();
+      }else if(data!=='basket-item'){
+        const currentArr=[...state.seatOccupants].filter(o=>o!==null);
+        if(currentArr.length>0){
+          const key=currentArr.join(',');
+          if(!state.basketContents[bi].find(a=>a.join(',')===key)){
+            state.basketContents[bi].push(currentArr);
+            if(!state.arrangementsFound.find(a=>a.join(',')===key)){
+              state.arrangementsFound.push(currentArr);
+            }
+          }
+        }
+        renderBaskets();
+        checkConflicts();
+      }
+    });
+    area.appendChild(basket);
+  });
+  const addBtn=document.createElement('div');
+  addBtn.className='basket';
+  addBtn.style.borderStyle='dashed';
+  addBtn.style.cursor='pointer';
+  addBtn.style.textAlign='center';
+  addBtn.style.color='var(--text2)';
+  addBtn.style.padding='16px';
+  addBtn.innerHTML='＋ 手动添加排列';
+  addBtn.addEventListener('click',()=>promptManualArrangement());
+  area.appendChild(addBtn);
+}
+
+function promptManualArrangement(){
+  const lv=LEVELS[state.currentLevel];
+  const input=prompt('输入排列，用逗号分隔（如：甲,乙,丙）：');
+  if(!input)return;
+  const arr=input.split(/[,，\s]+/).filter(s=>s);
+  const valid=arr.every(a=>lv.characters.find(c=>c.id===a));
+  if(!valid||arr.length!==lv.seats){
+    showToast('排列不合法，请使用正确的人物名称','error');
+    return;
+  }
+  const key=arr.join(',');
+  const basketIdx=prompt('放入第几个篮？(1-'+lv.basketLabels.length+')');
+  const bi=parseInt(basketIdx)-1;
+  if(isNaN(bi)||bi<0||bi>=lv.basketLabels.length){
+    showToast('篮编号无效','error');
+    return;
+  }
+  if(!state.basketContents[bi].find(a=>a.join(',')===key)){
+    state.basketContents[bi].push(arr);
+  }
+  if(!state.arrangementsFound.find(a=>a.join(',')===key)){
+    state.arrangementsFound.push(arr);
+  }
+  renderBaskets();
+  checkConflicts();
+}
+
+function checkConflicts(){
+  const lv=LEVELS[state.currentLevel];
+  state.conflictTraces=[];
+  const charInfo=[];
+  const seatInfo=[];
+  const basketInfo=[];
+
+  lv.characters.forEach(ch=>{
+    if(ch.restrictions.length>0){
+      charInfo.push({person:ch.id,restrictions:ch.restrictions});
+    }
+  });
+
+  state.seatOccupants.forEach((occ,i)=>{
+    if(occ){
+      const violation=checkViolation(occ,i);
+      if(violation)seatInfo.push({person:occ,pos:i,violation:true});
+    }
+  });
+
+  lv.basketLabels.forEach((label,bi)=>{
+    state.basketContents[bi].forEach(arr=>{
+      const firstChar=arr[0];
+      if(lv.isCircular){
+        basketInfo.push({basket:bi,arr:arr,type:'circular'});
+      }
+      for(const r of lv.restrictions){
+        if(r.person&&arr.includes(r.person)){
+          const pos=arr.indexOf(r.person);
+          if(r.type==='not_at_end'&&(pos===0||pos===arr.length-1)){
+            basketInfo.push({basket:bi,arr:arr,violation:true,reason:'限制违反：'+r.person+'在两端'});
+          }
+        }
+      }
+    });
+  });
+
+  if(charInfo.length>0&&seatInfo.length>0){
+    seatInfo.forEach(si=>{
+      const ci=charInfo.find(c=>c.person===si.person);
+      if(ci){
+        state.conflictTraces.push({
+          type:'card-seat',
+          trace:'人物卡「'+si.person+'」标注限制「'+ci.restrictions.join('、')+'」，但座位格中放在了位'+(si.pos+1)+'（违反限制）',
+          judge:'限制违反，需调整位置'
+        });
+      }
+    });
+  }
+
+  if(basketInfo.filter(b=>b.violation).length>0){
+    basketInfo.filter(b=>b.violation).forEach(bi=>{
+      state.conflictTraces.push({
+        type:'basket-violation',
+        trace:'分组篮「'+lv.basketLabels[bi.basket]+'」中排列 '+bi.arr.join('')+' 违反限制：'+bi.reason,
+        judge:'该排列不应计入此分组'
+      });
+    });
+  }
+
+  if(lv.isCircular&&state.basketContents.flat().length>0){
+    const allArrs=state.basketContents.flat();
+    for(let i=0;i<allArrs.length;i++){
+      for(let j=i+1;j<allArrs.length;j++){
+        if(isCircularDuplicate(allArrs[i],allArrs[j])){
+          state.conflictTraces.push({
+            type:'circular-duplicate',
+            trace:'排列 '+allArrs[i].join('')+' 与 '+allArrs[j].join('')+' 在圆桌上旋转等价，属于重复计数',
+            judge:'应只保留一种，除以旋转数n'
+          });
+        }
+      }
+    }
+  }
+
+  const log=document.getElementById('conflictLog');
+  const entries=document.getElementById('conflictEntries');
+  if(state.conflictTraces.length>0){
+    log.style.display='block';
+    entries.innerHTML='';
+    state.conflictTraces.forEach(ct=>{
+      const el=document.createElement('div');
+      el.className='conflict-entry';
+      el.innerHTML='<div class="trace">⚠ 留痕：'+ct.trace+'</div><div class="judge">→ 判断：'+ct.judge+'</div>';
+      entries.appendChild(el);
+    });
+  }else{
+    log.style.display='none';
+  }
+}
+
+function isCircularDuplicate(a,b){
+  if(a.length!==b.length)return false;
+  const doubled=a.join(',')+','+a.join(',');
+  return doubled.includes(b.join(','));
+}
+
+function submitAnswer(){
+  const lv=LEVELS[state.currentLevel];
+  const input=document.getElementById('answerInput');
+  const answer=parseInt(input.value);
+  if(isNaN(answer)){
+    showToast('请输入数字答案','warning');
+    return;
+  }
+  const selectedError=document.getElementById('errorTypeSelect').value;
+
+  clearInterval(state.timerInterval);
+
+  const correctAnswer=answer===lv.correctAnswer;
+  const correctError=selectedError===(lv.errorType||'none');
+
+  let score=0;
+  if(correctAnswer)score+=50;
+  if(correctError)score+=30;
+  const timeBonus=Math.max(0,20-Math.floor(state.timerSeconds/30));
+  score+=timeBonus;
+
+  const conflictsResolved=state.conflictTraces.length>0&&state.conflictTraces.every(c=>c.judge);
+  if(conflictsResolved)score+=10;
+
+  const result={
+    levelId:lv.id,
+    levelTitle:lv.title,
+    category:lv.category,
+    problem:lv.problem,
+    studentAnswer:lv.studentAnswer,
+    correctAnswer:lv.correctAnswer,
+    playerAnswer:answer,
+    selectedError:selectedError,
+    actualError:lv.errorType||'none',
+    correctAnswerBool:correctAnswer,
+    correctErrorBool:correctError,
+    score:score,
+    time:state.timerSeconds,
+    arrangementsFound:state.arrangementsFound.length,
+    conflictTraces:[...state.conflictTraces],
+    basketContents:state.basketContents.map(b=>b.map(a=>[...a])),
+    seatOccupants:[...state.seatOccupants]
+  };
+
+  state.levelScores.push(result);
+  state.history.push({
+    levelId:lv.id,
+    timestamp:new Date().toISOString(),
+    original:{
+      problem:lv.problem,
+      studentAnswer:lv.studentAnswer,
+      characters:lv.characters.map(c=>({id:c.id,restrictions:c.restrictions})),
+      restrictions:lv.restrictions,
+      seatLayout:lv.seats+'座位'+(lv.isCircular?'(圆桌)':'(直排)'),
+      emptySeats:lv.emptySeats||0
+    },
+    conclusion:{
+      playerAnswer:answer,
+      selectedError:selectedError,
+      correctAnswer:lv.correctAnswer,
+      actualError:lv.errorType||'无',
+      score:score,
+      time:state.timerSeconds+'秒',
+      arrangementsFound:state.arrangementsFound.length,
+      conflicts:state.conflictTraces.length,
+      answerCorrect:correctAnswer,
+      errorCorrect:correctError
+    },
+    correction:{
+      explanation:lv.explanation,
+      playerAnswerCorrect:correctAnswer,
+      playerErrorCorrect:correctError,
+      manualNotes:''
+    }
+  });
+
+  showSettlement(result);
+}
+
+function showSettlement(result){
+  const card=document.getElementById('settlementCard');
+  const ac=result.correctAnswerBool?'score-correct':'score-wrong';
+  const ec=result.correctErrorBool?'score-correct':'score-wrong';
+  card.innerHTML=
+    '<h2>第'+result.levelId+'关结算</h2>'+
+    '<div class="total-score">'+result.score+'<span style="font-size:16px;color:var(--text2)"> / 100+</span></div>'+
+    '<div class="total-label">总分</div>'+
+    '<div class="score-row"><span class="score-label">答案判定</span><span class="score-value '+ac+'">'+(result.correctAnswerBool?'✓ 正确':'✗ 错误')+'（'+result.playerAnswer+' → '+result.correctAnswer+'）</span></div>'+
+    '<div class="score-row"><span class="score-label">错因判断</span><span class="score-value '+ec+'">'+(result.correctErrorBool?'✓ 正确':'✗ 错误')+'（'+result.selectedError+'）</span></div>'+
+    '<div class="score-row"><span class="score-label">用时</span><span class="score-value">'+result.time+'秒</span></div>'+
+    '<div class="score-row"><span class="score-label">探索排列</span><span class="score-value">'+result.arrangementsFound+' 种</span></div>'+
+    '<div class="score-row"><span class="score-label">冲突留痕</span><span class="score-value">'+result.conflictTraces.length+' 条</span></div>'+
+    '<div class="settlement-actions">'+
+      '<button class="btn btn-secondary" onclick="showReview()">复盘</button>'+
+      '<button class="btn btn-primary" onclick="nextLevel()">下一关</button>'+
+    '</div>';
+  showScreen('settlementScreen');
+}
+
+function nextLevel(){
+  loadLevel(state.currentLevel+1);
+}
+
+function showReview(){
+  const result=state.levelScores[state.levelScores.length-1];
+  const lv=LEVELS[state.currentLevel];
+  const content=document.getElementById('reviewContent');
+  let html='';
+
+  html+='<div class="review-section"><h3><span class="icon icon-problem">题</span> 原题</h3>';
+  html+='<p style="font-size:16px;line-height:1.8">'+lv.problem+'</p>';
+  html+='<p style="margin-top:8px;color:var(--text2)">学生答案：<strong style="color:var(--orange)">'+lv.studentAnswer+'</strong> 种</p>';
+  html+='</div>';
+
+  html+='<div class="review-section"><h3><span class="icon icon-student">你</span> 你的作答</h3>';
+  html+='<p>答案：<strong class="'+(result.correctAnswerBool?'score-correct':'score-wrong')+'">'+result.playerAnswer+'</strong> 种　错因判断：<strong class="'+(result.correctErrorBool?'score-correct':'score-wrong')+'">'+result.selectedError+'</strong></p>';
+  if(result.seatOccupants.filter(o=>o).length>0){
+    html+='<div class="review-arrangement" style="margin-top:12px">';
+    result.seatOccupants.forEach((occ,i)=>{
+      if(occ){
+        const ch=lv.characters.find(c=>c.id===occ);
+        html+='<div class="review-seat'+(checkViolation(occ,i)?' error':'')+'" style="color:'+ch.color+'">'+occ+'</div>';
+      }else{
+        html+='<div class="review-seat">空</div>';
+      }
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+
+  html+='<div class="review-section"><h3><span class="icon icon-correct">✓</span> 正确答案</h3>';
+  html+='<p style="font-size:18px;font-weight:700;color:var(--green)">'+lv.correctAnswer+' 种</p>';
+  html+='<p style="margin-top:8px;line-height:1.8;color:var(--text2)">'+lv.explanation+'</p>';
+  if(lv.arrangements){
+    html+='<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px">';
+    lv.arrangements.forEach(arr=>{
+      html+='<div class="review-arrangement">';
+      arr.forEach((ch,ci)=>{
+        const c=lv.characters.find(x=>x.id===ch);
+        html+='<div class="review-seat highlight" style="color:'+c.color+';font-size:13px">'+ch+'</div>';
+      });
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+  html+='</div>';
+
+  if(lv.errorType){
+    html+='<div class="review-section"><h3><span class="icon icon-error">!</span> 错因分析</h3>';
+    html+='<div class="error-hint"><div class="hint-type">错因类型：'+lv.errorType+'</div><div class="hint-desc">'+getErrorHint(lv.errorType)+'</div></div>';
+    html+='<div class="error-hint" style="border-color:var(--orange)44;background:var(--orange)11"><div class="hint-type" style="color:var(--orange)">学生错误</div><div class="hint-desc">学生算出 '+lv.studentAnswer+'，实际应为 '+lv.correctAnswer+'。'+lv.explanation+'</div></div>';
+    html+='</div>';
+  }
+
+  if(result.conflictTraces.length>0){
+    html+='<div class="review-section"><h3><span class="icon icon-error">⚠</span> 冲突留痕记录</h3>';
+    result.conflictTraces.forEach(ct=>{
+      html+='<div class="conflict-entry"><div class="trace">留痕：'+ct.trace+'</div><div class="judge">判断：'+ct.judge+'</div></div>';
+    });
+    html+='</div>';
+  }
+
+  html+='<div class="review-section"><h3><span class="icon icon-problem">↻</span> 拖拽验证</h3>';
+  html+='<p style="color:var(--text2);font-size:13px;margin-bottom:12px">将人物卡拖入下方座位，验证你理解了正确排法</p>';
+  html+='<div class="drag-verify-area">';
+  html+='<div class="verify-seats" id="verifyDropZone">';
+  for(let i=0;i<lv.seats;i++){
+    html+='<div class="verify-seat" data-pos="'+i+'"></div>';
+  }
+  html+='</div>';
+  html+='<div class="verify-cards" id="verifyCardsArea">';
+  lv.characters.forEach(ch=>{
+    html+='<div class="char-card" draggable="true" data-verify-char="'+ch.id+'" style="font-size:13px;padding:6px 10px"><div class="avatar" style="background:'+ch.color+';width:28px;height:28px;font-size:14px">'+ch.id+'</div><span class="name" style="font-size:13px">'+ch.id+'</span></div>';
+  });
+  html+='</div>';
+  html+='</div>';
+  html+='<div style="margin-top:8px"><button class="btn btn-secondary btn-small" onclick="checkVerifyResult()">检查排列</button> <button class="btn btn-secondary btn-small" onclick="resetVerify()">重置</button></div>';
+  html+='</div>';
+
+  content.innerHTML=html;
+  showScreen('reviewScreen');
+  setupVerifyDrag();
+}
+
+function getErrorHint(type){
+  const hints={
+    '限制漏看':'题目中包含位置限制（如某人不在两端、某两人不相邻等），但在计算排列数时遗漏了这些限制条件，导致多算。解题时要先标注所有限制，再分步计算。',
+    '重复计数':'某些排列在特定条件下被视为相同（如圆桌旋转等价、元素可互换等），但计算时没有除以等价类的大小，导致同一情况被重复计算。解题时要注意"等价"条件，最后除以等价数。',
+    '空位误算':'当座位数多于人数时，需要先选择哪些座位被人占据（组合），再排列人到选定的座位上（排列）。只算排列而忽略选座位步骤，会严重少算。'
+  };
+  return hints[type]||'';
+}
+
+function setupVerifyDrag(){
+  state.verifySeats=new Array(LEVELS[state.currentLevel].seats).fill(null);
+  state.verifyCards=[...LEVELS[state.currentLevel].characters.map(c=>c.id)];
+
+  document.querySelectorAll('[data-verify-char]').forEach(card=>{
+    card.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('verify-char',card.dataset.verifyChar);
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  });
+
+  const zone=document.getElementById('verifyDropZone');
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over')});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+
+  document.querySelectorAll('.verify-seat').forEach(seat=>{
+    seat.addEventListener('dragover',e=>{e.preventDefault();seat.style.borderColor='var(--accent)'});
+    seat.addEventListener('dragleave',()=>{if(!seat.classList.contains('filled'))seat.style.borderColor=''});
+    seat.addEventListener('drop',e=>{
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const charId=e.dataTransfer.getData('verify-char');
+      if(!charId)return;
+      const pos=parseInt(seat.dataset.pos);
+      state.verifySeats[pos]=charId;
+      seat.classList.add('filled');
+      const ch=LEVELS[state.currentLevel].characters.find(c=>c.id===charId);
+      seat.textContent=charId;
+      seat.style.color=ch.color;
+    });
+    seat.addEventListener('click',()=>{
+      const pos=parseInt(seat.dataset.pos);
+      if(state.verifySeats[pos]){
+        state.verifySeats[pos]=null;
+        seat.classList.remove('filled','correct-pos','wrong-pos');
+        seat.textContent='';
+        seat.style.borderColor='';
+      }
+    });
+  });
+}
+
+function checkVerifyResult(){
+  const lv=LEVELS[state.currentLevel];
+  const arr=state.verifySeats;
+  const allFilled=arr.every(o=>o!==null);
+  if(!allFilled){
+    showToast('请填满所有座位','warning');
+    return;
+  }
+  const seats=document.querySelectorAll('.verify-seat');
+  let hasViolation=false;
+  arr.forEach((occ,i)=>{
+    const violation=checkViolation(occ,i);
+    if(violation){
+      seats[i].classList.add('wrong-pos');
+      hasViolation=true;
+    }else{
+      seats[i].classList.add('correct-pos');
+    }
+  });
+  if(hasViolation){
+    showToast('存在限制违反，请检查红色座位','error');
+  }else{
+    showToast('排列合规！','success');
+  }
+}
+
+function resetVerify(){
+  state.verifySeats=new Array(LEVELS[state.currentLevel].seats).fill(null);
+  document.querySelectorAll('.verify-seat').forEach(seat=>{
+    seat.classList.remove('filled','correct-pos','wrong-pos');
+    seat.textContent='';
+    seat.style.borderColor='';
+  });
+}
+
+function nextFromReview(){
+  if(state.currentLevel+1>=LEVELS.length){
+    showFinalReport();
+  }else{
+    nextLevel();
+  }
+}
+
+function showFinalReport(){
+  const smooth=state.levelScores.filter(r=>r.category==='smooth');
+  const restricted=state.levelScores.filter(r=>r.category==='restricted');
+  const totalScore=state.levelScores.reduce((s,r)=>s+r.score,0);
+
+  let html='<div style="max-width:700px;margin:0 auto;padding:40px">';
+  html+='<h2 style="text-align:center;font-size:28px;margin-bottom:24px">对局报告</h2>';
+  html+='<div style="text-align:center;font-size:48px;font-weight:800;color:var(--accent);margin-bottom:8px">'+totalScore+'</div>';
+  html+='<div style="text-align:center;color:var(--text2);margin-bottom:32px">总得分</div>';
+
+  html+='<div class="report-section"><h3>🟢 顺利样例</h3>';
+  if(smooth.length===0){
+    html+='<p style="color:var(--text2)">无</p>';
+  }else{
+    smooth.forEach(r=>{
+      html+='<div class="report-row"><span>第'+r.levelId+'关 · '+r.levelTitle+'</span><span class="'+(r.correctAnswerBool?'score-correct':'score-wrong')+'">'+r.playerAnswer+' → '+r.correctAnswer+' ('+r.score+'分)</span></div>';
+    });
+  }
+  html+='</div>';
+
+  html+='<div class="report-section"><h3>🟠 限制漏看材料</h3>';
+  if(restricted.length===0){
+    html+='<p style="color:var(--text2)">无</p>';
+  }else{
+    restricted.forEach(r=>{
+      html+='<div class="report-row"><span>第'+r.levelId+'关 · '+r.levelTitle+'</span><span class="'+(r.correctAnswerBool?'score-correct':'score-wrong')+'">'+r.playerAnswer+' → '+r.correctAnswer+' ('+r.score+'分)</span></div>';
+    });
+  }
+  html+='</div>';
+
+  html+='<div class="report-section"><h3>📊 错因统计</h3>';
+  const errorStats={};
+  state.levelScores.forEach(r=>{
+    if(!r.correctErrorBool){
+      const key=r.actualError;
+      errorStats[key]=(errorStats[key]||0)+1;
+    }
+  });
+  if(Object.keys(errorStats).length===0){
+    html+='<p style="color:var(--green)">全部错因判断正确！</p>';
+  }else{
+    Object.entries(errorStats).forEach(([type,count])=>{
+      html+='<div class="report-row"><span>'+type+'</span><span style="color:var(--red)">判断失误 ×'+count+'</span></div>';
+    });
+  }
+  html+='</div>';
+
+  html+='<div class="nav-buttons">';
+  html+='<button class="btn btn-secondary" onclick="exportGrades()">导出成绩</button>';
+  html+='<button class="btn btn-primary" onclick="showHistory()">查看历史</button>';
+  html+='<button class="btn btn-secondary" onclick="showStart()">返回首页</button>';
+  html+='</div></div>';
+
+  const screen=document.getElementById('settlementScreen');
+  const card=document.getElementById('settlementCard');
+  screen.innerHTML=html;
+  screen.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>{if(s.id!=='settlementScreen')s.classList.remove('active')});
+}
+
+function showHistory(){
+  state.currentHistoryTab='original';
+  renderHistory();
+  showScreen('historyScreen');
+}
+
+function switchHistoryTab(tab){
+  state.currentHistoryTab=tab;
+  document.querySelectorAll('.history-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.tab===tab);
+  });
+  renderHistory();
+}
+
+function renderHistory(){
+  const content=document.getElementById('historyContent');
+  if(state.history.length===0){
+    content.innerHTML='<div class="empty-state">暂无记录，完成关卡后这里会显示历史</div>';
+    return;
+  }
+  let html='';
+  state.history.forEach((rec,idx)=>{
+    html+='<div class="history-record"><h4>第'+rec.levelId+'关 <span class="meta">'+rec.timestamp+'</span></h4>';
+    if(state.currentHistoryTab==='original'){
+      html+='<div class="history-section"><h5>题目</h5><p>'+rec.original.problem+'</p></div>';
+      html+='<div class="history-section"><h5>人物与限制</h5>';
+      rec.original.characters.forEach(ch=>{
+        html+='<p>「'+ch.id+'」'+(ch.restrictions.length?'限制：'+ch.restrictions.join('、'):'无限制')+'</p>';
+      });
+      html+='</div>';
+      html+='<div class="history-section"><h5>座位布局</h5><p>'+rec.original.seatLayout+(rec.original.emptySeats?'，空位'+rec.original.emptySeats+'个':'')+'</p></div>';
+      html+='<div class="history-section"><h5>限制条件</h5>';
+      if(rec.original.restrictions.length===0){
+        html+='<p>无</p>';
+      }else{
+        rec.original.restrictions.forEach(r=>html+='<p>'+r.desc+'</p>');
+      }
+      html+='</div>';
+    }else if(state.currentHistoryTab==='conclusion'){
+      html+='<div class="history-section"><h5>玩家答案</h5><p>'+rec.conclusion.playerAnswer+' 种</p></div>';
+      html+='<div class="history-section"><h5>错因判断</h5><p>'+rec.conclusion.selectedError+'</p></div>';
+      html+='<div class="history-section"><h5>正确答案</h5><p>'+rec.conclusion.correctAnswer+' 种</p></div>';
+      html+='<div class="history-section"><h5>实际错因</h5><p>'+rec.conclusion.actualError+'</p></div>';
+      html+='<div class="history-section"><h5>得分</h5><p>'+rec.conclusion.score+' 分（用时'+rec.conclusion.time+'）</p></div>';
+      html+='<div class="history-section"><h5>正确性</h5><p>答案'+(rec.conclusion.answerCorrect?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>')+' 错因'+(rec.conclusion.errorCorrect?'<span style="color:var(--green)">✓</span>':'<span style="color:var(--red)">✗</span>')+'</p></div>';
+    }else if(state.currentHistoryTab==='correction'){
+      html+='<div class="history-section"><h5>正确解析</h5><p>'+rec.correction.explanation+'</p></div>';
+      html+='<div class="history-section"><h5>玩家答案正误</h5><p>'+(rec.correction.playerAnswerCorrect?'<span style="color:var(--green)">正确</span>':'<span style="color:var(--red)">错误</span>')+'</p></div>';
+      html+='<div class="history-section"><h5>错因判断正误</h5><p>'+(rec.correction.playerErrorCorrect?'<span style="color:var(--green)">正确</span>':'<span style="color:var(--red)">错误</span>')+'</p></div>';
+      html+='<div class="history-section"><h5>人工修正笔记</h5><textarea style="width:100%;min-height:60px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);font-size:13px;font-family:inherit;resize:vertical" data-correction-idx="'+idx+'" oninput="updateCorrection('+idx+',this.value)">'+(rec.correction.manualNotes||'')+'</textarea></div>';
+    }
+    html+='</div>';
+  });
+  content.innerHTML=html;
+}
+
+function updateCorrection(idx,value){
+  if(state.history[idx]){
+    state.history[idx].correction.manualNotes=value;
+  }
+}
+
+function exportGrades(){
+  const data={
+    exportTime:new Date().toISOString(),
+    levels:state.levelScores.map(r=>({
+      level:r.levelId,
+      title:r.levelTitle,
+      category:r.category,
+      playerAnswer:r.playerAnswer,
+      correctAnswer:r.correctAnswer,
+      selectedError:r.selectedError,
+      actualError:r.actualError,
+      score:r.score,
+      time:r.time+'s',
+      answerCorrect:r.correctAnswerBool,
+      errorCorrect:r.correctErrorBool,
+      arrangementsExplored:r.arrangementsFound,
+      conflicts:r.conflictTraces.length
+    })),
+    history:state.history
+  };
+  downloadJSON(data,'排队局-成绩-'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json');
+  showToast('成绩已导出','success');
+}
+
+function exportHistory(){
+  const data={
+    exportTime:new Date().toISOString(),
+    history:state.history
+  };
+  downloadJSON(data,'排队局-历史-'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json');
+  showToast('历史已导出','success');
+}
+
+function downloadJSON(data,filename){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function showToast(msg,type='info'){
+  const existing=document.querySelector('.toast');
+  if(existing)existing.remove();
+  const t=document.createElement('div');
+  t.className='toast toast-'+type;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{if(t.parentNode)t.remove()},3000);
+}
+</script>
+</body>
+</html>
