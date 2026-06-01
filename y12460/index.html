@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>斜抛投篮实验场</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1923;--panel:#1a2634;--card:#223344;--border:#2e4a5f;
+  --accent:#00d4aa;--accent2:#ff6b35;--warn:#ffc107;--error:#ff4757;
+  --text:#e8edf2;--muted:#8899aa;--success:#2ed573;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+.app{display:flex;flex-direction:column;min-height:100vh}
+.header{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:20px;font-weight:700;color:var(--accent)}
+.header .status-badge{font-size:13px;padding:4px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border)}
+.main{display:flex;flex:1;gap:0;min-height:0;overflow:hidden}
+.canvas-wrap{flex:1;position:relative;background:#0a1520;min-height:500px;overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+.sidebar{width:340px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.panel{padding:16px;border-bottom:1px solid var(--border)}
+.panel-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.param-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.param-label{font-size:14px;color:var(--text)}
+.param-value{font-size:15px;font-weight:700;color:var(--accent);min-width:60px;text-align:right}
+input[type=range]{width:100%;margin:4px 0;accent-color:var(--accent)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#000;border-color:var(--accent)}
+.btn-primary:hover{background:#00eabb;border-color:#00eabb}
+.btn-danger{border-color:var(--error);color:var(--error)}
+.btn-danger:hover{background:var(--error);color:#fff}
+.btn-warn{border-color:var(--warn);color:var(--warn)}
+.btn-warn:hover{background:var(--warn);color:#000}
+.alert{padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:8px}
+.alert code{background:rgba(0,0,0,.3);padding:1px 6px;border-radius:3px;font-size:12px}
+.alert-error{background:rgba(255,71,87,.12);border:1px solid rgba(255,71,87,.3);color:#ff6b7a}
+.alert-warn{background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.3);color:#ffd43b}
+.alert-info{background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:var(--accent)}
+.alert-success{background:rgba(46,213,115,.1);border:1px solid rgba(46,213,115,.3);color:var(--success)}
+.alert-suggestion{font-size:12px;color:var(--muted);margin-top:4px;font-style:italic}
+.history-panel{flex:1;overflow-y:auto;padding:0}
+.history-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.history-item:hover{background:var(--card)}
+.history-item .hi-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.history-item .hi-id{font-size:12px;color:var(--muted)}
+.history-item .hi-result{font-size:13px;font-weight:700}
+.history-item .hi-result.hit{color:var(--success)}
+.history-item .hi-result.miss{color:var(--error)}
+.history-item .hi-params{font-size:12px;color:var(--muted)}
+.history-item .hi-warnings{font-size:11px;color:var(--warn);margin-top:4px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:720px;max-height:85vh;overflow-y:auto;padding:28px;position:relative}
+.modal h2{font-size:20px;margin-bottom:16px;color:var(--accent)}
+.modal h3{font-size:15px;margin:16px 0 8px;color:var(--warn)}
+.modal .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}
+.modal .close-btn:hover{color:var(--text)}
+.review-section{margin-bottom:16px}
+.review-section .rs-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;padding-left:8px;border-left:3px solid var(--accent)}
+.review-section .rs-body{font-size:14px;line-height:1.7;color:var(--muted);padding-left:12px}
+.review-section .rs-body strong{color:var(--text)}
+.review-section .rs-body .formula{background:var(--card);padding:8px 14px;border-radius:6px;font-family:'Courier New',monospace;color:var(--accent);margin:8px 0;display:block}
+.review-section .rs-body .suggestion{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.2);padding:8px 12px;border-radius:6px;color:var(--warn);margin:6px 0}
+.review-section .rs-body .success-note{background:rgba(46,213,115,.08);border:1px solid rgba(46,213,115,.2);padding:8px 12px;border-radius:6px;color:var(--success)}
+.review-section .rs-body .error-note{background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.2);padding:8px 12px;border-radius:6px;color:#ff6b7a}
+.score-board{text-align:center;padding:20px}
+.score-board .score{font-size:48px;font-weight:900;color:var(--accent)}
+.score-board .score-label{font-size:14px;color:var(--muted)}
+.score-board .score-detail{font-size:13px;color:var(--muted);margin-top:8px}
+.dup-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:var(--warn);color:#000;font-weight:700;margin-left:6px}
+.ver-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;background:var(--card);border:1px solid var(--border);color:var(--muted);margin-left:4px}
+.footer-bar{background:var(--panel);border-top:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>🏀 斜抛投篮实验场</h1>
+    <div class="status-badge" id="stateLabel">状态：待命</div>
+  </div>
+  <div class="main">
+    <div class="canvas-wrap">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+    <div class="sidebar">
+      <div class="panel">
+        <div class="panel-title">实验参数</div>
+        <div class="param-row"><span class="param-label">发射角度</span><span class="param-value" id="angleVal">45°</span></div>
+        <input type="range" id="angleSlider" min="-10" max="100" value="45" step="1">
+        <div class="param-row"><span class="param-label">初始速度</span><span class="param-value" id="speedVal">15 m/s</span></div>
+        <input type="range" id="speedSlider" min="1" max="40" value="15" step="0.5">
+        <div class="param-row"><span class="param-label">风速（正=顺风）</span><span class="param-value" id="windVal">0 m/s²</span></div>
+        <input type="range" id="windSlider" min="-8" max="8" value="0" step="0.5">
+      </div>
+      <div class="panel">
+        <div class="panel-title">操控</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnShoot">投篮</button>
+          <button class="btn btn-warn" id="btnPause" disabled>暂停</button>
+          <button class="btn btn-danger" id="btnReset">重开</button>
+        </div>
+        <div style="margin-top:10px" class="btn-row">
+          <button class="btn" id="btnReview">复盘最近</button>
+          <button class="btn" id="btnClearHistory">清空记录</button>
+        </div>
+      </div>
+      <div class="panel" id="alertPanel"></div>
+      <div class="panel">
+        <div class="panel-title">组件版本</div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted)" id="componentInfo"></div>
+      </div>
+      <div class="history-panel">
+        <div class="panel-title" style="padding:12px 16px">实验记录</div>
+        <div id="historyList"></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bar">
+    <span>重力加速度 g = 9.8 m/s² ｜ 坐标系：原点在发射点，x 向右，y 向上</span>
+    <span id="recordCount">记录：0 条</span>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="close-btn" id="closeReview">&times;</button>
+    <h2>📋 实验复盘</h2>
+    <div id="reviewContent"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var STORAGE_KEY = "projectile_basketball_records_v2";
+var GRAVITY = 9.8;
+var COMPONENTS = [
+  {id:"basketball", name:"篮球", version:1},
+  {id:"angle-rod", name:"角度杆", version:1},
+  {id:"speed-bar", name:"速度条", version:1},
+  {id:"wind-flag", name:"风向标", version:1}
+];
+
+var ErrorCode = {
+  ANGLE_OUT_OF_BOUNDS: {
+    code: "ANGLE_OUT_OF_BOUNDS",
+    label: "角度越界",
+    description: "发射角度超出物理有效范围（0°~90°）",
+    suggestion: "请将角度调整到 0°~90° 之间。负角或超过 90° 的仰角在斜抛运动中无实际意义——负角意味着朝地面射出，超过 90° 则等于向后方抛出。"
+  },
+  SPEED_EXCESSIVE: {
+    code: "SPEED_EXCESSIVE",
+    label: "速度过大",
+    description: "初始速度超过实验安全上限（30 m/s）",
+    suggestion: "速度过大时篮球会飞出可视区域，无法观察完整轨迹。建议将速度降至 30 m/s 以下，这样轨迹更完整、数据更可读。"
+  },
+  WIND_REVERSED: {
+    code: "WIND_REVERSED",
+    label: "风向反用",
+    description: "风向与投篮方向相反（逆风投篮），显著增加命中难度",
+    suggestion: "当前为逆风条件，篮球水平位移会被风力削弱。如需实验逆风效果，可适当增大水平速度分量或减小发射角度来补偿；如非故意，请将风速调为正值（顺风）。"
+  }
+};
+
+var STATE = {IDLE:"idle", AIMING:"aiming", FLYING:"flying", PAUSED:"paused", RESULT:"result"};
+
+var canvas, ctx;
+var W, H;
+var groundY, launchX, launchY, hoopX, hoopY, hoopW;
+var scale;
+
+var gameState = STATE.IDLE;
+var angle = 45, speed = 15, wind = 0;
+var ballX, ballY, ballVx, ballVy, ballT;
+var trail = [];
+var animId = null;
+var lastTime = 0;
+var currentRecord = null;
+var detectedDupIds = {};
+var componentVersions = {};
+
+function initCanvas(){
+  canvas = document.getElementById("gameCanvas");
+  var wrap = canvas.parentElement;
+  W = wrap.clientWidth || 800;
+  H = wrap.clientHeight || 500;
+  canvas.width = W;
+  canvas.height = H;
+  ctx = canvas.getContext("2d");
+  groundY = H - 60;
+  launchX = 100;
+  launchY = groundY - 30;
+  hoopX = W - 200;
+  hoopY = groundY - 200;
+  hoopW = 50;
+  scale = 4.5;
+}
+
+function m2px(mx){ return launchX + mx * scale; }
+function m2py(my){ return launchY - my * scale; }
+function px2m(px){ return (px - launchX) / scale; }
+function py2m(py){ return (launchY - py) / scale; }
+
+function hoopM(){
+  var mx = px2m(hoopX);
+  var my = py2m(hoopY);
+  return {x:mx, y:my, w:hoopW/scale};
+}
+
+function checkErrors(a, s, w){
+  var errors = [];
+  if(a < 0 || a > 90){
+    errors.push(ErrorCode.ANGLE_OUT_OF_BOUNDS);
+  }
+  if(s > 30){
+    errors.push(ErrorCode.SPEED_EXCESSIVE);
+  }
+  if(w < 0){
+    errors.push(ErrorCode.WIND_REVERSED);
+  }
+  return errors;
+}
+
+function showAlerts(errors){
+  var panel = document.getElementById("alertPanel");
+  if(!errors.length){
+    panel.innerHTML = '<div class="alert alert-info">参数正常，可以投篮</div>';
+    return;
+  }
+  var html = "";
+  errors.forEach(function(e){
+    var cls = e.code === "ANGLE_OUT_OF_BOUNDS" ? "alert-error" :
+              e.code === "SPEED_EXCESSIVE" ? "alert-warn" : "alert-warn";
+    html += '<div class="alert ' + cls + '">';
+    html += '<div><strong>' + e.label + '</strong> <code>' + e.code + '</code><br>' + e.description + '</div>';
+    html += '<div class="alert-suggestion">💡 ' + e.suggestion + '</div>';
+    html += '</div>';
+  });
+  panel.innerHTML = html;
+}
+
+function detectDuplicateComponents(){
+  var known = {};
+  var dups = {};
+  COMPONENTS.forEach(function(c){
+    var key = c.id;
+    if(known[key]){
+      dups[key] = true;
+      componentVersions[key] = known[key] + 1;
+    } else {
+      componentVersions[key] = c.version;
+    }
+    known[key] = (known[key] || 0) + 1;
+  });
+  detectedDupIds = dups;
+  renderComponentInfo();
+}
+
+function renderComponentInfo(){
+  var el = document.getElementById("componentInfo");
+  var html = "";
+  COMPONENTS.forEach(function(c){
+    var v = componentVersions[c.id] || c.version;
+    var isDup = detectedDupIds[c.id];
+    html += '<div>' + c.name + ' <span class="ver-badge">v' + v + '</span>';
+    if(isDup){
+      html += '<span class="dup-badge">重复编号已标记</span>';
+    }
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function updateStateLabel(){
+  var labels = {};
+  labels[STATE.IDLE] = "待命";
+  labels[STATE.AIMING] = "瞄准中";
+  labels[STATE.FLYING] = "飞行中";
+  labels[STATE.PAUSED] = "已暂停";
+  labels[STATE.RESULT] = "已结算";
+  document.getElementById("stateLabel").textContent = "状态：" + (labels[gameState] || gameState);
+}
+
+function generateRecordId(){
+  return "rec-" + Date.now() + "-" + Math.random().toString(36).substr(2,6);
+}
+
+function loadRecords(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    var parsed = JSON.parse(raw);
+    if(!Array.isArray(parsed)) return [];
+    var seen = {};
+    var deduped = [];
+    parsed.forEach(function(r){
+      if(!r || !r.id) return;
+      if(seen[r.id]){
+        return;
+      }
+      seen[r.id] = true;
+      deduped.push(r);
+    });
+    return deduped;
+  }catch(e){ return []; }
+}
+
+function saveRecords(records){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }catch(e){}
+}
+
+function addRecord(record){
+  var records = loadRecords();
+  var existIdx = -1;
+  for(var i = 0; i < records.length; i++){
+    if(records[i].id === record.id){
+      existIdx = i;
+      break;
+    }
+  }
+  if(existIdx >= 0){
+    records[existIdx] = record;
+  } else {
+    records.push(record);
+  }
+  saveRecords(records);
+  renderHistory();
+}
+
+function renderHistory(){
+  var records = loadRecords();
+  var el = document.getElementById("historyList");
+  document.getElementById("recordCount").textContent = "记录：" + records.length + " 条";
+  if(!records.length){
+    el.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:13px">暂无实验记录</div>';
+    return;
+  }
+  var html = "";
+  var sorted = records.slice().reverse();
+  sorted.forEach(function(r){
+    var hitClass = r.hit ? "hit" : "miss";
+    var hitText = r.hit ? "命中" : "未命中";
+    var warnTexts = [];
+    if(r.errors && r.errors.length){
+      r.errors.forEach(function(e){ warnTexts.push(e.label); });
+    }
+    html += '<div class="history-item" data-id="' + r.id + '">';
+    html += '<div class="hi-head"><span class="hi-id">' + r.id + '</span><span class="hi-result ' + hitClass + '">' + hitText + '</span></div>';
+    html += '<div class="hi-params">角度 ' + r.angle + '° 速度 ' + r.speed + ' m/s 风速 ' + r.wind + ' m/s²</div>';
+    if(warnTexts.length){
+      html += '<div class="hi-warnings">⚠ ' + warnTexts.join("、") + '</div>';
+    }
+    html += '</div>';
+  });
+  el.innerHTML = html;
+  el.querySelectorAll(".history-item").forEach(function(item){
+    item.addEventListener("click", function(){
+      var rid = this.getAttribute("data-id");
+      openReview(rid);
+    });
+  });
+}
+
+function computeTrajectory(a, s, w, dt, maxT){
+  var rad = a * Math.PI / 180;
+  var vx0 = s * Math.cos(rad);
+  var vy0 = s * Math.sin(rad);
+  var ax = w;
+  var ay = -GRAVITY;
+  var points = [];
+  var t = 0;
+  while(t < maxT){
+    var px = vx0 * t + 0.5 * ax * t * t;
+    var py = vy0 * t + 0.5 * ay * t * t;
+    if(py < -5) break;
+    points.push({t:t, x:px, y:py, vx: vx0 + ax*t, vy: vy0 + ay*t});
+    t += dt;
+  }
+  return points;
+}
+
+function drawBackground(){
+  ctx.fillStyle = "#0a1520";
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "rgba(46,74,95,0.3)";
+  ctx.lineWidth = 1;
+  for(var x = launchX; x < W; x += scale * 5){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, groundY); ctx.stroke();
+  }
+  for(var y = groundY; y > 0; y -= scale * 5){
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  ctx.fillStyle = "#1a3020";
+  ctx.fillRect(0, groundY, W, H - groundY);
+  ctx.strokeStyle = "#2a5030";
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(W, groundY); ctx.stroke();
+}
+
+function drawHoop(){
+  ctx.strokeStyle = "#ff4444";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(hoopX, hoopY - 15);
+  ctx.lineTo(hoopX, hoopY + 15);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(hoopX + hoopW, hoopY - 15);
+  ctx.lineTo(hoopX + hoopW, hoopY + 15);
+  ctx.stroke();
+  ctx.strokeStyle = "#ff6666";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(hoopX, hoopY);
+  ctx.lineTo(hoopX + hoopW, hoopY);
+  ctx.stroke();
+  ctx.fillStyle = "#ff4444";
+  ctx.fillRect(hoopX - 3, hoopY - 80, 6, 80);
+  var bbY = hoopY - 80;
+  ctx.fillStyle = "rgba(255,255,255,0.15)";
+  ctx.fillRect(hoopX - 30, bbY, 30, 50);
+  ctx.strokeStyle = "rgba(255,255,255,0.3)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(hoopX - 30, bbY, 30, 50);
+}
+
+function drawLauncher(){
+  var rad = angle * Math.PI / 180;
+  var rodLen = 60;
+  var endX = launchX + rodLen * Math.cos(rad);
+  var endY = launchY - rodLen * Math.sin(rad);
+  ctx.strokeStyle = "#00d4aa";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(launchX, launchY);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+  ctx.fillStyle = "#00d4aa";
+  ctx.beginPath();
+  ctx.arc(endX, endY, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#8899aa";
+  ctx.font = "12px monospace";
+  ctx.fillText(angle + "°", endX + 8, endY - 5);
+  ctx.fillStyle = "#334455";
+  ctx.beginPath();
+  ctx.arc(launchX, launchY, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#00d4aa";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function drawWindFlag(){
+  var fx = 70, fy = 50;
+  ctx.fillStyle = "#8899aa";
+  ctx.font = "12px sans-serif";
+  ctx.fillText("风", fx, fy);
+  var arrowLen = Math.abs(wind) * 12;
+  var dir = wind >= 0 ? 1 : -1;
+  if(arrowLen < 2) arrowLen = 6;
+  ctx.strokeStyle = wind >= 0 ? "#2ed573" : "#ff6b35";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(fx + 20, fy - 4);
+  ctx.lineTo(fx + 20 + dir * arrowLen, fy - 4);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(fx + 20 + dir * arrowLen, fy - 4);
+  ctx.lineTo(fx + 20 + dir * (arrowLen - 6), fy - 9);
+  ctx.moveTo(fx + 20 + dir * arrowLen, fy - 4);
+  ctx.lineTo(fx + 20 + dir * (arrowLen - 6), fy + 1);
+  ctx.stroke();
+}
+
+function drawSpeedBar(){
+  var bx = W - 50, by = 60, bh = 200;
+  ctx.fillStyle = "#8899aa";
+  ctx.font = "12px sans-serif";
+  ctx.fillText("速度", bx - 6, by - 10);
+  ctx.strokeStyle = "#2e4a5f";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(bx, by, 20, bh);
+  var ratio = Math.min(speed / 40, 1);
+  var fillH = ratio * bh;
+  var barColor = speed > 30 ? "#ff4757" : speed > 20 ? "#ffc107" : "#00d4aa";
+  ctx.fillStyle = barColor;
+  ctx.fillRect(bx + 2, by + bh - fillH, 16, fillH);
+  ctx.fillStyle = "#e8edf2";
+  ctx.font = "11px monospace";
+  ctx.fillText(speed + "", bx - 2, by + bh + 16);
+}
+
+function drawTrail(){
+  if(trail.length < 2) return;
+  ctx.strokeStyle = "rgba(0,212,170,0.4)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  var p0 = trail[0];
+  ctx.moveTo(m2px(p0.x), m2py(p0.y));
+  for(var i = 1; i < trail.length; i++){
+    ctx.lineTo(m2px(trail[i].x), m2py(trail[i].y));
+  }
+  ctx.stroke();
+}
+
+function drawPredictedTrajectory(){
+  if(gameState !== STATE.IDLE && gameState !== STATE.AIMING && gameState !== STATE.RESULT) return;
+  var pts = computeTrajectory(angle, speed, wind, 0.02, 10);
+  ctx.strokeStyle = "rgba(0,212,170,0.2)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  for(var i = 0; i < pts.length; i++){
+    var px = m2px(pts[i].x), py = m2py(pts[i].y);
+    if(i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawBall(px, py){
+  var cx = m2px(px), cy = m2py(py);
+  var grad = ctx.createRadialGradient(cx - 2, cy - 2, 1, cx, cy, 14);
+  grad.addColorStop(0, "#ff8844");
+  grad.addColorStop(0.6, "#e86020");
+  grad.addColorStop(1, "#aa3800");
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(0,0,0,0.3)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.strokeStyle = "rgba(0,0,0,0.15)";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx - 10, cy); ctx.lineTo(cx + 10, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy + 10); ctx.stroke();
+}
+
+function drawScene(){
+  drawBackground();
+  drawPredictedTrajectory();
+  drawHoop();
+  drawLauncher();
+  drawWindFlag();
+  drawSpeedBar();
+  drawTrail();
+  if(gameState === STATE.FLYING || gameState === STATE.PAUSED){
+    drawBall(ballX, ballY);
+  }
+  if(gameState === STATE.IDLE || gameState === STATE.AIMING){
+    drawBall(0, 0);
+  }
+  if(gameState === STATE.RESULT && currentRecord){
+    drawBall(currentRecord.finalX, currentRecord.finalY);
+  }
+}
+
+function checkHit(bx, by){
+  var hm = hoopM();
+  var rimL = hm.x - 0.3;
+  var rimR = hm.x + hm.w + 0.3;
+  var rimY = hm.y;
+  if(bx >= rimL && bx <= rimR && Math.abs(by - rimY) < 1.5){
+    return true;
+  }
+  return false;
+}
+
+function checkGround(by){
+  return by <= 0;
+}
+
+function startShoot(){
+  var errors = checkErrors(angle, speed, wind);
+  showAlerts(errors);
+  if(gameState !== STATE.IDLE && gameState !== STATE.AIMING && gameState !== STATE.RESULT) return;
+  if(errors.some(function(e){ return e.code === "ANGLE_OUT_OF_BOUNDS"; })){
+    return;
+  }
+  var rad = angle * Math.PI / 180;
+  ballVx = speed * Math.cos(rad);
+  ballVy = speed * Math.sin(rad);
+  ballX = 0;
+  ballY = 0;
+  ballT = 0;
+  trail = [{x:0, y:0, t:0}];
+  gameState = STATE.FLYING;
+  updateStateLabel();
+  document.getElementById("btnPause").disabled = false;
+  document.getElementById("btnShoot").disabled = true;
+  currentRecord = {
+    id: generateRecordId(),
+    timestamp: Date.now(),
+    angle: angle,
+    speed: speed,
+    wind: wind,
+    errors: errors.map(function(e){ return {code:e.code, label:e.label}; }),
+    hit: false,
+    finalX: 0,
+    finalY: 0,
+    flightTime: 0,
+    maxH: 0,
+    range: 0,
+    trail: []
+  };
+  lastTime = performance.now();
+  animId = requestAnimationFrame(gameLoop);
+}
+
+function gameLoop(now){
+  if(gameState !== STATE.FLYING) return;
+  var dt = Math.min((now - lastTime) / 1000, 0.05);
+  lastTime = now;
+  ballT += dt;
+  ballX = ballVx * ballT + 0.5 * wind * ballT * ballT;
+  ballY = ballVy * ballT - 0.5 * GRAVITY * ballT * ballT;
+  trail.push({x:ballX, y:ballY, t:ballT});
+  if(currentRecord && ballY > currentRecord.maxH){
+    currentRecord.maxH = ballY;
+  }
+  drawScene();
+  if(checkHit(ballX, ballY)){
+    finishShot(true);
+    return;
+  }
+  if(checkGround(ballY) || ballT > 15){
+    finishShot(false);
+    return;
+  }
+  animId = requestAnimationFrame(gameLoop);
+}
+
+function finishShot(hit){
+  gameState = STATE.RESULT;
+  updateStateLabel();
+  if(animId) cancelAnimationFrame(animId);
+  document.getElementById("btnPause").disabled = true;
+  document.getElementById("btnShoot").disabled = false;
+  if(currentRecord){
+    currentRecord.hit = hit;
+    currentRecord.finalX = ballX;
+    currentRecord.finalY = Math.max(ballY, 0);
+    currentRecord.flightTime = ballT;
+    currentRecord.range = ballX;
+    currentRecord.trail = trail.slice();
+    addRecord(currentRecord);
+    showResultAlert(currentRecord);
+  }
+  drawScene();
+}
+
+function showResultAlert(rec){
+  var panel = document.getElementById("alertPanel");
+  var html = "";
+  if(rec.hit){
+    html += '<div class="alert alert-success"><strong>命中！</strong>飞行时间 ' + rec.flightTime.toFixed(2) + 's，最大高度 ' + rec.maxH.toFixed(1) + 'm</div>';
+  } else {
+    html += '<div class="alert alert-error"><strong>未命中</strong>，落点 x=' + rec.range.toFixed(1) + 'm，飞行时间 ' + rec.flightTime.toFixed(2) + 's</div>';
+  }
+  if(rec.errors.length){
+    rec.errors.forEach(function(e){
+      html += '<div class="alert alert-warn">⚠ ' + e.label + '（' + e.code + '）</div>';
+    });
+  }
+  panel.innerHTML = html;
+}
+
+function pauseGame(){
+  if(gameState === STATE.FLYING){
+    gameState = STATE.PAUSED;
+    if(animId) cancelAnimationFrame(animId);
+    document.getElementById("btnPause").textContent = "继续";
+    updateStateLabel();
+  } else if(gameState === STATE.PAUSED){
+    gameState = STATE.FLYING;
+    lastTime = performance.now();
+    document.getElementById("btnPause").textContent = "暂停";
+    updateStateLabel();
+    animId = requestAnimationFrame(gameLoop);
+  }
+}
+
+function resetGame(){
+  if(animId) cancelAnimationFrame(animId);
+  gameState = STATE.IDLE;
+  trail = [];
+  currentRecord = null;
+  ballX = 0; ballY = 0; ballT = 0;
+  updateStateLabel();
+  document.getElementById("btnPause").disabled = true;
+  document.getElementById("btnPause").textContent = "暂停";
+  document.getElementById("btnShoot").disabled = false;
+  showAlerts(checkErrors(angle, speed, wind));
+  drawScene();
+}
+
+function openReview(recordId){
+  var records = loadRecords();
+  var rec = null;
+  for(var i = 0; i < records.length; i++){
+    if(records[i].id === recordId){ rec = records[i]; break; }
+  }
+  if(!rec) return;
+  var el = document.getElementById("reviewContent");
+  var html = "";
+
+  html += '<div class="review-section"><div class="rs-title">实验概况</div><div class="rs-body">';
+  html += '<strong>结果：</strong>' + (rec.hit ? '<span style="color:var(--success)">命中 🏀</span>' : '<span style="color:var(--error)">未命中</span>') + '<br>';
+  html += '<strong>实验编号：</strong>' + rec.id + '<br>';
+  html += '<strong>时间：</strong>' + new Date(rec.timestamp).toLocaleString("zh-CN") + '<br>';
+  html += '<strong>飞行时间：</strong>' + rec.flightTime.toFixed(2) + ' 秒<br>';
+  html += '<strong>最大高度：</strong>' + rec.maxH.toFixed(2) + ' 米<br>';
+  html += '<strong>水平射程：</strong>' + rec.range.toFixed(2) + ' 米';
+  html += '</div></div>';
+
+  html += '<div class="review-section"><div class="rs-title">参数设定</div><div class="rs-body">';
+  html += '<strong>发射角度：</strong>' + rec.angle + '°<br>';
+  html += '<strong>初始速度：</strong>' + rec.speed + ' m/s<br>';
+  html += '<strong>风速（正=顺风）：</strong>' + rec.wind + ' m/s²';
+  html += '</div></div>';
+
+  html += '<div class="review-section"><div class="rs-title">抛体计算过程</div><div class="rs-body">';
+  var rad = rec.angle * Math.PI / 180;
+  var vx0 = rec.speed * Math.cos(rad);
+  var vy0 = rec.speed * Math.sin(rad);
+  html += '将角度 ' + rec.angle + '° 转为弧度：θ = ' + rad.toFixed(4) + ' rad<br><br>';
+  html += '初始水平分速度 vx₀ = v·cos(θ) = ' + rec.speed + '×cos(' + rec.angle + '°) = <strong>' + vx0.toFixed(2) + ' m/s</strong><br>';
+  html += '初始竖直分速度 vy₀ = v·sin(θ) = ' + rec.speed + '×sin(' + rec.angle + '°) = <strong>' + vy0.toFixed(2) + ' m/s</strong><br><br>';
+  html += '运动方程（含风力的水平加速度 a_x = ' + rec.wind + ' m/s²）：<br>';
+  html += '<span class="formula">x(t) = vx₀·t + ½·a_x·t² = ' + vx0.toFixed(2) + '·t + ' + (0.5 * rec.wind).toFixed(2) + '·t²</span>';
+  html += '<span class="formula">y(t) = vy₀·t − ½·g·t² = ' + vy0.toFixed(2) + '·t − ' + (0.5 * GRAVITY).toFixed(2) + '·t²</span>';
+  html += '其中 g = ' + GRAVITY + ' m/s² 是重力加速度。<br><br>';
+
+  var tTop = vy0 / GRAVITY;
+  var hMax = vy0 * vy0 / (2 * GRAVITY);
+  html += '到达最高点的时间 t_top = vy₀/g = ' + vy0.toFixed(2) + '/' + GRAVITY + ' = <strong>' + tTop.toFixed(2) + ' s</strong><br>';
+  html += '理论最大高度 H = vy₀²/(2g) = ' + (vy0*vy0).toFixed(2) + '/' + (2*GRAVITY).toFixed(1) + ' = <strong>' + hMax.toFixed(2) + ' m</strong><br>';
+  if(rec.wind !== 0){
+    var xAtTop = vx0 * tTop + 0.5 * rec.wind * tTop * tTop;
+    html += '最高点时水平位移 x(t_top) = ' + xAtTop.toFixed(2) + ' m（受风力影响）<br>';
+  }
+  html += '</div></div>';
+
+  html += '<div class="review-section"><div class="rs-title">参数反馈</div><div class="rs-body">';
+  if(rec.hit){
+    html += '<div class="success-note">🎯 命中分析：在角度 ' + rec.angle + '°、速度 ' + rec.speed + ' m/s';
+    if(rec.wind !== 0) html += '、风速 ' + rec.wind + ' m/s²';
+    html += ' 的条件下，篮球成功穿过篮筐。实际飞行 ' + rec.flightTime.toFixed(2) + ' 秒，最高 ' + rec.maxH.toFixed(1) + ' 米。</div>';
+  } else {
+    var hm = hoopM();
+    var dx = rec.range - (hm.x + hm.w/2);
+    html += '<div class="error-note">❌ 偏差分析：篮球落点距篮筐中心水平偏移约 ' + dx.toFixed(1) + ' 米。';
+    if(dx > 2) html += '偏右较多，可尝试减小角度或速度。';
+    else if(dx < -2) html += '偏左较多，可尝试增大角度或速度。';
+    else html += '差距不大，微调角度或速度即可。';
+    html += '</div>';
+  }
+  html += '</div></div>';
+
+  if(rec.errors && rec.errors.length){
+    html += '<div class="review-section"><div class="rs-title">异常与处理意见</div><div class="rs-body">';
+    rec.errors.forEach(function(e){
+      var full = ErrorCode[e.code];
+      html += '<h3>⚠ ' + e.label + '（' + e.code + '）</h3>';
+      html += '<p>' + (full ? full.description : "") + '</p>';
+      html += '<div class="suggestion">💡 处理意见：' + (full ? full.suggestion : "请检查参数") + '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  html += '<div class="review-section"><div class="rs-title">课堂讨论提示</div><div class="rs-body">';
+  html += '1. 如果只改变角度，不改变速度和风，最佳角度大约是多少？试试 30°、45°、60° 对比。<br>';
+  html += '2. 逆风（负风速）对轨迹的影响和顺风有何不同？轨迹形状一样吗？<br>';
+  html += '3. 速度增大到原来的 2 倍，射程是否也变成 2 倍？为什么？<br>';
+  if(rec.wind !== 0){
+    html += '4. 本次实验风速 ' + rec.wind + ' m/s²，如果没有风，结果会怎样？<br>';
+  }
+  html += '</div></div>';
+
+  el.innerHTML = html;
+  document.getElementById("reviewModal").classList.add("active");
+}
+
+function closeReview(){
+  document.getElementById("reviewModal").classList.remove("active");
+}
+
+function openLastReview(){
+  var records = loadRecords();
+  if(!records.length){
+    document.getElementById("alertPanel").innerHTML = '<div class="alert alert-info">暂无实验记录可复盘</div>';
+    return;
+  }
+  openReview(records[records.length - 1].id);
+}
+
+function clearHistory(){
+  if(confirm("确定要清空所有实验记录吗？此操作不可撤销。")){
+    localStorage.removeItem(STORAGE_KEY);
+    renderHistory();
+    document.getElementById("alertPanel").innerHTML = '<div class="alert alert-info">实验记录已清空</div>';
+  }
+}
+
+function onSliderChange(){
+  angle = parseFloat(document.getElementById("angleSlider").value);
+  speed = parseFloat(document.getElementById("speedSlider").value);
+  wind = parseFloat(document.getElementById("windSlider").value);
+  document.getElementById("angleVal").textContent = angle + "°";
+  document.getElementById("speedVal").textContent = speed + " m/s";
+  document.getElementById("windVal").textContent = wind + " m/s²";
+  if(gameState === STATE.IDLE || gameState === STATE.AIMING || gameState === STATE.RESULT){
+    showAlerts(checkErrors(angle, speed, wind));
+    drawScene();
+  }
+}
+
+function bindEvents(){
+  document.getElementById("angleSlider").addEventListener("input", onSliderChange);
+  document.getElementById("speedSlider").addEventListener("input", onSliderChange);
+  document.getElementById("windSlider").addEventListener("input", onSliderChange);
+  document.getElementById("btnShoot").addEventListener("click", startShoot);
+  document.getElementById("btnPause").addEventListener("click", pauseGame);
+  document.getElementById("btnReset").addEventListener("click", resetGame);
+  document.getElementById("btnReview").addEventListener("click", openLastReview);
+  document.getElementById("btnClearHistory").addEventListener("click", clearHistory);
+  document.getElementById("closeReview").addEventListener("click", closeReview);
+  document.getElementById("reviewModal").addEventListener("click", function(e){
+    if(e.target === this) closeReview();
+  });
+  window.addEventListener("resize", function(){
+    initCanvas();
+    drawScene();
+  });
+}
+
+function init(){
+  initCanvas();
+  detectDuplicateComponents();
+  updateStateLabel();
+  showAlerts(checkErrors(angle, speed, wind));
+  renderHistory();
+  bindEvents();
+  drawScene();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>
