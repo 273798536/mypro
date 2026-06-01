@@ -1,0 +1,26 @@
+[
+  {
+    "report_id": "RP-2026-001",
+    "scenario": "双11全品类",
+    "run_at": "2026-05-28T09:00:00",
+    "rule_ids": ["R001", "R002", "R003", "R004"],
+    "result_summary": {"valid_combinations": 4, "capped": false},
+    "notes": "正常完成"
+  },
+  {
+    "report_id": "RP-2026-002",
+    "scenario": "618活动初版",
+    "run_at": "2026-05-30T11:00:00",
+    "rule_ids": ["R001", "R002", "R003", "R004", "R005"],
+    "result_summary": {"valid_combinations": 7, "capped": false},
+    "notes": "R005为晚补规则，已补充录入"
+  },
+  {
+    "report_id": "RP-2026-003",
+    "scenario": "",
+    "run_at": "2026-05-31T15:00:00",
+    "rule_ids": ["R001", "R002", "R003", "R006", "R007"],
+    "result_summary": null,
+    "notes": "缺scenario和R007的rule_id，报告不完整"
+  }
+]

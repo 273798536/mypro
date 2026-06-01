@@ -1,0 +1,32 @@
+[
+  {
+    "category_id": "clothing",
+    "name": "服饰",
+    "parent": null,
+    "active": true
+  },
+  {
+    "category_id": "shoes",
+    "name": "鞋帽",
+    "parent": "clothing",
+    "active": true
+  },
+  {
+    "category_id": "food",
+    "name": "食品",
+    "parent": null,
+    "active": true
+  },
+  {
+    "category_id": "electronics",
+    "name": "电子数码",
+    "parent": null,
+    "active": true
+  },
+  {
+    "category_id": "home",
+    "name": "家居",
+    "parent": null,
+    "active": true
+  }
+]
