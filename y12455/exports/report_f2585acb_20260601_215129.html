@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>量子密钥护送队 — 课堂报告</title>
+<style>
+:root {
+  --bg: #fafbfc; --fg: #1a1a2e; --muted: #6b7280;
+  --accent: #4361ee; --danger: #ef4444; --safe: #10b981;
+  --card: #ffffff; --border: #e5e7eb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+       background: var(--bg); color: var(--fg); padding: 2rem; line-height: 1.7; }
+.container { max-width: 900px; margin: 0 auto; }
+h1 { font-size: 1.6rem; margin-bottom: 0.3rem; }
+h2 { font-size: 1.25rem; margin: 2rem 0 0.8rem; border-left: 4px solid var(--accent); padding-left: 0.6rem; }
+h3 { font-size: 1.05rem; margin: 1rem 0 0.4rem; }
+.meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+         padding: 1.2rem 1.5rem; margin-bottom: 1rem; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.stat { text-align: center; }
+.stat .num { font-size: 1.8rem; font-weight: 700; }
+.stat .label { font-size: 0.85rem; color: var(--muted); }
+.danger { color: var(--danger); }
+.safe { color: var(--safe); }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; }
+th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: center; }
+th { background: #f3f4f6; font-weight: 600; }
+.explain { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 0.8rem 1rem;
+            margin-top: 0.5rem; font-size: 0.9rem; border-radius: 0 6px 6px 0; }
+.event-step { padding: 0.5rem 0; border-bottom: 1px dashed var(--border); font-size: 0.88rem; }
+.event-step:last-child { border-bottom: none; }
+.step-label { display: inline-block; background: var(--accent); color: #fff;
+              border-radius: 4px; padding: 0 6px; font-size: 0.78rem; margin-right: 6px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; }
+.tag-danger { background: #fef2f2; color: var(--danger); }
+.tag-safe { background: #ecfdf5; color: var(--safe); }
+.tag-warn { background: #fffbeb; color: #d97706; }
+.key-display { font-family: "SF Mono", "Fira Code", monospace; letter-spacing: 2px;
+               background: #f8f9fa; padding: 0.6rem 1rem; border-radius: 6px; word-break: break-all; }
+.summary-box { background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+               border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
+@media print { body { padding: 0; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>量子密钥护送队 — 课堂报告</h1>
+<p class="meta">
+  会话 f2585acb &nbsp;|&nbsp;
+  生成时间 2026-06-01 21:51:29 &nbsp;|&nbsp;
+  用时 0.0s
+</p>
+
+<div class="card grid2">
+  <div class="stat"><div class="num">8</div><div class="label">发送光子</div></div>
+  <div class="stat"><div class="num">2</div><div class="label">筛选保留</div></div>
+  <div class="stat"><div class="num">1</div><div class="label">测试样本</div></div>
+  <div class="stat"><div class="num">1</div><div class="label">最终密钥位</div></div>
+</div>
+
+<div class="card">
+  <h3>误码率判定</h3>
+  <p>QBER = <strong class="safe">0.00%</strong>，
+     阈值 = <strong>11.00%</strong>
+     <span class="tag tag-safe">
+       安全
+     </span>
+  </p>
+  <p>测试样本中 0 位不一致。</p>
+</div>
+
+<div class="card">
+  <h3>最终密钥</h3>
+  <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0.3rem;">Alice 端</p>
+  <div class="key-display">1</div>
+  <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0 0.3rem;">Bob 端</p>
+  <div class="key-display">1</div>
+  <p style="margin-top:0.5rem;">
+    密钥一致性：<span class="tag tag-safe">
+      一致
+    </span>
+  </p>
+</div>
+
+<h2>分类错误分析</h2>
+<div class="summary-box">
+<strong>总评：</strong>测量基混淆 6 次；误码率 0.00% 在安全范围内；重复传输 6 对。
+</div>
+<div class="card">
+<h3>1. 测量基混淆 <span class="tag tag-danger">
+  发现 6 次
+</span></h3>
+<div class="explain">当测量基与编码基不一致时，量子态被投影到错误的基上，测量结果有 50% 概率与原始比特不同。这是 BB84 协议检测窃听的核心原理：窃听者不知道发送方的基，随机选基测量时会引入可检测的误码。</div>
+<ul style="margin:0.5rem 0 0 1.2rem;font-size:0.88rem;"><li>光子 #0：接收者(Bob)用了直线基 (+)测量，而发送方(Alice)用的是对角基 (×)。基不匹配时，测量结果有 50% 概率翻转，这是量子力学的基本性质。</li><li>光子 #1：接收者(Bob)用了直线基 (+)测量，而发送方(Alice)用的是对角基 (×)。基不匹配时，测量结果有 50% 概率翻转，这是量子力学的基本性质。</li><li>光子 #2：接收者(Bob)用了直线基 (+)测量，而发送方(Alice)用的是对角基 (×)，比特从 1 翻转为 0。基不匹配时，测量结果有 50% 概率翻转，这是量子力学的基本性质。</li><li>光子 #3：接收者(Bob)用了直线基 (+)测量，而发送方(Alice)用的是对角基 (×)，比特从 0 翻转为 1。基不匹配时，测量结果有 50% 概率翻转，这是量子力学的基本性质。</li><li>光子 #5：接收者(Bob)用了直线基 (+)测量，而发送方(Alice)用的是对角基 (×)，比特从 0 翻转为 1。基不匹配时，测量结果有 50% 概率翻转，这是量子力学的基本性质。</li><li>光子 #7：接收者(Bob)用了直线基 (+)测量，而发送方(Alice)用的是对角基 (×)，比特从 0 翻转为 1。基不匹配时，测量结果有 50% 概率翻转，这是量子力学的基本性质。</li></ul>
+</div>
+<div class="card">
+<h3>2. 误码超限判定 <span class="tag tag-safe">
+  QBER 0.00% ≤ 11.00%
+</span></h3>
+<div class="explain">Alice 和 Bob 公开比较一部分筛选后的密钥来估算误码率 (QBER)。BB84 协议的安全阈值通常设为约 11%。超过阈值意味着信道中可能存在窃听者，因为窃听者的随机测量会引入约 25% 的额外误码。</div>
+<p style="margin-top:0.5rem;font-size:0.9rem;white-space:pre-line;">测试样本共 1 位，其中 0 位不一致。
+误码率 (QBER) = 0.00%，阈值 = 11.00%。
+误码率在安全范围内，信道可信。</p>
+<p style="font-size:0.85rem;color:var(--muted);">出错光子索引：无</p>
+</div>
+<div class="card">
+<h3>3. 重复传输检测 <span class="tag tag-warn">
+  发现 6 对
+</span></h3>
+<div class="explain">如果两个光子的编码完全相同（比特、基、量子态），可能被窃听者截获一个、放行一个，实现无干扰窃听。实际 QKD 系统中会用随机序列号和时间戳标记每个光子，接收方检测到重复时会触发警报。</div>
+<ul style="margin:0.5rem 0 0 1.2rem;font-size:0.88rem;"><li>光子 #1 与 #0 编码完全相同（比特=1，基=对角基 (×)，态=|−⟩）。重复传输可能被窃听者利用做重放攻击，在真实系统中需要用序列号或时间戳标记。</li><li>光子 #2 与 #0 编码完全相同（比特=1，基=对角基 (×)，态=|−⟩）。重复传输可能被窃听者利用做重放攻击，在真实系统中需要用序列号或时间戳标记。</li><li>光子 #4 与 #0 编码完全相同（比特=1，基=对角基 (×)，态=|−⟩）。重复传输可能被窃听者利用做重放攻击，在真实系统中需要用序列号或时间戳标记。</li><li>光子 #5 与 #3 编码完全相同（比特=0，基=对角基 (×)，态=|+⟩）。重复传输可能被窃听者利用做重放攻击，在真实系统中需要用序列号或时间戳标记。</li><li>光子 #6 与 #0 编码完全相同（比特=1，基=对角基 (×)，态=|−⟩）。重复传输可能被窃听者利用做重放攻击，在真实系统中需要用序列号或时间戳标记。</li><li>光子 #7 与 #3 编码完全相同（比特=0，基=对角基 (×)，态=|+⟩）。重复传输可能被窃听者利用做重放攻击，在真实系统中需要用序列号或时间戳标记。</li></ul>
+</div>
+
+<h2>密钥生成追踪</h2>
+<p style="color:var(--muted);font-size:0.88rem;margin-bottom:0.5rem;">
+  以下表格展示每一颗光子从发送到筛选的完整路径，可以追溯密钥的每一位是怎么来的。
+</p>
+<div class="card" style="overflow-x:auto;">
+<table>
+<tr><th>#</th><th>Alice比特</th><th>Alice基</th><th>量子态</th>
+    <th>拦截(Eve)</th><th>Bob比特</th><th>Bob基</th><th>筛选</th><th>误码</th></tr>
+<tr>
+<td>0</td>
+<td>1</td><td>对角基(×)</td><td>|−⟩</td>
+<td>—</td>
+<td>1</td><td>直线基(+)</td>
+<td><span class="tag" style="background:#f3f4f6;color:#9ca3af;">丢弃</span></td>
+<td></td>
+</tr><tr>
+<td>1</td>
+<td>1</td><td>对角基(×)</td><td>|−⟩</td>
+<td>—</td>
+<td>1</td><td>直线基(+)</td>
+<td><span class="tag" style="background:#f3f4f6;color:#9ca3af;">丢弃</span></td>
+<td></td>
+</tr><tr>
+<td>2</td>
+<td>1</td><td>对角基(×)</td><td>|−⟩</td>
+<td>—</td>
+<td>0</td><td>直线基(+)</td>
+<td><span class="tag" style="background:#f3f4f6;color:#9ca3af;">丢弃</span></td>
+<td></td>
+</tr><tr>
+<td>3</td>
+<td>0</td><td>对角基(×)</td><td>|+⟩</td>
+<td>—</td>
+<td>1</td><td>直线基(+)</td>
+<td><span class="tag" style="background:#f3f4f6;color:#9ca3af;">丢弃</span></td>
+<td></td>
+</tr><tr>
+<td>4</td>
+<td>1</td><td>对角基(×)</td><td>|−⟩</td>
+<td>—</td>
+<td>1</td><td>对角基(×)</td>
+<td><span class="tag tag-safe">密钥</span></td>
+<td></td>
+</tr><tr>
+<td>5</td>
+<td>0</td><td>对角基(×)</td><td>|+⟩</td>
+<td>—</td>
+<td>1</td><td>直线基(+)</td>
+<td><span class="tag" style="background:#f3f4f6;color:#9ca3af;">丢弃</span></td>
+<td></td>
+</tr><tr>
+<td>6</td>
+<td>1</td><td>对角基(×)</td><td>|−⟩</td>
+<td>—</td>
+<td>1</td><td>对角基(×)</td>
+<td><span class="tag tag-warn">测试</span></td>
+<td></td>
+</tr><tr>
+<td>7</td>
+<td>0</td><td>对角基(×)</td><td>|+⟩</td>
+<td>—</td>
+<td>1</td><td>直线基(+)</td>
+<td><span class="tag" style="background:#f3f4f6;color:#9ca3af;">丢弃</span></td>
+<td></td>
+</tr>
+</table>
+</div>
+
+<h2>事件回放</h2>
+<p style="color:var(--muted);font-size:0.88rem;margin-bottom:0.5rem;">
+  按时间顺序回放本局所有关键事件，展示协议执行的全过程。
+</p>
+<div class="card"><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #0：比特=1，基=对角基(×)，态=|−⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用直线基(+)测量，结果=1<br><span class="step-label" style="background:#9ca3af;">丢弃</span> 基不一致，丢弃</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #1：比特=1，基=对角基(×)，态=|−⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用直线基(+)测量，结果=1<br><span class="step-label" style="background:#9ca3af;">丢弃</span> 基不一致，丢弃<br><span class="step-label" style="background:#ef4444;">重复</span> 与光子 #0 编码相同</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #2：比特=1，基=对角基(×)，态=|−⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用直线基(+)测量，结果=0<br><span class="step-label" style="background:#9ca3af;">丢弃</span> 基不一致，丢弃<br><span class="step-label" style="background:#ef4444;">重复</span> 与光子 #0 编码相同</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #3：比特=0，基=对角基(×)，态=|+⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用直线基(+)测量，结果=1<br><span class="step-label" style="background:#9ca3af;">丢弃</span> 基不一致，丢弃</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #4：比特=1，基=对角基(×)，态=|−⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用对角基(×)测量，结果=1<br><span class="step-label" style="background:#10b981;">密钥</span> 该位进入最终密钥<br><span class="step-label" style="background:#ef4444;">重复</span> 与光子 #0 编码相同</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #5：比特=0，基=对角基(×)，态=|+⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用直线基(+)测量，结果=1<br><span class="step-label" style="background:#9ca3af;">丢弃</span> 基不一致，丢弃<br><span class="step-label" style="background:#ef4444;">重复</span> 与光子 #3 编码相同</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #6：比特=1，基=对角基(×)，态=|−⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用对角基(×)测量，结果=1<br><span class="step-label" style="background:#d97706;">测试</span> 公开比对：一致<br><span class="step-label" style="background:#ef4444;">重复</span> 与光子 #0 编码相同</div><div class="event-step"><span class="step-label">发送</span> Alice 发送光子 #7：比特=0，基=对角基(×)，态=|+⟩<br><span class="step-label" style="background:#6366f1;">测量</span> Bob 用直线基(+)测量，结果=1<br><span class="step-label" style="background:#9ca3af;">丢弃</span> 基不一致，丢弃<br><span class="step-label" style="background:#ef4444;">重复</span> 与光子 #3 编码相同</div></div>
+
+</div>
+</body>
+</html>

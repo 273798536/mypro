@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量子密钥护送队</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>量子密钥护送队</h1>
+    <p class="subtitle">BB84 量子密钥分发科普教学 — 玩完就知道错在哪</p>
+  </header>
+
+  <div id="phase-setup" class="phase-panel">
+    <div class="card">
+      <h2>参数设置</h2>
+      <div class="form-row">
+        <label>光子数量
+          <select id="inp-photons">
+            <option value="8">8（快速演示）</option>
+            <option value="16" selected>16（标准）</option>
+            <option value="32">32（较多）</option>
+            <option value="64">64（完整）</option>
+          </select>
+        </label>
+        <label>误码阈值
+          <select id="inp-ber">
+            <option value="0.05">5%（严格）</option>
+            <option value="0.11" selected>11%（标准）</option>
+            <option value="0.20">20%（宽松）</option>
+          </select>
+        </label>
+      </div>
+      <div class="btn-group">
+        <button class="btn primary" onclick="startGame()">开始传输</button>
+        <button class="btn" onclick="runAuto()">一键演示（自动）</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="phase-alice" class="phase-panel" style="display:none;">
+    <div class="card">
+      <div class="phase-header">
+        <span class="phase-badge alice">Alice</span>
+        <span>发送光子</span>
+      </div>
+      <p class="hint">Alice 随机选择比特和编码基，将每个光子发送到量子信道中。</p>
+      <div id="alice-table" class="photon-table"></div>
+      <div class="btn-group">
+        <button class="btn primary" onclick="goToEve()">下一步：选择是否拦截</button>
+        <button class="btn" onclick="skipEve()">不拦截，直接到 Bob</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="phase-eve" class="phase-panel" style="display:none;">
+    <div class="card">
+      <div class="phase-header">
+        <span class="phase-badge eve">Eve</span>
+        <span>拦截测量</span>
+      </div>
+      <p class="hint">选择要拦截的光子，以及用什么基测量。基不匹配时有 50% 概率翻转比特。</p>
+      <div id="eve-controls" class="photon-table"></div>
+      <div class="btn-group">
+        <button class="btn primary" onclick="submitEve()">确认拦截选择</button>
+        <button class="btn" onclick="skipEve()">跳过拦截</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="phase-bob" class="phase-panel" style="display:none;">
+    <div class="card">
+      <div class="phase-header">
+        <span class="phase-badge bob">Bob</span>
+        <span>接收测量</span>
+      </div>
+      <p class="hint">Bob 随机选择测量基。基匹配时光子信息准确，不匹配时有 50% 概率翻转。</p>
+      <div id="bob-table" class="photon-table"></div>
+      <div class="btn-group">
+        <button class="btn primary" onclick="doSift()">进行基比对和筛选</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="phase-analysis" class="phase-panel" style="display:none;">
+    <div class="card">
+      <div class="phase-header">
+        <span class="phase-badge analysis">分析</span>
+        <span>分类错误报告</span>
+      </div>
+      <div id="analysis-content"></div>
+      <div class="btn-group">
+        <button class="btn primary" onclick="exportReport()">导出课堂报告</button>
+        <button class="btn" onclick="restartGame()">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="phase-done" class="phase-panel" style="display:none;">
+    <div class="card">
+      <h2>报告已生成</h2>
+      <p id="export-info"></p>
+      <div class="btn-group">
+        <a id="report-link" class="btn primary" href="#" target="_blank">打开报告</a>
+        <button class="btn" onclick="restartGame()">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-bar">
+    <span id="status-text">就绪</span>
+    <span id="session-id"></span>
+  </div>
+
+  <div id="pause-bar" style="display:none;">
+    <span>⏸ 已暂停</span>
+    <button class="btn small" onclick="resumeGame()">继续</button>
+    <button class="btn small danger" onclick="restartGame()">重新开始</button>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
