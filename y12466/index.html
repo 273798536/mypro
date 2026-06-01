@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐版权法庭战</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🎵 音乐版权法庭战 ⚖️</h1>
+            <div class="game-status">
+                <div class="status-item">
+                    <span class="label">当前案件:</span>
+                    <span id="current-case" class="value">未开始</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">计时:</span>
+                    <span id="timer" class="value">00:00</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">得分:</span>
+                    <span id="score" class="value">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">进度:</span>
+                    <span id="progress" class="value">0/0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <section class="left-panel">
+                <h2>📁 待分析证据</h2>
+                <div id="evidence-pool" class="evidence-pool">
+                    <p class="empty-hint">点击"开始游戏"加载案件证据</p>
+                </div>
+            </section>
+
+            <section class="center-panel">
+                <h2>🧩 证据链拼接区</h2>
+                <div class="authorization-zones">
+                    <div class="zone" data-type="sampling">
+                        <div class="zone-header">
+                            <span class="zone-icon">🎼</span>
+                            <span class="zone-title">采样授权</span>
+                            <span class="zone-desc">使用他人音乐片段</span>
+                        </div>
+                        <div class="zone-slots" data-type="sampling">
+                            <div class="slot" data-slot="audio" data-type="sampling">
+                                <span class="slot-label">歌曲片段</span>
+                            </div>
+                            <div class="slot" data-slot="contract" data-type="sampling">
+                                <span class="slot-label">授权合同</span>
+                            </div>
+                            <div class="slot" data-slot="notice" data-type="sampling">
+                                <span class="slot-label">平台通知</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zone" data-type="adaptation">
+                        <div class="zone-header">
+                            <span class="zone-icon">🎹</span>
+                            <span class="zone-title">改编授权</span>
+                            <span class="zone-desc">重新编曲/填词</span>
+                        </div>
+                        <div class="zone-slots" data-type="adaptation">
+                            <div class="slot" data-slot="audio" data-type="adaptation">
+                                <span class="slot-label">歌曲片段</span>
+                            </div>
+                            <div class="slot" data-slot="contract" data-type="adaptation">
+                                <span class="slot-label">授权合同</span>
+                            </div>
+                            <div class="slot" data-slot="notice" data-type="adaptation">
+                                <span class="slot-label">平台通知</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="zone" data-type="public-broadcast">
+                        <div class="zone-header">
+                            <span class="zone-icon">📻</span>
+                            <span class="zone-title">公播授权</span>
+                            <span class="zone-desc">公共场所播放</span>
+                        </div>
+                        <div class="zone-slots" data-type="public-broadcast">
+                            <div class="slot" data-slot="audio" data-type="public-broadcast">
+                                <span class="slot-label">歌曲片段</span>
+                            </div>
+                            <div class="slot" data-slot="contract" data-type="public-broadcast">
+                                <span class="slot-label">授权合同</span>
+                            </div>
+                            <div class="slot" data-slot="notice" data-type="public-broadcast">
+                                <span class="slot-label">平台通知</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="right-panel">
+                <h2>⚠️ 需复核案件</h2>
+                <div class="review-zones">
+                    <div class="review-zone" data-review="expired">
+                        <div class="review-header">
+                            <span class="review-icon">📅</span>
+                            <span class="review-title">授权过期</span>
+                        </div>
+                        <div class="review-slot" data-review="expired">
+                            <span class="slot-label">拖入过期证据</span>
+                        </div>
+                    </div>
+                    <div class="review-zone" data-review="exceeded">
+                        <div class="review-header">
+                            <span class="review-icon">⚠️</span>
+                            <span class="review-title">采样超限</span>
+                        </div>
+                        <div class="review-slot" data-review="exceeded">
+                            <span class="slot-label">拖入超限证据</span>
+                        </div>
+                    </div>
+                    <div class="review-zone" data-review="confusion">
+                        <div class="review-header">
+                            <span class="review-icon">🔄</span>
+                            <span class="review-title">同名曲混淆</span>
+                        </div>
+                        <div class="review-slot" data-review="confusion">
+                            <span class="slot-label">拖入混淆证据</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="case-info">
+                    <h3>📋 案件详情</h3>
+                    <div id="case-description" class="case-description">
+                        <p>开始游戏后显示案件详情</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="game-footer">
+            <div class="controls">
+                <button id="btn-start" class="btn btn-primary">🎮 开始游戏</button>
+                <button id="btn-pause" class="btn btn-secondary" disabled>⏸️ 暂停</button>
+                <button id="btn-reset" class="btn btn-warning">🔄 重开</button>
+                <button id="btn-submit" class="btn btn-success" disabled>✅ 结算</button>
+                <button id="btn-review" class="btn btn-info" disabled>📊 复盘</button>
+                <button id="btn-export" class="btn btn-export" disabled>📥 导出成绩</button>
+                <button id="btn-help" class="btn btn-help">❓ 游戏说明</button>
+            </div>
+            <div id="message" class="message"></div>
+        </footer>
+    </div>
+
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>📖 游戏说明</h2>
+            <div class="help-content">
+                <h3>🎯 游戏目标</h3>
+                <p>作为版权法庭的法官助理，你需要将证据正确归类到对应的授权类型中，并识别出需要老师复核的特殊案件。</p>
+                
+                <h3>📚 三种授权类型</h3>
+                <ul>
+                    <li><strong>🎼 采样授权 (Sampling)</strong> - 在新作品中直接使用他人音乐片段（通常8小节以上）</li>
+                    <li><strong>🎹 改编授权 (Adaptation)</strong> - 对原有音乐进行重新编曲、填词或风格改编</li>
+                    <li><strong>📻 公播授权 (Public Broadcast)</strong> - 在商场、餐厅、直播间等公共场所播放音乐</li>
+                </ul>
+
+                <h3>⚠️ 需复核的特殊案件</h3>
+                <ul>
+                    <li><strong>📅 授权过期</strong> - 授权合同已过有效期，<span class="highlight-red">绝不能混入正常结果</span></li>
+                    <li><strong>⚠️ 采样超限</strong> - 使用的音乐片段超过授权约定的长度（如授权8秒实际用了15秒）</li>
+                    <li><strong>🔄 同名曲混淆</strong> - 两首歌曲同名但实际不是同一首，需要仔细辨别</li>
+                </ul>
+
+                <h3>🎮 操作方式</h3>
+                <ul>
+                    <li>点击左侧证据卡片查看详情</li>
+                    <li>拖拽证据卡片到对应的授权区域槽位</li>
+                    <li>特殊案件（过期、超限、混淆）拖到右侧复核区</li>
+                    <li>证据可以在槽位间拖动调整</li>
+                    <li>双击证据卡片可放回待分析区</li>
+                </ul>
+
+                <h3>📝 计分规则</h3>
+                <ul>
+                    <li>正确归类证据 +10分</li>
+                    <li>错误归类 -5分</li>
+                    <li>正确识别特殊案件 +15分</li>
+                    <li>漏掉特殊案件 -10分</li>
+                    <li>授权过期混入正常结果 <span class="highlight-red">-20分</span></li>
+                </ul>
+
+                <h3>💡 常见麻烦样例</h3>
+                <div class="example-box">
+                    <p><strong>样例1：采样超限</strong></p>
+                    <p>合同约定可采样8秒，但歌曲片段实际使用了15秒 → 拖入"采样超限"复核区</p>
+                </div>
+                <div class="example-box">
+                    <p><strong>样例2：授权过期</strong></p>
+                    <p>授权合同有效期至2023年12月，但使用发生在2024年 → 拖入"授权过期"复核区，<span class="highlight-red">不能放入正常授权区</span></p>
+                </div>
+                <div class="example-box">
+                    <p><strong>样例3：同名曲混淆</strong></p>
+                    <p>歌曲名都是《夜曲》，但一个是周杰伦的，一个是肖邦的 → 拖入"同名曲混淆"复核区</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>🏆 游戏结算</h2>
+            <div id="result-content" class="result-content"></div>
+        </div>
+    </div>
+
+    <div id="review-modal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close">&times;</span>
+            <h2>📊 复盘分析</h2>
+            <div id="review-content" class="review-content"></div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
