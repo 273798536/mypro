@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-800 min-h-screen;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif-sc font-semibold;
+  }
+}
+
+@layer components {
+  .sudoku-cell {
+    @apply relative flex items-center justify-center font-mono-num text-lg font-medium transition-all duration-200;
+  }
+
+  .sudoku-cell:hover {
+    @apply z-10 scale-105 shadow-md;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-sudoku-primary text-white rounded-md hover:bg-sudoku-dark transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-all duration-200 shadow-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md border border-gray-100 p-5;
+  }
+
+  .card-header {
+    @apply font-serif-sc text-lg font-semibold text-sudoku-primary mb-3 pb-2 border-b border-gray-100;
+  }
+}
+
+@layer utilities {
+  .content-auto {
+    content-visibility: auto;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+}
