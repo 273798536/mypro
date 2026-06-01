@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #0F172A;
+  color: #E2E8F0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+/* 表格斑马纹 */
+.table-zebra tr:nth-child(even) {
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+/* 重复行闪烁效果 */
+.duplicate-row {
+  animation: duplicatePulse 2s ease-in-out infinite;
+}
+
+@keyframes duplicatePulse {
+  0%, 100% {
+    background-color: rgba(220, 38, 38, 0.1);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.3);
+  }
+}
+
+/* 3D画布容器 */
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 数据缺口提示条 */
+.data-gap-notice {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* 卡片边框发光效果 */
+.card-glow:hover {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* 状态标签样式 */
+.status-badge {
+  @apply px-2 py-0.5 rounded text-xs font-medium;
+}
+
+.status-normal {
+  @apply bg-status-normal/20 text-status-normal border border-status-normal/30;
+}
+
+.status-duplicate {
+  @apply bg-status-duplicate/20 text-status-duplicate border border-status-duplicate/30;
+}
+
+.status-missing {
+  @apply bg-status-missing/20 text-status-missing border border-status-missing/30;
+}
+
+.status-late {
+  @apply bg-status-late/20 text-status-late border border-status-late/30;
+}
