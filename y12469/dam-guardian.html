@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>偏微分水坝守卫</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--panel:#111827;--border:#1e293b;--accent:#3b82f6;--accent2:#10b981;--warn:#f59e0b;--danger:#ef4444;--text:#e2e8f0;--muted:#64748b;--dam:#374151;--water:#1d4ed8;--source:#f59e0b;--drain:#8b5cf6}
+body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;overflow:hidden;height:100vh}
+#app{display:flex;height:100vh}
+#sidebar{width:320px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.panel-section{padding:12px 16px;border-bottom:1px solid var(--border)}
+.panel-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tool-btn{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 6px;border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s;text-align:center}
+.tool-btn:hover{border-color:var(--accent);background:#1a2332}
+.tool-btn.active{border-color:var(--accent);background:#1e3a5f;box-shadow:0 0 8px rgba(59,130,246,.3)}
+.tool-btn.danger{border-color:var(--danger);color:var(--danger)}
+.tool-btn.danger:hover{background:#2a1525}
+.slider-group{margin-bottom:10px}
+.slider-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:var(--muted)}
+.slider-label .val{color:var(--accent);font-weight:bold}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:var(--border);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer}
+.cfl-bar{height:6px;background:var(--border);border-radius:3px;margin-top:4px;position:relative;overflow:hidden}
+.cfl-fill{height:100%;border-radius:3px;transition:width .2s,background .2s}
+.card-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.card-item{background:var(--bg);border:1px solid var(--border);padding:6px 10px;border-radius:4px;font-size:11px;cursor:pointer;flex:1;text-align:center;transition:all .15s}
+.card-item:hover{border-color:var(--source)}
+.card-item.selected{border-color:var(--source);background:#2a2215;box-shadow:0 0 6px rgba(245,158,11,.3)}
+.card-item .card-type{font-weight:bold;margin-bottom:2px}
+.card-item .card-val{color:var(--source)}
+.action-btn{width:100%;padding:10px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:inherit;font-size:13px;font-weight:bold;border-radius:4px;cursor:pointer;margin-top:6px;transition:all .15s;letter-spacing:1px}
+.action-btn:hover{background:var(--accent);color:#fff}
+.action-btn.danger-btn{border-color:var(--danger);color:var(--danger)}
+.action-btn.danger-btn:hover{background:var(--danger);color:#fff}
+.action-btn.success-btn{border-color:var(--accent2);color:var(--accent2)}
+.action-btn.success-btn:hover{background:var(--accent2);color:#fff}
+#main{flex:1;display:flex;flex-direction:column;position:relative}
+#topbar{height:40px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:16px;font-size:12px}
+#topbar .stat{color:var(--muted)}
+#topbar .stat span{color:var(--text);font-weight:bold}
+#topbar .stat.warn span{color:var(--warn)}
+#topbar .stat.danger span{color:var(--danger)}
+#canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+canvas{border:1px solid var(--border);cursor:crosshair}
+#info-overlay{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(17,24,39,.9);border:1px solid var(--border);border-radius:6px;padding:8px 16px;font-size:11px;color:var(--muted);max-width:600px;text-align:center;pointer-events:none}
+#modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center}
+#modal-overlay.show{display:flex}
+#modal{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:24px;max-width:640px;width:90%;max-height:80vh;overflow-y:auto}
+#modal h2{font-size:16px;margin-bottom:12px;color:var(--accent)}
+#modal .modal-section{margin-bottom:16px}
+#modal .modal-section h3{font-size:13px;color:var(--warn);margin-bottom:6px}
+#modal .modal-section p{font-size:12px;line-height:1.6;color:var(--text)}
+#modal .modal-section code{background:var(--bg);padding:2px 6px;border-radius:3px;color:var(--accent2);font-size:11px}
+#modal .modal-section .formula{background:var(--bg);padding:8px 12px;border-radius:4px;border-left:3px solid var(--accent);margin:8px 0;font-size:12px}
+#modal .close-btn{margin-top:12px;width:100%;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px}
+#toast{position:fixed;top:60px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast-item{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 16px;font-size:12px;animation:slideIn .3s;max-width:320px}
+.toast-item.warn{border-color:var(--warn);color:var(--warn)}
+.toast-item.danger{border-color:var(--danger);color:var(--danger)}
+.toast-item.success{border-color:var(--accent2);color:var(--accent2)}
+.toast-item.info{border-color:var(--accent);color:var(--accent)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.scenario-grid{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
+.scenario-btn{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:11px;text-align:left;transition:all .15s}
+.scenario-btn:hover{border-color:var(--accent)}
+.scenario-btn .sname{font-weight:bold;color:var(--accent)}
+.scenario-btn .sdesc{color:var(--muted);margin-top:2px;font-size:10px}
+.bc-row{display:flex;gap:4px;margin-bottom:4px;font-size:10px;align-items:center}
+.bc-row label{width:30px;color:var(--muted)}
+.bc-row select{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:3px 4px;border-radius:3px;font-family:inherit;font-size:10px}
+.bc-row input{width:50px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:3px 4px;border-radius:3px;font-family:inherit;font-size:10px}
+.history-list{max-height:150px;overflow-y:auto;font-size:10px}
+.history-list::-webkit-scrollbar{width:3px}
+.history-list::-webkit-scrollbar-thumb{background:var(--border)}
+.history-item{padding:4px 6px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.history-item .htype{color:var(--accent)}
+.history-item .htime{color:var(--muted)}
+.export-btns{display:flex;gap:6px;margin-top:6px}
+.export-btns button{flex:1;padding:6px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:3px;cursor:pointer;font-family:inherit;font-size:10px}
+.export-btns button:hover{border-color:var(--accent)}
+#import-area{display:none;margin-top:6px}
+#import-area textarea{width:100%;height:60px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:3px;font-family:inherit;font-size:10px;padding:4px;resize:vertical}
+#import-area .import-actions{display:flex;gap:6px;margin-top:4px}
+#import-area .import-actions button{flex:1;padding:6px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:3px;cursor:pointer;font-family:inherit;font-size:10px}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="sidebar">
+<div class="panel-section">
+<div class="panel-title">偏微分水坝守卫</div>
+<div class="tool-grid">
+<button class="tool-btn active" data-tool="water" onclick="setTool('water')">水域</button>
+<button class="tool-btn" data-tool="dam" onclick="setTool('dam')">坝体</button>
+<button class="tool-btn" data-tool="source" onclick="setTool('source')">源项</button>
+<button class="tool-btn" data-tool="drain" onclick="setTool('drain')">汇项</button>
+<button class="tool-btn" data-tool="erase" onclick="setTool('erase')">擦除</button>
+<button class="tool-btn" data-tool="inspect" onclick="setTool('inspect')">检查</button>
+</div>
+</div>
+<div class="panel-section">
+<div class="panel-title">时间步控制</div>
+<div class="slider-group">
+<div class="slider-label"><span>Δt (时间步长)</span><span class="val" id="dt-val">0.10</span></div>
+<input type="range" id="dt-slider" min="0.01" max="0.50" step="0.01" value="0.10" oninput="updateDt(this.value)">
+</div>
+<div class="slider-group">
+<div class="slider-label"><span>α (扩散系数)</span><span class="val" id="alpha-val">1.00</span></div>
+<input type="range" id="alpha-slider" min="0.10" max="5.00" step="0.10" value="1.00" oninput="updateAlpha(this.value)">
+</div>
+<div class="cfl-bar"><div class="cfl-fill" id="cfl-fill"></div></div>
+<div style="font-size:10px;color:var(--muted);margin-top:4px">
+CFL比: <span id="cfl-ratio">0.40</span> | 临界Δt: <span id="cfl-critical">0.25</span>
+</div>
+</div>
+<div class="panel-section">
+<div class="panel-title">源项卡牌</div>
+<div class="card-row">
+<div class="card-item" data-card="s1" onclick="selectCard('s1')"><div class="card-type">恒源</div><div class="card-val">+2.0</div></div>
+<div class="card-item" data-card="s2" onclick="selectCard('s2')"><div class="card-type">脉冲</div><div class="card-val">+5.0</div></div>
+<div class="card-item" data-card="s3" onclick="selectCard('s3')"><div class="card-type">振荡</div><div class="card-val">±3.0</div></div>
+</div>
+<div class="card-row">
+<div class="card-item" data-card="d1" onclick="selectCard('d1')"><div class="card-type">恒汇</div><div class="card-val">-2.0</div></div>
+<div class="card-item" data-card="d2" onclick="selectCard('d2')"><div class="card-type">泄漏</div><div class="card-val">-4.0</div></div>
+</div>
+<div style="font-size:10px;color:var(--muted);margin-top:4px" id="card-hint">点击卡牌选中，再点击网格放置</div>
+</div>
+<div class="panel-section">
+<div class="panel-title">边界条件</div>
+<div class="bc-row"><label>上</label><select id="bc-top" onchange="updateBC('top',this.value)"><option value="dirichlet">Dirichlet</option><option value="neumann">Neumann</option><option value="inverted">⚠ 反设</option></select><input id="bc-top-val" type="number" value="0" step="0.5" onchange="updateBCVal('top',this.value)"></div>
+<div class="bc-row"><label>下</label><select id="bc-bottom" onchange="updateBC('bottom',this.value)"><option value="dirichlet">Dirichlet</option><option value="neumann">Neumann</option><option value="inverted">⚠ 反设</option></select><input id="bc-bottom-val" type="number" value="0" step="0.5" onchange="updateBCVal('bottom',this.value)"></div>
+<div class="bc-row"><label>左</label><select id="bc-left" onchange="updateBC('left',this.value)"><option value="dirichlet">Dirichlet</option><option value="neumann">Neumann</option><option value="inverted">⚠ 反设</option></select><input id="bc-left-val" type="number" value="5" step="0.5" onchange="updateBCVal('left',this.value)"></div>
+<div class="bc-row"><label>右</label><select id="bc-right" onchange="updateBC('right',this.value)"><option value="dirichlet">Dirichlet</option><option value="neumann">Neumann</option><option value="inverted">⚠ 反设</option></select><input id="bc-right-val" type="number" value="0" step="0.5" onchange="updateBCVal('right',this.value)"></div>
+<div style="font-size:10px;color:var(--muted);margin-top:4px">⚠ 反设: Dirichlet/Neumann互换，物理上不自洽</div>
+</div>
+<div class="panel-section">
+<div class="panel-title">模拟控制</div>
+<button class="action-btn success-btn" onclick="startSim()">▶ 开始推进</button>
+<button class="action-btn" onclick="stepSim()">⏭ 单步推进</button>
+<button class="action-btn danger-btn" onclick="stopSim()">⏹ 停止</button>
+<button class="action-btn" onclick="resetSim()">↺ 重置场量</button>
+</div>
+<div class="panel-section">
+<div class="panel-title">预设场景</div>
+<div class="scenario-grid">
+<button class="scenario-btn" onclick="loadScenario('basic')"><span class="sname">基础水坝</span><div class="sdesc">标准水坝截面，左侧高水位</div></button>
+<button class="scenario-btn" onclick="loadScenario('cfl_explode')"><span class="sname">⏱ 时间步爆炸</span><div class="sdesc">Δt超过CFL条件，观察数值发散</div></button>
+<button class="scenario-btn" onclick="loadScenario('bc_invert')"><span class="sname">⚠ 边界反设</span><div class="sdesc">Dirichlet/Neumann互换，物理不自洽</div></button>
+<button class="scenario-btn" onclick="loadScenario('source_dup')"><span class="sname">∬ 源项重复</span><div class="sdesc">重复源项卡叠加，辨识并移除</div></button>
+</div>
+</div>
+<div class="panel-section">
+<div class="panel-title">历史与导出</div>
+<div class="history-list" id="history-list"></div>
+<div class="export-btns">
+<button onclick="exportState()">导出JSON</button>
+<button onclick="showImport()">导入</button>
+<button onclick="verifySync()">校验同步</button>
+</div>
+<div id="import-area">
+<textarea id="import-text" placeholder="粘贴JSON..."></textarea>
+<div class="import-actions">
+<button onclick="importState()">确认导入</button>
+<button onclick="hideImport()">取消</button>
+</div>
+</div>
+</div>
+</div>
+<div id="main">
+<div id="topbar">
+<div class="stat">步数: <span id="step-count">0</span></div>
+<div class="stat">时间: <span id="sim-time">0.00</span></div>
+<div class="stat" id="max-u-stat">最大u: <span id="max-u">0.00</span></div>
+<div class="stat" id="stability-stat">稳定</div>
+<div style="flex:1"></div>
+<button class="tool-btn" onclick="showHelp()" style="font-size:11px">? 说明</button>
+</div>
+<div id="canvas-wrap">
+<canvas id="grid-canvas"></canvas>
+<div id="info-overlay">点击网格设置单元类型 | 拖动绘制 | 右键检查单元</div>
+</div>
+</div>
+</div>
+<div id="modal-overlay"><div id="modal"></div></div>
+<div id="toast"></div>
+
+<script>
+var GRID_W = 30, GRID_H = 20, DX = 1.0;
+var canvas, ctx, cellSize;
+var grid = [], u = [], uNext = [], sources = [];
+var currentTool = 'water';
+var selectedCard = null;
+var simRunning = false, simTimer = null;
+var stepCount = 0, simTime = 0;
+var dt = 0.10, alpha = 1.0;
+var exploded = false;
+var explosionInfo = null;
+var opHistory = [];
+var bc = {
+  top:    { type: 'dirichlet', val: 0 },
+  bottom: { type: 'dirichlet', val: 0 },
+  left:   { type: 'dirichlet', val: 5 },
+  right:  { type: 'dirichlet', val: 0 }
+};
+var cardDefs = {
+  s1: { name:'恒源', value: 2.0, type:'source', mode:'constant' },
+  s2: { name:'脉冲', value: 5.0, type:'source', mode:'pulse' },
+  s3: { name:'振荡', value: 3.0, type:'source', mode:'oscillate' },
+  d1: { name:'恒汇', value:-2.0, type:'drain',  mode:'constant' },
+  d2: { name:'泄漏', value:-4.0, type:'drain',  mode:'constant' }
+};
+var sourceCards = [];
+
+function initGrid() {
+  grid = []; u = []; uNext = []; sources = [];
+  for (var j = 0; j < GRID_H; j++) {
+    grid[j] = []; u[j] = []; uNext[j] = []; sources[j] = [];
+    for (var i = 0; i < GRID_W; i++) {
+      grid[j][i] = 0;
+      u[j][i] = 0;
+      uNext[j][i] = 0;
+      sources[j][i] = null;
+    }
+  }
+  sourceCards = [];
+  stepCount = 0; simTime = 0; exploded = false; explosionInfo = null;
+  updateStats();
+}
+
+function cflCritical() {
+  return DX * DX / (4 * alpha);
+}
+
+function cflRatio() {
+  return dt / cflCritical();
+}
+
+function updateCFL() {
+  var crit = cflCritical();
+  var ratio = cflRatio();
+  document.getElementById('dt-val').textContent = dt.toFixed(2);
+  document.getElementById('alpha-val').textContent = alpha.toFixed(2);
+  document.getElementById('cfl-critical').textContent = crit.toFixed(3);
+  document.getElementById('cfl-ratio').textContent = ratio.toFixed(2);
+  var fill = document.getElementById('cfl-fill');
+  var pct = Math.min(ratio * 100, 100);
+  fill.style.width = pct + '%';
+  if (ratio <= 0.8) fill.style.background = 'var(--accent2)';
+  else if (ratio <= 1.0) fill.style.background = 'var(--warn)';
+  else fill.style.background = 'var(--danger)';
+  var stat = document.getElementById('stability-stat');
+  if (ratio <= 1.0) {
+    stat.textContent = '稳定';
+    stat.style.color = 'var(--accent2)';
+  } else {
+    stat.textContent = '⚠ CFL违反';
+    stat.style.color = 'var(--danger)';
+  }
+}
+
+function updateDt(v) {
+  dt = parseFloat(v);
+  updateCFL();
+  addHistory('调参', 'Δt=' + dt.toFixed(2));
+}
+
+function updateAlpha(v) {
+  alpha = parseFloat(v);
+  updateCFL();
+  addHistory('调参', 'α=' + alpha.toFixed(2));
+}
+
+function updateBC(side, val) {
+  bc[side].type = val;
+  addHistory('边界', side + '=' + val);
+}
+
+function updateBCVal(side, val) {
+  bc[side].val = parseFloat(val);
+}
+
+function setTool(t) {
+  currentTool = t;
+  document.querySelectorAll('.tool-btn[data-tool]').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tool === t);
+  });
+}
+
+function selectCard(id) {
+  if (selectedCard === id) {
+    selectedCard = null;
+    document.querySelectorAll('.card-item').forEach(function(c) { c.classList.remove('selected'); });
+  } else {
+    selectedCard = id;
+    document.querySelectorAll('.card-item').forEach(function(c) {
+      c.classList.toggle('selected', c.dataset.card === id);
+    });
+  }
+}
+
+function getSourceValue(card, t) {
+  var def = cardDefs[card.type];
+  if (def.mode === 'constant') return def.value;
+  if (def.mode === 'pulse') return (t < 2.0) ? def.value : 0;
+  if (def.mode === 'oscillate') return def.value * Math.sin(t * 2.0);
+  return def.value;
+}
+
+function computeStep() {
+  var dx2 = DX * DX;
+  var ratio = dt * alpha / dx2;
+  var maxU = 0;
+  var explosionDetected = false;
+
+  for (var j = 0; j < GRID_H; j++) {
+    for (var i = 0; i < GRID_W; i++) {
+      if (grid[j][i] === 1) {
+        uNext[j][i] = 0;
+        continue;
+      }
+
+      var uC = u[j][i];
+      var uR = (i < GRID_W - 1) ? (grid[j][i+1] === 1 ? uC : u[j][i+1]) : getBCVal('right', j);
+      var uL = (i > 0) ? (grid[j][i-1] === 1 ? uC : u[j][i-1]) : getBCVal('left', j);
+      var uU = (j > 0) ? (grid[j-1][i] === 1 ? uC : u[j-1][i]) : getBCVal('top', i);
+      var uD = (j < GRID_H - 1) ? (grid[j+1][i] === 1 ? uC : u[j+1][i]) : getBCVal('bottom', i);
+
+      var laplacian = (uR + uL + uU + uD - 4 * uC) / dx2;
+      var s = 0;
+      if (sources[j][i]) {
+        s = getSourceValue(sources[j][i], simTime);
+      }
+
+      uNext[j][i] = uC + dt * (alpha * laplacian + s);
+
+      if (!isFinite(uNext[j][i]) || Math.abs(uNext[j][i]) > 1e6) {
+        explosionDetected = true;
+      }
+      if (Math.abs(uNext[j][i]) > maxU) maxU = Math.abs(uNext[j][i]);
+    }
+  }
+
+  var tmp = u; u = uNext; uNext = tmp;
+  stepCount++;
+  simTime += dt;
+
+  if (explosionDetected && !exploded) {
+    exploded = true;
+    explosionInfo = {
+      step: stepCount,
+      time: simTime,
+      dt: dt,
+      cfl: cflRatio(),
+      alpha: alpha,
+      maxU: maxU
+    };
+    stopSim();
+    showToast('danger', '时间步爆炸！Δt=' + dt.toFixed(2) + ' 超过CFL临界值 ' + cflCritical().toFixed(3));
+  }
+
+  updateStats();
+  return explosionDetected;
+}
+
+function getBCVal(side, idx) {
+  var b = bc[side];
+  if (b.type === 'dirichlet') return b.val;
+  if (b.type === 'neumann') {
+    if (side === 'left') return u[idx][0];
+    if (side === 'right') return u[idx][GRID_W-1];
+    if (side === 'top') return u[0][idx];
+    if (side === 'bottom') return u[GRID_H-1][idx];
+    return 0;
+  }
+  if (b.type === 'inverted') return b.val * Math.sin(simTime * 3);
+  return 0;
+}
+
+function getBCNeighbor(side, j, i) {
+  var b = bc[side];
+  if (b.type === 'dirichlet') return b.val;
+  if (b.type === 'neumann') {
+    if (side === 'left' && i < GRID_W) return u[j][0];
+    if (side === 'right' && i >= 0) return u[j][GRID_W-1];
+    if (side === 'top' && j < GRID_H) return u[0][i];
+    if (side === 'bottom' && j >= 0) return u[GRID_H-1][i];
+  }
+  if (b.type === 'inverted') {
+    return b.val * Math.sin(simTime * 3);
+  }
+  return 0;
+}
+
+function updateStats() {
+  document.getElementById('step-count').textContent = stepCount;
+  document.getElementById('sim-time').textContent = simTime.toFixed(2);
+  var maxU = 0;
+  for (var j = 0; j < GRID_H; j++)
+    for (var i = 0; i < GRID_W; i++)
+      if (Math.abs(u[j][i]) > maxU) maxU = Math.abs(u[j][i]);
+  document.getElementById('max-u').textContent = maxU.toFixed(2);
+  var maxStat = document.getElementById('max-u-stat');
+  if (maxU > 100) { maxStat.className = 'stat danger'; }
+  else if (maxU > 20) { maxStat.className = 'stat warn'; }
+  else { maxStat.className = 'stat'; }
+}
+
+function startSim() {
+  if (simRunning) return;
+  if (exploded) {
+    showToast('warn', '场已爆炸，请重置后重试');
+    return;
+  }
+  simRunning = true;
+  simTimer = setInterval(function() {
+    var exploded_now = computeStep();
+    render();
+    if (exploded_now) {
+      showExplosionReport();
+    }
+  }, 50);
+  addHistory('操作', '开始模拟');
+}
+
+function stepSim() {
+  if (exploded) { showToast('warn', '场已爆炸，请重置'); return; }
+  var ex = computeStep();
+  render();
+  if (ex) showExplosionReport();
+  addHistory('操作', '单步推进');
+}
+
+function stopSim() {
+  simRunning = false;
+  if (simTimer) { clearInterval(simTimer); simTimer = null; }
+  addHistory('操作', '停止模拟');
+}
+
+function resetSim() {
+  stopSim();
+  for (var j = 0; j < GRID_H; j++)
+    for (var i = 0; i < GRID_W; i++)
+      u[j][i] = 0;
+  stepCount = 0; simTime = 0; exploded = false; explosionInfo = null;
+  applyInitialCondition();
+  updateStats();
+  render();
+  addHistory('操作', '重置场量');
+}
+
+function applyInitialCondition() {
+  for (var j = 0; j < GRID_H; j++) {
+    for (var i = 0; i < GRID_W; i++) {
+      if (grid[j][i] !== 1) {
+        u[j][i] = bc.left.val * (1 - i / GRID_W) * (1 - j / GRID_H) * 0.3;
+      }
+    }
+  }
+}
+
+function showExplosionReport() {
+  if (!explosionInfo) return;
+  var info = explosionInfo;
+  var cflCrit = cflCritical();
+  var html = '<h2>⏱ 时间步爆炸报告</h2>';
+  html += '<div class="modal-section"><h3>发生了什么</h3>';
+  html += '<p>在第 <code>' + info.step + '</code> 步（t=' + info.time.toFixed(2) + '），数值解发散至 <code>' + info.maxU.toExponential(2) + '</code></p></div>';
+  html += '<div class="modal-section"><h3>原因分析</h3>';
+  html += '<div class="formula">CFL条件: Δt ≤ Δx²/(4α) = ' + DX.toFixed(1) + '²/(4×' + info.alpha.toFixed(2) + ') = ' + cflCrit.toFixed(4) + '</div>';
+  html += '<p>你选择的 Δt = <code>' + info.dt.toFixed(2) + '</code>，CFL比 = <code>' + info.cfl.toFixed(2) + '</code></p>';
+  html += '<p>当 CFL > 1 时，Forward Euler 格式的截断误差逐步放大：</p>';
+  html += '<div class="formula">uⁿ⁺¹ = uⁿ + Δt·[α·∇²uⁿ + S] → |uⁿ⁺¹| > |uⁿ| (不稳定)</div>';
+  html += '<p>每步误差被放大 <code>' + (1 + info.cfl * 4).toFixed(1) + '</code> 倍以上，呈指数增长。</p></div>';
+  html += '<div class="modal-section"><h3>数值推进关系</h3>';
+  html += '<p>Forward Euler 的稳定性域为 |1 + Δt·λ| ≤ 1（λ为特征值）。对于扩散方程 λ = -4α/Δx²，要求 Δt ≤ Δx²/(4α)。超过此限制，每步的数值误差不会衰减反而增长——这就是"爆炸"的本质：不是物理现象，而是离散格式的不稳定性。</p></div>';
+  html += '<div class="modal-section"><h3>如何修复</h3>';
+  html += '<p>1. 减小Δt至CFL临界值以下（当前临界值: <code>' + cflCrit.toFixed(4) + '</code>）</p>';
+  html += '<p>2. 增大网格间距Δx（降低分辨率换取稳定性）</p>';
+  html += '<p>3. 减小扩散系数α（降低物理过程的剧烈程度）</p></div>';
+  html += '<button class="close-btn" onclick="closeModal()">关闭</button>';
+  showModal(html);
+}
+
+function showHelp() {
+  var html = '<h2>偏微分水坝守卫 — 说明</h2>';
+  html += '<div class="modal-section"><h3>游戏目标</h3>';
+  html += '<p>管理水坝截面的偏微分方程模拟，保持数值稳定，理解取舍：Δt越大推进越快但可能爆炸，源项越多控制越灵活但容易不稳定，边界条件的选择影响全局收敛。</p></div>';
+  html += '<div class="modal-section"><h3>核心PDE</h3>';
+  html += '<div class="formula">∂u/∂t = α·∇²u + S(x,y,t)</div>';
+  html += '<p>u: 水压/水位 | α: 扩散系数 | S: 源项</p>';
+  html += '<p>离散格式: Forward Euler + 5点Laplacian</p></div>';
+  html += '<div class="modal-section"><h3>操作方式</h3>';
+  html += '<p>• 点击/拖动网格设置单元类型（水域/坝体/源/汇）</p>';
+  html += '<p>• 选择源项卡牌后点击网格放置</p>';
+  html += '<p>• 调节Δt和α观察CFL条件变化</p>';
+  html += '<p>• 设置边界条件（⚠反设会交换Dirichlet/Neumann）</p>';
+  html += '<p>• 推进模拟，观察水压演化</p></div>';
+  html += '<div class="modal-section"><h3>关键概念</h3>';
+  html += '<p><b>CFL条件</b>: Δt ≤ Δx²/(4α)，超过则数值爆炸</p>';
+  html += '<p><b>边界反设</b>: Dirichlet↔Neumann互换，物理不自洽导致无反射边界变反射边界</p>';
+  html += '<p><b>源项重复</b>: 同一位置放置多张卡，效果叠加可能超预期</p></div>';
+  html += '<button class="close-btn" onclick="closeModal()">关闭</button>';
+  showModal(html);
+}
+
+function showModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+function showToast(type, msg) {
+  var div = document.createElement('div');
+  div.className = 'toast-item ' + type;
+  div.textContent = msg;
+  document.getElementById('toast').appendChild(div);
+  setTimeout(function() { div.remove(); }, 4000);
+}
+
+function addHistory(type, desc) {
+  var entry = { step: stepCount, time: simTime, type: type, desc: desc, ts: Date.now() };
+  opHistory.push(entry);
+  renderHistory();
+}
+
+function renderHistory() {
+  var list = document.getElementById('history-list');
+  var html = '';
+  var entries = opHistory.slice(-30).reverse();
+  for (var k = 0; k < entries.length; k++) {
+    var e = entries[k];
+    html += '<div class="history-item"><span class="htype">[' + e.type + '] ' + e.desc + '</span><span class="htime">t=' + e.time.toFixed(2) + '</span></div>';
+  }
+  list.innerHTML = html;
+}
+
+function getState() {
+  var gCopy = [], sCopy = [];
+  for (var j = 0; j < GRID_H; j++) {
+    gCopy[j] = grid[j].slice();
+    sCopy[j] = [];
+    for (var i = 0; i < GRID_W; i++) {
+      sCopy[j][i] = sources[j][i] ? JSON.parse(JSON.stringify(sources[j][i])) : null;
+    }
+  }
+  return {
+    gridW: GRID_W, gridH: GRID_H, dx: DX,
+    grid: gCopy, sources: sCopy,
+    dt: dt, alpha: alpha,
+    bc: JSON.parse(JSON.stringify(bc)),
+    sourceCards: sourceCards.slice(),
+    stepCount: stepCount, simTime: simTime,
+    exploded: exploded,
+    history: opHistory.slice()
+  };
+}
+
+function exportState() {
+  var state = getState();
+  var json = JSON.stringify(state, null, 2);
+  var blob = new Blob([json], {type: 'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'dam_state_' + Date.now() + '.json'; a.click();
+  URL.revokeObjectURL(url);
+  addHistory('导出', 'state JSON');
+  showToast('success', '已导出状态JSON');
+}
+
+function showImport() {
+  document.getElementById('import-area').style.display = 'block';
+}
+
+function hideImport() {
+  document.getElementById('import-area').style.display = 'none';
+}
+
+function importState() {
+  var text = document.getElementById('import-text').value.trim();
+  if (!text) { showToast('warn', '请粘贴JSON'); return; }
+  try {
+    var state = JSON.parse(text);
+    applyState(state);
+    addHistory('导入', '从JSON恢复');
+    showToast('success', '导入成功，对应关系已校验');
+  } catch(e) {
+    showToast('danger', 'JSON解析失败: ' + e.message);
+  }
+}
+
+function applyState(state) {
+  if (state.gridW !== GRID_W || state.gridH !== GRID_H) {
+    showToast('warn', '网格尺寸不匹配，使用导入尺寸');
+  }
+  var w = state.gridW || GRID_W;
+  var h = state.gridH || GRID_H;
+  for (var j = 0; j < Math.min(h, GRID_H); j++) {
+    for (var i = 0; i < Math.min(w, GRID_W); i++) {
+      grid[j][i] = state.grid[j][i];
+      sources[j][i] = state.sources && state.sources[j] ? state.sources[j][i] : null;
+      u[j][i] = 0;
+    }
+  }
+  dt = state.dt || 0.1;
+  alpha = state.alpha || 1.0;
+  if (state.bc) bc = state.bc;
+  sourceCards = state.sourceCards || [];
+  stepCount = state.stepCount || 0;
+  simTime = state.simTime || 0;
+  exploded = state.exploded || false;
+  if (state.history) opHistory = state.history;
+
+  document.getElementById('dt-slider').value = dt;
+  document.getElementById('alpha-slider').value = alpha;
+  document.getElementById('bc-top').value = bc.top.type;
+  document.getElementById('bc-bottom').value = bc.bottom.type;
+  document.getElementById('bc-left').value = bc.left.type;
+  document.getElementById('bc-right').value = bc.right.type;
+  document.getElementById('bc-top-val').value = bc.top.val;
+  document.getElementById('bc-bottom-val').value = bc.bottom.val;
+  document.getElementById('bc-left-val').value = bc.left.val;
+  document.getElementById('bc-right-val').value = bc.right.val;
+
+  updateCFL();
+  applyInitialCondition();
+  updateStats();
+  render();
+  hideImport();
+}
+
+function verifySync() {
+  var state = getState();
+  var issues = [];
+  for (var j = 0; j < GRID_H; j++) {
+    for (var i = 0; i < GRID_W; i++) {
+      if (grid[j][i] === 2 && !sources[j][i]) {
+        issues.push('网格[' + j + ',' + i + ']标记为源但无卡牌数据');
+      }
+      if (grid[j][i] === 3 && !sources[j][i]) {
+        issues.push('网格[' + j + ',' + i + ']标记为汇但无卡牌数据');
+      }
+      if (sources[j][i] && grid[j][i] !== 2 && grid[j][i] !== 3) {
+        issues.push('网格[' + j + ',' + i + ']有卡牌但类型=' + grid[j][i]);
+      }
+    }
+  }
+  if (bc.top.type === 'inverted') issues.push('上边界: 反设(Dirichlet↔Neumann互换)');
+  if (bc.bottom.type === 'inverted') issues.push('下边界: 反设(Dirichlet↔Neumann互换)');
+  if (bc.left.type === 'inverted') issues.push('左边界: 反设(Dirichlet↔Neumann互换)');
+  if (bc.right.type === 'inverted') issues.push('右边界: 反设(Dirichlet↔Neumann互换)');
+  if (cflRatio() > 1.0) issues.push('CFL违反: Δt=' + dt.toFixed(2) + ' > 临界值' + cflCritical().toFixed(3));
+
+  var html = '<h2>同步校验报告</h2>';
+  if (issues.length === 0) {
+    html += '<div class="modal-section"><p style="color:var(--accent2)">✓ 网格、源项卡牌、边界条件、CFL条件全部一致</p></div>';
+  } else {
+    html += '<div class="modal-section"><h3>发现 ' + issues.length + ' 个问题</h3>';
+    for (var k = 0; k < issues.length; k++) {
+      html += '<p>• ' + issues[k] + '</p>';
+    }
+    html += '</div>';
+  }
+  html += '<div class="modal-section"><h3>字段对应关系</h3>';
+  html += '<p><code>grid[j][i]</code>: 0=水域 1=坝体 2=源 3=汇</p>';
+  html += '<p><code>sources[j][i]</code>: {type, pos} | null</p>';
+  html += '<p><code>bc.{side}</code>: {type: dirichlet|neumann|inverted, val}</p>';
+  html += '<p><code>dt, alpha</code>: 时间步长与扩散系数</p></div>';
+  html += '<button class="close-btn" onclick="closeModal()">关闭</button>';
+  showModal(html);
+  addHistory('校验', issues.length + '个问题');
+}
+
+function loadScenario(name) {
+  stopSim();
+  initGrid();
+
+  if (name === 'basic') {
+    for (var j = 0; j < GRID_H; j++) {
+      for (var i = 0; i < GRID_W; i++) {
+        if (i >= 12 && i <= 14 && j >= 4 && j <= 16) grid[j][i] = 1;
+        else if (i < 12) u[j][i] = 5 * (1 - j / GRID_H);
+      }
+    }
+    dt = 0.10; alpha = 1.0;
+    bc = { top:{type:'dirichlet',val:0}, bottom:{type:'dirichlet',val:0}, left:{type:'dirichlet',val:5}, right:{type:'dirichlet',val:0} };
+    showToast('info', '基础水坝场景已加载');
+  }
+
+  else if (name === 'cfl_explode') {
+    for (var j = 0; j < GRID_H; j++) {
+      for (var i = 0; i < GRID_W; i++) {
+        if (i >= 12 && i <= 14 && j >= 4 && j <= 16) grid[j][i] = 1;
+        else if (i < 12) u[j][i] = 5 * (1 - j / GRID_H);
+      }
+    }
+    dt = 0.30; alpha = 1.5;
+    bc = { top:{type:'dirichlet',val:0}, bottom:{type:'dirichlet',val:0}, left:{type:'dirichlet',val:5}, right:{type:'dirichlet',val:0} };
+    showToast('warn', '⚠ Δt=0.30, α=1.5 → CFL比=' + cflRatio().toFixed(2) + '，随时可能爆炸！');
+  }
+
+  else if (name === 'bc_invert') {
+    for (var j = 0; j < GRID_H; j++) {
+      for (var i = 0; i < GRID_W; i++) {
+        if (i >= 12 && i <= 14 && j >= 4 && j <= 16) grid[j][i] = 1;
+        else if (i < 12) u[j][i] = 5 * (1 - j / GRID_H);
+      }
+    }
+    dt = 0.10; alpha = 1.0;
+    bc = { top:{type:'inverted',val:3}, bottom:{type:'inverted',val:0}, left:{type:'dirichlet',val:5}, right:{type:'neumann',val:0} };
+    showToast('warn', '⚠ 上下边界反设：Dirichlet↔Neumann互换，数值行为异常');
+  }
+
+  else if (name === 'source_dup') {
+    for (var j = 0; j < GRID_H; j++) {
+      for (var i = 0; i < GRID_W; i++) {
+        if (i >= 12 && i <= 14 && j >= 4 && j <= 16) grid[j][i] = 1;
+        else if (i < 12) u[j][i] = 5 * (1 - j / GRID_H);
+      }
+    }
+    dt = 0.10; alpha = 1.0;
+    var dupPositions = [[3,5],[3,5],[4,5],[4,5],[5,8],[5,8]];
+    for (var k = 0; k < dupPositions.length; k++) {
+      var pj = dupPositions[k][0], pi = dupPositions[k][1];
+      grid[pj][pi] = 2;
+      sources[pj][pi] = { type: 's1', pos: [pj, pi] };
+      sourceCards.push({ type: 's1', pos: [pj, pi] });
+    }
+    bc = { top:{type:'dirichlet',val:0}, bottom:{type:'dirichlet',val:0}, left:{type:'dirichlet',val:5}, right:{type:'dirichlet',val:0} };
+    showToast('warn', '∬ 部分位置有重复源项卡，检查并移除多余卡牌');
+  }
+
+  document.getElementById('dt-slider').value = dt;
+  document.getElementById('alpha-slider').value = alpha;
+  document.getElementById('bc-top').value = bc.top.type;
+  document.getElementById('bc-bottom').value = bc.bottom.type;
+  document.getElementById('bc-left').value = bc.left.type;
+  document.getElementById('bc-right').value = bc.right.type;
+  document.getElementById('bc-top-val').value = bc.top.val;
+  document.getElementById('bc-bottom-val').value = bc.bottom.val;
+  document.getElementById('bc-left-val').value = bc.left.val;
+  document.getElementById('bc-right-val').value = bc.right.val;
+
+  updateCFL();
+  updateStats();
+  render();
+  addHistory('场景', name);
+}
+
+function render() {
+  if (!ctx) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (var j = 0; j < GRID_H; j++) {
+    for (var i = 0; i < GRID_W; i++) {
+      var x = i * cellSize;
+      var y = j * cellSize;
+
+      if (grid[j][i] === 1) {
+        ctx.fillStyle = '#374151';
+        ctx.fillRect(x, y, cellSize, cellSize);
+        ctx.strokeStyle = '#4b5563';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, y, cellSize, cellSize);
+        ctx.fillStyle = '#6b7280';
+        ctx.font = Math.max(8, cellSize * 0.4) + 'px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('■', x + cellSize/2, y + cellSize/2);
+      } else {
+        var val = u[j][i];
+        var color = valToColor(val);
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, cellSize, cellSize);
+
+        ctx.strokeStyle = 'rgba(30,41,59,0.3)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, y, cellSize, cellSize);
+
+        if (grid[j][i] === 2 || grid[j][i] === 3) {
+          var isSrc = grid[j][i] === 2;
+          ctx.strokeStyle = isSrc ? '#f59e0b' : '#8b5cf6';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x+2, y+2, cellSize-4, cellSize-4);
+          ctx.fillStyle = isSrc ? '#f59e0b' : '#8b5cf6';
+          ctx.font = 'bold ' + Math.max(8, cellSize * 0.35) + 'px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(isSrc ? 'S' : 'D', x + cellSize/2, y + cellSize/2);
+          if (sources[j][i]) {
+            var sc = sources[j][i];
+            var count = countSourceAt(j, i);
+            if (count > 1) {
+              ctx.fillStyle = '#ef4444';
+              ctx.font = 'bold ' + Math.max(8, cellSize * 0.3) + 'px monospace';
+              ctx.fillText('×' + count, x + cellSize - 8, y + 8);
+            }
+          }
+        }
+
+        if (cellSize >= 20) {
+          ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          ctx.font = Math.max(7, cellSize * 0.25) + 'px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(val.toFixed(1), x + cellSize/2, y + cellSize - 1);
+        }
+      }
+    }
+  }
+
+  drawBCIndicators();
+  drawFlowArrows();
+}
+
+function countSourceAt(j, i) {
+  var count = 0;
+  for (var k = 0; k < sourceCards.length; k++) {
+    if (sourceCards[k].pos[0] === j && sourceCards[k].pos[1] === i) count++;
+  }
+  return count;
+}
+
+function valToColor(val) {
+  if (!isFinite(val) || Math.abs(val) > 1000) return '#ef4444';
+  var t = Math.max(0, Math.min(1, (val + 2) / 12));
+  var r, g, b;
+  if (t < 0.25) {
+    r = 10; g = Math.round(30 + t*4*100); b = Math.round(80 + t*4*140);
+  } else if (t < 0.5) {
+    var s = (t - 0.25) * 4;
+    r = Math.round(10 + s*30); g = Math.round(130 + s*80); b = Math.round(220 - s*40);
+  } else if (t < 0.75) {
+    var s = (t - 0.5) * 4;
+    r = Math.round(40 + s*200); g = Math.round(210 - s*60); b = Math.round(180 - s*140);
+  } else {
+    var s = (t - 0.75) * 4;
+    r = Math.round(240); g = Math.round(150 - s*100); b = Math.round(40 - s*40);
+  }
+  return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+function drawBCIndicators() {
+  var cs = cellSize;
+  ctx.lineWidth = 3;
+
+  var sides = [
+    { key:'top', x1:0, y1:0, x2:GRID_W*cs, y2:0, dir:'h' },
+    { key:'bottom', x1:0, y1:GRID_H*cs, x2:GRID_W*cs, y2:GRID_H*cs, dir:'h' },
+    { key:'left', x1:0, y1:0, x2:0, y2:GRID_H*cs, dir:'v' },
+    { key:'right', x1:GRID_W*cs, y1:0, x2:GRID_W*cs, y2:GRID_H*cs, dir:'v' }
+  ];
+
+  for (var s = 0; s < sides.length; s++) {
+    var side = sides[s];
+    var b = bc[side.key];
+    if (b.type === 'dirichlet') ctx.strokeStyle = '#3b82f6';
+    else if (b.type === 'neumann') ctx.strokeStyle = '#10b981';
+    else ctx.strokeStyle = '#ef4444';
+
+    ctx.beginPath();
+    if (side.dir === 'h') {
+      ctx.moveTo(side.x1, side.y1);
+      ctx.lineTo(side.x2, side.y2);
+    } else {
+      ctx.moveTo(side.x1, side.y1);
+      ctx.lineTo(side.x2, side.y2);
+    }
+    ctx.stroke();
+
+    if (b.type === 'inverted') {
+      ctx.fillStyle = '#ef4444';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = side.key === 'top' ? 'bottom' : (side.key === 'bottom' ? 'top' : 'middle');
+      var lx = (side.x1 + side.x2) / 2;
+      var ly = side.key === 'top' ? -2 : (side.key === 'bottom' ? side.y1 + 12 : (side.y1 + side.y2)/2);
+      if (side.key === 'left') { lx = -8; ctx.textAlign = 'right'; }
+      if (side.key === 'right') { lx = side.x1 + 8; ctx.textAlign = 'left'; }
+      ctx.fillText('⚠反', lx, ly);
+    }
+  }
+}
+
+function drawFlowArrows() {
+  if (stepCount < 1) return;
+  var step = 3;
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1;
+  for (var j = 1; j < GRID_H - 1; j += step) {
+    for (var i = 1; i < GRID_W - 1; i += step) {
+      if (grid[j][i] === 1) continue;
+      var gx = 0, gy = 0;
+      if (i > 0 && i < GRID_W - 1 && grid[j][i-1] !== 1 && grid[j][i+1] !== 1) {
+        gx = (u[j][i+1] - u[j][i-1]) / (2 * DX);
+      }
+      if (j > 0 && j < GRID_H - 1 && grid[j-1][i] !== 1 && grid[j+1][i] !== 1) {
+        gy = (u[j+1][i] - u[j-1][i]) / (2 * DX);
+      }
+      var mag = Math.sqrt(gx*gx + gy*gy);
+      if (mag < 0.01) continue;
+      var scale = Math.min(cellSize * step * 0.4, mag * cellSize * step * 0.3);
+      var cx = (i + 0.5) * cellSize;
+      var cy = (j + 0.5) * cellSize;
+      var dx = -gx / mag * scale;
+      var dy = -gy / mag * scale;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + dx, cy + dy);
+      ctx.stroke();
+    }
+  }
+}
+
+function handleCanvasClick(e) {
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+  var i = Math.floor(mx / cellSize);
+  var j = Math.floor(my / cellSize);
+  if (i < 0 || i >= GRID_W || j < 0 || j >= GRID_H) return;
+
+  if (currentTool === 'inspect' || e.button === 2) {
+    inspectCell(j, i);
+    return;
+  }
+
+  if (selectedCard) {
+    placeCard(j, i, selectedCard);
+    return;
+  }
+
+  var typeMap = { water: 0, dam: 1, source: 2, drain: 3, erase: 0 };
+  var newType = typeMap[currentTool];
+  if (currentTool === 'erase') {
+    grid[j][i] = 0;
+    sources[j][i] = null;
+    removeCardsAt(j, i);
+  } else {
+    grid[j][i] = newType;
+    if (newType === 2 || newType === 3) {
+      if (!sources[j][i]) {
+        var cardType = newType === 2 ? 's1' : 'd1';
+        sources[j][i] = { type: cardType, pos: [j, i] };
+        sourceCards.push({ type: cardType, pos: [j, i] });
+      }
+    } else {
+      sources[j][i] = null;
+      removeCardsAt(j, i);
+    }
+  }
+  addHistory('网格', '[' + j + ',' + i + ']→' + ['水域','坝体','源','汇'][grid[j][i]]);
+  render();
+}
+
+function placeCard(j, i, cardId) {
+  var def = cardDefs[cardId];
+  var cellType = def.type === 'source' ? 2 : 3;
+  grid[j][i] = cellType;
+  sources[j][i] = { type: cardId, pos: [j, i] };
+  sourceCards.push({ type: cardId, pos: [j, i] });
+  var count = countSourceAt(j, i);
+  if (count > 1) {
+    showToast('warn', '∬ 位置[' + j + ',' + i + ']已有' + count + '张卡，效果叠加！');
+  }
+  addHistory('卡牌', def.name + '@[' + j + ',' + i + ']');
+  selectedCard = null;
+  document.querySelectorAll('.card-item').forEach(function(c) { c.classList.remove('selected'); });
+  render();
+}
+
+function removeCardsAt(j, i) {
+  sourceCards = sourceCards.filter(function(c) { return !(c.pos[0] === j && c.pos[1] === i); });
+}
+
+function inspectCell(j, i) {
+  var typeNames = ['水域', '坝体', '源项', '汇项'];
+  var val = u[j][i];
+  var src = sources[j][i];
+  var count = countSourceAt(j, i);
+  var html = '<h2>单元检查 [' + j + ',' + i + ']</h2>';
+  html += '<div class="modal-section"><p>类型: <code>' + typeNames[grid[j][i]] + '</code></p>';
+  html += '<p>场量 u = <code>' + val.toFixed(4) + '</code></p>';
+  if (src) {
+    var def = cardDefs[src.type];
+    html += '<p>卡牌: <code>' + def.name + '</code> (值=' + def.value + ', 模式=' + def.mode + ')</p>';
+    html += '<p>当前源项值: <code>' + getSourceValue(src, simTime).toFixed(2) + '</code></p>';
+  }
+  if (count > 1) {
+    html += '<p style="color:var(--danger)">⚠ 此位置有 ' + count + ' 张重复卡牌！</p>';
+    html += '<p>叠加效果: ';
+    var total = 0;
+    for (var k = 0; k < sourceCards.length; k++) {
+      if (sourceCards[k].pos[0] === j && sourceCards[k].pos[1] === i) {
+        total += cardDefs[sourceCards[k].type].value;
+      }
+    }
+    html += '<code>' + total.toFixed(1) + '</code></p>';
+  }
+  html += '</div>';
+
+  var gx = 0, gy = 0;
+  if (i > 0 && i < GRID_W - 1) gx = (u[j][i+1] - u[j][i-1]) / (2*DX);
+  if (j > 0 && j < GRID_H - 1) gy = (u[j+1][i] - u[j-1][i]) / (2*DX);
+  html += '<div class="modal-section"><h3>梯度</h3>';
+  html += '<p>∂u/∂x = <code>' + gx.toFixed(4) + '</code> | ∂u/∂y = <code>' + gy.toFixed(4) + '</code></p>';
+  html += '<p>|∇u| = <code>' + Math.sqrt(gx*gx+gy*gy).toFixed(4) + '</code></p></div>';
+
+  html += '<div style="display:flex;gap:6px">';
+  if (count > 1) {
+    html += '<button class="action-btn danger-btn" style="flex:1" onclick="removeDuplicateCards(' + j + ',' + i + ');closeModal()">移除重复卡</button>';
+  }
+  html += '<button class="close-btn" style="flex:1" onclick="closeModal()">关闭</button></div>';
+  showModal(html);
+}
+
+function removeDuplicateCards(j, i) {
+  var first = true;
+  sourceCards = sourceCards.filter(function(c) {
+    if (c.pos[0] === j && c.pos[1] === i) {
+      if (first) { first = false; return true; }
+      return false;
+    }
+    return true;
+  });
+  sources[j][i] = sourceCards.find(function(c) { return c.pos[0] === j && c.pos[1] === i; }) || null;
+  if (!sources[j][i]) { grid[j][i] = 0; }
+  addHistory('操作', '移除[' + j + ',' + i + ']重复卡');
+  render();
+  showToast('success', '已移除重复卡牌，保留一张');
+}
+
+var isDragging = false;
+var lastDragCell = null;
+
+function onCanvasMouseDown(e) {
+  if (e.button === 2) { handleCanvasClick(e); return; }
+  isDragging = true;
+  lastDragCell = null;
+  handleCanvasClick(e);
+}
+
+function onCanvasMouseMove(e) {
+  if (!isDragging) return;
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+  var i = Math.floor(mx / cellSize);
+  var j = Math.floor(my / cellSize);
+  if (i < 0 || i >= GRID_W || j < 0 || j >= GRID_H) return;
+  var cell = j + ',' + i;
+  if (cell === lastDragCell) return;
+  lastDragCell = cell;
+
+  if (selectedCard) return;
+  var typeMap = { water: 0, dam: 1, source: 2, drain: 3, erase: 0 };
+  var newType = typeMap[currentTool];
+  if (currentTool === 'erase') {
+    grid[j][i] = 0; sources[j][i] = null; removeCardsAt(j, i);
+  } else {
+    grid[j][i] = newType;
+    if (newType === 0 || newType === 1) { sources[j][i] = null; removeCardsAt(j, i); }
+  }
+  render();
+}
+
+function onCanvasMouseUp() { isDragging = false; }
+
+function onCanvasContextMenu(e) { e.preventDefault(); }
+
+function resizeCanvas() {
+  var wrap = document.getElementById('canvas-wrap');
+  var maxW = wrap.clientWidth - 40;
+  var maxH = wrap.clientHeight - 40;
+  cellSize = Math.floor(Math.min(maxW / GRID_W, maxH / GRID_H));
+  cellSize = Math.max(12, cellSize);
+  canvas.width = GRID_W * cellSize;
+  canvas.height = GRID_H * cellSize;
+  render();
+}
+
+function init() {
+  canvas = document.getElementById('grid-canvas');
+  ctx = canvas.getContext('2d');
+
+  canvas.addEventListener('mousedown', onCanvasMouseDown);
+  canvas.addEventListener('mousemove', onCanvasMouseMove);
+  canvas.addEventListener('mouseup', onCanvasMouseUp);
+  canvas.addEventListener('contextmenu', onCanvasContextMenu);
+
+  initGrid();
+  loadScenario('basic');
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  updateCFL();
+  render();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
