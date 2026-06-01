@@ -1,0 +1,28 @@
+[
+  {
+    "clip_id": "clip_001",
+    "title": "Miles Davis - So What (1969 再版)",
+    "duration": 321.5,
+    "source": "Columbia CS 8161",
+    "file_path": "/audio/miles_so_what.wav"
+  },
+  {
+    "clip_id": "clip_002",
+    "title": "Beatles - Yesterday (1970 黑胶)",
+    "duration": 125.0,
+    "source": "Capitol ST 2553",
+    "file_path": "/audio/beatles_yesterday.wav"
+  },
+  {
+    "clip_id": "clip_003",
+    "title": "Pink Floyd - Money (1973 首版)",
+    "duration": 382.0,
+    "source": "Harvest SHVL 222"
+  },
+  {
+    "clip_id": "clip_004",
+    "title": "未命名片段",
+    "duration": 0,
+    "source": ""
+  }
+]

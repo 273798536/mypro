@@ -1,0 +1,72 @@
+[
+  {
+    "annotation_id": "ann_001",
+    "clip_id": "clip_001",
+    "noise_type": "底噪",
+    "severity": "中等",
+    "start_time": 0.0,
+    "end_time": 321.5,
+    "description": "全程中等底噪，典型黑胶磨损"
+  },
+  {
+    "annotation_id": "ann_002",
+    "clip_id": "clip_001",
+    "noise_type": "爆音",
+    "severity": "严重",
+    "start_time": 45.2,
+    "end_time": 45.5,
+    "description": "严重爆音，疑似划痕导致"
+  },
+  {
+    "annotation_id": "ann_003",
+    "clip_id": "clip_002",
+    "noise_type": "节拍漂移",
+    "severity": "中等",
+    "start_time": 30.0,
+    "end_time": 35.0,
+    "description": "节拍在中段偏移，可能是唱片变形"
+  },
+  {
+    "annotation_id": "ann_004",
+    "clip_id": "clip_002",
+    "noise_type": "底噪",
+    "severity": "轻微",
+    "is_late_addition": true,
+    "description": "后补：左声道有轻微底噪"
+  },
+  {
+    "annotation_id": "ann_005",
+    "clip_id": "clip_003",
+    "noise_type": "爆音",
+    "severity": "严重",
+    "start_time": 120.0,
+    "end_time": 122.0,
+    "description": "连续爆音区域",
+    "notes_modified": true,
+    "original_notes": "可能是灰尘",
+    "current_notes": "确认是严重划痕，非灰尘"
+  },
+  {
+    "annotation_id": "ann_006",
+    "clip_id": "clip_003",
+    "noise_type": "节拍漂移",
+    "severity": "严重",
+    "start_time": 200.0,
+    "end_time": 210.0,
+    "description": "严重节拍漂移，转盘可能不稳"
+  },
+  {
+    "annotation_id": "ann_007",
+    "clip_id": "clip_001",
+    "noise_type": "底噪"
+  },
+  {
+    "annotation_id": "ann_008",
+    "clip_id": "clip_004",
+    "noise_type": "爆音",
+    "severity": "中等",
+    "start_time": 10.0,
+    "end_time": 10.3,
+    "description": "片段信息不完整时的爆音标注"
+  }
+]

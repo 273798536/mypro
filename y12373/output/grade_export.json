@@ -1,0 +1,630 @@
+{
+  "export_time": "2026-06-01T22:14:30.840063",
+  "summary": {
+    "total_clips": 4,
+    "total_annotations": 8,
+    "total_reports": 6,
+    "total_repairs": 5,
+    "mis_delete_count": 2
+  },
+  "mapping_detail": [
+    {
+      "clip_id": "clip_001",
+      "clip_title": "Miles Davis - So What (1969 再版)",
+      "duration": 321.5,
+      "source": "Columbia CS 8161",
+      "annotations_and_reports": [
+        {
+          "report_id": "rpt_001",
+          "student_id": "STU2024001",
+          "clip_id": "clip_001",
+          "clip_title": "Miles Davis - So What (1969 再版)",
+          "annotation_id": "ann_001",
+          "noise_type": "底噪",
+          "severity": "中等",
+          "score": 85.0,
+          "accuracy": 90.0,
+          "repair_quality": 80.0,
+          "mis_delete_in_history": false,
+          "problems": [
+            {
+              "problem_id": "prob_0009",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 start_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0010",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 end_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0011",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 description",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0012",
+              "level": "🔴 严重",
+              "category": "误删原声",
+              "description": "ann_002: 修复操作 去爆音 导致误删原声",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 2,
+          "current_playback_note": "底噪在背景持续可闻",
+          "current_error_explanation": "持续性的低频沙沙声，来自黑胶唱片表面磨损"
+        },
+        {
+          "report_id": "rpt_002",
+          "student_id": "STU2024001",
+          "clip_id": "clip_001",
+          "clip_title": "Miles Davis - So What (1969 再版)",
+          "annotation_id": "ann_002",
+          "noise_type": "爆音",
+          "severity": "严重",
+          "score": 55.0,
+          "accuracy": 70.0,
+          "repair_quality": 40.0,
+          "mis_delete_in_history": true,
+          "problems": [
+            {
+              "problem_id": "prob_0009",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 start_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0010",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 end_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0011",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 description",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0012",
+              "level": "🔴 严重",
+              "category": "误删原声",
+              "description": "ann_002: 修复操作 去爆音 导致误删原声",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 2,
+          "current_playback_note": "爆音在标记时段可听到咔嗒声",
+          "current_error_explanation": "短促的咔嗒或爆裂声，通常由灰尘或划痕引起，严重程度高，需谨慎处理避免误删原声"
+        }
+      ]
+    },
+    {
+      "clip_id": "clip_002",
+      "clip_title": "Beatles - Yesterday (1970 黑胶)",
+      "duration": 125.0,
+      "source": "Capitol ST 2553",
+      "annotations_and_reports": [
+        {
+          "report_id": "rpt_003",
+          "student_id": "STU2024002",
+          "clip_id": "clip_002",
+          "clip_title": "Beatles - Yesterday (1970 黑胶)",
+          "annotation_id": "ann_003",
+          "noise_type": "节拍漂移",
+          "severity": "中等",
+          "score": 72.0,
+          "accuracy": 75.0,
+          "repair_quality": 68.0,
+          "mis_delete_in_history": false,
+          "problems": [
+            {
+              "problem_id": "prob_0005",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_004: 缺少 start_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0006",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_004: 缺少 end_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0007",
+              "level": "ℹ️ 信息",
+              "category": "晚补",
+              "description": "ann_004: 晚补记录",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0013",
+              "level": "🔴 严重",
+              "category": "节拍漂移",
+              "description": "ann_003: 节拍漂移区域的修复操作需特别关注",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 2,
+          "current_playback_note": "节拍漂移时段节奏有波动",
+          "current_error_explanation": "节拍不规律偏移，可能因唱片变形或转盘不稳"
+        },
+        {
+          "report_id": "rpt_006",
+          "student_id": "STU2024001",
+          "clip_id": "clip_002",
+          "clip_title": "Beatles - Yesterday (1970 黑胶)",
+          "annotation_id": "ann_004",
+          "noise_type": "底噪",
+          "severity": "轻微",
+          "score": 88.0,
+          "accuracy": 85.0,
+          "repair_quality": 90.0,
+          "mis_delete_in_history": false,
+          "problems": [
+            {
+              "problem_id": "prob_0005",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_004: 缺少 start_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0006",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_004: 缺少 end_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0007",
+              "level": "ℹ️ 信息",
+              "category": "晚补",
+              "description": "ann_004: 晚补记录",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0013",
+              "level": "🔴 严重",
+              "category": "节拍漂移",
+              "description": "ann_003: 节拍漂移区域的修复操作需特别关注",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 1,
+          "current_playback_note": "底噪在背景持续可闻",
+          "current_error_explanation": "持续性的低频沙沙声，来自黑胶唱片表面磨损，程度较轻，可选择保留"
+        }
+      ]
+    },
+    {
+      "clip_id": "clip_003",
+      "clip_title": "Pink Floyd - Money (1973 首版)",
+      "duration": 382.0,
+      "source": "Harvest SHVL 222",
+      "annotations_and_reports": [
+        {
+          "report_id": "rpt_004",
+          "student_id": "STU2024002",
+          "clip_id": "clip_003",
+          "clip_title": "Pink Floyd - Money (1973 首版)",
+          "annotation_id": "ann_005",
+          "noise_type": "爆音",
+          "severity": "严重",
+          "score": 60.0,
+          "accuracy": 65.0,
+          "repair_quality": 55.0,
+          "mis_delete_in_history": false,
+          "problems": [
+            {
+              "problem_id": "prob_0001",
+              "level": "🟡 警告",
+              "category": "音频片段",
+              "description": "clip_003: 缺少 file_path",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0008",
+              "level": "ℹ️ 信息",
+              "category": "备注修改",
+              "description": "ann_005: 备注已被修改",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0014",
+              "level": "🔴 严重",
+              "category": "误删原声",
+              "description": "ann_006: 修复操作 降噪 导致误删原声",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0015",
+              "level": "🔴 严重",
+              "category": "节拍漂移",
+              "description": "ann_006: 节拍漂移区域的修复操作需特别关注",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0016",
+              "level": "ℹ️ 信息",
+              "category": "评分报告",
+              "description": "rpt_005: 缺少 submitted_at",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 2,
+          "current_playback_note": "爆音在标记时段可听到咔嗒声",
+          "current_error_explanation": "短促的咔嗒或爆裂声，通常由灰尘或划痕引起，严重程度高，需谨慎处理避免误删原声"
+        },
+        {
+          "report_id": "rpt_005",
+          "student_id": "STU2024003",
+          "clip_id": "clip_003",
+          "clip_title": "Pink Floyd - Money (1973 首版)",
+          "annotation_id": "ann_006",
+          "noise_type": "节拍漂移",
+          "severity": "严重",
+          "score": 35.0,
+          "accuracy": 50.0,
+          "repair_quality": 20.0,
+          "mis_delete_in_history": true,
+          "problems": [
+            {
+              "problem_id": "prob_0001",
+              "level": "🟡 警告",
+              "category": "音频片段",
+              "description": "clip_003: 缺少 file_path",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0008",
+              "level": "ℹ️ 信息",
+              "category": "备注修改",
+              "description": "ann_005: 备注已被修改",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0014",
+              "level": "🔴 严重",
+              "category": "误删原声",
+              "description": "ann_006: 修复操作 降噪 导致误删原声",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0015",
+              "level": "🔴 严重",
+              "category": "节拍漂移",
+              "description": "ann_006: 节拍漂移区域的修复操作需特别关注",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0016",
+              "level": "ℹ️ 信息",
+              "category": "评分报告",
+              "description": "rpt_005: 缺少 submitted_at",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 2,
+          "current_playback_note": "节拍漂移时段节奏有波动 ⚠️ 部分原声已被误删，音质受损",
+          "current_error_explanation": "误删原声: 修复操作类型与噪声类型不匹配，导致原始音频内容被删除。此问题不可被后续节拍漂移或连续爆音修复掩盖。"
+        }
+      ]
+    }
+  ],
+  "problem_summary": {
+    "total": 16,
+    "critical": 4,
+    "warning": 9,
+    "info": 3,
+    "mis_delete_count": 2,
+    "beat_drift_count": 2
+  },
+  "critical_problems": [
+    {
+      "problem_id": "prob_0012",
+      "category": "误删原声",
+      "description": "ann_002: 修复操作 去爆音 导致误删原声",
+      "detail": "修复ID: repair_002, 结果: 爆音消除，但部分小号声被误删",
+      "annotation_id": "ann_002",
+      "clip_id": "clip_001"
+    },
+    {
+      "problem_id": "prob_0013",
+      "category": "节拍漂移",
+      "description": "ann_003: 节拍漂移区域的修复操作需特别关注",
+      "detail": "修复ID: repair_003, 类型: 节拍修正",
+      "annotation_id": "ann_003",
+      "clip_id": "clip_002"
+    },
+    {
+      "problem_id": "prob_0014",
+      "category": "误删原声",
+      "description": "ann_006: 修复操作 降噪 导致误删原声",
+      "detail": "修复ID: repair_005, 结果: 对节拍漂移应用降噪，导致原声被误删",
+      "annotation_id": "ann_006",
+      "clip_id": "clip_003"
+    },
+    {
+      "problem_id": "prob_0015",
+      "category": "节拍漂移",
+      "description": "ann_006: 节拍漂移区域的修复操作需特别关注",
+      "detail": "修复ID: repair_005, 类型: 降噪",
+      "annotation_id": "ann_006",
+      "clip_id": "clip_003"
+    }
+  ],
+  "history_trace": [
+    {
+      "entry_id": "hist_0001",
+      "annotation_id": "ann_001",
+      "event_type": "识别",
+      "description": "第1轮识别: 底噪/中等 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839554",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0002",
+      "annotation_id": "ann_002",
+      "event_type": "识别",
+      "description": "第1轮识别: 爆音/严重 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839600",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0003",
+      "annotation_id": "ann_003",
+      "event_type": "识别",
+      "description": "第1轮识别: 节拍漂移/中等 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839612",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0004",
+      "annotation_id": "ann_004",
+      "event_type": "识别",
+      "description": "第1轮识别: 底噪/轻微 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839624",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0005",
+      "annotation_id": "ann_005",
+      "event_type": "识别",
+      "description": "第1轮识别: 爆音/严重 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839636",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0006",
+      "annotation_id": "ann_006",
+      "event_type": "识别",
+      "description": "第1轮识别: 节拍漂移/严重 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839648",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0007",
+      "annotation_id": "ann_007",
+      "event_type": "识别",
+      "description": "第1轮识别: 底噪/中等 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839659",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0008",
+      "annotation_id": "ann_008",
+      "event_type": "识别",
+      "description": "第1轮识别: 爆音/中等 (置信度95%)",
+      "timestamp": "2026-06-01T22:14:30.839670",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0009",
+      "annotation_id": "ann_001",
+      "event_type": "预览变化",
+      "description": "修复预览: 修复前: 底噪/中等 → 降噪处理: 底噪减轻",
+      "timestamp": "2026-06-01T22:14:30.839689",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0010",
+      "annotation_id": "ann_001",
+      "event_type": "修复",
+      "description": "修复应用: 降噪 - 底噪降低约60%",
+      "timestamp": "2026-06-01T22:14:30.839699",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0011",
+      "annotation_id": "ann_001",
+      "event_type": "识别",
+      "description": "第2轮识别: 底噪/轻微 (置信度90%) - 修复后重新识别",
+      "timestamp": "2026-06-01T22:14:30.839719",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0012",
+      "annotation_id": "ann_002",
+      "event_type": "预览变化",
+      "description": "修复预览: 修复前: 爆音/严重 → 去爆音处理: 爆音显著减少",
+      "timestamp": "2026-06-01T22:14:30.839737",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0013",
+      "annotation_id": "ann_002",
+      "event_type": "修复",
+      "description": "修复应用: 去爆音 - 爆音消除，但部分小号声被误删",
+      "timestamp": "2026-06-01T22:14:30.839743",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0014",
+      "annotation_id": "ann_002",
+      "event_type": "误删原声",
+      "description": "确认误删原声: 去爆音",
+      "timestamp": "2026-06-01T22:14:30.839747",
+      "is_active": true,
+      "is_critical": true,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0015",
+      "annotation_id": "ann_002",
+      "event_type": "识别",
+      "description": "第2轮识别: 爆音/轻微 (置信度90%) - 修复后重新识别",
+      "timestamp": "2026-06-01T22:14:30.839760",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0016",
+      "annotation_id": "ann_003",
+      "event_type": "预览变化",
+      "description": "修复预览: 修复前: 节拍漂移/中等 → 节拍修正: 节拍漂移得到缓解",
+      "timestamp": "2026-06-01T22:14:30.839776",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0017",
+      "annotation_id": "ann_003",
+      "event_type": "修复",
+      "description": "修复应用: 节拍修正 - 节拍趋于稳定",
+      "timestamp": "2026-06-01T22:14:30.839782",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0018",
+      "annotation_id": "ann_003",
+      "event_type": "识别",
+      "description": "第2轮识别: 节拍漂移/轻微 (置信度90%) - 修复后重新识别",
+      "timestamp": "2026-06-01T22:14:30.839794",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0019",
+      "annotation_id": "ann_005",
+      "event_type": "预览变化",
+      "description": "修复预览: 修复前: 爆音/严重 → 去爆音处理: 爆音显著减少",
+      "timestamp": "2026-06-01T22:14:30.839809",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0020",
+      "annotation_id": "ann_005",
+      "event_type": "修复",
+      "description": "修复应用: 去爆音 - 连续爆音部分消除，但节拍出现偏移",
+      "timestamp": "2026-06-01T22:14:30.839815",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0021",
+      "annotation_id": "ann_005",
+      "event_type": "识别",
+      "description": "第2轮识别: 爆音/轻微 (置信度90%) - 修复后重新识别",
+      "timestamp": "2026-06-01T22:14:30.839827",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0022",
+      "annotation_id": "ann_006",
+      "event_type": "误删原声",
+      "description": "修复预览检测到误删原声: 降噪 作用于 节拍漂移",
+      "timestamp": "2026-06-01T22:14:30.839842",
+      "is_active": true,
+      "is_critical": true,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0023",
+      "annotation_id": "ann_006",
+      "event_type": "预览变化",
+      "description": "修复预览: 修复前: 节拍漂移/严重 → 降噪处理: 对节拍漂移无效果 [误删原声]",
+      "timestamp": "2026-06-01T22:14:30.839846",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0024",
+      "annotation_id": "ann_006",
+      "event_type": "修复",
+      "description": "修复应用: 降噪 ⚠️ 含误删原声",
+      "timestamp": "2026-06-01T22:14:30.839853",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0025",
+      "annotation_id": "ann_006",
+      "event_type": "误删原声",
+      "description": "确认误删原声: 降噪",
+      "timestamp": "2026-06-01T22:14:30.839857",
+      "is_active": true,
+      "is_critical": true,
+      "superseded_by": null
+    },
+    {
+      "entry_id": "hist_0026",
+      "annotation_id": "ann_006",
+      "event_type": "识别",
+      "description": "第2轮识别: 节拍漂移/严重 (置信度90%) - 修复后重新识别",
+      "timestamp": "2026-06-01T22:14:30.839869",
+      "is_active": true,
+      "is_critical": false,
+      "superseded_by": null
+    }
+  ]
+}

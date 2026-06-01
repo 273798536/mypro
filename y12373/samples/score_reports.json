@@ -1,0 +1,67 @@
+[
+  {
+    "report_id": "rpt_001",
+    "student_id": "STU2024001",
+    "clip_id": "clip_001",
+    "annotation_id": "ann_001",
+    "score": 85.0,
+    "accuracy": 90.0,
+    "repair_quality": 80.0,
+    "issues": ["底噪识别正确，修复效果良好"],
+    "submitted_at": "2026-05-28T11:00:00"
+  },
+  {
+    "report_id": "rpt_002",
+    "student_id": "STU2024001",
+    "clip_id": "clip_001",
+    "annotation_id": "ann_002",
+    "score": 55.0,
+    "accuracy": 70.0,
+    "repair_quality": 40.0,
+    "issues": ["误删原声：去爆音操作删除了小号声部", "修复类型与噪声匹配但操作过度"],
+    "submitted_at": "2026-05-28T11:05:00"
+  },
+  {
+    "report_id": "rpt_003",
+    "student_id": "STU2024002",
+    "clip_id": "clip_002",
+    "annotation_id": "ann_003",
+    "score": 72.0,
+    "accuracy": 75.0,
+    "repair_quality": 68.0,
+    "issues": ["节拍漂移识别正确，修复效果一般"],
+    "submitted_at": "2026-05-28T11:10:00"
+  },
+  {
+    "report_id": "rpt_004",
+    "student_id": "STU2024002",
+    "clip_id": "clip_003",
+    "annotation_id": "ann_005",
+    "score": 60.0,
+    "accuracy": 65.0,
+    "repair_quality": 55.0,
+    "issues": ["连续爆音修复后出现节拍漂移", "备注已修改需关注"],
+    "submitted_at": "2026-05-28T11:15:00"
+  },
+  {
+    "report_id": "rpt_005",
+    "student_id": "STU2024003",
+    "clip_id": "clip_003",
+    "annotation_id": "ann_006",
+    "score": 35.0,
+    "accuracy": 50.0,
+    "repair_quality": 20.0,
+    "issues": ["对节拍漂移使用降噪，严重误删原声", "操作类型与噪声类型完全不匹配"]
+  },
+  {
+    "report_id": "rpt_006",
+    "student_id": "STU2024001",
+    "clip_id": "clip_002",
+    "annotation_id": "ann_004",
+    "score": 88.0,
+    "accuracy": 85.0,
+    "repair_quality": 90.0,
+    "issues": ["晚补标注，识别正确"],
+    "submitted_at": "2026-05-28T11:30:00"
+  }
+]

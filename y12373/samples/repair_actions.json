@@ -1,0 +1,42 @@
+[
+  {
+    "action_id": "repair_001",
+    "annotation_id": "ann_001",
+    "action_type": "降噪",
+    "result": "底噪降低约60%",
+    "mis_deleted_original": false,
+    "timestamp": "2026-05-28T10:30:00"
+  },
+  {
+    "action_id": "repair_002",
+    "annotation_id": "ann_002",
+    "action_type": "去爆音",
+    "result": "爆音消除，但部分小号声被误删",
+    "mis_deleted_original": true,
+    "timestamp": "2026-05-28T10:35:00"
+  },
+  {
+    "action_id": "repair_003",
+    "annotation_id": "ann_003",
+    "action_type": "节拍修正",
+    "result": "节拍趋于稳定",
+    "mis_deleted_original": false,
+    "timestamp": "2026-05-28T10:40:00"
+  },
+  {
+    "action_id": "repair_004",
+    "annotation_id": "ann_005",
+    "action_type": "去爆音",
+    "result": "连续爆音部分消除，但节拍出现偏移",
+    "mis_deleted_original": false,
+    "timestamp": "2026-05-28T10:45:00"
+  },
+  {
+    "action_id": "repair_005",
+    "annotation_id": "ann_006",
+    "action_type": "降噪",
+    "result": "对节拍漂移应用降噪，导致原声被误删",
+    "mis_deleted_original": true,
+    "timestamp": "2026-05-28T10:50:00"
+  }
+]
