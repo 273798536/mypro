@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>函数曲面鞍点探测器</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.2.1/math.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--text2:#8b949e;
+  --accent:#58a6ff;--danger:#f85149;--warn:#d29922;--success:#3fb950;
+  --saddle:#ff6b6b;--local-min:#4ecdc4;--local-max:#ffe66d;--grad-miss:#ff9f43;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+.app{display:grid;grid-template-columns:320px 1fr 360px;grid-template-rows:52px 1fr;height:100vh}
+
+.topbar{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px}
+.topbar h1{font-size:16px;font-weight:600;letter-spacing:.5px;background:linear-gradient(135deg,var(--accent),var(--success));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar .sep{width:1px;height:24px;background:var(--border)}
+.btn{padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{background:#79b8ff}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.danger:hover{background:rgba(248,81,73,.15)}
+
+.left{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px}
+.section{margin-bottom:20px}
+.section-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.section-title .dot{width:6px;height:6px;border-radius:50%}
+
+.formula-input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Fira Code',monospace;font-size:14px;resize:vertical;min-height:60px;transition:border-color .2s}
+.formula-input:focus{outline:none;border-color:var(--accent)}
+.formula-hint{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.5}
+
+.slider-group{margin-bottom:14px}
+.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:13px}
+.slider-label .val{color:var(--accent);font-family:monospace;font-size:12px}
+.slider-label .source-tag{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:600}
+.source-original{background:rgba(88,166,255,.15);color:var(--accent)}
+.source-computed{background:rgba(63,185,80,.15);color:var(--success)}
+.source-imported{background:rgba(210,153,34,.15);color:var(--warn)}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg)}
+
+.import-area{width:100%;padding:8px;background:var(--bg);border:1px dashed var(--border);border-radius:8px;color:var(--text2);font-size:12px;font-family:monospace;resize:vertical;min-height:80px}
+.import-area:focus{outline:none;border-color:var(--warn);color:var(--text)}
+
+.canvas-wrap{position:relative;overflow:hidden;background:var(--bg)}
+.canvas-wrap canvas{display:block}
+.watermark{position:absolute;bottom:12px;left:12px;font-size:11px;color:rgba(255,255,255,.25);pointer-events:none}
+
+.right{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+
+.detect-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.detect-card{padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg)}
+.detect-card .num{font-size:22px;font-weight:700;font-family:monospace}
+.detect-card .label{font-size:11px;color:var(--text2);margin-top:2px}
+.detect-card.saddle .num{color:var(--saddle)}
+.detect-card.local-min .num{color:var(--local-min)}
+.detect-card.local-max .num{color:var(--local-max)}
+.detect-card.grad-miss .num{color:var(--grad-miss)}
+
+.point-list{max-height:240px;overflow-y:auto}
+.point-item{padding:8px 10px;border-radius:6px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s;font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.point-item:hover{border-color:var(--accent);background:rgba(88,166,255,.05)}
+.point-item.active{border-color:var(--accent);background:rgba(88,166,255,.1)}
+.point-item .type-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.point-item .coords{font-family:monospace;color:var(--text2)}
+
+.detail-panel{padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:none}
+.detail-panel.visible{display:block}
+.detail-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(48,54,61,.5)}
+.detail-row:last-child{border:none}
+.detail-row .key{color:var(--text2)}
+.detail-row .val{font-family:monospace;color:var(--text);max-width:200px;text-align:right;word-break:break-all}
+
+.error-log{max-height:200px;overflow-y:auto}
+.error-entry{padding:8px 10px;border-radius:6px;margin-bottom:4px;font-size:11px;border-left:3px solid}
+.error-entry.explosion{border-color:var(--danger);background:rgba(248,81,73,.05)}
+.error-entry.gradient{border-color:var(--warn);background:rgba(210,153,34,.05)}
+.error-entry.misjudge{border-color:var(--grad-miss);background:rgba(255,159,67,.05)}
+.error-entry .err-title{font-weight:600;margin-bottom:2px}
+.error-entry .err-trigger{color:var(--text2)}
+.error-entry .err-suggestion{color:var(--success);margin-top:4px;font-style:italic}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:8px 0}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filter-chip{padding:4px 10px;border-radius:12px;border:1px solid var(--border);font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.filter-chip.active{border-color:var(--accent);background:rgba(88,166,255,.15);color:var(--accent)}
+.filter-chip:hover{border-color:var(--accent)}
+
+.tooltip{position:absolute;padding:8px 12px;background:rgba(22,27,34,.95);border:1px solid var(--border);border-radius:6px;font-size:12px;pointer-events:none;z-index:100;display:none;max-width:260px;backdrop-filter:blur(8px)}
+.tooltip.visible{display:block}
+.tooltip .tt-type{font-weight:600;margin-bottom:4px}
+.tooltip .tt-coords{font-family:monospace;color:var(--text2);font-size:11px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:13px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <h1>函数曲面鞍点探测器</h1>
+    <div class="sep"></div>
+    <button class="btn primary" onclick="detectSaddlePoints()">▶ 探测</button>
+    <button class="btn" onclick="resetView()">⟳ 重置视角</button>
+    <button class="btn" onclick="exportScreenshot()">📷 截图导出</button>
+    <button class="btn" onclick="exportReport()">📋 导出报告</button>
+    <div style="flex:1"></div>
+    <span style="font-size:11px;color:var(--text2)" id="statusText">就绪</span>
+  </div>
+
+  <div class="left">
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent)"></span>函数公式</div>
+      <textarea class="formula-input" id="formulaInput" spellcheck="false">a * x^2 - b * y^2 + c * x * y</textarea>
+      <div class="formula-hint">变量: x, y &nbsp;|&nbsp; 运算: + - * / ^ &nbsp;|&nbsp; 函数: sin cos tan exp log sqrt abs<br>示例: sin(a*x) * cos(b*y) &nbsp;|&nbsp; x^3 - 3*x*y^2</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--success)"></span>参数滑块</div>
+      <div id="paramSliders"></div>
+      <div style="margin-top:8px">
+        <button class="btn" onclick="addParameter()" style="font-size:12px">+ 添加参数</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--local-min)"></span>采样范围</div>
+      <div class="slider-group">
+        <div class="slider-label"><span>X 范围</span><span class="val" id="xRangeVal">[-5, 5]</span></div>
+        <input type="range" id="xRangeSlider" min="1" max="10" value="5" step="0.5" oninput="updateRange()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>Y 范围</span><span class="val" id="yRangeVal">[-5, 5]</span></div>
+        <input type="range" id="yRangeSlider" min="1" max="10" value="5" step="0.5" oninput="updateRange()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>网格密度</span><span class="val" id="densityVal">80</span></div>
+        <input type="range" id="densitySlider" min="20" max="200" value="80" step="10" oninput="updateRange()">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--warn)"></span>导入数据</div>
+      <textarea class="import-area" id="importArea" placeholder='粘贴 JSON 导入参数或探测点&#10;格式:&#10;{&#10;  "params":{"a":2,"b":1},&#10;  "source":"原始材料",&#10;  "type":"import"&#10;}'></textarea>
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <button class="btn" onclick="importData('original')" style="font-size:12px">📥 导入(原始)</button>
+        <button class="btn" onclick="importData('computed')" style="font-size:12px">📥 导入(计算)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="watermark">函数曲面鞍点探测器 · 拖拽旋转 · 滚轮缩放 · 点击探测点查看明细</div>
+    <div class="tooltip" id="tooltip">
+      <div class="tt-type" id="ttType"></div>
+      <div class="tt-coords" id="ttCoords"></div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--saddle)"></span>探测结果</div>
+      <div class="detect-summary" id="detectSummary">
+        <div class="detect-card saddle"><div class="num" id="saddleCount">0</div><div class="label">鞍点</div></div>
+        <div class="detect-card local-min"><div class="num" id="minCount">0</div><div class="label">极小值</div></div>
+        <div class="detect-card local-max"><div class="num" id="maxCount">0</div><div class="label">极大值</div></div>
+        <div class="detect-card grad-miss"><div class="num" id="gradMissCount">0</div><div class="label">梯度缺失</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent)"></span>筛选</div>
+      <div class="filter-row" id="filterRow">
+        <span class="filter-chip active" data-type="saddle" onclick="toggleFilter(this)">鞍点</span>
+        <span class="filter-chip active" data-type="local-min" onclick="toggleFilter(this)">极小值</span>
+        <span class="filter-chip active" data-type="local-max" onclick="toggleFilter(this)">极大值</span>
+        <span class="filter-chip active" data-type="gradient-missing" onclick="toggleFilter(this)">梯度缺失</span>
+        <span class="filter-chip active" data-type="explosion" onclick="toggleFilter(this)">参数爆炸</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--success)"></span>探测点列表</div>
+      <div class="point-list" id="pointList">
+        <div style="font-size:12px;color:var(--text2);padding:12px;text-align:center">点击「探测」开始分析</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent)"></span>点明细</div>
+      <div class="detail-panel" id="detailPanel">
+        <div class="detail-row"><span class="key">类型</span><span class="val" id="detType">-</span></div>
+        <div class="detail-row"><span class="key">坐标</span><span class="val" id="detCoords">-</span></div>
+        <div class="detail-row"><span class="key">f(x,y)</span><span class="val" id="detValue">-</span></div>
+        <div class="detail-row"><span class="key">梯度 ∇f</span><span class="val" id="detGrad">-</span></div>
+        <div class="detail-row"><span class="key">Hessian</span><span class="val" id="detHessian">-</span></div>
+        <div class="detail-row"><span class="key">det(H)</span><span class="val" id="detDetH">-</span></div>
+        <div class="detail-row"><span class="key">来源</span><span class="val" id="detSource">-</span></div>
+        <div class="detail-row"><span class="key">判定依据</span><span class="val" id="detReason">-</span></div>
+        <div class="detail-row"><span class="key">风险</span><span class="val" id="detRisk">-</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--danger)"></span>错误追踪</div>
+      <div class="error-log" id="errorLog">
+        <div style="font-size:12px;color:var(--text2);padding:8px;text-align:center">暂无错误</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--text2)"></span>图例</div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--saddle)"></span>鞍点</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--local-min)"></span>极小值</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--local-max)"></span>极大值</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--grad-miss)"></span>梯度缺失</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--danger)"></span>参数爆炸</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const EXPLOSION_THRESHOLD = 1e6;
+const GRADIENT_EPS = 1e-6;
+const CRITICAL_THRESHOLD = 0.15;
+const HESSIAN_SINGULAR_THRESHOLD = 0.01;
+
+let scene, camera, renderer, controls;
+let surfaceMesh, wireframeMesh;
+let markerGroup, explosionGroup;
+let detectedPoints = [];
+let errorEntries = [];
+let activeFilters = new Set(['saddle','local-min','local-max','gradient-missing','explosion']);
+let selectedPointIndex = -1;
+let params = { a: 1, b: 1, c: 0 };
+let paramSources = {};
+let dataImports = [];
+
+function init() {
+  const wrap = document.getElementById('canvasWrap');
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0d1117);
+  scene.fog = new THREE.FogExp2(0x0d1117, 0.015);
+
+  camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 1000);
+  camera.position.set(8, 8, 8);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  wrap.insertBefore(renderer.domElement, wrap.firstChild);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 3;
+  controls.maxDistance = 30;
+
+  const ambient = new THREE.AmbientLight(0x404060, 0.6);
+  scene.add(ambient);
+  const dir = new THREE.DirectionalLight(0xffffff, 1.0);
+  dir.position.set(5, 10, 7);
+  scene.add(dir);
+  const dir2 = new THREE.DirectionalLight(0x58a6ff, 0.3);
+  dir2.position.set(-5, 5, -5);
+  scene.add(dir2);
+
+  const grid = new THREE.GridHelper(20, 20, 0x30363d, 0x21262d);
+  grid.position.y = -0.01;
+  scene.add(grid);
+
+  markerGroup = new THREE.Group();
+  scene.add(markerGroup);
+  explosionGroup = new THREE.Group();
+  scene.add(explosionGroup);
+
+  buildSurface();
+  initParams();
+  setupRaycaster();
+  animate();
+
+  window.addEventListener('resize', onResize);
+}
+
+function onResize() {
+  const wrap = document.getElementById('canvasWrap');
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+function safeEval(expr, scope) {
+  try {
+    const v = math.evaluate(expr, scope);
+    if (typeof v === 'number' && isFinite(v) && Math.abs(v) < EXPLOSION_THRESHOLD) return v;
+    return null;
+  } catch { return null; }
+}
+
+function buildSurface() {
+  if (surfaceMesh) { scene.remove(surfaceMesh); surfaceMesh.geometry.dispose(); surfaceMesh.material.dispose(); }
+  if (wireframeMesh) { scene.remove(wireframeMesh); wireframeMesh.geometry.dispose(); wireframeMesh.material.dispose(); }
+
+  const formula = document.getElementById('formulaInput').value.trim();
+  if (!formula) return;
+
+  const xRange = parseFloat(document.getElementById('xRangeSlider').value);
+  const yRange = parseFloat(document.getElementById('yRangeSlider').value);
+  const density = parseInt(document.getElementById('densitySlider').value);
+
+  const compiled = math.compile(formula);
+  const vertices = [], colors = [], indices = [];
+  const explosionVerts = [];
+  let zMin = Infinity, zMax = -Infinity;
+  const grid = [];
+
+  for (let j = 0; j <= density; j++) {
+    grid[j] = [];
+    for (let i = 0; i <= density; i++) {
+      const x = -xRange + (2 * xRange * i) / density;
+      const y = -yRange + (2 * yRange * j) / density;
+      const scope = { x, y, ...params };
+      const z = safeEvalCompiled(compiled, scope);
+      grid[j][i] = { x, y, z, explosion: z === null };
+      if (z !== null) {
+        zMin = Math.min(zMin, z);
+        zMax = Math.max(zMax, z);
+      }
+    }
+  }
+
+  const zSpan = Math.max(zMax - zMin, 0.001);
+  let vIdx = 0;
+  const idxMap = [];
+
+  for (let j = 0; j <= density; j++) {
+    idxMap[j] = [];
+    for (let i = 0; i <= density; i++) {
+      const p = grid[j][i];
+      if (p.z !== null) {
+        vertices.push(p.x, p.z / zSpan * 4, p.y);
+        const t = (p.z - zMin) / zSpan;
+        const c = heightColor(t);
+        colors.push(c.r, c.g, c.b);
+        idxMap[j][i] = vIdx++;
+      } else {
+        idxMap[j][i] = -1;
+        explosionVerts.push(new THREE.Vector3(p.x, 0, p.y));
+      }
+    }
+  }
+
+  for (let j = 0; j < density; j++) {
+    for (let i = 0; i < density; i++) {
+      const a = idxMap[j][i], b = idxMap[j][i+1];
+      const c = idxMap[j+1][i], d = idxMap[j+1][i+1];
+      if (a >= 0 && b >= 0 && c >= 0) indices.push(a, b, c);
+      if (b >= 0 && c >= 0 && d >= 0) indices.push(b, d, c);
+    }
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+
+  const mat = new THREE.MeshPhongMaterial({
+    vertexColors: true, side: THREE.DoubleSide,
+    shininess: 40, transparent: true, opacity: 0.88
+  });
+  surfaceMesh = new THREE.Mesh(geo, mat);
+  scene.add(surfaceMesh);
+
+  const wireMat = new THREE.MeshBasicMaterial({
+    wireframe: true, color: 0x58a6ff, transparent: true, opacity: 0.06
+  });
+  wireframeMesh = new THREE.Mesh(geo.clone(), wireMat);
+  scene.add(wireframeMesh);
+
+  buildExplosionMarkers(explosionVerts);
+
+  window._grid = grid;
+  window._compiled = compiled;
+  window._zMin = zMin;
+  window._zMax = zMax;
+  window._zSpan = zSpan;
+  window._xRange = xRange;
+  window._yRange = yRange;
+  window._density = density;
+}
+
+function safeEvalCompiled(compiled, scope) {
+  try {
+    const v = compiled.evaluate(scope);
+    if (typeof v === 'number' && isFinite(v) && Math.abs(v) < EXPLOSION_THRESHOLD) return v;
+    return null;
+  } catch { return null; }
+}
+
+function heightColor(t) {
+  const r = Math.min(1, 0.1 + 0.5 * t + 0.4 * t * t);
+  const g = Math.min(1, 0.15 + 0.6 * Math.sin(t * Math.PI));
+  const b = Math.min(1, 0.5 - 0.3 * t + 0.2 * t * t);
+  return { r, g, b };
+}
+
+function buildExplosionMarkers(verts) {
+  while (explosionGroup.children.length) {
+    const c = explosionGroup.children[0];
+    explosionGroup.remove(c);
+    c.geometry?.dispose();
+    c.material?.dispose();
+  }
+  if (verts.length === 0) return;
+
+  const sampleStep = Math.max(1, Math.floor(verts.length / 200));
+  const geo = new THREE.SphereGeometry(0.08, 8, 8);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xf85149, transparent: true, opacity: 0.7 });
+
+  for (let i = 0; i < verts.length; i += sampleStep) {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.copy(verts[i]);
+    m.userData = { type: 'explosion', index: i };
+    explosionGroup.add(m);
+  }
+}
+
+function computeGradient(compiled, x, y, h = 1e-5) {
+  const scope = { x, y, ...params };
+  const fx0 = safeEvalCompiled(compiled, scope);
+  if (fx0 === null) return null;
+
+  const dfdx = safeEvalCompiled(compiled, { x: x + h, y, ...params });
+  const dfdx2 = safeEvalCompiled(compiled, { x: x - h, y, ...params });
+  const dfdy = safeEvalCompiled(compiled, { x, y: y + h, ...params });
+  const dfdy2 = safeEvalCompiled(compiled, { x, y: y - h, ...params });
+
+  if (dfdx === null || dfdx2 === null || dfdy === null || dfdy2 === null) return null;
+
+  const gx = (dfdx - dfdx2) / (2 * h);
+  const gy = (dfdy - dfdy2) / (2 * h);
+
+  if (!isFinite(gx) || !isFinite(gy) || Math.abs(gx) > EXPLOSION_THRESHOLD || Math.abs(gy) > EXPLOSION_THRESHOLD) {
+    return null;
+  }
+  return { gx, gy, value: fx0 };
+}
+
+function computeHessian(compiled, x, y, h = 1e-4) {
+  const fxx = computeSecondPartial(compiled, x, y, 'x', 'x', h);
+  const fyy = computeSecondPartial(compiled, x, y, 'y', 'y', h);
+  const fxy = computeSecondPartial(compiled, x, y, 'x', 'y', h);
+  if (fxx === null || fyy === null || fxy === null) return null;
+  return { fxx, fyy, fxy, det: fxx * fyy - fxy * fxy };
+}
+
+function computeSecondPartial(compiled, x, y, d1, d2, h) {
+  const p = { ...params };
+  const pp = { ...params }, pm = { ...params }, mp = { ...params }, mm = { ...params };
+  if (d1 === 'x' && d2 === 'x') {
+    const v1 = safeEvalCompiled(compiled, { x: x + h, y, ...p });
+    const v2 = safeEvalCompiled(compiled, { x: x - h, y, ...p });
+    const v0 = safeEvalCompiled(compiled, { x, y, ...p });
+    if (v1 === null || v2 === null || v0 === null) return null;
+    return (v1 - 2 * v0 + v2) / (h * h);
+  }
+  if (d1 === 'y' && d2 === 'y') {
+    const v1 = safeEvalCompiled(compiled, { x, y: y + h, ...p });
+    const v2 = safeEvalCompiled(compiled, { x, y: y - h, ...p });
+    const v0 = safeEvalCompiled(compiled, { x, y, ...p });
+    if (v1 === null || v2 === null || v0 === null) return null;
+    return (v1 - 2 * v0 + v2) / (h * h);
+  }
+  const vPP = safeEvalCompiled(compiled, { x: x + h, y: y + h, ...p });
+  const vPM = safeEvalCompiled(compiled, { x: x + h, y: y - h, ...p });
+  const vMP = safeEvalCompiled(compiled, { x: x - h, y: y + h, ...p });
+  const vMM = safeEvalCompiled(compiled, { x: x - h, y: y - h, ...p });
+  if (vPP === null || vPM === null || vMP === null || vMM === null) return null;
+  return (vPP - vPM - vMP + vMM) / (4 * h * h);
+}
+
+function detectSaddlePoints() {
+  const compiled = window._compiled;
+  if (!compiled) { showToast('请先输入函数公式'); return; }
+
+  detectedPoints = [];
+  errorEntries = [];
+
+  const grid = window._grid;
+  const density = window._density;
+  const xRange = window._xRange;
+  const yRange = window._yRange;
+  const zSpan = window._zSpan;
+  const zMin = window._zMin;
+
+  setStatus('正在扫描梯度场...');
+
+  const step = Math.max(2, Math.floor(density / 25));
+  let explosionCount = 0;
+
+  for (let j = step; j <= density - step; j += step) {
+    for (let i = step; i <= density - step; i += step) {
+      const pt = grid[j]?.[i];
+      if (!pt || pt.z === null) {
+        explosionCount++;
+        continue;
+      }
+      const x = pt.x, y = pt.y;
+      const grad = computeGradient(compiled, x, y);
+
+      if (grad === null) {
+        detectedPoints.push({
+          type: 'gradient-missing', x, y, z: pt.z,
+          gradient: null, hessian: null,
+          source: '计算结果', reason: '数值梯度无法计算（函数在该点不连续或超出阈值）',
+          risk: '高', suggestion: '检查函数在该点的连续性，尝试缩小采样范围或调整参数'
+        });
+        errorEntries.push({
+          kind: 'gradient', title: '梯度缺失',
+          detail: `(${x.toFixed(3)}, ${y.toFixed(3)})`,
+          trigger: `参数: ${JSON.stringify(params)}`,
+          suggestion: '检查函数连续性，缩小参数范围'
+        });
+        continue;
+      }
+
+      const gradMag = Math.sqrt(grad.gx ** 2 + grad.gy ** 2);
+      if (gradMag < CRITICAL_THRESHOLD) {
+        const H = computeHessian(compiled, x, y);
+        if (H === null) {
+          detectedPoints.push({
+            type: 'gradient-missing', x, y, z: grad.value,
+            gradient: grad, hessian: null,
+            source: '计算结果', reason: 'Hessian 无法计算（二阶偏导数值不稳定）',
+            risk: '高', suggestion: '调整步长参数 h，或检查函数光滑性'
+          });
+          errorEntries.push({
+            kind: 'gradient', title: 'Hessian 计算失败',
+            detail: `(${x.toFixed(3)}, ${y.toFixed(3)})`,
+            trigger: `梯度模=${gradMag.toFixed(6)}`,
+            suggestion: '函数可能在临界点不光滑'
+          });
+          continue;
+        }
+
+        let type, reason, risk;
+        if (Math.abs(H.det) < HESSIAN_SINGULAR_THRESHOLD) {
+          type = 'saddle';
+          reason = `det(H)=${H.det.toFixed(6)}≈0，Hessian 近奇异，判别不确定，倾向于鞍点（退化情况）`;
+          risk = '中';
+          errorEntries.push({
+            kind: 'misjudge', title: '鞍点误判风险',
+            detail: `(${x.toFixed(3)}, ${y.toFixed(3)}) det(H)=${H.det.toFixed(6)}`,
+            trigger: `H 近奇异: fxx=${H.fxx.toFixed(4)}, fyy=${H.fyy.toFixed(4)}, fxy=${H.fxy.toFixed(4)}`,
+            suggestion: '增加采样密度或使用更高精度的数值方法'
+          });
+        } else if (H.det < 0) {
+          type = 'saddle';
+          reason = `det(H)=${H.det.toFixed(4)}<0，Hessian 不定，确认为鞍点`;
+          risk = '低';
+        } else if (H.det > 0 && H.fxx > 0) {
+          type = 'local-min';
+          reason = `det(H)=${H.det.toFixed(4)}>0, fxx=${H.fxx.toFixed(4)}>0，Hessian 正定，局部极小`;
+          risk = '低';
+        } else if (H.det > 0 && H.fxx < 0) {
+          type = 'local-max';
+          reason = `det(H)=${H.det.toFixed(4)}>0, fxx=${H.fxx.toFixed(4)}<0，Hessian 负定，局部极大`;
+          risk = '低';
+        } else {
+          type = 'saddle';
+          reason = `det(H)=${H.det.toFixed(4)}>0 但 fxx≈0，退化情况，倾向鞍点`;
+          risk = '中';
+        }
+
+        detectedPoints.push({
+          type, x, y, z: grad.value,
+          gradient: grad, hessian: H,
+          source: '计算结果', reason, risk,
+          suggestion: risk === '中' ? '建议增加采样密度验证' : '-'
+        });
+      }
+    }
+  }
+
+  if (explosionCount > 0) {
+    errorEntries.push({
+      kind: 'explosion', title: '参数爆炸',
+      detail: `${explosionCount} 个采样点函数值溢出`,
+      trigger: `参数: ${JSON.stringify(params)} | 阈值: ${EXPLOSION_THRESHOLD}`,
+      suggestion: '缩小参数范围或缩小 x/y 采样区间'
+    });
+  }
+
+  setStatus(`探测完成: ${detectedPoints.length} 个临界点`);
+  updateSummary();
+  renderMarkers();
+  renderPointList();
+  renderErrorLog();
+  showToast(`探测完成，发现 ${detectedPoints.length} 个临界点`);
+}
+
+function renderMarkers() {
+  while (markerGroup.children.length) {
+    const c = markerGroup.children[0];
+    markerGroup.remove(c);
+    c.geometry?.dispose();
+    c.material?.dispose();
+  }
+
+  const zSpan = window._zSpan || 1;
+  const zMin = window._zMin || 0;
+  const typeColors = {
+    'saddle': 0xff6b6b, 'local-min': 0x4ecdc4,
+    'local-max': 0xffe66d, 'gradient-missing': 0xff9f43
+  };
+
+  detectedPoints.forEach((pt, idx) => {
+    if (!activeFilters.has(pt.type)) return;
+    const color = typeColors[pt.type] || 0xffffff;
+    const geo = new THREE.SphereGeometry(0.15, 16, 16);
+    const mat = new THREE.MeshPhongMaterial({
+      color, emissive: color, emissiveIntensity: 0.4,
+      transparent: true, opacity: 0.9
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(pt.x, pt.z / zSpan * 4, pt.y);
+    mesh.userData = { pointIndex: idx, type: pt.type };
+    markerGroup.add(mesh);
+
+    if (idx === selectedPointIndex) {
+      const ringGeo = new THREE.RingGeometry(0.25, 0.35, 32);
+      const ringMat = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.copy(mesh.position);
+      ring.lookAt(camera.position);
+      ring.userData = { isHighlightRing: true };
+      markerGroup.add(ring);
+    }
+  });
+}
+
+function updateSummary() {
+  let saddle = 0, lmin = 0, lmax = 0, gmiss = 0;
+  detectedPoints.forEach(p => {
+    if (p.type === 'saddle') saddle++;
+    else if (p.type === 'local-min') lmin++;
+    else if (p.type === 'local-max') lmax++;
+    else if (p.type === 'gradient-missing') gmiss++;
+  });
+  document.getElementById('saddleCount').textContent = saddle;
+  document.getElementById('minCount').textContent = lmin;
+  document.getElementById('maxCount').textContent = lmax;
+  document.getElementById('gradMissCount').textContent = gmiss;
+}
+
+function renderPointList() {
+  const container = document.getElementById('pointList');
+  if (detectedPoints.length === 0) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text2);padding:12px;text-align:center">未发现临界点</div>';
+    return;
+  }
+  const typeLabels = { 'saddle': '鞍点', 'local-min': '极小', 'local-max': '极大', 'gradient-missing': '梯度缺失' };
+  const typeBgs = {
+    'saddle': 'rgba(255,107,107,.15);color:#ff6b6b',
+    'local-min': 'rgba(78,205,196,.15);color:#4ecdc4',
+    'local-max': 'rgba(255,230,109,.15);color:#ffe66d',
+    'gradient-missing': 'rgba(255,159,67,.15);color:#ff9f43'
+  };
+
+  container.innerHTML = detectedPoints.map((pt, idx) => {
+    if (!activeFilters.has(pt.type)) return '';
+    const label = typeLabels[pt.type] || pt.type;
+    const bg = typeBgs[pt.type] || '';
+    const active = idx === selectedPointIndex ? ' active' : '';
+    return `<div class="point-item${active}" onclick="window._selectPoint(${idx})">
+      <span class="type-badge" style="background:${bg}">${label}</span>
+      <span class="coords">(${pt.x.toFixed(2)}, ${pt.y.toFixed(2)}, ${pt.z.toFixed(2)})</span>
+    </div>`;
+  }).join('');
+}
+
+function renderErrorLog() {
+  const container = document.getElementById('errorLog');
+  if (errorEntries.length === 0) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text2);padding:8px;text-align:center">暂无错误</div>';
+    return;
+  }
+  container.innerHTML = errorEntries.map(e => `
+    <div class="error-entry ${e.kind}">
+      <div class="err-title">${e.title}</div>
+      <div>${e.detail}</div>
+      <div class="err-trigger">触发: ${e.trigger}</div>
+      <div class="err-suggestion">💡 ${e.suggestion}</div>
+    </div>
+  `).join('');
+}
+
+function selectPoint(idx) {
+  selectedPointIndex = idx;
+  const pt = detectedPoints[idx];
+  if (!pt) return;
+
+  const panel = document.getElementById('detailPanel');
+  panel.classList.add('visible');
+
+  const typeLabels = { 'saddle': '鞍点', 'local-min': '极小值', 'local-max': '极大值', 'gradient-missing': '梯度缺失' };
+  document.getElementById('detType').textContent = typeLabels[pt.type] || pt.type;
+  document.getElementById('detCoords').textContent = `(${pt.x.toFixed(4)}, ${pt.y.toFixed(4)})`;
+  document.getElementById('detValue').textContent = pt.z.toFixed(6);
+  document.getElementById('detGrad').textContent = pt.gradient
+    ? `(${pt.gradient.gx.toFixed(6)}, ${pt.gradient.gy.toFixed(6)})`
+    : '无法计算';
+  document.getElementById('detHessian').textContent = pt.hessian
+    ? `[${pt.hessian.fxx.toFixed(4)}, ${pt.hessian.fxy.toFixed(4)}; ${pt.hessian.fxy.toFixed(4)}, ${pt.hessian.fyy.toFixed(4)}]`
+    : '无法计算';
+  document.getElementById('detDetH').textContent = pt.hessian ? pt.hessian.det.toFixed(6) : '-';
+  document.getElementById('detSource').textContent = pt.source;
+  document.getElementById('detReason').textContent = pt.reason;
+  document.getElementById('detRisk').textContent = pt.risk;
+
+  renderMarkers();
+  renderPointList();
+}
+
+function toggleFilter(el) {
+  const type = el.dataset.type;
+  el.classList.toggle('active');
+  if (activeFilters.has(type)) activeFilters.delete(type);
+  else activeFilters.add(type);
+  renderMarkers();
+  renderPointList();
+}
+
+function setupRaycaster() {
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  const tooltip = document.getElementById('tooltip');
+  const ttType = document.getElementById('ttType');
+  const ttCoords = document.getElementById('ttCoords');
+
+  renderer.domElement.addEventListener('click', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    const hits = raycaster.intersectObjects(markerGroup.children.filter(c => !c.userData.isHighlightRing));
+    if (hits.length > 0) {
+      const idx = hits[0].object.userData.pointIndex;
+      if (idx !== undefined) selectPoint(idx);
+    }
+  });
+
+  renderer.domElement.addEventListener('mousemove', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    const hits = raycaster.intersectObjects(markerGroup.children.filter(c => !c.userData.isHighlightRing));
+    if (hits.length > 0) {
+      const obj = hits[0].object;
+      const idx = obj.userData.pointIndex;
+      const type = obj.userData.type;
+      if (idx !== undefined) {
+        const pt = detectedPoints[idx];
+        const typeLabels = { 'saddle': '鞍点', 'local-min': '极小值', 'local-max': '极大值', 'gradient-missing': '梯度缺失' };
+        ttType.textContent = typeLabels[type] || type;
+        ttCoords.textContent = `f(${pt.x.toFixed(2)}, ${pt.y.toFixed(2)}) = ${pt.z.toFixed(4)}`;
+        tooltip.style.left = (e.clientX - renderer.domElement.getBoundingClientRect().left + 12) + 'px';
+        tooltip.style.top = (e.clientY - renderer.domElement.getBoundingClientRect().top - 30) + 'px';
+        tooltip.classList.add('visible');
+        return;
+      }
+    }
+    tooltip.classList.remove('visible');
+  });
+}
+
+function initParams() {
+  const formula = document.getElementById('formulaInput').value;
+  const extracted = extractParams(formula);
+  const container = document.getElementById('paramSliders');
+  container.innerHTML = '';
+  params = {};
+  paramSources = {};
+
+  extracted.forEach(name => {
+    if (name === 'x' || name === 'y') return;
+    params[name] = 1;
+    paramSources[name] = '公式提取';
+    addSliderUI(container, name, 1, -10, 10, '公式提取');
+  });
+}
+
+function extractParams(formula) {
+  const reserved = new Set(['x','y','sin','cos','tan','exp','log','sqrt','abs','pi','e','PI','E']);
+  const matches = formula.match(/[a-zA-Z_]\w*/g) || [];
+  return [...new Set(matches.filter(m => !reserved.has(m)))];
+}
+
+function addSliderUI(container, name, value, min, max, source) {
+  const srcClass = source === '公式提取' ? 'source-original' : source === '导入数据' ? 'source-imported' : 'source-computed';
+  const srcLabel = source === '公式提取' ? '原始' : source === '导入数据' ? '导入' : '计算';
+  const div = document.createElement('div');
+  div.className = 'slider-group';
+  div.id = `slider-group-${name}`;
+  div.innerHTML = `
+    <div class="slider-label">
+      <span>${name} = <span class="val" id="val-${name}">${value}</span></span>
+      <span class="source-tag ${srcClass}">${srcLabel}</span>
+    </div>
+    <input type="range" id="slider-${name}" min="${min}" max="${max}" value="${value}" step="0.1"
+      oninput="window._onSliderChange('${name}', this.value)">
+  `;
+  container.appendChild(div);
+}
+
+function onSliderChange(name, value) {
+  const v = parseFloat(value);
+  if (Math.abs(v) > 100) {
+    errorEntries = errorEntries.filter(e => e.kind !== 'explosion' || !e.detail.includes(name));
+    errorEntries.push({
+      kind: 'explosion', title: '参数爆炸风险',
+      detail: `参数 ${name}=${v.toFixed(1)} 绝对值过大`,
+      trigger: `滑块调整 ${name}`,
+      suggestion: `将 ${name} 缩小到 |${name}|<10 范围内`
+    });
+    renderErrorLog();
+  }
+  params[name] = Math.max(-100, Math.min(100, v));
+  document.getElementById(`val-${name}`).textContent = params[name].toFixed(1);
+  buildSurface();
+}
+
+function addParameter() {
+  const name = prompt('参数名称（英文）:');
+  if (!name || !/^[a-zA-Z_]\w*$/.test(name)) { showToast('无效参数名'); return; }
+  if (params.hasOwnProperty(name)) { showToast('参数已存在'); return; }
+  params[name] = 0;
+  paramSources[name] = '手动添加';
+  addSliderUI(document.getElementById('paramSliders'), name, 0, -10, 10, '手动添加');
+}
+
+function importData(sourceType) {
+  const text = document.getElementById('importArea').value.trim();
+  if (!text) { showToast('请先粘贴 JSON 数据'); return; }
+  try {
+    const data = JSON.parse(text);
+    const label = sourceType === 'original' ? '原始材料' : '处理结果';
+    const srcLabel = sourceType === 'original' ? '导入' : '计算';
+
+    if (data.params && typeof data.params === 'object') {
+      const container = document.getElementById('paramSliders');
+      Object.entries(data.params).forEach(([k, v]) => {
+        params[k] = v;
+        paramSources[k] = label;
+        const existing = document.getElementById(`slider-group-${k}`);
+        if (existing) existing.remove();
+        addSliderUI(container, k, v, -10, 10, label);
+      });
+    }
+
+    if (data.formula) {
+      document.getElementById('formulaInput').value = data.formula;
+    }
+
+    dataImports.push({ ...data, sourceType, importTime: new Date().toISOString() });
+
+    buildSurface();
+    showToast(`导入成功（${label}），参数已更新`);
+    document.getElementById('importArea').value = '';
+  } catch (e) {
+    showToast('JSON 解析失败: ' + e.message);
+  }
+}
+
+function updateRange() {
+  const xr = parseFloat(document.getElementById('xRangeSlider').value);
+  const yr = parseFloat(document.getElementById('yRangeSlider').value);
+  const den = parseInt(document.getElementById('densitySlider').value);
+  document.getElementById('xRangeVal').textContent = `[-${xr}, ${xr}]`;
+  document.getElementById('yRangeVal').textContent = `[-${yr}, ${yr}]`;
+  document.getElementById('densityVal').textContent = den;
+  buildSurface();
+}
+
+function resetView() {
+  if (!camera || !controls) return;
+  camera.position.set(8, 8, 8);
+  controls.target.set(0, 0, 0);
+  controls.update();
+  selectedPointIndex = -1;
+  document.getElementById('detailPanel').classList.remove('visible');
+  renderMarkers();
+  renderPointList();
+}
+
+function exportScreenshot() {
+  renderer.render(scene, camera);
+  const link = document.createElement('a');
+  link.download = `鞍点探测_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.png`;
+  link.href = renderer.domElement.toDataURL('image/png');
+  link.click();
+  showToast('截图已导出');
+}
+
+function exportReport() {
+  const report = {
+    title: '函数曲面鞍点探测报告',
+    time: new Date().toISOString(),
+    formula: document.getElementById('formulaInput').value,
+    params: { ...params },
+    paramSources: { ...paramSources },
+    range: {
+      x: [-parseFloat(document.getElementById('xRangeSlider').value), parseFloat(document.getElementById('xRangeSlider').value)],
+      y: [-parseFloat(document.getElementById('yRangeSlider').value), parseFloat(document.getElementById('yRangeSlider').value)]
+    },
+    detectedPoints: detectedPoints.map(p => ({
+      type: p.type, x: +p.x.toFixed(6), y: +p.y.toFixed(6), z: +p.z.toFixed(6),
+      gradient: p.gradient ? { gx: +p.gradient.gx.toFixed(6), gy: +p.gradient.gy.toFixed(6) } : null,
+      hessian: p.hessian ? { fxx: +p.hessian.fxx.toFixed(6), fyy: +p.hessian.fyy.toFixed(6), fxy: +p.hessian.fxy.toFixed(6), det: +p.hessian.det.toFixed(6) } : null,
+      source: p.source, reason: p.reason, risk: p.risk
+    })),
+    errors: errorEntries,
+    imports: dataImports
+  };
+  const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.download = `鞍点报告_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  showToast('报告已导出');
+}
+
+function setStatus(text) {
+  document.getElementById('statusText').textContent = text;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+window._selectPoint = selectPoint;
+window._onSliderChange = onSliderChange;
+window.detectSaddlePoints = detectSaddlePoints;
+window.resetView = resetView;
+window.exportScreenshot = exportScreenshot;
+window.exportReport = exportReport;
+window.importData = importData;
+window.addParameter = addParameter;
+window.updateRange = updateRange;
+window.toggleFilter = toggleFilter;
+
+document.getElementById('formulaInput').addEventListener('input', () => {
+  initParams();
+  buildSurface();
+});
+
+init();
+</script>
+</body>
+</html>
