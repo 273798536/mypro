@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热泵COP边界检查工具</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>热泵COP边界检查工具</h1>
+            <p class="subtitle">温差 · 功率 · 除霜状态 联合校验 · 异常追溯</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="overview">概览</button>
+            <button class="tab-btn" data-tab="data">数据管理</button>
+            <button class="tab-btn" data-tab="calculation">COP计算</button>
+            <button class="tab-btn" data-tab="inspection">检查报告</button>
+            <button class="tab-btn" data-tab="trend">趋势图表</button>
+            <button class="tab-btn" data-tab="history">历史追溯</button>
+        </nav>
+
+        <main>
+            <section id="overview" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">记录总数</div>
+                        <div class="stat-value" id="totalRecords">0</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-label">缺字段记录</div>
+                        <div class="stat-value" id="missingFieldRecords">0</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">功率反号</div>
+                        <div class="stat-value" id="powerSignError">0</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">除霜漏标</div>
+                        <div class="stat-value" id="defrostMissed">0</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-label">晚补记录</div>
+                        <div class="stat-value" id="lateEntries">0</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-label">平均COP</div>
+                        <div class="stat-value" id="avgCOP">-</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>COP边界规则</h3>
+                    <div class="rule-grid">
+                        <div class="rule-item">
+                            <span class="rule-label">正常范围：</span>
+                            <span class="rule-value">2.5 ~ 5.5</span>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-label">偏低边界：</span>
+                            <span class="rule-value">1.5 ~ 2.5</span>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-label">偏高边界：</span>
+                            <span class="rule-value">5.5 ~ 7.0</span>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-label">异常范围：</span>
+                            <span class="rule-value">&lt; 1.5 或 &gt; 7.0</span>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-label">最小温差：</span>
+                            <span class="rule-value">3℃</span>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-label">额定功率：</span>
+                            <span class="rule-value">5 ~ 25 kW</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data" class="tab-content">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>数据管理</h3>
+                        <div class="panel-actions">
+                            <button id="loadSampleBtn" class="btn btn-primary">加载样例数据</button>
+                            <button id="clearDataBtn" class="btn btn-danger">清空数据</button>
+                        </div>
+                    </div>
+                    <p class="panel-desc">样例数据包含：正常记录、功率反号、缺字段、晚补、备注修改、除霜漏标等典型场景</p>
+                    
+                    <div class="data-table-container">
+                        <table class="data-table" id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>进水温度</th>
+                                    <th>出水温度</th>
+                                    <th>温差</th>
+                                    <th>功率(kW)</th>
+                                    <th>除霜标记</th>
+                                    <th>COP</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="calculation" class="tab-content">
+                <div class="panel">
+                    <h3>COP计算公式</h3>
+                    <div class="formula-box">
+                        <p class="formula">COP = (水流量 × 水比热容 × 温差) / 功率</p>
+                        <p class="formula-note">水流量 = 6.0 m³/h，水比热容 = 4.1868 kJ/(kg·℃)</p>
+                        <p class="formula-note">简化公式：COP = (6.978 × 温差) / 功率</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>单条计算验证</h3>
+                    <div class="calc-form">
+                        <div class="form-group">
+                            <label>进水温度 (℃)</label>
+                            <input type="number" id="calcTempIn" step="0.1" value="40">
+                        </div>
+                        <div class="form-group">
+                            <label>出水温度 (℃)</label>
+                            <input type="number" id="calcTempOut" step="0.1" value="45">
+                        </div>
+                        <div class="form-group">
+                            <label>功率 (kW)</label>
+                            <input type="number" id="calcPower" step="0.1" value="10">
+                        </div>
+                        <button id="calcBtn" class="btn btn-primary">计算COP</button>
+                    </div>
+                    <div class="calc-result" id="calcResult">
+                        <p>请输入参数后点击计算</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>状态分段逻辑</h3>
+                    <div class="status-flow">
+                        <div class="status-node">
+                            <div class="node-title">数据完整性检查</div>
+                            <div class="node-desc">检查温度、功率、除霜标记是否缺失</div>
+                        </div>
+                        <div class="status-arrow">→</div>
+                        <div class="status-node">
+                            <div class="node-title">功率符号校验</div>
+                            <div class="node-desc">检测功率反号（负值）</div>
+                        </div>
+                        <div class="status-arrow">→</div>
+                        <div class="status-node">
+                            <div class="node-title">除霜状态判断</div>
+                            <div class="node-desc">温差<3℃且功率正常 → 疑似除霜漏标</div>
+                        </div>
+                        <div class="status-arrow">→</div>
+                        <div class="status-node">
+                            <div class="node-title">COP计算</div>
+                            <div class="node-desc">根据公式计算能效比</div>
+                        </div>
+                        <div class="status-arrow">→</div>
+                        <div class="status-node">
+                            <div class="node-title">边界判定</div>
+                            <div class="node-desc">正常/偏低/偏高/异常</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="inspection" class="tab-content">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>检查报告</h3>
+                        <button id="exportReportBtn" class="btn btn-primary">导出报告</button>
+                    </div>
+                    
+                    <div class="report-summary" id="reportSummary">
+                        <p class="empty-hint">请先加载或导入数据以生成检查报告</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>异常明细</h3>
+                    <div class="anomaly-list" id="anomalyList">
+                        <p class="empty-hint">暂无异常数据</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="trend" class="tab-content">
+                <div class="panel">
+                    <div class="chart-controls">
+                        <label>
+                            <input type="checkbox" id="showCOP" checked> 显示COP曲线
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showTemp" checked> 显示温差曲线
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showPower" checked> 显示功率曲线
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showDefrost" checked> 标记除霜状态
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showAnomaly" checked> 高亮异常点
+                        </label>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>COP分布直方图</h3>
+                    <div class="chart-container">
+                        <canvas id="histogramChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="history" class="tab-content">
+                <div class="panel">
+                    <h3>历史追溯</h3>
+                    <p class="panel-desc">每条记录的修改历史、晚补标记、备注变更都会留痕，确保数据可追溯</p>
+                    
+                    <div class="history-list" id="historyList">
+                        <p class="empty-hint">请先加载数据以查看历史追溯信息</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="recordModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">记录详情</h3>
+                    <span class="close" id="closeModal">&times;</span>
+                </div>
+                <div class="modal-body" id="modalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
