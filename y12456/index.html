@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鼓点塔防排练室 - 选择关卡</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #4ECDC4, #44A08D, #DDA0DD);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header p {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .level-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .level-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4ECDC4, #44A08D);
+    }
+    
+    .level-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(78, 205, 196, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .level-difficulty {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .level-difficulty.easy {
+      background: rgba(0, 184, 148, 0.2);
+      color: #00b894;
+    }
+    
+    .level-difficulty.medium {
+      background: rgba(243, 156, 18, 0.2);
+      color: #f39c12;
+    }
+    
+    .level-difficulty.hard {
+      background: rgba(231, 76, 60, 0.2);
+      color: #e74c3c;
+    }
+    
+    .level-name {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .level-description {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .level-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 13px;
+    }
+    
+    .meta-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    
+    .meta-label {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      display: block;
+      margin-bottom: 3px;
+    }
+    
+    .meta-value {
+      font-weight: 600;
+      color: #4ECDC4;
+    }
+    
+    .level-stats {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .play-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4ECDC4, #44A08D);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .play-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+    }
+    
+    .stats-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 30px;
+      margin-top: 30px;
+    }
+    
+    .stats-section h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #4ECDC4;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+    }
+    
+    .stat-card .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #4ECDC4;
+      margin-bottom: 5px;
+    }
+    
+    .stat-card .stat-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 13px;
+    }
+    
+    .version-info {
+      margin-top: 10px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🥁 鼓点塔防排练室</h1>
+      <p>用塔防游戏的方式练习节奏，守住重音、切分和稳定拍！</p>
+    </div>
+    
+    <div class="levels-grid" id="levelsGrid"></div>
+    
+    <div class="stats-section">
+      <h2>📊 整体统计</h2>
+      <div class="stats-grid" id="overallStats"></div>
+    </div>
+    
+    <div class="footer">
+      <p>🎯 提示：不要只盯速度，注意重音位置和切分节奏！</p>
+      <p class="version-info">版本: 1.0.0 | 数据源: drum-track-rehearsal-v1</p>
+    </div>
+  </div>
+  
+  <script src="js/config.js"></script>
+  <script src="js/data/levels.js"></script>
+  <script src="js/engine/HistoryManager.js"></script>
+  <script>
+    const levels = getAllLevels();
+    const history = new HistoryManager();
+    
+    function getDifficultyLabel(diff) {
+      if (diff <= 1) return { text: '简单', class: 'easy' };
+      if (diff <= 2) return { text: '中等', class: 'medium' };
+      return { text: '困难', class: 'hard' };
+    }
+    
+    function renderLevels() {
+      const grid = document.getElementById('levelsGrid');
+      
+      grid.innerHTML = levels.map(level => {
+        const stats = history.getLevelStats(level.id);
+        const diff = getDifficultyLabel(level.difficulty);
+        
+        return `
+          <div class="level-card" data-id="${level.id}">
+            <span class="level-difficulty ${diff.class}">${diff.text}</span>
+            <h3 class="level-name">${level.name}</h3>
+            <p class="level-description">${level.description}</p>
+            <div class="level-meta">
+              <div class="meta-item">
+                <span class="meta-label">目标BPM</span>
+                <span class="meta-value">${level.targetBpm}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">难度</span>
+                <span class="meta-value">${'★'.repeat(level.difficulty)}</span>
+              </div>
+            </div>
+            ${stats ? `
+              <div class="level-stats">
+                已玩 ${stats.playCount} 次 | 最高分: ${stats.bestScore} | 最佳评级: ${stats.bestGrade}
+              </div>
+            ` : `
+              <div class="level-stats">
+                尚未挑战 - 快来解锁吧！
+              </div>
+            `}
+            <button class="play-btn" data-id="${level.id}">
+              ▶ 开始挑战
+            </button>
+          </div>
+        `;
+      }).join('');
+      
+      document.querySelectorAll('.level-card, .play-btn').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const levelId = el.dataset.id || el.closest('.level-card').dataset.id;
+          startLevel(levelId);
+        });
+      });
+    }
+    
+    function renderOverallStats() {
+      const allRecords = history.getRecords();
+      const statsGrid = document.getElementById('overallStats');
+      
+      let totalPlayTime = 0;
+      let totalDriftCount = 0;
+      
+      allRecords.forEach(r => {
+        totalPlayTime += r.duration;
+        totalDriftCount += r.stats.speedDriftCount;
+      });
+      
+      const stats = [
+        { label: '总游戏场次', value: allRecords.length },
+        { label: '胜利场次', value: allRecords.filter(r => r.status === 'won').length },
+        { label: '最高得分', value: allRecords.length > 0 ? Math.max(...allRecords.map(r => r.finalScore)).toLocaleString() : 0 },
+        { label: '总游戏时长', value: Math.round(totalPlayTime / 60000) + ' 分钟' },
+        { label: '速度漂移次数', value: totalDriftCount },
+        { label: '平均准确率', value: allRecords.length > 0 
+          ? Math.round(allRecords.reduce((sum, r) => sum + r.stats.accuracy, 0) / allRecords.length) + '%' 
+          : '0%' },
+      ];
+      
+      statsGrid.innerHTML = stats.map(stat => `
+        <div class="stat-card">
+          <div class="stat-value">${stat.value}</div>
+          <div class="stat-label">${stat.label}</div>
+        </div>
+      `).join('');
+    }
+    
+    function startLevel(levelId) {
+      window.location.href = 'game.html?level=' + levelId;
+    }
+    
+    renderLevels();
+    renderOverallStats();
+  </script>
+</body>
+</html>
