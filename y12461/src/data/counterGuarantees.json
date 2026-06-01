@@ -1,0 +1,102 @@
+[
+  {
+    "id": "cg_1780325274657_6gmvtdlfb",
+    "cgNo": "CG-001",
+    "type": "cash",
+    "provider": "华建工程有限公司",
+    "currency": "CNY",
+    "amount": 2500000,
+    "coverageRatio": 50,
+    "issueDate": "2024-01-15",
+    "expiryDate": "2024-06-30",
+    "relatedGuaranteeIds": [
+      "GB-2024-001"
+    ],
+    "relatedClueIds": [
+      "CL-001"
+    ],
+    "status": "valid",
+    "isExpired": false,
+    "assetDetails": {},
+    "valuation": 2500000,
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.657Z",
+    "updatedAt": "2026-06-01T14:47:54.657Z"
+  },
+  {
+    "id": "cg_1780325274657_ty9d2jcsi",
+    "cgNo": "CG-002",
+    "type": "bank_guarantee",
+    "provider": "工商银行XX支行",
+    "currency": "CNY",
+    "amount": 2500000,
+    "coverageRatio": 50,
+    "issueDate": "2024-01-15",
+    "expiryDate": "2024-05-15",
+    "relatedGuaranteeIds": [
+      "GB-2024-001"
+    ],
+    "relatedClueIds": [
+      "CL-001"
+    ],
+    "status": "valid",
+    "isExpired": true,
+    "assetDetails": {},
+    "valuation": 2500000,
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.657Z",
+    "updatedAt": "2026-06-01T14:47:54.657Z"
+  },
+  {
+    "id": "cg_1780325274657_4x9mhj8jz",
+    "cgNo": "CG-003",
+    "type": "real_estate",
+    "provider": "盛达建设集团",
+    "currency": "CNY",
+    "amount": 15000000,
+    "coverageRatio": 75,
+    "issueDate": "2024-02-20",
+    "expiryDate": "2024-08-20",
+    "relatedGuaranteeIds": [
+      "GB-2024-002"
+    ],
+    "relatedClueIds": [
+      "CL-002"
+    ],
+    "status": "valid",
+    "isExpired": true,
+    "assetDetails": {
+      "address": "XX市XX区XX路123号办公楼",
+      "area": 5000,
+      "type": "commercial"
+    },
+    "valuation": 20000000,
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.657Z",
+    "updatedAt": "2026-06-01T14:47:54.657Z"
+  },
+  {
+    "id": "cg_1780325274657_mpqzlfs9m",
+    "cgNo": "CG-004",
+    "type": "corporate_guarantee",
+    "provider": "泰禾集团总公司",
+    "currency": "CNY",
+    "amount": 8000000,
+    "coverageRatio": 100,
+    "issueDate": "2024-03-10",
+    "expiryDate": "2025-03-10",
+    "relatedGuaranteeIds": [
+      "GB-2024-003"
+    ],
+    "relatedClueIds": [
+      "CL-003"
+    ],
+    "status": "valid",
+    "isExpired": false,
+    "assetDetails": {},
+    "valuation": 8000000,
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.657Z",
+    "updatedAt": "2026-06-01T14:47:54.657Z"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "clue_1780325274656_3iya6udvg",
+    "clueNo": "CL-001",
+    "projectId": "PRJ-001",
+    "projectName": "市中心商务楼项目",
+    "clueType": "financial",
+    "description": "华建工程近期资金链紧张，有多笔逾期贷款记录",
+    "riskLevel": "high",
+    "relatedGuaranteeIds": [
+      "GB-2024-001"
+    ],
+    "relatedCounterGuaranteeIds": [
+      "CG-001"
+    ],
+    "discoveryDate": "2024-05-01",
+    "status": "pending",
+    "impactAnalysis": "可能影响投标保证金的安全性，建议追加反担保",
+    "handler": "",
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.656Z",
+    "updatedAt": "2026-06-01T14:47:54.656Z"
+  },
+  {
+    "id": "clue_1780325274656_qkgwuq2v0",
+    "clueNo": "CL-002",
+    "projectId": "PRJ-002",
+    "projectName": "城市地铁3号线项目",
+    "clueType": "schedule",
+    "description": "盛达建设施工进度滞后计划30%，可能触发履约索赔",
+    "riskLevel": "high",
+    "relatedGuaranteeIds": [
+      "GB-2024-002"
+    ],
+    "relatedCounterGuaranteeIds": [
+      "CG-003"
+    ],
+    "discoveryDate": "2024-04-15",
+    "status": "investigating",
+    "impactAnalysis": "若进度持续滞后，业主可能提出保函索赔",
+    "handler": "张经理",
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.656Z",
+    "updatedAt": "2026-06-01T14:47:54.656Z"
+  },
+  {
+    "id": "clue_1780325274657_9qokktc9u",
+    "clueNo": "CL-003",
+    "projectId": "PRJ-003",
+    "projectName": "城东新区土地开发项目",
+    "clueType": "market",
+    "description": "泰禾地产在售楼盘销售不及预期，现金流承压",
+    "riskLevel": "medium",
+    "relatedGuaranteeIds": [
+      "GB-2024-003"
+    ],
+    "relatedCounterGuaranteeIds": [],
+    "discoveryDate": "2024-05-10",
+    "status": "pending",
+    "impactAnalysis": "需关注土地出让金支付能力",
+    "handler": "",
+    "remarks": [],
+    "createdAt": "2026-06-01T14:47:54.657Z",
+    "updatedAt": "2026-06-01T14:47:54.657Z"
+  }
+]

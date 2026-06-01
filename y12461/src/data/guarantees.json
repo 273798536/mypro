@@ -1,0 +1,84 @@
+[
+  {
+    "id": "guar_1780325274653_vra5uv571",
+    "guaranteeNo": "GB-2024-001",
+    "applicant": "华建工程有限公司",
+    "beneficiary": "城市发展集团",
+    "guaranteeType": "bid",
+    "currency": "CNY",
+    "amount": 5000000,
+    "issueDate": "2024-01-15",
+    "expiryDate": "2024-06-30",
+    "claimExpiryDate": "2024-07-15",
+    "projectId": "PRJ-001",
+    "counterGuaranteeIds": [
+      "CG-001",
+      "CG-002"
+    ],
+    "status": "active",
+    "clues": [],
+    "remarks": [
+      {
+        "content": "投标保函，项目状态正常",
+        "timestamp": "2024-01-15T10:00:00Z"
+      }
+    ],
+    "isExpiryMissed": false,
+    "createdAt": "2026-06-01T14:47:54.653Z",
+    "updatedAt": "2026-06-01T14:47:54.654Z"
+  },
+  {
+    "id": "guar_1780325274655_dypyx9wbl",
+    "guaranteeNo": "GB-2024-002",
+    "applicant": "盛达建设集团",
+    "beneficiary": "市政投资公司",
+    "guaranteeType": "performance",
+    "currency": "CNY",
+    "amount": 20000000,
+    "issueDate": "2024-02-20",
+    "expiryDate": "2024-12-31",
+    "claimExpiryDate": "2025-01-15",
+    "projectId": "PRJ-002",
+    "counterGuaranteeIds": [
+      "CG-003"
+    ],
+    "status": "active",
+    "clues": [],
+    "remarks": [
+      {
+        "content": "履约保函，需关注施工进度",
+        "timestamp": "2024-02-20T14:00:00Z"
+      }
+    ],
+    "isExpiryMissed": true,
+    "createdAt": "2026-06-01T14:47:54.655Z",
+    "updatedAt": "2026-06-01T14:47:54.655Z"
+  },
+  {
+    "id": "guar_1780325274655_djtqn9sq9",
+    "guaranteeNo": "GB-2024-003",
+    "applicant": "泰禾地产开发公司",
+    "beneficiary": "土地储备中心",
+    "guaranteeType": "payment",
+    "currency": "CNY",
+    "amount": 8000000,
+    "issueDate": "2024-03-10",
+    "expiryDate": "2024-09-10",
+    "claimExpiryDate": "2024-09-25",
+    "projectId": "PRJ-003",
+    "counterGuaranteeIds": [
+      "CG-004"
+    ],
+    "status": "active",
+    "clues": [],
+    "remarks": [
+      {
+        "content": "预付款保函",
+        "timestamp": "2024-03-10T09:00:00Z"
+      }
+    ],
+    "isExpiryMissed": false,
+    "createdAt": "2026-06-01T14:47:54.655Z",
+    "updatedAt": "2026-06-01T14:47:54.655Z"
+  }
+]
