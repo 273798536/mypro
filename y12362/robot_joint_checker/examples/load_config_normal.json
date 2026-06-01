@@ -1,0 +1,6 @@
+{
+  "load_mass": 5.0,
+  "load_position": [0.1, 0.0, 0.0],
+  "max_load_mass": 10.0,
+  "max_load_radius": 1.0
+}

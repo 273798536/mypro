@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机器人关节力矩检查报告</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .critical { background-color: #dc3545; }
+        .warning { background-color: #ffc107; color: #333; }
+        .success { background-color: #28a745; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .violation-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        .violation-critical {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+        .violation-warning {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+        }
+        .plot-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .plot-container img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .summary-card {
+            display: inline-block;
+            padding: 20px;
+            margin: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            min-width: 150px;
+            text-align: center;
+        }
+        .summary-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .meta-info {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .source-item {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .key-finding {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 机器人关节力矩检查报告</h1>
+        <div class="meta-info">
+            生成时间: 2026-06-01 20:26:16
+        </div>
+
+        <div class="status-badge" style="background-color: #dc3545;">
+            检测到超限
+        </div>
+
+        <h2>📊 检查概览</h2>
+        <div style="text-align: center;">
+            <div class="summary-card">
+                <div class="summary-value">3</div>
+                <div>关节数量</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value">3</div>
+                <div>数据来源</div>
+            </div>
+            <div class="summary-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="summary-value">144</div>
+                <div>总超限数</div>
+            </div>
+            <div class="summary-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="summary-value">133</div>
+                <div>严重超限</div>
+            </div>
+        </div>
+
+        <div class="key-finding">
+            <strong>🔴 关键失败路径检测:</strong>
+            <p>检测到载荷越界！这会导致力矩计算结果失真，请优先检查载荷配置。</p>
+            <p>超限类型: load_mass_exceeded</p>
+        </div>
+
+        <h2>📁 数据来源</h2>
+
+        <div class="source-item">
+            <strong>类型:</strong> joint_config<br>
+            <strong>文件:</strong> <code>/Users/mac/pro/solo/workspaces/y12362/robot_joint_checker/examples/joint_config.json</code><br>
+            <strong>导入时间:</strong> 2026-06-01 20:26:16
+        </div>
+
+        <div class="source-item">
+            <strong>类型:</strong> load_config<br>
+            <strong>文件:</strong> <code>/Users/mac/pro/solo/workspaces/y12362/robot_joint_checker/examples/load_config_exceeded.json</code><br>
+            <strong>导入时间:</strong> 2026-06-01 20:26:16
+        </div>
+
+        <div class="source-item">
+            <strong>类型:</strong> motion_sequence<br>
+            <strong>文件:</strong> <code>/Users/mac/pro/solo/workspaces/y12362/robot_joint_checker/examples/motion_sequence.json</code><br>
+            <strong>导入时间:</strong> 2026-06-01 20:26:16
+        </div>
+
+        <h2>⚙️ 关节配置</h2>
+        <table>
+            <tr>
+                <th>关节ID</th>
+                <th>名称</th>
+                <th>连杆长度(m)</th>
+                <th>角度范围(°)</th>
+                <th>最大角速度(°/s)</th>
+                <th>最大力矩(Nm)</th>
+                <th>连杆质量(kg)</th>
+            </tr>
+
+            <tr>
+                <td>1</td>
+                <td>肩关节</td>
+                <td>0.5</td>
+                <td>-90.0 ~ 90.0</td>
+                <td>60.0</td>
+                <td>50.0</td>
+                <td>2.0</td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td>肘关节</td>
+                <td>0.4</td>
+                <td>-120.0 ~ 120.0</td>
+                <td>80.0</td>
+                <td>40.0</td>
+                <td>1.5</td>
+            </tr>
+
+            <tr>
+                <td>3</td>
+                <td>腕关节</td>
+                <td>0.2</td>
+                <td>-180.0 ~ 180.0</td>
+                <td>120.0</td>
+                <td>20.0</td>
+                <td>0.8</td>
+            </tr>
+</table>
+        <h2>📦 载荷配置</h2>
+        <div class="source-item violation-critical">
+            <table>
+                <tr>
+                    <th>参数</th>
+                    <th>实际值</th>
+                    <th>限制值</th>
+                    <th>状态</th>
+                </tr>
+                <tr>
+                    <td>载荷质量</td>
+                    <td>15.0 kg</td>
+                    <td>10.0 kg</td>
+                    <td>✗ 超限</td>
+                </tr>
+                <tr>
+                    <td>载荷位置</td>
+                    <td>[0.1, 0.0, 0.0]</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>最大允许半径</td>
+                    <td>-</td>
+                    <td>1.0 m</td>
+                    <td>-</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>📈 计算结果</h2>
+        <table>
+            <tr>
+                <th>关节ID</th>
+                <th>最大力矩(Nm)</th>
+                <th>力矩限制(Nm)</th>
+                <th>力矩状态</th>
+                <th>最大角速度(°/s)</th>
+                <th>角速度限制(°/s)</th>
+                <th>角速度状态</th>
+            </tr>
+
+            <tr>
+                <td>1</td>
+                <td>19.62</td>
+                <td>50.0</td>
+                <td style="color: #28a745;">✓ 正常</td>
+                <td>2864.79</td>
+                <td>60.0</td>
+                <td style="color: #dc3545;">✗ 超限</td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td>17.66</td>
+                <td>40.0</td>
+                <td style="color: #28a745;">✓ 正常</td>
+                <td>5729.58</td>
+                <td>80.0</td>
+                <td style="color: #dc3545;">✗ 超限</td>
+            </tr>
+
+            <tr>
+                <td>3</td>
+                <td>15.50</td>
+                <td>20.0</td>
+                <td style="color: #28a745;">✓ 正常</td>
+                <td>11459.16</td>
+                <td>120.0</td>
+                <td style="color: #dc3545;">✗ 超限</td>
+            </tr>
+</table>
+        <h2>⚠️ 超限详情</h2>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] load_mass_exceeded</strong><br>
+            <p>载荷质量超限: 15.00kg > 10.00kg</p>
+            <small>
+实际值: 15.0000 | 限制值: 10.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节1角度超出上限: 95.00° > 90.00°</p>
+            <small>
+关节: 1 | 时间: 1.900s | 实际值: 95.0000 | 限制值: 90.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节1角度超出上限: 100.00° > 90.00°</p>
+            <small>
+关节: 1 | 时间: 2.000s | 实际值: 100.0000 | 限制值: 90.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节1角度超出上限: 95.00° > 90.00°</p>
+            <small>
+关节: 1 | 时间: 2.100s | 实际值: 95.0000 | 限制值: 90.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节2角度超出上限: 130.00° > 120.00°</p>
+            <small>
+关节: 2 | 时间: 1.300s | 实际值: 130.0000 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节2角度超出上限: 140.00° > 120.00°</p>
+            <small>
+关节: 2 | 时间: 1.400s | 实际值: 140.0000 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节2角度超出上限: 130.00° > 120.00°</p>
+            <small>
+关节: 2 | 时间: 1.500s | 实际值: 130.0000 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_min_exceeded</strong><br>
+            <p>关节2角度低于下限: -130.00° < -120.00°</p>
+            <small>
+关节: 2 | 时间: 4.100s | 实际值: -130.0000 | 限制值: -120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_min_exceeded</strong><br>
+            <p>关节2角度低于下限: -140.00° < -120.00°</p>
+            <small>
+关节: 2 | 时间: 4.200s | 实际值: -140.0000 | 限制值: -120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_min_exceeded</strong><br>
+            <p>关节2角度低于下限: -130.00° < -120.00°</p>
+            <small>
+关节: 2 | 时间: 4.300s | 实际值: -130.0000 | 限制值: -120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_max_exceeded</strong><br>
+            <p>关节3角度超出上限: 200.00° > 180.00°</p>
+            <small>
+关节: 3 | 时间: 1.000s | 实际值: 200.0000 | 限制值: 180.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-warning">
+            <strong>[WARNING] angle_min_exceeded</strong><br>
+            <p>关节3角度低于下限: -200.00° < -180.00°</p>
+            <small>
+关节: 3 | 时间: 3.000s | 实际值: -200.0000 | 限制值: -180.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.100s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.200s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.300s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.400s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.500s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.600s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.700s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.800s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 0.900s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.000s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.100s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.200s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.300s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.400s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.500s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.600s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.700s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.800s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 1.900s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.100s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.200s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.300s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.400s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.500s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.600s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.700s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.800s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 2.900s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.000s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.100s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.200s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.300s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.400s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.500s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.600s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.700s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.800s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 3.900s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.000s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.100s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.200s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.300s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.400s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.500s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.600s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.700s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.800s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节1速度超限: 2864.79°/s > 60.00°/s</p>
+            <small>
+关节: 1 | 时间: 4.900s | 实际值: 2864.7890 | 限制值: 60.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.100s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.200s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.300s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.400s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.500s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.600s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.700s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.800s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 0.900s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.000s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.100s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.200s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.300s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.500s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.600s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.700s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.800s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 1.900s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.000s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.100s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.200s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.300s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.400s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.500s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.600s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.700s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.800s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 2.900s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.000s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.100s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.200s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.300s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.400s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.500s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.600s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.700s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.800s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 3.900s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.000s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.100s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.300s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.400s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.500s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.600s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.700s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.800s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节2速度超限: 5729.58°/s > 80.00°/s</p>
+            <small>
+关节: 2 | 时间: 4.900s | 实际值: 5729.5780 | 限制值: 80.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.100s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.200s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.300s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.400s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.500s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.600s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.700s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.800s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 0.900s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.100s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.200s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.300s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.400s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.500s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.600s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.700s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.800s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 1.900s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.000s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.100s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.200s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.300s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.400s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.500s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.600s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.700s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.800s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 2.900s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.100s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.200s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.300s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.400s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.500s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.600s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.700s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.800s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+        <div class="violation-item violation-critical">
+            <strong>[CRITICAL] velocity_exceeded</strong><br>
+            <p>关节3速度超限: 11459.16°/s > 120.00°/s</p>
+            <small>
+关节: 3 | 时间: 3.900s | 实际值: 11459.1559 | 限制值: 120.0000
+            </small>
+        </div>
+
+    </div>
+</body>
+</html>
