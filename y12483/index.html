@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利率风险山谷漫游 - Interest Rate Risk Valley Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        #three-container { width: 100%; height: 100%; }
+        .data-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+        .anomaly-item { border-left: 3px solid #ef4444; }
+        .scenario-btn.active { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .timeline-track {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+        }
+        .timeline-progress {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        .valley-info {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white h-screen overflow-hidden">
+    <div class="flex h-full">
+        <!-- 左侧数据面板 -->
+        <div class="w-80 bg-slate-800 flex flex-col border-r border-slate-700">
+            <!-- 标题 -->
+            <div class="p-4 border-b border-slate-700">
+                <h1 class="text-xl font-bold text-blue-400">🏔️ 利率风险山谷</h1>
+                <p class="text-xs text-slate-400 mt-1">Interest Rate Risk Valley Explorer</p>
+                <div class="mt-2 text-xs bg-slate-700/50 p-2 rounded">
+                    <span class="text-slate-400">数据来源：</span>
+                    <span class="text-green-400">资产负债管理部</span>
+                    <span class="text-slate-500">|</span>
+                    <span class="text-amber-400">2026年Q1</span>
+                </div>
+            </div>
+
+            <!-- 机构指标 -->
+            <div class="p-4 border-b border-slate-700">
+                <h2 class="text-sm font-semibold text-slate-300 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                    机构指标概览
+                </h2>
+                <div id="institution-metrics" class="space-y-2">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+
+            <!-- 久期缺口分析 -->
+            <div class="p-4 border-b border-slate-700 flex-1 overflow-y-auto">
+                <h2 class="text-sm font-semibold text-slate-300 mb-3 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <span class="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
+                        久期缺口分析
+                    </span>
+                    <span class="data-tag bg-amber-500/20 text-amber-400">来源: ALM系统</span>
+                </h2>
+                <div id="duration-gap-analysis" class="space-y-3">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+
+            <!-- 异常清单 -->
+            <div class="p-4 border-t border-slate-700 max-h-48 overflow-y-auto">
+                <h2 class="text-sm font-semibold text-red-400 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span>
+                    异常清单
+                    <span id="anomaly-count" class="ml-2 px-2 py-0.5 bg-red-500/20 text-red-400 rounded-full text-xs">0</span>
+                </h2>
+                <div id="anomaly-list" class="space-y-2">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间3D场景 -->
+        <div class="flex-1 flex flex-col relative">
+            <!-- 顶部情景切换 -->
+            <div class="absolute top-4 left-4 right-4 z-10 flex justify-between items-center">
+                <div class="flex space-x-2 bg-slate-800/90 backdrop-blur p-2 rounded-lg">
+                    <button onclick="switchScenario('base')" class="scenario-btn active px-4 py-2 rounded text-sm font-medium transition-all" data-scenario="base">
+                        基准情景
+                    </button>
+                    <button onclick="switchScenario('up100')" class="scenario-btn px-4 py-2 rounded text-sm font-medium transition-all bg-slate-700 hover:bg-slate-600" data-scenario="up100">
+                        利率+100bps
+                    </button>
+                    <button onclick="switchScenario('down100')" class="scenario-btn px-4 py-2 rounded text-sm font-medium transition-all bg-slate-700 hover:bg-slate-600" data-scenario="down100">
+                        利率-100bps
+                    </button>
+                    <button onclick="switchScenario('stress')" class="scenario-btn px-4 py-2 rounded text-sm font-medium transition-all bg-slate-700 hover:bg-slate-600" data-scenario="stress">
+                        压力情景
+                    </button>
+                </div>
+                <div class="bg-slate-800/90 backdrop-blur p-2 rounded-lg text-xs">
+                    <span class="text-slate-400">情景口径说明：</span>
+                    <span id="scenario-desc" class="text-blue-400 ml-1">收益率曲线平行移动</span>
+                </div>
+            </div>
+
+            <!-- 3D容器 -->
+            <div id="three-container" class="flex-1"></div>
+
+            <!-- 山谷信息浮窗 -->
+            <div id="valley-tooltip" class="valley-info absolute p-3 rounded-lg text-sm hidden pointer-events-none" style="min-width: 200px;">
+                <div id="tooltip-content"></div>
+            </div>
+
+            <!-- 底部时间轴 -->
+            <div class="bg-slate-800 border-t border-slate-700 p-4">
+                <div class="flex items-center space-x-4">
+                    <button id="play-btn" onclick="toggleTimeline()" class="p-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                        <svg id="play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                        </svg>
+                    </button>
+                    <div class="flex-1">
+                        <div class="timeline-track h-3 rounded-full relative cursor-pointer" onclick="seekTimeline(event)">
+                            <div id="timeline-progress" class="timeline-progress h-full rounded-full" style="width: 0%"></div>
+                            <div id="timeline-markers" class="absolute inset-0 flex items-center">
+                                <!-- 时间标记点 -->
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-1 text-xs text-slate-400">
+                            <span>2025-01</span>
+                            <span>2025-06</span>
+                            <span id="current-month">2025-01</span>
+                            <span>2025-12</span>
+                            <span>2026-03</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-400">速度:</span>
+                        <select id="speed-select" onchange="setPlaySpeed(this.value)" class="bg-slate-700 text-sm rounded px-2 py-1">
+                            <option value="0.5">0.5x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="2">2x</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧详情面板 -->
+        <div class="w-72 bg-slate-800 flex flex-col border-l border-slate-700">
+            <!-- 利率情景详情 -->
+            <div class="p-4 border-b border-slate-700">
+                <h2 class="text-sm font-semibold text-slate-300 mb-3 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        利率情景矩阵
+                    </span>
+                    <span class="data-tag bg-green-500/20 text-green-400">来源: 市场风险系统</span>
+                </h2>
+                <div id="rate-scenario-matrix" class="grid grid-cols-2 gap-2 text-xs">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+
+            <!-- 区域风险分布 -->
+            <div class="p-4 border-b border-slate-700 flex-1 overflow-y-auto">
+                <h2 class="text-sm font-semibold text-slate-300 mb-3 flex items-center">
+                    <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                    分行风险分布
+                </h2>
+                <div id="branch-risk" class="space-y-2">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+
+            <!-- 山谷图例 -->
+            <div class="p-4 border-t border-slate-700">
+                <h2 class="text-sm font-semibold text-slate-300 mb-3">山谷图例</h2>
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 rounded mr-2" style="background: linear-gradient(180deg, #22c55e, #16a34a)"></div>
+                        <span class="text-slate-400">安全区域 (缺口 < 1%)</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 rounded mr-2" style="background: linear-gradient(180deg, #eab308, #ca8a04)"></div>
+                        <span class="text-slate-400">警戒区域 (缺口 1-3%)</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 rounded mr-2" style="background: linear-gradient(180deg, #f97316, #ea580c)"></div>
+                        <span class="text-slate-400">风险区域 (缺口 3-5%)</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 rounded mr-2" style="background: linear-gradient(180deg, #ef4444, #dc2626)"></div>
+                        <span class="text-slate-400">危险区域 (缺口 > 5%)</span>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-slate-700">
+                    <p class="text-xs text-slate-500">
+                        <span class="text-blue-400">操作提示：</span>
+                        鼠标左键旋转 | 右键平移 | 滚轮缩放 | 点击山谷查看详情
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ 银行风险数据（接近真实场景） ============
+        const bankRiskData = {
+            institutions: [
+                { id: 'HQ', name: '总行', type: 'headquarters' },
+                { id: 'BJ', name: '北京分行', type: 'branch' },
+                { id: 'SH', name: '上海分行', type: 'branch' },
+                { id: 'GZ', name: '广州分行', type: 'branch' },
+                { id: 'SZ', name: '深圳分行', type: 'branch' },
+                { id: 'CD', name: '成都分行', type: 'branch' },
+                { id: 'WH', name: '武汉分行', type: 'branch' },
+                { id: 'XA', name: '西安分行', type: 'branch' }
+            ],
+            months: ['2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06', 
+                     '2025-07', '2025-08', '2025-09', '2025-10', '2025-11', '2025-12', '2026-01', '2026-02', '2026-03'],
+            scenarios: {
+                base: { name: '基准情景', desc: '收益率曲线平行移动，无冲击', shift: 0 },
+                up100: { name: '利率+100bps', desc: '收益率曲线平行上移100个基点', shift: 1.0 },
+                down100: { name: '利率-100bps', desc: '收益率曲线平行下移100个基点', shift: -1.0 },
+                stress: { name: '压力情景', desc: '收益率曲线陡峭化+200bps，短端上行更多', shift: 2.0 }
+            },
+            durationGaps: {},
+            anomalies: []
+        };
+
+        // 生成真实风格的久期缺口数据（含异常和缺失）
+        function generateRiskData() {
+            const baseGaps = {
+                'HQ': [2.1, 2.3, 2.5, 2.2, 2.0, 2.4, 2.8, 3.1, 3.5, 3.2, 2.9, 2.7, 3.0, 3.3, 3.6],
+                'BJ': [1.8, 1.9, 2.1, 1.7, null, 2.0, 2.3, 2.6, 2.9, 2.5, 2.2, 2.0, 2.4, 2.7, 3.0],
+                'SH': [1.5, 1.6, 1.8, 2.0, 2.2, 2.5, 2.8, 3.0, 2.7, 2.4, 2.1, 1.9, 2.2, 2.5, 2.8],
+                'GZ': [2.5, 2.7, 3.0, 3.2, 3.5, 3.8, 4.1, 4.4, 4.0, 3.6, 3.2, 2.9, 3.3, 3.7, 4.1],
+                'SZ': [3.0, 3.2, 3.5, 3.8, 4.0, 4.2, 4.5, 4.8, 4.4, 4.0, 3.6, 3.3, 3.7, 4.1, 4.5],
+                'CD': [1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.8, 2.4, 2.0, 1.7, 1.5, 1.8, 2.1, 2.4],
+                'WH': [2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.3, 3.6, 3.2, 2.8, 2.5, 2.2, 2.6, 3.0, 3.4],
+                'XA': [0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.3, 1.9, 1.6, 1.3, 1.1, null, 1.7, 2.0]
+            };
+
+            // 添加情景乘数
+            const scenarioMultipliers = { base: 1.0, up100: 1.3, down100: 0.7, stress: 1.8 };
+
+            Object.keys(bankRiskData.scenarios).forEach(scenario => {
+                bankRiskData.durationGaps[scenario] = {};
+                bankRiskData.institutions.forEach(inst => {
+                    bankRiskData.durationGaps[scenario][inst.id] = baseGaps[inst.id].map(gap => 
+                        gap === null ? null : gap * scenarioMultipliers[scenario] + (Math.random() - 0.5) * 0.3
+                    );
+                });
+            });
+
+            // 生成异常清单
+            bankRiskData.anomalies = [
+                { type: 'missing', severity: 'high', month: '2025-05', institution: '北京分行', desc: '5月久期缺口数据缺失，补报于6月中旬', source: 'ALM-2025-0615' },
+                { type: 'missing', severity: 'medium', month: '2026-01', institution: '西安分行', desc: '1月数据延迟提交，缺口计算口径待确认', source: 'ALM-2026-0128' },
+                { type: 'overlap', severity: 'high', month: '2025-09', institution: '深圳/广州分行', desc: '珠三角区域信贷数据统计重叠，涉及金额约12亿元', source: 'AUDIT-2025-0922' },
+                { type: 'overlap', severity: 'medium', month: '2025-12', institution: '上海/武汉分行', desc: '同业业务跨区统计重复，已调整但未回滚历史数据', source: 'AUDIT-2025-1230' },
+                { type: 'mismatch', severity: 'high', month: '2025-08', institution: '总行', desc: '利率情景参数错配，使用了Q1而非Q2的冲击矩阵', source: 'MRM-2025-0815' },
+                { type: 'mismatch', severity: 'low', month: '2025-03', institution: '成都分行', desc: '久期计算使用旧版模型，与总行口径差异约0.2年', source: 'ALM-2025-0401' }
+            ];
+        }
+
+        // ============ Three.js 3D 山谷场景 ============
+        let scene, camera, renderer, terrain, valleyMeshes = [];
+        let isPlaying = false;
+        let currentMonthIndex = 0;
+        let currentScenario = 'base';
+        let playSpeed = 1;
+        let raycaster, mouse;
+        let animationFrame;
+
+        function initThreeJS() {
+            const container = document.getElementById('three-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+            scene.fog = new THREE.Fog(0x0f172a, 20, 60);
+
+            camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+            camera.position.set(15, 12, 15);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            // 灯光
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.5);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(10, 20, 10);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x3b82f6, 0.5, 50);
+            pointLight.position.set(0, 10, 0);
+            scene.add(pointLight);
+
+            // 射线检测
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // 地形基底
+            createTerrainBase();
+            
+            // 创建山谷
+            createValleyMeshes();
+
+            // 轨道控制（简化版）
+            setupControls();
+
+            // 事件监听
+            renderer.domElement.addEventListener('click', onMouseClick);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('resize', onWindowResize);
+
+            animate();
+        }
+
+        function createTerrainBase() {
+            const geometry = new THREE.PlaneGeometry(30, 30, 50, 50);
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+
+            const vertices = geometry.attributes.position.array;
+            for (let i = 0; i < vertices.length; i += 3) {
+                const x = vertices[i];
+                const y = vertices[i + 1];
+                vertices[i + 2] = Math.sin(x * 0.3) * Math.cos(y * 0.3) * 0.3;
+            }
+            geometry.computeVertexNormals();
+
+            const terrain = new THREE.Mesh(geometry, material);
+            terrain.rotation.x = -Math.PI / 2;
+            terrain.receiveShadow = true;
+            scene.add(terrain);
+
+            // 网格线
+            const gridHelper = new THREE.GridHelper(30, 30, 0x334155, 0x1e293b);
+            gridHelper.position.y = 0.01;
+            scene.add(gridHelper);
+        }
+
+        function createValleyMeshes() {
+            valleyMeshes.forEach(m => scene.remove(m.mesh));
+            valleyMeshes = [];
+
+            const positions = [
+                { x: 0, z: 0, inst: 'HQ' },
+                { x: -8, z: -6, inst: 'BJ' },
+                { x: 8, z: -5, inst: 'SH' },
+                { x: -6, z: 6, inst: 'GZ' },
+                { x: -3, z: 8, inst: 'SZ' },
+                { x: 6, z: 6, inst: 'CD' },
+                { x: 8, z: -2, inst: 'WH' },
+                { x: -8, z: 2, inst: 'XA' }
+            ];
+
+            positions.forEach(pos => {
+                const geometry = new THREE.ConeGeometry(1.2, 3, 8);
+                const material = new THREE.MeshStandardMaterial({
+                    color: getValleyColor(0),
+                    roughness: 0.6,
+                    metalness: 0.3,
+                    transparent: true,
+                    opacity: 0.9
+                });
+
+                const cone = new THREE.Mesh(geometry, material);
+                cone.position.set(pos.x, 1.5, pos.z);
+                cone.castShadow = true;
+                cone.userData = { institution: pos.inst, ...pos };
+                scene.add(cone);
+
+                // 发光环
+                const ringGeometry = new THREE.RingGeometry(1.5, 1.8, 32);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x3b82f6,
+                    transparent: true,
+                    opacity: 0.5,
+                    side: THREE.DoubleSide
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.position.set(pos.x, 0.02, pos.z);
+                ring.rotation.x = -Math.PI / 2;
+                scene.add(ring);
+
+                // 标签
+                const label = createTextLabel(pos.inst);
+                label.position.set(pos.x, 3.5, pos.z);
+                scene.add(label);
+
+                valleyMeshes.push({ mesh: cone, ring, label, data: pos });
+            });
+        }
+
+        function createTextLabel(text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.fillRect(0, 0, 128, 32);
+            ctx.fillStyle = '#60a5fa';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 64, 16);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(material);
+            sprite.scale.set(3, 0.75, 1);
+            return sprite;
+        }
+
+        function getValleyColor(gap) {
+            if (gap === null) return 0x64748b;
+            if (gap < 1) return 0x22c55e;
+            if (gap < 3) return 0xeab308;
+            if (gap < 5) return 0xf97316;
+            return 0xef4444;
+        }
+
+        function updateValleyHeights() {
+            valleyMeshes.forEach(item => {
+                const instId = item.data.inst;
+                const gap = bankRiskData.durationGaps[currentScenario][instId][currentMonthIndex];
+                
+                const height = gap === null ? 0.5 : Math.max(0.5, gap * 0.8);
+                const targetY = height / 2;
+                
+                item.mesh.scale.y = height / 3;
+                item.mesh.position.y = targetY;
+                item.mesh.material.color.setHex(getValleyColor(gap));
+
+                // 光环颜色
+                const ringColor = gap === null ? 0x64748b : (gap > 4 ? 0xef4444 : gap > 2 ? 0xf97316 : 0x22c55e);
+                item.ring.material.color.setHex(ringColor);
+                item.ring.material.opacity = gap === null ? 0.2 : 0.3 + (gap / 10);
+            });
+        }
+
+        // ============ 鼠标交互 ============
+        function onMouseClick(event) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(valleyMeshes.map(v => v.mesh));
+
+            if (intersects.length > 0) {
+                const instId = intersects[0].object.userData.institution;
+                showInstitutionDetail(instId, event);
+            }
+        }
+
+        function onMouseMove(event) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(valleyMeshes.map(v => v.mesh));
+
+            const tooltip = document.getElementById('valley-tooltip');
+            if (intersects.length > 0) {
+                const instId = intersects[0].object.userData.institution;
+                const inst = bankRiskData.institutions.find(i => i.id === instId);
+                const gap = bankRiskData.durationGaps[currentScenario][instId][currentMonthIndex];
+                
+                tooltip.style.left = (event.clientX + 15) + 'px';
+                tooltip.style.top = (event.clientY + 15) + 'px';
+                tooltip.classList.remove('hidden');
+                
+                document.getElementById('tooltip-content').innerHTML = `
+                    <div class="font-bold text-blue-400">${inst.name}</div>
+                    <div class="text-xs text-slate-400 mt-1">久期缺口: <span class="text-white font-medium">${gap === null ? '数据缺失' : gap.toFixed(2)}%</span></div>
+                    <div class="text-xs text-slate-400">风险等级: <span class="${getRiskLevelColor(gap)}">${getRiskLevel(gap)}</span></div>
+                `;
+            } else {
+                tooltip.classList.add('hidden');
+            }
+        }
+
+        function getRiskLevel(gap) {
+            if (gap === null) return '未知';
+            if (gap < 1) return '低风险';
+            if (gap < 3) return '中风险';
+            if (gap < 5) return '高风险';
+            return '极高风险';
+        }
+
+        function getRiskLevelColor(gap) {
+            if (gap === null) return 'text-slate-400';
+            if (gap < 1) return 'text-green-400';
+            if (gap < 3) return 'text-yellow-400';
+            if (gap < 5) return 'text-orange-400';
+            return 'text-red-400';
+        }
+
+        // ============ 简化的轨道控制 ============
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let spherical = { theta: Math.PI / 4, phi: Math.PI / 3, radius: 20 };
+
+        function setupControls() {
+            const dom = renderer.domElement;
+            
+            dom.addEventListener('mousedown', e => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            dom.addEventListener('mouseup', () => isDragging = false);
+            dom.addEventListener('mouseleave', () => isDragging = false);
+            
+            dom.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                spherical.theta -= deltaX * 0.01;
+                spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.1, spherical.phi - deltaY * 0.01));
+                
+                updateCameraPosition();
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            dom.addEventListener('wheel', e => {
+                spherical.radius = Math.max(10, Math.min(40, spherical.radius + e.deltaY * 0.05));
+                updateCameraPosition();
+            });
+        }
+
+        function updateCameraPosition() {
+            camera.position.x = spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+            camera.position.y = spherical.radius * Math.cos(spherical.phi);
+            camera.position.z = spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+            camera.lookAt(0, 0, 0);
+        }
+
+        // ============ UI 更新 ============
+        function updateUI() {
+            updateInstitutionMetrics();
+            updateDurationGapAnalysis();
+            updateRateScenarioMatrix();
+            updateBranchRisk();
+            updateAnomalyList();
+            updateTimeline();
+            updateValleyHeights();
+        }
+
+        function updateInstitutionMetrics() {
+            const container = document.getElementById('institution-metrics');
+            const hqGap = bankRiskData.durationGaps[currentScenario]['HQ'][currentMonthIndex];
+            const avgGap = calculateAverageGap();
+            const maxGap = findMaxGap();
+            
+            container.innerHTML = `
+                <div class="bg-slate-700/50 p-3 rounded">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-slate-400">总行缺口</span>
+                        <span class="data-tag bg-blue-500/20 text-blue-400">口径: 修正久期</span>
+                    </div>
+                    <div class="text-2xl font-bold ${getRiskLevelColor(hqGap)} mt-1">${hqGap === null ? '--' : hqGap.toFixed(2)}%</div>
+                    <div class="text-xs text-slate-500 mt-1">${getRiskLevel(hqGap)}</div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <div class="bg-slate-700/50 p-2 rounded">
+                        <div class="text-xs text-slate-400">平均缺口</div>
+                        <div class="text-lg font-semibold text-white">${avgGap.toFixed(2)}%</div>
+                    </div>
+                    <div class="bg-slate-700/50 p-2 rounded">
+                        <div class="text-xs text-slate-400">最大缺口</div>
+                        <div class="text-lg font-semibold ${getRiskLevelColor(maxGap)}">${maxGap.toFixed(2)}%</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateAverageGap() {
+            let sum = 0, count = 0;
+            bankRiskData.institutions.forEach(inst => {
+                const gap = bankRiskData.durationGaps[currentScenario][inst.id][currentMonthIndex];
+                if (gap !== null) { sum += gap; count++; }
+            });
+            return count > 0 ? sum / count : 0;
+        }
+
+        function findMaxGap() {
+            let max = 0;
+            bankRiskData.institutions.forEach(inst => {
+                const gap = bankRiskData.durationGaps[currentScenario][inst.id][currentMonthIndex];
+                if (gap !== null && gap > max) max = gap;
+            });
+            return max;
+        }
+
+        function updateDurationGapAnalysis() {
+            const container = document.getElementById('duration-gap-analysis');
+            let html = '';
+            
+            bankRiskData.institutions.slice(0, 6).forEach(inst => {
+                const gaps = bankRiskData.durationGaps[currentScenario][inst.id];
+                const currentGap = gaps[currentMonthIndex];
+                const prevGap = currentMonthIndex > 0 ? gaps[currentMonthIndex - 1] : null;
+                const change = prevGap !== null && currentGap !== null ? currentGap - prevGap : null;
+                
+                html += `
+                    <div class="bg-slate-700/30 p-2 rounded">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium">${inst.name}</span>
+                            <span class="${getRiskLevelColor(currentGap)} font-bold">${currentGap === null ? '--' : currentGap.toFixed(2)}%</span>
+                        </div>
+                        <div class="mt-1 h-1.5 bg-slate-600 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" 
+                                 style="width: ${Math.min(100, (currentGap || 0) * 15)}%; background: ${getRiskCssColor(currentGap)}"></div>
+                        </div>
+                        ${change !== null ? `
+                            <div class="text-xs mt-1 ${change >= 0 ? 'text-red-400' : 'text-green-400'}">
+                                ${change >= 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(2)}% 较上月
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function getRiskCssColor(gap) {
+            if (gap === null) return '#64748b';
+            if (gap < 1) return '#22c55e';
+            if (gap < 3) return '#eab308';
+            if (gap < 5) return '#f97316';
+            return '#ef4444';
+        }
+
+        function updateRateScenarioMatrix() {
+            const container = document.getElementById('rate-scenario-matrix');
+            const shifts = [
+                { tenor: '1M', base: 2.1, up100: 3.1, down100: 1.1, stress: 4.2 },
+                { tenor: '3M', base: 2.3, up100: 3.3, down100: 1.3, stress: 4.3 },
+                { tenor: '6M', base: 2.5, up100: 3.5, down100: 1.5, stress: 4.2 },
+                { tenor: '1Y', base: 2.7, up100: 3.7, down100: 1.7, stress: 4.1 },
+                { tenor: '5Y', base: 3.1, up100: 4.1, down100: 2.1, stress: 4.0 },
+                { tenor: '10Y', base: 3.4, up100: 4.4, down100: 2.4, stress: 3.8 }
+            ];
+
+            let html = '';
+            shifts.forEach(s => {
+                const val = s[currentScenario];
+                html += `
+                    <div class="bg-slate-700/50 p-2 rounded text-center">
+                        <div class="text-slate-400">${s.tenor}</div>
+                        <div class="font-semibold text-blue-400">${val.toFixed(1)}%</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateBranchRisk() {
+            const container = document.getElementById('branch-risk');
+            const risks = bankRiskData.institutions.map(inst => {
+                const gap = bankRiskData.durationGaps[currentScenario][inst.id][currentMonthIndex];
+                return { ...inst, gap };
+            }).sort((a, b) => (b.gap || 0) - (a.gap || 0));
+
+            let html = '';
+            risks.slice(0, 5).forEach(inst => {
+                html += `
+                    <div class="flex items-center justify-between bg-slate-700/30 p-2 rounded">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 rounded-full mr-2" style="background: ${getRiskCssColor(inst.gap)}"></div>
+                            <span class="text-sm">${inst.name}</span>
+                        </div>
+                        <span class="text-sm font-medium ${getRiskLevelColor(inst.gap)}">${inst.gap === null ? '--' : inst.gap.toFixed(2)}%</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateAnomalyList() {
+            const container = document.getElementById('anomaly-list');
+            document.getElementById('anomaly-count').textContent = bankRiskData.anomalies.length;
+            
+            const typeLabels = {
+                missing: { label: '指标缺月', color: 'bg-yellow-500/20 text-yellow-400' },
+                overlap: { label: '区域重叠', color: 'bg-orange-500/20 text-orange-400' },
+                mismatch: { label: '情景错配', color: 'bg-red-500/20 text-red-400' }
+            };
+
+            let html = '';
+            bankRiskData.anomalies.slice(0, 4).forEach(anomaly => {
+                const type = typeLabels[anomaly.type];
+                html += `
+                    <div class="anomaly-item bg-slate-700/30 p-2 rounded text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="px-1.5 py-0.5 rounded ${type.color}">${type.label}</span>
+                            <span class="text-slate-400">${anomaly.month}</span>
+                        </div>
+                        <div class="mt-1 text-slate-300">${anomaly.institution}</div>
+                        <div class="mt-0.5 text-slate-500 truncate" title="${anomaly.desc}">${anomaly.desc}</div>
+                        <div class="mt-1 text-slate-600">来源: ${anomaly.source}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateTimeline() {
+            const progress = (currentMonthIndex / (bankRiskData.months.length - 1)) * 100;
+            document.getElementById('timeline-progress').style.width = progress + '%';
+            document.getElementById('current-month').textContent = bankRiskData.months[currentMonthIndex];
+        }
+
+        // ============ 交互功能 ============
+        function switchScenario(scenario) {
+            currentScenario = scenario;
+            
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('bg-slate-700', 'hover:bg-slate-600');
+            });
+            document.querySelector(`[data-scenario="${scenario}"]`).classList.add('active');
+            document.querySelector(`[data-scenario="${scenario}"]`).classList.remove('bg-slate-700', 'hover:bg-slate-600');
+            
+            document.getElementById('scenario-desc').textContent = bankRiskData.scenarios[scenario].desc;
+            
+            updateUI();
+        }
+
+        function toggleTimeline() {
+            isPlaying = !isPlaying;
+            const icon = document.getElementById('play-icon');
+            
+            if (isPlaying) {
+                icon.innerHTML = '<rect x="5" y="4" width="4" height="12"/><rect x="11" y="4" width="4" height="12"/>';
+                playTimeline();
+            } else {
+                icon.innerHTML = '<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>';
+                if (animationFrame) cancelAnimationFrame(animationFrame);
+            }
+        }
+
+        function playTimeline() {
+            if (!isPlaying) return;
+            
+            currentMonthIndex++;
+            if (currentMonthIndex >= bankRiskData.months.length) {
+                currentMonthIndex = 0;
+            }
+            
+            updateUI();
+            
+            setTimeout(() => {
+                if (isPlaying) playTimeline();
+            }, 1000 / playSpeed);
+        }
+
+        function seekTimeline(event) {
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const percentage = x / rect.width;
+            currentMonthIndex = Math.round(percentage * (bankRiskData.months.length - 1));
+            currentMonthIndex = Math.max(0, Math.min(bankRiskData.months.length - 1, currentMonthIndex));
+            updateUI();
+        }
+
+        function setPlaySpeed(speed) {
+            playSpeed = parseFloat(speed);
+        }
+
+        function showInstitutionDetail(instId, event) {
+            const inst = bankRiskData.institutions.find(i => i.id === instId);
+            const gaps = bankRiskData.durationGaps[currentScenario][instId];
+            
+            console.log('机构详情:', inst, gaps);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('three-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            valleyMeshes.forEach(item => {
+                item.ring.rotation.z += 0.005;
+                item.label.lookAt(camera.position);
+            });
+            
+            renderer.render(scene, camera);
+        }
+
+        // ============ 初始化 ============
+        generateRiskData();
+        initThreeJS();
+        updateUI();
+    </script>
+</body>
+</html>
