@@ -1,0 +1,14 @@
+[
+  {
+    "policy_type": "车险",
+    "expense_rate": 0.25,
+    "acquisition_cost": 0.15,
+    "administrative_cost": 0.1
+  },
+  {
+    "policy_type": "企财险",
+    "expense_rate": 0.2,
+    "acquisition_cost": 0.12,
+    "administrative_cost": 0.08
+  }
+]
