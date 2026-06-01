@@ -1,0 +1,289 @@
+{
+  "report_id": "ecd2ea4f29f92357af077cbf2bbe41d4c5d5fbaadcec9b0b677e090772a2240b",
+  "generated_at": "2026-06-01T17:25:41.464495",
+  "problem_list": [
+    {
+      "issue_id": "2f8ea993",
+      "severity": "budget_overrun",
+      "source": "scenario",
+      "description": "方案 均衡减排方案(S001) 中 部门 D001 预测排放 10600 超过预算上限 10500.0",
+      "department_id": "D001",
+      "scenario_id": "S001",
+      "overridden_by": null,
+      "priority_rank": 0
+    },
+    {
+      "issue_id": "834fd724",
+      "severity": "budget_overrun",
+      "source": "scenario",
+      "description": "方案 高减排优先方案(S002) 中 部门 D001 预测排放 11000 超过预算上限 10500.0",
+      "department_id": "D001",
+      "scenario_id": "S002",
+      "overridden_by": null,
+      "priority_rank": 0
+    },
+    {
+      "issue_id": "f7ab4543",
+      "severity": "budget_overrun",
+      "source": "scenario",
+      "description": "方案 高减排优先方案(S002) 中 部门 D002 预测排放 8100 超过预算上限 8000.0",
+      "department_id": "D002",
+      "scenario_id": "S002",
+      "overridden_by": null,
+      "priority_rank": 0
+    },
+    {
+      "issue_id": "37934cf5",
+      "severity": "missing_field",
+      "source": "department",
+      "description": "部门 研发部(D003) 缺少排放基线(emission_baseline)",
+      "department_id": "D003",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 1
+    },
+    {
+      "issue_id": "5a0d3b74",
+      "severity": "missing_field",
+      "source": "department",
+      "description": "部门 销售部(D005) 缺少业务量(business_volume)",
+      "department_id": "D005",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 1
+    },
+    {
+      "issue_id": "60baccc4",
+      "severity": "missing_field",
+      "source": "department",
+      "description": "部门 行政部(D004) 缺少减排目标(target_reduction)",
+      "department_id": "D004",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 1
+    },
+    {
+      "issue_id": "9bc4bea6",
+      "severity": "missing_field",
+      "source": "budget",
+      "description": "部门 D004 2026年 缺少预算上限(budget_cap)",
+      "department_id": "D004",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 1
+    },
+    {
+      "issue_id": "19ff7aa5",
+      "severity": "late_supplement",
+      "source": "department",
+      "description": "部门 物流部(D002) 为晚补数据",
+      "department_id": "D002",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 2
+    },
+    {
+      "issue_id": "87f8dcd1",
+      "severity": "late_supplement",
+      "source": "department",
+      "description": "部门 行政部(D004) 为晚补数据",
+      "department_id": "D004",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 2
+    },
+    {
+      "issue_id": "cce29856",
+      "severity": "late_supplement",
+      "source": "budget",
+      "description": "部门 D002 2026年 预算为晚补/调整数据",
+      "department_id": "D002",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 2
+    },
+    {
+      "issue_id": "d301070c",
+      "severity": "late_supplement",
+      "source": "budget",
+      "description": "部门 D004 2026年 预算为晚补/调整数据",
+      "department_id": "D004",
+      "scenario_id": null,
+      "overridden_by": null,
+      "priority_rank": 2
+    },
+    {
+      "issue_id": "a6323827",
+      "severity": "note_modified",
+      "source": "scenario",
+      "description": "方案 高减排优先方案(S002) 备注已被修改",
+      "department_id": null,
+      "scenario_id": "S002",
+      "overridden_by": null,
+      "priority_rank": 3
+    },
+    {
+      "issue_id": "26e81c92",
+      "severity": "conflict",
+      "source": "scenario",
+      "description": "方案 均衡减排方案(S001) 存在目标冲突: 生产部减排目标与产能增长冲突",
+      "department_id": null,
+      "scenario_id": "S001",
+      "overridden_by": null,
+      "priority_rank": 4
+    },
+    {
+      "issue_id": "ca1c5568",
+      "severity": "conflict",
+      "source": "scenario",
+      "description": "方案 高减排优先方案(S002) 存在目标冲突: 生产部减排目标与产能增长冲突",
+      "department_id": null,
+      "scenario_id": "S002",
+      "overridden_by": null,
+      "priority_rank": 4
+    },
+    {
+      "issue_id": "7cf47f1e",
+      "severity": "exclusive",
+      "source": "scenario",
+      "description": "方案 高减排优先方案(S002) 存在项目互斥: 碳捕捉项目与节能改造互斥",
+      "department_id": null,
+      "scenario_id": "S002",
+      "overridden_by": null,
+      "priority_rank": 5
+    }
+  ],
+  "optimization": {
+    "scenario_rankings": [
+      {
+        "scenario_id": "S003",
+        "scenario_name": "低成本优先方案",
+        "total_score": -1930.0,
+        "has_budget_overrun": true,
+        "cost_score": 80,
+        "emission_score": 65,
+        "fairness_score": 85,
+        "conflict_count": 0,
+        "exclusive_count": 0,
+        "overrun_penalty": 2000.0,
+        "overridden_by_overrun": false,
+        "rank": 1
+      },
+      {
+        "scenario_id": "S001",
+        "scenario_name": "均衡减排方案",
+        "total_score": -2007.0,
+        "has_budget_overrun": true,
+        "cost_score": 120,
+        "emission_score": 85,
+        "fairness_score": 78,
+        "conflict_count": 1,
+        "exclusive_count": 0,
+        "overrun_penalty": 2000.0,
+        "overridden_by_overrun": true,
+        "rank": 2
+      },
+      {
+        "scenario_id": "S002",
+        "scenario_name": "高减排优先方案",
+        "total_score": -2148.0,
+        "has_budget_overrun": true,
+        "cost_score": 200,
+        "emission_score": 92,
+        "fairness_score": 60,
+        "conflict_count": 1,
+        "exclusive_count": 1,
+        "overrun_penalty": 2000.0,
+        "overridden_by_overrun": true,
+        "rank": 3
+      }
+    ],
+    "sensitivity_analysis": {
+      "equal_weights": [
+        {
+          "scenario_id": "S003",
+          "scenario_name": "低成本优先方案",
+          "weighted_score": -1930.0
+        },
+        {
+          "scenario_id": "S001",
+          "scenario_name": "均衡减排方案",
+          "weighted_score": -1957.0
+        },
+        {
+          "scenario_id": "S002",
+          "scenario_name": "高减排优先方案",
+          "weighted_score": -2048.0
+        }
+      ],
+      "emission_heavy": [
+        {
+          "scenario_id": "S001",
+          "scenario_name": "均衡减排方案",
+          "weighted_score": -1812.0
+        },
+        {
+          "scenario_id": "S003",
+          "scenario_name": "低成本优先方案",
+          "weighted_score": -1825.0
+        },
+        {
+          "scenario_id": "S002",
+          "scenario_name": "高减排优先方案",
+          "weighted_score": -1856.0
+        }
+      ],
+      "fairness_heavy": [
+        {
+          "scenario_id": "S003",
+          "scenario_name": "低成本优先方案",
+          "weighted_score": -1805.0
+        },
+        {
+          "scenario_id": "S001",
+          "scenario_name": "均衡减排方案",
+          "weighted_score": -1819.0
+        },
+        {
+          "scenario_id": "S002",
+          "scenario_name": "高减排优先方案",
+          "weighted_score": -1888.0
+        }
+      ],
+      "cost_heavy": [
+        {
+          "scenario_id": "S003",
+          "scenario_name": "低成本优先方案",
+          "weighted_score": -2010.0
+        },
+        {
+          "scenario_id": "S001",
+          "scenario_name": "均衡减排方案",
+          "weighted_score": -2077.0
+        },
+        {
+          "scenario_id": "S002",
+          "scenario_name": "高减排优先方案",
+          "weighted_score": -2248.0
+        }
+      ],
+      "ranking_stability": {
+        "base_variant": "equal_weights",
+        "is_stable": false,
+        "variants_cause_reorder": [
+          "emission_heavy"
+        ]
+      }
+    },
+    "constraint_explanations": {
+      "budget_cap": "各部门年度碳排放不得超过预算上限，预算超限为最高优先级约束",
+      "conflict": "当部门预算超限时，目标冲突不掩盖预算超限问题",
+      "exclusive": "当部门预算超限时，项目互斥不掩盖预算超限问题"
+    },
+    "constraint_version_snapshot": {
+      "budget_cap": 1,
+      "conflict": 1,
+      "exclusive": 1
+    }
+  }
+}

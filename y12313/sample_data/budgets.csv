@@ -1,0 +1,6 @@
+department_id,year,budget_cap,adjusted,note
+D001,2026,10500,false,
+D002,2026,8000,true,晚补：原预算9000下调
+D003,2026,2000,false,
+D004,2026,,true,待确认预算
+D005,2026,5800,false,

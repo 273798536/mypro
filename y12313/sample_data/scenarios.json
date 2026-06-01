@@ -1,0 +1,52 @@
+[
+  {
+    "scenario_id": "S001",
+    "scenario_name": "均衡减排方案",
+    "allocations": [
+      {"department_id": "D001", "allocated_budget": 10500, "projected_emission": 10600},
+      {"department_id": "D002", "allocated_budget": 8000, "projected_emission": 7800},
+      {"department_id": "D003", "allocated_budget": 2000, "projected_emission": 1900},
+      {"department_id": "D004", "allocated_budget": 2800, "projected_emission": 2900},
+      {"department_id": "D005", "allocated_budget": 5800, "projected_emission": 5600}
+    ],
+    "objective_scores": {"cost": 120, "emission_reduction": 85, "fairness": 78},
+    "constraints": [
+      {"type": "conflict", "description": "生产部减排目标与产能增长冲突"}
+    ],
+    "note_modified": false,
+    "note": "各部门按比例均衡削减"
+  },
+  {
+    "scenario_id": "S002",
+    "scenario_name": "高减排优先方案",
+    "allocations": [
+      {"department_id": "D001", "allocated_budget": 9500, "projected_emission": 11000},
+      {"department_id": "D002", "allocated_budget": 7500, "projected_emission": 8100},
+      {"department_id": "D003", "allocated_budget": 1800, "projected_emission": 1700},
+      {"department_id": "D004", "allocated_budget": 2500, "projected_emission": 2600},
+      {"department_id": "D005", "allocated_budget": 5500, "projected_emission": 5400}
+    ],
+    "objective_scores": {"cost": 200, "emission_reduction": 92, "fairness": 60},
+    "constraints": [
+      {"type": "conflict", "description": "生产部减排目标与产能增长冲突"},
+      {"type": "exclusive", "description": "碳捕捉项目与节能改造互斥"}
+    ],
+    "note_modified": true,
+    "note": "原方案为各部门均等削减，后修改为重点部门加码"
+  },
+  {
+    "scenario_id": "S003",
+    "scenario_name": "低成本优先方案",
+    "allocations": [
+      {"department_id": "D001", "allocated_budget": 10800, "projected_emission": 10200},
+      {"department_id": "D002", "allocated_budget": 8200, "projected_emission": 7500},
+      {"department_id": "D003", "allocated_budget": 2000, "projected_emission": 1850},
+      {"department_id": "D004", "allocated_budget": 3000, "projected_emission": 2800},
+      {"department_id": "D005", "allocated_budget": 5900, "projected_emission": 5500}
+    ],
+    "objective_scores": {"cost": 80, "emission_reduction": 65, "fairness": 85},
+    "constraints": [],
+    "note_modified": false,
+    "note": "优先选择低成本措施，减排幅度有限"
+  }
+]

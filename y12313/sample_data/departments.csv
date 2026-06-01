@@ -1,0 +1,6 @@
+department_id,department_name,emission_baseline,target_reduction,business_volume,note,late_supplement
+D001,生产部,12000,0.15,5000,,false
+D002,物流部,8500,0.10,3200,含外包运输,true
+D003,研发部,,0.20,1800,,false
+D004,行政部,3000,,1200,后勤与办公,true
+D005,销售部,6000,0.08,,,false
