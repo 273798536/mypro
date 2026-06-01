@@ -1,0 +1,987 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-06-01T19:13:48.260781",
+    "request_id": "aeab69b1",
+    "report_version": "1.0"
+  },
+  "graph_statistics": {
+    "node_count": 12,
+    "edge_count": 17,
+    "barrier_count": 5,
+    "accessibility_issue_count": 5,
+    "manual_edit_count": 0,
+    "bidirectional_edges": 15,
+    "forward_edges": 1,
+    "backward_edges": 1,
+    "wheelchair_accessible_edges": 15
+  },
+  "navigation_summary": {
+    "request_id": "aeab69b1",
+    "status": "has_warnings",
+    "start_node_id": "N001",
+    "start_node_name": "校门",
+    "start_node_source": "sample_campus.json",
+    "end_node_id": "N007",
+    "end_node_name": "宿舍1号楼",
+    "end_node_source": "sample_campus.json",
+    "total_distance_meters": 436,
+    "estimated_time_minutes": 5.2,
+    "total_segments": 4,
+    "total_nodes": 5,
+    "has_warnings": false,
+    "has_errors": false,
+    "warnings": [],
+    "errors": [],
+    "accessibility_profile": null
+  },
+  "route_details": [
+    {
+      "segment_index": 0,
+      "edge_id": "E001",
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 162,
+      "from_node_id": "N001",
+      "from_node_name": "校门",
+      "to_node_id": "N002",
+      "to_node_name": "行政楼",
+      "length_meters": 112,
+      "direction": "bidirectional",
+      "accessibility_tags": [
+        "wheelchair",
+        "ramp"
+      ],
+      "node_coordinates": {
+        "from": {
+          "x": 0,
+          "y": 0
+        },
+        "to": {
+          "x": 100,
+          "y": 50
+        }
+      },
+      "flags": []
+    },
+    {
+      "segment_index": 1,
+      "edge_id": "E002",
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 184,
+      "from_node_id": "N002",
+      "from_node_name": "行政楼",
+      "to_node_id": "N003",
+      "to_node_name": "图书馆",
+      "length_meters": 112,
+      "direction": "bidirectional",
+      "accessibility_tags": [
+        "wheelchair",
+        "ramp"
+      ],
+      "node_coordinates": {
+        "from": {
+          "x": 100,
+          "y": 50
+        },
+        "to": {
+          "x": 200,
+          "y": 100
+        }
+      },
+      "flags": [
+        "has_accessibility_issue"
+      ],
+      "accessibility_issue_ids": [
+        "A004"
+      ]
+    },
+    {
+      "segment_index": 2,
+      "edge_id": "E013",
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 425,
+      "from_node_id": "N003",
+      "from_node_name": "图书馆",
+      "to_node_id": "N006",
+      "to_node_name": "食堂",
+      "length_meters": 100,
+      "direction": "bidirectional",
+      "accessibility_tags": [
+        "wheelchair",
+        "ramp"
+      ],
+      "node_coordinates": {
+        "from": {
+          "x": 200,
+          "y": 100
+        },
+        "to": {
+          "x": 300,
+          "y": 100
+        }
+      },
+      "flags": []
+    },
+    {
+      "segment_index": 3,
+      "edge_id": "E006",
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 272,
+      "from_node_id": "N006",
+      "from_node_name": "食堂",
+      "to_node_id": "N007",
+      "to_node_name": "宿舍1号楼",
+      "length_meters": 112,
+      "direction": "bidirectional",
+      "accessibility_tags": [
+        "wheelchair",
+        "ramp"
+      ],
+      "node_coordinates": {
+        "from": {
+          "x": 300,
+          "y": 100
+        },
+        "to": {
+          "x": 350,
+          "y": 200
+        }
+      },
+      "flags": []
+    }
+  ],
+  "edge_length_trace": [
+    {
+      "segment_index": 0,
+      "edge_id": "E001",
+      "from_node_id": "N001",
+      "from_node_name": "校门",
+      "to_node_id": "N002",
+      "to_node_name": "行政楼",
+      "reported_length": 112,
+      "actual_edge_length": 112,
+      "length_match": true,
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 162,
+      "direction": "bidirectional"
+    },
+    {
+      "segment_index": 1,
+      "edge_id": "E002",
+      "from_node_id": "N002",
+      "from_node_name": "行政楼",
+      "to_node_id": "N003",
+      "to_node_name": "图书馆",
+      "reported_length": 112,
+      "actual_edge_length": 112,
+      "length_match": true,
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 184,
+      "direction": "bidirectional"
+    },
+    {
+      "segment_index": 2,
+      "edge_id": "E013",
+      "from_node_id": "N003",
+      "from_node_name": "图书馆",
+      "to_node_id": "N006",
+      "to_node_name": "食堂",
+      "reported_length": 100,
+      "actual_edge_length": 100,
+      "length_match": true,
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 425,
+      "direction": "bidirectional"
+    },
+    {
+      "segment_index": 3,
+      "edge_id": "E006",
+      "from_node_id": "N006",
+      "from_node_name": "食堂",
+      "to_node_id": "N007",
+      "to_node_name": "宿舍1号楼",
+      "reported_length": 112,
+      "actual_edge_length": 112,
+      "length_match": true,
+      "edge_source_file": "sample_campus.json",
+      "edge_source_line": 272,
+      "direction": "bidirectional"
+    }
+  ],
+  "risk_sections": {
+    "direction_errors": {
+      "summary": {
+        "total_direction_errors": 2,
+        "affecting_route": 0,
+        "high_severity": 0
+      },
+      "errors_affecting_route": [],
+      "all_direction_errors": [
+        {
+          "type": "edge_direction_error",
+          "error_type": "unidirectional_warning",
+          "edge_id": "E015",
+          "from_node": "N001",
+          "to_node": "N011",
+          "direction": "forward",
+          "message": "边 E015 是单向边(forward)，可能存在方向错误",
+          "source_file": "sample_campus.json",
+          "source_line": 469,
+          "severity": "medium"
+        },
+        {
+          "type": "edge_direction_error",
+          "error_type": "backward_direction",
+          "edge_id": "E016",
+          "from_node": "N009",
+          "to_node": "N004",
+          "direction": "backward",
+          "message": "边 E016 使用了不常见的backward方向，请确认是否正确",
+          "source_file": "sample_campus.json",
+          "source_line": 491,
+          "severity": "medium"
+        }
+      ]
+    },
+    "expired_barriers": {
+      "summary": {
+        "total_barrier_issues": 2,
+        "expired_barriers": 2,
+        "affecting_route": 0
+      },
+      "expired_barriers_detail": [
+        {
+          "type": "barrier_expired_error",
+          "barrier_id": "B001",
+          "edge_id": "E003",
+          "reason": "道路施工",
+          "start_date": "2026-05-02T19:13:33.281135",
+          "end_date": "2026-05-27T19:13:33.281135",
+          "current_status": "active",
+          "calculated_status": "expired",
+          "days_expired": 5,
+          "message": "围挡 B001 已过期 5 天，但状态仍标记为 active，应标记为 expired",
+          "source_file": "sample_campus.json",
+          "source_line": 536,
+          "severity": "high"
+        },
+        {
+          "type": "barrier_expired_error",
+          "barrier_id": "B003",
+          "edge_id": "E011",
+          "reason": "过期围挡",
+          "start_date": "2026-04-02T19:13:33.281135",
+          "end_date": "2026-05-02T19:13:33.281135",
+          "current_status": "active",
+          "calculated_status": "expired",
+          "days_expired": 30,
+          "message": "围挡 B003 已过期 30 天，但状态仍标记为 active，应标记为 expired",
+          "source_file": "sample_campus.json",
+          "source_line": 566,
+          "severity": "high"
+        }
+      ],
+      "barriers_affecting_route": [],
+      "all_barrier_issues": [
+        {
+          "type": "barrier_expired_error",
+          "barrier_id": "B001",
+          "edge_id": "E003",
+          "reason": "道路施工",
+          "start_date": "2026-05-02T19:13:33.281135",
+          "end_date": "2026-05-27T19:13:33.281135",
+          "current_status": "active",
+          "calculated_status": "expired",
+          "days_expired": 5,
+          "message": "围挡 B001 已过期 5 天，但状态仍标记为 active，应标记为 expired",
+          "source_file": "sample_campus.json",
+          "source_line": 536,
+          "severity": "high"
+        },
+        {
+          "type": "barrier_expired_error",
+          "barrier_id": "B003",
+          "edge_id": "E011",
+          "reason": "过期围挡",
+          "start_date": "2026-04-02T19:13:33.281135",
+          "end_date": "2026-05-02T19:13:33.281135",
+          "current_status": "active",
+          "calculated_status": "expired",
+          "days_expired": 30,
+          "message": "围挡 B003 已过期 30 天，但状态仍标记为 active，应标记为 expired",
+          "source_file": "sample_campus.json",
+          "source_line": 566,
+          "severity": "high"
+        }
+      ]
+    },
+    "accessibility_breakpoints": {
+      "summary": {
+        "total_accessibility_issues": 5,
+        "high_severity": 3,
+        "moderate_severity": 2,
+        "low_severity": 0,
+        "affecting_route": 1
+      },
+      "high_severity_issues": [
+        {
+          "type": "accessibility_breakpoint",
+          "issue_type": "high_severity_unresolved",
+          "issue_id": "A001",
+          "edge_id": "E011",
+          "from_node": "N002",
+          "to_node": "N010",
+          "issue_type_detail": "stairs_only",
+          "severity": 5,
+          "description": "只有台阶，无坡道",
+          "location_detail": "行政楼到医务室路段",
+          "reported_date": "2026-05-12T19:13:33.281160",
+          "message": "边 E011 存在严重无障碍问题（严重度5）: 只有台阶，无坡道",
+          "source_file": "sample_campus.json",
+          "source_line": 613,
+          "edge_source_file": "sample_campus.json",
+          "edge_source_line": 382
+        },
+        {
+          "type": "accessibility_breakpoint",
+          "issue_type": "high_severity_unresolved",
+          "issue_id": "A003",
+          "edge_id": "E016",
+          "from_node": "N009",
+          "to_node": "N004",
+          "issue_type_detail": "stairs_only",
+          "severity": 5,
+          "description": "只有台阶，无电梯",
+          "location_detail": "实验楼到教学楼A",
+          "reported_date": "2026-05-27T19:13:33.281160",
+          "message": "边 E016 存在严重无障碍问题（严重度5）: 只有台阶，无电梯",
+          "source_file": "sample_campus.json",
+          "source_line": 643,
+          "edge_source_file": "sample_campus.json",
+          "edge_source_line": 491
+        },
+        {
+          "type": "accessibility_breakpoint",
+          "issue_type": "high_severity_unresolved",
+          "issue_id": "A005",
+          "edge_id": "E010",
+          "from_node": "N010",
+          "to_node": "N011",
+          "issue_type_detail": "broken_tactile_paving",
+          "severity": 4,
+          "description": "盲道砖破损",
+          "location_detail": "医务室到北门路段",
+          "reported_date": "2026-05-30T19:13:33.281160",
+          "message": "边 E010 存在严重无障碍问题（严重度4）: 盲道砖破损",
+          "source_file": "sample_campus.json",
+          "source_line": 673,
+          "edge_source_file": "sample_campus.json",
+          "edge_source_line": 360
+        }
+      ],
+      "moderate_severity_issues": [
+        {
+          "type": "accessibility_breakpoint",
+          "issue_type": "moderate_unresolved",
+          "issue_id": "A002",
+          "edge_id": "E008",
+          "from_node": "N008",
+          "to_node": "N009",
+          "issue_type_detail": "narrow_path",
+          "severity": 3,
+          "description": "道路狭窄，轮椅通行困难",
+          "location_detail": "体育馆到实验楼中间段",
+          "reported_date": "2026-05-22T19:13:33.281160",
+          "message": "边 E008 存在无障碍问题（严重度3）: 道路狭窄，轮椅通行困难",
+          "source_file": "sample_campus.json",
+          "source_line": 628,
+          "edge_source_file": "sample_campus.json",
+          "edge_source_line": 316
+        },
+        {
+          "type": "accessibility_breakpoint",
+          "issue_type": "moderate_unresolved",
+          "issue_id": "A004",
+          "edge_id": "E002",
+          "from_node": "N002",
+          "to_node": "N003",
+          "issue_type_detail": "uneven_surface",
+          "severity": 2,
+          "description": "路面不平整",
+          "location_detail": "行政楼到图书馆",
+          "reported_date": "2026-05-29T19:13:33.281160",
+          "message": "边 E002 存在无障碍问题（严重度2）: 路面不平整",
+          "source_file": "sample_campus.json",
+          "source_line": 658,
+          "edge_source_file": "sample_campus.json",
+          "edge_source_line": 184
+        }
+      ],
+      "low_severity_issues": [],
+      "issues_affecting_route": [
+        {
+          "issue_id": "A004",
+          "edge_id": "E002",
+          "from_node": "N002",
+          "to_node": "N003",
+          "issue_type": "uneven_surface",
+          "severity": 2,
+          "description": "路面不平整",
+          "location_detail": "行政楼到图书馆",
+          "source_file": "sample_campus.json",
+          "source_line": 658
+        }
+      ]
+    },
+    "manual_edit_impacts": {
+      "total_edits_affecting_route": 0,
+      "weight_overrides_applied": {},
+      "removed_edges": [],
+      "details": []
+    }
+  },
+  "data_validation": {
+    "direction_errors": [
+      {
+        "type": "edge_direction_error",
+        "error_type": "unidirectional_warning",
+        "edge_id": "E015",
+        "from_node": "N001",
+        "to_node": "N011",
+        "direction": "forward",
+        "message": "边 E015 是单向边(forward)，可能存在方向错误",
+        "source_file": "sample_campus.json",
+        "source_line": 469,
+        "severity": "medium"
+      },
+      {
+        "type": "edge_direction_error",
+        "error_type": "backward_direction",
+        "edge_id": "E016",
+        "from_node": "N009",
+        "to_node": "N004",
+        "direction": "backward",
+        "message": "边 E016 使用了不常见的backward方向，请确认是否正确",
+        "source_file": "sample_campus.json",
+        "source_line": 491,
+        "severity": "medium"
+      }
+    ],
+    "expired_barriers": [
+      {
+        "type": "barrier_expired_error",
+        "barrier_id": "B001",
+        "edge_id": "E003",
+        "reason": "道路施工",
+        "start_date": "2026-05-02T19:13:33.281135",
+        "end_date": "2026-05-27T19:13:33.281135",
+        "current_status": "active",
+        "calculated_status": "expired",
+        "days_expired": 5,
+        "message": "围挡 B001 已过期 5 天，但状态仍标记为 active，应标记为 expired",
+        "source_file": "sample_campus.json",
+        "source_line": 536,
+        "severity": "high"
+      },
+      {
+        "type": "barrier_expired_error",
+        "barrier_id": "B003",
+        "edge_id": "E011",
+        "reason": "过期围挡",
+        "start_date": "2026-04-02T19:13:33.281135",
+        "end_date": "2026-05-02T19:13:33.281135",
+        "current_status": "active",
+        "calculated_status": "expired",
+        "days_expired": 30,
+        "message": "围挡 B003 已过期 30 天，但状态仍标记为 active，应标记为 expired",
+        "source_file": "sample_campus.json",
+        "source_line": 566,
+        "severity": "high"
+      }
+    ],
+    "accessibility_breakpoints": [
+      {
+        "type": "accessibility_breakpoint",
+        "issue_type": "high_severity_unresolved",
+        "issue_id": "A001",
+        "edge_id": "E011",
+        "from_node": "N002",
+        "to_node": "N010",
+        "issue_type_detail": "stairs_only",
+        "severity": 5,
+        "description": "只有台阶，无坡道",
+        "location_detail": "行政楼到医务室路段",
+        "reported_date": "2026-05-12T19:13:33.281160",
+        "message": "边 E011 存在严重无障碍问题（严重度5）: 只有台阶，无坡道",
+        "source_file": "sample_campus.json",
+        "source_line": 613,
+        "edge_source_file": "sample_campus.json",
+        "edge_source_line": 382
+      },
+      {
+        "type": "accessibility_breakpoint",
+        "issue_type": "moderate_unresolved",
+        "issue_id": "A002",
+        "edge_id": "E008",
+        "from_node": "N008",
+        "to_node": "N009",
+        "issue_type_detail": "narrow_path",
+        "severity": 3,
+        "description": "道路狭窄，轮椅通行困难",
+        "location_detail": "体育馆到实验楼中间段",
+        "reported_date": "2026-05-22T19:13:33.281160",
+        "message": "边 E008 存在无障碍问题（严重度3）: 道路狭窄，轮椅通行困难",
+        "source_file": "sample_campus.json",
+        "source_line": 628,
+        "edge_source_file": "sample_campus.json",
+        "edge_source_line": 316
+      },
+      {
+        "type": "accessibility_breakpoint",
+        "issue_type": "high_severity_unresolved",
+        "issue_id": "A003",
+        "edge_id": "E016",
+        "from_node": "N009",
+        "to_node": "N004",
+        "issue_type_detail": "stairs_only",
+        "severity": 5,
+        "description": "只有台阶，无电梯",
+        "location_detail": "实验楼到教学楼A",
+        "reported_date": "2026-05-27T19:13:33.281160",
+        "message": "边 E016 存在严重无障碍问题（严重度5）: 只有台阶，无电梯",
+        "source_file": "sample_campus.json",
+        "source_line": 643,
+        "edge_source_file": "sample_campus.json",
+        "edge_source_line": 491
+      },
+      {
+        "type": "accessibility_breakpoint",
+        "issue_type": "moderate_unresolved",
+        "issue_id": "A004",
+        "edge_id": "E002",
+        "from_node": "N002",
+        "to_node": "N003",
+        "issue_type_detail": "uneven_surface",
+        "severity": 2,
+        "description": "路面不平整",
+        "location_detail": "行政楼到图书馆",
+        "reported_date": "2026-05-29T19:13:33.281160",
+        "message": "边 E002 存在无障碍问题（严重度2）: 路面不平整",
+        "source_file": "sample_campus.json",
+        "source_line": 658,
+        "edge_source_file": "sample_campus.json",
+        "edge_source_line": 184
+      },
+      {
+        "type": "accessibility_breakpoint",
+        "issue_type": "high_severity_unresolved",
+        "issue_id": "A005",
+        "edge_id": "E010",
+        "from_node": "N010",
+        "to_node": "N011",
+        "issue_type_detail": "broken_tactile_paving",
+        "severity": 4,
+        "description": "盲道砖破损",
+        "location_detail": "医务室到北门路段",
+        "reported_date": "2026-05-30T19:13:33.281160",
+        "message": "边 E010 存在严重无障碍问题（严重度4）: 盲道砖破损",
+        "source_file": "sample_campus.json",
+        "source_line": 673,
+        "edge_source_file": "sample_campus.json",
+        "edge_source_line": 360
+      }
+    ],
+    "data_inconsistencies": [
+      {
+        "type": "data_inconsistency",
+        "inconsistency_type": "edge_length_mismatch",
+        "edge_id": "E011",
+        "from_node": "N002",
+        "to_node": "N010",
+        "declared_length": 150,
+        "calculated_length": 158.11,
+        "difference": 8.11,
+        "message": "边 E011 的声明长度 150 与节点距离计算值 158.11 差异较大",
+        "source_file": "sample_campus.json",
+        "source_line": 382,
+        "severity": "medium"
+      },
+      {
+        "type": "data_inconsistency",
+        "inconsistency_type": "edge_length_mismatch",
+        "edge_id": "E012",
+        "from_node": "N006",
+        "to_node": "N012",
+        "declared_length": 141,
+        "calculated_length": 111.8,
+        "difference": 29.2,
+        "message": "边 E012 的声明长度 141 与节点距离计算值 111.8 差异较大",
+        "source_file": "sample_campus.json",
+        "source_line": 403,
+        "severity": "medium"
+      },
+      {
+        "type": "data_inconsistency",
+        "inconsistency_type": "edge_length_mismatch",
+        "edge_id": "E014",
+        "from_node": "N007",
+        "to_node": "N008",
+        "declared_length": 141,
+        "calculated_length": 180.28,
+        "difference": 39.28,
+        "message": "边 E014 的声明长度 141 与节点距离计算值 180.28 差异较大",
+        "source_file": "sample_campus.json",
+        "source_line": 447,
+        "severity": "medium"
+      },
+      {
+        "type": "data_inconsistency",
+        "inconsistency_type": "edge_length_mismatch",
+        "edge_id": "E015",
+        "from_node": "N001",
+        "to_node": "N011",
+        "declared_length": 180,
+        "calculated_length": 158.11,
+        "difference": 21.89,
+        "message": "边 E015 的声明长度 180 与节点距离计算值 158.11 差异较大",
+        "source_file": "sample_campus.json",
+        "source_line": 469,
+        "severity": "medium"
+      },
+      {
+        "type": "data_inconsistency",
+        "inconsistency_type": "edge_length_mismatch",
+        "edge_id": "E016",
+        "from_node": "N009",
+        "to_node": "N004",
+        "declared_length": 141,
+        "calculated_length": 111.8,
+        "difference": 29.2,
+        "message": "边 E016 的声明长度 141 与节点距离计算值 111.8 差异较大",
+        "source_file": "sample_campus.json",
+        "source_line": 491,
+        "severity": "medium"
+      }
+    ],
+    "summary": {
+      "total_direction_errors": 2,
+      "high_severity_direction_errors": 0,
+      "total_expired_barriers": 2,
+      "total_barrier_issues": 2,
+      "total_accessibility_breakpoints": 5,
+      "high_severity_accessibility_issues": 3,
+      "total_data_inconsistencies": 5,
+      "total_issues": 14
+    }
+  },
+  "consistency_check": {
+    "total_reported_distance": 436.0,
+    "total_actual_distance": 436.0,
+    "total_distance_match": true,
+    "result_total_distance": 436,
+    "inconsistencies": [],
+    "inconsistency_count": 0
+  },
+  "trace_entries": [
+    {
+      "source_type": "node",
+      "source_id": "N001",
+      "source_name": "校门",
+      "target_type": "navigation_result",
+      "target_id": "aeab69b1",
+      "target_name": "导航请求 aeab69b1",
+      "relationship": "节点参与导航计算",
+      "metadata": {
+        "node_position": 0,
+        "node_y": 0
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N001",
+      "source_name": "校门",
+      "target_type": "route_sequence",
+      "target_id": "pos_0",
+      "target_name": "路线位置 0",
+      "relationship": "节点在路线序列中",
+      "metadata": {
+        "sequence_position": 0
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N001",
+      "source_name": "校门",
+      "target_type": "edge",
+      "target_id": "E001",
+      "target_name": "主入口大道",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 112,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 162
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N002",
+      "source_name": "行政楼",
+      "target_type": "navigation_result",
+      "target_id": "aeab69b1",
+      "target_name": "导航请求 aeab69b1",
+      "relationship": "节点参与导航计算",
+      "metadata": {
+        "node_position": 100,
+        "node_y": 50
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N002",
+      "source_name": "行政楼",
+      "target_type": "route_sequence",
+      "target_id": "pos_1",
+      "target_name": "路线位置 1",
+      "relationship": "节点在路线序列中",
+      "metadata": {
+        "sequence_position": 1
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N002",
+      "source_name": "行政楼",
+      "target_type": "edge",
+      "target_id": "E001",
+      "target_name": "主入口大道",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 112,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 162
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N002",
+      "source_name": "行政楼",
+      "target_type": "edge",
+      "target_id": "E002",
+      "target_name": "行政楼到图书馆",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 112,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 184
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N003",
+      "source_name": "图书馆",
+      "target_type": "navigation_result",
+      "target_id": "aeab69b1",
+      "target_name": "导航请求 aeab69b1",
+      "relationship": "节点参与导航计算",
+      "metadata": {
+        "node_position": 200,
+        "node_y": 100
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N003",
+      "source_name": "图书馆",
+      "target_type": "route_sequence",
+      "target_id": "pos_2",
+      "target_name": "路线位置 2",
+      "relationship": "节点在路线序列中",
+      "metadata": {
+        "sequence_position": 2
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N003",
+      "source_name": "图书馆",
+      "target_type": "edge",
+      "target_id": "E002",
+      "target_name": "行政楼到图书馆",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 112,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 184
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N003",
+      "source_name": "图书馆",
+      "target_type": "edge",
+      "target_id": "E013",
+      "target_name": "图书馆到食堂捷径",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 100,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 425
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N006",
+      "source_name": "食堂",
+      "target_type": "navigation_result",
+      "target_id": "aeab69b1",
+      "target_name": "导航请求 aeab69b1",
+      "relationship": "节点参与导航计算",
+      "metadata": {
+        "node_position": 300,
+        "node_y": 100
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N006",
+      "source_name": "食堂",
+      "target_type": "route_sequence",
+      "target_id": "pos_3",
+      "target_name": "路线位置 3",
+      "relationship": "节点在路线序列中",
+      "metadata": {
+        "sequence_position": 3
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N006",
+      "source_name": "食堂",
+      "target_type": "edge",
+      "target_id": "E013",
+      "target_name": "图书馆到食堂捷径",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 100,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 425
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N006",
+      "source_name": "食堂",
+      "target_type": "edge",
+      "target_id": "E006",
+      "target_name": "食堂到宿舍",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 112,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 272
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N007",
+      "source_name": "宿舍1号楼",
+      "target_type": "navigation_result",
+      "target_id": "aeab69b1",
+      "target_name": "导航请求 aeab69b1",
+      "relationship": "节点参与导航计算",
+      "metadata": {
+        "node_position": 350,
+        "node_y": 200
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N007",
+      "source_name": "宿舍1号楼",
+      "target_type": "route_sequence",
+      "target_id": "pos_4",
+      "target_name": "路线位置 4",
+      "relationship": "节点在路线序列中",
+      "metadata": {
+        "sequence_position": 4
+      }
+    },
+    {
+      "source_type": "node",
+      "source_id": "N007",
+      "source_name": "宿舍1号楼",
+      "target_type": "edge",
+      "target_id": "E006",
+      "target_name": "食堂到宿舍",
+      "relationship": "节点连接到边",
+      "metadata": {
+        "edge_length": 112,
+        "edge_direction": "bidirectional",
+        "source_file": "sample_campus.json",
+        "source_line": 272
+      }
+    },
+    {
+      "source_type": "navigation_result",
+      "source_id": "aeab69b1",
+      "source_name": "导航请求 aeab69b1",
+      "target_type": "edge",
+      "target_id": "E001",
+      "target_name": "主入口大道",
+      "relationship": "路线使用边",
+      "metadata": {
+        "segment_index": 0,
+        "edge_length": 112,
+        "segment_length": 112
+      }
+    },
+    {
+      "source_type": "navigation_result",
+      "source_id": "aeab69b1",
+      "source_name": "导航请求 aeab69b1",
+      "target_type": "edge",
+      "target_id": "E002",
+      "target_name": "行政楼到图书馆",
+      "relationship": "路线使用边",
+      "metadata": {
+        "segment_index": 1,
+        "edge_length": 112,
+        "segment_length": 112
+      }
+    },
+    {
+      "source_type": "navigation_result",
+      "source_id": "aeab69b1",
+      "source_name": "导航请求 aeab69b1",
+      "target_type": "edge",
+      "target_id": "E013",
+      "target_name": "图书馆到食堂捷径",
+      "relationship": "路线使用边",
+      "metadata": {
+        "segment_index": 2,
+        "edge_length": 100,
+        "segment_length": 100
+      }
+    },
+    {
+      "source_type": "navigation_result",
+      "source_id": "aeab69b1",
+      "source_name": "导航请求 aeab69b1",
+      "target_type": "edge",
+      "target_id": "E006",
+      "target_name": "食堂到宿舍",
+      "relationship": "路线使用边",
+      "metadata": {
+        "segment_index": 3,
+        "edge_length": 112,
+        "segment_length": 112
+      }
+    }
+  ]
+}

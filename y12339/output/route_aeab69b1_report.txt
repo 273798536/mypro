@@ -1,0 +1,193 @@
+================================================================================
+Dijkstra校园导航系统 - 导航报告
+================================================================================
+报告生成时间: 2026-06-01 19:13:48
+请求ID: aeab69b1
+
+【导航概要】
+--------------------------------------------------------------------------------
+  状态: ⚠ 有警告
+  起点: N001 - 校门
+        来源: sample_campus.json:4
+  终点: N007 - 宿舍1号楼
+        来源: sample_campus.json:82
+  总距离: 436.00 米
+  预计时间: 5.2 分钟
+  路段数: 4
+  节点数: 5
+
+【路线明细】
+--------------------------------------------------------------------------------
+  节点序列: N001 → N002 → N003 → N006 → N007
+
+  序号   边ID      起点→终点                          长度(m)    方向           标签
+  ----------------------------------------------------------------------------
+  0    E001     校门→行政楼                  112.0    bidirectional wheelchair,ramp
+       来源: sample_campus.json:162
+  1    E002     行政楼→图书馆                  112.0    bidirectional wheelchair,ramp [⚡无障碍]
+       来源: sample_campus.json:184
+  2    E013     图书馆→食堂                   100.0    bidirectional wheelchair,ramp
+       来源: sample_campus.json:425
+  3    E006     食堂→宿舍1号楼                112.0    bidirectional wheelchair,ramp
+       来源: sample_campus.json:272
+
+【边长度追踪】
+--------------------------------------------------------------------------------
+  序号   边ID      起点→终点                          报告长度       实际长度       匹配
+  ----------------------------------------------------------------------
+  0    E001     校门→行政楼                  112.0      112.0      ✓
+       来源: sample_campus.json:162
+  1    E002     行政楼→图书馆                  112.0      112.0      ✓
+       来源: sample_campus.json:184
+  2    E013     图书馆→食堂                   100.0      100.0      ✓
+       来源: sample_campus.json:425
+  3    E006     食堂→宿舍1号楼                112.0      112.0      ✓
+       来源: sample_campus.json:272
+
+【边方向错误】
+--------------------------------------------------------------------------------
+  总计: 2 个问题
+
+  1. [中危] unidirectional_warning
+     边: E015 (N001 → N011)
+     方向: forward
+     说明: 边 E015 是单向边(forward)，可能存在方向错误
+     来源: sample_campus.json:469
+
+  2. [中危] backward_direction
+     边: E016 (N009 → N004)
+     方向: backward
+     说明: 边 E016 使用了不常见的backward方向，请确认是否正确
+     来源: sample_campus.json:491
+
+【围挡问题】
+--------------------------------------------------------------------------------
+  总计: 2 个问题，其中过期: 2 个
+
+  过期围挡明细:
+  1. [过期5天] B001
+     边: E003
+     原因: 道路施工
+     起止: 2026-05-02T19:13:33.281135 ~ 2026-05-27T19:13:33.281135
+     当前状态: active (应为: expired)
+     说明: 围挡 B001 已过期 5 天，但状态仍标记为 active，应标记为 expired
+     来源: sample_campus.json:536
+
+  2. [过期30天] B003
+     边: E011
+     原因: 过期围挡
+     起止: 2026-04-02T19:13:33.281135 ~ 2026-05-02T19:13:33.281135
+     当前状态: active (应为: expired)
+     说明: 围挡 B003 已过期 30 天，但状态仍标记为 active，应标记为 expired
+     来源: sample_campus.json:566
+
+【无障碍断点】
+--------------------------------------------------------------------------------
+  总计: 5 个问题
+  严重: 3 | 中等: 2 | 轻微: 0
+
+  严重无障碍问题 (严重度≥4):
+  1. [严重度5] A001
+     边: E011 (N002 → N010)
+     类型: stairs_only
+     说明: 只有台阶，无坡道
+     位置: 行政楼到医务室路段
+     来源: sample_campus.json:613
+
+  2. [严重度5] A003
+     边: E016 (N009 → N004)
+     类型: stairs_only
+     说明: 只有台阶，无电梯
+     位置: 实验楼到教学楼A
+     来源: sample_campus.json:643
+
+  3. [严重度4] A005
+     边: E010 (N010 → N011)
+     类型: broken_tactile_paving
+     说明: 盲道砖破损
+     位置: 医务室到北门路段
+     来源: sample_campus.json:673
+
+  中等无障碍问题 (严重度2-3):
+  1. [严重度3] A002 - 道路狭窄，轮椅通行困难
+     来源: sample_campus.json:628
+  2. [严重度2] A004 - 路面不平整
+     来源: sample_campus.json:658
+
+【溯源追踪】
+--------------------------------------------------------------------------------
+  1. node(N001) → navigation_result(aeab69b1)
+     关系: 节点参与导航计算
+     元数据: {'node_position': 0, 'node_y': 0}
+  2. node(N001) → route_sequence(pos_0)
+     关系: 节点在路线序列中
+     元数据: {'sequence_position': 0}
+  3. node(N001) → edge(E001)
+     关系: 节点连接到边
+     元数据: {'edge_length': 112, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 162}
+  4. node(N002) → navigation_result(aeab69b1)
+     关系: 节点参与导航计算
+     元数据: {'node_position': 100, 'node_y': 50}
+  5. node(N002) → route_sequence(pos_1)
+     关系: 节点在路线序列中
+     元数据: {'sequence_position': 1}
+  6. node(N002) → edge(E001)
+     关系: 节点连接到边
+     元数据: {'edge_length': 112, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 162}
+  7. node(N002) → edge(E002)
+     关系: 节点连接到边
+     元数据: {'edge_length': 112, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 184}
+  8. node(N003) → navigation_result(aeab69b1)
+     关系: 节点参与导航计算
+     元数据: {'node_position': 200, 'node_y': 100}
+  9. node(N003) → route_sequence(pos_2)
+     关系: 节点在路线序列中
+     元数据: {'sequence_position': 2}
+  10. node(N003) → edge(E002)
+     关系: 节点连接到边
+     元数据: {'edge_length': 112, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 184}
+  11. node(N003) → edge(E013)
+     关系: 节点连接到边
+     元数据: {'edge_length': 100, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 425}
+  12. node(N006) → navigation_result(aeab69b1)
+     关系: 节点参与导航计算
+     元数据: {'node_position': 300, 'node_y': 100}
+  13. node(N006) → route_sequence(pos_3)
+     关系: 节点在路线序列中
+     元数据: {'sequence_position': 3}
+  14. node(N006) → edge(E013)
+     关系: 节点连接到边
+     元数据: {'edge_length': 100, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 425}
+  15. node(N006) → edge(E006)
+     关系: 节点连接到边
+     元数据: {'edge_length': 112, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 272}
+  16. node(N007) → navigation_result(aeab69b1)
+     关系: 节点参与导航计算
+     元数据: {'node_position': 350, 'node_y': 200}
+  17. node(N007) → route_sequence(pos_4)
+     关系: 节点在路线序列中
+     元数据: {'sequence_position': 4}
+  18. node(N007) → edge(E006)
+     关系: 节点连接到边
+     元数据: {'edge_length': 112, 'edge_direction': 'bidirectional', 'source_file': 'sample_campus.json', 'source_line': 272}
+  19. navigation_result(aeab69b1) → edge(E001)
+     关系: 路线使用边
+     元数据: {'segment_index': 0, 'edge_length': 112, 'segment_length': 112}
+  20. navigation_result(aeab69b1) → edge(E002)
+     关系: 路线使用边
+     元数据: {'segment_index': 1, 'edge_length': 112, 'segment_length': 112}
+  21. navigation_result(aeab69b1) → edge(E013)
+     关系: 路线使用边
+     元数据: {'segment_index': 2, 'edge_length': 100, 'segment_length': 100}
+  22. navigation_result(aeab69b1) → edge(E006)
+     关系: 路线使用边
+     元数据: {'segment_index': 3, 'edge_length': 112, 'segment_length': 112}
+
+【一致性校验】
+--------------------------------------------------------------------------------
+  报告总距离: 436.00 米
+  累计路段距离: 436.00 米
+  实际边长度和: 436.00 米
+  距离匹配: ✓ 是
+
+================================================================================

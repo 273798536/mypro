@@ -1,0 +1,79 @@
+{
+  "barriers": [
+    {
+      "barrier_id": "B001",
+      "edge_id": "E003",
+      "reason": "道路施工",
+      "start_date": "2026-05-02T19:13:33.281135",
+      "end_date": "2026-05-27T19:13:33.281135",
+      "status": "active",
+      "affected_direction": null,
+      "description": "图书馆前主路维修",
+      "contact_person": "张工",
+      "metadata": {},
+      "created_at": "2026-06-01T19:13:33.281150",
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "barrier_id": "B002",
+      "edge_id": "E007",
+      "reason": "管线维修",
+      "start_date": "2026-05-22T19:13:33.281135",
+      "end_date": "2026-06-21T19:13:33.281135",
+      "status": "active",
+      "affected_direction": null,
+      "description": "教学楼A到体育馆管线改造",
+      "contact_person": "李工",
+      "metadata": {},
+      "created_at": "2026-06-01T19:13:33.281153",
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "barrier_id": "B003",
+      "edge_id": "E011",
+      "reason": "过期围挡",
+      "start_date": "2026-04-02T19:13:33.281135",
+      "end_date": "2026-05-02T19:13:33.281135",
+      "status": "active",
+      "affected_direction": null,
+      "description": "此围挡已过期未拆除",
+      "contact_person": "王工",
+      "metadata": {},
+      "created_at": "2026-06-01T19:13:33.281155",
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "barrier_id": "B004",
+      "edge_id": "E005",
+      "reason": "临时围挡",
+      "start_date": "2026-06-06T19:13:33.281135",
+      "end_date": "2026-06-16T19:13:33.281135",
+      "status": "scheduled",
+      "affected_direction": null,
+      "description": "计划中施工",
+      "contact_person": "赵工",
+      "metadata": {},
+      "created_at": "2026-06-01T19:13:33.281157",
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "barrier_id": "B005",
+      "edge_id": "E009",
+      "reason": "绿化施工",
+      "start_date": "2026-05-17T19:13:33.281135",
+      "end_date": "2026-06-06T19:13:33.281135",
+      "status": "active",
+      "affected_direction": "forward",
+      "description": "半幅施工，单向通行",
+      "contact_person": "刘工",
+      "metadata": {},
+      "created_at": "2026-06-01T19:13:33.281159",
+      "source_file": "sample_campus.json",
+      "source_line": null
+    }
+  ]
+}

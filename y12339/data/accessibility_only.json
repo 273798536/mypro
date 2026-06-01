@@ -1,0 +1,79 @@
+{
+  "accessibility_issues": [
+    {
+      "issue_id": "A001",
+      "edge_id": "E011",
+      "issue_type": "stairs_only",
+      "severity": 5,
+      "description": "只有台阶，无坡道",
+      "location_detail": "行政楼到医务室路段",
+      "reported_by": "运维检查",
+      "reported_date": "2026-05-12T19:13:33.281160",
+      "resolved": false,
+      "resolved_date": null,
+      "metadata": {},
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "issue_id": "A002",
+      "edge_id": "E008",
+      "issue_type": "narrow_path",
+      "severity": 3,
+      "description": "道路狭窄，轮椅通行困难",
+      "location_detail": "体育馆到实验楼中间段",
+      "reported_by": "学生反馈",
+      "reported_date": "2026-05-22T19:13:33.281160",
+      "resolved": false,
+      "resolved_date": null,
+      "metadata": {},
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "issue_id": "A003",
+      "edge_id": "E016",
+      "issue_type": "stairs_only",
+      "severity": 5,
+      "description": "只有台阶，无电梯",
+      "location_detail": "实验楼到教学楼A",
+      "reported_by": "系统检测",
+      "reported_date": "2026-05-27T19:13:33.281160",
+      "resolved": false,
+      "resolved_date": null,
+      "metadata": {},
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "issue_id": "A004",
+      "edge_id": "E002",
+      "issue_type": "uneven_surface",
+      "severity": 2,
+      "description": "路面不平整",
+      "location_detail": "行政楼到图书馆",
+      "reported_by": "日常巡查",
+      "reported_date": "2026-05-29T19:13:33.281160",
+      "resolved": false,
+      "resolved_date": null,
+      "metadata": {},
+      "source_file": "sample_campus.json",
+      "source_line": null
+    },
+    {
+      "issue_id": "A005",
+      "edge_id": "E010",
+      "issue_type": "broken_tactile_paving",
+      "severity": 4,
+      "description": "盲道砖破损",
+      "location_detail": "医务室到北门路段",
+      "reported_by": "运维检查",
+      "reported_date": "2026-05-30T19:13:33.281160",
+      "resolved": false,
+      "resolved_date": null,
+      "metadata": {},
+      "source_file": "sample_campus.json",
+      "source_line": null
+    }
+  ]
+}
