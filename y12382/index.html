@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>练琴打卡情绪分析</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="header-left">
+      <span class="logo-icon">🎹</span>
+      <h1>练琴打卡情绪分析</h1>
+    </div>
+    <nav class="main-nav">
+      <button class="nav-btn active" data-tab="import">导入打卡</button>
+      <button class="nav-btn" data-tab="dashboard">练习统计</button>
+      <button class="nav-btn" data-tab="detail">详情明细</button>
+      <button class="nav-btn" data-tab="export">报告导出</button>
+    </nav>
+  </header>
+
+  <main class="app-main">
+    <!-- 导入打卡 -->
+    <section id="tab-import" class="tab-panel active">
+      <div class="panel-grid">
+        <div class="card import-card">
+          <div class="card-header">
+            <h2>原始材料导入</h2>
+            <span class="badge badge-raw">原始材料</span>
+          </div>
+          <div class="card-body">
+            <div class="import-section">
+              <label>打卡音频</label>
+              <div class="file-drop" id="audioDrop">
+                <input type="file" id="audioInput" accept="audio/*" multiple hidden>
+                <div class="drop-hint">
+                  <span class="drop-icon">🎵</span>
+                  <p>拖拽音频文件至此，或点击选择</p>
+                  <p class="drop-sub">支持 WAV / MP3 / M4A，可多人分别上传</p>
+                </div>
+              </div>
+              <div id="audioFileList" class="file-list"></div>
+            </div>
+
+            <div class="import-section">
+              <label>文字心得</label>
+              <textarea id="textNoteInput" placeholder="粘贴或输入练琴心得文字…"></textarea>
+              <div class="input-row">
+                <input type="text" id="noteAuthor" placeholder="心得作者（选填）" class="input-sm">
+                <button class="btn btn-outline" id="addNoteBtn">添加心得</button>
+              </div>
+            </div>
+
+            <div class="import-section">
+              <label>曲目清单</label>
+              <div id="trackListContainer">
+                <div class="track-row">
+                  <input type="text" placeholder="曲目名称" class="track-name">
+                  <input type="number" placeholder="预计时长(分)" class="track-duration" min="0">
+                  <button class="btn-icon btn-remove" title="移除">×</button>
+                </div>
+              </div>
+              <button class="btn btn-outline" id="addTrackBtn">+ 添加曲目</button>
+            </div>
+
+            <div class="import-section">
+              <label>练习时长（分钟）</label>
+              <input type="number" id="practiceDuration" placeholder="实际练习时长" min="0" class="input-md">
+              <input type="text" id="durationReporter" placeholder="时长提供者（选填）" class="input-sm">
+            </div>
+          </div>
+        </div>
+
+        <div class="card process-card">
+          <div class="card-header">
+            <h2>处理与分析</h2>
+            <span class="badge badge-processed">处理结果</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>学生姓名</label>
+              <input type="text" id="studentName" placeholder="输入学生姓名" class="input-md">
+            </div>
+            <div class="form-group">
+              <label>打卡日期</label>
+              <input type="date" id="checkInDate" class="input-md">
+            </div>
+            <button class="btn btn-primary btn-block" id="analyzeBtn">开始分析</button>
+            <div id="analysisPreview" class="analysis-preview hidden">
+              <h3>分析预览</h3>
+              <div class="preview-item">
+                <span class="preview-label">情绪判定</span>
+                <span id="previewEmotion" class="preview-value"></span>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">情绪分值</span>
+                <span id="previewScore" class="preview-value"></span>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">文字心得结论</span>
+                <span id="previewInsight" class="preview-value"></span>
+              </div>
+              <div class="preview-item">
+                <span class="preview-label">异常数量</span>
+                <span id="previewAnomalyCount" class="preview-value"></span>
+              </div>
+              <button class="btn btn-success btn-block" id="confirmRecordBtn">确认录入</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>已导入记录</h2>
+          <span id="recordCount" class="badge">0</span>
+        </div>
+        <div class="card-body">
+          <div id="recordsList" class="records-list">
+            <p class="empty-hint">暂无打卡记录，请在左侧导入后分析</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 练习统计 -->
+    <section id="tab-dashboard" class="tab-panel">
+      <div class="dashboard-grid">
+        <div class="card stat-card">
+          <div class="stat-number" id="statTotalRecords">0</div>
+          <div class="stat-label">总打卡次数</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-number" id="statTotalDuration">0</div>
+          <div class="stat-label">总练习时长(分)</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-number" id="statAvgScore">-</div>
+          <div class="stat-label">平均情绪分值</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-number" id="statAnomalyCount">0</div>
+          <div class="stat-label">异常总数</div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header"><h2>练习时长趋势</h2></div>
+          <div class="card-body chart-body">
+            <canvas id="durationChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header"><h2>情绪分布</h2></div>
+          <div class="card-body chart-body">
+            <canvas id="emotionChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header"><h2>情绪分值趋势</h2></div>
+          <div class="card-body chart-body">
+            <canvas id="emotionTrendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header"><h2>异常类型分布</h2></div>
+          <div class="card-body chart-body">
+            <canvas id="anomalyChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 详情明细 -->
+    <section id="tab-detail" class="tab-panel">
+      <div class="detail-filter">
+        <input type="text" id="detailSearch" placeholder="搜索学生姓名或日期…" class="input-lg">
+        <select id="detailFilter" class="input-md">
+          <option value="all">全部记录</option>
+          <option value="anomaly">仅异常记录</option>
+          <option value="exported">已导出报告</option>
+          <option value="not_exported">未导出报告</option>
+        </select>
+      </div>
+      <div id="detailList" class="detail-list">
+        <p class="empty-hint">暂无记录</p>
+      </div>
+      <div id="detailModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="modalTitle">打卡详情</h2>
+            <button class="btn-icon modal-close" id="modalCloseBtn">×</button>
+          </div>
+          <div class="modal-body" id="modalBody"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 报告导出 -->
+    <section id="tab-export" class="tab-panel">
+      <div class="panel-grid">
+        <div class="card">
+          <div class="card-header"><h2>导出设置</h2></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>报告范围</label>
+              <select id="exportScope" class="input-md">
+                <option value="all">全部记录</option>
+                <option value="date_range">日期范围</option>
+                <option value="single">单条记录</option>
+              </select>
+            </div>
+            <div class="form-group date-range-group" id="dateRangeGroup" style="display:none">
+              <input type="date" id="exportDateFrom" class="input-sm">
+              <span>至</span>
+              <input type="date" id="exportDateTo" class="input-sm">
+            </div>
+            <div class="form-group single-record-group" id="singleRecordGroup" style="display:none">
+              <select id="exportRecordSelect" class="input-lg"></select>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="exportIncludeAnomalies" checked>
+                包含异常信息
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="exportIncludeRaw" checked>
+                包含原始材料索引
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="exportIncludeTraceability" checked>
+                包含可追溯对应关系
+              </label>
+            </div>
+            <button class="btn btn-primary btn-block" id="generateReportBtn">生成报告</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>报告预览</h2></div>
+          <div class="card-body">
+            <div id="reportPreview" class="report-preview">
+              <p class="empty-hint">点击"生成报告"查看预览</p>
+            </div>
+            <div class="export-actions hidden" id="exportActions">
+              <button class="btn btn-primary" id="downloadTxtBtn">下载 TXT 报告</button>
+              <button class="btn btn-primary" id="downloadJsonBtn">下载 JSON 数据</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
