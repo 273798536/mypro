@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>收益率曲线造桥赛</title>
+<style>
+:root {
+  --bg: #0a1628;
+  --bg2: #111d35;
+  --card: #162040;
+  --border: #253560;
+  --fg: #e8edf5;
+  --muted: #7b8daa;
+  --accent: #4fc3f7;
+  --accent2: #00e5ff;
+  --warn: #ffa726;
+  --danger: #ef5350;
+  --success: #66bb6a;
+  --plank-ok: #4fc3f7;
+  --plank-warn: #ffa726;
+  --plank-fail: #ef5350;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
+
+#start-screen {
+  align-items:center; justify-content:center; text-align:center; padding:2rem;
+}
+#start-screen h1 {
+  font-size:2.8rem; font-weight:800; margin-bottom:0.5rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+#start-screen .subtitle { color:var(--muted); font-size:1.1rem; margin-bottom:2rem; }
+.rules-box {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:1.5rem 2rem; max-width:640px; text-align:left; margin-bottom:2rem;
+}
+.rules-box h3 { color:var(--accent); margin-bottom:0.8rem; }
+.rules-box ul { padding-left:1.2rem; line-height:1.9; color:var(--muted); }
+.rules-box li { margin-bottom:0.3rem; }
+.btn {
+  padding:0.75rem 2rem; border:none; border-radius:8px; font-size:1rem;
+  cursor:pointer; font-weight:600; transition:all 0.2s;
+}
+.btn-primary {
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  color:#0a1628;
+}
+.btn-primary:hover { transform:scale(1.05); box-shadow:0 0 20px rgba(79,195,247,0.3); }
+.btn-secondary {
+  background:var(--card); color:var(--fg); border:1px solid var(--border);
+}
+.btn-secondary:hover { border-color:var(--accent); }
+.btn-danger { background:var(--danger); color:#fff; }
+
+#game-screen { padding:0; height:100vh; overflow:hidden; }
+.top-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0.8rem 1.5rem; background:var(--bg2); border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.top-bar .info { display:flex; gap:1.5rem; }
+.top-bar .info span { color:var(--muted); font-size:0.9rem; }
+.top-bar .info span b { color:var(--fg); }
+
+.game-body { display:flex; flex:1; overflow:hidden; min-height:0; }
+.canvas-area { flex:1; position:relative; }
+#bridge-canvas { width:100%; height:100%; display:block; }
+.event-overlay {
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(10,22,40,0.85); z-index:10; opacity:0; pointer-events:none;
+  transition: opacity 0.4s;
+}
+.event-overlay.visible { opacity:1; pointer-events:all; }
+.event-card {
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:2rem; max-width:480px; text-align:center;
+}
+.event-card h2 { font-size:1.5rem; margin-bottom:1rem; }
+.event-card p { color:var(--muted); line-height:1.7; margin-bottom:1.5rem; }
+
+.sidebar {
+  width:320px; background:var(--bg2); border-left:1px solid var(--border);
+  display:flex; flex-direction:column;
+  height:calc(100vh - 52px);
+}
+.sidebar-section { padding:1rem; border-bottom:1px solid var(--border); }
+.sidebar-section h4 { color:var(--accent); font-size:0.85rem; margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px; }
+#bond-list { max-height:200px; overflow-y:auto; }
+.bond-card {
+  background:var(--card); border:1px solid var(--border); border-radius:8px;
+  padding:0.7rem 0.9rem; margin-bottom:0.5rem; cursor:pointer;
+  transition:all 0.2s; position:relative;
+}
+.bond-card:hover { border-color:var(--accent); transform:translateX(4px); }
+.bond-card.selected { border-color:var(--accent2); box-shadow:0 0 12px rgba(0,229,255,0.2); }
+.bond-card .bond-name { font-weight:600; font-size:0.95rem; }
+.bond-card .bond-meta { display:flex; gap:0.8rem; margin-top:0.3rem; font-size:0.8rem; color:var(--muted); }
+.bond-card .bond-source {
+  position:absolute; top:0.5rem; right:0.7rem; font-size:0.7rem;
+  padding:0.1rem 0.4rem; border-radius:4px;
+}
+.source-A { background:#1a3a5c; color:#4fc3f7; }
+.source-B { background:#2a1a4c; color:#b388ff; }
+.source-C { background:#1a4c3a; color:#69f0ae; }
+
+.placed-list { max-height:200px; overflow-y:auto; }
+.placed-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0.4rem 0.6rem; margin-bottom:0.3rem; border-radius:6px;
+  background:var(--card); font-size:0.85rem;
+}
+.placed-item .remove-btn {
+  background:none; border:none; color:var(--danger); cursor:pointer;
+  font-size:0.8rem; padding:0.2rem 0.4rem;
+}
+.placed-item .remove-btn:hover { background:rgba(239,83,80,0.1); border-radius:4px; }
+
+.conflict-banner {
+  background:rgba(255,167,38,0.1); border:1px solid var(--warn); border-radius:8px;
+  padding:0.6rem 0.8rem; margin-bottom:0.5rem; font-size:0.82rem; color:var(--warn);
+}
+.evidence-gap {
+  background:rgba(239,83,80,0.1); border:1px solid var(--danger); border-radius:8px;
+  padding:0.6rem 0.8rem; margin-bottom:0.5rem; font-size:0.82rem; color:var(--danger);
+}
+
+.log-area { flex:1; overflow-y:auto; padding:0.5rem; }
+.log-entry {
+  font-size:0.8rem; padding:0.3rem 0.5rem; margin-bottom:0.2rem;
+  border-radius:4px; color:var(--muted);
+}
+.log-entry.warn { color:var(--warn); background:rgba(255,167,38,0.05); }
+.log-entry.danger { color:var(--danger); background:rgba(239,83,80,0.05); }
+.log-entry.success { color:var(--success); background:rgba(102,187,106,0.05); }
+
+.action-bar {
+  display:flex; gap:0.8rem; padding:1rem;
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+
+#settle-screen, #review-screen, #report-screen {
+  padding:2rem; align-items:center;
+}
+.page-container { max-width:900px; width:100%; }
+.page-title {
+  font-size:1.8rem; font-weight:700; margin-bottom:0.3rem;
+}
+.page-subtitle { color:var(--muted); margin-bottom:1.5rem; }
+
+.result-banner {
+  padding:1.2rem 1.5rem; border-radius:12px; margin-bottom:1.5rem;
+  font-size:1.1rem; font-weight:600;
+}
+.result-banner.pass { background:rgba(102,187,106,0.15); color:var(--success); border:1px solid rgba(102,187,106,0.3); }
+.result-banner.fail { background:rgba(239,83,80,0.15); color:var(--danger); border:1px solid rgba(239,83,80,0.3); }
+
+.section-card {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:1.5rem; margin-bottom:1rem;
+}
+.section-card h3 { color:var(--accent); margin-bottom:0.8rem; font-size:1.1rem; }
+.section-card p, .section-card li { color:var(--muted); line-height:1.8; }
+
+.plain-english {
+  background:rgba(79,195,247,0.08); border-left:3px solid var(--accent);
+  padding:1rem 1.2rem; border-radius:0 8px 8px 0; margin:0.8rem 0;
+  color:var(--fg); line-height:1.8;
+}
+.plain-english .label {
+  color:var(--accent); font-size:0.8rem; font-weight:600; margin-bottom:0.4rem;
+  text-transform:uppercase; letter-spacing:0.5px;
+}
+
+.damage-table {
+  width:100%; border-collapse:collapse; margin-top:0.8rem;
+}
+.damage-table th, .damage-table td {
+  padding:0.6rem 0.8rem; text-align:left; border-bottom:1px solid var(--border);
+  font-size:0.9rem;
+}
+.damage-table th { color:var(--accent); font-weight:600; font-size:0.8rem; text-transform:uppercase; }
+.damage-table td { color:var(--muted); }
+.damage-table td.ok { color:var(--success); }
+.damage-table td.warn { color:var(--warn); }
+.damage-table td.fail { color:var(--danger); font-weight:600; }
+
+.conflict-section { margin-top:1rem; }
+.conflict-item {
+  background:rgba(255,167,38,0.08); border:1px solid rgba(255,167,38,0.2);
+  border-radius:8px; padding:0.8rem 1rem; margin-bottom:0.6rem;
+}
+.conflict-item .conflict-header { color:var(--warn); font-weight:600; margin-bottom:0.3rem; }
+.conflict-item .conflict-detail { color:var(--muted); font-size:0.9rem; line-height:1.6; }
+
+.gap-item {
+  background:rgba(239,83,80,0.08); border:1px solid rgba(239,83,80,0.2);
+  border-radius:8px; padding:0.8rem 1rem; margin-bottom:0.6rem;
+}
+.gap-item .gap-header { color:var(--danger); font-weight:600; margin-bottom:0.3rem; }
+.gap-item .gap-detail { color:var(--muted); font-size:0.9rem; line-height:1.6; }
+.gap-item .gap-missing { color:var(--danger); font-style:italic; margin-top:0.3rem; }
+
+.btn-group { display:flex; gap:0.8rem; margin-top:1.5rem; flex-wrap:wrap; }
+
+#report-screen .report-block {
+  background:#fff; color:#222; border-radius:12px; padding:2rem;
+  margin-bottom:1.5rem; font-size:0.95rem; line-height:1.9;
+}
+#report-screen .report-block h2 { color:#1565c0; margin-bottom:0.8rem; }
+#report-screen .report-block h3 { color:#1976d2; margin:1rem 0 0.5rem; }
+#report-screen .report-block p { margin-bottom:0.5rem; }
+#report-screen .report-block .highlight {
+  background:#e3f2fd; padding:0.8rem 1rem; border-radius:8px;
+  border-left:3px solid #1976d2; margin:0.8rem 0;
+}
+#report-screen .report-block .warn-box {
+  background:#fff3e0; padding:0.8rem 1rem; border-radius:8px;
+  border-left:3px solid #f57c00; margin:0.8rem 0; color:#e65100;
+}
+#report-screen .report-block table {
+  width:100%; border-collapse:collapse; margin:0.8rem 0;
+}
+#report-screen .report-block table th, #report-screen .report-block table td {
+  padding:0.5rem 0.8rem; border:1px solid #ddd; text-align:left; font-size:0.9rem;
+}
+#report-screen .report-block table th { background:#e3f2fd; color:#1565c0; }
+
+.copy-btn {
+  position:absolute; top:1rem; right:1rem; background:#1976d2; color:#fff;
+  border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; font-size:0.8rem;
+}
+.copy-btn:hover { background:#1565c0; }
+
+@media (max-width: 900px) {
+  .game-body { flex-direction:column; }
+  .sidebar { width:100%; max-height:40vh; }
+  .canvas-area { min-height:50vh; }
+}
+</style>
+</head>
+<body>
+
+<div id="start-screen" class="screen active">
+  <h1>收益率曲线造桥赛</h1>
+  <p class="subtitle">用不同期限的债券搭桥，扛住利率风暴</p>
+  <div class="rules-box">
+    <h3>游戏规则</h3>
+    <ul>
+      <li>河面代表时间轴，河上的桥墩标注了不同期限节点</li>
+      <li>你从债券清单里挑选桥板，铺在相邻桥墩之间</li>
+      <li>每块桥板有久期（Duration），久期衡量利率敏感度</li>
+      <li>铺好桥后，利率事件来袭：平移、陡峭化、趋平、倒挂</li>
+      <li>久期缺口大的桥段在事件中会"裂开"，裂缝太多桥就塌了</li>
+      <li>债券桥板和期限节点由不同团队维护，合并时冲突会被暴露</li>
+      <li>久期漏算的线索不等于完整证据，工具会告诉你还缺什么</li>
+    </ul>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()">开始造桥</button>
+</div>
+
+<div id="game-screen" class="screen">
+  <div class="top-bar">
+    <div class="info">
+      <span>关卡 <b id="level-num">1</b>/3</span>
+      <span>关卡名 <b id="level-name">正常曲线</b></span>
+      <span>积分 <b id="score-num">0</b></span>
+    </div>
+    <div class="info">
+      <span id="phase-label">铺桥阶段</span>
+    </div>
+  </div>
+  <div class="game-body">
+    <div class="canvas-area">
+      <canvas id="bridge-canvas"></canvas>
+      <div class="event-overlay" id="event-overlay">
+        <div class="event-card" id="event-card"></div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-scroll" style="flex:1;overflow-y:auto;min-height:0">
+        <div class="sidebar-section">
+          <h4>债券清单（点击选取，再点桥墩放置）</h4>
+          <div id="bond-list"></div>
+        </div>
+        <div class="sidebar-section">
+          <h4>已铺桥板</h4>
+          <div id="placed-list" class="placed-list"></div>
+        </div>
+        <div class="sidebar-section" id="conflict-section" style="display:none">
+          <h4>合并冲突</h4>
+          <div id="conflict-list"></div>
+        </div>
+        <div class="sidebar-section" id="gap-section" style="display:none">
+          <h4>证据缺失</h4>
+          <div id="gap-list"></div>
+        </div>
+        <div class="sidebar-section" style="display:flex;flex-direction:column">
+          <h4>事件日志</h4>
+          <div id="log-area" class="log-area"></div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <button class="btn btn-primary" id="submit-btn" onclick="submitBridge()">提交桥梁</button>
+        <button class="btn btn-secondary" id="reset-btn" onclick="resetPlacements()">重置</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="settle-screen" class="screen">
+  <div class="page-container">
+    <div id="settle-content"></div>
+  </div>
+</div>
+
+<div id="review-screen" class="screen">
+  <div class="page-container">
+    <div id="review-content"></div>
+  </div>
+</div>
+
+<div id="report-screen" class="screen">
+  <div class="page-container" style="position:relative">
+    <button class="copy-btn" onclick="copyReport()">复制报告</button>
+    <div id="report-content"></div>
+  </div>
+</div>
+
+<script>
+const LEVELS = [
+  {
+    name: '正常曲线',
+    curve: [2.0, 2.3, 2.5, 2.8, 3.0, 3.2, 3.5, 3.6],
+    events: [
+      { type:'parallel_up', magnitude:50, label:'加息50bp', desc:'央行加息，整条曲线平行上移50个基点' },
+    ],
+    passThreshold: 0.4,
+  },
+  {
+    name: '趋平曲线',
+    curve: [3.5, 3.4, 3.3, 3.1, 3.0, 2.9, 2.8, 2.7],
+    events: [
+      { type:'bear_steepen', magnitude:40, label:'熊市陡峭化', desc:'长端利率上行更多，曲线趋陡' },
+      { type:'parallel_up', magnitude:30, label:'加息30bp', desc:'加息周期延续，曲线平行上移' },
+    ],
+    passThreshold: 0.45,
+  },
+  {
+    name: '倒挂曲线',
+    curve: [4.5, 4.3, 4.0, 3.6, 3.3, 3.0, 2.8, 2.6],
+    events: [
+      { type:'inversion', magnitude:60, label:'深度倒挂', desc:'短端利率远超长端，曲线严重倒挂——这是经济衰退的经典信号' },
+      { type:'bull_flatten', magnitude:30, label:'牛市趋平', desc:'长端利率大幅下行，曲线进一步趋平' },
+    ],
+    passThreshold: 0.5,
+  },
+];
+
+const MATURITIES = [1, 2, 3, 5, 7, 10, 20, 30];
+
+const BOND_CATALOG = [
+  { id:'b1',  name:'1年期国债',   maturity:1,  coupon:2.0, duration:0.98,  source:'A' },
+  { id:'b2a', name:'2年期国债A',  maturity:2,  coupon:2.3, duration:1.92,  source:'A' },
+  { id:'b2b', name:'2年期政策债', maturity:2,  coupon:2.5, duration:1.88,  source:'B' },
+  { id:'b3',  name:'3年期国债',   maturity:3,  coupon:2.5, duration:2.83,  source:'B' },
+  { id:'b5a', name:'5年期国债',   maturity:5,  coupon:2.8, duration:4.55,  source:'B' },
+  { id:'b5b', name:'5年期地方债', maturity:5,  coupon:3.0, duration:4.40,  source:'A' },
+  { id:'b7',  name:'7年期国债',   maturity:7,  coupon:3.0, duration:6.12,  source:'A' },
+  { id:'b10', name:'10年期国债',  maturity:10, coupon:3.2, duration:8.35,  source:'C' },
+  { id:'b10b',name:'10年期国开债',maturity:10, coupon:3.4, duration:8.10,  source:'B' },
+  { id:'b20', name:'20年期国债',  maturity:20, coupon:3.5, duration:14.20, source:'C' },
+  { id:'b30', name:'30年期国债',  maturity:30, coupon:3.6, duration:17.80, source:'C' },
+];
+
+const PILLAR_SOURCES = ['X','X','Y','Y','X','Z','Z','Z'];
+
+let G = {
+  level: 0,
+  score: 0,
+  selectedBond: null,
+  placements: [],
+  phase: 'build',
+  eventIndex: 0,
+  eventResults: [],
+  conflicts: [],
+  evidenceGaps: [],
+  allRoundResults: [],
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startGame() {
+  G = {
+    level: 0, score: 0, selectedBond: null, placements: [], phase: 'build',
+    eventIndex: 0, eventResults: [], conflicts: [], evidenceGaps: [],
+    allRoundResults: [],
+  };
+  initLevel();
+  showScreen('game-screen');
+}
+
+function initLevel() {
+  G.placements = [];
+  G.selectedBond = null;
+  G.phase = 'build';
+  G.eventIndex = 0;
+  G.eventResults = [];
+  G.conflicts = [];
+  G.evidenceGaps = [];
+  const lv = LEVELS[G.level];
+  document.getElementById('level-num').textContent = G.level + 1;
+  document.getElementById('level-name').textContent = lv.name;
+  document.getElementById('score-num').textContent = G.score;
+  document.getElementById('phase-label').textContent = '铺桥阶段';
+  document.getElementById('submit-btn').disabled = false;
+  renderBondList();
+  renderPlacedList();
+  renderConflicts();
+  renderGaps();
+  clearLog();
+  log('开始关卡：' + lv.name);
+  log('请在右侧选择债券，再点击桥面铺板');
+  requestAnimationFrame(() => { resizeCanvas(); drawBridge(); });
+}
+
+function renderBondList() {
+  const el = document.getElementById('bond-list');
+  el.innerHTML = '';
+  BOND_CATALOG.forEach(b => {
+    const used = G.placements.some(p => p.bondId === b.id);
+    const card = document.createElement('div');
+    card.className = 'bond-card' + (used ? ' used' : '') + (G.selectedBond === b.id ? ' selected' : '');
+    if (used) card.style.opacity = '0.4';
+    card.innerHTML = `
+      <div class="bond-name">${b.name}</div>
+      <div class="bond-meta">
+        <span>期限${b.maturity}Y</span>
+        <span>票面${b.coupon}%</span>
+        <span>久期${b.duration}</span>
+      </div>
+      <span class="bond-source source-${b.source}">团队${b.source}</span>
+    `;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.onclick = () => {
+      if (used) return;
+      G.selectedBond = (G.selectedBond === b.id) ? null : b.id;
+      renderBondList();
+      if (G.selectedBond) log('选中：' + b.name);
+    };
+    el.appendChild(card);
+  });
+}
+
+function renderPlacedList() {
+  const el = document.getElementById('placed-list');
+  el.innerHTML = '';
+  if (G.placements.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:0.85rem">暂未铺板</div>';
+    return;
+  }
+  G.placements.forEach((p, i) => {
+    const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+    const item = document.createElement('div');
+    item.className = 'placed-item';
+    item.innerHTML = `
+      <span>${bond.name} → ${MATURITIES[p.fromIdx]}Y~${MATURITIES[p.toIdx]}Y</span>
+      <button class="remove-btn" onclick="removePlacement(${i})">移除</button>
+    `;
+    el.appendChild(item);
+  });
+}
+
+function removePlacement(idx) {
+  const p = G.placements[idx];
+  const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+  G.placements.splice(idx, 1);
+  log('移除：' + bond.name, 'warn');
+  renderPlacedList();
+  renderBondList();
+  detectConflicts();
+  detectGaps();
+  drawBridge();
+}
+
+function detectConflicts() {
+  G.conflicts = [];
+  G.placements.forEach((p, i) => {
+    const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+    const pillarSrcFrom = PILLAR_SOURCES[p.fromIdx];
+    const pillarSrcTo = PILLAR_SOURCES[p.toIdx];
+    if (bond.source !== pillarSrcFrom || bond.source !== pillarSrcTo) {
+      G.conflicts.push({
+        bondId: bond.id,
+        bondName: bond.name,
+        bondSource: bond.source,
+        fromPillar: MATURITIES[p.fromIdx] + 'Y',
+        fromPillarSource: pillarSrcFrom,
+        toPillar: MATURITIES[p.toIdx] + 'Y',
+        toPillarSource: pillarSrcTo,
+        message: `"${bond.name}"(团队${bond.source})铺在 ${MATURITIES[p.fromIdx]}Y(团队${pillarSrcFrom})~${MATURITIES[p.toIdx]}Y(团队${pillarSrcTo}) 之间，数据来源不一致`,
+      });
+    }
+    const overlap = G.placements.find((q, j) => j !== i && q.fromIdx === p.fromIdx && q.toIdx === p.toIdx);
+    if (overlap) {
+      const otherBond = BOND_CATALOG.find(b => b.id === overlap.bondId);
+      G.conflicts.push({
+        bondId: bond.id,
+        bondName: bond.name,
+        message: `"${bond.name}"和"${otherBond.name}"铺在同一跨度 ${MATURITIES[p.fromIdx]}Y~${MATURITIES[p.toIdx]}Y，位置冲突`,
+      });
+    }
+  });
+  renderConflicts();
+}
+
+function detectGaps() {
+  G.evidenceGaps = [];
+  const covered = new Set();
+  G.placements.forEach(p => {
+    covered.add(p.fromIdx);
+    covered.add(p.toIdx);
+  });
+  for (let i = 0; i < MATURITIES.length - 1; i++) {
+    const spanCovered = G.placements.some(p => p.fromIdx === i && p.toIdx === i + 1);
+    if (!spanCovered) {
+      G.evidenceGaps.push({
+        type: 'uncovered',
+        span: `${MATURITIES[i]}Y~${MATURITIES[i+1]}Y`,
+        message: `${MATURITIES[i]}Y到${MATURITIES[i+1]}Y之间没有桥板覆盖，这是桥面的缺口`,
+        missing: '需要一块期限在' + MATURITIES[i] + 'Y至' + MATURITIES[i+1] + 'Y之间的债券来封合',
+      });
+    }
+  }
+  G.placements.forEach(p => {
+    const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+    const spanMid = (MATURITIES[p.fromIdx] + MATURITIES[p.toIdx]) / 2;
+    const idealDuration = spanMid * 0.9;
+    const durationGap = Math.abs(bond.duration - idealDuration);
+    if (durationGap > 2.0) {
+      G.evidenceGaps.push({
+        type: 'duration_mismatch',
+        span: `${MATURITIES[p.fromIdx]}Y~${MATURITIES[p.toIdx]}Y`,
+        bondName: bond.name,
+        message: `"${bond.name}"久期(${bond.duration})与跨度中点理想久期(${idealDuration.toFixed(1)})偏差${durationGap.toFixed(1)}，这块板可能承受过大利率压力`,
+        missing: '需要更精确的久期测算数据（含凸性修正、含权调整等）才能判断偏差是否可接受，当前仅有基础久期',
+      });
+    }
+  });
+  renderGaps();
+}
+
+function renderConflicts() {
+  const sec = document.getElementById('conflict-section');
+  const el = document.getElementById('conflict-list');
+  if (G.conflicts.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  el.innerHTML = '';
+  G.conflicts.forEach(c => {
+    el.innerHTML += `<div class="conflict-banner">${c.message}</div>`;
+  });
+}
+
+function renderGaps() {
+  const sec = document.getElementById('gap-section');
+  const el = document.getElementById('gap-list');
+  if (G.evidenceGaps.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  el.innerHTML = '';
+  G.evidenceGaps.forEach(g => {
+    el.innerHTML += `<div class="evidence-gap">${g.message}<div style="font-style:italic;margin-top:2px">缺失：${g.missing}</div></div>`;
+  });
+}
+
+let canvas, ctx;
+function resizeCanvas() {
+  canvas = document.getElementById('bridge-canvas');
+  ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * devicePixelRatio;
+  canvas.height = rect.height * devicePixelRatio;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+
+let pillarPositions = [];
+function calcPillarPositions() {
+  const w = canvas.width / devicePixelRatio;
+  const h = canvas.height / devicePixelRatio;
+  const lv = LEVELS[G.level];
+  const padX = 80, padY = 60;
+  const usableW = w - padX * 2;
+  const maxCurve = Math.max(...lv.curve);
+  const minCurve = Math.min(...lv.curve);
+  const range = maxCurve - minCurve || 1;
+  pillarPositions = MATURITIES.map((m, i) => {
+    const x = padX + (i / (MATURITIES.length - 1)) * usableW;
+    const yNorm = (lv.curve[i] - minCurve) / range;
+    const y = h - padY - yNorm * (h * 0.45);
+    return { x, y, maturity: m, yield: lv.curve[i] };
+  });
+}
+
+function drawBridge(eventState) {
+  if (!ctx) return;
+  const w = canvas.width / devicePixelRatio;
+  const h = canvas.height / devicePixelRatio;
+  calcPillarPositions();
+
+  ctx.clearRect(0, 0, w, h);
+
+  const grad = ctx.createLinearGradient(0, h * 0.6, 0, h);
+  grad.addColorStop(0, 'rgba(10,22,40,0)');
+  grad.addColorStop(1, 'rgba(20,60,120,0.3)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, h * 0.6, w, h * 0.4);
+
+  drawYieldCurve(eventState);
+  drawPillars(eventState);
+  drawPlanks(eventState);
+  drawLabels();
+}
+
+function drawYieldCurve(eventState) {
+  if (pillarPositions.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(pillarPositions[0].x, pillarPositions[0].y);
+  for (let i = 1; i < pillarPositions.length; i++) {
+    const prev = pillarPositions[i-1];
+    const curr = pillarPositions[i];
+    const cpx = (prev.x + curr.x) / 2;
+    ctx.quadraticCurveTo(prev.x + (curr.x - prev.x)*0.5, prev.y, cpx, (prev.y + curr.y)/2);
+  }
+  const last = pillarPositions[pillarPositions.length-1];
+  ctx.lineTo(last.x, last.y);
+  ctx.strokeStyle = 'rgba(79,195,247,0.5)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6,4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawPillars() {
+  pillarPositions.forEach((p, i) => {
+    const h = canvas.height / devicePixelRatio;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x, h - 30);
+    ctx.strokeStyle = 'rgba(79,195,247,0.6)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#4fc3f7';
+    ctx.fill();
+  });
+}
+
+function drawPlanks(eventState) {
+  G.placements.forEach(p => {
+    const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+    const from = pillarPositions[p.fromIdx];
+    const to = pillarPositions[p.toIdx];
+    if (!from || !to) return;
+
+    let color = 'var(--plank-ok)';
+    let status = 'ok';
+    if (eventState) {
+      const dmg = getPlankDamage(p, eventState);
+      if (dmg > 0.7) { color = '#ef5350'; status = 'fail'; }
+      else if (dmg > 0.35) { color = '#ffa726'; status = 'warn'; }
+      else { color = '#4fc3f7'; status = 'ok'; }
+    }
+
+    const midY = (from.y + to.y) / 2 - 4;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    const labelX = (from.x + to.x) / 2;
+    const labelY = midY - 12;
+    ctx.fillText(bond.name, labelX, labelY);
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText('D=' + bond.duration, labelX, labelY + 14);
+  });
+}
+
+function drawLabels() {
+  const h = canvas.height / devicePixelRatio;
+  ctx.font = '12px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#7b8daa';
+  pillarPositions.forEach(p => {
+    ctx.fillText(p.maturity + 'Y', p.x, h - 12);
+    ctx.fillText(p.yield.toFixed(1) + '%', p.x + 20, p.y - 12);
+  });
+}
+
+window.addEventListener('load', () => {
+  canvas = document.getElementById('bridge-canvas');
+  ctx = canvas.getContext('2d');
+  canvas.addEventListener('click', handleCanvasClick);
+  resizeCanvas();
+  drawBridge();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'd' || e.key === 'D') {
+    if (G.phase !== 'build') return;
+    G.placements = [];
+    const fills = [
+      { bondId: 'b1', fromIdx: 0, toIdx: 1 },
+      { bondId: 'b2a', fromIdx: 1, toIdx: 2 },
+      { bondId: 'b3', fromIdx: 2, toIdx: 3 },
+      { bondId: 'b5a', fromIdx: 3, toIdx: 4 },
+      { bondId: 'b7', fromIdx: 4, toIdx: 5 },
+      { bondId: 'b10', fromIdx: 5, toIdx: 6 },
+      { bondId: 'b20', fromIdx: 6, toIdx: 7 },
+    ];
+    G.placements = fills;
+    G.selectedBond = null;
+    renderBondList();
+    renderPlacedList();
+    detectConflicts();
+    detectGaps();
+    drawBridge();
+    log('(演示模式) 已自动填充桥板', 'success');
+  }
+});
+
+function handleCanvasClick(e) {
+  if (G.phase !== 'build') return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  if (!G.selectedBond) {
+    log('请先在右侧选择一块债券', 'warn');
+    return;
+  }
+
+  let bestIdx = -1, bestDist = 40;
+  pillarPositions.forEach((p, i) => {
+    const d = Math.sqrt((mx - p.x)**2 + (my - p.y)**2);
+    if (d < bestDist) { bestDist = d; bestIdx = i; }
+  });
+  if (bestIdx < 0) return;
+
+  const bond = BOND_CATALOG.find(b => b.id === G.selectedBond);
+  if (!bond) return;
+
+  if (G.placements.length === 0) {
+    const toIdx = bestIdx + 1 < MATURITIES.length ? bestIdx + 1 : bestIdx - 1;
+    G.placements.push({ bondId: bond.id, fromIdx: bestIdx, toIdx: toIdx });
+    log(`铺设：${bond.name} 从 ${MATURITIES[bestIdx]}Y 到 ${MATURITIES[toIdx]}Y`, 'success');
+  } else {
+    const lastP = G.placements[G.placements.length - 1];
+    const connectedRight = lastP.toIdx;
+    if (bestIdx === connectedRight && connectedRight + 1 < MATURITIES.length) {
+      G.placements.push({ bondId: bond.id, fromIdx: connectedRight, toIdx: connectedRight + 1 });
+      log(`铺设：${bond.name} 从 ${MATURITIES[connectedRight]}Y 到 ${MATURITIES[connectedRight+1]}Y`, 'success');
+    } else if (bestIdx === connectedRight - 1 && connectedRight - 2 >= 0) {
+      G.placements.push({ bondId: bond.id, fromIdx: connectedRight - 2, toIdx: connectedRight - 1 });
+    } else {
+      log('请从桥的末端继续铺设', 'warn');
+      return;
+    }
+  }
+
+  G.selectedBond = null;
+  renderBondList();
+  renderPlacedList();
+  detectConflicts();
+  detectGaps();
+  drawBridge();
+}
+
+function resetPlacements() {
+  G.placements = [];
+  G.selectedBond = null;
+  G.conflicts = [];
+  G.evidenceGaps = [];
+  renderBondList();
+  renderPlacedList();
+  renderConflicts();
+  renderGaps();
+  drawBridge();
+  log('桥面已重置', 'warn');
+}
+
+function submitBridge() {
+  if (G.placements.length === 0) {
+    log('请先铺设桥板！', 'danger');
+    return;
+  }
+  const covered = new Set();
+  G.placements.forEach(p => { covered.add(p.fromIdx); covered.add(p.toIdx); });
+  const allCovered = MATURITIES.every((_, i) => covered.has(i));
+  if (!allCovered) {
+    log('还有桥墩没有覆盖，请补全桥面', 'warn');
+    return;
+  }
+
+  G.phase = 'event';
+  G.eventIndex = 0;
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('phase-label').textContent = '利率事件';
+  log('桥梁已提交，利率事件即将来袭...', 'warn');
+  setTimeout(() => runNextEvent(), 1000);
+}
+
+function getPlankDamage(placement, event) {
+  const bond = BOND_CATALOG.find(b => b.id === placement.bondId);
+  const lv = LEVELS[G.level];
+  const fromYield = lv.curve[placement.fromIdx];
+  const toYield = lv.curve[placement.toIdx];
+  const spanMidYield = (fromYield + toYield) / 2;
+
+  let rateImpact = 0;
+  switch (event.type) {
+    case 'parallel_up':
+      rateImpact = (event.magnitude / 100) * bond.duration;
+      break;
+    case 'parallel_down':
+      rateImpact = -(event.magnitude / 100) * bond.duration;
+      break;
+    case 'bear_steepen':
+      const steepFactor = (bond.maturity / 30);
+      rateImpact = (event.magnitude / 100) * bond.duration * steepFactor;
+      break;
+    case 'bull_flatten':
+      const flatFactor = 1 - (bond.maturity / 60);
+      rateImpact = (event.magnitude / 100) * bond.duration * Math.abs(flatFactor);
+      break;
+    case 'inversion':
+      const invFactor = bond.maturity <= 5 ? 1.5 : 0.4;
+      rateImpact = (event.magnitude / 100) * bond.duration * invFactor;
+      break;
+  }
+
+  const spanMidMaturity = (MATURITIES[placement.fromIdx] + MATURITIES[placement.toIdx]) / 2;
+  const idealDuration = spanMidMaturity * 0.9;
+  const durationMismatch = Math.abs(bond.duration - idealDuration);
+  const mismatchPenalty = durationMismatch * 0.08;
+
+  const damage = Math.min(1, Math.abs(rateImpact) * 0.04 + mismatchPenalty);
+  return damage;
+}
+
+function runNextEvent() {
+  const lv = LEVELS[G.level];
+  if (G.eventIndex >= lv.events.length) {
+    finishRound();
+    return;
+  }
+  const event = lv.events[G.eventIndex];
+  showEvent(event, () => {
+    const results = G.placements.map(p => {
+      const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+      const dmg = getPlankDamage(p, event);
+      return {
+        placement: p,
+        bond: bond,
+        damage: dmg,
+        status: dmg > 0.7 ? 'collapsed' : dmg > 0.35 ? 'cracked' : 'intact',
+      };
+    });
+    G.eventResults.push({ event, results });
+    const collapsed = results.filter(r => r.status === 'collapsed').length;
+    const cracked = results.filter(r => r.status === 'cracked').length;
+    if (collapsed > 0) log(`${event.label}：${collapsed}块桥板断裂！`, 'danger');
+    if (cracked > 0) log(`${event.label}：${cracked}块桥板出现裂缝`, 'warn');
+    const intact = results.filter(r => r.status === 'intact').length;
+    if (intact > 0) log(`${event.label}：${intact}块桥板完好`, 'success');
+
+    drawBridge(event);
+    G.eventIndex++;
+    setTimeout(() => runNextEvent(), 1200);
+  });
+}
+
+function showEvent(event, callback) {
+  const overlay = document.getElementById('event-overlay');
+  const card = document.getElementById('event-card');
+  card.innerHTML = `
+    <h2 style="color:var(--warn)">${event.label}</h2>
+    <p>${event.desc}</p>
+    <button class="btn btn-primary" id="event-continue-btn">继续</button>
+  `;
+  overlay.classList.add('visible');
+  document.getElementById('event-continue-btn').onclick = () => {
+    overlay.classList.remove('visible');
+    callback();
+  };
+}
+
+function finishRound() {
+  G.phase = 'settle';
+  const lv = LEVELS[G.level];
+  let totalDamage = 0;
+  let totalPlanks = 0;
+  G.eventResults.forEach(er => {
+    er.results.forEach(r => {
+      totalDamage += r.damage;
+      totalPlanks++;
+    });
+  });
+  const avgDamage = totalPlanks > 0 ? totalDamage / totalPlanks : 1;
+  const passed = avgDamage <= lv.passThreshold;
+  const roundScore = passed ? Math.round((1 - avgDamage) * 1000) : Math.round((1 - avgDamage) * 300);
+  G.score += roundScore;
+
+  const roundResult = {
+    level: G.level,
+    levelName: lv.name,
+    passed,
+    avgDamage,
+    score: roundScore,
+    placements: JSON.parse(JSON.stringify(G.placements)),
+    eventResults: JSON.parse(JSON.stringify(G.eventResults)),
+    conflicts: JSON.parse(JSON.stringify(G.conflicts)),
+    evidenceGaps: JSON.parse(JSON.stringify(G.evidenceGaps)),
+  };
+  G.allRoundResults.push(roundResult);
+
+  showSettlement(roundResult);
+}
+
+function showSettlement(result) {
+  const el = document.getElementById('settle-content');
+  const lv = LEVELS[G.level];
+  const invPlainEnglish = getInversionExplanation(result);
+
+  el.innerHTML = `
+    <h1 class="page-title">关卡结算</h1>
+    <p class="page-subtitle">${lv.name} — 第${G.level+1}关</p>
+    <div class="result-banner ${result.passed ? 'pass' : 'fail'}">
+      ${result.passed ? '桥梁通过！' : '桥梁坍塌！'}
+      平均损伤 ${(result.avgDamage * 100).toFixed(1)}% · 得分 ${result.score}
+    </div>
+
+    <div class="section-card">
+      <h3>各桥板受损情况</h3>
+      <table class="damage-table">
+        <tr><th>桥板</th><th>跨度</th><th>久期</th><th>损伤</th><th>状态</th></tr>
+        ${result.eventResults.map(er => er.results.map(r => `
+          <tr>
+            <td>${r.bond.name}</td>
+            <td>${MATURITIES[r.placement.fromIdx]}Y~${MATURITIES[r.placement.toIdx]}Y</td>
+            <td>${r.bond.duration}</td>
+            <td class="${r.status === 'collapsed' ? 'fail' : r.status === 'cracked' ? 'warn' : 'ok'}">
+              ${(r.damage * 100).toFixed(1)}%
+            </td>
+            <td class="${r.status === 'collapsed' ? 'fail' : r.status === 'cracked' ? 'warn' : 'ok'}">
+              ${r.status === 'collapsed' ? '断裂' : r.status === 'cracked' ? '裂缝' : '完好'}
+            </td>
+          </tr>
+        `).join('')).join('')}
+      </table>
+    </div>
+
+    ${result.conflicts.length > 0 ? `
+    <div class="section-card">
+      <h3>合并冲突（已暴露）</h3>
+      ${result.conflicts.map(c => `
+        <div class="conflict-item">
+          <div class="conflict-header">冲突</div>
+          <div class="conflict-detail">${c.message}</div>
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+
+    ${result.evidenceGaps.length > 0 ? `
+    <div class="section-card">
+      <h3>证据缺失提示</h3>
+      ${result.evidenceGaps.map(g => `
+        <div class="gap-item">
+          <div class="gap-header">${g.type === 'uncovered' ? '桥面缺口' : '久期偏差'}</div>
+          <div class="gap-detail">${g.message}</div>
+          <div class="gap-missing">还缺：${g.missing}</div>
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+
+    <div class="section-card">
+      <h3>人话解读</h3>
+      <div class="plain-english">
+        <div class="label">发生了什么</div>
+        ${getWhatHappenedText(result)}
+      </div>
+      ${!result.passed ? `
+      <div class="plain-english" style="border-left-color:var(--danger)">
+        <div class="label" style="color:var(--danger)">为什么没过</div>
+        ${invPlainEnglish}
+      </div>
+      ` : `
+      <div class="plain-english" style="border-left-color:var(--success)">
+        <div class="label" style="color:var(--success)">为什么过了</div>
+        ${getWhyPassedText(result)}
+      </div>
+      `}
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="showReview()">查看复盘</button>
+      ${G.level < LEVELS.length - 1 ?
+        `<button class="btn btn-primary" onclick="nextLevel()">下一关</button>` :
+        `<button class="btn btn-primary" onclick="showFinalReport()">查看最终报告</button>`
+      }
+    </div>
+  `;
+  showScreen('settle-screen');
+}
+
+function getWhatHappenedText(result) {
+  const lv = LEVELS[result.level];
+  const eventDescs = lv.events.map(e => e.label).join('、');
+  if (result.passed) {
+    return `你在"${lv.name}"关卡用${result.placements.length}块债券搭了一座桥。利率事件(${eventDescs})来了，桥面虽然有震动，但整体撑住了。平均损伤${(result.avgDamage*100).toFixed(1)}%，在可接受范围内。`;
+  }
+  return `你在"${lv.name}"关卡用${result.placements.length}块债券搭了一座桥。利率事件(${eventDescs})来袭后，桥面受损严重，平均损伤${(result.avgDamage*100).toFixed(1)}%，超过了安全阈值。`;
+}
+
+function getInversionExplanation(result) {
+  const lv = LEVELS[result.level];
+  const hasInversion = lv.events.some(e => e.type === 'inversion');
+  if (hasInversion && !result.passed) {
+    return `这条收益率曲线是倒挂的——短期利率比长期利率还高。用通俗话说：存1年的利息比存10年还多，这很不正常，市场在发出经济衰退的信号。你铺在短端的桥板（5年以内）因为久期虽小但承受了更大的利率冲击（短端利率飙得更高），而长端的板虽然久期大但利率反而下降了。这种"该稳的地方反而不稳"的情况，就是倒挂曲线最难对付的地方。<br><br><b>说人话</b>：就像造桥时，离岸边最近的桥墩反而最不稳，远处的反而没事——你的桥从根上就不稳，怎么铺都会裂。`;
+  }
+  if (!result.passed) {
+    return `桥的平均损伤太高了。可能是久期选得太长（利率一动价格就大起大落），也可能是有些跨度的板选得不对。就像用太薄的木板铺太宽的河面，一有风浪就扛不住。`;
+  }
+  return '';
+}
+
+function getWhyPassedText(result) {
+  return `你的桥板选择比较合理，久期和跨度匹配度不错，所以利率事件来的时候桥面虽有晃动但没有断裂。继续挑战更难的关卡吧。`;
+}
+
+function nextLevel() {
+  G.level++;
+  initLevel();
+  showScreen('game-screen');
+}
+
+function showReview() {
+  const result = G.allRoundResults[G.allRoundResults.length - 1];
+  const lv = LEVELS[result.level];
+  const el = document.getElementById('review-content');
+
+  const portfolioDesc = result.placements.map(p => {
+    const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+    return `${bond.name}（久期${bond.duration}）铺在 ${MATURITIES[p.fromIdx]}Y 到 ${MATURITIES[p.toIdx]}Y 之间`;
+  });
+
+  const riskWarnings = [];
+  result.eventResults.forEach(er => {
+    er.results.forEach(r => {
+      if (r.status !== 'intact') {
+        riskWarnings.push(`${r.bond.name}在"${er.event.label}"中${r.status === 'collapsed' ? '断裂' : '出现裂缝'}，损伤${(r.damage*100).toFixed(1)}%，原因是${getDamageReason(r, er.event)}`);
+      }
+    });
+  });
+
+  el.innerHTML = `
+    <h1 class="page-title">复盘</h1>
+    <p class="page-subtitle">${lv.name} — 第${G.level+1}关</p>
+
+    <div class="section-card">
+      <h3>你的组合建造</h3>
+      <div class="plain-english">
+        <div class="label">建造过程</div>
+        ${portfolioDesc.map((d, i) => `<p>${i+1}. ${d}</p>`).join('')}
+      </div>
+      <div class="plain-english">
+        <div class="label">组合特征</div>
+        <p>共${result.placements.length}块桥板，覆盖${new Set(result.placements.flatMap(p => [p.fromIdx, p.toIdx])).size}个期限节点</p>
+        <p>组合久期范围：${Math.min(...result.placements.map(p => BOND_CATALOG.find(b => b.id === p.bondId).duration))} ~ ${Math.max(...result.placements.map(p => BOND_CATALOG.find(b => b.id === p.bondId).duration))}</p>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>风险提示（人话版）</h3>
+      ${riskWarnings.length > 0 ? riskWarnings.map(w => `
+        <div class="plain-english" style="border-left-color:var(--warn)">
+          <p>${w}</p>
+        </div>
+      `).join('') : '<p style="color:var(--muted)">本轮没有桥板受损，组合风险可控。</p>'}
+    </div>
+
+    ${result.conflicts.length > 0 ? `
+    <div class="section-card">
+      <h3>数据合并冲突</h3>
+      <p style="color:var(--muted);margin-bottom:0.8rem">以下冲突在造桥过程中已暴露，未做静默选择：</p>
+      ${result.conflicts.map(c => `
+        <div class="conflict-item">
+          <div class="conflict-detail">${c.message}</div>
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+
+    ${result.evidenceGaps.length > 0 ? `
+    <div class="section-card">
+      <h3>证据链缺失</h3>
+      <p style="color:var(--muted);margin-bottom:0.8rem">以下缺失项需要补充数据才能完整判断：</p>
+      ${result.evidenceGaps.map(g => `
+        <div class="gap-item">
+          <div class="gap-detail">${g.message}</div>
+          <div class="gap-missing">还缺：${g.missing}</div>
+        </div>
+      `).join('')}
+    </div>
+    ` : ''}
+
+    <div class="section-card">
+      <h3>课堂讨论题</h3>
+      <div class="plain-english">
+        <div class="label">供课堂讨论</div>
+        ${getClassroomQuestions(result)}
+      </div>
+    </div>
+
+    <div class="btn-group">
+      ${G.level < LEVELS.length - 1 ?
+        `<button class="btn btn-primary" onclick="nextLevel()">下一关</button>` :
+        `<button class="btn btn-primary" onclick="showFinalReport()">查看最终报告</button>`
+      }
+      <button class="btn btn-secondary" onclick="backToSettle()">返回结算</button>
+    </div>
+  `;
+  showScreen('review-screen');
+}
+
+function getDamageReason(r, event) {
+  const bond = r.bond;
+  const p = r.placement;
+  const spanMidMaturity = (MATURITIES[p.fromIdx] + MATURITIES[p.toIdx]) / 2;
+  const idealDur = spanMidMaturity * 0.9;
+  const mismatch = Math.abs(bond.duration - idealDur);
+
+  let reason = '';
+  if (event.type === 'inversion' && bond.maturity <= 5) {
+    reason = `曲线倒挂时短端受冲击最大，而这块板铺在短端（${bond.maturity}年以内），相当于暴风眼里的屋顶`;
+  } else if (event.type === 'bear_steepen' && bond.maturity > 10) {
+    reason = `熊市陡峭化时长端利率上升更多，这块长期债券（${bond.maturity}年）的价格跌幅被放大了`;
+  } else if (mismatch > 2.0) {
+    reason = `这块板的久期(${bond.duration})和它跨度的理想久期(${idealDur.toFixed(1)})差了${mismatch.toFixed(1)}，就像用了弹性不匹配的弹簧，一受力就变形过度`;
+  } else {
+    reason = `久期${bond.duration}在${event.label}中承受了${(r.damage*100).toFixed(1)}%的冲击，利率每变1%，价格就变动约${bond.duration}%`;
+  }
+  return reason;
+}
+
+function getClassroomQuestions(result) {
+  const lv = LEVELS[result.level];
+  const hasInversion = lv.events.some(e => e.type === 'inversion');
+  const questions = [
+    `<p>1. 如果只能换一块板来降低整体损伤，你会换哪块？为什么？</p>`,
+    `<p>2. 久期大的债券一定更危险吗？在什么情况下反而更安全？</p>`,
+  ];
+  if (hasInversion) {
+    questions.push(`<p>3. 曲线倒挂时，短端债券亏钱但长端债券可能赚钱——这说明了什么？现实中的倒挂意味着什么？</p>`);
+  }
+  questions.push(`<p>${questions.length + 1}. 如果利率事件再来一次但方向相反（比如加息变降息），你的桥会怎样？</p>`);
+  return questions.join('');
+}
+
+function backToSettle() {
+  showScreen('settle-screen');
+}
+
+function showFinalReport() {
+  const el = document.getElementById('report-content');
+  const totalScore = G.allRoundResults.reduce((s, r) => s + r.score, 0);
+  const passedCount = G.allRoundResults.filter(r => r.passed).length;
+
+  let html = `<div class="report-block">
+    <h2>收益率曲线造桥赛 — 最终报告</h2>
+    <p>总得分：<b>${totalScore}</b> · 通过关卡：<b>${passedCount}/${G.allRoundResults.length}</b></p>
+  </div>`;
+
+  G.allRoundResults.forEach((result, idx) => {
+    const lv = LEVELS[result.level];
+    html += `<div class="report-block">
+      <h2>第${idx+1}关：${lv.name}</h2>
+      <p><b>结果</b>：${result.passed ? '通过' : '未通过'}，平均损伤${(result.avgDamage*100).toFixed(1)}%，得分${result.score}</p>
+
+      <h3>你用了什么桥板</h3>
+      <table>
+        <tr><th>债券</th><th>跨度</th><th>久期</th></tr>
+        ${result.placements.map(p => {
+          const bond = BOND_CATALOG.find(b => b.id === p.bondId);
+          return `<tr><td>${bond.name}</td><td>${MATURITIES[p.fromIdx]}Y~${MATURITIES[p.toIdx]}Y</td><td>${bond.duration}</td></tr>`;
+        }).join('')}
+      </table>
+
+      <h3>利率事件与损伤</h3>
+      <table>
+        <tr><th>事件</th><th>桥板</th><th>损伤</th><th>状态</th></tr>
+        ${result.eventResults.map(er => er.results.map(r => `
+          <tr>
+            <td>${er.event.label}</td>
+            <td>${r.bond.name}</td>
+            <td>${(r.damage*100).toFixed(1)}%</td>
+            <td>${r.status === 'collapsed' ? '断裂' : r.status === 'cracked' ? '裂缝' : '完好'}</td>
+          </tr>
+        `).join('')).join('')}
+      </table>
+
+      <h3>说人话：发生了什么</h3>
+      <div class="highlight">
+        ${getWhatHappenedText(result)}
+      </div>
+
+      ${!result.passed ? `
+      <h3>说人话：为什么没过</h3>
+      <div class="warn-box">
+        ${getInversionExplanation(result)}
+      </div>
+      ` : `
+      <div class="highlight">
+        <b>为什么过了</b>：${getWhyPassedText(result)}
+      </div>
+      `}
+
+      ${result.conflicts.length > 0 ? `
+      <h3>数据合并冲突</h3>
+      <p>以下冲突在造桥过程中被暴露，未做静默选择：</p>
+      <ul>
+        ${result.conflicts.map(c => `<li>${c.message}</li>`).join('')}
+      </ul>
+      ` : ''}
+
+      ${result.evidenceGaps.length > 0 ? `
+      <h3>证据链缺失</h3>
+      <ul>
+        ${result.evidenceGaps.map(g => `<li>${g.message}（还缺：${g.missing}）</li>`).join('')}
+      </ul>
+      ` : ''}
+    </div>`;
+  });
+
+  html += `<div class="report-block">
+    <h2>总结与建议</h2>
+    <div class="highlight">
+      <p><b>核心知识点</b></p>
+      <p>1. 久期（Duration）衡量债券价格对利率变动的敏感度，久期越大，利率一动价格就变动越多。</p>
+      <p>2. 收益率曲线的形状决定了不同期限债券的表现：正常曲线下长期债券收益更高，倒挂曲线下短期利率反而更高。</p>
+      <p>3. 倒挂曲线意味着市场预期经济衰退，短端利率因政策紧缩而高企，长端利率因避险需求而下降。</p>
+      <p>4. 久期匹配是管理利率风险的核心策略——桥板的久期要和它所跨的期限匹配，否则利率一变就会"裂缝"。</p>
+    </div>
+    ${passedCount < G.allRoundResults.length ? `
+    <div class="warn-box">
+      <p><b>给非技术同事的建议</b></p>
+      <p>如果倒挂关卡没过，不要简单认为"长期债券更危险"。倒挂时恰恰相反——短期债券才是重灾区。这就像造桥时河岸边的桥墩反而最不稳，远处的反而没事。下次选板时，短端要选久期更小、更抗冲击的品种。</p>
+    </div>
+    ` : ''}
+  </div>`;
+
+  el.innerHTML = html;
+  showScreen('report-screen');
+}
+
+function copyReport() {
+  const el = document.getElementById('report-content');
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '已复制';
+    setTimeout(() => { btn.textContent = '复制报告'; }, 2000);
+  });
+}
+
+function log(msg, type) {
+  const area = document.getElementById('log-area');
+  if (!area) return;
+  const entry = document.createElement('div');
+  entry.className = 'log-entry' + (type ? ' ' + type : '');
+  const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  entry.textContent = `[${time}] ${msg}`;
+  area.appendChild(entry);
+  area.scrollTop = area.scrollHeight;
+}
+
+function clearLog() {
+  const area = document.getElementById('log-area');
+  if (area) area.innerHTML = '';
+}
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('game-screen').classList.contains('active')) {
+    resizeCanvas();
+    drawBridge();
+  }
+});
+
+window.addEventListener('load', () => {
+  canvas = document.getElementById('bridge-canvas');
+  ctx = canvas.getContext('2d');
+  canvas.addEventListener('click', handleCanvasClick);
+});
+</script>
+</body>
+</html>
