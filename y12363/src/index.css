@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #F1F5F9;
+  background-color: #0F172A;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #0F172A;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+/* Selection */
+::selection {
+  background: rgba(22, 93, 255, 0.3);
+  color: #F1F5F9;
+}
+
+/* Animation keyframes */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Table row hover */
+.ant-table-row:hover > td {
+  background: rgba(22, 93, 255, 0.1) !important;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Glow effect for critical anomalies */
+.glow-critical {
+  box-shadow: 0 0 20px rgba(245, 63, 63, 0.3);
+}
+
+.glow-warning {
+  box-shadow: 0 0 15px rgba(255, 125, 0, 0.25);
+}
+
+/* Data visualization colors */
+.chart-line-normal {
+  stroke: #165DFF;
+}
+
+.chart-line-isolated {
+  stroke: #86909C;
+  stroke-dasharray: 5, 5;
+}
+
+.marker-drift {
+  fill: #F53F3F;
+}
+
+.marker-emissivity {
+  fill: #FF7D00;
+}
+
+.marker-batch {
+  fill: '#FACC15';
+}
