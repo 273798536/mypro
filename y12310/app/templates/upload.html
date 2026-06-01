@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>📤 数据导入</h2>
+    <p style="margin-bottom: 1.5rem;">请上传包含仓库、库存、门店、需求、车辆信息的Excel文件（.xlsx或.xls格式）</p>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>选择Excel文件</label>
+            <input type="file" name="file" accept=".xlsx,.xls" required>
+        </div>
+        <button type="submit" class="btn btn-primary">导入数据</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>📋 Excel格式说明</h2>
+    <p style="margin-bottom: 1rem;">Excel文件应包含以下工作表：</p>
+    
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+        <h4 style="margin-bottom: 0.5rem; color: #667eea;">📦 仓库</h4>
+        <p style="font-size: 0.9rem; color: #666;">列：名称、地址、纬度、经度、最大容量</p>
+    </div>
+    
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+        <h4 style="margin-bottom: 0.5rem; color: #667eea;">📦 库存</h4>
+        <p style="font-size: 0.9rem; color: #666;">列：仓库ID、SKU、商品名称、数量、单位</p>
+    </div>
+    
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+        <h4 style="margin-bottom: 0.5rem; color: #667eea;">🏪 门店</h4>
+        <p style="font-size: 0.9rem; color: #666;">列：名称、地址、纬度、经度、优先级</p>
+    </div>
+    
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+        <h4 style="margin-bottom: 0.5rem; color: #667eea;">📋 需求</h4>
+        <p style="font-size: 0.9rem; color: #666;">列：门店ID、SKU、商品名称、数量、单位、截止时间、紧急程度</p>
+    </div>
+    
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 4px;">
+        <h4 style="margin-bottom: 0.5rem; color: #667eea;">🚚 车辆</h4>
+        <p style="font-size: 0.9rem; color: #666;">列：车牌号、车型、最大容量、容量单位、最大载重、重量单位、可用、所属仓库ID</p>
+    </div>
+</div>
+{% endblock %}

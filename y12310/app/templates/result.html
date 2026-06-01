@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 优化结果</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number">{{ '✓' if result.success else '✗' }}</div>
+            <div class="label">优化状态</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.total_cost }}</div>
+            <div class="label">总运输成本</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.solve_time|round(3) }}s</div>
+            <div class="label">求解时间</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.assignments|length }}</div>
+            <div class="label">分拨条数</div>
+        </div>
+    </div>
+    
+    <div style="margin-top: 1rem;">
+        <a href="{{ url_for('export_report', result_id=result_id) }}" class="btn btn-success">
+            📥 导出Excel报告
+        </a>
+        <a href="{{ url_for('optimize') }}" class="btn btn-secondary" style="margin-left: 0.5rem;">
+            重新计算
+        </a>
+    </div>
+</div>
+
+{% if result.conflicts %}
+<div class="card">
+    <h2>⚠️ 冲突检测结果 ({{ result.conflicts|length }} 条)</h2>
+    
+    {% for conflict in result.conflicts %}
+    <div class="conflict-item conflict-{{ conflict.severity }}">
+        <strong>
+            {% if conflict.severity == 'error' %}🔴
+            {% elif conflict.severity == 'warning' %}🟠
+            {% else %}🔵{% endif %}
+            [{{ conflict.type }}]
+        </strong>
+        <p style="margin-top: 0.5rem;">{{ conflict.description }}</p>
+        <p style="font-size: 0.9rem; color: #666; margin-top: 0.25rem;">
+            <strong>影响：</strong>{{ conflict.impact }}
+        </p>
+        {% if conflict.details %}
+        <details style="margin-top: 0.5rem;">
+            <summary style="cursor: pointer; color: #667eea;">查看详情</summary>
+            <pre style="background: white; padding: 0.5rem; margin-top: 0.5rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto;">
+{{ conflict.details | tojson(indent=2) }}
+            </pre>
+        </details>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if result.assignments %}
+<div class="card">
+    <h2>📋 分拨明细</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>出库仓库</th>
+                <th>收货门店</th>
+                <th>商品名称</th>
+                <th>分拨数量</th>
+                <th>运输成本</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assign in result.assignments %}
+            <tr>
+                <td>{{ assign.warehouse_name }}</td>
+                <td>{{ assign.store_name }}</td>
+                <td>{{ assign.sku_name }}</td>
+                <td>{{ assign.quantity }}</td>
+                <td>{{ assign.transport_cost|round(2) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

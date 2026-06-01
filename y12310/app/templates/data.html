@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 数据概览</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number">{{ warehouses|length }}</div>
+            <div class="label">仓库数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ stores|length }}</div>
+            <div class="label">门店数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ vehicles|length }}</div>
+            <div class="label">车辆数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ inventories|length }}</div>
+            <div class="label">库存记录</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ demands|length }}</div>
+            <div class="label">需求记录</div>
+        </div>
+    </div>
+</div>
+
+{% if warehouses %}
+<div class="card">
+    <h2>📦 仓库列表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>地址</th>
+                <th>最大容量</th>
+                <th>来源</th>
+                <th>版本</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wh in warehouses %}
+            <tr>
+                <td>{{ wh.id }}</td>
+                <td>{{ wh.name }}</td>
+                <td>{{ wh.address }}</td>
+                <td>{{ wh.max_capacity }}</td>
+                <td>{{ wh.source }}</td>
+                <td>{{ wh.version }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if stores %}
+<div class="card">
+    <h2>🏪 门店列表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>地址</th>
+                <th>优先级</th>
+                <th>来源</th>
+                <th>版本</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for st in stores %}
+            <tr>
+                <td>{{ st.id }}</td>
+                <td>{{ st.name }}</td>
+                <td>{{ st.address }}</td>
+                <td>{{ st.priority }}</td>
+                <td>{{ st.source }}</td>
+                <td>{{ st.version }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if inventories %}
+<div class="card">
+    <h2>📦 库存明细</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>仓库名称</th>
+                <th>SKU</th>
+                <th>商品名称</th>
+                <th>库存数量</th>
+                <th>单位</th>
+                <th>版本</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inv in inventories %}
+            <tr>
+                <td>{{ inv.仓库名称 }}</td>
+                <td>{{ inv.SKU }}</td>
+                <td>{{ inv.商品名称 }}</td>
+                <td>{{ inv.库存数量 }}</td>
+                <td>{{ inv.单位 }}</td>
+                <td>{{ inv.版本 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if demands %}
+<div class="card">
+    <h2>📋 需求明细</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>门店名称</th>
+                <th>SKU</th>
+                <th>商品名称</th>
+                <th>需求数量</th>
+                <th>单位</th>
+                <th>截止时间</th>
+                <th>紧急程度</th>
+                <th>版本</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dem in demands %}
+            <tr>
+                <td>{{ dem.门店名称 }}</td>
+                <td>{{ dem.SKU }}</td>
+                <td>{{ dem.商品名称 }}</td>
+                <td>{{ dem.需求数量 }}</td>
+                <td>{{ dem.单位 }}</td>
+                <td>{{ dem.截止时间 }}</td>
+                <td>{{ dem.紧急程度 }}</td>
+                <td>{{ dem.版本 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if not warehouses and not stores and not inventories and not demands %}
+<div class="card">
+    <p style="text-align: center; color: #666; padding: 2rem;">暂无数据，请先导入数据</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "message": "优化成功",
+  "total_cost": 0.0,
+  "objective_value": 0.0,
+  "solve_time": 0.853812,
+  "assignments": [],
+  "conflicts": [],
+  "warnings": [],
+  "saved_at": "2026-06-01T16:44:00.906786",
+  "data_version": "v20260601_164359"
+}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 方案对比</h2>
+    <p style="margin-bottom: 1.5rem;">选择两个优化方案进行对比分析</p>
+    
+    <form method="POST">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+                <label>方案 A</label>
+                <select name="result_a" required>
+                    <option value="">请选择方案</option>
+                    {% for r in results %}
+                    <option value="{{ r }}" {% if r == result_a_id %}selected{% endif %}>{{ r }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>方案 B</label>
+                <select name="result_b" required>
+                    <option value="">请选择方案</option>
+                    {% for r in results %}
+                    <option value="{{ r }}" {% if r == result_b_id %}selected{% endif %}>{{ r }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">开始对比</button>
+    </form>
+</div>
+
+{% if comparison %}
+<div class="card">
+    <h2>📈 对比结果</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number" style="font-size: 1.5rem;">
+                {{ '+' if comparison.cost_difference > 0 else '' }}{{ comparison.cost_difference|round(2) }}
+            </div>
+            <div class="label">成本差异</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" style="font-size: 1.5rem;">
+                {{ '+' if comparison.summary.cost_change_percent > 0 else '' }}{{ comparison.summary.cost_change_percent|round(2) }}%
+            </div>
+            <div class="label">成本变化率</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ comparison.summary.assignment_changes }}</div>
+            <div class="label">分拨变化数</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ comparison.summary.conflict_changes }}</div>
+            <div class="label">冲突变化数</div>
+        </div>
+    </div>
+    
+    <div style="background: #f7fafc; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+        <p>
+            <strong>{{ comparison.version_a }}</strong> vs <strong>{{ comparison.version_b }}</strong>
+            {% if comparison.cost_difference < 0 %}
+            <span style="color: #48bb78; margin-left: 1rem;">✓ 方案 B 更优，节省成本 {{ -comparison.cost_difference|round(2) }}</span>
+            {% elif comparison.cost_difference > 0 %}
+            <span style="color: #f56565; margin-left: 1rem;">⚠ 方案 B 成本增加 {{ comparison.cost_difference|round(2) }}</span>
+            {% else %}
+            <span style="color: #667eea; margin-left: 1rem;">两个方案成本相同</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+{% if comparison.assignment_differences %}
+<div class="card">
+    <h2>📋 分拨差异明细</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>变化类型</th>
+                <th>仓库</th>
+                <th>门店</th>
+                <th>商品</th>
+                <th>方案A数量</th>
+                <th>方案B数量</th>
+                <th>差异</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for diff in comparison.assignment_differences %}
+            <tr>
+                <td>
+                    {% if diff.type == 'added' %}
+                    <span style="color: #48bb78;">+ 新增</span>
+                    {% elif diff.type == 'removed' %}
+                    <span style="color: #f56565;">- 移除</span>
+                    {% else %}
+                    <span style="color: #ed8936;">~ 变更</span>
+                    {% endif %}
+                </td>
+                <td>{{ diff.warehouse }}</td>
+                <td>{{ diff.store }}</td>
+                <td>{{ diff.sku }}</td>
+                <td>{{ diff[comparison.version_a + '_数量'] }}</td>
+                <td>{{ diff[comparison.version_b + '_数量'] }}</td>
+                <td style="color: {{ '#48bb78' if diff.数量差异 > 0 else '#f56565' }};">
+                    {{ '+' if diff.数量差异 > 0 else '' }}{{ diff.数量差异|round(2) }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if comparison.conflict_differences %}
+<div class="card">
+    <h2>⚠️ 冲突差异</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>冲突类型</th>
+                <th>方案A数量</th>
+                <th>方案B数量</th>
+                <th>变化</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for diff in comparison.conflict_differences %}
+            <tr>
+                <td>{{ diff.conflict_type }}</td>
+                <td>{{ diff.count_a }}</td>
+                <td>{{ diff.count_b }}</td>
+                <td style="color: {{ '#f56565' if diff.change > 0 else '#48bb78' }};">
+                    {{ '+' if diff.change > 0 else '' }}{{ diff.change }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endif %}
+
+{% if not results %}
+<div class="card">
+    <p style="text-align: center; color: #666; padding: 2rem;">
+        暂无优化方案记录，请先运行优化计算
+    </p>
+</div>
+{% endif %}
+{% endblock %}

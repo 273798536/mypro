@@ -1,0 +1,72 @@
+[
+  {
+    "id": "a9f760c6",
+    "warehouse_id": "wh_001",
+    "sku": "SKU001",
+    "sku_name": "矿泉水500ml",
+    "quantity": 2000.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  },
+  {
+    "id": "ed155fe2",
+    "warehouse_id": "wh_001",
+    "sku": "SKU002",
+    "sku_name": "方便面袋装",
+    "quantity": 1500.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  },
+  {
+    "id": "9cb6d774",
+    "warehouse_id": "wh_001",
+    "sku": "SKU003",
+    "sku_name": "牛奶250ml",
+    "quantity": 1800.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  },
+  {
+    "id": "51fc1253",
+    "warehouse_id": "wh_002",
+    "sku": "SKU001",
+    "sku_name": "矿泉水500ml",
+    "quantity": 1200.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  },
+  {
+    "id": "ff48e114",
+    "warehouse_id": "wh_002",
+    "sku": "SKU002",
+    "sku_name": "方便面袋装",
+    "quantity": 800.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  },
+  {
+    "id": "5aab756b",
+    "warehouse_id": "wh_003",
+    "sku": "SKU003",
+    "sku_name": "牛奶250ml",
+    "quantity": 1000.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  },
+  {
+    "id": "3240e5b4",
+    "warehouse_id": "wh_003",
+    "sku": "SKU004",
+    "sku_name": "面包切片",
+    "quantity": 600.0,
+    "unit": "件",
+    "source": "test_script",
+    "version": "v20260601_164516"
+  }
+]

@@ -1,0 +1,169 @@
+{
+  "success": true,
+  "message": "优化成功",
+  "total_cost": 48151.47,
+  "objective_value": 48151.472854896056,
+  "solve_time": 0.047081,
+  "assignments": [
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_001",
+      "store_name": "朝阳门店",
+      "sku": "SKU001",
+      "sku_name": "矿泉水500ml",
+      "quantity": 720.0,
+      "transport_cost": 7617.548806833727
+    },
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_001",
+      "store_name": "朝阳门店",
+      "sku": "SKU003",
+      "sku_name": "牛奶250ml",
+      "quantity": 540.0,
+      "transport_cost": 5713.161605125295
+    },
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_001",
+      "store_name": "朝阳门店",
+      "sku": "SKU002",
+      "sku_name": "方便面袋装",
+      "quantity": 450.0,
+      "transport_cost": 4760.96800427108
+    },
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_004",
+      "store_name": "西城门店",
+      "sku": "SKU001",
+      "sku_name": "矿泉水500ml",
+      "quantity": 360.0,
+      "transport_cost": 3741.6271282851203
+    },
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_004",
+      "store_name": "西城门店",
+      "sku": "SKU002",
+      "sku_name": "方便面袋装",
+      "quantity": 270.0,
+      "transport_cost": 2806.22034621384
+    },
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_005",
+      "store_name": "东城门店",
+      "sku": "SKU001",
+      "sku_name": "矿泉水500ml",
+      "quantity": 450.0,
+      "transport_cost": 3237.951661915087
+    },
+    {
+      "warehouse_id": "wh_001",
+      "warehouse_name": "中心仓库A",
+      "store_id": "st_005",
+      "store_name": "东城门店",
+      "sku": "SKU003",
+      "sku_name": "牛奶250ml",
+      "quantity": 360.0,
+      "transport_cost": 2590.3613295320697
+    },
+    {
+      "warehouse_id": "wh_002",
+      "warehouse_name": "分拨中心B",
+      "store_id": "st_002",
+      "store_name": "海淀门店",
+      "sku": "SKU001",
+      "sku_name": "矿泉水500ml",
+      "quantity": 540.0,
+      "transport_cost": 5711.099690062846
+    },
+    {
+      "warehouse_id": "wh_002",
+      "warehouse_name": "分拨中心B",
+      "store_id": "st_002",
+      "store_name": "海淀门店",
+      "sku": "SKU002",
+      "sku_name": "方便面袋装",
+      "quantity": 360.0,
+      "transport_cost": 3807.3997933752307
+    },
+    {
+      "warehouse_id": "wh_003",
+      "warehouse_name": "郊区仓库C",
+      "store_id": "st_003",
+      "store_name": "通州门店",
+      "sku": "SKU003",
+      "sku_name": "牛奶250ml",
+      "quantity": 630.0,
+      "transport_cost": 5715.594142497235
+    },
+    {
+      "warehouse_id": "wh_003",
+      "warehouse_name": "郊区仓库C",
+      "store_id": "st_003",
+      "store_name": "通州门店",
+      "sku": "SKU004",
+      "sku_name": "面包切片",
+      "quantity": 270.0,
+      "transport_cost": 2449.5403467845294
+    }
+  ],
+  "conflicts": [
+    {
+      "type": "time_constraint",
+      "severity": "warning",
+      "description": "门店 朝阳门店 商品 牛奶250ml 为紧急需求",
+      "details": {
+        "store_id": "st_001",
+        "store_name": "朝阳门店",
+        "sku": "SKU003",
+        "sku_name": "牛奶250ml",
+        "deadline": "2026-06-02T16:45:16.408000",
+        "urgency": "urgent",
+        "assigned_quantity": 540.0
+      },
+      "impact": "需要优先安排配送，确保按时到达"
+    },
+    {
+      "type": "time_constraint",
+      "severity": "warning",
+      "description": "门店 东城门店 商品 牛奶250ml 为紧急需求",
+      "details": {
+        "store_id": "st_005",
+        "store_name": "东城门店",
+        "sku": "SKU003",
+        "sku_name": "牛奶250ml",
+        "deadline": "2026-06-02T16:45:16.408000",
+        "urgency": "urgent",
+        "assigned_quantity": 360.0
+      },
+      "impact": "需要优先安排配送，确保按时到达"
+    },
+    {
+      "type": "time_constraint",
+      "severity": "warning",
+      "description": "门店 通州门店 商品 牛奶250ml 为紧急需求",
+      "details": {
+        "store_id": "st_003",
+        "store_name": "通州门店",
+        "sku": "SKU003",
+        "sku_name": "牛奶250ml",
+        "deadline": "2026-06-02T04:45:16.408000",
+        "urgency": "urgent",
+        "assigned_quantity": 630.0
+      },
+      "impact": "需要优先安排配送，确保按时到达"
+    }
+  ],
+  "warnings": [],
+  "saved_at": "2026-06-01T16:45:16.668551",
+  "data_version": "v20260601_164516"
+}

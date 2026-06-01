@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>🚀 系统概览</h2>
+    <p>线性规划仓储分拨系统帮助物流计划员优化仓库到门店的商品分拨方案，平衡需求和到货时限。</p>
+</div>
+
+<div class="card">
+    <h2>📋 快速开始</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <div style="background: #f7fafc; padding: 1.5rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📤</div>
+            <h3 style="margin-bottom: 0.5rem;">1. 导入数据</h3>
+            <p style="font-size: 0.9rem; color: #666;">上传包含仓库、库存、门店、需求的Excel文件</p>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">开始导入</a>
+        </div>
+        <div style="background: #f7fafc; padding: 1.5rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚙️</div>
+            <h3 style="margin-bottom: 0.5rem;">2. 优化计算</h3>
+            <p style="font-size: 0.9rem; color: #666;">运行线性规划算法，生成分拨方案</p>
+            <a href="{{ url_for('optimize') }}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">开始优化</a>
+        </div>
+        <div style="background: #f7fafc; padding: 1.5rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+            <h3 style="margin-bottom: 0.5rem;">3. 导出报告</h3>
+            <p style="font-size: 0.9rem; color: #666;">查看冲突分析，导出Excel方案报告</p>
+            <a href="{{ url_for('compare') }}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">方案对比</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📁 数据版本历史</h2>
+    {% if versions %}
+    <table>
+        <thead>
+            <tr>
+                <th>版本号</th>
+                <th>创建时间</th>
+                <th>来源</th>
+                <th>描述</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in versions %}
+            <tr>
+                <td><strong>{{ v.version_id }}</strong></td>
+                <td>{{ v.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ v.source }}</td>
+                <td>{{ v.description }}</td>
+                <td>
+                    <a href="{{ url_for('load_version', version_id=v.version_id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                        加载此版本
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666; text-align: center; padding: 2rem;">暂无数据版本，请先导入数据</p>
+    {% endif %}
+</div>
+{% endblock %}
