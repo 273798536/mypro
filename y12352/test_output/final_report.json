@@ -1,0 +1,447 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-06-01T20:05:39.117982",
+    "generator": "桥梁简支梁受力器",
+    "version": "1.0.0"
+  },
+  "raw_data": null,
+  "unit_system": {
+    "length_unit": "m",
+    "force_unit": "kN",
+    "moment_unit": "kN·m"
+  },
+  "beam_properties": {
+    "length": "10 m",
+    "left_support": "pinned",
+    "right_support": "roller",
+    "name": "default",
+    "notes": []
+  },
+  "loads": [
+    {
+      "index": 1,
+      "type": "concentrated_force",
+      "magnitude": "10 kN",
+      "direction": "downward",
+      "source": null,
+      "effective_force": "10 kN",
+      "centroid_position": "3 m",
+      "position": "3 m"
+    },
+    {
+      "index": 2,
+      "type": "concentrated_force",
+      "magnitude": "20 kN",
+      "direction": "downward",
+      "source": null,
+      "effective_force": "20 kN",
+      "centroid_position": "7 m",
+      "position": "7 m"
+    },
+    {
+      "index": 3,
+      "type": "uniform_distributed",
+      "magnitude": "5 kN/m",
+      "direction": "downward",
+      "source": null,
+      "effective_force": "5e+04 N",
+      "centroid_position": "5 m",
+      "start_position": "0 m",
+      "end_position": "10 m"
+    }
+  ],
+  "validation": {
+    "is_valid": true,
+    "errors": [],
+    "warnings": []
+  },
+  "formulas": [
+    {
+      "name": "右支座反力",
+      "expression": "R_right = Σ(F_i * a_i) / L",
+      "description": "对左支座取矩，力矩平衡"
+    },
+    {
+      "name": "左支座反力",
+      "expression": "R_left = ΣF_i - R_right",
+      "description": "竖向力平衡"
+    },
+    {
+      "name": "剪力方程",
+      "expression": "V(x) = R_left - ΣF_i(left of x)",
+      "description": "截面左侧竖向力代数和"
+    },
+    {
+      "name": "弯矩方程",
+      "expression": "M(x) = R_left*x - ΣF_i*(x-a_i)",
+      "description": "截面左侧力矩代数和"
+    },
+    {
+      "name": "挠曲线方程",
+      "expression": "EI * d²y/dx² = M(x)",
+      "description": "材料力学基本方程"
+    }
+  ],
+  "results": {
+    "left_reaction": "38 kN",
+    "right_reaction": "42 kN",
+    "max_shear_force": "38 kN",
+    "min_shear_force": "-42 kN",
+    "max_bending_moment": "108.4 kN·m",
+    "min_bending_moment": "0 kN·m",
+    "max_deflection": null,
+    "total_vertical_force": "80 kN",
+    "total_moment": null,
+    "equilibrium_check": true,
+    "shear_force_zero_positions": [
+      "5.6 m"
+    ]
+  },
+  "intermediate_values": {
+    "验证结果": {
+      "是否有效": "True",
+      "错误数": "0",
+      "警告数": "0"
+    },
+    "载荷 #1 等效处理": {
+      "等效力": "10 kN",
+      "形心位置": "3 m"
+    },
+    "载荷 #2 等效处理": {
+      "等效力": "20 kN",
+      "形心位置": "7 m"
+    },
+    "载荷 #3 等效处理": {
+      "等效力": "5e+04 N",
+      "形心位置": "5 m"
+    },
+    "左支座反力计算": {
+      "R_left": "38 kN"
+    },
+    "右支座反力计算": {
+      "R_right": "42 kN"
+    },
+    "平衡条件校验": {
+      "力平衡误差": "0 kN",
+      "矩平衡误差": "0 kN·m",
+      "平衡满足": "True"
+    },
+    "剪力图计算": {
+      "最大剪力": "38 kN"
+    },
+    "弯矩图计算": {
+      "最大弯矩": "108.4 kN·m"
+    },
+    "计算结果汇总": {
+      "左支座反力": "38 kN",
+      "右支座反力": "42 kN",
+      "最大剪力": "38 kN",
+      "最小剪力": "-42 kN",
+      "最大弯矩": "108.4 kN·m",
+      "最小弯矩": "0 kN·m",
+      "最大挠度": "None",
+      "平衡校验": "True"
+    }
+  },
+  "calculation_steps": [
+    {
+      "step_type": "validation",
+      "title": "梁基本参数验证",
+      "description": "验证梁长度、边界条件等基本参数的有效性",
+      "formula": null,
+      "inputs": {
+        "梁长度": "10 m",
+        "左支座": "pinned",
+        "右支座": "roller"
+      },
+      "outputs": {},
+      "notes": [],
+      "order": 1
+    },
+    {
+      "step_type": "validation",
+      "title": "载荷 #1 验证",
+      "description": "验证 concentrated_force 的参数有效性",
+      "formula": null,
+      "inputs": {
+        "类型": "concentrated_force",
+        "大小": "10 kN"
+      },
+      "outputs": {},
+      "notes": [],
+      "order": 2
+    },
+    {
+      "step_type": "validation",
+      "title": "载荷 #2 验证",
+      "description": "验证 concentrated_force 的参数有效性",
+      "formula": null,
+      "inputs": {
+        "类型": "concentrated_force",
+        "大小": "20 kN"
+      },
+      "outputs": {},
+      "notes": [],
+      "order": 3
+    },
+    {
+      "step_type": "validation",
+      "title": "载荷 #3 验证",
+      "description": "验证 uniform_distributed 的参数有效性",
+      "formula": null,
+      "inputs": {
+        "类型": "uniform_distributed",
+        "大小": "5 kN/m"
+      },
+      "outputs": {},
+      "notes": [],
+      "order": 4
+    },
+    {
+      "step_type": "validation",
+      "title": "验证结果",
+      "description": "输入参数验证总结",
+      "formula": null,
+      "inputs": {},
+      "outputs": {
+        "是否有效": "True",
+        "错误数": "0",
+        "警告数": "0"
+      },
+      "notes": [],
+      "order": 5
+    },
+    {
+      "step_type": "input",
+      "title": "计算输入参数",
+      "description": "简支梁受力计算的原始输入参数",
+      "formula": null,
+      "inputs": {
+        "梁长度": "10 m",
+        "左支座": "pinned",
+        "右支座": "roller",
+        "载荷数量": "3"
+      },
+      "outputs": {},
+      "notes": [],
+      "order": 6
+    },
+    {
+      "step_type": "load_equivalent",
+      "title": "载荷 #1 等效处理",
+      "description": "将 concentrated_force 转换为等效力和作用点",
+      "formula": {
+        "name": "等效力计算",
+        "expression": "F_eq = ∫q(x)dx",
+        "variables": {
+          "载荷类型": "concentrated_force",
+          "原始大小": "10 kN"
+        },
+        "result": "10 kN"
+      },
+      "inputs": {
+        "原始载荷": "10 kN",
+        "载荷类型": "concentrated_force"
+      },
+      "outputs": {
+        "等效力": "10 kN",
+        "形心位置": "3 m"
+      },
+      "notes": [
+        ""
+      ],
+      "order": 7
+    },
+    {
+      "step_type": "load_equivalent",
+      "title": "载荷 #2 等效处理",
+      "description": "将 concentrated_force 转换为等效力和作用点",
+      "formula": {
+        "name": "等效力计算",
+        "expression": "F_eq = ∫q(x)dx",
+        "variables": {
+          "载荷类型": "concentrated_force",
+          "原始大小": "20 kN"
+        },
+        "result": "20 kN"
+      },
+      "inputs": {
+        "原始载荷": "20 kN",
+        "载荷类型": "concentrated_force"
+      },
+      "outputs": {
+        "等效力": "20 kN",
+        "形心位置": "7 m"
+      },
+      "notes": [
+        ""
+      ],
+      "order": 8
+    },
+    {
+      "step_type": "load_equivalent",
+      "title": "载荷 #3 等效处理",
+      "description": "将 uniform_distributed 转换为等效力和作用点",
+      "formula": {
+        "name": "等效力计算",
+        "expression": "F_eq = ∫q(x)dx",
+        "variables": {
+          "载荷类型": "uniform_distributed",
+          "原始大小": "5 kN/m"
+        },
+        "result": "5e+04 N"
+      },
+      "inputs": {
+        "原始载荷": "5 kN/m",
+        "载荷类型": "uniform_distributed"
+      },
+      "outputs": {
+        "等效力": "5e+04 N",
+        "形心位置": "5 m"
+      },
+      "notes": [
+        ""
+      ],
+      "order": 9
+    },
+    {
+      "step_type": "reaction_calculation",
+      "title": "左支座反力计算",
+      "description": "对右支座取矩，由力矩平衡计算左支座反力",
+      "formula": {
+        "name": "左支座反力",
+        "expression": "R_left = (ΣF * L - ΣM_A) / L",
+        "variables": {
+          "ΣF": "80 kN",
+          "ΣM_A": "420 kN·m",
+          "L": "10 m"
+        },
+        "result": "38 kN"
+      },
+      "inputs": {
+        "ΣF": "80 kN",
+        "ΣM_A": "420 kN·m",
+        "L": "10 m"
+      },
+      "outputs": {
+        "R_left": "38 kN"
+      },
+      "notes": [],
+      "order": 10
+    },
+    {
+      "step_type": "reaction_calculation",
+      "title": "右支座反力计算",
+      "description": "对左支座取矩，由力矩平衡计算右支座反力",
+      "formula": {
+        "name": "右支座反力",
+        "expression": "R_right = ΣM_A / L",
+        "variables": {
+          "ΣF": "80 kN",
+          "ΣM_A": "420 kN·m",
+          "L": "10 m"
+        },
+        "result": "42 kN"
+      },
+      "inputs": {
+        "ΣF": "80 kN",
+        "ΣM_A": "420 kN·m",
+        "L": "10 m"
+      },
+      "outputs": {
+        "R_right": "42 kN"
+      },
+      "notes": [],
+      "order": 11
+    },
+    {
+      "step_type": "equilibrium",
+      "title": "平衡条件校验",
+      "description": "验证竖向力平衡和力矩平衡",
+      "formula": {
+        "name": "竖向力平衡",
+        "expression": "ΣFy = R_left + R_right - ΣF_loads = 0",
+        "variables": {
+          "R_left": "38 kN",
+          "R_right": "42 kN",
+          "ΣF_loads": "80 kN"
+        },
+        "result": "0 kN"
+      },
+      "inputs": {
+        "总反力": "80 kN",
+        "总荷载": "80 kN"
+      },
+      "outputs": {
+        "力平衡误差": "0 kN",
+        "矩平衡误差": "0 kN·m",
+        "平衡满足": "True"
+      },
+      "notes": [],
+      "order": 12
+    },
+    {
+      "step_type": "shear_calculation",
+      "title": "剪力图计算",
+      "description": "沿梁长各截面的剪力值计算",
+      "formula": {
+        "name": "剪力计算",
+        "expression": "V(x) = R_left - ΣF_loads(left of x)",
+        "variables": {
+          "R_left": "38 kN"
+        },
+        "result": "101 个计算点"
+      },
+      "inputs": {},
+      "outputs": {
+        "最大剪力": "38 kN"
+      },
+      "notes": [],
+      "order": 13
+    },
+    {
+      "step_type": "moment_calculation",
+      "title": "弯矩图计算",
+      "description": "沿梁长各截面的弯矩值计算",
+      "formula": {
+        "name": "弯矩计算",
+        "expression": "M(x) = R_left * x - ΣM_loads(left of x)",
+        "variables": {
+          "R_left": "38 kN"
+        },
+        "result": "101 个计算点"
+      },
+      "inputs": {},
+      "outputs": {
+        "最大弯矩": "108.4 kN·m"
+      },
+      "notes": [],
+      "order": 14
+    },
+    {
+      "step_type": "summary",
+      "title": "计算结果汇总",
+      "description": "简支梁受力计算的主要结果汇总",
+      "formula": null,
+      "inputs": {},
+      "outputs": {
+        "左支座反力": "38 kN",
+        "右支座反力": "42 kN",
+        "最大剪力": "38 kN",
+        "最小剪力": "-42 kN",
+        "最大弯矩": "108.4 kN·m",
+        "最小弯矩": "0 kN·m",
+        "最大挠度": "None",
+        "平衡校验": "True"
+      },
+      "notes": [],
+      "order": 15
+    }
+  ],
+  "warnings": [],
+  "equilibrium_check": {
+    "passed": true,
+    "total_reactions": "80 kN"
+  },
+  "charts": {}
+}

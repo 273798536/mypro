@@ -1,0 +1,85 @@
+{
+  "beam": {
+    "name": "beam",
+    "length": "10 m",
+    "left_support": "pinned",
+    "right_support": "roller",
+    "loads": [
+      {
+        "load_type": "concentrated_force",
+        "magnitude": "10 kN",
+        "position": "3 m",
+        "start_position": null,
+        "end_position": null,
+        "magnitude_end": null,
+        "direction": "downward",
+        "source": "examples/beam_example.json"
+      },
+      {
+        "load_type": "concentrated_force",
+        "magnitude": "20 kN",
+        "position": "7 m",
+        "start_position": null,
+        "end_position": null,
+        "magnitude_end": null,
+        "direction": "downward",
+        "source": "examples/beam_example.json"
+      },
+      {
+        "load_type": "uniform_distributed",
+        "magnitude": "5 kN/m",
+        "position": null,
+        "start_position": "0 m",
+        "end_position": "10 m",
+        "magnitude_end": null,
+        "direction": "downward",
+        "source": "examples/beam_example.json"
+      }
+    ],
+    "section": {
+      "width": "0.1 m",
+      "height": "0.2 m",
+      "area": null,
+      "moment_of_inertia": "2.37e-05 m^4",
+      "section_modulus": null,
+      "name": "工字钢I20a"
+    },
+    "material": {
+      "elastic_modulus": "206 GPa",
+      "poissons_ratio": null,
+      "yield_strength": "235 MPa",
+      "name": "Q235钢"
+    },
+    "notes": [
+      "土木物理作业习题5.3",
+      "课堂例题：简支梁受多个集中力和均布载荷",
+      "学生容易搞混叠加顺序"
+    ],
+    "source": "examples/beam_example.json"
+  },
+  "unit_system": {
+    "length_unit": "m",
+    "force_unit": "kN",
+    "moment_unit": "kN·m",
+    "pressure_unit": "MPa",
+    "distributed_load_unit": "kN/m"
+  },
+  "validation_result": null,
+  "calculation_result": {
+    "left_reaction": "38 kN",
+    "right_reaction": "42 kN",
+    "max_shear_force": "38 kN",
+    "min_shear_force": "-42 kN",
+    "max_bending_moment": "108.4 kN·m",
+    "min_bending_moment": "0 kN·m",
+    "max_deflection": "0.5851 m",
+    "total_vertical_force": "80 kN",
+    "total_moment": null,
+    "equilibrium_check": true,
+    "shear_force_zero_positions": [
+      "5.6 m"
+    ]
+  },
+  "processing_timestamp": "2026-06-01T20:11:11.471924",
+  "raw_data_ref": "output/raw_data.json"
+}

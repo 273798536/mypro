@@ -1,0 +1,74 @@
+{
+  "beam_length_raw": "10",
+  "beam_length_unit_raw": "m",
+  "left_support_raw": "pinned",
+  "right_support_raw": "roller",
+  "loads_raw": [
+    {
+      "type": "concentrated_force",
+      "magnitude": 10,
+      "magnitude_unit": "kN",
+      "position": 3,
+      "position_unit": "m",
+      "_source": "examples/beam_example.json"
+    },
+    {
+      "type": "concentrated_force",
+      "magnitude": 20,
+      "magnitude_unit": "kN",
+      "position": 7,
+      "position_unit": "m",
+      "_source": "examples/beam_example.json"
+    },
+    {
+      "type": "uniform_distributed",
+      "magnitude": 5,
+      "magnitude_unit": "kN/m",
+      "start_position": 0,
+      "start_unit": "m",
+      "end_position": 10,
+      "end_unit": "m",
+      "_source": "examples/beam_example.json"
+    }
+  ],
+  "section_raw": {
+    "name": "工字钢I20a",
+    "height": 0.2,
+    "height_unit": "m",
+    "width": 0.1,
+    "width_unit": "m",
+    "moment_of_inertia": 2.37e-05,
+    "moment_of_inertia_unit": "m^4"
+  },
+  "material_raw": {
+    "name": "Q235钢",
+    "elastic_modulus": 206,
+    "elastic_modulus_unit": "GPa",
+    "yield_strength": 235,
+    "yield_strength_unit": "MPa"
+  },
+  "notes_raw": [
+    "土木物理作业习题5.3",
+    "课堂例题：简支梁受多个集中力和均布载荷",
+    "学生容易搞混叠加顺序"
+  ],
+  "class_notes": [
+    "复习：静力学平衡方程 ΣF=0, ΣM=0",
+    "易错点：分布载荷的等效力作用点",
+    "关键点：剪力为零处弯矩极值"
+  ],
+  "source_files": {
+    "beam_length": "examples/beam_example.json",
+    "supports": "command_line",
+    "load_0": "examples/beam_example.json",
+    "load_1": "examples/beam_example.json",
+    "load_2": "examples/beam_example.json",
+    "notes": "examples/beam_example.json",
+    "class_notes": "examples/beam_example.json",
+    "section": "examples/beam_example.json",
+    "material": "examples/beam_example.json",
+    "main": "examples/beam_example.json"
+  },
+  "source_meta": {},
+  "import_timestamp": "2026-06-01T20:11:11.471920"
+}

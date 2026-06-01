@@ -1,0 +1,39 @@
+{
+  "beam_length": {
+    "value": 500,
+    "unit": "cm"
+  },
+  "supports": {
+    "left": "铰支",
+    "right": "滚动支座"
+  },
+  "loads": [
+    {
+      "type": "concentrated_force",
+      "magnitude": 10000,
+      "magnitude_unit": "N",
+      "position": 2,
+      "position_unit": "m"
+    },
+    {
+      "type": "concentrated_force",
+      "magnitude": 15,
+      "magnitude_unit": "kN",
+      "position": 350,
+      "position_unit": "cm"
+    },
+    {
+      "type": "uniform_distributed",
+      "magnitude": 50,
+      "magnitude_unit": "N/mm",
+      "start_position": 0,
+      "start_unit": "m",
+      "end_position": 5,
+      "end_unit": "m"
+    }
+  ],
+  "notes": [
+    "单位混用测试案例",
+    "厘米、米、牛、千牛、牛每毫米混用"
+  ]
+}

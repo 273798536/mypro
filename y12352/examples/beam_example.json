@@ -1,0 +1,61 @@
+{
+  "beam_length": {
+    "value": 10,
+    "unit": "m"
+  },
+  "supports": {
+    "left": "pinned",
+    "right": "roller"
+  },
+  "loads": [
+    {
+      "type": "concentrated_force",
+      "magnitude": 10,
+      "magnitude_unit": "kN",
+      "position": 3,
+      "position_unit": "m"
+    },
+    {
+      "type": "concentrated_force",
+      "magnitude": 20,
+      "magnitude_unit": "kN",
+      "position": 7,
+      "position_unit": "m"
+    },
+    {
+      "type": "uniform_distributed",
+      "magnitude": 5,
+      "magnitude_unit": "kN/m",
+      "start_position": 0,
+      "start_unit": "m",
+      "end_position": 10,
+      "end_unit": "m"
+    }
+  ],
+  "notes": [
+    "土木物理作业习题5.3",
+    "课堂例题：简支梁受多个集中力和均布载荷",
+    "学生容易搞混叠加顺序"
+  ],
+  "class_notes": [
+    "复习：静力学平衡方程 ΣF=0, ΣM=0",
+    "易错点：分布载荷的等效力作用点",
+    "关键点：剪力为零处弯矩极值"
+  ],
+  "section": {
+    "name": "工字钢I20a",
+    "height": 0.2,
+    "height_unit": "m",
+    "width": 0.1,
+    "width_unit": "m",
+    "moment_of_inertia": 2.37e-5,
+    "moment_of_inertia_unit": "m^4"
+  },
+  "material": {
+    "name": "Q235钢",
+    "elastic_modulus": 206,
+    "elastic_modulus_unit": "GPa",
+    "yield_strength": 235,
+    "yield_strength_unit": "MPa"
+  }
+}
