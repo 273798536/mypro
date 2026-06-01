@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多项式拟合预警器</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #242836;
+  --border: #2e3348;
+  --text: #e4e6f0;
+  --text2: #9499b3;
+  --accent: #6c8cff;
+  --accent2: #4f6fd6;
+  --warn: #f5a623;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --info: #38bdf8;
+  --evidence: #a78bfa;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.app-header {
+  background: linear-gradient(135deg, #1a1d27 0%, #242836 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 32px;
+  display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.app-header .logo {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--evidence));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: #fff;
+}
+.app-header h1 { font-size: 20px; font-weight: 600; }
+.app-header .badge {
+  font-size: 11px; padding: 2px 8px; border-radius: 20px;
+  background: var(--accent); color: #fff; font-weight: 500;
+}
+.main-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr 380px;
+  gap: 0;
+  min-height: calc(100vh - 73px);
+}
+.panel {
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px;
+}
+.panel:last-child { border-right: none; }
+.panel-title {
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.panel-title .icon { font-size: 15px; }
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-size: 14px; font-weight: 600; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 6px; border: none;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all .15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-warn { background: var(--warn); color: #1a1d27; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.input-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.input-row label {
+  font-size: 13px; color: var(--text2); min-width: 70px;
+}
+.input-row input, .input-row select, .input-row textarea {
+  flex: 1; padding: 6px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-size: 13px; font-family: inherit;
+}
+.input-row textarea { min-height: 60px; resize: vertical; }
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.data-table th {
+  background: var(--surface2); padding: 6px 8px;
+  text-align: left; font-weight: 600; font-size: 12px;
+  color: var(--text2); border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 5px 8px; border-bottom: 1px solid var(--border);
+}
+.data-table input {
+  width: 100%; padding: 4px 6px; border-radius: 4px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-size: 13px;
+}
+.data-table .remark-cell {
+  position: relative;
+}
+.data-table .remark-badge {
+  position: absolute; top: -2px; right: -2px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--warn);
+}
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.chart-container canvas { width: 100% !important; }
+.alert {
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
+  margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px;
+}
+.alert-warn { background: rgba(245,166,35,.12); border: 1px solid rgba(245,166,35,.3); color: #f5a623; }
+.alert-danger { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); color: #ef4444; }
+.alert-info { background: rgba(56,189,248,.12); border: 1px solid rgba(56,189,248,.3); color: #38bdf8; }
+.alert-evidence { background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.3); color: #a78bfa; }
+.alert .icon { flex-shrink: 0; margin-top: 1px; }
+.fitting-result {
+  background: var(--surface2); border-radius: 6px; padding: 10px;
+  font-family: "SF Mono", "Fira Code", monospace; font-size: 13px;
+  margin-top: 8px; white-space: pre-wrap; word-break: break-all;
+}
+.evidence-item {
+  background: var(--surface2); border-radius: 8px; padding: 12px;
+  margin-bottom: 8px; border-left: 3px solid var(--evidence);
+}
+.evidence-item .ev-type {
+  font-size: 11px; font-weight: 600; color: var(--evidence);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px;
+}
+.evidence-item .ev-content { font-size: 13px; color: var(--text); }
+.evidence-item .ev-time { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.evidence-item.ev-warn { border-left-color: var(--warn); }
+.evidence-item.ev-warn .ev-type { color: var(--warn); }
+.evidence-item.ev-danger { border-left-color: var(--danger); }
+.evidence-item.ev-danger .ev-type { color: var(--danger); }
+.evidence-item.ev-info { border-left-color: var(--info); }
+.evidence-item.ev-info .ev-type { color: var(--info); }
+.version-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;
+}
+.version-tag.current { background: var(--accent); color: #fff; }
+.version-tag.superseded { background: var(--surface2); color: var(--text2); text-decoration: line-through; }
+.tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 14px;
+}
+.tab-bar .tab {
+  padding: 8px 16px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  color: var(--text2); transition: all .15s;
+}
+.tab-bar .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-bar .tab:hover { color: var(--text); }
+.stat-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
+}
+.stat-card {
+  background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+}
+.stat-card .stat-label { font-size: 11px; color: var(--text2); font-weight: 500; }
+.stat-card .stat-value { font-size: 20px; font-weight: 700; margin-top: 2px; }
+.stat-card .stat-value.good { color: var(--success); }
+.stat-card .stat-value.warn { color: var(--warn); }
+.stat-card .stat-value.bad { color: var(--danger); }
+.verify-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px; background: var(--surface2); border-radius: 6px;
+  margin-bottom: 6px; font-size: 13px;
+}
+.verify-row .check { color: var(--success); }
+.verify-row .cross { color: var(--danger); }
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; max-width: 700px; width: 90%;
+  max-height: 80vh; overflow-y: auto;
+}
+.modal h2 { font-size: 18px; margin-bottom: 16px; }
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--text2);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+.empty-state p { font-size: 14px; }
+.sample-card {
+  background: var(--surface2); border-radius: 8px; padding: 12px;
+  margin-bottom: 8px; cursor: pointer; transition: all .15s;
+  border: 1px solid transparent;
+}
+.sample-card:hover { border-color: var(--accent); }
+.sample-card .sc-name { font-size: 14px; font-weight: 600; }
+.sample-card .sc-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.report-section { margin-bottom: 16px; }
+.report-section h3 {
+  font-size: 15px; font-weight: 600; margin-bottom: 8px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.report-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  margin-bottom: 8px;
+}
+.report-table th, .report-table td {
+  padding: 6px 10px; border: 1px solid var(--border); text-align: left;
+}
+.report-table th { background: var(--surface2); font-weight: 600; }
+.remark-edit-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 998; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.remark-edit-overlay.active { opacity: 1; pointer-events: auto; }
+.remark-edit-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; max-width: 420px; width: 90%;
+}
+.remark-edit-box h3 { font-size: 15px; margin-bottom: 10px; }
+.remark-edit-box textarea {
+  width: 100%; min-height: 80px; padding: 8px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-size: 13px; font-family: inherit; resize: vertical;
+}
+.remark-edit-box .btn-row { margin-top: 10px; display: flex; gap: 8px; justify-content: flex-end; }
+.scroll-area { max-height: 300px; overflow-y: auto; }
+.extrap-config {
+  background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.extrap-config .ec-label { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+.extrap-config .ec-value { font-size: 14px; font-weight: 600; }
+.extrap-version-list { margin-top: 8px; }
+.extrap-version-item {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+  border-radius: 4px; margin-bottom: 4px; font-size: 12px;
+}
+.extrap-version-item.current-ver { background: rgba(108,140,255,.1); }
+.extrap-version-item .ver-label { font-weight: 600; }
+.extrap-version-item .ver-range { color: var(--text2); }
+.extrap-version-item .ver-time { color: var(--text2); margin-left: auto; }
+@media (max-width: 1200px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .panel { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo">P</div>
+  <h1>多项式拟合预警器</h1>
+  <span class="badge">v1.0</span>
+</div>
+
+<div class="main-layout">
+
+  <div class="panel" id="leftPanel">
+    <div class="panel-title"><span class="icon">📥</span> 数据导入</div>
+
+    <div class="section">
+      <div class="section-title">样例数据集</div>
+      <div id="sampleList"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">导入方式</div>
+      <div class="btn-group" style="margin-bottom:10px;">
+        <button class="btn btn-outline btn-sm" onclick="triggerCSVImport()">📁 导入 CSV</button>
+        <button class="btn btn-outline btn-sm" onclick="triggerJSONImport()">📄 导入 JSON</button>
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCSVFile(event)">
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="handleJSONFile(event)">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">实验点数据</div>
+      <div style="margin-bottom:8px;">
+        <div class="btn-group">
+          <button class="btn btn-primary btn-sm" onclick="addDataRow()">+ 添加点</button>
+          <button class="btn btn-outline btn-sm" onclick="clearAllData()">清空</button>
+        </div>
+      </div>
+      <div class="scroll-area" id="dataTableWrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>X</th><th>Y</th><th>备注</th><th></th></tr>
+          </thead>
+          <tbody id="dataBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">拟合配置</div>
+      <div class="input-row">
+        <label>拟合阶数</label>
+        <input type="number" id="fitDegree" value="2" min="1" max="10" style="width:70px;">
+      </div>
+      <div class="input-row">
+        <label>外推下界</label>
+        <input type="number" id="extrapMin" value="" placeholder="自动" step="any">
+      </div>
+      <div class="input-row">
+        <label>外推上界</label>
+        <input type="number" id="extrapMax" value="" placeholder="自动" step="any">
+      </div>
+      <div class="input-row">
+        <label>课堂备注</label>
+        <textarea id="classRemark" placeholder="本批实验的课堂备注，作为补充证据保留"></textarea>
+      </div>
+      <div style="margin-top:10px;">
+        <button class="btn btn-primary" onclick="runFitting()" style="width:100%;">执行拟合</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="centerPanel">
+    <div class="panel-title"><span class="icon">📊</span> 拟合可视化</div>
+
+    <div id="chartPlaceholder" class="empty-state">
+      <div class="icon">📈</div>
+      <p>导入实验点数据后，点击「执行拟合」查看图表</p>
+    </div>
+
+    <div class="chart-container" id="chartBox" style="display:none;">
+      <canvas id="mainChart"></canvas>
+    </div>
+
+    <div id="alertArea"></div>
+
+    <div id="statsArea" style="display:none;">
+      <div class="section">
+        <div class="section-title">拟合统计</div>
+        <div class="stat-grid" id="statGrid"></div>
+        <div class="fitting-result" id="fitFormula"></div>
+      </div>
+    </div>
+
+    <div id="extrapVersionArea" style="display:none;">
+      <div class="section">
+        <div class="section-title">外推区间版本</div>
+        <div id="extrapVersionList"></div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-outline btn-sm" onclick="updateExtrapInterval()">更新外推区间</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="rightPanel">
+    <div class="panel-title"><span class="icon">🔍</span> 明细与证据</div>
+
+    <div class="tab-bar">
+      <div class="tab active" role="tab" tabindex="0" data-tab="evidence" onclick="switchRightTab(this)">证据链</div>
+      <div class="tab" role="tab" tabindex="0" data-tab="verify" onclick="switchRightTab(this)">人工核验</div>
+      <div class="tab" role="tab" tabindex="0" data-tab="report" onclick="switchRightTab(this)">报告</div>
+    </div>
+
+    <div id="tabEvidence">
+      <div id="evidenceList">
+        <div class="empty-state" style="padding:20px;">
+          <p style="font-size:13px; color:var(--text2);">执行拟合后，预警与证据记录将在此显示</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tabVerify" style="display:none;">
+      <div class="section">
+        <div class="section-title">人工核验记录</div>
+        <div class="input-row">
+          <label>核验人</label>
+          <input type="text" id="verifierName" placeholder="姓名">
+        </div>
+        <div class="input-row">
+          <label>核验结论</label>
+          <select id="verifyResult">
+            <option value="pass">✅ 通过</option>
+            <option value="warn">⚠️ 存疑</option>
+            <option value="fail">❌ 不通过</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <label>核验备注</label>
+          <textarea id="verifyNote" placeholder="记录核验过程与依据，避免凭印象"></textarea>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addVerification()" style="width:100%;margin-top:6px;">提交核验记录</button>
+      </div>
+      <div id="verifyHistory"></div>
+    </div>
+
+    <div id="tabReport" style="display:none;">
+      <div class="section">
+        <div class="section-title">复盘报告</div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">汇总实验点、拟合结果、预警与证据，生成完整复盘报告</p>
+        <button class="btn btn-primary" onclick="generateReport()" style="width:100%;">生成报告</button>
+      </div>
+      <div id="reportOutput"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="remark-edit-overlay" id="remarkOverlay">
+  <div class="remark-edit-box">
+    <h3>编辑实验点备注</h3>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:8px;" id="remarkPointInfo"></p>
+    <textarea id="remarkInput" placeholder="输入备注内容，将作为补充证据保留"></textarea>
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="closeRemarkEdit()">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="saveRemarkEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var APP = {
+  dataPoints: [],
+  fitResult: null,
+  chart: null,
+  evidenceLog: [],
+  verifyHistory: [],
+  extrapVersions: [],
+  classRemark: '',
+  editingRemarkIdx: -1,
+  sampleCounter: 0
+};
+
+var SAMPLES = [
+  {
+    name: '线性趋势',
+    desc: '6 个点，一阶线性拟合，无外推',
+    points: [{x:1,y:2.1},{x:2,y:3.9},{x:3,y:6.2},{x:4,y:7.8},{x:5,y:10.3},{x:6,y:11.7}],
+    degree: 1,
+    remark: '课堂演示：线性关系验证'
+  },
+  {
+    name: '二次曲线',
+    desc: '8 个点，二阶拟合，含外推区间',
+    points: [{x:-3,y:9.2},{x:-2,y:4.1},{x:-1,y:1.3},{x:0,y:0.2},{x:1,y:0.8},{x:2,y:3.9},{x:3,y:8.7},{x:4,y:16.1}],
+    degree: 2,
+    remark: '课堂演示：抛物线拟合'
+  },
+  {
+    name: '过拟合风险',
+    desc: '5 个点尝试 4 阶拟合，触发过拟合预警',
+    points: [{x:1,y:1.2},{x:2,y:2.8},{x:3,y:3.1},{x:4,y:5.5},{x:5,y:4.9}],
+    degree: 4,
+    remark: '课堂备注：点数少、高阶拟合，过拟合风险大'
+  },
+  {
+    name: '外推越界',
+    desc: '7 个点，拟合后在新版本中修改外推区间',
+    points: [{x:0,y:0.5},{x:1,y:1.8},{x:2,y:4.2},{x:3,y:8.9},{x:4,y:15.5},{x:5,y:24.3},{x:6,y:35.8}],
+    degree: 2,
+    remark: '课堂备注：注意外推区间被新版本覆盖的情况'
+  }
+];
+
+function initSampleList() {
+  var el = document.getElementById('sampleList');
+  var html = '';
+  SAMPLES.forEach(function(s, i) {
+    html += '<div class="sample-card" role="button" tabindex="0" onclick="loadSample(' + i + ')">';
+    html += '<div class="sc-name">' + s.name + '</div>';
+    html += '<div class="sc-desc">' + s.desc + '</div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function loadSample(idx) {
+  var s = SAMPLES[idx];
+  APP.dataPoints = s.points.map(function(p, i) {
+    return { x: p.x, y: p.y, remark: '', originalRemark: '' };
+  });
+  document.getElementById('fitDegree').value = s.degree;
+  document.getElementById('classRemark').value = s.remark || '';
+  APP.sampleCounter++;
+  addEvidence('info', '加载样例「' + s.name + '」，共 ' + s.points.length + ' 个实验点，拟合阶数 ' + s.degree);
+  renderDataTable();
+}
+
+function renderDataTable() {
+  var body = document.getElementById('dataBody');
+  var html = '';
+  APP.dataPoints.forEach(function(p, i) {
+    var hasRemark = p.remark && p.remark.trim().length > 0;
+    html += '<tr>';
+    html += '<td><input type="number" step="any" value="' + p.x + '" onchange="updatePoint(' + i + ',\'x\',this.value)"></td>';
+    html += '<td><input type="number" step="any" value="' + p.y + '" onchange="updatePoint(' + i + ',\'y\',this.value)"></td>';
+    html += '<td class="remark-cell">';
+    html += '<span style="font-size:12px;color:' + (hasRemark ? 'var(--warn)' : 'var(--text2)') + ';cursor:pointer;" onclick="openRemarkEdit(' + i + ')">';
+    html += hasRemark ? (p.remark.length > 10 ? p.remark.substring(0,10)+'…' : p.remark) : '点击添加';
+    if (hasRemark) html += '<span class="remark-badge"></span>';
+    html += '</span></td>';
+    html += '<td><button class="btn btn-outline btn-sm" onclick="removePoint(' + i + ')" style="padding:2px 6px;font-size:11px;">✕</button></td>';
+    html += '</tr>';
+  });
+  body.innerHTML = html;
+}
+
+function updatePoint(idx, field, val) {
+  if (field === 'x' || field === 'y') {
+    APP.dataPoints[idx][field] = parseFloat(val);
+  }
+  addEvidence('info', '修改实验点 #' + (idx+1) + ' 的 ' + field.toUpperCase() + ' 为 ' + val);
+}
+
+function addDataRow() {
+  APP.dataPoints.push({ x: 0, y: 0, remark: '', originalRemark: '' });
+  renderDataTable();
+}
+
+function removePoint(idx) {
+  var p = APP.dataPoints[idx];
+  addEvidence('info', '删除实验点 #' + (idx+1) + ' (' + p.x + ', ' + p.y + ')');
+  APP.dataPoints.splice(idx, 1);
+  renderDataTable();
+}
+
+function clearAllData() {
+  if (APP.dataPoints.length > 0) {
+    addEvidence('info', '清空全部 ' + APP.dataPoints.length + ' 个实验点');
+  }
+  APP.dataPoints = [];
+  APP.fitResult = null;
+  APP.extrapVersions = [];
+  renderDataTable();
+  resetVisualization();
+}
+
+function openRemarkEdit(idx) {
+  APP.editingRemarkIdx = idx;
+  var p = APP.dataPoints[idx];
+  document.getElementById('remarkPointInfo').textContent = '点 #' + (idx+1) + ' (' + p.x + ', ' + p.y + ')';
+  document.getElementById('remarkInput').value = p.remark || '';
+  document.getElementById('remarkOverlay').classList.add('active');
+}
+
+function closeRemarkEdit() {
+  document.getElementById('remarkOverlay').classList.remove('active');
+  APP.editingRemarkIdx = -1;
+}
+
+function saveRemarkEdit() {
+  var idx = APP.editingRemarkIdx;
+  if (idx < 0 || idx >= APP.dataPoints.length) return;
+  var oldRemark = APP.dataPoints[idx].remark || '';
+  var newRemark = document.getElementById('remarkInput').value;
+  APP.dataPoints[idx].remark = newRemark;
+  if (!APP.dataPoints[idx].originalRemark && oldRemark) {
+    APP.dataPoints[idx].originalRemark = oldRemark;
+  }
+  if (oldRemark !== newRemark) {
+    addEvidence('warn', '实验点 #' + (idx+1) + ' 备注已变更', '原备注: "' + oldRemark + '" → 新备注: "' + newRemark + '"');
+  }
+  closeRemarkEdit();
+  renderDataTable();
+}
+
+function triggerCSVImport() {
+  document.getElementById('csvFileInput').click();
+}
+
+function triggerJSONImport() {
+  document.getElementById('jsonFileInput').click();
+}
+
+function handleCSVFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var lines = ev.target.result.trim().split('\n');
+      var points = [];
+      var startLine = 0;
+      if (lines[0] && isNaN(parseFloat(lines[0].split(',')[0]))) startLine = 1;
+      for (var i = startLine; i < lines.length; i++) {
+        var parts = lines[i].split(',').map(function(s) { return s.trim(); });
+        if (parts.length >= 2) {
+          var x = parseFloat(parts[0]);
+          var y = parseFloat(parts[1]);
+          var remark = parts.length > 2 ? parts.slice(2).join(',') : '';
+          if (!isNaN(x) && !isNaN(y)) {
+            points.push({ x: x, y: y, remark: remark, originalRemark: '' });
+          }
+        }
+      }
+      APP.dataPoints = points;
+      addEvidence('info', '从 CSV 导入 ' + points.length + ' 个实验点');
+      renderDataTable();
+    } catch (err) {
+      addEvidence('danger', 'CSV 解析失败: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function handleJSONFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      var arr = Array.isArray(data) ? data : (data.points || []);
+      var points = arr.map(function(p) {
+        return { x: parseFloat(p.x), y: parseFloat(p.y), remark: p.remark || '', originalRemark: '' };
+      }).filter(function(p) { return !isNaN(p.x) && !isNaN(p.y); });
+      APP.dataPoints = points;
+      addEvidence('info', '从 JSON 导入 ' + points.length + ' 个实验点');
+      renderDataTable();
+    } catch (err) {
+      addEvidence('danger', 'JSON 解析失败: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function polyFit(points, degree) {
+  var n = points.length;
+  if (n === 0 || degree < 1) return null;
+  var d = Math.min(degree, n - 1);
+  var size = d + 1;
+
+  var A = [];
+  var b = [];
+  for (var i = 0; i < size; i++) {
+    A[i] = [];
+    for (var j = 0; j < size; j++) {
+      var sum = 0;
+      for (var k = 0; k < n; k++) {
+        sum += Math.pow(points[k].x, i + j);
+      }
+      A[i][j] = sum;
+    }
+    var sumB = 0;
+    for (var k = 0; k < n; k++) {
+      sumB += points[k].y * Math.pow(points[k].x, i);
+    }
+    b[i] = sumB;
+  }
+
+  var coeffs = gaussianElimination(A, b);
+  if (!coeffs) return null;
+
+  var yMean = 0;
+  for (var i = 0; i < n; i++) yMean += points[i].y;
+  yMean /= n;
+
+  var ssTot = 0, ssRes = 0;
+  for (var i = 0; i < n; i++) {
+    var yPred = evalPoly(coeffs, points[i].x);
+    ssTot += Math.pow(points[i].y - yMean, 2);
+    ssRes += Math.pow(points[i].y - yPred, 2);
+  }
+  var r2 = ssTot === 0 ? 1 : 1 - ssRes / ssTot;
+
+  var residuals = points.map(function(p) {
+    return { x: p.x, yActual: p.y, yPred: evalPoly(coeffs, p.x), residual: p.y - evalPoly(coeffs, p.x) };
+  });
+
+  return {
+    coeffs: coeffs,
+    degree: d,
+    requestedDegree: degree,
+    r2: r2,
+    ssRes: ssRes,
+    residuals: residuals,
+    n: n,
+    xMin: Math.min.apply(null, points.map(function(p) { return p.x; })),
+    xMax: Math.max.apply(null, points.map(function(p) { return p.x; }))
+  };
+}
+
+function evalPoly(coeffs, x) {
+  var result = 0;
+  for (var i = 0; i < coeffs.length; i++) {
+    result += coeffs[i] * Math.pow(x, i);
+  }
+  return result;
+}
+
+function gaussianElimination(A, b) {
+  var n = A.length;
+  var aug = [];
+  for (var i = 0; i < n; i++) {
+    aug[i] = A[i].slice();
+    aug[i].push(b[i]);
+  }
+  for (var col = 0; col < n; col++) {
+    var maxRow = col;
+    for (var row = col + 1; row < n; row++) {
+      if (Math.abs(aug[row][col]) > Math.abs(aug[maxRow][col])) maxRow = row;
+    }
+    var tmp = aug[col]; aug[col] = aug[maxRow]; aug[maxRow] = tmp;
+    if (Math.abs(aug[col][col]) < 1e-12) return null;
+    for (var row = col + 1; row < n; row++) {
+      var factor = aug[row][col] / aug[col][col];
+      for (var j = col; j <= n; j++) {
+        aug[row][j] -= factor * aug[col][j];
+      }
+    }
+  }
+  var x = new Array(n);
+  for (var i = n - 1; i >= 0; i--) {
+    x[i] = aug[i][n];
+    for (var j = i + 1; j < n; j++) {
+      x[i] -= aug[i][j] * x[j];
+    }
+    x[i] /= aug[i][i];
+  }
+  return x;
+}
+
+function runFitting() {
+  if (APP.dataPoints.length < 2) {
+    addEvidence('danger', '至少需要 2 个实验点才能执行拟合');
+    return;
+  }
+
+  var degree = parseInt(document.getElementById('fitDegree').value) || 2;
+  APP.classRemark = document.getElementById('classRemark').value || '';
+
+  var result = polyFit(APP.dataPoints, degree);
+  if (!result) {
+    addEvidence('danger', '拟合失败：可能是数据不足或矩阵奇异');
+    return;
+  }
+  APP.fitResult = result;
+
+  addEvidence('info', '执行 ' + result.degree + ' 阶多项式拟合，共 ' + result.n + ' 个实验点，R² = ' + result.r2.toFixed(6));
+
+  if (result.requestedDegree !== result.degree) {
+    addEvidence('warn', '拟合阶数被自动降阶', '请求 ' + result.requestedDegree + ' 阶，因点数不足降为 ' + result.degree + ' 阶');
+  }
+
+  if (result.degree >= result.n - 1) {
+    addEvidence('danger', '过拟合风险', '拟合阶数(' + result.degree + ') ≥ 数据点数-1(' + (result.n-1) + ')，拟合将完全通过所有点，无统计意义');
+  } else if (result.degree > result.n / 2) {
+    addEvidence('warn', '拟合阶数偏高', '拟合阶数(' + result.degree + ') > 数据点数/2(' + Math.floor(result.n/2) + ')，可能存在过拟合风险');
+  }
+
+  if (result.r2 < 0.8) {
+    addEvidence('warn', '拟合质量偏低', 'R² = ' + result.r2.toFixed(4) + ' < 0.8，当前阶数可能不适合描述数据');
+  }
+
+  if (APP.classRemark.trim()) {
+    addEvidence('evidence', '课堂备注已留存', APP.classRemark);
+  }
+
+  checkExtrapolation(result);
+  checkPointRemarkChanges();
+  renderVisualization(result);
+  renderStats(result);
+  renderAlerts(result);
+}
+
+function checkExtrapolation(result) {
+  var extrapMinInput = document.getElementById('extrapMin').value;
+  var extrapMaxInput = document.getElementById('extrapMax').value;
+  var extrapMin = extrapMinInput !== '' ? parseFloat(extrapMinInput) : result.xMin;
+  var extrapMax = extrapMaxInput !== '' ? parseFloat(extrapMaxInput) : result.xMax;
+
+  var range = { min: extrapMin, max: extrapMax, time: new Date().toLocaleString() };
+
+  if (APP.extrapVersions.length > 0) {
+    var last = APP.extrapVersions[APP.extrapVersions.length - 1];
+    if (last.min !== range.min || last.max !== range.max) {
+      addEvidence('warn', '外推区间变更', '旧: [' + last.min + ', ' + last.max + '] → 新: [' + range.min + ', ' + range.max + ']，旧版本已保留');
+    }
+  }
+  range.version = APP.extrapVersions.length + 1;
+  APP.extrapVersions.push(range);
+
+  var belowMin = range.min < result.xMin;
+  var aboveMax = range.max > result.xMax;
+  if (belowMin || aboveMax) {
+    var msg = '';
+    if (belowMin) msg += '外推下界 ' + range.min + ' < 数据最小值 ' + result.xMin;
+    if (belowMin && aboveMax) msg += '；';
+    if (aboveMax) msg += '外推上界 ' + range.max + ' > 数据最大值 ' + result.xMax;
+    addEvidence('warn', '外推越界', msg + '，区间外预测可靠性低');
+  }
+
+  renderExtrapVersions();
+}
+
+function checkPointRemarkChanges() {
+  APP.dataPoints.forEach(function(p, i) {
+    if (p.originalRemark && p.originalRemark !== p.remark) {
+      addEvidence('evidence', '实验点 #' + (i+1) + ' 备注变更记录', '原始: "' + p.originalRemark + '" → 当前: "' + p.remark + '"');
+    }
+  });
+}
+
+function updateExtrapInterval() {
+  if (!APP.fitResult) {
+    addEvidence('danger', '请先执行拟合');
+    return;
+  }
+  checkExtrapolation(APP.fitResult);
+  renderVisualization(APP.fitResult);
+}
+
+function renderExtrapVersions() {
+  var area = document.getElementById('extrapVersionArea');
+  area.style.display = APP.extrapVersions.length > 0 ? '' : 'none';
+  var list = document.getElementById('extrapVersionList');
+  var html = '<div class="extrap-version-list">';
+  APP.extrapVersions.slice().reverse().forEach(function(v, ri) {
+    var isCurrent = ri === 0;
+    html += '<div class="extrap-version-item ' + (isCurrent ? 'current-ver' : '') + '">';
+    html += '<span class="version-tag ' + (isCurrent ? 'current' : 'superseded') + '">v' + v.version + '</span>';
+    html += '<span class="ver-range">[' + v.min + ', ' + v.max + ']</span>';
+    html += '<span class="ver-time">' + v.time + '</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+  list.innerHTML = html;
+}
+
+function renderVisualization(result) {
+  document.getElementById('chartPlaceholder').style.display = 'none';
+  document.getElementById('chartBox').style.display = '';
+
+  var points = APP.dataPoints;
+  var xMin = result.xMin;
+  var xMax = result.xMax;
+  var range = xMax - xMin;
+  if (range === 0) range = 1;
+
+  var plotMin = xMin - range * 0.3;
+  var plotMax = xMax + range * 0.3;
+
+  var extrapMin = APP.extrapVersions.length > 0 ? APP.extrapVersions[APP.extrapVersions.length - 1].min : xMin;
+  var extrapMax = APP.extrapVersions.length > 0 ? APP.extrapVersions[APP.extrapVersions.length - 1].max : xMax;
+
+  if (extrapMin < plotMin) plotMin = extrapMin - (range * 0.1);
+  if (extrapMax > plotMax) plotMax = extrapMax + (range * 0.1);
+
+  var curvePoints = [];
+  var steps = 200;
+  var stepSize = (plotMax - plotMin) / steps;
+  for (var i = 0; i <= steps; i++) {
+    var x = plotMin + i * stepSize;
+    curvePoints.push({ x: x, y: evalPoly(result.coeffs, x) });
+  }
+
+  var datasets = [];
+
+  datasets.push({
+    label: '拟合曲线 (y = ' + formatCoeffs(result.coeffs) + ')',
+    data: curvePoints,
+    showLine: true,
+    borderColor: 'rgba(108, 140, 255, 0.9)',
+    backgroundColor: 'rgba(108, 140, 255, 0.05)',
+    borderWidth: 2,
+    pointRadius: 0,
+    fill: false,
+    order: 2
+  });
+
+  var inRangePoints = points.map(function(p) {
+    return { x: p.x, y: p.y };
+  });
+  datasets.push({
+    label: '实验点',
+    data: inRangePoints,
+    showLine: false,
+    borderColor: 'rgba(34, 197, 94, 1)',
+    backgroundColor: 'rgba(34, 197, 94, 0.8)',
+    pointRadius: 6,
+    pointHoverRadius: 8,
+    borderWidth: 2,
+    order: 1
+  });
+
+  var residuals = result.residuals;
+  datasets.push({
+    label: '残差',
+    data: residuals.map(function(r) { return { x: r.x, y: r.residual }; }),
+    showLine: false,
+    borderColor: 'rgba(245, 166, 35, 0.8)',
+    backgroundColor: 'rgba(245, 166, 35, 0.5)',
+    pointRadius: 4,
+    borderWidth: 1,
+    order: 3
+  });
+
+  var annotations = {};
+  annotations.dataRangeLine = {
+    type: 'box',
+    xMin: xMin, xMax: xMax,
+    backgroundColor: 'rgba(34, 197, 94, 0.04)',
+    borderWidth: 0,
+    label: { display: false }
+  };
+
+  if (extrapMin < xMin) {
+    annotations.extrapLeft = {
+      type: 'box',
+      xMin: Math.max(extrapMin, plotMin), xMax: xMin,
+      backgroundColor: 'rgba(239, 68, 68, 0.08)',
+      borderWidth: 0,
+      label: {
+        display: true,
+        content: '← 外推',
+        position: { x: 'center', y: 'start' },
+        color: 'rgba(239, 68, 68, 0.7)',
+        font: { size: 11 }
+      }
+    };
+  }
+  if (extrapMax > xMax) {
+    annotations.extrapRight = {
+      type: 'box',
+      xMin: xMax, xMax: Math.min(extrapMax, plotMax),
+      backgroundColor: 'rgba(239, 68, 68, 0.08)',
+      borderWidth: 0,
+      label: {
+        display: true,
+        content: '外推 →',
+        position: { x: 'center', y: 'start' },
+        color: 'rgba(239, 68, 68, 0.7)',
+        font: { size: 11 }
+      }
+    };
+  }
+
+  if (APP.chart) APP.chart.destroy();
+
+  var ctx = document.getElementById('mainChart').getContext('2d');
+  APP.chart = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1.6,
+      interaction: { mode: 'nearest', intersect: true },
+      plugins: {
+        legend: { labels: { color: '#9499b3', font: { size: 12 } } },
+        tooltip: {
+          backgroundColor: '#242836',
+          titleColor: '#e4e6f0',
+          bodyColor: '#e4e6f0',
+          borderColor: '#2e3348',
+          borderWidth: 1,
+          callbacks: {
+            label: function(ctx) {
+              return ctx.dataset.label + ': (' + ctx.parsed.x.toFixed(3) + ', ' + ctx.parsed.y.toFixed(3) + ')';
+            }
+          }
+        },
+        annotation: { annotations: annotations }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(46, 51, 72, 0.5)' },
+          ticks: { color: '#9499b3' },
+          title: { display: true, text: 'X', color: '#9499b3' }
+        },
+        y: {
+          grid: { color: 'rgba(46, 51, 72, 0.5)' },
+          ticks: { color: '#9499b3' },
+          title: { display: true, text: 'Y', color: '#9499b3' }
+        }
+      }
+    }
+  });
+}
+
+function formatCoeffs(coeffs) {
+  var parts = [];
+  for (var i = coeffs.length - 1; i >= 0; i--) {
+    var c = coeffs[i];
+    if (Math.abs(c) < 1e-10 && coeffs.length > 1) continue;
+    var term = '';
+    if (i === 0) {
+      term = c.toFixed(4);
+    } else if (i === 1) {
+      term = c.toFixed(4) + 'x';
+    } else {
+      term = c.toFixed(4) + 'x^' + i;
+    }
+    parts.push(term);
+  }
+  return parts.join(' + ').replace(/\+ -/g, '- ');
+}
+
+function renderStats(result) {
+  document.getElementById('statsArea').style.display = '';
+  var grid = document.getElementById('statGrid');
+
+  var r2Class = result.r2 >= 0.95 ? 'good' : (result.r2 >= 0.8 ? 'warn' : 'bad');
+  var nRatio = result.n / (result.degree + 1);
+  var ratioClass = nRatio >= 3 ? 'good' : (nRatio >= 2 ? 'warn' : 'bad');
+
+  grid.innerHTML = '' +
+    '<div class="stat-card"><div class="stat-label">R² 决定系数</div><div class="stat-value ' + r2Class + '">' + result.r2.toFixed(6) + '</div></div>' +
+    '<div class="stat-card"><div class="stat-label">拟合阶数</div><div class="stat-value">' + result.degree + '</div></div>' +
+    '<div class="stat-card"><div class="stat-label">数据点数</div><div class="stat-value">' + result.n + '</div></div>' +
+    '<div class="stat-card"><div class="stat-label">点数/参数比</div><div class="stat-value ' + ratioClass + '">' + nRatio.toFixed(1) + '</div></div>';
+
+  var formula = 'y = ' + formatCoeffs(result.coeffs);
+  document.getElementById('fitFormula').textContent = formula;
+}
+
+function renderAlerts(result) {
+  var area = document.getElementById('alertArea');
+  var html = '';
+
+  if (result.degree >= result.n - 1) {
+    html += '<div class="alert alert-danger"><span class="icon">❌</span><div><strong>过拟合：</strong>拟合阶数(' + result.degree + ') ≥ 点数-1(' + (result.n-1) + ')，模型退化为插值，无统计意义</div></div>';
+  } else if (result.degree > result.n / 2) {
+    html += '<div class="alert alert-warn"><span class="icon">⚠️</span><div><strong>阶数偏高：</strong>拟合阶数(' + result.degree + ') > 点数/2(' + Math.floor(result.n/2) + ')，可能过拟合</div></div>';
+  }
+
+  if (result.r2 < 0.8) {
+    html += '<div class="alert alert-warn"><span class="icon">⚠️</span><div><strong>拟合质量低：</strong>R² = ' + result.r2.toFixed(4) + '，当前阶数可能不适合</div></div>';
+  }
+
+  var extrapMin = APP.extrapVersions.length > 0 ? APP.extrapVersions[APP.extrapVersions.length - 1].min : result.xMin;
+  var extrapMax = APP.extrapVersions.length > 0 ? APP.extrapVersions[APP.extrapVersions.length - 1].max : result.xMax;
+  if (extrapMin < result.xMin || extrapMax > result.xMax) {
+    html += '<div class="alert alert-danger"><span class="icon">🚀</span><div><strong>外推越界：</strong>预测区间超出数据范围，结果可靠性低</div></div>';
+  }
+
+  if (APP.extrapVersions.length > 1) {
+    html += '<div class="alert alert-info"><span class="icon">📋</span><div><strong>外推区间已更新：</strong>共 ' + APP.extrapVersions.length + ' 个版本，旧版本已保留在证据链中</div></div>';
+  }
+
+  area.innerHTML = html;
+}
+
+function addEvidence(type, title, detail) {
+  APP.evidenceLog.push({
+    type: type,
+    title: title,
+    detail: detail || '',
+    time: new Date().toLocaleString()
+  });
+  renderEvidence();
+}
+
+function renderEvidence() {
+  var list = document.getElementById('evidenceList');
+  if (APP.evidenceLog.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:20px;"><p style="font-size:13px;color:var(--text2);">执行拟合后，预警与证据记录将在此显示</p></div>';
+    return;
+  }
+  var html = '';
+  var items = APP.evidenceLog.slice().reverse();
+  items.forEach(function(ev) {
+    var cls = 'evidence-item';
+    if (ev.type === 'warn') cls += ' ev-warn';
+    else if (ev.type === 'danger') cls += ' ev-danger';
+    else if (ev.type === 'info') cls += ' ev-info';
+
+    var typeLabel = { info: '信息', warn: '预警', danger: '严重', evidence: '证据' }[ev.type] || '信息';
+    html += '<div class="' + cls + '">';
+    html += '<div class="ev-type">' + typeLabel + '</div>';
+    html += '<div class="ev-content">' + ev.title;
+    if (ev.detail) html += '<br><span style="color:var(--text2);font-size:12px;">' + ev.detail + '</span>';
+    html += '</div>';
+    html += '<div class="ev-time">' + ev.time + '</div>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function switchRightTab(el) {
+  var tab = el.getAttribute('data-tab');
+  document.querySelectorAll('#rightPanel .tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tabEvidence').style.display = tab === 'evidence' ? '' : 'none';
+  document.getElementById('tabVerify').style.display = tab === 'verify' ? '' : 'none';
+  document.getElementById('tabReport').style.display = tab === 'report' ? '' : 'none';
+}
+
+function addVerification() {
+  var name = document.getElementById('verifierName').value.trim();
+  var result = document.getElementById('verifyResult').value;
+  var note = document.getElementById('verifyNote').value.trim();
+
+  if (!name) {
+    addEvidence('danger', '核验人姓名不能为空');
+    return;
+  }
+
+  var record = {
+    verifier: name,
+    result: result,
+    note: note,
+    fittingState: APP.fitResult ? {
+      degree: APP.fitResult.degree,
+      r2: APP.fitResult.r2,
+      n: APP.fitResult.n,
+      coeffs: APP.fitResult.coeffs.slice()
+    } : null,
+    extrapState: APP.extrapVersions.length > 0 ? APP.extrapVersions.slice() : [],
+    dataSnapshot: APP.dataPoints.map(function(p) { return { x: p.x, y: p.y, remark: p.remark }; }),
+    time: new Date().toLocaleString()
+  };
+  APP.verifyHistory.push(record);
+
+  var resultText = { pass: '通过', warn: '存疑', fail: '不通过' }[result];
+  addEvidence('evidence', '人工核验: ' + resultText, '核验人: ' + name + (note ? '，备注: ' + note : ''));
+
+  document.getElementById('verifyNote').value = '';
+  renderVerifyHistory();
+}
+
+function renderVerifyHistory() {
+  var el = document.getElementById('verifyHistory');
+  if (APP.verifyHistory.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  var html = '';
+  APP.verifyHistory.slice().reverse().forEach(function(v) {
+    var icon = v.result === 'pass' ? '✅' : (v.result === 'warn' ? '⚠️' : '❌');
+    html += '<div class="verify-row">';
+    html += '<span>' + icon + '</span>';
+    html += '<span><strong>' + v.verifier + '</strong></span>';
+    html += '<span style="color:var(--text2);font-size:12px;">' + v.time + '</span>';
+    if (v.note) html += '<span style="color:var(--text2);font-size:12px;margin-left:auto;" title="' + v.note + '">📝</span>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function generateReport() {
+  if (!APP.fitResult) {
+    addEvidence('danger', '请先执行拟合再生成报告');
+    return;
+  }
+
+  var result = APP.fitResult;
+  var points = APP.dataPoints;
+  var now = new Date().toLocaleString();
+
+  var html = '';
+  html += '<div class="section">';
+  html += '<div class="section-title">📋 多项式拟合复盘报告</div>';
+  html += '<div style="font-size:12px;color:var(--text2);margin-bottom:12px;">生成时间: ' + now + '</div>';
+
+  html += '<div class="report-section"><h3>1. 实验点数据</h3>';
+  html += '<table class="report-table"><tr><th>#</th><th>X</th><th>Y</th><th>备注</th><th>预测值</th><th>残差</th></tr>';
+  points.forEach(function(p, i) {
+    var yPred = evalPoly(result.coeffs, p.x);
+    var residual = p.y - yPred;
+    html += '<tr><td>' + (i+1) + '</td><td>' + p.x + '</td><td>' + p.y + '</td>';
+    html += '<td>' + (p.remark || '-') + '</td>';
+    html += '<td>' + yPred.toFixed(4) + '</td>';
+    html += '<td>' + residual.toFixed(4) + '</td></tr>';
+  });
+  html += '</table></div>';
+
+  html += '<div class="report-section"><h3>2. 拟合结果</h3>';
+  html += '<p style="font-size:13px;">拟合公式: <code>y = ' + formatCoeffs(result.coeffs) + '</code></p>';
+  html += '<p style="font-size:13px;">拟合阶数: ' + result.degree + ' &nbsp;|&nbsp; 数据点数: ' + result.n + ' &nbsp;|&nbsp; R²: ' + result.r2.toFixed(6) + '</p>';
+  html += '</div>';
+
+  html += '<div class="report-section"><h3>3. 外推区间版本</h3>';
+  if (APP.extrapVersions.length > 0) {
+    html += '<table class="report-table"><tr><th>版本</th><th>区间</th><th>时间</th><th>状态</th></tr>';
+    APP.extrapVersions.forEach(function(v, i) {
+      var isCurrent = i === APP.extrapVersions.length - 1;
+      html += '<tr><td>v' + v.version + '</td><td>[' + v.min + ', ' + v.max + ']</td>';
+      html += '<td>' + v.time + '</td>';
+      html += '<td>' + (isCurrent ? '✅ 当前' : '⏭️ 已覆盖') + '</td></tr>';
+    });
+    html += '</table>';
+  } else {
+    html += '<p style="font-size:13px;color:var(--text2);">无外推区间设置</p>';
+  }
+  html += '</div>';
+
+  html += '<div class="report-section"><h3>4. 课堂备注</h3>';
+  html += '<p style="font-size:13px;">' + (APP.classRemark || '（无）') + '</p>';
+  html += '</div>';
+
+  html += '<div class="report-section"><h3>5. 预警与证据链</h3>';
+  var warnings = APP.evidenceLog.filter(function(e) { return e.type === 'warn' || e.type === 'danger'; });
+  var evidences = APP.evidenceLog.filter(function(e) { return e.type === 'evidence'; });
+  if (warnings.length > 0) {
+    html += '<p style="font-size:13px;font-weight:600;color:var(--warn);">预警记录 (' + warnings.length + ' 条)</p>';
+    html += '<ul style="font-size:13px;padding-left:16px;">';
+    warnings.forEach(function(w) {
+      html += '<li>' + w.title;
+      if (w.detail) html += ' — ' + w.detail;
+      html += ' <span style="color:var(--text2);font-size:11px;">(' + w.time + ')</span></li>';
+    });
+    html += '</ul>';
+  }
+  if (evidences.length > 0) {
+    html += '<p style="font-size:13px;font-weight:600;color:var(--evidence);margin-top:8px;">证据记录 (' + evidences.length + ' 条)</p>';
+    html += '<ul style="font-size:13px;padding-left:16px;">';
+    evidences.forEach(function(e) {
+      html += '<li>' + e.title;
+      if (e.detail) html += ' — ' + e.detail;
+      html += ' <span style="color:var(--text2);font-size:11px;">(' + e.time + ')</span></li>';
+    });
+    html += '</ul>';
+  }
+  if (warnings.length === 0 && evidences.length === 0) {
+    html += '<p style="font-size:13px;color:var(--text2);">无预警与证据记录</p>';
+  }
+  html += '</div>';
+
+  html += '<div class="report-section"><h3>6. 人工核验记录</h3>';
+  if (APP.verifyHistory.length > 0) {
+    html += '<table class="report-table"><tr><th>核验人</th><th>结论</th><th>备注</th><th>时间</th></tr>';
+    APP.verifyHistory.forEach(function(v) {
+      var icon = v.result === 'pass' ? '✅ 通过' : (v.result === 'warn' ? '⚠️ 存疑' : '❌ 不通过');
+      html += '<tr><td>' + v.verifier + '</td><td>' + icon + '</td><td>' + (v.note || '-') + '</td><td>' + v.time + '</td></tr>';
+    });
+    html += '</table>';
+  } else {
+    html += '<p style="font-size:13px;color:var(--text2);">无核验记录</p>';
+  }
+  html += '</div>';
+
+  html += '<div class="report-section"><h3>7. 一致性校验</h3>';
+  var consistencyIssues = [];
+  if (result.degree >= result.n - 1) consistencyIssues.push('拟合阶数(' + result.degree + ') ≥ 点数-1(' + (result.n-1) + ')，过拟合');
+  if (result.degree > result.n / 2) consistencyIssues.push('阶数/点数比 > 0.5，拟合可靠性存疑');
+  if (result.r2 < 0.8) consistencyIssues.push('R² < 0.8，拟合质量不达标');
+  var remarkChanged = points.filter(function(p) { return p.originalRemark && p.originalRemark !== p.remark; });
+  if (remarkChanged.length > 0) consistencyIssues.push(remarkChanged.length + ' 个点备注已变更');
+  if (APP.extrapVersions.length > 1) consistencyIssues.push('外推区间已更新 ' + APP.extrapVersions.length + ' 次');
+
+  if (consistencyIssues.length > 0) {
+    html += '<ul style="font-size:13px;padding-left:16px;">';
+    consistencyIssues.forEach(function(c) {
+      html += '<li style="color:var(--warn);">' + c + '</li>';
+    });
+    html += '</ul>';
+    html += '<p style="font-size:12px;color:var(--evidence);margin-top:6px;">以上不一致项已保留在证据链中，课堂备注作为补充证据</p>';
+  } else {
+    html += '<p style="font-size:13px;color:var(--success);">✅ 所有校验项通过</p>';
+  }
+  html += '</div>';
+
+  html += '<div style="margin-top:12px;display:flex;gap:8px;">';
+  html += '<button class="btn btn-primary" onclick="exportReportHTML()">📥 导出报告 HTML</button>';
+  html += '<button class="btn btn-outline" onclick="exportReportJSON()">📄 导出报告 JSON</button>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('reportOutput').innerHTML = html;
+  addEvidence('info', '复盘报告已生成');
+}
+
+function exportReportHTML() {
+  var content = document.getElementById('reportOutput').innerHTML;
+  var fullHTML = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>多项式拟合复盘报告</title>';
+  fullHTML += '<style>body{font-family:sans-serif;max-width:900px;margin:20px auto;padding:0 20px;color:#333;}';
+  fullHTML += 'table{border-collapse:collapse;width:100%;margin:10px 0;}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:14px;}th{background:#f5f5f5;}';
+  fullHTML += 'code{background:#f0f0f0;padding:2px 6px;border-radius:3px;}';
+  fullHTML += '.report-section{margin-bottom:20px;}.report-section h3{border-bottom:1px solid #eee;padding-bottom:6px;}</style>';
+  fullHTML += '</head><body>' + content + '</body></html>';
+
+  downloadFile(fullHTML, '多项式拟合复盘报告.html', 'text/html');
+}
+
+function exportReportJSON() {
+  var reportData = {
+    generatedAt: new Date().toISOString(),
+    dataPoints: APP.dataPoints,
+    fitResult: APP.fitResult ? {
+      coefficients: APP.fitResult.coeffs,
+      degree: APP.fitResult.degree,
+      r2: APP.fitResult.r2,
+      n: APP.fitResult.n,
+      formula: formatCoeffs(APP.fitResult.coeffs)
+    } : null,
+    extrapVersions: APP.extrapVersions,
+    classRemark: APP.classRemark,
+    evidenceLog: APP.evidenceLog,
+    verifyHistory: APP.verifyHistory
+  };
+  downloadFile(JSON.stringify(reportData, null, 2), '多项式拟合复盘报告.json', 'application/json');
+}
+
+function downloadFile(content, filename, mimeType) {
+  var blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  addEvidence('info', '已导出文件: ' + filename);
+}
+
+function resetVisualization() {
+  document.getElementById('chartPlaceholder').style.display = '';
+  document.getElementById('chartBox').style.display = 'none';
+  document.getElementById('alertArea').innerHTML = '';
+  document.getElementById('statsArea').style.display = 'none';
+  document.getElementById('extrapVersionArea').style.display = 'none';
+  if (APP.chart) { APP.chart.destroy(); APP.chart = null; }
+}
+
+initSampleList();
+renderEvidence();
+</script>
+</body>
+</html>
