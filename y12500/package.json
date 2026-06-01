@@ -1,0 +1,21 @@
+{
+  "name": "warehouse-drone-inspection",
+  "version": "1.0.0",
+  "description": "仓库无人机货架巡检3D工作台系统",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "nodemon server/app.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "better-sqlite3": "^9.2.2",
+    "three": "^0.160.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

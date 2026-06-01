@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仓库无人机巡检3D工作台</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-left">
+        <h1>🚁 仓库无人机货架巡检工作台</h1>
+      </div>
+      <div class="header-right">
+        <select id="warehouse-select" class="form-control">
+          <option value="">选择仓库...</option>
+        </select>
+        <select id="route-select" class="form-control">
+          <option value="">选择航线...</option>
+        </select>
+        <button id="btn-validate" class="btn btn-primary">预检查</button>
+        <button id="btn-run" class="btn btn-success">执行巡检</button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <aside class="sidebar-left">
+        <div class="panel">
+          <h3>📦 仓库信息</h3>
+          <div id="warehouse-info" class="info-panel">
+            <p class="empty-text">请选择仓库</p>
+          </div>
+        </div>
+        
+        <div class="panel">
+          <h3>⚠️ 边界值警告</h3>
+          <div id="boundary-warnings" class="warning-panel">
+            <p class="empty-text">暂无警告</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>📋 版本信息</h3>
+          <div id="version-info" class="info-panel">
+            <p class="empty-text">暂无数据</p>
+          </div>
+        </div>
+      </aside>
+
+      <main class="canvas-container">
+        <div id="three-canvas"></div>
+        <div class="canvas-controls">
+          <button id="btn-reset-view" class="btn btn-sm" title="重置视角">🔄</button>
+          <button id="btn-toggle-shelves" class="btn btn-sm" title="显示/隐藏货架">📦</button>
+          <button id="btn-toggle-zones" class="btn btn-sm" title="显示/隐藏区域">🚫</button>
+          <button id="btn-toggle-route" class="btn btn-sm" title="显示/隐藏航线">✈️</button>
+          <button id="btn-top-view" class="btn btn-sm" title="俯视图">⬆️</button>
+          <button id="btn-front-view" class="btn btn-sm" title="正视图">👁️</button>
+        </div>
+        <div id="hover-info" class="hover-info"></div>
+      </main>
+
+      <aside class="sidebar-right">
+        <div class="panel">
+          <h3>🔴 路线穿禁区</h3>
+          <div id="fz-violations" class="violation-panel">
+            <p class="empty-text success">✓ 无违规</p>
+          </div>
+        </div>
+        
+        <div class="panel">
+          <h3>🟡 盲区漏拍</h3>
+          <div id="bz-violations" class="violation-panel">
+            <p class="empty-text success">✓ 无违规</p>
+          </div>
+        </div>
+        
+        <div class="panel">
+          <h3>🟣 高度超限</h3>
+          <div id="h-violations" class="violation-panel">
+            <p class="empty-text success">✓ 无违规</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>📊 巡检统计</h3>
+          <div id="inspection-stats" class="stats-panel">
+            <p class="empty-text">等待执行...</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>📜 历史记录</h3>
+          <div id="history-panel" class="history-panel">
+            <p class="empty-text">暂无记录</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div id="report-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>巡检报告</h2>
+          <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <pre id="report-content"></pre>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">关闭</button>
+          <button class="btn btn-primary" onclick="downloadReport()">下载报告</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "localhost"
+  },
+  "database": {
+    "path": "./data/inspection.db"
+  },
+  "warehouse": {
+    "defaultHeight": 8,
+    "defaultWidth": 50,
+    "defaultDepth": 40,
+    "shelfMaxHeight": 6,
+    "shelfMinHeight": 2,
+    "droneMinAltitude": 1,
+    "droneMaxAltitude": 7,
+    "droneSafeDistance": 0.5
+  },
+  "validation": {
+    "enableDuplicateDetection": true,
+    "enableVersionCheck": true,
+    "warnOnBoundary": true
+  }
+}
