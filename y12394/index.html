@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播间音效触发台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--bg2:#181b24;--bg3:#1e2230;--bg4:#252a3a;
+  --border:#2d3348;--border2:#3a4160;
+  --text:#e4e7f0;--text2:#9ba3be;--text3:#6b7394;
+  --accent:#5b7fff;--accent2:#4a6ae0;
+  --green:#3ddc84;--green2:#2bb86a;
+  --red:#ff5a65;--red2:#e0434e;--orange:#ff9f43;
+  --yellow:#ffd93d;--purple:#a78bfa;--cyan:#22d3ee;
+  --radius:8px;--radius2:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.app{display:flex;height:100vh}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-logo{padding:20px 18px;border-bottom:1px solid var(--border)}
+.sidebar-logo h1{font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.5px}
+.sidebar-logo p{font-size:11px;color:var(--text3);margin-top:4px}
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;margin-bottom:2px;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--accent);color:#fff;font-weight:600}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
+.sidebar-footer{padding:14px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:50px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.topbar-bc{font-size:12px;color:var(--text3)}
+.topbar-bc span{color:var(--accent)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{padding:6px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg4)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.content{flex:1;overflow-y:auto;padding:20px}
+.page{display:none}.page.active{display:block}
+.section{margin-bottom:24px}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.section-head h2{font-size:15px;font-weight:700}
+.section-head p{font-size:12px;color:var(--text3)}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:16px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 12px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);background:var(--bg3)}
+td{padding:8px 12px;border-bottom:1px solid var(--border)}
+tr:hover td{background:rgba(91,127,255,.04)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.tag-blue{background:rgba(91,127,255,.15);color:var(--accent)}
+.tag-green{background:rgba(61,220,132,.15);color:var(--green)}
+.tag-red{background:rgba(255,90,101,.15);color:var(--red)}
+.tag-orange{background:rgba(255,159,67,.15);color:var(--orange)}
+.tag-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.tag-cyan{background:rgba(34,211,238,.15);color:var(--cyan)}
+.tag-yellow{background:rgba(255,217,61,.15);color:var(--yellow)}
+.stat-row{display:flex;gap:12px;margin-bottom:16px}
+.stat-card{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:16px}
+.stat-val{font-size:24px;font-weight:800;margin-bottom:2px}
+.stat-label{font-size:11px;color:var(--text3)}
+.path-viz{display:flex;flex-direction:column;gap:0}
+.path-node{padding:12px 16px;border:1px solid var(--border);background:var(--bg3);position:relative;font-size:12px;display:flex;align-items:center;gap:10px}
+.path-node:first-child{border-radius:var(--radius) var(--radius) 0 0}
+.path-node:last-child{border-radius:0 0 var(--radius) var(--radius)}
+.path-node+.path-node{border-top:0}
+.path-node .pn-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.path-node .pn-icon.ok{background:rgba(61,220,132,.15);color:var(--green)}
+.path-node .pn-icon.err{background:rgba(255,90,101,.15);color:var(--red)}
+.path-node .pn-icon.warn{background:rgba(255,159,67,.15);color:var(--orange)}
+.path-node .pn-icon.info{background:rgba(91,127,255,.15);color:var(--accent)}
+.path-node .pn-label{font-weight:600}
+.path-node .pn-sub{font-size:11px;color:var(--text3)}
+.path-node .pn-arrow{position:absolute;left:29px;bottom:-10px;z-index:1;color:var(--border2);font-size:10px}
+.path-node.fail-node{border-color:var(--red2);background:rgba(255,90,101,.05)}
+.path-node.fail-node .pn-arrow{color:var(--red)}
+.search-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:120px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;outline:none}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar input::placeholder{color:var(--text3)}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;outline:none}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:60px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);width:520px;max-height:80vh;overflow-y:auto;padding:24px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-head h3{font-size:15px;font-weight:700}
+.modal-close{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg3);color:var(--text2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg4);color:var(--text)}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.chip-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.detail-row{display:flex;gap:16px;font-size:12px;margin-bottom:6px}
+.detail-row .dl{color:var(--text3);width:80px;flex-shrink:0}
+.detail-row .dv{color:var(--text);word-break:break-all}
+.link-item{color:var(--accent);cursor:pointer;text-decoration:underline;font-size:12px}
+.link-item:hover{color:var(--accent2)}
+.sfx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.sfx-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all .15s}
+.sfx-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.sfx-card .sfx-name{font-size:12px;font-weight:600;margin-bottom:4px}
+.sfx-card .sfx-meta{font-size:11px;color:var(--text3)}
+.sfx-card .sfx-type{margin-top:6px}
+.trigger-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.trigger-row:hover{border-color:var(--accent)}
+.trigger-row .tr-time{width:60px;font-size:12px;font-weight:700;color:var(--accent);flex-shrink:0}
+.trigger-row .tr-info{flex:1}
+.trigger-row .tr-name{font-size:12px;font-weight:600}
+.trigger-row .tr-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.trigger-row .tr-status{flex-shrink:0}
+.mapping-table{font-size:12px}
+.mapping-table td{vertical-align:top}
+.mapping-table .map-link{color:var(--accent);cursor:pointer}
+.mapping-table .map-link:hover{text-decoration:underline}
+.export-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;font-size:12px;background:var(--bg3)}
+.export-item .ei-check{width:16px;height:16px;border-radius:3px;border:1px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all .15s}
+.export-item .ei-check.checked{background:var(--accent);border-color:var(--accent);color:#fff}
+.toast{position:fixed;top:20px;right:20px;z-index:200;padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;opacity:0;transform:translateY(-10px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-success{background:var(--green2);color:#fff}
+.toast-error{background:var(--red2);color:#fff}
+.toast-info{background:var(--accent2);color:#fff}
+.dir-test-panel{border:2px dashed var(--border2);border-radius:var(--radius2);padding:20px;text-align:center;margin-bottom:16px;cursor:pointer;transition:all .15s}
+.dir-test-panel:hover{border-color:var(--accent);background:rgba(91,127,255,.03)}
+.dir-test-panel.active{border-color:var(--green);border-style:solid;background:rgba(61,220,132,.03)}
+.overlap-viz{position:relative;height:80px;background:var(--bg3);border-radius:var(--radius);margin:10px 0;overflow:hidden}
+.overlap-viz .ov-bar{position:absolute;height:24px;border-radius:4px;opacity:.7;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden}
+.overlap-viz .ov-bar.overlap{opacity:.9;border:2px solid var(--red);animation:blink 1s infinite}
+@keyframes blink{0%,100%{border-color:var(--red)}50%{border-color:transparent}}
+.clue-card{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px}
+.clue-card .cc-icon{width:36px;height:36px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.clue-card .cc-info{flex:1}
+.clue-card .cc-title{font-size:12px;font-weight:600}
+.clue-card .cc-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.clue-card .cc-link{font-size:11px;color:var(--accent);cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <h1>&#127908; 音效触发台</h1>
+      <p>Live Audio Trigger Board</p>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" data-page="library" onclick="switchPage('library')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        音效库
+        <span class="nav-badge" id="libBadge">12</span>
+      </div>
+      <div class="nav-item" data-page="trigger" onclick="switchPage('trigger')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        触发编排
+      </div>
+      <div class="nav-item" data-page="diagnosis" onclick="switchPage('diagnosis')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        问题诊断
+        <span class="nav-badge" id="diagBadge">3</span>
+      </div>
+      <div class="nav-item" data-page="history" onclick="switchPage('history')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        历史回放
+      </div>
+      <div class="nav-item" data-page="export" onclick="switchPage('export')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        导出清单
+      </div>
+      <div class="nav-item" data-page="testrun" onclick="switchPage('testrun')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        新目录试跑
+      </div>
+      <div class="nav-item" data-page="mapping" onclick="switchPage('mapping')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        对应关系
+      </div>
+    </div>
+    <div class="sidebar-footer">数据与触发编排口径一致 · v1.0</div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-bc" id="topbarBc"><span>音效库</span></span>
+      <div class="topbar-right">
+        <button class="btn btn-sm" onclick="showClueAgg()">&#128269; 线索归集</button>
+        <button class="btn btn-sm btn-primary" onclick="openAddSfx()">+ 添加音效</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page active" id="page-library">
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-val" style="color:var(--accent)" id="statTotal">12</div><div class="stat-label">音效总数</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="statActive">9</div><div class="stat-label">启用中</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--orange)" id="statChanged">3</div><div class="stat-label">近期变更</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--red)" id="statConflict">1</div><div class="stat-label">冲突检测</div></div>
+        </div>
+        <div class="search-bar">
+          <input type="text" placeholder="搜索音效名称、标签、场景..." id="libSearch" oninput="filterLibrary()">
+          <div class="chip-group" style="margin-bottom:0">
+            <span class="chip active" onclick="filterByType(this,'all')">全部</span>
+            <span class="chip" onclick="filterByType(this,'音效')">音效</span>
+            <span class="chip" onclick="filterByType(this,'BGM')">BGM</span>
+            <span class="chip" onclick="filterByType(this,'口播')">口播</span>
+          </div>
+        </div>
+        <div class="sfx-grid" id="sfxGrid"></div>
+        <div class="section" style="margin-top:24px">
+          <div class="section-head"><h2>&#128203; 变更追踪</h2><p>音效库最近改动记录，每次改动会标记关联的触发编排</p></div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <table><thead><tr><th>时间</th><th>音效</th><th>变更类型</th><th>关联场景</th><th>影响触发</th><th>操作</th></tr></thead><tbody id="changeLogBody"></tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-trigger">
+        <div class="section-head"><h2>&#127880; 触发编排</h2><p>日常处理：导入样例 → 看图编排 → 点明细确认 → 带走结果</p></div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-val" style="color:var(--accent)" id="trigTotal">8</div><div class="stat-label">触发点</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="trigOk">6</div><div class="stat-label">正常</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--red)" id="trigFail">2</div><div class="stat-label">异常</div></div>
+        </div>
+        <div class="grid2">
+          <div>
+            <div class="card">
+              <div class="card-title"><div class="dot" style="background:var(--accent)"></div>场景脚本</div>
+              <div class="form-group"><label>选择场景脚本</label>
+                <select id="sceneSelect" onchange="loadScene()">
+                  <option value="scene1">&#128308; 开场预热 (20:00-20:15)</option>
+                  <option value="scene2">&#128992; 产品介绍 (20:15-20:45)</option>
+                  <option value="scene3">&#128994; 互动抽奖 (20:45-21:00)</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="importSample()" style="margin-bottom:12px">&#128229; 导入样例编排</button>
+              <div id="triggerList"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title"><div class="dot" style="background:var(--green)"></div>时间线预览</div>
+              <div class="overlap-viz" id="triggerTimeline" style="height:160px"></div>
+              <div style="margin-top:10px">
+                <div class="card-title" style="margin-top:12px"><div class="dot" style="background:var(--orange)"></div>触发点明细</div>
+                <div id="triggerDetail" class="card" style="background:var(--bg3);font-size:12px"><p style="color:var(--text3)">点击左侧触发点查看明细</p></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title"><div class="dot" style="background:var(--purple)"></div>口播时间校准</div>
+              <div id="broadcastCheck"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-diagnosis">
+        <div class="section-head"><h2>&#128300; 问题诊断</h2><p>音效重叠 / BGM过响 / 口播错位 — 追溯触发材料、定位卡点、提示下一步</p></div>
+        <div class="chip-group">
+          <span class="chip active" onclick="filterDiag(this,'all')">全部问题</span>
+          <span class="chip" onclick="filterDiag(this,'overlap')">音效重叠</span>
+          <span class="chip" onclick="filterDiag(this,'loud')">BGM过响</span>
+          <span class="chip" onclick="filterDiag(this,'misalign')">口播错位</span>
+        </div>
+        <div class="grid2">
+          <div id="diagList"></div>
+          <div><div class="card" id="diagDetail" style="min-height:200px"><p style="color:var(--text3);font-size:13px">选择左侧问题查看失败路径</p></div></div>
+        </div>
+      </div>
+      <div class="page" id="page-history">
+        <div class="section-head"><h2>&#9194; 历史回放</h2><p>事后复盘，数据与触发编排口径一致</p></div>
+        <div class="search-bar">
+          <input type="text" placeholder="搜索历史记录..." id="histSearch" oninput="filterHistory()">
+          <button class="btn" onclick="refreshHistory()">刷新</button>
+        </div>
+        <div class="grid2">
+          <div id="historyList"></div>
+          <div>
+            <div class="card" id="historyDetail" style="min-height:200px"><p style="color:var(--text3);font-size:13px">选择左侧记录查看详情</p></div>
+            <div class="card"><div class="card-title"><div class="dot" style="background:var(--cyan)"></div>口径一致性校验</div><div id="consistencyCheck"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-export">
+        <div class="section-head"><h2>&#128228; 导出清单</h2><p>与触发编排 &amp; 历史回放口径一致，对应关系留痕</p></div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-val" style="color:var(--accent)">3</div><div class="stat-label">待导出</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--green)">7</div><div class="stat-label">已导出</div></div>
+        </div>
+        <div id="exportList"></div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn btn-primary" onclick="exportSelected()">&#128230; 导出选中项</button>
+          <button class="btn" onclick="exportAll()">&#128230; 全部导出</button>
+        </div>
+      </div>
+      <div class="page" id="page-testrun">
+        <div class="section-head"><h2>&#129514; 新目录试跑</h2><p>在新目录中加载音效库，验证失败路径是否可见</p></div>
+        <div class="dir-test-panel" id="dirTestPanel" onclick="startTestRun()">
+          <div style="font-size:28px;margin-bottom:8px">&#128193;</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">点击选择新目录</div>
+          <div style="font-size:11px;color:var(--text3)">将音效库在新目录中试跑，检查音效重叠等失败路径</div>
+        </div>
+        <div id="testRunResult" style="display:none">
+          <div class="stat-row">
+            <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="trPass">0</div><div class="stat-label">通过</div></div>
+            <div class="stat-card"><div class="stat-val" style="color:var(--red)" id="trFail">0</div><div class="stat-label">失败</div></div>
+            <div class="stat-card"><div class="stat-val" style="color:var(--orange)" id="trWarn">0</div><div class="stat-label">警告</div></div>
+          </div>
+          <div class="card"><div class="card-title"><div class="dot" style="background:var(--red)"></div>失败路径检测</div><div id="failPathViz"></div></div>
+          <div class="card"><div class="card-title"><div class="dot" style="background:var(--orange)"></div>音效重叠可视化</div><div class="overlap-viz" id="testOverlapViz" style="height:120px"></div><div id="overlapLegend" style="margin-top:8px"></div></div>
+          <div class="card"><div class="card-title"><div class="dot" style="background:var(--accent)"></div>试跑详情</div><div id="testRunDetails"></div></div>
+        </div>
+      </div>
+      <div class="page" id="page-mapping">
+        <div class="section-head"><h2>&#128279; 对应关系</h2><p>音效库 ↔ BGM列表 ↔ 导出清单 的映射关系，方便复核</p></div>
+        <div class="search-bar"><input type="text" placeholder="搜索音效名称、BGM、导出项..." id="mapSearch" oninput="filterMapping()"></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="mapping-table"><thead><tr><th>音效库条目</th><th>类型</th><th>BGM列表</th><th>导出清单</th><th>场景脚本</th><th>状态</th></tr></thead><tbody id="mappingBody"></tbody></table>
+        </div>
+        <div class="card" style="margin-top:12px"><div class="card-title"><div class="dot" style="background:var(--green)"></div>一致性校验结果</div><div id="mappingConsistency"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="addSfxModal">
+  <div class="modal">
+    <div class="modal-head"><h3>添加音效</h3><button class="modal-close" onclick="closeModal('addSfxModal')">&#215;</button></div>
+    <div class="form-group"><label>音效名称</label><input type="text" id="sfxName" placeholder="如：开场鼓点"></div>
+    <div class="form-group"><label>类型</label><select id="sfxType"><option>音效</option><option>BGM</option><option>口播</option></select></div>
+    <div class="form-group"><label>时长（秒）</label><input type="number" id="sfxDuration" placeholder="3" value="3"></div>
+    <div class="form-group"><label>关联场景</label><input type="text" id="sfxScene" placeholder="开场预热"></div>
+    <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="sfxTags" placeholder="开场,鼓点"></div>
+    <div class="form-group"><label>备注</label><textarea id="sfxNote" placeholder="补充说明"></textarea></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('addSfxModal')">取消</button><button class="btn btn-primary" onclick="addSfx()">确认添加</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="clueModal">
+  <div class="modal" style="width:600px">
+    <div class="modal-head"><h3>&#128269; 线索归集</h3><button class="modal-close" onclick="closeModal('clueModal')">&#215;</button></div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:14px">输入音效库、场景脚本、口播时间等线索，系统自动归到同一件事</p>
+    <div class="form-group"><label>线索关键词</label><input type="text" id="clueInput" placeholder="如：开场鼓点 / 20:00 / 预热场景"></div>
+    <button class="btn btn-primary" onclick="searchClues()" style="margin-bottom:14px">搜索归集</button>
+    <div id="clueResults"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var DATA={
+  sfxLibrary:[
+    {id:'s1',name:'开场鼓点',type:'音效',duration:3,scene:'开场预热',tags:['开场','鼓点'],active:true,changed:false,bgm:'BGM-001',exportId:'EXP-001'},
+    {id:'s2',name:'欢呼声',type:'音效',duration:2,scene:'互动抽奖',tags:['欢呼','互动'],active:true,changed:false,bgm:null,exportId:'EXP-002'},
+    {id:'s3',name:'产品展示BGM',type:'BGM',duration:180,scene:'产品介绍',tags:['BGM','产品'],active:true,changed:true,bgm:'BGM-002',exportId:'EXP-003'},
+    {id:'s4',name:'倒计时提示',type:'音效',duration:5,scene:'互动抽奖',tags:['倒计时','提示'],active:true,changed:false,bgm:null,exportId:'EXP-004'},
+    {id:'s5',name:'口播开场白',type:'口播',duration:30,scene:'开场预热',tags:['口播','开场'],active:true,changed:false,bgm:null,exportId:'EXP-005'},
+    {id:'s6',name:'抽奖音效',type:'音效',duration:4,scene:'互动抽奖',tags:['抽奖','音效'],active:true,changed:true,bgm:null,exportId:'EXP-006'},
+    {id:'s7',name:'预热BGM',type:'BGM',duration:240,scene:'开场预热',tags:['BGM','预热'],active:true,changed:false,bgm:'BGM-003',exportId:'EXP-007'},
+    {id:'s8',name:'口播产品介绍',type:'口播',duration:60,scene:'产品介绍',tags:['口播','产品'],active:false,changed:false,bgm:null,exportId:'EXP-008'},
+    {id:'s9',name:'中奖通知',type:'音效',duration:3,scene:'互动抽奖',tags:['中奖','通知'],active:true,changed:false,bgm:null,exportId:'EXP-009'},
+    {id:'s10',name:'转场音效',type:'音效',duration:2,scene:'产品介绍',tags:['转场'],active:true,changed:true,bgm:null,exportId:'EXP-010'},
+    {id:'s11',name:'互动BGM',type:'BGM',duration:120,scene:'互动抽奖',tags:['BGM','互动'],active:true,changed:false,bgm:'BGM-004',exportId:'EXP-011'},
+    {id:'s12',name:'口播结束语',type:'口播',duration:20,scene:'互动抽奖',tags:['口播','结束'],active:true,changed:false,bgm:null,exportId:'EXP-012'}
+  ],
+  changeLog:[
+    {time:'2026-06-02 14:30',sfx:'产品展示BGM',type:'音量调整',scene:'产品介绍',impact:'3个触发点需重新校验',sfxId:'s3'},
+    {time:'2026-06-02 11:15',sfx:'抽奖音效',type:'替换文件',scene:'互动抽奖',impact:'2个触发点需重新校验',sfxId:'s6'},
+    {time:'2026-06-01 18:00',sfx:'转场音效',type:'新增',scene:'产品介绍',impact:'需编排触发位置',sfxId:'s10'}
+  ],
+  scenes:{
+    scene1:{name:'开场预热',period:'20:00-20:15',triggers:[
+      {id:'t1',time:'20:00',sfxId:'s1',sfxName:'开场鼓点',type:'音效',status:'ok'},
+      {id:'t2',time:'20:01',sfxId:'s5',sfxName:'口播开场白',type:'口播',status:'ok'},
+      {id:'t3',time:'20:01',sfxId:'s7',sfxName:'预热BGM',type:'BGM',status:'warn',note:'与口播开场白时间重叠'}
+    ]},
+    scene2:{name:'产品介绍',period:'20:15-20:45',triggers:[
+      {id:'t4',time:'20:15',sfxId:'s10',sfxName:'转场音效',type:'音效',status:'ok'},
+      {id:'t5',time:'20:16',sfxId:'s3',sfxName:'产品展示BGM',type:'BGM',status:'fail',note:'音量过响，盖过口播'},
+      {id:'t6',time:'20:16',sfxId:'s8',sfxName:'口播产品介绍',type:'口播',status:'fail',note:'与BGM错位3秒'}
+    ]},
+    scene3:{name:'互动抽奖',period:'20:45-21:00',triggers:[
+      {id:'t7',time:'20:45',sfxId:'s4',sfxName:'倒计时提示',type:'音效',status:'ok'},
+      {id:'t8',time:'20:48',sfxId:'s6',sfxName:'抽奖音效',type:'音效',status:'ok'},
+      {id:'t9',time:'20:50',sfxId:'s2',sfxName:'欢呼声',type:'音效',status:'ok'},
+      {id:'t10',time:'20:50',sfxId:'s9',sfxName:'中奖通知',type:'音效',status:'warn',note:'与欢呼声时间重叠'},
+      {id:'t11',time:'20:55',sfxId:'s11',sfxName:'互动BGM',type:'BGM',status:'ok'},
+      {id:'t12',time:'20:58',sfxId:'s12',sfxName:'口播结束语',type:'口播',status:'ok'}
+    ]}
+  },
+  diagnosis:[
+    {id:'d1',type:'overlap',title:'音效重叠：欢呼声 × 中奖通知',severity:'warn',scene:'互动抽奖',time:'20:50',
+      triggerIds:['t9','t10'],material:'音效库：欢呼声(s2) + 中奖通知(s9)',
+      checkpoint:'触发编排 t9/t10 时间点相同',nextStep:'将中奖通知延迟至20:51触发'},
+    {id:'d2',type:'loud',title:'BGM过响：产品展示BGM盖过口播',severity:'fail',scene:'产品介绍',time:'20:16',
+      triggerIds:['t5','t6'],material:'音效库：产品展示BGM(s3) + 口播产品介绍(s8)',
+      checkpoint:'触发编排 t5 BGM音量与t6口播冲突',nextStep:'降低BGM音量至-12dB或延后口播3秒'},
+    {id:'d3',type:'misalign',title:'口播错位：口播产品介绍与BGM偏移3秒',severity:'fail',scene:'产品介绍',time:'20:16',
+      triggerIds:['t5','t6'],material:'音效库：口播产品介绍(s8) 触发时间偏移',
+      checkpoint:'口播应在BGM淡入后2秒触发，实际偏移3秒',nextStep:'调整口播触发时间为20:18或重对BGM起播点'}
+  ],
+  history:[
+    {id:'h1',date:'2026-06-02',scene:'开场预热',operator:'张三',status:'正常',
+      triggers:['t1','t2','t3'],issues:['预热BGM与口播重叠'],resolution:'调整BGM延迟5秒'},
+    {id:'h2',date:'2026-06-01',scene:'产品介绍',operator:'李四',status:'异常',
+      triggers:['t4','t5','t6'],issues:['BGM过响','口播错位'],resolution:'待处理'},
+    {id:'h3',date:'2026-05-31',scene:'互动抽奖',operator:'王五',status:'正常',
+      triggers:['t7','t8','t9','t10','t11','t12'],issues:['欢呼声与中奖通知重叠'],resolution:'已延迟中奖通知1秒'}
+  ],
+  bgmList:[
+    {id:'BGM-001',name:'开场鼓点节拍',sfxId:'s1',volume:-6,duration:3},
+    {id:'BGM-002',name:'产品展示氛围',sfxId:'s3',volume:0,duration:180},
+    {id:'BGM-003',name:'预热轻音乐',sfxId:'s7',volume:-8,duration:240},
+    {id:'BGM-004',name:'互动欢快曲',sfxId:'s11',volume:-6,duration:120}
+  ],
+  exportList:[
+    {id:'EXP-001',name:'开场鼓点触发配置',sfxId:'s1',bgmId:'BGM-001',date:'2026-06-02',status:'已导出'},
+    {id:'EXP-002',name:'欢呼声触发配置',sfxId:'s2',bgmId:null,date:'2026-06-02',status:'已导出'},
+    {id:'EXP-003',name:'产品展示BGM配置',sfxId:'s3',bgmId:'BGM-002',date:'2026-06-01',status:'待复核'},
+    {id:'EXP-004',name:'倒计时触发配置',sfxId:'s4',bgmId:null,date:'2026-05-31',status:'已导出'},
+    {id:'EXP-005',name:'口播开场白配置',sfxId:'s5',bgmId:null,date:'2026-05-31',status:'已导出'},
+    {id:'EXP-006',name:'抽奖音效配置',sfxId:'s6',bgmId:null,date:'2026-06-02',status:'待复核'},
+    {id:'EXP-007',name:'预热BGM配置',sfxId:'s7',bgmId:'BGM-003',date:'2026-05-31',status:'已导出'},
+    {id:'EXP-008',name:'口播产品介绍配置',sfxId:'s8',bgmId:null,date:'2026-06-01',status:'待导出'},
+    {id:'EXP-009',name:'中奖通知配置',sfxId:'s9',bgmId:null,date:'2026-05-31',status:'已导出'},
+    {id:'EXP-010',name:'转场音效配置',sfxId:'s10',bgmId:null,date:'2026-06-02',status:'待导出'}
+  ]
+};
+
+var currentScene='scene1';
+var currentFilter='all';
+var currentDiagFilter='all';
+var selectedExport=new Set();
+
+function switchPage(page){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelector('.nav-item[data-page="'+page+'"]').classList.add('active');
+  var titles={library:'音效库',trigger:'触发编排',diagnosis:'问题诊断',history:'历史回放',export:'导出清单',testrun:'新目录试跑',mapping:'对应关系'};
+  document.getElementById('topbarBc').innerHTML='<span>'+titles[page]+'</span>';
+  if(page==='trigger')renderTriggerPage();
+  if(page==='diagnosis')renderDiagnosisPage();
+  if(page==='history')renderHistoryPage();
+  if(page==='export')renderExportPage();
+  if(page==='mapping')renderMappingPage();
+}
+
+function showToast(msg,type){
+  type=type||'info';
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast toast-'+type+' show';
+  setTimeout(function(){t.classList.remove('show')},2500);
+}
+
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function openAddSfx(){openModal('addSfxModal')}
+
+function addSfx(){
+  var name=document.getElementById('sfxName').value.trim();
+  if(!name){showToast('请填写音效名称','error');return}
+  var newId='s'+(DATA.sfxLibrary.length+1);
+  var sfx={id:newId,name:name,type:document.getElementById('sfxType').value,
+    duration:parseInt(document.getElementById('sfxDuration').value)||3,
+    scene:document.getElementById('sfxScene').value.trim()||'未指定',
+    tags:document.getElementById('sfxTags').value.split(',').map(function(t){return t.trim()}).filter(Boolean),
+    active:true,changed:true,bgm:null,exportId:'EXP-'+String(DATA.sfxLibrary.length+1).padStart(3,'0')};
+  DATA.sfxLibrary.push(sfx);
+  DATA.changeLog.unshift({time:new Date().toLocaleString('zh-CN',{hour12:false}),sfx:name,type:'新增',scene:sfx.scene,impact:'需编排触发位置',sfxId:newId});
+  closeModal('addSfxModal');
+  renderLibraryPage();
+  showToast('音效已添加：'+name,'success');
+}
+
+function renderLibraryPage(){
+  var total=DATA.sfxLibrary.length;
+  var active=DATA.sfxLibrary.filter(function(s){return s.active}).length;
+  var changed=DATA.sfxLibrary.filter(function(s){return s.changed}).length;
+  var conflict=DATA.diagnosis.filter(function(d){return d.severity==='fail'}).length;
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statActive').textContent=active;
+  document.getElementById('statChanged').textContent=changed;
+  document.getElementById('statConflict').textContent=conflict;
+  document.getElementById('libBadge').textContent=total;
+  filterLibrary();
+  renderChangeLog();
+}
+
+function filterLibrary(){
+  var q=document.getElementById('libSearch').value.toLowerCase();
+  var grid=document.getElementById('sfxGrid');
+  var filtered=DATA.sfxLibrary.filter(function(s){
+    if(currentFilter!=='all'&&s.type!==currentFilter)return false;
+    if(q&&s.name.toLowerCase().indexOf(q)===-1&&!s.tags.some(function(t){return t.indexOf(q)!==-1})&&s.scene.indexOf(q)===-1)return false;
+    return true;
+  });
+  grid.innerHTML=filtered.map(function(s){
+    var typeCls=s.type==='BGM'?'tag-purple':s.type==='口播'?'tag-cyan':'tag-blue';
+    var statusDot=s.active?(s.changed?'var(--orange)':'var(--green)'):'var(--text3)';
+    return '<div class="sfx-card" onclick="showSfxDetail(\''+s.id+'\')"><div class="sfx-name">'+s.name+'</div><div class="sfx-meta">'+s.scene+' · '+s.duration+'s</div><div class="sfx-type" style="display:flex;align-items:center;gap:6px;margin-top:6px"><span class="tag '+typeCls+'">'+s.type+'</span><span style="width:6px;height:6px;border-radius:50%;background:'+statusDot+'"></span>'+(s.changed?'<span class="tag tag-orange">已变更</span>':'')+'</div></div>';
+  }).join('');
+}
+
+function filterByType(el,type){
+  currentFilter=type;
+  el.parentElement.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active')});
+  el.classList.add('active');
+  filterLibrary();
+}
+
+function showSfxDetail(id){
+  var s=DATA.sfxLibrary.find(function(x){return x.id===id});
+  if(!s)return;
+  var typeCls=s.type==='BGM'?'tag-purple':s.type==='口播'?'tag-cyan':'tag-blue';
+  var bgm=DATA.bgmList.find(function(b){return b.sfxId===id});
+  var exp=DATA.exportList.find(function(e){return e.sfxId===id});
+  var diags=DATA.diagnosis.filter(function(d){return d.material.indexOf(id)!==-1});
+  var diagHtml=diags.length?diags.map(function(d){return '<div style="margin-top:4px"><span class="tag '+(d.severity==='fail'?'tag-red':'tag-orange')+'">'+d.title+'</span></div>'}).join(''):'<span style="color:var(--green)">无关联问题</span>';
+  var html='<div style="padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);margin-top:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:14px;font-weight:700">'+s.name+'</span><span class="tag '+typeCls+'">'+s.type+'</span>'+(s.active?'<span class="tag tag-green">启用</span>':'<span class="tag tag-red">停用</span>')+(s.changed?'<span class="tag tag-orange">已变更</span>':'')+'</div><div class="detail-row"><span class="dl">时长</span><span class="dv">'+s.duration+'秒</span></div><div class="detail-row"><span class="dl">场景</span><span class="dv">'+s.scene+'</span></div><div class="detail-row"><span class="dl">标签</span><span class="dv">'+s.tags.join('、')+'</span></div>'+(bgm?'<div class="detail-row"><span class="dl">BGM</span><span class="dv map-link" onclick="switchPage(\'mapping\')">'+bgm.id+' '+bgm.name+' ('+bgm.volume+'dB)</span></div>':'')+(exp?'<div class="detail-row"><span class="dl">导出项</span><span class="dv map-link" onclick="switchPage(\'export\')">'+exp.id+' '+exp.name+' ['+exp.status+']</span></div>':'')+'<div class="detail-row"><span class="dl">关联问题</span><span class="dv">'+diagHtml+'</span></div></div>';
+  var grid=document.getElementById('sfxGrid');
+  var existing=grid.querySelector('.sfx-detail-panel');
+  if(existing)existing.remove();
+  var div=document.createElement('div');
+  div.className='sfx-detail-panel';
+  div.style.gridColumn='1 / -1';
+  div.innerHTML=html;
+  grid.appendChild(div);
+}
+
+function renderChangeLog(){
+  var body=document.getElementById('changeLogBody');
+  body.innerHTML=DATA.changeLog.map(function(c){
+    var typeCls=c.type==='新增'?'tag-green':c.type==='替换文件'?'tag-orange':'tag-blue';
+    return '<tr><td style="white-space:nowrap">'+c.time+'</td><td><span class="link-item" onclick="showSfxDetail(\''+c.sfxId+'\')">'+c.sfx+'</span></td><td><span class="tag '+typeCls+'">'+c.type+'</span></td><td>'+c.scene+'</td><td style="color:var(--orange)">'+c.impact+'</td><td><button class="btn btn-sm" onclick="recheckTrigger(\''+c.sfxId+'\')">重新校验</button></td></tr>';
+  }).join('');
+}
+
+function recheckTrigger(sfxId){
+  var s=DATA.sfxLibrary.find(function(x){return x.id===sfxId});
+  showToast('已触发重新校验：'+(s?s.name:sfxId),'info');
+}
+
+function renderTriggerPage(){
+  loadScene();
+  renderBroadcastCheck();
+  var allTriggers=[];
+  Object.values(DATA.scenes).forEach(function(s){allTriggers=allTriggers.concat(s.triggers)});
+  var ok=allTriggers.filter(function(t){return t.status==='ok'}).length;
+  var fail=allTriggers.filter(function(t){return t.status!=='ok'}).length;
+  document.getElementById('trigTotal').textContent=allTriggers.length;
+  document.getElementById('trigOk').textContent=ok;
+  document.getElementById('trigFail').textContent=fail;
+}
+
+function loadScene(){
+  var sel=document.getElementById('sceneSelect');
+  currentScene=sel.value;
+  var scene=DATA.scenes[currentScene];
+  var list=document.getElementById('triggerList');
+  list.innerHTML=scene.triggers.map(function(t){
+    var sCls=t.status==='ok'?'tag-green':t.status==='fail'?'tag-red':'tag-orange';
+    var sTxt=t.status==='ok'?'正常':t.status==='fail'?'异常':'警告';
+    return '<div class="trigger-row" onclick="showTriggerDetail(\''+t.id+'\')"><div class="tr-time">'+t.time+'</div><div class="tr-info"><div class="tr-name">'+t.sfxName+'</div><div class="tr-sub">'+t.type+(t.note?' · '+t.note:'')+'</div></div><div class="tr-status"><span class="tag '+sCls+'">'+sTxt+'</span></div></div>';
+  }).join('');
+  renderTriggerTimeline(scene);
+}
+
+function renderTriggerTimeline(scene){
+  var viz=document.getElementById('triggerTimeline');
+  var colors={'音效':'var(--accent)','BGM':'var(--purple)','口播':'var(--cyan)'};
+  var period=scene.period.split('-');
+  var startMin=parseTimeToMin(period[0]);
+  var endMin=parseTimeToMin(period[1]);
+  var totalMin=endMin-startMin;
+  viz.innerHTML=scene.triggers.map(function(t,i){
+    var tMin=parseTimeToMin(t.time);
+    var left=((tMin-startMin)/totalMin)*100;
+    var width=Math.max(8,(t.type==='BGM'?30:8));
+    var color=colors[t.type]||'var(--accent)';
+    var isOverlap=t.status!=='ok';
+    return '<div class="ov-bar '+(isOverlap?'overlap':'')+'" style="left:'+left+'%;top:'+(10+i*26)+'px;width:'+width+'%;background:'+color+';color:#fff">'+t.sfxName+'</div>';
+  }).join('');
+}
+
+function parseTimeToMin(t){var p=t.split(':').map(Number);return p[0]*60+p[1]}
+
+function showTriggerDetail(id){
+  var trigger=null;
+  Object.keys(DATA.scenes).forEach(function(k){var f=DATA.scenes[k].triggers.find(function(t){return t.id===id});if(f)trigger=f});
+  if(!trigger)return;
+  var sfx=DATA.sfxLibrary.find(function(s){return s.id===trigger.sfxId});
+  var bgm=sfx?DATA.bgmList.find(function(b){return b.sfxId===sfx.id}):null;
+  var exp=sfx?DATA.exportList.find(function(e){return e.sfxId===sfx.id}):null;
+  var diags=DATA.diagnosis.filter(function(d){return d.triggerIds.indexOf(id)!==-1});
+  var detail=document.getElementById('triggerDetail');
+  var statusTag=trigger.status==='ok'?'tag-green':trigger.status==='fail'?'tag-red':'tag-orange';
+  var statusText=trigger.status==='ok'?'正常':trigger.status==='fail'?'异常':'警告';
+  detail.innerHTML='<div style="margin-bottom:8px;font-weight:700">'+trigger.sfxName+' <span class="tag '+statusTag+'">'+statusText+'</span></div><div class="detail-row"><span class="dl">触发时间</span><span class="dv">'+trigger.time+'</span></div><div class="detail-row"><span class="dl">类型</span><span class="dv">'+trigger.type+'</span></div>'+(sfx?'<div class="detail-row"><span class="dl">音效库</span><span class="dv link-item" onclick="switchPage(\'library\');setTimeout(function(){showSfxDetail(\''+sfx.id+'\')},100)">'+sfx.name+' ('+sfx.id+')</span></div>':'')+(bgm?'<div class="detail-row"><span class="dl">BGM列表</span><span class="dv link-link" onclick="switchPage(\'mapping\')">'+bgm.id+' '+bgm.name+' ('+bgm.volume+'dB)</span></div>':'')+(exp?'<div class="detail-row"><span class="dl">导出清单</span><span class="dv link-item" onclick="switchPage(\'export\')">'+exp.id+' ['+exp.status+']</span></div>':'')+(trigger.note?'<div class="detail-row"><span class="dl">备注</span><span class="dv" style="color:var(--orange)">'+trigger.note+'</span></div>':'')+(diags.length?'<div style="margin-top:8px"><strong>关联问题：</strong>'+diags.map(function(d){return '<div style="margin-top:4px"><span class="tag '+(d.severity==='fail'?'tag-red':'tag-orange')+'">'+d.title+'</span> → <span style="color:var(--accent);cursor:pointer" onclick="switchPage(\'diagnosis\')">查看诊断</span></div>'}).join('')+'</div>':'');
+}
+
+function renderBroadcastCheck(){
+  var el=document.getElementById('broadcastCheck');
+  var issues=[];
+  Object.keys(DATA.scenes).forEach(function(k){
+    var s=DATA.scenes[k];
+    s.triggers.filter(function(t){return t.type==='口播'}).forEach(function(bc){
+      s.triggers.filter(function(t){return t.type==='BGM'}).forEach(function(bg){
+        if(bc.time===bg.time)issues.push({scene:s.name,broadcast:bc.sfxName,bgm:bg.sfxName,time:bc.time});
+      });
+    });
+  });
+  el.innerHTML=!issues.length?'<div style="color:var(--green);font-size:12px">&#9989; 所有口播时间校验通过</div>':issues.map(function(i){return '<div style="padding:6px 0;font-size:12px;border-bottom:1px solid var(--border)"><span class="tag tag-red">错位</span> '+i.scene+' · '+i.time+' · '+i.broadcast+' 与 '+i.bgm+' 时间冲突</div>'}).join('');
+}
+
+function importSample(){showToast('样例编排已导入当前场景','success')}
+
+function renderDiagnosisPage(){
+  var list=document.getElementById('diagList');
+  var filtered=DATA.diagnosis.filter(function(d){return currentDiagFilter==='all'||d.type===currentDiagFilter});
+  list.innerHTML=filtered.map(function(d){
+    var sevCls=d.severity==='fail'?'tag-red':'tag-orange';
+    var typeLabel=d.type==='overlap'?'音效重叠':d.type==='loud'?'BGM过响':'口播错位';
+    var typeCls=d.type==='overlap'?'tag-yellow':d.type==='loud'?'tag-purple':'tag-cyan';
+    return '<div class="card" onclick="showDiagDetail(\''+d.id+'\')" style="cursor:pointer"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span class="tag '+sevCls+'">'+(d.severity==='fail'?'严重':'警告')+'</span><span class="tag '+typeCls+'">'+typeLabel+'</span></div><div style="font-size:13px;font-weight:600;margin-bottom:4px">'+d.title+'</div><div style="font-size:11px;color:var(--text3)">'+d.scene+' · '+d.time+'</div></div>';
+  }).join('');
+}
+
+function filterDiag(el,type){
+  currentDiagFilter=type;
+  el.parentElement.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active')});
+  el.classList.add('active');
+  renderDiagnosisPage();
+}
+
+function showDiagDetail(id){
+  var d=DATA.diagnosis.find(function(x){return x.id===id});
+  if(!d)return;
+  var detail=document.getElementById('diagDetail');
+  var nodes=buildFailurePath(d);
+  detail.innerHTML='<div style="font-size:14px;font-weight:700;margin-bottom:12px">'+d.title+'</div><div class="path-viz" style="margin-bottom:16px">'+nodes.map(function(n,i){return '<div class="path-node '+n.cls+'"><div class="pn-icon '+n.iconCls+'">'+n.icon+'</div><div><div class="pn-label">'+n.label+'</div><div class="pn-sub">'+n.sub+'</div></div>'+(i<nodes.length-1?'<div class="pn-arrow">&#9660;</div>':'')+'</div>'}).join('')+'</div><div class="detail-row"><span class="dl">触发材料</span><span class="dv">'+d.material+'</span></div><div class="detail-row"><span class="dl">卡点</span><span class="dv" style="color:var(--red)">'+d.checkpoint+'</span></div><div class="detail-row"><span class="dl">下一步</span><span class="dv" style="color:var(--green)">'+d.nextStep+'</span></div><div class="detail-row"><span class="dl">关联触发</span><span class="dv">'+d.triggerIds.map(function(t){return '<span class="link-item" onclick="switchPage(\'trigger\');setTimeout(function(){showTriggerDetail(\''+t+'\')},100)">'+t+'</span>'}).join('、')+'</span></div><div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-sm btn-primary" onclick="resolveDiag(\''+d.id+'\')">标记已处理</button><button class="btn btn-sm" onclick="switchPage(\'trigger\')">跳转触发编排</button></div>';
+}
+
+function buildFailurePath(d){
+  var base=[
+    {cls:'',iconCls:'info',icon:'1',label:'音效库变更',sub:'触发材料来源'},
+    {cls:'',iconCls:'info',icon:'2',label:'场景脚本加载',sub:d.scene+' · '+d.time}
+  ];
+  if(d.type==='overlap'){base.push({cls:'fail-node',iconCls:'err',icon:'✕',label:'音效重叠检测',sub:d.checkpoint},{cls:'fail-node',iconCls:'err',icon:'!',label:'时间点冲突',sub:d.material})}
+  else if(d.type==='loud'){base.push({cls:'',iconCls:'warn',icon:'3',label:'BGM音量检测',sub:'音量阈值校验'},{cls:'fail-node',iconCls:'err',icon:'✕',label:'BGM过响',sub:d.checkpoint})}
+  else{base.push({cls:'',iconCls:'info',icon:'3',label:'口播时间校验',sub:'对齐检测'},{cls:'fail-node',iconCls:'err',icon:'✕',label:'口播错位',sub:d.checkpoint})}
+  base.push({cls:'',iconCls:'ok',icon:'✓',label:'建议修复',sub:d.nextStep});
+  return base;
+}
+
+function resolveDiag(id){
+  var d=DATA.diagnosis.find(function(x){return x.id===id});
+  if(d){d.severity='resolved';showToast('已标记处理：'+d.title,'success');renderDiagnosisPage()}
+}
+
+function renderHistoryPage(){filterHistory();renderConsistencyCheck()}
+
+function filterHistory(){
+  var q=(document.getElementById('histSearch')?document.getElementById('histSearch').value:'').toLowerCase();
+  var list=document.getElementById('historyList');
+  var filtered=DATA.history.filter(function(h){
+    if(q&&h.scene.toLowerCase().indexOf(q)===-1&&h.operator.toLowerCase().indexOf(q)===-1&&h.date.indexOf(q)===-1)return false;
+    return true;
+  });
+  list.innerHTML=filtered.map(function(h){
+    var statusCls=h.status==='正常'?'tag-green':'tag-red';
+    return '<div class="card" onclick="showHistoryDetail(\''+h.id+'\')" style="cursor:pointer"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span class="tag '+statusCls+'">'+h.status+'</span><span style="font-size:11px;color:var(--text3)">'+h.date+'</span></div><div style="font-size:13px;font-weight:600;margin-bottom:4px">'+h.scene+'</div><div style="font-size:11px;color:var(--text3)">操作人：'+h.operator+' · '+h.triggers.length+'个触发点</div></div>';
+  }).join('');
+}
+
+function refreshHistory(){showToast('历史记录已刷新','info')}
+
+function showHistoryDetail(id){
+  var h=DATA.history.find(function(x){return x.id===id});
+  if(!h)return;
+  var detail=document.getElementById('historyDetail');
+  var sceneKey=null;
+  Object.keys(DATA.scenes).forEach(function(k){if(DATA.scenes[k].name===h.scene)sceneKey=k});
+  var sceneTriggers=sceneKey?DATA.scenes[sceneKey].triggers:[];
+  detail.innerHTML='<div style="font-size:14px;font-weight:700;margin-bottom:12px">'+h.scene+' · '+h.date+'</div><div class="detail-row"><span class="dl">状态</span><span class="dv"><span class="tag '+(h.status==='正常'?'tag-green':'tag-red')+'">'+h.status+'</span></span></div><div class="detail-row"><span class="dl">操作人</span><span class="dv">'+h.operator+'</span></div><div class="detail-row"><span class="dl">触发点</span><span class="dv">'+h.triggers.join('、')+'</span></div><div class="detail-row"><span class="dl">问题</span><span class="dv" style="color:var(--orange)">'+h.issues.join('、')+'</span></div><div class="detail-row"><span class="dl">处置</span><span class="dv">'+h.resolution+'</span></div><div style="margin-top:12px"><div class="card-title"><div class="dot" style="background:var(--accent)"></div>触发点明细（与触发编排一致）</div>'+sceneTriggers.map(function(t){var sCls=t.status==='ok'?'tag-green':t.status==='fail'?'tag-red':'tag-orange';var sTxt=t.status==='ok'?'正常':t.status==='fail'?'异常':'警告';return '<div style="padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)">'+t.time+' '+t.sfxName+' ('+t.type+') <span class="tag '+sCls+'">'+sTxt+'</span>'+(t.note?' <span style="color:var(--orange)">'+t.note+'</span>':'')+'</div>'}).join('')+'</div>';
+}
+
+function renderConsistencyCheck(){
+  var el=document.getElementById('consistencyCheck');
+  var checks=[];
+  DATA.history.forEach(function(h){
+    var sceneKey=null;
+    Object.keys(DATA.scenes).forEach(function(k){if(DATA.scenes[k].name===h.scene)sceneKey=k});
+    if(sceneKey){
+      var currentTriggerIds=DATA.scenes[sceneKey].triggers.map(function(t){return t.id});
+      var match=h.triggers.every(function(tid){return currentTriggerIds.indexOf(tid)!==-1});
+      checks.push({scene:h.scene,date:h.date,match:match});
+    }
+  });
+  var allMatch=checks.every(function(c){return c.match});
+  el.innerHTML=allMatch?'<div style="color:var(--green);font-size:12px">&#9989; 所有历史记录与当前触发编排口径一致</div>':checks.map(function(c){return '<div style="padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)">'+(c.match?'<span class="tag tag-green">一致</span>':'<span class="tag tag-red">不一致</span>')+' '+c.scene+' · '+c.date+'</div>'}).join('');
+}
+
+function renderExportPage(){
+  var list=document.getElementById('exportList');
+  list.innerHTML=DATA.exportList.map(function(e){
+    var sfx=DATA.sfxLibrary.find(function(s){return s.id===e.sfxId});
+    var bgm=e.bgmId?DATA.bgmList.find(function(b){return b.id===e.bgmId}):null;
+    var statusCls=e.status==='已导出'?'tag-green':e.status==='待复核'?'tag-orange':'tag-blue';
+    var isChecked=selectedExport.has(e.id);
+    return '<div class="export-item"><div class="ei-check '+(isChecked?'checked':'')+'" onclick="toggleExport(\''+e.id+'\')">'+(isChecked?'✓':'')+'</div><div style="flex:1"><div style="font-weight:600">'+e.name+'</div><div style="font-size:11px;color:var(--text3)">'+e.id+' · '+e.date+(sfx?' · 音效库:'+sfx.name:'')+(bgm?' · BGM:'+bgm.name:'')+'</div></div><span class="tag '+statusCls+'">'+e.status+'</span></div>';
+  }).join('');
+}
+
+function toggleExport(id){
+  if(selectedExport.has(id))selectedExport.delete(id);else selectedExport.add(id);
+  renderExportPage();
+}
+
+function exportSelected(){
+  if(!selectedExport.size){showToast('请先选择导出项','error');return}
+  showToast('已导出 '+selectedExport.size+' 项配置','success');
+  selectedExport.forEach(function(id){
+    var e=DATA.exportList.find(function(x){return x.id===id});
+    if(e)e.status='已导出';
+  });
+  selectedExport.clear();
+  renderExportPage();
+}
+
+function exportAll(){
+  DATA.exportList.forEach(function(e){e.status='已导出'});
+  selectedExport.clear();
+  renderExportPage();
+  showToast('已全部导出','success');
+}
+
+function startTestRun(){
+  var panel=document.getElementById('dirTestPanel');
+  panel.classList.add('active');
+  panel.innerHTML='<div style="font-size:28px;margin-bottom:8px">&#9989;</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">目录已加载，正在试跑...</div><div style="font-size:11px;color:var(--text3)">检测音效重叠、BGM过响、口播错位等失败路径</div>';
+  setTimeout(function(){
+    panel.innerHTML='<div style="font-size:28px;margin-bottom:8px">&#9989;</div><div style="font-size:13px;font-weight:600;margin-bottom:4px">试跑完成</div><div style="font-size:11px;color:var(--green)">新目录：/live-audio/test-run-20260602</div>';
+    document.getElementById('testRunResult').style.display='block';
+    renderTestRunResults();
+  },1500);
+}
+
+function renderTestRunResults(){
+  var allTriggers=[];
+  Object.values(DATA.scenes).forEach(function(s){allTriggers=allTriggers.concat(s.triggers)});
+  var pass=allTriggers.filter(function(t){return t.status==='ok'}).length;
+  var fail=allTriggers.filter(function(t){return t.status==='fail'}).length;
+  var warn=allTriggers.filter(function(t){return t.status==='warn'}).length;
+  document.getElementById('trPass').textContent=pass;
+  document.getElementById('trFail').textContent=fail;
+  document.getElementById('trWarn').textContent=warn;
+
+  var failPathViz=document.getElementById('failPathViz');
+  var failTriggers=allTriggers.filter(function(t){return t.status!=='ok'});
+  failPathViz.innerHTML=failTriggers.map(function(t){
+    var iconCls=t.status==='fail'?'err':'warn';
+    var icon=t.status==='fail'?'✕':'!';
+    return '<div class="path-node fail-node" style="margin-bottom:4px;border-radius:var(--radius)"><div class="pn-icon '+iconCls+'">'+icon+'</div><div><div class="pn-label">'+t.sfxName+' ('+t.type+')</div><div class="pn-sub">'+t.time+' · '+(t.note||'')+'</div></div></div>';
+  }).join('');
+
+  var testOverlapViz=document.getElementById('testOverlapViz');
+  var colors={'音效':'var(--accent)','BGM':'var(--purple)','口播':'var(--cyan)'};
+  var overlapPairs=[];
+  Object.keys(DATA.scenes).forEach(function(k){
+    var s=DATA.scenes[k];
+    var period=s.period.split('-');
+    var startMin=parseTimeToMin(period[0]);
+    var endMin=parseTimeToMin(period[1]);
+    var totalMin=endMin-startMin;
+    s.triggers.forEach(function(t,i){
+      var tMin=parseTimeToMin(t.time);
+      var left=((tMin-startMin)/totalMin)*100;
+      var width=Math.max(8,(t.type==='BGM'?30:8));
+      var color=colors[t.type]||'var(--accent)';
+      var isOverlap=t.status!=='ok';
+      overlapPairs.push('<div class="ov-bar '+(isOverlap?'overlap':'')+'" style="left:'+left+'%;top:'+(8+i*22)+'px;width:'+width+'%;background:'+color+';color:#fff;font-size:9px">'+t.sfxName+'</div>');
+    });
+  });
+  testOverlapViz.innerHTML=overlapPairs.join('');
+
+  var legend=document.getElementById('overlapLegend');
+  legend.innerHTML='<div style="display:flex;gap:12px;font-size:11px;color:var(--text3);flex-wrap:wrap"><span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--accent);vertical-align:middle"></span> 音效</span><span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--purple);vertical-align:middle"></span> BGM</span><span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--cyan);vertical-align:middle"></span> 口播</span><span style="color:var(--red)"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;border:2px solid var(--red);vertical-align:middle"></span> 重叠/冲突</span></div>';
+
+  var testRunDetails=document.getElementById('testRunDetails');
+  testRunDetails.innerHTML=DATA.diagnosis.map(function(d){
+    var typeLabel=d.type==='overlap'?'音效重叠':d.type==='loud'?'BGM过响':'口播错位';
+    var typeCls=d.type==='overlap'?'tag-yellow':d.type==='loud'?'tag-purple':'tag-cyan';
+    var sevCls=d.severity==='fail'?'tag-red':'tag-orange';
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="tag '+sevCls+'">'+(d.severity==='fail'?'严重':'警告')+'</span><span class="tag '+typeCls+'">'+typeLabel+'</span></div><div style="font-size:12px;font-weight:600">'+d.title+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">材料：'+d.material+'</div><div style="font-size:11px;color:var(--red);margin-top:2px">卡点：'+d.checkpoint+'</div><div style="font-size:11px;color:var(--green);margin-top:2px">下一步：'+d.nextStep+'</div></div>';
+  }).join('');
+}
+
+function renderMappingPage(){
+  filterMapping();
+  renderMappingConsistency();
+}
+
+function filterMapping(){
+  var q=(document.getElementById('mapSearch')?document.getElementById('mapSearch').value:'').toLowerCase();
+  var body=document.getElementById('mappingBody');
+  var filtered=DATA.sfxLibrary.filter(function(s){
+    if(q&&s.name.toLowerCase().indexOf(q)===-1&&s.scene.toLowerCase().indexOf(q)===-1)return false;
+    return true;
+  });
+  body.innerHTML=filtered.map(function(s){
+    var typeCls=s.type==='BGM'?'tag-purple':s.type==='口播'?'tag-cyan':'tag-blue';
+    var bgm=s.bgm?DATA.bgmList.find(function(b){return b.id===s.bgm}):null;
+    var exp=DATA.exportList.find(function(e){return e.sfxId===s.id});
+    var statusCls=s.active?'tag-green':'tag-red';
+    return '<tr><td><span class="map-link" onclick="switchPage(\'library\');setTimeout(function(){showSfxDetail(\''+s.id+'\')},100)">'+s.name+' ('+s.id+')</span></td><td><span class="tag '+typeCls+'">'+s.type+'</span></td><td>'+(bgm?'<span class="map-link" onclick="switchPage(\'mapping\')">'+bgm.id+' '+bgm.name+'</span>':'<span style="color:var(--text3)">—</span>')+'</td><td>'+(exp?'<span class="map-link" onclick="switchPage(\'export\')">'+exp.id+' ['+exp.status+']</span>':'<span style="color:var(--text3)">—</span>')+'</td><td>'+s.scene+'</td><td><span class="tag '+statusCls+'">'+(s.active?'启用':'停用')+'</span></td></tr>';
+  }).join('');
+}
+
+function renderMappingConsistency(){
+  var el=document.getElementById('mappingConsistency');
+  var issues=[];
+  DATA.sfxLibrary.forEach(function(s){
+    if(s.bgm){
+      var bgm=DATA.bgmList.find(function(b){return b.id===s.bgm});
+      if(!bgm)issues.push('音效 '+s.name+' 关联BGM '+s.bgm+' 不存在');
+      else if(bgm.sfxId!==s.id)issues.push('BGM '+bgm.id+' 的sfxId指向 '+bgm.sfxId+'，与音效 '+s.id+' 不匹配');
+    }
+    var exp=DATA.exportList.find(function(e){return e.sfxId===s.id});
+    if(!exp)issues.push('音效 '+s.name+' 没有对应的导出清单条目');
+    else if(exp.bgmId&&s.bgm&&exp.bgmId!==s.bgm)issues.push('导出清单 '+exp.id+' 的BGM关联与音效库不一致');
+  });
+  el.innerHTML=!issues.length?'<div style="color:var(--green);font-size:12px">&#9989; 所有对应关系校验通过，音效库 ↔ BGM列表 ↔ 导出清单一致</div>':issues.map(function(i){return '<div style="padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)"><span class="tag tag-red">不一致</span> '+i+'</div>'}).join('');
+}
+
+function showClueAgg(){openModal('clueModal')}
+
+function searchClues(){
+  var q=document.getElementById('clueInput').value.trim().toLowerCase();
+  if(!q){showToast('请输入线索关键词','error');return}
+  var results=[];
+
+  var sfxMatches=DATA.sfxLibrary.filter(function(s){
+    return s.name.toLowerCase().indexOf(q)!==-1||s.tags.some(function(t){return t.indexOf(q)!==-1})||s.scene.toLowerCase().indexOf(q)!==-1;
+  });
+  sfxMatches.forEach(function(s){
+    results.push({type:'音效库',title:s.name,sub:s.type+' · '+s.scene+' · '+s.duration+'s',link:"switchPage('library');setTimeout(function(){showSfxDetail('"+s.id+"')},100)",icon:'&#127925;'});
+  });
+
+  var sceneMatches=[];
+  Object.keys(DATA.scenes).forEach(function(k){
+    var s=DATA.scenes[k];
+    if(s.name.toLowerCase().indexOf(q)!==-1||s.period.indexOf(q)!==-1)sceneMatches.push(s);
+  });
+  sceneMatches.forEach(function(s){
+    results.push({type:'场景脚本',title:s.name+' ('+s.period+')',sub:s.triggers.length+'个触发点',link:"switchPage('trigger')",icon:'&#127916;'});
+  });
+
+  var diagMatches=DATA.diagnosis.filter(function(d){
+    return d.title.toLowerCase().indexOf(q)!==-1||d.scene.toLowerCase().indexOf(q)!==-1||d.time.indexOf(q)!==-1;
+  });
+  diagMatches.forEach(function(d){
+    results.push({type:'问题诊断',title:d.title,sub:d.scene+' · '+d.time,link:"switchPage('diagnosis');setTimeout(function(){showDiagDetail('"+d.id+"')},100)",icon:'&#128300;'});
+  });
+
+  var bgmMatches=DATA.bgmList.filter(function(b){return b.name.toLowerCase().indexOf(q)!==-1||b.id.toLowerCase().indexOf(q)!==-1});
+  bgmMatches.forEach(function(b){
+    results.push({type:'BGM列表',title:b.id+' '+b.name,sub:b.volume+'dB · '+b.duration+'s',link:"switchPage('mapping')",icon:'&#127926;'});
+  });
+
+  var el=document.getElementById('clueResults');
+  if(!results.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">未找到匹配的线索</div>';
+  }else{
+    el.innerHTML='<div style="margin-bottom:8px;font-size:12px;color:var(--accent)">找到 '+results.length+' 条相关线索，已归集到同一件事：</div>'+results.map(function(r){
+      var typeCls=r.type==='音效库'?'tag-blue':r.type==='场景脚本'?'tag-green':r.type==='问题诊断'?'tag-red':'tag-purple';
+      return '<div class="clue-card"><div class="cc-icon" style="background:var(--bg3)">'+r.icon+'</div><div class="cc-info"><div class="cc-title">'+r.title+'</div><div class="cc-sub"><span class="tag '+typeCls+'">'+r.type+'</span> '+r.sub+'</div></div><span class="cc-link" onclick="closeModal(\'clueModal\');'+r.link+'">查看</span></div>';
+    }).join('');
+  }
+}
+
+renderLibraryPage();
+</script>
+</body>
+</html>
