@@ -1,0 +1,11 @@
+[
+  {"beat_index": 1, "action_name": "起步", "performer": "主舞", "notes": "右脚先出"},
+  {"beat_index": 2, "action_name": "弹跳", "performer": "主舞", "notes": null},
+  {"beat_index": 3, "action_name": "侧移", "performer": "伴舞", "notes": "向左移动"},
+  {"beat_index": 4, "action_name": "定格", "performer": "全体", "notes": "重拍定格"},
+  {"beat_index": 5, "action_name": null, "performer": null, "notes": null},
+  {"beat_index": 7, "action_name": "地板动作", "performer": "主舞", "notes": "晚补标注", "is_manual_override": true, "changed_by": "编导李老师", "change_reason": "排练后补充动作"},
+  {"beat_index": 8, "action_name": "旋转", "performer": "伴舞", "notes": "漂移处需确认，已人工调整", "is_manual_override": true, "changed_by": "编导李老师", "change_reason": "节拍漂移手动同步"},
+  {"beat_index": 10, "action_name": "定格", "performer": "全体", "notes": "重拍定格式"},
+  {"beat_index": 11, "action_name": "收步", "performer": "主舞", "notes": "最初备注为向右收步", "is_manual_override": true, "changed_by": "编导李老师", "change_reason": "备注修正：方向更正为向左"}
+]

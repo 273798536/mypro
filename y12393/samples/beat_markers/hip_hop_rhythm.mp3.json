@@ -1,0 +1,14 @@
+[
+  {"beat_index": 1, "timestamp_sec": 0.000, "is_downbeat": true, "source": "auto"},
+  {"beat_index": 2, "timestamp_sec": 0.500, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 3, "timestamp_sec": 1.000, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 4, "timestamp_sec": 1.500, "is_downbeat": true, "source": "auto"},
+  {"beat_index": 5, "timestamp_sec": 2.000, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 6, "timestamp_sec": 2.500, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 7, "timestamp_sec": 3.000, "is_downbeat": true, "source": "auto"},
+  {"beat_index": 8, "timestamp_sec": 3.950, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 9, "timestamp_sec": 4.450, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 10, "timestamp_sec": 4.950, "is_downbeat": true, "source": "auto"},
+  {"beat_index": 11, "timestamp_sec": 5.450, "is_downbeat": false, "source": "auto"},
+  {"beat_index": 12, "timestamp_sec": 5.950, "is_downbeat": false, "source": "auto"}
+]

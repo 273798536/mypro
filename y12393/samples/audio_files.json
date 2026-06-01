@@ -1,0 +1,12 @@
+[
+  {
+    "filename": "waltz_swan_lake.wav",
+    "duration_sec": 180.0,
+    "bpm": 90.0
+  },
+  {
+    "filename": "hip_hop_rhythm.mp3",
+    "duration_sec": 210.5,
+    "bpm": 120.0
+  }
+]

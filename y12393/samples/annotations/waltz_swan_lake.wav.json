@@ -1,0 +1,11 @@
+[
+  {"beat_index": 1, "action_name": "起势", "performer": "领舞", "notes": "双臂展开，重心下沉"},
+  {"beat_index": 2, "action_name": "旋转", "performer": "领舞", "notes": "顺时针一圈"},
+  {"beat_index": 3, "action_name": null, "performer": "领舞", "notes": null},
+  {"beat_index": 4, "action_name": "大跳", "performer": null, "notes": "落地要稳"},
+  {"beat_index": 5, "action_name": "下蹲", "performer": "群舞", "notes": "同步下蹲"},
+  {"beat_index": 7, "action_name": "跃起", "performer": "领舞", "notes": "与节拍6衔接"},
+  {"beat_index": 8, "action_name": "定格", "performer": "群舞", "notes": "漂移节拍处需确认", "is_manual_override": true, "changed_by": "编导张老师", "change_reason": "节拍漂移后手动调整动作同步"},
+  {"beat_index": 10, "action_name": "转身", "performer": "领舞", "notes": "面向观众"},
+  {"beat_index": 12, "action_name": "收势", "performer": "全体", "notes": "统一谢幕姿势"}
+]

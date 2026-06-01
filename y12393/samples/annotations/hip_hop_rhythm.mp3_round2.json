@@ -1,0 +1,4 @@
+[
+  {"beat_index": 11, "action_name": "收步", "performer": "主舞", "notes": "方向更正为向左收步", "is_manual_override": true, "changed_by": "编导李老师", "change_reason": "备注方向从右改为左"},
+  {"beat_index": 5, "action_name": "滑步", "performer": "伴舞", "notes": "补充缺失动作", "changed_by": "编导李老师", "change_reason": "补填缺失动作"}
+]

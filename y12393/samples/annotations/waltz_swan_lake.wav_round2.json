@@ -1,0 +1,5 @@
+[
+  {"beat_index": 3, "action_name": "侧旋", "performer": "领舞", "notes": "补填动作名称", "changed_by": "编导张老师", "change_reason": "补填缺失动作"},
+  {"beat_index": 4, "action_name": "大跳", "performer": "领舞", "notes": "落地要稳，膝盖微曲", "is_manual_override": true, "changed_by": "编导张老师", "change_reason": "补充表演者并修改备注细节"},
+  {"beat_index": 8, "action_name": "定格", "performer": "群舞", "notes": "漂移节拍处已人工确认同步，动作不变", "is_manual_override": true, "changed_by": "编导张老师", "change_reason": "确认漂移处动作同步无误"}
+]
