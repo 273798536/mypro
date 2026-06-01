@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>流体边界层风洞可视化</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <aside id="sidebar">
+      <header class="sidebar-header">
+        <h1>流体边界层风洞</h1>
+        <div class="status-indicator" id="status-indicator"></div>
+      </header>
+
+      <section class="panel">
+        <h2>参数控制</h2>
+        
+        <div class="control-group" id="angle-control">
+          <label>
+            <span class="label-text">迎角 (AoA)</span>
+            <span class="value" id="angle-value">0.0°</span>
+          </label>
+          <input type="range" id="angle-slider" min="-15" max="15" step="0.1" value="0">
+          <div class="range-info">
+            <span>安全范围: -8° ~ 8°</span>
+            <span class="limit-badge" id="angle-limit"></span>
+          </div>
+        </div>
+
+        <div class="control-group" id="wind-control">
+          <label>
+            <span class="label-text">风速</span>
+            <span class="value" id="wind-value">0.0 m/s</span>
+          </label>
+          <input type="range" id="wind-slider" min="0" max="100" step="0.5" value="30">
+          <div class="range-info">
+            <span>范围: 0 ~ 100 m/s</span>
+            <span class="version-badge" id="wind-version">基础版本</span>
+          </div>
+        </div>
+
+        <div class="control-group" id="sampling-control">
+          <label>
+            <span class="label-text">采样密度</span>
+            <span class="value" id="sampling-value">50</span>
+          </label>
+          <input type="range" id="sampling-slider" min="10" max="200" step="5" value="50">
+          <div class="range-info">
+            <span>建议范围: 10 ~ 80</span>
+            <span class="density-badge" id="sampling-status"></span>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="reset-btn" class="btn btn-secondary">重置对比</button>
+          <button id="snapshot-btn" class="btn btn-primary">截图导出</button>
+        </div>
+      </section>
+
+      <section class="panel" id="version-panel">
+        <h2>版本对比</h2>
+        <div class="version-grid">
+          <div class="version-card active" id="version-base">
+            <div class="version-tag">基准版本</div>
+            <div class="version-data">
+              <div><span>迎角:</span><span id="base-angle">0.0°</span></div>
+              <div><span>风速:</span><span id="base-wind">30.0 m/s</span></div>
+              <div><span>采样:</span><span id="base-sampling">50</span></div>
+            </div>
+          </div>
+          <div class="version-card" id="version-current">
+            <div class="version-tag">当前版本</div>
+            <div class="version-data">
+              <div><span>迎角:</span><span id="current-angle">0.0°</span></div>
+              <div><span>风速:</span><span id="current-wind">30.0 m/s</span></div>
+              <div><span>采样:</span><span id="current-sampling">50</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="diff-summary" id="diff-summary"></div>
+      </section>
+
+      <section class="panel" id="warnings-panel">
+        <h2>警告信息</h2>
+        <div id="warnings-container" class="warnings-container">
+          <div class="no-warnings">暂无警告</div>
+        </div>
+      </section>
+
+      <section class="panel" id="info-panel">
+        <h2>对象信息</h2>
+        <div id="info-content" class="info-content">
+          <p class="hint">点击场景中的对象查看详情</p>
+        </div>
+      </section>
+
+      <section class="panel" id="metrics-panel">
+        <h2>实时数据</h2>
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="metric-label">阻力系数 (Cd)</div>
+            <div class="metric-value" id="metric-cd">0.000</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">升力系数 (Cl)</div>
+            <div class="metric-value" id="metric-cl">0.000</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">边界层厚度</div>
+            <div class="metric-value" id="metric-boundary">0.00 mm</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">雷诺数</div>
+            <div class="metric-value" id="metric-re">0.00e+06</div>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <div id="toast-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
