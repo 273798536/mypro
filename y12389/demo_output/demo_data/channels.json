@@ -1,0 +1,86 @@
+{
+  "event_name": "2026夏季音乐节-主舞台",
+  "timestamp": "2026-06-01T20:00:00",
+  "channels": [
+    {
+      "ch_number": 1,
+      "name": "Kick",
+      "source_type": "mic",
+      "bus_assignment": "Mix1",
+      "phantom_power": false,
+      "gain_db": -12.0
+    },
+    {
+      "ch_number": 2,
+      "name": "Snare",
+      "source_type": "mic",
+      "bus_assignment": "Mix1",
+      "phantom_power": false,
+      "gain_db": -8.0
+    },
+    {
+      "ch_number": 3,
+      "name": "HiHat",
+      "source_type": "mic",
+      "bus_assignment": "Mix2",
+      "phantom_power": false,
+      "gain_db": -10.0
+    },
+    {
+      "ch_number": 4,
+      "name": "Bass DI",
+      "source_type": "di",
+      "bus_assignment": "Mix2",
+      "phantom_power": false,
+      "gain_db": -6.0
+    },
+    {
+      "ch_number": 5,
+      "name": "Guitar",
+      "source_type": "mic",
+      "bus_assignment": "Mix3",
+      "phantom_power": false,
+      "gain_db": -5.0
+    },
+    {
+      "ch_number": 6,
+      "name": "Keys L",
+      "source_type": "line",
+      "bus_assignment": "Mix3",
+      "phantom_power": false,
+      "gain_db": 0.0
+    },
+    {
+      "ch_number": 7,
+      "name": "Keys R",
+      "source_type": "line",
+      "bus_assignment": "Mix3",
+      "phantom_power": false,
+      "gain_db": 0.0
+    },
+    {
+      "ch_number": 8,
+      "name": "Vocal Main",
+      "source_type": "mic",
+      "bus_assignment": "Mix4",
+      "phantom_power": true,
+      "gain_db": -3.0
+    },
+    {
+      "ch_number": 9,
+      "name": "Vocal BGV1",
+      "source_type": "mic",
+      "bus_assignment": "Mix4",
+      "phantom_power": true,
+      "gain_db": -4.0
+    },
+    {
+      "ch_number": 10,
+      "name": "Vocal BGV2",
+      "source_type": "mic",
+      "bus_assignment": "Mix4",
+      "phantom_power": true,
+      "gain_db": -4.0
+    }
+  ]
+}

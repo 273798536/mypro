@@ -1,0 +1,527 @@
+{
+  "event_name": "2026夏季音乐节-主舞台",
+  "created_at": "2026-06-02T01:43:54.103884",
+  "trace": {
+    "record_id": "49d957a8",
+    "source": "现场返听故障复盘",
+    "imported_at": "2026-06-02T01:43:54.103874"
+  },
+  "channel_list_trace_id": "42120d13",
+  "snapshot_trace_id": "0dcf4457",
+  "problems": [
+    {
+      "problem_type": "通道错配",
+      "description": "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix1（乐手: 鼓手）",
+      "severity": "high",
+      "channel_refs": [
+        8
+      ],
+      "bus_refs": [
+        "Mix1",
+        "Mix4"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "鼓手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 1（Kick）分配到 Bus Mix1，但返听设置引用 Bus Mix2（乐手: 贝斯手）",
+      "severity": "high",
+      "channel_refs": [
+        1
+      ],
+      "bus_refs": [
+        "Mix2",
+        "Mix1"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "贝斯手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 5（Guitar）分配到 Bus Mix3，但返听设置引用 Bus Mix2（乐手: 贝斯手）",
+      "severity": "high",
+      "channel_refs": [
+        5
+      ],
+      "bus_refs": [
+        "Mix2",
+        "Mix3"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "贝斯手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 1（Kick）分配到 Bus Mix1，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+      "severity": "high",
+      "channel_refs": [
+        1
+      ],
+      "bus_refs": [
+        "Mix5",
+        "Mix1"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "吉他手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 2（Snare）分配到 Bus Mix1，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+      "severity": "high",
+      "channel_refs": [
+        2
+      ],
+      "bus_refs": [
+        "Mix5",
+        "Mix1"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "吉他手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 5（Guitar）分配到 Bus Mix3，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+      "severity": "high",
+      "channel_refs": [
+        5
+      ],
+      "bus_refs": [
+        "Mix5",
+        "Mix3"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "吉他手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+      "severity": "high",
+      "channel_refs": [
+        8
+      ],
+      "bus_refs": [
+        "Mix5",
+        "Mix4"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "吉他手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "返听设置中通道 12 在通道列表中不存在（乐手: 吉他手, Bus: Mix5）",
+      "severity": "high",
+      "channel_refs": [
+        12
+      ],
+      "bus_refs": [
+        "Mix5"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "吉他手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix3（乐手: 键盘手）",
+      "severity": "high",
+      "channel_refs": [
+        8
+      ],
+      "bus_refs": [
+        "Mix3",
+        "Mix4"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [
+        "键盘手"
+      ],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "通道错配",
+      "description": "通道 3（HiHat）已分配 Bus Mix2，但未被任何返听设置引用",
+      "severity": "medium",
+      "channel_refs": [
+        3
+      ],
+      "bus_refs": [
+        "Mix2"
+      ],
+      "snapshot_refs": [],
+      "musician_refs": [],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "快照缺失",
+      "description": "通道 3（HiHat）有 Bus 分配但在快照「Scene-A-Opening」中缺失返听设置",
+      "severity": "high",
+      "channel_refs": [
+        3
+      ],
+      "bus_refs": [
+        "Mix2"
+      ],
+      "snapshot_refs": [
+        "Scene-A-Opening"
+      ],
+      "musician_refs": [],
+      "trace_refs": [
+        "42120d13",
+        "0dcf4457"
+      ]
+    },
+    {
+      "problem_type": "反馈重复",
+      "description": "乐手 吉他手 的反馈重复（第 1 条与第 2 条：听不到鼓声）",
+      "severity": "low",
+      "channel_refs": [
+        1
+      ],
+      "bus_refs": [
+        "Mix5"
+      ],
+      "snapshot_refs": [],
+      "musician_refs": [
+        "吉他手"
+      ],
+      "trace_refs": []
+    }
+  ],
+  "attributions": [
+    {
+      "root_cause": "通道分配与返听设置不一致",
+      "affected_channels": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        12
+      ],
+      "affected_buses": [
+        "Mix1",
+        "Mix2",
+        "Mix3",
+        "Mix4",
+        "Mix5"
+      ],
+      "confidence": "high",
+      "evidence": [
+        "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix1（乐手: 鼓手）",
+        "通道 1（Kick）分配到 Bus Mix1，但返听设置引用 Bus Mix2（乐手: 贝斯手）",
+        "通道 5（Guitar）分配到 Bus Mix3，但返听设置引用 Bus Mix2（乐手: 贝斯手）",
+        "通道 1（Kick）分配到 Bus Mix1，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+        "通道 2（Snare）分配到 Bus Mix1，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+        "通道 5（Guitar）分配到 Bus Mix3，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+        "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix5（乐手: 吉他手）",
+        "返听设置中通道 12 在通道列表中不存在（乐手: 吉他手, Bus: Mix5）",
+        "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix3（乐手: 键盘手）",
+        "通道 3（HiHat）已分配 Bus Mix2，但未被任何返听设置引用",
+        "乐手反馈(吉他手): 听不到鼓声",
+        "乐手反馈(吉他手): 听不到鼓声",
+        "乐手反馈(主唱): 返听有啸叫",
+        "乐手反馈(贝斯手): 吉他声音太大"
+      ]
+    },
+    {
+      "root_cause": "快照数据不完整",
+      "affected_channels": [
+        3
+      ],
+      "affected_buses": [
+        "Mix2"
+      ],
+      "confidence": "medium",
+      "evidence": [
+        "通道 3（HiHat）有 Bus 分配但在快照「Scene-A-Opening」中缺失返听设置"
+      ]
+    },
+    {
+      "root_cause": "乐手反馈数据重复，可能影响故障判断",
+      "affected_channels": [
+        1
+      ],
+      "affected_buses": [
+        "Mix5"
+      ],
+      "confidence": "low",
+      "evidence": [
+        "乐手 吉他手 的反馈重复（第 1 条与第 2 条：听不到鼓声）"
+      ]
+    }
+  ],
+  "time_alignments": [
+    {
+      "event_time": "2026-06-01T20:00:00",
+      "snapshot_time": "2026-06-01T20:05:00",
+      "feedback_time": null,
+      "offset_seconds": 300.0,
+      "aligned": false,
+      "note": "快照与事件时间差 300 秒"
+    },
+    {
+      "event_time": "2026-06-01T20:00:00",
+      "snapshot_time": "2026-06-01T20:05:00",
+      "feedback_time": "2026-06-01T20:10:00",
+      "offset_seconds": 600.0,
+      "aligned": false,
+      "note": "乐手 吉他手 反馈与事件时间差 600 秒"
+    },
+    {
+      "event_time": "2026-06-01T20:00:00",
+      "snapshot_time": "2026-06-01T20:05:00",
+      "feedback_time": "2026-06-01T20:10:00",
+      "offset_seconds": 600.0,
+      "aligned": false,
+      "note": "乐手 吉他手 反馈与事件时间差 600 秒"
+    },
+    {
+      "event_time": "2026-06-01T20:00:00",
+      "snapshot_time": "2026-06-01T20:05:00",
+      "feedback_time": "2026-06-01T20:12:00",
+      "offset_seconds": 720.0,
+      "aligned": false,
+      "note": "乐手 主唱 反馈与事件时间差 720 秒"
+    },
+    {
+      "event_time": "2026-06-01T20:00:00",
+      "snapshot_time": "2026-06-01T20:05:00",
+      "feedback_time": "2026-06-01T20:15:00",
+      "offset_seconds": 900.0,
+      "aligned": false,
+      "note": "乐手 贝斯手 反馈与事件时间差 900 秒"
+    }
+  ],
+  "corrections": [
+    {
+      "target": "通道 8（Vocal Main）",
+      "action": "将 Bus 分配从 Mix4 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix1（乐手: 鼓手）"
+    },
+    {
+      "target": "通道 1（Kick）",
+      "action": "将 Bus 分配从 Mix1 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 1（Kick）分配到 Bus Mix1，但返听设置引用 Bus Mix2（乐手: 贝斯手）"
+    },
+    {
+      "target": "通道 5（Guitar）",
+      "action": "将 Bus 分配从 Mix3 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 5（Guitar）分配到 Bus Mix3，但返听设置引用 Bus Mix2（乐手: 贝斯手）"
+    },
+    {
+      "target": "通道 1（Kick）",
+      "action": "将 Bus 分配从 Mix1 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 1（Kick）分配到 Bus Mix1，但返听设置引用 Bus Mix5（乐手: 吉他手）"
+    },
+    {
+      "target": "通道 2（Snare）",
+      "action": "将 Bus 分配从 Mix1 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 2（Snare）分配到 Bus Mix1，但返听设置引用 Bus Mix5（乐手: 吉他手）"
+    },
+    {
+      "target": "通道 5（Guitar）",
+      "action": "将 Bus 分配从 Mix3 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 5（Guitar）分配到 Bus Mix3，但返听设置引用 Bus Mix5（乐手: 吉他手）"
+    },
+    {
+      "target": "通道 8（Vocal Main）",
+      "action": "将 Bus 分配从 Mix4 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix5（乐手: 吉他手）"
+    },
+    {
+      "target": "通道 12",
+      "action": "从返听设置中移除不存在的通道引用，或补充通道到通道列表",
+      "priority": "high",
+      "rationale": "返听设置中通道 12 在通道列表中不存在（乐手: 吉他手, Bus: Mix5）"
+    },
+    {
+      "target": "通道 8（Vocal Main）",
+      "action": "将 Bus 分配从 Mix4 修正为返听设置中引用的 Bus",
+      "priority": "high",
+      "rationale": "通道 8（Vocal Main）分配到 Bus Mix4，但返听设置引用 Bus Mix3（乐手: 键盘手）"
+    },
+    {
+      "target": "通道 3（HiHat）",
+      "action": "补充通道 3 到返听设置",
+      "priority": "high",
+      "rationale": "通道 3（HiHat）已分配 Bus Mix2，但未被任何返听设置引用"
+    },
+    {
+      "target": "快照「Scene-A-Opening」",
+      "action": "补充通道 [3] 的返听设置",
+      "priority": "high",
+      "rationale": "通道 3（HiHat）有 Bus 分配但在快照「Scene-A-Opening」中缺失返听设置"
+    },
+    {
+      "target": "乐手反馈数据",
+      "action": "去重后保留最早一条反馈，确认是否为不同时间点的同类问题",
+      "priority": "low",
+      "rationale": "乐手 吉他手 的反馈重复（第 1 条与第 2 条：听不到鼓声）"
+    }
+  ],
+  "correspondences": [
+    {
+      "channel_list_trace_id": "42120d13",
+      "snapshot_trace_id": "0dcf4457",
+      "report_trace_id": "49d957a8",
+      "channel_numbers": [
+        1,
+        2,
+        8
+      ],
+      "bus_names": [
+        "Mix1"
+      ],
+      "note": "乐手 鼓手 的返听设置"
+    },
+    {
+      "channel_list_trace_id": "42120d13",
+      "snapshot_trace_id": "0dcf4457",
+      "report_trace_id": "49d957a8",
+      "channel_numbers": [
+        1,
+        4,
+        5
+      ],
+      "bus_names": [
+        "Mix2"
+      ],
+      "note": "乐手 贝斯手 的返听设置"
+    },
+    {
+      "channel_list_trace_id": "42120d13",
+      "snapshot_trace_id": "0dcf4457",
+      "report_trace_id": "49d957a8",
+      "channel_numbers": [
+        1,
+        2,
+        5,
+        8,
+        12
+      ],
+      "bus_names": [
+        "Mix5"
+      ],
+      "note": "乐手 吉他手 的返听设置"
+    },
+    {
+      "channel_list_trace_id": "42120d13",
+      "snapshot_trace_id": "0dcf4457",
+      "report_trace_id": "49d957a8",
+      "channel_numbers": [
+        6,
+        7,
+        8
+      ],
+      "bus_names": [
+        "Mix3"
+      ],
+      "note": "乐手 键盘手 的返听设置"
+    },
+    {
+      "channel_list_trace_id": "42120d13",
+      "snapshot_trace_id": "0dcf4457",
+      "report_trace_id": "49d957a8",
+      "channel_numbers": [
+        8,
+        9,
+        10
+      ],
+      "bus_names": [
+        "Mix4"
+      ],
+      "note": "乐手 主唱 的返听设置"
+    },
+    {
+      "channel_list_trace_id": "42120d13",
+      "snapshot_trace_id": "0dcf4457",
+      "report_trace_id": "49d957a8",
+      "channel_numbers": [
+        3
+      ],
+      "bus_names": [
+        "Mix2"
+      ],
+      "note": "通道 3（HiHat）未在返听设置中出现"
+    }
+  ]
+}

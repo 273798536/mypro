@@ -1,0 +1,36 @@
+{
+  "feedbacks": [
+    {
+      "musician": "吉他手",
+      "timestamp": "2026-06-01T20:10:00",
+      "issue": "听不到鼓声",
+      "channel_ref": 1,
+      "bus_ref": "Mix5",
+      "severity": "high"
+    },
+    {
+      "musician": "吉他手",
+      "timestamp": "2026-06-01T20:10:00",
+      "issue": "听不到鼓声",
+      "channel_ref": 1,
+      "bus_ref": "Mix5",
+      "severity": "high"
+    },
+    {
+      "musician": "主唱",
+      "timestamp": "2026-06-01T20:12:00",
+      "issue": "返听有啸叫",
+      "channel_ref": 8,
+      "bus_ref": "Mix4",
+      "severity": "high"
+    },
+    {
+      "musician": "贝斯手",
+      "timestamp": "2026-06-01T20:15:00",
+      "issue": "吉他声音太大",
+      "channel_ref": 5,
+      "bus_ref": "Mix2",
+      "severity": "medium"
+    }
+  ]
+}

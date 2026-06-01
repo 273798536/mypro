@@ -1,0 +1,74 @@
+{
+  "snapshot_name": "Scene-A-Opening",
+  "timestamp": "2026-06-01T20:05:00",
+  "scene_label": "开场",
+  "monitor_settings": [
+    {
+      "musician": "鼓手",
+      "bus": "Mix1",
+      "channels": [
+        1,
+        2,
+        8
+      ],
+      "level_db": -6.0,
+      "eq_high_hz": 12000,
+      "eq_mid_hz": 2500,
+      "eq_low_hz": 80
+    },
+    {
+      "musician": "贝斯手",
+      "bus": "Mix2",
+      "channels": [
+        1,
+        4,
+        5
+      ],
+      "level_db": -4.0,
+      "eq_high_hz": 8000,
+      "eq_mid_hz": 800,
+      "eq_low_hz": 60
+    },
+    {
+      "musician": "吉他手",
+      "bus": "Mix5",
+      "channels": [
+        1,
+        2,
+        5,
+        8,
+        12
+      ],
+      "level_db": -5.0,
+      "eq_high_hz": 10000,
+      "eq_mid_hz": 2000,
+      "eq_low_hz": 100
+    },
+    {
+      "musician": "键盘手",
+      "bus": "Mix3",
+      "channels": [
+        6,
+        7,
+        8
+      ],
+      "level_db": -3.0,
+      "eq_high_hz": 12000,
+      "eq_mid_hz": 3000,
+      "eq_low_hz": 80
+    },
+    {
+      "musician": "主唱",
+      "bus": "Mix4",
+      "channels": [
+        8,
+        9,
+        10
+      ],
+      "level_db": -2.0,
+      "eq_high_hz": 10000,
+      "eq_mid_hz": 2500,
+      "eq_low_hz": 100
+    }
+  ]
+}
