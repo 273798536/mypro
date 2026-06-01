@@ -1,0 +1,96 @@
+{
+  "tracking_id": "dff57aa0-c792-4afe-acad-869578761b7a",
+  "exported_at": "2026-06-02T01:57:07.549197",
+  "nodes": [
+    {
+      "node_id": "16703749-f6ce-4b58-91e5-a6a111d32654",
+      "node_type": "charge_config",
+      "timestamp": 0.0,
+      "data": {
+        "charge_id": "charge1",
+        "position": [
+          0.1,
+          0.0,
+          0.0
+        ],
+        "charge": 1e-09,
+        "charge_type": "positive"
+      },
+      "parent_ids": [],
+      "metadata": {},
+      "created_at": "2026-06-02T01:57:07.160154"
+    },
+    {
+      "node_id": "1de1cbb0-e725-4ead-a265-1a934c97acdd",
+      "node_type": "charge_config",
+      "timestamp": 0.0,
+      "data": {
+        "charge_id": "charge2",
+        "position": [
+          -0.1,
+          0.0,
+          0.0
+        ],
+        "charge": -1e-09,
+        "charge_type": "negative"
+      },
+      "parent_ids": [],
+      "metadata": {},
+      "created_at": "2026-06-02T01:57:07.160167"
+    },
+    {
+      "node_id": "56a8e861-ef87-4b91-a3d9-1aa4acf4f50d",
+      "node_type": "coil_config",
+      "timestamp": 0.0,
+      "data": {
+        "coil_id": "coil1",
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "normal": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "radius": 0.05,
+        "current": 50.0,
+        "turns": 1
+      },
+      "parent_ids": [],
+      "metadata": {},
+      "created_at": "2026-06-02T01:57:07.160204"
+    },
+    {
+      "node_id": "b5c352ce-e451-435f-a121-f5beb51e6e28",
+      "node_type": "particle_config",
+      "timestamp": 0.0,
+      "data": {
+        "particle_id": "electron1",
+        "position": [
+          0.0,
+          0.05,
+          0.0
+        ],
+        "velocity": [
+          100000.0,
+          0.0,
+          0.0
+        ],
+        "charge": -1.6e-19,
+        "mass": 9.11e-31,
+        "name": "演示电子"
+      },
+      "parent_ids": [],
+      "metadata": {},
+      "created_at": "2026-06-02T01:57:07.160222"
+    }
+  ],
+  "head_nodes": [
+    "16703749-f6ce-4b58-91e5-a6a111d32654",
+    "1de1cbb0-e725-4ead-a265-1a934c97acdd",
+    "56a8e861-ef87-4b91-a3d9-1aa4acf4f50d",
+    "b5c352ce-e451-435f-a121-f5beb51e6e28"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "session_id": "998be532-f9ef-4ff0-9ab5-92e3ef07209c",
+  "exported_at": "2026-06-02T01:57:07.549929",
+  "annotations": [
+    {
+      "annotation_id": "8aec8d38-deb3-4336-ac13-69837e7e1f13",
+      "versions": [
+        {
+          "annotation_id": "8aec8d38-deb3-4336-ac13-69837e7e1f13",
+          "version": 1,
+          "type": "field_strength",
+          "value": 1000.0,
+          "unit": "V/m",
+          "position": [
+            -0.06857963530632072,
+            0.04011415013331294,
+            0.0
+          ],
+          "description": "电场强度采样",
+          "annotator": "user",
+          "timestamp": 1.0000000000000002e-10,
+          "confidence": "high",
+          "status": "draft",
+          "parent_annotation_id": null,
+          "simulation_step": 10,
+          "particle_id": "electron1",
+          "field_component": null,
+          "metadata": {},
+          "created_at": "2026-06-02T01:57:07.547592",
+          "updated_at": "2026-06-02T01:57:07.547593"
+        }
+      ],
+      "current_version": 1
+    }
+  ]
+}

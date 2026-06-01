@@ -1,0 +1,271 @@
+{
+  "overall_summary": "本次模拟共 1 个粒子，1 个需物理老师复核，0 个可直接使用",
+  "particle_results": {
+    "electron1": {
+      "particle_id": "electron1",
+      "final_category": "needs_teacher_review",
+      "confidence_score": 0.5,
+      "summary": "需要物理老师复核: 粒子 36 次超出模拟边界，轨迹可能不完整",
+      "issues": [
+        {
+          "issue_id": "electron1_oob",
+          "rule_id": "R006",
+          "name": "粒子越界",
+          "description": "粒子 36 次超出模拟边界，轨迹可能不完整",
+          "category": "needs_teacher_review",
+          "severity": 4,
+          "location": null,
+          "evidence": {
+            "oob_count": 36,
+            "oob_details": [
+              {
+                "step": 64,
+                "timestamp": 6.399999999999998e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 65,
+                "timestamp": 6.499999999999997e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 66,
+                "timestamp": 6.599999999999997e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 67,
+                "timestamp": 6.699999999999997e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 68,
+                "timestamp": 6.799999999999996e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 69,
+                "timestamp": 6.899999999999996e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 70,
+                "timestamp": 6.999999999999995e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 71,
+                "timestamp": 7.099999999999995e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 72,
+                "timestamp": 7.199999999999995e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 73,
+                "timestamp": 7.299999999999994e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 74,
+                "timestamp": 7.399999999999994e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 75,
+                "timestamp": 7.499999999999994e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 76,
+                "timestamp": 7.599999999999993e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 77,
+                "timestamp": 7.699999999999993e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 78,
+                "timestamp": 7.799999999999993e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 79,
+                "timestamp": 7.899999999999992e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 80,
+                "timestamp": 7.999999999999992e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 81,
+                "timestamp": 8.099999999999992e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 82,
+                "timestamp": 8.199999999999991e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 83,
+                "timestamp": 8.299999999999991e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 84,
+                "timestamp": 8.399999999999991e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 85,
+                "timestamp": 8.49999999999999e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 86,
+                "timestamp": 8.59999999999999e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 87,
+                "timestamp": 8.69999999999999e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 88,
+                "timestamp": 8.799999999999989e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 89,
+                "timestamp": 8.899999999999989e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 90,
+                "timestamp": 8.999999999999989e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 91,
+                "timestamp": 9.099999999999988e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 92,
+                "timestamp": 9.199999999999988e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 93,
+                "timestamp": 9.299999999999988e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 94,
+                "timestamp": 9.399999999999988e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 95,
+                "timestamp": 9.499999999999988e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 96,
+                "timestamp": 9.599999999999988e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 97,
+                "timestamp": 9.699999999999987e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 98,
+                "timestamp": 9.799999999999987e-10,
+                "axis": "x",
+                "position": -0.5
+              },
+              {
+                "step": 99,
+                "timestamp": 9.899999999999986e-10,
+                "axis": "x",
+                "position": -0.5
+              }
+            ]
+          },
+          "suggestion": "请考虑扩大模拟边界或调整初始条件，确保粒子在感兴趣区域内运动"
+        },
+        {
+          "issue_id": "electron1_complete",
+          "rule_id": "R009",
+          "name": "数据完整",
+          "description": "所有必要参数完整，计算过程稳定",
+          "category": "direct_use",
+          "severity": 0,
+          "location": null,
+          "evidence": {
+            "has_mass": true,
+            "has_charge": true,
+            "frames_count": 100
+          },
+          "suggestion": null
+        }
+      ],
+      "direct_use_evidence": [
+        "所有必要参数完整，计算过程稳定"
+      ],
+      "review_required_reasons": [
+        "粒子 36 次超出模拟边界，轨迹可能不完整"
+      ],
+      "not_usable_reasons": []
+    }
+  },
+  "direct_use_count": 0,
+  "needs_review_count": 1,
+  "not_usable_count": 0,
+  "total_particles": 1,
+  "generated_at": "2026-06-02T01:57:07.550566"
+}

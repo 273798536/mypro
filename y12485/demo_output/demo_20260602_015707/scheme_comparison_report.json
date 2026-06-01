@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-06-02T01:57:07.550196",
+  "total_schemes": 1,
+  "schemes": [
+    {
+      "scheme_id": "c0efaefb-a082-417b-b0ac-971ba28c8ce7",
+      "name": "基础方案",
+      "description": "演示用的基础配置方案",
+      "created_at": "2026-06-02T01:57:07.547660",
+      "particle_count": 1,
+      "charge_count": 2,
+      "coil_count": 1,
+      "has_classification": true,
+      "direct_use_count": 0,
+      "needs_review_count": 1,
+      "not_usable_count": 0
+    }
+  ],
+  "comparisons": [],
+  "classification_guide": {
+    "categories": {
+      "direct_use": {
+        "name": "可直接使用",
+        "description": "数据完整、计算稳定、无异常事件，结果可信",
+        "criteria": [
+          "粒子质量和电荷完整设置",
+          "无场强爆炸或数值错误",
+          "无方向反转或越界事件（或已确认是预期物理现象）"
+        ]
+      },
+      "needs_teacher_review": {
+        "name": "需物理老师确认",
+        "description": "存在需要人工判断的异常，可能是物理现象也可能是问题",
+        "criteria": [
+          "检测到方向反转，需确认是否为预期物理现象",
+          "粒子越界，需确认是否影响结果",
+          "事件时间重叠，需人工区分"
+        ]
+      },
+      "not_usable": {
+        "name": "暂时不能算",
+        "description": "存在严重问题，数据不可靠",
+        "criteria": [
+          "场强爆炸导致数值不稳定",
+          "粒子质量或电荷缺失",
+          "数值计算错误"
+        ]
+      }
+    },
+    "rules": [
+      {
+        "id": "R001",
+        "name": "场强爆炸",
+        "description": "粒子运动过程中遇到数值不稳定的场强爆炸",
+        "category": "not_usable",
+        "severity": 10
+      },
+      {
+        "id": "R002",
+        "name": "粒子质量缺失",
+        "description": "粒子质量未设置，无法进行正确的物理计算",
+        "category": "not_usable",
+        "severity": 10
+      },
+      {
+        "id": "R003",
+        "name": "粒子电荷缺失",
+        "description": "粒子电荷未设置，无法进行正确的物理计算",
+        "category": "not_usable",
+        "severity": 10
+      },
+      {
+        "id": "R004",
+        "name": "数值错误",
+        "description": "模拟过程中出现数值计算错误",
+        "category": "not_usable",
+        "severity": 9
+      },
+      {
+        "id": "R005",
+        "name": "方向反转",
+        "description": "粒子运动方向发生反转，需要验证是否为物理现象",
+        "category": "needs_teacher_review",
+        "severity": 5
+      },
+      {
+        "id": "R006",
+        "name": "粒子越界",
+        "description": "粒子超出模拟边界，结果可能不完整",
+        "category": "needs_teacher_review",
+        "severity": 4
+      },
+      {
+        "id": "R007",
+        "name": "反转与越界重叠",
+        "description": "方向反转事件与越界事件发生在同一时间步，可能被错误合并",
+        "category": "needs_teacher_review",
+        "severity": 7
+      },
+      {
+        "id": "R008",
+        "name": "轨迹正常",
+        "description": "粒子运动轨迹正常，无异常事件",
+        "category": "direct_use",
+        "severity": 0
+      },
+      {
+        "id": "R009",
+        "name": "数据完整",
+        "description": "所有必要参数完整，计算过程稳定",
+        "category": "direct_use",
+        "severity": 0
+      }
+    ]
+  }
+}
