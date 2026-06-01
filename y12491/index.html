@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>债券违约传染网络</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <h1>债券违约传染网络</h1>
+      <div class="header-actions">
+        <div id="filter-container"></div>
+        <div id="export-container"></div>
+      </div>
+    </header>
+    <div id="network-container"></div>
+    <div id="detail-container"></div>
+    <div id="bottom-bar">
+      <div id="timeline-container"></div>
+      <div id="summary-container"></div>
+    </div>
+  </div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
