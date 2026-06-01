@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply bg-industrial-bg text-industrial-text;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-industrial-bg-dark;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-industrial-border rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-industrial-border-light;
+  }
+}
+
+@layer components {
+  .industrial-card {
+    @apply bg-industrial-bg-light border border-industrial-border rounded-sm p-4;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .industrial-btn {
+    @apply px-4 py-2 border-2 border-industrial-border bg-industrial-bg 
+           text-industrial-text font-medium transition-all duration-200
+           hover:border-industrial-border-light hover:bg-industrial-bg-light
+           active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500/50;
+  }
+
+  .industrial-btn-primary {
+    @apply industrial-btn border-blue-500 text-blue-400
+           hover:bg-blue-500/10 hover:shadow-glow-blue;
+  }
+
+  .industrial-btn-danger {
+    @apply industrial-btn border-red-500 text-red-400
+           hover:bg-red-500/10 hover:shadow-glow-red;
+  }
+
+  .industrial-btn-success {
+    @apply industrial-btn border-green-500 text-green-400
+           hover:bg-green-500/10 hover:shadow-glow-green;
+  }
+
+  .industrial-input {
+    @apply bg-industrial-bg border border-industrial-border rounded-sm px-3 py-2
+           text-industrial-text font-mono text-sm
+           focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
+           placeholder-industrial-text-dim;
+  }
+
+  .industrial-table {
+    @apply w-full border-collapse;
+  }
+
+  .industrial-table th {
+    @apply bg-industrial-bg-dark border border-industrial-border px-4 py-3
+           text-left text-industrial-text-muted text-sm font-semibold;
+  }
+
+  .industrial-table td {
+    @apply border border-industrial-border px-4 py-2 text-sm;
+  }
+
+  .industrial-table tr:nth-child(even) {
+    @apply bg-industrial-bg/50;
+  }
+
+  .industrial-table tr:hover {
+    @apply bg-industrial-bg-light;
+  }
+
+  .industrial-table tr.anomaly-speed {
+    @apply bg-blue-500/10;
+  }
+
+  .industrial-table tr.anomaly-temp {
+    @apply bg-orange-500/10;
+  }
+
+  .industrial-table tr.anomaly-power {
+    @apply bg-red-500/10;
+  }
+
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  .status-dot.online {
+    @apply bg-anomaly-normal animate-pulse;
+  }
+
+  .status-dot.offline {
+    @apply bg-industrial-text-dim;
+  }
+
+  .status-dot.maintenance {
+    @apply bg-yellow-500 animate-pulse;
+  }
+
+  .data-number {
+    @apply font-mono tabular-nums;
+  }
+
+  .anomaly-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .anomaly-badge-speed {
+    @apply bg-blue-500/20 text-blue-400 border border-blue-500/50;
+  }
+
+  .anomaly-badge-temp {
+    @apply bg-orange-500/20 text-orange-400 border border-orange-500/50;
+  }
+
+  .anomaly-badge-power {
+    @apply bg-red-500/20 text-red-400 border border-red-500/50;
+  }
+
+  .segment-highlight-0 { @apply bg-blue-500/10; }
+  .segment-highlight-1 { @apply bg-purple-500/10; }
+  .segment-highlight-2 { @apply bg-green-500/10; }
+  .segment-highlight-3 { @apply bg-yellow-500/10; }
+  .segment-highlight-4 { @apply bg-pink-500/10; }
+}
+
+@layer utilities {
+  .text-shadow-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .border-glow-blue {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), inset 0 0 10px rgba(59, 130, 246, 0.1);
+  }
+
+  .grid-lines {
+    background-image: 
+      linear-gradient(rgba(71, 85, 105, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(71, 85, 105, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
