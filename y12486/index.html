@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web3 交易网络星图</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0e17;
+  --panel-bg: #111827;
+  --card-bg: #1a2332;
+  --border: #2a3a4e;
+  --text: #e2e8f0;
+  --text-dim: #8899aa;
+  --accent: #38bdf8;
+  --accent2: #a78bfa;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --success: #10b981;
+  --circular: #f97316;
+  --merge: #e879f9;
+  --expired: #94a3b8;
+}
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif; overflow: hidden; }
+#app { display: flex; height: 100vh; }
+#canvas-wrap { flex: 1; position: relative; overflow: hidden; }
+#canvas-wrap canvas { display: block; }
+#watermark { position: absolute; top: 12px; left: 16px; font-size: 13px; color: var(--text-dim); pointer-events: none; z-index: 2; line-height: 1.6; }
+#watermark .title { font-size: 16px; font-weight: 700; color: var(--accent); }
+#watermark .tw { font-size: 12px; color: var(--warning); }
+#tooltip { position: absolute; display: none; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 12px; pointer-events: none; z-index: 10; max-width: 320px; line-height: 1.6; box-shadow: 0 4px 20px rgba(0,0,0,.5); }
+#tooltip .tt-addr { font-family: 'SF Mono', 'Fira Code', monospace; color: var(--accent); word-break: break-all; }
+#tooltip .tt-label { color: var(--accent2); font-weight: 600; }
+#tooltip .tt-warn { color: var(--warning); }
+#tooltip .tt-err { color: var(--error); }
+#tooltip .tt-ok { color: var(--success); }
+#tooltip .tt-dim { color: var(--text-dim); }
+
+#sidebar { width: 380px; min-width: 320px; background: var(--panel-bg); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+#sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--card-bg); }
+#sidebar-tabs button { flex: 1; padding: 10px 6px; font-size: 12px; font-weight: 600; background: none; border: none; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: .2s; }
+#sidebar-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+#sidebar-tabs button:hover { color: var(--text); }
+#sidebar-content { flex: 1; overflow-y: auto; padding: 14px; }
+#sidebar-content::-webkit-scrollbar { width: 4px; }
+#sidebar-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.panel-section { margin-bottom: 16px; }
+.panel-section h3 { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.stat-card .stat-val { font-size: 20px; font-weight: 700; color: var(--accent); }
+.stat-card .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.stat-card.warn .stat-val { color: var(--warning); }
+.stat-card.err .stat-val { color: var(--error); }
+
+.anomaly-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
+.anomaly-item .anomaly-type { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.anomaly-item .anomaly-type.merge { color: var(--merge); }
+.anomaly-item .anomaly-type.circular { color: var(--circular); }
+.anomaly-item .anomaly-type.expired { color: var(--expired); }
+.anomaly-item .anomaly-orig { color: var(--text-dim); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.anomaly-item .anomaly-curr { color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; }
+.anomaly-item .anomaly-note { color: var(--warning); font-size: 11px; margin-top: 4px; }
+
+.hint-item { background: var(--card-bg); border-left: 3px solid var(--warning); border-radius: 0 8px 8px 0; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
+.hint-item .hint-addr { font-family: 'SF Mono', 'Fira Code', monospace; color: var(--accent); font-size: 11px; word-break: break-all; }
+.hint-item .hint-action { color: var(--success); font-size: 11px; margin-top: 4px; }
+
+.impact-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.6; }
+.impact-item .impact-tag { display: inline-block; background: var(--warning); color: #000; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-right: 6px; }
+.impact-item .impact-nodes { color: var(--accent); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; word-break: break-all; }
+
+#time-bar { background: var(--card-bg); border-top: 1px solid var(--border); padding: 10px 14px; }
+#time-bar .time-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; display: flex; justify-content: space-between; }
+#time-bar .time-label span { font-weight: 600; color: var(--warning); }
+#time-slider { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; }
+#time-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); }
+#time-controls { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+#time-controls button { background: var(--border); border: none; color: var(--text); padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+#time-controls button:hover { background: var(--accent); color: var(--bg); }
+#time-controls .speed-label { font-size: 11px; color: var(--text-dim); margin-left: auto; }
+#time-current { font-size: 12px; color: var(--accent); font-weight: 600; text-align: center; margin-top: 4px; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-dim); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+.version-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-left: 6px; font-weight: 600; }
+.version-badge.v-current { background: var(--success); color: #000; }
+.version-badge.v-stale { background: var(--warning); color: #000; }
+
+.detail-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-row .dr-key { color: var(--text-dim); }
+.detail-row .dr-val { color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; text-align: right; max-width: 200px; word-break: break-all; }
+
+#sidebar-content .tab-panel { display: none; }
+#sidebar-content .tab-panel.active { display: block; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="canvas-wrap">
+    <div id="watermark">
+      <div class="title">Web3 交易网络星图</div>
+      <div id="wm-time-window" class="tw"></div>
+      <div id="wm-version"></div>
+      <div id="wm-frame"></div>
+    </div>
+    <div id="tooltip"></div>
+  </div>
+  <div id="sidebar">
+    <div id="sidebar-tabs">
+      <button class="active" data-tab="overview">概览</button>
+      <button data-tab="anomaly">异常</button>
+      <button data-tab="hints">标签提示</button>
+      <button data-tab="impact">口径影响</button>
+    </div>
+    <div id="sidebar-content">
+      <div id="panel-overview" class="tab-panel active">
+        <div class="panel-section">
+          <h3>网络指标</h3>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-val" id="s-nodes">0</div><div class="stat-label">节点数</div></div>
+            <div class="stat-card"><div class="stat-val" id="s-edges">0</div><div class="stat-label">边数</div></div>
+            <div class="stat-card"><div class="stat-val" id="s-volume">0</div><div class="stat-label">总交易量 ETH</div></div>
+            <div class="stat-card"><div class="stat-val" id="s-txcount">0</div><div class="stat-label">交易笔数</div></div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <h3>数据版本 <span id="data-version" class="version-badge v-current">v1</span></h3>
+          <div id="version-info" style="font-size:12px;color:var(--text-dim);line-height:1.6;"></div>
+        </div>
+        <div class="panel-section">
+          <h3>图例</h3>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#38bdf8"></div>钱包</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>合约</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>交易所</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>异常节点</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#e879f9;border:2px dashed #e879f9"></div>合并错误</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>循环转账</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>标签过期</div>
+          </div>
+        </div>
+        <div class="panel-section" id="detail-section" style="display:none">
+          <h3>选中节点详情</h3>
+          <div id="detail-content"></div>
+        </div>
+      </div>
+      <div id="panel-anomaly" class="tab-panel">
+        <div class="panel-section">
+          <h3>地址合并错误</h3>
+          <div id="anomaly-merge"></div>
+        </div>
+        <div class="panel-section">
+          <h3>循环转账</h3>
+          <div id="anomaly-circular"></div>
+        </div>
+        <div class="panel-section">
+          <h3>标签过期</h3>
+          <div id="anomaly-expired"></div>
+        </div>
+      </div>
+      <div id="panel-hints" class="tab-panel">
+        <div class="panel-section">
+          <h3>缺失合约标签 — 可操作提示</h3>
+          <div id="hints-list"></div>
+        </div>
+      </div>
+      <div id="panel-impact" class="tab-panel">
+        <div class="panel-section">
+          <h3>时间窗口口径变更影响</h3>
+          <div id="impact-list"></div>
+        </div>
+      </div>
+    </div>
+    <div id="time-bar">
+      <div class="time-label">时间播放 <span id="tw-range"></span></div>
+      <input type="range" id="time-slider" min="0" max="100" value="0">
+      <div id="time-controls">
+        <button id="btn-play">▶ 播放</button>
+        <button id="btn-step">+1 步</button>
+        <button id="btn-reset">重置</button>
+        <span class="speed-label" id="speed-label">1x</span>
+      </div>
+      <div id="time-current">—</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  var TIME_WINDOWS = [
+    { id: 'tw0', label: '2025-01', range: '2025-01-01 ~ 2025-01-31', start: '2025-01-01', end: '2025-01-31' },
+    { id: 'tw1', label: '2025-02', range: '2025-02-01 ~ 2025-02-28', start: '2025-02-01', end: '2025-02-28' },
+    { id: 'tw2', label: '2025-03', range: '2025-03-01 ~ 2025-03-31', start: '2025-03-01', end: '2025-03-31' },
+    { id: 'tw3', label: '2025-04', range: '2025-04-01 ~ 2025-04-30', start: '2025-04-01', end: '2025-04-30' },
+    { id: 'tw4', label: '2025-05', range: '2025-05-01 ~ 2025-05-31', start: '2025-05-01', end: '2025-05-31' },
+    { id: 'tw5', label: '2025-06', range: '2025-06-01 ~ 2025-06-30', start: '2025-06-01', end: '2025-06-30' }
+  ];
+
+  var DATA_VERSION = 2;
+  var DATA_VERSION_NOTE = '合约标签更新至 v2；v1 标签于 2025-03 过期，已标记但保留原始值';
+
+  var NODES = [
+    { id: '0xA1b2…3c4D', label: 'Uniswap V3 Router', originalLabel: 'Uniswap V3 Router', type: 'contract', version: 2, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 1420.5 },
+    { id: '0xB3c4…5e6F', label: 'Vitalik.eth', originalLabel: 'Vitalik.eth', type: 'wallet', version: 2, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 8920.1 },
+    { id: '0xC5d6…7g8H', label: null, originalLabel: null, type: 'contract', version: 1, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 330.7 },
+    { id: '0xD7e8…9i0J', label: 'Binance Hot Wallet', originalLabel: 'Binance Hot Wallet', type: 'exchange', version: 2, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 54300.0 },
+    { id: '0xE9f0…1k2L', label: 'Aave Lending Pool', originalLabel: 'Aave Lending Pool v1', type: 'contract', version: 2, mergeError: false, mergeNote: '', labelExpired: true, labelExpiredNote: 'v1 标签已于 2025-03 过期，当前合约已升级为 v2，但标签未同步', balance: 2100.3 },
+    { id: '0xF1g2…3m4N', label: null, originalLabel: null, type: 'wallet', version: 1, mergeError: true, mergeNote: '该地址疑似与 0xA1b2…3c4D 为同一实体控制，但尚未合并；原始采集显示两笔来自同一 IP 的交易', labelExpired: false, labelExpiredNote: '', balance: 450.2 },
+    { id: '0xG5h6…7o8P', label: 'OpenSea Seaport', originalLabel: 'OpenSea Seaport', type: 'contract', version: 1, mergeError: false, mergeNote: '', labelExpired: true, labelExpiredNote: '标签数据版本 v1，当前合约已迁移至 Seaport 1.6，标签未更新', balance: 890.6 },
+    { id: '0xH9i0…1q2R', label: null, originalLabel: null, type: 'wallet', version: 1, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 55.1 },
+    { id: '0xI3j4…5s6T', label: 'OKX Deposit', originalLabel: 'OKX Deposit', type: 'exchange', version: 2, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 32100.8 },
+    { id: '0xJ7k8…9u0V', label: null, originalLabel: 'MEV Bot (旧)', type: 'contract', version: 1, mergeError: true, mergeNote: '被错误合并到 0xC5d6…7g8H；两个地址实际控制不同实体，合并操作已回滚，保留原始合并记录', labelExpired: false, labelExpiredNote: '', balance: 1200.0 },
+    { id: '0xK1l2…3w4X', label: 'Tornado Cash Router', originalLabel: 'Tornado Cash Router', type: 'contract', version: 2, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 6700.4 },
+    { id: '0xL5m6…7y8Z', label: null, originalLabel: null, type: 'wallet', version: 1, mergeError: false, mergeNote: '', labelExpired: false, labelExpiredNote: '', balance: 210.9 }
+  ];
+
+  var EDGES = [
+    { source: '0xB3c4…5e6F', target: '0xA1b2…3c4D', value: 120.5, txCount: 42, isCircular: false, circularNote: '', timeWindows: ['tw0','tw1','tw2','tw3','tw4','tw5'], originalValue: 120.5, version: 2 },
+    { source: '0xA1b2…3c4D', target: '0xD7e8…9i0J', value: 85.3, txCount: 18, isCircular: false, circularNote: '', timeWindows: ['tw0','tw1','tw2','tw3','tw4','tw5'], originalValue: 85.3, version: 2 },
+    { source: '0xF1g2…3m4N', target: '0xA1b2…3c4D', value: 33.2, txCount: 7, isCircular: false, circularNote: '', timeWindows: ['tw1','tw2','tw3'], originalValue: 33.2, version: 2 },
+    { source: '0xB3c4…5e6F', target: '0xE9f0…1k2L', value: 200.0, txCount: 15, isCircular: false, circularNote: '', timeWindows: ['tw0','tw1','tw2','tw3','tw4'], originalValue: 200.0, version: 2 },
+    { source: '0xD7e8…9i0J', target: '0xE9f0…1k2L', value: 500.0, txCount: 8, isCircular: false, circularNote: '', timeWindows: ['tw2','tw3','tw4','tw5'], originalValue: 500.0, version: 2 },
+    { source: '0xB3c4…5e6F', target: '0xD7e8…9i0J', value: 60.0, txCount: 22, isCircular: false, circularNote: '', timeWindows: ['tw0','tw1','tw2','tw3','tw4','tw5'], originalValue: 60.0, version: 2 },
+    { source: '0xC5d6…7g8H', target: '0xD7e8…9i0J', value: 44.8, txCount: 3, isCircular: false, circularNote: '', timeWindows: ['tw3','tw4','tw5'], originalValue: 44.8, version: 1 },
+    { source: '0xD7e8…9i0J', target: '0xC5d6…7g8H', value: 44.8, txCount: 3, isCircular: true, circularNote: 'Binance↔未知合约循环转账：3 笔金额完全相同的双向交易，疑似做市或洗盘', timeWindows: ['tw3','tw4','tw5'], originalValue: 44.8, version: 1 },
+    { source: '0xF1g2…3m4N', target: '0xB3c4…5e6F', value: 15.0, txCount: 5, isCircular: false, circularNote: '', timeWindows: ['tw2','tw3','tw4'], originalValue: 15.0, version: 2 },
+    { source: '0xB3c4…5e6F', target: '0xF1g2…3m4N', value: 15.0, txCount: 5, isCircular: true, circularNote: 'Vitalik↔疑似关联地址循环转账：5 笔等额双向交易，疑似测试或资金归集', timeWindows: ['tw2','tw3','tw4'], originalValue: 15.0, version: 2 },
+    { source: '0xG5h6…7o8P', target: '0xB3c4…5e6F', value: 2.5, txCount: 1, isCircular: false, circularNote: '', timeWindows: ['tw4','tw5'], originalValue: 2.5, version: 1 },
+    { source: '0xB3c4…5e6F', target: '0xG5h6…7o8P', value: 2.5, txCount: 1, isCircular: true, circularNote: 'Seaport↔Vitalik 循环：NFT 挂单与取消产生的等额往返交易', timeWindows: ['tw4','tw5'], originalValue: 2.5, version: 1 },
+    { source: '0xH9i0…1q2R', target: '0xA1b2…3c4D', value: 0.8, txCount: 2, isCircular: false, circularNote: '', timeWindows: ['tw5'], originalValue: 0.8, version: 1 },
+    { source: '0xA1b2…3c4D', target: '0xH9i0…1q2R', value: 0.8, txCount: 2, isCircular: true, circularNote: 'Router↔小额钱包循环：2 笔 0.8 ETH 往返，疑似 MEV 回款测试', timeWindows: ['tw5'], originalValue: 0.8, version: 1 },
+    { source: '0xJ7k8…9u0V', target: '0xC5d6…7g8H', value: 88.0, txCount: 11, isCircular: false, circularNote: '', timeWindows: ['tw1','tw2','tw3','tw4'], originalValue: 88.0, version: 1 },
+    { source: '0xI3j4…5s6T', target: '0xD7e8…9i0J', value: 120.0, txCount: 6, isCircular: false, circularNote: '', timeWindows: ['tw2','tw3','tw4','tw5'], originalValue: 120.0, version: 2 },
+    { source: '0xK1l2…3w4X', target: '0xD7e8…9i0J', value: 300.0, txCount: 9, isCircular: false, circularNote: '', timeWindows: ['tw0','tw1','tw2'], originalValue: 300.0, version: 2 },
+    { source: '0xK1l2…3w4X', target: '0xI3j4…5s6T', value: 150.0, txCount: 4, isCircular: false, circularNote: '', timeWindows: ['tw1','tw2','tw3'], originalValue: 150.0, version: 2 },
+    { source: '0xL5m6…7y8Z', target: '0xA1b2…3c4D', value: 12.0, txCount: 3, isCircular: false, circularNote: '', timeWindows: ['tw4','tw5'], originalValue: 12.0, version: 1 },
+    { source: '0xD7e8…9i0J', target: '0xI3j4…5s6T', value: 200.0, txCount: 10, isCircular: false, circularNote: '', timeWindows: ['tw3','tw4','tw5'], originalValue: 200.0, version: 2 }
+  ];
+
+  var currentNodeIdx = 0;
+  var currentTWIdx = 0;
+  var isPlaying = false;
+  var playTimer = null;
+  var playSpeed = 1;
+
+  var scene, camera, renderer, raycaster, mouse;
+  var graphGroup;
+  var nodeMeshes = [];
+  var edgeLines = [];
+  var labelSprites = [];
+  var nodePositions = {};
+
+  function init() {
+    var container = document.getElementById('canvas-wrap');
+    var w = container.clientWidth;
+    var h = container.clientHeight;
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 2000);
+    camera.position.set(0, 0, 60);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0x0a0e17, 1);
+    container.appendChild(renderer.domElement);
+
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
+    graphGroup = new THREE.Group();
+    scene.add(graphGroup);
+
+    var ambient = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambient);
+    var dir = new THREE.DirectionalLight(0xffffff, 0.8);
+    dir.position.set(10, 20, 30);
+    scene.add(dir);
+
+    computeLayout();
+    buildGraph();
+    updateSidebar();
+    updateTimeBar();
+
+    renderer.domElement.addEventListener('mousemove', onMouseMove);
+    renderer.domElement.addEventListener('click', onClick);
+    window.addEventListener('resize', onResize);
+
+    document.querySelectorAll('#sidebar-tabs button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#sidebar-tabs button').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.getElementById('time-slider').addEventListener('input', function() {
+      var idx = Math.round(this.value / 100 * (TIME_WINDOWS.length - 1));
+      switchTimeWindow(idx);
+    });
+    document.getElementById('btn-play').addEventListener('click', togglePlay);
+    document.getElementById('btn-step').addEventListener('click', function() { switchTimeWindow(Math.min(currentTWIdx + 1, TIME_WINDOWS.length - 1)); });
+    document.getElementById('btn-reset').addEventListener('click', function() { switchTimeWindow(0); stopPlay(); });
+    document.getElementById('speed-label').addEventListener('click', function() {
+      playSpeed = playSpeed === 1 ? 2 : playSpeed === 2 ? 4 : 1;
+      this.textContent = playSpeed + 'x';
+      if (isPlaying) { clearInterval(playTimer); startPlayTimer(); }
+    });
+
+    animate();
+  }
+
+  function computeLayout() {
+    var n = NODES.length;
+    var phi = (1 + Math.sqrt(5)) / 2;
+    for (var i = 0; i < n; i++) {
+      var theta = 2 * Math.PI * i / phi;
+      var r = 18 * Math.sqrt(i / n);
+      var y = (i / n - 0.5) * 30;
+      nodePositions[NODES[i].id] = { x: r * Math.cos(theta), y: y, z: r * Math.sin(theta) };
+    }
+  }
+
+  function getNodeColor(node) {
+    if (node.mergeError) return 0xe879f9;
+    if (node.labelExpired) return 0x94a3b8;
+    if (node.type === 'wallet') return 0x38bdf8;
+    if (node.type === 'contract') return 0xa78bfa;
+    if (node.type === 'exchange') return 0x10b981;
+    return 0x38bdf8;
+  }
+
+  function getNodeSize(node) {
+    return Math.max(1.2, Math.min(3.5, Math.log10(node.balance + 1) * 0.8));
+  }
+
+  function buildGraph() {
+    while (graphGroup.children.length > 0) graphGroup.remove(graphGroup.children[0]);
+    nodeMeshes = [];
+    edgeLines = [];
+    labelSprites = [];
+
+    var activeEdges = getActiveEdges();
+
+    for (var i = 0; i < NODES.length; i++) {
+      var node = NODES[i];
+      var pos = nodePositions[node.id];
+      var color = getNodeColor(node);
+      var size = getNodeSize(node);
+      var geo = new THREE.SphereGeometry(size, 24, 24);
+      var mat = new THREE.MeshPhongMaterial({ color: color, emissive: color, emissiveIntensity: 0.3, transparent: true, opacity: 0.9 });
+      var mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(pos.x, pos.y, pos.z);
+      mesh.userData = { nodeIndex: i, type: 'node' };
+      graphGroup.add(mesh);
+      nodeMeshes.push(mesh);
+
+      if (node.mergeError) {
+        var ringGeo = new THREE.RingGeometry(size + 0.4, size + 0.7, 32);
+        var ringMat = new THREE.MeshBasicMaterial({ color: 0xe879f9, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+        var ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.position.copy(mesh.position);
+        ring.lookAt(camera.position);
+        ring.userData = { type: 'ring', nodeIndex: i };
+        graphGroup.add(ring);
+      }
+
+      var sprite = makeTextSprite(node.label || node.id, { color: node.label ? '#e2e8f0' : '#8899aa', fontSize: 28 });
+      sprite.position.set(pos.x, pos.y + size + 1.2, pos.z);
+      sprite.userData = { type: 'label' };
+      graphGroup.add(sprite);
+      labelSprites.push(sprite);
+    }
+
+    for (var j = 0; j < activeEdges.length; j++) {
+      var edge = activeEdges[j];
+      var sPos = nodePositions[edge.source];
+      var tPos = nodePositions[edge.target];
+      if (!sPos || !tPos) continue;
+      var lineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(sPos.x, sPos.y, sPos.z),
+        new THREE.Vector3(tPos.x, tPos.y, tPos.z)
+      ]);
+      var lineColor = edge.isCircular ? 0xf97316 : 0x2a3a4e;
+      var lineMat = new THREE.LineBasicMaterial({ color: lineColor, transparent: true, opacity: edge.isCircular ? 0.8 : 0.35, linewidth: 1 });
+      var line = new THREE.Line(lineGeo, lineMat);
+      line.userData = { edgeIndex: EDGES.indexOf(edge), type: 'edge' };
+      graphGroup.add(line);
+      edgeLines.push(line);
+
+      if (edge.isCircular) {
+        var mid = new THREE.Vector3((sPos.x + tPos.x) / 2, (sPos.y + tPos.y) / 2 + 1.5, (sPos.z + tPos.z) / 2);
+        var cSprite = makeTextSprite('⟳ 循环', { color: '#f97316', fontSize: 22 });
+        cSprite.position.copy(mid);
+        graphGroup.add(cSprite);
+      }
+    }
+  }
+
+  function makeTextSprite(text, opts) {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var fontSize = opts.fontSize || 28;
+    ctx.font = 'bold ' + fontSize + 'px sans-serif';
+    var tw = ctx.measureText(text).width;
+    canvas.width = Math.max(64, tw + 20);
+    canvas.height = fontSize + 16;
+    ctx.font = 'bold ' + fontSize + 'px sans-serif';
+    ctx.fillStyle = opts.color || '#e2e8f0';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    var tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+    var mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    var sprite = new THREE.Sprite(mat);
+    sprite.scale.set(canvas.width / 80, canvas.height / 80, 1);
+    return sprite;
+  }
+
+  function getActiveEdges() {
+    var twId = TIME_WINDOWS[currentTWIdx].id;
+    return EDGES.filter(function(e) { return e.timeWindows.indexOf(twId) >= 0; });
+  }
+
+  function switchTimeWindow(idx) {
+    currentTWIdx = idx;
+    document.getElementById('time-slider').value = (idx / (TIME_WINDOWS.length - 1)) * 100;
+    buildGraph();
+    updateSidebar();
+    updateTimeBar();
+  }
+
+  function togglePlay() {
+    if (isPlaying) { stopPlay(); }
+    else { isPlaying = true; document.getElementById('btn-play').textContent = '⏸ 暂停'; startPlayTimer(); }
+  }
+
+  function startPlayTimer() {
+    playTimer = setInterval(function() {
+      var next = (currentTWIdx + 1) % TIME_WINDOWS.length;
+      switchTimeWindow(next);
+    }, 2000 / playSpeed);
+  }
+
+  function stopPlay() {
+    isPlaying = false;
+    clearInterval(playTimer);
+    document.getElementById('btn-play').textContent = '▶ 播放';
+  }
+
+  function onMouseMove(e) {
+    var rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  }
+
+  var selectedNode = -1;
+
+  function onClick(e) {
+    raycaster.setFromCamera(mouse, camera);
+    var hits = raycaster.intersectObjects(nodeMeshes);
+    if (hits.length > 0) {
+      selectedNode = hits[0].object.userData.nodeIndex;
+      showNodeDetail(selectedNode);
+    } else {
+      selectedNode = -1;
+      document.getElementById('detail-section').style.display = 'none';
+    }
+  }
+
+  function showNodeDetail(idx) {
+    var node = NODES[idx];
+    var html = '';
+    html += '<div class="detail-row"><span class="dr-key">地址</span><span class="dr-val">' + node.id + '</span></div>';
+    html += '<div class="detail-row"><span class="dr-key">当前标签</span><span class="dr-val">' + (node.label || '(无)') + '</span></div>';
+    html += '<div class="detail-row"><span class="dr-key">原始标签</span><span class="dr-val">' + (node.originalLabel || '(无)') + '</span></div>';
+    html += '<div class="detail-row"><span class="dr-key">类型</span><span class="dr-val">' + node.type + '</span></div>';
+    html += '<div class="detail-row"><span class="dr-key">余额</span><span class="dr-val">' + node.balance.toFixed(2) + ' ETH</span></div>';
+    html += '<div class="detail-row"><span class="dr-key">版本</span><span class="dr-val"><span class="version-badge ' + (node.version === DATA_VERSION ? 'v-current' : 'v-stale') + '">v' + node.version + '</span></span></div>';
+    if (node.mergeError) {
+      html += '<div style="margin-top:8px;padding:8px;background:rgba(232,121,249,.1);border-left:3px solid var(--merge);border-radius:0 6px 6px 0;font-size:11px;">';
+      html += '<strong style="color:var(--merge)">合并错误</strong><br>' + node.mergeNote + '</div>';
+    }
+    if (node.labelExpired) {
+      html += '<div style="margin-top:8px;padding:8px;background:rgba(148,163,184,.1);border-left:3px solid var(--expired);border-radius:0 6px 6px 0;font-size:11px;">';
+      html += '<strong style="color:var(--expired)">标签过期</strong><br>' + node.labelExpiredNote + '</div>';
+    }
+    document.getElementById('detail-content').innerHTML = html;
+    document.getElementById('detail-section').style.display = 'block';
+  }
+
+  var hoveredNode = -1;
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    raycaster.setFromCamera(mouse, camera);
+    var hits = raycaster.intersectObjects(nodeMeshes);
+    var tooltip = document.getElementById('tooltip');
+    if (hits.length > 0) {
+      hoveredNode = hits[0].object.userData.nodeIndex;
+      var node = NODES[hoveredNode];
+      var pos = nodePositions[node.id];
+      var vec = new THREE.Vector3(pos.x, pos.y, pos.z).project(camera);
+      var rect = renderer.domElement.getBoundingClientRect();
+      var sx = (vec.x * 0.5 + 0.5) * rect.width;
+      var sy = (-vec.y * 0.5 + 0.5) * rect.height;
+      var tt = '';
+      tt += '<div class="tt-addr">' + node.id + '</div>';
+      if (node.label) tt += '<div class="tt-label">' + node.label + '</div>';
+      else tt += '<div class="tt-warn">⚠ 合约标签缺失</div>';
+      if (node.mergeError) tt += '<div class="tt-err">合并错误: ' + node.mergeNote + '</div>';
+      if (node.labelExpired) tt += '<div class="tt-dim">标签过期: ' + node.labelExpiredNote + '</div>';
+      tt += '<div class="tt-dim">余额: ' + node.balance.toFixed(2) + ' ETH | v' + node.version + '</div>';
+      tooltip.innerHTML = tt;
+      tooltip.style.display = 'block';
+      tooltip.style.left = Math.min(sx + 16, rect.width - 330) + 'px';
+      tooltip.style.top = Math.max(sy - 20, 8) + 'px';
+
+      nodeMeshes.forEach(function(m) { m.material.emissiveIntensity = 0.3; });
+      hits[0].object.material.emissiveIntensity = 0.8;
+      renderer.domElement.style.cursor = 'pointer';
+    } else {
+      hoveredNode = -1;
+      tooltip.style.display = 'none';
+      nodeMeshes.forEach(function(m) { m.material.emissiveIntensity = 0.3; });
+      renderer.domElement.style.cursor = 'default';
+    }
+
+    graphGroup.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+
+  function onResize() {
+    var container = document.getElementById('canvas-wrap');
+    var w = container.clientWidth;
+    var h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+
+  function updateSidebar() {
+    var activeEdges = getActiveEdges();
+    var totalVol = 0, totalTx = 0;
+    activeEdges.forEach(function(e) { totalVol += e.value; totalTx += e.txCount; });
+
+    var activeNodeIds = new Set();
+    activeEdges.forEach(function(e) { activeNodeIds.add(e.source); activeNodeIds.add(e.target); });
+
+    document.getElementById('s-nodes').textContent = activeNodeIds.size;
+    document.getElementById('s-edges').textContent = activeEdges.length;
+    document.getElementById('s-volume').textContent = totalVol.toFixed(1);
+    document.getElementById('s-txcount').textContent = totalTx;
+
+    document.getElementById('data-version').textContent = 'v' + DATA_VERSION;
+    document.getElementById('data-version').className = 'version-badge v-current';
+    document.getElementById('version-info').textContent = DATA_VERSION_NOTE;
+
+    document.getElementById('wm-version').textContent = '数据版本: v' + DATA_VERSION;
+    document.getElementById('wm-time-window').textContent = '时间窗口: ' + TIME_WINDOWS[currentTWIdx].range;
+
+    updateAnomalyPanel(activeEdges, activeNodeIds);
+    updateHintsPanel(activeNodeIds);
+    updateImpactPanel();
+  }
+
+  function updateAnomalyPanel(activeEdges, activeNodeIds) {
+    var mergeHtml = '';
+    NODES.forEach(function(node) {
+      if (node.mergeError && activeNodeIds.has(node.id)) {
+        mergeHtml += '<div class="anomaly-item">';
+        mergeHtml += '<div class="anomaly-type merge">地址合并错误</div>';
+        mergeHtml += '<div class="anomaly-orig">原始: ' + node.id + '</div>';
+        mergeHtml += '<div class="anomaly-curr">当前: ' + node.id + ' (未合并)</div>';
+        mergeHtml += '<div class="anomaly-note">' + node.mergeNote + '</div>';
+        mergeHtml += '</div>';
+      }
+    });
+    if (!mergeHtml) mergeHtml = '<div style="font-size:12px;color:var(--text-dim)">当前窗口无合并错误</div>';
+    document.getElementById('anomaly-merge').innerHTML = mergeHtml;
+
+    var circHtml = '';
+    activeEdges.forEach(function(edge) {
+      if (edge.isCircular) {
+        circHtml += '<div class="anomaly-item">';
+        circHtml += '<div class="anomaly-type circular">循环转账</div>';
+        circHtml += '<div class="anomaly-orig">原始值: ' + edge.originalValue.toFixed(2) + ' ETH / ' + edge.txCount + ' 笔</div>';
+        circHtml += '<div class="anomaly-curr">当前: ' + edge.value.toFixed(2) + ' ETH / ' + edge.txCount + ' 笔</div>';
+        circHtml += '<div class="anomaly-note">' + edge.circularNote + '</div>';
+        circHtml += '</div>';
+      }
+    });
+    if (!circHtml) circHtml = '<div style="font-size:12px;color:var(--text-dim)">当前窗口无循环转账</div>';
+    document.getElementById('anomaly-circular').innerHTML = circHtml;
+
+    var expHtml = '';
+    NODES.forEach(function(node) {
+      if (node.labelExpired && activeNodeIds.has(node.id)) {
+        expHtml += '<div class="anomaly-item">';
+        expHtml += '<div class="anomaly-type expired">标签过期</div>';
+        expHtml += '<div class="anomaly-orig">原始标签: ' + (node.originalLabel || '(无)') + ' (v' + node.version + ')</div>';
+        expHtml += '<div class="anomaly-curr">当前标签: ' + (node.label || '(无)') + '</div>';
+        expHtml += '<div class="anomaly-note">' + node.labelExpiredNote + '</div>';
+        expHtml += '</div>';
+      }
+    });
+    if (!expHtml) expHtml = '<div style="font-size:12px;color:var(--text-dim)">当前窗口无标签过期</div>';
+    document.getElementById('anomaly-expired').innerHTML = expHtml;
+  }
+
+  function updateHintsPanel(activeNodeIds) {
+    var html = '';
+    NODES.forEach(function(node) {
+      if (!node.label && activeNodeIds.has(node.id)) {
+        html += '<div class="hint-item">';
+        html += '<div class="hint-addr">' + node.id + '</div>';
+        html += '<div style="color:var(--text-dim);font-size:11px;">类型: ' + node.type + ' | 余额: ' + node.balance.toFixed(2) + ' ETH</div>';
+        if (node.type === 'contract') {
+          html += '<div class="hint-action">→ 建议: 在 Etherscan 上查看合约创建者与字节码，手动补充标签；或更新标签数据至 v' + DATA_VERSION + '</div>';
+        } else {
+          html += '<div class="hint-action">→ 建议: 检查该地址是否与已知实体存在资金关联，考虑合并或标注</div>';
+        }
+        html += '</div>';
+      }
+    });
+    if (!html) html = '<div style="font-size:12px;color:var(--text-dim)">当前窗口所有节点均有标签</div>';
+    document.getElementById('hints-list').innerHTML = html;
+  }
+
+  function updateImpactPanel() {
+    var html = '';
+    for (var i = 0; i < TIME_WINDOWS.length; i++) {
+      var tw = TIME_WINDOWS[i];
+      var affected = new Set();
+      EDGES.forEach(function(e) {
+        if (e.timeWindows.indexOf(tw.id) < 0) {
+          var inCurrent = e.timeWindows.indexOf(TIME_WINDOWS[currentTWIdx].id) >= 0;
+          if (inCurrent) {
+            affected.add(e.source);
+            affected.add(e.target);
+          }
+        }
+      });
+      NODES.forEach(function(n) {
+        var nodeEdges = EDGES.filter(function(e) { return e.source === n.id || e.target === n.id; });
+        var inThis = nodeEdges.some(function(e) { return e.timeWindows.indexOf(tw.id) >= 0; });
+        var inCurrent = nodeEdges.some(function(e) { return e.timeWindows.indexOf(TIME_WINDOWS[currentTWIdx].id) >= 0; });
+        if (inCurrent && !inThis) affected.add(n.id);
+      });
+
+      if (i === currentTWIdx) {
+        html += '<div class="impact-item">';
+        html += '<span class="impact-tag">当前</span>';
+        html += '<strong>' + tw.label + '</strong> ' + tw.range;
+        html += '</div>';
+      } else {
+        var diff = Math.abs(i - currentTWIdx);
+        html += '<div class="impact-item">';
+        html += '<span class="impact-tag" style="background:' + (diff <= 1 ? 'var(--warning)' : 'var(--border)') + ';color:' + (diff <= 1 ? '#000' : 'var(--text-dim)') + '">' + (diff <= 1 ? '近邻' : '远端') + '</span>';
+        html += '<strong>' + tw.label + '</strong> ' + tw.range;
+        var affectedInTW = new Set();
+        EDGES.forEach(function(e) {
+          if (e.timeWindows.indexOf(tw.id) >= 0 && e.timeWindows.indexOf(TIME_WINDOWS[currentTWIdx].id) < 0) {
+            affectedInTW.add(e.source);
+            affectedInTW.add(e.target);
+          }
+        });
+        if (affectedInTW.size > 0) {
+          html += '<div class="impact-nodes">独有节点: ' + Array.from(affectedInTW).join(', ') + '</div>';
+        }
+        html += '</div>';
+      }
+    }
+    document.getElementById('impact-list').innerHTML = html;
+  }
+
+  function updateTimeBar() {
+    var tw = TIME_WINDOWS[currentTWIdx];
+    document.getElementById('tw-range').textContent = tw.range;
+    document.getElementById('time-current').textContent = tw.label + ' | ' + tw.range + ' | 帧 ' + currentTWIdx + '/' + (TIME_WINDOWS.length - 1);
+    document.getElementById('wm-frame').textContent = '帧: ' + currentTWIdx + '/' + (TIME_WINDOWS.length - 1);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
