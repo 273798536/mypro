@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "generatedAt": "2026-06-01T18:52:55.160Z",
+    "objectId": "wall_001",
+    "objectName": "北墙"
+  },
+  "objectDetails": {
+    "basic": {
+      "name": "北墙",
+      "type": "box",
+      "material": "stone_wall",
+      "materialType": "solid",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": -50
+      },
+      "size": {
+        "x": 100,
+        "y": 5,
+        "z": 2
+      },
+      "notes": "主要阻挡墙"
+    },
+    "heatmap": {
+      "collisionCount": 4,
+      "intensity": 0.5714285714285714,
+      "intensityLevel": "中",
+      "rank": 4,
+      "percentile": 40,
+      "color": "rgb(73, 255, 0)"
+    },
+    "levelSource": {
+      "levelName": "新手村_2号路口_v2.1",
+      "levelVersion": "v2.1",
+      "sourceFile": "level_xincun_v2.1.fbx",
+      "levelNotes": "原名：新手村_主路口，2024年10月调整了碰撞体位置"
+    }
+  },
+  "analysis": [
+    "设计备注: 主要阻挡墙"
+  ]
+}

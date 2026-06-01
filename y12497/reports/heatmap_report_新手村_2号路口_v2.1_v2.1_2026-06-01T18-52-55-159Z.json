@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "generatedAt": "2026-06-01T18:52:55.159Z",
+    "levelName": "新手村_2号路口_v2.1",
+    "levelVersion": "v2.1",
+    "sourceFile": "level_xincun_v2.1.fbx",
+    "totalTrajectories": 8,
+    "totalCollisions": 24,
+    "uniquePlayers": 8
+  },
+  "dataQuality": {
+    "score": 70,
+    "rating": "一般",
+    "issues": [
+      "版本混用 - 严重影响数据可比性"
+    ],
+    "details": {
+      "avgCompleteness": "100.0",
+      "hasVersionMix": true,
+      "hasSevereDrift": false,
+      "missingColliders": false
+    }
+  },
+  "anomalies": {
+    "版本": [
+      {
+        "type": "version_mix",
+        "title": "版本混用: v2.0",
+        "severity": "high",
+        "message": "发现 1 条(12.5%)数据属于 v2.0 版本，而主要版本是 v2.1（预期是 v2.1）。这些数据会污染热图结果，建议：数据量较小，可能是测试数据，可以考虑排除",
+        "affectedCount": 1
+      },
+      {
+        "type": "version_unknown",
+        "title": "未知版本数据",
+        "severity": "medium",
+        "message": "有 1 条轨迹无法确定对应关卡版本",
+        "affectedCount": 1
+      }
+    ],
+    "轨迹": [
+      {
+        "type": "trajectory_drift",
+        "title": "轨迹漂移",
+        "severity": "medium",
+        "message": "1 条轨迹(12.5%)存在漂移，共 1 个漂移点。漂移较轻，基本不影响分析",
+        "affectedCount": 1
+      }
+    ]
+  },
+  "hotspots": [
+    {
+      "rank": 1,
+      "name": "铁轨",
+      "collisionCount": 7,
+      "intensity": 1,
+      "intensityLevel": "极高",
+      "material": "metal_rail"
+    },
+    {
+      "rank": 2,
+      "name": "东墙",
+      "collisionCount": 6,
+      "intensity": 0.8571428571428571,
+      "intensityLevel": "极高",
+      "material": "stone_wall"
+    },
+    {
+      "rank": 3,
+      "name": "柱子",
+      "collisionCount": 5,
+      "intensity": 0.7142857142857143,
+      "intensityLevel": "高",
+      "material": "stone_wall"
+    },
+    {
+      "rank": 4,
+      "name": "北墙",
+      "collisionCount": 4,
+      "intensity": 0.5714285714285714,
+      "intensityLevel": "中",
+      "material": "stone_wall"
+    },
+    {
+      "rank": 5,
+      "name": "木栅栏",
+      "collisionCount": 2,
+      "intensity": 0.2857142857142857,
+      "intensityLevel": "低",
+      "material": "wood_fence"
+    }
+  ],
+  "colliderHeat": [
+    {
+      "id": "rail_001",
+      "name": "铁轨",
+      "collisionCount": 7,
+      "intensity": 1,
+      "rank": 1,
+      "percentile": 100,
+      "material": "metal_rail",
+      "versions": [
+        "v2.1",
+        "v2.0"
+      ]
+    },
+    {
+      "id": "wall_002",
+      "name": "东墙",
+      "collisionCount": 6,
+      "intensity": 0.8571428571428571,
+      "rank": 2,
+      "percentile": 80,
+      "material": "stone_wall",
+      "versions": [
+        "v2.1"
+      ]
+    },
+    {
+      "id": "pillar_001",
+      "name": "柱子",
+      "collisionCount": 5,
+      "intensity": 0.7142857142857143,
+      "rank": 3,
+      "percentile": 60,
+      "material": "stone_wall",
+      "versions": [
+        "v2.0",
+        "v2.1",
+        "unknown"
+      ]
+    },
+    {
+      "id": "wall_001",
+      "name": "北墙",
+      "collisionCount": 4,
+      "intensity": 0.5714285714285714,
+      "rank": 4,
+      "percentile": 40,
+      "material": "stone_wall",
+      "versions": [
+        "v2.1",
+        "unknown"
+      ]
+    },
+    {
+      "id": "fence_001",
+      "name": "木栅栏",
+      "collisionCount": 2,
+      "intensity": 0.2857142857142857,
+      "rank": 5,
+      "percentile": 20,
+      "material": "wood_fence",
+      "versions": [
+        "v2.1"
+      ]
+    }
+  ],
+  "versionInfo": {
+    "targetVersion": "v2.1",
+    "distribution": [
+      {
+        "version": "v2.1",
+        "count": 6,
+        "percentage": "75.0"
+      },
+      {
+        "version": "v2.0",
+        "count": 1,
+        "percentage": "12.5"
+      },
+      {
+        "version": "unknown",
+        "count": 1,
+        "percentage": "12.5"
+      }
+    ],
+    "sourceReliability": {
+      "explicit": "8条 (100.0%)",
+      "fromFilename": "0条 (0.0%)",
+      "inferred": "0条 (0.0%)"
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "紧急",
+      "title": "处理高优先级异常",
+      "items": [
+        "发现 1 条(12.5%)数据属于 v2.0 版本，而主要版本是 v2.1（预期是 v2.1）。这些数据会污染热图结果，建议：数据量较小，可能是测试数据，可以考虑排除"
+      ]
+    },
+    {
+      "priority": "建议",
+      "title": "关注中等异常",
+      "items": [
+        "有 1 条轨迹无法确定对应关卡版本",
+        "1 条轨迹(12.5%)存在漂移，共 1 个漂移点。漂移较轻，基本不影响分析"
+      ]
+    },
+    {
+      "priority": "设计参考",
+      "title": "高碰撞区域",
+      "items": [
+        "碰撞排名第1的对象碰撞次数异常高，建议检查是否存在设计问题",
+        "碰撞排名第2的对象碰撞次数异常高，建议检查是否存在设计问题"
+      ]
+    }
+  ],
+  "raw": {
+    "levelSummary": {
+      "colliderCount": 5,
+      "materials": [
+        "stone_wall",
+        "wood_fence",
+        "metal_rail"
+      ]
+    },
+    "trajectoryStats": {
+      "withDrift": 1,
+      "avgCompleteness": 100
+    }
+  }
+}

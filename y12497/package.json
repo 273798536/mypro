@@ -1,0 +1,13 @@
+{
+  "name": "game-collision-heatmap",
+  "version": "1.0.0",
+  "description": "游戏关卡碰撞热图分析系统",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {},
+  "keywords": ["game", "collision", "heatmap", "analytics"]
+}
