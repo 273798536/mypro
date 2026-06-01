@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply bg-lab-bg text-lab-text;
+  }
+}
+
+@layer components {
+  .lab-card {
+    @apply bg-lab-surface border border-lab-border rounded-lg p-4;
+  }
+  
+  .lab-input {
+    @apply bg-lab-bg border border-lab-border rounded px-3 py-2 text-lab-text 
+           focus:outline-none focus:border-lab-info focus:shadow-glow-info
+           transition-all duration-200 font-mono text-sm;
+  }
+  
+  .lab-btn {
+    @apply px-4 py-2 rounded font-medium transition-all duration-200
+           border-2 hover:shadow-lg active:scale-95;
+  }
+  
+  .lab-btn-primary {
+    @apply lab-btn bg-lab-info border-lab-info text-white
+           hover:bg-lab-info/90 hover:shadow-glow-info;
+  }
+  
+  .lab-btn-success {
+    @apply lab-btn bg-lab-success border-lab-success text-white
+           hover:bg-lab-success/90 hover:shadow-glow-success;
+  }
+  
+  .lab-btn-warning {
+    @apply lab-btn bg-transparent border-lab-warning text-lab-warning
+           hover:bg-lab-warning/10 hover:shadow-glow-warning;
+  }
+  
+  .lab-btn-danger {
+    @apply lab-btn bg-transparent border-lab-danger text-lab-danger
+           hover:bg-lab-danger/10 hover:shadow-glow-danger;
+  }
+  
+  .lab-table {
+    @apply w-full border-collapse;
+  }
+  
+  .lab-table th {
+    @apply bg-lab-bg text-lab-muted text-xs font-medium uppercase tracking-wider
+           px-3 py-2 border-b border-lab-border text-left;
+  }
+  
+  .lab-table td {
+    @apply px-3 py-2 border-b border-lab-border/50 font-mono text-sm;
+  }
+  
+  .lab-table tr:hover td {
+    @apply bg-lab-bg/50;
+  }
+  
+  .anomaly-card {
+    @apply p-3 rounded border mb-2 transition-all duration-200
+           hover:shadow-md cursor-pointer;
+  }
+  
+  .anomaly-card-warning {
+    @apply anomaly-card bg-lab-warning/10 border-lab-warning/50;
+  }
+  
+  .anomaly-card-error {
+    @apply anomaly-card bg-lab-danger/10 border-lab-danger/50;
+  }
+  
+  .data-row-warning {
+    @apply bg-lab-warning/10 !important;
+  }
+  
+  .data-row-error {
+    @apply bg-lab-danger/10 !important;
+  }
+  
+  .diff-positive {
+    @apply text-lab-success;
+  }
+  
+  .diff-negative {
+    @apply text-lab-danger;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-lab-bg rounded;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-lab-border rounded hover:bg-lab-muted;
+  }
+}
