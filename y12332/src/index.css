@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(226, 232, 240, 1);
+  background-color: #020617;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at top, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(56, 189, 248, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.5);
+}
+
+@layer components {
+  .card {
+    @apply bg-dark-800/60 backdrop-blur-md border border-dark-700/50 rounded-xl shadow-lg;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:border-cold-500/30 hover:shadow-cold-500/10 hover:shadow-xl;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-gradient-to-r from-cold-500 to-cold-600 text-white font-medium rounded-lg 
+           hover:from-cold-400 hover:to-cold-500 transition-all duration-200 
+           active:scale-95 shadow-lg shadow-cold-500/25;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-dark-700/80 text-dark-200 font-medium rounded-lg border border-dark-600
+           hover:bg-dark-600/80 hover:text-white transition-all duration-200 active:scale-95;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-gradient-to-r from-alert-red to-alert-orange text-white font-medium rounded-lg
+           hover:opacity-90 transition-all duration-200 active:scale-95 shadow-lg shadow-alert-red/25;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-dark-900/50 border border-dark-700 rounded-lg text-dark-100
+           placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-cold-500/50 focus:border-cold-500
+           transition-all duration-200;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
+  }
+
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .status-online {
+    @apply bg-green-400 shadow-lg shadow-green-400/50;
+  }
+
+  .status-warning {
+    @apply bg-alert-yellow shadow-lg shadow-alert-yellow/50 animate-pulse-slow;
+  }
+
+  .status-offline {
+    @apply bg-dark-500;
+  }
+
+  .anomaly-pulse {
+    animation: anomalyPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes anomalyPulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+  }
+
+  .chart-container {
+    @apply relative bg-dark-900/30 rounded-lg border border-dark-700/50 overflow-hidden;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-dark-300 hover:text-white 
+           hover:bg-dark-700/50 transition-all duration-200 cursor-pointer;
+  }
+
+  .nav-item-active {
+    @apply bg-gradient-to-r from-cold-500/20 to-transparent text-cold-400 border-l-2 border-cold-400;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .divider {
+    @apply h-px bg-gradient-to-r from-transparent via-dark-600 to-transparent;
+  }
+}
