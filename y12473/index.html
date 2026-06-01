@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>期货仓单解谜赛</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f172a;--bg2:#1e293b;--card:#1e293b;--card-hover:#334155;
+  --accent:#f59e0b;--accent2:#d97706;--danger:#ef4444;--success:#22c55e;
+  --warning:#eab304;--info:#3b82f6;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --border:#334155;--receipt-bg:#172554;--warehouse-bg:#14532d;--inspection-bg:#4c1d95;
+  --receipt-border:#3b82f6;--warehouse-border:#22c55e;--inspection-border:#a855f7;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;min-height:100vh;overflow-x:hidden}
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:12px}
+.header-title{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:2px}
+.header-subtitle{font-size:13px;color:var(--text2)}
+.score-display{display:flex;align-items:center;gap:20px}
+.score-item{text-align:center}
+.score-value{font-size:24px;font-weight:700;color:var(--accent)}
+.score-label{font-size:11px;color:var(--text3);margin-top:2px}
+.attempt-badge{background:var(--accent);color:#000;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px}
+.main{display:grid;grid-template-columns:280px 1fr 300px;gap:0;min-height:calc(100vh - 56px)}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:16px;overflow-y:auto;max-height:calc(100vh - 56px)}
+.sidebar-title{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.doc-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative}
+.doc-card:hover{background:var(--card-hover);transform:translateX(3px)}
+.doc-card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.doc-card.flagged{border-left:3px solid var(--danger)}
+.doc-card.flagged::after{content:'⚠';position:absolute;top:8px;right:8px;font-size:14px}
+.doc-type-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:6px}
+.doc-type-badge.receipt{background:var(--receipt-bg);color:var(--receipt-border);border:1px solid var(--receipt-border)}
+.doc-type-badge.warehouse{background:var(--warehouse-bg);color:var(--warehouse-border);border:1px solid var(--warehouse-border)}
+.doc-type-badge.inspection{background:var(--inspection-bg);color:var(--inspection-border);border:1px solid var(--inspection-border)}
+.doc-card-id{font-size:13px;font-weight:600;color:var(--text)}
+.doc-card-summary{font-size:11px;color:var(--text2);margin-top:4px}
+.center{padding:20px;overflow-y:auto;max-height:calc(100vh - 56px)}
+.case-briefing{background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.case-title{font-size:18px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.case-date{font-size:13px;color:var(--text2);margin-bottom:12px}
+.case-desc{font-size:14px;color:var(--text2);line-height:1.8}
+.doc-detail{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;display:none}
+.doc-detail.visible{display:block}
+.doc-detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.doc-detail-id{font-size:20px;font-weight:700}
+.doc-detail-type{font-size:13px;font-weight:600;padding:4px 12px;border-radius:6px}
+.doc-field{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.doc-field:last-child{border-bottom:none}
+.doc-field-label{font-size:13px;color:var(--text2)}
+.doc-field-value{font-size:14px;font-weight:500}
+.doc-field-value.expired{color:var(--danger);text-decoration:line-through}
+.doc-field-value.warning{color:var(--warning)}
+.flag-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.flag-section-title{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:12px}
+.flag-options{display:flex;flex-wrap:wrap;gap:8px}
+.flag-btn{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s}
+.flag-btn:hover{border-color:var(--accent);color:var(--accent)}
+.flag-btn.selected{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.link-docs{margin-top:12px;padding:12px;background:var(--bg);border-radius:8px}
+.link-docs-title{font-size:12px;color:var(--text3);margin-bottom:6px}
+.link-doc-item{font-size:13px;color:var(--info);cursor:pointer;padding:2px 0}
+.link-doc-item:hover{text-decoration:underline}
+.right-panel{background:var(--bg2);border-left:1px solid var(--border);padding:16px;overflow-y:auto;max-height:calc(100vh - 56px)}
+.panel-section{margin-bottom:20px}
+.panel-section-title{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.finding-item{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;font-size:12px}
+.finding-item .finding-doc{color:var(--info);font-weight:600}
+.finding-item .finding-issue{color:var(--danger);margin-top:3px}
+.finding-item .finding-field{color:var(--text3);margin-top:2px}
+.finding-item.correct{border-left:3px solid var(--success)}
+.finding-item.wrong{border-left:3px solid var(--danger)}
+.finding-item.missed{border-left:3px solid var(--warning);opacity:.7}
+.status-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px}
+.status-label{color:var(--text2)}
+.status-value{font-weight:600}
+.status-value.ok{color:var(--success)}
+.status-value.bad{color:var(--danger)}
+.status-value.warn{color:var(--warning)}
+.board-state{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px}
+.board-title{font-size:12px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.board-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.board-row .label{color:var(--text2)}
+.board-row .value{font-weight:600}
+.board-row .value.down{color:var(--danger)}
+.board-row .value.up{color:var(--success)}
+.btn{padding:10px 24px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.submit-area{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);text-align:center}
+.result-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:200;display:none;overflow-y:auto}
+.result-overlay.visible{display:flex;flex-direction:column;align-items:center}
+.result-container{max-width:800px;width:100%;padding:40px 20px}
+.result-header{text-align:center;margin-bottom:30px}
+.result-score{font-size:64px;font-weight:800;color:var(--accent)}
+.result-label{font-size:16px;color:var(--text2);margin-top:4px}
+.result-summary{display:flex;gap:16px;justify-content:center;margin-bottom:30px}
+.result-stat{text-align:center;padding:12px 20px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)}
+.result-stat-value{font-size:24px;font-weight:700}
+.result-stat-value.green{color:var(--success)}
+.result-stat-value.red{color:var(--danger)}
+.result-stat-value.yellow{color:var(--warning)}
+.result-stat-label{font-size:12px;color:var(--text3);margin-top:2px}
+.evidence-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
+.evidence-card.correct-card{border-left:4px solid var(--success)}
+.evidence-card.wrong-card{border-left:4px solid var(--danger)}
+.evidence-card.missed-card{border-left:4px solid var(--warning)}
+.evidence-type{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px}
+.evidence-type.correct{background:rgba(34,197,94,.15);color:var(--success)}
+.evidence-type.wrong{background:rgba(239,68,68,.15);color:var(--danger)}
+.evidence-type.missed{background:rgba(234,179,8,.15);color:var(--warning)}
+.evidence-title{font-size:15px;font-weight:600;margin-bottom:8px}
+.evidence-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px}
+.evidence-pointer{background:var(--bg);border-radius:6px;padding:10px;margin-top:8px}
+.evidence-pointer-title{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px}
+.evidence-pointer-item{font-size:12px;color:var(--text2);padding:3px 0;display:flex;align-items:center;gap:6px}
+.evidence-pointer-item .doc-ref{color:var(--info);font-weight:600}
+.evidence-pointer-item .field-ref{color:var(--warning)}
+.evidence-pointer-item .detail-ref{color:var(--text)}
+.result-actions{display:flex;gap:12px;justify-content:center;margin-top:30px}
+.diff-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:700}
+.diff-badge.new{background:rgba(34,197,94,.2);color:var(--success)}
+.diff-badge.removed{background:rgba(239,68,68,.2);color:var(--danger)}
+.diff-badge.kept{background:rgba(59,130,246,.2);color:var(--info)}
+.welcome-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#0f172a,#1e293b);z-index:300;display:flex;align-items:center;justify-content:center}
+.welcome-box{text-align:center;max-width:560px;padding:40px}
+.welcome-title{font-size:36px;font-weight:800;color:var(--accent);margin-bottom:8px;letter-spacing:3px}
+.welcome-sub{font-size:16px;color:var(--text2);margin-bottom:30px;line-height:1.8}
+.welcome-rules{text-align:left;background:var(--card);border-radius:10px;padding:20px;margin-bottom:30px}
+.welcome-rules h3{font-size:14px;color:var(--accent);margin-bottom:10px}
+.welcome-rules li{font-size:13px;color:var(--text2);line-height:2;list-style:none;padding-left:16px;position:relative}
+.welcome-rules li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:10px 20px;border-radius:8px;font-size:13px;z-index:400;display:none;animation:fadeInOut 2.5s ease}
+.toast.visible{display:block}
+.toast.success{border-color:var(--success);color:var(--success)}
+.toast.error{border-color:var(--danger);color:var(--danger)}
+.toast.info{border-color:var(--info);color:var(--info)}
+@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}85%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-state-icon{font-size:40px;margin-bottom:10px}
+.empty-state-text{font-size:14px}
+.prev-attempt-tag{font-size:10px;color:var(--text3);background:var(--bg);padding:2px 6px;border-radius:3px;margin-left:6px}
+.comparison-section{margin-top:20px;padding-top:16px;border-top:2px dashed var(--border)}
+.comparison-title{font-size:14px;font-weight:600;color:var(--info);margin-bottom:12px}
+.change-item{background:var(--bg);border-radius:6px;padding:8px 12px;margin-bottom:6px;font-size:12px}
+.change-item .added{color:var(--success)}
+.change-item .removed{color:var(--danger)}
+</style>
+</head>
+<body>
+
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-box">
+    <div class="welcome-title">期货仓单解谜赛</div>
+    <div class="welcome-sub">审核交割材料，找出仓单重复、质检过期、合约到期的证据</div>
+    <div class="welcome-rules">
+      <h3>规则</h3>
+      <ul>
+        <li>点击左侧材料卡查看详情</li>
+        <li>在详情面板中标记你认为有问题的字段</li>
+        <li>每次标记后，审核局面和分数实时变化</li>
+        <li>提交审核后，系统逐条指出问题出在哪个材料的哪个字段</li>
+        <li>可以进行第二次尝试，系统会保留两次差别</li>
+      </ul>
+    </div>
+    <button class="btn btn-primary" onclick="startGame()" style="font-size:18px;padding:14px 48px">开始审核</button>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-title">期货仓单解谜赛</div>
+    <div class="header-subtitle" id="caseName">大豆交割审核案</div>
+    <div class="attempt-badge" id="attemptBadge">第 1 次</div>
+  </div>
+  <div class="score-display">
+    <div class="score-item">
+      <div class="score-value" id="scoreValue">0</div>
+      <div class="score-label">得分</div>
+    </div>
+    <div class="score-item">
+      <div class="score-value" id="flagCount">0</div>
+      <div class="score-label">已标记</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-title">📋 交割材料</div>
+    <div id="docList"></div>
+  </div>
+
+  <div class="center">
+    <div class="case-briefing" id="caseBriefing"></div>
+    <div class="doc-detail" id="docDetail"></div>
+  </div>
+
+  <div class="right-panel">
+    <div class="panel-section">
+      <div class="panel-section-title">📊 审核局面</div>
+      <div id="boardState"></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-section-title">🔍 已标记问题</div>
+      <div id="findingsList"></div>
+    </div>
+    <div class="submit-area">
+      <button class="btn btn-primary" id="submitBtn" onclick="submitReview()">提交审核</button>
+    </div>
+  </div>
+</div>
+
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-container" id="resultContainer"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var CURRENT_DATE = '2026-06-01';
+
+var scenario = {
+  title: '大豆交割审核案',
+  briefing: '大连商品交易所收到一批大豆和玉米交割申请，涉及3张仓单、2个仓库、2份质检单。请逐份审核材料，找出其中仓单重复、质检过期、合约到期等问题，标记到具体材料的具体字段。',
+  documents: [
+    {
+      id:'WR-001', type:'仓单卡', category:'receipt',
+      fields:[
+        {key:'commodity',label:'品种',value:'大豆'},
+        {key:'quantity',label:'数量',value:'500吨'},
+        {key:'warehouse',label:'仓库名称',value:'大连港1号库'},
+        {key:'contract',label:'合约编号',value:'M2607'},
+        {key:'issuer',label:'签发机构',value:'大商所'},
+        {key:'issueDate',label:'签发日期',value:'2026-03-15'}
+      ],
+      linkedDocs:['WH-DL1','QI-042'],
+      summary:'大豆 500吨 大连港1号库 M2607'
+    },
+    {
+      id:'WR-002', type:'仓单卡', category:'receipt',
+      fields:[
+        {key:'commodity',label:'品种',value:'大豆'},
+        {key:'quantity',label:'数量',value:'500吨'},
+        {key:'warehouse',label:'仓库名称',value:'大连港1号库'},
+        {key:'contract',label:'合约编号',value:'M2607'},
+        {key:'issuer',label:'签发机构',value:'大商所'},
+        {key:'issueDate',label:'签发日期',value:'2026-03-15'}
+      ],
+      linkedDocs:['WH-DL1','QI-043'],
+      summary:'大豆 500吨 大连港1号库 M2607'
+    },
+    {
+      id:'WR-003', type:'仓单卡', category:'receipt',
+      fields:[
+        {key:'commodity',label:'品种',value:'玉米'},
+        {key:'quantity',label:'数量',value:'800吨'},
+        {key:'warehouse',label:'仓库名称',value:'鲅鱼圈2号库'},
+        {key:'contract',label:'合约编号',value:'C2605'},
+        {key:'issuer',label:'签发机构',value:'大商所'},
+        {key:'issueDate',label:'签发日期',value:'2026-02-01'}
+      ],
+      linkedDocs:['WH-BYQ1'],
+      summary:'玉米 800吨 鲅鱼圈2号库 C2605'
+    },
+    {
+      id:'WH-DL1', type:'现货仓库', category:'warehouse',
+      fields:[
+        {key:'warehouse',label:'仓库名称',value:'大连港1号库'},
+        {key:'commodity',label:'库存品种',value:'大豆'},
+        {key:'totalStock',label:'总库存',value:'1000吨'},
+        {key:'linkedReceipts',label:'关联仓单',value:'WR-001、WR-002'},
+        {key:'recordDate',label:'记录日期',value:'2026-05-20'}
+      ],
+      linkedDocs:['WR-001','WR-002'],
+      summary:'大连港1号库 大豆 库存1000吨'
+    },
+    {
+      id:'WH-BYQ1', type:'现货仓库', category:'warehouse',
+      fields:[
+        {key:'warehouse',label:'仓库名称',value:'鲅鱼圈2号库'},
+        {key:'commodity',label:'库存品种',value:'玉米'},
+        {key:'totalStock',label:'总库存',value:'800吨'},
+        {key:'linkedReceipts',label:'关联仓单',value:'WR-003'},
+        {key:'recordDate',label:'记录日期',value:'2026-05-20'}
+      ],
+      linkedDocs:['WR-003'],
+      summary:'鲅鱼圈2号库 玉米 库存800吨'
+    },
+    {
+      id:'QI-042', type:'质检单', category:'inspection',
+      fields:[
+        {key:'commodity',label:'品种',value:'大豆'},
+        {key:'grade',label:'品级',value:'一等品'},
+        {key:'inspectionDate',label:'检测日期',value:'2026-02-10'},
+        {key:'validUntil',label:'有效期至',value:'2026-05-10'},
+        {key:'inspector',label:'检测机构',value:'中检集团'},
+        {key:'linkedReceipt',label:'关联仓单',value:'WR-001'}
+      ],
+      linkedDocs:['WR-001'],
+      summary:'大豆一等品 有效期至2026-05-10'
+    },
+    {
+      id:'QI-043', type:'质检单', category:'inspection',
+      fields:[
+        {key:'commodity',label:'品种',value:'大豆'},
+        {key:'grade',label:'品级',value:'二等品'},
+        {key:'inspectionDate',label:'检测日期',value:'2026-04-20'},
+        {key:'validUntil',label:'有效期至',value:'2026-07-20'},
+        {key:'inspector',label:'检测机构',value:'中检集团'},
+        {key:'linkedReceipt',label:'关联仓单',value:'WR-002'}
+      ],
+      linkedDocs:['WR-002'],
+      summary:'大豆二等品 有效期至2026-07-20'
+    }
+  ],
+  issues:[
+    {
+      id:'ISSUE-1',
+      type:'仓单重复',
+      severity:'high',
+      description:'仓单WR-001与WR-002在品种、数量、仓库、合约、签发日期上完全一致，属于同一批货物重复注册仓单。',
+      evidence:[
+        {docId:'WR-001',field:'全部字段',detail:'品种=大豆,数量=500吨,仓库=大连港1号库,合约=M2607'},
+        {docId:'WR-002',field:'全部字段',detail:'与WR-001完全一致，同一仓库同一合约注册了两张相同仓单'},
+        {docId:'WH-DL1',field:'关联仓单',detail:'该仓库同时关联了WR-001和WR-002，库存1000吨=500×2，存在重复计算风险'}
+      ],
+      flagType:'duplicate',
+      flagDocIds:['WR-001','WR-002','WH-DL1']
+    },
+    {
+      id:'ISSUE-2',
+      type:'质检过期',
+      severity:'high',
+      description:'质检单QI-042有效期至2026-05-10，当前日期2026-06-01已过期22天，关联仓单WR-001无法用于交割。',
+      evidence:[
+        {docId:'QI-042',field:'有效期至',detail:'2026-05-10 < 当前日期2026-06-01，已过期22天'},
+        {docId:'WR-001',field:'关联质检',detail:'WR-001关联的质检单QI-042已过期，该仓单暂不可交割'}
+      ],
+      flagType:'expired_insp',
+      flagDocIds:['QI-042','WR-001']
+    },
+    {
+      id:'ISSUE-3',
+      type:'合约到期',
+      severity:'high',
+      description:'仓单WR-003对应的玉米合约C2605为2026年5月交割合约，最后交易日为2026年5月15日，现已过期，无法进入交割流程。',
+      evidence:[
+        {docId:'WR-003',field:'合约编号',detail:'C2605=2026年5月玉米合约，最后交易日2026-05-15，已过期'}
+      ],
+      flagType:'contract_expired',
+      flagDocIds:['WR-003']
+    }
+  ]
+};
+
+var flagTypes = [
+  {key:'duplicate',label:'仓单重复',icon:'🔁'},
+  {key:'expired_insp',label:'质检过期',icon:'⏰'},
+  {key:'contract_expired',label:'合约到期',icon:'📅'},
+  {key:'qty_mismatch',label:'数量异常',icon:'⚖️'},
+  {key:'grade_mismatch',label:'品级不符',icon:'🏷️'}
+];
+
+var state = {
+  attempt: 1,
+  activeDocId: null,
+  flags: {},
+  prevFlags: {},
+  score: 0,
+  submitted: false,
+  results: null
+};
+
+function startGame(){
+  document.getElementById('welcomeOverlay').style.display='none';
+  renderAll();
+}
+
+function renderAll(){
+  renderCaseBriefing();
+  renderDocList();
+  renderDocDetail();
+  renderBoardState();
+  renderFindings();
+  updateScore();
+}
+
+function renderCaseBriefing(){
+  var el=document.getElementById('caseBriefing');
+  el.innerHTML='<div class="case-title">'+scenario.title+'</div>'+
+    '<div class="case-date">审核日期：'+CURRENT_DATE+'</div>'+
+    '<div class="case-desc">'+scenario.briefing+'</div>';
+}
+
+function renderDocList(){
+  var el=document.getElementById('docList');
+  var html='';
+  scenario.documents.forEach(function(doc){
+    var isActive=state.activeDocId===doc.id;
+    var isFlagged=state.flags[doc.id]&&state.flags[doc.id].length>0;
+    var cls='doc-card'+(isActive?' active':'')+(isFlagged?' flagged':'');
+    html+='<div class="'+cls+'" role="button" tabindex="0" aria-label="查看'+doc.id+' '+doc.type+'" onclick="selectDoc(\''+doc.id+'\')">';
+    html+='<span class="doc-type-badge '+doc.category+'">'+doc.type+'</span>';
+    html+='<div class="doc-card-id">'+doc.id+'</div>';
+    html+='<div class="doc-card-summary">'+doc.summary+'</div>';
+    if(isFlagged){
+      var flagLabels=state.flags[doc.id].map(function(f){
+        var ft=flagTypes.find(function(t){return t.key===f;});
+        return ft?ft.label:f;
+      });
+      html+='<div style="margin-top:6px;font-size:11px;color:var(--danger)">标记: '+flagLabels.join(', ')+'</div>';
+    }
+    if(state.attempt===2&&state.prevFlags[doc.id]){
+      var prevLabels=state.prevFlags[doc.id].map(function(f){
+        var ft=flagTypes.find(function(t){return t.key===f;});
+        return ft?ft.label:f;
+      });
+      html+='<div style="margin-top:3px;font-size:10px;color:var(--text3)">上次: '+prevLabels.join(', ')+'</div>';
+    }
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+function selectDoc(docId){
+  state.activeDocId=docId;
+  renderDocList();
+  renderDocDetail();
+}
+
+function renderDocDetail(){
+  var el=document.getElementById('docDetail');
+  if(!state.activeDocId){
+    el.className='doc-detail';
+    el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">点击左侧材料卡查看详情</div></div>';
+    el.className='doc-detail visible';
+    return;
+  }
+  var doc=scenario.documents.find(function(d){return d.id===state.activeDocId;});
+  if(!doc)return;
+  var docFlags=state.flags[doc.id]||[];
+  var typeColors={receipt:{bg:'var(--receipt-bg)',border:'var(--receipt-border)'},warehouse:{bg:'var(--warehouse-bg)',border:'var(--warehouse-border)'},inspection:{bg:'var(--inspection-bg)',border:'var(--inspection-border)'}};
+  var tc=typeColors[doc.category]||{bg:'var(--card)',border:'var(--border)'};
+
+  var html='<div class="doc-detail-header">';
+  html+='<div class="doc-detail-id" style="color:'+tc.border+'">'+doc.id+'</div>';
+  html+='<div class="doc-detail-type" style="background:'+tc.bg+';color:'+tc.border+';border:1px solid '+tc.border+'">'+doc.type+'</div>';
+  html+='</div>';
+
+  html+='<div class="doc-fields">';
+  doc.fields.forEach(function(f){
+    var valueClass='';
+    if(doc.category==='inspection'&&f.key==='validUntil'){
+      if(f.value<CURRENT_DATE)valueClass='expired';
+    }
+    if(doc.category==='receipt'&&f.key==='contract'){
+      var contractMonth=parseContractMonth(f.value);
+      if(contractMonth&&contractMonth<CURRENT_DATE.substring(0,7))valueClass='warning';
+    }
+    html+='<div class="doc-field">';
+    html+='<span class="doc-field-label">'+f.label+'</span>';
+    html+='<span class="doc-field-value'+(valueClass?' '+valueClass:'')+'">'+f.value+'</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  if(doc.linkedDocs&&doc.linkedDocs.length>0){
+    html+='<div class="link-docs">';
+    html+='<div class="link-docs-title">关联材料</div>';
+    doc.linkedDocs.forEach(function(lid){
+      var ld=scenario.documents.find(function(d){return d.id===lid;});
+      if(ld){
+        html+='<div class="link-doc-item" onclick="selectDoc(\''+lid+'\')">'+lid+' — '+ld.type+' ('+ld.summary+')</div>';
+      }
+    });
+    html+='</div>';
+  }
+
+  if(!state.submitted){
+    html+='<div class="flag-section">';
+    html+='<div class="flag-section-title">标记问题</div>';
+    html+='<div class="flag-options">';
+    flagTypes.forEach(function(ft){
+      var selected=docFlags.indexOf(ft.key)>=0;
+      html+='<button class="flag-btn'+(selected?' selected':'')+'" onclick="toggleFlag(\''+doc.id+'\',\''+ft.key+'\')">'+ft.icon+' '+ft.label+'</button>';
+    });
+    html+='</div>';
+
+    if(state.attempt===2&&state.prevFlags[doc.id]){
+      html+='<div style="margin-top:10px;font-size:11px;color:var(--text3)">上次标记: ';
+      html+=state.prevFlags[doc.id].map(function(f){
+        var ft2=flagTypes.find(function(t){return t.key===f;});
+        return ft2?ft2.label:f;
+      }).join(', ');
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+
+  el.innerHTML=html;
+  el.className='doc-detail visible';
+}
+
+function parseContractMonth(contract){
+  if(!contract)return null;
+  var m=contract.match(/([A-Z])(\d{4})/);
+  if(!m)return null;
+  var yy=m[2].substring(0,2);
+  var mm=m[2].substring(2);
+  return '20'+yy+'-'+mm;
+}
+
+function toggleFlag(docId,flagKey){
+  if(state.submitted)return;
+  if(!state.flags[docId])state.flags[docId]=[];
+  var idx=state.flags[docId].indexOf(flagKey);
+  if(idx>=0){
+    state.flags[docId].splice(idx,1);
+    if(state.flags[docId].length===0)delete state.flags[docId];
+    showToast('取消标记: '+docId,'info');
+  }else{
+    state.flags[docId].push(flagKey);
+    showToast('已标记 '+docId+': '+flagTypes.find(function(t){return t.key===flagKey;}).label,'success');
+  }
+  renderAll();
+}
+
+function renderBoardState(){
+  var el=document.getElementById('boardState');
+  var totalReceipts=3;
+  var flaggedReceipts=0;
+  var availableStock=0;
+  var totalStock=0;
+  var expiredInsp=0;
+  var expiredContract=0;
+
+  var docMap={};
+  scenario.documents.forEach(function(d){docMap[d.id]=d;});
+
+  var wr001Flagged=state.flags['WR-001']&&state.flags['WR-001'].length>0;
+  var wr002Flagged=state.flags['WR-002']&&state.flags['WR-002'].length>0;
+  var wr003Flagged=state.flags['WR-003']&&state.flags['WR-003'].length>0;
+
+  if(wr001Flagged)flaggedReceipts++;
+  if(wr002Flagged)flaggedReceipts++;
+  if(wr003Flagged)flaggedReceipts++;
+
+  totalStock=1000+800;
+  var dl1Valid=(!wr001Flagged?500:0)+(!wr002Flagged?500:0);
+  var byq1Valid=!wr003Flagged?800:0;
+  availableStock=dl1Valid+byq1Valid;
+
+  var qi042Flagged=state.flags['QI-042']&&state.flags['QI-042'].indexOf('expired_insp')>=0;
+  if(qi042Flagged)expiredInsp=1;
+
+  var wr003ContractFlag=state.flags['WR-003']&&state.flags['WR-003'].indexOf('contract_expired')>=0;
+  if(wr003ContractFlag)expiredContract=1;
+
+  var html='<div class="board-state">';
+  html+='<div class="board-title">仓库库存</div>';
+  html+='<div class="board-row"><span class="label">大连港1号库 可交割量</span><span class="value'+(dl1Valid<1000?' down':'')+'">'+dl1Valid+'吨</span></div>';
+  html+='<div class="board-row"><span class="label">鲅鱼圈2号库 可交割量</span><span class="value'+(byq1Valid<800?' down':'')+'">'+byq1Valid+'吨</span></div>';
+  html+='<div class="board-row"><span class="label">总可交割量</span><span class="value'+(availableStock<totalStock?' down':'')+'">'+availableStock+'/'+totalStock+'吨</span></div>';
+  html+='</div>';
+
+  html+='<div class="board-state">';
+  html+='<div class="board-title">仓单状态</div>';
+  html+='<div class="board-row"><span class="label">已审核仓单</span><span class="value">'+flaggedReceipts+'/'+totalReceipts+'</span></div>';
+  html+='<div class="board-row"><span class="label">未处理仓单</span><span class="value'+(totalReceipts-flaggedReceipts>0?' warn':'')+'">'+(totalReceipts-flaggedReceipts)+'</span></div>';
+  html+='</div>';
+
+  html+='<div class="board-state">';
+  html+='<div class="board-title">风险提示</div>';
+  html+='<div class="board-row"><span class="label">质检过期标记</span><span class="value'+(expiredInsp?' ok':' bad')+'">'+(expiredInsp?'已标记':'未标记')+'</span></div>';
+  html+='<div class="board-row"><span class="label">合约到期标记</span><span class="value'+(expiredContract?' ok':' bad')+'">'+(expiredContract?'已标记':'未标记')+'</span></div>';
+  html+='<div class="board-row"><span class="label">仓单重复标记</span><span class="value'+((state.flags['WR-001']&&state.flags['WR-001'].indexOf('duplicate')>=0)||(state.flags['WR-002']&&state.flags['WR-002'].indexOf('duplicate')>=0)?' ok':' bad')+'">'+((state.flags['WR-001']&&state.flags['WR-001'].indexOf('duplicate')>=0)||(state.flags['WR-002']&&state.flags['WR-002'].indexOf('duplicate')>=0)?'已标记':'未标记')+'</span></div>';
+  html+='</div>';
+
+  el.innerHTML=html;
+}
+
+function renderFindings(){
+  var el=document.getElementById('findingsList');
+  var keys=Object.keys(state.flags);
+  if(keys.length===0){
+    el.innerHTML='<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-text">尚未标记任何问题</div></div>';
+    return;
+  }
+  var html='';
+  keys.forEach(function(docId){
+    var doc=scenario.documents.find(function(d){return d.id===docId;});
+    state.flags[docId].forEach(function(fk){
+      var ft=flagTypes.find(function(t){return t.key===fk;});
+      var diffTag='';
+      if(state.attempt===2&&state.prevFlags[docId]){
+        var wasInPrev=state.prevFlags[docId].indexOf(fk)>=0;
+        diffTag=wasInPrev?'<span class="diff-badge kept">保留</span>':'<span class="diff-badge new">新增</span>';
+      }else if(state.attempt===2&&!state.prevFlags[docId]){
+        diffTag='<span class="diff-badge new">新增</span>';
+      }
+      html+='<div class="finding-item">';
+      html+='<div class="finding-doc">'+docId+' — '+doc.type+' '+diffTag+'</div>';
+      html+='<div class="finding-issue">'+(ft?ft.icon+' '+ft.label:fk)+'</div>';
+      html+='</div>';
+    });
+  });
+
+  if(state.attempt===2){
+    Object.keys(state.prevFlags).forEach(function(docId){
+      state.prevFlags[docId].forEach(function(fk){
+        if(!state.flags[docId]||state.flags[docId].indexOf(fk)<0){
+          var ft=flagTypes.find(function(t){return t.key===fk;});
+          html+='<div class="finding-item" style="opacity:.5">';
+          html+='<div class="finding-doc">'+docId+' <span class="diff-badge removed">已移除</span></div>';
+          html+='<div class="finding-issue">'+(ft?ft.icon+' '+ft.label:fk)+'</div>';
+          html+='</div>';
+        }
+      });
+    });
+  }
+
+  el.innerHTML=html;
+}
+
+function updateScore(){
+  var s=0;
+  var count=0;
+  Object.keys(state.flags).forEach(function(docId){
+    state.flags[docId].forEach(function(fk){
+      count++;
+      var hit=scenario.issues.some(function(iss){
+        return iss.flagType===fk&&iss.flagDocIds.indexOf(docId)>=0;
+      });
+      if(hit)s+=5;else s-=2;
+    });
+  });
+  state.score=s;
+  document.getElementById('scoreValue').textContent=s;
+  document.getElementById('scoreValue').style.color=s>=0?'var(--accent)':'var(--danger)';
+  document.getElementById('flagCount').textContent=count;
+}
+
+function submitReview(){
+  if(state.submitted)return;
+  state.submitted=true;
+  document.getElementById('submitBtn').disabled=true;
+
+  var results=evaluateFlags();
+  state.results=results;
+  showResults(results);
+}
+
+function evaluateFlags(){
+  var correct=[];
+  var wrong=[];
+  var missed=[];
+  var checkedIssues={};
+
+  Object.keys(state.flags).forEach(function(docId){
+    state.flags[docId].forEach(function(fk){
+      var matchedIssue=null;
+      scenario.issues.forEach(function(iss){
+        if(iss.flagType===fk&&iss.flagDocIds.indexOf(docId)>=0&&!checkedIssues[iss.id]){
+          matchedIssue=iss;
+          checkedIssues[iss.id]=true;
+        }
+      });
+      if(matchedIssue){
+        correct.push({docId:docId,flagType:fk,issue:matchedIssue});
+      }else{
+        wrong.push({docId:docId,flagType:fk});
+      }
+    });
+  });
+
+  scenario.issues.forEach(function(iss){
+    if(!checkedIssues[iss.id]){
+      missed.push({issue:iss});
+    }
+  });
+
+  var score=correct.length*20-wrong.length*5-missed.length*10;
+  if(score<0)score=0;
+
+  return {correct:correct,wrong:wrong,missed:missed,score:score,total:scenario.issues.length*20};
+}
+
+function showResults(results){
+  var el=document.getElementById('resultOverlay');
+  var container=document.getElementById('resultContainer');
+
+  var html='<div class="result-header">';
+  html+='<div class="result-score">'+results.score+'/'+results.total+'</div>';
+  html+='<div class="result-label">第 '+state.attempt+' 次审核得分</div>';
+  html+='</div>';
+
+  html+='<div class="result-summary">';
+  html+='<div class="result-stat"><div class="result-stat-value green">'+results.correct.length+'</div><div class="result-stat-label">正确标记</div></div>';
+  html+='<div class="result-stat"><div class="result-stat-value red">'+results.wrong.length+'</div><div class="result-stat-label">错误标记</div></div>';
+  html+='<div class="result-stat"><div class="result-stat-value yellow">'+results.missed.length+'</div><div class="result-stat-label">遗漏问题</div></div>';
+  html+='</div>';
+
+  results.correct.forEach(function(r){
+    html+=renderEvidenceCard('correct','✅ 正确',r.issue);
+  });
+
+  results.wrong.forEach(function(r){
+    var ft=flagTypes.find(function(t){return t.key===r.flagType;});
+    html+='<div class="evidence-card wrong-card">';
+    html+='<span class="evidence-type wrong">❌ 错误标记</span>';
+    html+='<div class="evidence-title">'+r.docId+' — '+(ft?ft.label:r.flagType)+'</div>';
+    html+='<div class="evidence-desc">该材料并不存在"'+(ft?ft.label:r.flagType)+'"问题。误标会干扰正常交割流程审核。</div>';
+    html+='</div>';
+  });
+
+  results.missed.forEach(function(r){
+    html+=renderEvidenceCard('missed','⚠️ 遗漏',r.issue);
+  });
+
+  html+='<div class="result-actions">';
+  if(state.attempt===1){
+    html+='<button class="btn btn-primary" onclick="retryAttempt()">进行第二次审核</button>';
+  }else{
+    html+='<button class="btn btn-outline" onclick="showComparison()">查看两次对比</button>';
+  }
+  html+='<button class="btn btn-outline" onclick="resetGame()">重新开始</button>';
+  html+='</div>';
+
+  container.innerHTML=html;
+  el.className='result-overlay visible';
+}
+
+function renderEvidenceCard(type,label,issue){
+  var typeClass=type==='correct'?'correct-card':type==='missed'?'missed-card':'wrong-card';
+  var typeBg=type==='correct'?'correct':type==='missed'?'missed':'wrong';
+  var html='<div class="evidence-card '+typeClass+'">';
+  html+='<span class="evidence-type '+typeBg+'">'+label+'</span>';
+  html+='<div class="evidence-title">['+issue.type+'] '+issue.description+'</div>';
+
+  html+='<div class="evidence-pointer">';
+  html+='<div class="evidence-pointer-title">证据定位 — 问题出在以下材料的以下字段</div>';
+  issue.evidence.forEach(function(ev){
+    html+='<div class="evidence-pointer-item">';
+    html+='<span class="doc-ref">📄 '+ev.docId+'</span>';
+    html+='<span style="color:var(--text3)">→</span>';
+    html+='<span class="field-ref">'+ev.field+'</span>';
+    html+='<span style="color:var(--text3)">:</span>';
+    html+='<span class="detail-ref">'+ev.detail+'</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+  html+='</div>';
+  return html;
+}
+
+function retryAttempt(){
+  state.prevFlags=JSON.parse(JSON.stringify(state.flags));
+  state.flags={};
+  state.activeDocId=null;
+  state.score=0;
+  state.submitted=false;
+  state.results=null;
+  state.attempt=2;
+
+  document.getElementById('attemptBadge').textContent='第 2 次';
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('resultOverlay').className='result-overlay';
+
+  renderAll();
+}
+
+function showComparison(){
+  var el=document.getElementById('resultOverlay');
+  var container=document.getElementById('resultContainer');
+
+  var r1=evaluateFlagsFor(state.prevFlags);
+  var r2=state.results||evaluateFlags();
+
+  var html='<div class="result-header">';
+  html+='<div style="font-size:24px;color:var(--accent);font-weight:700;margin-bottom:8px">两次审核对比</div>';
+  html+='</div>';
+
+  html+='<div class="result-summary">';
+  html+='<div class="result-stat"><div class="result-stat-value green">'+r1.score+'/'+r1.total+'</div><div class="result-stat-label">第1次得分</div></div>';
+  html+='<div class="result-stat"><div class="result-stat-value'+(r2.score>r1.score?' green':r2.score<r1.score?' red':'')+'">'+r2.score+'/'+r2.total+'</div><div class="result-stat-label">第2次得分</div></div>';
+  html+='<div class="result-stat"><div class="result-stat-value">'+(r2.score-r1.score>0?'+':'')+( r2.score-r1.score)+'</div><div class="result-stat-label">变化</div></div>';
+  html+='</div>';
+
+  html+='<div class="comparison-section">';
+  html+='<div class="comparison-title">变化详情</div>';
+
+  var allDocIds={};
+  Object.keys(state.prevFlags).forEach(function(k){allDocIds[k]=true;});
+  Object.keys(state.flags).forEach(function(k){allDocIds[k]=true;});
+
+  Object.keys(allDocIds).forEach(function(docId){
+    var prev=state.prevFlags[docId]||[];
+    var curr=state.flags[docId]||[];
+    var added=curr.filter(function(f){return prev.indexOf(f)<0;});
+    var removed=prev.filter(function(f){return curr.indexOf(f)<0;});
+    var kept=curr.filter(function(f){return prev.indexOf(f)>=0;});
+
+    if(added.length>0||removed.length>0){
+      html+='<div class="change-item">';
+      html+='<strong>'+docId+'</strong>: ';
+      if(kept.length>0)html+='<span style="color:var(--text3)">保留('+kept.map(flagLabel).join(',')+')</span> ';
+      if(added.length>0)html+='<span class="added">新增('+added.map(flagLabel).join(',')+')</span> ';
+      if(removed.length>0)html+='<span class="removed">移除('+removed.map(flagLabel).join(',')+')</span>';
+      html+='</div>';
+    }
+  });
+
+  html+='</div>';
+
+  html+='<div class="result-actions">';
+  html+='<button class="btn btn-outline" onclick="backToResults()">返回结果</button>';
+  html+='<button class="btn btn-outline" onclick="resetGame()">重新开始</button>';
+  html+='</div>';
+
+  container.innerHTML=html;
+  el.className='result-overlay visible';
+}
+
+function flagLabel(fk){
+  var ft=flagTypes.find(function(t){return t.key===fk;});
+  return ft?ft.label:fk;
+}
+
+function evaluateFlagsFor(flags){
+  var correct=[];
+  var wrong=[];
+  var missed=[];
+  var checkedIssues={};
+
+  Object.keys(flags).forEach(function(docId){
+    flags[docId].forEach(function(fk){
+      var matchedIssue=null;
+      scenario.issues.forEach(function(iss){
+        if(iss.flagType===fk&&iss.flagDocIds.indexOf(docId)>=0&&!checkedIssues[iss.id]){
+          matchedIssue=iss;
+          checkedIssues[iss.id]=true;
+        }
+      });
+      if(matchedIssue){
+        correct.push({docId:docId,flagType:fk,issue:matchedIssue});
+      }else{
+        wrong.push({docId:docId,flagType:fk});
+      }
+    });
+  });
+
+  scenario.issues.forEach(function(iss){
+    if(!checkedIssues[iss.id]){
+      missed.push({issue:iss});
+    }
+  });
+
+  var score=correct.length*20-wrong.length*5-missed.length*10;
+  if(score<0)score=0;
+  return {correct:correct,wrong:wrong,missed:missed,score:score,total:scenario.issues.length*20};
+}
+
+function backToResults(){
+  if(state.results)showResults(state.results);
+}
+
+function resetGame(){
+  state={attempt:1,activeDocId:null,flags:{},prevFlags:{},score:0,submitted:false,results:null};
+  document.getElementById('attemptBadge').textContent='第 1 次';
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('resultOverlay').className='result-overlay';
+  renderAll();
+}
+
+function showToast(msg,type){
+  var el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast visible '+type;
+  setTimeout(function(){el.className='toast';},2500);
+}
+
+renderAll();
+</script>
+</body>
+</html>
