@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>养老金资产配置棋</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="game-header">
+            <h1>养老金资产配置棋</h1>
+            <div class="game-controls">
+                <button id="btnNewGame" class="btn btn-primary">新游戏</button>
+                <button id="btnReplay" class="btn btn-secondary">回放</button>
+                <button id="btnLeaderboard" class="btn btn-secondary">排行榜</button>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-left">
+                <div class="age-grid-section">
+                    <h2>年龄格</h2>
+                    <div id="ageGrid" class="age-grid"></div>
+                </div>
+                
+                <div class="market-events-section">
+                    <h2>市场事件</h2>
+                    <div id="marketEvents" class="market-events"></div>
+                </div>
+            </div>
+
+            <div class="game-center">
+                <div class="game-status">
+                    <div class="status-item">
+                        <span class="label">当前年龄:</span>
+                        <span id="currentAge" class="value">25</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">退休目标:</span>
+                        <span id="retirementGoal" class="value">60</span>
+                        <button id="btnRevokeGoal" class="btn-small btn-warning">撤回</button>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">当前回合:</span>
+                        <span id="currentTurn" class="value">1</span>
+                    </div>
+                    <div class="status-item risk-status" id="riskStatus">
+                        <span class="label">风险状态:</span>
+                        <span class="value safe">安全</span>
+                    </div>
+                </div>
+
+                <div class="asset-selection">
+                    <h2>资产配置</h2>
+                    <div id="assetCards" class="asset-cards"></div>
+                </div>
+
+                <div class="tax-account">
+                    <h2>税延账户 <span class="account-balance" id="taxAccountBalance">0</span>元</h2>
+                    <div class="tax-controls">
+                        <button id="btnTaxDeposit" class="btn btn-small btn-primary">存入</button>
+                        <button id="btnTaxWithdraw" class="btn btn-small btn-danger">提前支取</button>
+                        <input type="number" id="taxAmount" class="input-small" value="10000" min="0">
+                    </div>
+                    <div class="tax-info" id="taxInfo"></div>
+                </div>
+
+                <div class="game-actions">
+                    <button id="btnConfirmAllocation" class="btn btn-primary btn-large">确认配置</button>
+                    <button id="btnNextTurn" class="btn btn-success btn-large">下一回合</button>
+                </div>
+            </div>
+
+            <div class="game-right">
+                <div class="report-section">
+                    <h2>配置报告</h2>
+                    <div id="allocationReport" class="allocation-report"></div>
+                </div>
+
+                <div class="diagnosis-section">
+                    <h2>诊断信息</h2>
+                    <div id="diagnosis" class="diagnosis"></div>
+                </div>
+
+                <div class="history-section">
+                    <h2>操作历史</h2>
+                    <div id="history" class="history"></div>
+                </div>
+            </div>
+        </main>
+
+        <div id="modalOverlay" class="modal-overlay hidden">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 id="modalTitle">提示</h3>
+                    <button id="modalClose" class="btn-close">×</button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+                <div class="modal-footer">
+                    <button id="modalConfirm" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaderboardOverlay" class="modal-overlay hidden">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h3>排行榜</h3>
+                    <button id="leaderboardClose" class="btn-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="leaderboardContent" class="leaderboard-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="replayOverlay" class="modal-overlay hidden">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h3>游戏回放</h3>
+                    <button id="replayClose" class="btn-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="replay-controls">
+                        <button id="replayPrev" class="btn btn-small">上一步</button>
+                        <span id="replayStep">第 1 步</span>
+                        <button id="replayNext" class="btn btn-small">下一步</button>
+                        <button id="replayAuto" class="btn btn-small btn-primary">自动播放</button>
+                    </div>
+                    <div id="replayContent" class="replay-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/models.js"></script>
+    <script src="js/gameEngine.js"></script>
+    <script src="js/diagnosis.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
