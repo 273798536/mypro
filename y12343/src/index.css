@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a1628 0%, #0f1f38 50%, #122f6f 100%);
+  color: #eef5ff;
+}
+
+@layer components {
+  .card {
+    @apply bg-dark-card/80 backdrop-blur-sm border border-dark-border/50 rounded-xl shadow-lg;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:border-primary-500/30 hover:-translate-y-0.5;
+  }
+  
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-bg disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-500 focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-dark-border/50 text-primary-100 hover:bg-dark-border focus:ring-primary-400;
+  }
+  
+  .btn-danger {
+    @apply btn bg-accent-error/90 text-white hover:bg-accent-error focus:ring-accent-error;
+  }
+  
+  .btn-success {
+    @apply btn bg-accent-success/90 text-white hover:bg-accent-success focus:ring-accent-success;
+  }
+  
+  .input {
+    @apply w-full px-3 py-2 bg-dark-bg/50 border border-dark-border rounded-lg text-primary-100 placeholder-primary-400/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+  }
+  
+  .label {
+    @apply block text-sm font-medium text-primary-200 mb-1;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply badge bg-accent-success/20 text-accent-success;
+  }
+  
+  .badge-warning {
+    @apply badge bg-accent-warning/20 text-accent-warning;
+  }
+  
+  .badge-error {
+    @apply badge bg-accent-error/20 text-accent-error;
+  }
+  
+  .badge-info {
+    @apply badge bg-accent-info/20 text-accent-info;
+  }
+  
+  .table-header {
+    @apply text-left text-xs font-semibold text-primary-300 uppercase tracking-wider px-4 py-3;
+  }
+  
+  .table-cell {
+    @apply px-4 py-3 text-sm text-primary-100;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-primary-200 hover:bg-primary-600/20 hover:text-white transition-all duration-200;
+  }
+  
+  .sidebar-item-active {
+    @apply sidebar-item bg-primary-600/30 text-white border-l-2 border-primary-400;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-300 to-primary-500 bg-clip-text text-transparent;
+  }
+  
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #1e3a5f transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #1e3a5f;
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #286ef7;
+  }
+}
+
+.table-row-odd {
+  background-color: rgba(30, 58, 95, 0.3);
+}
+
+.table-row-even {
+  background-color: rgba(15, 31, 56, 0.5);
+}
+
+.anomaly-highlight {
+  animation: anomalyPulse 2s ease-in-out infinite;
+}
+
+@keyframes anomalyPulse {
+  0%, 100% {
+    background-color: rgba(231, 76, 60, 0.15);
+  }
+  50% {
+    background-color: rgba(231, 76, 60, 0.3);
+  }
+}
+
+.supplemented-row {
+  background-color: rgba(230, 126, 34, 0.15);
+}
+
+.chart-container {
+  position: relative;
+  background: linear-gradient(180deg, rgba(15, 31, 56, 0.8) 0%, rgba(10, 22, 40, 0.9) 100%);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(30, 58, 95, 0.3) !important;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.custom-tooltip {
+  background: rgba(15, 31, 56, 0.95) !important;
+  border: 1px solid rgba(30, 58, 95, 0.5) !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+}
