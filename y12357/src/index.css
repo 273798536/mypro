@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #EBEFF5;
+  background-color: #0F1114;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1D21;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #525A68;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6B7484;
+}
+
+@layer utilities {
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+@layer components {
+  .industrial-card {
+    @apply bg-industrial-850 border border-industrial-700 rounded-sm;
+  }
+  
+  .industrial-input {
+    @apply bg-industrial-900 border border-industrial-700 text-industrial-100 px-3 py-2 rounded-sm focus:outline-none focus:border-tech-500 focus:ring-1 focus:ring-tech-500 transition-colors font-mono;
+  }
+  
+  .industrial-input-error {
+    @apply border-alert-red ring-1 ring-alert-red animate-border-pulse;
+  }
+  
+  .industrial-btn {
+    @apply px-4 py-2 bg-industrial-800 border border-industrial-600 text-industrial-200 hover:bg-industrial-700 hover:border-industrial-500 hover:text-white transition-all duration-150 active:translate-y-px font-medium rounded-sm;
+  }
+  
+  .industrial-btn-primary {
+    @apply px-4 py-2 bg-tech-600 border border-tech-500 text-white hover:bg-tech-500 transition-all duration-150 active:translate-y-px font-medium rounded-sm;
+  }
+  
+  .industrial-btn-danger {
+    @apply px-4 py-2 bg-alert-red border border-alert-red text-white hover:bg-red-600 transition-all duration-150 active:translate-y-px font-medium rounded-sm;
+  }
+  
+  .section-title {
+    @apply font-mono text-sm font-semibold text-industrial-400 uppercase tracking-wider mb-3;
+  }
+  
+  .data-label {
+    @apply text-xs text-industrial-500 font-mono;
+  }
+  
+  .data-value {
+    @apply text-sm font-mono text-industrial-100;
+  }
+  
+  .error-alert {
+    @apply bg-red-950/60 border border-alert-red text-red-200 p-3 rounded-sm animate-pulse-fast;
+  }
+  
+  .warning-alert {
+    @apply bg-orange-950/60 border border-alert-orange text-orange-200 p-3 rounded-sm;
+  }
+  
+  .success-alert {
+    @apply bg-green-950/60 border border-alert-green text-green-200 p-3 rounded-sm;
+  }
+}
