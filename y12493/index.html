@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物理光线追迹展台</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --ray1: #ff6b6b;
+  --ray2: #51cf66;
+  --ray3: #ffd43b;
+  --lens-color: #74c0fc;
+  --object-color: #ff922b;
+  --image-color: #da77f2;
+  --focal-color: #ffd43b;
+  --warning: #f0883e;
+  --error: #f85149;
+  --success: #3fb950;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+.header {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.header .badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+.stage-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+.canvas-area {
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+}
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sidebar {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.panel {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+}
+.panel-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.param-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.param-row label {
+  font-size: 13px;
+  width: 50px;
+  flex-shrink: 0;
+}
+.param-row input[type=range] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+.param-row .val {
+  font-size: 13px;
+  font-weight: 600;
+  width: 55px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.model-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+.model-toggle input[type=checkbox] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+.model-toggle .stage-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.stage-tag.s1 { background: #1f6feb33; color: #58a6ff; }
+.stage-tag.s2 { background: #23863633; color: #3fb950; }
+.stage-tag.s3 { background: #9e6a0333; color: #d29922; }
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.info-cell {
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.info-cell .info-label {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.info-cell .info-value {
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.info-cell .info-value.real { color: var(--image-color); }
+.info-cell .info-value.virtual { color: var(--accent); }
+.info-cell .info-value.err { color: var(--error); }
+.warn-list { list-style: none; }
+.warn-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.warn-item:last-child { border-bottom: none; }
+.warn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.warn-dot.error { background: var(--error); }
+.warn-dot.warning { background: var(--warning); }
+.warn-dot.info { background: var(--accent); }
+.warn-dot.success { background: var(--success); }
+.warn-stage {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.btn-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.btn {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+.btn.primary:hover { opacity: 0.85; }
+.version-list {
+  max-height: 120px;
+  overflow-y: auto;
+}
+.version-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+.version-item:hover { color: var(--accent); }
+.version-item.active { color: var(--accent); font-weight: 600; }
+.version-time { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.version-tag {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #1f6feb33;
+  color: #58a6ff;
+}
+.history-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+.history-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.history-item:last-child { border-bottom: none; }
+.history-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.history-time { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.history-field {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+  background: #da77f233;
+  color: #da77f2;
+}
+.history-reason {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.history-impact {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--warning);
+}
+.reason-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 4px 8px;
+  margin-top: 6px;
+}
+.reason-input:focus { outline: none; border-color: var(--accent); }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+.legend-line {
+  width: 18px;
+  height: 3px;
+  border-radius: 1px;
+}
+.compare-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: none;
+}
+.compare-label {
+  position: absolute;
+  top: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.compare-label.left { left: 10px; background: #1f6feb88; color: #fff; }
+.compare-label.right { right: 10px; background: #da77f288; color: #fff; }
+.empty-state { color: var(--text-muted); font-size: 12px; text-align: center; padding: 10px 0; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <div class="header">
+    <h1>物理光线追迹展台</h1>
+    <span class="badge">薄透镜</span>
+    <span class="stage-label" id="stageLabel">构建阶段：透镜基础</span>
+  </div>
+  <div class="canvas-area">
+    <canvas id="mainCanvas"></canvas>
+    <div class="compare-overlay" id="compareOverlay">
+      <div class="compare-label left">当前版本</div>
+      <div class="compare-label right">对比版本</div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="panel">
+      <div class="panel-title">参数控制</div>
+      <div class="param-row">
+        <label>焦距 f</label>
+        <input type="range" id="focalSlider" min="-300" max="300" value="120" step="1">
+        <span class="val" id="focalVal">120</span>
+      </div>
+      <div class="param-row">
+        <label>物距 u</label>
+        <input type="range" id="objectDistSlider" min="20" max="600" value="250" step="1">
+        <span class="val" id="objectDistVal">250</span>
+      </div>
+      <div class="param-row">
+        <label>物高 h</label>
+        <input type="range" id="objectHeightSlider" min="10" max="200" value="80" step="1">
+        <span class="val" id="objectHeightVal">80</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">增量模型构建</div>
+      <label class="model-toggle">
+        <input type="checkbox" id="toggleLens" checked>
+        透镜与焦点
+        <span class="stage-tag s1">阶段1</span>
+      </label>
+      <label class="model-toggle">
+        <input type="checkbox" id="toggleObject">
+        光源（物体）
+        <span class="stage-tag s2">阶段2</span>
+      </label>
+      <label class="model-toggle">
+        <input type="checkbox" id="toggleScreen">
+        成像屏幕
+        <span class="stage-tag s3">阶段3</span>
+      </label>
+      <label class="model-toggle">
+        <input type="checkbox" id="toggleRays" checked>
+        光线追迹
+        <span class="stage-tag s2">阶段2</span>
+      </label>
+    </div>
+    <div class="panel">
+      <div class="panel-title">成像结果</div>
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">像距 v</div>
+          <div class="info-value" id="imageDistValue">--</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">放大率 M</div>
+          <div class="info-value" id="magValue">--</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">像高 h'</div>
+          <div class="info-value" id="imageHeightValue">--</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">成像性质</div>
+          <div class="info-value" id="imageTypeValue">--</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">诊断提示</div>
+      <ul class="warn-list" id="warnList">
+        <li class="empty-state">暂无诊断信息</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="panel-title">图例</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-line" style="background:var(--ray1)"></div>平行光线</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--ray2)"></div>过心光线</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--ray3)"></div>焦光线</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--object-color)"></div>物体</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--image-color)"></div>像</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--focal-color)"></div>焦点</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">版本管理</div>
+      <div class="btn-row" style="margin-bottom:8px">
+        <button class="btn primary" id="btnSaveVersion">保存版本</button>
+        <button class="btn" id="btnReset">重置</button>
+        <button class="btn" id="btnCompare">对比模式</button>
+      </div>
+      <div class="version-list" id="versionList">
+        <div class="empty-state">尚无保存的版本</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">判断变更历史</div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">尚无变更记录</div>
+      </div>
+      <input class="reason-input" id="reasonInput" placeholder="修改原因（保存版本时填写）">
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('mainCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const focalSlider = document.getElementById('focalSlider');
+  const objectDistSlider = document.getElementById('objectDistSlider');
+  const objectHeightSlider = document.getElementById('objectHeightSlider');
+  const focalVal = document.getElementById('focalVal');
+  const objectDistVal = document.getElementById('objectDistVal');
+  const objectHeightVal = document.getElementById('objectHeightVal');
+
+  const toggleLens = document.getElementById('toggleLens');
+  const toggleObject = document.getElementById('toggleObject');
+  const toggleScreen = document.getElementById('toggleScreen');
+  const toggleRays = document.getElementById('toggleRays');
+
+  const imageDistValue = document.getElementById('imageDistValue');
+  const magValue = document.getElementById('magValue');
+  const imageHeightValue = document.getElementById('imageHeightValue');
+  const imageTypeValue = document.getElementById('imageTypeValue');
+  const warnList = document.getElementById('warnList');
+  const stageLabel = document.getElementById('stageLabel');
+  const versionListEl = document.getElementById('versionList');
+  const historyListEl = document.getElementById('historyList');
+  const reasonInput = document.getElementById('reasonInput');
+  const compareOverlay = document.getElementById('compareOverlay');
+
+  let state = {
+    focalLength: 120,
+    objectDist: 250,
+    objectHeight: 80,
+    showLens: true,
+    showObject: false,
+    showScreen: false,
+    showRays: true
+  };
+
+  let versions = [];
+  let history = [];
+  let compareVersion = null;
+  let compareMode = false;
+  let dpr = window.devicePixelRatio || 1;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    draw();
+  }
+
+  window.addEventListener('resize', resize);
+
+  function getCanvasSize() {
+    return { w: canvas.width / dpr, h: canvas.height / dpr };
+  }
+
+  function computeImage() {
+    const f = state.focalLength;
+    const u = state.objectDist;
+    const h = state.objectHeight;
+
+    if (Math.abs(f) < 0.5) {
+      return { valid: false, reason: 'focal_zero', v: Infinity, M: Infinity, imageHeight: Infinity, imageType: '无效' };
+    }
+
+    const denom = u - f;
+    if (Math.abs(denom) < 0.5) {
+      return { valid: false, reason: 'at_focal', v: Infinity, M: Infinity, imageHeight: Infinity, imageType: '不成像' };
+    }
+
+    const v = (u * f) / denom;
+    const M = -v / u;
+    const imageHeight = M * h;
+
+    let imageType = '';
+    if (v > 0) {
+      imageType = M < 0 ? '倒立实像' : '正立实像';
+    } else {
+      imageType = M > 0 ? '正立虚像' : '倒立虚像';
+    }
+    if (Math.abs(M) > 1) imageType += ' 放大';
+    else if (Math.abs(M) < 1) imageType += ' 缩小';
+    else imageType += ' 等大';
+
+    return { valid: true, v: v, M: M, imageHeight: imageHeight, imageType: imageType };
+  }
+
+  function getStage() {
+    if (!state.showLens) return 0;
+    if (!state.showObject) return 1;
+    if (!state.showScreen) return 2;
+    return 3;
+  }
+
+  function getStageText(s) {
+    return ['未开始', '透镜基础', '光线追迹', '完整模型'][s] || '透镜基础';
+  }
+
+  function getWarnings(img) {
+    const warnings = [];
+    const f = state.focalLength;
+    const u = state.objectDist;
+    const stage = getStage();
+
+    if (Math.abs(f) < 0.5) {
+      warnings.push({
+        level: 'error',
+        stage: 3,
+        msg: '焦距为零：透镜无折光能力，不成像。请调整焦距。'
+      });
+    }
+
+    if (f < 0) {
+      warnings.push({
+        level: 'warning',
+        stage: 1,
+        msg: '当前为凹透镜（f < 0），只能成正立缩小虚像。'
+      });
+    }
+
+    if (img.valid) {
+      const absV = Math.abs(img.v);
+      const { w } = getCanvasSize();
+      const halfW = w / 2;
+
+      if (absV > halfW * 1.5) {
+        warnings.push({
+          level: 'warning',
+          stage: 1,
+          msg: '像距超出画布范围（|v|=' + absV.toFixed(0) + '），成像点在可视区域外。'
+        });
+      }
+
+      if (Math.abs(img.imageHeight) > 400) {
+        warnings.push({
+          level: 'warning',
+          stage: 1,
+          msg: '像高过大（|h\'|=' + Math.abs(img.imageHeight).toFixed(0) + '），可能超出显示范围。'
+        });
+      }
+    }
+
+    if (img.reason === 'at_focal') {
+      warnings.push({
+        level: 'error',
+        stage: 2,
+        msg: '物距等于焦距：物体恰在焦点上，折射光线平行，不成像。'
+      });
+    }
+
+    if (img.valid && Math.abs(u - f) < 10 && Math.abs(u - f) >= 0.5) {
+      warnings.push({
+        level: 'warning',
+        stage: 3,
+        msg: '物距接近焦距（u - f = ' + (u - f).toFixed(1) + '），像距极大，成像不稳定。'
+      });
+    }
+
+    if (stage < 2) {
+      warnings.push({
+        level: 'info',
+        stage: stage + 1,
+        msg: '请开启"光源（物体）"以观察光线追迹。'
+      });
+    } else if (stage < 3 && state.showScreen === false) {
+      warnings.push({
+        level: 'info',
+        stage: 3,
+        msg: '开启"成像屏幕"可观察像在屏幕上的投影。'
+      });
+    }
+
+    if (img.valid && img.v > 0 && state.showScreen) {
+      const screenX = img.v;
+      const { w } = getCanvasSize();
+      if (screenX > w / 2 - 20 || screenX < -(w / 2 - 20)) {
+        warnings.push({
+          level: 'warning',
+          stage: 3,
+          msg: '成像屏幕位置超出可视区域，考虑调整参数。'
+        });
+      }
+    }
+
+    return warnings;
+  }
+
+  function draw() {
+    const { w, h } = getCanvasSize();
+    ctx.save();
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = w / 2;
+    const cy = h / 2;
+    const f = state.focalLength;
+    const u = state.objectDist;
+    const hObj = state.objectHeight;
+    const img = computeImage();
+
+    drawGrid(cx, cy, w, h);
+    drawAxis(cx, cy, w, h);
+
+    if (state.showLens) {
+      drawLens(cx, cy, h, f);
+      drawFocalPoints(cx, cy, f, h);
+    }
+
+    if (state.showObject) {
+      drawObject(cx, cy, u, hObj);
+
+      if (state.showRays) {
+        drawRays(cx, cy, f, u, hObj, img, w, h);
+      }
+    }
+
+    if (img.valid && state.showObject) {
+      drawImage(cx, cy, img, u, h);
+    }
+
+    if (state.showScreen && img.valid) {
+      drawScreen(cx, cy, img, h);
+    }
+
+    if (compareMode && compareVersion) {
+      drawCompareGhost(cx, cy, w, h);
+    }
+
+    ctx.restore();
+
+    updateInfo(img);
+    updateWarnings(img);
+    updateStageLabel();
+  }
+
+  function drawGrid(cx, cy, w, h) {
+    ctx.strokeStyle = '#ffffff08';
+    ctx.lineWidth = 1;
+    const step = 50;
+    for (let x = cx % step; x < w; x += step) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+    for (let y = cy % step; y < h; y += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+  }
+
+  function drawAxis(cx, cy, w, h) {
+    ctx.strokeStyle = '#ffffff30';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([8, 4]);
+    ctx.beginPath();
+    ctx.moveTo(0, cy);
+    ctx.lineTo(w, cy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#ffffff50';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    const step = 100;
+    for (let i = -Math.floor(cx / step); i <= Math.floor((w - cx) / step); i++) {
+      if (i === 0) continue;
+      const x = cx + i * step;
+      ctx.fillText((i * step).toString(), x, cy + 16);
+    }
+    ctx.fillText('O', cx, cy + 16);
+  }
+
+  function drawLens(cx, cy, h, f) {
+    const lensH = Math.min(h * 0.7, 300);
+    const bulge = f > 0 ? 12 : -12;
+
+    ctx.strokeStyle = '#74c0fc';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - lensH / 2);
+    ctx.quadraticCurveTo(cx + bulge, cy, cx, cy + lensH / 2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - lensH / 2);
+    ctx.quadraticCurveTo(cx - bulge, cy, cx, cy + lensH / 2);
+    ctx.stroke();
+
+    if (f > 0) {
+      drawArrowhead(cx, cy - lensH / 2, 'up');
+      drawArrowhead(cx, cy + lensH / 2, 'down');
+    } else {
+      drawArrowhead(cx, cy - lensH / 2, 'down');
+      drawArrowhead(cx, cy + lensH / 2, 'up');
+    }
+
+    ctx.fillStyle = '#74c0fc88';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(f > 0 ? '凸透镜' : '凹透镜', cx, cy - lensH / 2 - 10);
+  }
+
+  function drawArrowhead(x, y, dir) {
+    const sz = 6;
+    const dy = dir === 'up' ? -sz : sz;
+    ctx.fillStyle = '#74c0fc';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x - sz, y + dy);
+    ctx.lineTo(x + sz, y + dy);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawFocalPoints(cx, cy, f, h) {
+    if (Math.abs(f) < 0.5) return;
+
+    const points = [
+      { x: cx + f, label: "F'", side: 'right' },
+      { x: cx - f, label: 'F', side: 'left' },
+      { x: cx + 2 * f, label: "2F'", side: 'right' },
+      { x: cx - 2 * f, label: '2F', side: 'left' }
+    ];
+
+    points.forEach(p => {
+      ctx.fillStyle = '#ffd43b33';
+      ctx.beginPath();
+      ctx.arc(p.x, cy, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffd43b';
+      ctx.beginPath();
+      ctx.arc(p.x, cy, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffd43b99';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label, p.x, cy + 28);
+    });
+  }
+
+  function drawObject(cx, cy, u, hObj) {
+    const objX = cx - u;
+    const objTop = cy - hObj;
+
+    ctx.strokeStyle = '#ff922b';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(objX, cy);
+    ctx.lineTo(objX, objTop);
+    ctx.stroke();
+
+    ctx.fillStyle = '#ff922b';
+    ctx.beginPath();
+    ctx.moveTo(objX, objTop - 8);
+    ctx.lineTo(objX - 6, objTop + 2);
+    ctx.lineTo(objX + 6, objTop + 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#ff922bcc';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('物 ↕↔', objX, objTop - 14);
+    ctx.fillText('u=' + u, objX, cy + 28);
+
+    ctx.fillStyle = '#ff922b33';
+    ctx.beginPath();
+    ctx.arc(objX, objTop, 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawImage(cx, cy, img, u, canvasH) {
+    if (!img.valid) return;
+
+    const imgX = cx + img.v;
+    const imgH = img.imageHeight;
+    const imgTop = cy - imgH;
+    const isReal = img.v > 0;
+
+    ctx.strokeStyle = isReal ? '#da77f2' : '#da77f288';
+    ctx.lineWidth = isReal ? 3 : 2;
+    if (!isReal) ctx.setLineDash([6, 4]);
+
+    ctx.beginPath();
+    ctx.moveTo(imgX, cy);
+    ctx.lineTo(imgX, imgTop);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = isReal ? '#da77f2' : '#da77f288';
+    const arrowDir = imgH > 0 ? -1 : 1;
+    ctx.beginPath();
+    ctx.moveTo(imgX, imgTop + arrowDir * (-8));
+    ctx.lineTo(imgX - 6, imgTop + arrowDir * 2);
+    ctx.lineTo(imgX + 6, imgTop + arrowDir * 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#da77f2cc';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    const labelY = imgH > 0 ? imgTop - 14 : imgTop + 20;
+    ctx.fillText(isReal ? '实像' : '虚像', imgX, labelY);
+    ctx.fillText('v=' + img.v.toFixed(1), imgX, cy + 28);
+  }
+
+  function drawRays(cx, cy, f, u, hObj, img, w, h) {
+    if (Math.abs(f) < 0.5) return;
+    if (!img.valid && img.reason !== 'at_focal') return;
+
+    const objX = cx - u;
+    const objTop = cy - hObj;
+    const isAtFocal = img.reason === 'at_focal';
+
+    drawRay1(cx, cy, f, objX, objTop, img, w, h, isAtFocal);
+    drawRay2(cx, cy, f, objX, objTop, img, w, h, isAtFocal);
+    drawRay3(cx, cy, f, objX, objTop, img, w, h, isAtFocal);
+  }
+
+  function drawRay1(cx, cy, f, objX, objTop, img, w, h, isAtFocal) {
+    ctx.strokeStyle = '#ff6b6b';
+    ctx.lineWidth = 1.8;
+
+    ctx.beginPath();
+    ctx.moveTo(objX, objTop);
+    ctx.lineTo(cx, objTop);
+    ctx.stroke();
+
+    if (isAtFocal) {
+      const rightEdge = w;
+      ctx.beginPath();
+      ctx.moveTo(cx, objTop);
+      ctx.lineTo(rightEdge, objTop);
+      ctx.stroke();
+      return;
+    }
+
+    const dyPerX = (cy - objTop) / f;
+    const isReal = img.v > 0;
+    const imgX = cx + img.v;
+    const imgY = cy - img.imageHeight;
+
+    if (isReal) {
+      ctx.beginPath();
+      ctx.moveTo(cx, objTop);
+      ctx.lineTo(imgX, imgY);
+      ctx.stroke();
+
+      const extX = Math.min(w, imgX + 200);
+      const extY = imgY + dyPerX * (extX - imgX);
+      ctx.globalAlpha = 0.3;
+      ctx.beginPath();
+      ctx.moveTo(imgX, imgY);
+      ctx.lineTo(extX, extY);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else {
+      const rightEdge = w;
+      const exitY = objTop + dyPerX * (rightEdge - cx);
+      ctx.beginPath();
+      ctx.moveTo(cx, objTop);
+      ctx.lineTo(rightEdge, exitY);
+      ctx.stroke();
+
+      ctx.setLineDash([6, 4]);
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, objTop);
+      ctx.lineTo(imgX, imgY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawRay2(cx, cy, f, objX, objTop, img, w, h, isAtFocal) {
+    ctx.strokeStyle = '#51cf66';
+    ctx.lineWidth = 1.8;
+
+    ctx.beginPath();
+    ctx.moveTo(objX, objTop);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+
+    if (isAtFocal) {
+      const slope = (cy - objTop) / (cx - objX);
+      const rightEdge = w;
+      const exitY = cy + slope * (rightEdge - cx);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(rightEdge, exitY);
+      ctx.stroke();
+      return;
+    }
+
+    const slope = (cy - objTop) / (cx - objX);
+    const isReal = img.v > 0;
+    const imgX = cx + img.v;
+    const imgY = cy - img.imageHeight;
+
+    if (isReal) {
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(imgX, imgY);
+      ctx.stroke();
+
+      const extX = Math.min(w, imgX + 200);
+      const extY = imgY + slope * (extX - imgX);
+      ctx.globalAlpha = 0.3;
+      ctx.beginPath();
+      ctx.moveTo(imgX, imgY);
+      ctx.lineTo(extX, extY);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else {
+      const rightEdge = w;
+      const exitY = cy + slope * (rightEdge - cx);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(rightEdge, exitY);
+      ctx.stroke();
+
+      ctx.setLineDash([6, 4]);
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(imgX, imgY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawRay3(cx, cy, f, objX, objTop, img, w, h, isAtFocal) {
+    ctx.strokeStyle = '#ffd43b';
+    ctx.lineWidth = 1.8;
+
+    if (Math.abs(f) < 1) return;
+
+    const nearFocalX = f > 0 ? cx - f : cx + f;
+    const slopeToFocal = (objTop - cy) / (objX - nearFocalX);
+    const lensY = cy + slopeToFocal * (cx - nearFocalX);
+
+    if ((f > 0 && objX < nearFocalX) || (f < 0)) {
+      ctx.beginPath();
+      ctx.moveTo(objX, objTop);
+      ctx.lineTo(cx, lensY);
+      ctx.stroke();
+
+      if (isAtFocal) {
+        const rightEdge = w;
+        ctx.beginPath();
+        ctx.moveTo(cx, lensY);
+        ctx.lineTo(rightEdge, lensY);
+        ctx.stroke();
+        return;
+      }
+
+      const isReal = img.v > 0;
+      const imgX = cx + img.v;
+      const imgY = cy - img.imageHeight;
+
+      if (isReal) {
+        ctx.beginPath();
+        ctx.moveTo(cx, lensY);
+        ctx.lineTo(imgX, imgY);
+        ctx.stroke();
+
+        const extX = Math.min(w, imgX + 200);
+        const exitSlope = (imgY - lensY) / (imgX - cx);
+        const extY = imgY + exitSlope * (extX - imgX);
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.moveTo(imgX, imgY);
+        ctx.lineTo(extX, extY);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      } else {
+        const exitSlope = (lensY - cy) / (cx - nearFocalX);
+        const rightEdge = w;
+        const exitY = lensY + exitSlope * (rightEdge - cx);
+        ctx.beginPath();
+        ctx.moveTo(cx, lensY);
+        ctx.lineTo(rightEdge, exitY);
+        ctx.stroke();
+
+        ctx.setLineDash([6, 4]);
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, lensY);
+        ctx.lineTo(imgX, imgY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  function drawScreen(cx, cy, img, canvasH) {
+    if (!img.valid) return;
+    const screenX = cx + img.v;
+    const screenH = Math.min(canvasH * 0.6, 280);
+
+    ctx.strokeStyle = '#868e9666';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(screenX, cy - screenH);
+    ctx.lineTo(screenX, cy + screenH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#868e9666';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('屏幕', screenX, cy - screenH - 6);
+  }
+
+  function drawCompareGhost(cx, cy, w, h) {
+    const sv = compareVersion.state;
+    const f = sv.focalLength;
+    const u = sv.objectDist;
+    const hObj = sv.objectHeight;
+    const img = computeImageFromState(sv);
+
+    ctx.globalAlpha = 0.25;
+
+    if (sv.showLens) {
+      const lensH = Math.min(h * 0.7, 300);
+      ctx.strokeStyle = '#da77f2';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      const bulge = f > 0 ? 12 : -12;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - lensH / 2);
+      ctx.quadraticCurveTo(cx + bulge, cy, cx, cy + lensH / 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - lensH / 2);
+      ctx.quadraticCurveTo(cx - bulge, cy, cx, cy + lensH / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    if (sv.showObject) {
+      const objX = cx - u;
+      const objTop = cy - hObj;
+      ctx.strokeStyle = '#da77f2';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(objX, cy);
+      ctx.lineTo(objX, objTop);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    if (img.valid && sv.showObject) {
+      const imgX = cx + img.v;
+      const imgTop = cy - img.imageHeight;
+      ctx.strokeStyle = '#da77f288';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(imgX, cy);
+      ctx.lineTo(imgX, imgTop);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function computeImageFromState(s) {
+    const f = s.focalLength;
+    const u = s.objectDist;
+    const h = s.objectHeight;
+    if (Math.abs(f) < 0.5) return { valid: false, reason: 'focal_zero', v: Infinity, M: Infinity, imageHeight: Infinity, imageType: '无效' };
+    const denom = u - f;
+    if (Math.abs(denom) < 0.5) return { valid: false, reason: 'at_focal', v: Infinity, M: Infinity, imageHeight: Infinity, imageType: '不成像' };
+    const v = (u * f) / denom;
+    const M = -v / u;
+    const imageHeight = M * h;
+    let imageType = '';
+    if (v > 0) imageType = M < 0 ? '倒立实像' : '正立实像';
+    else imageType = M > 0 ? '正立虚像' : '倒立虚像';
+    if (Math.abs(M) > 1) imageType += ' 放大';
+    else if (Math.abs(M) < 1) imageType += ' 缩小';
+    else imageType += ' 等大';
+    return { valid: true, v, M, imageHeight, imageType };
+  }
+
+  function updateInfo(img) {
+    if (!state.showObject || !img.valid) {
+      imageDistValue.textContent = '--';
+      imageDistValue.className = 'info-value';
+      magValue.textContent = '--';
+      magValue.className = 'info-value';
+      imageHeightValue.textContent = '--';
+      imageHeightValue.className = 'info-value';
+      imageTypeValue.textContent = img.reason === 'at_focal' ? '不成像' : (Math.abs(state.focalLength) < 0.5 ? '无效' : '--');
+      imageTypeValue.className = 'info-value err';
+      return;
+    }
+    imageDistValue.textContent = img.v.toFixed(1);
+    imageDistValue.className = 'info-value ' + (img.v > 0 ? 'real' : 'virtual');
+    magValue.textContent = img.M.toFixed(2);
+    magValue.className = 'info-value ' + (img.v > 0 ? 'real' : 'virtual');
+    imageHeightValue.textContent = img.imageHeight.toFixed(1);
+    imageHeightValue.className = 'info-value ' + (img.v > 0 ? 'real' : 'virtual');
+    imageTypeValue.textContent = img.imageType;
+    imageTypeValue.className = 'info-value ' + (img.v > 0 ? 'real' : 'virtual');
+  }
+
+  function updateWarnings(img) {
+    const warnings = getWarnings(img);
+    if (warnings.length === 0) {
+      warnList.innerHTML = '<li class="empty-state">所有参数正常</li>';
+      return;
+    }
+    warnList.innerHTML = warnings.map(w => {
+      const stageTag = '<span class="warn-stage stage-tag s' + (w.stage || 1) + '">阶段' + (w.stage || 1) + '</span>';
+      return '<li class="warn-item"><span class="warn-dot ' + w.level + '"></span>' + stageTag + '<span>' + w.msg + '</span></li>';
+    }).join('');
+  }
+
+  function updateStageLabel() {
+    const s = getStage();
+    stageLabel.textContent = '构建阶段：' + getStageText(s);
+  }
+
+  function syncUI() {
+    focalSlider.value = state.focalLength;
+    objectDistSlider.value = state.objectDist;
+    objectHeightSlider.value = state.objectHeight;
+    focalVal.textContent = state.focalLength;
+    objectDistVal.textContent = state.objectDist;
+    objectHeightVal.textContent = state.objectHeight;
+    toggleLens.checked = state.showLens;
+    toggleObject.checked = state.showObject;
+    toggleScreen.checked = state.showScreen;
+    toggleRays.checked = state.showRays;
+  }
+
+  focalSlider.addEventListener('input', function() {
+    recordChange('focalLength', state.focalLength, +this.value);
+    state.focalLength = +this.value;
+    focalVal.textContent = this.value;
+    draw();
+  });
+
+  objectDistSlider.addEventListener('input', function() {
+    recordChange('objectDist', state.objectDist, +this.value);
+    state.objectDist = +this.value;
+    objectDistVal.textContent = this.value;
+    draw();
+  });
+
+  objectHeightSlider.addEventListener('input', function() {
+    recordChange('objectHeight', state.objectHeight, +this.value);
+    state.objectHeight = +this.value;
+    objectHeightVal.textContent = this.value;
+    draw();
+  });
+
+  toggleLens.addEventListener('change', function() {
+    state.showLens = this.checked;
+    draw();
+  });
+  toggleObject.addEventListener('change', function() {
+    state.showObject = this.checked;
+    draw();
+  });
+  toggleScreen.addEventListener('change', function() {
+    state.showScreen = this.checked;
+    draw();
+  });
+  toggleRays.addEventListener('change', function() {
+    state.showRays = this.checked;
+    draw();
+  });
+
+  let pendingChanges = [];
+
+  function recordChange(field, oldVal, newVal) {
+    if (oldVal === newVal) return;
+    pendingChanges.push({ field, oldVal, newVal });
+  }
+
+  function flushChangesToHistory(reason) {
+    if (pendingChanges.length === 0) return;
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateStr = now.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+
+    pendingChanges.forEach(c => {
+      const oldImg = computeImageFromState({ ...state, [c.field]: c.oldVal });
+      const newImg = computeImageFromState(state);
+
+      const impact = [];
+      if (c.field === 'focalLength') {
+        if (Math.abs(c.oldVal) >= 0.5 && Math.abs(c.newVal) < 0.5) impact.push('焦距归零，成像失效');
+        if (c.oldVal > 0 && c.newVal < 0) impact.push('透镜类型从凸变凹');
+        if (c.oldVal < 0 && c.newVal > 0) impact.push('透镜类型从凹变凸');
+      }
+      if (oldImg.valid && newImg.valid) {
+        if ((oldImg.v > 0) !== (newImg.v > 0)) impact.push('虚实像性质改变');
+        if ((oldImg.M > 0) !== (newImg.M > 0)) impact.push('正倒立性质改变');
+      }
+      if (oldImg.valid && !newImg.valid) impact.push('成像从有效变为无效');
+      if (!oldImg.valid && newImg.valid) impact.push('成像从无效恢复');
+
+      history.unshift({
+        time: dateStr + ' ' + timeStr,
+        field: c.field,
+        oldVal: c.oldVal,
+        newVal: c.newVal,
+        reason: reason || '未注明',
+        impact: impact
+      });
+    });
+
+    pendingChanges = [];
+    renderHistory();
+  }
+
+  function renderHistory() {
+    if (history.length === 0) {
+      historyListEl.innerHTML = '<div class="empty-state">尚无变更记录</div>';
+      return;
+    }
+    historyListEl.innerHTML = history.slice(0, 50).map(h => {
+      const fieldMap = { focalLength: '焦距', objectDist: '物距', objectHeight: '物高' };
+      const impactHtml = h.impact.length > 0
+        ? '<div class="history-impact">影响：' + h.impact.join('；') + '</div>'
+        : '';
+      return '<div class="history-item">' +
+        '<div class="history-head">' +
+          '<span class="history-time">' + h.time + '</span>' +
+          '<span class="history-field">' + (fieldMap[h.field] || h.field) + '</span>' +
+          '<span>' + h.oldVal + ' → ' + h.newVal + '</span>' +
+        '</div>' +
+        '<div class="history-reason">原因：' + h.reason + '</div>' +
+        impactHtml +
+      '</div>';
+    }).join('');
+  }
+
+  document.getElementById('btnSaveVersion').addEventListener('click', function() {
+    const reason = reasonInput.value.trim();
+    flushChangesToHistory(reason);
+
+    const now = new Date();
+    const label = 'v' + (versions.length + 1);
+    versions.push({
+      label: label,
+      time: now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      date: now.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' }),
+      state: JSON.parse(JSON.stringify(state)),
+      reason: reason || '手动保存'
+    });
+    reasonInput.value = '';
+    renderVersions();
+  });
+
+  function renderVersions() {
+    if (versions.length === 0) {
+      versionListEl.innerHTML = '<div class="empty-state">尚无保存的版本</div>';
+      return;
+    }
+    versionListEl.innerHTML = versions.map((v, i) => {
+      const isActive = compareMode && compareVersion && compareVersion.label === v.label;
+      return '<div class="version-item' + (isActive ? ' active' : '') + '" data-idx="' + i + '">' +
+        '<span class="version-tag">' + v.label + '</span>' +
+        '<span class="version-time">' + v.date + ' ' + v.time + '</span>' +
+        '<span style="color:var(--text-muted);font-size:11px">f=' + v.state.focalLength + ' u=' + v.state.objectDist + '</span>' +
+      '</div>';
+    }).join('');
+
+    versionListEl.querySelectorAll('.version-item').forEach(el => {
+      el.addEventListener('click', function() {
+        const idx = +this.dataset.idx;
+        if (compareMode) {
+          compareVersion = versions[idx];
+          draw();
+          renderVersions();
+        } else {
+          const reason = reasonInput.value.trim() || '恢复版本 ' + versions[idx].label;
+          flushChangesToHistory(reason);
+          state = JSON.parse(JSON.stringify(versions[idx].state));
+          syncUI();
+          draw();
+        }
+      });
+    });
+  }
+
+  document.getElementById('btnReset').addEventListener('click', function() {
+    const reason = reasonInput.value.trim() || '重置为默认';
+    flushChangesToHistory(reason);
+    state = {
+      focalLength: 120,
+      objectDist: 250,
+      objectHeight: 80,
+      showLens: true,
+      showObject: false,
+      showScreen: false,
+      showRays: true
+    };
+    syncUI();
+    draw();
+  });
+
+  document.getElementById('btnCompare').addEventListener('click', function() {
+    compareMode = !compareMode;
+    if (compareMode) {
+      this.textContent = '退出对比';
+      this.classList.add('primary');
+      compareOverlay.style.display = 'block';
+      if (versions.length > 0 && !compareVersion) {
+        compareVersion = versions[versions.length - 1];
+      }
+    } else {
+      this.textContent = '对比模式';
+      this.classList.remove('primary');
+      compareOverlay.style.display = 'none';
+      compareVersion = null;
+    }
+    draw();
+    renderVersions();
+  });
+
+  let dragTarget = null;
+
+  function hitTest(mx, my) {
+    const { w, h } = getCanvasSize();
+    const cx = w / 2;
+    const cy = h / 2;
+    const f = state.focalLength;
+    const u = state.objectDist;
+    const hObj = state.objectHeight;
+    const threshold = 18;
+
+    if (state.showObject) {
+      const objX = cx - u;
+      const objTop = cy - hObj;
+      if (Math.abs(mx - objX) < threshold && my >= objTop - 12 && my <= cy + 10) {
+        return 'object';
+      }
+    }
+
+    if (state.showLens && Math.abs(f) >= 1) {
+      const fpx = cx + f;
+      const fmx = cx - f;
+      if (Math.abs(mx - fpx) < threshold && Math.abs(my - cy) < threshold) {
+        return 'focalRight';
+      }
+      if (Math.abs(mx - fmx) < threshold && Math.abs(my - cy) < threshold) {
+        return 'focalLeft';
+      }
+    }
+
+    return null;
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const target = hitTest(mx, my);
+    if (target) {
+      dragTarget = target;
+      canvas.style.cursor = 'grabbing';
+      e.preventDefault();
+    }
+  });
+
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const { w, h } = getCanvasSize();
+    const cx = w / 2;
+    const cy = h / 2;
+
+    if (dragTarget) {
+      if (dragTarget === 'object') {
+        const newU = Math.round(Math.max(20, Math.min(600, cx - mx)));
+        if (newU !== state.objectDist) {
+          recordChange('objectDist', state.objectDist, newU);
+          state.objectDist = newU;
+          objectDistSlider.value = newU;
+          objectDistVal.textContent = newU;
+          draw();
+        }
+        const newH = Math.round(Math.max(10, Math.min(200, cy - my)));
+        if (newH !== state.objectHeight) {
+          recordChange('objectHeight', state.objectHeight, newH);
+          state.objectHeight = newH;
+          objectHeightSlider.value = newH;
+          objectHeightVal.textContent = newH;
+          draw();
+        }
+      } else if (dragTarget === 'focalRight') {
+        const newF = Math.round(Math.max(-300, Math.min(300, mx - cx)));
+        if (newF !== state.focalLength) {
+          recordChange('focalLength', state.focalLength, newF);
+          state.focalLength = newF;
+          focalSlider.value = newF;
+          focalVal.textContent = newF;
+          draw();
+        }
+      } else if (dragTarget === 'focalLeft') {
+        const newF = Math.round(Math.max(-300, Math.min(300, cx - mx)));
+        if (newF !== state.focalLength) {
+          recordChange('focalLength', state.focalLength, newF);
+          state.focalLength = newF;
+          focalSlider.value = newF;
+          focalVal.textContent = newF;
+          draw();
+        }
+      }
+    } else {
+      const target = hitTest(mx, my);
+      canvas.style.cursor = target ? 'grab' : 'default';
+    }
+  });
+
+  canvas.addEventListener('mouseup', function() {
+    if (dragTarget) {
+      dragTarget = null;
+      canvas.style.cursor = 'default';
+    }
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    if (dragTarget) {
+      dragTarget = null;
+      canvas.style.cursor = 'default';
+    }
+  });
+
+  syncUI();
+  setTimeout(resize, 50);
+})();
+</script>
+</body>
+</html>
