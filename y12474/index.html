@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>向量风帆航海课</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>⛵ 向量风帆航海课</h1>
+            <p class="subtitle">水流一缺，坐标网格一补，数学老师的向量课就可能变样</p>
+        </header>
+
+        <div class="main-content">
+            <div class="game-area">
+                <div class="canvas-container">
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <div class="canvas-overlay">
+                        <div id="statusIndicator" class="status-indicator">准备就绪</div>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label>关卡选择</label>
+                        <select id="levelSelect"></select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>风向 (°)</label>
+                        <input type="number" id="windAngle" value="0" min="0" max="359">
+                        <span class="hint">0°=东, 90°=北, 180°=西, 270°=南</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>风力 (单位/步)</label>
+                        <input type="number" id="windMagnitude" value="1" step="0.5" min="0">
+                    </div>
+
+                    <div class="control-group">
+                        <label>航行步数</label>
+                        <input type="number" id="stepCount" value="5" min="1" max="20">
+                    </div>
+
+                    <div class="button-group">
+                        <button id="startBtn" class="btn btn-primary">开始航行</button>
+                        <button id="pauseBtn" class="btn btn-secondary" disabled>暂停</button>
+                        <button id="resetBtn" class="btn btn-warning">重置</button>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="runTwiceBtn" class="btn btn-info">同一批帆船跑两次</button>
+                        <button id="compareBtn" class="btn btn-success" disabled>对比修正结果</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-area">
+                <div class="panel">
+                    <h3>🎯 当前状态</h3>
+                    <div id="currentState" class="state-display">
+                        <p>等待开始...</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>📊 航行记录</h3>
+                    <div id="stepLog" class="step-log">
+                        <p class="hint">开始航行后将显示每一步的详细记录</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>⚠️ 错误检测</h3>
+                    <div id="errorPanel" class="error-panel">
+                        <p class="hint">错误信息将在此显示，并附带解释和修正建议</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>✏️ 手动修正</h3>
+                    <div class="correction-panel">
+                        <p class="hint">数学老师可在此修正风向箭头，然后重新计算</p>
+                        <div class="control-group">
+                            <label>修正后风向 (°)</label>
+                            <input type="number" id="correctedWindAngle" value="0" min="0" max="359">
+                        </div>
+                        <div class="control-group">
+                            <label>修正后风力</label>
+                            <input type="number" id="correctedWindMagnitude" value="1" step="0.5" min="0">
+                        </div>
+                        <button id="applyCorrectionBtn" class="btn btn-success">应用修正</button>
+                        <div id="correctionResult" class="correction-result"></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>📋 成绩导出</h3>
+                    <div class="export-panel">
+                        <button id="exportBtn" class="btn btn-primary">导出成绩报告</button>
+                        <button id="exportJsonBtn" class="btn btn-secondary">导出JSON数据</button>
+                        <div id="exportPreview" class="export-preview"></div>
+                    </div>
+                </div>
+
+                <div class="panel" id="comparePanel" style="display: none;">
+                    <h3>🔄 新旧结果对比</h3>
+                    <div class="compare-container">
+                        <div class="compare-col">
+                            <h4>原始结果</h4>
+                            <div id="originalResult"></div>
+                        </div>
+                        <div class="compare-col">
+                            <h4>修正后结果</h4>
+                            <div id="correctedResult"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><span class="legend-icon sailboat">⛵</span> 帆船</div>
+            <div class="legend-item"><span class="legend-icon wind">➤</span> 风向</div>
+            <div class="legend-item"><span class="legend-icon current">〜</span> 水流</div>
+            <div class="legend-item"><span class="legend-icon island">🏝️</span> 岛屿（障碍）</div>
+            <div class="legend-item"><span class="legend-icon target">🎯</span> 目标点</div>
+            <div class="legend-item"><span class="legend-icon start">🚩</span> 起点</div>
+        </div>
+    </div>
+
+    <script src="js/vector.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/gameObjects.js"></script>
+    <script src="js/level.js"></script>
+    <script src="js/errorDetector.js"></script>
+    <script src="js/scoreSystem.js"></script>
+    <script src="js/manualCorrection.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
