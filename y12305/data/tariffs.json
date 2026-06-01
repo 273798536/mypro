@@ -1,0 +1,95 @@
+[
+  {
+    "id": "tariff-001",
+    "name": "居民阶梯电价-2024版",
+    "effectiveFrom": "2024-01-01",
+    "effectiveTo": "2026-12-31",
+    "tiers": [
+      {
+        "tierId": "tier-1",
+        "tierName": "第一档",
+        "minKwh": 0,
+        "maxKwh": 200,
+        "pricePerKwh": 0.56
+      },
+      {
+        "tierId": "tier-2",
+        "tierName": "第二档",
+        "minKwh": 200,
+        "maxKwh": 400,
+        "pricePerKwh": 0.61
+      },
+      {
+        "tierId": "tier-3",
+        "tierName": "第三档",
+        "minKwh": 400,
+        "maxKwh": null,
+        "pricePerKwh": 0.86
+      }
+    ],
+    "isExpired": false,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "tariff-002",
+    "name": "居民阶梯电价-2023版",
+    "effectiveFrom": "2023-01-01",
+    "effectiveTo": "2023-12-31",
+    "tiers": [
+      {
+        "tierId": "tier-1",
+        "tierName": "第一档",
+        "minKwh": 0,
+        "maxKwh": 180,
+        "pricePerKwh": 0.54
+      },
+      {
+        "tierId": "tier-2",
+        "tierName": "第二档",
+        "minKwh": 180,
+        "maxKwh": 360,
+        "pricePerKwh": 0.59
+      },
+      {
+        "tierId": "tier-3",
+        "tierName": "第三档",
+        "minKwh": 360,
+        "maxKwh": null,
+        "pricePerKwh": 0.84
+      }
+    ],
+    "isExpired": true,
+    "createdAt": "2023-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "tariff-003",
+    "name": "商业峰谷电价-2024",
+    "effectiveFrom": "2024-01-01",
+    "effectiveTo": "2026-12-31",
+    "tiers": [
+      {
+        "tierId": "tier-valley",
+        "tierName": "谷时",
+        "minKwh": 0,
+        "maxKwh": null,
+        "pricePerKwh": 0.38
+      },
+      {
+        "tierId": "tier-flat",
+        "tierName": "平时",
+        "minKwh": 0,
+        "maxKwh": null,
+        "pricePerKwh": 0.68
+      },
+      {
+        "tierId": "tier-peak",
+        "tierName": "峰时",
+        "minKwh": 0,
+        "maxKwh": null,
+        "pricePerKwh": 0.98
+      }
+    ],
+    "isExpired": false,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]

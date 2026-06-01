@@ -1,0 +1,43 @@
+{
+  "id": "v-1780303754936-99wi",
+  "name": "样例1-正常记录",
+  "tariffTableId": "tariff-001",
+  "usageRecordId": "usage-001",
+  "totalBill": 183.5,
+  "calculatedTotal": 183.5,
+  "discrepancy": 0,
+  "totalCalculatedKwh": 317.2131,
+  "tierResults": [
+    {
+      "tierId": "tier-1",
+      "tierName": "第一档",
+      "pricePerKwh": 0.56,
+      "billedKwh": 200,
+      "billedAmount": 112,
+      "formula": "该档电费 = 档位电量 200kWh × 电价 0.56元/kWh = 112.00元",
+      "tierRange": "0kWh - 200kWh"
+    },
+    {
+      "tierId": "tier-2",
+      "tierName": "第二档",
+      "pricePerKwh": 0.61,
+      "billedKwh": 117.2131,
+      "billedAmount": 71.5,
+      "formula": "该档电费 = 剩余电费 71.50元 ÷ 电价 0.61元/kWh = 117.2131kWh × 0.61元/kWh = 71.50元",
+      "tierRange": "200kWh - 400kWh"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "mismatch_total",
+      "severity": "warning",
+      "message": "计算总用电量 317.21kWh 与提供的总用量 280kWh 相差 37.21kWh",
+      "sourceField": "totalUsage",
+      "sourceValue": 280,
+      "traceId": "calc-1780303754936-xre18p"
+    }
+  ],
+  "createdAt": "2026-06-01T08:49:14.936Z",
+  "createdBy": "analyst",
+  "note": "280度正常用电"
+}

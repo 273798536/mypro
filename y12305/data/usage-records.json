@@ -1,0 +1,50 @@
+[
+  {
+    "id": "usage-001",
+    "recordDate": "2024-06-15",
+    "totalBill": 183.50,
+    "peakUsage": 150,
+    "valleyUsage": 80,
+    "flatUsage": 50,
+    "totalUsage": 280,
+    "customerNote": "6月上半月正常用电",
+    "sourceFile": "用电账单_202406.xlsx",
+    "importedAt": "2024-06-16T10:30:00.000Z"
+  },
+  {
+    "id": "usage-002",
+    "recordDate": "2024-01-20",
+    "totalBill": 165.80,
+    "peakUsage": 120,
+    "valleyUsage": 60,
+    "flatUsage": 70,
+    "totalUsage": 250,
+    "customerNote": "1月账单，注意：系统建议用2023电价表复核",
+    "sourceFile": "用电账单_202401.xlsx",
+    "importedAt": "2024-01-22T14:00:00.000Z"
+  },
+  {
+    "id": "usage-003",
+    "recordDate": "2024-03-10",
+    "totalBill": 112.00,
+    "peakUsage": 80,
+    "valleyUsage": 60,
+    "flatUsage": 60,
+    "totalUsage": 200,
+    "customerNote": "3月账单，恰好到一档上限",
+    "sourceFile": "用电账单_202403.xlsx",
+    "importedAt": "2024-03-12T09:15:00.000Z"
+  },
+  {
+    "id": "usage-004",
+    "recordDate": "2024-04-05",
+    "totalBill": 95.60,
+    "peakUsage": -15,
+    "valleyUsage": 70,
+    "flatUsage": 120,
+    "totalUsage": 175,
+    "customerNote": "4月账单，峰时段出现负读数，疑似抄表错误",
+    "sourceFile": "用电账单_202404.xlsx",
+    "importedAt": "2024-04-08T16:45:00.000Z"
+  }
+]

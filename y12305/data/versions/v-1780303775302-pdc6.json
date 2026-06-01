@@ -1,0 +1,34 @@
+{
+  "id": "v-1780303775302-pdc6",
+  "name": "样例3-边界档位",
+  "tariffTableId": "tariff-001",
+  "usageRecordId": "usage-003",
+  "totalBill": 112,
+  "calculatedTotal": 112,
+  "discrepancy": 0,
+  "totalCalculatedKwh": 200,
+  "tierResults": [
+    {
+      "tierId": "tier-1",
+      "tierName": "第一档",
+      "pricePerKwh": 0.56,
+      "billedKwh": 200,
+      "billedAmount": 112,
+      "formula": "该档电费 = 剩余电费 112.00元 ÷ 电价 0.56元/kWh = 200.0000kWh × 0.56元/kWh = 112.00元",
+      "tierRange": "0kWh - 200kWh"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "boundary_tier",
+      "severity": "info",
+      "message": "总用电量 200.00kWh 恰好等于 第一档 上限 200kWh",
+      "sourceField": "totalCalculatedKwh",
+      "sourceValue": 199.99999999999997,
+      "traceId": "calc-1780303775302-c1qf9x"
+    }
+  ],
+  "createdAt": "2026-06-01T08:49:35.302Z",
+  "createdBy": "analyst",
+  "note": "恰好200度到达一档上限"
+}
