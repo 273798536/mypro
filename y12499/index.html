@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抛物面卫星天线台 — 物理科普演示</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--orange:#d29922;--purple:#bc8cff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+.app{display:grid;grid-template-columns:1fr 360px;grid-template-rows:1fr 220px;height:100vh}
+.viewport{grid-row:1;grid-column:1;position:relative;overflow:hidden;cursor:grab}
+.viewport:active{cursor:grabbing}
+.viewport canvas{display:block}
+.vp-label{position:absolute;top:12px;left:16px;font-size:13px;color:var(--text2);pointer-events:none;z-index:2}
+.vp-hint{position:absolute;bottom:12px;left:16px;font-size:11px;color:var(--text2);pointer-events:none;z-index:2}
+.vp-badge{position:absolute;top:12px;right:16px;z-index:2;display:flex;gap:6px}
+.sidebar{grid-row:1;grid-column:2;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px}
+.panel-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.panel-title .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.sg{margin-bottom:10px}
+.sg:last-child{margin-bottom:0}
+.sl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.sl span:first-child{color:var(--text)}
+.sl span:last-child{color:var(--accent);font-family:monospace;font-size:11px}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;border:2px solid var(--bg)}
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600}
+.badge-ok{background:rgba(63,185,80,.15);color:var(--green)}
+.badge-warn{background:rgba(210,153,34,.15);color:var(--orange)}
+.badge-err{background:rgba(248,81,73,.15);color:var(--red)}
+.badge-revoked{background:rgba(188,140,255,.15);color:var(--purple)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:6px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#000;border-color:var(--accent)}
+.btn-primary:hover{opacity:.85}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:rgba(248,81,73,.1)}
+.log-area{grid-row:2;grid-column:1/-1;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.log-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.log-header h3{font-size:12px;color:var(--text2);font-weight:600}
+.log-body{flex:1;overflow-y:auto;padding:8px 16px;font-family:"SF Mono",Monaco,monospace;font-size:11px;line-height:1.7}
+.log-body::-webkit-scrollbar{width:6px}
+.log-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.log-entry{display:flex;gap:10px;align-items:flex-start;padding:3px 0;border-bottom:1px solid rgba(48,54,61,.4)}
+.log-ts{color:var(--text2);flex-shrink:0;min-width:70px}
+.log-tag{flex-shrink:0;min-width:64px;text-align:center}
+.log-msg{color:var(--text);flex:1}
+.log-msg .sug{color:var(--orange);margin-top:2px;font-size:10px}
+.revoked .log-msg{text-decoration:line-through;opacity:.5}
+.edge-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
+.edge-table th{text-align:left;color:var(--text2);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--border)}
+.edge-table td{padding:4px 6px;border-bottom:1px solid rgba(48,54,61,.4)}
+.tl-bar{display:flex;align-items:center;gap:8px;padding:6px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.tl-bar input[type=range]{flex:1}
+.tl-bar .tl-label{font-size:11px;color:var(--text2);font-family:monospace;min-width:40px}
+.readout-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.ro{background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.15);border-radius:4px;padding:4px 8px}
+.ro .rl{font-size:10px;color:var(--text2)}
+.ro .rv{font-size:13px;font-family:monospace;color:var(--accent)}
+.ann-box{background:rgba(210,153,34,.06);border:1px solid rgba(210,153,34,.2);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--orange);line-height:1.6}
+.ann-box strong{color:var(--orange)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px}
+.legend-color{width:14px;height:3px;border-radius:1px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="viewport" id="viewport">
+    <canvas id="c3d"></canvas>
+    <div class="vp-label">3D 抛物面天线 — 拖动旋转 / 滚轮缩放</div>
+    <div class="vp-hint" id="viewHint">入射线(蓝) · 反射线(绿/红) · 焦点(绿) · 接收器(橙)</div>
+    <div class="vp-badge">
+      <span class="badge badge-ok" id="vpStatus">正常</span>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--accent)"></span>天线参数</div>
+      <div class="sg"><div class="sl"><span>焦距 f</span><span id="valF">1.50</span></div><input type="range" id="slF" min="0.3" max="4" step="0.05" value="1.5"></div>
+      <div class="sg"><div class="sl"><span>口径 D</span><span id="valD">3.00</span></div><input type="range" id="slD" min="0.5" max="6" step="0.1" value="3"></div>
+      <div class="sg"><div class="sl"><span>入射角 θ</span><span id="valTheta">0°</span></div><input type="range" id="slTheta" min="-60" max="60" step="1" value="0"></div>
+      <div class="sg"><div class="sl"><span>焦点偏移 Δ</span><span id="valOffset">0.00</span></div><input type="range" id="slOffset" min="-1" max="1" step="0.02" value="0"></div>
+      <div class="sg"><div class="sl"><span>采样光线数</span><span id="valRays">8</span></div><input type="range" id="slRays" min="3" max="20" step="1" value="8"></div>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-primary" id="btnReset">重置参数</button>
+        <button class="btn" id="btnSnapshot">截图标注</button>
+        <button class="btn btn-danger" id="btnRevoke">撤回上次</button>
+      </div>
+      <div class="panel-title" style="margin-top:10px;margin-bottom:6px"><span class="dot" style="background:var(--red)"></span>边界样例快捷</div>
+      <div class="btn-row">
+        <button class="btn" id="preFocusOff">焦点偏移</button>
+        <button class="btn" id="preAngleOob">角度越界</button>
+        <button class="btn" id="preReflRev">反射线反向</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--green)"></span>实时读数</div>
+      <div class="readout-grid">
+        <div class="ro"><div class="rl">焦点坐标</div><div class="rv" id="rdFocus">(0, 0, 1.50)</div></div>
+        <div class="ro"><div class="rl">接收器位置</div><div class="rv" id="rdRecv">(0, 0, 1.50)</div></div>
+        <div class="ro"><div class="rl">口径角</div><div class="rv" id="rdAper">53.1°</div></div>
+        <div class="ro"><div class="rl">汇聚偏差</div><div class="rv" id="rdDev">0.000</div></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#58a6ff"></div>入射线</div>
+        <div class="legend-item"><div class="legend-color" style="background:#3fb950"></div>反射线(正常)</div>
+        <div class="legend-item"><div class="legend-color" style="background:#f85149"></div>反射线(越界/反向)</div>
+        <div class="legend-item"><div class="legend-color" style="background:#d29922"></div>焦点偏移</div>
+        <div class="legend-item"><div class="legend-color" style="background:#bc8cff"></div>已撤回</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--orange)"></span>边界判定</div>
+      <table class="edge-table">
+        <thead><tr><th>检测项</th><th>状态</th><th>值</th></tr></thead>
+        <tbody id="edgeBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="dot" style="background:var(--red)"></span>处理建议</div>
+      <div class="ann-box" id="annBox">当前参数在正常范围内，无需特殊处理。</div>
+    </div>
+  </div>
+
+  <div class="log-area">
+    <div class="log-header">
+      <h3>计算日志 &amp; 截图标注</h3>
+      <div class="btn-row">
+        <button class="btn" id="btnClearLog">清空</button>
+        <button class="btn" id="btnRunTwice">重复验证</button>
+      </div>
+    </div>
+    <div class="log-body" id="logBody"></div>
+    <div class="tl-bar">
+      <span class="tl-label" id="tlLabel">0</span>
+      <input type="range" id="slTL" min="0" max="1" step="1" value="0">
+      <span class="tl-label" id="tlMax">0</span>
+      <button class="btn" id="btnPlay" style="padding:4px 10px">▶</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+var PI=Math.PI,deg=PI/180;
+var canvas=document.getElementById('c3d');
+var ctx=canvas.getContext('2d');
+var vp=document.getElementById('viewport');
+
+var params={f:1.5,D:3,theta:0,offset:0,rays:8};
+var snapIdx=0;
+var tlEntries=[];
+var revokedSet=new Set();
+
+var camRx=0.45,camRy=0.6,camDist=8,camTarget=[0,0,1];
+var dragging=false,lastMx=0,lastMy=0;
+
+function resize(){
+  canvas.width=vp.clientWidth*devicePixelRatio;
+  canvas.height=vp.clientHeight*devicePixelRatio;
+  canvas.style.width=vp.clientWidth+'px';
+  canvas.style.height=vp.clientHeight+'px';
+  render();
+}
+window.addEventListener('resize',resize);
+resize();
+
+vp.addEventListener('mousedown',function(e){dragging=true;lastMx=e.clientX;lastMy=e.clientY});
+window.addEventListener('mouseup',function(){dragging=false});
+window.addEventListener('mousemove',function(e){
+  if(!dragging)return;
+  var dx=e.clientX-lastMx,dy=e.clientY-lastMy;
+  camRy+=dx*0.005;
+  camRx+=dy*0.005;
+  camRx=Math.max(-1.2,Math.min(1.2,camRx));
+  lastMx=e.clientX;lastMy=e.clientY;
+  render();
+});
+vp.addEventListener('wheel',function(e){
+  e.preventDefault();
+  camDist+=e.deltaY*0.005;
+  camDist=Math.max(3,Math.min(20,camDist));
+  render();
+},{passive:false});
+
+function project(x,y,z){
+  var cx=Math.cos(camRx),sx=Math.sin(camRx);
+  var cy=Math.cos(camRy),sy=Math.sin(camRy);
+  var x1=x*cy+z*sy;
+  var z1=-x*sy+z*cy;
+  var y1=y*cx-z1*sx;
+  var z2=y*sx+z1*cx;
+  var d=camDist;
+  var sc=canvas.width/d*0.8;
+  var px=canvas.width/2+x1*sc;
+  var py=canvas.height/2-y1*sc;
+  var depth=z2;
+  return{px:px,py:py,depth:depth,sc:sc};
+}
+
+function drawLine3D(x1,y1,z1,x2,y2,z2,color,lw,dash){
+  var a=project(x1,y1,z1),b=project(x2,y2,z2);
+  ctx.beginPath();
+  ctx.strokeStyle=color;
+  ctx.lineWidth=lw||1;
+  ctx.setLineDash(dash||[]);
+  ctx.moveTo(a.px,a.py);
+  ctx.lineTo(b.px,b.py);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawDot3D(x,y,z,r,color,label,labelColor){
+  var p=project(x,y,z);
+  ctx.beginPath();
+  ctx.arc(p.px,p.py,r*devicePixelRatio,0,PI*2);
+  ctx.fillStyle=color;
+  ctx.fill();
+  if(label){
+    ctx.font=(12*devicePixelRatio)+'px sans-serif';
+    ctx.fillStyle=labelColor||color;
+    ctx.textAlign='center';
+    ctx.fillText(label,p.px,p.py-r*devicePixelRatio-4*devicePixelRatio);
+  }
+}
+
+function drawArrow3D(x1,y1,z1,x2,y2,z2,color,lw){
+  drawLine3D(x1,y1,z1,x2,y2,z2,color,lw);
+  var a=project(x1,y1,z1),b=project(x2,y2,z2);
+  var dx=b.px-a.px,dy=b.py-a.py;
+  var len=Math.sqrt(dx*dx+dy*dy);
+  if(len<5)return;
+  dx/=len;dy/=len;
+  var hs=8*devicePixelRatio;
+  ctx.beginPath();
+  ctx.fillStyle=color;
+  ctx.moveTo(b.px,b.py);
+  ctx.lineTo(b.px-dx*hs+dy*hs*0.4,b.py-dy*hs-dx*hs*0.4);
+  ctx.lineTo(b.px-dx*hs-dy*hs*0.4,b.py-dy*hs+dx*hs*0.4);
+  ctx.fill();
+}
+
+function render(){
+  var w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+
+  ctx.fillStyle='#0a0e14';
+  ctx.fillRect(0,0,w,h);
+
+  drawGrid();
+  drawAxes();
+  drawDish();
+  drawRays();
+}
+
+function drawGrid(){
+  var s=5;
+  ctx.strokeStyle='#141a24';
+  ctx.lineWidth=1;
+  for(var i=-s;i<=s;i++){
+    drawLine3D(i,0,-s,i,0,s,'#1c2333');
+    drawLine3D(-s,0,i,s,0,i,'#1c2333');
+  }
+}
+
+function drawAxes(){
+  drawArrow3D(0,0,0,1.5,0,0,'#f85149',1.5);
+  drawArrow3D(0,0,0,0,1.5,0,'#3fb950',1.5);
+  drawArrow3D(0,0,0,0,0,1.5,'#58a6ff',1.5);
+  var p=project(1.7,0,0);ctx.fillStyle='#f85149';ctx.font=(10*devicePixelRatio)+'px monospace';ctx.textAlign='center';ctx.fillText('X',p.px,p.py);
+  p=project(0,1.7,0);ctx.fillStyle='#3fb950';ctx.fillText('Y',p.px,p.py);
+  p=project(0,0,1.7);ctx.fillStyle='#58a6ff';ctx.fillText('Z',p.px,p.py);
+}
+
+function drawDish(){
+  var f=params.f,R=params.D/2;
+  var rings=12,segs=48;
+  ctx.lineWidth=1;
+
+  for(var ri=0;ri<=rings;ri++){
+    var r=R*ri/rings;
+    var z=r*r/(4*f);
+    ctx.beginPath();
+    for(var si=0;si<=segs;si++){
+      var a=si/segs*PI*2;
+      var x=r*Math.cos(a),y=r*Math.sin(a);
+      var p=project(x,y,z);
+      if(si===0)ctx.moveTo(p.px,p.py);else ctx.lineTo(p.px,p.py);
+    }
+    var alpha=ri===rings?0.9:0.35;
+    var color=ri===rings?'rgba(88,166,255,'+alpha+')':'rgba(88,166,255,'+alpha*0.5+')';
+    ctx.strokeStyle=color;
+    ctx.lineWidth=ri===rings?2.5*devicePixelRatio:1*devicePixelRatio;
+    ctx.stroke();
+  }
+
+  for(var si=0;si<segs;si+=4){
+    var a=si/segs*PI*2;
+    ctx.beginPath();
+    for(var ri=0;ri<=rings;ri++){
+      var r=R*ri/rings;
+      var z=r*r/(4*f);
+      var x=r*Math.cos(a),y=r*Math.sin(a);
+      var p=project(x,y,z);
+      if(ri===0)ctx.moveTo(p.px,p.py);else ctx.lineTo(p.px,p.py);
+    }
+    ctx.strokeStyle='rgba(88,166,255,0.2)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
+
+  for(var ri=1;ri<=rings;ri++){
+    var r=R*ri/rings;
+    var z=r*r/(4*f);
+    for(var si=0;si<segs;si+=2){
+      var a=si/segs*PI*2;
+      var na=(si+1)/segs*PI*2;
+      var x1=r*Math.cos(a),y1=r*Math.sin(a);
+      var nr=R*(ri-0.5)/rings;
+      var nz=nr*nr/(4*f);
+      var x2=nr*Math.cos((a+na)/2),y2=nr*Math.sin((a+na)/2);
+      var p1=project(x1,y1,z);
+      var p2=project(x2,y2,nz);
+      ctx.beginPath();
+      ctx.moveTo(p1.px,p1.py);ctx.lineTo(p2.px,p2.py);
+      ctx.strokeStyle='rgba(88,166,255,0.03)';
+      ctx.lineWidth=1;
+      ctx.stroke();
+    }
+  }
+}
+
+function vec3Sub(a,b){return[a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
+function vec3Dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function vec3Norm(a){var l=Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);return l>1e-12?[a[0]/l,a[1]/l,a[2]/l]:[0,0,1]}
+function vec3Scale(a,s){return[a[0]*s,a[1]*s,a[2]*s]}
+function vec3Add(a,b){return[a[0]+b[0],a[1]+b[1],a[2]+b[2]]}
+function vec3Reflect(inc,n){var d=vec3Dot(inc,n);return[inc[0]-2*d*n[0],inc[1]-2*d*n[1],inc[2]-2*d*n[2]]}
+function vec3Len(a){return Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2])}
+
+var lastIssues=[];
+var lastDev=0;
+
+function drawRays(){
+  var f=params.f,R=params.D/2,theta=params.theta*deg,off=params.offset;
+  var n=params.rays;
+
+  var focusPos=[0,0,f];
+  var recvPos=[off,0,f];
+
+  drawDot3D(focusPos[0],focusPos[1],focusPos[2],8*devicePixelRatio,'#3fb950','F(焦点)','#3fb950');
+  drawDot3D(recvPos[0],recvPos[1],recvPos[2],9*devicePixelRatio,'#d29922','R(接收器)','#d29922');
+
+  if(Math.abs(off)>0.01){
+    drawLine3D(focusPos[0],focusPos[1],focusPos[2],recvPos[0],recvPos[1],recvPos[2],'#d29922',2,[6,4]);
+    var mid=[(focusPos[0]+recvPos[0])/2,(focusPos[1]+recvPos[1])/2,(focusPos[2]+recvPos[2])/2];
+    var mp=project(mid[0],mid[1],mid[2]);
+    ctx.font=(10*devicePixelRatio)+'px monospace';
+    ctx.fillStyle='#d29922';
+    ctx.textAlign='center';
+    ctx.fillText('Δ='+off.toFixed(2),mp.px,mp.py-8*devicePixelRatio);
+  }
+
+  drawArrow3D(0,0,0,0,0,f*1.3,'#3fb950',1,[3,3]);
+  var axisLabelP=project(0,0,f*1.3+0.3);
+  ctx.font=(10*devicePixelRatio)+'px sans-serif';
+  ctx.fillStyle='#3fb950';
+  ctx.textAlign='center';
+  ctx.fillText('光轴',axisLabelP.px,axisLabelP.py);
+
+  var incDir=vec3Norm([Math.sin(theta),0,-1]);
+
+  var issues=[];
+
+  for(var i=0;i<n;i++){
+    var t=n===1?0:(i/(n-1))*2-1;
+    var rr=R*t;
+    var angle=PI/2;
+    var px=rr*Math.cos(angle),py=rr*Math.sin(angle);
+    var pz=rr*rr/(4*f);
+
+    var p=[px,py,pz];
+
+    var nx=-2*px/(4*f),ny=-2*py/(4*f),nz=1;
+    var normal=vec3Norm([nx,ny,nz]);
+
+    var reflDir=vec3Norm(vec3Reflect(incDir,normal));
+
+    var toFocus=vec3Norm(vec3Sub(focusPos,p));
+    var cosA=vec3Dot(reflDir,toFocus);
+    var isNormal=cosA>0.85;
+    var isReverse=cosA<0;
+    var isOob=Math.abs(params.theta)>45;
+
+    var rayColor=isNormal?'#3fb950':(isReverse?'#f85149':'#d29922');
+
+    var srcZ=Math.max(f*2.5,pz+3);
+    var dz=srcZ-pz;
+    var srcX=px-incDir[0]*dz/Math.max(0.001,-incDir[2]);
+    var srcY=py-incDir[1]*dz/Math.max(0.001,-incDir[2]);
+    if(incDir[2]>=0){srcX=px+incDir[0]*3;srcY=py+incDir[1]*3;srcZ=pz+3;}
+
+    drawLine3D(srcX,srcY,srcZ,px,py,pz,'rgba(88,166,255,0.8)',1.5*devicePixelRatio,[4,3]);
+
+    var rl=3.5;
+    var re=vec3Add(p,vec3Scale(reflDir,rl));
+    drawArrow3D(px,py,pz,re[0],re[1],re[2],rayColor,2*devicePixelRatio);
+
+    if(isReverse)issues.push({type:'reverse',ray:i});
+    if(isOob&&i===0)issues.push({type:'oob',angle:params.theta});
+  }
+
+  var dev=vec3Len(vec3Sub(recvPos,focusPos));
+  lastIssues=issues;
+  lastDev=dev;
+
+  updateReadouts(focusPos,recvPos,dev);
+  updateEdgeTable(issues,dev);
+  updateAnnotation(issues,dev);
+  updateVpStatus(issues,dev);
+}
+
+function updateVpStatus(issues,dev){
+  var el=document.getElementById('vpStatus');
+  var hasOob=issues.some(function(i){return i.type==='oob'});
+  var hasReverse=issues.some(function(i){return i.type==='reverse'});
+  var hasOffset=Math.abs(params.offset)>0.05;
+  if(hasOob||hasReverse){el.className='badge badge-err';el.textContent='越界';}
+  else if(hasOffset||dev>0.05){el.className='badge badge-warn';el.textContent='注意';}
+  else{el.className='badge badge-ok';el.textContent='正常';}
+}
+
+function updateReadouts(fp,rp,dev){
+  document.getElementById('rdFocus').textContent='('+fp[0].toFixed(2)+', '+fp[1].toFixed(2)+', '+fp[2].toFixed(2)+')';
+  document.getElementById('rdRecv').textContent='('+rp[0].toFixed(2)+', '+rp[1].toFixed(2)+', '+rp[2].toFixed(2)+')';
+  document.getElementById('rdAper').textContent=(2*Math.atan2(params.D/2,params.f)*180/PI).toFixed(1)+'°';
+  document.getElementById('rdDev').textContent=dev.toFixed(3);
+  var devEl=document.getElementById('rdDev');
+  devEl.style.color=dev>0.3?'var(--red)':dev>0.05?'var(--orange)':'var(--green)';
+}
+
+function updateEdgeTable(issues,dev){
+  var body=document.getElementById('edgeBody');
+  var hasOob=issues.some(function(i){return i.type==='oob'});
+  var hasReverse=issues.some(function(i){return i.type==='reverse'});
+  var hasOffset=Math.abs(params.offset)>0.05;
+  var rows=[
+    {name:'焦点偏移',s:hasOffset?'warn':'ok',v:'Δ='+params.offset.toFixed(2)},
+    {name:'角度越界',s:hasOob?'err':'ok',v:'θ='+params.theta+'° (限±45°)'},
+    {name:'反射线反向',s:hasReverse?'err':'ok',v:hasReverse?issues.filter(function(i){return i.type==='reverse'}).length+'条反向':'0条'},
+    {name:'汇聚偏差',s:dev>0.3?'err':dev>0.05?'warn':'ok',v:dev.toFixed(3)}
+  ];
+  body.innerHTML=rows.map(function(r){
+    var c=r.s==='ok'?'badge-ok':r.s==='warn'?'badge-warn':'badge-err';
+    var t=r.s==='ok'?'正常':r.s==='warn'?'注意':'越界';
+    return '<tr><td>'+r.name+'</td><td><span class="badge '+c+'">'+t+'</span></td><td style="font-family:monospace;font-size:11px">'+r.v+'</td></tr>';
+  }).join('');
+}
+
+function updateAnnotation(issues,dev){
+  var box=document.getElementById('annBox');
+  var hasOob=issues.some(function(i){return i.type==='oob'});
+  var hasReverse=issues.some(function(i){return i.type==='reverse'});
+  var hasOffset=Math.abs(params.offset)>0.05;
+  if(!hasOob&&!hasReverse&&!hasOffset&&dev<0.05){box.innerHTML='当前参数在正常范围内，无需特殊处理。';return;}
+  var lines=[];
+  if(hasOffset)lines.push('<strong>焦点偏移 Δ='+params.offset.toFixed(2)+'</strong>：接收器偏离焦点，信号增益下降。建议：调整接收器支架使 Δ→0，或重新校准焦距 f。');
+  if(hasOob)lines.push('<strong>入射角越界 θ='+params.theta+'°</strong>：超出天线主瓣有效接收范围（±45°）。建议：旋转天线使入射方向对准轴线，或更换更大口径天线。');
+  if(hasReverse){var cnt=issues.filter(function(i){return i.type==='reverse'}).length;lines.push('<strong>反射线反向 ×'+cnt+'条</strong>：部分反射线背离焦点方向，能量无法汇聚。建议：减小入射角或增大焦径比 f/D。');}
+  if(dev>0.3)lines.push('<strong>汇聚偏差 '+dev.toFixed(3)+'</strong>：偏差过大，信号质量严重劣化。建议：优先修正焦点偏移。');
+  box.innerHTML=lines.join('<br><br>');
+}
+
+function logEntry(tag,cls,msg){
+  var body=document.getElementById('logBody');
+  var d=new Date();
+  var ts=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');
+  var div=document.createElement('div');
+  div.className='log-entry';
+  div.dataset.idx=snapIdx;
+  div.innerHTML='<span class="log-ts">'+ts+'</span><span class="log-tag"><span class="badge '+cls+'">'+tag+'</span></span><span class="log-msg">'+msg+'</span>';
+  body.appendChild(div);
+  body.scrollTop=body.scrollHeight;
+}
+
+function snapshot(){
+  render();
+  snapIdx++;
+  var hasIssues=lastIssues.length>0||Math.abs(params.offset)>0.05;
+  var tag=hasIssues?'边界':'正常';
+  var cls=hasIssues?'badge-err':'badge-ok';
+  var det='f='+params.f.toFixed(2)+' D='+params.D.toFixed(2)+' θ='+params.theta+'° Δ='+params.offset.toFixed(2);
+  var sug='';
+  if(Math.abs(params.offset)>0.05)sug+='<div class="sug">→ 处理：调整接收器支架 Δ→0</div>';
+  if(lastIssues.some(function(i){return i.type==='reverse'}))sug+='<div class="sug">→ 处理：减小入射角或增大焦径比</div>';
+  if(lastIssues.some(function(i){return i.type==='oob'}))sug+='<div class="sug">→ 处理：旋转天线对准入射方向</div>';
+  logEntry(tag,cls,det+' 偏差='+lastDev.toFixed(3)+sug);
+  tlEntries.push({idx:snapIdx,params:Object.assign({},params),issues:lastIssues.slice(),dev:lastDev});
+  document.getElementById('slTL').max=tlEntries.length;
+  document.getElementById('slTL').value=tlEntries.length;
+  document.getElementById('tlMax').textContent=tlEntries.length;
+  document.getElementById('tlLabel').textContent=tlEntries.length;
+}
+
+function revokeLast(){
+  if(snapIdx<1)return;
+  var idx=snapIdx;
+  revokedSet.add(idx);
+  snapIdx--;
+  var entries=document.getElementById('logBody').querySelectorAll('.log-entry');
+  for(var i=entries.length-1;i>=0;i--){
+    if(entries[i].dataset.idx==idx){
+      entries[i].classList.add('revoked');
+      var badge=entries[i].querySelector('.badge');
+      if(badge){badge.className='badge badge-revoked';badge.textContent='已撤回';}
+      break;
+    }
+  }
+  logEntry('撤回','badge-revoked','已标记快照 #'+idx+' 为撤回状态，相关结果仅供参考');
+  highlightRevoked();
+}
+
+function highlightRevoked(){
+  var entries=document.getElementById('logBody').querySelectorAll('.log-entry');
+  entries.forEach(function(el){if(revokedSet.has(parseInt(el.dataset.idx)))el.classList.add('revoked');});
+}
+
+function runTwice(){
+  var d1=computeDev();
+  var d2=computeDev();
+  var consistent=Math.abs(d1-d2)<1e-10;
+  var tag=consistent?'一致':'差异';
+  var cls=consistent?'badge-ok':'badge-err';
+  logEntry(tag,cls,'两次运行：偏差1='+d1.toFixed(8)+' 偏差2='+d2.toFixed(8)+' 差值='+Math.abs(d1-d2).toFixed(12));
+}
+
+function computeDev(){
+  var f=params.f,R=params.D/2,theta=params.theta*deg,off=params.offset;
+  var focusPos=[0,0,f];
+  var recvPos=[off,0,f];
+  var incDir=vec3Norm([Math.sin(theta),0,-1]);
+  var totalDev=0;
+  var n=params.rays;
+  for(var i=0;i<n;i++){
+    var t=n===1?0:(i/(n-1))*2-1;
+    var rr=R*t;
+    var px=rr*Math.cos(PI/2),py=rr*Math.sin(PI/2);
+    var pz=rr*rr/(4*f);
+    var nx=-2*px/(4*f),ny=-2*py/(4*f),nz=1;
+    var normal=vec3Norm([nx,ny,nz]);
+    var reflDir=vec3Norm(vec3Reflect(incDir,normal));
+    var p=[px,py,pz];
+    var reflEnd=vec3Add(p,vec3Scale(reflDir,3.5));
+    var dev=vec3Len(vec3Sub(reflEnd,recvPos));
+    totalDev+=dev;
+  }
+  totalDev/=n;
+  totalDev+=vec3Len(vec3Sub(recvPos,focusPos));
+  return totalDev;
+}
+
+function restoreTL(idx){
+  if(idx<1||idx>tlEntries.length)return;
+  var e=tlEntries[idx-1];
+  params.f=e.params.f;params.D=e.params.D;params.theta=e.params.theta;params.offset=e.params.offset;params.rays=e.params.rays;
+  syncSliders();
+  render();
+}
+
+function syncSliders(){
+  document.getElementById('slF').value=params.f;document.getElementById('valF').textContent=params.f.toFixed(2);
+  document.getElementById('slD').value=params.D;document.getElementById('valD').textContent=params.D.toFixed(2);
+  document.getElementById('slTheta').value=params.theta;document.getElementById('valTheta').textContent=params.theta+'°';
+  document.getElementById('slOffset').value=params.offset;document.getElementById('valOffset').textContent=params.offset.toFixed(2);
+  document.getElementById('slRays').value=params.rays;document.getElementById('valRays').textContent=params.rays;
+}
+
+function resetParams(){
+  params={f:1.5,D:3,theta:0,offset:0,rays:8};
+  syncSliders();render();
+  logEntry('重置','badge-ok','参数已重置为默认值');
+}
+
+['slF','slD','slTheta','slOffset','slRays'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',function(){
+    params.f=parseFloat(document.getElementById('slF').value);
+    params.D=parseFloat(document.getElementById('slD').value);
+    params.theta=parseInt(document.getElementById('slTheta').value);
+    params.offset=parseFloat(document.getElementById('slOffset').value);
+    params.rays=parseInt(document.getElementById('slRays').value);
+    document.getElementById('valF').textContent=params.f.toFixed(2);
+    document.getElementById('valD').textContent=params.D.toFixed(2);
+    document.getElementById('valTheta').textContent=params.theta+'°';
+    document.getElementById('valOffset').textContent=params.offset.toFixed(2);
+    document.getElementById('valRays').textContent=params.rays;
+    render();
+  });
+});
+
+document.getElementById('btnReset').addEventListener('click',resetParams);
+document.getElementById('btnSnapshot').addEventListener('click',snapshot);
+document.getElementById('btnRevoke').addEventListener('click',revokeLast);
+document.getElementById('btnRunTwice').addEventListener('click',runTwice);
+document.getElementById('preFocusOff').addEventListener('click',function(){params={f:1.5,D:3,theta:0,offset:0.6,rays:8};syncSliders();render();logEntry('样例','badge-warn','焦点偏移 Δ=0.60');});
+document.getElementById('preAngleOob').addEventListener('click',function(){params={f:1.5,D:3,theta:55,offset:0,rays:8};syncSliders();render();logEntry('样例','badge-err','角度越界 θ=55°');});
+document.getElementById('preReflRev').addEventListener('click',function(){params={f:0.5,D:5,theta:35,offset:0,rays:10};syncSliders();render();logEntry('样例','badge-err','反射线反向 f/D=0.10');});
+document.getElementById('btnClearLog').addEventListener('click',function(){
+  document.getElementById('logBody').innerHTML='';
+  tlEntries=[];snapIdx=0;revokedSet.clear();
+  document.getElementById('slTL').max=1;document.getElementById('slTL').value=1;
+  document.getElementById('tlMax').textContent='0';document.getElementById('tlLabel').textContent='0';
+});
+
+document.getElementById('slTL').addEventListener('input',function(){
+  var idx=parseInt(this.value);
+  document.getElementById('tlLabel').textContent=idx;
+  restoreTL(idx);
+});
+
+var playing=false,playInt=null;
+document.getElementById('btnPlay').addEventListener('click',function(){
+  if(playing){playing=false;clearInterval(playInt);this.textContent='▶';return;}
+  if(tlEntries.length<2)return;
+  playing=true;this.textContent='⏸';
+  var tl=document.getElementById('slTL');
+  var cur=parseInt(tl.value)||1;
+  if(cur>=tlEntries.length)cur=1;
+  playInt=setInterval(function(){
+    cur++;if(cur>tlEntries.length)cur=1;
+    tl.value=cur;document.getElementById('tlLabel').textContent=cur;
+    restoreTL(cur);
+  },800);
+});
+
+render();
+snapshot();
+})();
+</script>
+</body>
+</html>
