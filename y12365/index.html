@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微波炉驻波热区图 - 科普实验可视化工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #canvas-container { width: 100%; height: 100vh; }
+        .heat-gradient {
+            background: linear-gradient(to right, 
+                #0000ff 0%, #00ffff 25%, #00ff00 50%, 
+                #ffff00 75%, #ff0000 100%);
+        }
+        .tab-active {
+            background: #3b82f6;
+            color: white;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .timeline-slider {
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+        }
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+        .error-badge {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <div class="w-80 bg-white shadow-lg flex flex-col z-10">
+            <div class="p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                <h1 class="text-lg font-bold">🔬 微波炉驻波热区图</h1>
+                <p class="text-xs text-blue-200 mt-1">科普实验数据可视化工具</p>
+            </div>
+            
+            <div class="flex border-b">
+                <button class="tab-btn flex-1 py-2 text-sm font-medium tab-active" data-tab="data">数据</button>
+                <button class="tab-btn flex-1 py-2 text-sm font-medium" data-tab="analysis">分析</button>
+                <button class="tab-btn flex-1 py-2 text-sm font-medium" data-tab="export">导出</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto scrollbar-thin">
+                <div id="tab-data" class="tab-content p-4">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">实验样例</label>
+                        <select id="sample-select" class="w-full p-2 border rounded text-sm">
+                            <option value="normal">正常对照组</option>
+                            <option value="position_error" selected>位置错标案例</option>
+                            <option value="time_gap">时间缺口案例</option>
+                            <option value="sample_mix">样品混用案例</option>
+                        </select>
+                    </div>
+                    
+                    <div id="error-panel" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg hidden">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="error-badge w-2 h-2 bg-red-500 rounded-full"></span>
+                            <span class="font-medium text-red-800 text-sm">检测到数据问题</span>
+                        </div>
+                        <p id="error-description" class="text-xs text-red-600 mb-2"></p>
+                        <div id="error-suggestion" class="text-xs bg-white p-2 rounded border">
+                            <p class="font-medium text-gray-700 mb-1">处理建议：</p>
+                            <p class="text-gray-600"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">参数控制</label>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-xs">
+                                    <span>微波频率 (GHz)</span>
+                                    <span id="freq-value">2.45</span>
+                                </div>
+                                <input type="range" id="freq-slider" min="1" max="5" step="0.1" value="2.45" 
+                                    class="w-full h-2 rounded-lg">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs">
+                                    <span>转盘转速 (rpm)</span>
+                                    <span id="speed-value">6</span>
+                                </div>
+                                <input type="range" id="speed-slider" min="0" max="12" step="1" value="6" 
+                                    class="w-full h-2 rounded-lg">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs">
+                                    <span>功率 (W)</span>
+                                    <span id="power-value">800</span>
+                                </div>
+                                <input type="range" id="power-slider" min="100" max="1500" step="50" value="800" 
+                                    class="w-full h-2 rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">温度点数据</label>
+                        <div id="temp-points" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">转盘位置记录</label>
+                        <div id="turntable-positions" class="space-y-2 max-h-32 overflow-y-auto"></div>
+                    </div>
+                </div>
+                
+                <div id="tab-analysis" class="tab-content p-4 hidden">
+                    <div class="mb-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">📊 驻波分析</h3>
+                        <div id="standing-wave-info" class="text-xs space-y-2">
+                            <div class="p-2 bg-blue-50 rounded">
+                                <p class="font-medium text-blue-800">驻波波长</p>
+                                <p id="wavelength-value" class="text-blue-600">-</p>
+                            </div>
+                            <div class="p-2 bg-green-50 rounded">
+                                <p class="font-medium text-green-800">波节点数</p>
+                                <p id="node-count" class="text-green-600">-</p>
+                            </div>
+                            <div class="p-2 bg-yellow-50 rounded">
+                                <p class="font-medium text-yellow-800">波腹点数</p>
+                                <p id="antinode-count" class="text-yellow-600">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">📈 温度分布</h3>
+                        <canvas id="temp-chart" height="150"></canvas>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">💡 驻波原理解释</h3>
+                        <div id="wave-explanation" class="text-xs text-gray-600 p-3 bg-gray-50 rounded leading-relaxed">
+                            选择数据后显示驻波解释...
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tab-export" class="tab-content p-4 hidden">
+                    <div class="mb-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">📋 实验报告预览</h3>
+                        <div id="report-preview" class="text-xs p-3 bg-gray-50 rounded max-h-60 overflow-y-auto">
+                            <p class="text-gray-500">生成报告后预览...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <button id="generate-report" class="w-full py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
+                            生成完整报告
+                        </button>
+                        <button id="export-png" class="w-full py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700">
+                            导出3D场景图片
+                        </button>
+                        <button id="export-csv" class="w-full py-2 bg-purple-600 text-white rounded text-sm font-medium hover:bg-purple-700">
+                            导出数据表格 (CSV)
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-yellow-50 rounded">
+                        <p class="text-xs font-medium text-yellow-800 mb-1">数据对应关系记录</p>
+                        <div id="data-traceability" class="text-xs text-yellow-700 space-y-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex-1 relative">
+            <div id="canvas-container"></div>
+            
+            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur p-3 rounded-lg shadow">
+                <p class="text-xs font-medium text-gray-700 mb-1">温度色标</p>
+                <div class="heat-gradient w-32 h-4 rounded"></div>
+                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>20°C</span>
+                    <span>100°C</span>
+                </div>
+            </div>
+            
+            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg shadow">
+                <p class="text-xs font-medium text-gray-700 mb-2">当前时间点</p>
+                <p id="current-time" class="text-2xl font-bold text-blue-600">0:00</p>
+                <p id="current-temp" class="text-sm text-gray-600">平均温度: -</p>
+            </div>
+            
+            <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur p-4 rounded-lg shadow">
+                <div class="flex items-center gap-4">
+                    <button id="play-btn" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700">
+                        <span id="play-icon">▶</span>
+                    </button>
+                    <div class="flex-1">
+                        <input type="range" id="timeline" min="0" max="100" value="0" 
+                            class="timeline-slider w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0:00</span>
+                            <span id="total-duration">2:00</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="filter-btn px-3 py-1 text-xs rounded bg-gray-200 hover:bg-gray-300" data-filter="all">全部</button>
+                        <button class="filter-btn px-3 py-1 text-xs rounded bg-gray-200 hover:bg-gray-300" data-filter="hot">高温区</button>
+                        <button class="filter-btn px-3 py-1 text-xs rounded bg-gray-200 hover:bg-gray-300" data-filter="cold">低温区</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="point-tooltip" class="absolute hidden bg-gray-900 text-white text-xs p-2 rounded pointer-events-none z-50">
+                <p id="tooltip-content"></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
