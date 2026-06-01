@@ -1,0 +1,46 @@
+[
+  {
+    "id": "T001",
+    "name": "张教授",
+    "available_times": [
+      {"weekday": "周一", "start_period": 1, "end_period": 4},
+      {"weekday": "周三", "start_period": 1, "end_period": 4},
+      {"weekday": "周五", "start_period": 1, "end_period": 4}
+    ],
+    "preferred_times": [
+      {"weekday": "周一", "start_period": 1, "end_period": 2}
+    ]
+  },
+  {
+    "id": "T002",
+    "name": "李老师",
+    "available_times": [
+      {"weekday": "周二", "start_period": 1, "end_period": 8},
+      {"weekday": "周四", "start_period": 1, "end_period": 8}
+    ],
+    "preferred_times": [
+      {"weekday": "周二", "start_period": 3, "end_period": 4}
+    ]
+  },
+  {
+    "id": "T003",
+    "name": "王老师",
+    "available_times": [
+      {"weekday": "周一", "start_period": 5, "end_period": 8},
+      {"weekday": "周三", "start_period": 5, "end_period": 8},
+      {"weekday": "周五", "start_period": 5, "end_period": 8}
+    ],
+    "preferred_times": []
+  },
+  {
+    "id": "T004",
+    "name": "赵教授",
+    "available_times": [
+      {"weekday": "周一", "start_period": 1, "end_period": 8},
+      {"weekday": "周三", "start_period": 1, "end_period": 8}
+    ],
+    "preferred_times": [
+      {"weekday": "周三", "start_period": 5, "end_period": 7}
+    ]
+  }
+]

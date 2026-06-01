@@ -1,0 +1,56 @@
+[
+  {
+    "id": "C001",
+    "name": "高等数学",
+    "teacher_id": "T001",
+    "class_id": "CLS001",
+    "duration": 2,
+    "need_consecutive": true,
+    "capacity": 50
+  },
+  {
+    "id": "C002",
+    "name": "线性代数",
+    "teacher_id": "T001",
+    "class_id": "CLS002",
+    "duration": 2,
+    "need_consecutive": true,
+    "capacity": 40
+  },
+  {
+    "id": "C003",
+    "name": "Python编程",
+    "teacher_id": "T002",
+    "class_id": "CLS001",
+    "duration": 2,
+    "need_consecutive": false,
+    "capacity": 45
+  },
+  {
+    "id": "C004",
+    "name": "数据结构",
+    "teacher_id": "T002",
+    "class_id": "CLS003",
+    "duration": 2,
+    "need_consecutive": true,
+    "capacity": 35
+  },
+  {
+    "id": "C005",
+    "name": "大学英语",
+    "teacher_id": "T003",
+    "class_id": "CLS001",
+    "duration": 2,
+    "need_consecutive": false,
+    "capacity": 60
+  },
+  {
+    "id": "C006",
+    "name": "物理实验",
+    "teacher_id": "T004",
+    "class_id": "CLS002",
+    "duration": 3,
+    "need_consecutive": true,
+    "capacity": 30
+  }
+]

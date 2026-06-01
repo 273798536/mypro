@@ -1,0 +1,27 @@
+[
+  {
+    "id": "CLS001",
+    "name": "计算机1班",
+    "student_count": 45,
+    "preferred_teachers": ["T001", "T002"],
+    "preferred_times": [
+      {"weekday": "周一", "start_period": 1, "end_period": 4}
+    ]
+  },
+  {
+    "id": "CLS002",
+    "name": "软件2班",
+    "student_count": 38,
+    "preferred_teachers": ["T002"],
+    "preferred_times": []
+  },
+  {
+    "id": "CLS003",
+    "name": "大数据3班",
+    "student_count": 55,
+    "preferred_teachers": ["T001", "T004"],
+    "preferred_times": [
+      {"weekday": "周二", "start_period": 1, "end_period": 4}
+    ]
+  }
+]
