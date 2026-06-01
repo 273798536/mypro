@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family: "Noto Sans SC", sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #1d2129;
+    background-color: #f7f8fa;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-width: 1366px;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Noto Serif SC", serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors duration-200 font-medium;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-white border border-neutral-200 text-neutral-700 rounded-md hover:bg-neutral-50 transition-colors duration-200 font-medium;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-danger-500 text-white rounded-md hover:bg-danger-600 transition-colors duration-200 font-medium;
+  }
+
+  .btn-warning {
+    @apply px-4 py-2 bg-warning-500 text-white rounded-md hover:bg-warning-600 transition-colors duration-200 font-medium;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-card p-6 transition-all duration-200;
+  }
+
+  .card:hover {
+    @apply shadow-card-hover;
+  }
+
+  .input-base {
+    @apply px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full;
+  }
+
+  .badge-success {
+    @apply badge bg-success-50 text-success-600;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-50 text-warning-600;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-50 text-danger-600;
+  }
+
+  .badge-neutral {
+    @apply badge bg-neutral-100 text-neutral-600;
+  }
+
+  .table-base {
+    @apply w-full border-collapse;
+  }
+
+  .table-base th {
+    @apply px-4 py-3 text-left text-sm font-semibold text-neutral-600 bg-neutral-50 border-b border-neutral-200;
+  }
+
+  .table-base td {
+    @apply px-4 py-3 text-sm text-neutral-700 border-b border-neutral-100;
+  }
+
+  .table-base tr:hover td {
+    @apply bg-primary-50/30;
+  }
+
+  .supplement-mark {
+    @apply relative;
+  }
+
+  .supplement-mark::after {
+    content: "";
+    @apply absolute -top-1 -right-1 w-2 h-2 bg-warning-500 rounded-full animate-breathe;
+  }
+
+  .exception-row {
+    @apply bg-danger-50/50;
+  }
+
+  .pending-row {
+    @apply bg-warning-50/50;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #c9cdd4 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #c9cdd4;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #86909c;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
