@@ -1,0 +1,5 @@
+level_name,priority_weight,max_concurrent
+SVIP,10.0,2
+VIP,8.0,2
+金牌,6.0,3
+普通,1.0,5
