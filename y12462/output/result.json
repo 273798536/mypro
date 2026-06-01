@@ -1,0 +1,25 @@
+{
+  "level_id": "level_1",
+  "level_name": "基础象限识别",
+  "status": "success",
+  "score": 200,
+  "hit_targets": 2,
+  "total_targets": 2,
+  "accuracy": 1.0,
+  "errors": [
+    {
+      "type": "quadrant_misjudge",
+      "row": 1,
+      "message": "象限误判: 期望象限=2, 实际=1",
+      "raw": "45"
+    },
+    {
+      "type": "quadrant_misjudge",
+      "row": 2,
+      "message": "象限误判: 期望象限=1, 实际=2",
+      "raw": "135"
+    }
+  ],
+  "timestamp": 1780323335.027735,
+  "explanation": "表现优秀！对三角函数的理解很到位。\n提示：90°-180°在第二象限(cos负,sin正)，180°-270°在第三象限(cos负,sin负)"
+}
