@@ -1,0 +1,811 @@
+{
+  "summary": {
+    "project": {
+      "id": "proj_44ed5cdddb2c",
+      "name": "示例乐谱校对项目",
+      "created_at": "2026-06-02T00:55:12.865068",
+      "current_version": 3,
+      "import_sources_count": 1
+    },
+    "measures": {
+      "total": 4,
+      "complete": 4
+    },
+    "issues": {
+      "total": 9,
+      "by_status": {
+        "待确认": 9
+      },
+      "by_category": {
+        "升降号漏识": 5,
+        "升降号误识": 1,
+        "连音线断裂": 2,
+        "小节错位": 1
+      },
+      "by_severity": {
+        "错误": 5,
+        "警告": 4
+      }
+    },
+    "corrections": {
+      "total_corrections": 1,
+      "resolved_issues": 0
+    }
+  },
+  "issues": [
+    {
+      "id": "issue_acc_01636d9e",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "description": "第1小节 F5 音符可能缺失升降号",
+      "location": {
+        "x": 80.0,
+        "y": 110.0,
+        "width": 20.0,
+        "height": 50.0,
+        "confidence": 0.92
+      },
+      "measure_id": "measure_1",
+      "measure_number": 1,
+      "symbol_ids": [
+        "note_1_1"
+      ],
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求F升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "F",
+            "octave": 5,
+            "has_accidental": false,
+            "confidence": 0.92
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "created_at": "2026-06-02T00:55:12.866079",
+      "updated_at": "2026-06-02T00:55:12.866080",
+      "corrections": [
+        {
+          "id": "corr_5bd90da1",
+          "issue_id": "issue_acc_01636d9e",
+          "corrected_by": "校对员A",
+          "corrected_at": "2026-06-02T00:55:12.866953",
+          "original_value": "无升降号",
+          "corrected_value": "升号(#)",
+          "description": "根据调号3#，F音需要升半音",
+          "affects_other_issues": []
+        }
+      ],
+      "metadata": {
+        "note_pitch": "F",
+        "octave": 5,
+        "expected_reasons": [
+          "调号3#要求F升半音"
+        ]
+      }
+    },
+    {
+      "id": "issue_acc_39b9ce0c",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "description": "第1小节 C5 音符可能缺失升降号",
+      "location": {
+        "x": 150.0,
+        "y": 110.0,
+        "width": 20.0,
+        "height": 50.0,
+        "confidence": 0.88
+      },
+      "measure_id": "measure_1",
+      "measure_number": 1,
+      "symbol_ids": [
+        "note_1_2"
+      ],
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求C升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "C",
+            "octave": 5,
+            "has_accidental": false,
+            "confidence": 0.88
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "created_at": "2026-06-02T00:55:12.866110",
+      "updated_at": "2026-06-02T00:55:12.866111",
+      "corrections": [],
+      "metadata": {
+        "note_pitch": "C",
+        "octave": 5,
+        "expected_reasons": [
+          "调号3#要求C升半音"
+        ]
+      }
+    },
+    {
+      "id": "issue_acc_677350ee",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "description": "第2小节 F4 音符可能缺失升降号",
+      "location": {
+        "x": 80.0,
+        "y": 130.0,
+        "width": 20.0,
+        "height": 50.0,
+        "confidence": 0.87
+      },
+      "measure_id": "measure_2",
+      "measure_number": 2,
+      "symbol_ids": [
+        "note_2_1"
+      ],
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求F升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "F",
+            "octave": 4,
+            "has_accidental": false,
+            "confidence": 0.87
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "created_at": "2026-06-02T00:55:12.866362",
+      "updated_at": "2026-06-02T00:55:12.866363",
+      "corrections": [],
+      "metadata": {
+        "note_pitch": "F",
+        "octave": 4,
+        "expected_reasons": [
+          "调号3#要求F升半音"
+        ]
+      }
+    },
+    {
+      "id": "issue_acc_e4091d71",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "description": "第2小节 C4 音符可能缺失升降号",
+      "location": {
+        "x": 190.0,
+        "y": 130.0,
+        "width": 20.0,
+        "height": 50.0,
+        "confidence": 0.91
+      },
+      "measure_id": "measure_2",
+      "measure_number": 2,
+      "symbol_ids": [
+        "note_2_2"
+      ],
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求C升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "C",
+            "octave": 4,
+            "has_accidental": false,
+            "confidence": 0.91
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "created_at": "2026-06-02T00:55:12.866393",
+      "updated_at": "2026-06-02T00:55:12.866394",
+      "corrections": [],
+      "metadata": {
+        "note_pitch": "C",
+        "octave": 4,
+        "expected_reasons": [
+          "调号3#要求C升半音"
+        ]
+      }
+    },
+    {
+      "id": "issue_acc_mis_77283703",
+      "category": "accidental_misread",
+      "severity": "warning",
+      "status": "pending",
+      "description": "第3小节 sharp 识别可信度低（0.55）",
+      "location": {
+        "x": 105.0,
+        "y": 145.0,
+        "width": 15.0,
+        "height": 30.0,
+        "confidence": 0.55
+      },
+      "measure_id": "measure_3",
+      "measure_number": 3,
+      "symbol_ids": [
+        "accidental_3_1"
+      ],
+      "evidence": [
+        {
+          "source": "ocr_confidence",
+          "description": "OCR可信度低",
+          "data": {
+            "confidence": 0.55,
+            "threshold": 0.7
+          }
+        }
+      ],
+      "suggestions": [
+        "对照原谱照片确认该位置的变音记号类型",
+        "当前识别为sharp，请核对是否正确",
+        "检查是否为印刷模糊或拍摄角度导致的识别错误"
+      ],
+      "created_at": "2026-06-02T00:55:12.866451",
+      "updated_at": "2026-06-02T00:55:12.866452",
+      "corrections": [],
+      "metadata": {
+        "accidental_type": "sharp",
+        "confidence": 0.55
+      }
+    },
+    {
+      "id": "issue_acc_f3756f83",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "description": "第5小节 C5 音符可能缺失升降号",
+      "location": {
+        "x": 100.0,
+        "y": 160.0,
+        "width": 20.0,
+        "height": 50.0,
+        "confidence": 0.9
+      },
+      "measure_id": "measure_5",
+      "measure_number": 5,
+      "symbol_ids": [
+        "note_5_1"
+      ],
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求C升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "C",
+            "octave": 5,
+            "has_accidental": false,
+            "confidence": 0.9
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "created_at": "2026-06-02T00:55:12.866493",
+      "updated_at": "2026-06-02T00:55:12.866494",
+      "corrections": [],
+      "metadata": {
+        "note_pitch": "C",
+        "octave": 5,
+        "expected_reasons": [
+          "调号3#要求C升半音"
+        ]
+      }
+    },
+    {
+      "id": "issue_slur_f1712b6d",
+      "category": "slur_broken",
+      "severity": "warning",
+      "status": "pending",
+      "description": "第2小节连音线可能断裂: 连音线标记为不完整",
+      "location": {
+        "x": 70.0,
+        "y": 95.0,
+        "width": 80.0,
+        "height": 15.0,
+        "confidence": 0.6
+      },
+      "measure_id": "measure_2",
+      "measure_number": 2,
+      "symbol_ids": [
+        "slur_2_1"
+      ],
+      "evidence": [
+        {
+          "source": "slur_analysis",
+          "description": "连音线标记为不完整",
+          "data": {
+            "is_complete": false,
+            "has_start": true,
+            "has_end": false
+          }
+        }
+      ],
+      "suggestions": [
+        "在原谱照片中追踪连音线的完整路径",
+        "确认连音线连接的起始和结束音符",
+        "检查是否因换行导致连音线断裂",
+        "如为延音线，请确认两个音符音高是否相同"
+      ],
+      "created_at": "2026-06-02T00:55:12.866531",
+      "updated_at": "2026-06-02T00:55:12.866532",
+      "corrections": [],
+      "metadata": {
+        "slur_id": "slur_2_1"
+      }
+    },
+    {
+      "id": "issue_slur_06678089",
+      "category": "slur_broken",
+      "severity": "warning",
+      "status": "pending",
+      "description": "第2小节连音线可能断裂: 连音线标记为不完整",
+      "location": {
+        "x": 160.0,
+        "y": 95.0,
+        "width": 60.0,
+        "height": 15.0,
+        "confidence": 0.55
+      },
+      "measure_id": "measure_2",
+      "measure_number": 2,
+      "symbol_ids": [
+        "slur_2_2"
+      ],
+      "evidence": [
+        {
+          "source": "slur_analysis",
+          "description": "连音线标记为不完整",
+          "data": {
+            "is_complete": false,
+            "has_start": false,
+            "has_end": true
+          }
+        }
+      ],
+      "suggestions": [
+        "在原谱照片中追踪连音线的完整路径",
+        "确认连音线连接的起始和结束音符",
+        "检查是否因换行导致连音线断裂",
+        "如为延音线，请确认两个音符音高是否相同"
+      ],
+      "created_at": "2026-06-02T00:55:12.866549",
+      "updated_at": "2026-06-02T00:55:12.866550",
+      "corrections": [],
+      "metadata": {
+        "slur_id": "slur_2_2"
+      }
+    },
+    {
+      "id": "issue_bar_25f0c5c2",
+      "category": "barline_misaligned",
+      "severity": "warning",
+      "status": "pending",
+      "description": "第3小节位置可能错位: 垂直位置偏差过大: 50.0px > 36.0px",
+      "location": {
+        "x": 50.0,
+        "y": 150.0,
+        "width": 400.0,
+        "height": 120.0,
+        "confidence": 0.8
+      },
+      "measure_id": "measure_3",
+      "measure_number": 3,
+      "symbol_ids": [],
+      "evidence": [
+        {
+          "source": "barline_alignment",
+          "description": "小节线对齐异常",
+          "data": {
+            "y_difference": 50.0,
+            "height_difference": 0.0,
+            "y_threshold": 36.0,
+            "height_threshold": 24.0,
+            "reasons": [
+              "垂直位置偏差过大: 50.0px > 36.0px"
+            ]
+          }
+        }
+      ],
+      "suggestions": [
+        "检查原谱照片中该小节的位置是否正确",
+        "确认小节线是否因拍摄角度或透视变形导致错位",
+        "检查前后小节的边界位置",
+        "如小节编号有误，请重新调整小节划分"
+      ],
+      "created_at": "2026-06-02T00:55:12.866593",
+      "updated_at": "2026-06-02T00:55:12.866594",
+      "corrections": [],
+      "metadata": {
+        "y_difference": 50.0,
+        "height_difference": 0.0
+      }
+    }
+  ],
+  "version_history": [
+    {
+      "version": 1,
+      "timestamp": "2026-06-02T00:55:12.865068",
+      "description": "创建新项目",
+      "changed_by": "system",
+      "changes": [
+        "项目名称: 示例乐谱校对项目"
+      ]
+    },
+    {
+      "version": 2,
+      "timestamp": "2026-06-02T00:55:12.865950",
+      "description": "导入OCR结果",
+      "changed_by": "importer",
+      "changes": [
+        "OCR数据源: sample_ocr_data.json"
+      ]
+    },
+    {
+      "version": 3,
+      "timestamp": "2026-06-02T00:55:12.866985",
+      "description": "修正问题: 根据调号3#，F音需要升半音",
+      "changed_by": "校对员A",
+      "changes": [
+        "问题ID: issue_acc_01636d9e",
+        "从 '无升降号' -> '升号(#)'"
+      ]
+    }
+  ],
+  "import_sources": [
+    {
+      "source_type": "ocr",
+      "file_path": "sample_ocr_data.json",
+      "import_time": "2026-06-02T00:55:12.865475",
+      "version": 1,
+      "metadata": {
+        "raw_data": {
+          "type": "ocr",
+          "source": "示例乐谱OCR",
+          "measures": [
+            {
+              "id": "measure_1",
+              "measure_number": 1,
+              "time_signature": "4/4",
+              "key_signature": "3#",
+              "is_complete": true,
+              "position": {
+                "x": 50,
+                "y": 100,
+                "width": 400,
+                "height": 120,
+                "confidence": 0.9
+              },
+              "symbols": [
+                {
+                  "id": "note_1_1",
+                  "symbol_type": "note",
+                  "position": {
+                    "x": 80,
+                    "y": 110,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.92
+                  },
+                  "confidence": 0.92,
+                  "pitch": "F",
+                  "octave": 5,
+                  "duration": 1.0,
+                  "accidental": null
+                },
+                {
+                  "id": "note_1_2",
+                  "symbol_type": "note",
+                  "position": {
+                    "x": 150,
+                    "y": 110,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.88
+                  },
+                  "confidence": 0.88,
+                  "pitch": "C",
+                  "octave": 5,
+                  "duration": 1.0,
+                  "accidental": null
+                },
+                {
+                  "id": "note_1_3",
+                  "symbol_type": "note",
+                  "pitch": "G",
+                  "octave": 5,
+                  "duration": 1.0,
+                  "position": {
+                    "x": 220,
+                    "y": 110,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.95
+                  },
+                  "confidence": 0.95,
+                  "accidental": "sharp"
+                },
+                {
+                  "id": "note_1_4",
+                  "symbol_type": "note",
+                  "pitch": "D",
+                  "octave": 5,
+                  "duration": 1.0,
+                  "position": {
+                    "x": 290,
+                    "y": 110,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.9
+                  },
+                  "confidence": 0.9,
+                  "accidental": null
+                }
+              ]
+            },
+            {
+              "id": "measure_2",
+              "measure_number": 2,
+              "time_signature": "4/4",
+              "key_signature": "3#",
+              "is_complete": true,
+              "position": {
+                "x": 50,
+                "y": 100,
+                "width": 400,
+                "height": 120,
+                "confidence": 0.85
+              },
+              "symbols": [
+                {
+                  "id": "note_2_1",
+                  "symbol_type": "note",
+                  "pitch": "F",
+                  "octave": 4,
+                  "duration": 0.5,
+                  "position": {
+                    "x": 80,
+                    "y": 130,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.87
+                  },
+                  "confidence": 0.87,
+                  "accidental": null
+                },
+                {
+                  "id": "slur_2_1",
+                  "symbol_type": "slur",
+                  "position": {
+                    "x": 70,
+                    "y": 95,
+                    "width": 80,
+                    "height": 15,
+                    "confidence": 0.6
+                  },
+                  "confidence": 0.6,
+                  "start_note_id": "note_2_1",
+                  "end_note_id": null,
+                  "is_complete": false
+                },
+                {
+                  "id": "slur_2_2",
+                  "symbol_type": "slur",
+                  "position": {
+                    "x": 160,
+                    "y": 95,
+                    "width": 60,
+                    "height": 15,
+                    "confidence": 0.55
+                  },
+                  "confidence": 0.55,
+                  "start_note_id": null,
+                  "end_note_id": "note_2_2",
+                  "is_complete": false
+                },
+                {
+                  "id": "note_2_2",
+                  "symbol_type": "note",
+                  "pitch": "C",
+                  "octave": 4,
+                  "duration": 0.5,
+                  "position": {
+                    "x": 190,
+                    "y": 130,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.91
+                  },
+                  "confidence": 0.91,
+                  "accidental": null
+                },
+                {
+                  "id": "note_2_3",
+                  "symbol_type": "note",
+                  "pitch": "G",
+                  "octave": 4,
+                  "duration": 1.0,
+                  "position": {
+                    "x": 260,
+                    "y": 130,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.89
+                  },
+                  "confidence": 0.89,
+                  "accidental": "sharp"
+                },
+                {
+                  "id": "note_2_4",
+                  "symbol_type": "note",
+                  "pitch": "D",
+                  "octave": 4,
+                  "duration": 2.0,
+                  "position": {
+                    "x": 330,
+                    "y": 130,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.93
+                  },
+                  "confidence": 0.93,
+                  "accidental": null
+                }
+              ]
+            },
+            {
+              "id": "measure_3",
+              "measure_number": 3,
+              "time_signature": "4/4",
+              "key_signature": "3#",
+              "is_complete": true,
+              "position": {
+                "x": 50,
+                "y": 150,
+                "width": 400,
+                "height": 120,
+                "confidence": 0.8
+              },
+              "symbols": [
+                {
+                  "id": "note_3_1",
+                  "symbol_type": "note",
+                  "pitch": "F",
+                  "octave": 4,
+                  "duration": 1.0,
+                  "position": {
+                    "x": 80,
+                    "y": 160,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.85
+                  },
+                  "confidence": 0.85,
+                  "accidental": null
+                },
+                {
+                  "id": "accidental_3_1",
+                  "symbol_type": "accidental",
+                  "accidental_type": "sharp",
+                  "position": {
+                    "x": 105,
+                    "y": 145,
+                    "width": 15,
+                    "height": 30,
+                    "confidence": 0.55
+                  },
+                  "confidence": 0.55
+                }
+              ]
+            },
+            {
+              "id": "measure_5",
+              "measure_number": 5,
+              "time_signature": "4/4",
+              "key_signature": "3#",
+              "is_complete": true,
+              "position": {
+                "x": 50,
+                "y": 115,
+                "width": 400,
+                "height": 120,
+                "confidence": 0.75
+              },
+              "symbols": [
+                {
+                  "id": "note_5_1",
+                  "symbol_type": "note",
+                  "pitch": "C",
+                  "octave": 5,
+                  "duration": 1.0,
+                  "position": {
+                    "x": 100,
+                    "y": 160,
+                    "width": 20,
+                    "height": 50,
+                    "confidence": 0.9
+                  },
+                  "confidence": 0.9,
+                  "accidental": null
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
