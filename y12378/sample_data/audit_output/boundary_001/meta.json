@@ -1,0 +1,211 @@
+{
+  "sample_id": "boundary_001",
+  "melody_midi_path": "melody.mid",
+  "classification": "boundary",
+  "chord_analyses": [
+    {
+      "bar_start": 1,
+      "bar_end": 2,
+      "expected_chord": "G:maj",
+      "actual_chord": "G:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.94,
+      "note": ""
+    },
+    {
+      "bar_start": 2,
+      "bar_end": 3,
+      "expected_chord": "C:maj",
+      "actual_chord": "C:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.91,
+      "note": ""
+    },
+    {
+      "bar_start": 3,
+      "bar_end": 4,
+      "expected_chord": "D:maj",
+      "actual_chord": "D:7",
+      "match_result": "uncertain",
+      "chroma_vector": [],
+      "confidence": 0.72,
+      "note": ""
+    },
+    {
+      "bar_start": 4,
+      "bar_end": 5,
+      "expected_chord": "E:min",
+      "actual_chord": "E:min",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.89,
+      "note": ""
+    },
+    {
+      "bar_start": 5,
+      "bar_end": 6,
+      "expected_chord": "G:maj",
+      "actual_chord": "G:sus4",
+      "match_result": "mismatch",
+      "chroma_vector": [],
+      "confidence": 0.55,
+      "note": "sus4与maj有3/4音级重叠, 边界case"
+    },
+    {
+      "bar_start": 6,
+      "bar_end": 7,
+      "expected_chord": "C:maj",
+      "actual_chord": "C:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.9,
+      "note": ""
+    },
+    {
+      "bar_start": 7,
+      "bar_end": 8,
+      "expected_chord": "D:7",
+      "actual_chord": "D:7",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.93,
+      "note": ""
+    },
+    {
+      "bar_start": 8,
+      "bar_end": 9,
+      "expected_chord": "G:maj",
+      "actual_chord": "G:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.95,
+      "note": ""
+    }
+  ],
+  "version_records": [
+    {
+      "version_id": "v1",
+      "timestamp": "2026-05-18T09:00:00",
+      "source": "ai_analysis",
+      "chord_conclusion": "G:sus4",
+      "content": "AI分析: 小节5判断为G:sus4, 置信度0.55",
+      "previous_version_id": null,
+      "is_latest": false
+    },
+    {
+      "version_id": "v2",
+      "timestamp": "2026-05-19T11:00:00",
+      "source": "teacher_annotation",
+      "chord_conclusion": "G:maj",
+      "content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+      "previous_version_id": "v1",
+      "is_latest": false
+    },
+    {
+      "version_id": "v3",
+      "timestamp": "2026-05-20T16:00:00",
+      "source": "manual_correction",
+      "chord_conclusion": "G:maj",
+      "content": "修正备注: 接受老师意见, 小节5修正为G:maj, 原sus4判断为边界case",
+      "previous_version_id": "v2",
+      "is_latest": true
+    }
+  ],
+  "conflicts": [
+    {
+      "conflict_type": "chord_conflict",
+      "description": "小节 3-4: 期望和弦 D:maj 与实际和弦 D:7 存在不确定性",
+      "severity": "medium",
+      "evidence_version_ids": [
+        "v1",
+        "v2"
+      ],
+      "related_bar_range": [
+        3,
+        4
+      ],
+      "resolution": "",
+      "resolved": false
+    },
+    {
+      "conflict_type": "chord_conflict",
+      "description": "小节 5-6: 期望和弦 G:maj 与实际和弦 G:sus4 冲突",
+      "severity": "high",
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "related_bar_range": [
+        5,
+        6
+      ],
+      "resolution": "",
+      "resolved": false
+    }
+  ],
+  "conclusion_consistent": false,
+  "meta": {
+    "description": "G大调旋律, 小节5-6处和弦有模糊判断, AI给出sus4但老师标注maj",
+    "teacher": "李老师",
+    "note": "小节5的sus4和maj之间有音级重叠, 属于边界case",
+    "_audit": {
+      "audit_time": "2026-06-02T01:10:01.043877",
+      "consistency_result": {
+        "is_consistent": false,
+        "inconsistent_diffs": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-18T09:00:00",
+            "newer_timestamp": "2026-05-19T11:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "G:sus4",
+            "newer_conclusion": "G:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 小节5判断为G:sus4, 置信度0.55",
+            "newer_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+            "content_changed": true
+          }
+        ],
+        "total_versions": 3,
+        "warning": "发现 1 处版本间结论不一致, 版本记录已作为补充证据保留在详情中"
+      },
+      "overwritten_modulation_evidence": [],
+      "version_diffs": [
+        {
+          "older_version_id": "v1",
+          "newer_version_id": "v2",
+          "older_timestamp": "2026-05-18T09:00:00",
+          "newer_timestamp": "2026-05-19T11:00:00",
+          "older_source": "ai_analysis",
+          "newer_source": "teacher_annotation",
+          "older_conclusion": "G:sus4",
+          "newer_conclusion": "G:maj",
+          "conclusion_changed": true,
+          "older_content": "AI分析: 小节5判断为G:sus4, 置信度0.55",
+          "newer_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+          "content_changed": true
+        },
+        {
+          "older_version_id": "v2",
+          "newer_version_id": "v3",
+          "older_timestamp": "2026-05-19T11:00:00",
+          "newer_timestamp": "2026-05-20T16:00:00",
+          "older_source": "teacher_annotation",
+          "newer_source": "manual_correction",
+          "older_conclusion": "G:maj",
+          "newer_conclusion": "G:maj",
+          "conclusion_changed": false,
+          "older_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+          "newer_content": "修正备注: 接受老师意见, 小节5修正为G:maj, 原sus4判断为边界case",
+          "content_changed": true
+        }
+      ]
+    }
+  },
+  "created_at": "2026-06-02T01:10:01.034388"
+}

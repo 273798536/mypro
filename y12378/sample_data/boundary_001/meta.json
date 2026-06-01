@@ -1,0 +1,14 @@
+{
+  "sample_id": "boundary_001",
+  "melody_midi_path": "melody.mid",
+  "classification": "boundary",
+  "conclusion_consistent": true,
+  "meta": {
+    "description": "G大调旋律, 小节5-6处和弦有模糊判断, AI给出sus4但老师标注maj",
+    "teacher": "李老师",
+    "note": "小节5的sus4和maj之间有音级重叠, 属于边界case"
+  },
+  "chord_analyses": [],
+  "version_records": [],
+  "conflicts": []
+}

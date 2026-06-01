@@ -1,0 +1,9 @@
+{
+  "version_id": "v2",
+  "timestamp": "2026-05-19T11:00:00",
+  "source": "teacher_annotation",
+  "chord_conclusion": "G:maj",
+  "content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+  "previous_version_id": "v1",
+  "is_latest": false
+}

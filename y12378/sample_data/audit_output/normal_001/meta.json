@@ -1,0 +1,139 @@
+{
+  "sample_id": "normal_001",
+  "melody_midi_path": "melody.mid",
+  "classification": "normal",
+  "chord_analyses": [
+    {
+      "bar_start": 1,
+      "bar_end": 2,
+      "expected_chord": "C:maj",
+      "actual_chord": "C:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.95,
+      "note": ""
+    },
+    {
+      "bar_start": 2,
+      "bar_end": 3,
+      "expected_chord": "G:maj",
+      "actual_chord": "G:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.92,
+      "note": ""
+    },
+    {
+      "bar_start": 3,
+      "bar_end": 4,
+      "expected_chord": "A:min",
+      "actual_chord": "A:min",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.9,
+      "note": ""
+    },
+    {
+      "bar_start": 4,
+      "bar_end": 5,
+      "expected_chord": "F:maj",
+      "actual_chord": "F:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.93,
+      "note": ""
+    },
+    {
+      "bar_start": 5,
+      "bar_end": 6,
+      "expected_chord": "C:maj",
+      "actual_chord": "C:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.96,
+      "note": ""
+    },
+    {
+      "bar_start": 6,
+      "bar_end": 7,
+      "expected_chord": "G:maj",
+      "actual_chord": "G:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.91,
+      "note": ""
+    },
+    {
+      "bar_start": 7,
+      "bar_end": 8,
+      "expected_chord": "F:maj",
+      "actual_chord": "F:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.88,
+      "note": ""
+    },
+    {
+      "bar_start": 8,
+      "bar_end": 9,
+      "expected_chord": "C:maj",
+      "actual_chord": "C:maj",
+      "match_result": "match",
+      "chroma_vector": [],
+      "confidence": 0.97,
+      "note": ""
+    }
+  ],
+  "version_records": [
+    {
+      "version_id": "v1",
+      "timestamp": "2026-05-20T10:00:00",
+      "source": "ai_analysis",
+      "chord_conclusion": "C:maj",
+      "content": "AI初步分析: C大调, 和弦进行 I-V-vi-IV-I-V-IV-I",
+      "previous_version_id": null,
+      "is_latest": false
+    },
+    {
+      "version_id": "v2",
+      "timestamp": "2026-05-21T14:30:00",
+      "source": "teacher_annotation",
+      "chord_conclusion": "C:maj",
+      "content": "老师批注: 确认C大调, 和弦进行正确",
+      "previous_version_id": "v1",
+      "is_latest": true
+    }
+  ],
+  "conflicts": [],
+  "conclusion_consistent": true,
+  "meta": {
+    "description": "C大调简单旋律, AI伴奏和弦完全正确",
+    "teacher": "张老师",
+    "_audit": {
+      "audit_time": "2026-06-02T01:10:01.043877",
+      "consistency_result": {
+        "is_consistent": true,
+        "inconsistent_diffs": [],
+        "total_versions": 2
+      },
+      "overwritten_modulation_evidence": [],
+      "version_diffs": [
+        {
+          "older_version_id": "v1",
+          "newer_version_id": "v2",
+          "older_timestamp": "2026-05-20T10:00:00",
+          "newer_timestamp": "2026-05-21T14:30:00",
+          "older_source": "ai_analysis",
+          "newer_source": "teacher_annotation",
+          "older_conclusion": "C:maj",
+          "newer_conclusion": "C:maj",
+          "conclusion_changed": false,
+          "older_content": "AI初步分析: C大调, 和弦进行 I-V-vi-IV-I-V-IV-I",
+          "newer_content": "老师批注: 确认C大调, 和弦进行正确",
+          "content_changed": true
+        }
+      ]
+    }
+  },
+  "created_at": "2026-06-02T01:10:01.041508"
+}

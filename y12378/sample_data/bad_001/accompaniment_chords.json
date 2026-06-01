@@ -1,0 +1,10 @@
+[
+  {"bar_start": 1, "bar_end": 2, "expected_chord": "F:maj", "actual_chord": "F:maj", "confidence": 0.93},
+  {"bar_start": 2, "bar_end": 3, "expected_chord": "Bb:maj", "actual_chord": "Bb:maj", "confidence": 0.88},
+  {"bar_start": 3, "bar_end": 4, "expected_chord": "C:maj", "actual_chord": "C:7", "confidence": 0.70},
+  {"bar_start": 4, "bar_end": 5, "expected_chord": "D:min", "actual_chord": "D:min", "confidence": 0.85},
+  {"bar_start": 5, "bar_end": 6, "expected_chord": "Bb:maj", "actual_chord": "A:maj", "confidence": 0.30, "note": "此处已转入d小调, AI错误识别为A大调"},
+  {"bar_start": 7, "bar_end": 9, "expected_chord": "D:min", "actual_chord": "F:maj", "confidence": 0.25, "note": "小节6缺失, 小节7-8应为d小调主和弦"},
+  {"bar_start": 9, "bar_end": 10, "expected_chord": "C:7", "actual_chord": "G:min", "confidence": 0.40},
+  {"bar_start": 10, "bar_end": 11, "expected_chord": "F:maj", "actual_chord": "F:maj", "confidence": 0.91}
+]

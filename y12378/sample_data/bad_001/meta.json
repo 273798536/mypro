@@ -1,0 +1,14 @@
+{
+  "sample_id": "bad_001",
+  "melody_midi_path": "melody.mid",
+  "classification": "bad",
+  "conclusion_consistent": false,
+  "meta": {
+    "description": "F大调旋律, 中段转d小调但AI漏判, 小节6-8和弦完全错误, 存在小节错位",
+    "teacher": "王老师",
+    "note": "转调漏判被新版本覆盖, 原始转调标注丢失"
+  },
+  "chord_analyses": [],
+  "version_records": [],
+  "conflicts": []
+}

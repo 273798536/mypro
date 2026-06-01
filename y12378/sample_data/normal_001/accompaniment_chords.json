@@ -1,0 +1,10 @@
+[
+  {"bar_start": 1, "bar_end": 2, "expected_chord": "C:maj", "actual_chord": "C:maj", "confidence": 0.95},
+  {"bar_start": 2, "bar_end": 3, "expected_chord": "G:maj", "actual_chord": "G:maj", "confidence": 0.92},
+  {"bar_start": 3, "bar_end": 4, "expected_chord": "A:min", "actual_chord": "A:min", "confidence": 0.90},
+  {"bar_start": 4, "bar_end": 5, "expected_chord": "F:maj", "actual_chord": "F:maj", "confidence": 0.93},
+  {"bar_start": 5, "bar_end": 6, "expected_chord": "C:maj", "actual_chord": "C:maj", "confidence": 0.96},
+  {"bar_start": 6, "bar_end": 7, "expected_chord": "G:maj", "actual_chord": "G:maj", "confidence": 0.91},
+  {"bar_start": 7, "bar_end": 8, "expected_chord": "F:maj", "actual_chord": "F:maj", "confidence": 0.88},
+  {"bar_start": 8, "bar_end": 9, "expected_chord": "C:maj", "actual_chord": "C:maj", "confidence": 0.97}
+]

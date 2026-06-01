@@ -1,0 +1,14 @@
+{
+  "sample_id": "bad_002",
+  "melody_midi_path": "melody.mid",
+  "classification": "bad",
+  "conclusion_consistent": false,
+  "meta": {
+    "description": "A大调旋律, AI把E:7全部错判为E:min7, 小节3-4有严重和弦冲突",
+    "teacher": "赵老师",
+    "note": "属七和弦被错误识别为小七, 影响整个和声功能判断"
+  },
+  "chord_analyses": [],
+  "version_records": [],
+  "conflicts": []
+}

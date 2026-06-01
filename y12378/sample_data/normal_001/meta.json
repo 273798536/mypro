@@ -1,0 +1,13 @@
+{
+  "sample_id": "normal_001",
+  "melody_midi_path": "melody.mid",
+  "classification": "normal",
+  "conclusion_consistent": true,
+  "meta": {
+    "description": "C大调简单旋律, AI伴奏和弦完全正确",
+    "teacher": "张老师"
+  },
+  "chord_analyses": [],
+  "version_records": [],
+  "conflicts": []
+}

@@ -1,0 +1,9 @@
+{
+  "version_id": "v1",
+  "timestamp": "2026-05-22T08:00:00",
+  "source": "ai_analysis",
+  "chord_conclusion": "A:min",
+  "content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+  "previous_version_id": null,
+  "is_latest": false
+}

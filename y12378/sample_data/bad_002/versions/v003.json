@@ -1,0 +1,9 @@
+{
+  "version_id": "v3",
+  "timestamp": "2026-05-24T10:00:00",
+  "source": "manual_correction",
+  "chord_conclusion": "A:maj",
+  "content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+  "previous_version_id": "v2",
+  "is_latest": true
+}

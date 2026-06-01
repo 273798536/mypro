@@ -1,0 +1,9 @@
+{
+  "version_id": "v1",
+  "timestamp": "2026-05-15T08:00:00",
+  "source": "ai_analysis",
+  "chord_conclusion": "F:maj",
+  "content": "AI初步分析: F大调, 未检测到转调",
+  "previous_version_id": null,
+  "is_latest": false
+}

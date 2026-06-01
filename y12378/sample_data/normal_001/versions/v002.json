@@ -1,0 +1,9 @@
+{
+  "version_id": "v2",
+  "timestamp": "2026-05-21T14:30:00",
+  "source": "teacher_annotation",
+  "chord_conclusion": "C:maj",
+  "content": "老师批注: 确认C大调, 和弦进行正确",
+  "previous_version_id": "v1",
+  "is_latest": true
+}

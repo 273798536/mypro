@@ -1,0 +1,1597 @@
+{
+  "audit_time": "2026-06-02T01:10:01.043877",
+  "total_samples": 4,
+  "classification_counts": {
+    "normal": 1,
+    "boundary": 1,
+    "bad": 2
+  },
+  "conflict_counts": {
+    "chord_conflict": 13,
+    "bar_misalignment": 2,
+    "missed_modulation": 6
+  },
+  "total_conflicts": 21,
+  "samples_with_conflicts": 3,
+  "samples_conclusion_inconsistent": 3,
+  "failure_paths": [
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 2-3: 期望和弦 Bb:maj 与实际和弦 Bb:maj 存在不确定性",
+      "severity": "medium",
+      "bar_range": [
+        2,
+        3
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 1,
+            "bar_end": 2,
+            "expected_chord": "F:maj",
+            "actual_chord": "F:maj",
+            "match_result": "match",
+            "confidence": 0.93
+          },
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.88
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "C:maj",
+            "actual_chord": "C:7",
+            "match_result": "uncertain",
+            "confidence": 0.7
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 2-3: 期望和弦 Bb:maj 与实际和弦 Bb:maj 存在不确定性"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 3-4: 期望和弦 C:maj 与实际和弦 C:7 存在不确定性",
+      "severity": "medium",
+      "bar_range": [
+        3,
+        4
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.88
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "C:maj",
+            "actual_chord": "C:7",
+            "match_result": "uncertain",
+            "confidence": 0.7
+          },
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "D:min",
+            "actual_chord": "D:min",
+            "match_result": "match",
+            "confidence": 0.85
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 3-4: 期望和弦 C:maj 与实际和弦 C:7 存在不确定性"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 5-6: 期望和弦 Bb:maj 与实际和弦 A:maj 存在不确定性",
+      "severity": "medium",
+      "bar_range": [
+        5,
+        6
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "D:min",
+            "actual_chord": "D:min",
+            "match_result": "match",
+            "confidence": 0.85
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "A:maj",
+            "match_result": "uncertain",
+            "confidence": 0.3
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 5-6: 期望和弦 Bb:maj 与实际和弦 A:maj 存在不确定性"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 7-9: 期望和弦 D:min 与实际和弦 F:maj 冲突",
+      "severity": "high",
+      "bar_range": [
+        7,
+        9
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 7,
+            "bar_end": 9,
+            "expected_chord": "D:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.25
+          },
+          {
+            "bar_start": 9,
+            "bar_end": 10,
+            "expected_chord": "C:7",
+            "actual_chord": "G:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 7-9: 期望和弦 D:min 与实际和弦 F:maj 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 9-10: 期望和弦 C:7 与实际和弦 G:min 冲突",
+      "severity": "high",
+      "bar_range": [
+        9,
+        10
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 7,
+            "bar_end": 9,
+            "expected_chord": "D:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.25
+          },
+          {
+            "bar_start": 9,
+            "bar_end": 10,
+            "expected_chord": "C:7",
+            "actual_chord": "G:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          },
+          {
+            "bar_start": 10,
+            "bar_end": 11,
+            "expected_chord": "F:maj",
+            "actual_chord": "F:maj",
+            "match_result": "match",
+            "confidence": 0.91
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 9-10: 期望和弦 C:7 与实际和弦 G:min 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "bar_misalignment",
+      "description": "小节错位: 分析段 4 结束于小节 6, 分析段 5 开始于小节 7, 存在 1 小节空白未覆盖",
+      "severity": "medium",
+      "bar_range": [
+        5,
+        9
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "D:min",
+            "actual_chord": "D:min",
+            "match_result": "match",
+            "confidence": 0.85
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "A:maj",
+            "match_result": "uncertain",
+            "confidence": 0.3
+          },
+          {
+            "bar_start": 7,
+            "bar_end": 9,
+            "expected_chord": "D:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.25
+          },
+          {
+            "bar_start": 9,
+            "bar_end": 10,
+            "expected_chord": "C:7",
+            "actual_chord": "G:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节错位: 分析段 4 结束于小节 6, 分析段 5 开始于小节 7, 存在 1 小节空白未覆盖"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "bar_misalignment",
+      "description": "小节覆盖缺失: 小节 [6] 未被任何和弦分析覆盖",
+      "severity": "low",
+      "bar_range": [
+        6,
+        6
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "A:maj",
+            "match_result": "uncertain",
+            "confidence": 0.3
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节覆盖缺失: 小节 [6] 未被任何和弦分析覆盖"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 4 处 和弦从 C:7 变为 D:min, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "bar_range": [
+        3,
+        5
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.88
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "C:maj",
+            "actual_chord": "C:7",
+            "match_result": "uncertain",
+            "confidence": 0.7
+          },
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "D:min",
+            "actual_chord": "D:min",
+            "match_result": "match",
+            "confidence": 0.85
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "A:maj",
+            "match_result": "uncertain",
+            "confidence": 0.3
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "疑似漏判转调: 小节 4 处 和弦从 C:7 变为 D:min, 大小调品质切换, 可能存在转调但未被标注"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 5 处 和弦从 D:min 变为 A:maj, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "bar_range": [
+        4,
+        6
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "C:maj",
+            "actual_chord": "C:7",
+            "match_result": "uncertain",
+            "confidence": 0.7
+          },
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "D:min",
+            "actual_chord": "D:min",
+            "match_result": "match",
+            "confidence": 0.85
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "Bb:maj",
+            "actual_chord": "A:maj",
+            "match_result": "uncertain",
+            "confidence": 0.3
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "疑似漏判转调: 小节 5 处 和弦从 D:min 变为 A:maj, 大小调品质切换, 可能存在转调但未被标注"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 9 处 和弦从 F:maj 变为 G:min, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "bar_range": [
+        7,
+        10
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 7,
+            "bar_end": 9,
+            "expected_chord": "D:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.25
+          },
+          {
+            "bar_start": 9,
+            "bar_end": 10,
+            "expected_chord": "C:7",
+            "actual_chord": "G:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          },
+          {
+            "bar_start": 10,
+            "bar_end": 11,
+            "expected_chord": "F:maj",
+            "actual_chord": "F:maj",
+            "match_result": "match",
+            "confidence": 0.91
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "疑似漏判转调: 小节 9 处 和弦从 F:maj 变为 G:min, 大小调品质切换, 可能存在转调但未被标注"
+      }
+    },
+    {
+      "sample_id": "bad_001",
+      "classification": "bad",
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 10 处 和弦从 G:min 变为 F:maj, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "bar_range": [
+        9,
+        11
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 7,
+            "bar_end": 9,
+            "expected_chord": "D:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.25
+          },
+          {
+            "bar_start": 9,
+            "bar_end": 10,
+            "expected_chord": "C:7",
+            "actual_chord": "G:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          },
+          {
+            "bar_start": 10,
+            "bar_end": 11,
+            "expected_chord": "F:maj",
+            "actual_chord": "F:maj",
+            "match_result": "match",
+            "confidence": 0.91
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-15T08:00:00",
+            "newer_timestamp": "2026-05-16T10:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "F:maj",
+            "newer_conclusion": "D:min",
+            "conclusion_changed": true,
+            "older_content": "AI初步分析: F大调, 未检测到转调",
+            "newer_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-16T10:00:00",
+            "newer_timestamp": "2026-05-17T09:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "ai_analysis",
+            "older_conclusion": "D:min",
+            "newer_conclusion": "F:maj",
+            "conclusion_changed": true,
+            "older_content": "老师批注: 小节5开始转入d小调, 转调标注! AI漏判转调",
+            "newer_content": "AI重新分析: 仍判断F大调, 覆盖了老师的转调标注, 转调漏判",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "疑似漏判转调: 小节 10 处 和弦从 G:min 变为 F:maj, 大小调品质切换, 可能存在转调但未被标注"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 2-3: 期望和弦 D:maj 与实际和弦 D:min 冲突",
+      "severity": "high",
+      "bar_range": [
+        2,
+        3
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 1,
+            "bar_end": 2,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:maj",
+            "match_result": "match",
+            "confidence": 0.92
+          },
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "D:maj",
+            "actual_chord": "D:min",
+            "match_result": "mismatch",
+            "confidence": 0.45
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.35
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 2-3: 期望和弦 D:maj 与实际和弦 D:min 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 3-4: 期望和弦 E:7 与实际和弦 E:min7 冲突",
+      "severity": "high",
+      "bar_range": [
+        3,
+        4
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "D:maj",
+            "actual_chord": "D:min",
+            "match_result": "mismatch",
+            "confidence": 0.45
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.35
+          },
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 3-4: 期望和弦 E:7 与实际和弦 E:min7 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 4-5: 期望和弦 A:maj 与实际和弦 A:min 冲突",
+      "severity": "high",
+      "bar_range": [
+        4,
+        5
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.35
+          },
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "F#:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.2
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 4-5: 期望和弦 A:maj 与实际和弦 A:min 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 5-6: 期望和弦 F#:min 与实际和弦 F:maj 冲突",
+      "severity": "high",
+      "bar_range": [
+        5,
+        6
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:min",
+            "match_result": "mismatch",
+            "confidence": 0.4
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "F#:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.2
+          },
+          {
+            "bar_start": 6,
+            "bar_end": 7,
+            "expected_chord": "B:7",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.15
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 5-6: 期望和弦 F#:min 与实际和弦 F:maj 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 6-7: 期望和弦 B:7 与实际和弦 Bb:maj 存在不确定性",
+      "severity": "medium",
+      "bar_range": [
+        6,
+        7
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "F#:min",
+            "actual_chord": "F:maj",
+            "match_result": "mismatch",
+            "confidence": 0.2
+          },
+          {
+            "bar_start": 6,
+            "bar_end": 7,
+            "expected_chord": "B:7",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.15
+          },
+          {
+            "bar_start": 7,
+            "bar_end": 8,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.38
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 6-7: 期望和弦 B:7 与实际和弦 Bb:maj 存在不确定性"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "chord_conflict",
+      "description": "小节 7-8: 期望和弦 E:7 与实际和弦 E:min7 冲突",
+      "severity": "high",
+      "bar_range": [
+        7,
+        8
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 6,
+            "bar_end": 7,
+            "expected_chord": "B:7",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.15
+          },
+          {
+            "bar_start": 7,
+            "bar_end": 8,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.38
+          },
+          {
+            "bar_start": 8,
+            "bar_end": 9,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:maj",
+            "match_result": "match",
+            "confidence": 0.9
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 7-8: 期望和弦 E:7 与实际和弦 E:min7 冲突"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 2 处 和弦从 A:maj 变为 D:min, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "bar_range": [
+        1,
+        3
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 1,
+            "bar_end": 2,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:maj",
+            "match_result": "match",
+            "confidence": 0.92
+          },
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "D:maj",
+            "actual_chord": "D:min",
+            "match_result": "mismatch",
+            "confidence": 0.45
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.35
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "疑似漏判转调: 小节 2 处 和弦从 A:maj 变为 D:min, 大小调品质切换, 可能存在转调但未被标注"
+      }
+    },
+    {
+      "sample_id": "bad_002",
+      "classification": "bad",
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 8 处 和弦从 E:min7 变为 A:maj, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "bar_range": [
+        7,
+        9
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 6,
+            "bar_end": 7,
+            "expected_chord": "B:7",
+            "actual_chord": "Bb:maj",
+            "match_result": "uncertain",
+            "confidence": 0.15
+          },
+          {
+            "bar_start": 7,
+            "bar_end": 8,
+            "expected_chord": "E:7",
+            "actual_chord": "E:min7",
+            "match_result": "mismatch",
+            "confidence": 0.38
+          },
+          {
+            "bar_start": 8,
+            "bar_end": 9,
+            "expected_chord": "A:maj",
+            "actual_chord": "A:maj",
+            "match_result": "match",
+            "confidence": 0.9
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-22T08:00:00",
+            "newer_timestamp": "2026-05-23T15:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "A:min",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 误判为A小调, 属七和弦功能全部识别错误",
+            "newer_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-23T15:00:00",
+            "newer_timestamp": "2026-05-24T10:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "A:maj",
+            "newer_conclusion": "A:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+            "newer_content": "人工修正: 接受老师批注, 修正为A大调, 标注属七和弦功能",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "疑似漏判转调: 小节 8 处 和弦从 E:min7 变为 A:maj, 大小调品质切换, 可能存在转调但未被标注"
+      }
+    },
+    {
+      "sample_id": "boundary_001",
+      "classification": "boundary",
+      "conflict_type": "chord_conflict",
+      "description": "小节 3-4: 期望和弦 D:maj 与实际和弦 D:7 存在不确定性",
+      "severity": "medium",
+      "bar_range": [
+        3,
+        4
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 2,
+            "bar_end": 3,
+            "expected_chord": "C:maj",
+            "actual_chord": "C:maj",
+            "match_result": "match",
+            "confidence": 0.91
+          },
+          {
+            "bar_start": 3,
+            "bar_end": 4,
+            "expected_chord": "D:maj",
+            "actual_chord": "D:7",
+            "match_result": "uncertain",
+            "confidence": 0.72
+          },
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "E:min",
+            "actual_chord": "E:min",
+            "match_result": "match",
+            "confidence": 0.89
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-18T09:00:00",
+            "newer_timestamp": "2026-05-19T11:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "G:sus4",
+            "newer_conclusion": "G:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 小节5判断为G:sus4, 置信度0.55",
+            "newer_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-19T11:00:00",
+            "newer_timestamp": "2026-05-20T16:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "G:maj",
+            "newer_conclusion": "G:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+            "newer_content": "修正备注: 接受老师意见, 小节5修正为G:maj, 原sus4判断为边界case",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 3-4: 期望和弦 D:maj 与实际和弦 D:7 存在不确定性"
+      }
+    },
+    {
+      "sample_id": "boundary_001",
+      "classification": "boundary",
+      "conflict_type": "chord_conflict",
+      "description": "小节 5-6: 期望和弦 G:maj 与实际和弦 G:sus4 冲突",
+      "severity": "high",
+      "bar_range": [
+        5,
+        6
+      ],
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "resolved": false,
+      "trace": {
+        "chord_analyses": [
+          {
+            "bar_start": 4,
+            "bar_end": 5,
+            "expected_chord": "E:min",
+            "actual_chord": "E:min",
+            "match_result": "match",
+            "confidence": 0.89
+          },
+          {
+            "bar_start": 5,
+            "bar_end": 6,
+            "expected_chord": "G:maj",
+            "actual_chord": "G:sus4",
+            "match_result": "mismatch",
+            "confidence": 0.55
+          },
+          {
+            "bar_start": 6,
+            "bar_end": 7,
+            "expected_chord": "C:maj",
+            "actual_chord": "C:maj",
+            "match_result": "match",
+            "confidence": 0.9
+          }
+        ],
+        "version_comparison": [
+          {
+            "older_version_id": "v1",
+            "newer_version_id": "v2",
+            "older_timestamp": "2026-05-18T09:00:00",
+            "newer_timestamp": "2026-05-19T11:00:00",
+            "older_source": "ai_analysis",
+            "newer_source": "teacher_annotation",
+            "older_conclusion": "G:sus4",
+            "newer_conclusion": "G:maj",
+            "conclusion_changed": true,
+            "older_content": "AI分析: 小节5判断为G:sus4, 置信度0.55",
+            "newer_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+            "content_changed": true
+          },
+          {
+            "older_version_id": "v2",
+            "newer_version_id": "v3",
+            "older_timestamp": "2026-05-19T11:00:00",
+            "newer_timestamp": "2026-05-20T16:00:00",
+            "older_source": "teacher_annotation",
+            "newer_source": "manual_correction",
+            "older_conclusion": "G:maj",
+            "newer_conclusion": "G:maj",
+            "conclusion_changed": false,
+            "older_content": "老师批注: 小节5应为G:maj, sus4的4音是经过音而非和弦音",
+            "newer_content": "修正备注: 接受老师意见, 小节5修正为G:maj, 原sus4判断为边界case",
+            "content_changed": true
+          }
+        ],
+        "error_annotation": "小节 5-6: 期望和弦 G:maj 与实际和弦 G:sus4 冲突"
+      }
+    }
+  ]
+}

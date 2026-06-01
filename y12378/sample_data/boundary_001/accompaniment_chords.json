@@ -1,0 +1,10 @@
+[
+  {"bar_start": 1, "bar_end": 2, "expected_chord": "G:maj", "actual_chord": "G:maj", "confidence": 0.94},
+  {"bar_start": 2, "bar_end": 3, "expected_chord": "C:maj", "actual_chord": "C:maj", "confidence": 0.91},
+  {"bar_start": 3, "bar_end": 4, "expected_chord": "D:maj", "actual_chord": "D:7", "confidence": 0.72},
+  {"bar_start": 4, "bar_end": 5, "expected_chord": "E:min", "actual_chord": "E:min", "confidence": 0.89},
+  {"bar_start": 5, "bar_end": 6, "expected_chord": "G:maj", "actual_chord": "G:sus4", "confidence": 0.55, "note": "sus4与maj有3/4音级重叠, 边界case"},
+  {"bar_start": 6, "bar_end": 7, "expected_chord": "C:maj", "actual_chord": "C:maj", "confidence": 0.90},
+  {"bar_start": 7, "bar_end": 8, "expected_chord": "D:7", "actual_chord": "D:7", "confidence": 0.93},
+  {"bar_start": 8, "bar_end": 9, "expected_chord": "G:maj", "actual_chord": "G:maj", "confidence": 0.95}
+]

@@ -1,0 +1,9 @@
+{
+  "version_id": "v2",
+  "timestamp": "2026-05-23T15:00:00",
+  "source": "teacher_annotation",
+  "chord_conclusion": "A:maj",
+  "content": "老师批注: 应为A大调, E:7是属七不是小七, 请修正",
+  "previous_version_id": "v1",
+  "is_latest": false
+}

@@ -1,0 +1,9 @@
+{
+  "version_id": "v1",
+  "timestamp": "2026-05-20T10:00:00",
+  "source": "ai_analysis",
+  "chord_conclusion": "C:maj",
+  "content": "AI初步分析: C大调, 和弦进行 I-V-vi-IV-I-V-IV-I",
+  "previous_version_id": null,
+  "is_latest": false
+}

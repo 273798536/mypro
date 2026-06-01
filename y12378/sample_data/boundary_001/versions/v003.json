@@ -1,0 +1,9 @@
+{
+  "version_id": "v3",
+  "timestamp": "2026-05-20T16:00:00",
+  "source": "manual_correction",
+  "chord_conclusion": "G:maj",
+  "content": "修正备注: 接受老师意见, 小节5修正为G:maj, 原sus4判断为边界case",
+  "previous_version_id": "v2",
+  "is_latest": true
+}

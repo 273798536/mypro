@@ -1,0 +1,9 @@
+{
+  "version_id": "v1",
+  "timestamp": "2026-05-18T09:00:00",
+  "source": "ai_analysis",
+  "chord_conclusion": "G:sus4",
+  "content": "AI分析: 小节5判断为G:sus4, 置信度0.55",
+  "previous_version_id": null,
+  "is_latest": false
+}
