@@ -27,39 +27,44 @@ const importTypeConfigs: { key: ImportType; label: string; icon: React.ElementTy
 ];
 
 function isValidBuilding(b: unknown): b is BuildingBlock {
+  if (typeof b !== 'object' || b === null) return false;
+  const obj = b as Record<string, unknown>;
   return (
-    typeof b === 'object' &&
-    b !== null &&
-    'id' in b &&
-    typeof (b as Record<string, unknown>).id === 'string' &&
-    'name' in b &&
-    typeof (b as Record<string, unknown>).name === 'string' &&
-    'position' in b &&
-    typeof (b as Record<string, unknown>).position === 'object' &&
-    'dimensions' in b &&
-    typeof (b as Record<string, unknown>).dimensions === 'object'
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.position === 'object' && obj.position !== null &&
+    typeof obj.dimensions === 'object' && obj.dimensions !== null &&
+    typeof obj.color === 'string' &&
+    typeof obj.opacity === 'number' &&
+    typeof obj.setbackDistance === 'number' &&
+    typeof obj.requiredSetback === 'number' &&
+    typeof obj.remarks === 'string' &&
+    (obj.status === 'normal' || obj.status === 'pending' || obj.status === 'anomaly')
   );
 }
 
 function isValidWind(w: unknown): w is WindDirection {
+  if (typeof w !== 'object' || w === null) return false;
+  const obj = w as Record<string, unknown>;
   return (
-    typeof w === 'object' &&
-    w !== null &&
-    'angle' in w &&
-    typeof (w as Record<string, unknown>).angle === 'number' &&
-    'speed' in w &&
-    typeof (w as Record<string, unknown>).speed === 'number'
+    typeof obj.angle === 'number' &&
+    typeof obj.speed === 'number' &&
+    typeof obj.frequency === 'number' &&
+    typeof obj.timePeriod === 'string'
   );
 }
 
 function isValidOpenSpace(s: unknown): s is OpenSpace {
+  if (typeof s !== 'object' || s === null) return false;
+  const obj = s as Record<string, unknown>;
   return (
-    typeof s === 'object' &&
-    s !== null &&
-    'id' in s &&
-    typeof (s as Record<string, unknown>).id === 'string' &&
-    'name' in s &&
-    typeof (s as Record<string, unknown>).name === 'string'
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.position === 'object' && obj.position !== null &&
+    typeof obj.dimensions === 'object' && obj.dimensions !== null &&
+    typeof obj.area === 'number' &&
+    (obj.type === 'park' || obj.type === 'plaza' || obj.type === 'river') &&
+    typeof obj.visible === 'boolean'
   );
 }
 
@@ -102,7 +107,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }
         const invalid = data.find((b) => !isValidBuilding(b));
         if (invalid) {
-          throw new Error('建筑数据缺少必要字段: id, name, position, dimensions');
+          throw new Error('建筑数据缺少必要字段或类型不匹配，需要: id, name, position, dimensions, color, opacity, setbackDistance, requiredSetback, remarks, status');
         }
         const dupIds = new Set<string>();
         const dupCheck = new Set<string>();
@@ -123,7 +128,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }
         const invalid = data.find((w) => !isValidWind(w));
         if (invalid) {
-          throw new Error('风向数据缺少必要字段: angle, speed');
+          throw new Error('风向数据缺少必要字段或类型不匹配，需要: angle, speed, frequency, timePeriod');
         }
         setPreviewData({ count: data.length, type: '风向条目' });
       } else if (importType === 'openSpaces') {
@@ -135,7 +140,7 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }
         const invalid = data.find((s) => !isValidOpenSpace(s));
         if (invalid) {
-          throw new Error('开敞空间数据缺少必要字段: id, name');
+          throw new Error('开敞空间数据缺少必要字段或类型不匹配，需要: id, name, position, dimensions, area, type(park/plaza/river), visible');
         }
         setPreviewData({ count: data.length, type: '开敞空间' });
       }
