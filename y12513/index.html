@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>热力学相图空间站</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <h1>热力学相图空间站</h1>
+      <div class="status-indicator">
+        <span id="currentMaterial">当前材料: H₂O</span>
+        <span id="errorIndicator" class="error hidden">⚠️ 检测到问题</span>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <aside class="control-panel">
+        <section class="panel-section">
+          <h2>参数控制</h2>
+          <div class="control-group">
+            <label for="temperature">温度 (K)</label>
+            <input type="range" id="temperature" min="100" max="1000" step="1" value="300">
+            <span id="tempValue">300 K</span>
+          </div>
+          <div class="control-group">
+            <label for="pressure">压力 (Pa)</label>
+            <input type="range" id="pressure" min="100" max="1e7" step="100" value="101325">
+            <span id="pressValue">1.01×10⁵ Pa</span>
+          </div>
+          <div class="control-group">
+            <label for="material">材料选择</label>
+            <select id="material">
+              <option value="H2O">H₂O (水)</option>
+              <option value="CO2">CO₂ (二氧化碳)</option>
+              <option value="NH3">NH₃ (氨)</option>
+              <option value="Ar">Ar (氩)</option>
+            </select>
+          </div>
+          <div class="control-group checkbox-group">
+            <input type="checkbox" id="paramProtection" checked>
+            <label for="paramProtection">参数保护（防止越过临界点）</label>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>课堂题目</h2>
+          <div id="questionContainer">
+            <p class="question-text">题目加载中...</p>
+            <div class="question-actions">
+              <button id="newQuestion">新题目</button>
+              <button id="compareState">对比状态</button>
+              <button id="saveState">保存当前状态</button>
+            </div>
+            <div id="stateDiff" class="state-diff hidden"></div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>路径控制</h2>
+          <div class="control-group">
+            <button id="playPath">▶ 播放路径</button>
+            <button id="pausePath">⏸ 暂停</button>
+            <button id="resetPath">↺ 重置</button>
+          </div>
+          <div class="control-group">
+            <label for="pathSpeed">播放速度</label>
+            <input type="range" id="pathSpeed" min="0.5" max="3" step="0.1" value="1">
+          </div>
+        </section>
+      </aside>
+
+      <main class="viewer-container">
+        <div id="threeCanvas"></div>
+        <div id="hoverInfo" class="hover-info hidden"></div>
+      </main>
+
+      <aside class="data-panel">
+        <section class="panel-section">
+          <h2>相图数据</h2>
+          <div class="data-grid">
+            <div class="data-item">
+              <span class="label">当前相态</span>
+              <span id="currentPhase" class="value">液态</span>
+            </div>
+            <div class="data-item">
+              <span class="label">温度</span>
+              <span id="dataTemp" class="value">300 K</span>
+            </div>
+            <div class="data-item">
+              <span class="label">压力</span>
+              <span id="dataPress" class="value">1.01×10⁵ Pa</span>
+            </div>
+            <div class="data-item">
+              <span class="label">比容</span>
+              <span id="specificVolume" class="value">1.0×10⁻³ m³/kg</span>
+            </div>
+            <div class="data-item">
+              <span class="label">焓值</span>
+              <span id="enthalpy" class="value">104.8 kJ/kg</span>
+            </div>
+            <div class="data-item">
+              <span class="label">熵值</span>
+              <span id="entropy" class="value">0.367 kJ/(kg·K)</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>临界点数据</h2>
+          <div class="data-grid">
+            <div class="data-item">
+              <span class="label">临界温度</span>
+              <span id="criticalTemp" class="value">647.1 K</span>
+            </div>
+            <div class="data-item">
+              <span class="label">临界压力</span>
+              <span id="criticalPress" class="value">22.06×10⁶ Pa</span>
+            </div>
+            <div class="data-item">
+              <span class="label">临界比容</span>
+              <span id="criticalVol" class="value">3.155×10⁻³ m³/kg</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>三相点数据</h2>
+          <div class="data-grid">
+            <div class="data-item">
+              <span class="label">三相温度</span>
+              <span id="tripleTemp" class="value">273.16 K</span>
+            </div>
+            <div class="data-item">
+              <span class="label">三相压力</span>
+              <span id="triplePress" class="value">611.7 Pa</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h2>数据来源</h2>
+          <div id="dataSource" class="data-source">
+            <p><strong>材料:</strong> <span id="sourceMaterial">H₂O</span></p>
+            <p><strong>数据库:</strong> <span id="sourceDatabase">NIST REFPROP v10.0</span></p>
+            <p><strong>参考状态:</strong> <span id="sourceRef">三相点液态, u=0, s=0</span></p>
+            <p><strong>数据版本:</strong> <span id="sourceVersion">2024.1</span></p>
+          </div>
+        </section>
+
+        <section class="panel-section" id="errorSection">
+          <h2>问题诊断</h2>
+          <div id="errorDiagnosis" class="error-diagnosis hidden">
+            <div class="error-type">
+              <span class="error-icon">⚠️</span>
+              <span id="errorType">单位错误</span>
+            </div>
+            <p id="errorDetail"></p>
+            <div class="error-material">
+              <strong>涉及材料:</strong> <span id="errorMaterialName"></span>
+            </div>
+            <div class="error-location">
+              <strong>问题位置:</strong> <span id="errorLocation"></span>
+            </div>
+            <div class="error-suggestion">
+              <strong>建议:</strong> <span id="errorSuggestion"></span>
+            </div>
+          </div>
+          <div id="noError" class="no-error">
+            <p>✅ 当前状态正常</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
