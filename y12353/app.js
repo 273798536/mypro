@@ -130,7 +130,7 @@ const app = {
         }
 
         if (record.deltaT !== null && record.deltaT !== undefined && 
-            record.power !== null && record.power !== undefined && record.power > 0) {
+            record.power !== null && record.power !== undefined) {
             if (record.deltaT < config.defrostDeltaTThreshold && !record.defrostFlag) {
                 validation.anomalies.push('DEFROST_MISSED');
                 validation.status = 'error';
