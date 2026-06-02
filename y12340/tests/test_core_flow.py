@@ -39,28 +39,35 @@ def test_unit_consistency_block():
 
 
 def test_sampling_gap_detection():
-    """测试：采样缺口检测"""
+    """测试：采样缺口检测（模拟学生漏记5个采样点的真实场景）"""
     print("=" * 60)
     print("测试2: 采样缺口检测")
     print("=" * 60)
     
     validator = DataValidator(tolerance_factor=2.0)
     
-    t = np.arange(0, 5, 0.1)
+    base_timestamps = [i * 0.1 for i in range(50)]
+    gap_timestamps = [t for i, t in enumerate(base_timestamps) if not (20 <= i <= 24)]
+    
     data = []
-    for i, time in enumerate(t):
-        if i == 20:
-            time = 2.5
-        disp = 0.1 * np.exp(-0.3 * time) * np.cos(5 * time)
+    for t in gap_timestamps:
+        disp = 0.1 * np.exp(-0.3 * t) * np.cos(5 * t)
         data.append({
-            "timestamp": time,
+            "timestamp": t,
             "timestamp_unit": "s",
             "displacement": disp,
             "displacement_unit": "m"
         })
     
-    issues = validator.validate_all(data, "kg")
+    sorted_ts = sorted([p["timestamp"] for p in data])
+    intervals = np.diff(sorted_ts)
+    print(f"  数据点数: {len(data)} (原始50个，跳过第20-24个)")
+    print(f"  间隔中位数: {np.median(intervals):.4f}s")
+    print(f"  最大间隔: {max(intervals):.4f}s (在1.9s到2.5s之间)")
     
+    assert max(intervals) > 0.4, f"测试数据应包含>0.4s的缺口，实际最大间隔={max(intervals):.4f}s"
+    
+    issues = validator.validate_all(data, "kg")
     gap_check = next((i for i in issues if i.check_type == "sampling_gaps"), None)
     
     assert gap_check is not None, "应该返回采样间隔检查结果"

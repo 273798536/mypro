@@ -98,7 +98,9 @@ class DataValidator:
             return None
 
         median_interval = np.median(intervals)
-        if median_interval == 0:
+        mean_interval = np.mean(intervals)
+
+        if median_interval == 0 and mean_interval == 0:
             return ValidationIssue(
                 check_type="sampling_gaps",
                 passed=False,
@@ -107,24 +109,26 @@ class DataValidator:
                 severity="error"
             )
 
-        threshold = median_interval * self.tolerance_factor
+        reference_interval = median_interval if median_interval > 0 else mean_interval
+        threshold = reference_interval * self.tolerance_factor
 
         gap_points = []
+        gap_count = 0
         for i, interval in enumerate(intervals):
             if interval > threshold:
+                gap_count += 1
                 gap_points.append(original_indices[i])
                 gap_points.append(original_indices[i + 1])
 
         gap_points = sorted(list(set(gap_points)))
 
         if gap_points:
-            gap_count = len([i for i in range(len(intervals)) if intervals[i] > threshold])
             affected_str = ', '.join([str(p + 1) for p in gap_points[:5]])
             if len(gap_points) > 5:
                 affected_str += f' 等{len(gap_points)}个'
             
             message = (f"⚠️ 发现 {gap_count} 处采样间隔异常，影响了第 {affected_str} 个数据点。"
-                      f"正常间隔约 {median_interval:.3f}秒，这些地方间隔超过了 {threshold:.3f}秒，"
+                      f"正常间隔约 {reference_interval:.3f}秒，这些地方间隔超过了 {threshold:.3f}秒，"
                       f"可能是记录时漏掉了或者仪器暂停了，会影响曲线拟合的准确性。")
 
             return ValidationIssue(
