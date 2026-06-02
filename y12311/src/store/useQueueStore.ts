@@ -9,6 +9,8 @@ import {
 } from '../types';
 import { generateMockData } from '../mock/dataGenerator';
 import { filterSyncEngine } from '../engines/FilterSyncEngine';
+import { useExceptionStore } from '../engines/ExceptionEngine';
+import { useSupplementStore } from '../engines/SupplementEngine';
 
 interface QueueState {
   visitors: Visitor[];
@@ -59,6 +61,8 @@ export const useQueueStore = create<QueueState>((set, get) => ({
         windowStatusLogs: mockData.windowStatusLogs,
         isLoading: false,
       });
+      useExceptionStore.getState().setExceptions(mockData.exceptions);
+      useSupplementStore.getState().setSupplements(mockData.supplements);
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : '加载数据失败',
