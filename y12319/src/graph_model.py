@@ -151,3 +151,26 @@ class TopologyGraph:
     
     def get_nodes_by_layer(self, layer: str) -> List[Node]:
         return [n for n in self.nodes.values() if n.layer == layer]
+    
+    def deep_copy(self) -> 'TopologyGraph':
+        new_graph = TopologyGraph()
+        for node in self.nodes.values():
+            new_node = Node(
+                id=node.id,
+                name=node.name,
+                layer=node.layer,
+                attributes=node.attributes.copy(),
+                tags=node.tags.copy()
+            )
+            new_graph.add_node(new_node)
+        for edge in self.edges.values():
+            new_edge = Edge(
+                id=edge.id,
+                source=edge.source,
+                target=edge.target,
+                direction=edge.direction,
+                layer=edge.layer,
+                attributes=edge.attributes.copy()
+            )
+            new_graph.add_edge(new_edge)
+        return new_graph

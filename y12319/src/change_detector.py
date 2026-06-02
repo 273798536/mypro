@@ -22,7 +22,7 @@ class ChangeReport:
     edge_changes: List[ChangeItem] = field(default_factory=list)
     issue_changes: List[ChangeItem] = field(default_factory=list)
     breakpoints: List[Dict] = field(default_factory=list)
-    path_changes: List[Dict] = field(default_factory=dict)
+    path_changes: List[Dict] = field(default_factory=list)
 
 
 class ChangeDetector:

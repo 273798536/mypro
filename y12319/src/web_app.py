@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import csv
+import copy
 from pathlib import Path
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_file
@@ -191,8 +192,8 @@ def update_edge(edge_id):
     if current_graph is None or edge_id not in current_graph.edges:
         return jsonify({'error': 'Edge not found'}), 404
     
-    previous_graph = current_graph
-    previous_report = current_report
+    previous_graph = current_graph.deep_copy()
+    previous_report = copy.deepcopy(current_report)
     
     data = request.json
     edge = current_graph.edges[edge_id]
@@ -212,6 +213,8 @@ def update_edge(edge_id):
     
     auditor = ConnectivityAuditor(current_graph)
     current_report = auditor.run_full_audit()
+    current_report.source_file_nodes = previous_report.source_file_nodes if previous_report else ''
+    current_report.source_file_edges = previous_report.source_file_edges if previous_report else ''
     
     return jsonify({
         'success': True,
@@ -220,7 +223,8 @@ def update_edge(edge_id):
             'source': new_edge.source,
             'target': new_edge.target,
             'direction': new_edge.direction.value
-        }
+        },
+        'has_previous': True
     })
 
 

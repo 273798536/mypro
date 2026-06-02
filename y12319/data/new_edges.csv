@@ -1,0 +1,6 @@
+id,source,target,direction,layer
+e1,A1,B1,forward,接入层
+e2,A2,B2,forward,接入层
+e3,B1,C1,forward,汇聚层
+e4,B2,C2,reverse,汇聚层
+e6,C2,D1,forward,核心层
