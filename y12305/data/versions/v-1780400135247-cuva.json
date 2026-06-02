@@ -1,0 +1,58 @@
+{
+  "id": "v-1780400135247-cuva",
+  "name": "API测试-峰谷核算",
+  "tariffTableId": "tariff-003",
+  "usageRecordId": "usage-1780400104658-4xrb",
+  "totalBill": 236,
+  "calculatedTotal": 239.4,
+  "discrepancy": -3.4,
+  "totalCalculatedKwh": 330,
+  "tierResults": [
+    {
+      "tierId": "tier-valley",
+      "tierName": "谷时",
+      "periodType": "valley",
+      "pricePerKwh": 0.38,
+      "billedKwh": 100,
+      "billedAmount": 38,
+      "formula": "谷时段电费 = valleyUsage 100.00kWh × 电价 0.38元/kWh = 38.00元",
+      "tierRange": "0kWh 以上",
+      "calculationMode": "forward"
+    },
+    {
+      "tierId": "tier-flat",
+      "tierName": "平时",
+      "periodType": "flat",
+      "pricePerKwh": 0.68,
+      "billedKwh": 80,
+      "billedAmount": 54.4,
+      "formula": "平时段电费 = flatUsage 80.00kWh × 电价 0.68元/kWh = 54.40元",
+      "tierRange": "0kWh 以上",
+      "calculationMode": "forward"
+    },
+    {
+      "tierId": "tier-peak",
+      "tierName": "峰时",
+      "periodType": "peak",
+      "pricePerKwh": 0.98,
+      "billedKwh": 150,
+      "billedAmount": 147,
+      "formula": "峰时段电费 = peakUsage 150.00kWh × 电价 0.98元/kWh = 147.00元",
+      "tierRange": "0kWh 以上",
+      "calculationMode": "forward"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "bill_mismatch",
+      "severity": "warning",
+      "message": "计算总电费 (¥239.40) 与账单总电费 (¥236.00) 相差 ¥3.40，请核实数据",
+      "sourceField": "totalBill",
+      "sourceValue": 236,
+      "traceId": "calc-1780400135247-3re5kr"
+    }
+  ],
+  "createdAt": "2026-06-02T11:35:35.248Z",
+  "createdBy": "analyst",
+  "note": "验证新增记录的峰谷核算"
+}

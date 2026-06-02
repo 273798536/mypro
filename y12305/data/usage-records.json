@@ -2,7 +2,7 @@
   {
     "id": "usage-001",
     "recordDate": "2024-06-15",
-    "totalBill": 183.50,
+    "totalBill": 183.5,
     "peakUsage": 150,
     "valleyUsage": 80,
     "flatUsage": 50,
@@ -14,7 +14,7 @@
   {
     "id": "usage-002",
     "recordDate": "2024-01-20",
-    "totalBill": 165.80,
+    "totalBill": 165.8,
     "peakUsage": 120,
     "valleyUsage": 60,
     "flatUsage": 70,
@@ -26,7 +26,7 @@
   {
     "id": "usage-003",
     "recordDate": "2024-03-10",
-    "totalBill": 112.00,
+    "totalBill": 112,
     "peakUsage": 80,
     "valleyUsage": 60,
     "flatUsage": 60,
@@ -38,7 +38,7 @@
   {
     "id": "usage-004",
     "recordDate": "2024-04-05",
-    "totalBill": 95.60,
+    "totalBill": 95.6,
     "peakUsage": -15,
     "valleyUsage": 70,
     "flatUsage": 120,
@@ -50,7 +50,7 @@
   {
     "id": "usage-005",
     "recordDate": "2024-06-20",
-    "totalBill": 472.00,
+    "totalBill": 472,
     "peakUsage": 300,
     "valleyUsage": 200,
     "flatUsage": 150,
@@ -62,7 +62,7 @@
   {
     "id": "usage-006",
     "recordDate": "2024-05-15",
-    "totalBill": 350.00,
+    "totalBill": 350,
     "peakUsage": 250,
     "valleyUsage": 180,
     "flatUsage": 120,
@@ -74,7 +74,7 @@
   {
     "id": "usage-007",
     "recordDate": "2024-07-01",
-    "totalBill": 280.00,
+    "totalBill": 280,
     "peakUsage": 200,
     "valleyUsage": null,
     "flatUsage": 100,
@@ -82,5 +82,17 @@
     "customerNote": "商业用户7月账单，谷时段数据缺失",
     "sourceFile": "商业账单_202407.xlsx",
     "importedAt": "2024-07-02T14:20:00.000Z"
+  },
+  {
+    "recordDate": "2024-12-01",
+    "totalBill": 236,
+    "sourceFile": "API测试",
+    "peakUsage": 150,
+    "valleyUsage": 100,
+    "flatUsage": 80,
+    "totalUsage": 330,
+    "customerNote": "测试新增用电记录",
+    "id": "usage-1780400104658-4xrb",
+    "importedAt": "2026-06-02T11:35:04.658Z"
   }
 ]
