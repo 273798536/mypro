@@ -114,27 +114,37 @@ class TopologyGraph:
     
     def add_edge(self, edge: Edge):
         self.edges[edge.id] = edge
-        self.edge_by_nodes[(edge.source, edge.target)] = edge.id
         if edge.direction == EdgeDirection.FORWARD:
             self.G.add_edge(edge.source, edge.target, edge_id=edge.id, **edge.attributes)
+            self.edge_by_nodes[(edge.source, edge.target)] = edge.id
         elif edge.direction == EdgeDirection.REVERSE:
             self.G.add_edge(edge.target, edge.source, edge_id=edge.id, **edge.attributes)
+            self.edge_by_nodes[(edge.target, edge.source)] = edge.id
         elif edge.direction == EdgeDirection.BIDIRECTIONAL:
             self.G.add_edge(edge.source, edge.target, edge_id=edge.id, **edge.attributes)
             self.G.add_edge(edge.target, edge.source, edge_id=edge.id + '_rev', **edge.attributes)
+            self.edge_by_nodes[(edge.source, edge.target)] = edge.id
+            self.edge_by_nodes[(edge.target, edge.source)] = edge.id
     
     def remove_edge(self, edge_id: str):
         if edge_id in self.edges:
             edge = self.edges[edge_id]
-            if self.G.has_edge(edge.source, edge.target):
-                self.G.remove_edge(edge.source, edge.target)
-            if edge.direction == EdgeDirection.BIDIRECTIONAL:
+            if edge.direction == EdgeDirection.FORWARD:
+                if self.G.has_edge(edge.source, edge.target):
+                    self.G.remove_edge(edge.source, edge.target)
+                self.edge_by_nodes.pop((edge.source, edge.target), None)
+            elif edge.direction == EdgeDirection.REVERSE:
                 if self.G.has_edge(edge.target, edge.source):
                     self.G.remove_edge(edge.target, edge.source)
+                self.edge_by_nodes.pop((edge.target, edge.source), None)
+            elif edge.direction == EdgeDirection.BIDIRECTIONAL:
+                if self.G.has_edge(edge.source, edge.target):
+                    self.G.remove_edge(edge.source, edge.target)
+                if self.G.has_edge(edge.target, edge.source):
+                    self.G.remove_edge(edge.target, edge.source)
+                self.edge_by_nodes.pop((edge.source, edge.target), None)
+                self.edge_by_nodes.pop((edge.target, edge.source), None)
             del self.edges[edge_id]
-            key = (edge.source, edge.target)
-            if key in self.edge_by_nodes:
-                del self.edge_by_nodes[key]
     
     def get_node(self, node_id: str) -> Optional[Node]:
         return self.nodes.get(node_id)
