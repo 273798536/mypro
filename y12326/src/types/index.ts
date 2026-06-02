@@ -50,6 +50,36 @@ export interface AuditReport {
   leakageFeatures: FeatureEntry[]
   sparseGroups: CustomerGroup[]
   conflicts: ConflictRecord[]
+  auditDetail: {
+    samples: TrainingSample[]
+    groups: CustomerGroup[]
+    versions: Pick<DataVersion, "source" | "version" | "importedAt" | "isLate">[]
+    sourceMeta: {
+      training: {
+        rowCount: number
+        headers: string[]
+        sampleIdRange: [string, string]
+        targetDistribution: Record<string, number>
+      } | null
+      feature: {
+        rowCount: number
+        headers: string[]
+        featureCount: number
+      } | null
+      group: {
+        rowCount: number
+        headers: string[]
+        groupCount: number
+      } | null
+    }
+    calculationMeta: {
+      importanceSeedSalt: string
+      groupSource: "training_only" | "group_file" | "mixed"
+      totalSamples: number
+      totalFeatures: number
+      totalGroups: number
+    }
+  }
 }
 
 export interface RawImportResult {

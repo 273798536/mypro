@@ -170,6 +170,46 @@ export const useAuditStore = create<AuditState>()(
         const groupVer =
           state.versions.filter((v) => v.source === "group").pop()?.version || "v0"
 
+        const trainingMeta = state.trainingRaw
+          ? {
+              rowCount: state.trainingRaw.rowCount,
+              headers: state.trainingRaw.headers,
+              sampleIdRange: [
+                state.samples[0]?.id || "",
+                state.samples[state.samples.length - 1]?.id || "",
+              ] as [string, string],
+              targetDistribution: state.samples.reduce((acc, s) => {
+                const key = String(s.target ?? "未标注")
+                acc[key] = (acc[key] || 0) + 1
+                return acc
+              }, {} as Record<string, number>),
+            }
+          : null
+
+        const featureMeta = state.featureRaw
+          ? {
+              rowCount: state.featureRaw.rowCount,
+              headers: state.featureRaw.headers,
+              featureCount: state.features.length,
+            }
+          : null
+
+        const groupMeta = state.groupRaw
+          ? {
+              rowCount: state.groupRaw.rowCount,
+              headers: state.groupRaw.headers,
+              groupCount: state.groups.length,
+            }
+          : null
+
+        let groupSource: "training_only" | "group_file" | "mixed" = "training_only"
+        if (state.groupRaw && state.groupRaw.rowCount > 0) {
+          const sampleGroupIds = new Set(state.samples.map((s) => s.groupId).filter(Boolean))
+          const fileGroupIds = new Set(parseGroupMetadata(state.groupRaw).map((g) => g.groupId))
+          const hasUnmapped = Array.from(sampleGroupIds).some((id) => !fileGroupIds.has(id!))
+          groupSource = hasUnmapped ? "mixed" : "group_file"
+        }
+
         const report: AuditReport = {
           id: `rpt_${Date.now()}`,
           createdAt: Date.now(),
@@ -182,6 +222,28 @@ export const useAuditStore = create<AuditState>()(
             Object.values(g.featureCoverage).some((c) => c < 0.5)
           ),
           conflicts: state.conflicts,
+          auditDetail: {
+            samples: state.samples,
+            groups: state.groups,
+            versions: state.versions.map((v) => ({
+              source: v.source,
+              version: v.version,
+              importedAt: v.importedAt,
+              isLate: v.isLate,
+            })),
+            sourceMeta: {
+              training: trainingMeta,
+              feature: featureMeta,
+              group: groupMeta,
+            },
+            calculationMeta: {
+              importanceSeedSalt: `v1:${trainingVer}:${featureVer}:${groupVer}`,
+              groupSource,
+              totalSamples: state.samples.length,
+              totalFeatures: state.features.length,
+              totalGroups: state.groups.length,
+            },
+          },
         }
 
         set((state) => ({ reports: [...state.reports, report] }))
