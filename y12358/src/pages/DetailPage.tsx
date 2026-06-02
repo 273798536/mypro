@@ -45,8 +45,10 @@ import {
   getSeverityColor,
   getSeverityText,
   generateId,
+  downloadFile,
 } from '../utils';
 import type { CheckResult, EvidenceItem } from '../types';
+import * as XLSX from 'xlsx';
 
 const { TextArea } = Input;
 
@@ -61,10 +63,10 @@ const DetailPage: React.FC = () => {
     updateCheckResult,
     updateLoadRecord,
     reports,
+    checkResults,
   } = useAppStore();
 
   const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
-  const [editingRemark, setEditingRemark] = useState(false);
   const [remarkForm] = Form.useForm();
   const [remarkModalVisible, setRemarkModalVisible] = useState(false);
 
@@ -98,6 +100,68 @@ const DetailPage: React.FC = () => {
   const relatedReports = reports.filter((r) =>
     r.checkResultIds.includes(checkResult.id)
   );
+
+  const handleExportDetail = () => {
+    if (!loadRecord || !oilPressure) return;
+
+    const data: Record<string, string | number>[] = [
+      {
+        记录编号: checkResult.recordNo,
+        设备名称: loadRecord.deviceName,
+        设备ID: loadRecord.deviceId,
+        校核时间: formatDateTime(checkResult.checkTime),
+        台账版本: checkResult.ledgerVersion,
+        载重kg: loadRecord.loadWeight,
+        额定载荷kg: loadRecord.ratedLoad,
+        超载检测: checkResult.overloadCheck.passed ? '正常' : '异常',
+        超载详情: checkResult.overloadCheck.detail,
+        作业高度m: loadRecord.height,
+        最大高度m: loadRecord.maxHeight,
+        高度检测: checkResult.heightCheck.passed ? '正常' : '异常',
+        高度详情: checkResult.heightCheck.detail,
+        油压峰值MPa: checkResult.pressureCheck.value,
+        报警阈值MPa: checkResult.pressureCheck.threshold,
+        油压检测: checkResult.pressureCheck.passed ? '正常' : '异常',
+        油压详情: checkResult.pressureCheck.detail,
+        结论: getConclusionText(checkResult.conclusion),
+        口径一致: checkResult.conclusionConsistent ? '是' : '否',
+        检修备注: checkResult.maintenanceRemark || '-',
+        操作人: checkResult.operator,
+        载重记录ID: checkResult.loadRecordId,
+        油压序列ID: checkResult.oilPressureId,
+      },
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '校核明细');
+
+    const evidenceData = checkResult.evidenceChain.map((e) => ({
+      证据类型: e.type === 'load_record' ? '载重记录' : e.type === 'oil_pressure' ? '油压序列' : e.type === 'maintenance_remark' ? '检修备注' : '导出报告',
+      证据ID: e.refId,
+      描述: e.description,
+      操作人: e.operator,
+      时间: formatDateTime(e.timestamp),
+    }));
+    const wsEvidence = XLSX.utils.json_to_sheet(evidenceData);
+    XLSX.utils.book_append_sheet(wb, wsEvidence, '证据链');
+
+    const oilData = oilPressure.dataPoints.map((p, i) => ({
+      序号: i + 1,
+      时间: formatDateTime(p.timestamp),
+      压力MPa: p.pressure,
+      温度C: p.temperature ?? '',
+    }));
+    const wsOil = XLSX.utils.json_to_sheet(oilData);
+    XLSX.utils.book_append_sheet(wb, wsOil, '油压序列');
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    downloadFile(blob, `${checkResult.recordNo}_明细.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    message.success('明细已导出');
+  };
 
   const handleSaveRemark = (values: any) => {
     const newRemark = values.remark.trim();
@@ -311,7 +375,7 @@ const DetailPage: React.FC = () => {
               补充检修备注
             </Button>
           )}
-          <Button icon={<Download size={16} />}>导出明细</Button>
+          <Button icon={<Download size={16} />} onClick={handleExportDetail}>导出明细</Button>
         </Space>
       </div>
 
@@ -559,7 +623,38 @@ const DetailPage: React.FC = () => {
                     renderItem={(report) => (
                       <List.Item
                         actions={[
-                          <Button type="link" size="small">
+                          <Button
+                            type="link"
+                            size="small"
+                            key="download"
+                            onClick={() => {
+                              const resultsToExport = checkResults.filter((r) =>
+                                report.checkResultIds.includes(r.id)
+                              );
+                              if (resultsToExport.length === 0) {
+                                message.warning('关联校核记录不存在');
+                                return;
+                              }
+                              const exportData = resultsToExport.map((r) => {
+                                const lr = getLoadRecordById(r.loadRecordId);
+                                return {
+                                  记录编号: r.recordNo,
+                                  设备名称: lr?.deviceName || '-',
+                                  结论: getConclusionText(r.conclusion),
+                                  口径一致: r.conclusionConsistent ? '是' : '否',
+                                  检修备注: r.maintenanceRemark || '-',
+                                  载重记录ID: r.loadRecordId,
+                                  油压序列ID: r.oilPressureId,
+                                };
+                              });
+                              const ws = XLSX.utils.json_to_sheet(exportData);
+                              const wb = XLSX.utils.book_new();
+                              XLSX.utils.book_append_sheet(wb, ws, '校核结果');
+                              const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                              const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                              downloadFile(blob, `${report.reportNo}.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                            }}
+                          >
                             下载
                           </Button>,
                         ]}

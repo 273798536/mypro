@@ -38,7 +38,6 @@ import {
 } from '../utils';
 import type { CheckResult, TabKey } from '../types';
 
-const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 
 const CheckPage: React.FC = () => {
@@ -332,19 +331,16 @@ const CheckPage: React.FC = () => {
             onChange={(key) => setActiveTab(key as TabKey)}
             size="large"
             className="mb-0"
-          >
-            {tabItems.map((item) => (
-              <TabPane
-                tab={
-                  <span className="flex items-center gap-2">
-                    {item.label}
-                    <Tag color="blue">{item.count}</Tag>
-                  </span>
-                }
-                key={item.key}
-              />
-            ))}
-          </Tabs>
+            items={tabItems.map((item) => ({
+              key: item.key,
+              label: (
+                <span className="flex items-center gap-2">
+                  {item.label}
+                  <Tag color="blue">{item.count}</Tag>
+                </span>
+              ),
+            }))}
+          />
 
           <Space className="flex-shrink-0">
             <Input

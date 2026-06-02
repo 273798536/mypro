@@ -39,7 +39,6 @@ import type {
 } from '../types';
 
 const { Dragger } = Upload;
-const { TabPane } = Tabs;
 const { TextArea } = Input;
 
 const parseFileToRows = (file: File): Promise<Record<string, string>[]> => {
@@ -538,170 +537,181 @@ const ImportPage: React.FC = () => {
         </Space>
       </div>
 
-      <Tabs defaultActiveKey="load" size="large">
-        <TabPane
-          tab={
-            <span className="flex items-center gap-2">
-              <FileSpreadsheet size={18} />
-              载重记录
-              <Tag color="blue">{loadRecords.length}</Tag>
-            </span>
-          }
-          key="load"
-        >
-          <Card className="mb-4">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                  导入载重记录
-                </h4>
-                <Dragger {...loadUploadProps} showUploadList={false}>
-                  <p className="ant-upload-drag-icon">
-                    <UploadIcon size={36} className="text-blue-500 mx-auto" />
-                  </p>
-                  <p className="ant-upload-text text-gray-600">
-                    点击或拖拽文件到此处上传
-                  </p>
-                  <p className="ant-upload-hint text-xs text-gray-400 mt-2">
-                    支持 CSV、Excel 格式，需包含 recordNo, deviceId, loadWeight,
-                    height, loadTime 等字段
-                  </p>
-                </Dragger>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                  导入说明
-                </h4>
-                <ul className="text-xs text-gray-600 space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500">•</span>
-                    <span>
-                      载重记录将自动根据关联的台账版本计算是否超载、高度是否越界
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500">•</span>
-                    <span>备注修改历史将自动记录，保留完整追溯链</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500">•</span>
-                    <span>建议先导入设备台账，再导入业务数据</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </Card>
+      <Tabs
+        defaultActiveKey="load"
+        size="large"
+        items={[
+          {
+            key: 'load',
+            label: (
+              <span className="flex items-center gap-2">
+                <FileSpreadsheet size={18} />
+                载重记录
+                <Tag color="blue">{loadRecords.length}</Tag>
+              </span>
+            ),
+            children: (
+              <>
+                <Card className="mb-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                        导入载重记录
+                      </h4>
+                      <Dragger {...loadUploadProps} showUploadList={false}>
+                        <p className="ant-upload-drag-icon">
+                          <UploadIcon size={36} className="text-blue-500 mx-auto" />
+                        </p>
+                        <p className="ant-upload-text text-gray-600">
+                          点击或拖拽文件到此处上传
+                        </p>
+                        <p className="ant-upload-hint text-xs text-gray-400 mt-2">
+                          支持 CSV、Excel 格式，需包含 recordNo, deviceId, loadWeight,
+                          height, loadTime 等字段
+                        </p>
+                      </Dragger>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                        导入说明
+                      </h4>
+                      <ul className="text-xs text-gray-600 space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          <span>
+                            载重记录将自动根据关联的台账版本计算是否超载、高度是否越界
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          <span>备注修改历史将自动记录，保留完整追溯链</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          <span>建议先导入设备台账，再导入业务数据</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
 
-          <Table
-            columns={loadRecordColumns}
-            dataSource={loadRecords}
-            rowKey="id"
-            size="small"
-            scroll={{ x: 1200 }}
-            pagination={{ pageSize: 10 }}
-          />
-        </TabPane>
+                <Table
+                  columns={loadRecordColumns}
+                  dataSource={loadRecords}
+                  rowKey="id"
+                  size="small"
+                  scroll={{ x: 1200 }}
+                  pagination={{ pageSize: 10 }}
+                />
+              </>
+            ),
+          },
+          {
+            key: 'pressure',
+            label: (
+              <span className="flex items-center gap-2">
+                <Database size={18} />
+                油压序列
+                <Tag color="blue">{oilPressureSeries.length}</Tag>
+              </span>
+            ),
+            children: (
+              <>
+                <Card className="mb-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                        导入油压序列
+                      </h4>
+                      <Dragger {...pressureUploadProps} showUploadList={false}>
+                        <p className="ant-upload-drag-icon">
+                          <UploadIcon size={36} className="text-red-500 mx-auto" />
+                        </p>
+                        <p className="ant-upload-text text-gray-600">
+                          点击或拖拽文件到此处上传
+                        </p>
+                        <p className="ant-upload-hint text-xs text-gray-400 mt-2">
+                          支持 CSV、Excel 格式，需包含 timestamp, pressure, temperature 等时序字段
+                        </p>
+                      </Dragger>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                        自动分析说明
+                      </h4>
+                      <ul className="text-xs text-gray-600 space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-500">•</span>
+                          <span>
+                            系统自动检测压力尖峰、骤降、异常波动、超限四类异常
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-500">•</span>
+                          <span>
+                            异常区间将在图表中用红色/橙色背景高亮标注
+                          </span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-500">•</span>
+                          <span>
+                            阈值基于台账版本中的预警值和报警值自动计算
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
 
-        <TabPane
-          tab={
-            <span className="flex items-center gap-2">
-              <Database size={18} />
-              油压序列
-              <Tag color="blue">{oilPressureSeries.length}</Tag>
-            </span>
-          }
-          key="pressure"
-        >
-          <Card className="mb-4">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                  导入油压序列
-                </h4>
-                <Dragger {...pressureUploadProps} showUploadList={false}>
-                  <p className="ant-upload-drag-icon">
-                    <UploadIcon size={36} className="text-red-500 mx-auto" />
-                  </p>
-                  <p className="ant-upload-text text-gray-600">
-                    点击或拖拽文件到此处上传
-                  </p>
-                  <p className="ant-upload-hint text-xs text-gray-400 mt-2">
-                    支持 CSV、Excel 格式，需包含 timestamp, pressure, temperature 等时序字段
-                  </p>
-                </Dragger>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                  自动分析说明
-                </h4>
-                <ul className="text-xs text-gray-600 space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500">•</span>
-                    <span>
-                      系统自动检测压力尖峰、骤降、异常波动、超限四类异常
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500">•</span>
-                    <span>
-                      异常区间将在图表中用红色/橙色背景高亮标注
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500">•</span>
-                    <span>
-                      阈值基于台账版本中的预警值和报警值自动计算
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </Card>
+                <Table
+                  columns={oilPressureColumns}
+                  dataSource={oilPressureSeries}
+                  rowKey="id"
+                  size="small"
+                  scroll={{ x: 1200 }}
+                  pagination={{ pageSize: 10 }}
+                />
+              </>
+            ),
+          },
+          {
+            key: 'ledger',
+            label: (
+              <span className="flex items-center gap-2">
+                <History size={18} />
+                设备台账
+                <Tag color="blue">{ledgers.length}</Tag>
+              </span>
+            ),
+            children: (
+              <>
+                <Card className="mb-4">
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-blue-700 mb-2">
+                      多版本管理说明
+                    </h4>
+                    <ul className="text-xs text-blue-600 space-y-1">
+                      <li>• 设备台账支持多版本，新版本不会覆盖旧版本</li>
+                      <li>• 每条校核记录绑定具体的台账版本号，确保口径一致</li>
+                      <li>• 高度越界记录与台账版本绑定，不会被新版本覆盖</li>
+                      <li>• 新增版本时，旧版本自动标记为非当前版本</li>
+                    </ul>
+                  </div>
+                </Card>
 
-          <Table
-            columns={oilPressureColumns}
-            dataSource={oilPressureSeries}
-            rowKey="id"
-            size="small"
-            scroll={{ x: 1200 }}
-            pagination={{ pageSize: 10 }}
-          />
-        </TabPane>
-
-        <TabPane
-          tab={
-            <span className="flex items-center gap-2">
-              <History size={18} />
-              设备台账
-              <Tag color="blue">{ledgers.length}</Tag>
-            </span>
-          }
-          key="ledger"
-        >
-          <Card className="mb-4">
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-blue-700 mb-2">
-                多版本管理说明
-              </h4>
-              <ul className="text-xs text-blue-600 space-y-1">
-                <li>• 设备台账支持多版本，新版本不会覆盖旧版本</li>
-                <li>• 每条校核记录绑定具体的台账版本号，确保口径一致</li>
-                <li>• 高度越界记录与台账版本绑定，不会被新版本覆盖</li>
-                <li>• 新增版本时，旧版本自动标记为非当前版本</li>
-              </ul>
-            </div>
-          </Card>
-
-          <Table
-            columns={ledgerColumns}
-            dataSource={ledgers}
-            rowKey="id"
-            size="small"
-            scroll={{ x: 1200 }}
-            pagination={{ pageSize: 10 }}
-          />
-        </TabPane>
-      </Tabs>
+                <Table
+                  columns={ledgerColumns}
+                  dataSource={ledgers}
+                  rowKey="id"
+                  size="small"
+                  scroll={{ x: 1200 }}
+                  pagination={{ pageSize: 10 }}
+                />
+              </>
+            ),
+          },
+        ]}
+      />
 
       <Modal
         title="新增设备台账版本"

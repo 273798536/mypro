@@ -22,16 +22,12 @@ import {
 } from 'antd';
 import {
   BarChart3,
-  TrendingUp,
   Download,
   FileText,
-  Calendar,
-  Settings,
   CheckCircle,
   AlertTriangle,
   XCircle,
   History,
-  Filter,
   FileSpreadsheet,
   File as FileIcon,
 } from 'lucide-react';
@@ -47,9 +43,7 @@ import {
 } from '../utils';
 import type { CheckResult, ExportReport } from '../types';
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
 
-const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { Group: CheckboxGroup } = Checkbox;
@@ -405,83 +399,76 @@ const AnalysisPage: React.FC = () => {
     includeEvidence: boolean,
     reportNo: string
   ) => {
-    const doc = new jsPDF();
-    let yPos = 20;
+    const container = document.createElement('div');
+    container.style.cssText =
+      'position:fixed;left:-9999px;top:0;width:794px;background:#fff;padding:40px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;color:#1f2937;line-height:1.6;';
 
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('液压升降安全校核报告', 105, yPos, { align: 'center' });
-    yPos += 10;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`报告编号: ${reportNo}`, 20, yPos);
-    doc.text(`生成时间: ${formatDateTime(new Date())}`, 120, yPos);
-    yPos += 8;
-    doc.text(`操作人: 设备安全员`, 20, yPos);
-    doc.text(`记录数量: ${results.length}条`, 120, yPos);
-    yPos += 10;
-
-    doc.setDrawColor(200);
-    doc.line(20, yPos, 190, yPos);
-    yPos += 10;
-
-    results.forEach((r, idx) => {
-      if (yPos > 270) {
-        doc.addPage();
-        yPos = 20;
-      }
-
+    const renderResult = (r: CheckResult) => {
       const loadRecord = getLoadRecordById(r.loadRecordId);
-
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${idx + 1}. ${r.recordNo} - ${loadRecord?.deviceName || '-'}`, 20, yPos);
-      yPos += 7;
-
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`  校核时间: ${formatDateTime(r.checkTime)}`, 25, yPos);
-      yPos += 5;
-      doc.text(`  台账版本: ${r.ledgerVersion}`, 25, yPos);
-      yPos += 5;
-      doc.text(`  超载检测: ${r.overloadCheck.detail}`, 25, yPos);
-      yPos += 5;
-      doc.text(`  油压检测: ${r.pressureCheck.detail}`, 25, yPos);
-      yPos += 5;
-      doc.text(`  高度检测: ${r.heightCheck.detail}`, 25, yPos);
-      yPos += 5;
-      doc.text(`  结论: ${getConclusionText(r.conclusion)}`, 25, yPos);
-      yPos += 5;
-      doc.text(`  口径一致: ${r.conclusionConsistent ? '是' : '否'}`, 25, yPos);
-      yPos += 5;
-
+      let html = `<div style="margin-bottom:20px;padding:16px;border:1px solid #e5e7eb;border-radius:8px;">`;
+      html += `<div style="font-size:14px;font-weight:700;margin-bottom:8px;">${r.recordNo} - ${loadRecord?.deviceName || '-'}</div>`;
+      html += `<div style="font-size:12px;color:#6b7280;margin-bottom:4px;">校核时间：${formatDateTime(r.checkTime)} | 台账版本：${r.ledgerVersion}</div>`;
+      html += `<div style="font-size:12px;">超载检测：${r.overloadCheck.passed ? '✅ 正常' : '❌ ' + r.overloadCheck.detail}</div>`;
+      html += `<div style="font-size:12px;">油压检测：${r.pressureCheck.passed ? '✅ 正常' : '❌ ' + r.pressureCheck.detail}</div>`;
+      html += `<div style="font-size:12px;">高度检测：${r.heightCheck.passed ? '✅ 正常' : '❌ ' + r.heightCheck.detail}</div>`;
+      html += `<div style="font-size:12px;">结论：<span style="color:${r.conclusion === 'danger' ? '#F53F3F' : r.conclusion === 'warning' ? '#FF7D00' : '#00B42A'};font-weight:700;">${getConclusionText(r.conclusion)}</span> | 口径一致：${r.conclusionConsistent ? '是' : '否'}</div>`;
       if (r.maintenanceRemark) {
-        const splitText = doc.splitTextToSize(`  检修备注: ${r.maintenanceRemark}`, 160);
-        doc.text(splitText, 25, yPos);
-        yPos += splitText.length * 5;
+        html += `<div style="font-size:12px;margin-top:4px;padding:8px;background:#fff7ed;border-radius:4px;">检修备注：${r.maintenanceRemark}</div>`;
       }
-
       if (includeEvidence && r.evidenceChain.length > 0) {
-        yPos += 3;
-        doc.setFont('helvetica', 'bold');
-        doc.text('  证据链:', 25, yPos);
-        yPos += 5;
-        doc.setFont('helvetica', 'normal');
+        html += `<div style="margin-top:8px;font-size:12px;font-weight:600;">证据链：</div>`;
         r.evidenceChain.forEach((e) => {
           const typeText = e.type === 'load_record' ? '载重记录' : e.type === 'oil_pressure' ? '油压序列' : e.type === 'maintenance_remark' ? '检修备注' : '导出报告';
-          doc.text(`    - [${typeText}] ${e.description} (${e.operator}, ${formatDate(e.timestamp)})`, 28, yPos);
-          yPos += 5;
+          html += `<div style="font-size:11px;color:#6b7280;margin-left:12px;">· [${typeText}] ${e.description} (${e.operator}, ${formatDate(e.timestamp)})</div>`;
         });
       }
+      html += '</div>';
+      return html;
+    };
 
-      yPos += 5;
-      doc.setDrawColor(230);
-      doc.line(25, yPos, 185, yPos);
-      yPos += 8;
+    let content = `<div style="text-align:center;margin-bottom:24px;">`;
+    content += `<div style="font-size:22px;font-weight:700;margin-bottom:8px;">液压升降安全校核报告</div>`;
+    content += `<div style="font-size:13px;color:#6b7280;">报告编号：${reportNo} | 生成时间：${formatDateTime(new Date())} | 操作人：设备安全员 | 记录数量：${results.length}条</div>`;
+    content += `</div>`;
+    content += `<hr style="border:none;border-top:2px solid #165DFF;margin-bottom:20px;" />`;
+    results.forEach((r) => {
+      content += renderResult(r);
     });
+    content += `<div style="margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;">报告由液压升降安全校核系统自动生成，包含的校核结果ID：${results.map((r) => r.id).join(', ')}</div>`;
 
-    doc.save(`${reportNo}.pdf`);
+    container.innerHTML = content;
+    document.body.appendChild(container);
+
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const jsPDF = (await import('jspdf')).default;
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageHeight = 297;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`${reportNo}.pdf`);
+    } finally {
+      document.body.removeChild(container);
+    }
   };
 
   const reportColumns = [
@@ -534,11 +521,27 @@ const AnalysisPage: React.FC = () => {
       title: '操作',
       key: 'action',
       width: 100,
-      render: () => (
-        <Button type="link" size="small" icon={<Download size={14} />}>
-          下载
-        </Button>
-      ),
+      render: (_: any, record: ExportReport) => {
+        const handleDownload = () => {
+          const resultsToExport = checkResults.filter((r) =>
+            record.checkResultIds.includes(r.id)
+          );
+          if (resultsToExport.length === 0) {
+            message.warning('该报告关联的校核记录已不存在');
+            return;
+          }
+          if (record.format === 'excel') {
+            exportToExcel(resultsToExport, record.includeEvidence, record.reportNo);
+          } else {
+            exportToPDF(resultsToExport, record.includeEvidence, record.reportNo);
+          }
+        };
+        return (
+          <Button type="link" size="small" icon={<Download size={14} />} onClick={handleDownload}>
+            下载
+          </Button>
+        );
+      },
     },
   ];
 
@@ -635,7 +638,6 @@ const AnalysisPage: React.FC = () => {
           </Button>
           <Button
             type="default"
-            icon={<Settings size={16} />}
             onClick={() => {
               setSelectedCheckResults(filteredResults.map((r) => r.id));
               message.info(`已选择当前筛选条件下的所有${filteredResults.length}条记录`);
@@ -649,7 +651,6 @@ const AnalysisPage: React.FC = () => {
       <Card size="small">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-gray-400" />
             <span className="text-sm text-gray-600">时间范围：</span>
             <RangePicker
               value={
@@ -706,7 +707,6 @@ const AnalysisPage: React.FC = () => {
               ))}
             </Select>
           </div>
-          <Button icon={<Filter size={14} />}>筛选</Button>
         </div>
       </Card>
 
@@ -756,7 +756,7 @@ const AnalysisPage: React.FC = () => {
       <Card
         title={
           <span className="flex items-center gap-2">
-            <TrendingUp size={18} className="text-blue-500" />
+            <BarChart3 size={18} className="text-blue-500" />
             趋势图表分析
           </span>
         }
@@ -766,11 +766,12 @@ const AnalysisPage: React.FC = () => {
             onChange={setActiveChartTab}
             size="small"
             className="mb-0"
-          >
-            <TabPane tab="异常趋势" key="trend" />
-            <TabPane tab="结论统计" key="stats" />
-            <TabPane tab="载重趋势" key="load" />
-          </Tabs>
+            items={[
+              { key: 'trend', label: '异常趋势' },
+              { key: 'stats', label: '结论统计' },
+              { key: 'load', label: '载重趋势' },
+            ]}
+          />
         }
       >
         {activeChartTab === 'trend' && (
