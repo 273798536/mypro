@@ -320,7 +320,7 @@ export const RecordDetail = ({ recordId, onClose }: RecordDetailProps) => {
                 <p>σ_total = √(σ_systematic² + σ_random² + σ_approx²)</p>
                 <p className="mt-2">其中：</p>
                 <p className="ml-4">• σ_systematic = √(σ_length² + σ_angle²) = √({errorEstimate.lengthError.toFixed(3)}² + {errorEstimate.angleError.toFixed(3)}²) = {errorEstimate.systematicError.toFixed(3)}%</p>
-                <p className="ml-4">• σ_random = √(σ_timing² + σ_count²) = √({errorEstimate.timingError.toFixed(3)}² + {errorEstimate.lengthError.toFixed(3)}²) = {errorEstimate.randomError.toFixed(3)}%</p>
+                <p className="ml-4">• σ_random = √(σ_timing² + σ_count²) = √({errorEstimate.timingError.toFixed(3)}² + {errorEstimate.countError.toFixed(3)}²) = {errorEstimate.randomError.toFixed(3)}%</p>
                 <p className="ml-4">• σ_approx = 近似误差 = {calculation.smallAngleApproxError.toFixed(3)}%</p>
                 <p className="mt-2 font-bold">
                   σ_total = √({errorEstimate.systematicError.toFixed(3)}² + {errorEstimate.randomError.toFixed(3)}² + {calculation.smallAngleApproxError.toFixed(3)}²) = {errorEstimate.totalError.toFixed(3)}%

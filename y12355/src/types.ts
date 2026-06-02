@@ -40,6 +40,7 @@ export interface ErrorEstimate {
   lengthError: number;
   angleError: number;
   timingError: number;
+  countError: number;
   systematicError: number;
   randomError: number;
   totalError: number;

@@ -174,6 +174,7 @@ export const calculateErrorEstimate = (
     lengthError,
     angleError,
     timingError,
+    countError,
     systematicError,
     randomError,
     totalError,

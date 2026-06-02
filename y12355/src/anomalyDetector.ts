@@ -36,37 +36,38 @@ const detectLengthUnitError = (
     return null;
   }
   
-  const otherRecords = batchRecords.filter(r => r.id !== record.id);
-  if (otherRecords.length === 0) return null;
+  const confirmedRecords = batchRecords.filter(r => r.id !== record.id && r.lengthUnitConfirmed);
+  if (confirmedRecords.length === 0) return null;
   
   const recordLengthMeters = convertLengthToMeters(record.length, record.lengthUnit);
-  const avgLength = otherRecords.reduce((sum, r) => 
+  const avgLength = confirmedRecords.reduce((sum, r) => 
     sum + convertLengthToMeters(r.length, r.lengthUnit), 0
-  ) / otherRecords.length;
+  ) / confirmedRecords.length;
   
   const deviationPercent = Math.abs(recordLengthMeters - avgLength) / avgLength * 100;
   
   if (deviationPercent < 50) return null;
   
   let suggestedUnit: 'm' | 'cm' | 'mm' | null = null;
+  let correctedDeviation = deviationPercent;
   
-  if (record.lengthUnit === 'm' && record.length < 0.1) {
-    suggestedUnit = 'cm';
-  } else if (record.lengthUnit === 'cm' && record.length > 500) {
-    suggestedUnit = 'mm';
-  } else if (record.lengthUnit === 'mm' && record.length < 10) {
-    suggestedUnit = 'cm';
+  const allUnits: ('m' | 'cm' | 'mm')[] = ['m', 'cm', 'mm'];
+  let bestDeviation = Infinity;
+  
+  for (const unit of allUnits) {
+    if (unit === record.lengthUnit) continue;
+    const converted = convertLengthToMeters(record.length, unit);
+    const dev = Math.abs(converted - avgLength) / avgLength * 100;
+    if (dev < bestDeviation && dev < 60) {
+      bestDeviation = dev;
+      suggestedUnit = unit;
+      correctedDeviation = dev;
+    }
   }
   
-  const possibleCorrectLength = suggestedUnit 
-    ? convertLengthToMeters(record.length, suggestedUnit)
-    : null;
-  
-  const correctedDeviation = possibleCorrectLength
-    ? Math.abs(possibleCorrectLength - avgLength) / avgLength * 100
-    : deviationPercent;
-  
-  if (correctedDeviation > 20) return null;
+  if (suggestedUnit === null && correctedDeviation > 20) {
+    return null;
+  }
   
   const severity = deviationPercent > 200 ? 'high' : deviationPercent > 100 ? 'medium' : 'low';
   
@@ -74,7 +75,7 @@ const detectLengthUnitError = (
     recordId: record.id,
     type: 'length_unit_error',
     severity,
-    description: `摆长 ${record.length} ${record.lengthUnit} 与批次平均值偏差 ${deviationPercent.toFixed(1)}%，` +
+    description: `摆长 ${record.length} ${record.lengthUnit} 与批次已确认记录平均值偏差 ${deviationPercent.toFixed(1)}%，` +
       (suggestedUnit ? `疑似单位误写，可能应为 ${record.length} ${suggestedUnit}` : '请确认单位是否正确'),
     suggestion: suggestedUnit 
       ? `建议将单位改为 ${suggestedUnit}，修正后偏差为 ${correctedDeviation.toFixed(1)}%。确认后请勾选"单位已确认"。`
