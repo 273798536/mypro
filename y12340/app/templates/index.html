@@ -1002,8 +1002,8 @@
             const times = sortedPoints.map(dp => dp.timestamp);
             const disps = sortedPoints.map(dp => dp.displacement);
             
-            const A = fittingResult.spring_constant ? 
-                Math.max(...disps.map(Math.abs)) : 0.1;
+            const A = fittingResult.initial_amplitude || 
+                Math.max(...disps.map(Math.abs));
             const zeta = fittingResult.damping_ratio;
             const omega_n = fittingResult.natural_frequency * 2 * Math.PI;
             
@@ -1093,7 +1093,14 @@
         }
 
         function exportReport() {
-            window.open(`/api/v1/experiments/${currentExperimentId}/report`, '_blank');
+            const url = `/api/v1/experiments/${currentExperimentId}/report`;
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.download = `spring_damper_report_${currentExperimentId}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
     </script>
 </body>

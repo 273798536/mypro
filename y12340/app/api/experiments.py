@@ -340,7 +340,9 @@ def generate_report(experiment_id: int, db: Session = Depends(get_db)):
     )
 
     from fastapi.responses import HTMLResponse
-    return HTMLResponse(content=html)
+    response = HTMLResponse(content=html)
+    response.headers["Content-Disposition"] = f"inline; filename=spring_damper_report_{experiment_id}.html"
+    return response
 
 
 @router.delete("/{experiment_id}")
