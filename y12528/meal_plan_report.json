@@ -1,0 +1,473 @@
+{
+  "report_version": "1.0",
+  "generated_at": "2026-06-02T14:43:46.027479",
+  "plan": {
+    "plan_id": "08550b1d",
+    "name": "方案C-修正后",
+    "meal_type": "午餐",
+    "total_cost": 3.57,
+    "is_feasible": true,
+    "portions": {
+      "V001": 0.019,
+      "V002": 0.005,
+      "V003": 0.6,
+      "P001": 0.005,
+      "P002": 0.005,
+      "E001": 0.005,
+      "G001": 0.005,
+      "G002": 0.341,
+      "S001": 0.005,
+      "S002": 0.005,
+      "V004": 0.005
+    },
+    "nutrition": {
+      "calories": 1798.7,
+      "protein": 5.0,
+      "fat": 1.0,
+      "carbs": 36.8,
+      "sodium": 34.8
+    },
+    "conflicts": 2,
+    "revision_note": "营养师调整: 脂肪下限2g→1g，允许更低脂肪"
+  },
+  "nutrition": {
+    "calories": 1798.6688235294118,
+    "protein": 5.0,
+    "fat": 1.0201117647058824,
+    "carbs": 36.776441176470584,
+    "sodium": 34.825294117647054,
+    "fiber": 2.099147058823529,
+    "sugar": 0.8038529411764704
+  },
+  "portions": {
+    "V001": 0.01923529411764703,
+    "V002": 0.005,
+    "V003": 0.6,
+    "P001": 0.005,
+    "P002": 0.005,
+    "E001": 0.005,
+    "G001": 0.005,
+    "G002": 0.3407647058823529,
+    "S001": 0.005,
+    "S002": 0.005,
+    "V004": 0.005
+  },
+  "constraints": [
+    {
+      "type": "allergen",
+      "name": "食材排除: 花生",
+      "severity": "CRITICAL",
+      "status": "violated",
+      "target_value": null,
+      "actual_value": null,
+      "violation_amount": 1.0,
+      "description": "花生(F001) 因含过敏源花生被排除",
+      "affected_ingredients": [
+        "F001"
+      ],
+      "correction_note": "",
+      "priority": 1
+    },
+    {
+      "type": "allergen",
+      "name": "食材排除: 牛奶",
+      "severity": "CRITICAL",
+      "status": "violated",
+      "target_value": null,
+      "actual_value": null,
+      "violation_amount": 1.0,
+      "description": "牛奶(M001) 因含过敏源牛奶被排除",
+      "affected_ingredients": [
+        "M001"
+      ],
+      "correction_note": "",
+      "priority": 1
+    },
+    {
+      "type": "cost",
+      "name": "总成本",
+      "severity": "INFO",
+      "status": "satisfied",
+      "target_value": null,
+      "actual_value": 3.5673823529411757,
+      "violation_amount": 0.0,
+      "description": "配餐总成本 3.57 元",
+      "affected_ingredients": [],
+      "correction_note": "",
+      "priority": 3
+    }
+  ],
+  "conflict_chain": {
+    "total_conflicts": 3,
+    "resolution_order": [
+      "allergen",
+      "allergen",
+      "cost"
+    ],
+    "conflicts": [
+      {
+        "type": "allergen",
+        "name": "食材排除: 花生",
+        "severity": "CRITICAL",
+        "status": "violated",
+        "violation": 1.0,
+        "affected": [
+          "F001"
+        ],
+        "correction": ""
+      },
+      {
+        "type": "allergen",
+        "name": "食材排除: 牛奶",
+        "severity": "CRITICAL",
+        "status": "violated",
+        "violation": 1.0,
+        "affected": [
+          "M001"
+        ],
+        "correction": ""
+      },
+      {
+        "type": "cost",
+        "name": "总成本",
+        "severity": "INFO",
+        "status": "satisfied",
+        "violation": 0.0,
+        "affected": [],
+        "correction": ""
+      }
+    ]
+  },
+  "solver_traces": [
+    {
+      "step": 1,
+      "description": "开始配餐规划",
+      "variables": {},
+      "objective_value": null,
+      "timestamp": "2026-06-02T14:43:46.024972",
+      "extra": {
+        "ingredient_count": 13,
+        "meal_type": "午餐",
+        "target": {
+          "calories": [
+            400,
+            2000
+          ],
+          "protein": [
+            5,
+            50
+          ],
+          "fat": [
+            1,
+            40
+          ]
+        }
+      }
+    },
+    {
+      "step": 2,
+      "description": "过滤食材",
+      "variables": {},
+      "objective_value": null,
+      "timestamp": "2026-06-02T14:43:46.024995",
+      "extra": {
+        "total": 13,
+        "active": 11,
+        "excluded": 2,
+        "excluded_details": [
+          {
+            "id": "F001",
+            "name": "花生",
+            "reasons": [
+              "含过敏源花生"
+            ]
+          },
+          {
+            "id": "M001",
+            "name": "牛奶",
+            "reasons": [
+              "含过敏源牛奶"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "description": "构建LP问题",
+      "variables": {
+        "变量数": 11,
+        "不等式约束": 22,
+        "等式约束": 1
+      },
+      "objective_value": null,
+      "timestamp": "2026-06-02T14:43:46.025058",
+      "extra": {
+        "objective_coeffs": {
+          "大白菜": 3.5,
+          "胡萝卜": 4.2,
+          "土豆": 2.8,
+          "猪里脊肉": 25.0,
+          "鸡胸肉": 18.5,
+          "鸡蛋": 12.0,
+          "大米": 5.2,
+          "面粉": 4.0,
+          "大豆油": 10.0,
+          "酱油": 8.5,
+          "西兰花": 8.0
+        },
+        "constraints": [
+          "用量下限: 大白菜",
+          "用量上限: 大白菜(库存20.000)",
+          "用量下限: 胡萝卜",
+          "用量上限: 胡萝卜(库存15.000)",
+          "用量下限: 土豆",
+          "用量上限: 土豆(库存10.000)",
+          "用量下限: 猪里脊肉",
+          "用量上限: 猪里脊肉(库存3.000)",
+          "用量下限: 鸡胸肉",
+          "用量上限: 鸡胸肉(库存5.000)",
+          "用量下限: 鸡蛋",
+          "用量上限: 鸡蛋(库存15.000)",
+          "用量下限: 大米",
+          "用量上限: 大米(库存50.000)",
+          "用量下限: 面粉",
+          "用量上限: 面粉(库存30.000)",
+          "用量下限: 大豆油",
+          "用量上限: 大豆油(库存10.000)",
+          "用量下限: 酱油",
+          "用量上限: 酱油(库存5.000)",
+          "用量下限: 西兰花",
+          "用量上限: 西兰花(库存8.000)",
+          "总重量 = 1kg",
+          "calories >= 400",
+          "calories <= 2000",
+          "protein >= 5",
+          "protein <= 50",
+          "fat >= 1",
+          "fat <= 40",
+          "carbs >= 10",
+          "carbs <= 150",
+          "sodium <= 1500",
+          "fiber >= 0.5",
+          "sugar <= 30",
+          "库存约束: 大白菜 <= 20.000",
+          "库存约束: 胡萝卜 <= 15.000",
+          "库存约束: 土豆 <= 10.000",
+          "库存约束: 猪里脊肉 <= 3.000",
+          "库存约束: 鸡胸肉 <= 5.000",
+          "库存约束: 鸡蛋 <= 15.000",
+          "库存约束: 大米 <= 50.000",
+          "库存约束: 面粉 <= 30.000",
+          "库存约束: 大豆油 <= 10.000",
+          "库存约束: 酱油 <= 5.000",
+          "库存约束: 西兰花 <= 8.000"
+        ],
+        "ingredients": [
+          {
+            "id": "V001",
+            "name": "大白菜",
+            "stock": 20.0,
+            "cost": 3.5,
+            "allergens": []
+          },
+          {
+            "id": "V002",
+            "name": "胡萝卜",
+            "stock": 15.0,
+            "cost": 4.2,
+            "allergens": []
+          },
+          {
+            "id": "V003",
+            "name": "土豆",
+            "stock": 10.0,
+            "cost": 2.8,
+            "allergens": []
+          },
+          {
+            "id": "P001",
+            "name": "猪里脊肉",
+            "stock": 3.0,
+            "cost": 25.0,
+            "allergens": []
+          },
+          {
+            "id": "P002",
+            "name": "鸡胸肉",
+            "stock": 5.0,
+            "cost": 18.5,
+            "allergens": []
+          },
+          {
+            "id": "E001",
+            "name": "鸡蛋",
+            "stock": 15.0,
+            "cost": 12.0,
+            "allergens": [
+              "鸡蛋"
+            ]
+          },
+          {
+            "id": "G001",
+            "name": "大米",
+            "stock": 50.0,
+            "cost": 5.2,
+            "allergens": [
+              "小麦",
+              "小麦交叉污染"
+            ]
+          },
+          {
+            "id": "G002",
+            "name": "面粉",
+            "stock": 30.0,
+            "cost": 4.0,
+            "allergens": [
+              "小麦"
+            ]
+          },
+          {
+            "id": "S001",
+            "name": "大豆油",
+            "stock": 10.0,
+            "cost": 10.0,
+            "allergens": [
+              "大豆"
+            ]
+          },
+          {
+            "id": "S002",
+            "name": "酱油",
+            "stock": 5.0,
+            "cost": 8.5,
+            "allergens": [
+              "大豆",
+              "小麦"
+            ]
+          },
+          {
+            "id": "V004",
+            "name": "西兰花",
+            "stock": 8.0,
+            "cost": 8.0,
+            "allergens": []
+          }
+        ]
+      }
+    },
+    {
+      "step": 4,
+      "description": "LP求解完成",
+      "variables": {},
+      "objective_value": 3.5673823529411757,
+      "timestamp": "2026-06-02T14:43:46.025852",
+      "extra": {
+        "success": true,
+        "status": 0,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "iterations": 2
+      }
+    },
+    {
+      "step": 5,
+      "description": "计算营养汇总",
+      "variables": {
+        "V001": 0.01923529411764703,
+        "V002": 0.005,
+        "V003": 0.6,
+        "P001": 0.005,
+        "P002": 0.005,
+        "E001": 0.005,
+        "G001": 0.005,
+        "G002": 0.3407647058823529,
+        "S001": 0.005,
+        "S002": 0.005,
+        "V004": 0.005
+      },
+      "objective_value": 3.5673823529411757,
+      "timestamp": "2026-06-02T14:43:46.025860",
+      "extra": {}
+    }
+  ],
+  "clean_report": {
+    "total_rows": 14,
+    "valid_rows": 13,
+    "removed_rows": 1,
+    "total_issues": 8,
+    "issue_types": {
+      "备注提取": 1,
+      "空值填充": 4,
+      "单位换算": 2,
+      "关键数据缺失": 1
+    }
+  },
+  "comparison": {
+    "plan_a": {
+      "id": "08550b1d",
+      "name": "方案C-修正后",
+      "is_feasible": true
+    },
+    "plan_b": {
+      "id": "ea6eae5f",
+      "name": "方案B-补货后(严格约束)",
+      "is_feasible": true
+    },
+    "differences": {
+      "total_cost": {
+        "a": 3.57,
+        "b": 3.63,
+        "diff": 0.06,
+        "pct": 1.7,
+        "better": "A"
+      },
+      "calories": {
+        "a": 1798.7,
+        "b": 1891.5,
+        "diff": 92.8,
+        "pct": 5.2
+      },
+      "protein": {
+        "a": 5.0,
+        "b": 5.0,
+        "diff": 0.0,
+        "pct": 0.0
+      },
+      "fat": {
+        "a": 1.0,
+        "b": 2.0,
+        "diff": 1.0,
+        "pct": 100.0
+      },
+      "carbs": {
+        "a": 36.8,
+        "b": 36.9,
+        "diff": 0.1,
+        "pct": 0.3
+      },
+      "sodium": {
+        "a": 34.8,
+        "b": 34.0,
+        "diff": -0.8,
+        "pct": -2.3
+      }
+    },
+    "portions_diff": {
+      "S001": {
+        "a": 0.005,
+        "b": 0.015,
+        "diff": 0.01
+      },
+      "G002": {
+        "a": 0.341,
+        "b": 0.342,
+        "diff": 0.002
+      },
+      "V001": {
+        "a": 0.019,
+        "b": 0.008,
+        "diff": -0.012
+      }
+    }
+  }
+}
