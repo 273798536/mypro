@@ -1,0 +1,15 @@
+{
+  "id_column": "sample_id",
+  "date_column": null,
+  "metrics_import_time": "2026-06-02T15:18:27.540822",
+  "metric_columns": [
+    "metric_a",
+    "metric_b",
+    "metric_c",
+    "metric_d",
+    "metric_e",
+    "metric_f"
+  ],
+  "groups_last_updated": "2026-06-02T15:18:27.546280",
+  "windows_last_updated": "2026-06-02T15:18:27.551115"
+}

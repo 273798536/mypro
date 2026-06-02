@@ -1,0 +1,9 @@
+{
+  "id_column": "sample_id",
+  "date_column": null,
+  "metrics_import_time": "2026-06-02T15:18:55.720637",
+  "metric_columns": [
+    "feature_x",
+    "feature_y"
+  ]
+}
