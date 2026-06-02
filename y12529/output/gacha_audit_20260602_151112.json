@@ -1,0 +1,541 @@
+{
+  "version_id": "audit_20260602_151112",
+  "created_at": "2026-06-02T15:11:12.955116",
+  "prob_configs": [
+    {
+      "pool_id": "pool_hero",
+      "pool_name": "英雄限定池",
+      "version": "1.0",
+      "entries": [
+        {
+          "item_id": "hero_001",
+          "item_name": "苍穹之翼",
+          "rarity": "SSR",
+          "probability": 0.015
+        },
+        {
+          "item_id": "hero_002",
+          "item_name": "暗影猎手",
+          "rarity": "SSR",
+          "probability": 0.015
+        },
+        {
+          "item_id": "weapon_001",
+          "item_name": "星陨之剑",
+          "rarity": "SR",
+          "probability": 0.1
+        },
+        {
+          "item_id": "weapon_002",
+          "item_name": "月华弓",
+          "rarity": "SR",
+          "probability": 0.1
+        },
+        {
+          "item_id": "mat_001",
+          "item_name": "强化石",
+          "rarity": "R",
+          "probability": 0.3
+        },
+        {
+          "item_id": "mat_002",
+          "item_name": "灵晶",
+          "rarity": "R",
+          "probability": 0.2
+        },
+        {
+          "item_id": "mat_003",
+          "item_name": "金币袋",
+          "rarity": "N",
+          "probability": 0.13
+        },
+        {
+          "item_id": "mat_004",
+          "item_name": "经验药水",
+          "rarity": "N",
+          "probability": 0.13
+        }
+      ],
+      "valid_from": null,
+      "valid_to": null
+    },
+    {
+      "pool_id": "pool_weapon",
+      "pool_name": "武器常驻池",
+      "version": "2.1",
+      "entries": [
+        {
+          "item_id": "wpn_ssr_001",
+          "item_name": "天罚",
+          "rarity": "SSR",
+          "probability": 0.007
+        },
+        {
+          "item_id": "wpn_ssr_002",
+          "item_name": "深渊之牙",
+          "rarity": "SSR",
+          "probability": 0.007
+        },
+        {
+          "item_id": "wpn_sr_001",
+          "item_name": "烈焰弓",
+          "rarity": "SR",
+          "probability": 0.06
+        },
+        {
+          "item_id": "wpn_sr_002",
+          "item_name": "冰霜杖",
+          "rarity": "SR",
+          "probability": 0.06
+        },
+        {
+          "item_id": "wpn_r_001",
+          "item_name": "铁剑",
+          "rarity": "R",
+          "probability": 0.25
+        },
+        {
+          "item_id": "wpn_r_002",
+          "item_name": "铜盾",
+          "rarity": "R",
+          "probability": 0.25
+        },
+        {
+          "item_id": "wpn_n_001",
+          "item_name": "木棍",
+          "rarity": "N",
+          "probability": 0.18
+        },
+        {
+          "item_id": "wpn_n_002",
+          "item_name": "石块",
+          "rarity": "N",
+          "probability": 0.18
+        }
+      ],
+      "valid_from": null,
+      "valid_to": null
+    },
+    {
+      "pool_id": "pool_collab",
+      "pool_name": "联动限定池(概率未归一)",
+      "version": "1.0",
+      "entries": [
+        {
+          "item_id": "collab_ssr_001",
+          "item_name": "联动角色A",
+          "rarity": "SSR",
+          "probability": 0.02
+        },
+        {
+          "item_id": "collab_sr_001",
+          "item_name": "联动武器B",
+          "rarity": "SR",
+          "probability": 0.08
+        },
+        {
+          "item_id": "collab_r_001",
+          "item_name": "联动材料C",
+          "rarity": "R",
+          "probability": 0.3
+        },
+        {
+          "item_id": "collab_n_001",
+          "item_name": "联动碎片D",
+          "rarity": "N",
+          "probability": 0.4
+        }
+      ],
+      "valid_from": null,
+      "valid_to": null
+    }
+  ],
+  "pity_rules": [
+    {
+      "pool_id": "pool_hero",
+      "pity_type": "hard",
+      "threshold": 90,
+      "guaranteed_rarity": "SSR",
+      "soft_pity_start": null,
+      "soft_pity_slope": null
+    },
+    {
+      "pool_id": "pool_hero",
+      "pity_type": "soft",
+      "threshold": 90,
+      "guaranteed_rarity": "SSR",
+      "soft_pity_start": 75,
+      "soft_pity_slope": 0.05
+    },
+    {
+      "pool_id": "pool_weapon",
+      "pity_type": "hard",
+      "threshold": 80,
+      "guaranteed_rarity": "SSR",
+      "soft_pity_start": null,
+      "soft_pity_slope": null
+    },
+    {
+      "pool_id": "pool_collab",
+      "pity_type": "hard",
+      "threshold": 90,
+      "guaranteed_rarity": "SSR",
+      "soft_pity_start": null,
+      "soft_pity_slope": null
+    }
+  ],
+  "issues": [
+    {
+      "severity": "CRITICAL",
+      "category": "概率未归一",
+      "pool_id": "pool_hero",
+      "description": "卡池 pool_hero(英雄限定池) 概率总和=0.990000，偏差=0.010000",
+      "location": "prob_config.pool_id=pool_hero, version=1.0, rarity_breakdown=SSR,SR,R,N",
+      "detail": {
+        "total": 0.99,
+        "deviation": 0.010000000000000009,
+        "rarity_breakdown": [
+          {
+            "rarity": "SSR",
+            "sum": 0.03,
+            "items": [
+              {
+                "item_id": "hero_001",
+                "item_name": "苍穹之翼",
+                "rarity": "SSR",
+                "probability": 0.015
+              },
+              {
+                "item_id": "hero_002",
+                "item_name": "暗影猎手",
+                "rarity": "SSR",
+                "probability": 0.015
+              }
+            ]
+          },
+          {
+            "rarity": "SR",
+            "sum": 0.2,
+            "items": [
+              {
+                "item_id": "weapon_001",
+                "item_name": "星陨之剑",
+                "rarity": "SR",
+                "probability": 0.1
+              },
+              {
+                "item_id": "weapon_002",
+                "item_name": "月华弓",
+                "rarity": "SR",
+                "probability": 0.1
+              }
+            ]
+          },
+          {
+            "rarity": "R",
+            "sum": 0.5,
+            "items": [
+              {
+                "item_id": "mat_001",
+                "item_name": "强化石",
+                "rarity": "R",
+                "probability": 0.3
+              },
+              {
+                "item_id": "mat_002",
+                "item_name": "灵晶",
+                "rarity": "R",
+                "probability": 0.2
+              }
+            ]
+          },
+          {
+            "rarity": "N",
+            "sum": 0.26,
+            "items": [
+              {
+                "item_id": "mat_003",
+                "item_name": "金币袋",
+                "rarity": "N",
+                "probability": 0.13
+              },
+              {
+                "item_id": "mat_004",
+                "item_name": "经验药水",
+                "rarity": "N",
+                "probability": 0.13
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "概率未归一",
+      "pool_id": "pool_weapon",
+      "description": "卡池 pool_weapon(武器常驻池) 概率总和=0.994000，偏差=0.006000",
+      "location": "prob_config.pool_id=pool_weapon, version=2.1, rarity_breakdown=SSR,SR,R,N",
+      "detail": {
+        "total": 0.994,
+        "deviation": 0.006000000000000005,
+        "rarity_breakdown": [
+          {
+            "rarity": "SSR",
+            "sum": 0.014,
+            "items": [
+              {
+                "item_id": "wpn_ssr_001",
+                "item_name": "天罚",
+                "rarity": "SSR",
+                "probability": 0.007
+              },
+              {
+                "item_id": "wpn_ssr_002",
+                "item_name": "深渊之牙",
+                "rarity": "SSR",
+                "probability": 0.007
+              }
+            ]
+          },
+          {
+            "rarity": "SR",
+            "sum": 0.12,
+            "items": [
+              {
+                "item_id": "wpn_sr_001",
+                "item_name": "烈焰弓",
+                "rarity": "SR",
+                "probability": 0.06
+              },
+              {
+                "item_id": "wpn_sr_002",
+                "item_name": "冰霜杖",
+                "rarity": "SR",
+                "probability": 0.06
+              }
+            ]
+          },
+          {
+            "rarity": "R",
+            "sum": 0.5,
+            "items": [
+              {
+                "item_id": "wpn_r_001",
+                "item_name": "铁剑",
+                "rarity": "R",
+                "probability": 0.25
+              },
+              {
+                "item_id": "wpn_r_002",
+                "item_name": "铜盾",
+                "rarity": "R",
+                "probability": 0.25
+              }
+            ]
+          },
+          {
+            "rarity": "N",
+            "sum": 0.36,
+            "items": [
+              {
+                "item_id": "wpn_n_001",
+                "item_name": "木棍",
+                "rarity": "N",
+                "probability": 0.18
+              },
+              {
+                "item_id": "wpn_n_002",
+                "item_name": "石块",
+                "rarity": "N",
+                "probability": 0.18
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "概率未归一",
+      "pool_id": "pool_collab",
+      "description": "卡池 pool_collab(联动限定池(概率未归一)) 概率总和=0.800000，偏差=0.200000",
+      "location": "prob_config.pool_id=pool_collab, version=1.0, rarity_breakdown=SSR,SR,R,N",
+      "detail": {
+        "total": 0.8,
+        "deviation": 0.19999999999999996,
+        "rarity_breakdown": [
+          {
+            "rarity": "SSR",
+            "sum": 0.02,
+            "items": [
+              {
+                "item_id": "collab_ssr_001",
+                "item_name": "联动角色A",
+                "rarity": "SSR",
+                "probability": 0.02
+              }
+            ]
+          },
+          {
+            "rarity": "SR",
+            "sum": 0.08,
+            "items": [
+              {
+                "item_id": "collab_sr_001",
+                "item_name": "联动武器B",
+                "rarity": "SR",
+                "probability": 0.08
+              }
+            ]
+          },
+          {
+            "rarity": "R",
+            "sum": 0.3,
+            "items": [
+              {
+                "item_id": "collab_r_001",
+                "item_name": "联动材料C",
+                "rarity": "R",
+                "probability": 0.3
+              }
+            ]
+          },
+          {
+            "rarity": "N",
+            "sum": 0.4,
+            "items": [
+              {
+                "item_id": "collab_n_001",
+                "item_name": "联动碎片D",
+                "rarity": "N",
+                "probability": 0.4
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "severity": "CRITICAL",
+      "category": "保底异常重置",
+      "pool_id": "pool_hero",
+      "description": "玩家 P002 在卡池 pool_hero 连续两次出SSR，前一次保底计数=12< 阈值=90，保底计数器疑似异常重置",
+      "location": "gacha_log.seq=27, timestamp=2026-05-02T08:12:00, player_id=P002, prev_reset_seq=26",
+      "detail": {
+        "prev_reset": {
+          "seq": 26,
+          "timestamp": "2026-05-02T08:11:00",
+          "counter_before_reset": 12,
+          "item_id": "hero_001",
+          "item_name": "苍穹之翼",
+          "rarity": "SSR",
+          "player_id": "P002",
+          "pool_id": "pool_hero"
+        },
+        "current_reset": {
+          "seq": 27,
+          "timestamp": "2026-05-02T08:12:00",
+          "counter_before_reset": 1,
+          "item_id": "hero_001",
+          "item_name": "苍穹之翼",
+          "rarity": "SSR",
+          "player_id": "P002",
+          "pool_id": "pool_hero"
+        }
+      }
+    }
+  ],
+  "pity_snapshots": [
+    {
+      "player_id": "P001",
+      "pool_id": "pool_hero",
+      "pity_type": "hard",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 14,
+      "last_reset_timestamp": "2026-05-01T10:13:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P001",
+      "pool_id": "pool_hero",
+      "pity_type": "soft",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 14,
+      "last_reset_timestamp": "2026-05-01T10:13:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P002",
+      "pool_id": "pool_hero",
+      "pity_type": "hard",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 27,
+      "last_reset_timestamp": "2026-05-02T08:12:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P002",
+      "pool_id": "pool_hero",
+      "pity_type": "soft",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 27,
+      "last_reset_timestamp": "2026-05-02T08:12:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P003",
+      "pool_id": "pool_weapon",
+      "pity_type": "hard",
+      "current_count": 2,
+      "threshold": 80,
+      "last_reset_seq": 33,
+      "last_reset_timestamp": "2026-05-03T14:05:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P004",
+      "pool_id": "pool_collab",
+      "pity_type": "hard",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 39,
+      "last_reset_timestamp": "2026-05-04T20:03:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P005",
+      "pool_id": "pool_hero",
+      "pity_type": "hard",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 90,
+      "last_reset_timestamp": "2026-05-05T11:50:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    },
+    {
+      "player_id": "P005",
+      "pool_id": "pool_hero",
+      "pity_type": "soft",
+      "current_count": 0,
+      "threshold": 90,
+      "last_reset_seq": 90,
+      "last_reset_timestamp": "2026-05-05T11:50:00",
+      "is_anomaly": false,
+      "anomaly_reason": null
+    }
+  ],
+  "supplemental_for": null,
+  "filter_applied": {}
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "pool_id": "pool_hero",
+    "pity_type": "hard",
+    "threshold": 90,
+    "guaranteed_rarity": "SSR"
+  },
+  {
+    "pool_id": "pool_hero",
+    "pity_type": "soft",
+    "threshold": 90,
+    "guaranteed_rarity": "SSR",
+    "soft_pity_start": 75,
+    "soft_pity_slope": 0.05
+  },
+  {
+    "pool_id": "pool_weapon",
+    "pity_type": "hard",
+    "threshold": 80,
+    "guaranteed_rarity": "SSR"
+  },
+  {
+    "pool_id": "pool_collab",
+    "pity_type": "hard",
+    "threshold": 90,
+    "guaranteed_rarity": "SSR"
+  }
+]

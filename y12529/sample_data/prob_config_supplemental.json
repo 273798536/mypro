@@ -1,0 +1,14 @@
+[
+  {
+    "pool_id": "pool_collab",
+    "pool_name": "联动限定池(已修正)",
+    "version": "1.1",
+    "entries": [
+      {"item_id": "collab_ssr_001", "item_name": "联动角色A", "rarity": "SSR", "probability": 0.02},
+      {"item_id": "collab_sr_001", "item_name": "联动武器B", "rarity": "SR", "probability": 0.08},
+      {"item_id": "collab_r_001", "item_name": "联动材料C", "rarity": "R", "probability": 0.30},
+      {"item_id": "collab_n_001", "item_name": "联动碎片D", "rarity": "N", "probability": 0.40},
+      {"item_id": "collab_n_002", "item_name": "联动碎片E", "rarity": "N", "probability": 0.20}
+    ]
+  }
+]

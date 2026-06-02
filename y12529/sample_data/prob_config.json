@@ -1,0 +1,43 @@
+[
+  {
+    "pool_id": "pool_hero",
+    "pool_name": "英雄限定池",
+    "version": "1.0",
+    "entries": [
+      {"item_id": "hero_001", "item_name": "苍穹之翼", "rarity": "SSR", "probability": 0.015},
+      {"item_id": "hero_002", "item_name": "暗影猎手", "rarity": "SSR", "probability": 0.015},
+      {"item_id": "weapon_001", "item_name": "星陨之剑", "rarity": "SR", "probability": 0.10},
+      {"item_id": "weapon_002", "item_name": "月华弓", "rarity": "SR", "probability": 0.10},
+      {"item_id": "mat_001", "item_name": "强化石", "rarity": "R", "probability": 0.30},
+      {"item_id": "mat_002", "item_name": "灵晶", "rarity": "R", "probability": 0.20},
+      {"item_id": "mat_003", "item_name": "金币袋", "rarity": "N", "probability": 0.13},
+      {"item_id": "mat_004", "item_name": "经验药水", "rarity": "N", "probability": 0.13}
+    ]
+  },
+  {
+    "pool_id": "pool_weapon",
+    "pool_name": "武器常驻池",
+    "version": "2.1",
+    "entries": [
+      {"item_id": "wpn_ssr_001", "item_name": "天罚", "rarity": "SSR", "probability": 0.007},
+      {"item_id": "wpn_ssr_002", "item_name": "深渊之牙", "rarity": "SSR", "probability": 0.007},
+      {"item_id": "wpn_sr_001", "item_name": "烈焰弓", "rarity": "SR", "probability": 0.06},
+      {"item_id": "wpn_sr_002", "item_name": "冰霜杖", "rarity": "SR", "probability": 0.06},
+      {"item_id": "wpn_r_001", "item_name": "铁剑", "rarity": "R", "probability": 0.25},
+      {"item_id": "wpn_r_002", "item_name": "铜盾", "rarity": "R", "probability": 0.25},
+      {"item_id": "wpn_n_001", "item_name": "木棍", "rarity": "N", "probability": 0.18},
+      {"item_id": "wpn_n_002", "item_name": "石块", "rarity": "N", "probability": 0.18}
+    ]
+  },
+  {
+    "pool_id": "pool_collab",
+    "pool_name": "联动限定池(概率未归一)",
+    "version": "1.0",
+    "entries": [
+      {"item_id": "collab_ssr_001", "item_name": "联动角色A", "rarity": "SSR", "probability": 0.02},
+      {"item_id": "collab_sr_001", "item_name": "联动武器B", "rarity": "SR", "probability": 0.08},
+      {"item_id": "collab_r_001", "item_name": "联动材料C", "rarity": "R", "probability": 0.30},
+      {"item_id": "collab_n_001", "item_name": "联动碎片D", "rarity": "N", "probability": 0.40}
+    ]
+  }
+]
