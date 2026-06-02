@@ -8,14 +8,21 @@ import Intervention from "@/pages/Intervention";
 import Export from "@/pages/Export";
 import { useAnalysisStore } from "@/store/useAnalysisStore";
 
+const DEMO_VERSION = '1.1';
+
 export default function App() {
   const { loadDemoData, records } = useAnalysisStore();
 
   useEffect(() => {
-    if (records.length === 0) {
+    const storedVersion = localStorage.getItem('demo_version');
+    const hasDemo003 = records.some(r => r.id === 'DEMO-003');
+    const needsUpdate = storedVersion !== DEMO_VERSION || !hasDemo003;
+    
+    if (needsUpdate) {
       loadDemoData();
+      localStorage.setItem('demo_version', DEMO_VERSION);
     }
-  }, [loadDemoData, records.length]);
+  }, [loadDemoData, records]);
 
   return (
     <Router>

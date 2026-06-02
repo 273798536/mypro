@@ -1,84 +1,86 @@
 import { AnalysisRecord, TimeSeriesPoint } from '../types';
 import { createEvidenceItem, calculateCorrelation, detectMisjudgment } from './analysisEngine';
 
-function generateNormalTimeSeries(): TimeSeriesPoint[] {
+function generateDeterministicNormalData(): TimeSeriesPoint[] {
   const data: TimeSeriesPoint[] = [];
   const baseDate = new Date('2025-01-01');
+  
+  const baseValuesA = [
+    100, 102, 98, 105, 101, 99, 103, 97, 106, 102,
+    104, 99, 101, 105, 98, 103, 100, 102, 97, 104,
+    101, 99, 103, 105, 98, 102, 100, 96, 104, 101,
+    103, 99, 102, 105, 97, 100, 104, 98, 102, 101,
+    99, 103, 100, 105, 98, 102, 96, 104, 101, 103,
+    99, 102, 100, 105, 97, 101, 104, 98, 102, 100
+  ];
+  
+  const baseValuesB = [
+    50, 51, 49, 52, 50, 49, 51, 48, 53, 51,
+    52, 49, 50, 52, 48, 51, 50, 51, 47, 52,
+    50, 49, 51, 53, 48, 51, 50, 47, 52, 50,
+    51, 49, 50, 52, 48, 50, 52, 49, 51, 50,
+    49, 51, 50, 53, 48, 51, 47, 52, 50, 51,
+    49, 50, 50, 52, 48, 50, 52, 49, 51, 50
+  ];
   
   for (let i = 0; i < 60; i++) {
     const date = new Date(baseDate);
     date.setDate(date.getDate() + i);
     
-    const baseValue = 100 + i * 0.5;
-    const noiseA = (Math.random() - 0.5) * 10;
-    const noiseB = (Math.random() - 0.5) * 8;
-    const trendFactor = i * 0.3;
-    
     data.push({
       date: date.toISOString().split('T')[0],
-      valueA: baseValue + trendFactor + noiseA,
-      valueB: baseValue * 0.8 + trendFactor * 1.2 + noiseB,
+      valueA: baseValuesA[i],
+      valueB: baseValuesB[i],
     });
   }
   
   return data;
 }
 
-function generateSmallSampleTimeSeries(): TimeSeriesPoint[] {
+function generateSmallSampleData(): TimeSeriesPoint[] {
   const data: TimeSeriesPoint[] = [];
   const baseDate = new Date('2025-03-01');
   
+  const sampleDates = [0, 7, 14, 21, 28, 35, 42, 49];
+  const valuesA = [500, 520, 490, 510, 530, 480, 505, 515];
+  const valuesB = [20, 22, 19, 21, 23, 18, 20, 21];
+  
   for (let i = 0; i < 8; i++) {
     const date = new Date(baseDate);
-    date.setDate(date.getDate() + i * 7);
+    date.setDate(date.getDate() + sampleDates[i]);
     
     data.push({
       date: date.toISOString().split('T')[0],
-      valueA: 500 + Math.random() * 200,
-      valueB: 20 + Math.random() * 15,
+      valueA: valuesA[i],
+      valueB: valuesB[i],
     });
   }
   
   return data;
 }
 
-function generateLagRelationTimeSeries(): TimeSeriesPoint[] {
+function generateLagRelationData(): TimeSeriesPoint[] {
   const data: TimeSeriesPoint[] = [];
   const baseDate = new Date('2025-02-01');
   
-  for (let i = 0; i < 45; i++) {
-    const date = new Date(baseDate);
-    date.setDate(date.getDate() + i);
-    
-    const baseA = 200 + Math.sin(i / 10) * 50 + Math.random() * 10;
-    const lagOffset = 7;
-    const bIndex = Math.max(0, i - lagOffset);
-    const baseB = 100 + Math.sin(bIndex / 10) * 30 + Math.random() * 8;
-    
-    data.push({
-      date: date.toISOString().split('T')[0],
-      valueA: baseA,
-      valueB: baseB,
-    });
-  }
+  const lagDays = 2;
+  const valuesA: number[] = [];
   
-  return data;
-}
-
-function generateCommonTrendTimeSeries(): TimeSeriesPoint[] {
-  const data: TimeSeriesPoint[] = [];
-  const baseDate = new Date('2025-01-01');
+  for (let i = 0; i < 50; i++) {
+    valuesA.push(200 + Math.sin(i / 5) * 50 + i * 0.5);
+  }
   
   for (let i = 0; i < 50; i++) {
     const date = new Date(baseDate);
     date.setDate(date.getDate() + i);
     
-    const timeTrend = i * 2;
+    const bIndex = Math.max(0, i - lagDays);
+    const valueB = 100 + Math.sin(bIndex / 5) * 30 + bIndex * 0.3;
     
     data.push({
       date: date.toISOString().split('T')[0],
-      valueA: 100 + timeTrend + Math.random() * 5,
-      valueB: 50 + timeTrend * 0.5 + Math.random() * 4,
+      valueA: valuesA[i],
+      valueB: valueB,
     });
   }
   
@@ -88,19 +90,23 @@ function generateCommonTrendTimeSeries(): TimeSeriesPoint[] {
 export function createDemoRecords(): AnalysisRecord[] {
   const now = new Date().toISOString();
   
-  const normalData = generateNormalTimeSeries();
+  const normalData = generateDeterministicNormalData();
   const normalCorr = calculateCorrelation(normalData);
   const normalDetect = detectMisjudgment(normalCorr, normalData.length);
   
-  const smallData = generateSmallSampleTimeSeries();
+  const smallData = generateSmallSampleData();
   const smallCorr = calculateCorrelation(smallData);
   const smallDetect = detectMisjudgment(smallCorr, smallData.length);
+  
+  const lagData = generateLagRelationData();
+  const lagCorr = calculateCorrelation(lagData);
+  const lagDetect = detectMisjudgment(lagCorr, lagData.length);
   
   const records: AnalysisRecord[] = [
     {
       id: 'DEMO-001',
-      metricA: '广告投放额',
-      metricB: '订单转化量',
+      metricA: '商品浏览量',
+      metricB: '加购件数',
       timeSeriesData: normalData,
       sampleSize: normalData.length,
       status: normalDetect.status,
@@ -112,17 +118,17 @@ export function createDemoRecords(): AnalysisRecord[] {
       pendingReason: normalDetect.pendingReason,
       abnormalReason: normalDetect.abnormalReason,
       evidenceChain: [
-        createEvidenceItem('source', `数据来源：广告平台API导出，日期范围：${normalData[0].date} 至 ${normalData[normalData.length - 1].date}`),
+        createEvidenceItem('source', `数据来源：埋点系统导出，日期范围：${normalData[0].date} 至 ${normalData[normalData.length - 1].date}`),
         createEvidenceItem('judgment', `执行相关性计算：Pearson r=${normalCorr.coefficient.toFixed(3)}, p=${normalCorr.pValue.toFixed(4)}`),
-        createEvidenceItem('judgment', `误判检测：样本量=${normalData.length}，缺失率=${(normalCorr.missingRate * 100).toFixed(1)}%，异常值影响=${normalCorr.outlierImpact.toFixed(3)}`),
+        createEvidenceItem('judgment', `误判检测：样本量=${normalData.length}，时间趋势A=${normalCorr.trendCorrelationA.toFixed(3)}，时间趋势B=${normalCorr.trendCorrelationB.toFixed(3)}，最佳滞后=${normalCorr.lagValue}天`),
         createEvidenceItem('result', normalDetect.judgment),
       ],
       createdAt: now,
       updatedAt: now,
-      dataSource: '广告平台API',
-      groupField: '投放渠道',
+      dataSource: '埋点系统',
+      groupField: '商品类目',
       groupFieldAddedAt: now,
-      eventNote: '期间无重大运营活动',
+      eventNote: '期间平台稳定运营，无大促活动',
       eventNoteAddedAt: now,
     },
     {
@@ -148,6 +154,32 @@ export function createDemoRecords(): AnalysisRecord[] {
       createdAt: now,
       updatedAt: now,
       dataSource: '活动后台',
+    },
+    {
+      id: 'DEMO-003',
+      metricA: '广告投放额',
+      metricB: '订单转化量',
+      timeSeriesData: lagData,
+      sampleSize: lagData.length,
+      status: lagDetect.status,
+      judgment: lagDetect.judgment,
+      correlationCoeff: lagCorr.coefficient,
+      pValue: lagCorr.pValue,
+      lagValue: lagCorr.lagValue,
+      lagModified: false,
+      pendingReason: lagDetect.pendingReason,
+      abnormalReason: lagDetect.abnormalReason,
+      evidenceChain: [
+        createEvidenceItem('source', `数据来源：广告平台API，日期范围：${lagData[0].date} 至 ${lagData[lagData.length - 1].date}`),
+        createEvidenceItem('judgment', `执行相关性计算：Pearson r=${lagCorr.coefficient.toFixed(3)}, p=${lagCorr.pValue.toFixed(4)}`),
+        createEvidenceItem('judgment', `误判检测：最佳滞后=${lagCorr.lagValue}天，滞后相关系数=${lagCorr.maxLagCorrelation.toFixed(3)}`),
+        createEvidenceItem('result', lagDetect.judgment),
+      ],
+      createdAt: now,
+      updatedAt: now,
+      dataSource: '广告平台API',
+      groupField: '投放渠道',
+      groupFieldAddedAt: now,
     },
   ];
   

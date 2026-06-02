@@ -212,7 +212,7 @@ export default function Dashboard() {
           <QuickAction
             icon={Sparkles}
             label="加载样例数据"
-            description="加载1条正常+1条样本太少的演示数据"
+            description="加载1条正常+1条待确认+1条异常的演示数据"
             onClick={loadDemoData}
           />
           <QuickAction
@@ -245,7 +245,7 @@ export default function Dashboard() {
         <div className="bg-slate-800/30 border border-slate-700 rounded-lg p-8 text-center">
           <Sparkles className="w-12 h-12 text-amber-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-white mb-2">开始你的分析</h3>
-          <p className="text-slate-400 mb-4">点击"加载样例数据"查看两条演示记录，验证正常和样本太少分支是否生效</p>
+          <p className="text-slate-400 mb-4">点击"加载样例数据"查看三条演示记录，验证正常、待确认、样本太少分支是否生效</p>
           <button
             onClick={loadDemoData}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors inline-flex items-center gap-2"
