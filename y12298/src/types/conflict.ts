@@ -7,8 +7,15 @@ export interface EvidenceItem {
   id: string
   type: 'screenshot' | 'workorder' | 'model_snapshot' | 'annotation'
   url: string
+  dataUrl?: string
   timestamp: string
   description: string
+  metadata?: {
+    routeVersion?: string
+    userName?: string
+    viewMode?: string
+    layers?: string[]
+  }
 }
 
 export interface Conflict {

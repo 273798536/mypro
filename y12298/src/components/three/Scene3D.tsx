@@ -1,7 +1,7 @@
-import { Canvas, useThree, useFrame, useThree as useThreeContext } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls, Grid, Html } from '@react-three/drei'
 import { useAppStore, type AnnotationPoint } from '@/store/useAppStore'
-import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import Lights from './Lights'
 import Corridor from './Corridor'
@@ -9,21 +9,6 @@ import Valve from './Valve'
 import RoutePath from './RoutePath'
 import ForbiddenZone from './ForbiddenZone'
 import Annotations3D from './Annotations3D'
-
-export interface Scene3DHandle {
-  getCanvas: () => HTMLCanvasElement | null
-}
-
-const Scene3DContent = forwardRef<Scene3DHandle>((_, ref) => {
-  const { gl } = useThreeContext()
-
-  useImperativeHandle(ref, () => ({
-    getCanvas: () => gl.domElement,
-  }))
-
-  return <SceneContent />
-})
-Scene3DContent.displayName = 'Scene3DContent'
 
 function CameraController() {
   const viewMode = useAppStore((s) => s.viewMode)
@@ -300,25 +285,19 @@ export interface Scene3DProps {
 }
 
 export default function Scene3D({ onCanvasReady }: Scene3DProps) {
-  const sceneRef = useRef<Scene3DHandle>(null)
-
-  useEffect(() => {
-    if (sceneRef.current && onCanvasReady) {
-      const canvas = sceneRef.current.getCanvas()
-      if (canvas) onCanvasReady(canvas)
-    }
-  }, [onCanvasReady])
-
   return (
     <div className="h-full w-full" style={{ border: '1px solid #1E3A5F' }}>
       <Canvas
         camera={{ position: [8, 6, 8], fov: 50, near: 0.1, far: 200 }}
         style={{ background: '#0A1628' }}
         gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
+        onCreated={({ gl }) => {
+          if (onCanvasReady) onCanvasReady(gl.domElement)
+        }}
       >
         <color attach="background" args={['#0A1628']} />
         <CameraController />
-        <Scene3DContent ref={sceneRef} />
+        <SceneContent />
       </Canvas>
     </div>
   )

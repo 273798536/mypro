@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { CorridorModel, Valve, InspectionRoute, ForbiddenZone, Conflict, WorkOrder, Annotation, CorridorNode, RoutePoint } from '@/types'
+import type { CorridorModel, Valve, InspectionRoute, ForbiddenZone, Conflict, WorkOrder, Annotation, CorridorNode, RoutePoint, EvidenceItem } from '@/types'
 import { corridorData } from '@/data/corridor'
 import { valveData } from '@/data/valves'
 import { routeData } from '@/data/routes'
@@ -56,6 +56,13 @@ interface AppState {
 
   screenshotOverlay: boolean
   latestScreenshot: string | null
+  latestScreenshotWithWatermark: string | null
+  screenshotMetadata: {
+    routeVersion: string
+    userName: string
+    viewMode: string
+    layers: string[]
+  } | null
 
   pendingAnnotationText: string
   pendingArrowText: string
@@ -143,6 +150,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   screenshotOverlay: false,
   latestScreenshot: null,
+  latestScreenshotWithWatermark: null,
+  screenshotMetadata: null,
 
   pendingAnnotationText: '',
   pendingArrowText: '重点巡检',
@@ -386,14 +395,138 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   takeScreenshot: (canvas) => {
     try {
-      const dataUrl = canvas.toDataURL('image/png')
-      set({ latestScreenshot: dataUrl, screenshotOverlay: true })
+      const raw = canvas.toDataURL('image/png')
+      const state = get()
+      const now = new Date()
+      const ts = now.toISOString()
+      const dateStr = now.toISOString().slice(0, 19).replace(/[T:]/g, '-')
+
+      const activeRoute = state.selectedRouteId
+        ? state.routes.find((r) => r.id === state.selectedRouteId)
+        : null
+      const routeVersion = activeRoute?.version ?? '无选中路线'
+
+      const layers: string[] = []
+      if (state.showValveLayer) layers.push('阀门')
+      if (state.showRouteLayer) layers.push('路线')
+      if (state.showForbiddenLayer) layers.push('禁区')
+      if (state.showAnnotationLayer) layers.push('标注')
+
+      const metadata = {
+        routeVersion,
+        userName: '当前用户',
+        viewMode: state.viewMode,
+        layers,
+      }
+
+      const img = new Image()
+      img.onload = () => {
+        const c = document.createElement('canvas')
+        c.width = img.width
+        c.height = img.height
+        const ctx = c.getContext('2d')
+        if (!ctx) return
+
+        ctx.drawImage(img, 0, 0)
+
+        const padding = 12
+        const lineHeight = 18
+        const lines = [
+          `版本: ${routeVersion}`,
+          `时间: ${ts.slice(0, 19)}`,
+          `视角: ${metadata.viewMode} | 图层: ${metadata.layers.join('+')}`,
+          `操作人: ${metadata.userName}`,
+        ]
+        const boxW = 340
+        const boxH = lines.length * lineHeight + padding * 2
+
+        ctx.fillStyle = 'rgba(10, 22, 40, 0.85)'
+        ctx.fillRect(c.width - boxW - 8, c.height - boxH - 8, boxW, boxH)
+        ctx.strokeStyle = 'rgba(30, 58, 95, 0.9)'
+        ctx.lineWidth = 1
+        ctx.strokeRect(c.width - boxW - 8, c.height - boxH - 8, boxW, boxH)
+
+        ctx.font = '12px "JetBrains Mono", monospace'
+        lines.forEach((line, i) => {
+          ctx.fillStyle = i === 0 ? '#60A5FA' : '#94A3B8'
+          ctx.fillText(line, c.width - boxW - 8 + padding, c.height - boxH - 8 + padding + (i + 1) * lineHeight - 4)
+        })
+
+        const watermarked = c.toDataURL('image/png')
+        set({
+          latestScreenshot: watermarked,
+          latestScreenshotWithWatermark: watermarked,
+          screenshotOverlay: true,
+          screenshotMetadata: metadata,
+        })
+
+        const evidenceId = `ev-screenshot-${Date.now()}`
+        const newEvidence: EvidenceItem = {
+          id: evidenceId,
+          type: 'screenshot',
+          url: '',
+          dataUrl: watermarked,
+          timestamp: ts,
+          description: `工作台截图 [${routeVersion}] ${ts.slice(0, 19)}`,
+          metadata,
+        }
+
+        const conflictId = state.selectedConflictId
+        const workOrderId = state.selectedWorkOrderId
+        const relatedWo = workOrderId
+          ? state.workOrders.find((w) => w.id === workOrderId)
+          : null
+
+        if (relatedWo) {
+          set({
+            workOrders: state.workOrders.map((w) =>
+              w.id === workOrderId
+                ? { ...w, attachments: [...w.attachments, newEvidence], updatedAt: ts }
+                : w,
+            ),
+          })
+        } else {
+          const targetWo = state.workOrders.find((w) => w.status !== 'closed')
+          if (targetWo) {
+            set({
+              workOrders: state.workOrders.map((w) =>
+                w.id === targetWo.id
+                  ? { ...w, attachments: [...w.attachments, newEvidence], updatedAt: ts }
+                  : w,
+              ),
+            })
+          } else {
+            const newWo: WorkOrder = {
+              id: `WO-${now.getFullYear()}-${String(state.workOrders.length + 1).padStart(4, '0')}`,
+              title: `工作台截图证据 ${ts.slice(0, 10)}`,
+              description: `自动生成的截图证据工单，包含工作台截图和操作元数据`,
+              type: 'conflict_investigation',
+              status: 'open',
+              creator: '当前用户',
+              createdAt: ts,
+              updatedAt: ts,
+              relatedRouteIds: activeRoute ? [activeRoute.id] : [],
+              relatedValveIds: [],
+              relatedConflictIds: conflictId ? [conflictId] : [],
+              attachments: [newEvidence],
+              comments: [],
+            }
+            set({ workOrders: [...state.workOrders, newWo] })
+          }
+        }
+      }
+      img.src = raw
     } catch (e) {
       console.error('截图失败:', e)
     }
   },
 
-  clearScreenshot: () => set({ screenshotOverlay: false, latestScreenshot: null }),
+  clearScreenshot: () => set({
+    screenshotOverlay: false,
+    latestScreenshot: null,
+    latestScreenshotWithWatermark: null,
+    screenshotMetadata: null,
+  }),
 
   setPendingAnnotationText: (text) => set({ pendingAnnotationText: text }),
   setPendingArrowText: (text) => set({ pendingArrowText: text }),

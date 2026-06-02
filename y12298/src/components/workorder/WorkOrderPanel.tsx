@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
-import type { WorkOrderStatus, WorkOrderType } from '@/types'
-import { ChevronDown, ChevronRight, FileText, Camera, MessageSquare, ClipboardCheck } from 'lucide-react'
+import type { WorkOrderStatus, WorkOrderType, EvidenceItem } from '@/types'
+import { ChevronDown, ChevronRight, FileText, Camera, MessageSquare, ClipboardCheck, X, Download, Eye } from 'lucide-react'
 
 const statusColorMap: Record<WorkOrderStatus, string> = {
   open: '#DC2626',
@@ -22,11 +22,74 @@ const typeLabelMap: Record<WorkOrderType, string> = {
   model_update: '模型更新',
 }
 
-const evidenceTypeIcon: Record<string, string> = {
-  screenshot: '📷',
-  workorder: '📋',
-  model_snapshot: '🔬',
-  annotation: '📝',
+const evidenceTypeLabel: Record<string, string> = {
+  screenshot: '📷 截图',
+  workorder: '📋 工单',
+  model_snapshot: '🔬 模型快照',
+  annotation: '📝 标注',
+}
+
+function EvidenceThumbnail({ evidence }: { evidence: EvidenceItem }) {
+  const [expanded, setExpanded] = useState(false)
+
+  if (evidence.type === 'screenshot' && evidence.dataUrl) {
+    return (
+      <div className="mt-1">
+        <div className="flex items-center gap-1.5 text-[10px]">
+          <Camera size={10} style={{ color: '#60A5FA' }} />
+          <span className="truncate flex-1" style={{ color: '#94A3B8' }}>{evidence.description}</span>
+          <button onClick={() => setExpanded(!expanded)} className="rounded p-0.5 hover:bg-white/10 cursor-pointer" style={{ color: '#64748B' }}>
+            <Eye size={10} />
+          </button>
+          <a
+            href={evidence.dataUrl}
+            download={`证据_${evidence.id}.png`}
+            className="rounded p-0.5 hover:bg-white/10"
+            style={{ color: '#64748B' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Download size={10} />
+          </a>
+        </div>
+        <div className="flex items-center gap-2 mt-0.5 text-[10px]" style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>
+          <span>{evidence.timestamp.slice(0, 19)}</span>
+          {evidence.metadata?.routeVersion && <span style={{ color: '#60A5FA' }}>{evidence.metadata.routeVersion}</span>}
+          {evidence.metadata?.viewMode && <span>{evidence.metadata.viewMode}</span>}
+        </div>
+        {evidence.metadata?.layers && evidence.metadata.layers.length > 0 && (
+          <div className="flex gap-1 mt-0.5">
+            {evidence.metadata.layers.map((l) => (
+              <span key={l} className="rounded px-1 py-px text-[9px]" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#F59E0B' }}>
+                {l}
+              </span>
+            ))}
+          </div>
+        )}
+        <div
+          className="mt-1 rounded overflow-hidden border cursor-pointer"
+          style={{ borderColor: '#1E3A5F', maxHeight: expanded ? '300px' : '48px' }}
+          onClick={() => setExpanded(!expanded)}
+        >
+          <img
+            src={evidence.dataUrl}
+            alt={evidence.description}
+            className="w-full"
+            style={{ objectFit: expanded ? 'contain' : 'cover', maxHeight: expanded ? '300px' : '48px' }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-start gap-1.5 text-[10px]" style={{ color: '#94A3B8' }}>
+      <span>{evidenceTypeLabel[evidence.type] || '📎'}</span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate">{evidence.description}</div>
+        <div style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>{evidence.timestamp.slice(0, 19)}</div>
+      </div>
+    </div>
+  )
 }
 
 export default function WorkOrderPanel() {
@@ -165,7 +228,7 @@ export default function WorkOrderPanel() {
         <div className="border-t p-3" style={{ borderColor: '#1E3A5F', background: 'rgba(15,29,47,0.8)' }}>
           <div className="flex items-center gap-1 text-xs font-medium" style={{ color: '#60A5FA' }}>
             <ClipboardCheck size={12} />
-            证据 & 附件
+            证据 & 附件 ({selectedWorkOrder.attachments.length})
           </div>
           {(selectedWorkOrder.attachments.length === 0 && selectedWorkOrder.relatedConflictIds.length === 0) && (
             <div className="mt-1 text-[10px]" style={{ color: '#475569' }}>暂无关联证据</div>
@@ -180,15 +243,13 @@ export default function WorkOrderPanel() {
               ))}
             </div>
           )}
-          {selectedWorkOrder.attachments.map((att) => (
-            <div key={att.id} className="mt-1 flex items-start gap-1.5 text-[10px]" style={{ color: '#94A3B8' }}>
-              <span>{evidenceTypeIcon[att.type] || '📎'}</span>
-              <div className="min-w-0 flex-1">
-                <div className="truncate">{att.description}</div>
-                <div style={{ color: '#475569', fontFamily: 'JetBrains Mono, monospace' }}>{att.timestamp}</div>
+          <div className="mt-1.5 space-y-2">
+            {selectedWorkOrder.attachments.map((att) => (
+              <div key={att.id} className="rounded border p-1.5" style={{ borderColor: '#1E3A5F', background: 'rgba(30,64,175,0.04)' }}>
+                <EvidenceThumbnail evidence={att} />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
