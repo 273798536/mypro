@@ -10,7 +10,7 @@ export function detectInsufficientSample(
 
   if (valid) return null;
 
-  const smallCells = [];
+  const smallCells: { row: number; col: number; value: number }[] = [];
   for (let i = 0; i < expectedTable.length; i++) {
     for (let j = 0; j < expectedTable[i].length; j++) {
       if (expectedTable[i][j] < 5) {

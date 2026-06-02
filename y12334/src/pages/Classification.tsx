@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '../store';
 import { autoClassifyRecords, findMatchingProject } from '../utils/classification';
+import type { DefectRecord } from '../types';
 import { cn } from '../lib/utils';
 
 export default function Classification() {
@@ -38,7 +39,7 @@ export default function Classification() {
   const handleAutoClassify = () => {
     if (!currentProjectId || currentRecords.length === 0) return;
 
-    const projectRecordsMap = new Map<string, any[]>();
+    const projectRecordsMap = new Map<string, DefectRecord[]>();
     projects.forEach(p => {
       if (p.id !== currentProjectId) {
         projectRecordsMap.set(p.id, defectRecords.get(p.id) || []);
@@ -55,7 +56,7 @@ export default function Classification() {
   const getMatchInfo = (projectId: string) => {
     if (!currentProjectId || currentRecords.length === 0) return null;
     
-    const projectRecordsMap = new Map<string, any[]>();
+    const projectRecordsMap = new Map<string, DefectRecord[]>();
     projectRecordsMap.set(projectId, defectRecords.get(projectId) || []);
     
     const targetProject = projects.filter(p => p.id === projectId);
