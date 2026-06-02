@@ -13,6 +13,12 @@ type ViewMode = 'top' | 'side' | 'free'
 type ToolMode = 'select' | 'draw_route' | 'annotate_text' | 'annotate_arrow' | 'measure'
 type CompareMode = 'none' | 'selecting' | 'comparing'
 
+export type AnnotationPoint = {
+  x: number
+  y: number
+  z: number
+}
+
 interface AppState {
   corridor: CorridorModel
   valves: Valve[]
@@ -51,6 +57,11 @@ interface AppState {
   screenshotOverlay: boolean
   latestScreenshot: string | null
 
+  pendingAnnotationText: string
+  pendingArrowText: string
+  measurePoints: AnnotationPoint[]
+  lastClickedPoint: AnnotationPoint | null
+
   setSelectedValve: (id: string | null) => void
   setSelectedRoute: (id: string | null) => void
   setSelectedConflict: (id: string | null) => void
@@ -87,6 +98,12 @@ interface AppState {
   clearScreenshot: () => void
 
   validateDraftRoute: () => string[]
+
+  setPendingAnnotationText: (text: string) => void
+  setPendingArrowText: (text: string) => void
+  handleSceneClick: (point: AnnotationPoint) => void
+  clearMeasurePoints: () => void
+  cancelAnnotation: () => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -126,6 +143,11 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   screenshotOverlay: false,
   latestScreenshot: null,
+
+  pendingAnnotationText: '',
+  pendingArrowText: '重点巡检',
+  measurePoints: [],
+  lastClickedPoint: null,
 
   setSelectedValve: (id) => set({ selectedValveId: id }),
   setSelectedRoute: (id) => set({ selectedRouteId: id }),
@@ -372,4 +394,82 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   clearScreenshot: () => set({ screenshotOverlay: false, latestScreenshot: null }),
+
+  setPendingAnnotationText: (text) => set({ pendingAnnotationText: text }),
+  setPendingArrowText: (text) => set({ pendingArrowText: text }),
+
+  handleSceneClick: (point) => {
+    const state = get()
+    const { toolMode, pendingAnnotationText, pendingArrowText, measurePoints, addAnnotation } = state
+
+    if (toolMode === 'annotate_text' && pendingAnnotationText.trim()) {
+      const newAnnotation = {
+        id: `ann-${Date.now()}`,
+        type: 'text' as const,
+        position: [point.x, point.y + 0.5, point.z] as [number, number, number],
+        content: pendingAnnotationText,
+        color: '#60A5FA',
+        author: '当前用户',
+        createdAt: new Date().toISOString(),
+      }
+      addAnnotation(newAnnotation)
+      set({ toolMode: 'select', pendingAnnotationText: '' })
+      return
+    }
+
+    if (toolMode === 'annotate_arrow') {
+      const newAnnotation = {
+        id: `ann-${Date.now()}`,
+        type: 'arrow' as const,
+        position: [point.x, point.y + 0.5, point.z] as [number, number, number],
+        content: pendingArrowText || '重点巡检',
+        color: '#22C55E',
+        author: '当前用户',
+        createdAt: new Date().toISOString(),
+      }
+      addAnnotation(newAnnotation)
+      set({ toolMode: 'select' })
+      return
+    }
+
+    if (toolMode === 'measure') {
+      const newPoints = [...measurePoints, point]
+      if (newPoints.length >= 2) {
+        const p1 = newPoints[0]
+        const p2 = newPoints[1]
+        const distance = Math.sqrt(
+          Math.pow(p2.x - p1.x, 2) + Math.pow(p2.z - p1.z, 2),
+        ).toFixed(2)
+
+        const midX = (p1.x + p2.x) / 2
+        const midZ = (p1.z + p2.z) / 2
+
+        const newAnnotation = {
+          id: `ann-${Date.now()}`,
+          type: 'measure' as const,
+          position: [midX, 0.3, midZ] as [number, number, number],
+          content: `距离: ${distance}m`,
+          color: '#F59E0B',
+          author: '当前用户',
+          createdAt: new Date().toISOString(),
+        }
+        addAnnotation(newAnnotation)
+        set({ toolMode: 'select', measurePoints: [] })
+      } else {
+        set({ measurePoints: newPoints, lastClickedPoint: point })
+      }
+    }
+  },
+
+  clearMeasurePoints: () => set({ measurePoints: [], lastClickedPoint: null }),
+
+  cancelAnnotation: () => {
+    set({
+      toolMode: 'select',
+      pendingAnnotationText: '',
+      pendingArrowText: '重点巡检',
+      measurePoints: [],
+      lastClickedPoint: null,
+    })
+  },
 }))

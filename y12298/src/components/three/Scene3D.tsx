@@ -1,6 +1,6 @@
 import { Canvas, useThree, useFrame, useThree as useThreeContext } from '@react-three/fiber'
 import { OrbitControls, Grid, Html } from '@react-three/drei'
-import { useAppStore } from '@/store/useAppStore'
+import { useAppStore, type AnnotationPoint } from '@/store/useAppStore'
 import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import * as THREE from 'three'
 import Lights from './Lights'
@@ -139,6 +139,100 @@ function DraftRoutePreview() {
   )
 }
 
+function ClickableGroundPlane() {
+  const toolMode = useAppStore((s) => s.toolMode)
+  const handleSceneClick = useAppStore((s) => s.handleSceneClick)
+  const isDrawingRoute = useAppStore((s) => s.isDrawingRoute)
+  const planeRef = useRef<THREE.Mesh>(null)
+
+  const isAnnotationMode = toolMode === 'annotate_text' || toolMode === 'annotate_arrow' || toolMode === 'measure'
+
+  if (!isAnnotationMode && !isDrawingRoute) return null
+
+  return (
+    <mesh
+      ref={planeRef}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[6, -0.49, 0]}
+      onClick={(e) => {
+        e.stopPropagation()
+        const point = e.point
+        handleSceneClick({ x: point.x, y: point.y, z: point.z })
+      }}
+    >
+      <planeGeometry args={[50, 50]} />
+      <meshBasicMaterial transparent opacity={0} />
+    </mesh>
+  )
+}
+
+function MeasurePoints() {
+  const toolMode = useAppStore((s) => s.toolMode)
+  const measurePoints = useAppStore((s) => s.measurePoints)
+
+  if (toolMode !== 'measure') return null
+
+  return (
+    <>
+      {measurePoints.map((point, i) => (
+        <group key={i}>
+          <mesh position={[point.x, point.y + 0.05, point.z]}>
+            <sphereGeometry args={[0.15, 16, 16]} />
+            <meshBasicMaterial color="#F59E0B" />
+          </mesh>
+          <Html position={[point.x, point.y + 0.4, point.z]} center zIndexRange={[100, 0]}>
+            <div
+              style={{
+                background: 'rgba(245, 158, 11, 0.9)',
+                color: 'white',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontSize: '10px',
+                fontFamily: 'JetBrains Mono, monospace',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none',
+              }}
+            >
+              点{i + 1}
+            </div>
+          </Html>
+        </group>
+      ))}
+    </>
+  )
+}
+
+function MeasurePreviewLine() {
+  const toolMode = useAppStore((s) => s.toolMode)
+  const measurePoints = useAppStore((s) => s.measurePoints)
+
+  if (toolMode !== 'measure' || measurePoints.length < 2) return null
+
+  const p1 = measurePoints[0]
+  const p2 = measurePoints[1]
+
+  const points = [
+    new THREE.Vector3(p1.x, p1.y + 0.05, p1.z),
+    new THREE.Vector3(p2.x, p2.y + 0.05, p2.z),
+  ]
+
+  const pointsArray = new Float32Array(points.length * 3)
+  points.forEach((p, i) => {
+    pointsArray[i * 3] = p.x
+    pointsArray[i * 3 + 1] = p.y
+    pointsArray[i * 3 + 2] = p.z
+  })
+
+  return (
+    <line>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={points.length} array={pointsArray} itemSize={3} />
+      </bufferGeometry>
+      <lineBasicMaterial color="#F59E0B" linewidth={2} />
+    </line>
+  )
+}
+
 function SceneContent() {
   const corridor = useAppStore((s) => s.corridor)
   const valves = useAppStore((s) => s.valves)
@@ -191,6 +285,10 @@ function SceneContent() {
           <DraftRoutePreview />
         </>
       )}
+
+      <ClickableGroundPlane />
+      <MeasurePoints />
+      <MeasurePreviewLine />
 
       <Annotations3D />
     </>

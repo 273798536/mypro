@@ -1,73 +1,25 @@
 import { useAppStore } from '@/store/useAppStore'
 import type { AnnotationType } from '@/types'
-import { X, Plus, Type, ArrowRight, Ruler, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { X, Type, ArrowRight, Ruler } from 'lucide-react'
 
 export default function AnnotationPanel() {
   const toolMode = useAppStore((s) => s.toolMode)
   const setToolMode = useAppStore((s) => s.setToolMode)
   const annotations = useAppStore((s) => s.annotations)
-  const addAnnotation = useAppStore((s) => s.addAnnotation)
   const showAnnotationLayer = useAppStore((s) => s.showAnnotationLayer)
-
-  const [newText, setNewText] = useState('')
-  const [measurePoints, setMeasurePoints] = useState<{ x: number; z: number }[]>([])
-
-  const tools: { id: AnnotationType; icon: any; label: string }[] = [
-    { id: 'text', icon: Type, label: '文字' },
-    { id: 'arrow', icon: ArrowRight, label: '箭头' },
-    { id: 'measure', icon: Ruler, label: '测距' },
-  ]
-
-  const handleAddTextAnnotation = () => {
-    if (!newText.trim()) return
-
-    const newAnnotation = {
-      id: `ann-${Date.now()}`,
-      type: 'text' as const,
-      position: [6, 1, 0] as [number, number, number],
-      content: newText,
-      color: '#60A5FA',
-      author: '当前用户',
-      createdAt: new Date().toISOString(),
-    }
-
-    addAnnotation(newAnnotation)
-    setNewText('')
-    setToolMode('select')
-  }
-
-  const handleAddMeasureAnnotation = () => {
-    const newAnnotation = {
-      id: `ann-${Date.now()}`,
-      type: 'measure' as const,
-      position: [8, 0.5, 3] as [number, number, number],
-      content: '距离: 5.2m',
-      color: '#F59E0B',
-      author: '当前用户',
-      createdAt: new Date().toISOString(),
-    }
-
-    addAnnotation(newAnnotation)
-    setToolMode('select')
-  }
-
-  const handleAddArrowAnnotation = () => {
-    const newAnnotation = {
-      id: `ann-${Date.now()}`,
-      type: 'arrow' as const,
-      position: [4, 1, -2] as [number, number, number],
-      content: '重点巡检',
-      color: '#22C55E',
-      author: '当前用户',
-      createdAt: new Date().toISOString(),
-    }
-
-    addAnnotation(newAnnotation)
-    setToolMode('select')
-  }
+  const pendingAnnotationText = useAppStore((s) => s.pendingAnnotationText)
+  const pendingArrowText = useAppStore((s) => s.pendingArrowText)
+  const setPendingAnnotationText = useAppStore((s) => s.setPendingAnnotationText)
+  const setPendingArrowText = useAppStore((s) => s.setPendingArrowText)
+  const measurePoints = useAppStore((s) => s.measurePoints)
+  const cancelAnnotation = useAppStore((s) => s.cancelAnnotation)
+  const clearMeasurePoints = useAppStore((s) => s.clearMeasurePoints)
 
   if (toolMode === 'select') return null
+
+  const isTextMode = toolMode === 'annotate_text'
+  const isArrowMode = toolMode === 'annotate_arrow'
+  const isMeasureMode = toolMode === 'measure'
 
   return (
     <div
@@ -76,12 +28,12 @@ export default function AnnotationPanel() {
     >
       <div className="flex items-center justify-between mb-3">
         <div className="text-xs font-medium" style={{ color: '#60A5FA' }}>
-          {toolMode === 'annotate_text' && '文字标注'}
-          {toolMode === 'annotate_arrow' && '箭头标注'}
-          {toolMode === 'measure' && '距离测量'}
+          {isTextMode && '文字标注'}
+          {isArrowMode && '箭头标注'}
+          {isMeasureMode && '距离测量'}
         </div>
         <button
-          onClick={() => setToolMode('select')}
+          onClick={cancelAnnotation}
           className="rounded p-1 hover:bg-white/10 transition-colors"
           style={{ color: '#94A3B8' }}
         >
@@ -89,59 +41,75 @@ export default function AnnotationPanel() {
         </button>
       </div>
 
-      {toolMode === 'annotate_text' && (
+      {isTextMode && (
         <div className="space-y-2">
+          <div className="text-[10px]" style={{ color: '#64748B' }}>
+            1. 输入标注文字
+          </div>
           <input
             type="text"
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
+            value={pendingAnnotationText}
+            onChange={(e) => setPendingAnnotationText(e.target.value)}
             placeholder="输入标注内容..."
             className="w-full rounded border px-2 py-1.5 text-xs"
             style={{ background: '#0F172A', borderColor: '#1E3A5F', color: '#CBD5E1' }}
+            autoFocus
           />
-          <button
-            onClick={handleAddTextAnnotation}
-            disabled={!newText.trim()}
-            className={`flex w-full items-center justify-center gap-1 rounded py-1.5 text-xs ${
-              newText.trim() ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
-            }`}
-            style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#60A5FA' }}
+          <div
+            className="text-[10px]"
+            style={{ color: pendingAnnotationText.trim() ? '#22C55E' : '#64748B' }}
           >
-            <Plus size={12} />
-            添加标注
-          </button>
+            2. {pendingAnnotationText.trim() ? '✓ 文字已输入，点击3D场景放置标注' : '请先输入文字'}
+          </div>
         </div>
       )}
 
-      {toolMode === 'annotate_arrow' && (
+      {isArrowMode && (
         <div className="space-y-2">
           <div className="text-[10px]" style={{ color: '#64748B' }}>
-            点击场景位置添加箭头标注
+            1. 输入箭头文字（可选）
           </div>
-          <button
-            onClick={handleAddArrowAnnotation}
-            className="flex w-full items-center justify-center gap-1 rounded py-1.5 text-xs cursor-pointer"
-            style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}
-          >
-            <Plus size={12} />
-            示例箭头
-          </button>
+          <input
+            type="text"
+            value={pendingArrowText}
+            onChange={(e) => setPendingArrowText(e.target.value)}
+            placeholder="箭头标注..."
+            className="w-full rounded border px-2 py-1.5 text-xs"
+            style={{ background: '#0F172A', borderColor: '#1E3A5F', color: '#CBD5E1' }}
+          />
+          <div className="text-[10px]" style={{ color: '#22C55E' }}>
+            2. 点击3D场景放置箭头标注
+          </div>
         </div>
       )}
 
-      {toolMode === 'measure' && (
+      {isMeasureMode && (
         <div className="space-y-2">
           <div className="text-[10px]" style={{ color: '#64748B' }}>
-            点击两个点测量距离
+            点击3D场景选择两个点测量距离
           </div>
-          <button
-            onClick={handleAddMeasureAnnotation}
-            className="flex w-full items-center justify-center gap-1 rounded py-1.5 text-xs cursor-pointer"
-            style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}
-          >
-            <Plus size={12} />
-            示例测量
-          </button>
+          <div className="flex items-center gap-2 text-[10px]" style={{ color: '#F59E0B' }}>
+            <Ruler size={12} />
+            <span>已选点: {measurePoints.length} / 2</span>
+          </div>
+          {measurePoints.length > 0 && (
+            <div className="space-y-1">
+              {measurePoints.map((p, i) => (
+                <div key={i} className="text-[10px]" style={{ color: '#94A3B8', fontFamily: 'JetBrains Mono, monospace' }}>
+                  点{i + 1}: ({p.x.toFixed(1)}, {p.z.toFixed(1)})
+                </div>
+              ))}
+            </div>
+          )}
+          {measurePoints.length > 0 && (
+            <button
+              onClick={clearMeasurePoints}
+              className="w-full text-[10px] underline cursor-pointer"
+              style={{ color: '#F87171' }}
+            >
+              清除已选点
+            </button>
+          )}
         </div>
       )}
 
