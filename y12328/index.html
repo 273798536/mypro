@@ -17,6 +17,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
 .header h1{font-size:18px;font-weight:600;white-space:nowrap}
 .header .badge{font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px;font-weight:500}
+.source-badge{font-size:11px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:2px 10px;border-radius:10px;display:flex;align-items:center;gap:6px}
+.source-badge .dot{width:8px;height:8px;border-radius:50%}
+.source-badge.demo .dot{background:var(--warn)}
+.source-badge.user .dot{background:var(--success)}
 .tabs{display:flex;gap:0;margin-left:auto}
 .tab{padding:8px 20px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab:hover{color:var(--text)}
@@ -29,6 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
 .card-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .card-title .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.card-title .right{margin-left:auto;font-weight:400;text-transform:none}
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .stat .label{font-size:11px;color:var(--text2);margin-bottom:4px}
@@ -50,6 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn.danger{border-color:var(--danger);color:var(--danger)}
 .btn.danger:hover{background:var(--danger);color:#fff}
 .btn.sm{padding:4px 10px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{text-align:left;padding:8px 10px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;background:var(--surface);z-index:1}
 td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
@@ -71,7 +77,7 @@ tr:hover td{background:var(--surface2)}
 .evidence-item.leak .type{color:var(--info)}
 .chart-container{position:relative;height:280px}
 .chart-container canvas{width:100%!important;height:100%!important}
-.search-bar{display:flex;gap:10px;margin-bottom:14px;align-items:center}
+.search-bar{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
 .search-bar input,.search-bar select{padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px}
 .search-bar input{flex:1;min-width:120px}
 .search-bar input:focus,.search-bar select:focus{outline:none;border-color:var(--accent)}
@@ -95,7 +101,7 @@ tr:hover td{background:var(--surface2)}
 .help-toggle:hover{text-decoration:underline}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:700px;width:90%;max-height:85vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:800px;width:90%;max-height:85vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .modal h3{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .modal .close{margin-left:auto;cursor:pointer;color:var(--text2);font-size:20px}
 .modal .close:hover{color:var(--text)}
@@ -107,11 +113,33 @@ tr:hover td{background:var(--surface2)}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:13px}
 .pager{display:flex;justify-content:center;gap:6px;margin-top:12px}
 .pager .btn{min-width:32px;justify-content:center}
+
+.import-tabs{display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.import-tab{padding:8px 16px;font-size:12px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.import-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
+.import-panel{display:none}
+.import-panel.active{display:block}
+textarea.import-area{width:100%;height:200px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;color:var(--text);font-family:monospace;font-size:11px;resize:vertical}
+.file-drop{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:all .2s}
+.file-drop:hover{border-color:var(--accent);background:rgba(108,140,255,.05)}
+.file-drop.dragover{border-color:var(--accent);background:rgba(108,140,255,.1)}
+.format-spec{background:var(--surface2);border-radius:var(--radius);padding:12px;font-size:11px;color:var(--text2);margin-top:12px}
+.format-spec code{background:var(--bg);padding:2px 6px;border-radius:4px}
+.version-selector{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.version-tag{padding:4px 12px;border-radius:var(--radius);font-size:11px;cursor:pointer;border:1px solid var(--border)}
+.version-tag.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.version-tag .remove{margin-left:6px;opacity:.7;cursor:pointer}
+.version-tag .remove:hover{opacity:1}
+.meta-info{font-size:11px;color:var(--text2);padding:8px 0;border-top:1px solid var(--border);margin-top:12px}
+.meta-info span{margin-right:16px}
+
 @media(max-width:900px){
   .stat-grid{grid-template-columns:repeat(2,1fr)}
   .row{flex-direction:column}
   .main{padding:16px}
   .version-compare{grid-template-columns:1fr}
+  .header{padding:12px 16px;flex-wrap:wrap}
+  .tabs{width:100%;order:3}
 }
 </style>
 </head>
@@ -119,7 +147,10 @@ tr:hover td{background:var(--surface2)}
 
 <div class="header">
   <h1>逻辑回归阈值解释器</h1>
-  <span class="badge">v1.0</span>
+  <span class="badge">v2.0</span>
+  <span class="source-badge" id="source-badge"><span class="dot"></span><span id="source-label">演示数据</span></span>
+  <button class="btn sm" onclick="ImportPanel.open()">📥 导入样本</button>
+  <button class="btn sm danger" onclick="DataManager.clearAll()" id="clear-btn" style="display:none">🗑 清空数据</button>
   <div class="tabs">
     <div class="tab active" data-tab="simulation">阈值模拟</div>
     <div class="tab" data-tab="review">样本回看</div>
@@ -143,6 +174,7 @@ tr:hover td{background:var(--surface2)}
       <input type="range" id="threshold-slider" min="0" max="100" value="50" step="1">
       <span class="val" id="threshold-val">0.50</span>
       <span class="bounds">下界 <strong id="bound-lower">0.30</strong> / 上界 <strong id="bound-upper">0.70</strong></span>
+      <button class="btn sm" onclick="openBoundsModal()">调整边界</button>
     </div>
     <div class="row">
       <div class="col">
@@ -175,6 +207,9 @@ tr:hover td{background:var(--surface2)}
   </div>
 
   <div id="panel-review" class="panel">
+    <div class="version-selector" id="version-selector">
+      <span style="font-size:12px;color:var(--text2)">版本：</span>
+    </div>
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="搜索客户ID或姓名...">
       <select id="filter-group">
@@ -189,9 +224,6 @@ tr:hover td{background:var(--surface2)}
         <option value="">全部</option>
         <option value="yes">仅不一致</option>
         <option value="no">仅一致</option>
-      </select>
-      <select id="filter-version">
-        <option value="current">当前版本</option>
       </select>
       <button class="btn" onclick="ReviewPanel.search()">筛选</button>
     </div>
@@ -239,7 +271,8 @@ tr:hover td{background:var(--surface2)}
         <div class="card">
           <div class="card-title"><span class="dot" style="background:var(--success)"></span>报告导出</div>
           <p style="font-size:12px;color:var(--text2);margin-bottom:16px">导出数据与阈值模拟、样本回看使用同一批数据，口径一致。包含阈值越界证据、分组稀疏证据和样本泄漏记录。</p>
-          <div style="display:flex;flex-direction:column;gap:10px">
+          <div id="export-meta" class="meta-info"></div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">
             <button class="btn primary" onclick="ExportPanel.downloadFull()">📄 下载完整报告 (CSV)</button>
             <button class="btn" onclick="ExportPanel.downloadAffected()">📋 下载受影响客户明细</button>
             <button class="btn" onclick="ExportPanel.downloadViolations()">⚠ 下载阈值越界证据</button>
@@ -281,15 +314,23 @@ tr:hover td{background:var(--surface2)}
     <div style="display:none">
       <div class="help-item">
         <h4>1. 准备样本特征</h4>
-        <p>每条样本需包含：客户ID、姓名、数值型特征（如年龄、收入、负债比、信用历史月数、在职年限、贷款金额、逾期次数）和模型分数（0~1）。特征值会自动归一化后与模型分数做方向比对，判断是否一致。不一致的样本会在"样本回看"中标记，并作为客户分组的补充证据保留在详情中。</p>
+        <p>点击顶部「📥 导入样本」按钮，支持三种方式：<br>
+        • <strong>CSV上传</strong>：拖动或选择.csv文件<br>
+        • <strong>粘贴数据</strong>：直接粘贴CSV格式文本<br>
+        • <strong>快速配置</strong>：手动输入特征列映射<br>
+        必填列：客户ID(id)、模型分数(model_score，0~1)；可选列：姓名(name)、版本(version)、多个数值型特征。特征值会自动归一化并与模型分数做方向比对。</p>
       </div>
       <div class="help-item">
         <h4>2. 复现阈值越界</h4>
-        <p>在"阈值模拟"面板拖动滑块，当阈值超出下界/上界时，页面顶部会出现红色越界提示，同时自动写入证据日志。每次阈值变动导致的客户分组迁移也会记录。在"样本回看"的证据日志中可按时间回溯所有越界操作。导出报告时，越界证据作为独立字段保留。</p>
+        <p>在"阈值模拟"面板拖动滑块，当阈值超出下界/上界时，页面顶部会出现红色越界提示，同时自动写入证据日志。每次阈值变动导致的客户分组迁移也会记录。可点击"调整边界"自定义阈值边界范围。</p>
       </div>
       <div class="help-item">
         <h4>3. 看报告导出</h4>
-        <p>报告导出与阈值模拟、样本回看共享同一批数据，口径完全一致。完整报告包含所有样本的当前分组、特征-分数一致性标记、越界/稀疏/泄漏标记。可单独导出受影响客户、越界证据、稀疏证据、泄漏记录或不一致记录。CSV格式可直接在Excel中打开，每行对应一个样本或一条证据。</p>
+        <p>报告导出与阈值模拟、样本回看共享同一批数据，口径完全一致。数据自动保存在浏览器localStorage，刷新页面后保持不变。导出的CSV包含数据哈希校验值，可用于追溯。</p>
+      </div>
+      <div class="help-item">
+        <h4>4. 样本泄漏检测</h4>
+        <p>导入多个版本的数据后，系统会自动检测跨版本重复的客户ID，标记为可能的样本泄漏。在"样本回看"面板可查看版本对比和泄漏详情。</p>
       </div>
     </div>
   </div>
@@ -297,96 +338,423 @@ tr:hover td{background:var(--surface2)}
 
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
-    <h3><span id="modal-title"></span><span class="close" onclick="document.getElementById('detail-modal').classList.remove('show')">&times;</span></h3>
+    <h3><span id="modal-title"></span><span class="close" onclick="closeModal('detail-modal')">&times;</span></h3>
     <div id="modal-body"></div>
   </div>
 </div>
 
+<div class="modal-overlay" id="import-modal">
+  <div class="modal" style="max-width:700px">
+    <h3>导入样本数据<span class="close" onclick="closeModal('import-modal')">&times;</span></h3>
+    <div class="import-tabs">
+      <div class="import-tab active" data-tab="csv">CSV文件</div>
+      <div class="import-tab" data-tab="paste">粘贴文本</div>
+      <div class="import-tab" data-tab="quick">快速配置</div>
+    </div>
+    <div id="import-csv" class="import-panel active">
+      <div class="file-drop" id="file-drop" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+        <div style="font-size:24px;margin-bottom:8px">📁</div>
+        <div style="font-size:13px;margin-bottom:4px">点击或拖拽CSV文件到这里</div>
+        <div style="font-size:11px;color:var(--text2)">支持 .csv 格式，最大 10MB</div>
+      </div>
+      <input type="file" id="file-input" accept=".csv" style="display:none" onchange="handleFileSelect(event)">
+      <div class="format-spec">
+        <strong>CSV格式要求：</strong><br>
+        第一行为表头，需包含 <code>id</code>（客户ID）和 <code>model_score</code>（模型分数0~1）。<br>
+        可选列：<code>name</code>（姓名）、<code>version</code>（版本号，如1/2）、任意数值型特征列。<br>
+        示例：id,name,model_score,age,income,debt_ratio,version
+      </div>
+    </div>
+    <div id="import-paste" class="import-panel">
+      <textarea class="import-area" id="paste-area" placeholder="粘贴CSV格式数据，例如：&#10;id,name,model_score,age,income,version&#10;C001,张三,0.72,35,25000,1&#10;C002,李四,0.35,28,18000,1"></textarea>
+      <button class="btn primary" onclick="ImportPanel.fromPaste()" style="margin-top:10px">解析并导入</button>
+      <div class="format-spec">
+        粘贴完整的CSV内容，包括表头行。系统会自动识别列映射。
+      </div>
+    </div>
+    <div id="import-quick" class="import-panel">
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+        <label style="font-size:12px;text-align:right;color:var(--text2)">客户ID列名</label>
+        <input type="text" id="quick-id" value="id" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+        <label style="font-size:12px;text-align:right;color:var(--text2)">模型分数列名</label>
+        <input type="text" id="quick-score" value="model_score" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+        <label style="font-size:12px;text-align:right;color:var(--text2)">姓名列名（可选）</label>
+        <input type="text" id="quick-name" value="name" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+        <label style="font-size:12px;text-align:right;color:var(--text2)">版本列名（可选）</label>
+        <input type="text" id="quick-version" value="version" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+        <label style="font-size:12px;text-align:right;color:var(--text2)">特征列（逗号分隔）</label>
+        <input type="text" id="quick-features" placeholder="age,income,debt_ratio" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+        <label style="font-size:12px;text-align:right;color:var(--text2)">版本号</label>
+        <input type="number" id="quick-ver-num" value="1" min="1" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;width:80px">
+      </div>
+      <div style="margin:10px 0">
+        <textarea class="import-area" id="quick-data" placeholder="粘贴数据内容（不含表头行，按上面配置的列顺序）&#10;示例：&#10;C001,张三,0.72,35,25000&#10;C002,李四,0.35,28,18000"></textarea>
+      </div>
+      <button class="btn primary" onclick="ImportPanel.fromQuick()">导入数据</button>
+    </div>
+    <div id="import-result" style="display:none;margin-top:16px">
+      <div class="card">
+        <div class="card-title" style="font-size:12px">预览（前10条）</div>
+        <div class="table-wrap" style="max-height:250px">
+          <table id="import-preview-table"></table>
+        </div>
+        <div class="meta-info" id="import-preview-meta"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn danger" onclick="ImportPanel.cancelImport()">取消</button>
+          <button class="btn primary" onclick="ImportPanel.confirmImport()">确认导入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bounds-modal">
+  <div class="modal" style="max-width:400px">
+    <h3>调整阈值边界<span class="close" onclick="closeModal('bounds-modal')">&times;</span></h3>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <label style="font-size:12px;color:var(--text2)">下界（最低阈值允许值）</label>
+        <input type="number" id="bound-lower-input" min="0" max="1" step="0.01" value="0.30" style="width:80px;padding:6px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;text-align:center">
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <label style="font-size:12px;color:var(--text2)">上界（最高阈值允许值）</label>
+        <input type="number" id="bound-upper-input" min="0" max="1" step="0.01" value="0.70" style="width:80px;padding:6px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;text-align:center">
+      </div>
+      <p style="font-size:11px;color:var(--text2);margin-top:12px">阈值超出此范围时将触发越界记录。建议根据业务规则设定。</p>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="closeModal('bounds-modal')">取消</button>
+      <button class="btn primary" onclick="applyBounds()">应用</button>
+    </div>
+  </div>
+</div>
+
 <script>
-var DATA_STORE = (function(){
-  var NAMES = ['张伟','王芳','李明','赵丽','刘洋','陈静','杨磊','黄敏','周强','吴霞','孙涛','马丽','朱军','胡琳','郭鹏','林娜','何勇','高燕','郑辉','梁萍','谢刚','韩梅','唐杰','冯蕾','董超','蒋云','沈楠','彭婷','曾鑫','吕露'];
-  var FEATURES = ['年龄','收入(万)','负债比','信用历史(月)','在职年限','贷款金额(万)','逾期次数'];
+var DataManager = {
+  versions: {},
+  currentVersion: 1,
+  featureNames: {},
+  featureDirection: {},
+  meta: {
+    importedAt: null,
+    dataHash: null,
+    source: 'demo',
+    totalRecords: 0
+  },
+  isDemo: true,
 
-  function genSamples(n, version){
-    var arr = [];
-    for(var i=0;i<n;i++){
-      var age = 22 + Math.random()*40;
-      var income = 3 + Math.random()*47;
-      var debtRatio = Math.random()*0.85;
-      var creditHistory = 6 + Math.random()*180;
-      var empYears = 0.5 + Math.random()*20;
-      var loanAmt = 1 + Math.random()*99;
-      var delinq = Math.floor(Math.random()*6);
-      var rawScore = 0.15*(1-debtRatio) + 0.15*(creditHistory/186) + 0.15*(empYears/20.5) + 0.15*(income/50) + 0.1*(1-age/62) + 0.15*(1-delinq/5) + 0.15*(1-loanAmt/100);
-      var noise = (Math.random()-0.5)*0.3;
-      var score = Math.max(0,Math.min(1, rawScore + noise));
-      var featureScore = calcFeatureScore(age,income,debtRatio,creditHistory,empYears,loanAmt,delinq);
-      var inconsist = Math.abs(score - featureScore) > 0.25;
-      arr.push({
-        id: 'CUST-'+ String(version||1).padStart(2,'0') +'-'+ String(i+1).padStart(4,'0'),
-        name: NAMES[i % NAMES.length],
-        version: version || 1,
-        features: {age:Math.round(age),income:+income.toFixed(1),debtRatio:+debtRatio.toFixed(3),creditHistory:Math.round(creditHistory),empYears:+empYears.toFixed(1),loanAmt:+loanAmt.toFixed(1),delinq:delinq},
-        modelScore: +score.toFixed(4),
-        featureScore: +featureScore.toFixed(4),
-        inconsistent: inconsist
-      });
+  init: function(){
+    this.loadFromStorage();
+    if(Object.keys(this.versions).length === 0){
+      this.loadDemoData();
+    } else {
+      this.isDemo = false;
+      this.currentVersion = Math.max.apply(null, Object.keys(this.versions).map(Number));
     }
-    return arr;
-  }
+    this.updateUI();
+    this.renderVersionSelector();
+  },
 
-  function calcFeatureScore(age,income,debtRatio,creditHistory,empYears,loanAmt,delinq){
-    var s = 0;
-    s += (income>20?0.2:income>10?0.1:0);
-    s += (debtRatio<0.3?0.2:debtRatio<0.5?0.1:0);
-    s += (creditHistory>60?0.2:creditHistory>24?0.1:0);
-    s += (empYears>5?0.15:empYears>2?0.08:0);
-    s += (delinq===0?0.15:delinq<=1?0.07:0);
-    s += (loanAmt<30?0.1:loanAmt<60?0.05:0);
-    return Math.min(1,s);
-  }
+  loadDemoData: function(){
+    this.isDemo = true;
+    var NAMES = ['张伟','王芳','李明','赵丽','刘洋','陈静','杨磊','黄敏','周强','吴霞','孙涛','马丽','朱军','胡琳','郭鹏','林娜','何勇','高燕','郑辉','梁萍'];
+    var FEATURE_KEYS = ['age','income','debtRatio','creditHistory','empYears','loanAmt','delinq'];
+    var FEATURE_LABELS = {'age':'年龄','income':'收入(万)','debtRatio':'负债比','creditHistory':'信用历史(月)','empYears':'在职年限','loanAmt':'贷款金额(万)','delinq':'逾期次数'};
+    var FEATURE_DIRECTION = {'age':-1,'income':1,'debtRatio':-1,'creditHistory':1,'empYears':1,'loanAmt':-1,'delinq':-1};
 
-  function getGroup(score, threshold){
+    this.featureNames = FEATURE_LABELS;
+    this.featureDirection = FEATURE_DIRECTION;
+
+    var seed = 12345;
+    function seededRandom(){
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    }
+
+    for(var v=1;v<=2;v++){
+      this.versions[v] = [];
+      var n = v===1?55:60;
+      for(var i=0;i<n;i++){
+        var age = 22 + seededRandom()*40;
+        var income = 3 + seededRandom()*47;
+        var debtRatio = seededRandom()*0.85;
+        var creditHistory = 6 + seededRandom()*180;
+        var empYears = 0.5 + seededRandom()*20;
+        var loanAmt = 1 + seededRandom()*99;
+        var delinq = Math.floor(seededRandom()*6);
+        var rawScore = 0.15*(1-debtRatio) + 0.15*(creditHistory/186) + 0.15*(empYears/20.5) + 0.15*(income/50) + 0.1*(1-age/62) + 0.15*(1-delinq/5) + 0.15*(1-loanAmt/100);
+        var noise = (seededRandom()-0.5)*0.3;
+        var score = Math.max(0,Math.min(1, rawScore + noise));
+
+        var features = {
+          age: Math.round(age),
+          income: +income.toFixed(1),
+          debtRatio: +debtRatio.toFixed(3),
+          creditHistory: Math.round(creditHistory),
+          empYears: +empYears.toFixed(1),
+          loanAmt: +loanAmt.toFixed(1),
+          delinq: delinq
+        };
+
+        var featureScore = this.calcFeatureScore(features, FEATURE_KEYS, FEATURE_DIRECTION);
+        var inconsist = Math.abs(score - featureScore) > 0.25;
+
+        this.versions[v].push({
+          id: 'CUST-'+String(v).padStart(2,'0')+'-'+String(i+1).padStart(4,'0'),
+          name: NAMES[i % NAMES.length],
+          version: v,
+          features: features,
+          modelScore: +score.toFixed(4),
+          featureScore: featureScore,
+          inconsistent: inconsist
+        });
+      }
+    }
+
+    this.currentVersion = 2;
+    this.meta = {
+      importedAt: new Date().toISOString(),
+      dataHash: this.calcHash(JSON.stringify(this.versions)),
+      source: 'demo',
+      totalRecords: Object.values(this.versions).reduce(function(s,a){return s+a.length},0)
+    };
+  },
+
+  calcFeatureScore: function(features, featureKeys, directionMap){
+    if(!featureKeys || featureKeys.length === 0) return 0.5;
+    var vals = featureKeys.map(function(k){
+      return features[k] != null ? features[k] : 0;
+    });
+    var min = Math.min.apply(null, vals);
+    var max = Math.max.apply(null, vals);
+    if(max === min) return 0.5;
+    var score = 0;
+    featureKeys.forEach(function(k, i){
+      var norm = (vals[i] - min) / (max - min);
+      var dir = directionMap && directionMap[k] === -1 ? -1 : 1;
+      if(dir === -1) norm = 1 - norm;
+      score += norm / featureKeys.length;
+    });
+    return +score.toFixed(4);
+  },
+
+  calcHash: function(str){
+    var hash = 0;
+    for(var i=0;i<str.length;i++){
+      var c = str.charCodeAt(i);
+      hash = ((hash<<5)-hash)+c;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16);
+  },
+
+  get current(){
+    return this.versions[this.currentVersion] || [];
+  },
+
+  get previous(){
+    var vs = Object.keys(this.versions).map(Number).sort(function(a,b){return b-a});
+    var idx = vs.indexOf(this.currentVersion);
+    if(idx < vs.length-1){
+      return this.versions[vs[idx+1]] || [];
+    }
+    return [];
+  },
+
+  get leakIds(){
+    var ids = {};
+    Object.keys(this.versions).forEach(function(v){
+      DataManager.versions[v].forEach(function(s){
+        if(!ids[s.id]) ids[s.id] = [];
+        ids[s.id].push(Number(v));
+      });
+    });
+    var leaked = [];
+    for(var id in ids){
+      if(ids[id].length > 1) leaked.push(id);
+    }
+    return leaked;
+  },
+
+  get crossLeak(){
+    return this.leakIds;
+  },
+
+  get features(){
+    return Object.keys(this.featureNames);
+  },
+
+  getGroup: function(score, threshold){
     if(score < threshold * 0.4) return 'A';
     if(score < threshold * 0.7) return 'B';
     if(score < threshold) return 'C';
     if(score < threshold + (1-threshold)*0.4) return 'D';
     return 'E';
-  }
+  },
 
-  var current = genSamples(60, 2);
-  var previous = genSamples(55, 1);
+  switchVersion: function(v){
+    this.currentVersion = Number(v);
+    this.renderVersionSelector();
+    if(typeof ReviewPanel !== 'undefined' && ReviewPanel.init) ReviewPanel.init();
+    if(typeof SimPanel !== 'undefined' && SimPanel.init) SimPanel.init();
+    if(typeof ExportPanel !== 'undefined' && ExportPanel.init) ExportPanel.init();
+  },
 
-  var leakIds = [];
-  var idSetCurrent = new Set(current.map(function(s){return s.id}));
-  var idSetPrevious = new Set(previous.map(function(s){return s.id}));
-  previous.forEach(function(s){
-    if(idSetCurrent.has(s.id)) leakIds.push(s.id);
-  });
-  var crossLeak = [];
-  for(var i=0;i<8;i++){
-    var s = previous[i];
-    var copy = JSON.parse(JSON.stringify(s));
-    copy.version = 2;
-    copy.modelScore = +(copy.modelScore + (Math.random()-0.5)*0.1).toFixed(4);
-    var idx = current.findIndex(function(c){return c.id===s.id});
-    if(idx===-1){
-      current.push(copy);
-      leakIds.push(s.id);
-      crossLeak.push(s.id);
+  renderVersionSelector: function(){
+    var el = document.getElementById('version-selector');
+    if(!el) return;
+    var vs = Object.keys(this.versions).map(Number).sort(function(a,b){return a-b});
+    var html = '<span style="font-size:12px;color:var(--text2)">版本：</span>';
+    vs.forEach(function(v){
+      html += '<span class="version-tag '+(v===DataManager.currentVersion?'active':'')+'" onclick="DataManager.switchVersion('+v+')">v'+v+' ('+DataManager.versions[v].length+')</span>';
+    });
+    el.innerHTML = html;
+  },
+
+  importData: function(rows, config){
+    var v = config.version || 1;
+    if(!this.versions[v]) this.versions[v] = [];
+
+    var featureKeys = config.featureKeys || [];
+    var featureLabels = config.featureLabels || {};
+    var directionMap = config.directionMap || {};
+
+    featureKeys.forEach(function(k){
+      if(!DataManager.featureNames[k]){
+        DataManager.featureNames[k] = featureLabels[k] || k;
+      }
+      if(!DataManager.featureDirection[k]){
+        DataManager.featureDirection[k] = directionMap[k] || 1;
+      }
+    });
+
+    var imported = 0;
+    var skipped = 0;
+
+    rows.forEach(function(row){
+      if(!row[config.idCol]){
+        skipped++;
+        return;
+      }
+      var score = parseFloat(row[config.scoreCol]);
+      if(isNaN(score) || score < 0 || score > 1){
+        skipped++;
+        return;
+      }
+
+      var features = {};
+      featureKeys.forEach(function(k){
+        var val = row[k];
+        features[k] = val != null && val !== '' ? parseFloat(val) || 0 : 0;
+      });
+
+      var featureScore = this.calcFeatureScore(features, featureKeys, this.featureDirection);
+      var inconsist = Math.abs(score - featureScore) > 0.25;
+
+      var existing = this.versions[v].findIndex(function(s){return s.id === String(row[config.idCol])});
+      var sample = {
+        id: String(row[config.idCol]),
+        name: config.nameCol && row[config.nameCol] ? String(row[config.nameCol]) : String(row[config.idCol]),
+        version: v,
+        features: features,
+        modelScore: +score.toFixed(4),
+        featureScore: featureScore,
+        inconsistent: inconsist
+      };
+
+      if(existing >= 0){
+        this.versions[v][existing] = sample;
+      } else {
+        this.versions[v].push(sample);
+      }
+      imported++;
+    }.bind(this));
+
+    this.currentVersion = v;
+    this.isDemo = false;
+    this.meta = {
+      importedAt: new Date().toISOString(),
+      dataHash: this.calcHash(JSON.stringify(this.versions)),
+      source: 'user',
+      totalRecords: Object.values(this.versions).reduce(function(s,a){return s+a.length},0)
+    };
+
+    this.saveToStorage();
+    this.updateUI();
+    this.renderVersionSelector();
+
+    return {imported: imported, skipped: skipped};
+  },
+
+  clearAll: function(){
+    if(!confirm('确定要清空所有数据吗？将恢复到演示模式。')) return;
+    this.versions = {};
+    this.currentVersion = 1;
+    this.featureNames = {};
+    this.featureDirection = {};
+    this.saveToStorage();
+    this.init();
+    SimPanel.init();
+    ReviewPanel.init();
+    ExportPanel.init();
+    addEvidence('info','数据已清空，恢复到演示模式');
+  },
+
+  saveToStorage: function(){
+    try{
+      localStorage.setItem('lr_threshold_data', JSON.stringify({
+        versions: this.versions,
+        featureNames: this.featureNames,
+        featureDirection: this.featureDirection,
+        meta: this.meta
+      }));
+    }catch(e){
+      console.warn('保存到localStorage失败:', e);
+    }
+  },
+
+  loadFromStorage: function(){
+    try{
+      var raw = localStorage.getItem('lr_threshold_data');
+      if(raw){
+        var data = JSON.parse(raw);
+        this.versions = data.versions || {};
+        this.featureNames = data.featureNames || {};
+        this.featureDirection = data.featureDirection || {};
+        this.meta = data.meta || {};
+        return true;
+      }
+    }catch(e){
+      console.warn('从localStorage读取失败:', e);
+    }
+    return false;
+  },
+
+  updateUI: function(){
+    var badge = document.getElementById('source-badge');
+    var label = document.getElementById('source-label');
+    var clearBtn = document.getElementById('clear-btn');
+    if(this.isDemo){
+      badge.className = 'source-badge demo';
+      label.textContent = '演示数据';
+      if(clearBtn) clearBtn.style.display = 'none';
+    } else {
+      badge.className = 'source-badge user';
+      label.textContent = '用户数据 · '+this.meta.totalRecords+'条';
+      if(clearBtn) clearBtn.style.display = 'inline-flex';
     }
   }
-
-  return {
-    current: current,
-    previous: previous,
-    leakIds: leakIds,
-    crossLeak: crossLeak,
-    features: FEATURES,
-    getGroup: getGroup,
-    calcFeatureScore: calcFeatureScore
-  };
-})();
+};
 
 var THRESHOLD_STATE = {
   current: 0.50,
@@ -413,14 +781,14 @@ function renderEvidenceLog(){
   var el = document.getElementById('evidence-log');
   if(!el) return;
   el.innerHTML = EVIDENCE_LOG.map(function(e){
-    return '<div class="evidence-item '+e.type+'"><span class="ts">'+e.ts+'</span><span class="type">'+({violation:'越界',sparse:'稀疏',leak:'泄漏',shift:'迁移',info:'信息'}[e.type]||e.type)+'</span><span class="msg">'+e.msg+'</span></div>';
+    return '<div class="evidence-item '+e.type+'"><span class="ts">'+e.ts+'</span><span class="type">'+({violation:'越界',sparse:'稀疏',leak:'泄漏',shift:'迁移',info:'信息',import:'导入'}[e.type]||e.type)+'</span><span class="msg">'+e.msg+'</span></div>';
   }).join('');
 }
 
 function checkSparse(threshold){
   var groups = {A:0,B:0,C:0,D:0,E:0};
-  DATA_STORE.current.forEach(function(s){
-    groups[DATA_STORE.getGroup(s.modelScore, threshold)]++;
+  DataManager.current.forEach(function(s){
+    groups[DataManager.getGroup(s.modelScore, threshold)]++;
   });
   var sparse = [];
   var minReq = 5;
@@ -467,9 +835,9 @@ function checkViolation(threshold){
 
 function getAffectedCustomers(oldT, newT){
   var affected = [];
-  DATA_STORE.current.forEach(function(s){
-    var oldG = DATA_STORE.getGroup(s.modelScore, oldT);
-    var newG = DATA_STORE.getGroup(s.modelScore, newT);
+  DataManager.current.forEach(function(s){
+    var oldG = DataManager.getGroup(s.modelScore, oldT);
+    var newG = DataManager.getGroup(s.modelScore, newT);
     if(oldG !== newG){
       affected.push({
         sample: s,
@@ -482,20 +850,304 @@ function getAffectedCustomers(oldT, newT){
   return affected;
 }
 
+var ImportPanel = {
+  pendingData: null,
+  pendingConfig: null,
+
+  open: function(){
+    document.getElementById('import-modal').classList.add('show');
+    document.getElementById('import-result').style.display = 'none';
+    document.querySelectorAll('.import-tab').forEach(function(t){
+      t.classList.remove('active');
+    });
+    document.querySelector('.import-tab[data-tab="csv"]').classList.add('active');
+    document.querySelectorAll('.import-panel').forEach(function(p){
+      p.classList.remove('active');
+    });
+    document.getElementById('import-csv').classList.add('active');
+  },
+
+  cancelImport: function(){
+    this.pendingData = null;
+    this.pendingConfig = null;
+    document.getElementById('import-result').style.display = 'none';
+  },
+
+  confirmImport: function(){
+    if(!this.pendingData || !this.pendingConfig) return;
+    var result = DataManager.importData(this.pendingData, this.pendingConfig);
+    closeModal('import-modal');
+    addEvidence('import','导入版本'+this.pendingConfig.version+'数据：'+result.imported+'条成功，'+result.skipped+'条跳过');
+    this.pendingData = null;
+    this.pendingConfig = null;
+    SimPanel.init();
+    ReviewPanel.init();
+    ExportPanel.init();
+  },
+
+  showPreview: function(rows, config){
+    this.pendingData = rows;
+    this.pendingConfig = config;
+
+    var previewRows = rows.slice(0,10);
+    var allCols = [config.idCol, config.scoreCol];
+    if(config.nameCol) allCols.push(config.nameCol);
+    if(config.versionCol) allCols.push(config.versionCol);
+    allCols = allCols.concat(config.featureKeys || []);
+
+    var thead = '<thead><tr>'+allCols.map(function(c){return '<th>'+c+'</th>'}).join('')+'</tr></thead>';
+    var tbody = '<tbody>'+previewRows.map(function(row){
+      return '<tr>'+allCols.map(function(c){return '<td>'+(row[c] != null ? row[c] : '')+'</td>'}).join('')+'</tr>';
+    }).join('')+'</tbody>';
+
+    document.getElementById('import-preview-table').innerHTML = thead + tbody;
+    document.getElementById('import-preview-meta').innerHTML =
+      '<span>共 '+rows.length+' 条</span>' +
+      '<span>特征列：'+(config.featureKeys || []).join(', ')+'</span>' +
+      '<span>版本：'+config.version+'</span>';
+    document.getElementById('import-result').style.display = 'block';
+  },
+
+  parseCSV: function(text){
+    var lines = text.trim().split(/\r?\n/);
+    if(lines.length < 2) return null;
+    var headers = this.parseCSVLine(lines[0]);
+    var rows = [];
+    for(var i=1;i<lines.length;i++){
+      var vals = this.parseCSVLine(lines[i]);
+      if(vals.length !== headers.length) continue;
+      var row = {};
+      headers.forEach(function(h, idx){
+        row[h.trim()] = vals[idx];
+      });
+      rows.push(row);
+    }
+    return {headers: headers, rows: rows};
+  },
+
+  parseCSVLine: function(line){
+    var result = [];
+    var current = '';
+    var inQuote = false;
+    for(var i=0;i<line.length;i++){
+      var c = line[i];
+      if(c === '"'){
+        if(inQuote && line[i+1] === '"'){
+          current += '"';
+          i++;
+        } else {
+          inQuote = !inQuote;
+        }
+      } else if(c === ',' && !inQuote){
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += c;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  },
+
+  autoDetectConfig: function(headers){
+    var idCandidates = ['id','cust_id','customer_id','客户id','客户编号'];
+    var scoreCandidates = ['model_score','score','prob','probability','分数','模型分数'];
+    var nameCandidates = ['name','客户名','姓名','客户姓名'];
+    var versionCandidates = ['version','ver','v','版本'];
+    var skipCols = idCandidates.concat(scoreCandidates, nameCandidates, versionCandidates);
+
+    var idCol = headers.find(function(h){return idCandidates.indexOf(h.toLowerCase()) >= 0}) || headers[0];
+    var scoreCol = headers.find(function(h){return scoreCandidates.indexOf(h.toLowerCase()) >= 0});
+    var nameCol = headers.find(function(h){return nameCandidates.indexOf(h.toLowerCase()) >= 0});
+    var versionCol = headers.find(function(h){return versionCandidates.indexOf(h.toLowerCase()) >= 0});
+
+    var featureKeys = headers.filter(function(h){
+      return skipCols.indexOf(h.toLowerCase()) < 0;
+    });
+
+    return {
+      idCol: idCol,
+      scoreCol: scoreCol,
+      nameCol: nameCol,
+      versionCol: versionCol,
+      featureKeys: featureKeys,
+      featureLabels: {},
+      directionMap: {},
+      version: 1
+    };
+  },
+
+  fromPaste: function(){
+    var text = document.getElementById('paste-area').value;
+    if(!text.trim()){
+      alert('请粘贴数据');
+      return;
+    }
+    var parsed = this.parseCSV(text);
+    if(!parsed || parsed.rows.length === 0){
+      alert('无法解析数据，请检查格式');
+      return;
+    }
+    var config = this.autoDetectConfig(parsed.headers);
+    if(!config.scoreCol){
+      alert('未找到模型分数列，请确保包含 model_score 或类似命名的列');
+      return;
+    }
+    this.showPreview(parsed.rows, config);
+  },
+
+  fromQuick: function(){
+    var idCol = document.getElementById('quick-id').value.trim();
+    var scoreCol = document.getElementById('quick-score').value.trim();
+    var nameCol = document.getElementById('quick-name').value.trim();
+    var versionCol = document.getElementById('quick-version').value.trim();
+    var featureStr = document.getElementById('quick-features').value.trim();
+    var version = parseInt(document.getElementById('quick-ver-num').value) || 1;
+    var dataText = document.getElementById('quick-data').value.trim();
+
+    if(!idCol || !scoreCol){
+      alert('请填写客户ID列名和模型分数列名');
+      return;
+    }
+    if(!dataText){
+      alert('请粘贴数据内容');
+      return;
+    }
+
+    var featureKeys = featureStr ? featureStr.split(',').map(function(s){return s.trim()}).filter(Boolean) : [];
+    var allCols = [idCol];
+    if(nameCol) allCols.push(nameCol);
+    allCols.push(scoreCol);
+    if(versionCol) allCols.push(versionCol);
+    allCols = allCols.concat(featureKeys);
+
+    var lines = dataText.trim().split(/\r?\n/);
+    var rows = [];
+    lines.forEach(function(line){
+      var parts = line.split(',');
+      if(parts.length < 2) return;
+      var row = {};
+      allCols.forEach(function(col, i){
+        row[col] = parts[i] != null ? parts[i].trim() : '';
+      });
+      rows.push(row);
+    });
+
+    if(rows.length === 0){
+      alert('未解析到有效数据行');
+      return;
+    }
+
+    var config = {
+      idCol: idCol,
+      scoreCol: scoreCol,
+      nameCol: nameCol,
+      versionCol: versionCol,
+      featureKeys: featureKeys,
+      featureLabels: {},
+      directionMap: {},
+      version: version
+    };
+
+    this.showPreview(rows, config);
+  },
+
+  fromFile: function(file){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var text = e.target.result;
+      var parsed = ImportPanel.parseCSV(text);
+      if(!parsed || parsed.rows.length === 0){
+        alert('无法解析CSV文件');
+        return;
+      }
+      var config = ImportPanel.autoDetectConfig(parsed.headers);
+      if(!config.scoreCol){
+        alert('未找到模型分数列，请确保CSV包含 model_score 列');
+        return;
+      }
+      ImportPanel.showPreview(parsed.rows, config);
+    };
+    reader.readAsText(file);
+  }
+};
+
+document.querySelectorAll('.import-tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.import-tab').forEach(function(t){t.classList.remove('active')});
+    document.querySelectorAll('.import-panel').forEach(function(p){p.classList.remove('active')});
+    this.classList.add('active');
+    document.getElementById('import-'+this.dataset.tab).classList.add('active');
+  });
+});
+
+function handleDragOver(e){
+  e.preventDefault();
+  e.currentTarget.classList.add('dragover');
+}
+function handleDragLeave(e){
+  e.currentTarget.classList.remove('dragover');
+}
+function handleDrop(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  var files = e.dataTransfer.files;
+  if(files.length > 0 && files[0].name.endsWith('.csv')){
+    ImportPanel.fromFile(files[0]);
+  }
+}
+
+document.getElementById('file-drop').addEventListener('click', function(){
+  document.getElementById('file-input').click();
+});
+
+function handleFileSelect(e){
+  if(e.target.files.length > 0){
+    ImportPanel.fromFile(e.target.files[0]);
+  }
+}
+
+function openBoundsModal(){
+  document.getElementById('bound-lower-input').value = THRESHOLD_STATE.lower;
+  document.getElementById('bound-upper-input').value = THRESHOLD_STATE.upper;
+  document.getElementById('bounds-modal').classList.add('show');
+}
+
+function applyBounds(){
+  var lower = parseFloat(document.getElementById('bound-lower-input').value);
+  var upper = parseFloat(document.getElementById('bound-upper-input').value);
+  if(isNaN(lower) || isNaN(upper) || lower >= upper || lower < 0 || upper > 1){
+    alert('边界值无效，需满足 0 ≤ 下界 < 上界 ≤ 1');
+    return;
+  }
+  THRESHOLD_STATE.lower = lower;
+  THRESHOLD_STATE.upper = upper;
+  document.getElementById('bound-lower').textContent = lower.toFixed(2);
+  document.getElementById('bound-upper').textContent = upper.toFixed(2);
+  closeModal('bounds-modal');
+  checkViolation(THRESHOLD_STATE.current);
+  addEvidence('info','阈值边界调整为 ['+lower.toFixed(2)+', '+upper.toFixed(2)+']');
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
 var SimPanel = {
   distChart: null,
   impactChart: null,
   init: function(){
     var slider = document.getElementById('threshold-slider');
-    slider.addEventListener('input', function(){
+    slider.removeEventListener('input', slider._handler);
+    slider._handler = function(){
       SimPanel.onThresholdChange(this.value / 100);
-    });
+    };
+    slider.addEventListener('input', slider._handler);
     this.renderStats();
     this.renderDistribution();
     this.renderImpact();
     this.renderAffected();
     checkSparse(THRESHOLD_STATE.current);
-    addEvidence('info','初始化完成，默认阈值=0.50，下界=0.30，上界=0.70');
   },
   onThresholdChange: function(val){
     var oldT = THRESHOLD_STATE.current;
@@ -517,7 +1169,7 @@ var SimPanel = {
   renderStats: function(){
     var t = THRESHOLD_STATE.current;
     var pass = 0, fail = 0, inconsist = 0, sparse = 0;
-    DATA_STORE.current.forEach(function(s){
+    DataManager.current.forEach(function(s){
       if(s.modelScore >= t) fail++; else pass++;
       if(s.inconsistent) inconsist++;
     });
@@ -532,8 +1184,8 @@ var SimPanel = {
   renderDistribution: function(){
     var t = THRESHOLD_STATE.current;
     var groups = {A:0,B:0,C:0,D:0,E:0};
-    DATA_STORE.current.forEach(function(s){
-      groups[DATA_STORE.getGroup(s.modelScore, t)]++;
+    DataManager.current.forEach(function(s){
+      groups[DataManager.getGroup(s.modelScore, t)]++;
     });
     var labels = ['A-低风险','B-中低风险','C-中风险','D-中高风险','E-高风险'];
     var data = [groups.A,groups.B,groups.C,groups.D,groups.E];
@@ -549,7 +1201,7 @@ var SimPanel = {
     var t = THRESHOLD_STATE.current;
     var pass=0,fail=0,shiftUp=0,shiftDown=0;
     var affected = getAffectedCustomers(THRESHOLD_STATE.previous, t);
-    DATA_STORE.current.forEach(function(s){
+    DataManager.current.forEach(function(s){
       if(s.modelScore < t) pass++; else fail++;
     });
     affected.forEach(function(a){
@@ -596,9 +1248,9 @@ var ReviewPanel = {
     var groupFilter = document.getElementById('filter-group').value;
     var inconsistFilter = document.getElementById('filter-inconsist').value;
     var t = THRESHOLD_STATE.current;
-    this.filtered = DATA_STORE.current.filter(function(s){
+    this.filtered = DataManager.current.filter(function(s){
       if(keyword && s.id.toLowerCase().indexOf(keyword)===-1 && s.name.toLowerCase().indexOf(keyword)===-1) return false;
-      if(groupFilter && DATA_STORE.getGroup(s.modelScore,t) !== groupFilter) return false;
+      if(groupFilter && DataManager.getGroup(s.modelScore,t) !== groupFilter) return false;
       if(inconsistFilter==='yes' && !s.inconsistent) return false;
       if(inconsistFilter==='no' && s.inconsistent) return false;
       return true;
@@ -612,9 +1264,9 @@ var ReviewPanel = {
     var t = THRESHOLD_STATE.current;
     var tbody = document.getElementById('review-tbody');
     tbody.innerHTML = this.filtered.slice(start,end).map(function(s){
-      var group = DATA_STORE.getGroup(s.modelScore, t);
+      var group = DataManager.getGroup(s.modelScore, t);
       var inconsistTag = s.inconsistent?'<span class="inconsist-marker">不一致</span>':'<span class="tag pass">一致</span>';
-      var leakTag = DATA_STORE.crossLeak.indexOf(s.id)!==-1?'<span class="tag warn" style="margin-left:4px">泄漏</span>':'';
+      var leakTag = DataManager.crossLeak.indexOf(s.id)!==-1?'<span class="tag warn" style="margin-left:4px">泄漏</span>':'';
       return '<tr><td>'+s.id+'</td><td>'+s.name+'</td><td>'+s.modelScore.toFixed(4)+'</td><td><span class="tag '+(group==='A'||group==='B'?'pass':group==='C'?'warn':'fail')+'">'+group+'</span></td><td>'+inconsistTag+'</td><td>v'+s.version+leakTag+'</td><td><button class="btn sm" onclick="showDetail(\''+s.id+'\')">详情</button></td></tr>';
     }).join('');
     var total = Math.ceil(this.filtered.length / this.pageSize);
@@ -630,13 +1282,13 @@ var ReviewPanel = {
   renderInconsistChart: function(){
     var t = THRESHOLD_STATE.current;
     var groups = {A:{total:0,inconsist:0},B:{total:0,inconsist:0},C:{total:0,inconsist:0},D:{total:0,inconsist:0},E:{total:0,inconsist:0}};
-    DATA_STORE.current.forEach(function(s){
-      var g = DATA_STORE.getGroup(s.modelScore,t);
+    DataManager.current.forEach(function(s){
+      var g = DataManager.getGroup(s.modelScore,t);
       groups[g].total++;
       if(s.inconsistent) groups[g].inconsist++;
     });
     var summary = document.getElementById('inconsist-summary');
-    var totalInconsist = DATA_STORE.current.filter(function(s){return s.inconsistent}).length;
+    var totalInconsist = DataManager.current.filter(function(s){return s.inconsistent}).length;
     summary.textContent = '共 '+totalInconsist+' 条不一致样本，分布于各分组中：';
     var labels = ['A','B','C','D','E'];
     var totalData = labels.map(function(g){return groups[g].total});
@@ -658,30 +1310,33 @@ var ReviewPanel = {
     var t = THRESHOLD_STATE.current;
     var currGroups = {A:0,B:0,C:0,D:0,E:0};
     var prevGroups = {A:0,B:0,C:0,D:0,E:0};
-    DATA_STORE.current.forEach(function(s){currGroups[DATA_STORE.getGroup(s.modelScore,t)]++});
-    DATA_STORE.previous.forEach(function(s){prevGroups[DATA_STORE.getGroup(s.modelScore,t)]++});
+    DataManager.current.forEach(function(s){currGroups[DataManager.getGroup(s.modelScore,t)]++});
+    DataManager.previous.forEach(function(s){prevGroups[DataManager.getGroup(s.modelScore,t)]++});
     var leftHtml = '';
     ['A','B','C','D','E'].forEach(function(g){
       leftHtml += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span>分组 '+g+'</span><span style="font-weight:600">'+currGroups[g]+'</span></div>';
     });
-    leftHtml += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px solid var(--border);margin-top:4px"><span>合计</span><span style="font-weight:600">'+DATA_STORE.current.length+'</span></div>';
+    leftHtml += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px solid var(--border);margin-top:4px"><span>合计</span><span style="font-weight:600">'+DataManager.current.length+'</span></div>';
     document.getElementById('vc-left').innerHTML = leftHtml;
     var rightHtml = '';
     ['A','B','C','D','E'].forEach(function(g){
       rightHtml += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span>分组 '+g+'</span><span style="font-weight:600">'+prevGroups[g]+'</span></div>';
     });
-    rightHtml += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px solid var(--border);margin-top:4px"><span>合计</span><span style="font-weight:600">'+DATA_STORE.previous.length+'</span></div>';
+    rightHtml += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-top:1px solid var(--border);margin-top:4px"><span>合计</span><span style="font-weight:600">'+DataManager.previous.length+'</span></div>';
     document.getElementById('vc-right').innerHTML = rightHtml;
   },
   renderLeakSummary: function(){
     var el = document.getElementById('leak-summary');
-    if(DATA_STORE.crossLeak.length > 0){
-      el.innerHTML = '检测到 <strong style="color:var(--info)">'+DATA_STORE.crossLeak.length+'</strong> 条样本在版本间重复出现（可能泄漏）：'+DATA_STORE.crossLeak.map(function(id){return '<span class="tag info">'+id+'</span>'}).join(' ');
-      DATA_STORE.crossLeak.forEach(function(id){
-        addEvidence('leak','样本 '+id+' 在版本1和版本2中均出现，疑似样本泄漏');
-      });
+    var leaks = DataManager.leakIds;
+    if(leaks.length > 0){
+      el.innerHTML = '检测到 <strong style="color:var(--info)">'+leaks.length+'</strong> 条样本在版本间重复出现（可能泄漏）：'+leaks.slice(0,5).map(function(id){return '<span class="tag info">'+id+'</span>'}).join(' ')+(leaks.length>5?' ...':'');
+      if(!DataManager.isDemo){
+        leaks.forEach(function(id){
+          addEvidence('leak','样本 '+id+' 在多个版本中重复出现，疑似样本泄漏');
+        });
+      }
     } else {
-      el.textContent = '未检测到版本间样本泄漏';
+      el.textContent = DataManager.previous.length>0?'未检测到版本间样本泄漏':'请导入多个版本以检测泄漏';
     }
   }
 };
@@ -692,6 +1347,15 @@ var ExportPanel = {
   currentType: 'full',
   init: function(){
     this.refresh();
+    this.renderMeta();
+  },
+  renderMeta: function(){
+    var el = document.getElementById('export-meta');
+    if(!DataManager.isDemo){
+      el.innerHTML = '<span>数据哈希：'+DataManager.meta.dataHash+'</span><span>导入时间：'+new Date(DataManager.meta.importedAt).toLocaleString('zh-CN')+'</span><span>总记录数：'+DataManager.meta.totalRecords+'</span>';
+    } else {
+      el.innerHTML = '<span style="color:var(--warn)">当前为演示模式，导入真实数据后将显示可追溯元信息</span>';
+    }
   },
   switchType: function(){
     this.currentType = document.getElementById('export-type').value;
@@ -702,20 +1366,24 @@ var ExportPanel = {
     var t = THRESHOLD_STATE.current;
     type = type || this.currentType;
     if(type === 'full'){
-      return DATA_STORE.current.map(function(s){
-        var g = DATA_STORE.getGroup(s.modelScore,t);
-        return {
+      return DataManager.current.map(function(s){
+        var g = DataManager.getGroup(s.modelScore,t);
+        var row = {
           id:s.id, name:s.name, version:s.version,
           modelScore:s.modelScore, featureScore:s.featureScore,
           group:g, inconsistent:s.inconsistent?'是':'否',
           pass:s.modelScore<t?'通过':'拒绝',
-          leak:DATA_STORE.crossLeak.indexOf(s.id)!==-1?'是':'否',
+          leak:DataManager.crossLeak.indexOf(s.id)!==-1?'是':'否',
           sparseGroup:THRESHOLD_STATE.sparseRecords.some(function(sr){return sr.group===g})?'是':'否',
-          threshold:t.toFixed(2),
-          age:s.features.age, income:s.features.income,
-          debtRatio:s.features.debtRatio, creditHistory:s.features.creditHistory,
-          empYears:s.features.empYears, loanAmt:s.features.loanAmt, delinq:s.features.delinq
+          threshold:t.toFixed(2)
         };
+        Object.keys(s.features).forEach(function(k){
+          row['feature_'+k] = s.features[k];
+        });
+        if(!DataManager.isDemo){
+          row.dataHash = DataManager.meta.dataHash;
+        }
+        return row;
       });
     }
     if(type === 'affected'){
@@ -739,14 +1407,14 @@ var ExportPanel = {
       });
     }
     if(type === 'leaks'){
-      return DATA_STORE.crossLeak.map(function(id,i){
-        var s = DATA_STORE.current.find(function(x){return x.id===id});
-        return {序号:i+1,客户ID:id,客户名称:s?s.name:'',版本1:'存在',版本2:'存在',阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN')};
+      return DataManager.crossLeak.map(function(id,i){
+        var s = DataManager.current.find(function(x){return x.id===id});
+        return {序号:i+1,客户ID:id,客户名称:s?s.name:'',版本:'跨版本重复',阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN')};
       });
     }
     if(type === 'inconsist'){
-      return DATA_STORE.current.filter(function(s){return s.inconsistent}).map(function(s){
-        var g = DATA_STORE.getGroup(s.modelScore,t);
+      return DataManager.current.filter(function(s){return s.inconsistent}).map(function(s){
+        var g = DataManager.getGroup(s.modelScore,t);
         return {客户ID:s.id,客户名称:s.name,模型分数:s.modelScore,特征分数:s.featureScore,差值:+(s.modelScore-s.featureScore).toFixed(4),分组:g,阈值:t.toFixed(2)};
       });
     }
@@ -759,13 +1427,13 @@ var ExportPanel = {
   },
   renderStats: function(){
     var t = THRESHOLD_STATE.current;
-    var total = DATA_STORE.current.length;
-    var pass = DATA_STORE.current.filter(function(s){return s.modelScore<t}).length;
+    var total = DataManager.current.length;
+    var pass = DataManager.current.filter(function(s){return s.modelScore<t}).length;
     var fail = total - pass;
-    var inconsist = DATA_STORE.current.filter(function(s){return s.inconsistent}).length;
+    var inconsist = DataManager.current.filter(function(s){return s.inconsistent}).length;
     var violations = THRESHOLD_STATE.violations.length;
     var sparse = THRESHOLD_STATE.sparseRecords.length;
-    var leaks = DATA_STORE.crossLeak.length;
+    var leaks = DataManager.crossLeak.length;
     var html = '';
     html += '<div class="stat info"><div class="label">总样本</div><div class="value">'+total+'</div></div>';
     html += '<div class="stat success"><div class="label">通过/拒绝</div><div class="value">'+pass+'/'+fail+'</div></div>';
@@ -780,12 +1448,12 @@ var ExportPanel = {
       document.getElementById('export-page-info').textContent = '';
       return;
     }
-    var keys = Object.keys(data[0]);
+    var keys = Object.keys(data[0]).slice(0,12);
     document.getElementById('export-thead').innerHTML = keys.map(function(k){return '<th>'+k+'</th>'}).join('');
     var start = this.page * this.pageSize;
     var end = Math.min(start+this.pageSize, data.length);
     document.getElementById('export-tbody').innerHTML = data.slice(start,end).map(function(row){
-      return '<tr>'+keys.map(function(k){return '<td>'+row[k]+'</td>'}).join('')+'</tr>';
+      return '<tr>'+keys.map(function(k){return '<td>'+(row[k] != null ? row[k] : '')+'</td>'}).join('')+'</tr>';
     }).join('');
     var total = Math.ceil(data.length / this.pageSize);
     document.getElementById('export-page-info').textContent = (this.page+1)+' / '+total+' （共'+data.length+'条）';
@@ -842,7 +1510,12 @@ var ExportPanel = {
     this.download('阈值解释器_稀疏证据.csv', data);
   },
   downloadLeaks: function(){
-    this.download('阈值解释器_泄漏记录.csv', this.getData('leaks'));
+    var data = this.getData('leaks');
+    if(data.length===0){
+      var t = THRESHOLD_STATE.current;
+      data.push({序号:1,客户ID:'-',客户名称:'-',版本:'-',阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN'),备注:'导入多个版本后可检测泄漏'});
+    }
+    this.download('阈值解释器_泄漏记录.csv', data);
   },
   downloadInconsist: function(){
     this.download('阈值解释器_不一致记录.csv', this.getData('inconsist'));
@@ -850,33 +1523,35 @@ var ExportPanel = {
 };
 
 function showDetail(id){
-  var s = DATA_STORE.current.find(function(x){return x.id===id});
-  if(!s) s = DATA_STORE.previous.find(function(x){return x.id===id});
+  var s = DataManager.current.find(function(x){return x.id===id});
+  if(!s) s = DataManager.previous.find(function(x){return x.id===id});
   if(!s) return;
   var t = THRESHOLD_STATE.current;
-  var group = DATA_STORE.getGroup(s.modelScore, t);
+  var group = DataManager.getGroup(s.modelScore, t);
   var groupNames = {A:'低风险',B:'中低风险',C:'中风险',D:'中高风险',E:'高风险'};
   document.getElementById('modal-title').textContent = s.id+' · '+s.name;
 
-  var normMax = {age:62,income:50,debtRatio:0.85,creditHistory:186,empYears:20.5,loanAmt:100,delinq:5};
-  var featureColors = {age:'#6c8cff',income:'#4ecb8d',debtRatio:'#ef5b5b',creditHistory:'#5bb8ef',empYears:'#f0a840',loanAmt:'#c084fc',delinq:'#ef5b5b'};
-  var featureKeys = ['age','income','debtRatio','creditHistory','empYears','loanAmt','delinq'];
-  var featureLabels = {age:'年龄',income:'收入(万)',debtRatio:'负债比',creditHistory:'信用历史(月)',empYears:'在职年限',loanAmt:'贷款金额(万)',delinq:'逾期次数'};
+  var featureKeys = Object.keys(s.features);
+  var normMax = {};
+  featureKeys.forEach(function(k){
+    var vals = DataManager.current.map(function(x){return x.features[k]||0});
+    normMax[k] = Math.max.apply(null, vals) || 1;
+  });
+  var featureColors = ['#6c8cff','#4ecb8d','#ef5b5b','#5bb8ef','#f0a840','#c084fc','#94a3b8','#f472b6'];
 
   var html = '';
   html += '<div class="detail-row"><div class="dl">模型分数</div><div class="dv">'+s.modelScore.toFixed(4)+'</div></div>';
   html += '<div class="detail-row"><div class="dl">特征分数</div><div class="dv">'+s.featureScore.toFixed(4)+'</div></div>';
   html += '<div class="detail-row"><div class="dl">当前分组</div><div class="dv"><span class="tag '+(group==='A'||group==='B'?'pass':group==='C'?'warn':'fail')+'">'+group+' - '+groupNames[group]+'</span>'+(s.inconsistent?' <span class="inconsist-marker">特征-分数不一致</span>':'')+'</div></div>';
   html += '<div class="detail-row"><div class="dl">决策</div><div class="dv"><span class="tag '+(s.modelScore<t?'pass':'fail')+'">'+(s.modelScore<t?'通过':'拒绝')+'</span></div></div>';
-  if(DATA_STORE.crossLeak.indexOf(s.id)!==-1){
+  if(DataManager.crossLeak.indexOf(s.id)!==-1){
     html += '<div class="detail-row"><div class="dl">泄漏标记</div><div class="dv"><span class="tag info">跨版本重复</span></div></div>';
   }
   html += '<div style="margin-top:16px;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text2)">特征分布</div>';
-  featureKeys.forEach(function(k){
-    var pct = Math.min(100, (s.features[k] / normMax[k]) * 100);
-    var danger = (k==='debtRatio'||k==='delinq') ? (pct > 60) : (pct < 30);
-    var color = featureColors[k];
-    html += '<div class="feature-bar"><span class="fname">'+featureLabels[k]+'</span><div class="fbar"><div class="fill" style="width:'+pct+'%;background:'+color+'"></div></div><span class="fval">'+s.features[k]+'</span></div>';
+  featureKeys.forEach(function(k, i){
+    var pct = Math.min(100, ((s.features[k]||0) / normMax[k]) * 100);
+    var color = featureColors[i % featureColors.length];
+    html += '<div class="feature-bar"><span class="fname">'+(DataManager.featureNames[k]||k)+'</span><div class="fbar"><div class="fill" style="width:'+pct+'%;background:'+color+'"></div></div><span class="fval">'+(s.features[k]||0)+'</span></div>';
   });
 
   if(s.inconsistent){
@@ -904,6 +1579,7 @@ document.getElementById('detail-modal').addEventListener('click', function(e){
   if(e.target === this) this.classList.remove('show');
 });
 
+DataManager.init();
 SimPanel.init();
 </script>
 </body>
