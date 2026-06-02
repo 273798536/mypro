@@ -760,14 +760,79 @@ class RCFittingSystem {
     }
 
     downloadReport() {
-        var text = this.generatePlainTextReport();
-        var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-        var url = URL.createObjectURL(blob);
-        var link = document.createElement('a');
-        link.download = 'RC\u5206\u6790\u62A5\u544A-' + this.reportId + '.txt';
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
+        var plainText = this.generatePlainTextReport();
+        var fileName = 'RC\u5206\u6790\u62A5\u544A-' + this.reportId + '.pdf';
+
+        try {
+            if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
+                throw new Error('jsPDF \u672A\u52A0\u8F7D');
+            }
+
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF({ unit: 'pt', format: 'a4' });
+            var pageWidth = doc.internal.pageSize.getWidth();
+            var margin = 50;
+            var x = margin;
+            var y = margin;
+            var lineHeight = 16;
+            var maxWidth = pageWidth - margin * 2;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('RC CHARGE-DISCHARGE FITTING ANALYSIS REPORT', x, y);
+            y += lineHeight + 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            var lines = plainText.split('\n');
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+
+                if (line.indexOf('\u2550\u2550') === 0 || line.indexOf('\u2500\u2500') === 0) continue;
+
+                if (y > 780) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                if (line.indexOf('\uD83D\uDCCB') === 0 || line.indexOf('\uD83D\uDCE6') === 0 ||
+                    line.indexOf('\uD83D\uDCCA') === 0 || line.indexOf('\uD83D\uDEA8') === 0 ||
+                    line.indexOf('\uD83D\uDCDD') === 0 || line.indexOf('\uD83D\uDD17') === 0 ||
+                    line.indexOf('\uD83D\uDCA1') === 0) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(13);
+                    doc.text(line, x, y);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    y += lineHeight + 4;
+                } else if (line.trim() === '') {
+                    y += lineHeight * 0.5;
+                } else {
+                    var wrapped = doc.splitTextToSize(line, maxWidth);
+                    for (var j = 0; j < wrapped.length; j++) {
+                        if (y > 780) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        doc.text(wrapped[j], x, y);
+                        y += lineHeight;
+                    }
+                }
+            }
+
+            doc.save(fileName);
+        } catch (err) {
+            console.warn('PDF \u751F\u6210\u5931\u8D25\uFF0C\u964D\u7EA7\u4E3A\u6587\u672C\u4E0B\u8F7D:', err.message);
+            var blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' });
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.download = fileName.replace('.pdf', '.txt');
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+            alert('PDF\u751F\u6210\u5931\u8D25\uFF0C\u5DF2\u81EA\u52A8\u4E0B\u8F7D\u6587\u672C\u7248\u62A5\u544A');
+        }
     }
 
     copyReportText() {
