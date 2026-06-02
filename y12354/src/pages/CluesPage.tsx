@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Card, List, Tag, Modal, Form, Input, Upload, Space, Divider, message, Table, Image, Select } from 'antd';
 const { Option } = Select;
-import { PlusOutlined, UploadOutlined, FileText, Image as ImageIcon, Thermometer, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, FileTextOutlined, EditOutlined, DeleteOutlined, EyeOutlined, PictureOutlined, DashboardOutlined } from '@ant-design/icons';
 import { useAppStore } from '../store/appStore';
 import { generateId, parseTemperatureRecords, getAverageTemperature } from '../utils/diagnosis';
 import type { DiagnosisEvent, Clue, TemperatureRecord } from '../types';
@@ -10,10 +10,10 @@ import type { UploadProps } from 'antd';
 const { TextArea } = Input;
 
 const clueTypeIcons: Record<string, React.ReactNode> = {
-  curve: <FileText size={16} />,
-  temperature: <Thermometer size={16} />,
-  photo: <ImageIcon size={16} />,
-  note: <FileText size={16} />,
+  curve: <FileTextOutlined />,
+  temperature: <DashboardOutlined />,
+  photo: <PictureOutlined />,
+  note: <FileTextOutlined />,
 };
 
 const clueTypeNames: Record<string, string> = {
@@ -260,7 +260,7 @@ export default function CluesPage() {
                         </Tag>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
-                        <FileText size={14} className="inline mr-1" />
+                        <FileTextOutlined style={{ fontSize: 14 }} className="mr-1" />
                         {event.clues.length} 条线索
                       </div>
                     </div>
@@ -317,13 +317,13 @@ export default function CluesPage() {
                       上传遮挡照片
                     </Button>
                     <Button
-                      icon={<FileText size={14} />}
+                      icon={<FileTextOutlined />}
                       onClick={() => setClueType('note')}
                     >
                       添加备注
                     </Button>
                     <Button
-                      icon={<FileText size={14} />}
+                      icon={<FileTextOutlined />}
                       onClick={() => setClueType('curve')}
                     >
                       关联IV曲线
