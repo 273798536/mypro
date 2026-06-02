@@ -1,8 +1,8 @@
 {
   "summary": {
-    "context_id": "cc9d8627-88bc-422e-a56e-de4a77789bb3",
+    "context_id": "6ff36f2c-71a7-438d-9269-68ac12985853",
     "context_name": "sample_with_blocked_road",
-    "generated_at": "2026-06-01T17:20:38.778798",
+    "generated_at": "2026-06-03T02:53:20.955982",
     "overview": {
       "total_warehouses": 2,
       "total_roads": 5,
@@ -11,11 +11,82 @@
       "assigned_demands": 2,
       "failed_demands": 0,
       "unassigned_demands": 0,
+      "detour_demands": 2,
       "total_distance": 30.0,
       "success_rate": 100.0
     }
   },
-  "errors": [],
+  "errors": [
+    {
+      "error_id": "block_R002_DEM002",
+      "error_type": "road_blocked",
+      "error_type_name": "道路中断",
+      "source_file": "sample_with_blocked_road",
+      "location": "LOC_C -> LOC_D",
+      "timestamp": "2026-06-03T02:53:20.955873",
+      "details": {
+        "road_id": "R002",
+        "from": "LOC_C",
+        "to": "LOC_D",
+        "distance": 3.0,
+        "demand_id": "DEM002",
+        "demand_location": "LOC_E",
+        "warehouse_id": "WH001",
+        "warehouse_name": "中心仓库A",
+        "ideal_path": [
+          "LOC_A",
+          "LOC_C",
+          "LOC_D",
+          "LOC_E"
+        ],
+        "ideal_path_str": "LOC_A -> LOC_C -> LOC_D -> LOC_E",
+        "ideal_distance": "12.0",
+        "actual_path": [
+          "LOC_A",
+          "LOC_B",
+          "LOC_D",
+          "LOC_E"
+        ],
+        "actual_distance": 22.0,
+        "has_detour": true
+      },
+      "next_step": "道路 LOC_C -> LOC_D 中断，理想最短路 LOC_A -> LOC_C -> LOC_D -> LOC_E（12.0 km）不可达。 绕行路线: LOC_A -> LOC_B -> LOC_D -> LOC_E，绕行距离: 22.0 km",
+      "severity": "high"
+    },
+    {
+      "error_id": "block_R002_DEM001",
+      "error_type": "road_blocked",
+      "error_type_name": "道路中断",
+      "source_file": "sample_with_blocked_road",
+      "location": "LOC_C -> LOC_D",
+      "timestamp": "2026-06-03T02:53:20.955919",
+      "details": {
+        "road_id": "R002",
+        "from": "LOC_C",
+        "to": "LOC_D",
+        "distance": 3.0,
+        "demand_id": "DEM001",
+        "demand_location": "LOC_D",
+        "warehouse_id": "WH001",
+        "warehouse_name": "中心仓库A",
+        "ideal_path": [
+          "LOC_A",
+          "LOC_C",
+          "LOC_D"
+        ],
+        "ideal_path_str": "LOC_A -> LOC_C -> LOC_D",
+        "ideal_distance": "8.0",
+        "actual_path": [
+          "LOC_B",
+          "LOC_D"
+        ],
+        "actual_distance": 8.0,
+        "has_detour": true
+      },
+      "next_step": "道路 LOC_C -> LOC_D 中断，理想最短路 LOC_A -> LOC_C -> LOC_D（8.0 km）不可达。 绕行路线: LOC_B -> LOC_D，绕行距离: 8.0 km",
+      "severity": "high"
+    }
+  ],
   "routes": [
     {
       "route_no": 1,
@@ -28,11 +99,12 @@
         "id": "V001",
         "plate": "京A12345"
       },
-      "path": "R004 -> R003 -> R005",
+      "path": "LOC_A -> LOC_B -> LOC_D -> LOC_E",
       "path_locations": [
-        "R004",
-        "R003",
-        "R005"
+        "LOC_A",
+        "LOC_B",
+        "LOC_D",
+        "LOC_E"
       ],
       "road_ids": [
         "R004",
@@ -43,7 +115,8 @@
       "items": {
         "饮用水": 15,
         "帐篷": 5
-      }
+      },
+      "detour": true
     },
     {
       "route_no": 2,
@@ -56,9 +129,10 @@
         "id": "V002",
         "plate": "京B67890"
       },
-      "path": "R003",
+      "path": "LOC_B -> LOC_D",
       "path_locations": [
-        "R003"
+        "LOC_B",
+        "LOC_D"
       ],
       "road_ids": [
         "R003"
@@ -67,7 +141,8 @@
       "items": {
         "饮用水": 20,
         "急救包": 10
-      }
+      },
+      "detour": true
     }
   ],
   "blocked_roads": [

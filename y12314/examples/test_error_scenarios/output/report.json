@@ -1,8 +1,8 @@
 {
   "summary": {
-    "context_id": "45ed80ce-198e-4572-ae60-8af37f3969ce",
+    "context_id": "575e5384-d76b-4e02-b238-51016f13df7c",
     "context_name": "test_error_scenarios",
-    "generated_at": "2026-06-01T17:21:43.667849",
+    "generated_at": "2026-06-03T02:53:15.210700",
     "overview": {
       "total_warehouses": 1,
       "total_roads": 2,
@@ -11,6 +11,7 @@
       "assigned_demands": 0,
       "failed_demands": 3,
       "unassigned_demands": 3,
+      "detour_demands": 0,
       "total_distance": 0.0,
       "success_rate": 0.0
     }
@@ -22,7 +23,7 @@
       "error_type_name": "车辆超载",
       "source_file": "test_error_scenarios",
       "location": "depot",
-      "timestamp": "2026-06-01T17:21:43.667786",
+      "timestamp": "2026-06-03T02:53:15.210539",
       "details": {
         "vehicle_id": "V001",
         "plate_number": "TEST-001",
@@ -39,7 +40,7 @@
       "error_type_name": "需求重复",
       "source_file": "test_error_scenarios",
       "location": "POINT2",
-      "timestamp": "2026-06-01T17:21:43.667790",
+      "timestamp": "2026-06-03T02:53:15.210545",
       "details": {
         "demand_id": "DEM001",
         "duplicate_with": "DEM002",
@@ -56,7 +57,7 @@
       "error_type_name": "需求重复",
       "source_file": "test_error_scenarios",
       "location": "POINT2",
-      "timestamp": "2026-06-01T17:21:43.667793",
+      "timestamp": "2026-06-03T02:53:15.210547",
       "details": {
         "demand_id": "DEM002",
         "duplicate_with": "DEM001",
