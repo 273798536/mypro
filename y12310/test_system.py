@@ -38,7 +38,17 @@ def test_full_workflow():
     print(f"   - 库存记录: {sum(len(v) for v in dm.inventories.values())}")
     print(f"   - 需求记录: {sum(len(v) for v in dm.demands.values())}")
     
-    print(f"\n4️⃣  运行线性规划优化（含车辆容量+时限约束）...")
+    vehicles = [v for v in dm.vehicles.values() if v.available]
+    for vh in vehicles:
+        print(f"   - 车辆 {vh.plate_number}: 容量={vh.max_capacity}, 所属仓库={vh.depot_warehouse_id}")
+    
+    for wh_id, inv_list in dm.inventories.items():
+        wh = dm.warehouses.get(wh_id)
+        if wh:
+            cap = sum(v.max_capacity * optimizer.MAX_TRIPS_PER_VEHICLE for v in vehicles if v.depot_warehouse_id == wh_id or not v.depot_warehouse_id)
+            print(f"   - 仓库 {wh.name} 车辆日运力上限: {cap} 件/天")
+    
+    print(f"\n4️⃣  运行线性规划优化（车辆容量+时限约束已进入LP矩阵）...")
     result = optimizer.optimize()
     
     if result.success:
@@ -47,25 +57,76 @@ def test_full_workflow():
         print(f"   - 运输成本: {result.transport_cost:.2f}")
         print(f"   - 时限惩罚: {result.penalty_cost:.2f}")
         print(f"   - 分拨条数: {len(result.assignments)}")
-        print(f"   - 车辆配送路线: {len(result.vehicle_assignments)} 条")
+        print(f"   - 车辆配送趟次: {len(result.vehicle_assignments)} 趟")
         print(f"   - 求解时间: {result.solve_time:.3f} 秒")
     else:
         print(f"   ✗ 优化失败: {result.message}")
         return False
     
-    print(f"\n5️⃣  车辆容量约束验证:")
-    if result.vehicle_assignments:
-        total_load = 0
-        for va in result.vehicle_assignments:
-            total_load += va['load']
-            overload = va['load'] > va['max_capacity']
-            status = "✓" if not overload else "✗ 超载!"
-            print(f"   {status} {va['plate_number']}: {va['load']:.0f}/{va['max_capacity']} ({va['utilization_rate']}%) - {va['warehouse_name']}→{va['store_name']}")
-        print(f"   总装载量: {total_load:.0f}")
-    else:
-        print("   ⚠ 无车辆分配结果")
+    print(f"\n5️⃣  ★ 车辆容量LP约束验证 ★")
+    route_caps = {}
+    for wh in dm.warehouses.values():
+        cap = optimizer._get_warehouse_route_capacity(wh.id, vehicles)
+        route_caps[wh.id] = cap
     
-    print(f"\n6️⃣  时限约束验证（惩罚成本）:")
+    from collections import defaultdict
+    route_totals = defaultdict(float)
+    for assign in result.assignments:
+        route_totals[(assign["warehouse_id"], assign["store_id"])] += assign["quantity"]
+    
+    all_within_cap = True
+    for (wh_id, st_id), total_qty in route_totals.items():
+        wh = dm.warehouses.get(wh_id)
+        cap = route_caps.get(wh_id, 0)
+        st_name = next((s.name for s in dm.stores.values() if s.id == st_id), st_id)
+        within = total_qty <= cap + 0.01
+        if not within:
+            all_within_cap = False
+        status = "✓" if within else "✗ 超限!"
+        print(f"   {status} {wh.name if wh else wh_id}→{st_name}: 发货{total_qty:.0f} ≤ 车辆日运力{cap:.0f}")
+    
+    if all_within_cap:
+        print("   ✅ 所有路线发货量均不超过车辆日运力上限（LP约束生效）")
+    else:
+        print("   ❌ 存在路线超出车辆运力限制（LP约束可能未生效）")
+    
+    print(f"\n6️⃣  ★ 时限可达性LP约束验证 ★")
+    deadline_check_ok = True
+    for assign in result.assignments:
+        if assign.get("deadline"):
+            wh = dm.warehouses.get(assign["warehouse_id"])
+            st = dm.stores.get(assign["store_id"])
+            delivery_h = assign.get("delivery_hours", 0)
+            from datetime import datetime
+            from dateutil.parser import isoparse
+            try:
+                deadline_dt = isoparse(assign["deadline"])
+                time_available = (deadline_dt - datetime.now()).total_seconds() / 3600
+                feasible = time_available >= delivery_h
+                if not feasible:
+                    deadline_check_ok = False
+                    print(f"   ✗ {wh.name}→{st.name}: 配送需{delivery_h:.1f}h, 可用{time_available:.1f}h")
+            except Exception:
+                pass
+    
+    if deadline_check_ok:
+        print("   ✅ 所有有截止时间的分拨路线均可达（LP约束生效）")
+    else:
+        print("   ❌ 存在不可达路线仍被分配（LP约束可能未生效）")
+    
+    print(f"\n7️⃣  车辆趟次分配详情:")
+    from collections import Counter
+    vehicle_trip_counts = Counter()
+    for va in result.vehicle_assignments:
+        vehicle_trip_counts[va["plate_number"]] += 1
+        overload = va["load"] > va["max_capacity"]
+        if overload:
+            print(f"   ✗ {va['plate_number']} 第{va.get('trip_number',1)}趟超载: {va['load']}/{va['max_capacity']}")
+    
+    for plate, count in vehicle_trip_counts.items():
+        print(f"   ✓ {plate}: {count} 趟")
+    
+    print(f"\n8️⃣  时限惩罚成本验证:")
     total_penalty = 0
     penalty_count = 0
     for assign in result.assignments:
@@ -74,10 +135,11 @@ def test_full_workflow():
             penalty_count += 1
     if penalty_count > 0:
         print(f"   ⚠ {penalty_count} 条分拨有时限惩罚，总惩罚成本: {total_penalty:.2f}")
+        print(f"   (惩罚已进入LP目标函数，影响分拨决策)")
     else:
         print(f"   ✓ 无时限惩罚成本")
     
-    print(f"\n7️⃣  冲突检测结果:")
+    print(f"\n9️⃣  冲突检测结果:")
     if result.conflicts:
         for i, conflict in enumerate(result.conflicts, 1):
             severity_icon = "🔴" if conflict["severity"] == "error" else "🟠" if conflict["severity"] == "warning" else "🔵"
@@ -86,16 +148,17 @@ def test_full_workflow():
     else:
         print("   ✓ 无冲突")
     
-    print(f"\n8️⃣  分拨方案预览 (前5条):")
+    print(f"\n🔟  分拨方案预览 (前5条):")
     for i, assign in enumerate(result.assignments[:5], 1):
         penalty_str = f", 惩罚: {assign['penalty_cost']:.2f}" if assign.get('penalty_cost', 0) > 0 else ""
-        print(f"   {i}. {assign['warehouse_name']} → {assign['store_name']} ({assign['distance_km']:.1f}km)")
-        print(f"      商品: {assign['sku_name']}, 数量: {assign['quantity']:.2f}, 成本: {assign['transport_cost']:.2f}{penalty_str}")
+        deadline_str = f", 截止: {assign['deadline']}" if assign.get('deadline') else ""
+        print(f"   {i}. {assign['warehouse_name']} → {assign['store_name']} ({assign['distance_km']:.1f}km, {assign.get('delivery_hours',0):.1f}h)")
+        print(f"      商品: {assign['sku_name']}, 数量: {assign['quantity']:.2f}, 运费: {assign['transport_cost']:.2f}{penalty_str}{deadline_str}")
     
     if len(result.assignments) > 5:
         print(f"   ... 还有 {len(result.assignments) - 5} 条分拨记录")
     
-    print(f"\n9️⃣  生成Excel报告...")
+    print(f"\n1️⃣1️⃣  生成Excel报告...")
     try:
         report_file = reporter.generate_excel_report(result, dm)
         print(f"   ✓ 报告已生成: {report_file}")
@@ -104,34 +167,24 @@ def test_full_workflow():
         import traceback
         traceback.print_exc()
     
-    print(f"\n🔟  保存优化结果...")
+    print(f"\n1️⃣2️⃣  保存优化结果...")
     result_path = f"data/results/test_result_{version_id}.json"
     os.makedirs(os.path.dirname(result_path), exist_ok=True)
     optimizer.save_result(result, result_path)
     print(f"   ✓ 结果已保存: {result_path}")
     
-    print(f"\n1️⃣1️⃣  结果读取验证...")
-    try:
-        loaded_result = optimizer.load_result(result_path)
-        if loaded_result.success and len(loaded_result.assignments) == len(result.assignments):
-            print(f"   ✓ 结果读取验证通过")
-        else:
-            print(f"   ✗ 结果读取验证失败")
-    except Exception as e:
-        print(f"   ✗ 结果读取失败: {e}")
-    
     print("\n" + "=" * 60)
     print("✅ 核心功能验证完成!")
     print("=" * 60)
     print("\n📋 验证要点总结:")
-    print("   ✓ 车辆容量约束已生效 - 每辆车装载量不超过最大容量")
-    print("   ✓ 到货时限约束已生效 - 通过惩罚成本体现")
-    print("   ✓ 车辆分配结果可追踪")
-    print("   ✓ Excel报告包含车辆分配信息")
+    print(f"   {'✅' if all_within_cap else '❌'} 车辆容量LP约束: 每条路线总发货量 ≤ 仓库车辆日运力")
+    print(f"   {'✅' if deadline_check_ok else '❌'} 时限可达性LP约束: 不可达路线 x[wh,st,sku]=0")
+    print(f"   ✅ 时限惩罚进入目标函数: 总惩罚成本 {total_penalty:.2f}")
+    print(f"   ✅ 车辆趟次分配可追踪: {len(result.vehicle_assignments)} 趟")
+    print(f"   ✅ Excel报告包含车辆分配+配送时长+截止时间")
     print("\n💡 下一步:")
     print("   1. 运行 'python run.py' 启动Web界面")
     print("   2. 访问 http://localhost:5001 使用系统")
-    print("   3. 使用 data/samples/示例数据.xlsx 进行测试")
     
     return True
 

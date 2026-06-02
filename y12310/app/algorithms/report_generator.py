@@ -57,16 +57,18 @@ class ReportGenerator:
             
             if result.assignments:
                 df_assignments = pd.DataFrame(result.assignments)
-                cols = ["warehouse_name", "store_name", "sku_name", "quantity", "distance_km", "transport_cost"]
+                base_cols = ["warehouse_name", "store_name", "sku_name", "quantity", "distance_km", "delivery_hours", "transport_cost"]
+                base_names = ["出库仓库", "收货门店", "商品名称", "分拨数量", "距离(km)", "配送时长(h)", "运输成本"]
                 if "penalty_cost" in df_assignments.columns:
-                    cols.append("penalty_cost")
-                    cols.append("total_cost")
-                df_assignments = df_assignments[cols]
-                col_names = ["出库仓库", "收货门店", "商品名称", "分拨数量", "距离(km)", "运输成本"]
-                if "penalty_cost" in df_assignments.columns:
-                    col_names.append("时限惩罚")
-                    col_names.append("总成本")
-                df_assignments.columns = col_names
+                    base_cols.append("penalty_cost")
+                    base_names.append("时限惩罚")
+                if "deadline" in df_assignments.columns:
+                    base_cols.append("deadline")
+                    base_names.append("截止时间")
+                base_cols.append("total_cost")
+                base_names.append("总成本")
+                df_assignments = df_assignments[base_cols]
+                df_assignments.columns = base_names
                 df_assignments.to_excel(writer, sheet_name="分拨明细", index=False)
             
             if result.conflicts:
@@ -99,6 +101,7 @@ class ReportGenerator:
             "vehicle_overload": "车辆超载",
             "no_available_vehicles": "无可用车辆",
             "excessive_trips": "趟次超限",
+            "deadline_unreachable": "截止时间不可达",
             "zero_demand": "零需求",
             "zero_inventory": "零库存",
             "insufficient_inventory": "库存不足",
