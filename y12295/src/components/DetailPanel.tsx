@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Info, Copy, Check, Clock, User, Image, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Info, Copy, Check, Clock, User, Image, TrendingUp, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
 import { useStarmapStore } from '../store/useStarmapStore';
 import { generateColorScale } from '../utils/colorUtils';
+import type { DataPoint } from '../types';
 
 export function DetailPanel() {
   const dataPoints = useStarmapStore(s => s.dataPoints);
@@ -145,6 +146,67 @@ export function DetailPanel() {
   
   const point = selectedPoints[0];
   const labelColor = colorScale(point.trueLabel);
+
+  const renderSourceSection = (p: DataPoint) => {
+    if (!p.source) return null;
+    return (
+      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2 text-sm text-gray-300">
+            <FileText className="w-4 h-4" />
+            <span>数据来源</span>
+          </div>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              alert(`定位到文件：${p.source?.fileName}，行号：${p.source?.rowIndex}`);
+            }}
+            className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+            title="定位到原始文件"
+          >
+            <ExternalLink className="w-3 h-3" />
+            <span>定位</span>
+          </a>
+        </div>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="bg-gray-900/50 rounded p-2">
+            <div className="text-[10px] text-gray-500 mb-1">文件名</div>
+            <div className="text-xs text-white font-mono truncate" title={p.source.fileName}>
+              {p.source.fileName}
+            </div>
+          </div>
+          <div className="bg-gray-900/50 rounded p-2">
+            <div className="text-[10px] text-gray-500 mb-1">行号</div>
+            <div className="text-xs text-cyan-400 font-mono">第 {p.source.rowIndex} 行</div>
+          </div>
+        </div>
+        <div>
+          <div className="text-[10px] text-gray-500 mb-1">原始记录</div>
+          <div className="font-mono text-[10px] text-gray-400 bg-gray-900 rounded p-2 max-h-28 overflow-y-auto">
+            {Object.entries(p.source.rawRecord).map(([k, v]) => (
+              <div key={k} className="flex gap-2 py-0.5">
+                <span className="text-gray-500">{k}:</span>
+                <span className="text-gray-300">{String(v)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-3 pt-3 border-t border-gray-700">
+          <div className="text-[10px] text-gray-500 mb-1">字段映射</div>
+          <div className="grid grid-cols-2 gap-1 text-[10px]">
+            {Object.entries(p.source.fieldMapping).map(([k, v]) => (
+              <div key={k} className="flex items-center gap-1 text-gray-400">
+                <span className="text-cyan-500">{k}</span>
+                <span>→</span>
+                <span className="text-gray-300 font-mono">{v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
   
   return (
     <div className="h-full flex flex-col p-4 overflow-y-auto gap-4">
@@ -268,6 +330,8 @@ export function DetailPanel() {
           </div>
         </div>
       )}
+      
+      {renderSourceSection(point)}
       
       <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
         <div className="text-xs text-gray-500 mb-2">3D嵌入坐标</div>

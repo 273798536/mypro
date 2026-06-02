@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import type { CameraState } from '../types';
 
 export function useCameraState() {
   const { camera } = useThree();
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
   const cameraStateRef = useRef<CameraState>({
     position: [0, 0, 0],
     target: [0, 0, 0],

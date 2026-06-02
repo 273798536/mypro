@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, ThreeEvent } from '@react-three/fiber';
 import { OrbitControls, Select } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, FXAA } from '@react-three/postprocessing';
 import type { DataPoint } from '../types';
@@ -68,9 +68,10 @@ function SceneContent({ onScreenshotReady }: StarmapSceneProps) {
       const handleScreenshot = () => {
         gl.render(scene, camera);
         const dataUrl = gl.domElement.toDataURL('image/png');
-        const viewState = getCameraState();
+        getCameraState();
         onScreenshotReady(dataUrl);
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__takeStarmapScreenshot = handleScreenshot;
     }
   }, [gl, scene, camera, onScreenshotReady, getCameraState]);
@@ -87,7 +88,7 @@ function SceneContent({ onScreenshotReady }: StarmapSceneProps) {
     }
   };
   
-  const handleSceneClick = (e: any) => {
+  const handleSceneClick = (e: ThreeEvent<MouseEvent>) => {
     if (e.target === gl.domElement) {
       setSelectedPointIds([]);
     }

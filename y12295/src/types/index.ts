@@ -1,5 +1,12 @@
 export type Embedding3D = [number, number, number];
 
+export interface DataPointSource {
+  fileName: string;
+  rowIndex: number;
+  fieldMapping: Record<string, string>;
+  rawRecord: Record<string, string | number | boolean | null>;
+}
+
 export interface DataPoint {
   id: string;
   vector: number[];
@@ -13,6 +20,7 @@ export interface DataPoint {
   isOccluded?: boolean;
   occlusionReason?: string;
   screenshots: ScreenshotRef[];
+  source?: DataPointSource;
 }
 
 export interface ScreenshotRef {

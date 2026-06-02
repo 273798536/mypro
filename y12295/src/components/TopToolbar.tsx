@@ -8,7 +8,7 @@ import { useStarmapStore } from '../store/useStarmapStore';
 import { generateExample } from '../data/exampleData';
 import { analyzeDataQuality } from '../utils/dataQuality';
 import { detectOverlaps } from '../utils/overlapDetection';
-import { parseCSV, parseJSON, convertToDataPoints, autoDetectFields, downloadScreenshot, takeScreenshot, type ImportConfig } from '../utils/dataImport';
+import { parseCSV, parseJSON, convertToDataPoints, autoDetectFields, downloadScreenshot, type ImportConfig } from '../utils/dataImport';
 
 interface TopToolbarProps {
   onTakeScreenshot?: () => string | null;
@@ -18,7 +18,7 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importConfig, setImportConfig] = useState<Partial<ImportConfig>>({});
-  const [previewData, setPreviewData] = useState<any[] | null>(null);
+  const [previewData, setPreviewData] = useState<Record<string, unknown>[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const setDataPoints = useStarmapStore(s => s.setDataPoints);
@@ -48,11 +48,11 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
     
     setImportFile(file);
     
-    let rawData: any[];
+    let rawData: Record<string, unknown>[];
     if (file.name.endsWith('.csv')) {
-      rawData = await parseCSV(file);
+      rawData = (await parseCSV(file)) as Record<string, unknown>[];
     } else if (file.name.endsWith('.json')) {
-      rawData = await parseJSON(file);
+      rawData = (await parseJSON(file)) as Record<string, unknown>[];
     } else {
       alert('请上传CSV或JSON文件');
       return;
@@ -79,9 +79,9 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
       groupField: importConfig.groupField,
       confidenceField: importConfig.confidenceField,
       predictedLabelField: importConfig.predictedLabelField,
+      fileName: importFile.name,
     };
     
-    let allData: any[];
     if (importFile.name.endsWith('.csv')) {
       parseCSV(importFile).then(data => {
         processImportData(data, config, importFile.name);
@@ -97,7 +97,7 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
     setPreviewData(null);
   };
   
-  const processImportData = (data: any[], config: ImportConfig, filename: string) => {
+  const processImportData = (data: Record<string, unknown>[], config: ImportConfig, filename: string) => {
     const points = convertToDataPoints(data, config);
     const datasetName = filename.replace(/\.(csv|json)$/i, '');
     
@@ -115,7 +115,11 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
     
     if (onTakeScreenshot) {
       dataUrl = onTakeScreenshot();
-    } else if (typeof (window as any).__takeStarmapScreenshot === 'function') {
+    } else if (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      typeof (window as any).__takeStarmapScreenshot === 'function'
+    ) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__takeStarmapScreenshot();
       return;
     }

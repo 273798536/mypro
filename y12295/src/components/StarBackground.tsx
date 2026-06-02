@@ -43,7 +43,7 @@ export function StarBackground({ count = 2000, radius = 50 }: StarBackgroundProp
     return [positions, colors];
   }, [count, radius]);
   
-  useFrame((state) => {
+  useFrame(() => {
     if (pointsRef.current) {
       pointsRef.current.rotation.y += 0.0001;
       pointsRef.current.rotation.x += 0.00005;

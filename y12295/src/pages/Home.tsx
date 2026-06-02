@@ -33,7 +33,9 @@ export default function Home() {
   }, []);
   
   const handleTakeScreenshot = useCallback((): string | null => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof (window as any).__takeStarmapScreenshot === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__takeStarmapScreenshot();
     }
     return screenshotDataUrl;

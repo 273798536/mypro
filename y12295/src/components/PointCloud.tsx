@@ -1,5 +1,5 @@
-import { useRef, useMemo, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useMemo, useRef, useState } from 'react';
+import { useFrame, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { DataPoint } from '../types';
 import { hexToRgb, getPointSize } from '../utils/colorUtils';
@@ -73,7 +73,7 @@ export function PointCloud({ points, colorScale, onPointClick, onPointHover }: P
     return { positions, colors, sizes, pointIds };
   }, [points, colorScale, overlapRegions]);
   
-  useFrame(({ camera, gl }) => {
+  useFrame(() => {
     if (!pointsRef.current) return;
     
     const geometry = pointsRef.current.geometry;
@@ -113,8 +113,9 @@ export function PointCloud({ points, colorScale, onPointClick, onPointHover }: P
     sizeAttr.needsUpdate = true;
   });
   
-  const handlePointerMove = (e: any) => {
-    const rect = e.target.getBoundingClientRect();
+  const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
+    const target = e.target as unknown as HTMLElement;
+    const rect = target.getBoundingClientRect();
     mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     
@@ -135,7 +136,7 @@ export function PointCloud({ points, colorScale, onPointClick, onPointHover }: P
     }
   };
   
-  const handleClick = (e: any) => {
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
     if (pointsRef.current) {
       raycaster.current.setFromCamera(mouse.current, e.camera);
       const intersects = raycaster.current.intersectObject(pointsRef.current);
