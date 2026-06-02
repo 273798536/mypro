@@ -1,18 +1,20 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { AirVent as AirVentType } from '../../types';
+import { AirVent as AirVentType, ObjectType } from '../../types';
 import { useSceneStore } from '../../store/useSceneStore';
 import { getStatusColor } from '../../utils/colors';
 
 interface AirVentProps {
   vent: AirVentType;
+  isAlarmFiltered: boolean;
+  onObjectClick: (type: ObjectType, id: string, name: string) => void;
 }
 
-export function AirVent({ vent }: AirVentProps) {
+export function AirVent({ vent, isAlarmFiltered, onObjectClick }: AirVentProps) {
   const groupRef = useRef<THREE.Group>(null);
   const fanRef = useRef<THREE.Mesh>(null);
-  const { selectedObject, setSelectedObject, setDetailModalOpen } = useSceneStore();
+  const { selectedObject } = useSceneStore();
   const isSelected = selectedObject?.id === vent.id;
   const statusColor = getStatusColor(vent.status);
 
@@ -28,10 +30,11 @@ export function AirVent({ vent }: AirVentProps) {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    setSelectedObject({ type: 'vent', id: vent.id, name: vent.name });
-    setDetailModalOpen(true);
+    onObjectClick('vent', vent.id, vent.name);
   };
 
+  const dimmed = isAlarmFiltered && !isSelected;
+  const bodyOpacity = dimmed ? 0.35 : 1;
   const airflowPercent = vent.airflow / vent.maxAirflow;
 
   return (
@@ -55,6 +58,8 @@ export function AirVent({ vent }: AirVentProps) {
           roughness={0.3}
           emissive={isSelected ? '#00D4FF' : '#000000'}
           emissiveIntensity={isSelected ? 0.3 : 0}
+          transparent={dimmed}
+          opacity={bodyOpacity}
         />
       </mesh>
 

@@ -1,17 +1,19 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Sensor as SensorType } from '../../types';
+import { Sensor as SensorType, ObjectType } from '../../types';
 import { useSceneStore } from '../../store/useSceneStore';
 import { getStatusColor } from '../../utils/colors';
 
 interface SensorProps {
   sensor: SensorType;
+  isAlarmFiltered: boolean;
+  onObjectClick: (type: ObjectType, id: string, name: string) => void;
 }
 
-export function Sensor({ sensor }: SensorProps) {
+export function Sensor({ sensor, isAlarmFiltered, onObjectClick }: SensorProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const { selectedObject, setSelectedObject, setDetailModalOpen } = useSceneStore();
+  const { selectedObject } = useSceneStore();
   const isSelected = selectedObject?.id === sensor.id;
   const statusColor = getStatusColor(sensor.status);
 
@@ -24,9 +26,11 @@ export function Sensor({ sensor }: SensorProps) {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    setSelectedObject({ type: 'sensor', id: sensor.id, name: sensor.type });
-    setDetailModalOpen(true);
+    onObjectClick('sensor', sensor.id, sensor.rackId);
   };
+
+  const dimmed = isAlarmFiltered && !isSelected;
+  const bodyOpacity = dimmed ? 0.35 : 1;
 
   return (
     <group
@@ -47,6 +51,8 @@ export function Sensor({ sensor }: SensorProps) {
           color={statusColor}
           emissive={statusColor}
           emissiveIntensity={sensor.status === 'critical' ? 1 : 0.5}
+          transparent={dimmed}
+          opacity={bodyOpacity}
         />
       </mesh>
 

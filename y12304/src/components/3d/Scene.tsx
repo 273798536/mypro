@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -11,6 +11,34 @@ import { TemperatureField, Floor } from './TemperatureField';
 import { mockRacks, mockVents, mockTrays, mockSensors } from '../../data/mockData';
 import { useFilterStore } from '../../store/useFilterStore';
 import { useSceneStore } from '../../store/useSceneStore';
+import { useAlarmStore } from '../../store/useAlarmStore';
+
+function useHighlightSync() {
+  const { alarmLevels } = useFilterStore();
+  const { selectedAlarm, alarms } = useAlarmStore();
+  const { setHighlightedObjectIds } = useSceneStore();
+
+  const ids = useMemo(() => {
+    const set = new Set<string>();
+
+    alarms.forEach((alarm) => {
+      if (!alarmLevels.includes(alarm.level)) return;
+      set.add(alarm.relatedObjectId);
+      alarm.clues.forEach((clue) => set.add(clue.relatedId));
+    });
+
+    if (selectedAlarm) {
+      set.add(selectedAlarm.relatedObjectId);
+      selectedAlarm.clues.forEach((clue) => set.add(clue.relatedId));
+    }
+
+    return set;
+  }, [alarmLevels, selectedAlarm, alarms]);
+
+  useEffect(() => {
+    setHighlightedObjectIds(ids);
+  }, [ids, setHighlightedObjectIds]);
+}
 
 function CameraController() {
   const { focusPosition } = useSceneStore();
@@ -18,7 +46,10 @@ function CameraController() {
 
   useFrame(() => {
     if (focusPosition && controlsRef.current) {
-      controlsRef.current.target.set(...focusPosition);
+      controlsRef.current.target.lerp(
+        new THREE.Vector3(...focusPosition),
+        0.08
+      );
       controlsRef.current.update();
     }
   });
@@ -36,13 +67,41 @@ function CameraController() {
 }
 
 function SceneContent() {
-  const { selectedTypes, showTemperatureField } = useFilterStore();
+  const { selectedTypes, showTemperatureField, alarmLevels } = useFilterStore();
   const { setSelectedObject, setDetailModalOpen } = useSceneStore();
+  const { setSelectedAlarm, getAlarmsByRelatedObject, alarms } = useAlarmStore();
+
+  useHighlightSync();
+
+  const alarmFilteredObjectIds = useMemo(() => {
+    const set = new Set<string>();
+    alarms.forEach((alarm) => {
+      if (!alarmLevels.includes(alarm.level)) return;
+      set.add(alarm.relatedObjectId);
+      alarm.clues.forEach((clue) => set.add(clue.relatedId));
+    });
+    return set;
+  }, [alarmLevels, alarms]);
+
+  const handleObjectClick3D = (type: 'rack' | 'vent' | 'tray' | 'sensor', id: string, name: string) => {
+    setSelectedObject({ type, id, name });
+    setDetailModalOpen(true);
+
+    const related = getAlarmsByRelatedObject(id);
+    if (related.length > 0) {
+      setSelectedAlarm(related[0]);
+    }
+  };
 
   const handleBackgroundClick = () => {
     setSelectedObject(null);
     setDetailModalOpen(false);
   };
+
+  const rackVisible = selectedTypes.includes('rack');
+  const ventVisible = selectedTypes.includes('vent');
+  const trayVisible = selectedTypes.includes('tray');
+  const sensorVisible = selectedTypes.includes('sensor');
 
   return (
     <>
@@ -54,20 +113,46 @@ function SceneContent() {
 
       {showTemperatureField && <TemperatureField />}
 
-      {selectedTypes.includes('rack') &&
-        mockRacks.map((rack) => <Rack key={rack.id} rack={rack} />)}
+      {rackVisible &&
+        mockRacks.map((rack) => (
+          <Rack
+            key={rack.id}
+            rack={rack}
+            isAlarmFiltered={alarmFilteredObjectIds.has(rack.id)}
+            onObjectClick={handleObjectClick3D}
+          />
+        ))}
 
-      {selectedTypes.includes('vent') &&
-        mockVents.map((vent) => <AirVent key={vent.id} vent={vent} />)}
+      {ventVisible &&
+        mockVents.map((vent) => (
+          <AirVent
+            key={vent.id}
+            vent={vent}
+            isAlarmFiltered={alarmFilteredObjectIds.has(vent.id)}
+            onObjectClick={handleObjectClick3D}
+          />
+        ))}
 
-      {selectedTypes.includes('tray') &&
-        mockTrays.map((tray) => <CableTray key={tray.id} tray={tray} />)}
+      {trayVisible &&
+        mockTrays.map((tray) => (
+          <CableTray
+            key={tray.id}
+            tray={tray}
+            isAlarmFiltered={alarmFilteredObjectIds.has(tray.id)}
+            onObjectClick={handleObjectClick3D}
+          />
+        ))}
 
-      {selectedTypes.includes('sensor') &&
+      {sensorVisible &&
         mockSensors
           .filter((s) => s.status !== 'normal')
           .map((sensor) => (
-            <Sensor key={sensor.id} sensor={sensor} />
+            <Sensor
+              key={sensor.id}
+              sensor={sensor}
+              isAlarmFiltered={alarmFilteredObjectIds.has(sensor.id)}
+              onObjectClick={handleObjectClick3D}
+            />
           ))}
 
       <mesh onClick={handleBackgroundClick}>

@@ -1,17 +1,19 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CableTray as CableTrayType } from '../../types';
+import { CableTray as CableTrayType, ObjectType } from '../../types';
 import { useSceneStore } from '../../store/useSceneStore';
 import { getStatusColor } from '../../utils/colors';
 
 interface CableTrayProps {
   tray: CableTrayType;
+  isAlarmFiltered: boolean;
+  onObjectClick: (type: ObjectType, id: string, name: string) => void;
 }
 
-export function CableTray({ tray }: CableTrayProps) {
+export function CableTray({ tray, isAlarmFiltered, onObjectClick }: CableTrayProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const { selectedObject, setSelectedObject, setDetailModalOpen } = useSceneStore();
+  const { selectedObject } = useSceneStore();
   const isSelected = selectedObject?.id === tray.id;
   const statusColor = getStatusColor(tray.status);
 
@@ -46,9 +48,11 @@ export function CableTray({ tray }: CableTrayProps) {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    setSelectedObject({ type: 'tray', id: tray.id, name: tray.name });
-    setDetailModalOpen(true);
+    onObjectClick('tray', tray.id, tray.name);
   };
+
+  const dimmed = isAlarmFiltered && !isSelected;
+  const tubeOpacity = dimmed ? 0.15 : 0.8;
 
   return (
     <group
@@ -68,7 +72,7 @@ export function CableTray({ tray }: CableTrayProps) {
           metalness={0.6}
           roughness={0.4}
           transparent
-          opacity={0.8}
+          opacity={tubeOpacity}
           emissive={isSelected ? '#00D4FF' : '#000000'}
           emissiveIntensity={isSelected ? 0.2 : 0}
         />

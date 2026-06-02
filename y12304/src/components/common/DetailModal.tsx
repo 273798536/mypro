@@ -1,5 +1,6 @@
 import { X, FileText, MapPin, AlertTriangle, CheckCircle2, Link2, Server, Wind, Cable, Thermometer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 import { useSceneStore } from '../../store/useSceneStore';
 import { useAlarmStore } from '../../store/useAlarmStore';
 import { mockRacks, mockVents, mockTrays, mockSensors } from '../../data/mockData';
@@ -21,17 +22,25 @@ const objectTypeLabels: Record<ObjectType, string> = {
 
 export function DetailModal() {
   const { isDetailModalOpen, selectedObject, setDetailModalOpen, setSelectedObject } = useSceneStore();
-  const { alarms, getAlarmsByRelatedObject } = useAlarmStore();
-
-  if (!selectedObject) return null;
-
-  const objectData = getObjectData(selectedObject.type, selectedObject.id);
-  const relatedAlarms = getAlarmsByRelatedObject(selectedObject.id);
+  const { alarms, getAlarmsByRelatedObject, setSelectedAlarm } = useAlarmStore();
 
   const handleClose = () => {
     setDetailModalOpen(false);
     setSelectedObject(null);
   };
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  if (!selectedObject) return null;
+
+  const objectData = getObjectData(selectedObject.type, selectedObject.id);
+  const relatedAlarms = getAlarmsByRelatedObject(selectedObject.id);
 
   return (
     <AnimatePresence>
@@ -88,7 +97,8 @@ export function DetailModal() {
                       {relatedAlarms.map((alarm) => (
                         <div
                           key={alarm.id}
-                          className="p-3 rounded-lg border border-gray-700/50 bg-gray-800/50"
+                          onClick={() => setSelectedAlarm(alarm)}
+                          className="p-3 rounded-lg border border-gray-700/50 bg-gray-800/50 cursor-pointer hover:bg-gray-700/50 transition-colors"
                         >
                           <div className="flex items-start gap-3">
                             <div

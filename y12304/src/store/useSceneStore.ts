@@ -7,12 +7,14 @@ interface SceneStore {
   focusPosition: [number, number, number] | null;
   isDetailModalOpen: boolean;
   screenshotMode: boolean;
+  highlightedObjectIds: Set<string>;
 
   setSelectedObject: (obj: SelectedObject | null) => void;
   setHoveredObject: (obj: SelectedObject | null) => void;
   setFocusPosition: (pos: [number, number, number] | null) => void;
   setDetailModalOpen: (open: boolean) => void;
   setScreenshotMode: (mode: boolean) => void;
+  setHighlightedObjectIds: (ids: Set<string>) => void;
   focusOnObject: (type: ObjectType, id: string, name: string, position: [number, number, number]) => void;
 }
 
@@ -22,12 +24,14 @@ export const useSceneStore = create<SceneStore>((set) => ({
   focusPosition: null,
   isDetailModalOpen: false,
   screenshotMode: false,
+  highlightedObjectIds: new Set<string>(),
 
   setSelectedObject: (obj) => set({ selectedObject: obj }),
   setHoveredObject: (obj) => set({ hoveredObject: obj }),
   setFocusPosition: (pos) => set({ focusPosition: pos }),
   setDetailModalOpen: (open) => set({ isDetailModalOpen: open }),
   setScreenshotMode: (mode) => set({ screenshotMode: mode }),
+  setHighlightedObjectIds: (ids) => set({ highlightedObjectIds: ids }),
 
   focusOnObject: (type, id, name, position) => {
     set({

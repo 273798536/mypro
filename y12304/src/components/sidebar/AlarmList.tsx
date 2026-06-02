@@ -55,7 +55,7 @@ interface AlarmCardProps {
 function AlarmCard({ alarm, isSelected, onSelect }: AlarmCardProps) {
   const config = levelConfig[alarm.level];
   const Icon = config.icon;
-  const { focusOnObject, setSelectedObject } = useSceneStore();
+  const { focusOnObject } = useSceneStore();
 
   const handleClick = () => {
     onSelect(alarm);

@@ -1,18 +1,20 @@
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Rack as RackType } from '../../types';
+import { Rack as RackType, ObjectType } from '../../types';
 import { useSceneStore } from '../../store/useSceneStore';
 import { getTemperatureColor, getStatusColor } from '../../utils/colors';
 
 interface RackProps {
   rack: RackType;
+  isAlarmFiltered: boolean;
+  onObjectClick: (type: ObjectType, id: string, name: string) => void;
 }
 
-export function Rack({ rack }: RackProps) {
+export function Rack({ rack, isAlarmFiltered, onObjectClick }: RackProps) {
   const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
-  const { selectedObject, setSelectedObject, setDetailModalOpen } = useSceneStore();
+  const { selectedObject } = useSceneStore();
   const isSelected = selectedObject?.id === rack.id;
 
   const scale = hovered || isSelected ? 1.05 : 1;
@@ -30,9 +32,11 @@ export function Rack({ rack }: RackProps) {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    setSelectedObject({ type: 'rack', id: rack.id, name: rack.name });
-    setDetailModalOpen(true);
+    onObjectClick('rack', rack.id, rack.name);
   };
+
+  const dimmed = isAlarmFiltered && !isSelected;
+  const bodyOpacity = dimmed ? 0.35 : 1;
 
   return (
     <group
@@ -57,6 +61,8 @@ export function Rack({ rack }: RackProps) {
           roughness={0.2}
           emissive={isSelected ? '#00D4FF' : hovered ? '#1a3a5a' : '#000000'}
           emissiveIntensity={isSelected ? 0.3 : hovered ? 0.15 : 0}
+          transparent={dimmed}
+          opacity={bodyOpacity}
         />
       </mesh>
 
@@ -69,6 +75,8 @@ export function Rack({ rack }: RackProps) {
             roughness={0.3}
             emissive={i < 2 ? temperatureColor : '#000000'}
             emissiveIntensity={i < 2 ? 0.3 : 0}
+            transparent={dimmed}
+            opacity={bodyOpacity}
           />
         </mesh>
       ))}
