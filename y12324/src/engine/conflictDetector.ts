@@ -332,6 +332,14 @@ export function detectUniqueSolutionViolation(
 ): ErrorDetection[] {
   const errors: ErrorDetection[] = [];
   
+  let filledCount = 0;
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (board[r][c] !== null) filledCount++;
+    }
+  }
+  if (filledCount < 40) return errors;
+  
   const hasUnique = hasUniqueSolution(board);
   
   if (!hasUnique) {

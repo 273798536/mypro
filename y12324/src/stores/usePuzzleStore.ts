@@ -251,33 +251,67 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
       setTimeout(() => {
         const state = get();
         const materials = state.importedMaterials;
-        
+
+        const byType = (t: MaterialType) => materials.filter((m) => m.type === t);
+
         let mergedBoard = createEmptyBoard();
         let mergedCandidates = createEmptyCandidates();
         let mergedSteps: SolutionStep[] = [];
         let puzzleName = '合并题目';
         let puzzleSource = '多材料合并';
-        
-        const boardMaterial = materials.find((m) => m.type === 'board');
-        const candidatesMaterial = materials.find((m) => m.type === 'candidates');
-        const stepsMaterial = materials.find((m) => m.type === 'steps');
-        
-        if (boardMaterial && boardMaterial.data.board) {
-          mergedBoard = cloneBoard(boardMaterial.data.board);
-          puzzleName = boardMaterial.data.name || puzzleName;
-          puzzleSource = boardMaterial.data.source || puzzleSource;
+
+        const boardMaterials = byType('board');
+        const candidateMaterials = byType('candidates');
+        const stepsMaterials = byType('steps');
+        const reportMaterials = byType('report');
+
+        for (const bm of boardMaterials) {
+          if (bm.data && bm.data.board) {
+            const src = bm.data.board as (number | null)[][];
+            for (let r = 0; r < 9; r++) {
+              for (let c = 0; c < 9; c++) {
+                if (src[r][c] !== null && mergedBoard[r][c] === null) {
+                  mergedBoard[r][c] = src[r][c];
+                }
+              }
+            }
+            if (!puzzleName || puzzleName === '合并题目') {
+              puzzleName = bm.data.name || bm.name;
+            }
+            puzzleSource = [puzzleSource, bm.source].filter((s) => s && s !== '多材料合并').join(' + ');
+          }
         }
-        
-        if (candidatesMaterial && candidatesMaterial.data) {
-          mergedCandidates = cloneCandidates(candidatesMaterial.data);
-        } else if (boardMaterial) {
+
+        if (candidateMaterials.length > 0) {
+          for (const cm of candidateMaterials) {
+            if (cm.data) {
+              const srcCands = cm.data as Set<number>[][];
+              for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                  if (mergedBoard[r][c] === null) {
+                    if (mergedCandidates[r][c].size === 0) {
+                      mergedCandidates[r][c] = new Set(srcCands[r][c]);
+                    } else {
+                      mergedCandidates[r][c] = new Set(
+                        [...mergedCandidates[r][c]].filter((v) => srcCands[r][c].has(v))
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } else {
           mergedCandidates = initializeCandidates(mergedBoard);
         }
-        
-        if (stepsMaterial && Array.isArray(stepsMaterial.data)) {
-          mergedSteps = stepsMaterial.data;
+
+        for (const sm of stepsMaterials) {
+          if (Array.isArray(sm.data)) {
+            mergedSteps = mergedSteps.concat(sm.data as SolutionStep[]);
+          }
         }
-        
+        mergedSteps.sort((a, b) => a.stepNumber - b.stepNumber);
+
         const mergedPuzzle: SudokuPuzzle = {
           id: `puzzle-merged-${Date.now()}`,
           name: puzzleName,
@@ -288,10 +322,25 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
           source: puzzleSource,
           createdAt: new Date(),
         };
-        
+
         const allErrors = validateAllSteps(mergedPuzzle, mergedSteps);
-        const report = generateCorrectionReport(mergedPuzzle, allErrors, puzzleSource);
-        
+        let report = generateCorrectionReport(mergedPuzzle, allErrors, puzzleSource);
+
+        if (reportMaterials.length > 0) {
+          const existingNotes = reportMaterials
+            .map((rm) => rm.data)
+            .filter(Boolean)
+            .map((d) => d.summary || d.description || '')
+            .filter(Boolean)
+            .join('；');
+          if (existingNotes) {
+            report = {
+              ...report,
+              sourceMaterial: [report.sourceMaterial, existingNotes].join('；'),
+            };
+          }
+        }
+
         set((state) => ({
           puzzle: mergedPuzzle,
           steps: mergedSteps,
@@ -378,6 +427,24 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
     loadMockData: (id) => {
       const data = getMockDataSet(id);
       if (data) {
+        const batchId = get().currentBatchId;
+        const boardMat: ImportedMaterial = {
+          id: `mock-board-${Date.now()}`,
+          type: 'board',
+          name: data.puzzle.name,
+          source: data.puzzle.source,
+          importedAt: new Date(),
+          data: data.puzzle,
+        };
+        const stepsMat: ImportedMaterial = {
+          id: `mock-steps-${Date.now()}`,
+          type: 'steps',
+          name: '解题步骤',
+          source: data.puzzle.source,
+          importedAt: new Date(),
+          data: data.steps,
+        };
+        const newMaterials = [boardMat, stepsMat];
         set({
           puzzle: clonePuzzle(data.puzzle),
           steps: [...data.steps],
@@ -386,6 +453,19 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
           currentStepIndex: data.steps.length - 1,
           sourceMaterial: data.puzzle.source,
           selectedCell: null,
+          importedMaterials: newMaterials,
+          batches: {
+            ...get().batches,
+            [batchId]: {
+              ...get().batches[batchId],
+              materials: newMaterials,
+              mergedPuzzle: clonePuzzle(data.puzzle),
+              mergedSteps: [...data.steps],
+              mergedErrors: [...data.errors],
+              mergedReport: data.report,
+              isAnalyzed: true,
+            },
+          },
         });
       }
     },
