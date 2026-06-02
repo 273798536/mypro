@@ -11,7 +11,7 @@ import * as XLSX from 'xlsx';
 export default function Scheduling() {
   const { 
     employees, stations, plans, currentPlanId, setCurrentPlanId,
-    addPlan, addOverflowRecord, updateStation, getFilteredAssignments, getFilteredChartData,
+    addPlan, addOverflowRecord, updateStation, getFilteredAssignments,
     overflowRecords, filters
   } = useAppStore();
   

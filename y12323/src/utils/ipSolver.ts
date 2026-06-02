@@ -1,33 +1,3 @@
-export interface IPVariable {
-  name: string;
-  value: number;
-  lowerBound: number;
-  upperBound: number;
-  isInteger: boolean;
-}
-
-export interface IPConstraint {
-  name: string;
-  coefficients: { varName: string; coeff: number }[];
-  sense: 'le' | 'eq' | 'ge';
-  rhs: number;
-}
-
-export interface IPModel {
-  variables: IPVariable[];
-  objective: { varName: string; coeff: number }[];
-  objectiveSense: 'min';
-  constraints: IPConstraint[];
-}
-
-export interface IPSolution {
-  feasible: boolean;
-  optimal: boolean;
-  objectiveValue: number;
-  variables: Map<string, number>;
-  gap: number;
-}
-
 export interface FacilityLocationResult {
   feasible: boolean;
   optimal: boolean;
@@ -169,6 +139,27 @@ function solveAssignmentWithCapacities(
     }
   }
 
+  if (minStationEmployees > 0) {
+    const finalAssignments: { employeeId: string; stationId: string }[] = [];
+    const stationsToClose = new Set<string>();
+
+    for (let li = 0; li < openIndices.length; li++) {
+      if (usage[li] < minStationEmployees) {
+        stationsToClose.add(cm.stationIds[openIndices[li]]);
+      }
+    }
+
+    for (const a of assignments) {
+      if (stationsToClose.has(a.stationId)) {
+        unassigned.push(a.employeeId);
+      } else {
+        finalAssignments.push(a);
+      }
+    }
+
+    return { assignments: finalAssignments, totalDist, overflows, unassigned };
+  }
+
   return { assignments, totalDist, overflows, unassigned };
 }
 
@@ -222,6 +213,10 @@ function lPRelaxationLowerBound(
     bound += cm.openCosts[i];
   }
 
+  if (bound >= bestKnown) {
+    return bound;
+  }
+
   for (let ei = 0; ei < cm.employeeIds.length; ei++) {
     let minCost = Infinity;
     for (const si of fixedOpen) {
@@ -238,6 +233,9 @@ function lPRelaxationLowerBound(
 
     if (minCost < Infinity) {
       bound += minCost;
+      if (bound >= bestKnown) {
+        return bound;
+      }
     }
   }
 
