@@ -164,6 +164,14 @@ export const useBudgetStore = defineStore('budget', () => {
       const allocatedBudget = totalBudget * weight
       const marginalRevenue = (channel.conversionRate * channel.cpc) > 0 ? (150 / channel.cpc) : 0
 
+      const hasSupplementaryBidding = biddingRecords.value.some(
+        b => b.isSupplementary && b.channelId === channel.id
+      )
+      const hasSupplementaryConversion = conversions.value.some(
+        c => c.isSupplementary && c.channelId === channel.id
+      )
+      const source: RecordSource = hasSupplementaryBidding || hasSupplementaryConversion ? 'SUPPLEMENTARY' : 'AUTO'
+
       return {
         id: generateId(),
         channelId: channel.id,
@@ -179,12 +187,13 @@ export const useBudgetStore = defineStore('budget', () => {
           .reduce((sum, c) => sum + c.conversionCount, 0),
         roi: marginalRevenue - 1,
         priority: 1,
-        source: 'AUTO'
+        source
       }
     })
 
     const allocatedSum = details.reduce((sum, d) => sum + d.allocatedBudget, 0)
-    const hasSupplementary = supplementaryBiddingRecords.value.length > 0
+    const hasSupplementary = supplementaryBiddingRecords.value.length > 0 ||
+      conversions.value.filter(c => c.isSupplementary).length > 0
 
     const report: BudgetAllocationReport = {
       id: generateId(),
@@ -210,20 +219,20 @@ export const useBudgetStore = defineStore('budget', () => {
         matchedDetails.forEach(detail => {
           if (!record.affectedAllocationIds.includes(detail.id)) {
             record.affectedAllocationIds.push(detail.id)
+            addAlert({
+              type: 'MANUAL_MODIFICATION',
+              level: 'INFO',
+              title: '补录出价记录影响明细',
+              message: `补录的出价记录已影响预算分配明细：渠道「${detail.channelName}」的分配计算，请在报告中查看影响范围`,
+              relatedObjectId: detail.id,
+              relatedObjectName: detail.channelName,
+              relatedObjectType: 'ALLOCATION',
+              data: {
+                biddingRecordId: record.id,
+                supplementaryAt: record.supplementaryAt
+              }
+            })
           }
-          addAlert({
-            type: 'MANUAL_MODIFICATION',
-            level: 'INFO',
-            title: '补录出价记录影响明细',
-            message: `补录的出价记录已影响预算分配明细：渠道「${detail.channelName}」的分配计算，请在报告中查看影响范围`,
-            relatedObjectId: detail.id,
-            relatedObjectName: detail.channelName,
-            relatedObjectType: 'ALLOCATION',
-            data: {
-              biddingRecordId: record.id,
-              supplementaryAt: record.supplementaryAt
-            }
-          })
         })
       })
 
@@ -234,6 +243,19 @@ export const useBudgetStore = defineStore('budget', () => {
         matchedDetails.forEach(detail => {
           if (!conv.affectedRecordIds.includes(detail.id)) {
             conv.affectedRecordIds.push(detail.id)
+            addAlert({
+              type: 'MANUAL_MODIFICATION',
+              level: 'INFO',
+              title: '补录转化记录影响明细',
+              message: `补录的转化记录已影响预算分配明细：渠道「${detail.channelName}」的分配计算，请在报告中查看影响范围`,
+              relatedObjectId: detail.id,
+              relatedObjectName: detail.channelName,
+              relatedObjectType: 'ALLOCATION',
+              data: {
+                conversionId: conv.id,
+                supplementaryAt: conv.supplementaryAt
+              }
+            })
           }
         })
       })
@@ -417,6 +439,22 @@ export const useBudgetStore = defineStore('budget', () => {
     allocationReports.value.forEach(report => {
       const affectedDetails = report.details.filter(d => d.channelId === conversion.channelId)
       conversion.affectedRecordIds.push(...affectedDetails.map(d => d.id))
+
+      affectedDetails.forEach(detail => {
+        addAlert({
+          type: 'MANUAL_MODIFICATION',
+          level: 'INFO',
+          title: '补录转化记录影响明细',
+          message: `补录的转化记录已影响预算分配明细：渠道「${detail.channelName}」的分配计算，请在报告中查看影响范围`,
+          relatedObjectId: detail.id,
+          relatedObjectName: detail.channelName,
+          relatedObjectType: 'ALLOCATION',
+          data: {
+            conversionId: conversion.id,
+            supplementaryAt: conversion.supplementaryAt
+          }
+        })
+      })
     })
   }
 
@@ -429,7 +467,7 @@ export const useBudgetStore = defineStore('budget', () => {
         addAlert({
           type: 'MANUAL_MODIFICATION',
           level: 'INFO',
-          title: '补算出价记录影响明细',
+          title: '补录出价记录影响明细',
           message: `补录的出价记录已影响预算分配明细：渠道「${detail.channelName}」的分配计算，请在报告中查看影响范围`,
           relatedObjectId: detail.id,
           relatedObjectName: detail.channelName,
@@ -706,6 +744,7 @@ export const useBudgetStore = defineStore('budget', () => {
         currencyUnit: 'CNY',
         isSupplementary: true,
         supplementaryAt: new Date().toISOString(),
+        remark: '新品推广活动结束后补录的转化数据',
         affectedRecordIds: []
       }
     ]
@@ -729,6 +768,7 @@ export const useBudgetStore = defineStore('budget', () => {
         bidTime: '2026-06-12T14:20:00Z',
         isSupplementary: true,
         supplementaryAt: new Date().toISOString(),
+        remark: '618活动结束后补录的历史出价数据',
         affectedAllocationIds: [],
         currencyUnit: 'CNY'
       }

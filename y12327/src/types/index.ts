@@ -118,6 +118,7 @@ export interface BiddingRecord {
   materialId: string
   bidAmount: number
   bidTime: string
+  remark?: string
   isSupplementary: boolean
   supplementaryAt?: string
   affectedAllocationIds: string[]
