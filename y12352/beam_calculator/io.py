@@ -258,10 +258,17 @@ class DataImporter:
     def _parse_load(self, load_raw: Dict[str, Any]) -> Load:
         load_type = LoadType.from_string(load_raw.get("type", load_raw.get("load_type", "concentrated_force")))
 
+        if load_type == LoadType.CONCENTRATED_FORCE:
+            default_magnitude_unit = self.unit_system.force_unit
+        elif load_type == LoadType.CONCENTRATED_MOMENT:
+            default_magnitude_unit = self.unit_system.moment_unit
+        else:
+            default_magnitude_unit = self.unit_system.distributed_load_unit
+
         magnitude = self._parse_quantity(
             load_raw.get("magnitude", load_raw.get("value")),
             load_raw.get("magnitude_unit", load_raw.get("unit")),
-            Unit.N,
+            default_magnitude_unit,
         )
 
         load = Load(

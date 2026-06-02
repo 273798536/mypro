@@ -76,12 +76,20 @@ def create_parser() -> argparse.ArgumentParser:
     load_group.add_argument("--load", action="append", default=[],
                            help="""载荷定义，格式:
   集中力: type,magnitude,position
+         (默认单位: 力单位由 --unit-system 决定，engineering=kN, metric=N)
   集中力偶: moment,magnitude,position
+         (默认单位: 力矩单位由 --unit-system 决定，engineering=kN·m, metric=N·m)
   均布载荷: uniform,magnitude,start,end
+         (默认单位: 分布载荷单位由 --unit-system 决定，engineering=kN/m, metric=N/m)
   三角分布: triangular,magnitude,start,end
   梯形分布: trapezoidal,magnitude_start,magnitude_end,start,end
-  可附加单位: type,magnitude,mag_unit,position,pos_unit
-  示例: --load "concentrated,10000,N,3,m"
+  可显式指定单位: type,magnitude,mag_unit,position,pos_unit
+                   type,magnitude,mag_unit,start,start_unit,end,end_unit
+  示例:
+    --load "concentrated,10,3"                  (engineering系统: 10kN @ 3m)
+    --load "concentrated,10000,N,3,m"           (10000N @ 3m)
+    --load "uniform,5,0,10"                     (engineering系统: 5kN/m, 0~10m)
+    --load "uniform,5000,N/m,0,m,10,m"         (5000N/m, 0~10m)
 """)
 
     unit_group = parser.add_argument_group("单位系统")

@@ -122,8 +122,24 @@ class InputValidator:
             warnings_list.append(f"载荷 #{load_index} 大小为零，将被忽略")
             self.warnings.zero_load(load_index=load_index, source=load.source)
 
-        if load.magnitude.unit.category not in [UnitCategory.FORCE, UnitCategory.MOMENT, UnitCategory.DISTRIBUTED_LOAD]:
-            errors.append(f"载荷 #{load_index}: 单位 {load.magnitude.unit.symbol} 不是力、力矩或分布载荷单位")
+        expected_categories = {
+            LoadType.CONCENTRATED_FORCE: UnitCategory.FORCE,
+            LoadType.CONCENTRATED_MOMENT: UnitCategory.MOMENT,
+            LoadType.UNIFORM_DISTRIBUTED: UnitCategory.DISTRIBUTED_LOAD,
+            LoadType.TRIANGULAR_DISTRIBUTED: UnitCategory.DISTRIBUTED_LOAD,
+            LoadType.TRAPEZOIDAL_DISTRIBUTED: UnitCategory.DISTRIBUTED_LOAD,
+        }
+        expected_category = expected_categories.get(load.load_type)
+        if expected_category and load.magnitude.unit.category != expected_category:
+            category_names = {
+                UnitCategory.FORCE: "力",
+                UnitCategory.MOMENT: "力矩",
+                UnitCategory.DISTRIBUTED_LOAD: "分布载荷",
+            }
+            errors.append(
+                f"载荷 #{load_index}: {load.load_type.value} 需要 {category_names.get(expected_category, expected_category.value)} 单位，"
+                f"实际为 {load.magnitude.unit.symbol} ({load.magnitude.unit.category.value})"
+            )
 
         if load.load_type in [LoadType.CONCENTRATED_FORCE, LoadType.CONCENTRATED_MOMENT]:
             if load.position is not None and load.position.unit.category != UnitCategory.LENGTH:
@@ -147,19 +163,35 @@ class InputValidator:
     def _validate_units(self, beam: Beam) -> List[str]:
         errors = []
         quantities_to_check: Dict[str, Quantity] = {"梁长度": beam.length}
+        target_units: Dict[str, Unit] = {"梁长度": self.unit_system.length_unit}
 
         for i, load in enumerate(beam.loads):
             quantities_to_check[f"载荷#{i+1}_大小"] = load.magnitude
+
+            if load.load_type == LoadType.CONCENTRATED_FORCE:
+                target_units[f"载荷#{i+1}_大小"] = self.unit_system.force_unit
+            elif load.load_type == LoadType.CONCENTRATED_MOMENT:
+                target_units[f"载荷#{i+1}_大小"] = self.unit_system.moment_unit
+            else:
+                target_units[f"载荷#{i+1}_大小"] = self.unit_system.distributed_load_unit
+
             if load.position is not None:
                 quantities_to_check[f"载荷#{i+1}_位置"] = load.position
+                target_units[f"载荷#{i+1}_位置"] = self.unit_system.length_unit
             if load.start_position is not None:
                 quantities_to_check[f"载荷#{i+1}_起始"] = load.start_position
+                target_units[f"载荷#{i+1}_起始"] = self.unit_system.length_unit
             if load.end_position is not None:
                 quantities_to_check[f"载荷#{i+1}_结束"] = load.end_position
+                target_units[f"载荷#{i+1}_结束"] = self.unit_system.length_unit
 
-        is_consistent, mismatches = self.unit_system.check_consistency(quantities_to_check)
+        mismatches = {}
+        for name, qty in quantities_to_check.items():
+            target_unit = target_units.get(name)
+            if target_unit and qty.unit != target_unit and qty.unit.category == target_unit.category:
+                mismatches[name] = target_unit
 
-        if not is_consistent:
+        if mismatches:
             for name, target_unit in mismatches.items():
                 original_qty = quantities_to_check[name]
                 self.warnings.unit_mismatch(
@@ -180,6 +212,22 @@ class InputValidator:
                     original=original_qty,
                     converted=converted,
                 )
+
+                if "大小" in name and i < len(beam.loads):
+                    load_idx = int(name.split("#")[1].split("_")[0]) - 1
+                    beam.loads[load_idx].magnitude = converted
+                elif "位置" in name and i < len(beam.loads):
+                    load_idx = int(name.split("#")[1].split("_")[0]) - 1
+                    beam.loads[load_idx].position = converted
+                elif "起始" in name and i < len(beam.loads):
+                    load_idx = int(name.split("#")[1].split("_")[0]) - 1
+                    beam.loads[load_idx].start_position = converted
+                elif "结束" in name and i < len(beam.loads):
+                    load_idx = int(name.split("#")[1].split("_")[0]) - 1
+                    beam.loads[load_idx].end_position = converted
+
+        if beam.length.unit != self.unit_system.length_unit:
+            beam.length = beam.length.convert_to(self.unit_system.length_unit)
 
         return errors
 
