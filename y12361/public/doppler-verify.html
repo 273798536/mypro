@@ -10,9 +10,12 @@
     .fail { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
     .formula { font-family: monospace; background: #f3f4f6; padding: 8px 12px; border-radius: 4px; margin: 8px 0; }
     h2 { margin-top: 32px; }
+    .back-link { display: inline-block; margin-bottom: 16px; padding: 8px 16px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; }
+    .back-link:hover { background: #2563eb; }
   </style>
 </head>
 <body>
+  <a href="/" class="back-link">← 返回应用</a>
   <h1>多普勒测速公式验证</h1>
   <div id="results"></div>
 
@@ -51,7 +54,7 @@
           const result = calculateVelocityFromFrequency(1000, 900, 'receding', SPEED_OF_SOUND);
           return {
             pass: result >= 38 && result <= 39 && result < SPEED_OF_SOUND,
-            actual: result,
+            actual: result + ' m/s',
             expected: '~38.11 m/s ( < 343 m/s)'
           };
         }
@@ -62,7 +65,7 @@
           const result = calculateVelocityFromFrequency(1000, 1100, 'approaching', SPEED_OF_SOUND);
           return {
             pass: result >= 31 && result <= 32 && result < SPEED_OF_SOUND,
-            actual: result,
+            actual: result + ' m/s',
             expected: '~31.18 m/s ( < 343 m/s)'
           };
         }
@@ -74,7 +77,7 @@
           const r2 = calculateVelocityFromFrequency(1000, 1000, 'receding', SPEED_OF_SOUND);
           return {
             pass: r1 === 0 && r2 === 0,
-            actual: `靠近: ${r1}, 远离: ${r2}`,
+            actual: `靠近: ${r1} m/s, 远离: ${r2} m/s`,
             expected: '0 m/s'
           };
         }

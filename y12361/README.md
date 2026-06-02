@@ -1,57 +1,119 @@
-# React + TypeScript + Vite
+# 多普勒测速教具
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向物理教学的多普勒效应计算工具，支持频移与速度双向换算，批量数据处理，分步补录不覆盖。
 
-Currently, two official plugins are available:
+## ✨ 功能特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **单条计算**：分步输入，发射频率先到，接收频率后补，不覆盖已有判断
+- **批量计算**：支持CSV导入，表格编辑，状态分类
+- **结果分析**：正常/待确认/异常三类展示，完整导出
+- **历史记录**：localStorage持久化，自动去重，变更日志
+- **波形演示**：参数变化实时回放，直观理解多普勒效应
 
-## Expanding the ESLint configuration
+## 🚀 快速开始
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 环境要求
+- Node.js >= 18.0.0
+- npm >= 9.0.0
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 安装依赖
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 开发模式
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm run dev
 ```
+
+访问 http://localhost:5173/ 查看应用
+
+### 类型检查
+
+```bash
+npm run check
+```
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+构建产物在 `dist/` 目录
+
+### 预览生产版本
+
+```bash
+npm run preview
+```
+
+## 🧪 公式验证
+
+启动开发服务器后，访问 http://localhost:5173/doppler-verify.html 查看核心公式验证结果。
+
+### 关键验证用例
+
+| 场景 | 发射频率 | 接收频率 | 方向 | 预期速度 | 验证状态 |
+|------|---------|---------|------|---------|---------|
+| 远离 | 1000 Hz | 900 Hz | 远离 | ~38.11 m/s | ✅ |
+| 靠近 | 1000 Hz | 1100 Hz | 靠近 | ~31.18 m/s | ✅ |
+| 无频移 | 1000 Hz | 1000 Hz | 任意 | 0 m/s | ✅ |
+
+**修复说明**：`calculateVelocityFromFrequency` 函数已修复"远离"方向的公式错误。
+- 修复前：1000Hz/900Hz/远离 → 724.11 m/s（超过声速，异常）
+- 修复后：1000Hz/900Hz/远离 → 38.11 m/s（正常物理值）
+
+## 📁 项目结构
+
+```
+src/
+├── components/          # 组件目录
+│   ├── layout/         # 布局组件
+│   └── shared/         # 共享组件
+├── pages/              # 页面组件
+│   ├── Home.tsx        # 首页
+│   ├── SingleCalculation.tsx  # 单条计算
+│   ├── BatchCalculation.tsx   # 批量计算
+│   ├── Results.tsx     # 结果分析
+│   └── History.tsx     # 历史记录
+├── store/              # 状态管理
+│   └── useDopplerStore.ts
+├── types/              # 类型定义
+│   └── doppler.ts
+├── utils/              # 工具函数
+│   └── dopplerEngine.ts  # 核心计算引擎
+├── App.tsx             # 应用入口
+├── main.tsx            # React 入口
+└── index.css           # 全局样式
+```
+
+## 🔧 核心技术栈
+
+- **框架**：React 18 + TypeScript
+- **构建**：Vite 6
+- **样式**：TailwindCSS 3
+- **状态**：Zustand 5
+- **路由**：React Router 7
+- **图标**：Lucide React
+
+## 📊 状态规则
+
+| 状态 | 触发条件 |
+|------|---------|
+| 未完成 | 缺少发射频率 / 缺少接收频率或速度 |
+| 待确认 | 运动方向未确认 / 未进行温度修正 / 方向可能反判 |
+| 异常 | 速度超过声速 / 频率为负 / 速度为负 |
+| 正常 | 所有校验通过 |
+
+## 📝 注意事项
+
+1. **历史数据重算**：修复前保存的旧记录需要在"批量计算"页点击"全部重算"刷新
+2. **公式适用场景**：当前公式假设"波源运动、观察者静止"，若为观察者运动场景公式形式不同
+3. **温度修正**：建议填写环境温度以获得更精确的声速计算值
+
+## 📄 License
+
+MIT
