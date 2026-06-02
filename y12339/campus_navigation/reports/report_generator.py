@@ -382,21 +382,60 @@ class ReportGenerator:
                 lines.append("")
 
         edit_impacts = result.manual_edit_impacts
-        if edit_impacts:
+        weight_overrides = self.service.router.get_weight_overrides() if self.service.router else {}
+        removed_edges = list(self.service.router.get_removed_edges()) if self.service.router else []
+
+        if edit_impacts or weight_overrides or removed_edges:
             lines.append("【人工修改影响】")
             lines.append("-" * 80)
-            lines.append(f"  影响路线的人工修改: {len(edit_impacts)} 处")
+            lines.append(f"  人工修改总数: {len(edit_impacts)} 条")
+            if weight_overrides:
+                lines.append(f"  权重覆盖生效: {len(weight_overrides)} 条")
+                for eid, w in weight_overrides.items():
+                    lines.append(f"    - 边 {eid}: 权重覆盖为 {w}")
+            if removed_edges:
+                lines.append(f"  已移除边: {len(removed_edges)} 条")
+                for eid in removed_edges:
+                    lines.append(f"    - 边 {eid}: 已被人工移除")
             lines.append("")
-            for i, impact in enumerate(edit_impacts, 1):
-                lines.append(f"  {i}. {impact.get('edit_id')} - {impact.get('edit_type')}")
-                lines.append(f"     边: {impact.get('edge_id')} ({impact.get('from_node')} → {impact.get('to_node')})")
-                lines.append(f"     修改人: {impact.get('editor')}")
-                lines.append(f"     修改时间: {impact.get('edit_time')}")
-                lines.append(f"     原因: {impact.get('reason')}")
-                lines.append(f"     原值: {impact.get('old_value')} → 新值: {impact.get('new_value')}")
-                if impact.get("source_file"):
-                    lines.append(f"     来源: {impact['source_file']}:{impact.get('source_line', '?')}")
-                lines.append("")
+
+            route_edge_ids = {s.edge_id for s in result.route_segments}
+            on_route = [imp for imp in edit_impacts if imp.get("edge_id") in route_edge_ids]
+            off_route = [imp for imp in edit_impacts if imp.get("edge_id") not in route_edge_ids]
+
+            if on_route:
+                lines.append("  影响当前路线的修改:")
+                for i, impact in enumerate(on_route, 1):
+                    lines.append(f"  {i}. {impact.get('edit_id')} - {impact.get('edit_type')}")
+                    if impact.get("edge_id"):
+                        lines.append(f"     边: {impact.get('edge_id')} ({impact.get('from_node', '?')} → {impact.get('to_node', '?')})")
+                    lines.append(f"     修改人: {impact.get('editor')}")
+                    lines.append(f"     修改时间: {impact.get('edit_time')}")
+                    lines.append(f"     原因: {impact.get('reason')}")
+                    lines.append(f"     原值: {impact.get('old_value')} → 新值: {impact.get('new_value')}")
+                    if impact.get("source_file"):
+                        lines.append(f"     来源: {impact['source_file']}:{impact.get('source_line', '?')}")
+                    lines.append("")
+
+            if off_route:
+                lines.append("  全局人工修改（不限于当前路线）:")
+                for i, impact in enumerate(off_route, 1):
+                    target_desc = impact.get("target_id", "?")
+                    aff_edges = impact.get("affected_edge_ids", [])
+                    aff_nodes = impact.get("affected_node_ids", [])
+                    lines.append(f"  {i}. {impact.get('edit_id')} - {impact.get('edit_type')}")
+                    lines.append(f"     目标: {target_desc}")
+                    if aff_edges:
+                        lines.append(f"     受影响边: {aff_edges}")
+                    if aff_nodes:
+                        lines.append(f"     受影响节点: {aff_nodes}")
+                    lines.append(f"     修改人: {impact.get('editor')}")
+                    lines.append(f"     修改时间: {impact.get('edit_time')}")
+                    lines.append(f"     原因: {impact.get('reason')}")
+                    lines.append(f"     原值: {impact.get('old_value')} → 新值: {impact.get('new_value')}")
+                    if impact.get("source_file"):
+                        lines.append(f"     来源: {impact['source_file']}:{impact.get('source_line', '?')}")
+                    lines.append("")
 
         if show_traces and result.trace_entries:
             lines.append("【溯源追踪】")

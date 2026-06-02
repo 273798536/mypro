@@ -100,8 +100,14 @@ class DataLoader:
                         "source_file": source_file,
                     })
 
+        edits_source = None
         if "manual_edits" in data:
-            for idx, edit_data in enumerate(data["manual_edits"]):
+            edits_source = data["manual_edits"]
+        elif "edit_trail" in data and isinstance(data["edit_trail"], dict) and "edits" in data["edit_trail"]:
+            edits_source = data["edit_trail"]["edits"]
+
+        if edits_source:
+            for idx, edit_data in enumerate(edits_source):
                 try:
                     source_line = self._find_line_for_item(lines, edit_data, "edit_id")
                     edit = ManualEdit.from_dict(edit_data, source_file=source_file, source_line=source_line)

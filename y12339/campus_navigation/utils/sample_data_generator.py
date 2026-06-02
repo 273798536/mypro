@@ -174,7 +174,8 @@ class SampleDataGenerator:
         graph = self.generate_campus_data()
 
         main_data_file = os.path.join(output_dir, "sample_campus.json")
-        loader = __import__("campus_navigation.utils.data_loader", fromlist=["DataLoader"]).DataLoader()
+        from .data_loader import DataLoader
+        loader = DataLoader()
         loader.save_to_file(graph, main_data_file)
 
         separate_files = {

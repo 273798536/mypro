@@ -6,6 +6,7 @@ from ..models import (
     CampusGraph,
     Edge,
     EdgeDirection,
+    BarrierStatus,
     NavigationResult,
     RouteStatus,
     RouteSegment,
@@ -34,10 +35,13 @@ class DijkstraRouter:
             elif edit.edit_type == EditType.BARRIER_STATUS_CHANGE:
                 barrier = self.graph.barriers.get(edit.target_id)
                 if barrier and edit.new_value:
-                    from ..models import BarrierStatus
                     try:
                         barrier.status = BarrierStatus(edit.new_value)
                     except ValueError:
+                        pass
+            elif edit.edit_type == EditType.ROUTE_SEGMENT_OVERRIDE:
+                for edge_id in edit.affected_edge_ids:
+                    if edge_id not in self._removed_edges:
                         pass
 
     def _get_edge_weight(self, edge: Edge, profile: Optional[AccessibilityProfile] = None) -> float:
@@ -281,6 +285,33 @@ class DijkstraRouter:
                     })
 
             result.route_segments.append(segment)
+
+        all_edits = list(self.graph.edit_trail.edits)
+        if all_edits:
+            for edit in all_edits:
+                already_in_route = any(
+                    edit.edit_id in seg.edit_ids
+                    for seg in result.route_segments
+                    if seg.has_manual_edit
+                )
+                if not already_in_route:
+                    result.manual_edit_impacts.append({
+                        "edit_id": edit.edit_id,
+                        "edit_type": edit.edit_type.value,
+                        "edge_id": None,
+                        "from_node": None,
+                        "to_node": None,
+                        "editor": edit.editor,
+                        "edit_time": edit.edit_time.isoformat(),
+                        "reason": edit.reason,
+                        "old_value": edit.old_value,
+                        "new_value": edit.new_value,
+                        "target_id": edit.target_id,
+                        "affected_node_ids": edit.affected_node_ids,
+                        "affected_edge_ids": edit.affected_edge_ids,
+                        "source_file": edit.source_file,
+                        "source_line": edit.source_line,
+                    })
 
         for node_id in path_nodes:
             self.tracer.trace_node_to_result(node_id, result)

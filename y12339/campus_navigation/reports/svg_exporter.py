@@ -313,21 +313,46 @@ class SVGExporter:
         if result and result.manual_edit_impacts and show_manual_edits:
             svg_parts.append(f'  <g id="manual_edits">')
             for i, impact in enumerate(result.manual_edit_impacts):
-                edge = self.graph.get_edge(impact.get("edge_id", ""))
-                if not edge:
-                    continue
-                from_node = self.graph.get_node(edge.from_node)
-                to_node = self.graph.get_node(edge.to_node)
-                if not from_node or not to_node:
-                    continue
+                edge = self.graph.get_edge(impact.get("edge_id") or "")
+                target_id = impact.get("target_id", "")
+                aff_edges = impact.get("affected_edge_ids", [])
+                mid_x = None
+                mid_y = None
 
-                x1, y1 = self._transform_coords(from_node.x, from_node.y, bounds)
-                x2, y2 = self._transform_coords(to_node.x, to_node.y, bounds)
-                mid_x = (x1 + x2) / 2
-                mid_y = (y1 + y2) / 2
+                if edge:
+                    from_node = self.graph.get_node(edge.from_node)
+                    to_node = self.graph.get_node(edge.to_node)
+                    if from_node and to_node:
+                        x1, y1 = self._transform_coords(from_node.x, from_node.y, bounds)
+                        x2, y2 = self._transform_coords(to_node.x, to_node.y, bounds)
+                        mid_x = (x1 + x2) / 2
+                        mid_y = (y1 + y2) / 2
+                elif aff_edges:
+                    ref_edge = self.graph.get_edge(aff_edges[0])
+                    if ref_edge:
+                        fn = self.graph.get_node(ref_edge.from_node)
+                        tn = self.graph.get_node(ref_edge.to_node)
+                        if fn and tn:
+                            x1, y1 = self._transform_coords(fn.x, fn.y, bounds)
+                            x2, y2 = self._transform_coords(tn.x, tn.y, bounds)
+                            mid_x = (x1 + x2) / 2
+                            mid_y = (y1 + y2) / 2 - 30
+                elif target_id.startswith("B"):
+                    barrier = self.graph.barriers.get(target_id)
+                    if barrier:
+                        ref_edge = self.graph.get_edge(barrier.edge_id)
+                        if ref_edge:
+                            fn = self.graph.get_node(ref_edge.from_node)
+                            tn = self.graph.get_node(ref_edge.to_node)
+                            if fn and tn:
+                                x1, y1 = self._transform_coords(fn.x, fn.y, bounds)
+                                x2, y2 = self._transform_coords(tn.x, tn.y, bounds)
+                                mid_x = (x1 + x2) / 2
+                                mid_y = (y1 + y2) / 2 - 30
 
-                svg_parts.append(f'    <rect x="{mid_x-12}" y="{mid_y-25}" width="24" height="20" rx="3" fill="#9b59b6" stroke="#8e44ad" stroke-width="1"/>')
-                svg_parts.append(f'    <text x="{mid_x}" y="{mid_y-11}" font-family="sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">✎{i+1}</text>')
+                if mid_x is not None and mid_y is not None:
+                    svg_parts.append(f'    <rect x="{mid_x-12}" y="{mid_y-25}" width="24" height="20" rx="3" fill="#9b59b6" stroke="#8e44ad" stroke-width="1"/>')
+                    svg_parts.append(f'    <text x="{mid_x}" y="{mid_y-11}" font-family="sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">✎{i+1}</text>')
             svg_parts.append(f'  </g>')
 
         svg_parts.append(f'  <g id="metadata">')
