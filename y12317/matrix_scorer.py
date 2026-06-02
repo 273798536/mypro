@@ -41,6 +41,27 @@ class JudgeScore:
     missing_criteria: List[str] = field(default_factory=list)
 
 
+class WeightSource(Enum):
+    DIRECT = "直接权重"
+    EIGENVECTOR = "特征向量法"
+    EXCLUDED_CR = "一致性检验不通过"
+    EXCLUDED_DIM = "维度不匹配"
+    EXCLUDED_MISSING = "数据缺失"
+
+
+@dataclass
+class JudgeWeightMetadata:
+    judge_id: str
+    judge_name: str
+    source: WeightSource
+    raw_sum: float
+    is_normalized: bool
+    included_in_consensus: bool
+    weights: Optional[np.ndarray] = None
+    cr_value: Optional[float] = None
+    excluded_reason: Optional[str] = None
+
+
 @dataclass
 class SupplierMaterial:
     supplier_id: str
@@ -88,6 +109,7 @@ class MatrixConsistencyScorer:
         self.inspection_reports: List[InspectionReport] = []
         self.diagnoses: List[DiagnosisMessage] = []
         self.judge_weights: Dict[str, np.ndarray] = {}
+        self.judge_metadata: Dict[str, JudgeWeightMetadata] = {}
         self.consensus_weights: Optional[np.ndarray] = None
         self.rankings: List[Dict] = []
 
@@ -102,30 +124,6 @@ class MatrixConsistencyScorer:
 
     def _validate_judge_scores(self) -> None:
         for js in self.judge_scores:
-            if js.comparison_matrix is not None:
-                n = js.comparison_matrix.shape[0]
-                expected = len(self.criteria)
-                if n != expected:
-                    self.diagnoses.append(DiagnosisMessage(
-                        level=DiagnosisLevel.ERROR,
-                        code="MATRIX_DIM_MISMATCH",
-                        source_type="评委打分",
-                        source_id=js.judge_id,
-                        detail=f"评委 {js.judge_name} 的判断矩阵维度为 {n}x{n}，期望 {expected}x{expected}（依据 {expected} 个准则）",
-                        suggestion=f"请检查评委 {js.judge_name} 的打分表，确认是否遗漏或多余准则列/行",
-                    ))
-                neg_mask = js.comparison_matrix <= 0
-                if neg_mask.any():
-                    rows, cols = np.where(neg_mask)
-                    positions = [f"第{r+1}行第{c+1}列" for r, c in zip(rows, cols)]
-                    self.diagnoses.append(DiagnosisMessage(
-                        level=DiagnosisLevel.ERROR,
-                        code="MATRIX_NON_POSITIVE",
-                        source_type="评委打分",
-                        source_id=js.judge_id,
-                        detail=f"评委 {js.judge_name} 的判断矩阵存在非正元素: {', '.join(positions[:5])}",
-                        suggestion="判断矩阵元素必须为正数，请核实该评委原始打分记录",
-                    ))
             if js.missing_criteria:
                 missing_names = ", ".join(js.missing_criteria)
                 self.diagnoses.append(DiagnosisMessage(
@@ -193,6 +191,9 @@ class MatrixConsistencyScorer:
                             ))
 
     def step1_compute_weights(self) -> Dict[str, np.ndarray]:
+        self.judge_weights.clear()
+        self.judge_metadata.clear()
+
         for js in self.judge_scores:
             if js.direct_weights is not None:
                 n = len(js.direct_weights)
@@ -206,10 +207,20 @@ class MatrixConsistencyScorer:
                         detail=f"评委 {js.judge_name} 的直接权重维度为 {n}，期望 {expected}",
                         suggestion=f"请检查评委 {js.judge_name} 的直接权重设置，确保包含 {expected} 个准则的权重",
                     ))
+                    self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                        judge_id=js.judge_id,
+                        judge_name=js.judge_name,
+                        source=WeightSource.EXCLUDED_DIM,
+                        raw_sum=float(js.direct_weights.sum()),
+                        is_normalized=False,
+                        included_in_consensus=False,
+                        excluded_reason=f"维度不匹配: 期望{expected}维，实际{n}维",
+                    )
                     continue
 
-                weight_sum = js.direct_weights.sum()
-                if not math.isclose(weight_sum, 1.0, abs_tol=1e-6):
+                weight_sum = float(js.direct_weights.sum())
+                is_normalized = math.isclose(weight_sum, 1.0, abs_tol=1e-6)
+                if not is_normalized:
                     self.diagnoses.append(DiagnosisMessage(
                         level=DiagnosisLevel.WARNING,
                         code="JUDGE_WEIGHT_NOT_NORMALIZED",
@@ -226,6 +237,15 @@ class MatrixConsistencyScorer:
                     ))
 
                 self.judge_weights[js.judge_id] = js.direct_weights.copy()
+                self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                    judge_id=js.judge_id,
+                    judge_name=js.judge_name,
+                    source=WeightSource.DIRECT,
+                    raw_sum=weight_sum,
+                    is_normalized=is_normalized,
+                    included_in_consensus=True,
+                    weights=js.direct_weights.copy(),
+                )
                 continue
 
             if js.comparison_matrix is None:
@@ -237,11 +257,60 @@ class MatrixConsistencyScorer:
                     detail=f"评委 {js.judge_name} 未提供判断矩阵也未提供直接权重，将被跳过",
                     suggestion=f"请联系评委 {js.judge_name} 补充打分数据",
                 ))
+                self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                    judge_id=js.judge_id,
+                    judge_name=js.judge_name,
+                    source=WeightSource.EXCLUDED_MISSING,
+                    raw_sum=0.0,
+                    is_normalized=False,
+                    included_in_consensus=False,
+                    excluded_reason="未提供判断矩阵也未提供直接权重",
+                )
                 continue
+
             n = js.comparison_matrix.shape[0]
-            if n != len(self.criteria):
+            expected = len(self.criteria)
+            if n != expected:
+                self.diagnoses.append(DiagnosisMessage(
+                    level=DiagnosisLevel.ERROR,
+                    code="MATRIX_DIM_MISMATCH",
+                    source_type="评委打分",
+                    source_id=js.judge_id,
+                    detail=f"评委 {js.judge_name} 的判断矩阵维度为 {n}x{n}，期望 {expected}x{expected}",
+                    suggestion=f"请检查评委 {js.judge_name} 的打分表，确认是否遗漏或多余准则列/行",
+                ))
+                self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                    judge_id=js.judge_id,
+                    judge_name=js.judge_name,
+                    source=WeightSource.EXCLUDED_DIM,
+                    raw_sum=0.0,
+                    is_normalized=False,
+                    included_in_consensus=False,
+                    excluded_reason=f"矩阵维度不匹配: 期望{expected}x{expected}，实际{n}x{n}",
+                )
                 continue
-            if (js.comparison_matrix <= 0).any():
+
+            neg_mask = js.comparison_matrix <= 0
+            if neg_mask.any():
+                rows, cols = np.where(neg_mask)
+                positions = [f"第{r+1}行第{c+1}列" for r, c in zip(rows, cols)]
+                self.diagnoses.append(DiagnosisMessage(
+                    level=DiagnosisLevel.ERROR,
+                    code="MATRIX_NON_POSITIVE",
+                    source_type="评委打分",
+                    source_id=js.judge_id,
+                    detail=f"评委 {js.judge_name} 的判断矩阵存在非正元素: {', '.join(positions[:5])}",
+                    suggestion="判断矩阵元素必须为正数，请核实该评委原始打分记录",
+                ))
+                self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                    judge_id=js.judge_id,
+                    judge_name=js.judge_name,
+                    source=WeightSource.EXCLUDED_DIM,
+                    raw_sum=0.0,
+                    is_normalized=False,
+                    included_in_consensus=False,
+                    excluded_reason=f"矩阵存在非正元素: {', '.join(positions[:3])}",
+                )
                 continue
 
             weights = _eigenvector_weights(js.comparison_matrix)
@@ -262,6 +331,17 @@ class MatrixConsistencyScorer:
                         f"重点检查是否存在自相矛盾的赋值（如 A>B, B>C 但 C>A）"
                     ),
                 ))
+                self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                    judge_id=js.judge_id,
+                    judge_name=js.judge_name,
+                    source=WeightSource.EXCLUDED_CR,
+                    raw_sum=float(weights.sum()),
+                    is_normalized=math.isclose(float(weights.sum()), 1.0, abs_tol=1e-6),
+                    included_in_consensus=False,
+                    weights=weights,
+                    cr_value=cr,
+                    excluded_reason=f"一致性检验不通过: CR={cr:.4f} > 阈值{self.cr_threshold}",
+                )
                 continue
             else:
                 self.diagnoses.append(DiagnosisMessage(
@@ -274,6 +354,16 @@ class MatrixConsistencyScorer:
                 ))
 
             self.judge_weights[js.judge_id] = weights
+            self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                judge_id=js.judge_id,
+                judge_name=js.judge_name,
+                source=WeightSource.EIGENVECTOR,
+                raw_sum=float(weights.sum()),
+                is_normalized=math.isclose(float(weights.sum()), 1.0, abs_tol=1e-6),
+                included_in_consensus=True,
+                weights=weights,
+                cr_value=cr,
+            )
 
         return self.judge_weights
 
@@ -293,9 +383,55 @@ class MatrixConsistencyScorer:
         self.consensus_weights = all_weights.mean(axis=0)
 
         weight_sum = self.consensus_weights.sum()
+        included_metadata = [m for m in self.judge_metadata.values() if m.included_in_consensus]
+        excluded_metadata = [m for m in self.judge_metadata.values() if not m.included_in_consensus]
+
         if not math.isclose(weight_sum, 1.0, abs_tol=1e-6):
-            per_judge_sums = {jid: f"{w.sum():.6f}" for jid, w in self.judge_weights.items()}
-            sum_details = "; ".join(per_judge_sums.values())
+            per_judge_sums = {m.judge_name: f"{m.raw_sum:.6f}" for m in included_metadata}
+            sum_details = "; ".join([f"{name}: {s}" for name, s in per_judge_sums.items()])
+
+            non_normalized_judges = [m for m in included_metadata if not m.is_normalized]
+            excluded_count = len(excluded_metadata)
+
+            cause_parts = []
+            if non_normalized_judges:
+                names = "、".join([m.judge_name for m in non_normalized_judges])
+                sums = "、".join([f"{m.judge_name}({m.raw_sum:.6f})" for m in non_normalized_judges])
+                cause_parts.append(
+                    f"直接原因：评委 {names} 提供的权重本身未归一化，分别为 {sums}"
+                )
+            if excluded_count > 0:
+                excluded_names = "、".join([m.judge_name for m in excluded_metadata])
+                reasons = "、".join([f"{m.judge_name}({m.excluded_reason})" for m in excluded_metadata])
+                cause_parts.append(
+                    f"聚合因素：共有 {excluded_count} 位评委被排除（{excluded_names}），"
+                    f"排除原因：{reasons}"
+                )
+            if not non_normalized_judges and excluded_count == 0:
+                cause_parts.append(
+                    "技术因素：所有参与聚合的评委权重均已归一化，"
+                    "但浮点精度累积导致均值总和与1.0存在微小偏差"
+                )
+
+            cause_text = "。".join(cause_parts)
+
+            suggestion_parts = []
+            if non_normalized_judges:
+                names = "、".join([m.judge_name for m in non_normalized_judges])
+                suggestion_parts.append(
+                    f"(1) 优先处理：请联系评委 {names}，确认是否需要修正其权重为归一化形式；"
+                )
+            if excluded_count > 0:
+                excluded_names = "、".join([m.judge_name for m in excluded_metadata])
+                suggestion_parts.append(
+                    f"(2) 可选方案：如需保留 {excluded_names} 的意见，"
+                    f"可考虑对其判断矩阵做局部修正而非直接排除；"
+                )
+            suggestion_parts.append(
+                "(3) 技术修正：对聚合权重做归一化除法 w_i / Σw 即可得到正确的相对权重分布"
+            )
+            suggestion_text = " ".join(suggestion_parts)
+
             self.diagnoses.append(DiagnosisMessage(
                 level=DiagnosisLevel.WARNING,
                 code="WEIGHT_NOT_NORMALIZED",
@@ -303,15 +439,10 @@ class MatrixConsistencyScorer:
                 source_id="consensus",
                 detail=(
                     f"聚合权重之和为 {weight_sum:.6f}，未归一化为1.0。"
-                    f"各评委权重之和: {sum_details}。"
-                    f"原因: 当部分评委判断矩阵未通过一致性检验被排除时，"
-                    f"剩余评委的特征向量权重虽然各自归一，但均值聚合后浮点累积导致总和非1"
+                    f"参与聚合的评委权重之和: {sum_details}。"
+                    f"原因分析：{cause_text}"
                 ),
-                suggestion=(
-                    "处理建议: (1) 对聚合权重做归一化除法 w_i / Σw 即可修正; "
-                    "(2) 若排除评委较多，建议回溯确认排除理由是否合理，避免因排除导致权重偏斜; "
-                    "(3) 如需保留所有评委意见，可考虑对未通过一致性的评委做局部修正而非直接排除"
-                ),
+                suggestion=suggestion_text,
             ))
             self.consensus_weights = self.consensus_weights / self.consensus_weights.sum()
             self.diagnoses.append(DiagnosisMessage(
@@ -323,14 +454,30 @@ class MatrixConsistencyScorer:
                 suggestion="归一化仅为技术修正，业务含义不变；如对权重分布有疑问请复核评委原始判断",
             ))
         else:
-            self.diagnoses.append(DiagnosisMessage(
-                level=DiagnosisLevel.INFO,
-                code="WEIGHT_NORMALIZED",
-                source_type="权重计算",
-                source_id="consensus",
-                detail=f"聚合权重之和为 {weight_sum:.6f}，归一化正常",
-                suggestion="无需处理",
-            ))
+            excluded_count = len(excluded_metadata)
+            if excluded_count > 0:
+                excluded_names = "、".join([m.judge_name for m in excluded_metadata])
+                self.diagnoses.append(DiagnosisMessage(
+                    level=DiagnosisLevel.INFO,
+                    code="WEIGHT_NORMALIZED",
+                    source_type="权重计算",
+                    source_id="consensus",
+                    detail=(
+                        f"聚合权重之和为 {weight_sum:.6f}，归一化正常。"
+                        f"注意：共有 {excluded_count} 位评委被排除（{excluded_names}），"
+                        f"未参与权重聚合"
+                    ),
+                    suggestion="如排除评委较多，建议回溯确认排除理由是否合理，避免因排除导致权重偏斜",
+                ))
+            else:
+                self.diagnoses.append(DiagnosisMessage(
+                    level=DiagnosisLevel.INFO,
+                    code="WEIGHT_NORMALIZED",
+                    source_type="权重计算",
+                    source_id="consensus",
+                    detail=f"聚合权重之和为 {weight_sum:.6f}，归一化正常",
+                    suggestion="无需处理",
+                ))
 
         return self.consensus_weights
 
@@ -353,7 +500,9 @@ class MatrixConsistencyScorer:
 
         extreme_results = []
         for i, jid in enumerate(judge_ids):
-            js_obj = next(js for js in self.judge_scores if js.judge_id == jid)
+            metadata = self.judge_metadata.get(jid)
+            if metadata is None:
+                continue
             w = self.judge_weights[jid]
             z_scores = np.zeros_like(w)
             for k in range(len(w)):
@@ -366,29 +515,34 @@ class MatrixConsistencyScorer:
             is_extreme = abs(max_z) > self.extreme_z_threshold
             extreme_results.append({
                 "judge_id": jid,
-                "judge_name": js_obj.judge_name,
+                "judge_name": metadata.judge_name,
                 "is_extreme": is_extreme,
                 "max_z_score": float(max_z),
                 "extreme_criterion": max_criterion,
                 "z_scores": z_scores.tolist(),
+                "weight_source": metadata.source.value,
             })
 
             if is_extreme:
                 direction = "偏高" if max_z > 0 else "偏低"
+                source_detail = f"权重来源：{metadata.source.value}"
+                if metadata.cr_value is not None:
+                    source_detail += f"，一致性检验 CR={metadata.cr_value:.4f}"
                 self.diagnoses.append(DiagnosisMessage(
                     level=DiagnosisLevel.WARNING,
                     code="EXTREME_JUDGE",
                     source_type="评委打分",
                     source_id=jid,
                     detail=(
-                        f"评委 {js_obj.judge_name} 在准则「{max_criterion}」上的权重Z得分={max_z:.2f}，"
+                        f"评委 {metadata.judge_name} 在准则「{max_criterion}」上的权重Z得分={max_z:.2f}，"
                         f"{direction}于均值超过 {self.extreme_z_threshold} 个标准差，"
                         f"该评委对「{max_criterion}」的赋权为 {w[max_z_idx]:.4f}，"
-                        f"而均值为 {mean_w[max_z_idx]:.4f}"
+                        f"而均值为 {mean_w[max_z_idx]:.4f}。"
+                        f"{source_detail}"
                     ),
                     suggestion=(
-                        f"请核实评委 {js_obj.judge_name} 对准则「{max_criterion}」的原始判断值，"
-                        f"确认是否存在主观偏好或理解偏差; "
+                        f"请核实评委 {metadata.judge_name} 对准则「{max_criterion}」的原始判断值，"
+                        f"确认是否存在主观偏好或理解偏差；"
                         f"如确认异常，可在聚合时降低该评委权重或要求其重新评判"
                     ),
                 ))
@@ -398,7 +552,10 @@ class MatrixConsistencyScorer:
                     code="JUDGE_NORMAL",
                     source_type="评委打分",
                     source_id=jid,
-                    detail=f"评委 {js_obj.judge_name} 最大Z得分={max_z:.2f}，未超出极端阈值",
+                    detail=(
+                        f"评委 {metadata.judge_name} 最大Z得分={max_z:.2f}，未超出极端阈值。"
+                        f"权重来源：{metadata.source.value}"
+                    ),
                     suggestion="无需处理",
                 ))
 
@@ -470,6 +627,18 @@ class MatrixConsistencyScorer:
         return {
             "diagnoses": [str(d) for d in self.diagnoses],
             "judge_weights": {jid: w.tolist() for jid, w in self.judge_weights.items()},
+            "judge_metadata": {
+                mid: {
+                    "judge_id": m.judge_id,
+                    "judge_name": m.judge_name,
+                    "source": m.source.value,
+                    "raw_sum": m.raw_sum,
+                    "is_normalized": m.is_normalized,
+                    "included_in_consensus": m.included_in_consensus,
+                    "cr_value": m.cr_value,
+                    "excluded_reason": m.excluded_reason,
+                } for mid, m in self.judge_metadata.items()
+            },
             "consensus_weights": self.consensus_weights.tolist() if self.consensus_weights is not None else None,
             "extreme_judges": extreme,
             "rankings": rankings,
@@ -496,10 +665,23 @@ class MatrixConsistencyScorer:
         print("\n【各评委权重】")
         print("-" * 60)
         for jid, weights in result["judge_weights"].items():
-            js_obj = next((js for js in self.judge_scores if js.judge_id == jid), None)
-            name = js_obj.judge_name if js_obj else jid
+            metadata = result["judge_metadata"].get(jid, {})
+            name = metadata.get("judge_name", jid)
+            source = metadata.get("source", "未知来源")
+            raw_sum = metadata.get("raw_sum", 0.0)
+            is_norm = metadata.get("is_normalized", False)
+            norm_tag = "✅ 已归一" if is_norm else "⚠️ 未归一"
             items = [f"{c}={w:.4f}" for c, w in zip(self.criteria, weights)]
-            print(f"  {name}: {', '.join(items)} (Σ={sum(weights):.6f})")
+            print(f"  {name} [{source}] [{norm_tag}]")
+            print(f"    权重: {', '.join(items)}")
+            print(f"    原始和={raw_sum:.6f}, 当前和={sum(weights):.6f}")
+
+        excluded_judges = [m for m in result["judge_metadata"].values() if not m["included_in_consensus"]]
+        if excluded_judges:
+            print("\n【未参与聚合的评委】")
+            print("-" * 60)
+            for m in excluded_judges:
+                print(f"  ❌ {m['judge_name']} | 原因: {m['excluded_reason']}")
 
         if result["consensus_weights"] is not None:
             print("\n【共识权重（归一化后）】")
@@ -511,7 +693,8 @@ class MatrixConsistencyScorer:
         print("-" * 60)
         for ej in result["extreme_judges"]:
             tag = "⚠️ 极端" if ej["is_extreme"] else "✅ 正常"
-            print(f"  {tag} | {ej['judge_name']} | 最大Z={ej['max_z_score']:.2f} | 偏离准则: {ej['extreme_criterion']}")
+            source = ej.get("weight_source", "未知来源")
+            print(f"  {tag} | {ej['judge_name']} [{source}] | 最大Z={ej['max_z_score']:.2f} | 偏离准则: {ej['extreme_criterion']}")
 
         print("\n【供应商排名】")
         print("-" * 60)
