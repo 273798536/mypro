@@ -56,14 +56,15 @@ function recalculate(state: Partial<BayesianState>): {
 } {
   const alarms = state.alarms ?? []
   const maintenances = state.maintenances ?? []
+  const reports = state.reports ?? []
   const priors = state.priors ?? []
   const prevProbs = state.probabilities ?? []
 
-  const { probabilities: rawProbs, evidenceChain } = bayesianUpdate(priors, alarms, maintenances)
+  const { probabilities: rawProbs, evidenceChain } = bayesianUpdate(priors, alarms, maintenances, reports)
   const probabilities = computeRankChanges(prevProbs, rawProbs)
   const boundaryWarnings = detectBoundaryWarnings(alarms, maintenances, probabilities)
   const reinspectionSuggestions = generateReinspectionSuggestions(probabilities, boundaryWarnings, evidenceChain)
-  const traceLinks = buildTraceLinks(alarms, maintenances, probabilities)
+  const traceLinks = buildTraceLinks(alarms, maintenances, probabilities, reports)
 
   return { probabilities, evidenceChain, boundaryWarnings, reinspectionSuggestions, traceLinks }
 }

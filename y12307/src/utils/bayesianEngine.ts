@@ -1,9 +1,10 @@
-import type { AlarmRecord, MaintenanceResult, ComponentProbability, EvidenceItem, ComponentPrior } from '@/types'
+import type { AlarmRecord, MaintenanceResult, ComponentProbability, EvidenceItem, ComponentPrior, LocalizationReport } from '@/types'
 
 export function bayesianUpdate(
   priors: ComponentPrior[],
   alarms: AlarmRecord[],
-  maintenances: MaintenanceResult[]
+  maintenances: MaintenanceResult[],
+  reports: LocalizationReport[]
 ): { probabilities: ComponentProbability[]; evidenceChain: EvidenceItem[] } {
   const components = new Map<string, ComponentPrior>()
   for (const p of priors) {
@@ -32,13 +33,25 @@ export function bayesianUpdate(
     }
   }
 
+  for (const report of reports) {
+    for (const ranking of report.componentRanking) {
+      if (!components.has(ranking.component)) {
+        components.set(ranking.component, {
+          component: ranking.component,
+          prior: 1 / Math.max(components.size, 1),
+          material: ranking.material,
+          object: ranking.object,
+        })
+      }
+    }
+  }
+
   const likelihoods = new Map<string, number>()
   for (const [comp] of components) {
     likelihoods.set(comp, 1.0)
   }
 
   const evidenceChain: EvidenceItem[] = []
-  let evId = 0
 
   for (const alarm of alarms) {
     const comp = alarm.alarmType
@@ -61,7 +74,6 @@ export function bayesianUpdate(
       contributionToRank: `↑ ${comp} 似然提升 ×${boost.toFixed(2)}`,
       confidence: Math.min(alarm.sampleSize / 10, 1.0),
     })
-    evId++
   }
 
   for (const m of maintenances) {
@@ -95,7 +107,37 @@ export function bayesianUpdate(
         confidence: 0.5,
       })
     }
-    evId++
+  }
+
+  for (const report of reports) {
+    for (const ranking of report.componentRanking) {
+      const comp = ranking.component
+      const current = likelihoods.get(comp) ?? 1.0
+      const reportBoost = 1.0 + ranking.probability * report.priorStrength * 0.5
+      likelihoods.set(comp, current * reportBoost)
+
+      for (const [otherComp] of components) {
+        if (otherComp !== comp) {
+          const other = likelihoods.get(otherComp) ?? 1.0
+          likelihoods.set(otherComp, other * 0.98)
+        }
+      }
+    }
+
+    evidenceChain.push({
+      sourceId: report.id,
+      sourceType: 'report',
+      description: `定位报告: ${report.source} (先验强度 ${(report.priorStrength * 100).toFixed(0)}%)`,
+      contributionToRank: `报告证据纳入 ${report.componentRanking.length} 个部件排序`,
+      confidence: report.priorStrength,
+    })
+
+    for (const item of report.evidenceChain) {
+      evidenceChain.push({
+        ...item,
+        sourceId: `${report.id}-${item.sourceId}`,
+      })
+    }
   }
 
   let numeratorSum = 0
