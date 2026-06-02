@@ -5,7 +5,9 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
+    "prestart": "npm run build",
     "start": "node dist/main.js",
+    "pretest": "npm run build",
     "test": "node dist/test.js"
   },
   "keywords": [],
