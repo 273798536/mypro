@@ -14,6 +14,7 @@ class MicrowaveVisualizer {
         this.heatPlane = null;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+        this._chartThrottleTimer = null;
         
         this.init();
     }
@@ -268,7 +269,7 @@ class MicrowaveVisualizer {
         document.getElementById('timeline').value = 0;
         this.updateTimeDisplay();
         this.updateHeatVisualization();
-        this.updateTemperatureChart();
+        this.updateTemperatureChart(true);
     }
     
     updateErrorPanel(errors) {
@@ -287,9 +288,13 @@ class MicrowaveVisualizer {
     
     updateTempPointsList(points) {
         const container = document.getElementById('temp-points');
-        const currentPoints = points.filter(p => p.time === this.getCurrentTimePoint());
-        
-        container.innerHTML = currentPoints.map(p => `
+        const filtered = points.filter(p => {
+            if (this.currentFilter === 'hot') return p.temp >= 70;
+            if (this.currentFilter === 'cold') return p.temp < 50;
+            return true;
+        });
+
+        container.innerHTML = filtered.map(p => `
             <div class="flex items-center justify-between p-2 rounded ${p.flagged ? 'bg-red-50 border border-red-200' : 'bg-gray-50'} text-xs">
                 <div>
                     <span class="font-medium">${p.id}</span>
@@ -319,13 +324,21 @@ class MicrowaveVisualizer {
     }
     
     updateTraceability(data) {
+        const params = this.getCurrentSliderParams();
+        const allInterpPts = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
+        const filteredPts = this.getCurrentInterpolatedPoints();
+        const filterLabel = this.currentFilter === 'hot' ? '高温区' :
+                            this.currentFilter === 'cold' ? '低温区' : '全部';
         const container = document.getElementById('data-traceability');
         container.innerHTML = `
             <div>• 实验编号: ${data.metadata.sampleId}</div>
-            <div>• 温度点数: ${data.temperaturePoints.length} 个</div>
+            <div>• 当前时间: ${Math.floor(this.currentTime)}秒</div>
+            <div>• 筛选模式: ${filterLabel}</div>
+            <div>• 频率: ${params.frequency} GHz / 功率: ${params.power} W</div>
+            <div>• 插值点数: ${allInterpPts.length} 个</div>
+            <div>• 显示点数: ${filteredPts.length} 个</div>
             <div>• 转盘记录: ${data.turntablePositions.length} 条</div>
             <div>• 操作人员: ${data.metadata.operator}</div>
-            <div>• 时间跨度: 0-${data.parameters.duration}秒</div>
         `;
     }
     
@@ -369,6 +382,26 @@ class MicrowaveVisualizer {
         });
     }
     
+    getCurrentInterpolatedPoints(time) {
+        const t = time !== undefined ? time : this.currentTime;
+        const data = sampleData[this.currentSample];
+        if (!data) return [];
+        const points = this.interpolateTemperature(data.temperaturePoints, t);
+        return points.filter(p => {
+            if (this.currentFilter === 'hot') return p.temp >= 70;
+            if (this.currentFilter === 'cold') return p.temp < 50;
+            return true;
+        });
+    }
+
+    getCurrentSliderParams() {
+        return {
+            frequency: parseFloat(document.getElementById('freq-slider').value),
+            speed: parseFloat(document.getElementById('speed-slider').value),
+            power: parseFloat(document.getElementById('power-slider').value)
+        };
+    }
+
     updateHeatVisualization() {
         const data = sampleData[this.currentSample];
         if (!data) return;
@@ -420,6 +453,16 @@ class MicrowaveVisualizer {
         
         const avgTemp = currentPoints.reduce((sum, p) => sum + p.temp, 0) / currentPoints.length;
         document.getElementById('current-temp').textContent = `平均温度: ${avgTemp.toFixed(1)}°C`;
+
+        this._scheduleChartUpdate();
+    }
+
+    _scheduleChartUpdate() {
+        if (this._chartThrottleTimer) return;
+        this._chartThrottleTimer = setTimeout(() => {
+            this._chartThrottleTimer = null;
+            this.updateTemperatureChart();
+        }, this.isPlaying ? 500 : 0);
     }
     
     updateHeatPlane(points) {
@@ -495,58 +538,72 @@ class MicrowaveVisualizer {
         const centerPoints = points.filter(p => Math.abs(p.x) < 5 && Math.abs(p.y) < 5);
         const edgePoints = points.filter(p => Math.abs(p.x) > 10 || Math.abs(p.y) > 10);
         
-        const centerTemp = centerPoints.reduce((sum, p) => sum + p.temp, 0) / centerPoints.length;
-        const edgeTemp = edgePoints.reduce((sum, p) => sum + p.temp, 0) / edgePoints.length;
+        const centerTemp = centerPoints.length > 0 ? centerPoints.reduce((sum, p) => sum + p.temp, 0) / centerPoints.length : 0;
+        const edgeTemp = edgePoints.length > 0 ? edgePoints.reduce((sum, p) => sum + p.temp, 0) / edgePoints.length : 0;
         
-        document.getElementById('wavelength-value').textContent = `${wavelength.toFixed(1)} cm`;
+        document.getElementById('wavelength-value').textContent = `${wavelength.toFixed(1)} cm (中心${centerTemp.toFixed(0)}° / 边缘${edgeTemp.toFixed(0)}°)`;
         document.getElementById('node-count').textContent = '约 4-6 个';
         document.getElementById('antinode-count').textContent = '约 5-7 个';
     }
     
-    updateTemperatureChart() {
+    updateTemperatureChart(forceRebuild) {
         const data = sampleData[this.currentSample];
         if (!data) return;
-        
+
         const ctx = document.getElementById('temp-chart').getContext('2d');
-        
-        if (this.tempChart) {
-            this.tempChart.destroy();
-        }
-        
-        const timePoints = [0, 30, 60, 90, 120];
-        const tempByTime = timePoints.map(t => {
-            const points = data.temperaturePoints.filter(p => p.time === t);
-            return points.reduce((sum, p) => sum + p.temp, 0) / points.length;
+        const steps = [];
+        for (let t = 0; t <= 120; t += 10) steps.push(t);
+
+        const filterLabel = this.currentFilter === 'hot' ? '(高温区)' :
+                            this.currentFilter === 'cold' ? '(低温区)' : '';
+
+        const tempByTime = steps.map(t => {
+            const pts = this.getCurrentInterpolatedPoints(t);
+            if (pts.length === 0) return null;
+            return pts.reduce((s, p) => s + p.temp, 0) / pts.length;
         });
-        
+
+        const pointBgColors = steps.map((t, i) => {
+            if (Math.abs(t - this.currentTime) <= 5 && tempByTime[i] !== null) return '#ef4444';
+            return 'rgba(59, 130, 246, 1)';
+        });
+        const pointRadii = steps.map((t) => {
+            if (Math.abs(t - this.currentTime) <= 5) return 6;
+            return 3;
+        });
+
+        if (this.tempChart && !forceRebuild) {
+            this.tempChart.data.labels = steps.map(t => `${t}s`);
+            this.tempChart.data.datasets[0].data = tempByTime;
+            this.tempChart.data.datasets[0].label = `平均温度 ${filterLabel} (°C)`;
+            this.tempChart.data.datasets[0].pointBackgroundColor = pointBgColors;
+            this.tempChart.data.datasets[0].pointRadius = pointRadii;
+            this.tempChart.update('none');
+            return;
+        }
+
+        if (this.tempChart) this.tempChart.destroy();
+
         this.tempChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: timePoints.map(t => `${t}s`),
+                labels: steps.map(t => `${t}s`),
                 datasets: [{
-                    label: '平均温度 (°C)',
+                    label: `平均温度 ${filterLabel} (°C)`,
                     data: tempByTime,
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     fill: true,
-                    tension: 0.3
+                    tension: 0.3,
+                    pointBackgroundColor: pointBgColors,
+                    pointRadius: pointRadii
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 20,
-                        max: 100
-                    }
-                }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: false, min: 20, max: 100 } }
             }
         });
     }
@@ -559,7 +616,8 @@ class MicrowaveVisualizer {
         
         const data = sampleData[this.currentSample];
         if (data) {
-            this.updateTempPointsList(data.temperaturePoints);
+            const interpolated = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
+            this.updateTempPointsList(interpolated);
         }
     }
     
@@ -587,6 +645,22 @@ class MicrowaveVisualizer {
     
     generateReport() {
         const data = sampleData[this.currentSample];
+        const params = this.getCurrentSliderParams();
+        const currentPts = this.getCurrentInterpolatedPoints();
+        const allInterpPts = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
+        const filterLabel = this.currentFilter === 'hot' ? '高温区' :
+                            this.currentFilter === 'cold' ? '低温区' : '全部';
+
+        const avgTemp = allInterpPts.reduce((s, p) => s + p.temp, 0) / allInterpPts.length;
+        const maxTemp = Math.max(...allInterpPts.map(p => p.temp));
+        const minTemp = Math.min(...allInterpPts.map(p => p.temp));
+        const flaggedPts = allInterpPts.filter(p => p.flagged);
+
+        const traceLines = allInterpPts.map(p => {
+            const pos = data.turntablePositions.find(t => Math.abs(t.time - this.currentTime) < 15);
+            return `  ${p.id}: 温度=${p.temp.toFixed(1)}°C, 位置=(${p.x},${p.y}), 转盘角度=${pos ? pos.angle + '°' : 'N/A'}${p.flagged ? ' [异常: ' + p.flagReason + ']' : ''}`;
+        });
+
         const report = `
 ========================================
     微波炉驻波热区图实验报告
@@ -598,19 +672,31 @@ class MicrowaveVisualizer {
 样品类型: ${data.metadata.sampleType}
 
 ----------------------------------------
-实验参数
+实验参数 (当前设定值)
 ----------------------------------------
-微波频率: ${data.parameters.frequency} GHz
-转盘转速: ${data.parameters.speed} rpm
-输出功率: ${data.parameters.power} W
+微波频率: ${params.frequency} GHz
+转盘转速: ${params.speed} rpm
+输出功率: ${params.power} W
 实验时长: ${data.parameters.duration} 秒
+
+----------------------------------------
+当前视图状态
+----------------------------------------
+时间位置: ${Math.floor(this.currentTime)} 秒
+筛选模式: ${filterLabel}
+平均温度: ${avgTemp.toFixed(1)} °C
+最高温度: ${maxTemp.toFixed(1)} °C
+最低温度: ${minTemp.toFixed(1)} °C
 
 ----------------------------------------
 数据摘要
 ----------------------------------------
-温度测量点总数: ${data.temperaturePoints.length} 个
+原始温度点总数: ${data.temperaturePoints.length} 个
+当前时间插值点数: ${allInterpPts.length} 个
+筛选后显示点数: ${currentPts.length} 个
 转盘位置记录: ${data.turntablePositions.length} 条
 初始温度: ${data.metadata.initialTemp} °C
+异常标记点数: ${flaggedPts.length} 个
 
 ----------------------------------------
 数据质量检测
@@ -625,13 +711,9 @@ ${data.errors.map(e => `  ${e.suggestion}`).join('\n')}` :
 }
 
 ----------------------------------------
-温度点与转盘位置对应关系
+温度点与转盘位置对应关系 (t=${Math.floor(this.currentTime)}s)
 ----------------------------------------
-${data.temperaturePoints.slice(0, 10).map(p => {
-    const pos = data.turntablePositions.find(t => Math.abs(t.time - p.time) < 5);
-    return `  ${p.id}: 温度=${p.temp.toFixed(1)}°C, 位置=(${p.x},${p.y}), 转盘角度=${pos ? pos.angle + '°' : 'N/A'}`;
-}).join('\n')}
-  ... (共 ${data.temperaturePoints.length} 条记录)
+${traceLines.join('\n')}
 
 ----------------------------------------
 备注
@@ -651,7 +733,7 @@ ${data.notes}
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `实验报告_${data.metadata.sampleId}.txt`;
+        a.download = `实验报告_${data.metadata.sampleId}_t${Math.floor(this.currentTime)}s.txt`;
         a.click();
         URL.revokeObjectURL(url);
     }
@@ -666,17 +748,38 @@ ${data.notes}
     
     exportCSV() {
         const data = sampleData[this.currentSample];
-        let csv = 'ID,时间(秒),X坐标,Y坐标,温度(°C),来源,标记\n';
-        
-        data.temperaturePoints.forEach(p => {
-            csv += `${p.id},${p.time},${p.x},${p.y},${p.temp},${p.source},${p.flagged ? p.flagReason : ''}\n`;
+        const params = this.getCurrentSliderParams();
+        const filterLabel = this.currentFilter === 'hot' ? '高温区' :
+                            this.currentFilter === 'cold' ? '低温区' : '全部';
+        const allInterpPts = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
+        const filteredPts = this.getCurrentInterpolatedPoints();
+
+        let csv = 'ID,时间(秒),X坐标,Y坐标,温度(°C),来源,标记,插值\n';
+
+        allInterpPts.forEach(p => {
+            csv += `${p.id},${Math.floor(this.currentTime)},${p.x},${p.y},${p.temp.toFixed(2)},${p.source},${p.flagged ? p.flagReason : ''},${Math.abs(p.temp - (data.temperaturePoints.find(op => op.id === p.id && op.time === this.getCurrentTimePoint()) || {}).temp || 0) > 0.05 ? '插值' : '原始'}\n`;
         });
-        
+
+        csv += `\n元数据\n`;
+        csv += `实验编号,${data.metadata.sampleId}\n`;
+        csv += `实验日期,${data.metadata.date}\n`;
+        csv += `操作人员,${data.metadata.operator}\n`;
+        csv += `样品类型,${data.metadata.sampleType}\n`;
+        csv += `导出时间,${new Date().toLocaleString()}\n`;
+        csv += `当前时间位置(秒),${Math.floor(this.currentTime)}\n`;
+        csv += `筛选模式,${filterLabel}\n`;
+        csv += `频率(GHz),${params.frequency}\n`;
+        csv += `转速(rpm),${params.speed}\n`;
+        csv += `功率(W),${params.power}\n`;
+        csv += `总点数,${allInterpPts.length}\n`;
+        csv += `筛选后点数,${filteredPts.length}\n`;
+        csv += `异常点数,${allInterpPts.filter(p => p.flagged).length}\n`;
+
         const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `温度数据_${data.metadata.sampleId}.csv`;
+        a.download = `温度数据_${data.metadata.sampleId}_t${Math.floor(this.currentTime)}s.csv`;
         a.click();
         URL.revokeObjectURL(url);
     }
@@ -698,6 +801,7 @@ ${data.notes}
         document.getElementById('freq-slider').addEventListener('input', (e) => {
             document.getElementById('freq-value').textContent = e.target.value;
             this.updateHeatVisualization();
+            this.updateTemperatureChart(true);
         });
         
         document.getElementById('speed-slider').addEventListener('input', (e) => {
@@ -707,6 +811,7 @@ ${data.notes}
         document.getElementById('power-slider').addEventListener('input', (e) => {
             document.getElementById('power-value').textContent = e.target.value;
             this.updateHeatVisualization();
+            this.updateTemperatureChart(true);
         });
         
         document.getElementById('play-btn').addEventListener('click', () => {
@@ -729,6 +834,7 @@ ${data.notes}
                 btn.classList.add('bg-blue-600', 'text-white');
                 this.currentFilter = btn.dataset.filter;
                 this.updateHeatVisualization();
+                this.updateTemperatureChart(true);
             });
         });
         
