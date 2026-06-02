@@ -86,9 +86,13 @@ export default function Export() {
     const skillNames = v.skillIds.map(sid => getSkillById(sid)?.name ?? sid).join('、');
     
     const positions: string[] = [];
-    const shiftDetails: string[] = [];
-    const anomalyTypes: string[] = [];
-    const anomalyDetails: string[] = [];
+    const shiftRecords: Array<{
+      shiftDetail: string;
+      hasAnomaly: boolean;
+      anomalyType: string;
+      anomalyDetail: string;
+    }> = [];
+    const allAnomalyTypes: string[] = [];
 
     for (const a of volAssignments) {
       const sh = getShiftById(a.shiftId);
@@ -96,17 +100,21 @@ export default function Export() {
       const ts = TIME_SLOTS.find(t => t.id === sh?.timeSlot);
       const posName = pos?.name ?? '未知岗位';
       const tsLabel = ts?.label ?? sh?.timeSlot ?? '未知时段';
+      const shiftDetail = `${posName}（${tsLabel}）`;
       
       if (pos && !positions.includes(posName)) {
         positions.push(posName);
       }
-      shiftDetails.push(`${posName}（${tsLabel}）`);
       
-      if (a.isAnomaly && a.anomalyType) {
-        if (!anomalyTypes.includes(a.anomalyType)) {
-          anomalyTypes.push(a.anomalyType);
-        }
-        anomalyDetails.push(`[${tsLabel}] ${a.constraintExplanation || a.anomalyType}`);
+      shiftRecords.push({
+        shiftDetail,
+        hasAnomaly: !!a.isAnomaly,
+        anomalyType: a.anomalyType ?? '',
+        anomalyDetail: a.isAnomaly ? `[${tsLabel}] ${a.constraintExplanation || a.anomalyType}` : '',
+      });
+      
+      if (a.isAnomaly && a.anomalyType && !allAnomalyTypes.includes(a.anomalyType)) {
+        allAnomalyTypes.push(a.anomalyType);
       }
     }
 
@@ -115,22 +123,22 @@ export default function Export() {
       skills: skillNames || '无',
       positions: positions.length > 0 ? positions : ['未分配'],
       shiftCount: volAssignments.length,
-      shiftDetails,
-      anomalyTypes: anomalyTypes.length > 0 ? anomalyTypes : ['—'],
-      anomalyCount: anomalyDetails.length,
-      anomalyDetails: anomalyDetails.length > 0 ? anomalyDetails : ['—'],
+      shiftRecords,
+      anomalyTypes: allAnomalyTypes.length > 0 ? allAnomalyTypes : [],
+      anomalyCount: shiftRecords.filter(s => s.hasAnomaly).length,
       sourceType: v.source?.type === 'import' ? '导入' : v.source?.type === 'manual' ? '手动' : v.source?.type === 'system' ? '系统' : '未知',
       sourceDetail: getSourceLabel(v.source),
     };
   });
 
   const traceTableRows = traceData.flatMap(t => 
-    t.shiftDetails.map((sd, idx) => ({
+    t.shiftRecords.map((sr, idx) => ({
       volunteerName: idx === 0 ? t.volunteerName : '',
       skills: idx === 0 ? t.skills : '',
-      shiftDetail: sd,
-      hasAnomaly: t.anomalyCount > 0 && t.anomalyDetails[idx] && t.anomalyDetails[idx] !== '—',
-      anomalyDetail: t.anomalyCount > 0 ? (t.anomalyDetails[idx] || '') : '',
+      shiftDetail: sr.shiftDetail,
+      hasAnomaly: sr.hasAnomaly,
+      anomalyType: sr.anomalyType,
+      anomalyDetail: sr.anomalyDetail,
       sourceType: idx === 0 ? t.sourceType : '',
       sourceDetail: idx === 0 ? t.sourceDetail : '',
     }))
@@ -155,8 +163,8 @@ export default function Export() {
 
   const handleExportTraceCSV = () => {
     exportCSV(
-      ['志愿者', '技能标签', '分配班次', '异常说明', '来源类型', '来源详情'],
-      traceTableRows.map(r => [r.volunteerName, r.skills, r.shiftDetail, r.anomalyDetail, r.sourceType, r.sourceDetail]),
+      ['志愿者', '技能标签', '分配班次', '异常类型', '异常说明', '来源类型', '来源详情'],
+      traceTableRows.map(r => [r.volunteerName, r.skills, r.shiftDetail, r.anomalyType, r.anomalyDetail, r.sourceType, r.sourceDetail]),
     );
   };
 
@@ -166,10 +174,14 @@ export default function Export() {
       技能标签: t.skills,
       分配岗位: t.positions,
       班次数: t.shiftCount,
-      分配班次详情: t.shiftDetails,
-      异常类型: t.anomalyTypes,
-      异常数: t.anomalyCount,
-      异常详情: t.anomalyDetails,
+      分配班次详情: t.shiftRecords.map(sr => ({
+        班次: sr.shiftDetail,
+        是否异常: sr.hasAnomaly,
+        异常类型: sr.anomalyType,
+        异常说明: sr.anomalyDetail,
+      })),
+      异常类型汇总: t.anomalyTypes,
+      异常总数: t.anomalyCount,
       来源类型: t.sourceType,
       来源详情: t.sourceDetail,
     })), 'trace_report.json');
@@ -249,12 +261,13 @@ export default function Export() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-surface-700 text-gray-400 bg-surface-800/80 sticky top-0">
-                  <th className="py-2 px-3 text-left font-medium w-24">志愿者</th>
-                  <th className="py-2 px-3 text-left font-medium w-36">技能标签</th>
-                  <th className="py-2 px-3 text-left font-medium w-40">分配班次</th>
+                  <th className="py-2 px-3 text-left font-medium w-20">志愿者</th>
+                  <th className="py-2 px-3 text-left font-medium w-32">技能标签</th>
+                  <th className="py-2 px-3 text-left font-medium w-36">分配班次</th>
+                  <th className="py-2 px-3 text-left font-medium w-24">异常类型</th>
                   <th className="py-2 px-3 text-left font-medium">异常说明</th>
-                  <th className="py-2 px-3 text-left font-medium w-16">来源</th>
-                  <th className="py-2 px-3 text-left font-medium">来源详情</th>
+                  <th className="py-2 px-3 text-left font-medium w-14">来源</th>
+                  <th className="py-2 px-3 text-left font-medium w-28">来源详情</th>
                 </tr>
               </thead>
               <tbody>
@@ -266,6 +279,13 @@ export default function Export() {
                     <td className="py-1.5 px-3 font-mono">{row.volunteerName}</td>
                     <td className="py-1.5 px-3">{row.skills}</td>
                     <td className="py-1.5 px-3">{row.shiftDetail}</td>
+                    <td className="py-1.5 px-3">
+                      {row.anomalyType ? (
+                        <span className="text-warn">{row.anomalyType}</span>
+                      ) : (
+                        <span className="text-gray-600">—</span>
+                      )}
+                    </td>
                     <td className="py-1.5 px-3 text-gray-500">{row.anomalyDetail || '—'}</td>
                     <td className="py-1.5 px-3">
                       {row.sourceType && (
