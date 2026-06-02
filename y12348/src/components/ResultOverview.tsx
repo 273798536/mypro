@@ -113,7 +113,7 @@ export const ResultOverview: React.FC<ResultOverviewProps> = ({
             <div className="font-mono text-3xl font-bold text-primary-400">
               {formatNumber(results.totalPressureDrop)}
             </div>
-            <div className="text-sm text-industrial-textMuted">{pressureUnit}</div>
+            <div className="text-sm text-industrial-textMuted">{results.pressureDropUnit}</div>
           </div>
 
           <div className="p-4 bg-primary-900/30 rounded border border-primary-700/30 text-center">

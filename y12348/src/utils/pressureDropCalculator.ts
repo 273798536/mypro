@@ -238,7 +238,7 @@ export function calculatePressureDrop(
   totalHeadLoss: number,
   density: number,
   targetUnit: PressureUnit
-): { value: number; unit: PressureUnit; result: IntermediateResult } {
+): { valuePa: number; value: number; unit: PressureUnit; result: IntermediateResult } {
   const deltaP_Pa = density * GRAVITY * totalHeadLoss;
 
   const conversionFactors: Record<PressureUnit, number> = {
@@ -263,7 +263,12 @@ export function calculatePressureDrop(
     }
   );
 
-  return { value: deltaP_Pa, unit: 'Pa', result };
+  return {
+    valuePa: deltaP_Pa,
+    value: convertedValue,
+    unit: targetUnit,
+    result,
+  };
 }
 
 export function calculateSegmentPressureDrop(
@@ -429,7 +434,7 @@ export function calculateFullSession(
       session.fluid.density,
       pressureUnit
     );
-    totalPressureDrop_Pa += pressureDrop.value;
+    totalPressureDrop_Pa += pressureDrop.valuePa;
 
     const matching = checkDiameterFlowMatching(
       segment,
@@ -483,7 +488,7 @@ export function calculateFullSession(
       session.fluid.density,
       pressureUnit
     );
-    totalPressureDrop_Pa += branchPressureDrop.value;
+    totalPressureDrop_Pa += branchPressureDrop.valuePa;
 
     if (branch.isMissingData) {
       contradictions.push({

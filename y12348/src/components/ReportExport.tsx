@@ -32,18 +32,19 @@ export const ReportExport: React.FC<ReportExportProps> = ({
   const reportRef = useRef<HTMLDivElement>(null);
 
   const generateReport = (): ExportReport => {
+    const results = session.results;
     return {
       sessionId: session.id,
       generatedAt: Date.now(),
       summary: {
-        totalPressureDrop: session.results?.totalPressureDrop ?? 0,
-        unit: pressureUnit,
+        totalPressureDrop: results?.totalPressureDrop ?? 0,
+        unit: results?.pressureDropUnit ?? pressureUnit,
         totalFlowRate: session.totalFlowRate,
         flowUnit: session.flowRateUnit,
-        contradictionCount: session.results?.contradictions.filter(c => c.severity === 'error').length ?? 0,
-        warningCount: session.results?.contradictions.filter(c => c.severity === 'warning').length ?? 0,
+        contradictionCount: results?.contradictions.filter(c => c.severity === 'error').length ?? 0,
+        warningCount: results?.contradictions.filter(c => c.severity === 'warning').length ?? 0,
       },
-      fullResults: session.results,
+      fullResults: results,
       inputParameters: {
         fluid: session.fluid,
         segments: session.mainSegments,
@@ -313,7 +314,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
               <div className="text-xs text-industrial-textMuted">
                 <span className="text-warning-400 font-medium">报告口径说明：</span>
                 支路汇总的流量口径为 {session.flowRateUnit}，压降口径为米水柱(m)，
-                转换为 {pressureUnit} 时的换算系数已包含在计算过程中。
+                转换为 {session.results!.pressureDropUnit} 时的换算系数已包含在计算过程中。
                 {errors > 0 && ` 当前存在 ${errors} 项错误，报告中的数据可能不准确。`}
                 {warnings > 0 && ` 另有 ${warnings} 项警告需要关注。`}
               </div>
@@ -344,7 +345,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
                 <div className="font-mono text-xl font-bold text-primary-400">
                   {formatNumber(session.results!.totalPressureDrop)}
                 </div>
-                <div className="text-xs text-industrial-textMuted">{pressureUnit}</div>
+                <div className="text-xs text-industrial-textMuted">{session.results!.pressureDropUnit}</div>
               </div>
               <div className="p-3 bg-primary-900/30 rounded text-center">
                 <div className="text-xs text-industrial-textMuted mb-1">总流量</div>
