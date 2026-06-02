@@ -75,7 +75,7 @@ interface GenerationStep {
 }
 
 interface DownloadProgress {
-  type: 'csv' | 'pdf' | 'zip' | null;
+  type: 'xlsx' | 'pdf' | 'zip' | null;
   step: number;
   total: number;
   label: string;
@@ -296,11 +296,11 @@ const Report: React.FC = () => {
     return `${currentBatchId}_${timestamp}.${extension}`;
   };
 
-  const downloadCSV = async () => {
+  const downloadExcel = async () => {
     if (!validateAndPrepareExport()) return;
 
     setDownloadProgress({
-      type: 'csv',
+      type: 'xlsx',
       step: 1,
       total: 5,
       label: '正在整理会员数据 1/5...',
@@ -310,7 +310,7 @@ const Report: React.FC = () => {
       '正在整理会员数据 1/5...',
       '正在处理状态历史 2/5...',
       '正在导出行为标签 3/5...',
-      '正在生成CSV文件 4/5...',
+      '正在生成Excel文件 4/5...',
       '正在下载文件 5/5...',
     ];
 
@@ -632,11 +632,11 @@ const Report: React.FC = () => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
-  const estimateFileSize = (type: 'csv' | 'pdf' | 'zip') => {
+  const estimateFileSize = (type: 'xlsx' | 'pdf' | 'zip') => {
     const baseSize = members.length * 0.5;
     switch (type) {
-      case 'csv':
-        return `${(baseSize * 0.1).toFixed(1)} MB`;
+      case 'xlsx':
+        return `${(baseSize * 0.15).toFixed(1)} MB`;
       case 'pdf':
         return `${(baseSize * 0.3).toFixed(1)} MB`;
       case 'zip':
@@ -1312,7 +1312,7 @@ const Report: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={downloadCSV}
+            onClick={downloadExcel}
             disabled={downloadProgress.type !== null}
             className={cn(
               'text-left p-6 rounded-xl border-2 transition-all duration-300',
@@ -1328,12 +1328,12 @@ const Report: React.FC = () => {
               <div className="flex-1">
                 <h3 className="font-bold text-gray-900 text-lg mb-1">数据明细</h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  CSV / Excel 格式，包含当前批次所有会员数据
+                  Excel 格式，包含当前批次所有会员数据
                 </p>
                 <div className="space-y-1">
                   <p className="text-xs text-gray-500 flex items-center gap-2">
                     <span className="w-1 h-1 rounded-full bg-emerald-500" />
-                    文件大小：约 {estimateFileSize('csv')}
+                    文件大小：约 {estimateFileSize('xlsx')}
                   </p>
                   <p className="text-xs text-gray-500 flex items-center gap-2">
                     <span className="w-1 h-1 rounded-full bg-emerald-500" />
