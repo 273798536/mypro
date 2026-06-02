@@ -1,6 +1,6 @@
 {
-  "id": "v-1780396707544-p7cf",
-  "name": "样例1-正常记录",
+  "id": "v-1780398449325-33mh",
+  "name": "阶梯-正常",
   "tariffTableId": "tariff-001",
   "usageRecordId": "usage-001",
   "totalBill": 183.5,
@@ -38,10 +38,10 @@
       "message": "计算总用电量 317.21kWh 与提供的总用量 280kWh 相差 37.21kWh",
       "sourceField": "totalUsage",
       "sourceValue": 280,
-      "traceId": "calc-1780396707544-iuimx6"
+      "traceId": "calc-1780398449325-boq088"
     }
   ],
-  "createdAt": "2026-06-02T10:38:27.544Z",
+  "createdAt": "2026-06-02T11:07:29.325Z",
   "createdBy": "analyst",
   "note": ""
 }

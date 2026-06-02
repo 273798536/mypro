@@ -1,6 +1,6 @@
 {
-  "id": "v-1780396731750-9hp1",
-  "name": "样例6-电费不符",
+  "id": "v-1780398449344-c00r",
+  "name": "峰谷-电费不符",
   "tariffTableId": "tariff-003",
   "usageRecordId": "usage-006",
   "totalBill": 350,
@@ -49,7 +49,7 @@
       "message": "峰谷平用量之和 (550.00kWh) 与总用量 (540kWh) 相差 10.00kWh",
       "sourceField": "totalUsage",
       "sourceValue": 540,
-      "traceId": "calc-1780396731747-9ih90a"
+      "traceId": "calc-1780398449344-3n7h26"
     },
     {
       "type": "bill_mismatch",
@@ -57,10 +57,10 @@
       "message": "计算总电费 (¥395.00) 与账单总电费 (¥350.00) 相差 ¥45.00，请核实数据",
       "sourceField": "totalBill",
       "sourceValue": 350,
-      "traceId": "calc-1780396731749-do1z8k"
+      "traceId": "calc-1780398449344-71syz0"
     }
   ],
-  "createdAt": "2026-06-02T10:38:51.750Z",
+  "createdAt": "2026-06-02T11:07:29.344Z",
   "createdBy": "analyst",
   "note": ""
 }

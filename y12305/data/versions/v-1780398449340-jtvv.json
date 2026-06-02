@@ -1,6 +1,6 @@
 {
-  "id": "v-1780396731700-ghv3",
-  "name": "样例4-用量为负",
+  "id": "v-1780398449340-jtvv",
+  "name": "阶梯-负值",
   "tariffTableId": "tariff-001",
   "usageRecordId": "usage-004",
   "totalBill": 95.6,
@@ -27,7 +27,7 @@
       "message": "peakUsage 出现负值 (-15kWh)，请检查原始数据",
       "sourceField": "peakUsage",
       "sourceValue": -15,
-      "traceId": "calc-1780396731699-h0cvbb"
+      "traceId": "calc-1780398449340-jp9ejf"
     },
     {
       "type": "mismatch_total",
@@ -35,10 +35,10 @@
       "message": "计算总用电量 170.71kWh 与提供的总用量 175kWh 相差 4.29kWh",
       "sourceField": "totalUsage",
       "sourceValue": 175,
-      "traceId": "calc-1780396731699-88oowh"
+      "traceId": "calc-1780398449340-v99yng"
     }
   ],
-  "createdAt": "2026-06-02T10:38:51.700Z",
+  "createdAt": "2026-06-02T11:07:29.340Z",
   "createdBy": "analyst",
   "note": ""
 }

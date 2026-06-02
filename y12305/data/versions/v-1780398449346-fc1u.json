@@ -1,6 +1,6 @@
 {
-  "id": "v-1780396731769-n845",
-  "name": "样例7-数据缺失",
+  "id": "v-1780398449346-fc1u",
+  "name": "峰谷-数据缺失",
   "tariffTableId": "tariff-003",
   "usageRecordId": "usage-007",
   "totalBill": 280,
@@ -15,7 +15,7 @@
       "message": "谷时段用量 (valleyUsage) 缺失，无法进行峰谷电价核算",
       "sourceField": "valleyUsage",
       "sourceValue": null,
-      "traceId": "calc-1780396731768-upg196"
+      "traceId": "calc-1780398449346-l323xd"
     },
     {
       "type": "period_sum_mismatch",
@@ -23,10 +23,10 @@
       "message": "峰谷平用量之和 (300.00kWh) 与总用量 (350kWh) 相差 50.00kWh",
       "sourceField": "totalUsage",
       "sourceValue": 350,
-      "traceId": "calc-1780396731769-805cbk"
+      "traceId": "calc-1780398449346-7fvv5z"
     }
   ],
-  "createdAt": "2026-06-02T10:38:51.769Z",
+  "createdAt": "2026-06-02T11:07:29.346Z",
   "createdBy": "analyst",
   "note": ""
 }

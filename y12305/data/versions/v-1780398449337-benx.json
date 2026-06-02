@@ -1,6 +1,6 @@
 {
-  "id": "v-1780396731678-ecsu",
-  "name": "样例3-边界档位",
+  "id": "v-1780398449337-benx",
+  "name": "阶梯-边界",
   "tariffTableId": "tariff-001",
   "usageRecordId": "usage-003",
   "totalBill": 112,
@@ -27,10 +27,10 @@
       "message": "总用电量 200.00kWh 恰好等于 第一档 上限 200kWh",
       "sourceField": "totalCalculatedKwh",
       "sourceValue": 199.99999999999997,
-      "traceId": "calc-1780396731678-1rx3c4"
+      "traceId": "calc-1780398449337-64m8w4"
     }
   ],
-  "createdAt": "2026-06-02T10:38:51.678Z",
+  "createdAt": "2026-06-02T11:07:29.337Z",
   "createdBy": "analyst",
   "note": ""
 }

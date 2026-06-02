@@ -1,6 +1,6 @@
 {
-  "id": "v-1780396857577-5vif",
-  "name": "核算版本 2026/6/2",
+  "id": "v-1780398449342-t33o",
+  "name": "峰谷-正常",
   "tariffTableId": "tariff-003",
   "usageRecordId": "usage-005",
   "totalBill": 472,
@@ -43,7 +43,7 @@
     }
   ],
   "warnings": [],
-  "createdAt": "2026-06-02T10:40:57.577Z",
+  "createdAt": "2026-06-02T11:07:29.342Z",
   "createdBy": "analyst",
   "note": ""
 }
