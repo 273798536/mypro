@@ -4,8 +4,6 @@ import SimulationVisualization from '../components/features/SimulationVisualizat
 import WaitDistributionChart from '../components/charts/WaitDistributionChart';
 import StatCard from '../components/ui/StatCard';
 import { useSimulationStore, simulationEngine } from '../engines/SimulationEngine';
-import { format } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
 
 const Simulation: React.FC = () => {
   const {
@@ -27,7 +25,7 @@ const Simulation: React.FC = () => {
   const lastTimeRef = useRef<number>(0);
 
   const handleRunSimulation = useCallback(() => {
-    const simResult = simulationEngine.run(config);
+    simulationEngine.run(config);
     setIsRunning(true);
     setIsPaused(false);
     setCurrentTime(0);
@@ -192,7 +190,6 @@ const Simulation: React.FC = () => {
         <div className="lg:col-span-3 space-y-6">
           <SimulationVisualization
             events={result?.timeline || []}
-            config={config}
             currentTime={currentTime}
             isRunning={isRunning && !isPaused}
             windowCount={config.windowCount}

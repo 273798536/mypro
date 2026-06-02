@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { SimulationEvent, SimulationConfig } from '../../types';
+import { SimulationEvent } from '../../types';
 
 interface SimulationVisualizationProps {
   events: SimulationEvent[];
-  config: SimulationConfig;
   currentTime: number;
   isRunning: boolean;
   windowCount: number;
@@ -11,7 +10,6 @@ interface SimulationVisualizationProps {
 
 const SimulationVisualization: React.FC<SimulationVisualizationProps> = ({
   events,
-  config,
   currentTime,
   isRunning,
   windowCount,

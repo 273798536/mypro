@@ -47,7 +47,6 @@ export const generateMockData = () => {
   const windowStatusLogs: WindowStatusLog[] = [];
 
   const totalRecords = 150;
-  const currentTime = threeDaysAgo;
 
   for (let i = 0; i < totalRecords; i++) {
     const minutesOffset = randomInt(0, 480);

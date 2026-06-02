@@ -1,7 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus, Plus, Trash2, Play, Award } from 'lucide-react';
 import { ComparisonPlan, ComparisonResult, SimulationConfig } from '../../types';
-import { comparisonEngine } from '../../engines/ComparisonEngine';
 import { cn } from '../../lib/utils';
 
 interface ComparisonPanelProps {

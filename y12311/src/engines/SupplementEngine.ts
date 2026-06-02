@@ -39,13 +39,13 @@ export const useSupplementStore = create<SupplementStore>((set, get) => ({
 }));
 
 export class SupplementEngine {
-  private originalSnapshots: Map<string, Record<string, any>> = new Map();
+  private originalSnapshots: Map<string, Record<string, string | number | boolean | Date | null>> = new Map();
 
   recordSupplement(
     recordId: string,
     fieldName: string,
-    oldValue: any,
-    newValue: any,
+    oldValue: string | number | null,
+    newValue: string | number | null,
     operator: string,
     affectedRecords: string[] = [recordId]
   ): DataSupplement | null {
@@ -165,7 +165,7 @@ export class SupplementEngine {
     return chain.sort((a, b) => a.supplementTime.getTime() - b.supplementTime.getTime());
   }
 
-  private createSnapshot(record: ServiceRecord | Appointment): Record<string, any> {
+  private createSnapshot(record: ServiceRecord | Appointment): Record<string, string | number | boolean | Date | null> {
     if ('serviceDuration' in record) {
       return {
         serviceDuration: record.serviceDuration,
@@ -185,7 +185,7 @@ export class SupplementEngine {
     }
   }
 
-  private formatJudgment(snapshot: Record<string, any>): string {
+  private formatJudgment(snapshot: Record<string, string | number | boolean | Date | null>): string {
     if (snapshot.serviceDuration !== undefined) {
       return `服务时长${snapshot.serviceDuration}分钟，窗口${snapshot.windowId}，${snapshot.hasException ? '存在异常' : '正常'}`;
     } else {

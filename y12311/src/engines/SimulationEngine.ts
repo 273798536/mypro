@@ -87,8 +87,8 @@ export class SimulationEngine {
     const queueLengths: number[] = [];
 
     let currentTime = 0;
-    let queue: { arrivalTime: number; visitorId: string }[] = [];
-    let windows: { endTime: number; visitorId: string | null }[] = Array(windowCount).fill(null).map(() => ({
+    const queue: { arrivalTime: number; visitorId: string }[] = [];
+    const windows: { endTime: number; visitorId: string | null }[] = Array(windowCount).fill(null).map(() => ({
       endTime: 0,
       visitorId: null,
     }));
@@ -163,7 +163,6 @@ export class SimulationEngine {
 
         nextArrival = currentTime + this.randomExponential(arrivalRate / 60);
       } else if (nextEventType === 'end_service' && nextWindowIndex !== -1) {
-        const window = windows[nextWindowIndex];
         totalServed++;
         totalBusyTime += this.randomNormal(avgServiceTime, serviceTimeStd);
 

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import * as echarts from 'echarts';
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts';
 import Chart from './Chart';
 import { SimulationResult } from '../../types';
 
@@ -71,9 +71,10 @@ const WaitDistributionChart: React.FC<WaitDistributionChartProps> = ({
         axisPointer: {
           type: 'shadow',
         },
-        formatter: (params: any) => {
-          const data = params[0];
-          const cumulative = showCumulative && params[1];
+        formatter: (params: TooltipComponentFormatterCallbackParams) => {
+          const paramArr = Array.isArray(params) ? params : [params];
+          const data = paramArr[0] as { name: string; value: number };
+          const cumulative = showCumulative && paramArr[1] as { value: number } | undefined;
           let result = `<div style="font-weight: 600; margin-bottom: 4px;">等待时长 ${data.name} 分钟</div>`;
           result += `<div>人数：<span style="font-weight: 600; color: #165DFF;">${data.value}</span> 人</div>`;
           if (cumulative) {

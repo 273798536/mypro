@@ -5,7 +5,6 @@ import {
   Clock,
   Building2,
   AlertTriangle,
-  TrendingUp,
   CheckCircle,
   XCircle,
 } from 'lucide-react';
@@ -22,7 +21,7 @@ import { zhCN } from 'date-fns/locale';
 
 const Dashboard: React.FC = () => {
   const { loadData, getStatistics, getFilteredData, windows, isLoading } = useQueueStore();
-  const { exceptions, setExceptions } = useExceptionStore();
+  const { exceptions } = useExceptionStore();
   const { dateRange } = useFilterStore();
 
   useEffect(() => {
@@ -39,7 +38,6 @@ const Dashboard: React.FC = () => {
   const filteredData = useMemo(() => getFilteredData(), [getFilteredData]);
 
   const pendingExceptions = exceptions.filter((e) => e.status === 'pending');
-  const confirmedExceptions = exceptions.filter((e) => e.status === 'confirmed');
 
   const trendChartOption: EChartsOption = useMemo(() => {
     const days = 7;

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Download, Filter, ListFilter, History } from 'lucide-react';
+import { Download, ListFilter, History } from 'lucide-react';
 import FilterPanel from '../components/features/FilterPanel';
 import QueueTable from '../components/features/QueueTable';
 import { useQueueStore } from '../store/useQueueStore';
-import { useFilterStore, filterSyncEngine } from '../engines/FilterSyncEngine';
+import { useFilterStore } from '../engines/FilterSyncEngine';
 import { useSupplementStore, supplementEngine } from '../engines/SupplementEngine';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';

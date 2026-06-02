@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
 import * as echarts from 'echarts';
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts';
 import { BarChart3, Percent, Clock, Users, TrendingUp, Box } from 'lucide-react';
 import Chart from '../components/charts/Chart';
 import WaitDistributionChart from '../components/charts/WaitDistributionChart';
 import StatCard from '../components/ui/StatCard';
 import FilterPanel from '../components/features/FilterPanel';
 import { useQueueStore } from '../store/useQueueStore';
-import { useFilterStore, filterSyncEngine } from '../engines/FilterSyncEngine';
+import { useFilterStore } from '../engines/FilterSyncEngine';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
@@ -111,8 +111,9 @@ const Distribution: React.FC = () => {
     return {
       tooltip: {
         trigger: 'item',
-        formatter: (params: any) => {
-          const data = params.data;
+        formatter: (params: TooltipComponentFormatterCallbackParams) => {
+          const p = Array.isArray(params) ? params[0] : params;
+          const data = (p as { data: number[] }).data;
           return `
             <div style="font-weight: 600; margin-bottom: 4px;">等待时长箱线图</div>
             <div>最小值：${data[0]} 分钟</div>
@@ -185,11 +186,12 @@ const Distribution: React.FC = () => {
     return {
       tooltip: {
         trigger: 'axis',
-        formatter: (params: any) => {
-          const data = params[0];
+        formatter: (params: TooltipComponentFormatterCallbackParams) => {
+          const p = Array.isArray(params) ? params[0] : params;
+          const data = p as { value: number; name: string };
           return `
             <div style="font-weight: 600; margin-bottom: 4px;">累积分布</div>
-            <div>${data.value}% 的人等待时间 ≤ ${data.data} 分钟</div>
+            <div>${data.name} 的人等待时间 ≤ ${data.value} 分钟</div>
           `;
         },
       },
@@ -262,8 +264,9 @@ const Distribution: React.FC = () => {
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
-        formatter: (params: any) => {
-          const data = params[0];
+        formatter: (params: TooltipComponentFormatterCallbackParams) => {
+          const p = Array.isArray(params) ? params[0] : params;
+          const data = p as { value: number; name: string };
           return `
             <div style="font-weight: 600; margin-bottom: 4px;">服务时长 ${data.name} 分钟</div>
             <div>记录数：<span style="font-weight: 600; color: #00B42A;">${data.value}</span> 条</div>

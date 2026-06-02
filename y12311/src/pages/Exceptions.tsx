@@ -4,7 +4,7 @@ import ExceptionList from '../components/features/ExceptionList';
 import FilterPanel from '../components/features/FilterPanel';
 import { useExceptionStore, exceptionEngine } from '../engines/ExceptionEngine';
 import { useQueueStore } from '../store/useQueueStore';
-import { useFilterStore, filterSyncEngine } from '../engines/FilterSyncEngine';
+import { useFilterStore } from '../engines/FilterSyncEngine';
 import { ExceptionStatus } from '../types';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';

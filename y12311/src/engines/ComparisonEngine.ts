@@ -3,7 +3,6 @@ import {
   ComparisonPlan,
   ComparisonResult,
   SimulationConfig,
-  SimulationResult,
 } from '../types';
 import { simulationEngine } from './SimulationEngine';
 

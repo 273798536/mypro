@@ -15,7 +15,6 @@ import {
   Visitor,
   Appointment,
   Window,
-  Exception,
   DataSupplement,
 } from '../../types';
 import { useSupplementStore, supplementEngine } from '../../engines/SupplementEngine';
@@ -41,9 +40,6 @@ const QueueTable: React.FC<QueueTableProps> = ({
   const { selectedRecordId, setSelectedRecordId, highlightedSupplementId } = useQueueStore();
   const exceptions = useExceptionStore((state) => state.exceptions);
   const supplements = useSupplementStore((state) => state.supplements);
-
-  const getVisitorName = (visitorId: string) =>
-    visitors.find((v) => v.id === visitorId)?.name || '-';
 
   const getAppointment = (visitorId: string) =>
     appointments.find((a) => a.visitorId === visitorId);
