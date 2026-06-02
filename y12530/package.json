@@ -1,0 +1,13 @@
+{
+  "name": "pk-simulation-system",
+  "version": "1.0.0",
+  "description": "微分方程药量模拟系统 - 药代动力学模拟平台",
+  "main": "app.py",
+  "scripts": {
+    "start": "python app.py",
+    "install-python": "pip install -r requirements.txt"
+  },
+  "keywords": ["pharmacokinetics", "simulation", "ode", "differential-equations"],
+  "author": "Pharmaceutical Simulation Team",
+  "license": "MIT"
+}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微分方程药量模拟系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-gradient-to-r from-blue-600 to-purple-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-2xl font-bold">🧪 微分方程药量模拟系统</h1>
+            <p class="text-blue-100 text-sm mt-1">药代动力学模拟 · 可复现计算 · 完整追踪</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="mr-2">👤</span> 基础信息
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">操作人员</label>
+                            <input type="text" id="operator" value="李老师" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">模型类型</label>
+                            <select id="modelType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="one_compartment">一室模型</option>
+                                <option value="two_compartment">二室模型</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">求解方法</label>
+                            <select id="solverMethod" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="true">解析解法（推荐）</option>
+                                <option value="false">数值ODE解法</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">时间步长 (小时)</label>
+                            <input type="number" id="timeStep" value="0.1" step="0.01" min="0.001"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <p class="text-xs text-gray-500 mt-1">建议小于半衰期的1/10</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="mr-2">💊</span> 药物参数
+                    </h2>
+                    <div class="space-y-4" id="parameterFields">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">半衰期 (h)</label>
+                                <input type="number" id="halfLife" value="6" step="0.1"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">体重 (kg)</label>
+                                <input type="number" id="weight" value="70" step="0.1"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">分布容积 (L/kg)</label>
+                                <input type="number" id="vd" value="0.5" step="0.01"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">生物利用度</label>
+                                <input type="number" id="bioavailability" value="1" step="0.01" min="0" max="1"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">吸收速率常数 (1/h)</label>
+                            <input type="number" id="ka" value="1.5" step="0.01"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <p class="text-xs text-gray-500 mt-1">口服/肌注/皮下给药时需要</p>
+                        </div>
+                    </div>
+
+                    <div id="twoCompartmentParams" class="hidden space-y-4 mt-4 pt-4 border-t border-gray-200">
+                        <p class="text-sm font-medium text-gray-700">二室模型参数</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">α相半衰期 (h)</label>
+                                <input type="number" id="halfLifeAlpha" value="0.5" step="0.01"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">β相半衰期 (h)</label>
+                                <input type="number" id="halfLifeBeta" value="6" step="0.1"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">中央室V1 (L/kg)</label>
+                                <input type="number" id="v1" value="0.2" step="0.01"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">k12 (1/h)</label>
+                                <input type="number" id="k12" value="0.3" step="0.01"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-1">k21 (1/h)</label>
+                                <input type="number" id="k21" value="0.1" step="0.01"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="mr-2">📋</span> 给药计划
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium text-gray-700">总模拟时长 (小时)</label>
+                            <input type="number" id="totalDuration" value="24" step="1"
+                                   class="w-24 px-3 py-2 border border-gray-300 rounded-lg text-right">
+                        </div>
+                        <div id="dosingEvents" class="space-y-3">
+                        </div>
+                        <button onclick="addDosingEvent()" 
+                                class="w-full py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center justify-center">
+                            <span class="mr-2">+</span> 添加给药事件
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="mr-2">📌</span> 采样点
+                    </h2>
+                    <div id="samplingPoints" class="space-y-2 mb-3">
+                    </div>
+                    <button onclick="addSamplingPoint()"
+                            class="w-full py-2 px-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition flex items-center justify-center text-sm">
+                        <span class="mr-2">+</span> 添加采样时间
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="validateParameters()" 
+                                class="py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">
+                            🔍 校验参数
+                        </button>
+                        <button onclick="runSimulation()" id="runBtn"
+                                class="py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-medium">
+                            ▶ 运行模拟
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 mt-3">
+                        <button onclick="exportReport('pdf')" 
+                                class="py-2 px-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm" title="导出PDF报告">
+                            📄 PDF
+                        </button>
+                        <button onclick="exportReport('excel')" 
+                                class="py-2 px-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm" title="导出Excel">
+                            📊 Excel
+                        </button>
+                        <button onclick="exportReport('json')" 
+                                class="py-2 px-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm" title="导出JSON数据">
+                            📋 JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                <div id="statusPanel" class="hidden">
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <span class="mr-2">📈</span> 浓度-时间曲线
+                        </h2>
+                        <div id="chartInfo" class="text-sm text-gray-500">
+                        </div>
+                    </div>
+                    <div class="relative h-80">
+                        <canvas id="concentrationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">📊 药代动力学参数</h3>
+                        <div id="pkParameters" class="space-y-2 text-sm">
+                            <p class="text-gray-500">运行模拟后显示</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">🔬 计算依据</h3>
+                        <div id="computationInfo" class="space-y-2 text-sm">
+                            <p class="text-gray-500">运行模拟后显示</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="samplingImpact" class="hidden bg-white rounded-xl shadow-md p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">📌 采样点影响分析</h3>
+                    <div id="samplingImpactContent" class="space-y-3">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-gray-800 flex items-center">
+                            <span class="mr-2">📜</span> 操作历史
+                        </h3>
+                        <button onclick="refreshOperations()" class="text-sm text-blue-500 hover:text-blue-700">
+                            刷新
+                        </button>
+                    </div>
+                    <div id="operationHistory" class="max-h-64 overflow-y-auto space-y-2 text-sm">
+                        <p class="text-gray-500">暂无操作记录</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-gray-800 flex items-center">
+                            <span class="mr-2">📁</span> 数据来源
+                        </h3>
+                        <button onclick="refreshDataSources()" class="text-sm text-blue-500 hover:text-blue-700">
+                            刷新
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">原始材料</h4>
+                            <div id="originalSources" class="space-y-2 text-xs">
+                                <p class="text-gray-500">暂无数据</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">处理结果</h4>
+                            <div id="processedResults" class="space-y-2 text-xs">
+                                <p class="text-gray-500">暂无数据</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">📖 使用说明</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="font-medium text-blue-800 mb-2">💡 可复现性保证</p>
+                            <p>相同输入参数和计算哈希，确保结果一致。计算哈希会记录在报告中，用于验证。</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="font-medium text-green-800 mb-2">🔍 异常参数解释</p>
+                            <p>参数越界、时间步过大、单位错误时，系统会给出具体原因、卡住步骤和下一步建议。</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <p class="font-medium text-yellow-800 mb-2">📋 数据追踪</p>
+                            <p>原始材料和处理结果分开存储，可追溯每次操作的触发人、时间和数据来源。</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <p class="font-medium text-purple-800 mb-2">📌 采样点标记</p>
+                            <p>补录采样时间后，系统会标出它影响了哪些PK参数计算和哪些浓度明细。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-700" id="loadingText">处理中...</p>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
