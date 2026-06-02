@@ -203,6 +203,41 @@ export const useBudgetStore = defineStore('budget', () => {
     allocationReports.value.push(report)
     currentReportId.value = report.id
 
+    biddingRecords.value
+      .filter(b => b.isSupplementary)
+      .forEach(record => {
+        const matchedDetails = report.details.filter(d => d.channelId === record.channelId)
+        matchedDetails.forEach(detail => {
+          if (!record.affectedAllocationIds.includes(detail.id)) {
+            record.affectedAllocationIds.push(detail.id)
+          }
+          addAlert({
+            type: 'MANUAL_MODIFICATION',
+            level: 'INFO',
+            title: '补录出价记录影响明细',
+            message: `补录的出价记录已影响预算分配明细：渠道「${detail.channelName}」的分配计算，请在报告中查看影响范围`,
+            relatedObjectId: detail.id,
+            relatedObjectName: detail.channelName,
+            relatedObjectType: 'ALLOCATION',
+            data: {
+              biddingRecordId: record.id,
+              supplementaryAt: record.supplementaryAt
+            }
+          })
+        })
+      })
+
+    conversions.value
+      .filter(c => c.isSupplementary)
+      .forEach(conv => {
+        const matchedDetails = report.details.filter(d => d.channelId === conv.channelId)
+        matchedDetails.forEach(detail => {
+          if (!conv.affectedRecordIds.includes(detail.id)) {
+            conv.affectedRecordIds.push(detail.id)
+          }
+        })
+      })
+
     createPlaybackSnapshot(report.id, '初始预算分配报告生成')
 
     return report
@@ -706,6 +741,8 @@ export const useBudgetStore = defineStore('budget', () => {
 
     detectMaterialDuplicates()
     checkDataConflicts()
+
+    generateAllocationReport(150000)
   }
 
   return {
