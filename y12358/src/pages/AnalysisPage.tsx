@@ -48,7 +48,6 @@ import {
 import type { CheckResult, ExportReport } from '../types';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;

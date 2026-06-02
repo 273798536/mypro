@@ -23,6 +23,8 @@ import {
   Eye,
 } from 'lucide-react';
 import type { UploadProps } from 'antd';
+import * as XLSX from 'xlsx';
+import Papa from 'papaparse';
 import { useAppStore } from '../store';
 import {
   formatDateTime,
@@ -40,6 +42,48 @@ const { Dragger } = Upload;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
+const parseFileToRows = (file: File): Promise<Record<string, string>[]> => {
+  return new Promise((resolve, reject) => {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const reader = new FileReader();
+
+    if (ext === 'csv') {
+      reader.onload = (e) => {
+        try {
+          const text = e.target?.result as string;
+          const result = Papa.parse<Record<string, string>>(text, {
+            header: true,
+            skipEmptyLines: true,
+            dynamicTyping: false,
+          });
+          resolve(result.data);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('读取文件失败'));
+      reader.readAsText(file);
+    } else {
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          const wb = XLSX.read(data, { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, {
+            raw: false,
+            defval: '',
+          });
+          resolve(rows);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('读取文件失败'));
+      reader.readAsArrayBuffer(file);
+    }
+  });
+};
+
 const ImportPage: React.FC = () => {
   const {
     ledgers,
@@ -49,6 +93,8 @@ const ImportPage: React.FC = () => {
     addOilPressureSeries,
     addLedger,
     getLedgerByVersion,
+    generateCheckResultsForLoadRecord,
+    generateCheckResultsForOilPressure,
   } = useAppStore();
 
   const [ledgerModalVisible, setLedgerModalVisible] = useState(false);
@@ -295,18 +341,11 @@ const ImportPage: React.FC = () => {
     multiple: false,
     accept: '.csv,.xlsx,.xls',
     beforeUpload: (file) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const text = e.target?.result as string;
-          const lines = text.split('\n').filter((l) => l.trim());
-          const headers = lines[0].split(',').map((h) => h.trim());
-
-          for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map((v) => v.trim());
-            const data: Record<string, string> = {};
-            headers.forEach((h, idx) => (data[h] = values[idx]));
-
+      parseFileToRows(file)
+        .then((rows) => {
+          let imported = 0;
+          let generated = 0;
+          for (const data of rows) {
             const ledger = getLedgerByVersion(
               data['deviceId'] || 'DEV-001',
               data['ledgerVersion'] || 'v2.0'
@@ -318,7 +357,7 @@ const ImportPage: React.FC = () => {
 
             const record: LoadRecord = {
               id: generateId(),
-              recordNo: data['recordNo'] || `REC-IMPORT-${Date.now()}-${i}`,
+              recordNo: data['recordNo'] || `REC-IMPORT-${Date.now()}-${imported}`,
               deviceId: data['deviceId'] || 'DEV-001',
               deviceName: data['deviceName'] || '液压升降机A1',
               loadTime: data['loadTime'] || new Date().toISOString(),
@@ -346,14 +385,25 @@ const ImportPage: React.FC = () => {
             };
 
             addLoadRecord(record);
+            imported++;
+
+            generateCheckResultsForLoadRecord(record.id);
+            const store = useAppStore.getState();
+            const exists = store.checkResults.find(
+              (c) => c.loadRecordId === record.id
+            );
+            if (exists) generated++;
           }
 
-          message.success(`成功导入 ${lines.length - 1} 条载重记录`);
-        } catch (error) {
+          const parts = [`成功导入 ${imported} 条载重记录`];
+          if (generated > 0) {
+            parts.push(`自动生成 ${generated} 条安全校核结果`);
+          }
+          message.success(parts.join('，'));
+        })
+        .catch(() => {
           message.error('文件解析失败，请检查格式');
-        }
-      };
-      reader.readAsText(file);
+        });
       return false;
     },
   };
@@ -363,28 +413,28 @@ const ImportPage: React.FC = () => {
     multiple: false,
     accept: '.csv,.xlsx,.xls',
     beforeUpload: (file) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const text = e.target?.result as string;
-          const lines = text.split('\n').filter((l) => l.trim());
-          const headers = lines[0].split(',').map((h) => h.trim());
+      parseFileToRows(file)
+        .then((rows) => {
+          if (rows.length === 0) {
+            message.error('文件中没有数据行');
+            return;
+          }
 
           const dataPoints: OilPressurePoint[] = [];
           let deviceId = 'DEV-001';
           let recordNo = '';
           let ledgerVersion = 'v2.0';
 
-          for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map((v) => v.trim());
-            const data: Record<string, string> = {};
-            headers.forEach((h, idx) => (data[h] = values[idx]));
-
-            if (i === 1) {
-              deviceId = data['deviceId'] || deviceId;
-              recordNo = data['recordNo'] || `REC-OIL-${Date.now()}`;
-              ledgerVersion = data['ledgerVersion'] || ledgerVersion;
+          for (const data of rows) {
+            if (!recordNo && data['recordNo']) {
+              recordNo = data['recordNo'];
             }
+            if (!deviceId && data['deviceId']) {
+              deviceId = data['deviceId'];
+            }
+            if (data['deviceId']) deviceId = data['deviceId'];
+            if (data['recordNo']) recordNo = data['recordNo'];
+            if (data['ledgerVersion']) ledgerVersion = data['ledgerVersion'];
 
             dataPoints.push({
               timestamp: data['timestamp'] || new Date().toISOString(),
@@ -393,6 +443,10 @@ const ImportPage: React.FC = () => {
                 ? Number(data['temperature'])
                 : undefined,
             });
+          }
+
+          if (!recordNo) {
+            recordNo = `REC-OIL-${Date.now()}`;
           }
 
           const ledger = getLedgerByVersion(deviceId, ledgerVersion);
@@ -418,14 +472,24 @@ const ImportPage: React.FC = () => {
           };
 
           addOilPressureSeries(series);
-          message.success(
-            `成功导入油压序列，共 ${dataPoints.length} 个采样点，检测到 ${anomalies.length} 个异常`
-          );
-        } catch (error) {
+
+          generateCheckResultsForOilPressure(series.id);
+          const store = useAppStore.getState();
+          const generated = store.checkResults.filter(
+            (c) => c.oilPressureId === series.id
+          ).length;
+
+          const parts = [
+            `成功导入油压序列，共 ${dataPoints.length} 个采样点，检测到 ${anomalies.length} 个异常`,
+          ];
+          if (generated > 0) {
+            parts.push(`自动生成 ${generated} 条安全校核结果`);
+          }
+          message.success(parts.join('，'));
+        })
+        .catch(() => {
           message.error('文件解析失败，请检查格式');
-        }
-      };
-      reader.readAsText(file);
+        });
       return false;
     },
   };
