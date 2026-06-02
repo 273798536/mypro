@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分段函数税费计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .deduction-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .deduction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .add-btn {
+            background: #51cf66;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result-card {
+            display: none;
+        }
+        
+        .result-card.show {
+            display: block;
+        }
+        
+        .result-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .result-item .label {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .result-item .value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .result-item.tax .value {
+            color: #e74c3c;
+        }
+        
+        .calc-log {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .calc-log h3 {
+            color: #2c5aa0;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .calc-log ul {
+            list-style: none;
+        }
+        
+        .calc-log li {
+            padding: 5px 0;
+            color: #444;
+            font-size: 13px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .calc-log li:before {
+            content: "•";
+            color: #667eea;
+            position: absolute;
+            left: 0;
+        }
+        
+        .anomaly-section {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .anomaly-section h3 {
+            color: #c53030;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .anomaly-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #fc8181;
+        }
+        
+        .anomaly-type {
+            font-weight: bold;
+            color: #c53030;
+            font-size: 12px;
+        }
+        
+        .anomaly-desc {
+            color: #666;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+        
+        .note {
+            background: #fff9db;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .note h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        
+        .supplement-tag {
+            background: #ffa94d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        
+        .export-btn {
+            background: #339af0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 分段函数税费计算器</h1>
+            <p>支持边界校验 · 异常检测 · 来源追溯 · 报告导出</p>
+        </div>
+        
+        <div class="card">
+            <h2>👤 员工基本信息</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>员工姓名</label>
+                    <input type="text" id="employee_name" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>工号</label>
+                    <input type="text" id="employee_id" placeholder="选填">
+                </div>
+                <div class="form-group">
+                    <label>年份</label>
+                    <select id="year">
+                        <option value="2024">2024年</option>
+                        <option value="2025">2025年</option>
+                        <option value="2026">2026年</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>月份</label>
+                    <select id="month">
+                        <option value="1">1月</option>
+                        <option value="2">2月</option>
+                        <option value="3">3月</option>
+                        <option value="4">4月</option>
+                        <option value="5">5月</option>
+                        <option value="6">6月</option>
+                        <option value="7">7月</option>
+                        <option value="8">8月</option>
+                        <option value="9">9月</option>
+                        <option value="10">10月</option>
+                        <option value="11">11月</option>
+                        <option value="12">12月</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>💰 收入信息（单位：元）</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>基本工资</label>
+                    <input type="number" id="salary" placeholder="请输入基本工资" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>奖金</label>
+                    <input type="number" id="bonus" placeholder="选填" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>其他收入</label>
+                    <input type="number" id="other_income" placeholder="选填" step="0.01">
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📋 扣除项目</h2>
+            <div id="deductions_list"></div>
+            <button class="add-btn" onclick="addDeduction()">+ 添加扣除项</button>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculate()">计算个税</button>
+        
+        <div class="card result-card" id="result_card">
+            <h2>📊 计算结果</h2>
+            
+            <div class="result-summary">
+                <div class="result-item">
+                    <div class="label">税前总收入</div>
+                    <div class="value" id="res_total_income">0.00</div>
+                </div>
+                <div class="result-item">
+                    <div class="label">扣除合计</div>
+                    <div class="value" id="res_total_deductions">0.00</div>
+                </div>
+                <div class="result-item">
+                    <div class="label">应纳税所得额</div>
+                    <div class="value" id="res_taxable_income">0.00</div>
+                </div>
+                <div class="result-item tax">
+                    <div class="label">应缴个税</div>
+                    <div class="value" id="res_tax_amount">0.00</div>
+                </div>
+            </div>
+            
+            <div class="calc-log">
+                <h3>📝 计算过程</h3>
+                <ul id="calc_log"></ul>
+            </div>
+            
+            <div id="anomalies_container"></div>
+            
+            <button class="export-btn" onclick="exportExcel()">📥 导出Excel报告</button>
+            
+            <div class="note" style="margin-top: 20px;">
+                <h4>📌 边界校验口径说明</h4>
+                <p>1. 边界值校验：当应纳税所得额接近税率级距边界（±0.01元）时，自动标记为异常<br>
+                2. 扣除项校验：标准五险一金扣除项缺失时标记为异常<br>
+                3. 补录标记：事后补录的扣除项单独标记并说明原因<br>
+                4. 覆盖保护：历史数据被覆盖时记录旧值和新值，保留版本号<br>
+                5. 单位校验：收入与扣除项单位不一致时提示</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let deductionIndex = 0;
+        let currentResult = null;
+        
+        function addDeduction() {
+            const div = document.createElement('div');
+            div.className = 'deduction-item';
+            div.id = `deduction_${deductionIndex}`;
+            div.innerHTML = `
+                <div class="deduction-header">
+                    <strong>扣除项 #${deductionIndex + 1}</strong>
+                    <button class="remove-btn" onclick="removeDeduction(${deductionIndex})">删除</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>名称</label>
+                        <select class="ded_name" onchange="toggleSupplement(${deductionIndex})">
+                            <option value="基本养老保险">基本养老保险</option>
+                            <option value="基本医疗保险">基本医疗保险</option>
+                            <option value="失业保险">失业保险</option>
+                            <option value="住房公积金">住房公积金</option>
+                            <option value="子女教育专项附加扣除">子女教育专项附加扣除</option>
+                            <option value="继续教育专项附加扣除">继续教育专项附加扣除</option>
+                            <option value="大病医疗专项附加扣除">大病医疗专项附加扣除</option>
+                            <option value="住房贷款利息专项附加扣除">住房贷款利息专项附加扣除</option>
+                            <option value="住房租金专项附加扣除">住房租金专项附加扣除</option>
+                            <option value="赡养老人专项附加扣除">赡养老人专项附加扣除</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>金额（元）</label>
+                        <input type="number" class="ded_amount" placeholder="请输入金额" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" class="ded_supplement" onchange="toggleSupplementReason(${deductionIndex})">
+                        事后补录 <span class="supplement-tag">异常标记</span>
+                    </label>
+                </div>
+                <div class="form-group ded_reason_div" id="ded_reason_${deductionIndex}" style="display: none;">
+                    <label>补录原因</label>
+                    <input type="text" class="ded_reason" placeholder="请说明补录原因">
+                </div>
+            `;
+            document.getElementById('deductions_list').appendChild(div);
+            deductionIndex++;
+        }
+        
+        function removeDeduction(index) {
+            const el = document.getElementById(`deduction_${index}`);
+            if (el) el.remove();
+        }
+        
+        function toggleSupplementReason(index) {
+            const checkbox = document.querySelector(`#deduction_${index} .ded_supplement`);
+            const reasonDiv = document.getElementById(`ded_reason_${index}`);
+            reasonDiv.style.display = checkbox.checked ? 'block' : 'none';
+        }
+        
+        function getDeductions() {
+            const deductions = [];
+            document.querySelectorAll('.deduction-item').forEach(item => {
+                const name = item.querySelector('.ded_name').value;
+                const amount = item.querySelector('.ded_amount').value;
+                const isSupplement = item.querySelector('.ded_supplement').checked;
+                const reason = item.querySelector('.ded_reason') ? item.querySelector('.ded_reason').value : '';
+                
+                if (amount && parseFloat(amount) > 0) {
+                    deductions.push({
+                        name: name,
+                        amount: parseFloat(amount),
+                        is_supplement: isSupplement,
+                        supplement_reason: reason
+                    });
+                }
+            });
+            return deductions;
+        }
+        
+        async function calculate() {
+            const data = {
+                employee_id: document.getElementById('employee_id').value,
+                employee_name: document.getElementById('employee_name').value || '未命名',
+                year: document.getElementById('year').value,
+                month: document.getElementById('month').value,
+                salary: parseFloat(document.getElementById('salary').value) || 0,
+                bonus: parseFloat(document.getElementById('bonus').value) || 0,
+                other_income: parseFloat(document.getElementById('other_income').value) || 0,
+                deductions: getDeductions()
+            };
+            
+            try {
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    currentResult = { ...data, results: [result.result] };
+                    displayResult(result.result);
+                }
+            } catch (e) {
+                alert('计算出错：' + e.message);
+            }
+        }
+        
+        function displayResult(result) {
+            document.getElementById('res_total_income').textContent = result.total_income.toFixed(2) + ' 元';
+            document.getElementById('res_total_deductions').textContent = result.total_deductions.toFixed(2) + ' 元';
+            document.getElementById('res_taxable_income').textContent = result.taxable_income.toFixed(2) + ' 元';
+            document.getElementById('res_tax_amount').textContent = result.tax_amount.toFixed(2) + ' 元';
+            
+            const logUl = document.getElementById('calc_log');
+            logUl.innerHTML = '';
+            result.calculation_log.forEach(log => {
+                const li = document.createElement('li');
+                li.textContent = log;
+                logUl.appendChild(li);
+            });
+            
+            const anomalyContainer = document.getElementById('anomalies_container');
+            if (result.anomalies && result.anomalies.length > 0) {
+                anomalyContainer.innerHTML = `
+                    <div class="anomaly-section">
+                        <h3>⚠️ 异常提示（${result.anomalies.length} 条）</h3>
+                        ${result.anomalies.map(a => `
+                            <div class="anomaly-item">
+                                <div class="anomaly-type">【${a.anomaly_type}】</div>
+                                <div class="anomaly-desc">${a.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                anomalyContainer.innerHTML = '';
+            }
+            
+            document.getElementById('result_card').classList.add('show');
+            document.getElementById('result_card').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        async function exportExcel() {
+            if (!currentResult) {
+                alert('请先进行计算');
+                return;
+            }
+            
+            const data = {
+                employees: [{
+                    employee_id: currentResult.employee_id,
+                    employee_name: currentResult.employee_name,
+                    year: currentResult.year,
+                    month: currentResult.month,
+                    salary: currentResult.salary,
+                    bonus: currentResult.bonus,
+                    other_income: currentResult.other_income,
+                    deductions: currentResult.deductions
+                }]
+            };
+            
+            try {
+                const response = await fetch('/api/download-excel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `个税计算报告_${new Date().toISOString().slice(0,10)}.xlsx`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (e) {
+                alert('导出失败：' + e.message);
+            }
+        }
+        
+        addDeduction();
+        document.getElementById('year').value = new Date().getFullYear();
+        document.getElementById('month').value = new Date().getMonth() + 1;
+    </script>
+</body>
+</html>
