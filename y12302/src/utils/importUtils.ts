@@ -391,20 +391,28 @@ export const parseDCM = (buffer: ArrayBuffer, filename: string): ParsedDoseResul
   }
 
   if (!foundPixelData || doseCount === 0) {
-    minDose = 0.5;
-    maxDose = 78.0;
-    doseSum = 45.2 * 64 * 64;
-    doseCount = 64 * 64;
-    rows = rows || 64;
-    columns = columns || 64;
+    throw new Error(`DICOM文件 "${filename}" 无法读取像素数据（未找到 (7FE0,0010) 标签或无有效剂量值）`);
   }
 
-  const meanDose = doseCount > 0 ? doseSum / doseCount : 45.2;
+  if (!rows || !columns) {
+    throw new Error(`DICOM文件 "${filename}" 缺少图像尺寸信息（Rows/Columns 标签）`);
+  }
 
-  if (!isFinite(minDose)) minDose = 0;
-  if (!isFinite(maxDose)) maxDose = meanDose * 1.8;
+  const meanDose = doseSum / doseCount;
 
-  const threshold = maxDose > 0 ? Math.round(maxDose * 0.9 * 10) / 10 : 70.0;
+  if (!isFinite(minDose) || !isFinite(maxDose) || !isFinite(meanDose)) {
+    throw new Error(`DICOM文件 "${filename}" 包含无效的剂量值（NaN 或 Infinity）`);
+  }
+
+  if (minDose < 0 || maxDose < 0 || meanDose < 0) {
+    throw new Error(`DICOM文件 "${filename}" 包含负数剂量值，剂量数据必须为非负数`);
+  }
+
+  if (maxDose === 0) {
+    throw new Error(`DICOM文件 "${filename}" 最大剂量为0，可能不是有效的剂量文件`);
+  }
+
+  const threshold = Math.round(maxDose * 0.9 * 10) / 10;
 
   return {
     name: inferNameFromFilename(filename),
@@ -414,7 +422,7 @@ export const parseDCM = (buffer: ArrayBuffer, filename: string): ParsedDoseResul
     maxDose: Math.round(maxDose * 10) / 10,
     meanDose: Math.round(meanDose * 10) / 10,
     threshold,
-    gridSize: [columns || 64, rows || 64, sliceCount],
+    gridSize: [columns, rows, sliceCount],
     spacing: [pixelSpacingX, pixelSpacingY, sliceThickness],
   };
 };
@@ -435,8 +443,8 @@ export const parseNRRD = (buffer: ArrayBuffer, filename: string): ParsedDoseResu
   const headerText = text.slice(0, headerEnd);
   const headerLines = headerText.split('\n');
 
-  let dataType = 'float';
-  let sizes = [64, 64, 1];
+  let dataType = '';
+  let sizes: number[] = [];
   let spacings = [1.0, 1.0, 1.0];
 
   for (const line of headerLines) {
@@ -505,17 +513,33 @@ export const parseNRRD = (buffer: ArrayBuffer, filename: string): ParsedDoseResu
     }
   }
 
-  if (doseCount === 0) {
-    minDose = 0.5;
-    maxDose = 78.0;
-    doseSum = 45.2 * 64 * 64;
-    doseCount = 64 * 64;
+  if (sizes.length < 3) {
+    throw new Error(`NRRD文件 "${filename}" 缺少尺寸信息（sizes 字段）`);
   }
 
-  const meanDose = doseCount > 0 ? doseSum / doseCount : 45.2;
-  if (!isFinite(minDose)) minDose = 0;
-  if (!isFinite(maxDose)) maxDose = meanDose * 1.8;
-  const threshold = maxDose > 0 ? Math.round(maxDose * 0.9 * 10) / 10 : 70.0;
+  if (!dataType) {
+    throw new Error(`NRRD文件 "${filename}" 缺少数据类型（type 字段）`);
+  }
+
+  if (doseCount === 0) {
+    throw new Error(`NRRD文件 "${filename}" 无法读取有效剂量值（体数据为空或格式不支持）`);
+  }
+
+  const meanDose = doseSum / doseCount;
+
+  if (!isFinite(minDose) || !isFinite(maxDose) || !isFinite(meanDose)) {
+    throw new Error(`NRRD文件 "${filename}" 包含无效的剂量值（NaN 或 Infinity）`);
+  }
+
+  if (minDose < 0 || maxDose < 0 || meanDose < 0) {
+    throw new Error(`NRRD文件 "${filename}" 包含负数剂量值，剂量数据必须为非负数`);
+  }
+
+  if (maxDose === 0) {
+    throw new Error(`NRRD文件 "${filename}" 最大剂量为0，可能不是有效的剂量文件`);
+  }
+
+  const threshold = Math.round(maxDose * 0.9 * 10) / 10;
 
   return {
     name: inferNameFromFilename(filename),

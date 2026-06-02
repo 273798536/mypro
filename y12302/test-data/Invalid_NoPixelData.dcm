@@ -1,0 +1,3 @@
+DICM
+This is a fake DICOM file without pixel data
+It only has the DICM prefix but no (7FE0,0010) pixel data tag

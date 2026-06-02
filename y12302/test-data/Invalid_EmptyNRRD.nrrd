@@ -1,0 +1,7 @@
+NRRD0004
+# This is a fake NRRD file without valid body data
+type: float
+dimension: 3
+sizes: 0 0 0
+spacings: 1.0 1.0 1.0
+data file: none
