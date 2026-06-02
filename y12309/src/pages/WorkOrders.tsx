@@ -1,15 +1,22 @@
 import { useState } from 'react';
-import { Search, Filter, Eye, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+import { Search, Filter, Eye, CheckCircle, Clock, XCircle, AlertCircle, Plus, X } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { cn } from '@/lib/utils';
 import type { WorkOrderStatus, WorkOrderSource, WorkOrderType } from '@/types';
 
 export default function WorkOrders() {
-  const { workOrders, buildings, inspectors, updateWorkOrderStatus } = useStore();
+  const { workOrders, buildings, inspectors, updateWorkOrderStatus, addManualWorkOrder } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus | 'all'>('all');
   const [sourceFilter, setSourceFilter] = useState<WorkOrderSource | 'all'>('all');
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [showInsertModal, setShowInsertModal] = useState(false);
+  const [formBuildingId, setFormBuildingId] = useState('');
+  const [formInspectorId, setFormInspectorId] = useState('');
+  const [formType, setFormType] = useState<WorkOrderType>('routine');
+  const [formDescription, setFormDescription] = useState('');
+  const [formPriority, setFormPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [formScheduledTime, setFormScheduledTime] = useState('');
 
   const filteredOrders = workOrders.filter(wo => {
     const building = buildings.find(b => b.id === wo.buildingId);
@@ -49,6 +56,13 @@ export default function WorkOrders() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-800">工单管理</h1>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowInsertModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={18} />
+            人工插单
+          </button>
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
@@ -268,6 +282,136 @@ export default function WorkOrders() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showInsertModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="font-semibold text-lg text-slate-800">人工插单</h3>
+              <button
+                onClick={() => setShowInsertModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                addManualWorkOrder({
+                  buildingId: formBuildingId,
+                  inspectorId: formInspectorId,
+                  type: formType,
+                  status: 'pending',
+                  source: 'manual',
+                  scheduledTime: formScheduledTime.replace('T', ' '),
+                  description: formDescription,
+                  priority: formPriority,
+                });
+                setShowInsertModal(false);
+                setFormBuildingId('');
+                setFormInspectorId('');
+                setFormType('routine');
+                setFormDescription('');
+                setFormPriority('medium');
+                setFormScheduledTime('');
+              }}
+              className="p-6 space-y-4"
+            >
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">楼栋</label>
+                <select
+                  value={formBuildingId}
+                  onChange={(e) => setFormBuildingId(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">请选择楼栋</option>
+                  {buildings.filter(b => b.accessOpen).map(b => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">巡检员</label>
+                <select
+                  value={formInspectorId}
+                  onChange={(e) => setFormInspectorId(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">请选择巡检员</option>
+                  {inspectors.filter(i => i.onDuty).map(i => (
+                    <option key={i.id} value={i.id}>{i.name} - {i.team}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">工单类型</label>
+                <select
+                  value={formType}
+                  onChange={(e) => setFormType(e.target.value as WorkOrderType)}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="routine">日常巡检</option>
+                  <option value="repair">维修工单</option>
+                  <option value="inspection">专项检查</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">工单描述</label>
+                <input
+                  type="text"
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  required
+                  placeholder="请输入工单描述"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">优先级</label>
+                <select
+                  value={formPriority}
+                  onChange={(e) => setFormPriority(e.target.value as 'low' | 'medium' | 'high')}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="low">低</option>
+                  <option value="medium">中</option>
+                  <option value="high">高</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">计划时间</label>
+                <input
+                  type="datetime-local"
+                  value={formScheduledTime}
+                  onChange={(e) => setFormScheduledTime(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowInsertModal(false)}
+                  className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  确认插单
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

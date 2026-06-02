@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Calendar, Clock, User, Edit3, Check, X, AlertCircle, FileEdit } from 'lucide-react';
+import { Calendar, Clock, User, Edit3, Check, X, AlertCircle, FileEdit, RefreshCw } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { cn } from '@/lib/utils';
 import { getBuildingName } from '@/utils/graphUtils';
 import type { ShiftType } from '@/types';
 
 export default function ScheduleCenter() {
-  const { schedules, inspectors, buildings, leaveRecords, selectedDate, setSelectedDate, updateSchedule, changeLogs } = useStore();
+  const { schedules, inspectors, buildings, leaveRecords, selectedDate, setSelectedDate, updateSchedule, changeLogs, runReschedule, approveLeave, lastRescheduleResult } = useStore();
   const [editingSchedule, setEditingSchedule] = useState<string | null>(null);
   const [editBuildings, setEditBuildings] = useState<string[]>([]);
+  const [showBanner, setShowBanner] = useState(true);
 
   const todaySchedules = schedules.filter(s => s.date === selectedDate);
   const todayLeaves = leaveRecords.filter(l => 
@@ -64,9 +65,42 @@ export default function ScheduleCenter() {
               onChange={(e) => setSelectedDate(e.target.value)}
               className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <button
+              onClick={() => runReschedule('手动触发自动重排')}
+              className="flex items-center gap-1.5 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+            >
+              <RefreshCw size={16} />
+              自动重排
+            </button>
           </div>
         </div>
       </div>
+
+      {lastRescheduleResult && showBanner && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <RefreshCw size={16} className="text-blue-500" />
+                <span className="font-medium text-blue-800">重排结果</span>
+                <span className="text-xs text-blue-600">{lastRescheduleResult.reason}</span>
+              </div>
+              <div className="flex flex-wrap gap-4 text-sm text-blue-700">
+                <span>重新分配: <strong>{lastRescheduleResult.summary.reassigned}</strong> 条</span>
+                <span>门禁跳过: <strong>{lastRescheduleResult.summary.accessSkipped.length > 0 ? lastRescheduleResult.summary.accessSkipped.join('、') : '无'}</strong></span>
+                <span>路线中断: <strong>{lastRescheduleResult.summary.routeBreakCount}</strong> 处</span>
+                <span>重复分配: <strong>{lastRescheduleResult.summary.duplicateCount}</strong> 条</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowBanner(false)}
+              className="p-1 text-blue-400 hover:text-blue-600 rounded transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
@@ -236,13 +270,23 @@ export default function ScheduleCenter() {
                           <div className="text-xs text-slate-500">{leave.startDate} ~ {leave.endDate}</div>
                         </div>
                       </div>
-                      <span className={cn(
-                        'text-xs px-2 py-0.5 rounded',
-                        leave.status === 'approved' ? 'bg-green-100 text-green-700' :
-                        leave.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
-                      )}>
-                        {leave.status === 'approved' ? '已批准' : leave.status === 'pending' ? '待审批' : '已拒绝'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          'text-xs px-2 py-0.5 rounded',
+                          leave.status === 'approved' ? 'bg-green-100 text-green-700' :
+                          leave.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+                        )}>
+                          {leave.status === 'approved' ? '已批准' : leave.status === 'pending' ? '待审批' : '已拒绝'}
+                        </span>
+                        {leave.status === 'pending' && (
+                          <button
+                            onClick={() => approveLeave(leave.id)}
+                            className="flex items-center gap-1 text-xs bg-green-500 text-white px-2 py-0.5 rounded hover:bg-green-600 transition-colors"
+                          >
+                            <Check size={12} /> 批准
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="text-xs text-slate-500 mt-2">
                       {leave.type === 'annual' ? '年假' : leave.type === 'sick' ? '病假' : '事假'}：{leave.reason}

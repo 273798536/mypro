@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Lock, Route, Users, Filter, CheckCircle, Eye, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Lock, Route, Users, Filter, CheckCircle, Eye, ArrowRight, AlertTriangle, RefreshCw, X } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { cn } from '@/lib/utils';
 import { getBuildingName } from '@/utils/graphUtils';
 import type { AnomalyType, Anomaly } from '@/types';
 
 export default function Anomalies() {
-  const { anomalies, buildings, workOrders, inspectors, resolveAnomaly } = useStore();
+  const { anomalies, buildings, workOrders, inspectors, resolveAnomaly, runReschedule, toggleBuildingAccess, toggleRouteEdge, lastRescheduleResult } = useStore();
+  const [rescheduleMsg, setRescheduleMsg] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<AnomalyType | 'all'>('all');
   const [selectedAnomaly, setSelectedAnomaly] = useState<string | null>(null);
 
@@ -105,6 +106,17 @@ export default function Anomalies() {
 
   return (
     <div className="space-y-6">
+      {rescheduleMsg && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <RefreshCw size={16} className="text-blue-500" />
+            <span className="text-sm text-blue-700">{rescheduleMsg}</span>
+          </div>
+          <button onClick={() => setRescheduleMsg(null)} className="text-blue-400 hover:text-blue-600">
+            <X size={16} />
+          </button>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-800">异常分析</h1>
         <div className="flex items-center gap-2">
@@ -233,6 +245,21 @@ export default function Anomalies() {
                           <CheckCircle size={16} />
                         </button>
                       )}
+                      {!anomaly.resolved && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const desc = anomaly.description;
+                            const result = runReschedule(`异常驱动重排：${desc}`);
+                            setRescheduleMsg(`重排完成：${result.summary.reassigned}条排班已调整，跳过${result.summary.accessSkipped.length}栋门禁关闭楼栋`);
+                            setTimeout(() => setRescheduleMsg(null), 5000);
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors"
+                          title="触发重排"
+                        >
+                          <RefreshCw size={16} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -304,6 +331,53 @@ export default function Anomalies() {
                   <div className="text-xs text-slate-400 mt-2">
                     数据来源: 楼栋巡检图 + 排程中心 + 工单列表
                   </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-200">
+                <div className="text-xs text-slate-500 mb-2 font-medium">快捷操作</div>
+                <div className="space-y-2">
+                  {selectedAnomalyData.type === 'access_closed' && selectedAnomalyData.sourceIds[0] && (
+                    <button
+                      onClick={() => {
+                        const bid = selectedAnomalyData.sourceIds[0];
+                        toggleBuildingAccess(bid);
+                        setRescheduleMsg('已恢复门禁并触发重排');
+                        setTimeout(() => setRescheduleMsg(null), 4000);
+                      }}
+                      className="w-full text-left text-xs bg-red-50 text-red-700 px-3 py-2 rounded hover:bg-red-100 transition-colors"
+                    >
+                      <RefreshCw size={12} className="inline mr-1" />
+                      恢复门禁开放并触发重排
+                    </button>
+                  )}
+                  {selectedAnomalyData.type === 'route_break' && selectedAnomalyData.sourceIds[0] && (
+                    <button
+                      onClick={() => {
+                        const eid = selectedAnomalyData.sourceIds[0];
+                        toggleRouteEdge(eid);
+                        setRescheduleMsg('已恢复路线并触发重排');
+                        setTimeout(() => setRescheduleMsg(null), 4000);
+                      }}
+                      className="w-full text-left text-xs bg-orange-50 text-orange-700 px-3 py-2 rounded hover:bg-orange-100 transition-colors"
+                    >
+                      <RefreshCw size={12} className="inline mr-1" />
+                      恢复路线通行并触发重排
+                    </button>
+                  )}
+                  {!selectedAnomalyData.resolved && (
+                    <button
+                      onClick={() => {
+                        const result = runReschedule(`异常驱动重排：${selectedAnomalyData.description}`);
+                        setRescheduleMsg(`重排完成：${result.summary.reassigned}条排班已调整`);
+                        setTimeout(() => setRescheduleMsg(null), 4000);
+                      }}
+                      className="w-full text-left text-xs bg-blue-50 text-blue-700 px-3 py-2 rounded hover:bg-blue-100 transition-colors"
+                    >
+                      <RefreshCw size={12} className="inline mr-1" />
+                      触发全局重排
+                    </button>
+                  )}
                 </div>
               </div>
 

@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { MapPin, Route, Info, Layers } from 'lucide-react';
+import { MapPin, Route, Info, Layers, Power, ShieldOff, Shield, ToggleLeft } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import BuildingTopology from '@/components/BuildingTopology';
 import { createRouteAnalyzer, getBuildingName } from '@/utils/graphUtils';
 import { cn } from '@/lib/utils';
 
 export default function BuildingMap() {
-  const { buildings, routeEdges, workOrders, schedules, selectedDate } = useStore();
+  const { buildings, routeEdges, workOrders, schedules, selectedDate, toggleBuildingAccess, toggleRouteEdge } = useStore();
   const [showRouteAnalysis, setShowRouteAnalysis] = useState(false);
   const [selectedInspector, setSelectedInspector] = useState<string | null>(null);
 
@@ -106,26 +106,80 @@ export default function BuildingMap() {
               <h2 className="font-semibold text-slate-800">路线断点分析</h2>
             </div>
             <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
-              {breakpoints.map(bp => (
+              {breakpoints.map(bp => {
+                const edgeId = bp.id.replace('break-', '');
+                const edge = routeEdges.find(e => e.id === edgeId);
+                const isInactive = edge && !edge.isActive;
+                return (
                 <div key={bp.id} className="p-3 bg-orange-50 rounded-lg border border-orange-200">
                   <div className="flex items-start gap-2">
                     <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <Route size={14} className="text-white" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <div className="text-sm font-medium text-slate-800">{bp.reason}</div>
                       <div className="text-xs text-slate-500 mt-1">
                         影响: {bp.affectedRoutes.join(', ') || '无'}
                       </div>
                     </div>
+                    {isInactive && (
+                      <button
+                        onClick={() => toggleRouteEdge(edgeId)}
+                        className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md hover:bg-emerald-100 transition-colors flex-shrink-0"
+                      >
+                        <Power size={12} />
+                        恢复路线
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
               {breakpoints.length === 0 && (
                 <div className="text-center text-slate-500 py-8">
                   无路线断点
                 </div>
               )}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <h2 className="font-semibold text-slate-800">门禁管理</h2>
+            </div>
+            <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
+              {buildings.map(building => (
+                <div key={building.id} className="px-4 py-3 flex items-center justify-between hover:bg-slate-50">
+                  <div className="flex items-center gap-2">
+                    {building.accessOpen ? (
+                      <Shield size={16} className="text-emerald-500" />
+                    ) : (
+                      <ShieldOff size={16} className="text-red-500" />
+                    )}
+                    <span className="text-sm font-medium text-slate-700">{building.name}</span>
+                    <span className={cn(
+                      'text-xs px-1.5 py-0.5 rounded font-medium',
+                      building.accessOpen
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-red-100 text-red-700'
+                    )}>
+                      {building.accessOpen ? '开放' : '关闭'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => toggleBuildingAccess(building.id)}
+                    className={cn(
+                      'flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md border transition-colors',
+                      building.accessOpen
+                        ? 'text-red-700 bg-red-50 border-red-200 hover:bg-red-100'
+                        : 'text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100'
+                    )}
+                  >
+                    <ToggleLeft size={12} />
+                    {building.accessOpen ? '关闭门禁' : '恢复门禁'}
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
