@@ -48,6 +48,14 @@ interface AppState {
     confidence: number;
     matchedFields: string[];
     isNewProject: boolean;
+    batchesCreated: number;
+    batchesMerged: number;
+    batchDetails: {
+      batchNumber: string;
+      sampleSize: number;
+      recordCount: number;
+      isNew: boolean;
+    }[];
   };
   addBatch: (projectId: string, batch: Batch) => void;
   setRowField: (field: keyof DefectRecord) => void;
@@ -183,7 +191,10 @@ export const useAppStore = create<AppState>()(
             matchedProjectName: null,
             confidence: 0,
             matchedFields: [],
-            isNewProject: true
+            isNewProject: true,
+            batchesCreated: 0,
+            batchesMerged: 0,
+            batchDetails: []
           };
         }
 
@@ -198,6 +209,72 @@ export const useAppStore = create<AppState>()(
         const newRecords = [...existingRecords, ...recordsWithProjectId];
         const newDefectRecords = new Map(state.defectRecords).set(actualProjectId, newRecords);
 
+        const existingBatches = state.batches.get(actualProjectId) || [];
+        const batchGroups = new Map<string, { records: DefectRecord[]; sampleSize: number }>();
+        
+        newRecords.forEach(record => {
+          if (!record.batchId) return;
+          const key = `${record.batchId}-${record.sampleSize || 'unknown'}`;
+          if (!batchGroups.has(key)) {
+            batchGroups.set(key, { records: [], sampleSize: record.sampleSize || 0 });
+          }
+          batchGroups.get(key)!.records.push(record);
+          if (record.sampleSize && (!batchGroups.get(key)!.sampleSize || batchGroups.get(key)!.sampleSize === 0)) {
+            batchGroups.get(key)!.sampleSize = record.sampleSize;
+          }
+        });
+
+        const batchDetails: { batchNumber: string; sampleSize: number; recordCount: number; isNew: boolean }[] = [];
+        let batchesCreated = 0;
+        let batchesMerged = 0;
+        const updatedBatches = [...existingBatches];
+
+        batchGroups.forEach((group, key) => {
+          const [batchId] = key.split('-');
+          const existingBatch = existingBatches.find(b => b.batchNumber === batchId);
+          
+          if (existingBatch) {
+            const totalRecords = group.records.length;
+            batchDetails.push({
+              batchNumber: batchId,
+              sampleSize: group.sampleSize || existingBatch.sampleSize,
+              recordCount: totalRecords,
+              isNew: false
+            });
+            batchesMerged++;
+            
+            const batchIndex = updatedBatches.findIndex(b => b.batchNumber === batchId);
+            if (batchIndex !== -1 && group.sampleSize && group.sampleSize !== existingBatch.sampleSize) {
+              updatedBatches[batchIndex] = {
+                ...updatedBatches[batchIndex],
+                sampleSize: group.sampleSize
+              };
+            }
+          } else {
+            const totalRecords = group.records.length;
+            const firstRecord = group.records[0];
+            const newBatch = {
+              id: `batch-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              projectId: actualProjectId,
+              batchNumber: batchId,
+              sampleSize: group.sampleSize || totalRecords,
+              productType: firstRecord?.category || '',
+              productionDate: firstRecord?.recordDate || new Date(),
+              inspector: ''
+            };
+            updatedBatches.push(newBatch);
+            batchDetails.push({
+              batchNumber: batchId,
+              sampleSize: group.sampleSize || totalRecords,
+              recordCount: totalRecords,
+              isNew: true
+            });
+            batchesCreated++;
+          }
+        });
+
+        const newBatchesMap = new Map(state.batches).set(actualProjectId, updatedBatches);
+
         const autoClassifyResult = {
           matchedProjectId: classifyResult.projectId,
           matchedProjectName: matchedProject?.name || null,
@@ -209,6 +286,7 @@ export const useAppStore = create<AppState>()(
 
         set({
           defectRecords: newDefectRecords,
+          batches: newBatchesMap,
           lastAutoClassifyResult: autoClassifyResult,
           projects: state.projects.map((p) =>
             p.id === actualProjectId ? { ...p, updatedAt: new Date(), status: 'draft' } : p
@@ -222,7 +300,10 @@ export const useAppStore = create<AppState>()(
           matchedProjectName: matchedProject?.name || null,
           confidence: classifyResult.match?.confidence || 0,
           matchedFields: classifyResult.match?.matchedFields || [],
-          isNewProject: classifyResult.isNewProject
+          isNewProject: classifyResult.isNewProject,
+          batchesCreated,
+          batchesMerged,
+          batchDetails
         };
       },
 
@@ -404,7 +485,9 @@ export const useAppStore = create<AppState>()(
         results: Array.from(state.results.entries()),
         abnormalities: Array.from(state.abnormalities.entries()),
         reviewAdvices: Array.from(state.reviewAdvices.entries()),
-        dataHashes: Array.from(state.dataHashes.entries())
+        dataHashes: Array.from(state.dataHashes.entries()),
+        rowField: state.rowField,
+        colField: state.colField
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

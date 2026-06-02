@@ -69,25 +69,108 @@ export default function Workbench() {
   };
 
   const processFile = async (file: File) => {
-    const result = await importFile(file);
+    setImportErrors([]);
+    setImportWarnings([]);
+
+    if (!file) {
+      setImportErrors(['未选择文件']);
+      setShowImportResult(true);
+      setTimeout(() => setShowImportResult(false), 5000);
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setImportErrors([`文件过大（${(file.size / 1024 / 1024).toFixed(2)}MB），最大支持 10MB`]);
+      setShowImportResult(true);
+      setTimeout(() => setShowImportResult(false), 5000);
+      return;
+    }
+
+    let result;
+    try {
+      result = await importFile(file);
+    } catch (error) {
+      setImportErrors([`文件解析失败：${(error as Error).message}`]);
+      setShowImportResult(true);
+      setTimeout(() => setShowImportResult(false), 5000);
+      return;
+    }
     
     if (result.errors.length > 0) {
       setImportErrors(result.errors);
-    } else {
-      setImportErrors([]);
     }
     
     if (result.warnings.length > 0) {
       setImportWarnings(result.warnings);
-    } else {
-      setImportWarnings([]);
+    }
+
+    if (!result.success) {
+      if (result.records.length === 0) {
+        setImportErrors(prev => [...prev, '未解析到有效数据记录，请检查文件格式和必填字段']);
+      }
+      setShowImportResult(true);
+      setTimeout(() => {
+        setShowImportResult(false);
+        clearAutoClassifyResult();
+      }, 10000);
+      return;
     }
 
     if (result.success) {
+      if (!currentProjectId && result.records.length > 0) {
+        const hasSampleSize = result.records.some(r => r.sampleSize !== undefined && r.sampleSize > 0);
+        const batchIds = [...new Set(result.records.map(r => r.batchId))].filter(Boolean);
+        
+        if (batchIds.length === 0) {
+          setImportErrors(prev => [...prev, '无法自动归类：记录中缺少批次号，请填写批次号后重试']);
+          setShowImportResult(true);
+          setTimeout(() => {
+            setShowImportResult(false);
+            clearAutoClassifyResult();
+          }, 10000);
+          return;
+        }
+        
+        if (!hasSampleSize) {
+          setImportWarnings(prev => [...prev, 
+            '提示：记录中未填写抽检数量，归类准确性可能受影响。建议在文件中添加「抽检数量」列。'
+          ]);
+        }
+      }
+
       const classifyResult = addDefectRecordsWithAutoClassify(result.records, currentProjectId || undefined);
       
+      if (classifyResult.added === 0 && classifyResult.duplicates > 0) {
+        setImportErrors(prev => [...prev, 
+          `导入失败：所有 ${classifyResult.duplicates} 条记录均为重复记录，已全部跳过。`,
+          `重复判定规则：同一批次号 + 缺陷类型 + 类别 + 材料来源 + 记录日期`
+        ]);
+        setShowImportResult(true);
+        setTimeout(() => {
+          setShowImportResult(false);
+          clearAutoClassifyResult();
+        }, 10000);
+        return;
+      }
+      
       if (classifyResult.added > 0) {
-        setImportWarnings(prev => [...prev, `成功导入 ${classifyResult.added} 条记录${classifyResult.duplicates > 0 ? `，跳过 ${classifyResult.duplicates} 条重复记录` : ''}`]);
+        setImportWarnings(prev => [...prev, 
+          `成功导入 ${classifyResult.added} 条记录${classifyResult.duplicates > 0 ? `，跳过 ${classifyResult.duplicates} 条重复记录` : ''}`
+        ]);
+
+        if (classifyResult.batchesCreated > 0 || classifyResult.batchesMerged > 0) {
+          const batchMessages: string[] = [];
+          if (classifyResult.batchesCreated > 0) {
+            const newBatches = classifyResult.batchDetails.filter(b => b.isNew);
+            batchMessages.push(`创建批次事项 ${classifyResult.batchesCreated} 个：${newBatches.map(b => `${b.batchNumber}(${b.sampleSize}件)`).join('、')}`);
+          }
+          if (classifyResult.batchesMerged > 0) {
+            const mergedBatches = classifyResult.batchDetails.filter(b => !b.isNew);
+            batchMessages.push(`合并批次事项 ${classifyResult.batchesMerged} 个：${mergedBatches.map(b => `${b.batchNumber}(${b.sampleSize}件)`).join('、')}`);
+          }
+          setImportWarnings(prev => [...prev, ...batchMessages]);
+        }
         
         if (classifyResult.matchedProjectId && classifyResult.confidence >= 0.6) {
           setImportWarnings(prev => [...prev, 
@@ -99,13 +182,21 @@ export default function Workbench() {
             setCurrentProject(classifyResult.matchedProjectId);
             setImportWarnings(prev => [...prev, `已自动切换到匹配的项目`]);
           }
+        } else if (classifyResult.isNewProject && !currentProjectId) {
+          setImportErrors(prev => [...prev, 
+            '未找到匹配的现有项目，无法自动归类。',
+            `检测到 ${result.records.length} 条记录涉及 ${classifyResult.batchDetails.length} 个批次`,
+            '请先在顶部创建一个新项目，或选择一个现有项目后再导入。'
+          ]);
+          setShowImportResult(true);
+          setTimeout(() => {
+            setShowImportResult(false);
+            clearAutoClassifyResult();
+          }, 15000);
+          return;
         } else if (classifyResult.isNewProject) {
           setImportWarnings(prev => [...prev, '未找到匹配项目，记录已添加到当前项目']);
         }
-      }
-      
-      if (classifyResult.added === 0 && classifyResult.duplicates > 0) {
-        setImportErrors(prev => [...prev, `所有 ${classifyResult.duplicates} 条记录均为重复，已跳过`]);
       }
     }
     
@@ -113,7 +204,7 @@ export default function Workbench() {
     setTimeout(() => {
       setShowImportResult(false);
       clearAutoClassifyResult();
-    }, 8000);
+    }, 12000);
   };
 
   const handleAnalyze = () => {
@@ -291,27 +382,31 @@ export default function Workbench() {
                 <table className="w-full">
                   <thead className="bg-slate-50 sticky top-0">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">批次号</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">缺陷类型</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">类别</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">数量</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">材料来源</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">操作</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">批次号</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">缺陷类型</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">类别</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">缺陷数</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">抽检数</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">材料来源</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase">操作</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {visibleRecords.slice(0, 50).map((record) => (
                       <tr key={record.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 text-sm text-slate-700">{record.batchId}</td>
-                        <td className="px-4 py-3 text-sm text-slate-700">{record.defectType}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3 text-sm text-slate-700 font-mono">{record.batchId}</td>
+                        <td className="px-3 py-3 text-sm text-slate-700">{record.defectType}</td>
+                        <td className="px-3 py-3">
                           <span className="px-2 py-1 text-xs rounded-full bg-slate-100 text-slate-600">
                             {record.category}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm font-medium text-slate-800">{record.count}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{record.materialSource}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3 text-sm font-medium text-slate-800">{record.count}</td>
+                        <td className="px-3 py-3 text-sm font-medium text-blue-700">
+                          {record.sampleSize ?? <span className="text-slate-400">-</span>}
+                        </td>
+                        <td className="px-3 py-3 text-sm text-slate-600">{record.materialSource}</td>
+                        <td className="px-3 py-3">
                           <button
                             onClick={() => handleDeleteRecord(record.id)}
                             className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"

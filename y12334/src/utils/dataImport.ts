@@ -22,11 +22,24 @@ function validateRecord(record: Partial<DefectRecord>, index: number): {
     errors.push(`第 ${index + 1} 行: 数量不能为负数`);
   }
 
+  if (record.sampleSize !== undefined && record.sampleSize !== null) {
+    if (isNaN(Number(record.sampleSize))) {
+      errors.push(`第 ${index + 1} 行: 抽检数量无效`);
+    } else if (Number(record.sampleSize) < 0) {
+      errors.push(`第 ${index + 1} 行: 抽检数量不能为负数`);
+    } else if (Number(record.count) > Number(record.sampleSize)) {
+      warnings.push(`第 ${index + 1} 行: 缺陷数量(${record.count})大于抽检数量(${record.sampleSize})，请检查数据`);
+    }
+  }
+
   if (!record.materialSource) {
     warnings.push(`第 ${index + 1} 行: 建议填写材料来源`);
   }
   if (!record.batchId) {
     warnings.push(`第 ${index + 1} 行: 建议填写批次号`);
+  }
+  if (!record.sampleSize) {
+    warnings.push(`第 ${index + 1} 行: 建议填写抽检数量，用于批次归类`);
   }
 
   return { valid: errors.length === 0, errors, warnings };
@@ -57,6 +70,7 @@ export async function parseCSVFile(file: File): Promise<ImportResult> {
             defectType: data['缺陷类型'] || data['defectType'] || data['defect_type'] || '',
             category: data['类别'] || data['category'] || '',
             count: Number(data['数量'] || data['count'] || 0),
+            sampleSize: data['抽检数量'] || data['sampleSize'] || data['sample_size'] ? Number(data['抽检数量'] || data['sampleSize'] || data['sample_size'] || 0) : undefined,
             materialSource: data['材料来源'] || data['materialSource'] || data['material_source'] || '',
             productionLine: data['生产线'] || data['productionLine'] || data['production_line'] || '',
             shift: data['班次'] || data['shift'] || '',
@@ -105,6 +119,7 @@ export async function parseExcelFile(file: File): Promise<ImportResult> {
     const allWarnings: string[] = [];
 
     jsonData.forEach((row, index) => {
+      const sampleSizeValue = row['抽检数量'] || row['sampleSize'] || row['sample_size'];
       const rawRecord: Partial<DefectRecord> = {
         id: `record-${Date.now()}-${index}`,
         projectId: '',
@@ -112,6 +127,7 @@ export async function parseExcelFile(file: File): Promise<ImportResult> {
         defectType: String(row['缺陷类型'] || row['defectType'] || row['defect_type'] || ''),
         category: String(row['类别'] || row['category'] || ''),
         count: Number(row['数量'] || row['count'] || 0),
+        sampleSize: sampleSizeValue !== undefined && sampleSizeValue !== null && sampleSizeValue !== '' ? Number(sampleSizeValue) : undefined,
         materialSource: String(row['材料来源'] || row['materialSource'] || row['material_source'] || ''),
         productionLine: String(row['生产线'] || row['productionLine'] || row['production_line'] || ''),
         shift: String(row['班次'] || row['shift'] || ''),
@@ -162,14 +178,14 @@ export async function importFile(file: File): Promise<ImportResult> {
 }
 
 export function generateSampleCSV(): string {
-  const headers = ['批次号', '缺陷类型', '类别', '数量', '材料来源', '生产线', '班次', '记录日期', '备注'];
+  const headers = ['批次号', '缺陷类型', '类别', '数量', '抽检数量', '材料来源', '生产线', '班次', '记录日期', '备注'];
   const sampleData = [
-    ['BATCH001', '表面划痕', '外观缺陷', '5', '供应商A', 'L1', '早班', '2024-01-15', ''],
-    ['BATCH001', '尺寸偏差', '尺寸缺陷', '3', '供应商A', 'L1', '早班', '2024-01-15', ''],
-    ['BATCH001', '功能故障', '性能缺陷', '2', '供应商A', 'L1', '早班', '2024-01-15', '需复检'],
-    ['BATCH002', '表面划痕', '外观缺陷', '8', '供应商B', 'L2', '中班', '2024-01-16', ''],
-    ['BATCH002', '尺寸偏差', '尺寸缺陷', '1', '供应商B', 'L2', '中班', '2024-01-16', ''],
-    ['BATCH002', '功能故障', '性能缺陷', '4', '供应商B', 'L2', '中班', '2024-01-16', '']
+    ['BATCH001', '表面划痕', '外观缺陷', '5', '100', '供应商A', 'L1', '早班', '2024-01-15', ''],
+    ['BATCH001', '尺寸偏差', '尺寸缺陷', '3', '100', '供应商A', 'L1', '早班', '2024-01-15', ''],
+    ['BATCH001', '功能故障', '性能缺陷', '2', '100', '供应商A', 'L1', '早班', '2024-01-15', '需复检'],
+    ['BATCH002', '表面划痕', '外观缺陷', '8', '150', '供应商B', 'L2', '中班', '2024-01-16', ''],
+    ['BATCH002', '尺寸偏差', '尺寸缺陷', '1', '150', '供应商B', 'L2', '中班', '2024-01-16', ''],
+    ['BATCH002', '功能故障', '性能缺陷', '4', '150', '供应商B', 'L2', '中班', '2024-01-16', '']
   ];
 
   return [headers.join(','), ...sampleData.map(row => row.join(','))].join('\n');

@@ -17,6 +17,7 @@ export function generateRecordsHash(records: DefectRecord[]): string {
     defectType: r.defectType,
     category: r.category,
     count: r.count,
+    sampleSize: r.sampleSize,
     batchId: r.batchId,
     materialSource: r.materialSource
   }));
@@ -35,13 +36,25 @@ export function calculateSimilarity(
   records1: DefectRecord[],
   records2: DefectRecord[]
 ): number {
-  const set1 = new Set(records1.map(r => `${r.defectType}-${r.category}-${r.batchId}`));
-  const set2 = new Set(records2.map(r => `${r.defectType}-${r.category}-${r.batchId}`));
+  const batchSampleSizePairs1 = new Set(
+    records1.map(r => `${r.batchId}-${r.sampleSize || 'unknown'}`)
+  );
+  const batchSampleSizePairs2 = new Set(
+    records2.map(r => `${r.batchId}-${r.sampleSize || 'unknown'}`)
+  );
   
-  const intersection = [...set1].filter(x => set2.has(x));
-  const union = new Set([...set1, ...set2]);
+  const batchIntersection = [...batchSampleSizePairs1].filter(x => batchSampleSizePairs2.has(x));
+  const batchUnion = new Set([...batchSampleSizePairs1, ...batchSampleSizePairs2]);
+  const batchSimilarity = batchUnion.size > 0 ? batchIntersection.length / batchUnion.size : 0;
   
-  return intersection.length / union.size;
+  const detailSet1 = new Set(records1.map(r => `${r.defectType}-${r.category}-${r.batchId}`));
+  const detailSet2 = new Set(records2.map(r => `${r.defectType}-${r.category}-${r.batchId}`));
+  
+  const detailIntersection = [...detailSet1].filter(x => detailSet2.has(x));
+  const detailUnion = new Set([...detailSet1, ...detailSet2]);
+  const detailSimilarity = detailUnion.size > 0 ? detailIntersection.length / detailUnion.size : 0;
+  
+  return batchSimilarity * 0.6 + detailSimilarity * 0.4;
 }
 
 export function findMatchingProject(
@@ -63,6 +76,17 @@ export function findMatchingProject(
     const existingBatchIds = new Set(existingRecords.map(r => r.batchId));
     if ([...newBatchIds].some(id => existingBatchIds.has(id))) {
       matchedFields.push('产品批次');
+    }
+
+    const newSampleSizes = new Set(
+      newRecords.filter(r => r.sampleSize !== undefined).map(r => String(r.sampleSize))
+    );
+    const existingSampleSizes = new Set(
+      existingRecords.filter(r => r.sampleSize !== undefined).map(r => String(r.sampleSize))
+    );
+    if (newSampleSizes.size > 0 && existingSampleSizes.size > 0 && 
+        [...newSampleSizes].some(s => existingSampleSizes.has(s))) {
+      matchedFields.push('抽检数量');
     }
 
     const newMaterials = new Set(newRecords.map(r => r.materialSource));

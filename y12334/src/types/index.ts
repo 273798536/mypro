@@ -24,6 +24,7 @@ export interface DefectRecord {
   defectType: string;
   category: string;
   count: number;
+  sampleSize?: number;
   materialSource: string;
   productionLine: string;
   shift: string;
