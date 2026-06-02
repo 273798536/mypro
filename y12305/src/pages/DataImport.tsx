@@ -374,14 +374,14 @@ function AddUsageRecordForm({ onSuccess, onCancel }: AddUsageRecordFormProps) {
     }
   };
 
-  const autoCalculateTotal = () => {
+  useEffect(() => {
     const peak = peakUsage ? Number(peakUsage) : 0;
     const valley = valleyUsage ? Number(valleyUsage) : 0;
     const flat = flatUsage ? Number(flatUsage) : 0;
     if (peak || valley || flat) {
       setTotalUsage(String(peak + valley + flat));
     }
-  };
+  }, [peakUsage, valleyUsage, flatUsage]);
 
   return (
     <div className="card p-6 bg-slate-50">
@@ -459,10 +459,7 @@ function AddUsageRecordForm({ onSuccess, onCancel }: AddUsageRecordFormProps) {
               min="0"
               className="input"
               value={peakUsage}
-              onChange={(e) => {
-                setPeakUsage(e.target.value);
-                autoCalculateTotal();
-              }}
+              onChange={(e) => setPeakUsage(e.target.value)}
               placeholder="如：300"
             />
           </div>
@@ -476,10 +473,7 @@ function AddUsageRecordForm({ onSuccess, onCancel }: AddUsageRecordFormProps) {
               min="0"
               className="input"
               value={valleyUsage}
-              onChange={(e) => {
-                setValleyUsage(e.target.value);
-                autoCalculateTotal();
-              }}
+              onChange={(e) => setValleyUsage(e.target.value)}
               placeholder="如：200"
             />
           </div>
@@ -493,10 +487,7 @@ function AddUsageRecordForm({ onSuccess, onCancel }: AddUsageRecordFormProps) {
               min="0"
               className="input"
               value={flatUsage}
-              onChange={(e) => {
-                setFlatUsage(e.target.value);
-                autoCalculateTotal();
-              }}
+              onChange={(e) => setFlatUsage(e.target.value)}
               placeholder="如：150"
             />
           </div>
