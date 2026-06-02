@@ -1,0 +1,306 @@
+{
+  "filter_config": {
+    "time_start": "2026-06-01 00:00:00",
+    "time_end": "2026-06-02 00:45:00",
+    "selected_columns": [
+      "主回路",
+      "照明回路",
+      "空调回路"
+    ],
+    "group_by": "D",
+    "group_by_name": "按日",
+    "integration_method": "trapezoidal",
+    "integration_method_name": "梯形法",
+    "exclude_negative": false,
+    "exclude_null": true
+  },
+  "filter_description": "起始时间: 2026-06-01 00:00:00；结束时间: 2026-06-02 00:45:00；已选通道: 主回路, 照明回路, 空调回路；排除空值: 移除 2 条含空值的记录",
+  "data_points": {
+    "before": 100,
+    "after": 98
+  },
+  "unit_validation": {
+    "主回路": {
+      "original_unit": "kW",
+      "standardized_unit": "kW",
+      "category": "power",
+      "conversion_steps": [],
+      "value_range": {
+        "min": -5.2,
+        "max": 67880.5658,
+        "mean": 1899.5624
+      }
+    },
+    "照明回路": {
+      "original_unit": "kW",
+      "standardized_unit": "kW",
+      "category": "power",
+      "conversion_steps": [],
+      "value_range": {
+        "min": 69.215,
+        "max": 174.9932,
+        "mean": 120.5223
+      }
+    },
+    "空调回路": {
+      "original_unit": "kW",
+      "standardized_unit": "kW",
+      "category": "power",
+      "conversion_steps": [],
+      "value_range": {
+        "min": 36.4156,
+        "max": 91.3546,
+        "mean": 62.7104
+      }
+    }
+  },
+  "integration_results": {
+    "主回路": {
+      "total_energy": 47466.8649,
+      "unit": "kWh",
+      "method": "梯形法",
+      "group_results": {
+        "2026-06-01": 47410.7205,
+        "2026-06-02": 56.1444
+      },
+      "calculation_notes": [],
+      "sample_steps": [
+        {
+          "time_start": "2026-06-01T00:00:00.000000000",
+          "time_end": "2026-06-01T00:15:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 82.48357076505616,
+          "power_end": 83.10645210135655,
+          "energy": 20.69875285830159,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(82.4836 + 83.1065) / 2 × 0.250000 = 20.698753"
+        },
+        {
+          "time_start": "2026-06-01T00:15:00.000000000",
+          "time_end": "2026-06-01T00:30:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 83.10645210135655,
+          "power_end": 90.77288230593584,
+          "energy": 21.73491680091155,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(83.1065 + 90.7729) / 2 × 0.250000 = 21.734917"
+        },
+        {
+          "time_start": "2026-06-01T00:30:00.000000000",
+          "time_end": "2026-06-01T00:45:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 90.77288230593584,
+          "power_end": 98.76502295184994,
+          "energy": 23.692238157223223,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(90.7729 + 98.7650) / 2 × 0.250000 = 23.692238"
+        },
+        {
+          "time_start": "2026-06-01T00:45:00.000000000",
+          "time_end": "2026-06-01T01:00:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 98.76502295184994,
+          "power_end": 93.41513520939738,
+          "energy": 24.022519770155917,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(98.7650 + 93.4151) / 2 × 0.250000 = 24.022520"
+        },
+        {
+          "time_start": "2026-06-01T01:00:00.000000000",
+          "time_end": "2026-06-01T01:15:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 93.41513520939738,
+          "power_end": 96.6165530868933,
+          "energy": 23.753961037036333,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(93.4151 + 96.6166) / 2 × 0.250000 = 23.753961"
+        }
+      ]
+    },
+    "照明回路": {
+      "total_energy": 2973.6956,
+      "unit": "kWh",
+      "method": "梯形法",
+      "group_results": {
+        "2026-06-01": 2914.8701,
+        "2026-06-02": 58.8256
+      },
+      "calculation_notes": [],
+      "sample_steps": [
+        {
+          "time_start": "2026-06-01T00:00:00.000000000",
+          "time_end": "2026-06-01T00:15:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 148.6770340635967,
+          "power_end": 156.45371432080051,
+          "energy": 38.14134354804965,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(148.6770 + 156.4537) / 2 × 0.250000 = 38.141344"
+        },
+        {
+          "time_start": "2026-06-01T00:15:00.000000000",
+          "time_end": "2026-06-01T00:30:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 156.45371432080051,
+          "power_end": 156.53543175829412,
+          "energy": 39.12364325988683,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(156.4537 + 156.5354) / 2 × 0.250000 = 39.123643"
+        },
+        {
+          "time_start": "2026-06-01T00:30:00.000000000",
+          "time_end": "2026-06-01T00:45:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 156.53543175829412,
+          "power_end": 151.96150079080695,
+          "energy": 38.562116568637634,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(156.5354 + 151.9615) / 2 × 0.250000 = 38.562117"
+        },
+        {
+          "time_start": "2026-06-01T00:45:00.000000000",
+          "time_end": "2026-06-01T01:00:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 151.96150079080695,
+          "power_end": 155.8444316273148,
+          "energy": 38.47574155226522,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(151.9615 + 155.8444) / 2 × 0.250000 = 38.475742"
+        },
+        {
+          "time_start": "2026-06-01T01:00:00.000000000",
+          "time_end": "2026-06-01T01:15:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 155.8444316273148,
+          "power_end": 158.78582480071324,
+          "energy": 39.3287820535035,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(155.8444 + 158.7858) / 2 × 0.250000 = 39.328782"
+        }
+      ]
+    },
+    "空调回路": {
+      "total_energy": 1518.3506,
+      "unit": "kWh",
+      "method": "梯形法",
+      "group_results": {
+        "2026-06-01": 1468.4413,
+        "2026-06-02": 49.9093
+      },
+      "calculation_notes": [],
+      "sample_steps": [
+        {
+          "time_start": "2026-06-01T00:00:00.000000000",
+          "time_end": "2026-06-01T00:15:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 61.07336208104485,
+          "power_end": 64.8423814985717,
+          "energy": 15.739467947452068,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(61.0734 + 64.8424) / 2 × 0.250000 = 15.739468"
+        },
+        {
+          "time_start": "2026-06-01T00:15:00.000000000",
+          "time_end": "2026-06-01T00:30:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 64.8423814985717,
+          "power_end": 69.48982264349557,
+          "energy": 16.79152551775841,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(64.8424 + 69.4898) / 2 × 0.250000 = 16.791526"
+        },
+        {
+          "time_start": "2026-06-01T00:30:00.000000000",
+          "time_end": "2026-06-01T00:45:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 69.48982264349557,
+          "power_end": 72.32593659065292,
+          "energy": 17.72696990426856,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(69.4898 + 72.3259) / 2 × 0.250000 = 17.726970"
+        },
+        {
+          "time_start": "2026-06-01T00:45:00.000000000",
+          "time_end": "2026-06-01T01:00:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 72.32593659065292,
+          "power_end": 67.72515047722153,
+          "energy": 17.506385883484306,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(72.3259 + 67.7252) / 2 × 0.250000 = 17.506386"
+        },
+        {
+          "time_start": "2026-06-01T01:00:00.000000000",
+          "time_end": "2026-06-01T01:15:00.000000000",
+          "interval_hours": 0.25,
+          "power_start": 67.72515047722153,
+          "power_end": 71.44040830783189,
+          "energy": 17.395694848131676,
+          "formula": "E = (P₁ + P₂) / 2 × Δt",
+          "calculation": "(67.7252 + 71.4404) / 2 × 0.250000 = 17.395695"
+        }
+      ]
+    }
+  },
+  "quality_issues": [
+    {
+      "type": "时间乱序",
+      "severity": "警告",
+      "count": 2,
+      "description": "检测到 2 处时间乱序，时间未按递增顺序排列",
+      "details": {
+        "affected_rows_pct": 2.0,
+        "first_occurrence": "2026-06-01 13:45:00"
+      }
+    },
+    {
+      "type": "缺采样",
+      "severity": "警告",
+      "count": 4,
+      "description": "检测到 1 处采样间隔异常，预计缺失约 4 个采样点（预期间隔 0 days 00:15:00）",
+      "details": {
+        "expected_interval": "0 days 00:15:00",
+        "total_missing_points": 4,
+        "missing_gaps": [
+          {
+            "gap_start": "2026-06-01 18:30:00",
+            "gap_end": "2026-06-01 19:45:00",
+            "gap_duration": "0 days 01:15:00",
+            "expected_missing_points": 4
+          }
+        ],
+        "affected_rows_pct": 3.85
+      }
+    },
+    {
+      "type": "负值读数",
+      "severity": "警告",
+      "count": 2,
+      "description": "检测到 2 个负值读数，涉及 1 个读数通道: 主回路",
+      "details": {
+        "per_column": {
+          "主回路": {
+            "count": 2,
+            "min_value": -5.2,
+            "mean_value": -4.0
+          }
+        },
+        "affected_rows_pct": 2.0
+      }
+    },
+    {
+      "type": "空值读数",
+      "severity": "警告",
+      "count": 2,
+      "description": "检测到 2 个空值读数，涉及 1 个读数通道: 照明回路",
+      "details": {
+        "per_column": {
+          "照明回路": {
+            "count": 2
+          }
+        },
+        "affected_rows_pct": 2.0
+      }
+    }
+  ]
+}
