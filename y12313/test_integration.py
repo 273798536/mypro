@@ -64,7 +64,7 @@ class TestValidator(unittest.TestCase):
                     ScenarioAllocation("D002", 8000, 7800),
                 ],
                 objective_scores={"cost": 120, "emission_reduction": 85, "fairness": 78},
-                constraints=[{"type": "conflict", "description": "生产部冲突"}],
+                constraints=[{"type": "conflict", "description": "生产部冲突", "department_ids": ["D001"]}],
             ),
             ScenarioReport(
                 "S002", "高减排方案",
@@ -74,8 +74,8 @@ class TestValidator(unittest.TestCase):
                 ],
                 objective_scores={"cost": 200, "emission_reduction": 92, "fairness": 60},
                 constraints=[
-                    {"type": "conflict", "description": "生产部冲突"},
-                    {"type": "exclusive", "description": "项目互斥"},
+                    {"type": "conflict", "description": "生产部冲突", "department_ids": ["D001"]},
+                    {"type": "exclusive", "description": "项目互斥", "department_ids": ["D001", "D002"]},
                 ],
                 note_modified=True,
             ),
@@ -104,9 +104,18 @@ class TestValidator(unittest.TestCase):
     def test_overrun_overrides_conflict_and_exclusive(self):
         issues = validate_all(self.departments, self.budgets, self.scenarios)
         overrun_depts = {i.department_id for i in issues if i.severity == "budget_overrun"}
+        overridden = [i for i in issues if i.overridden_by == "budget_overrun"]
+        self.assertGreaterEqual(len(overridden), 1, "预算超限应覆盖同部门的冲突/互斥问题，但未找到任何被覆盖记录")
         for i in issues:
             if i.severity in ("conflict", "exclusive") and i.department_id in overrun_depts:
                 self.assertEqual(i.overridden_by, "budget_overrun")
+
+    def test_conflict_exclusive_have_department_id(self):
+        issues = validate_all(self.departments, self.budgets, self.scenarios)
+        conflict_or_exclusive = [i for i in issues if i.severity in ("conflict", "exclusive")]
+        self.assertGreaterEqual(len(conflict_or_exclusive), 1)
+        for i in conflict_or_exclusive:
+            self.assertIsNotNone(i.department_id, f"{i.severity} 问题 {i.issue_id} 缺少 department_id，覆盖关系无法建立")
 
     def test_overrun_not_overridden_by_conflict(self):
         issues = validate_all(self.departments, self.budgets, self.scenarios)

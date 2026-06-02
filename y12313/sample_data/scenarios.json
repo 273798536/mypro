@@ -11,7 +11,7 @@
     ],
     "objective_scores": {"cost": 120, "emission_reduction": 85, "fairness": 78},
     "constraints": [
-      {"type": "conflict", "description": "生产部减排目标与产能增长冲突"}
+      {"type": "conflict", "description": "生产部减排目标与产能增长冲突", "department_ids": ["D001"]}
     ],
     "note_modified": false,
     "note": "各部门按比例均衡削减"
@@ -28,8 +28,8 @@
     ],
     "objective_scores": {"cost": 200, "emission_reduction": 92, "fairness": 60},
     "constraints": [
-      {"type": "conflict", "description": "生产部减排目标与产能增长冲突"},
-      {"type": "exclusive", "description": "碳捕捉项目与节能改造互斥"}
+      {"type": "conflict", "description": "生产部减排目标与产能增长冲突", "department_ids": ["D001"]},
+      {"type": "exclusive", "description": "碳捕捉项目与节能改造互斥", "department_ids": ["D001", "D002"]}
     ],
     "note_modified": true,
     "note": "原方案为各部门均等削减，后修改为重点部门加码"

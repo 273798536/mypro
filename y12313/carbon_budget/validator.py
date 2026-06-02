@@ -101,8 +101,14 @@ def _check_conflicts(scenarios: List[ScenarioReport]) -> List[Issue]:
     for s in scenarios:
         for c in s.constraints:
             if c.get("type") == "conflict":
-                desc = f"方案 {s.scenario_name}({s.scenario_id}) 存在目标冲突: {c.get('description', '')}"
-                issues.append(Issue(issue_id=_did("conflict", desc), severity="conflict", source="scenario", description=desc, scenario_id=s.scenario_id))
+                dept_ids = c.get("department_ids", [])
+                if dept_ids:
+                    for dept_id in dept_ids:
+                        desc = f"方案 {s.scenario_name}({s.scenario_id}) 存在目标冲突(部门 {dept_id}): {c.get('description', '')}"
+                        issues.append(Issue(issue_id=_did("conflict", desc), severity="conflict", source="scenario", description=desc, department_id=dept_id, scenario_id=s.scenario_id))
+                else:
+                    desc = f"方案 {s.scenario_name}({s.scenario_id}) 存在目标冲突: {c.get('description', '')}"
+                    issues.append(Issue(issue_id=_did("conflict", desc), severity="conflict", source="scenario", description=desc, scenario_id=s.scenario_id))
     return issues
 
 
@@ -111,8 +117,14 @@ def _check_exclusive(scenarios: List[ScenarioReport]) -> List[Issue]:
     for s in scenarios:
         for c in s.constraints:
             if c.get("type") == "exclusive":
-                desc = f"方案 {s.scenario_name}({s.scenario_id}) 存在项目互斥: {c.get('description', '')}"
-                issues.append(Issue(issue_id=_did("exclusive", desc), severity="exclusive", source="scenario", description=desc, scenario_id=s.scenario_id))
+                dept_ids = c.get("department_ids", [])
+                if dept_ids:
+                    for dept_id in dept_ids:
+                        desc = f"方案 {s.scenario_name}({s.scenario_id}) 存在项目互斥(部门 {dept_id}): {c.get('description', '')}"
+                        issues.append(Issue(issue_id=_did("exclusive", desc), severity="exclusive", source="scenario", description=desc, department_id=dept_id, scenario_id=s.scenario_id))
+                else:
+                    desc = f"方案 {s.scenario_name}({s.scenario_id}) 存在项目互斥: {c.get('description', '')}"
+                    issues.append(Issue(issue_id=_did("exclusive", desc), severity="exclusive", source="scenario", description=desc, scenario_id=s.scenario_id))
     return issues
 
 
