@@ -5,8 +5,11 @@ import {
   CorrectionReport,
   createEmptyBoard,
   createEmptyCandidates,
+  DataBatch,
   ErrorDetection,
+  ImportedMaterial,
   initializeCandidates,
+  MaterialType,
   SolutionStep,
   SudokuPuzzle,
 } from '../types';
@@ -16,16 +19,30 @@ import { applyStep } from '../engine/sudokuCore';
 import { getFirstMockDataSet, getMockDataSet, MockDataSet } from '../data/mockData';
 
 interface PuzzleState {
+  currentBatchId: string;
+  batches: Record<string, DataBatch>;
+  importedMaterials: ImportedMaterial[];
+  
   puzzle: SudokuPuzzle;
   steps: SolutionStep[];
   errors: ErrorDetection[];
   report: CorrectionReport | null;
   currentStepIndex: number;
   selectedCell: { row: number; col: number } | null;
+  selectedErrorId: string | null;
   showCandidates: boolean;
   showHeatmap: boolean;
   isAnalyzing: boolean;
+  isMerging: boolean;
   sourceMaterial: string;
+  
+  createNewBatch: () => void;
+  setCurrentBatch: (batchId: string) => void;
+  importMaterial: (type: MaterialType, name: string, source: string, data: any) => string;
+  removeMaterial: (materialId: string) => void;
+  mergeMaterials: () => void;
+  linkErrorToStep: (errorId: string, stepId: string) => void;
+  setSelectedErrorId: (errorId: string | null) => void;
   
   setPuzzle: (puzzle: SudokuPuzzle) => void;
   setCellValue: (row: number, col: number, value: number | null) => void;
@@ -50,6 +67,7 @@ interface PuzzleState {
   
   getCurrentBoard: () => (number | null)[][];
   getCurrentCandidates: () => Set<number>[][];
+  getCurrentBatch: () => DataBatch | null;
 }
 
 const initialPuzzle: SudokuPuzzle = {
@@ -63,19 +81,67 @@ const initialPuzzle: SudokuPuzzle = {
   createdAt: new Date(),
 };
 
+function createEmptyBatch(id: string): DataBatch {
+  return {
+    id,
+    name: `分析批次 ${new Date().toLocaleString('zh-CN')}`,
+    materials: [],
+    mergedPuzzle: { ...initialPuzzle, id: `puzzle-${id}` },
+    mergedSteps: [],
+    mergedErrors: [],
+    mergedReport: null,
+    createdAt: new Date(),
+    isAnalyzed: false,
+  };
+}
+
 export const usePuzzleStore = create<PuzzleState>((set, get) => {
   const firstMock = getFirstMockDataSet();
+  const initialBatchId = `batch-${Date.now()}`;
+  const initialBatch = createEmptyBatch(initialBatchId);
+  
+  if (firstMock) {
+    initialBatch.materials = [
+      {
+        id: 'mock-board',
+        type: 'board',
+        name: firstMock.puzzle.name,
+        source: firstMock.puzzle.source,
+        importedAt: new Date(),
+        data: firstMock.puzzle,
+      },
+      {
+        id: 'mock-steps',
+        type: 'steps',
+        name: '解题步骤',
+        source: firstMock.puzzle.source,
+        importedAt: new Date(),
+        data: firstMock.steps,
+      },
+    ];
+    initialBatch.mergedPuzzle = clonePuzzle(firstMock.puzzle);
+    initialBatch.mergedSteps = [...firstMock.steps];
+    initialBatch.mergedErrors = [...firstMock.errors];
+    initialBatch.mergedReport = firstMock.report;
+    initialBatch.isAnalyzed = true;
+  }
   
   return {
-    puzzle: firstMock?.puzzle || initialPuzzle,
+    currentBatchId: initialBatchId,
+    batches: { [initialBatchId]: initialBatch },
+    importedMaterials: initialBatch.materials,
+    
+    puzzle: firstMock ? clonePuzzle(firstMock.puzzle) : initialPuzzle,
     steps: firstMock?.steps || [],
     errors: firstMock?.errors || [],
     report: firstMock?.report || null,
     currentStepIndex: firstMock?.steps ? firstMock.steps.length - 1 : 0,
     selectedCell: null,
+    selectedErrorId: null,
     showCandidates: true,
     showHeatmap: false,
     isAnalyzing: false,
+    isMerging: false,
     sourceMaterial: firstMock?.puzzle.source || '',
 
     setPuzzle: (puzzle) => set({ puzzle }),
@@ -114,6 +180,143 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
     toggleCandidates: () => set((state) => ({ showCandidates: !state.showCandidates })),
     toggleHeatmap: () => set((state) => ({ showHeatmap: !state.showHeatmap })),
     setSourceMaterial: (source) => set({ sourceMaterial: source }),
+    setSelectedErrorId: (errorId) => set({ selectedErrorId: errorId }),
+
+    createNewBatch: () => {
+      const batchId = `batch-${Date.now()}`;
+      const newBatch = createEmptyBatch(batchId);
+      set((state) => ({
+        batches: { ...state.batches, [batchId]: newBatch },
+        currentBatchId: batchId,
+        importedMaterials: [],
+        puzzle: clonePuzzle(newBatch.mergedPuzzle),
+        steps: [],
+        errors: [],
+        report: null,
+        currentStepIndex: 0,
+        selectedCell: null,
+        selectedErrorId: null,
+      }));
+    },
+
+    setCurrentBatch: (batchId) => {
+      set((state) => {
+        const batch = state.batches[batchId];
+        if (!batch) return state;
+        return {
+          currentBatchId: batchId,
+          importedMaterials: batch.materials,
+          puzzle: clonePuzzle(batch.mergedPuzzle),
+          steps: [...batch.mergedSteps],
+          errors: [...batch.mergedErrors],
+          report: batch.mergedReport,
+          currentStepIndex: batch.mergedSteps.length > 0 ? batch.mergedSteps.length - 1 : 0,
+          selectedCell: null,
+          selectedErrorId: null,
+        };
+      });
+    },
+
+    importMaterial: (type, name, source, data) => {
+      const materialId = `material-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const material: ImportedMaterial = {
+        id: materialId,
+        type,
+        name,
+        source,
+        importedAt: new Date(),
+        data,
+      };
+      set((state) => ({
+        importedMaterials: [...state.importedMaterials, material],
+        batches: {
+          ...state.batches,
+          [state.currentBatchId]: {
+            ...state.batches[state.currentBatchId],
+            materials: [...state.batches[state.currentBatchId].materials, material],
+          },
+        },
+      }));
+      return materialId;
+    },
+
+    removeMaterial: (materialId) => {
+      set((state) => ({
+        importedMaterials: state.importedMaterials.filter((m) => m.id !== materialId),
+      }));
+    },
+
+    mergeMaterials: () => {
+      set({ isMerging: true });
+      setTimeout(() => {
+        const state = get();
+        const materials = state.importedMaterials;
+        
+        let mergedBoard = createEmptyBoard();
+        let mergedCandidates = createEmptyCandidates();
+        let mergedSteps: SolutionStep[] = [];
+        let puzzleName = '合并题目';
+        let puzzleSource = '多材料合并';
+        
+        const boardMaterial = materials.find((m) => m.type === 'board');
+        const candidatesMaterial = materials.find((m) => m.type === 'candidates');
+        const stepsMaterial = materials.find((m) => m.type === 'steps');
+        
+        if (boardMaterial && boardMaterial.data.board) {
+          mergedBoard = cloneBoard(boardMaterial.data.board);
+          puzzleName = boardMaterial.data.name || puzzleName;
+          puzzleSource = boardMaterial.data.source || puzzleSource;
+        }
+        
+        if (candidatesMaterial && candidatesMaterial.data) {
+          mergedCandidates = cloneCandidates(candidatesMaterial.data);
+        } else if (boardMaterial) {
+          mergedCandidates = initializeCandidates(mergedBoard);
+        }
+        
+        if (stepsMaterial && Array.isArray(stepsMaterial.data)) {
+          mergedSteps = stepsMaterial.data;
+        }
+        
+        const mergedPuzzle: SudokuPuzzle = {
+          id: `puzzle-merged-${Date.now()}`,
+          name: puzzleName,
+          difficulty: 'medium',
+          board: mergedBoard,
+          initialBoard: cloneBoard(mergedBoard),
+          candidates: mergedCandidates,
+          source: puzzleSource,
+          createdAt: new Date(),
+        };
+        
+        const errors = analyzeErrors(mergedPuzzle);
+        const report = generateCorrectionReport(mergedPuzzle, errors, puzzleSource);
+        
+        set((state) => ({
+          puzzle: mergedPuzzle,
+          steps: mergedSteps,
+          errors,
+          report,
+          currentStepIndex: mergedSteps.length > 0 ? mergedSteps.length - 1 : 0,
+          isMerging: false,
+          sourceMaterial: puzzleSource,
+          batches: {
+            ...state.batches,
+            [state.currentBatchId]: {
+              ...state.batches[state.currentBatchId],
+              mergedPuzzle,
+              mergedSteps,
+              mergedErrors: errors,
+              mergedReport: report,
+              isAnalyzed: true,
+            },
+          },
+        }));
+      }, 800);
+    },
+
+    linkErrorToStep: (errorId, stepId) => {
+    },
 
     addStep: (step) => set((state) => ({
       steps: [...state.steps, step],
@@ -228,6 +431,11 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
         return state.steps[state.currentStepIndex].candidates;
       }
       return state.puzzle.candidates;
+    },
+
+    getCurrentBatch: () => {
+      const state = get();
+      return state.batches[state.currentBatchId] || null;
     },
   };
 });

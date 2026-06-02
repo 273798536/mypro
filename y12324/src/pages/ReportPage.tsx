@@ -1,5 +1,6 @@
 import React from 'react';
-import { FileText, Lightbulb, AlertCircle, Target, ArrowRight, Sparkles, RefreshCw } from 'lucide-react';
+import { FileText, Lightbulb, AlertCircle, Target, ArrowRight, Sparkles, RefreshCw, Search, PlayCircle, Download, Link2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { SudokuGrid } from '../components/SudokuGrid/SudokuGrid';
 import { usePuzzleStore } from '../stores/usePuzzleStore';
 import {
@@ -9,6 +10,7 @@ import {
 } from '../engine/explanationGenerator';
 
 export const ReportPage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     report,
     puzzle,
@@ -17,17 +19,51 @@ export const ReportPage: React.FC = () => {
     isAnalyzing,
     showCandidates,
     toggleCandidates,
+    currentBatchId,
+    importedMaterials,
   } = usePuzzleStore();
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-serif-sc font-bold text-sudoku-primary mb-2">
-          错因解释报告
-        </h1>
-        <p className="text-gray-600">
-          触发溯源、卡点定位、补救建议，以及"人话"版错误解释
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-serif-sc font-bold text-sudoku-primary mb-2">
+              错因解释报告
+            </h1>
+            <p className="text-gray-600">
+              触发溯源、卡点定位、补救建议，以及"人话"版错误解释
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">
+              批次: {currentBatchId.slice(0, 12)}...
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2 mt-4">
+          <button
+            onClick={() => navigate('/analyze')}
+            className="flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+          >
+            <Search size={14} />
+            <span>查看错误分析</span>
+          </button>
+          <button
+            onClick={() => navigate('/replay')}
+            className="flex items-center space-x-1 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm hover:bg-purple-100 transition-colors"
+          >
+            <PlayCircle size={14} />
+            <span>步骤回放</span>
+          </button>
+          <button
+            onClick={() => navigate('/export')}
+            className="flex items-center space-x-1 px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors"
+          >
+            <Download size={14} />
+            <span>导出报告</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -279,7 +315,7 @@ export const ReportPage: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">材料来源</span>
-                <span className="font-medium text-right">
+                <span className="font-medium text-right text-xs">
                   {puzzle.source}
                 </span>
               </div>
@@ -293,6 +329,28 @@ export const ReportPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {importedMaterials.length > 0 && (
+            <div className="card">
+              <div className="card-header flex items-center space-x-2">
+                <Link2 size={18} />
+                <span>关联材料 ({importedMaterials.length} 份)</span>
+              </div>
+              <div className="space-y-2">
+                {importedMaterials.slice(0, 3).map((material) => (
+                  <div key={material.id} className="p-2 bg-gray-50 rounded-lg text-xs">
+                    <div className="font-medium text-gray-900">{material.name}</div>
+                    <div className="text-gray-500">{material.source}</div>
+                  </div>
+                ))}
+                {importedMaterials.length > 3 && (
+                  <div className="text-xs text-gray-500 text-center">
+                    还有 {importedMaterials.length - 3} 份更多材料
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="card bg-gradient-to-br from-sudoku-primary to-sudoku-dark text-white">
             <div className="font-serif-sc font-bold text-lg mb-2">💡 小贴士</div>

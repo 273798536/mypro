@@ -80,6 +80,29 @@ export interface CorrectionReport {
   generatedAt: Date;
 }
 
+export type MaterialType = 'board' | 'candidates' | 'steps' | 'report';
+
+export interface ImportedMaterial {
+  id: string;
+  type: MaterialType;
+  name: string;
+  source: string;
+  importedAt: Date;
+  data: any;
+}
+
+export interface DataBatch {
+  id: string;
+  name: string;
+  materials: ImportedMaterial[];
+  mergedPuzzle: SudokuPuzzle;
+  mergedSteps: SolutionStep[];
+  mergedErrors: ErrorDetection[];
+  mergedReport: CorrectionReport | null;
+  createdAt: Date;
+  isAnalyzed: boolean;
+}
+
 export interface AnalysisResult {
   puzzle: SudokuPuzzle;
   steps: SolutionStep[];
