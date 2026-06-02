@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>csvParser 修复验证工具</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #1a1a2e; color: #eee; }
+    h1 { color: #ffd166; }
+    .test-case { background: #16213e; border-radius: 8px; padding: 16px; margin: 16px 0; border-left: 4px solid #0f3460; }
+    .test-case.pass { border-left-color: #06d6a0; }
+    .test-case.fail { border-left-color: #ef476f; }
+    .test-name { font-weight: bold; font-size: 16px; margin-bottom: 8px; }
+    .test-input { background: #0f3460; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 12px; margin: 8px 0; white-space: pre-wrap; }
+    .test-output { background: #1a1a2e; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 12px; margin: 8px 0; white-space: pre-wrap; }
+    .status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-left: 8px; }
+    .status.pass { background: #06d6a0; color: #0f3460; }
+    .status.fail { background: #ef476f; color: #fff; }
+    button { background: #e94560; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+    button:hover { background: #d63855; }
+    .summary { font-size: 18px; padding: 16px; border-radius: 8px; margin: 20px 0; }
+    .summary.all-pass { background: #06d6a022; border: 1px solid #06d6a0; }
+    .summary.has-fail { background: #ef476f22; border: 1px solid #ef476f; }
+    code { background: #0f3460; padding: 2px 6px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>csvParser 核心修复验证工具</h1>
+  <p>本页面直接测试 <code>src/utils/csvParser.ts</code> 中的关键修复逻辑，不依赖完整的 React 应用。</p>
+  
+  <button onclick="runAllTests()">运行所有测试</button>
+  
+  <div id="summary"></div>
+  <div id="results"></div>
+
+  <script type="module">
+    // 内联 csvParser.ts 中的关键函数，用于独立测试
+    function parseTimestamp(row, rowIndex, baseTime) {
+      const tsRaw = row['timestamp'] ?? row['time'] ?? row['Time'] ?? row['时间'] ?? row['t'];
+      if (tsRaw === undefined || tsRaw === null || tsRaw === '') {
+        return baseTime + rowIndex * 20;
+      }
+      const tsNum = Number(tsRaw);
+      if (!Number.isFinite(tsNum)) return baseTime + rowIndex * 20;
+      if (tsNum < 1000000000) return baseTime + tsNum * 1000;
+      return tsNum;
+    }
+
+    function parseValue(row) {
+      const vRaw = row['value'] ?? row['acceleration'] ?? row['加速度'] ?? row['disp'] ?? row['displacement'] ?? row['位移'] ?? 0;
+      return Number(vRaw) || 0;
+    }
+
+    function parseSaturated(row) {
+      const s = row['saturated'] ?? row['饱和'];
+      if (s === undefined || s === null || s === '') return false;
+      if (typeof s === 'boolean') return s;
+      const str = String(s).toLowerCase();
+      return str === 'true' || str === '1' || str === 'yes';
+    }
+
+    function detectValueColumn(headers) {
+      const preferred = ['value', 'acceleration', '加速度', 'disp', 'displacement', '位移'];
+      for (const p of preferred) {
+        if (headers.includes(p)) return p;
+      }
+      return null;
+    }
+
+    // 测试用例
+    const testCases = [
+      {
+        name: '测试1: timestamp=0 开头的边界场景（触发原bug的场景）',
+        description: '原bug: ts || Date.now() + records.length * 20 在初始化期引用 records.length',
+        input: [
+          { timestamp: 0, value: 0.1 },
+          { timestamp: 1, value: 0.2 },
+          { timestamp: 2, value: 0.3 },
+          { timestamp: 3, value: 0.4 },
+        ],
+        baseTime: 1700000000000,
+        expected: [
+          { timestamp: 1700000000000, value: 0.1 },
+          { timestamp: 1700000001000, value: 0.2 },
+          { timestamp: 1700000002000, value: 0.3 },
+          { timestamp: 1700000003000, value: 0.4 },
+        ],
+        validate: (result, expected) => {
+          if (result.length !== expected.length) return { pass: false, reason: `长度不匹配: ${result.length} != ${expected.length}` };
+          for (let i = 0; i < result.length; i++) {
+            if (result[i].timestamp !== expected[i].timestamp) {
+              return { pass: false, reason: `第${i}行时间戳错误: ${result[i].timestamp} != ${expected[i].timestamp}` };
+            }
+          }
+          return { pass: true, reason: '所有时间戳正确解析，使用 ts * 1000 转换相对秒' };
+        }
+      },
+      {
+        name: '测试2: 缺失时间列的场景（地震波CSV常见格式）',
+        description: '原bug: records.length 在 map 回调中被引用时 records 尚未初始化完成',
+        input: [
+          { value: 0.5 },
+          { value: 0.8 },
+          { value: 1.2 },
+          { value: 0.9 },
+        ],
+        baseTime: 1700000000000,
+        expected: [
+          { timestamp: 1700000000000, value: 0.5 },
+          { timestamp: 1700000000020, value: 0.8 },
+          { timestamp: 1700000000040, value: 1.2 },
+          { timestamp: 1700000000060, value: 0.9 },
+        ],
+        validate: (result, expected) => {
+          if (result.length !== expected.length) return { pass: false, reason: `长度不匹配` };
+          for (let i = 0; i < result.length; i++) {
+            if (result[i].timestamp !== expected[i].timestamp) {
+              return { pass: false, reason: `第${i}行时间戳错误: ${result[i].timestamp} != ${expected[i].timestamp}。应使用 baseTime + rowIndex * 20` };
+            }
+            if (result[i].value !== expected[i].value) {
+              return { pass: false, reason: `第${i}行值错误` };
+            }
+          }
+          return { pass: true, reason: '时间戳正确使用 rowIndex 生成，无初始化期引用错误' };
+        }
+      },
+      {
+        name: '测试3: 中文列名，无时间戳列',
+        description: '地震波CSV常使用中文列名',
+        input: [
+          { 加速度: 0.1, 饱和: 'false' },
+          { 加速度: 0.3, 饱和: 'false' },
+          { 加速度: 0.5, 饱和: 'true' },
+        ],
+        baseTime: 1700000000000,
+        expected: [
+          { timestamp: 1700000000000, value: 0.1, saturated: false },
+          { timestamp: 1700000000020, value: 0.3, saturated: false },
+          { timestamp: 1700000000040, value: 0.5, saturated: true },
+        ],
+        validate: (result, expected) => {
+          for (let i = 0; i < result.length; i++) {
+            if (result[i].timestamp !== expected[i].timestamp) return { pass: false, reason: `第${i}行时间戳错误` };
+            if (result[i].value !== expected[i].value) return { pass: false, reason: `第${i}行值错误` };
+            if (result[i].saturated !== expected[i].saturated) return { pass: false, reason: `第${i}行saturated错误` };
+          }
+          return { pass: true, reason: '中文列名正确识别，饱和列正确解析' };
+        }
+      },
+      {
+        name: '测试4: time列名格式（非timestamp）',
+        input: [
+          { time: 0.00, value: 0.0 },
+          { time: 0.02, value: 0.1 },
+          { time: 0.04, value: 0.2 },
+        ],
+        baseTime: 1700000000000,
+        expected: [
+          { timestamp: 1700000000000, value: 0.0 },
+          { timestamp: 1700000000020, value: 0.1 },
+          { timestamp: 1700000000040, value: 0.2 },
+        ],
+        validate: (result, expected) => {
+          for (let i = 0; i < result.length; i++) {
+            if (Math.abs(result[i].timestamp - expected[i].timestamp) > 1) {
+              return { pass: false, reason: `第${i}行时间戳错误: ${result[i].timestamp}` };
+            }
+          }
+          return { pass: true, reason: 'time列名正确识别，秒转毫秒正确' };
+        }
+      },
+      {
+        name: '测试5: 混合格式，部分行缺失时间戳',
+        input: [
+          { timestamp: 1700000000000, value: 0.0 },
+          { value: 0.1 },
+          { timestamp: 1700000000040, value: 0.2 },
+          { value: 0.3 },
+        ],
+        baseTime: 1700000000000,
+        expected: [
+          { timestamp: 1700000000000, value: 0.0 },
+          { timestamp: 1700000000020, value: 0.1 },
+          { timestamp: 1700000000040, value: 0.2 },
+          { timestamp: 1700000000060, value: 0.3 },
+        ],
+        validate: (result, expected) => {
+          for (let i = 0; i < result.length; i++) {
+            if (result[i].timestamp !== expected[i].timestamp) {
+              return { pass: false, reason: `第${i}行时间戳错误: ${result[i].timestamp} != ${expected[i].timestamp}` };
+            }
+          }
+          return { pass: true, reason: '混合格式正确处理，缺失行使用rowIndex生成时间戳' };
+        }
+      },
+      {
+        name: '测试6: 空值和无效值处理',
+        input: [
+          { timestamp: '', value: 0.1 },
+          { timestamp: 'invalid', value: 0.2 },
+          { timestamp: null, value: 0.3 },
+          { timestamp: 0, value: 0.4 },
+        ],
+        baseTime: 1700000000000,
+        expected: [
+          { timestamp: 1700000000000, value: 0.1 },
+          { timestamp: 1700000000020, value: 0.2 },
+          { timestamp: 1700000000040, value: 0.3 },
+          { timestamp: 1700000000000, value: 0.4 },
+        ],
+        validate: (result, expected) => {
+          for (let i = 0; i < result.length; i++) {
+            if (result[i].timestamp !== expected[i].timestamp) {
+              return { pass: false, reason: `第${i}行时间戳错误: ${result[i].timestamp} != ${expected[i].timestamp}` };
+            }
+          }
+          return { pass: true, reason: '空值、无效值、null正确处理' };
+        }
+      },
+    ];
+
+    function runTest(testCase) {
+      const results = [];
+      for (let i = 0; i < testCase.input.length; i++) {
+        const row = testCase.input[i];
+        const record = {
+          timestamp: parseTimestamp(row, i, testCase.baseTime),
+          value: parseValue(row),
+          saturated: parseSaturated(row),
+        };
+        results.push(record);
+      }
+      return testCase.validate(results, testCase.expected);
+    }
+
+    function formatJSON(obj) {
+      return JSON.stringify(obj, null, 2);
+    }
+
+    window.runAllTests = function() {
+      const resultsDiv = document.getElementById('results');
+      const summaryDiv = document.getElementById('summary');
+      resultsDiv.innerHTML = '';
+      
+      let passCount = 0;
+      let failCount = 0;
+      
+      testCases.forEach((testCase, index) => {
+        const result = runTest(testCase);
+        const testDiv = document.createElement('div');
+        testDiv.className = `test-case ${result.pass ? 'pass' : 'fail'}`;
+        
+        const inputStr = testCase.input.map((row, i) => `行${i}: ${JSON.stringify(row)}`).join('\n');
+        const outputStr = result.reason;
+        
+        testDiv.innerHTML = `
+          <div class="test-name">
+            ${testCase.name}
+            <span class="status ${result.pass ? 'pass' : 'fail'}">${result.pass ? '通过' : '失败'}</span>
+          </div>
+          <div style="color: #aaa; font-size: 13px; margin: 4px 0;">${testCase.description}</div>
+          <div class="test-input">输入数据:\n${inputStr}</div>
+          <div class="test-output">测试结果: ${outputStr}</div>
+        `;
+        
+        resultsDiv.appendChild(testDiv);
+        
+        if (result.pass) passCount++;
+        else failCount++;
+      });
+      
+      const allPass = failCount === 0;
+      summaryDiv.className = `summary ${allPass ? 'all-pass' : 'has-fail'}`;
+      summaryDiv.innerHTML = `
+        <strong>测试结果汇总:</strong>
+        <span style="color: #06d6a0;">✅ 通过 ${passCount}</span> /
+        <span style="color: #ef476f;">❌ 失败 ${failCount}</span>
+        ${allPass ? '<span style="margin-left: 16px;">🎉 所有核心修复验证通过！</span>' : ''}
+      `;
+    };
+
+    runAllTests();
+  </script>
+</body>
+</html>

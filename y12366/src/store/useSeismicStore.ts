@@ -336,6 +336,11 @@ export const useSeismicStore = create<SeismicState>()(
       displacementConclusion: '',
       dataLoaded: false,
     })
+    try {
+      localStorage.removeItem('seismic-store')
+    } catch {
+      // ignore
+    }
   },
 
   updateAlignmentOffset: (channel, value) => {
@@ -350,6 +355,7 @@ export const useSeismicStore = create<SeismicState>()(
 }),
     {
       name: 'seismic-store',
+      version: 1,
       partialize: (state) => ({
         accelerationData: state.accelerationData,
         displacementData: state.displacementData,
@@ -361,6 +367,50 @@ export const useSeismicStore = create<SeismicState>()(
         displacementConclusion: state.displacementConclusion,
         dataLoaded: state.dataLoaded,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          if (!Array.isArray(state.accelerationData)) state.accelerationData = []
+          if (!Array.isArray(state.displacementData)) state.displacementData = []
+          if (!Array.isArray(state.damagePhotos)) state.damagePhotos = []
+          if (!Array.isArray(state.peakExtractions)) state.peakExtractions = []
+          if (!Array.isArray(state.conflicts)) state.conflicts = []
+          if (!Array.isArray(state.traceLinks)) state.traceLinks = []
+          if (typeof state.displacementConclusion !== 'string') state.displacementConclusion = ''
+          if (typeof state.dataLoaded !== 'boolean') state.dataLoaded = false
+          if (!state.playback) {
+            state.playback = {
+              isPlaying: false,
+              currentTime: 0,
+              speed: 1,
+              startTime: 0,
+              endTime: 0,
+            }
+          }
+        }
+      },
+      migrate: (persistedState: unknown, version: number) => {
+        if (version === 0) {
+          return {
+            accelerationData: [],
+            displacementData: [],
+            damagePhotos: [],
+            alignmentResult: null,
+            peakExtractions: [],
+            conflicts: [],
+            traceLinks: [],
+            displacementConclusion: '',
+            dataLoaded: false,
+            playback: {
+              isPlaying: false,
+              currentTime: 0,
+              speed: 1,
+              startTime: 0,
+              endTime: 0,
+            },
+          }
+        }
+        return persistedState as SeismicState
+      },
     }
   )
 )
