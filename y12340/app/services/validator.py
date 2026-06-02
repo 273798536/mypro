@@ -89,25 +89,41 @@ class DataValidator:
         if len(data_points) < 3:
             return None
 
-        timestamps = sorted([p["timestamp"] for p in data_points])
+        indexed_points = [(i, p["timestamp"]) for i, p in enumerate(data_points)]
+        indexed_points.sort(key=lambda x: x[1])
+        original_indices, timestamps = zip(*indexed_points)
         intervals = np.diff(timestamps)
 
         if len(intervals) == 0:
             return None
 
         median_interval = np.median(intervals)
+        if median_interval == 0:
+            return ValidationIssue(
+                check_type="sampling_gaps",
+                passed=False,
+                message="⚠️ 发现多个数据点有相同的时间戳，这会导致拟合失败。",
+                affected_points=list(range(len(data_points))),
+                severity="error"
+            )
+
         threshold = median_interval * self.tolerance_factor
 
         gap_points = []
         for i, interval in enumerate(intervals):
             if interval > threshold:
-                gap_points.extend([i, i + 1])
+                gap_points.append(original_indices[i])
+                gap_points.append(original_indices[i + 1])
 
         gap_points = sorted(list(set(gap_points)))
 
         if gap_points:
             gap_count = len([i for i in range(len(intervals)) if intervals[i] > threshold])
-            message = (f"⚠️ 发现 {gap_count} 处采样间隔异常，影响了第 {min(gap_points)+1} 到第 {max(gap_points)+1} 个数据点。"
+            affected_str = ', '.join([str(p + 1) for p in gap_points[:5]])
+            if len(gap_points) > 5:
+                affected_str += f' 等{len(gap_points)}个'
+            
+            message = (f"⚠️ 发现 {gap_count} 处采样间隔异常，影响了第 {affected_str} 个数据点。"
                       f"正常间隔约 {median_interval:.3f}秒，这些地方间隔超过了 {threshold:.3f}秒，"
                       f"可能是记录时漏掉了或者仪器暂停了，会影响曲线拟合的准确性。")
 
@@ -203,33 +219,48 @@ class DataValidator:
         if len(data_points) < 5:
             return None
 
-        displacements = [p["displacement"] for p in data_points]
-        timestamps = [p["timestamp"] for p in data_points]
+        indexed_points = [(i, p["timestamp"], p["displacement"]) for i, p in enumerate(data_points)]
+        indexed_points.sort(key=lambda x: x[1])
+        original_indices, timestamps, displacements = zip(*indexed_points)
+        
+        displacements = np.array(displacements)
+        n = len(displacements)
+        
+        window_size = min(5, n // 5)
+        if window_size < 3:
+            window_size = 3
+        
+        deviations = np.zeros(n)
+        for i in range(n):
+            start = max(0, i - window_size)
+            end = min(n, i + window_size + 1)
+            local_values = displacements[start:end]
+            local_median = np.median(local_values)
+            local_mad = np.median(np.abs(local_values - local_median))
+            
+            if local_mad > 0:
+                deviations[i] = abs(displacements[i] - local_median) / (local_mad + 1e-10)
+            else:
+                deviations[i] = 0
+        
+        zscore_threshold = 3.0
+        outlier_mask = deviations > zscore_threshold
+        outlier_indices_sorted = [i for i in range(n) if outlier_mask[i]]
+        outlier_indices_original = [original_indices[i] for i in outlier_indices_sorted]
 
-        sorted_pairs = sorted(zip(timestamps, displacements), key=lambda x: x[0])
-        _, sorted_disp = zip(*sorted_pairs)
-
-        Q1 = np.percentile(sorted_disp, 25)
-        Q3 = np.percentile(sorted_disp, 75)
-        IQR = Q3 - Q1
-
-        lower_bound = Q1 - 1.5 * IQR
-        upper_bound = Q3 + 1.5 * IQR
-
-        outlier_indices = []
-        for i, disp in enumerate(sorted_disp):
-            if disp < lower_bound or disp > upper_bound:
-                outlier_indices.append(i)
-
-        if outlier_indices:
-            message = (f"❗ 发现 {len(outlier_indices)} 个异常点（第 {', '.join([str(i+1) for i in outlier_indices])} 个）"
-                      f"数值偏离正常范围太多。可能是手抖了、仪器跳数了或者录入错了，建议核对一下。")
+        if outlier_indices_original:
+            affected_str = ', '.join([str(p + 1) for p in sorted(outlier_indices_original)[:5]])
+            if len(outlier_indices_original) > 5:
+                affected_str += f' 等{len(outlier_indices_original)}个'
+            
+            message = (f"❗ 发现 {len(outlier_indices_original)} 个异常点（第 {affected_str} 个）"
+                      f"数值偏离周围点太多。可能是手抖了、仪器跳数了或者录入错了，建议核对一下。")
 
             return ValidationIssue(
                 check_type="outliers",
                 passed=False,
                 message=message,
-                affected_points=outlier_indices,
+                affected_points=sorted(outlier_indices_original),
                 severity="warning"
             )
 

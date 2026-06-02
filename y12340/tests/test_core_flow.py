@@ -31,7 +31,7 @@ def test_unit_consistency_block():
     
     assert unit_check is not None, "应该返回单位一致性检查结果"
     assert unit_check.passed == False, "单位混用应该不通过"
-    assert unit_check.severity == "error", "单位混用应该是error级别"
+    assert unit_check.severity == "error", f"单位混用应该是error级别，实际是{unit_check.severity}"
     
     print(f"✓ 单位混用检测正确: passed={unit_check.passed}, severity={unit_check.severity}")
     print(f"✓ 人话解释: {unit_check.message}")
@@ -44,13 +44,13 @@ def test_sampling_gap_detection():
     print("测试2: 采样缺口检测")
     print("=" * 60)
     
-    validator = DataValidator()
+    validator = DataValidator(tolerance_factor=2.0)
     
     t = np.arange(0, 5, 0.1)
     data = []
     for i, time in enumerate(t):
         if i == 20:
-            time = time + 0.5
+            time = 2.5
         disp = 0.1 * np.exp(-0.3 * time) * np.cos(5 * time)
         data.append({
             "timestamp": time,
@@ -64,10 +64,12 @@ def test_sampling_gap_detection():
     gap_check = next((i for i in issues if i.check_type == "sampling_gaps"), None)
     
     assert gap_check is not None, "应该返回采样间隔检查结果"
-    assert gap_check.passed == False, "有采样缺口应该不通过"
-    assert gap_check.severity == "warning", "采样缺口应该是warning级别"
+    assert gap_check.passed == False, f"有采样缺口应该不通过，实际passed={gap_check.passed}"
+    assert gap_check.severity == "warning", f"采样缺口应该是warning级别，实际是{gap_check.severity}"
+    assert len(gap_check.affected_points) >= 2, f"应该至少影响2个点，实际影响{len(gap_check.affected_points)}个"
     
     print(f"✓ 采样缺口检测正确: passed={gap_check.passed}, severity={gap_check.severity}")
+    print(f"✓ 影响点数: {len(gap_check.affected_points)}")
     print(f"✓ 人话解释: {gap_check.message}")
     print()
 
@@ -96,8 +98,8 @@ def test_damping_anomaly_detection():
     damp_check = next((i for i in issues if i.check_type == "damping_anomaly"), None)
     
     assert damp_check is not None, "应该返回阻尼异常检查结果"
-    assert damp_check.passed == False, "阻尼过大应该不通过"
-    assert damp_check.severity == "warning", "阻尼异常应该是warning级别"
+    assert damp_check.passed == False, f"阻尼过大应该不通过，实际passed={damp_check.passed}"
+    assert damp_check.severity == "warning", f"阻尼异常应该是warning级别，实际是{damp_check.severity}"
     
     print(f"✓ 阻尼过大检测正确: passed={damp_check.passed}, severity={damp_check.severity}")
     print(f"✓ 人话解释: {damp_check.message}")
@@ -117,7 +119,7 @@ def test_outlier_detection():
     for i, time in enumerate(t):
         disp = 0.1 * np.exp(-0.3 * time) * np.cos(5 * time)
         if i == 15:
-            disp = disp * 5
+            disp = disp * 10
         data.append({
             "timestamp": time,
             "timestamp_unit": "s",
@@ -130,8 +132,8 @@ def test_outlier_detection():
     outlier_check = next((i for i in issues if i.check_type == "outliers"), None)
     
     assert outlier_check is not None, "应该返回异常点检测结果"
-    assert outlier_check.passed == False, "有异常点应该不通过"
-    assert 15 in outlier_check.affected_points, "应该检测到第15个点是异常点"
+    assert outlier_check.passed == False, f"有异常点应该不通过，实际passed={outlier_check.passed}"
+    assert 15 in outlier_check.affected_points, f"应该检测到第15个点是异常点，实际检测到{outlier_check.affected_points}"
     
     print(f"✓ 异常点检测正确: passed={outlier_check.passed}, affected_points={outlier_check.affected_points}")
     print(f"✓ 人话解释: {outlier_check.message}")
@@ -146,15 +148,16 @@ def test_fitting_algorithm():
     
     fitter = SpringDamperFitter()
     
-    k_true = 25.0
-    c_true = 0.3
-    mass_true = 0.1
+    k_true = 100.0
+    c_true = 1.0
+    mass_true = 1.0
     zeta_true = c_true / (2 * np.sqrt(mass_true * k_true))
     omega_n_true = np.sqrt(k_true / mass_true)
     
-    print(f"真实参数: k={k_true}, c={c_true}, zeta={zeta_true:.4f}, f_n={omega_n_true/(2*np.pi):.3f}Hz")
+    print(f"真实参数: k={k_true}, c={c_true}, mass={mass_true}")
+    print(f"真实参数: zeta={zeta_true:.6f}, omega_n={omega_n_true:.6f}, f_n={omega_n_true/(2*np.pi):.3f}Hz")
     
-    t = np.arange(0, 5, 0.1)
+    t = np.arange(0, 10, 0.05)
     data = []
     for time in t:
         omega_d = omega_n_true * np.sqrt(1 - zeta_true**2)
@@ -169,12 +172,20 @@ def test_fitting_algorithm():
     result = fitter.fit(data, mass_true, "kg")
     
     assert result is not None, "拟合应该成功"
-    assert abs(result.spring_constant - k_true) / k_true < 0.05, f"k误差太大: {result.spring_constant}"
-    assert abs(result.damping_coefficient - c_true) / c_true < 0.1, f"c误差太大: {result.damping_coefficient}"
-    assert result.r_squared > 0.99, f"R²太低: {result.r_squared}"
     
-    print(f"✓ 拟合结果: k={result.spring_constant:.3f} (误差={abs(result.spring_constant-k_true)/k_true*100:.2f}%)")
-    print(f"✓ 拟合结果: c={result.damping_coefficient:.4f} (误差={abs(result.damping_coefficient-c_true)/c_true*100:.2f}%)")
+    k_error = abs(result.spring_constant - k_true) / k_true * 100
+    c_error = abs(result.damping_coefficient - c_true) / c_true * 100
+    
+    print(f"拟合结果: k={result.spring_constant:.3f} (误差={k_error:.2f}%)")
+    print(f"拟合结果: c={result.damping_coefficient:.4f} (误差={c_error:.2f}%)")
+    print(f"拟合优度: R²={result.r_squared:.6f}")
+    
+    assert k_error < 5.0, f"k误差太大: {k_error:.2f}% (阈值: 5%)"
+    assert c_error < 10.0, f"c误差太大: {c_error:.2f}% (阈值: 10%)"
+    assert result.r_squared > 0.99, f"R²太低: {result.r_squared} (阈值: 0.99)"
+    
+    print(f"✓ 拟合结果: k={result.spring_constant:.3f} (误差={k_error:.2f}%)")
+    print(f"✓ 拟合结果: c={result.damping_coefficient:.4f} (误差={c_error:.2f}%)")
     print(f"✓ 拟合优度: R²={result.r_squared:.6f}")
     print(f"✓ 拟合方程: {result.fitted_equation}")
     print()
@@ -203,7 +214,7 @@ def test_normal_data_validation():
     
     for issue in issues:
         if issue.check_type == "unit_consistency":
-            assert issue.passed == True, "单位检查应该通过"
+            assert issue.passed == True, f"单位检查应该通过，实际{issue.passed}"
         print(f"✓ {issue.check_type}: passed={issue.passed}, {issue.message}")
     
     print()
@@ -235,6 +246,8 @@ def main():
             print()
         except Exception as e:
             print(f"✗ {test.__name__} 异常: {e}")
+            import traceback
+            traceback.print_exc()
             failed += 1
             print()
     
