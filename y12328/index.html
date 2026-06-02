@@ -562,6 +562,15 @@ var DataManager = {
     return this.versions[this.currentVersion] || [];
   },
 
+  get allSamples(){
+    var all = [];
+    var self = this;
+    Object.keys(this.versions).sort(function(a,b){return Number(a)-Number(b)}).forEach(function(v){
+      all = all.concat(self.versions[v]);
+    });
+    return all;
+  },
+
   get previous(){
     var vs = Object.keys(this.versions).map(Number).sort(function(a,b){return b-a});
     var idx = vs.indexOf(this.currentVersion);
@@ -622,9 +631,6 @@ var DataManager = {
   },
 
   importData: function(rows, config){
-    var v = config.version || 1;
-    if(!this.versions[v]) this.versions[v] = [];
-
     var featureKeys = config.featureKeys || [];
     var featureLabels = config.featureLabels || {};
     var directionMap = config.directionMap || {};
@@ -640,6 +646,12 @@ var DataManager = {
 
     var imported = 0;
     var skipped = 0;
+    var newVersions = new Set();
+    var maxVersion = 0;
+
+    Object.keys(this.versions).forEach(function(v){
+      maxVersion = Math.max(maxVersion, Number(v));
+    });
 
     rows.forEach(function(row){
       if(!row[config.idCol]){
@@ -651,6 +663,17 @@ var DataManager = {
         skipped++;
         return;
       }
+
+      var v = config.version || 1;
+      if(config.versionCol && row[config.versionCol] != null && row[config.versionCol] !== ''){
+        var rowVer = parseInt(row[config.versionCol]);
+        if(!isNaN(rowVer) && rowVer > 0){
+          v = rowVer;
+        }
+      }
+
+      if(!this.versions[v]) this.versions[v] = [];
+      newVersions.add(v);
 
       var features = {};
       featureKeys.forEach(function(k){
@@ -680,7 +703,12 @@ var DataManager = {
       imported++;
     }.bind(this));
 
-    this.currentVersion = v;
+    var latestVersion = 0;
+    newVersions.forEach(function(v){
+      latestVersion = Math.max(latestVersion, Number(v));
+    });
+    if(latestVersion === 0) latestVersion = config.version || 1;
+    this.currentVersion = latestVersion;
     this.isDemo = false;
     this.meta = {
       importedAt: new Date().toISOString(),
@@ -693,7 +721,7 @@ var DataManager = {
     this.updateUI();
     this.renderVersionSelector();
 
-    return {imported: imported, skipped: skipped};
+    return {imported: imported, skipped: skipped, versions: Array.from(newVersions)};
   },
 
   clearAll: function(){
@@ -793,16 +821,16 @@ function checkSparse(threshold){
   var sparse = [];
   var minReq = 5;
   for(var g in groups){
-    if(groups[g] < minReq) sparse.push({group:g, count:groups[g], minReq:minReq});
+    if(groups[g] < minReq) sparse.push({group:g, count:groups[g], minReq:minReq, version: DataManager.currentVersion});
   }
   THRESHOLD_STATE.sparseRecords = sparse;
   var banner = document.getElementById('sparse-banner');
   var msg = document.getElementById('sparse-msg');
   if(sparse.length > 0){
     banner.style.display = 'flex';
-    msg.textContent = '分组稀疏警告：'+sparse.map(function(s){return '分组'+s.group+'仅'+s.count+'人（最低要求'+s.minReq+'人）'}).join('；');
+    msg.textContent = 'v'+DataManager.currentVersion+' 分组稀疏警告：'+sparse.map(function(s){return '分组'+s.group+'仅'+s.count+'人（最低要求'+s.minReq+'人）'}).join('；');
     sparse.forEach(function(s){
-      addEvidence('sparse','分组'+s.group+'样本数'+s.count+'，低于最低要求'+s.minReq+'（阈值='+threshold.toFixed(2)+'）');
+      addEvidence('sparse','v'+s.version+' 分组'+s.group+'样本数'+s.count+'，低于最低要求'+s.minReq+'（阈值='+threshold.toFixed(2)+'）');
     });
   } else {
     banner.style.display = 'none';
@@ -877,7 +905,10 @@ var ImportPanel = {
     if(!this.pendingData || !this.pendingConfig) return;
     var result = DataManager.importData(this.pendingData, this.pendingConfig);
     closeModal('import-modal');
-    addEvidence('import','导入版本'+this.pendingConfig.version+'数据：'+result.imported+'条成功，'+result.skipped+'条跳过');
+    var verStr = result.versions && result.versions.length > 0
+      ? 'v'+result.versions.sort(function(a,b){return Number(a)-Number(b)}).join('/v')
+      : this.pendingConfig.version;
+    addEvidence('import','导入版本'+verStr+'数据：'+result.imported+'条成功，'+result.skipped+'条跳过');
     this.pendingData = null;
     this.pendingConfig = null;
     SimPanel.init();
@@ -900,11 +931,28 @@ var ImportPanel = {
       return '<tr>'+allCols.map(function(c){return '<td>'+(row[c] != null ? row[c] : '')+'</td>'}).join('')+'</tr>';
     }).join('')+'</tbody>';
 
+    var versionInfo = '';
+    if(config.versionCol){
+      var versionCounts = {};
+      rows.forEach(function(row){
+        var v = row[config.versionCol];
+        if(v != null && v !== ''){
+          versionCounts[v] = (versionCounts[v] || 0) + 1;
+        }
+      });
+      var versions = Object.keys(versionCounts).sort(function(a,b){return Number(a)-Number(b)});
+      var maxVer = versions.length > 0 ? versions[versions.length - 1] : config.version;
+      var versionDetails = versions.map(function(v){return 'v'+v+': '+versionCounts[v]+'条'}).join(', ');
+      versionInfo = '<span>检测到版本：'+versionDetails+'</span><span>默认查看：v'+maxVer+'</span>';
+    } else {
+      versionInfo = '<span>版本：'+config.version+'</span>';
+    }
+
     document.getElementById('import-preview-table').innerHTML = thead + tbody;
     document.getElementById('import-preview-meta').innerHTML =
       '<span>共 '+rows.length+' 条</span>' +
       '<span>特征列：'+(config.featureKeys || []).join(', ')+'</span>' +
-      '<span>版本：'+config.version+'</span>';
+      versionInfo;
     document.getElementById('import-result').style.display = 'block';
   },
 
@@ -1366,7 +1414,7 @@ var ExportPanel = {
     var t = THRESHOLD_STATE.current;
     type = type || this.currentType;
     if(type === 'full'){
-      return DataManager.current.map(function(s){
+      return DataManager.allSamples.map(function(s){
         var g = DataManager.getGroup(s.modelScore,t);
         var row = {
           id:s.id, name:s.name, version:s.version,
@@ -1374,7 +1422,7 @@ var ExportPanel = {
           group:g, inconsistent:s.inconsistent?'是':'否',
           pass:s.modelScore<t?'通过':'拒绝',
           leak:DataManager.crossLeak.indexOf(s.id)!==-1?'是':'否',
-          sparseGroup:THRESHOLD_STATE.sparseRecords.some(function(sr){return sr.group===g})?'是':'否',
+          sparseGroup:THRESHOLD_STATE.sparseRecords.some(function(sr){return sr.group===g && sr.version===s.version})?'是':'否',
           threshold:t.toFixed(2)
         };
         Object.keys(s.features).forEach(function(k){
@@ -1408,14 +1456,20 @@ var ExportPanel = {
     }
     if(type === 'leaks'){
       return DataManager.crossLeak.map(function(id,i){
-        var s = DataManager.current.find(function(x){return x.id===id});
-        return {序号:i+1,客户ID:id,客户名称:s?s.name:'',版本:'跨版本重复',阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN')};
+        var s = DataManager.allSamples.find(function(x){return x.id===id});
+        var versions = [];
+        Object.keys(DataManager.versions).forEach(function(v){
+          if(DataManager.versions[v].some(function(x){return x.id===id})){
+            versions.push('v'+v);
+          }
+        });
+        return {序号:i+1,客户ID:id,客户名称:s?s.name:'',出现版本:versions.join(','),阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN')};
       });
     }
     if(type === 'inconsist'){
-      return DataManager.current.filter(function(s){return s.inconsistent}).map(function(s){
+      return DataManager.allSamples.filter(function(s){return s.inconsistent}).map(function(s){
         var g = DataManager.getGroup(s.modelScore,t);
-        return {客户ID:s.id,客户名称:s.name,模型分数:s.modelScore,特征分数:s.featureScore,差值:+(s.modelScore-s.featureScore).toFixed(4),分组:g,阈值:t.toFixed(2)};
+        return {客户ID:s.id,客户名称:s.name,版本:s.version,模型分数:s.modelScore,特征分数:s.featureScore,差值:+(s.modelScore-s.featureScore).toFixed(4),分组:g,阈值:t.toFixed(2)};
       });
     }
     return [];
@@ -1513,7 +1567,7 @@ var ExportPanel = {
     var data = this.getData('leaks');
     if(data.length===0){
       var t = THRESHOLD_STATE.current;
-      data.push({序号:1,客户ID:'-',客户名称:'-',版本:'-',阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN'),备注:'导入多个版本后可检测泄漏'});
+      data.push({序号:1,客户ID:'-',客户名称:'-',出现版本:'-',阈值:t.toFixed(2),时间:new Date().toLocaleString('zh-CN'),备注:'导入多个版本后可检测泄漏'});
     }
     this.download('阈值解释器_泄漏记录.csv', data);
   },
