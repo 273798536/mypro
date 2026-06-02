@@ -1,0 +1,52 @@
+[
+  {
+    "id": "st_001",
+    "name": "朝阳门店",
+    "address": "北京市朝阳区建国路",
+    "latitude": 39.9142,
+    "longitude": 116.4374,
+    "priority": 1,
+    "source": "test_script",
+    "version": "v20260603_024104"
+  },
+  {
+    "id": "st_002",
+    "name": "海淀门店",
+    "address": "北京市海淀区中关村",
+    "latitude": 39.9699,
+    "longitude": 116.3281,
+    "priority": 2,
+    "source": "test_script",
+    "version": "v20260603_024104"
+  },
+  {
+    "id": "st_003",
+    "name": "通州门店",
+    "address": "北京市通州区新华大街",
+    "latitude": 39.9185,
+    "longitude": 116.6768,
+    "priority": 1,
+    "source": "test_script",
+    "version": "v20260603_024104"
+  },
+  {
+    "id": "st_004",
+    "name": "西城门店",
+    "address": "北京市西城区西单",
+    "latitude": 39.9147,
+    "longitude": 116.3789,
+    "priority": 3,
+    "source": "test_script",
+    "version": "v20260603_024104"
+  },
+  {
+    "id": "st_005",
+    "name": "东城门店",
+    "address": "北京市东城区王府井",
+    "latitude": 39.9137,
+    "longitude": 116.4109,
+    "priority": 2,
+    "source": "test_script",
+    "version": "v20260603_024104"
+  }
+]

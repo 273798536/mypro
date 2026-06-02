@@ -63,32 +63,58 @@ def test_full_workflow():
         print(f"   ✗ 优化失败: {result.message}")
         return False
     
-    print(f"\n5️⃣  ★ 车辆容量LP约束验证 ★")
-    route_caps = {}
-    for wh in dm.warehouses.values():
-        cap = optimizer._get_warehouse_route_capacity(wh.id, vehicles)
-        route_caps[wh.id] = cap
-    
+    print(f"\n5️⃣  ★ 全局车辆容量LP约束验证（单车单趟级） ★")
+    print(f"   ▶ 约束1: 每辆车每趟只能服务一条路线")
     from collections import defaultdict
-    route_totals = defaultdict(float)
-    for assign in result.assignments:
-        route_totals[(assign["warehouse_id"], assign["store_id"])] += assign["quantity"]
+    vehicle_trip_routes = defaultdict(set)
+    for va in result.vehicle_assignments:
+        key = (va["vehicle_id"], va["trip_number"])
+        vehicle_trip_routes[key].add((va["warehouse_id"], va["store_id"]))
     
-    all_within_cap = True
-    for (wh_id, st_id), total_qty in route_totals.items():
-        wh = dm.warehouses.get(wh_id)
-        cap = route_caps.get(wh_id, 0)
-        st_name = next((s.name for s in dm.stores.values() if s.id == st_id), st_id)
-        within = total_qty <= cap + 0.01
-        if not within:
-            all_within_cap = False
-        status = "✓" if within else "✗ 超限!"
-        print(f"   {status} {wh.name if wh else wh_id}→{st_name}: 发货{total_qty:.0f} ≤ 车辆日运力{cap:.0f}")
+    one_route_ok = True
+    for (vh_id, trip), routes in vehicle_trip_routes.items():
+        vh = dm.vehicles.get(vh_id)
+        if len(routes) > 1:
+            one_route_ok = False
+            print(f"   ✗ {vh.plate_number if vh else vh_id} 第{trip}趟服务了{len(routes)}条路线")
     
-    if all_within_cap:
-        print("   ✅ 所有路线发货量均不超过车辆日运力上限（LP约束生效）")
+    if one_route_ok:
+        print("   ✅ 所有车辆每趟仅服务一条路线（OneRoutePerTrip约束生效）")
     else:
-        print("   ❌ 存在路线超出车辆运力限制（LP约束可能未生效）")
+        print("   ❌ 存在车辆单趟服务多条路线")
+    
+    print(f"\n   ▶ 约束2: 每辆车每趟装载量 ≤ 车辆最大容量")
+    single_trip_cap_ok = True
+    for va in result.vehicle_assignments:
+        vh = dm.vehicles.get(va["vehicle_id"])
+        if va["load"] > va["max_capacity"] + 0.01:
+            single_trip_cap_ok = False
+            print(f"   ✗ {va['plate_number']} 第{va['trip_number']}趟超载: {va['load']:.0f}/{va['max_capacity']:.0f}")
+    
+    if single_trip_cap_ok:
+        print("   ✅ 所有车辆趟次装载均不超过容量上限（VehicleCap约束生效）")
+    else:
+        print("   ❌ 存在车辆趟次超载")
+    
+    print(f"\n   ▶ 约束3: 每辆车总趟次 ≤ {optimizer.MAX_TRIPS_PER_VEHICLE}")
+    max_trips_ok = True
+    from collections import Counter
+    vehicle_trip_counts = Counter()
+    for va in result.vehicle_assignments:
+        vehicle_trip_counts[va["vehicle_id"]] += 1
+    
+    for vh_id, trips in vehicle_trip_counts.items():
+        vh = dm.vehicles.get(vh_id)
+        if trips > optimizer.MAX_TRIPS_PER_VEHICLE:
+            max_trips_ok = False
+            print(f"   ✗ {vh.plate_number if vh else vh_id}: {trips} 趟 > {optimizer.MAX_TRIPS_PER_VEHICLE} 趟上限")
+    
+    if max_trips_ok:
+        print(f"   ✅ 所有车辆趟次均不超过{optimizer.MAX_TRIPS_PER_VEHICLE}趟上限")
+    else:
+        print("   ❌ 存在车辆超趟次限制")
+    
+    global_vehicle_cap_ok = one_route_ok and single_trip_cap_ok and max_trips_ok
     
     print(f"\n6️⃣  ★ 时限可达性LP约束验证 ★")
     deadline_check_ok = True
@@ -177,8 +203,8 @@ def test_full_workflow():
     print("✅ 核心功能验证完成!")
     print("=" * 60)
     print("\n📋 验证要点总结:")
-    print(f"   {'✅' if all_within_cap else '❌'} 车辆容量LP约束: 每条路线总发货量 ≤ 仓库车辆日运力")
-    print(f"   {'✅' if deadline_check_ok else '❌'} 时限可达性LP约束: 不可达路线 x[wh,st,sku]=0")
+    print(f"   {'✅' if global_vehicle_cap_ok else '❌'} 全局车辆容量LP约束: 单车单趟级建模，车辆不可重复计数")
+    print(f"   {'✅' if deadline_check_ok else '❌'} 时限可达性LP约束: 车辆趟次级别的不可达路线 x=0")
     print(f"   ✅ 时限惩罚进入目标函数: 总惩罚成本 {total_penalty:.2f}")
     print(f"   ✅ 车辆趟次分配可追踪: {len(result.vehicle_assignments)} 趟")
     print(f"   ✅ Excel报告包含车辆分配+配送时长+截止时间")

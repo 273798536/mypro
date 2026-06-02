@@ -327,6 +327,19 @@ class LinearProgrammingOptimizer:
 
         return vehicle_assignments, vehicle_total_loads, conflicts
 
+    def _get_vehicle_warehouse(self, vh, warehouses):
+        if vh.depot_warehouse_id:
+            return vh.depot_warehouse_id
+        return warehouses[0].id if warehouses else None
+
+    def _is_vehicle_trip_feasible(self, vh, trip_num, wh, st, deadline):
+        if not deadline:
+            return True
+        delivery_hours = self._get_route_delivery_hours(wh, st)
+        total_hours = delivery_hours * trip_num
+        time_available = (deadline - datetime.now()).total_seconds() / 3600
+        return time_available >= total_hours
+
     def optimize(self) -> OptimizationResult:
         start_time = datetime.now()
 
@@ -344,6 +357,7 @@ class LinearProgrammingOptimizer:
         warehouses = list(self.dm.warehouses.values())
         stores = list(self.dm.stores.values())
         vehicles = [v for v in self.dm.vehicles.values() if v.available]
+        trips = list(range(1, self.MAX_TRIPS_PER_VEHICLE + 1))
 
         if not warehouses or not stores or not vehicles:
             self.result.success = False
@@ -359,35 +373,84 @@ class LinearProgrammingOptimizer:
             for dem in dem_list:
                 all_skus.add(dem.sku)
 
-        prob = pulp.LpProblem("Warehouse_Allocation_with_Vehicle_and_Deadline", pulp.LpMinimize)
+        prob = pulp.LpProblem("Warehouse_Allocation_VehicleTripLevel", pulp.LpMinimize)
 
         x = {}
-        for wh in warehouses:
-            for st in stores:
-                for sku in all_skus:
-                    var_name = f"x_{wh.id}_{st.id}_{sku}"
-                    x[(wh.id, st.id, sku)] = pulp.LpVariable(
-                        var_name, lowBound=0, cat='Continuous'
+        use_route = {}
+        for vh in vehicles:
+            vh_wh = self._get_vehicle_warehouse(vh, warehouses)
+            for trip in trips:
+                for st in stores:
+                    route_key = (vh.id, trip, vh_wh, st.id)
+                    use_route[route_key] = pulp.LpVariable(
+                        f"use_{vh.id}_{trip}_{vh_wh}_{st.id}",
+                        lowBound=0, upBound=1, cat='Binary'
                     )
+                    for sku in all_skus:
+                        var_name = f"x_{vh.id}_{trip}_{vh_wh}_{st.id}_{sku}"
+                        x[(vh.id, trip, vh_wh, st.id, sku)] = pulp.LpVariable(
+                            var_name, lowBound=0, cat='Continuous'
+                        )
 
         total_transport_cost = pulp.LpAffineExpression()
         total_penalty_cost = pulp.LpAffineExpression()
 
-        for wh in warehouses:
-            for st in stores:
-                route_cost = self._get_transport_cost(wh, st)
-                for sku in all_skus:
-                    total_transport_cost += x[(wh.id, st.id, sku)] * route_cost
-                    unit_penalty = self._compute_unit_penalty(wh, st, sku)
-                    total_penalty_cost += x[(wh.id, st.id, sku)] * unit_penalty
+        for vh in vehicles:
+            vh_wh = self._get_vehicle_warehouse(vh, warehouses)
+            wh_obj = next((w for w in warehouses if w.id == vh_wh), None)
+            if not wh_obj:
+                continue
+            for trip in trips:
+                for st in stores:
+                    route_cost = self._get_transport_cost(wh_obj, st)
+                    route_key = (vh.id, trip, vh_wh, st.id)
+                    for sku in all_skus:
+                        x_var = x[(vh.id, trip, vh_wh, st.id, sku)]
+                        total_transport_cost += x_var * route_cost
+                        unit_penalty = self._compute_unit_penalty(wh_obj, st, sku)
+                        total_penalty_cost += x_var * unit_penalty
 
         prob += total_transport_cost + total_penalty_cost, "Total_Cost"
+
+        for vh in vehicles:
+            vh_wh = self._get_vehicle_warehouse(vh, warehouses)
+            for trip in trips:
+                route_count = pulp.lpSum([
+                    use_route[(vh.id, trip, vh_wh, st.id)] for st in stores
+                ])
+                prob += route_count <= 1, f"OneRoutePerTrip_{vh.id}_{trip}"
+
+        for vh in vehicles:
+            vh_wh = self._get_vehicle_warehouse(vh, warehouses)
+            wh_obj = next((w for w in warehouses if w.id == vh_wh), None)
+            for trip in trips:
+                for st in stores:
+                    route_key = (vh.id, trip, vh_wh, st.id)
+                    route_total = pulp.lpSum([
+                        x[(vh.id, trip, vh_wh, st.id, sku)] for sku in all_skus
+                    ])
+                    prob += route_total <= vh.max_capacity * use_route[route_key], f"VehicleCap_{vh.id}_{trip}_{st.id}"
+
+        for vh in vehicles:
+            vh_wh = self._get_vehicle_warehouse(vh, warehouses)
+            wh_obj = next((w for w in warehouses if w.id == vh_wh), None)
+            if not wh_obj:
+                continue
+            for trip in trips:
+                for st in stores:
+                    for dem in self.dm.demands.get(st.id, []):
+                        if dem.deadline and not self._is_vehicle_trip_feasible(vh, trip, wh_obj, st, dem.deadline):
+                            prob += x[(vh.id, trip, vh_wh, st.id, dem.sku)] == 0, f"Deadline_{vh.id}_{trip}_{st.id}_{dem.sku}"
 
         for wh in warehouses:
             inv_list = self.dm.inventories.get(wh.id, [])
             for inv in inv_list:
                 total_shipped = pulp.lpSum([
-                    x[(wh.id, st.id, inv.sku)] for st in stores
+                    x[(vh.id, trip, wh.id, st.id, inv.sku)]
+                    for vh in vehicles
+                    for trip in trips
+                    for st in stores
+                    if self._get_vehicle_warehouse(vh, warehouses) == wh.id
                 ])
                 prob += total_shipped <= inv.quantity, f"Supply_{wh.id}_{inv.sku}"
 
@@ -396,41 +459,14 @@ class LinearProgrammingOptimizer:
             for dem in dem_list:
                 if dem.quantity > 0:
                     total_received = pulp.lpSum([
-                        x[(wh.id, st.id, dem.sku)] for wh in warehouses
+                        x[(vh.id, trip, self._get_vehicle_warehouse(vh, warehouses), st.id, dem.sku)]
+                        for vh in vehicles
+                        for trip in trips
                     ])
                     min_fill = 0.9 if dem.urgency == "urgent" else 0.8
                     prob += total_received >= dem.quantity * min_fill, f"Demand_{st.id}_{dem.sku}"
 
-        for wh in warehouses:
-            route_cap = self._get_warehouse_route_capacity(wh.id, vehicles)
-            for st in stores:
-                route_total = pulp.lpSum([
-                    x[(wh.id, st.id, sku)] for sku in all_skus
-                ])
-                prob += route_total <= route_cap, f"VehicleCap_{wh.id}_{st.id}"
-
-        for st in stores:
-            dem_list = self.dm.demands.get(st.id, [])
-            for dem in dem_list:
-                if dem.deadline and dem.urgency == "urgent":
-                    for wh in warehouses:
-                        if not self._is_route_feasible_for_deadline(wh, st, dem.deadline, trip_index=1):
-                            prob += x[(wh.id, st.id, dem.sku)] == 0, f"Deadline_Block_{wh.id}_{st.id}_{dem.sku}"
-
-        for st in stores:
-            dem_list = self.dm.demands.get(st.id, [])
-            for dem in dem_list:
-                if dem.deadline and dem.urgency != "urgent":
-                    infeasible_count = 0
-                    for wh in warehouses:
-                        if not self._is_route_feasible_for_deadline(wh, st, dem.deadline, trip_index=1):
-                            infeasible_count += 1
-                    if infeasible_count < len(warehouses):
-                        for wh in warehouses:
-                            if not self._is_route_feasible_for_deadline(wh, st, dem.deadline, trip_index=1):
-                                prob += x[(wh.id, st.id, dem.sku)] == 0, f"Deadline_SoftBlock_{wh.id}_{st.id}_{dem.sku}"
-
-        solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=120)
+        solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=180)
         prob.solve(solver)
 
         if pulp.LpStatus[prob.status] not in ["Optimal", "Feasible"]:
@@ -440,49 +476,76 @@ class LinearProgrammingOptimizer:
             return self.result
 
         assignments = []
-        for wh in warehouses:
-            for st in stores:
-                for sku in all_skus:
-                    quantity = x[(wh.id, st.id, sku)].varValue
-                    if quantity and quantity > 0.01:
-                        inv_list = self.dm.inventories.get(wh.id, [])
-                        sku_name = ""
-                        for inv in inv_list:
-                            if inv.sku == sku:
-                                sku_name = inv.sku_name
-                                break
+        vehicle_assignments = []
+        route_sku_totals = defaultdict(lambda: defaultdict(float))
+        vehicle_trip_loads = defaultdict(float)
 
-                        distance = self._calculate_distance(
-                            wh.latitude, wh.longitude,
-                            st.latitude, st.longitude
-                        )
-                        transport_cost = self._get_transport_cost(wh, st) * quantity
-                        unit_pen = self._compute_unit_penalty(wh, st, sku)
-                        penalty_cost = unit_pen * quantity
+        for vh in vehicles:
+            vh_wh = self._get_vehicle_warehouse(vh, warehouses)
+            wh_obj = next((w for w in warehouses if w.id == vh_wh), None)
+            for trip in trips:
+                for st in stores:
+                    route_used = use_route.get((vh.id, trip, vh_wh, st.id))
+                    if route_used is not None and route_used.varValue is not None and route_used.varValue > 0.5:
+                        trip_total = 0
+                        for sku in all_skus:
+                            qty = x[(vh.id, trip, vh_wh, st.id, sku)].varValue
+                            if qty is not None and qty > 0.01:
+                                route_sku_totals[(vh_wh, st.id)][sku] += qty
+                                trip_total += qty
+                        if trip_total > 0.01:
+                            st_obj = next((s for s in stores if s.id == st.id), None)
+                            delivery_hours = self._get_route_delivery_hours(wh_obj, st_obj) if wh_obj and st_obj else 0
+                            vehicle_assignments.append({
+                                "vehicle_id": vh.id,
+                                "plate_number": vh.plate_number,
+                                "warehouse_id": vh_wh,
+                                "warehouse_name": wh_obj.name if wh_obj else vh_wh,
+                                "store_id": st.id,
+                                "store_name": st.name,
+                                "trip_number": trip,
+                                "load": round(trip_total, 2),
+                                "max_capacity": vh.max_capacity,
+                                "utilization_rate": round(trip_total / vh.max_capacity * 100, 1),
+                                "delivery_hours": round(delivery_hours, 2)
+                            })
+                            vehicle_trip_loads[vh.id] += trip_total
 
-                        deadline_info = self._get_deadline_info(st, sku)
+        for (wh_id, st_id), sku_totals in route_sku_totals.items():
+            wh_obj = next((w for w in warehouses if w.id == wh_id), None)
+            st_obj = next((s for s in stores if s.id == st_id), None)
+            for sku, quantity in sku_totals.items():
+                if quantity > 0.01:
+                    sku_name = ""
+                    for inv in self.dm.inventories.get(wh_id, []):
+                        if inv.sku == sku:
+                            sku_name = inv.sku_name
+                            break
 
-                        assignments.append({
-                            "warehouse_id": wh.id,
-                            "warehouse_name": wh.name,
-                            "store_id": st.id,
-                            "store_name": st.name,
-                            "sku": sku,
-                            "sku_name": sku_name,
-                            "quantity": round(quantity, 2),
-                            "distance_km": round(distance, 2),
-                            "transport_cost": round(transport_cost, 2),
-                            "penalty_cost": round(penalty_cost, 2),
-                            "total_cost": round(transport_cost + penalty_cost, 2),
-                            "deadline": deadline_info.get("deadline"),
-                            "deadline_feasible": deadline_info.get("feasible", True),
-                            "delivery_hours": round(self._get_route_delivery_hours(wh, st), 2)
-                        })
+                    distance = self._calculate_distance(
+                        wh_obj.latitude, wh_obj.longitude,
+                        st_obj.latitude, st_obj.longitude
+                    ) if wh_obj and st_obj else 0
+                    transport_cost = self._get_transport_cost(wh_obj, st_obj) * quantity if wh_obj and st_obj else 0
 
-        vehicle_assignments, vehicle_loads, vehicle_conflicts = self._build_vehicle_assignments(
-            assignments, vehicles, warehouses, stores
-        )
-        self.result.conflicts.extend(vehicle_conflicts)
+                    deadline_info = self._get_deadline_info(st_obj, sku)
+
+                    assignments.append({
+                        "warehouse_id": wh_id,
+                        "warehouse_name": wh_obj.name if wh_obj else wh_id,
+                        "store_id": st_id,
+                        "store_name": st_obj.name if st_obj else st_id,
+                        "sku": sku,
+                        "sku_name": sku_name,
+                        "quantity": round(quantity, 2),
+                        "distance_km": round(distance, 2),
+                        "transport_cost": round(transport_cost, 2),
+                        "penalty_cost": 0,
+                        "total_cost": round(transport_cost, 2),
+                        "deadline": deadline_info.get("deadline"),
+                        "deadline_feasible": deadline_info.get("feasible", True),
+                        "delivery_hours": round(self._get_route_delivery_hours(wh_obj, st_obj) if wh_obj and st_obj else 0, 2)
+                    })
 
         self.result.success = True
         self.result.message = "优化成功"
