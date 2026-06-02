@@ -10,6 +10,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useStore } from "@/store/useStore";
+import { parseSalesCSV, parsePromoCSV, parseInventoryCSV, parseOOSCSV, readFileAsText } from "@/utils/csvParser";
 import type { DataSourceStatus, VersionDiff, ConflictItem } from "@/types";
 
 const ICON_MAP: Record<DataSourceStatus["id"], React.ReactNode> = {
@@ -32,20 +33,40 @@ const SEVERITY_STYLE: Record<ConflictItem["severity"], { bg: string; border: str
 };
 
 function DataSourceCard({ ds }: { ds: DataSourceStatus }) {
-  const { setDataSourceLoading, setDataSourceLoaded } = useStore();
+  const { setDataSourceLoading, setDataSourceLoaded, setSalesHistory, setPromoCalendarV2, setInventorySnapshot, setOutOfStockRecords } = useStore();
 
   const handleDrop = useCallback(
-    (e: React.DragEvent) => {
+    async (e: React.DragEvent) => {
       e.preventDefault();
       const file = e.dataTransfer.files[0];
       if (!file) return;
       setDataSourceLoading(ds.id, true);
-      setTimeout(() => {
-        const rowCount = Math.floor(Math.random() * 200) + 50;
+      try {
+        const text = await readFileAsText(file);
+        let rowCount = 0;
+        if (ds.id === "sales") {
+          const records = parseSalesCSV(text);
+          setSalesHistory(records);
+          rowCount = records.length;
+        } else if (ds.id === "promo") {
+          const records = parsePromoCSV(text);
+          setPromoCalendarV2(records);
+          rowCount = records.length;
+        } else if (ds.id === "inventory") {
+          const records = parseInventoryCSV(text);
+          setInventorySnapshot(records);
+          rowCount = records.length;
+        } else if (ds.id === "oos") {
+          const records = parseOOSCSV(text);
+          setOutOfStockRecords(records);
+          rowCount = records.length;
+        }
         setDataSourceLoaded(ds.id, rowCount, file.name);
-      }, 800);
+      } catch {
+        setDataSourceLoading(ds.id, false);
+      }
     },
-    [ds.id, setDataSourceLoading, setDataSourceLoaded]
+    [ds.id, setDataSourceLoading, setDataSourceLoaded, setSalesHistory, setPromoCalendarV2, setInventorySnapshot, setOutOfStockRecords]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => e.preventDefault(), []);

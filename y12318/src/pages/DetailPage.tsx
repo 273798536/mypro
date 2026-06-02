@@ -178,22 +178,21 @@ function EvidenceTimeline({ items }: { items: EvidenceItem[] }) {
 
 function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: EvidenceItem[] }) {
   const [format, setFormat] = useState<"csv" | "excel">("csv");
-  const [error, setError] = useState<string[] | null>(null);
+  const [warnings, setWarnings] = useState<string[] | null>(null);
   const [success, setSuccess] = useState(false);
   const exportConsistencyCheck = useStore((st) => st.exportConsistencyCheck);
 
-  const handleExport = () => {
-    const result = exportConsistencyCheck();
-    if (!result.passed) {
-      setError(result.details);
-      return;
-    }
+  const doDownload = () => {
     const bom = "\uFEFF";
     const header = "SKU,SKU名称,补货量,置信度,优先级,当前库存,安全库存,P50,P75,P90";
     const row = `${s.skuId},${s.skuName},${s.suggestedQty},${(s.confidence * 100).toFixed(1)}%,${PRIORITY_LABEL[s.priority]},${s.currentStock},${s.safetyStock},${(s.probabilityP50 * 100).toFixed(1)}%,${(s.probabilityP75 * 100).toFixed(1)}%,${(s.probabilityP90 * 100).toFixed(1)}%`;
     const evHeader = "证据ID,事件日期,事件类型,描述,数据源,是否覆盖,严重程度";
     const evRows = evidences.map((e) => `${e.evidenceId},${e.eventDate},${EVT[e.eventType]?.label || e.eventType},"${e.description}",${e.sourceTable},${e.isOverride ? "是" : "否"},${e.severity}`).join("\n");
-    const csv = bom + header + "\n" + row + "\n\n" + evHeader + "\n" + evRows;
+    let csv = bom + header + "\n" + row + "\n\n" + evHeader + "\n" + evRows;
+    const result = exportConsistencyCheck();
+    if (!result.passed) {
+      csv += "\n\n一致性校验警告\n" + result.details.map((d) => `⚠ ${d}`).join("\n");
+    }
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -202,7 +201,17 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
     a.click();
     URL.revokeObjectURL(url);
     setSuccess(true);
+    setWarnings(null);
     setTimeout(() => setSuccess(false), 2000);
+  };
+
+  const handleExport = () => {
+    const result = exportConsistencyCheck();
+    if (!result.passed) {
+      setWarnings(result.details);
+      return;
+    }
+    doDownload();
   };
 
   return (
@@ -220,17 +229,21 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
         </button>
         {success && <span className="flex items-center gap-1 text-emerald text-xs"><CheckCircle2 className="w-3.5 h-3.5" />导出成功</span>}
       </div>
-      {error && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setError(null)}>
+      {warnings && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setWarnings(null)}>
           <div className="bg-base-50 border border-base-100 rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-3">
-              <XCircle className="w-5 h-5 text-danger" />
-              <h4 className="text-sm font-medium text-text-primary">一致性校验未通过</h4>
+              <AlertTriangle className="w-5 h-5 text-amber" />
+              <h4 className="text-sm font-medium text-text-primary">一致性校验发现差异</h4>
             </div>
-            <div className="space-y-1.5 max-h-48 overflow-y-auto">
-              {error.map((d, i) => <p key={i} className="text-xs text-danger">{d}</p>)}
+            <p className="text-xs text-text-secondary mb-2">以下项目库存快照结论与补货建议不一致，差异信息将写入导出文件：</p>
+            <div className="space-y-1.5 max-h-48 overflow-y-auto mb-4">
+              {warnings.map((d, i) => <p key={i} className="text-xs text-amber">{d}</p>)}
             </div>
-            <button onClick={() => setError(null)} className="btn-secondary mt-4 text-sm w-full">关闭</button>
+            <div className="flex gap-3">
+              <button onClick={() => setWarnings(null)} className="btn-secondary text-sm flex-1">取消</button>
+              <button onClick={doDownload} className="btn-primary text-sm flex-1">仍然导出</button>
+            </div>
           </div>
         </div>
       )}
