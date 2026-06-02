@@ -168,6 +168,7 @@ export const useOptimizerStore = create<OptimizerStore>((set, get) => ({
         nutritionTargets: config.nutritionTargets,
         excludedAllergens: config.excludedAllergens,
         priorityRules: config.priorityRules,
+        configName: config.name,
       },
       (progress: SolverProgress) => {
         set((state) => ({

@@ -15,7 +15,6 @@ import {
   checkCategoryConstraints,
   calculateObjectiveScore,
   createTraceLog,
-  filterDishesByAllergens,
 } from './model';
 import { SolverInput, SolverCallback } from './types';
 
@@ -34,6 +33,7 @@ interface Node {
     variableIndex: number;
     value: number;
   };
+  depth: number;
 }
 
 function createNode(
@@ -41,6 +41,7 @@ function createNode(
   fixedIndices: Set<number>,
   lowerBound: number,
   upperBound: number,
+  depth: number,
   parentId?: string,
   branchInfo?: { variableIndex: number; value: number }
 ): Node {
@@ -50,9 +51,60 @@ function createNode(
     fixedIndices: new Set(fixedIndices),
     lowerBound,
     upperBound,
+    depth,
     parentId,
     branchInfo,
   };
+}
+
+function linearRelaxation(
+  dishes: Dish[],
+  input: SolverInput,
+  fixedIndices: Set<number>,
+  fixedValues: number[]
+): number[] {
+  const n = dishes.length;
+  const quantities: number[] = new Array(n).fill(0);
+
+  fixedIndices.forEach((idx) => {
+    quantities[idx] = fixedValues[idx];
+  });
+
+  const sortedDishes = dishes
+    .map((dish, index) => ({
+      dish,
+      index,
+      score: calculateObjectiveScore(
+        dishes,
+        quantities.map((_, i) => (i === index ? 1 : 0)),
+        input.nutritionTargets,
+        input.budget
+      ),
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  let totalCost = calculateTotalCost(dishes, quantities);
+  let portionsFilled = quantities.reduce((sum, q) => sum + q, 0);
+
+  for (const { dish, index } of sortedDishes) {
+    if (fixedIndices.has(index)) continue;
+
+    const maxPortions = Math.min(
+      5,
+      (input.budget - totalCost) / dish.cost,
+      input.portionCount - portionsFilled
+    );
+
+    if (maxPortions > 0.01) {
+      quantities[index] = maxPortions;
+      totalCost += dish.cost * maxPortions;
+      portionsFilled += maxPortions;
+    }
+
+    if (portionsFilled >= input.portionCount - 0.01) break;
+  }
+
+  return quantities;
 }
 
 function greedyHeuristic(
@@ -98,8 +150,9 @@ function greedyHeuristic(
   return { quantities, score };
 }
 
-function findFractionalVariable(variables: number[]): number | null {
+function findFractionalVariable(variables: number[], fixedIndices: Set<number>): number | null {
   for (let i = 0; i < variables.length; i++) {
+    if (fixedIndices.has(i)) continue;
     const val = variables[i];
     if (Math.abs(val - Math.round(val)) > 0.01 && val > 0) {
       return i;
@@ -116,8 +169,85 @@ function calculateBounds(
   const score = calculateObjectiveScore(dishes, variables, input.nutritionTargets, input.budget);
   return {
     lowerBound: score,
-    upperBound: score * 1.2,
+    upperBound: score * 1.5,
   };
+}
+
+function detectConflictsInOrder(
+  dishes: Dish[],
+  quantities: number[],
+  input: SolverInput,
+  traceLogs: TraceLog[],
+  step: { value: number }
+): Conflict[] {
+  const allConflicts: Conflict[] = [];
+
+  const allergenCheck = checkAllergenConstraint(dishes, quantities, input.excludedAllergens);
+  if (allergenCheck.conflicts.length > 0) {
+    traceLogs.push(
+      createTraceLog(++step.value, 'conflict', '【第1优先级】检测到过敏冲突', {
+        conflictCount: allergenCheck.conflicts.length,
+        details: allergenCheck.conflicts.map((c) => c.description),
+      })
+    );
+    allConflicts.push(...allergenCheck.conflicts);
+  } else {
+    traceLogs.push(
+      createTraceLog(++step.value, 'constraint', '【第1优先级】过敏约束验证通过', {})
+    );
+  }
+
+  const budgetCheck = checkBudgetConstraint(dishes, quantities, input.budget);
+  if (budgetCheck.conflicts.length > 0) {
+    traceLogs.push(
+      createTraceLog(++step.value, 'conflict', '【第2优先级】检测到预算冲突', {
+        conflictCount: budgetCheck.conflicts.length,
+        actualCost: budgetCheck.actualCost,
+        budget: input.budget,
+        details: budgetCheck.conflicts.map((c) => c.description),
+      })
+    );
+    allConflicts.push(...budgetCheck.conflicts);
+  } else {
+    traceLogs.push(
+      createTraceLog(++step.value, 'constraint', '【第2优先级】预算约束验证通过', {
+        actualCost: budgetCheck.actualCost,
+      })
+    );
+  }
+
+  const nutritionCheck = checkNutritionConstraints(dishes, quantities, input.nutritionTargets);
+  if (nutritionCheck.conflicts.length > 0) {
+    traceLogs.push(
+      createTraceLog(++step.value, 'conflict', '【第3优先级】检测到营养不足冲突', {
+        conflictCount: nutritionCheck.conflicts.length,
+        details: nutritionCheck.conflicts.map((c) => c.description),
+      })
+    );
+    allConflicts.push(...nutritionCheck.conflicts);
+  } else {
+    traceLogs.push(
+      createTraceLog(++step.value, 'constraint', '【第3优先级】营养约束验证通过', {})
+    );
+  }
+
+  const categoryCheck = checkCategoryConstraints(dishes, quantities, input.categoryLimits);
+  if (categoryCheck.conflicts.length > 0) {
+    traceLogs.push(
+      createTraceLog(++step.value, 'conflict', '【第4优先级】检测到品类数量冲突', {
+        conflictCount: categoryCheck.conflicts.length,
+        details: categoryCheck.conflicts.map((c) => c.description),
+      })
+    );
+    allConflicts.push(...categoryCheck.conflicts);
+  } else {
+    traceLogs.push(
+      createTraceLog(++step.value, 'constraint', '【第4优先级】品类约束验证通过', {})
+    );
+  }
+
+  allConflicts.sort((a, b) => a.priority - b.priority);
+  return allConflicts;
 }
 
 export function solveIntegerProgramming(
@@ -125,46 +255,17 @@ export function solveIntegerProgramming(
   callback?: SolverCallback
 ): OptimizationResult {
   const traceLogs: TraceLog[] = [];
-  let step = 0;
+  const step = { value: 0 };
 
-  const filteredDishes = filterDishesByAllergens(input.dishes, input.excludedAllergens);
-  if (filteredDishes.length === 0) {
-    traceLogs.push(
-      createTraceLog(++step, 'conflict', '所有菜品都含有过敏原，无法进行配餐', {
-        excludedAllergens: input.excludedAllergens,
-      })
-    );
-    return {
-      id: '',
-      configId: '',
-      configName: '',
-      selectedDishes: [],
-      totalCost: 0,
-      totalNutrition: {
-        calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0,
-        calcium: 0, iron: 0, vitaminA: 0, vitaminC: 0,
-      },
-      conflicts: [{
-        id: '',
-        type: 'allergy_violation',
-        priority: 1,
-        description: '所有菜品都含有排除的过敏原',
-        involvedConstraints: input.excludedAllergens,
-        severity: 'high',
-      }],
-      traceLogs,
-      alternativePlans: [],
-      score: 0,
-      status: 'infeasible',
-      createdAt: new Date(),
-    };
-  }
+  const dishes = input.dishes;
+  const n = dishes.length;
 
   traceLogs.push(
-    createTraceLog(++step, 'constraint', '开始构建整数规划模型', {
-      dishCount: filteredDishes.length,
+    createTraceLog(++step.value, 'constraint', '开始构建整数规划模型', {
+      dishCount: dishes.length,
       budget: input.budget,
       portionCount: input.portionCount,
+      excludedAllergens: input.excludedAllergens,
     })
   );
 
@@ -175,33 +276,52 @@ export function solveIntegerProgramming(
     bestSolutionFound: false,
   });
 
-  const n = filteredDishes.length;
-  const initialQuantities = new Array(n).fill(0);
+  traceLogs.push(
+    createTraceLog(++step.value, 'constraint', '使用贪心启发式获取初始整数解', {})
+  );
 
-  const greedy = greedyHeuristic(filteredDishes, input);
+  const greedy = greedyHeuristic(dishes, input);
   let bestQuantities = [...greedy.quantities];
   let bestScore = greedy.score;
 
   traceLogs.push(
-    createTraceLog(++step, 'decision', '贪心启发式获得初始解', {
+    createTraceLog(++step.value, 'decision', '贪心启发式获得初始整数解', {
       initialScore: greedy.score.toFixed(3),
+      selectedCount: greedy.quantities.filter((q) => q > 0).length,
     })
   );
 
   callback?.({
     currentStep: '获得初始解',
-    progress: 25,
+    progress: 20,
     nodesExplored: 0,
     bestSolutionFound: true,
     currentBestValue: bestScore,
   });
 
-  const initialBounds = calculateBounds(filteredDishes, bestQuantities, input);
+  traceLogs.push(
+    createTraceLog(++step.value, 'constraint', '开始分支定界搜索', {
+      maxIterations: MAX_ITERATIONS,
+      maxNodes: MAX_NODES,
+      timeLimit: TIME_LIMIT_MS + 'ms',
+    })
+  );
+
+  const initialRelaxation = linearRelaxation(dishes, input, new Set(), new Array(n).fill(0));
+  const initialBounds = calculateBounds(dishes, initialRelaxation, input);
   const rootNode = createNode(
-    initialQuantities,
+    initialRelaxation,
     new Set<number>(),
     initialBounds.lowerBound,
-    initialBounds.upperBound
+    initialBounds.upperBound,
+    0
+  );
+
+  traceLogs.push(
+    createTraceLog(++step.value, 'constraint', '线性松弛根节点计算完成', {
+      rootScore: initialBounds.lowerBound.toFixed(3),
+      fractionalCount: initialRelaxation.filter((v) => Math.abs(v - Math.round(v)) > 0.01 && v > 0).length,
+    })
   );
 
   const nodeQueue: Node[] = [rootNode];
@@ -209,10 +329,11 @@ export function solveIntegerProgramming(
   let iterations = 0;
   let nodesExplored = 0;
   const startTime = Date.now();
+  let branchCount = 0;
 
   callback?.({
     currentStep: '分支定界搜索中',
-    progress: 30,
+    progress: 25,
     nodesExplored: 0,
     bestSolutionFound: true,
     currentBestValue: bestScore,
@@ -221,8 +342,10 @@ export function solveIntegerProgramming(
   while (nodeQueue.length > 0 && iterations < MAX_ITERATIONS) {
     if (Date.now() - startTime > TIME_LIMIT_MS) {
       traceLogs.push(
-        createTraceLog(++step, 'decision', '达到时间限制，终止搜索', {
+        createTraceLog(++step.value, 'decision', '达到时间限制，终止分支定界搜索', {
           timeElapsed: Date.now() - startTime,
+          nodesExplored,
+          branchesCreated: branchCount,
         })
       );
       break;
@@ -235,13 +358,15 @@ export function solveIntegerProgramming(
     exploredNodes.add(currentNode.id);
     nodesExplored++;
 
-    if (currentNode.upperBound < bestScore * 0.9) continue;
+    if (currentNode.upperBound < bestScore * 0.9) {
+      continue;
+    }
 
-    const fractionalIndex = findFractionalVariable(currentNode.variables);
+    const fractionalIndex = findFractionalVariable(currentNode.variables, currentNode.fixedIndices);
 
     if (fractionalIndex === null) {
       const currentScore = calculateObjectiveScore(
-        filteredDishes,
+        dishes,
         currentNode.variables,
         input.nutritionTargets,
         input.budget
@@ -251,32 +376,48 @@ export function solveIntegerProgramming(
         bestQuantities = [...currentNode.variables];
 
         traceLogs.push(
-          createTraceLog(++step, 'decision', '找到更优整数解', {
+          createTraceLog(++step.value, 'decision', '分支定界找到更优整数解', {
             score: currentScore.toFixed(3),
-            nodeDepth: currentNode.branchInfo ? 'branch' : 'root',
+            improvement: ((currentScore - greedy.score) / greedy.score * 100).toFixed(1) + '%',
+            depth: currentNode.depth,
+            selectedCount: currentNode.variables.filter((q) => q > 0).length,
           })
         );
       }
     } else {
-      for (const branchValue of [
-        Math.floor(currentNode.variables[fractionalIndex]),
-        Math.ceil(currentNode.variables[fractionalIndex]),
-      ]) {
+      const fractionalValue = currentNode.variables[fractionalIndex];
+      const floorValue = Math.floor(fractionalValue);
+      const ceilValue = Math.ceil(fractionalValue);
+
+      traceLogs.push(
+        createTraceLog(++step.value, 'constraint', '执行分支操作', {
+          nodeDepth: currentNode.depth,
+          variableIndex: fractionalIndex,
+          dishName: dishes[fractionalIndex]?.name,
+          fractionalValue: fractionalValue.toFixed(2),
+          branchValues: [floorValue, ceilValue],
+        })
+      );
+
+      for (const branchValue of [floorValue, ceilValue]) {
         if (branchValue < 0 || branchValue > 5) continue;
 
+        branchCount++;
         const newVariables = [...currentNode.variables];
         newVariables[fractionalIndex] = branchValue;
         const newFixed = new Set(currentNode.fixedIndices);
         newFixed.add(fractionalIndex);
 
-        const newBounds = calculateBounds(filteredDishes, newVariables, input);
+        const relaxedSolution = linearRelaxation(dishes, input, newFixed, newVariables);
+        const newBounds = calculateBounds(dishes, relaxedSolution, input);
 
-        if (newBounds.lowerBound <= bestScore * 1.1) {
+        if (newBounds.lowerBound <= bestScore * 1.2) {
           const childNode = createNode(
-            newVariables,
+            relaxedSolution,
             newFixed,
             newBounds.lowerBound,
             newBounds.upperBound,
+            currentNode.depth + 1,
             currentNode.id,
             { variableIndex: fractionalIndex, value: branchValue }
           );
@@ -288,10 +429,10 @@ export function solveIntegerProgramming(
       }
     }
 
-    if (iterations % 100 === 0) {
+    if (iterations % 50 === 0) {
       callback?.({
         currentStep: '分支定界搜索中',
-        progress: 30 + Math.min(60, (iterations / MAX_ITERATIONS) * 60),
+        progress: 25 + Math.min(60, (iterations / MAX_ITERATIONS) * 60),
         nodesExplored,
         bestSolutionFound: true,
         currentBestValue: bestScore,
@@ -300,82 +441,58 @@ export function solveIntegerProgramming(
   }
 
   traceLogs.push(
-    createTraceLog(++step, 'decision', '分支定界搜索完成', {
+    createTraceLog(++step.value, 'decision', '分支定界搜索完成', {
       iterations,
       nodesExplored,
+      branchesCreated: branchCount,
       bestScore: bestScore.toFixed(3),
+      improvement: ((bestScore - greedy.score) / greedy.score * 100).toFixed(1) + '%',
     })
   );
 
   callback?.({
     currentStep: '验证约束条件',
-    progress: 90,
+    progress: 85,
     nodesExplored,
     bestSolutionFound: true,
     currentBestValue: bestScore,
   });
 
-  const allConflicts: Conflict[] = [];
-
-  const allergenCheck = checkAllergenConstraint(
-    filteredDishes,
-    bestQuantities,
-    input.excludedAllergens
+  traceLogs.push(
+    createTraceLog(++step.value, 'constraint', '按优先级顺序验证约束条件', {
+      priorityOrder: ['1-过敏', '2-预算', '3-营养', '4-品类'],
+    })
   );
-  allConflicts.push(...allergenCheck.conflicts);
 
-  const budgetCheck = checkBudgetConstraint(filteredDishes, bestQuantities, input.budget);
-  allConflicts.push(...budgetCheck.conflicts);
+  const allConflicts = detectConflictsInOrder(dishes, bestQuantities, input, traceLogs, step);
 
-  const nutritionCheck = checkNutritionConstraints(
-    filteredDishes,
-    bestQuantities,
-    input.nutritionTargets
-  );
-  allConflicts.push(...nutritionCheck.conflicts);
-
-  const categoryCheck = checkCategoryConstraints(
-    filteredDishes,
-    bestQuantities,
-    input.categoryLimits
-  );
-  allConflicts.push(...categoryCheck.conflicts);
-
-  allConflicts.sort((a, b) => a.priority - b.priority);
-
-  allConflicts.forEach((conflict) => {
-    traceLogs.push(
-      createTraceLog(++step, 'conflict', `检测到${conflict.type}`, {
-        conflict: conflict.description,
-        priority: conflict.priority,
-        severity: conflict.severity,
-      })
-    );
-  });
-
-  const selectedDishes: SelectedDish[] = filteredDishes
+  const selectedDishes: SelectedDish[] = dishes
     .map((dish, index) => ({
       dishId: dish.id,
       quantity: Math.round(bestQuantities[index]),
     }))
     .filter((sd) => sd.quantity > 0);
 
-  const totalCost = calculateTotalCost(filteredDishes, bestQuantities);
-  const totalNutrition = calculateTotalNutrition(filteredDishes, bestQuantities);
+  const totalCost = calculateTotalCost(dishes, bestQuantities);
+  const totalNutrition = calculateTotalNutrition(dishes, bestQuantities);
+
+  traceLogs.push(
+    createTraceLog(++step.value, 'resolution', '生成最终配餐方案', {
+      selectedDishes: selectedDishes.length,
+      totalCost: totalCost.toFixed(2),
+      totalNutrition: {
+        calories: totalNutrition.calories.toFixed(0),
+        protein: totalNutrition.protein.toFixed(1),
+      },
+      conflictCount: allConflicts.length,
+    })
+  );
 
   const alternativePlans: AlternativePlan[] = generateAlternativePlans(
-    filteredDishes,
+    dishes,
     input,
     bestQuantities,
     allConflicts
-  );
-
-  traceLogs.push(
-    createTraceLog(++step, 'resolution', '优化完成，生成最终方案', {
-      selectedDishes: selectedDishes.length,
-      totalCost: totalCost.toFixed(2),
-      conflictCount: allConflicts.length,
-    })
   );
 
   callback?.({
@@ -391,7 +508,7 @@ export function solveIntegerProgramming(
   return {
     id: '',
     configId: '',
-    configName: '',
+    configName: input.configName || '',
     selectedDishes,
     totalCost,
     totalNutrition,
@@ -411,22 +528,26 @@ function generateAlternativePlans(
   conflicts: Conflict[]
 ): AlternativePlan[] {
   const alternatives: AlternativePlan[] = [];
+  const variants = [
+    { name: '成本优先方案', costBias: -0.2, nutritionBias: 0.1 },
+    { name: '营养优先方案', costBias: 0.1, nutritionBias: -0.2 },
+    { name: '均衡方案', costBias: 0, nutritionBias: 0 },
+  ];
 
-  for (let variant = 1; variant <= 3; variant++) {
+  variants.forEach((variant, idx) => {
     const altQuantities = [...bestQuantities];
     const tradeoffs: string[] = [];
 
     for (let i = 0; i < altQuantities.length; i++) {
-      if (Math.random() < 0.2 && altQuantities[i] > 0) {
-        altQuantities[i] = Math.max(0, altQuantities[i] - 1);
-        tradeoffs.push(`减少${dishes[i].name}`);
-      }
-    }
-
-    for (let i = 0; i < altQuantities.length; i++) {
-      if (Math.random() < 0.15 && altQuantities[i] === 0) {
-        altQuantities[i] = 1;
-        tradeoffs.push(`增加${dishes[i].name}`);
+      if (altQuantities[i] > 0 && Math.random() < 0.25) {
+        const adjustment = variant.costBias < 0 ? -1 : variant.costBias > 0 ? 1 : 0;
+        const newValue = Math.max(0, Math.min(5, altQuantities[i] + adjustment));
+        if (newValue !== altQuantities[i]) {
+          altQuantities[i] = newValue;
+          tradeoffs.push(
+            newValue > 0 ? `调整${dishes[i].name}为${newValue}份` : `移除${dishes[i].name}`
+          );
+        }
       }
     }
 
@@ -442,15 +563,15 @@ function generateAlternativePlans(
       .filter((sd) => sd.quantity > 0);
 
     alternatives.push({
-      id: `alt-${variant}`,
-      name: `备选方案 ${variant}`,
+      id: `alt-${idx + 1}`,
+      name: variant.name,
       selectedDishes,
       totalCost,
       totalNutrition,
       tradeoffs: tradeoffs.slice(0, 3),
       score,
     });
-  }
+  });
 
   return alternatives.sort((a, b) => b.score - a.score);
 }

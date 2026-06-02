@@ -21,6 +21,7 @@ export interface SolverInput {
     priority: number;
     description: string;
   }[];
+  configName?: string;
 }
 
 export interface SolverDish {
