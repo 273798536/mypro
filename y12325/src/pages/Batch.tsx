@@ -6,7 +6,7 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Alert from '@/components/Alert';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import { Experiment, ExperimentConfig, InitialShape } from '@/types';
+import { Experiment, ExperimentConfig, InitialShape, IterationResult } from '@/types';
 import { 
   Play, 
   Plus, 
@@ -90,16 +90,26 @@ export default function Batch() {
         updatedAt: new Date(),
       };
 
+      const collectedResults: IterationResult[] = [];
+
       const result = await fractalEngine.iterate(
         expConfig.config,
         600,
         500,
-        () => {}
+        (stepResult) => {
+          collectedResults.push(stepResult);
+        }
       );
+
+      const finalDimension = collectedResults.length > 0
+        ? collectedResults[collectedResults.length - 1].dimension
+        : undefined;
 
       experiment.status = result.success ? 'success' : 'failed';
       experiment.errorType = result.errorType as any;
       experiment.errorMessage = result.errorMessage;
+      experiment.results = collectedResults;
+      experiment.fractalDimension = finalDimension;
 
       executedResults.push(experiment);
       saveToHistory(experiment);

@@ -1,5 +1,26 @@
-import { Experiment, ExportFormat } from '@/types';
+import { Experiment, ExportFormat, Point } from '@/types';
 import jsPDF from 'jspdf';
+
+function computeBounds(points: Point[]): { minX: number; maxX: number; minY: number; maxY: number } | undefined {
+  if (points.length === 0) return undefined;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const p of points) {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  }
+  return { minX, maxX, minY, maxY };
+}
+
+function mapIterationResult(r: { step: number; dimension: number; points: Point[] }) {
+  return {
+    step: r.step,
+    dimension: r.dimension,
+    pointCount: r.points.length,
+    bounds: computeBounds(r.points),
+  };
+}
 
 export const exportAsJSON = (experiment: Experiment): string => {
   const exportData = {
@@ -12,11 +33,7 @@ export const exportAsJSON = (experiment: Experiment): string => {
     fractalDimension: experiment.fractalDimension,
     createdAt: experiment.createdAt,
     updatedAt: experiment.updatedAt,
-    results: experiment.results.map(r => ({
-      step: r.step,
-      dimension: r.dimension,
-      pointCount: r.points.length,
-    })),
+    results: experiment.results.map(mapIterationResult),
   };
   return JSON.stringify(exportData, null, 2);
 };
@@ -118,7 +135,14 @@ export const exportBatchResults = (experiments: Experiment[], format: ExportForm
       config: {
         iterationRule: e.config.iterationRule,
         initialShape: e.config.initialShape,
+        colorScheme: e.config.colorScheme,
+        maxIterations: e.config.maxIterations,
+        zoomLevel: e.config.zoomLevel,
+        note: e.config.note,
       },
+      results: e.results.map(mapIterationResult),
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
     }));
     
     const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });

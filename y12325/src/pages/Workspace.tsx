@@ -62,18 +62,23 @@ export default function Workspace() {
     setIsRunning(true);
     startExperiment();
 
+    const collectedResults: import('@/types').IterationResult[] = [];
+
     const result = await fractalEngine.iterate(
       currentExperiment.config,
       600,
       500,
       (stepResult) => {
+        collectedResults.push(stepResult);
         addIterationResult(stepResult);
         setCurrentStep(stepResult.step);
         setCurrentPoints(stepResult);
       }
     );
 
-    const finalDimension = currentPoints?.dimension || 0;
+    const finalDimension = collectedResults.length > 0
+      ? collectedResults[collectedResults.length - 1].dimension
+      : 0;
     completeExperiment(result.success, result.errorType, result.errorMessage, finalDimension);
     
     if (currentExperiment) {
@@ -83,6 +88,7 @@ export default function Workspace() {
         errorType: result.errorType as any,
         errorMessage: result.errorMessage,
         fractalDimension: finalDimension,
+        results: collectedResults,
       });
     }
 
