@@ -45,11 +45,23 @@ export const useStore = create<Store>((set, get) => ({
 
   addCoil: (coil) => {
     try {
+      if (!coil.name?.trim()) {
+        throw new Error('线圈名称不能为空');
+      }
+      if (!coil.turns || coil.turns <= 0) {
+        throw new Error('线圈匝数必须大于 0');
+      }
+      if (!Number.isInteger(coil.turns)) {
+        throw new Error('线圈匝数必须是整数');
+      }
+      if (!coil.crossSection || coil.crossSection <= 0) {
+        throw new Error('线圈截面积必须大于 0');
+      }
       const newCoil = coilStorage.add(coil);
       set(state => ({ coils: [...state.coils, newCoil] }));
       get().addHistoryRecord({
         operationType: 'create',
-        operationDetail: `创建线圈: ${coil.name}`,
+        operationDetail: `创建线圈: ${coil.name}（${coil.turns}匝）`,
         affectedItems: ['线圈参数'],
         operator: '当前用户',
       });
@@ -60,14 +72,29 @@ export const useStore = create<Store>((set, get) => ({
 
   updateCoil: (id, updates) => {
     try {
+      if (updates.name !== undefined && !updates.name.trim()) {
+        throw new Error('线圈名称不能为空');
+      }
+      if (updates.turns !== undefined) {
+        if (!updates.turns || updates.turns <= 0) {
+          throw new Error('线圈匝数必须大于 0');
+        }
+        if (!Number.isInteger(updates.turns)) {
+          throw new Error('线圈匝数必须是整数');
+        }
+      }
+      if (updates.crossSection !== undefined && (!updates.crossSection || updates.crossSection <= 0)) {
+        throw new Error('线圈截面积必须大于 0');
+      }
       const updated = coilStorage.update(id, updates);
       if (updated) {
         set(state => ({
           coils: state.coils.map(c => (c.id === id ? updated : c)),
         }));
+        const turnChange = updates.turns !== undefined ? `（匝数调整为 ${updates.turns}）` : '';
         get().addHistoryRecord({
           operationType: 'update',
-          operationDetail: `更新线圈: ${updates.name || updated.name}`,
+          operationDetail: `更新线圈: ${updates.name || updated.name}${turnChange}`,
           affectedItems: ['线圈参数'],
           operator: '当前用户',
         });

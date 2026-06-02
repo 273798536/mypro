@@ -273,11 +273,70 @@ export interface FullCalculationResult {
   hasFluxReversal: boolean;
 }
 
+export const validateCoilParams = (coil: Coil): Anomaly[] => {
+  const anomalies: Anomaly[] = [];
+
+  if (!coil.turns || coil.turns <= 0) {
+    anomalies.push({
+      type: 'missing_turns',
+      severity: 'critical',
+      timestamp: 0,
+      description: `线圈匝数无效：当前值为 ${coil.turns}，匝数必须大于 0`,
+      isResolved: false,
+    });
+  } else if (coil.turns < 10) {
+    anomalies.push({
+      type: 'missing_turns',
+      severity: 'warning',
+      timestamp: 0,
+      description: `线圈匝数过低：当前值为 ${coil.turns}，可能导致测量结果不准确`,
+      isResolved: false,
+    });
+  }
+
+  if (!coil.crossSection || coil.crossSection <= 0) {
+    anomalies.push({
+      type: 'other',
+      severity: 'critical',
+      timestamp: 0,
+      description: `线圈截面积无效：当前值为 ${coil.crossSection}，截面积必须大于 0`,
+      isResolved: false,
+    });
+  }
+
+  return anomalies;
+};
+
 export const performFullCalculation = (
   coil: Coil,
   magneticSequence: MagneticSequence,
   targetEmfUnit: EmfUnit = 'mV'
 ): FullCalculationResult => {
+  const coilValidationAnomalies = validateCoilParams(coil);
+
+  if (coilValidationAnomalies.some(a => a.severity === 'critical')) {
+    const zeroResults: CalculationResult[] = magneticSequence.dataPoints.map(p => ({
+      time: p.time,
+      magneticFlux: p.magneticFlux,
+      emf: 0,
+      dPhiDt: 0,
+    }));
+
+    return {
+      calculationResults: zeroResults,
+      anomalies: coilValidationAnomalies,
+      boundaryCheck: {
+        minEmf: 0,
+        maxEmf: 0,
+        avgEmf: 0,
+        isWithinBounds: false,
+      },
+      hasMissingTurns: coilValidationAnomalies.some(a => a.type === 'missing_turns'),
+      hasTimeUnitError: false,
+      hasFluxReversal: false,
+    };
+  }
+
   const normalized = normalizeToBaseUnits(
     magneticSequence.dataPoints,
     magneticSequence.timeUnit,
@@ -294,16 +353,17 @@ export const performFullCalculation = (
           magneticSequence.timeUnit === 'ms' ? r.time * 1000 : r.time * 1000000,
   }));
 
-  const anomalies = detectAllAnomalies(resultsWithEmf, normalized, coil);
+  const dataAnomalies = detectAllAnomalies(resultsWithEmf, normalized, coil);
+  const allAnomalies = [...coilValidationAnomalies, ...dataAnomalies];
   const boundaryCheck = performBoundaryCheck(resultsWithEmf, targetEmfUnit);
 
   return {
     calculationResults: convertedResults,
-    anomalies,
+    anomalies: allAnomalies,
     boundaryCheck,
-    hasMissingTurns: anomalies.some(a => a.type === 'missing_turns'),
-    hasTimeUnitError: anomalies.some(a => a.type === 'time_unit_error'),
-    hasFluxReversal: anomalies.some(a => a.type === 'flux_reversal'),
+    hasMissingTurns: allAnomalies.some(a => a.type === 'missing_turns'),
+    hasTimeUnitError: allAnomalies.some(a => a.type === 'time_unit_error'),
+    hasFluxReversal: allAnomalies.some(a => a.type === 'flux_reversal'),
   };
 };
 

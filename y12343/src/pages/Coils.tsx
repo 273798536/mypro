@@ -15,6 +15,13 @@ interface CoilFormData {
   status: CoilStatus;
 }
 
+interface FormErrors {
+  name?: string;
+  turns?: string;
+  crossSection?: string;
+  resistance?: string;
+}
+
 const initialFormData: CoilFormData = {
   name: '',
   turns: 100,
@@ -27,14 +34,46 @@ const initialFormData: CoilFormData = {
   status: 'normal',
 };
 
+const validateForm = (data: CoilFormData): FormErrors => {
+  const errors: FormErrors = {};
+
+  if (!data.name.trim()) {
+    errors.name = '请输入线圈名称';
+  }
+
+  if (!data.turns || data.turns <= 0) {
+    errors.turns = '匝数必须大于 0';
+  } else if (!Number.isInteger(data.turns)) {
+    errors.turns = '匝数必须是整数';
+  } else if (data.turns < 10) {
+    errors.turns = '匝数建议不小于 10 匝，否则测量精度会受影响';
+  } else if (data.turns > 100000) {
+    errors.turns = '匝数不能超过 100000';
+  }
+
+  if (!data.crossSection || data.crossSection <= 0) {
+    errors.crossSection = '截面积必须大于 0';
+  } else if (data.crossSection > 10000) {
+    errors.crossSection = '截面积值过大，请检查单位是否正确';
+  }
+
+  if (data.resistance < 0) {
+    errors.resistance = '电阻不能为负数';
+  }
+
+  return errors;
+};
+
 export default function CoilsPage() {
   const { coils, addCoil, updateCoil, deleteCoil } = useStore();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<CoilFormData>(initialFormData);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   const handleOpenCreate = () => {
     setFormData(initialFormData);
+    setFormErrors({});
     setEditingId(null);
     setShowModal(true);
   };
@@ -51,12 +90,46 @@ export default function CoilsPage() {
       remark: coil.remark,
       status: coil.status,
     });
+    setFormErrors({});
     setEditingId(coil.id);
     setShowModal(true);
   };
 
+  const handleNumberInput = (
+    field: 'turns' | 'crossSection' | 'resistance',
+    value: string,
+    requireInteger: boolean = false
+  ) => {
+    if (value === '' || value === '-') {
+      setFormData({ ...formData, [field]: 0 });
+      setFormErrors({ ...formErrors, [field]: '请输入有效数值' });
+      return;
+    }
+
+    const numValue = requireInteger ? parseInt(value, 10) : parseFloat(value);
+
+    if (isNaN(numValue)) {
+      return;
+    }
+
+    setFormData({ ...formData, [field]: numValue });
+
+    const newErrors = validateForm({ ...formData, [field]: numValue });
+    setFormErrors(newErrors);
+  };
+
   const handleSubmit = () => {
-    if (!formData.name.trim()) return;
+    const errors = validateForm(formData);
+    setFormErrors(errors);
+
+    const hasCriticalErrors = Object.entries(errors).some(([key, msg]) => {
+      if (key === 'turns' && msg?.includes('建议')) return false;
+      return !!msg;
+    });
+
+    if (hasCriticalErrors) {
+      return;
+    }
 
     if (editingId) {
       updateCoil(editingId, formData);
@@ -116,7 +189,20 @@ export default function CoilsPage() {
                     className={index % 2 === 0 ? 'table-row-even' : 'table-row-odd'}
                   >
                     <td className="table-cell font-medium text-white">{coil.name}</td>
-                    <td className="table-cell font-mono">{coil.turns}</td>
+                    <td className="table-cell">
+                      <span className={`font-mono ${
+                        !coil.turns || coil.turns <= 0 ? 'text-accent-error' :
+                        coil.turns < 10 ? 'text-accent-warning' : ''
+                      }`}>
+                        {coil.turns}
+                        {(!coil.turns || coil.turns <= 0) && (
+                          <span className="ml-1 text-xs">（无效）</span>
+                        )}
+                        {coil.turns > 0 && coil.turns < 10 && (
+                          <span className="ml-1 text-xs">（过低）</span>
+                        )}
+                      </span>
+                    </td>
                     <td className="table-cell font-mono">
                       {coil.crossSection} {coil.crossSectionUnit}
                     </td>
@@ -179,26 +265,43 @@ export default function CoilsPage() {
 
             <div className="p-6 space-y-4 max-h-96 overflow-y-auto scrollbar-thin">
               <div>
-                <label className="label">线圈名称</label>
+                <label className="label">线圈名称 <span className="text-accent-error">*</span></label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="input"
+                  onChange={e => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (formErrors.name) {
+                      setFormErrors({ ...formErrors, name: undefined });
+                    }
+                  }}
+                  className={`input ${formErrors.name ? 'border-accent-error focus:border-accent-error' : ''}`}
                   placeholder="输入线圈名称"
                 />
+                {formErrors.name && (
+                  <p className="text-xs text-accent-error mt-1">{formErrors.name}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">匝数</label>
+                  <label className="label">匝数 <span className="text-accent-error">*</span></label>
                   <input
                     type="number"
-                    value={formData.turns}
-                    onChange={e => setFormData({ ...formData, turns: Number(e.target.value) })}
-                    className="input"
+                    value={formData.turns || ''}
+                    onChange={e => handleNumberInput('turns', e.target.value, true)}
+                    className={`input ${formErrors.turns ? 'border-accent-error focus:border-accent-error' : ''}`}
                     min="1"
+                    step="1"
+                    placeholder="请输入匝数"
                   />
+                  {formErrors.turns && (
+                    <p className={`text-xs mt-1 ${
+                      formErrors.turns.includes('建议') ? 'text-accent-warning' : 'text-accent-error'
+                    }`}>
+                      {formErrors.turns}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="label">材质</label>
@@ -207,21 +310,23 @@ export default function CoilsPage() {
                     value={formData.material}
                     onChange={e => setFormData({ ...formData, material: e.target.value })}
                     className="input"
+                    placeholder="铜线、漆包线等"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">截面积</label>
+                  <label className="label">截面积 <span className="text-accent-error">*</span></label>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       step="0.01"
-                      value={formData.crossSection}
-                      onChange={e => setFormData({ ...formData, crossSection: Number(e.target.value) })}
-                      className="input flex-1"
+                      value={formData.crossSection || ''}
+                      onChange={e => handleNumberInput('crossSection', e.target.value)}
+                      className={`input flex-1 ${formErrors.crossSection ? 'border-accent-error focus:border-accent-error' : ''}`}
                       min="0.01"
+                      placeholder="0.00"
                     />
                     <select
                       value={formData.crossSectionUnit}
@@ -233,6 +338,9 @@ export default function CoilsPage() {
                       <option value="mm²">mm²</option>
                     </select>
                   </div>
+                  {formErrors.crossSection && (
+                    <p className="text-xs text-accent-error mt-1">{formErrors.crossSection}</p>
+                  )}
                 </div>
                 <div>
                   <label className="label">电阻</label>
@@ -240,10 +348,11 @@ export default function CoilsPage() {
                     <input
                       type="number"
                       step="0.01"
-                      value={formData.resistance}
-                      onChange={e => setFormData({ ...formData, resistance: Number(e.target.value) })}
-                      className="input flex-1"
+                      value={formData.resistance || ''}
+                      onChange={e => handleNumberInput('resistance', e.target.value)}
+                      className={`input flex-1 ${formErrors.resistance ? 'border-accent-error focus:border-accent-error' : ''}`}
                       min="0"
+                      placeholder="0.00"
                     />
                     <select
                       value={formData.resistanceUnit}
@@ -255,6 +364,9 @@ export default function CoilsPage() {
                       <option value="mΩ">mΩ</option>
                     </select>
                   </div>
+                  {formErrors.resistance && (
+                    <p className="text-xs text-accent-error mt-1">{formErrors.resistance}</p>
+                  )}
                 </div>
               </div>
 
@@ -293,7 +405,14 @@ export default function CoilsPage() {
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!formData.name.trim()}
+                disabled={
+                  !formData.name.trim() ||
+                  !formData.turns ||
+                  formData.turns <= 0 ||
+                  !formData.crossSection ||
+                  formData.crossSection <= 0 ||
+                  formData.resistance < 0
+                }
                 className="btn-primary flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
