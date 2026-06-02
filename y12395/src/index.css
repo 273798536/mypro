@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-xuanzhi: #f5f0e8;
+  --color-mohei: #1a1a2e;
+  --color-gutong: #c9a96e;
+  --color-zhusha: #c0392b;
+  --color-dianlan: #2c3e7a;
+  --font-serif: "Noto Serif SC", serif;
+  --font-heading: "Ma Shan Zheng", cursive;
+  font-family: var(--font-serif);
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-xuanzhi);
+  margin: 0;
+  padding: 0;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-gutong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #b8935a;
+}
+
+.scrollbar-xuanzhi::-webkit-scrollbar-thumb {
+  background-color: rgba(201, 169, 110, 0.4);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.shadow-warm {
+  box-shadow: 0 4px 6px -1px rgba(26, 26, 46, 0.08), 0 2px 4px -2px rgba(201, 169, 110, 0.1);
+}
+
+.shadow-warm-md {
+  box-shadow: 0 6px 12px -2px rgba(26, 26, 46, 0.1), 0 4px 8px -2px rgba(201, 169, 110, 0.12);
+}
+
+@layer utilities {
+  .bg-xuanzhi {
+    background-color: var(--color-xuanzhi);
+  }
+  .text-gutong {
+    color: var(--color-gutong);
+  }
+  .border-gutong {
+    border-color: var(--color-gutong);
+  }
+  .bg-gutong {
+    background-color: var(--color-gutong);
+  }
+}
