@@ -299,6 +299,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       temperatureData,
       cargoBatches,
       maintenanceNotes,
+      sensors,
     } = get();
 
     if (!currentBatchId) {

@@ -20,7 +20,7 @@ import {
   Play,
 } from 'lucide-react';
 import { useAppStore } from '@/store';
-import { ReportOptions, ReportData } from '@/types';
+import { ReportOptions } from '@/types';
 import {
   formatDateTime,
   formatDate,
@@ -59,13 +59,15 @@ const ExportReport = () => {
     playbackConfig: playbackConfig || undefined,
   });
 
-  const toggleOption = (key: keyof ReportOptions, value: boolean) => {
-    setReportOptions((prev) => ({
-      ...prev,
-      [key]: value,
-      compareConfig: prev.includeCompareAnalysis ? compareConfig : undefined,
-      playbackConfig: prev.includePlaybackConfig ? playbackConfig || undefined : undefined,
-    }));
+  const toggleOption = (key: string, value: boolean) => {
+    setReportOptions((prev) => {
+      const updated = { ...prev, [key]: value };
+      return {
+        ...updated,
+        compareConfig: updated.includeCompareAnalysis ? compareConfig : undefined,
+        playbackConfig: updated.includePlaybackConfig ? playbackConfig || undefined : undefined,
+      };
+    });
   };
 
   const [showPreview, setShowPreview] = useState(false);
@@ -74,7 +76,13 @@ const ExportReport = () => {
   const currentBatch = batches.find((b) => b.batchId === currentBatchId);
 
   const handleGenerateReport = () => {
-    generateReport(reportOptions);
+    const finalOptions: ReportOptions = {
+      ...reportOptions,
+      timeRange: selectedTimeRange || undefined,
+      compareConfig: reportOptions.includeCompareAnalysis ? compareConfig : undefined,
+      playbackConfig: reportOptions.includePlaybackConfig ? playbackConfig || undefined : undefined,
+    };
+    generateReport(finalOptions);
     setShowPreview(true);
   };
 

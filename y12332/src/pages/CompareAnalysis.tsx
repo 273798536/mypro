@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import {
   BarChart3,
@@ -69,10 +69,6 @@ const CompareAnalysis = () => {
       : [...selectedGroups, groupId];
     setCompareConfig({ selectedGroups: newSelected });
   };
-
-  useEffect(() => {
-    setCompareConfig({ selectedSensors, timeRange: selectedTimeRange || undefined });
-  }, [selectedSensors, selectedTimeRange]);
 
   const filteredData = useMemo(() => {
     let data = processedData.filter((d) => selectedSensors.includes(d.sensorId));
@@ -510,10 +506,7 @@ const CompareAnalysis = () => {
               ].map((item) => (
                 <button
                   key={item.value}
-                  onClick={() => {
-                    setGroupBy(item.value as GroupByType);
-                    setSelectedGroups([]);
-                  }}
+                  onClick={() => handleGroupByChange(item.value as GroupByType)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     groupBy === item.value
                       ? 'bg-cold-500/20 text-cold-400 border border-cold-500/50'
