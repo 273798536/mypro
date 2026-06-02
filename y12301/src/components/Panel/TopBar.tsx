@@ -11,6 +11,7 @@ export function TopBar() {
   const setIsPlaying = useAppStore((state) => state.setIsPlaying);
   const runAnomalyDetection = useAppStore((state) => state.runAnomalyDetection);
   const anomalies = useAppStore((state) => state.anomalies);
+  const exportReport = useAppStore((state) => state.exportReport);
 
   const animationRef = useRef<number | null>(null);
 
@@ -144,7 +145,10 @@ export function TopBar() {
           重新检测
         </button>
 
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white transition-colors text-xs shadow-lg shadow-cyan-500/30">
+        <button
+          onClick={exportReport}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-600 text-white transition-colors text-xs shadow-lg shadow-cyan-500/30"
+        >
           <Download className="w-3.5 h-3.5" />
           导出报告
         </button>

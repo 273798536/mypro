@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Settings, Building2, Wind, AlertTriangle, Save, X } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Settings, Building2, Wind, AlertTriangle, Save, CheckCircle, X } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { cn } from '../../utils/cn';
 
@@ -17,8 +17,17 @@ export function RightPanel() {
   const buildings = useAppStore((state) => state.buildings);
   const updateBuilding = useAppStore((state) => state.updateBuilding);
   const addBuildingRemark = useAppStore((state) => state.addBuildingRemark);
+  const saveRemarksToStorage = useAppStore((state) => state.saveRemarksToStorage);
   const windData = useAppStore((state) => state.windData);
   const timePeriod = useAppStore((state) => state.timePeriod);
+
+  const [saveFeedback, setSaveFeedback] = useState(false);
+
+  const handleSaveRemark = useCallback(() => {
+    saveRemarksToStorage();
+    setSaveFeedback(true);
+    setTimeout(() => setSaveFeedback(false), 2000);
+  }, [saveRemarksToStorage]);
 
   const selectedBuilding = buildings.find((b) => b.id === selectedEntity);
 
@@ -255,11 +264,25 @@ export function RightPanel() {
               />
             </div>
             <button
-              onClick={() => {}}
-              className="w-full flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+              onClick={handleSaveRemark}
+              className={cn(
+                'w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm transition-all duration-300',
+                saveFeedback
+                  ? 'bg-green-500 text-white'
+                  : 'bg-cyan-500 hover:bg-cyan-600 text-white'
+              )}
             >
-              <Save className="w-4 h-4" />
-              保存备注
+              {saveFeedback ? (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  已保存至本地
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  保存备注
+                </>
+              )}
             </button>
             {selectedBuilding.remarks && (
               <div className="mt-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">

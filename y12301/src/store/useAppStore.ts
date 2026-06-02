@@ -12,6 +12,30 @@ import { detectOverlaps } from '../engine/overlapDetector';
 import { detectSetbackErrors } from '../engine/setbackDetector';
 import { detectWindGaps } from '../engine/windGapDetector';
 
+const REMARKS_STORAGE_KEY = 'wind-corridor-building-remarks';
+
+function loadPersistedRemarks(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(REMARKS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function persistRemarks(remarks: Record<string, string>) {
+  try {
+    localStorage.setItem(REMARKS_STORAGE_KEY, JSON.stringify(remarks));
+  } catch {}
+}
+
+function applyPersistedRemarks(buildings: BuildingBlock[]): BuildingBlock[] {
+  const persisted = loadPersistedRemarks();
+  return buildings.map((b) =>
+    persisted[b.id] !== undefined ? { ...b, remarks: persisted[b.id] } : b
+  );
+}
+
 interface AppState {
   buildings: BuildingBlock[];
   windData: Record<TimePeriod, WindDirection[]>;
@@ -45,10 +69,12 @@ interface AppState {
   unresolveAnomaly: (id: string) => void;
 
   addBuildingRemark: (buildingId: string, remark: string) => void;
+  saveRemarksToStorage: () => void;
+  exportReport: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  buildings: mockBuildings,
+  buildings: applyPersistedRemarks(mockBuildings),
   windData: mockWindData,
   openSpaces: mockOpenSpaces,
   anomalies: [],
@@ -168,5 +194,73 @@ export const useAppStore = create<AppState>((set, get) => ({
         b.id === buildingId ? { ...b, remarks: remark } : b
       ),
     }));
+  },
+
+  saveRemarksToStorage: () => {
+    const { buildings } = get();
+    const remarksMap: Record<string, string> = {};
+    buildings.forEach((b) => {
+      if (b.remarks) {
+        remarksMap[b.id] = b.remarks;
+      }
+    });
+    persistRemarks(remarksMap);
+  },
+
+  exportReport: () => {
+    const { buildings, anomalies, windData, timePeriod, openSpaces } = get();
+
+    const unresolvedErrors = anomalies.filter((a) => !a.resolved && a.severity === 'error');
+    const unresolvedWarnings = anomalies.filter((a) => !a.resolved && a.severity === 'warning');
+    const resolvedItems = anomalies.filter((a) => a.resolved);
+
+    const report = {
+      exportTime: new Date().toISOString(),
+      timePeriod,
+      summary: {
+        totalBuildings: buildings.length,
+        totalAnomalies: anomalies.length,
+        errorCount: unresolvedErrors.length,
+        warningCount: unresolvedWarnings.length,
+        resolvedCount: resolvedItems.length,
+      },
+      buildings: buildings.map((b) => ({
+        id: b.id,
+        name: b.name,
+        position: b.position,
+        dimensions: b.dimensions,
+        setbackDistance: b.setbackDistance,
+        requiredSetback: b.requiredSetback,
+        status: b.status,
+        remarks: b.remarks || '',
+      })),
+      windData: windData[timePeriod],
+      openSpaces: openSpaces.map((s) => ({
+        id: s.id,
+        name: s.name,
+        position: s.position,
+        area: s.area,
+        type: s.type,
+      })),
+      anomalies: anomalies.map((a) => ({
+        id: a.id,
+        type: a.type,
+        severity: a.severity,
+        reason: a.reason,
+        suggestion: a.suggestion,
+        relatedEntities: a.relatedEntities,
+        resolved: a.resolved,
+      })),
+    };
+
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `wind-corridor-report-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   },
 }));

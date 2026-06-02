@@ -8,6 +8,7 @@ import { BuildingMesh } from './BuildingMesh';
 import { WindCorridor } from './WindCorridor';
 import { OpenSpaceMesh } from './OpenSpaceMesh';
 import { AnomalyMarker } from './AnomalyMarker';
+import { WindRose } from './WindRose';
 import { SITE_BOUNDARY } from '../../data/mockData';
 
 function CameraController({
@@ -139,6 +140,14 @@ function SceneContent() {
           .map((wind, index) => (
             <WindCorridor key={index} wind={wind} siteSize={120} />
           ))}
+
+      {layers.windRose && (
+        <WindRose
+          windData={currentWindData}
+          position={[SITE_BOUNDARY.maxX - 25, 0.2, SITE_BOUNDARY.minZ + 25]}
+          radius={18}
+        />
+      )}
 
       {anomalies
         .filter((a) => !a.resolved)
