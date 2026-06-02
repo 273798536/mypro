@@ -107,7 +107,7 @@ export default function AnomalyList() {
                             {exp.materialId || '未命名材料'}
                           </span>
                           <span className="text-xs text-red-600">
-                            #{exp.rowIndex !== undefined ? exp.rowIndex + 1 : '-'}
+                            {exp.temperaturePoints.length}点 · {exp.sourceFile}
                           </span>
                         </div>
                         <div className="text-xs text-red-700 space-y-0.5">

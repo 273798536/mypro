@@ -46,20 +46,19 @@ export function parseCSV(content: string, fileName: string): ParseResult {
   const experiments: Experiment[] = [];
   const batchId = `batch-${Date.now()}`;
 
-  const groupedByRow: Map<number, TemperaturePoint[]> = new Map();
-  const rowMetadata: Map<
-    number,
+  const groupedByKey: Map<string, TemperaturePoint[]> = new Map();
+  const groupMetadata: Map<
+    string,
     { materialId: string | null; thickness: number | null; boundaryTemp: number | null }
   > = new Map();
 
-  dataRows.forEach((line, rowIndex) => {
+  dataRows.forEach((line) => {
     const values = line.split(',').map((v) => v.trim());
 
     const time = parseFloat(values[timeIdx]);
     const temp = parseFloat(values[tempIdx]);
 
     if (isNaN(time) || isNaN(temp)) {
-      errors.push(`第 ${rowIndex + 2} 行: 时间或温度值无效`);
       return;
     }
 
@@ -82,17 +81,34 @@ export function parseCSV(content: string, fileName: string): ParseResult {
         ? parseFloat(values[boundaryIdx])
         : null;
 
-    const rowKey = rowIndex;
-    if (!groupedByRow.has(rowKey)) {
-      groupedByRow.set(rowKey, []);
-      rowMetadata.set(rowKey, { materialId, thickness, boundaryTemp });
+    const groupKey = materialId
+      ? `${materialId}::${fileName}`
+      : `__no_material__::${fileName}`;
+
+    if (!groupedByKey.has(groupKey)) {
+      groupedByKey.set(groupKey, []);
+      groupMetadata.set(groupKey, {
+        materialId,
+        thickness,
+        boundaryTemp,
+      });
+    } else {
+      const existing = groupMetadata.get(groupKey)!;
+      if (existing.thickness == null && thickness != null) {
+        existing.thickness = thickness;
+      }
+      if (existing.boundaryTemp == null && boundaryTemp != null) {
+        existing.boundaryTemp = boundaryTemp;
+      }
     }
-    groupedByRow.get(rowKey)!.push(point);
+
+    groupedByKey.get(groupKey)!.push(point);
   });
 
-  groupedByRow.forEach((points, rowKey) => {
-    const metadata = rowMetadata.get(rowKey)!;
-    const expId = `exp-${batchId}-${rowKey}`;
+  let groupIndex = 0;
+  groupedByKey.forEach((points, groupKey) => {
+    const metadata = groupMetadata.get(groupKey)!;
+    const expId = `exp-${batchId}-${groupIndex}`;
 
     const sortedPoints = [...points].sort((a, b) => a.time - b.time);
 
@@ -108,8 +124,9 @@ export function parseCSV(content: string, fileName: string): ParseResult {
       isLocked: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      rowIndex: rowKey,
     });
+
+    groupIndex++;
   });
 
   return { experiments, errors, totalRows: dataRows.length };

@@ -135,7 +135,7 @@ export default function ResultPanel() {
                             {exp?.materialId || '未知材料'}
                           </span>
                           <span className="text-xs text-slate-500">
-                            #{exp?.rowIndex !== undefined ? exp.rowIndex + 1 : '-'}
+                            {exp?.temperaturePoints.length}点 · {exp?.sourceFile}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">

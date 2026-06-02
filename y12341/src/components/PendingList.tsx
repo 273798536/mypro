@@ -80,7 +80,7 @@ export default function PendingList() {
                           {exp.materialId || '未命名材料'}
                         </span>
                         <span className="text-xs text-amber-600">
-                          #{exp.rowIndex !== undefined ? exp.rowIndex + 1 : '-'}
+                          {exp.temperaturePoints.length}点 · {exp.sourceFile}
                         </span>
                       </div>
                       <div className="text-xs text-amber-700 space-y-0.5">
