@@ -105,6 +105,7 @@ function buildNormalResultData(
       return {
         '实验ID': r.experimentId,
         '材料编号': exp?.materialId || '',
+        '批次': exp?.batchNumber || '',
         '厚度_m': exp?.thickness ?? '',
         '边界温度_°C': exp?.boundaryTemp ?? '',
         '数据点数': exp?.temperaturePoints.length ?? 0,
@@ -129,6 +130,7 @@ function buildPendingData(
     return {
       '实验ID': exp.id,
       '材料编号': exp.materialId || '(未填写)',
+      '批次': exp.batchNumber || '',
       '厚度_m': exp.thickness ?? '(未填写)',
       '边界温度_°C': exp.boundaryTemp ?? '(未填写)',
       '数据点数': exp.temperaturePoints.length,
@@ -152,6 +154,7 @@ function buildAnomalyData(
     return {
       '实验ID': a.experimentId,
       '材料编号': exp?.materialId || '',
+      '批次': exp?.batchNumber || '',
       '异常类型': ANOMALY_TYPE_LABELS[a.type],
       '严重程度': a.severity === 'error' ? '错误' : '警告',
       '异常说明': a.description,
@@ -210,16 +213,20 @@ function buildSummaryData(
 function convertToCSV(data: any[]): string {
   if (data.length === 0) return '';
 
-  const headers = Object.keys(data[0]);
-  const headerLine = headers.join(',');
+  const allKeys = new Set<string>();
+  data.forEach((row) => Object.keys(row).forEach((k) => allKeys.add(k)));
+  const headers = Array.from(allKeys);
+  const headerLine = headers.map((h) => `"${h.replace(/"/g, '""')}"`).join(',');
 
   const lines = data.map((row) =>
     headers.map((h) => {
       const value = row[h];
-      if (typeof value === 'string' && (value.includes(',') || value.includes('\n'))) {
-        return `"${value.replace(/"/g, '""')}"`;
+      if (value == null || value === undefined) return '';
+      const strValue = String(value);
+      if (strValue.includes(',') || strValue.includes('\n') || strValue.includes('"')) {
+        return `"${strValue.replace(/"/g, '""')}"`;
       }
-      return value;
+      return strValue;
     }).join(',')
   );
 

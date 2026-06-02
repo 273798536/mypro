@@ -24,6 +24,7 @@ export interface Experiment {
   temperaturePoints: TemperaturePoint[];
   sourceFile: string;
   batchId: string;
+  batchNumber: string | null;
   status: ExperimentStatus;
   isLocked: boolean;
   createdAt: string;
@@ -80,6 +81,7 @@ export interface CSVMapping {
   thicknessColumn?: string;
   boundaryTempColumn?: string;
   sensorColumn?: string;
+  batchColumn?: string;
 }
 
 export const ANOMALY_TYPE_LABELS: Record<AnomalyType, string> = {

@@ -127,6 +127,9 @@ export default function DataTable() {
                   材料编号
                 </th>
                 <th className="px-3 py-2 text-left text-slate-600 font-medium border-b border-slate-200">
+                  批次
+                </th>
+                <th className="px-3 py-2 text-left text-slate-600 font-medium border-b border-slate-200">
                   厚度 (m)
                 </th>
                 <th className="px-3 py-2 text-left text-slate-600 font-medium border-b border-slate-200">
@@ -184,6 +187,11 @@ export default function DataTable() {
                         )}
                       </div>
                     )}
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className="text-slate-600 font-mono text-xs">
+                      {exp.batchNumber || '-'}
+                    </span>
                   </td>
                   <td className="px-3 py-2">
                     {editingCell?.id === exp.id && editingCell?.field === 'thickness' ? (

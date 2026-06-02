@@ -1,19 +1,15 @@
-import type { Experiment, TemperaturePoint, CSVMapping } from '@/types';
+const fs = require('fs');
+const path = require('path');
 
-export interface ParseResult {
-  experiments: Experiment[];
-  errors: string[];
-  totalRows: number;
-}
-
-export function parseCSV(content: string, fileName: string): ParseResult {
+// 模拟 csvParser.ts 的核心逻辑
+function parseCSV(content, fileName) {
   const lines = content.trim().split(/\r?\n/);
   if (lines.length < 2) {
     return { experiments: [], errors: ['CSV文件为空或数据不足'], totalRows: 0 };
   }
 
   const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
-  const errors: string[] = [];
+  const errors = [];
 
   const timeIdx = headers.findIndex(
     (h) => h.includes('time') || h.includes('时间') || h.includes('t(s)') || h === 't'
@@ -30,9 +26,6 @@ export function parseCSV(content: string, fileName: string): ParseResult {
   const boundaryIdx = headers.findIndex(
     (h) => h.includes('boundary') || h.includes('边界') || h.includes('t_boundary')
   );
-  const sensorIdx = headers.findIndex(
-    (h) => h.includes('sensor') || h.includes('传感器')
-  );
   const batchIdx = headers.findIndex(
     (h) => h.includes('batch') || h.includes('批次')
   );
@@ -43,14 +36,11 @@ export function parseCSV(content: string, fileName: string): ParseResult {
   }
 
   const dataRows = lines.slice(1).filter((line) => line.trim().length > 0);
-  const experiments: Experiment[] = [];
+  const experiments = [];
   const batchId = `batch-${Date.now()}`;
 
-  const groupedByKey: Map<string, TemperaturePoint[]> = new Map();
-  const groupMetadata: Map<
-    string,
-    { materialId: string | null; thickness: number | null; boundaryTemp: number | null; batchNumber: string | null }
-  > = new Map();
+  const groupedByKey = new Map();
+  const groupMetadata = new Map();
 
   dataRows.forEach((line) => {
     const values = line.split(',').map((v) => v.trim());
@@ -62,11 +52,7 @@ export function parseCSV(content: string, fileName: string): ParseResult {
       return;
     }
 
-    const point: TemperaturePoint = {
-      time,
-      temperature: temp,
-      sensorId: sensorIdx >= 0 ? parseInt(values[sensorIdx]) || 1 : 1,
-    };
+    const point = { time, temperature: temp };
 
     const materialId =
       materialIdx >= 0 && values[materialIdx]
@@ -85,7 +71,7 @@ export function parseCSV(content: string, fileName: string): ParseResult {
         ? values[batchIdx].toString()
         : null;
 
-    const keyParts: string[] = [];
+    const keyParts = [];
     if (materialId) keyParts.push(materialId);
     if (batchNumber) keyParts.push(batchNumber);
     keyParts.push(fileName);
@@ -103,7 +89,7 @@ export function parseCSV(content: string, fileName: string): ParseResult {
         batchNumber,
       });
     } else {
-      const existing = groupMetadata.get(groupKey)!;
+      const existing = groupMetadata.get(groupKey);
       if (existing.thickness == null && thickness != null) {
         existing.thickness = thickness;
       }
@@ -115,12 +101,12 @@ export function parseCSV(content: string, fileName: string): ParseResult {
       }
     }
 
-    groupedByKey.get(groupKey)!.push(point);
+    groupedByKey.get(groupKey).push(point);
   });
 
   let groupIndex = 0;
   groupedByKey.forEach((points, groupKey) => {
-    const metadata = groupMetadata.get(groupKey)!;
+    const metadata = groupMetadata.get(groupKey);
     const expId = `exp-${batchId}-${groupIndex}`;
 
     const sortedPoints = [...points].sort((a, b) => a.time - b.time);
@@ -130,10 +116,10 @@ export function parseCSV(content: string, fileName: string): ParseResult {
       materialId: metadata.materialId,
       thickness: metadata.thickness,
       boundaryTemp: metadata.boundaryTemp,
+      batchNumber: metadata.batchNumber,
       temperaturePoints: sortedPoints,
       sourceFile: fileName,
       batchId,
-      batchNumber: metadata.batchNumber,
       status: 'pending',
       isLocked: false,
       createdAt: new Date().toISOString(),
@@ -146,44 +132,45 @@ export function parseCSV(content: string, fileName: string): ParseResult {
   return { experiments, errors, totalRows: dataRows.length };
 }
 
-export function detectColumns(content: string): CSVMapping | null {
-  const firstLine = content.split(/\r?\n/)[0];
-  if (!firstLine) return null;
+// 测试
+const testCases = [
+  'material_A_copper.csv',
+  'multi_batch_copper.csv',
+  'temp_only_later_fill.csv',
+  'anomaly_boundary_jump.csv',
+];
 
-  const headers = firstLine.split(',').map((h) => h.trim().toLowerCase());
+console.log('=== CSV 解析聚合逻辑测试 ===\n');
 
-  const mapping: CSVMapping = {
-    timeColumn: '',
-    tempColumn: '',
-  };
-
-  for (const h of headers) {
-    if ((h.includes('time') || h.includes('时间') || h.includes('t(s)')) && !mapping.timeColumn) {
-      mapping.timeColumn = h;
-    }
-    if ((h.includes('temp') || h.includes('温度') || h.includes('°c')) && !mapping.tempColumn) {
-      mapping.tempColumn = h;
-    }
-    if (h.includes('material') || h.includes('材料') || h.includes('id')) {
-      mapping.materialColumn = h;
-    }
-    if (h.includes('thick') || h.includes('厚度')) {
-      mapping.thicknessColumn = h;
-    }
-    if (h.includes('boundary') || h.includes('边界')) {
-      mapping.boundaryTempColumn = h;
-    }
-    if (h.includes('sensor') || h.includes('传感器')) {
-      mapping.sensorColumn = h;
-    }
-    if (h.includes('batch') || h.includes('批次')) {
-      mapping.batchColumn = h;
-    }
+testCases.forEach((fileName) => {
+  const filePath = path.join(__dirname, 'sample_data', fileName);
+  if (!fs.existsSync(filePath)) {
+    console.log(`❌ ${fileName}: 文件不存在`);
+    return;
   }
 
-  return mapping.timeColumn && mapping.tempColumn ? mapping : null;
-}
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const result = parseCSV(content, fileName);
 
-export function generateId(): string {
-  return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
+  console.log(`📄 ${fileName}`);
+  console.log(`   总行数: ${result.totalRows}`);
+  console.log(`   解析后实验数: ${result.experiments.length}`);
+  
+  if (result.errors.length > 0) {
+    console.log(`   错误: ${result.errors.join(', ')}`);
+  }
+
+  result.experiments.forEach((exp, idx) => {
+    console.log(`   实验 ${idx + 1}:`);
+    console.log(`     材料: ${exp.materialId || '无'}`);
+    console.log(`     批次: ${exp.batchNumber || '无'}`);
+    console.log(`     温度点数: ${exp.temperaturePoints.length}`);
+    console.log(`     厚度: ${exp.thickness ?? '无'}`);
+    console.log(`     边界温度: ${exp.boundaryTemp ?? '无'}`);
+    console.log(`     时间范围: ${exp.temperaturePoints[0]?.time}s - ${exp.temperaturePoints[exp.temperaturePoints.length - 1]?.time}s`);
+    console.log(`     温度范围: ${exp.temperaturePoints[0]?.temperature}°C - ${exp.temperaturePoints[exp.temperaturePoints.length - 1]?.temperature}°C`);
+  });
+  console.log();
+});
+
+console.log('=== 测试完成 ===');
