@@ -92,7 +92,7 @@ router.post('/batches/:id/materials', (req: Request, res: Response) => {
 
     const material = db.prepare('SELECT * FROM material WHERE id = ?').get(id)
     res.status(201).json({ success: true, data: material })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to add material' })
   }
 })
@@ -107,7 +107,7 @@ router.get('/batches/:id/materials', (req: Request, res: Response) => {
 
     const materials = db.prepare('SELECT * FROM material WHERE batch_id = ?').all(req.params.id)
     res.json({ success: true, data: materials })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to list materials' })
   }
 })
@@ -122,7 +122,7 @@ router.delete('/materials/:id', (req: Request, res: Response) => {
 
     db.prepare('DELETE FROM material WHERE id = ?').run(req.params.id)
     res.json({ success: true, data: { id: req.params.id } })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to delete material' })
   }
 })
@@ -165,7 +165,7 @@ router.patch('/materials/:id', (req: Request, res: Response) => {
 
     const updated = db.prepare('SELECT * FROM material WHERE id = ?').get(req.params.id)
     res.json({ success: true, data: updated })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to update material' })
   }
 })

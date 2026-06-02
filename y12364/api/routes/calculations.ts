@@ -86,7 +86,7 @@ router.post('/batches/:id/calculate', (req: Request, res: Response) => {
 
     const result = db.prepare('SELECT * FROM lift_drag_result WHERE batch_id = ?').get(req.params.id)
     res.json({ success: true, data: result })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to calculate lift/drag' })
   }
 })
@@ -106,7 +106,7 @@ router.get('/batches/:id/calculate', (req: Request, res: Response) => {
     }
 
     res.json({ success: true, data: result })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to get calculation result' })
   }
 })

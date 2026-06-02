@@ -3,13 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronDown, ChevronRight, X } from 'lucide-react'
 import { useAnomalyStore, type Anomaly } from '@/stores/anomalyStore'
 import AnomalyTypeBadge from '@/components/AnomalyTypeBadge'
-import StatusBadge from '@/components/StatusBadge'
-
-const anomalyTypeLabels: Record<string, string> = {
-  zero_drift: '零点漂移',
-  angle_exceed: '迎角越界',
-  speed_missing: '速度缺采',
-}
 
 const statusMap: Record<string, string> = {
   open: '待处理',

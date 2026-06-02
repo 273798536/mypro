@@ -31,7 +31,7 @@ router.get('/', (req: Request, res: Response) => {
 
     const anomalies = db.prepare(sql).all(...params)
     res.json({ success: true, data: anomalies })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to list anomalies' })
   }
 })
@@ -55,7 +55,7 @@ router.get('/:id', (req: Request, res: Response) => {
         batch
       }
     })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to get anomaly' })
   }
 })
@@ -95,7 +95,7 @@ router.patch('/:id', (req: Request, res: Response) => {
 
     const updated = db.prepare('SELECT * FROM anomaly WHERE id = ?').get(req.params.id)
     res.json({ success: true, data: updated })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to update anomaly' })
   }
 })
@@ -121,7 +121,7 @@ router.patch('/:id/resolve', (req: Request, res: Response) => {
 
     const updated = db.prepare('SELECT * FROM anomaly WHERE id = ?').get(req.params.id)
     res.json({ success: true, data: updated })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to resolve anomaly' })
   }
 })

@@ -35,7 +35,7 @@ router.get('/batches/:id/report', (req: Request, res: Response) => {
         zero_correction_specs: zeroCorrectionSpecs
       }
     })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to get report preview' })
   }
 })
@@ -62,7 +62,7 @@ router.post('/batches/:id/report/export', (req: Request, res: Response) => {
 
     const report = db.prepare('SELECT * FROM report WHERE id = ?').get(id)
     res.status(201).json({ success: true, data: report })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to export report' })
   }
 })

@@ -31,7 +31,7 @@ router.get('/', (req: Request, res: Response) => {
 
     const batches = db.prepare(sql).all(...params)
     res.json({ success: true, data: batches })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to list batches' })
   }
 })
@@ -57,7 +57,7 @@ router.post('/', (req: Request, res: Response) => {
 
     const batch = db.prepare('SELECT * FROM batch WHERE id = ?').get(id)
     res.status(201).json({ success: true, data: batch })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to create batch' })
   }
 })
@@ -81,7 +81,7 @@ router.get('/:id', (req: Request, res: Response) => {
         anomaly_count: anomalyCount.count
       }
     })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to get batch' })
   }
 })
@@ -123,7 +123,7 @@ router.patch('/:id', (req: Request, res: Response) => {
 
     const updated = db.prepare('SELECT * FROM batch WHERE id = ?').get(req.params.id)
     res.json({ success: true, data: updated })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to update batch' })
   }
 })
@@ -146,10 +146,6 @@ router.patch('/:id/status', (req: Request, res: Response) => {
 
     const openAnomalyCount = db.prepare(
       "SELECT COUNT(*) as count FROM anomaly WHERE batch_id = ? AND status = 'open'"
-    ).get(req.params.id) as { count: number }
-
-    const resolvedAnomalyCount = db.prepare(
-      "SELECT COUNT(*) as count FROM anomaly WHERE batch_id = ? AND status = 'resolved'"
     ).get(req.params.id) as { count: number }
 
     const totalAnomalyCount = db.prepare(
@@ -184,7 +180,7 @@ router.patch('/:id/status', (req: Request, res: Response) => {
 
     const updated = db.prepare('SELECT * FROM batch WHERE id = ?').get(req.params.id)
     res.json({ success: true, data: updated })
-  } catch (error) {
+  } catch {
     res.status(500).json({ success: false, error: 'Failed to update status' })
   }
 })
