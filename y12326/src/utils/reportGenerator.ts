@@ -1,59 +1,22 @@
 import type { AuditReport, FeatureEntry, CustomerGroup, ConflictRecord } from "@/types"
 
+function escHtml(str: string | number | undefined): string {
+  if (str === undefined || str === null) return ""
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+}
+
 export function generateJSONReport(report: AuditReport): string {
   return JSON.stringify(report, null, 2)
 }
 
 export function generateHTMLReport(report: AuditReport): string {
   const formatTime = (ts: number) => new Date(ts).toLocaleString("zh-CN")
-
-  const leakageRows = report.leakageFeatures
-    .map(
-      (f) => `
-      <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${f.name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${(f.importance * 100).toFixed(2)}%</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;color:#ef4444;">${f.leakageReason || "疑似泄漏"}</td>
-      </tr>`
-    )
-    .join("")
-
-  const sparseRows = report.sparseGroups
-    .map(
-      (g) => `
-      <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${g.groupName}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${g.sampleCount}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${Object.values(g.featureCoverage).filter((c) => c < 0.5).length} 个特征覆盖率 &lt;50%</td>
-      </tr>`
-    )
-    .join("")
-
-  const conflictRows = report.conflicts
-    .map(
-      (c) => `
-      <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${c.type}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;color:${c.severity === "high" ? "#ef4444" : c.severity === "medium" ? "#f59e0b" : "#06b6d4"};">${c.severity}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${c.description}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${c.resolution || "待处理"}</td>
-      </tr>`
-    )
-    .join("")
-
-  const topFeatures = report.featureImportance.slice(0, 20)
-  const featureRows = topFeatures
-    .map(
-      (f, i) => `
-      <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${i + 1}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${f.isLeakage ? "color:#ef4444;font-weight:bold;" : ""}">${f.name}${f.isLeakage ? " ⚠" : ""}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${(f.importance * 100).toFixed(2)}%</td>
-      </tr>`
-    )
-    .join("")
-
   const detail = report.auditDetail
+
   const groupSourceText = {
     training_only: "仅使用训练样本中的 group_id",
     group_file: "完全来自客户分组文件",
@@ -68,7 +31,7 @@ export function generateHTMLReport(report: AuditReport): string {
           <span class="badge badge-${v.source}">${v.source === "training" ? "训练样本" : v.source === "feature" ? "特征列表" : "客户分组"}</span>
         </td>
         <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${v.isLate ? "color:#ef4444;font-weight:bold;" : ""}">
-          ${v.version}${v.isLate ? " ⚠ 延迟到达" : ""}
+          ${escHtml(v.version)}${v.isLate ? " ⚠ 延迟到达" : ""}
         </td>
         <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${formatTime(v.importedAt)}</td>
       </tr>`
@@ -79,11 +42,11 @@ export function generateHTMLReport(report: AuditReport): string {
     .map(
       (g) => `
       <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${g.groupId}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${g.groupName}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(g.groupId)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(g.groupName)}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${g.sampleCount === 0 ? "color:#f59e0b;" : ""}">${g.sampleCount}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">
-          ${Object.entries(g.featureCoverage).map(([f, c]) => `${f}: ${(c * 100).toFixed(0)}%`).join(" | ")}
+          ${Object.entries(g.featureCoverage).map(([f, c]) => `${escHtml(f)}: ${(c * 100).toFixed(0)}%`).join(" | ")}
         </td>
       </tr>`
     )
@@ -94,13 +57,164 @@ export function generateHTMLReport(report: AuditReport): string {
         .map(
           ([k, v]) => `
       <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${k}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(k)}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${v}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${((v / detail.calculationMeta.totalSamples) * 100).toFixed(2)}%</td>
       </tr>`
         )
         .join("")
     : ""
+
+  const allFeatureNames = report.featureImportance.map((f) => f.name)
+  const allGroupIds = detail.groups.map((g) => g.groupId)
+
+  const fullFeatureRows = report.featureImportance
+    .map(
+      (f, i) => {
+        const sparsityCells = allGroupIds
+          .map((gid) => {
+            const val = f.sparsityByGroup[gid]
+            if (val === undefined) return `<td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;color:#71717a;">—</td>`
+            const pct = (val * 100).toFixed(0)
+            const style = val < 0.5 ? "color:#f59e0b;font-weight:600;" : ""
+            return `<td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${style}">${pct}%</td>`
+          })
+          .join("")
+        return `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${i + 1}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${f.isLeakage ? "color:#ef4444;font-weight:bold;" : ""}">${escHtml(f.name)}${f.isLeakage ? " ⚠" : ""}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${(f.importance * 100).toFixed(2)}%</td>
+        ${sparsityCells}
+      </tr>`
+      }
+    )
+    .join("")
+
+  const sparsityHeaders = allGroupIds
+    .map((gid) => {
+      const g = detail.groups.find((gr) => gr.groupId === gid)
+      return `<th>${escHtml(g?.groupName || gid)}</th>`
+    })
+    .join("")
+
+  const leakageRows = report.leakageFeatures
+    .map(
+      (f) => `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(f.name)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${(f.importance * 100).toFixed(2)}%</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;color:#ef4444;">${escHtml(f.leakageReason || "疑似泄漏")}</td>
+      </tr>`
+    )
+    .join("")
+
+  const sparseRows = report.sparseGroups
+    .map(
+      (g) => `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(g.groupName)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${g.sampleCount}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${Object.values(g.featureCoverage).filter((c) => c < 0.5).length} 个特征覆盖率 &lt;50%</td>
+      </tr>`
+    )
+    .join("")
+
+  const conflictRows = report.conflicts
+    .map(
+      (c) => `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${c.type}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;color:${c.severity === "high" ? "#ef4444" : c.severity === "medium" ? "#f59e0b" : "#06b6d4"};">${c.severity}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(c.description)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(c.resolution) || "待处理"}</td>
+      </tr>`
+    )
+    .join("")
+
+  const sampleHeaderCells = ["ID", ...allFeatureNames, "目标", "分组"]
+    .map((h) => `<th>${escHtml(h)}</th>`)
+    .join("")
+
+  const sampleRows = detail.samples
+    .map(
+      (s) => {
+        const featureCells = allFeatureNames
+          .map((fname) => `<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.features[fname])}</td>`)
+          .join("")
+        return `
+      <tr>
+        <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;font-family:monospace;">${escHtml(s.id)}</td>
+        ${featureCells}
+        <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.target)}</td>
+        <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">
+          ${s.groupId ? `<span class="badge badge-group">${escHtml(s.groupId)}</span>` : '<span style="color:#71717a;">—</span>'}
+        </td>
+      </tr>`
+      }
+    )
+    .join("")
+
+  const sampleGroupMap: Record<string, string> = {}
+  for (const g of detail.groups) {
+    sampleGroupMap[g.groupId] = g.groupName
+  }
+
+  const sampleByGroupSection = detail.groups
+    .map((g) => {
+      const groupSamples = detail.samples.filter((s) => s.groupId === g.groupId)
+      if (groupSamples.length === 0) {
+        return `
+      <h3>${escHtml(g.groupName)}（${escHtml(g.groupId)}）— 0 条样本</h3>
+      <p class="empty-state">该分组无训练样本数据</p>`
+      }
+      const rows = groupSamples
+        .map((s) => {
+          const cells = allFeatureNames
+            .map((fname) => `<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.features[fname])}</td>`)
+            .join("")
+          return `
+        <tr>
+          <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;font-family:monospace;">${escHtml(s.id)}</td>
+          ${cells}
+          <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.target)}</td>
+        </tr>`
+        })
+        .join("")
+      return `
+      <h3>${escHtml(g.groupName)}（${escHtml(g.groupId)}）— ${groupSamples.length} 条样本</h3>
+      <table>
+        <thead><tr><th>ID</th>${allFeatureNames.map((f) => `<th>${escHtml(f)}</th>`).join("")}<th>目标</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`
+    })
+    .join("\n")
+
+  const unmappedSamples = detail.samples.filter(
+    (s) => s.groupId && !detail.groups.some((g) => g.groupId === s.groupId)
+  )
+  const unmappedSection =
+    unmappedSamples.length > 0
+      ? `
+    <h3>未映射分组样本 — ${unmappedSamples.length} 条</h3>
+    <table>
+      <thead><tr><th>ID</th>${allFeatureNames.map((f) => `<th>${escHtml(f)}</th>`).join("")}<th>目标</th><th>原始分组</th></tr></thead>
+      <tbody>${unmappedSamples
+        .map((s) => {
+          const cells = allFeatureNames
+            .map((fname) => `<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.features[fname])}</td>`)
+            .join("")
+          return `
+        <tr>
+          <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;font-family:monospace;">${escHtml(s.id)}</td>
+          ${cells}
+          <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.target)}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;color:#f59e0b;">${escHtml(s.groupId)}</td>
+        </tr>`
+        })
+        .join("")}</tbody>
+    </table>`
+      : ""
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -113,7 +227,7 @@ export function generateHTMLReport(report: AuditReport): string {
     h2 { color: #a1a1aa; font-size: 18px; margin-top: 32px; margin-bottom: 16px; border-bottom: 1px solid #2a2a3e; padding-bottom: 8px; }
     h3 { color: #71717a; font-size: 15px; margin-top: 20px; margin-bottom: 10px; }
     table { width: 100%; border-collapse: collapse; background: #1a1a2e; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-    th { background: #252540; padding: 10px 12px; text-align: left; color: #a1a1aa; font-weight: 600; font-size: 13px; }
+    th { background: #252540; padding: 10px 12px; text-align: left; color: #a1a1aa; font-weight: 600; font-size: 13px; white-space: nowrap; }
     td { padding: 8px 12px; border-bottom: 1px solid #2a2a33; }
     .meta { color: #71717a; font-size: 13px; margin-bottom: 24px; }
     .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 8px; }
@@ -128,18 +242,19 @@ export function generateHTMLReport(report: AuditReport): string {
     .section-divider { height: 1px; background: #2a2a33; margin: 24px 0; }
     .report-id { color: #06b6d4; font-family: monospace; font-size: 12px; }
     .empty-state { color: #71717a; padding: 16px; }
+    .table-wrap { overflow-x: auto; }
   </style>
 </head>
 <body>
   <h1>随机森林特征审计报告</h1>
   <div class="meta">
-    报告ID：<span class="report-id">${report.id}</span> &nbsp;|&nbsp;
+    报告ID：<span class="report-id">${escHtml(report.id)}</span> &nbsp;|&nbsp;
     生成时间：${formatTime(report.createdAt)}
   </div>
   <div class="meta">
-    <span class="badge badge-training">训练样本 v${report.trainingVersion}</span>
-    <span class="badge badge-feature">特征列表 v${report.featureVersion}</span>
-    <span class="badge badge-group">客户分组 v${report.groupVersion}</span>
+    <span class="badge badge-training">训练样本 v${escHtml(report.trainingVersion)}</span>
+    <span class="badge badge-feature">特征列表 v${escHtml(report.featureVersion)}</span>
+    <span class="badge badge-group">客户分组 v${escHtml(report.groupVersion)}</span>
   </div>
 
   <h2>一、数据来源与计算元数据</h2>
@@ -162,7 +277,7 @@ export function generateHTMLReport(report: AuditReport): string {
     </div>
     <div class="info-row">
       <span class="info-label">重要性计算种子</span>
-      <span class="info-value" style="font-family:monospace;font-size:12px;">${detail.calculationMeta.importanceSeedSalt}</span>
+      <span class="info-value" style="font-family:monospace;font-size:12px;">${escHtml(detail.calculationMeta.importanceSeedSalt)}</span>
     </div>
   </div>
 
@@ -183,11 +298,11 @@ export function generateHTMLReport(report: AuditReport): string {
     </div>
     <div class="info-row">
       <span class="info-label">列名</span>
-      <span class="info-value">${detail.sourceMeta.training.headers.join(", ")}</span>
+      <span class="info-value">${detail.sourceMeta.training.headers.map(escHtml).join(", ")}</span>
     </div>
     <div class="info-row">
       <span class="info-label">样本ID范围</span>
-      <span class="info-value">${detail.sourceMeta.training.sampleIdRange[0]} ~ ${detail.sourceMeta.training.sampleIdRange[1]}</span>
+      <span class="info-value">${escHtml(detail.sourceMeta.training.sampleIdRange[0])} ~ ${escHtml(detail.sourceMeta.training.sampleIdRange[1])}</span>
     </div>
   </div>
   <h3>目标变量分布</h3>
@@ -206,7 +321,7 @@ export function generateHTMLReport(report: AuditReport): string {
     </div>
     <div class="info-row">
       <span class="info-label">列名</span>
-      <span class="info-value">${detail.sourceMeta.feature.headers.join(", ")}</span>
+      <span class="info-value">${detail.sourceMeta.feature.headers.map(escHtml).join(", ")}</span>
     </div>
     <div class="info-row">
       <span class="info-label">有效特征数</span>
@@ -224,7 +339,7 @@ export function generateHTMLReport(report: AuditReport): string {
     </div>
     <div class="info-row">
       <span class="info-label">列名</span>
-      <span class="info-value">${detail.sourceMeta.group.headers.join(", ")}</span>
+      <span class="info-value">${detail.sourceMeta.group.headers.map(escHtml).join(", ")}</span>
     </div>
     <div class="info-row">
       <span class="info-label">分组数</span>
@@ -239,11 +354,13 @@ export function generateHTMLReport(report: AuditReport): string {
     <tbody>${allGroupRows}</tbody>
   </table>
 
-  <h2>五、特征重要性 Top 20</h2>
+  <h2>五、完整特征列表与分组对应</h2>
+  <div class="table-wrap">
   <table>
-    <thead><tr><th>排名</th><th>特征名</th><th>重要性</th></tr></thead>
-    <tbody>${featureRows}</tbody>
+    <thead><tr><th>排名</th><th>特征名</th><th>重要性</th>${sparsityHeaders}</tr></thead>
+    <tbody>${fullFeatureRows}</tbody>
   </table>
+  </div>
 
   <h2>六、特征泄漏检测</h2>
   ${report.leakageFeatures.length > 0 ? `<table>
@@ -257,7 +374,19 @@ export function generateHTMLReport(report: AuditReport): string {
     <tbody>${sparseRows}</tbody>
   </table>` : '<p class="empty-state">无稀疏分组</p>'}
 
-  <h2>八、冲突留痕</h2>
+  <h2>八、训练样本逐行明细</h2>
+  ${detail.samples.length > 0 ? `
+  <div class="table-wrap">
+  <table>
+    <thead><tr>${sampleHeaderCells}</tr></thead>
+    <tbody>${sampleRows}</tbody>
+  </table>
+  </div>` : '<p class="empty-state">无训练样本数据</p>'}
+
+  <h2>九、按分组查看样本明细</h2>
+  ${detail.samples.length > 0 ? `${sampleByGroupSection}${unmappedSection}` : '<p class="empty-state">无训练样本数据</p>'}
+
+  <h2>十、冲突留痕</h2>
   ${report.conflicts.length > 0 ? `<table>
     <thead><tr><th>类型</th><th>严重性</th><th>描述</th><th>处理结果</th></tr></thead>
     <tbody>${conflictRows}</tbody>
@@ -265,7 +394,7 @@ export function generateHTMLReport(report: AuditReport): string {
 
   <div class="section-divider"></div>
   <div class="meta" style="text-align:center;margin-top:24px;">
-    本报告由随机森林特征审计工具自动生成 · 报告ID ${report.id}
+    本报告由随机森林特征审计工具自动生成 · 报告ID ${escHtml(report.id)}
   </div>
 </body>
 </html>`

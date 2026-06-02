@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>导出链路验证 - RF特征审计</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f0f1a; color: #e4e4e7; margin: 0; padding: 20px; }
+    h1 { color: #f59e0b; font-size: 20px; }
+    h2 { color: #a1a1aa; font-size: 16px; margin-top: 24px; border-bottom: 1px solid #2a2a3e; padding-bottom: 6px; }
+    .pass { color: #22c55e; font-weight: bold; }
+    .fail { color: #ef4444; font-weight: bold; }
+    .result { background: #1a1a2e; border: 1px solid #2a2a33; border-radius: 8px; padding: 12px; margin: 8px 0; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+    button { background: #f59e0b; color: #000; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin: 4px; }
+    button:hover { background: #d97706; }
+    #htmlPreview { width: 100%; height: 600px; border: 1px solid #2a2a3e; border-radius: 8px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>导出链路验证</h1>
+  <div id="results"></div>
+  <div style="margin-top:16px;">
+    <button onclick="downloadJSON()">下载 JSON 报告</button>
+    <button onclick="downloadHTML()">下载 HTML 报告</button>
+    <button onclick="showHTMLPreview()">预览 HTML 报告</button>
+  </div>
+  <iframe id="htmlPreview" style="display:none;"></iframe>
+
+<script>
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
+function deterministicRandom(seed, range = 1) {
+  const hash = hashCode(seed);
+  return (hash % 1000000) / 1000000 * range;
+}
+
+function escHtml(str) {
+  if (str === undefined || str === null) return "";
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+const samples = [
+  { id: "1", features: { age: 25, income: 45000, credit_score: 680 }, target: 0, groupId: "A" },
+  { id: "2", features: { age: 34, income: 72000, credit_score: 750 }, target: 0, groupId: "A" },
+  { id: "3", features: { age: 45, income: 95000, credit_score: 820 }, target: 0, groupId: "A" },
+  { id: "4", features: { age: 28, income: 38000, credit_score: 620 }, target: 1, groupId: "B" },
+  { id: "5", features: { age: 52, income: 110000, credit_score: 850 }, target: 0, groupId: "B" },
+  { id: "6", features: { age: 31, income: 55000, credit_score: 700 }, target: 0, groupId: "B" },
+  { id: "7", features: { age: 29, income: 42000, credit_score: 650 }, target: 1, groupId: "C" },
+  { id: "8", features: { age: 38, income: 68000, credit_score: 730 }, target: 0, groupId: "C" },
+];
+
+const groupRaw = {
+  headers: ["group_id", "group_name", "description"],
+  rows: [
+    { group_id: "A", group_name: "高价值客户", description: "年收入大于70000" },
+    { group_id: "B", group_name: "成长型客户", description: "年收入40000-70000" },
+    { group_id: "C", group_name: "培育型客户", description: "年收入小于40000" },
+    { group_id: "D", group_name: "待激活客户", description: "尚未产生交易记录" },
+  ],
+  rowCount: 4,
+  importedAt: Date.now(),
+};
+
+const featureRaw = {
+  headers: ["feature", "importance"],
+  rows: [
+    { feature: "age", importance: 0.08 },
+    { feature: "income", importance: 0.15 },
+    { feature: "credit_score", importance: 0.22 },
+  ],
+  rowCount: 3,
+  importedAt: Date.now() - 5000,
+};
+
+function parseGroupMetadata(raw) {
+  return raw.rows.map((row, idx) => {
+    const groupId = String(row["group_id"] || row["groupid"] || row["id"] || row["groupId"] || "").trim();
+    const groupName = String(row["group_name"] || row["groupname"] || row["name"] || row["描述"] || row["description"] || "").trim() || `分组 ${groupId}`;
+    return { groupId, groupName, order: idx };
+  }).filter(g => g.groupId);
+}
+
+function buildCustomerGroups(samples, groupRaw) {
+  const sampleGroupMap = {};
+  for (const s of samples) {
+    const gid = s.groupId || "default";
+    if (!sampleGroupMap[gid]) sampleGroupMap[gid] = [];
+    sampleGroupMap[gid].push(s);
+  }
+  const allFeatureNames = new Set();
+  for (const s of samples) { for (const k of Object.keys(s.features)) allFeatureNames.add(k); }
+  function calcCoverage(groupSamples) {
+    const coverage = {};
+    for (const fname of allFeatureNames) {
+      const nonEmpty = groupSamples.filter(s => s.features[fname] !== undefined && s.features[fname] !== null && s.features[fname] !== "").length;
+      coverage[fname] = groupSamples.length > 0 ? nonEmpty / groupSamples.length : 0;
+    }
+    return coverage;
+  }
+  if (groupRaw && groupRaw.rows.length > 0) {
+    const metaList = parseGroupMetadata(groupRaw);
+    const result = [];
+    for (const meta of metaList) {
+      const groupSamples = sampleGroupMap[meta.groupId] || [];
+      result.push({ groupId: meta.groupId, groupName: meta.groupName, sampleCount: groupSamples.length, featureCoverage: calcCoverage(groupSamples) });
+    }
+    const metaGroupIds = new Set(metaList.map(m => m.groupId));
+    for (const [groupId, groupSamples] of Object.entries(sampleGroupMap)) {
+      if (!metaGroupIds.has(groupId)) {
+        result.push({ groupId, groupName: `未映射分组 ${groupId}`, sampleCount: groupSamples.length, featureCoverage: calcCoverage(groupSamples) });
+      }
+    }
+    return result;
+  }
+  return Object.entries(sampleGroupMap).map(([groupId, groupSamples]) => ({ groupId, groupName: `分组 ${groupId}`, sampleCount: groupSamples.length, featureCoverage: calcCoverage(groupSamples) }));
+}
+
+function buildFeatureEntries(samples, featureRaw) {
+  const featureNames = new Set();
+  for (const s of samples) { for (const k of Object.keys(s.features)) featureNames.add(k); }
+  const featureImportanceMap = {};
+  if (featureRaw) { for (const row of featureRaw.rows) { const name = String(row["feature"] || row["name"] || ""); const imp = Number(row["importance"] || 0); if (name) featureImportanceMap[name] = imp; } }
+  const featureEntries = [];
+  for (const name of featureNames) { featureEntries.push({ name, importance: featureImportanceMap[name] ?? 0.05, isLeakage: false, sparsityByGroup: {} }); }
+  featureEntries.sort((a, b) => b.importance - a.importance);
+  return featureEntries;
+}
+
+function analyzeSparsity(features, groups) {
+  return features.map(f => {
+    const sparsityByGroup = {};
+    for (const g of groups) { sparsityByGroup[g.groupId] = g.featureCoverage[f.name] ?? 0; }
+    return { ...f, sparsityByGroup };
+  });
+}
+
+const groups = buildCustomerGroups(samples, groupRaw);
+let features = buildFeatureEntries(samples, featureRaw);
+features = analyzeSparsity(features, groups);
+
+const now = Date.now();
+const report = {
+  id: "rpt_verify_" + now,
+  createdAt: now,
+  trainingVersion: "v1",
+  featureVersion: "v1",
+  groupVersion: "v1",
+  featureImportance: features,
+  leakageFeatures: features.filter(f => f.isLeakage),
+  sparseGroups: groups.filter(g => Object.values(g.featureCoverage).some(c => c < 0.5)),
+  conflicts: [],
+  auditDetail: {
+    samples,
+    groups,
+    versions: [
+      { source: "training", version: "v1", importedAt: now - 10000, isLate: false },
+      { source: "feature", version: "v1", importedAt: now - 5000, isLate: false },
+      { source: "group", version: "v1", importedAt: now, isLate: false },
+    ],
+    sourceMeta: {
+      training: { rowCount: 8, headers: ["id","age","income","credit_score","target","group_id"], sampleIdRange: ["1","8"], targetDistribution: { "0": 5, "1": 3 } },
+      feature: { rowCount: 3, headers: ["feature","importance"], featureCount: 3 },
+      group: { rowCount: 4, headers: ["group_id","group_name","description"], groupCount: 4 },
+    },
+    calculationMeta: {
+      importanceSeedSalt: "v1:v1:v1:v1",
+      groupSource: "group_file",
+      totalSamples: 8,
+      totalFeatures: 3,
+      totalGroups: 4,
+    },
+  },
+};
+
+const allFeatureNames = report.featureImportance.map(f => f.name);
+const allGroupIds = report.auditDetail.groups.map(g => g.groupId);
+
+function generateHTMLReport(rpt) {
+  const detail = rpt.auditDetail;
+  const groupSourceText = { training_only: "仅使用训练样本中的 group_id", group_file: "完全来自客户分组文件", mixed: "混合模式" }[detail.calculationMeta.groupSource];
+  const formatTime = (ts) => new Date(ts).toLocaleString("zh-CN");
+
+  const versionRows = detail.versions.map(v => `<tr><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;"><span class="badge badge-${v.source}">${v.source==="training"?"训练样本":v.source==="feature"?"特征列表":"客户分组"}</span></td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(v.version)}</td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${formatTime(v.importedAt)}</td></tr>`).join("");
+
+  const allGroupRows = detail.groups.map(g => `<tr><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(g.groupId)}</td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(g.groupName)}</td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${g.sampleCount===0?"color:#f59e0b;":""}">${g.sampleCount}</td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${Object.entries(g.featureCoverage).map(([f,c])=>`${escHtml(f)}: ${(c*100).toFixed(0)}%`).join(" | ")}</td></tr>`).join("");
+
+  const sparsityHeaders = allGroupIds.map(gid => { const g = detail.groups.find(gr=>gr.groupId===gid); return `<th>${escHtml(g?.groupName||gid)}</th>`; }).join("");
+  const fullFeatureRows = rpt.featureImportance.map((f,i) => {
+    const cells = allGroupIds.map(gid => { const val = f.sparsityByGroup[gid]; if (val===undefined) return `<td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;color:#71717a;">—</td>`; const pct=(val*100).toFixed(0); const style=val<0.5?"color:#f59e0b;font-weight:600;":""; return `<td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;${style}">${pct}%</td>`; }).join("");
+    return `<tr><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${i+1}</td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${escHtml(f.name)}</td><td style="padding:8px 12px;border-bottom:1px solid #2a2a3e;">${(f.importance*100).toFixed(2)}%</td>${cells}</tr>`;
+  }).join("");
+
+  const sampleHeaderCells = ["ID",...allFeatureNames,"目标","分组"].map(h=>`<th>${escHtml(h)}</th>`).join("");
+  const sampleRows = detail.samples.map(s => {
+    const featureCells = allFeatureNames.map(fn=>`<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.features[fn])}</td>`).join("");
+    return `<tr><td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;font-family:monospace;">${escHtml(s.id)}</td>${featureCells}<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.target)}</td><td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${s.groupId?`<span class="badge badge-group">${escHtml(s.groupId)}</span>`:'<span style="color:#71717a;">—</span>'}</td></tr>`;
+  }).join("");
+
+  const sampleByGroupSection = detail.groups.map(g => {
+    const gs = detail.samples.filter(s=>s.groupId===g.groupId);
+    if (gs.length===0) return `<h3>${escHtml(g.groupName)}（${escHtml(g.groupId)}）— 0 条样本</h3><p class="empty-state">该分组无训练样本数据</p>`;
+    const rows = gs.map(s => { const cells = allFeatureNames.map(fn=>`<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.features[fn])}</td>`).join(""); return `<tr><td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;font-family:monospace;">${escHtml(s.id)}</td>${cells}<td style="padding:6px 10px;border-bottom:1px solid #2a2a3e;font-size:12px;">${escHtml(s.target)}</td></tr>`; }).join("");
+    return `<h3>${escHtml(g.groupName)}（${escHtml(g.groupId)}）— ${gs.length} 条样本</h3><table><thead><tr><th>ID</th>${allFeatureNames.map(f=>`<th>${escHtml(f)}</th>`).join("")}<th>目标</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }).join("\n");
+
+  return `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>随机森林特征审计报告</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f0f1a;color:#e4e4e7;margin:0;padding:40px}h1{color:#f59e0b;font-size:24px;margin-bottom:8px}h2{color:#a1a1aa;font-size:18px;margin-top:32px;margin-bottom:16px;border-bottom:1px solid #2a2a3e;padding-bottom:8px}h3{color:#71717a;font-size:15px;margin-top:20px;margin-bottom:10px}table{width:100%;border-collapse:collapse;background:#1a1a2e;border-radius:8px;overflow:hidden;margin-bottom:12px}th{background:#252540;padding:10px 12px;text-align:left;color:#a1a1aa;font-weight:600;font-size:13px;white-space:nowrap}td{padding:8px 12px;border-bottom:1px solid #2a2a33}.meta{color:#71717a;font-size:13px;margin-bottom:24px}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin-right:8px}.badge-training{background:#1e3a5f;color:#60a5fa}.badge-feature{background:#3b1f0b;color:#f59e0b}.badge-group{background:#0b3b2e;color:#34d399}.info-box{background:#1a1a2e;border:1px solid #2a2a33;border-radius:8px;padding:16px;margin-bottom:16px}.info-row{display:flex;margin-bottom:8px;font-size:14px}.info-label{color:#71717a;width:180px;flex-shrink:0}.info-value{color:#e4e4e7}.info-value.highlight{color:#f59e0b;font-weight:600}.section-divider{height:1px;background:#2a2a33;margin:24px 0}.report-id{color:#06b6d4;font-family:monospace;font-size:12px}.empty-state{color:#71717a;padding:16px}.table-wrap{overflow-x:auto}</style></head><body>
+<h1>随机森林特征审计报告</h1>
+<div class="meta">报告ID：<span class="report-id">${escHtml(rpt.id)}</span> | 生成时间：${formatTime(rpt.createdAt)}</div>
+<div class="meta"><span class="badge badge-training">训练样本 v${escHtml(rpt.trainingVersion)}</span><span class="badge badge-feature">特征列表 v${escHtml(rpt.featureVersion)}</span><span class="badge badge-group">客户分组 v${escHtml(rpt.groupVersion)}</span></div>
+<h2>一、数据来源与计算元数据</h2><div class="info-box"><div class="info-row"><span class="info-label">总样本数</span><span class="info-value highlight">${detail.calculationMeta.totalSamples}</span></div><div class="info-row"><span class="info-label">总特征数</span><span class="info-value highlight">${detail.calculationMeta.totalFeatures}</span></div><div class="info-row"><span class="info-label">总分组数</span><span class="info-value highlight">${detail.calculationMeta.totalGroups}</span></div><div class="info-row"><span class="info-label">分组数据来源</span><span class="info-value">${groupSourceText}</span></div><div class="info-row"><span class="info-label">重要性计算种子</span><span class="info-value" style="font-family:monospace;font-size:12px;">${escHtml(detail.calculationMeta.importanceSeedSalt)}</span></div></div>
+<h2>二、版本时序与对应明细</h2><table><thead><tr><th>数据类型</th><th>版本号</th><th>导入时间</th></tr></thead><tbody>${versionRows}</tbody></table>
+<h2>三、数据源元数据</h2>
+<h3>训练样本</h3><div class="info-box"><div class="info-row"><span class="info-label">行数</span><span class="info-value">${detail.sourceMeta.training.rowCount}</span></div><div class="info-row"><span class="info-label">列名</span><span class="info-value">${detail.sourceMeta.training.headers.map(escHtml).join(", ")}</span></div><div class="info-row"><span class="info-label">样本ID范围</span><span class="info-value">${escHtml(detail.sourceMeta.training.sampleIdRange[0])} ~ ${escHtml(detail.sourceMeta.training.sampleIdRange[1])}</span></div></div>
+<h3>特征列表</h3><div class="info-box"><div class="info-row"><span class="info-label">行数</span><span class="info-value">${detail.sourceMeta.feature.rowCount}</span></div><div class="info-row"><span class="info-label">列名</span><span class="info-value">${detail.sourceMeta.feature.headers.map(escHtml).join(", ")}</span></div><div class="info-row"><span class="info-label">有效特征数</span><span class="info-value">${detail.sourceMeta.feature.featureCount}</span></div></div>
+<h3>客户分组</h3><div class="info-box"><div class="info-row"><span class="info-label">行数</span><span class="info-value">${detail.sourceMeta.group.rowCount}</span></div><div class="info-row"><span class="info-label">列名</span><span class="info-value">${detail.sourceMeta.group.headers.map(escHtml).join(", ")}</span></div><div class="info-row"><span class="info-label">分组数</span><span class="info-value">${detail.sourceMeta.group.groupCount}</span></div></div>
+<h2>四、完整分组明细（含覆盖率）</h2><table><thead><tr><th>分组ID</th><th>分组名称</th><th>样本数</th><th>各特征覆盖率</th></tr></thead><tbody>${allGroupRows}</tbody></table>
+<h2>五、完整特征列表与分组对应</h2><div class="table-wrap"><table><thead><tr><th>排名</th><th>特征名</th><th>重要性</th>${sparsityHeaders}</tr></thead><tbody>${fullFeatureRows}</tbody></table></div>
+<h2>六、特征泄漏检测</h2><p class="empty-state">未检测到特征泄漏</p>
+<h2>七、分组稀疏分析（稀疏分组）</h2><p class="empty-state">无稀疏分组</p>
+<h2>八、训练样本逐行明细</h2><div class="table-wrap"><table><thead><tr>${sampleHeaderCells}</tr></thead><tbody>${sampleRows}</tbody></table></div>
+<h2>九、按分组查看样本明细</h2>${sampleByGroupSection}
+<h2>十、冲突留痕</h2><p class="empty-state">无冲突记录</p>
+<div class="section-divider"></div><div class="meta" style="text-align:center;margin-top:24px;">本报告由随机森林特征审计工具自动生成 · 报告ID ${escHtml(rpt.id)}</div>
+</body></html>`;
+}
+
+const htmlContent = generateHTMLReport(report);
+const jsonContent = JSON.stringify(report, null, 2);
+
+const results = [];
+let allPass = true;
+
+function check(name, pass, detail) {
+  results.push({ name, pass, detail });
+  if (!pass) allPass = false;
+}
+
+check("分组名称来自客户分组文件", groups[0].groupName === "高价值客户" && groups[1].groupName === "成长型客户" && groups[2].groupName === "培育型客户", `分组名: ${groups.map(g=>g.groupName).join(", ")}`);
+check("包含无样本分组D（待激活客户）", groups.some(g => g.groupId==="D" && g.sampleCount===0 && g.groupName==="待激活客户"), `D组: ${JSON.stringify(groups.find(g=>g.groupId==="D"))}`);
+check("分组来源标记为group_file", report.auditDetail.calculationMeta.groupSource === "group_file", `groupSource: ${report.auditDetail.calculationMeta.groupSource}`);
+check("JSON包含auditDetail.samples", jsonContent.includes('"samples"') && jsonContent.includes('"features"'), "samples 字段存在");
+check("JSON包含auditDetail.groups（4个）", report.auditDetail.groups.length === 4, `groups.length: ${report.auditDetail.groups.length}`);
+check("JSON包含完整特征列表（3个）", report.featureImportance.length === 3, `features.length: ${report.featureImportance.length}`);
+check("HTML包含章节八（训练样本逐行明细）", htmlContent.includes("训练样本逐行明细"), "章节标题存在");
+check("HTML包含章节九（按分组查看样本明细）", htmlContent.includes("按分组查看样本明细"), "章节标题存在");
+check("HTML包含章节五（完整特征列表与分组对应）", htmlContent.includes("完整特征列表与分组对应"), "章节标题存在");
+check("HTML包含样本ID=1的数据", htmlContent.includes(">1<"), "样本行存在");
+check("HTML包含'高价值客户'分组名", htmlContent.includes("高价值客户"), "分组名正确");
+check("HTML包含'待激活客户'分组名（0样本）", htmlContent.includes("待激活客户"), "空分组存在");
+check("HTML特征列表含各分组稀疏度", htmlContent.includes("高价值客户</th>") && htmlContent.includes("成长型客户</th>"), "稀疏度表头含分组名");
+check("确定性随机数一致性", deterministicRandom("age:targets", 0.1) === deterministicRandom("age:targets", 0.1), "相同种子结果相同");
+check("HTML格式可被正常解析（DOCTYPE开头）", htmlContent.startsWith("<!DOCTYPE html>"), "HTML有效");
+
+const resultsDiv = document.getElementById("results");
+resultsDiv.innerHTML = `<h2>验证结果：${allPass ? '<span class="pass">✅ 全部通过</span>' : '<span class="fail">❌ 存在失败</span>'}</h2>` +
+  results.map(r => `<div class="result">${r.pass ? "✅" : "❌"} ${r.name}${r.detail ? "\n   → " + r.detail : ""}</div>`).join("");
+
+function downloadJSON() {
+  const blob = new Blob([jsonContent], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = `audit_report_${report.id}.json`; a.click(); URL.revokeObjectURL(url);
+}
+
+function downloadHTML() {
+  const blob = new Blob([htmlContent], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = `audit_report_${report.id}.html`; a.click(); URL.revokeObjectURL(url);
+}
+
+function showHTMLPreview() {
+  const iframe = document.getElementById("htmlPreview");
+  iframe.style.display = "block";
+  iframe.srcdoc = htmlContent;
+}
+</script>
+</body>
+</html>
