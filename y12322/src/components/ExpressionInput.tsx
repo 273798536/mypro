@@ -34,33 +34,75 @@ export default function ExpressionInput() {
     fileInputRef.current?.click();
   };
 
+  const parseLine = (line: string): { expression: string; stepSize: number; intervalA: number; intervalB: number; notes: string } | null => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return null;
+
+    const tabParts = trimmed.split('\t');
+    if (tabParts.length >= 5) {
+      const [expr, hStr, aStr, bStr, note] = tabParts;
+      const h = parseFloat(hStr);
+      const a = parseFloat(aStr);
+      const b = parseFloat(bStr);
+      if (expr.trim() && !isNaN(h) && h > 0 && !isNaN(a) && !isNaN(b)) {
+        return { expression: expr.trim(), stepSize: h, intervalA: a, intervalB: b, notes: note?.trim() ?? '' };
+      }
+    }
+
+    const commaParts = trimmed.split(',');
+    if (commaParts.length >= 5) {
+      const [expr, hStr, aStr, bStr, ...noteParts] = commaParts;
+      const h = parseFloat(hStr.trim());
+      const a = parseFloat(aStr.trim());
+      const b = parseFloat(bStr.trim());
+      if (expr.trim() && !isNaN(h) && h > 0 && !isNaN(a) && !isNaN(b)) {
+        return { expression: expr.trim(), stepSize: h, intervalA: a, intervalB: b, notes: noteParts.join(',').trim() };
+      }
+    }
+
+    return {
+      expression: trimmed,
+      stepSize: parseFloat(stepSize) || 0.1,
+      intervalA: parseFloat(intervalA) || 0,
+      intervalB: parseFloat(intervalB) || 1,
+      notes: '',
+    };
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      try {
-        const text = ev.target?.result as string;
-        const data = JSON.parse(text);
-        const items = Array.isArray(data) ? data : [data];
-        for (const item of items) {
-          if (item.expression) {
-            addRawMaterial(
-              item.expression,
-              parseFloat(item.stepSize) || 0.1,
-              parseFloat(item.intervalA) || 0,
-              parseFloat(item.intervalB) || 1,
-              item.notes || '',
-              'import'
-            );
+      const text = ev.target?.result as string;
+      const fileName = file.name.toLowerCase();
+
+      if (fileName.endsWith('.json')) {
+        try {
+          const data = JSON.parse(text);
+          const items = Array.isArray(data) ? data : [data];
+          for (const item of items) {
+            if (item.expression && typeof item.expression === 'string') {
+              addRawMaterial(
+                item.expression.trim(),
+                typeof item.stepSize === 'number' && item.stepSize > 0 ? item.stepSize : 0.1,
+                typeof item.intervalA === 'number' ? item.intervalA : 0,
+                typeof item.intervalB === 'number' ? item.intervalB : 1,
+                typeof item.notes === 'string' ? item.notes : '',
+                'import'
+              );
+            }
           }
+        } catch {
+          window.alert('JSON 文件解析失败，请检查格式是否正确');
         }
-      } catch {
-        const lines = (ev.target?.result as string).split('\n').filter((l) => l.trim());
+      } else {
+        const lines = text.split('\n');
         for (const line of lines) {
-          if (line.trim()) {
-            addRawMaterial(line.trim(), parseFloat(stepSize) || 0.1, parseFloat(intervalA) || 0, parseFloat(intervalB) || 1, '', 'import');
+          const parsed = parseLine(line);
+          if (parsed) {
+            addRawMaterial(parsed.expression, parsed.stepSize, parsed.intervalA, parsed.intervalB, parsed.notes, 'import');
           }
         }
       }

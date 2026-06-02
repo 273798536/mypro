@@ -1,57 +1,107 @@
-# React + TypeScript + Vite
+# 积分近似误差教具
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向大学助教的数值积分可视化与复盘工具。支持输入函数表达式与积分区间，自动检测奇点附近、区间反向、步长过大等边界情形，截图导出与报告导出均携带边界提示。
 
-Currently, two official plugins are available:
+## 运行方式
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
+# 浏览器打开 http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+生产构建：
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm run build
+npm run preview
 ```
+
+## 核心检查点
+
+按以下顺序验证核心链路（函数表达式 → 边界检测 → 可视化 → 截图导出）：
+
+1. **手动输入**：在左侧面板输入 `f(x) = 1/sqrt(x)`，区间 [0, 1]，步长 0.1，点击"添加并计算"
+2. **边界提示**：右侧"边界提示"区域应出现琥珀色奇点警告（x=0 处函数值无穷大）
+3. **可视化**：下方图表应绘制函数曲线，积分近似值与误差估计显示在图表下方
+4. **截图导出**：点击"截图导出"按钮，下载 PNG 图片——图片应包含边界提示+图表+结果
+5. **报告导出**：点击"报告导出"按钮，下载 TXT 文件——文件应包含边界提示全文
+
+**反向区间**：输入区间 a=5, b=1 → 右侧出现红色"区间反向"警告，计算自动校正
+**步长过大**：区间 [0, 1]，步长 0.5 → 右侧出现橙色"步长过大"警告
+**幂等性**：同一条材料切换积分方法再切回来，结果不变
+
+## 导入格式
+
+### JSON 文件（.json）
+
+每条记录含 `expression`（必填）、`stepSize`、`intervalA`、`intervalB`、`notes`（均选填）：
+
+```json
+[
+  {
+    "expression": "1/sqrt(x)",
+    "stepSize": 0.01,
+    "intervalA": 0,
+    "intervalB": 1,
+    "notes": "第三周课堂样例"
+  },
+  {
+    "expression": "sin(x)",
+    "stepSize": 0.05,
+    "intervalA": 0,
+    "intervalB": 3.14159
+  }
+]
+```
+
+缺省值：`stepSize=0.1`，`intervalA=0`，`intervalB=1`，`notes=""`。
+
+### 文本文件（.txt / .csv）
+
+每行一条记录，支持三种格式：
+
+**Tab 分隔**（推荐，适合从 Excel 粘贴）：
+```
+1/sqrt(x)	0.01	0	1	第三周课堂样例
+sin(x)	0.05	0	3.14159
+```
+
+**逗号分隔**（注意：备注中含逗号时会归入备注字段）：
+```
+1/sqrt(x),0.01,0,1,第三周课堂样例
+sin(x),0.05,0,3.14159
+```
+
+**纯表达式**（仅一行表达式，步长和区间使用当前输入框的值）：
+```
+1/sqrt(x)
+x^2 + 1
+```
+
+以 `#` 开头的行视为注释跳过。
+
+### 导入后来源标识
+
+导入的材料在"已添加的材料"列表中标为蓝色"导入"标签，手动输入的标为绿色"手动"标签。原始材料和处理结果在界面上始终可区分。
+
+## 导出验证
+
+### 截图导出（PNG）
+
+截图范围为右侧面板（边界提示 + 图表 + 积分结果）。打开导出的 PNG 确认：
+- 边界提示（奇点/反向/步长过大）出现在图片上方
+- 函数曲线与积分区域填充可见
+- 积分近似值和误差估计显示在图表下方
+
+### 报告导出（TXT）
+
+报告为纯文本，包含：函数表达式、区间、步长、方法、积分近似值、误差估计、**边界提示全文**、课堂备注。打开导出的 TXT 确认：
+- 有边界提示的函数，报告的"边界提示"段落不为空
+- 课堂备注段落内容与输入一致
+
+## 已知风险
+
+- **奇点精确位置**：边界检测通过 200+ 采样点探测，步长极小时探测精度有限，奇点位置可能与理论值有微小偏差
+- **html2canvas 局限**：截图导出依赖 html2canvas 渲染 DOM，若浏览器缩放非 100% 或字体未加载完毕，截图可能与屏幕显示有差异
+- **LocalStorage 未接入**：当前版本数据仅存于内存，刷新页面后数据丢失，尚未持久化到 LocalStorage
