@@ -1,0 +1,135 @@
+{
+  "generated_at": "2026-06-02T11:00:59.576586",
+  "smooth_cases": [
+    {
+      "name": "顺利场景1 - 基础正常求解",
+      "description": "8只股票分布在4个行业，约束设置合理，预期可正常求解并找到最优解",
+      "status": "error",
+      "optimal_weights": null,
+      "conflicts": [],
+      "violations": []
+    },
+    {
+      "name": "顺利场景2 - 行业约束较紧",
+      "description": "每个行业有明确的上下限约束，测试行业约束的处理能力",
+      "status": "error",
+      "optimal_weights": null,
+      "conflicts": [],
+      "violations": []
+    }
+  ],
+  "conflict_cases": [
+    {
+      "name": "冲突场景1 - 权重不满",
+      "description": "总权重约束下限(1.5)远高于所有股票最大权重之和(0.75)，预期不可行",
+      "status": "infeasible",
+      "error_message": "优化问题不可行，存在约束冲突。\n总权重上限冲突: 各股最大权重之和(0.7500) < 总权重下限(1.5000)\n约束详情: 变量数量: 3; 单票约束: 下限[0.0000, 0.0000], 上限[0.2500, 0.2500]; 总权重约束: [1.5000, 2.0000]; 换手率约束: <= 1.0000",
+      "infeasibility_causes": [
+        "总权重上限冲突: 各股最大权重之和(0.7500) < 总权重下限(1.5000)"
+      ],
+      "conflicts": [],
+      "violations": []
+    },
+    {
+      "name": "冲突场景2 - 行业约束冲突",
+      "description": "目标行业3只股票的最小权重之和(0.45)超过行业上限(0.30)，预期不可行",
+      "status": "infeasible",
+      "error_message": "约束冲突检测：行业目标行业最小可能权重(0.4500)超过上限(0.3000)",
+      "infeasibility_causes": [],
+      "conflicts": [],
+      "violations": []
+    },
+    {
+      "name": "冲突场景3 - 禁买标的",
+      "description": "目标权重最高(40%)的股票被禁止买入，测试求解器如何重新分配权重",
+      "status": "infeasible",
+      "error_message": "优化问题不可行，存在约束冲突。\n总权重上限冲突: 各股最大权重之和(0.9000) < 总权重下限(0.9500)\n约束详情: 变量数量: 4; 单票约束: 下限[0.0000, 0.0000], 上限[0.0000, 0.3000]; 总权重约束: [0.9500, 1.0500]; 换手率约束: <= 1.0000; 禁买标的: ['FORBID']",
+      "infeasibility_causes": [
+        "总权重上限冲突: 各股最大权重之和(0.9000) < 总权重下限(0.9500)"
+      ],
+      "conflicts": [],
+      "violations": []
+    },
+    {
+      "name": "冲突场景4 - 数据冲突",
+      "description": "高目标权重的股票行业置信度低、流动性差，测试冲突检测和留痕机制",
+      "status": "error",
+      "error_message": "'SolverStats' object has no attribute 'get'",
+      "infeasibility_causes": [],
+      "conflicts": [
+        {
+          "conflict_id": "5f574aaa-fa3b-435b-a683-fd1e0470e175",
+          "conflict_type": "weight_vs_industry",
+          "stock_code": "HIGH01",
+          "description": "股票HIGH01目标权重(30.00%)较高，但行业置信度(30.00%)较低",
+          "source_data": {
+            "target_weight": 0.3,
+            "industry_confidence": 0.3,
+            "industry": "高权重行业"
+          },
+          "severity": "warning",
+          "resolved": false,
+          "resolution": null,
+          "timestamp": "2026-06-02 11:00:59.532808"
+        },
+        {
+          "conflict_id": "7eb84016-66ce-4dae-85ff-75d577432f2d",
+          "conflict_type": "weight_vs_cost",
+          "stock_code": "HIGH01",
+          "description": "股票HIGH01目标权重(30.00%)较高，但流动性评分(15.00%)较低",
+          "source_data": {
+            "target_weight": 0.3,
+            "liquidity_score": 0.15,
+            "buy_cost": 0.005,
+            "sell_cost": 0.005
+          },
+          "severity": "warning",
+          "resolved": false,
+          "resolution": null,
+          "timestamp": "2026-06-02 11:00:59.532819"
+        },
+        {
+          "conflict_id": "c17eefbd-311f-4756-bc10-236fc2b35702",
+          "conflict_type": "weight_vs_industry",
+          "stock_code": "HIGH02",
+          "description": "股票HIGH02目标权重(25.00%)较高，但行业置信度(40.00%)较低",
+          "source_data": {
+            "target_weight": 0.25,
+            "industry_confidence": 0.4,
+            "industry": "高权重行业"
+          },
+          "severity": "warning",
+          "resolved": false,
+          "resolution": null,
+          "timestamp": "2026-06-02 11:00:59.532826"
+        },
+        {
+          "conflict_id": "f6dfd725-5f42-4baf-86df-5a4409099921",
+          "conflict_type": "weight_vs_cost",
+          "stock_code": "HIGH02",
+          "description": "股票HIGH02目标权重(25.00%)较高，但流动性评分(20.00%)较低",
+          "source_data": {
+            "target_weight": 0.25,
+            "liquidity_score": 0.2,
+            "buy_cost": 0.004,
+            "sell_cost": 0.004
+          },
+          "severity": "warning",
+          "resolved": false,
+          "resolution": null,
+          "timestamp": "2026-06-02 11:00:59.532832"
+        }
+      ],
+      "violations": []
+    },
+    {
+      "name": "冲突场景5 - 换手率约束过紧",
+      "description": "当前权重与目标差异很大(需要换手1.60)，但换手率上限仅0.10，预期不可行",
+      "status": "error",
+      "error_message": "'SolverStats' object has no attribute 'get'",
+      "infeasibility_causes": [],
+      "conflicts": [],
+      "violations": []
+    }
+  ]
+}
