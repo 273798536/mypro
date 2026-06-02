@@ -45,7 +45,8 @@ class GroupAnalyzer:
         thresholds = df['customer_size'].quantile(quantiles).values
         
         if group_names is None:
-            group_names = ['小型客户', '中型客户', '大型客户'][:n_groups]
+            _all_names = ['小型客户', '中小型客户', '中型客户', '中大型客户', '大型客户']
+            group_names = _all_names[:n_groups]
         
         def assign_group(size):
             for i in range(n_groups):

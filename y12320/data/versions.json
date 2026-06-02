@@ -1,0 +1,10 @@
+[
+  {
+    "version_id": "v001",
+    "timestamp": "2026-06-03T03:11:50.499186",
+    "source": "示例数据",
+    "description": "模拟的SaaS定价转化数据",
+    "data_hash": "0f2a693b52646e574305556e93eb81b02d573f65b39b592d6b54ec6af5870b6a",
+    "row_count": 2000
+  }
+]
