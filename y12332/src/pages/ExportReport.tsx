@@ -16,6 +16,8 @@ import {
   ChevronUp,
   Loader2,
   RefreshCw,
+  Layers,
+  Play,
 } from 'lucide-react';
 import { useAppStore } from '@/store';
 import { ReportOptions, ReportData } from '@/types';
@@ -39,6 +41,9 @@ const ExportReport = () => {
     downloadReport,
     loadMockData,
     isLoading,
+    compareConfig,
+    playbackConfig,
+    selectedTimeRange,
   } = useAppStore();
 
   const [reportOptions, setReportOptions] = useState<ReportOptions>({
@@ -47,7 +52,21 @@ const ExportReport = () => {
     includeAnomalyDetails: true,
     includeDiagnosis: true,
     includeCharts: true,
+    includeCompareAnalysis: true,
+    includePlaybackConfig: true,
+    timeRange: selectedTimeRange || undefined,
+    compareConfig: compareConfig,
+    playbackConfig: playbackConfig || undefined,
   });
+
+  const toggleOption = (key: keyof ReportOptions, value: boolean) => {
+    setReportOptions((prev) => ({
+      ...prev,
+      [key]: value,
+      compareConfig: prev.includeCompareAnalysis ? compareConfig : undefined,
+      playbackConfig: prev.includePlaybackConfig ? playbackConfig || undefined : undefined,
+    }));
+  };
 
   const [showPreview, setShowPreview] = useState(false);
   const [activeTab, setActiveTab] = useState<'summary' | 'anomalies' | 'diagnosis'>('summary');
@@ -394,34 +413,53 @@ const ExportReport = () => {
                   label="包含原始数据"
                   description="导出完整的原始温度采样数据"
                   checked={reportOptions.includeRawData}
-                  onChange={(v) => setReportOptions((prev) => ({ ...prev, includeRawData: v }))}
+                  onChange={(v) => toggleOption('includeRawData', v)}
                   icon={Database}
                 />
                 <OptionToggle
                   label="包含处理后数据"
                   description="导出经过清洗和修正后的温度数据"
                   checked={reportOptions.includeProcessedData}
-                  onChange={(v) =>
-                    setReportOptions((prev) => ({ ...prev, includeProcessedData: v }))
-                  }
+                  onChange={(v) => toggleOption('includeProcessedData', v)}
                   icon={BarChart3}
                 />
                 <OptionToggle
                   label="包含异常明细"
                   description="导出所有检测到的异常事件详细信息"
                   checked={reportOptions.includeAnomalyDetails}
-                  onChange={(v) =>
-                    setReportOptions((prev) => ({ ...prev, includeAnomalyDetails: v }))
-                  }
+                  onChange={(v) => toggleOption('includeAnomalyDetails', v)}
                   icon={AlertTriangle}
                 />
                 <OptionToggle
                   label="包含诊断结果"
                   description="导出异常根因诊断结果和证据链"
                   checked={reportOptions.includeDiagnosis}
-                  onChange={(v) => setReportOptions((prev) => ({ ...prev, includeDiagnosis: v }))}
+                  onChange={(v) => toggleOption('includeDiagnosis', v)}
                   icon={CheckCircle2}
                 />
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-dark-700/50">
+                <h4 className="text-sm font-medium text-dark-300 mb-3 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-cold-400" />
+                  高级导出选项
+                </h4>
+                <div className="space-y-3">
+                  <OptionToggle
+                    label="包含分组对比口径"
+                    description="导出分组对比配置和统计结果，确保报告口径清晰可追溯"
+                    checked={reportOptions.includeCompareAnalysis}
+                    onChange={(v) => toggleOption('includeCompareAnalysis', v)}
+                    icon={Layers}
+                  />
+                  <OptionToggle
+                    label="包含图表回放配置"
+                    description="导出图表回放的时间范围、播放速度和选择的传感器"
+                    checked={reportOptions.includePlaybackConfig}
+                    onChange={(v) => toggleOption('includePlaybackConfig', v)}
+                    icon={Play}
+                  />
+                </div>
               </div>
 
               <button

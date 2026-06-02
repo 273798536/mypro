@@ -13,6 +13,10 @@ import {
   ReportOptions,
   ReportData,
   SourceFile,
+  CompareConfig,
+  PlaybackConfig,
+  GroupByType,
+  TimePeriod,
 } from '@/types';
 import { generateId, addHours } from '@/utils/helpers';
 import { generateMockDataBatch, generateProcessedData } from '@/utils/mockData';
@@ -37,6 +41,8 @@ interface AppState {
   currentReport: ReportData | null;
   isLoading: boolean;
   error: string | null;
+  compareConfig: CompareConfig;
+  playbackConfig: PlaybackConfig | null;
 
   setCurrentBatch: (batchId: string) => void;
   loadMockData: () => void;
@@ -49,12 +55,28 @@ interface AppState {
   downloadReport: (format: 'pdf' | 'excel') => void;
   logProcessing: (action: string, details: Record<string, unknown>) => void;
   clearError: () => void;
+  setCompareConfig: (config: Partial<CompareConfig>) => void;
+  setPlaybackConfig: (config: Partial<PlaybackConfig>) => void;
+  resetCompareConfig: () => void;
 }
 
 const initialPlaybackState: PlaybackState = {
   isPlaying: false,
   currentTime: new Date(),
   speed: 1,
+};
+
+const initialCompareConfig: CompareConfig = {
+  groupBy: 'sensor',
+  selectedGroups: [],
+  timePeriod: 'all',
+  selectedSensors: [],
+  comparisonMetrics: {
+    meanTemp: true,
+    stdDev: true,
+    anomalyRate: true,
+    minMax: true,
+  },
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -74,6 +96,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   currentReport: null,
   isLoading: false,
   error: null,
+  compareConfig: initialCompareConfig,
+  playbackConfig: null,
 
   setCurrentBatch: (batchId: string) => {
     const { batches } = get();
@@ -296,6 +320,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         temperatureData,
         cargoBatches,
         maintenanceNotes,
+        sensors,
         options
       );
 
@@ -358,5 +383,25 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   clearError: () => {
     set({ error: null });
+  },
+
+  setCompareConfig: (config: Partial<CompareConfig>) => {
+    set((state) => ({
+      compareConfig: { ...state.compareConfig, ...config },
+    }));
+  },
+
+  setPlaybackConfig: (config: Partial<PlaybackConfig>) => {
+    set((state) => ({
+      playbackConfig: state.playbackConfig
+        ? { ...state.playbackConfig, ...config }
+        : (config as PlaybackConfig),
+    }));
+  },
+
+  resetCompareConfig: () => {
+    set({
+      compareConfig: { ...initialCompareConfig },
+    });
   },
 }));

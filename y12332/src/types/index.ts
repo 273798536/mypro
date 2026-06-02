@@ -131,13 +131,55 @@ export interface TimeRange {
   end: Date;
 }
 
+export type GroupByType = 'sensor' | 'anomalyType' | 'timePeriod';
+export type TimePeriod = 'all' | 'morning' | 'afternoon' | 'evening' | 'night';
+
+export interface CompareConfig {
+  groupBy: GroupByType;
+  selectedGroups: string[];
+  timePeriod: TimePeriod;
+  timeRange?: TimeRange;
+  selectedSensors: string[];
+  comparisonMetrics: {
+    meanTemp: boolean;
+    stdDev: boolean;
+    anomalyRate: boolean;
+    minMax: boolean;
+  };
+}
+
+export interface PlaybackConfig {
+  startTime: Date;
+  endTime: Date;
+  speed: number;
+  selectedSensors: string[];
+  playbackPoints: number;
+}
+
+export interface CompareResult {
+  groupId: string;
+  groupName: string;
+  meanTemperature: number;
+  stdDeviation: number;
+  minTemperature: number;
+  maxTemperature: number;
+  readingCount: number;
+  anomalyCount: number;
+  anomalyRate: number;
+  criticalAnomalyCount: number;
+}
+
 export interface ReportOptions {
   includeRawData: boolean;
   includeProcessedData: boolean;
   includeAnomalyDetails: boolean;
   includeDiagnosis: boolean;
   includeCharts: boolean;
+  includeCompareAnalysis: boolean;
+  includePlaybackConfig: boolean;
   timeRange?: TimeRange;
+  compareConfig?: CompareConfig;
+  playbackConfig?: PlaybackConfig;
 }
 
 export interface ReportData {
@@ -149,6 +191,9 @@ export interface ReportData {
   cargoBatches: CargoBatch[];
   maintenanceNotes: MaintenanceNote[];
   charts: ChartData[];
+  compareResults: CompareResult[];
+  compareConfig?: CompareConfig;
+  playbackConfig?: PlaybackConfig;
   generatedAt: Date;
 }
 
@@ -160,6 +205,9 @@ export interface ReportSummary {
   sensorFaultCount: number;
   cargoAnomalyCount: number;
   dataQualityIssues: number;
+  totalSensors: number;
+  totalCargoBatches: number;
+  totalMaintenanceNotes: number;
 }
 
 export interface ChartData {

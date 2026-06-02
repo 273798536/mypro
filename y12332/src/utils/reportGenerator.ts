@@ -11,6 +11,10 @@ import {
   MaintenanceNote,
   ReportSummary,
   ChartData,
+  CompareConfig,
+  CompareResult,
+  PlaybackConfig,
+  SensorInfo,
 } from '@/types';
 import {
   formatDateTime,
@@ -20,7 +24,106 @@ import {
   getSeverityLabel,
   toFixed,
   downloadBlob,
+  calculateMean,
+  calculateStdDev,
 } from './helpers';
+
+const calculateCompareResults = (
+  config: CompareConfig,
+  sensors: SensorInfo[],
+  temperatureData: TemperatureReading[],
+  anomalies: AnomalyEvent[]
+): CompareResult[] => {
+  const results: CompareResult[] = [];
+
+  if (config.groupBy === 'sensor') {
+    const sensorIds =
+      config.selectedGroups.length > 0
+        ? config.selectedGroups
+        : config.selectedSensors;
+
+    sensorIds.forEach((sensorId) => {
+      const sensor = sensors.find((s) => s.sensorId === sensorId);
+      const readings = temperatureData.filter((t) => t.sensorId === sensorId);
+      const sensorAnomalies = anomalies.filter((a) => a.sensorId === sensorId);
+      const temps = readings.map((r) => r.temperature);
+
+      if (readings.length > 0) {
+        results.push({
+          groupId: sensorId,
+          groupName: sensor?.name || sensorId,
+          meanTemperature: calculateMean(temps),
+          stdDeviation: calculateStdDev(temps),
+          minTemperature: Math.min(...temps),
+          maxTemperature: Math.max(...temps),
+          readingCount: readings.length,
+          anomalyCount: sensorAnomalies.length,
+          anomalyRate: readings.length > 0 ? sensorAnomalies.length / readings.length : 0,
+          criticalAnomalyCount: sensorAnomalies.filter((a) => a.severity === 'critical').length,
+        });
+      }
+    });
+  } else if (config.groupBy === 'anomalyType') {
+    const types = ['missing_sample', 'clock_drift', 'sensor_offline', 'outlier', 'value_out_of_range'] as const;
+    types.forEach((type) => {
+      const typeAnomalies = anomalies.filter((a) => a.anomalyType === type);
+      const sensorIds = [...new Set(typeAnomalies.map((a) => a.sensorId))];
+      const readings = temperatureData.filter((t) => sensorIds.includes(t.sensorId));
+      const temps = readings.map((r) => r.temperature);
+
+      if (typeAnomalies.length > 0) {
+        results.push({
+          groupId: type,
+          groupName: getAnomalyTypeLabel(type),
+          meanTemperature: temps.length > 0 ? calculateMean(temps) : 0,
+          stdDeviation: temps.length > 0 ? calculateStdDev(temps) : 0,
+          minTemperature: temps.length > 0 ? Math.min(...temps) : 0,
+          maxTemperature: temps.length > 0 ? Math.max(...temps) : 0,
+          readingCount: readings.length,
+          anomalyCount: typeAnomalies.length,
+          anomalyRate: readings.length > 0 ? typeAnomalies.length / readings.length : 0,
+          criticalAnomalyCount: typeAnomalies.filter((a) => a.severity === 'critical').length,
+        });
+      }
+    });
+  } else if (config.groupBy === 'timePeriod') {
+    const periods = [
+      { id: 'morning', name: '上午 (06:00-12:00)', range: [6, 12] },
+      { id: 'afternoon', name: '下午 (12:00-18:00)', range: [12, 18] },
+      { id: 'evening', name: '傍晚 (18:00-24:00)', range: [18, 24] },
+      { id: 'night', name: '夜间 (00:00-06:00)', range: [0, 6] },
+    ] as const;
+
+    periods.forEach((period) => {
+      const periodReadings = temperatureData.filter((t) => {
+        const hour = new Date(t.timestamp).getHours();
+        return hour >= period.range[0] && hour < period.range[1];
+      });
+      const periodAnomalies = anomalies.filter((a) => {
+        const hour = new Date(a.eventTime).getHours();
+        return hour >= period.range[0] && hour < period.range[1];
+      });
+      const temps = periodReadings.map((r) => r.temperature);
+
+      if (periodReadings.length > 0) {
+        results.push({
+          groupId: period.id,
+          groupName: period.name,
+          meanTemperature: calculateMean(temps),
+          stdDeviation: calculateStdDev(temps),
+          minTemperature: Math.min(...temps),
+          maxTemperature: Math.max(...temps),
+          readingCount: periodReadings.length,
+          anomalyCount: periodAnomalies.length,
+          anomalyRate: periodReadings.length > 0 ? periodAnomalies.length / periodReadings.length : 0,
+          criticalAnomalyCount: periodAnomalies.filter((a) => a.severity === 'critical').length,
+        });
+      }
+    });
+  }
+
+  return results;
+};
 
 export class ReportGenerator {
   static generateReport(
@@ -30,6 +133,7 @@ export class ReportGenerator {
     temperatureData: TemperatureReading[],
     cargoBatches: CargoBatch[],
     maintenanceNotes: MaintenanceNote[],
+    sensors: SensorInfo[],
     options: ReportOptions
   ): ReportData {
     const sensorFaultCount = anomalies.filter(
@@ -50,9 +154,22 @@ export class ReportGenerator {
       sensorFaultCount,
       cargoAnomalyCount,
       dataQualityIssues,
+      totalSensors: sensors.length,
+      totalCargoBatches: cargoBatches.length,
+      totalMaintenanceNotes: maintenanceNotes.length,
     };
 
     const charts: ChartData[] = [];
+    let compareResults: CompareResult[] = [];
+
+    if (options.includeCompareAnalysis && options.compareConfig) {
+      compareResults = calculateCompareResults(
+        options.compareConfig,
+        sensors,
+        temperatureData,
+        anomalies
+      );
+    }
 
     return {
       batchInfo: batch,
@@ -63,6 +180,9 @@ export class ReportGenerator {
       cargoBatches,
       maintenanceNotes,
       charts,
+      compareResults,
+      compareConfig: options.compareConfig,
+      playbackConfig: options.includePlaybackConfig ? options.playbackConfig : undefined,
       generatedAt: new Date(),
     };
   }
@@ -204,6 +324,73 @@ export class ReportGenerator {
       XLSX.utils.aoa_to_sheet([diagnosisHeaders, ...diagnosisData]),
       '诊断结果'
     );
+
+    if (report.compareResults && report.compareResults.length > 0) {
+      const compareConfigSheet = [
+        ['分组对比配置'],
+        ['对比维度', report.compareConfig?.groupBy === 'sensor' ? '按传感器' : report.compareConfig?.groupBy === 'anomalyType' ? '按异常类型' : '按时间段'],
+        ['时间范围', report.compareConfig?.timePeriod ? (report.compareConfig.timePeriod === 'all' ? '全部时段' : report.compareConfig.timePeriod) : '全部时段'],
+        ['对比分组', report.compareConfig?.selectedGroups?.join(', ') || '全部'],
+        ['对比指标', [
+          report.compareConfig?.comparisonMetrics?.meanTemp ? '平均温度' : '',
+          report.compareConfig?.comparisonMetrics?.stdDev ? '标准差' : '',
+          report.compareConfig?.comparisonMetrics?.anomalyRate ? '异常率' : '',
+          report.compareConfig?.comparisonMetrics?.minMax ? '极值' : '',
+        ].filter(Boolean).join(', ')],
+        [],
+      ];
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.aoa_to_sheet(compareConfigSheet),
+        '对比配置'
+      );
+
+      const compareHeaders = [
+        '分组ID',
+        '分组名称',
+        '平均温度(°C)',
+        '标准差(°C)',
+        '最低温度(°C)',
+        '最高温度(°C)',
+        '采样点数',
+        '异常数',
+        '异常率(%)',
+        '严重异常数',
+      ];
+      const compareData = report.compareResults.map((r) => [
+        r.groupId,
+        r.groupName,
+        toFixed(r.meanTemperature),
+        toFixed(r.stdDeviation),
+        toFixed(r.minTemperature),
+        toFixed(r.maxTemperature),
+        r.readingCount,
+        r.anomalyCount,
+        (r.anomalyRate * 100).toFixed(2),
+        r.criticalAnomalyCount,
+      ]);
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.aoa_to_sheet([compareHeaders, ...compareData]),
+        '分组对比结果'
+      );
+    }
+
+    if (report.playbackConfig) {
+      const playbackSheet = [
+        ['图表回放配置'],
+        ['开始时间', formatDateTime(report.playbackConfig.startTime)],
+        ['结束时间', formatDateTime(report.playbackConfig.endTime)],
+        ['播放速度', `${report.playbackConfig.speed}x`],
+        ['回放传感器', report.playbackConfig.selectedSensors.join(', ')],
+        ['总回放点数', report.playbackConfig.playbackPoints],
+      ];
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.aoa_to_sheet(playbackSheet),
+        '回放配置'
+      );
+    }
 
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     return new Blob([excelBuffer], {

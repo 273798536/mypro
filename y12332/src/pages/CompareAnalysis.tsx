@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import ReactECharts from 'echarts-for-react';
 import {
   BarChart3,
@@ -12,6 +12,7 @@ import {
   Table,
   Filter,
   RefreshCw,
+  Save,
 } from 'lucide-react';
 import { useAppStore } from '@/store';
 import StatsCard from '@/components/StatsCard';
@@ -23,10 +24,14 @@ import {
   calculateMean,
   calculateStdDev,
 } from '@/utils/helpers';
-import { DataQualityIssue, SeverityLevel, TemperatureReading, AnomalyEvent } from '@/types';
-
-type GroupByType = 'sensor' | 'anomalyType' | 'timePeriod';
-type TimePeriod = 'all' | 'morning' | 'afternoon' | 'evening' | 'night';
+import {
+  DataQualityIssue,
+  SeverityLevel,
+  TemperatureReading,
+  AnomalyEvent,
+  GroupByType,
+  TimePeriod,
+} from '@/types';
 
 interface CompareGroup {
   id: string;
@@ -43,11 +48,31 @@ const CompareAnalysis = () => {
     anomalies,
     selectedTimeRange,
     selectedSensors,
+    compareConfig,
+    setCompareConfig,
+    resetCompareConfig,
   } = useAppStore();
 
-  const [groupBy, setGroupBy] = useState<GroupByType>('sensor');
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
+  const { groupBy, selectedGroups, timePeriod } = compareConfig;
+
+  const handleGroupByChange = (newGroupBy: GroupByType) => {
+    setCompareConfig({ groupBy: newGroupBy, selectedGroups: [] });
+  };
+
+  const handleTimePeriodChange = (newTimePeriod: TimePeriod) => {
+    setCompareConfig({ timePeriod: newTimePeriod });
+  };
+
+  const toggleGroup = (groupId: string) => {
+    const newSelected = selectedGroups.includes(groupId)
+      ? selectedGroups.filter((g) => g !== groupId)
+      : [...selectedGroups, groupId];
+    setCompareConfig({ selectedGroups: newSelected });
+  };
+
+  useEffect(() => {
+    setCompareConfig({ selectedSensors, timeRange: selectedTimeRange || undefined });
+  }, [selectedSensors, selectedTimeRange]);
 
   const filteredData = useMemo(() => {
     let data = processedData.filter((d) => selectedSensors.includes(d.sensorId));
@@ -168,12 +193,6 @@ const CompareAnalysis = () => {
     if (selectedGroups.length === 0) return compareGroups;
     return compareGroups.filter((g) => selectedGroups.includes(g.id));
   }, [compareGroups, selectedGroups]);
-
-  const toggleGroup = (groupId: string) => {
-    setSelectedGroups((prev) =>
-      prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]
-    );
-  };
 
   const getGroupStats = (group: CompareGroup) => {
     const temps = group.readings.map((r) => r.temperature);
@@ -432,7 +451,7 @@ const CompareAnalysis = () => {
           </p>
         </div>
         <button
-          onClick={() => setSelectedGroups([])}
+          onClick={resetCompareConfig}
           className="btn-secondary flex items-center gap-2"
         >
           <RefreshCw className="w-4 h-4" />
@@ -511,7 +530,7 @@ const CompareAnalysis = () => {
             <label className="block text-sm text-dark-300 mb-2">时间段筛选</label>
             <select
               value={timePeriod}
-              onChange={(e) => setTimePeriod(e.target.value as TimePeriod)}
+              onChange={(e) => handleTimePeriodChange(e.target.value as TimePeriod)}
               className="input-field"
             >
               <option value="all">全部时段</option>
