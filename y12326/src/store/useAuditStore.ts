@@ -16,6 +16,7 @@ import {
   detectLeakage,
   analyzeSparsity,
   detectConflicts,
+  parseGroupMetadata,
 } from "@/utils/featureAnalyzer"
 
 interface AuditState {
@@ -194,7 +195,7 @@ export const useAuditStore = create<AuditState>()(
         let features = buildFeatureEntries(state.samples, state.featureRaw || undefined)
         features = detectLeakage(state.samples, features)
 
-        const groups = buildCustomerGroups(state.samples)
+        const groups = buildCustomerGroups(state.samples, state.groupRaw || undefined)
         features = analyzeSparsity(features, groups)
 
         set({ features, groups })

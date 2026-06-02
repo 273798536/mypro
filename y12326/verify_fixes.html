@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RF特征审计 - 修复验证</title>
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #0f0f1a; color: #e4e4e7; padding: 40px; max-width: 900px; margin: 0 auto; }
+    h1 { color: #f59e0b; }
+    h2 { color: #a1a1aa; font-size: 18px; margin-top: 30px; }
+    pre { background: #1a1a2e; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .pass { color: #22c55e; }
+    .fail { color: #ef4444; }
+    .result { padding: 10px; border-radius: 8px; margin: 20px 0; font-weight: bold; font-size: 18px; }
+    .result.pass { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .result.fail { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+  </style>
+</head>
+<body>
+  <h1>🔧 RF特征审计 - 修复验证</h1>
+  <p>测试两个问题修复是否正确：</p>
+  <p>1. 客户分组数据是否真正被使用</p>
+  <p>2. 重要性计算是否具有确定性（无随机值）</p>
+  <div id="output"></div>
+
+  <script type="module">
+    import { parseCSV } from '/src/utils/dataParser.ts'
+    import {
+      buildTrainingSamples,
+      buildFeatureEntries,
+      buildCustomerGroups,
+      detectLeakage,
+      analyzeSparsity,
+      parseGroupMetadata,
+    } from '/src/utils/featureAnalyzer.ts'
+
+    const trainingCSV = `id,age,income,credit_score,target,group_id
+1,25,45000,680,0,A
+2,34,72000,750,0,A
+3,45,95000,820,0,A
+4,28,38000,620,1,B
+5,52,110000,850,0,B
+6,31,55000,700,0,B
+7,29,42000,650,1,C
+8,38,68000,730,0,C
+9,41,85000,790,0,C
+10,27,40000,640,1,C
+11,55,120000,870,0,A
+12,33,60000,710,0,A
+13,36,65000,720,0,B
+14,48,100000,840,0,B
+15,23,35000,600,1,C
+16,30,50000,690,0,C
+17,43,90000,810,0,A
+18,26,43000,660,1,B
+19,39,75000,760,0,A
+20,50,105000,860,0,B`
+
+    const featureCSV = `feature,importance
+age,0.08
+income,0.15
+credit_score,0.22`
+
+    const groupCSV = `group_id,group_name,description
+A,高价值客户,年收入大于70000
+B,成长型客户,年收入40000-70000
+C,培育型客户,年收入小于40000
+D,待激活客户,尚未产生交易记录`
+
+    async function runTests() {
+      const output = document.getElementById('output')
+      let html = ''
+      let allPassed = true
+
+      const trainingFile = new File([trainingCSV], 'test_training.csv', { type: 'text/csv' })
+      const featureFile = new File([featureCSV], 'test_features.csv', { type: 'text/csv' })
+      const groupFile = new File([groupCSV], 'test_groups.csv', { type: 'text/csv' })
+
+      const trainingRaw = await parseCSV(trainingFile)
+      const featureRaw = await parseCSV(featureFile)
+      const groupRaw = await parseCSV(groupFile)
+
+      html += '<h2>📊 数据导入</h2>'
+      html += `<pre>训练样本: ${trainingRaw.rowCount} 行
+特征列表: ${featureRaw.rowCount} 行
+客户分组: ${groupRaw.rowCount} 行</pre>`
+
+      const samples = buildTrainingSamples(trainingRaw)
+
+      html += '<h2>🧪 测试1: 客户分组数据是否真正被使用</h2>'
+
+      const groupsWithoutGroupRaw = buildCustomerGroups(samples)
+      html += '<p><strong>未传入 groupRaw 时:</strong></p>'
+      html += '<pre>' + groupsWithoutGroupRaw.map((g, i) =>
+        `  ${i + 1}. ${g.groupName} (ID: ${g.groupId}) - ${g.sampleCount} 样本`
+      ).join('\n') + '</pre>'
+
+      const groupsWithGroupRaw = buildCustomerGroups(samples, groupRaw)
+      html += '<p><strong>传入 groupRaw 后:</strong></p>'
+      html += '<pre>' + groupsWithGroupRaw.map((g, i) =>
+        `  ${i + 1}. ${g.groupName} (ID: ${g.groupId}) - ${g.sampleCount} 样本`
+      ).join('\n') + '</pre>'
+
+      const groupMetadata = parseGroupMetadata(groupRaw)
+      const groupNames = groupMetadata.map((m) => m.groupName)
+      const hasCorrectNames = groupsWithGroupRaw.slice(0, 3).every((g, i) => g.groupName === groupNames[i])
+      const hasEmptyGroupD = groupsWithGroupRaw.some((g) => g.groupId === 'D' && g.sampleCount === 0)
+
+      html += `<p><span class="${hasCorrectNames ? 'pass' : 'fail'}">${hasCorrectNames ? '✅' : '❌'}</span> 分组名称正确</p>`
+      html += `<p><span class="${hasEmptyGroupD ? 'pass' : 'fail'}">${hasEmptyGroupD ? '✅' : '❌'}</span> 包含无样本分组 D</p>`
+      const test1Pass = hasCorrectNames && hasEmptyGroupD
+      html += `<p><strong>测试1结果: <span class="${test1Pass ? 'pass' : 'fail'}">${test1Pass ? '通过' : '失败'}</span></strong></p>`
+      if (!test1Pass) allPassed = false
+
+      html += '<h2>🎲 测试2: 重要性计算是否具有确定性</h2>'
+
+      const features1 = buildFeatureEntries(samples, featureRaw)
+      const features2 = buildFeatureEntries(samples, featureRaw)
+      const features3 = buildFeatureEntries(samples, featureRaw)
+
+      const importanceMap1 = new Map(features1.map((f) => [f.name, f.importance]))
+      const importanceMap2 = new Map(features2.map((f) => [f.name, f.importance]))
+      const importanceMap3 = new Map(features3.map((f) => [f.name, f.importance]))
+
+      let deterministic = true
+      html += '<pre>'
+      for (const f of features1.slice(0, 5)) {
+        const v1 = importanceMap1.get(f.name).toFixed(6)
+        const v2 = importanceMap2.get(f.name).toFixed(6)
+        const v3 = importanceMap3.get(f.name).toFixed(6)
+        const same = v1 === v2 && v2 === v3
+        if (!same) deterministic = false
+        html += `  ${f.name}: ${v1} | ${v2} | ${v3} ${same ? '✅' : '❌'}\n`
+      }
+      html += '</pre>'
+
+      html += `<p><strong>测试2结果: <span class="${deterministic ? 'pass' : 'fail'}">${deterministic ? '通过 - 三次结果完全一致' : '失败 - 存在不一致'}</span></strong></p>`
+      if (!deterministic) allPassed = false
+
+      html += '<h2>🔬 测试3: 稀疏分析使用正确分组</h2>'
+
+      let features = buildFeatureEntries(samples, featureRaw)
+      features = detectLeakage(samples, features)
+      const groups = buildCustomerGroups(samples, groupRaw)
+      features = analyzeSparsity(features, groups)
+
+      const testFeature = features.find((f) => f.name === 'age')
+      html += '<p>特征 "age" 的分组稀疏性:</p>'
+      html += '<pre>' + groups.map((g) => {
+        const cov = testFeature?.sparsityByGroup[g.groupId] ?? 0
+        return `  ${g.groupName} (${g.groupId}): ${(cov * 100).toFixed(0)}%`
+      }).join('\n') + '</pre>'
+
+      const sparsityKeys = Object.keys(testFeature?.sparsityByGroup || {})
+      const hasFourGroups = sparsityKeys.includes('A') && sparsityKeys.includes('B') &&
+                           sparsityKeys.includes('C') && sparsityKeys.includes('D')
+      html += `<p><span class="${hasFourGroups ? 'pass' : 'fail'}">${hasFourGroups ? '✅' : '❌'}</span> 包含4个分组的稀疏数据</p>`
+      if (!hasFourGroups) allPassed = false
+
+      html += '<h2>📋 测试4: 分组对比显示正确名称</h2>'
+      const groupListHTML = groups.map((g) =>
+        `<li>${g.groupName} (${g.groupId}): ${g.sampleCount} 样本, ${Object.keys(g.featureCoverage).length} 个特征</li>`
+      ).join('')
+      html += `<ul>${groupListHTML}</ul>`
+      const groupD = groups.find((g) => g.groupId === 'D')
+      const hasGroupDWithZero = groupD && groupD.sampleCount === 0 && groupD.groupName === '待激活客户'
+      html += `<p><span class="${hasGroupDWithZero ? 'pass' : 'fail'}">${hasGroupDWithZero ? '✅' : '❌'}</span> 分组D显示为"待激活客户"且样本数为0</p>`
+      if (!hasGroupDWithZero) allPassed = false
+
+      html += '<h2>📝 测试5: 生成报告验证分组信息</h2>'
+      const reportData = {
+        groups: groups,
+        features: features,
+        groupNames: groups.map((g) => g.groupName),
+      }
+      html += '<pre>' + JSON.stringify({
+        groupNames: reportData.groupNames,
+        groupACount: reportData.groups.find((g) => g.groupId === 'A')?.sampleCount,
+        groupDName: reportData.groups.find((g) => g.groupId === 'D')?.groupName,
+      }, null, 2) + '</pre>'
+      const reportHasCorrectNames = reportData.groupNames[0] === '高价值客户' &&
+                                   reportData.groupNames[1] === '成长型客户' &&
+                                   reportData.groupNames[2] === '培育型客户' &&
+                                   reportData.groupNames[3] === '待激活客户'
+      html += `<p><span class="${reportHasCorrectNames ? 'pass' : 'fail'}">${reportHasCorrectNames ? '✅' : '❌'}</span> 报告包含正确的分组名称</p>`
+      if (!reportHasCorrectNames) allPassed = false
+
+      html += '<div class="result ' + (allPassed ? 'pass' : 'fail') + '">' +
+        (allPassed ? '✅ 所有测试通过！修复已正确应用。' : '❌ 存在测试失败，请检查修复。') +
+        '</div>'
+
+      output.innerHTML = html
+    }
+
+    runTests().catch((err) => {
+      document.getElementById('output').innerHTML =
+        '<pre style="color:#ef4444;">测试运行出错: ' + err.message + '\n' + err.stack + '</pre>'
+    })
+  </script>
+</body>
+</html>

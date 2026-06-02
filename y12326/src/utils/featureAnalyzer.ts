@@ -6,6 +6,43 @@ import type {
   RawImportResult,
 } from "@/types"
 
+function hashCode(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash
+  }
+  return Math.abs(hash)
+}
+
+function deterministicRandom(seed: string, range: number = 1): number {
+  const hash = hashCode(seed)
+  return (hash % 1000000) / 1000000 * range
+}
+
+export interface GroupMetadata {
+  groupId: string
+  groupName: string
+  order: number
+}
+
+export function parseGroupMetadata(groupRaw: RawImportResult): GroupMetadata[] {
+  return groupRaw.rows.map((row, idx) => {
+    const groupId = String(
+      row["group_id"] || row["groupid"] || row["id"] || row["groupId"] || ""
+    ).trim()
+    const groupName = String(
+      row["group_name"] || row["groupname"] || row["name"] || row["描述"] || row["description"] || ""
+    ).trim() || `分组 ${groupId}`
+    return {
+      groupId,
+      groupName,
+      order: idx,
+    }
+  }).filter((g) => g.groupId)
+}
+
 export function buildTrainingSamples(raw: RawImportResult): TrainingSample[] {
   return raw.rows.map((row, i) => {
     const features: Record<string, number | string> = {}
@@ -72,16 +109,16 @@ export function computeGiniImportance(samples: TrainingSample[], featureName: st
   if (values.length === 0) return 0
 
   const targets = samples.filter((s) => s.target !== undefined).map((s) => s.target)
-  if (targets.length < 2) return Math.random() * 0.1
+  if (targets.length < 2) return deterministicRandom(featureName + ":targets", 0.1)
 
   const numericValues = values.map(Number).filter((v) => !isNaN(v))
-  if (numericValues.length < 2) return Math.random() * 0.05
+  if (numericValues.length < 2) return deterministicRandom(featureName + ":numeric", 0.05)
 
   const targetArr = samples
     .filter((s) => s.target !== undefined && s.features[featureName] !== undefined)
     .map((s) => ({ val: Number(s.features[featureName]), target: s.target! }))
 
-  if (targetArr.length < 2) return Math.random() * 0.05
+  if (targetArr.length < 2) return deterministicRandom(featureName + ":targetArr", 0.05)
 
   const median = numericValues.sort((a, b) => a - b)[Math.floor(numericValues.length / 2)]
 
@@ -114,37 +151,71 @@ function gini(values: string[]): number {
   return 1 - sum
 }
 
-export function buildCustomerGroups(samples: TrainingSample[]): CustomerGroup[] {
-  const groupMap: Record<string, TrainingSample[]> = {}
+export function buildCustomerGroups(
+  samples: TrainingSample[],
+  groupRaw?: RawImportResult
+): CustomerGroup[] {
+  const sampleGroupMap: Record<string, TrainingSample[]> = {}
   for (const s of samples) {
     const gid = s.groupId || "default"
-    if (!groupMap[gid]) groupMap[gid] = []
-    groupMap[gid].push(s)
+    if (!sampleGroupMap[gid]) sampleGroupMap[gid] = []
+    sampleGroupMap[gid].push(s)
   }
 
-  return Object.entries(groupMap).map(([groupId, groupSamples]) => {
-    const featureCoverage: Record<string, number> = {}
-    const featureNames = new Set<string>()
-    for (const s of groupSamples) {
-      for (const k of Object.keys(s.features)) featureNames.add(k)
-    }
-    for (const fname of featureNames) {
+  const allFeatureNames = new Set<string>()
+  for (const s of samples) {
+    for (const k of Object.keys(s.features)) allFeatureNames.add(k)
+  }
+
+  function calcCoverage(groupSamples: TrainingSample[]): Record<string, number> {
+    const coverage: Record<string, number> = {}
+    for (const fname of allFeatureNames) {
       const nonEmpty = groupSamples.filter(
         (s) =>
           s.features[fname] !== undefined &&
           s.features[fname] !== null &&
           s.features[fname] !== ""
       ).length
-      featureCoverage[fname] = nonEmpty / groupSamples.length
+      coverage[fname] = groupSamples.length > 0 ? nonEmpty / groupSamples.length : 0
+    }
+    return coverage
+  }
+
+  if (groupRaw && groupRaw.rows.length > 0) {
+    const metaList = parseGroupMetadata(groupRaw)
+    const result: CustomerGroup[] = []
+
+    for (const meta of metaList) {
+      const groupSamples = sampleGroupMap[meta.groupId] || []
+      result.push({
+        groupId: meta.groupId,
+        groupName: meta.groupName,
+        sampleCount: groupSamples.length,
+        featureCoverage: calcCoverage(groupSamples),
+      })
     }
 
-    return {
-      groupId,
-      groupName: `分组 ${groupId}`,
-      sampleCount: groupSamples.length,
-      featureCoverage,
+    const metaGroupIds = new Set(metaList.map((m) => m.groupId))
+    for (const [groupId, groupSamples] of Object.entries(sampleGroupMap)) {
+      if (!metaGroupIds.has(groupId)) {
+        result.push({
+          groupId,
+          groupName: `未映射分组 ${groupId}`,
+          sampleCount: groupSamples.length,
+          featureCoverage: calcCoverage(groupSamples),
+        })
+      }
     }
-  })
+
+    return result
+  }
+
+  return Object.entries(sampleGroupMap).map(([groupId, groupSamples]) => ({
+    groupId,
+    groupName: `分组 ${groupId}`,
+    sampleCount: groupSamples.length,
+    featureCoverage: calcCoverage(groupSamples),
+  }))
 }
 
 export function detectLeakage(
