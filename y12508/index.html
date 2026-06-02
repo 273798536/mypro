@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天体轨道摄动教室</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header class="top-bar">
+            <div class="title">
+                <h1>🌌 天体轨道摄动教室</h1>
+                <span class="subtitle">交互式N体轨道模拟与分析平台</span>
+            </div>
+            <div class="top-actions">
+                <button id="btn-screenshot" class="btn btn-secondary">📸 截图</button>
+                <button id="btn-export-report" class="btn btn-primary">📄 导出报告</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="left-panel">
+                <div class="panel-section">
+                    <h2>🎮 模拟控制</h2>
+                    <div class="control-group">
+                        <button id="btn-play" class="btn btn-primary">▶ 播放</button>
+                        <button id="btn-pause" class="btn btn-secondary">⏸ 暂停</button>
+                        <button id="btn-reset" class="btn btn-danger">↺ 重置</button>
+                    </div>
+                    <div class="control-group">
+                        <label>时间步长: <span id="timestep-value">1.0</span> 天</label>
+                        <input type="range" id="timestep-slider" min="0.1" max="10" step="0.1" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label>模拟速度: <span id="speed-value">1.0</span>x</label>
+                        <input type="range" id="speed-slider" min="0.1" max="10" step="0.1" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label>已模拟: <span id="simulation-time">0</span> 天</label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>🔍 天体筛选</h2>
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" class="filter-type" value="star" checked>
+                            <span class="color-dot" style="background: #ffd700;"></span>
+                            恒星
+                        </label>
+                        <label>
+                            <input type="checkbox" class="filter-type" value="planet" checked>
+                            <span class="color-dot" style="background: #4a9eff;"></span>
+                            行星
+                        </label>
+                        <label>
+                            <input type="checkbox" class="filter-type" value="moon" checked>
+                            <span class="color-dot" style="background: #aaa;"></span>
+                            卫星
+                        </label>
+                        <label>
+                            <input type="checkbox" class="filter-type" value="asteroid" checked>
+                            <span class="color-dot" style="background: #8b4513;"></span>
+                            小行星
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>显示轨道</label>
+                        <input type="checkbox" id="show-orbits" checked>
+                    </div>
+                    <div class="control-group">
+                        <label>显示轨迹点</label>
+                        <input type="checkbox" id="show-trail">
+                    </div>
+                    <div class="control-group">
+                        <label>轨迹长度: <span id="trail-length-value">1000</span> 点</label>
+                        <input type="range" id="trail-length" min="100" max="5000" step="100" value="1000">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>📊 数据管理</h2>
+                    <div class="control-group">
+                        <button id="btn-load-data" class="btn btn-secondary">📂 加载数据</button>
+                        <button id="btn-merge-data" class="btn btn-secondary">🔗 合并数据</button>
+                        <input type="file" id="file-input" accept=".json" style="display: none;">
+                    </div>
+                    <div id="conflict-panel" class="conflict-panel hidden">
+                        <h3>⚠️ 数据冲突</h3>
+                        <div id="conflict-list"></div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>⚙️ 参数调节</h2>
+                    <div id="parameter-controls">
+                        <p class="hint">点击天体以调节参数</p>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="canvas-container">
+                <div id="canvas-wrapper">
+                    <canvas id="main-canvas"></canvas>
+                    <div id="warning-banner" class="warning-banner hidden"></div>
+                    <div id="info-tooltip" class="info-tooltip hidden"></div>
+                </div>
+            </main>
+
+            <aside class="right-panel">
+                <div class="panel-section">
+                    <h2>📋 天体表</h2>
+                    <div id="body-list" class="body-list"></div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>🔬 天体详情</h2>
+                    <div id="body-details" class="body-details">
+                        <p class="hint">点击天体查看详情</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>⚠️ 系统警告</h2>
+                    <div id="system-warnings" class="system-warnings">
+                        <p class="hint">暂无警告</p>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>🔍 碰撞检测</h2>
+                    <div id="collision-info" class="collision-info">
+                        <p class="hint">暂无碰撞事件</p>
+                    </div>
+                    <div id="evidence-panel" class="evidence-panel hidden">
+                        <h3>证据缺失提示</h3>
+                        <div id="evidence-missing"></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <div id="report-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📄 轨道分析报告</h2>
+                    <button id="btn-close-modal" class="btn btn-close">✕</button>
+                </div>
+                <div id="report-content" class="report-content"></div>
+                <div class="modal-footer">
+                    <button id="btn-copy-report" class="btn btn-secondary">📋 复制文本</button>
+                    <button id="btn-download-report" class="btn btn-primary">💾 下载报告</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/physics.js"></script>
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/scene.js"></script>
+    <script type="module" src="js/report.js"></script>
+    <script type="module" src="js/export.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

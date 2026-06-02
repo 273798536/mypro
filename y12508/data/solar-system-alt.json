@@ -1,0 +1,43 @@
+{
+  "name": "内太阳系模型(备用数据源)",
+  "description": "来自另一数据源的内太阳系参数，用于演示数据冲突检测功能",
+  "timeStep": 1.0,
+  "bodies": [
+    {
+      "id": "sun",
+      "name": "太阳",
+      "type": "star",
+      "mass": 1.991e30,
+      "radius": 6.96e8,
+      "color": "#ffd700",
+      "description": "太阳系的中心恒星",
+      "source": "天文年历2024",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "id": "earth",
+      "name": "地球",
+      "type": "planet",
+      "mass": 5.974e24,
+      "radius": 6.378e6,
+      "color": "#4a9eff",
+      "description": "第三颗行星",
+      "source": "天文年历2024",
+      "position": { "x": 1.49598e11, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 29783 }
+    },
+    {
+      "id": "moon",
+      "name": "月球",
+      "type": "moon",
+      "mass": 7.349e22,
+      "radius": 1.738e6,
+      "color": "#cccccc",
+      "description": "地球的卫星",
+      "source": "天文年历2024",
+      "position": { "x": 1.49598e11, "y": 0, "z": 3.847e8 },
+      "velocity": { "x": 1025, "y": 0, "z": 29783 }
+    }
+  ]
+}

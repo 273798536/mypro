@@ -1,0 +1,79 @@
+{
+  "name": "内太阳系模型",
+  "description": "包含太阳、四颗类地行星和月球的简化模型，用于演示轨道摄动效应",
+  "timeStep": 1.0,
+  "bodies": [
+    {
+      "id": "sun",
+      "name": "太阳",
+      "type": "star",
+      "mass": 1.989e30,
+      "radius": 6.957e8,
+      "color": "#ffd700",
+      "description": "太阳系的中心恒星，占据了太阳系总质量的99.86%",
+      "source": "NASA行星数据",
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "id": "mercury",
+      "name": "水星",
+      "type": "planet",
+      "mass": 3.301e23,
+      "radius": 2.4397e6,
+      "color": "#b5b5b5",
+      "description": "太阳系最内侧的行星，轨道偏心率最大",
+      "source": "NASA行星数据",
+      "position": { "x": 5.79e10, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 47360 }
+    },
+    {
+      "id": "venus",
+      "name": "金星",
+      "type": "planet",
+      "mass": 4.867e24,
+      "radius": 6.0518e6,
+      "color": "#ffc649",
+      "description": "太阳系最热的行星，表面温度可达462°C",
+      "source": "NASA行星数据",
+      "position": { "x": 1.082e11, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 35020 }
+    },
+    {
+      "id": "earth",
+      "name": "地球",
+      "type": "planet",
+      "mass": 5.972e24,
+      "radius": 6.371e6,
+      "color": "#4a9eff",
+      "description": "我们的家园，唯一已知存在生命的星球",
+      "source": "NASA行星数据",
+      "position": { "x": 1.496e11, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 29780 }
+    },
+    {
+      "id": "moon",
+      "name": "月球",
+      "type": "moon",
+      "mass": 7.342e22,
+      "radius": 1.737e6,
+      "color": "#cccccc",
+      "description": "地球唯一的天然卫星，对地球潮汐有重要影响",
+      "source": "NASA行星数据",
+      "position": { "x": 1.496e11, "y": 0, "z": 3.844e8 },
+      "velocity": { "x": 1022, "y": 0, "z": 29780 }
+    },
+    {
+      "id": "mars",
+      "name": "火星",
+      "type": "planet",
+      "mass": 6.39e23,
+      "radius": 3.3895e6,
+      "color": "#e27b58",
+      "description": "红色星球，人类探索的下一个目标",
+      "source": "NASA行星数据",
+      "position": { "x": 2.279e11, "y": 0, "z": 0 },
+      "velocity": { "x": 0, "y": 0, "z": 24130 }
+    }
+  ]
+}
