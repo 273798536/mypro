@@ -18,6 +18,7 @@ import { generateId, addHours } from '@/utils/helpers';
 import { generateMockDataBatch, generateProcessedData } from '@/utils/mockData';
 import { runFullDetection } from '@/utils/anomalyDetector';
 import { ReportGenerator } from '@/utils/reportGenerator';
+import { ParsedData } from '@/utils/fileParser';
 
 interface AppState {
   currentBatchId: string | null;
@@ -43,7 +44,7 @@ interface AppState {
   selectTimeRange: (range: TimeRange) => void;
   toggleSensor: (sensorId: string) => void;
   setPlaybackState: (state: Partial<PlaybackState>) => void;
-  importFiles: (files: SourceFile[]) => Promise<void>;
+  importFiles: (files: SourceFile[], parsedData: ParsedData) => Promise<void>;
   generateReport: (options: ReportOptions) => void;
   downloadReport: (format: 'pdf' | 'excel') => void;
   logProcessing: (action: string, details: Record<string, unknown>) => void;
@@ -196,7 +197,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }));
   },
 
-  importFiles: async (files: SourceFile[]) => {
+  importFiles: async (files: SourceFile[], parsedData: ParsedData) => {
     set({ isLoading: true, error: null });
 
     try {
@@ -207,24 +208,42 @@ export const useAppStore = create<AppState>((set, get) => ({
         importedAt: new Date(),
         importedBy: '当前用户',
         sourceFiles: files,
-        completeness: 100,
+        completeness: parsedData.completeness,
         status: 'completed',
       };
 
-      const mockData = generateMockDataBatch();
+      const temperatureDataWithBatch = parsedData.temperatureData.map((r) => ({
+        ...r,
+        batchId,
+      }));
+      const processedDataWithBatch = generateProcessedData(parsedData.temperatureData).map(
+        (r) => ({ ...r, batchId })
+      );
+      const cargoBatchesWithBatch = parsedData.cargoBatches.map((c) => ({
+        ...c,
+        batchId,
+      }));
+      const maintenanceNotesWithBatch = parsedData.maintenanceNotes.map((m) => ({
+        ...m,
+        batchId,
+      }));
+
+      const timestamps = temperatureDataWithBatch.map((t) => new Date(t.timestamp).getTime());
+      const minTime = timestamps.length > 0 ? new Date(Math.min(...timestamps)) : new Date();
+      const maxTime = timestamps.length > 0 ? new Date(Math.max(...timestamps)) : new Date();
 
       set((state) => ({
         batches: [...state.batches, newBatch],
         currentBatchId: batchId,
-        temperatureData: mockData.readings.map((r) => ({ ...r, batchId })),
-        processedData: generateProcessedData(mockData.readings).map((r) => ({ ...r, batchId })),
-        cargoBatches: mockData.cargoBatches.map((c) => ({ ...c, batchId })),
-        maintenanceNotes: mockData.maintenanceNotes.map((m) => ({ ...m, batchId })),
-        sensors: mockData.sensors,
-        selectedSensors: mockData.sensors.map((s) => s.sensorId),
+        temperatureData: temperatureDataWithBatch,
+        processedData: processedDataWithBatch,
+        cargoBatches: cargoBatchesWithBatch,
+        maintenanceNotes: maintenanceNotesWithBatch,
+        sensors: parsedData.sensors,
+        selectedSensors: parsedData.sensors.map((s) => s.sensorId),
         selectedTimeRange: {
-          start: addHours(new Date(), -48),
-          end: new Date(),
+          start: minTime,
+          end: maxTime,
         },
         isLoading: false,
       }));
@@ -234,6 +253,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         batchId,
         fileCount: files.length,
         files: files.map((f) => f.fileName),
+        temperatureCount: temperatureDataWithBatch.length,
+        cargoCount: cargoBatchesWithBatch.length,
+        maintenanceCount: maintenanceNotesWithBatch.length,
+        completeness: parsedData.completeness,
       });
     } catch (err) {
       set({

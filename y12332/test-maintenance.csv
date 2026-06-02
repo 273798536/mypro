@@ -1,0 +1,3 @@
+sensorId,eventTime,eventType,description,operator
+S001,2026-06-02 09:30:00,定期巡检,传感器状态正常,无异常,张工
+S002,2026-06-02 15:45:00,故障处理,温度读数波动较大,已校准,李工

@@ -30,6 +30,7 @@ import * as XLSX from 'xlsx';
 import { useAppStore } from '@/store';
 import { ImportFileType, SourceFile } from '@/types';
 import { formatDateTime, parseCSV, generateId } from '@/utils/helpers';
+import { parseFileContent, mergeParsedData, generateSampleFile } from '@/utils/fileParser';
 import { cn } from '@/lib/utils';
 
 // 文件类型配置
@@ -101,6 +102,7 @@ interface PendingFile {
   preview?: PreviewData;
   status: 'pending' | 'analyzing' | 'ready' | 'error';
   error?: string;
+  parseResult?: Awaited<ReturnType<typeof parseFileContent>>;
 }
 
 const ImportCenter = () => {
@@ -243,6 +245,8 @@ const ImportCenter = () => {
       const fileArray = Array.from(files);
       const validExtensions = ['.csv', '.xlsx', '.xls'];
 
+      const tempBatchId = `TEMP-${generateId()}`;
+
       const newPendingFiles: PendingFile[] = fileArray
         .filter((file) => {
           const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
@@ -257,14 +261,17 @@ const ImportCenter = () => {
 
       setPendingFiles((prev) => [...prev, ...newPendingFiles]);
 
-      // 异步分析每个文件
+      // 异步分析每个文件（同时生成预览和解析真实数据）
       for (const pendingFile of newPendingFiles) {
         try {
-          const preview = await generatePreview(pendingFile.file, pendingFile.fileType);
+          const [preview, parseResult] = await Promise.all([
+            generatePreview(pendingFile.file, pendingFile.fileType),
+            parseFileContent(pendingFile.file, pendingFile.fileType, tempBatchId),
+          ]);
           setPendingFiles((prev) =>
             prev.map((f) =>
               f.id === pendingFile.id
-                ? { ...f, preview, status: 'ready' as const }
+                ? { ...f, preview, parseResult, status: 'ready' as const }
                 : f
             )
           );
@@ -324,13 +331,18 @@ const ImportCenter = () => {
       )
     );
 
-    // 重新生成预览
+    const tempBatchId = `TEMP-${generateId()}`;
+    
+    // 重新生成预览和解析
     const file = pendingFiles.find((f) => f.id === id);
     if (file) {
-      generatePreview(file.file, fileType).then((preview) => {
+      Promise.all([
+        generatePreview(file.file, fileType),
+        parseFileContent(file.file, fileType, tempBatchId),
+      ]).then(([preview, parseResult]) => {
         setPendingFiles((prev) =>
           prev.map((f) =>
-            f.id === id ? { ...f, preview, status: 'ready' as const } : f
+            f.id === id ? { ...f, preview, parseResult, status: 'ready' as const } : f
           )
         );
       });
@@ -339,7 +351,9 @@ const ImportCenter = () => {
 
   // 执行导入
   const handleImport = useCallback(async () => {
-    const readyFiles = pendingFiles.filter((f) => f.status === 'ready' && f.preview);
+    const readyFiles = pendingFiles.filter(
+      (f) => f.status === 'ready' && f.preview && f.parseResult
+    );
     
     if (readyFiles.length === 0) return;
 
@@ -352,7 +366,11 @@ const ImportCenter = () => {
       recordCount: f.preview!.totalRows,
     }));
 
-    await importFiles(sourceFiles);
+    const parseResults = readyFiles.map((f) => f.parseResult!);
+    const finalBatchId = `BATCH-${Date.now().toString(36).toUpperCase()}`;
+    const mergedData = mergeParsedData(parseResults, finalBatchId);
+
+    await importFiles(sourceFiles, mergedData);
     setPendingFiles([]);
     setSelectedPreviewFile(null);
   }, [pendingFiles, importFiles]);
