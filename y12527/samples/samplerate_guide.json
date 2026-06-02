@@ -1,0 +1,49 @@
+{
+  "samplerate_options": [
+    {
+      "rate": 8000,
+      "label": "电话质量",
+      "nyquist": 4000
+    },
+    {
+      "rate": 22050,
+      "label": "低质量音频",
+      "nyquist": 11025
+    },
+    {
+      "rate": 44100,
+      "label": "CD质量",
+      "nyquist": 22050
+    },
+    {
+      "rate": 48000,
+      "label": "专业音频",
+      "nyquist": 24000
+    },
+    {
+      "rate": 96000,
+      "label": "高分辨率",
+      "nyquist": 48000
+    }
+  ],
+  "error_triggers": [
+    {
+      "trigger": "mix_samplerate_sources",
+      "description": "混合不同采样率的音频源",
+      "howto": "将44100Hz和22050Hz的音频拼接在一起",
+      "detection": "segment_mismatch检测器会识别频谱质心突变"
+    },
+    {
+      "trigger": "insufficient_samplerate",
+      "description": "使用过低的采样率录制高频信号",
+      "howto": "用8000Hz采样率录制包含5kHz以上频率的信号",
+      "detection": "nyquist_violation和mirror_frequencies检测器触发"
+    },
+    {
+      "trigger": "incorrect_resample",
+      "description": "错误的重采样操作",
+      "howto": "强制将低采样率音频重采样到高频而不进行抗混叠滤波",
+      "detection": "resample_artifact检测器识别高频伪影"
+    }
+  ]
+}

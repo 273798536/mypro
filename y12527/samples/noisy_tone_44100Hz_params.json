@@ -1,0 +1,30 @@
+{
+  "exported_at": "2026-06-02T12:25:13.639777",
+  "record_count": 1,
+  "band_labels": {},
+  "records": [
+    {
+      "file_name": "noisy_tone_44100Hz.wav",
+      "timestamp": "2026-06-02T12:25:13.637261",
+      "band_label": "Sub-bass (partial)",
+      "parameters": {
+        "threshold": 0.15,
+        "band_start": 0,
+        "band_end": null
+      },
+      "issue_count": 2,
+      "issues": [
+        {
+          "type": "high_freq_removal",
+          "description": "移除了 107664 个显著频率分量",
+          "severity": "medium"
+        },
+        {
+          "type": "high_band_removal",
+          "description": "高频段移除比例超过50%，可能影响临场感",
+          "severity": "medium"
+        }
+      ]
+    }
+  ]
+}

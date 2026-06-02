@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: fourier-noise-cleaner
+Version: 0.1.0
+Summary: 傅里叶噪声清洗CLI - 音频噪声清洗与分析工具
+Requires-Python: >=3.9
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: scipy>=1.7.0
+Requires-Dist: soundfile>=0.10.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: rich>=10.0.0
+Requires-Dist: matplotlib>=3.4.0
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: PyYAML>=5.4.0

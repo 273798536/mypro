@@ -1,0 +1,6 @@
+﻿记录ID,时间点,异常类型,来源材料,严重程度,描述,状态,解决时间,备注
+1,00:00:15,samplerate_mismatch,导入材料-第2段,high,采样率从44100Hz突变为22050Hz,resolved,2024-01-15 11:00,重采样至统一44100Hz
+2,00:02:30,frequency_folding,,medium,检测到频率折叠，奈奎斯特频率附近能量异常,pending,,
+3,,over_filtering,清洗过程,high,能量保留率仅25%，过度滤波,resolved,2024-01-15 14:20,阈值从0.3调整为0.15
+4,00:07:45,band_overlap,频段边界,low,Bass和Low Mid频段边界模糊,resolved,,调整边界从250Hz至260Hz [备注修改]
+5,00:10:00,clock_jitter,录制设备,low,检测到轻微时钟抖动,resolved,2024-01-16 09:15,【晚补记录】次日确认不影响质量

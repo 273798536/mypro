@@ -1,0 +1,2 @@
+[console_scripts]
+fnc = fourier_noise_cleaner.cli:main

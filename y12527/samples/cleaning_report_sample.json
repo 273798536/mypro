@@ -1,0 +1,59 @@
+{
+  "report_id": "RPT-2024-001",
+  "created_at": "2024-01-15T10:30:00",
+  "file": "lecture_recording.wav",
+  "original_samplerate": 44100,
+  "records": [
+    {
+      "id": 1,
+      "timestamp": "00:00:15",
+      "type": "samplerate_mismatch",
+      "source": "导入材料-第2段",
+      "severity": "high",
+      "description": "采样率从44100Hz突变为22050Hz",
+      "status": "resolved",
+      "resolved_at": "2024-01-15T11:00:00",
+      "note": "重采样至统一44100Hz"
+    },
+    {
+      "id": 2,
+      "timestamp": "00:02:30",
+      "type": "frequency_folding",
+      "source": "原始录制",
+      "severity": "medium",
+      "description": "检测到频率折叠，奈奎斯特频率附近能量异常",
+      "status": "pending",
+      "note": ""
+    },
+    {
+      "id": 3,
+      "timestamp": "00:05:00",
+      "type": "over_filtering",
+      "source": "清洗过程",
+      "severity": "high",
+      "description": "能量保留率仅25%，过度滤波",
+      "status": "resolved",
+      "resolved_at": "2024-01-15T14:20:00",
+      "note": "阈值从0.3调整为0.15"
+    },
+    {
+      "id": 4,
+      "timestamp": "00:07:45",
+      "type": "band_overlap",
+      "source": "频段边界",
+      "severity": "low",
+      "description": "Bass和Low Mid频段边界模糊",
+      "status": "resolved",
+      "resolved_at": "2024-01-15T15:30:00",
+      "note": "调整边界从250Hz至260Hz"
+    }
+  ],
+  "summary": {
+    "total_issues": 4,
+    "resolved": 3,
+    "pending": 1,
+    "high_severity": 2,
+    "medium_severity": 1,
+    "low_severity": 1
+  }
+}
