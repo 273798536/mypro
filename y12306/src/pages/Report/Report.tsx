@@ -4,9 +4,7 @@ import {
   Download,
   FileSpreadsheet,
   File as FileIcon,
-  Eye,
   Clock,
-  CheckCircle,
   AlertTriangle,
 } from 'lucide-react';
 import { useOptimizerStore } from '../../store/optimizerStore';

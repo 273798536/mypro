@@ -33,7 +33,7 @@ export function createTraceLog(
   step: number,
   type: TraceLog['type'],
   description: string,
-  details: Record<string, any>
+  details: Record<string, unknown>
 ): TraceLog {
   return {
     step,

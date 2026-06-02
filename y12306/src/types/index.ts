@@ -78,7 +78,7 @@ export interface TraceLog {
   timestamp: Date;
   type: TraceLogType;
   description: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
 }
 
 export interface SelectedDish {

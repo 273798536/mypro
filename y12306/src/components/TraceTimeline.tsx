@@ -1,5 +1,5 @@
 import React from 'react';
-import { GitBranch, CheckCircle, AlertTriangle, Settings, Lightbulb } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Settings, Lightbulb } from 'lucide-react';
 import { TraceLog, TraceLogType } from '../types';
 import { cn } from '@/lib/utils';
 

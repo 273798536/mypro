@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GitBranch, Clock, Filter, ChevronRight, AlertTriangle, XCircle, Info } from 'lucide-react';
+import { GitBranch, Clock, ChevronRight, AlertTriangle, XCircle, Info } from 'lucide-react';
 import { useOptimizerStore } from '../../store/optimizerStore';
 import { useDishStore } from '../../store/dishStore';
 import { ConflictBadge } from '../../components/ConflictBadge';
@@ -12,7 +12,7 @@ type FilterSeverity = 'all' | ConflictSeverity;
 
 export const TraceCenter: React.FC = () => {
   const { loadDishes } = useDishStore();
-  const { history, currentResult, setCurrentResult } = useOptimizerStore();
+  const { history, currentResult } = useOptimizerStore();
 
   const [selectedResult, setSelectedResult] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<FilterType>('all');

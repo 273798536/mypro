@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, XCircle, AlertCircle, Info } from 'lucide-react';
+import { AlertTriangle, XCircle, Info } from 'lucide-react';
 import { ConflictType, ConflictSeverity, CONFLICT_TYPE_LABELS } from '../types';
 import { cn } from '@/lib/utils';
 

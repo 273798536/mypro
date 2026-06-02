@@ -491,8 +491,7 @@ export function solveIntegerProgramming(
   const alternativePlans: AlternativePlan[] = generateAlternativePlans(
     dishes,
     input,
-    bestQuantities,
-    allConflicts
+    bestQuantities
   );
 
   callback?.({
@@ -524,8 +523,7 @@ export function solveIntegerProgramming(
 function generateAlternativePlans(
   dishes: Dish[],
   input: SolverInput,
-  bestQuantities: number[],
-  conflicts: Conflict[]
+  bestQuantities: number[]
 ): AlternativePlan[] {
   const alternatives: AlternativePlan[] = [];
   const variants = [

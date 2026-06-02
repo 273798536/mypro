@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Plus, Upload, Filter, Edit, Trash2, X } from 'lucide-react';
+import { Search, Plus, Upload, Edit, Trash2, X } from 'lucide-react';
 import { useDishStore } from '../../store/dishStore';
 import { Dish, DishCategory, CATEGORY_COLORS, ALLERGENS } from '../../types';
 import { cn } from '@/lib/utils';
@@ -8,15 +8,12 @@ const categories: (DishCategory | 'all')[] = ['all', '主食', '荤菜', '素菜
 
 export const DishList: React.FC = () => {
   const {
-    dishes,
     loadDishes,
     getFilteredDishes,
     searchQuery,
     categoryFilter,
     setSearchQuery,
     setCategoryFilter,
-    selectedDish,
-    setSelectedDish,
     deleteDish,
     addDish,
     updateDish,

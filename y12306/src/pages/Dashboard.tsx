@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Utensils, Calculator, AlertTriangle, TrendingUp, DollarSign, Target } from 'lucide-react';
+import { Utensils, Calculator, AlertTriangle, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDishStore } from '../store/dishStore';
 import { useOptimizerStore } from '../store/optimizerStore';

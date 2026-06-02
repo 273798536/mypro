@@ -5,8 +5,6 @@ import {
   NutritionTarget,
   CategoryLimit,
   PriorityRule,
-  DishCategory,
-  Nutrition,
   SolverState,
 } from '../types';
 import { solveIntegerProgramming, SolverProgress } from '../solver';
