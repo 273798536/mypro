@@ -1,5 +1,5 @@
 {
-  "id": "v-1780303764053-e2ki",
+  "id": "v-1780396719837-b71z",
   "name": "样例2-电价表过期",
   "tariffTableId": "tariff-002",
   "usageRecordId": "usage-002",
@@ -11,20 +11,24 @@
     {
       "tierId": "tier-1",
       "tierName": "第一档",
+      "periodType": "none",
       "pricePerKwh": 0.54,
       "billedKwh": 180,
       "billedAmount": 97.2,
       "formula": "该档电费 = 档位电量 180kWh × 电价 0.54元/kWh = 97.20元",
-      "tierRange": "0kWh - 180kWh"
+      "tierRange": "0kWh - 180kWh",
+      "calculationMode": "reverse"
     },
     {
       "tierId": "tier-2",
       "tierName": "第二档",
+      "periodType": "none",
       "pricePerKwh": 0.59,
       "billedKwh": 116.2712,
       "billedAmount": 68.6,
       "formula": "该档电费 = 剩余电费 68.60元 ÷ 电价 0.59元/kWh = 116.2712kWh × 0.59元/kWh = 68.60元",
-      "tierRange": "180kWh - 360kWh"
+      "tierRange": "180kWh - 360kWh",
+      "calculationMode": "reverse"
     }
   ],
   "warnings": [
@@ -34,7 +38,7 @@
       "message": "用电日期 2024-01-20 超出电价表有效期 (2023-01-01 至 2023-12-31)，计算结果仅供参考",
       "sourceField": "tariff.effectiveTo",
       "sourceValue": "2023-12-31",
-      "traceId": "calc-1780303764053-5tkm22"
+      "traceId": "calc-1780396719835-fdtw0n"
     },
     {
       "type": "mismatch_total",
@@ -42,10 +46,10 @@
       "message": "计算总用电量 296.27kWh 与提供的总用量 250kWh 相差 46.27kWh",
       "sourceField": "totalUsage",
       "sourceValue": 250,
-      "traceId": "calc-1780303764053-fh5tto"
+      "traceId": "calc-1780396719836-rvh0f8"
     }
   ],
-  "createdAt": "2026-06-01T08:49:24.053Z",
+  "createdAt": "2026-06-02T10:38:39.837Z",
   "createdBy": "analyst",
-  "note": "2023版电价表已过期"
+  "note": ""
 }

@@ -1,14 +1,19 @@
+export type TariffTableType = 'step' | 'tou';
+export type PeriodType = 'peak' | 'valley' | 'flat' | 'none';
+
 export interface TariffTier {
   tierId: string;
   tierName: string;
   minKwh: number;
   maxKwh: number | null;
   pricePerKwh: number;
+  periodType: PeriodType;
 }
 
 export interface TariffTable {
   id: string;
   name: string;
+  type: TariffTableType;
   effectiveFrom: string;
   effectiveTo: string;
   tiers: TariffTier[];
@@ -32,14 +37,16 @@ export interface UsageRecord {
 export interface TierCalculation {
   tierId: string;
   tierName: string;
+  periodType: PeriodType;
   pricePerKwh: number;
   billedKwh: number;
   billedAmount: number;
   formula: string;
   tierRange: string;
+  calculationMode: 'reverse' | 'forward';
 }
 
-export type WarningType = 'expired_tariff' | 'negative_usage' | 'boundary_tier' | 'mismatch_total' | 'tariff_boundary';
+export type WarningType = 'expired_tariff' | 'negative_usage' | 'boundary_tier' | 'mismatch_total' | 'tariff_boundary' | 'missing_period_usage' | 'period_sum_mismatch' | 'bill_mismatch' | 'unknown_period_type';
 export type WarningSeverity = 'error' | 'warning' | 'info';
 
 export interface CalculationWarning {

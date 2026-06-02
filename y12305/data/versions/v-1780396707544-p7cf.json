@@ -1,6 +1,6 @@
 {
-  "id": "v-1780303683647-mvwd",
-  "name": "测试-正常记录",
+  "id": "v-1780396707544-p7cf",
+  "name": "样例1-正常记录",
   "tariffTableId": "tariff-001",
   "usageRecordId": "usage-001",
   "totalBill": 183.5,
@@ -11,20 +11,24 @@
     {
       "tierId": "tier-1",
       "tierName": "第一档",
+      "periodType": "none",
       "pricePerKwh": 0.56,
       "billedKwh": 200,
       "billedAmount": 112,
       "formula": "该档电费 = 档位电量 200kWh × 电价 0.56元/kWh = 112.00元",
-      "tierRange": "0kWh - 200kWh"
+      "tierRange": "0kWh - 200kWh",
+      "calculationMode": "reverse"
     },
     {
       "tierId": "tier-2",
       "tierName": "第二档",
+      "periodType": "none",
       "pricePerKwh": 0.61,
       "billedKwh": 117.2131,
       "billedAmount": 71.5,
       "formula": "该档电费 = 剩余电费 71.50元 ÷ 电价 0.61元/kWh = 117.2131kWh × 0.61元/kWh = 71.50元",
-      "tierRange": "200kWh - 400kWh"
+      "tierRange": "200kWh - 400kWh",
+      "calculationMode": "reverse"
     }
   ],
   "warnings": [
@@ -34,10 +38,10 @@
       "message": "计算总用电量 317.21kWh 与提供的总用量 280kWh 相差 37.21kWh",
       "sourceField": "totalUsage",
       "sourceValue": 280,
-      "traceId": "calc-1780303683647-1bhml9"
+      "traceId": "calc-1780396707544-iuimx6"
     }
   ],
-  "createdAt": "2026-06-01T08:48:03.647Z",
+  "createdAt": "2026-06-02T10:38:27.544Z",
   "createdBy": "analyst",
-  "note": "验证正常核算流程"
+  "note": ""
 }

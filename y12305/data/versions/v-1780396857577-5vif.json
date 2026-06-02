@@ -1,0 +1,49 @@
+{
+  "id": "v-1780396857577-5vif",
+  "name": "核算版本 2026/6/2",
+  "tariffTableId": "tariff-003",
+  "usageRecordId": "usage-005",
+  "totalBill": 472,
+  "calculatedTotal": 472,
+  "discrepancy": 0,
+  "totalCalculatedKwh": 650,
+  "tierResults": [
+    {
+      "tierId": "tier-valley",
+      "tierName": "谷时",
+      "periodType": "valley",
+      "pricePerKwh": 0.38,
+      "billedKwh": 200,
+      "billedAmount": 76,
+      "formula": "谷时段电费 = valleyUsage 200.00kWh × 电价 0.38元/kWh = 76.00元",
+      "tierRange": "0kWh 以上",
+      "calculationMode": "forward"
+    },
+    {
+      "tierId": "tier-flat",
+      "tierName": "平时",
+      "periodType": "flat",
+      "pricePerKwh": 0.68,
+      "billedKwh": 150,
+      "billedAmount": 102,
+      "formula": "平时段电费 = flatUsage 150.00kWh × 电价 0.68元/kWh = 102.00元",
+      "tierRange": "0kWh 以上",
+      "calculationMode": "forward"
+    },
+    {
+      "tierId": "tier-peak",
+      "tierName": "峰时",
+      "periodType": "peak",
+      "pricePerKwh": 0.98,
+      "billedKwh": 300,
+      "billedAmount": 294,
+      "formula": "峰时段电费 = peakUsage 300.00kWh × 电价 0.98元/kWh = 294.00元",
+      "tierRange": "0kWh 以上",
+      "calculationMode": "forward"
+    }
+  ],
+  "warnings": [],
+  "createdAt": "2026-06-02T10:40:57.577Z",
+  "createdBy": "analyst",
+  "note": ""
+}

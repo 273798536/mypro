@@ -1,0 +1,32 @@
+{
+  "id": "v-1780396731769-n845",
+  "name": "样例7-数据缺失",
+  "tariffTableId": "tariff-003",
+  "usageRecordId": "usage-007",
+  "totalBill": 280,
+  "calculatedTotal": 0,
+  "discrepancy": 280,
+  "totalCalculatedKwh": 0,
+  "tierResults": [],
+  "warnings": [
+    {
+      "type": "missing_period_usage",
+      "severity": "error",
+      "message": "谷时段用量 (valleyUsage) 缺失，无法进行峰谷电价核算",
+      "sourceField": "valleyUsage",
+      "sourceValue": null,
+      "traceId": "calc-1780396731768-upg196"
+    },
+    {
+      "type": "period_sum_mismatch",
+      "severity": "warning",
+      "message": "峰谷平用量之和 (300.00kWh) 与总用量 (350kWh) 相差 50.00kWh",
+      "sourceField": "totalUsage",
+      "sourceValue": 350,
+      "traceId": "calc-1780396731769-805cbk"
+    }
+  ],
+  "createdAt": "2026-06-02T10:38:51.769Z",
+  "createdBy": "analyst",
+  "note": ""
+}

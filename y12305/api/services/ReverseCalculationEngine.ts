@@ -5,6 +5,7 @@ import type {
   CalculationWarning,
   TraceNode,
   WarningType,
+  PeriodType,
 } from '../../shared/types.js';
 
 function generateId(): string {
@@ -16,6 +17,36 @@ function formatTierRange(minKwh: number, maxKwh: number | null): string {
     return `${minKwh}kWh 以上`;
   }
   return `${minKwh}kWh - ${maxKwh}kWh`;
+}
+
+function getPeriodLabel(periodType: PeriodType): string {
+  const labels: Record<PeriodType, string> = {
+    peak: '峰时段',
+    valley: '谷时段',
+    flat: '平时段',
+    none: '',
+  };
+  return labels[periodType];
+}
+
+function getPeriodUsage(record: UsageRecord, periodType: PeriodType): number | undefined {
+  const mapping: Record<PeriodType, keyof UsageRecord> = {
+    peak: 'peakUsage',
+    valley: 'valleyUsage',
+    flat: 'flatUsage',
+    none: 'totalUsage',
+  };
+  return record[mapping[periodType]] as number | undefined;
+}
+
+function getPeriodFieldName(periodType: PeriodType): string {
+  const mapping: Record<PeriodType, string> = {
+    peak: 'peakUsage',
+    valley: 'valleyUsage',
+    flat: 'flatUsage',
+    none: 'totalUsage',
+  };
+  return mapping[periodType];
 }
 
 export class WarningDetector {
@@ -132,6 +163,74 @@ export class WarningDetector {
     }
   }
 
+  checkMissingPeriodUsage(record: UsageRecord, tiers: { periodType: PeriodType }[]): void {
+    const requiredPeriods = tiers
+      .map(t => t.periodType)
+      .filter(p => p !== 'none');
+
+    for (const periodType of requiredPeriods) {
+      const usage = getPeriodUsage(record, periodType);
+      if (usage === undefined || usage === null) {
+        const fieldName = getPeriodFieldName(periodType);
+        const periodLabel = getPeriodLabel(periodType);
+        this.addWarning(
+          'missing_period_usage',
+          'error',
+          `${periodLabel}用量 (${fieldName}) 缺失，无法进行峰谷电价核算`,
+          fieldName,
+          usage
+        );
+      }
+    }
+  }
+
+  checkPeriodSumMismatch(record: UsageRecord): void {
+    const peak = record.peakUsage ?? 0;
+    const valley = record.valleyUsage ?? 0;
+    const flat = record.flatUsage ?? 0;
+    const periodSum = peak + valley + flat;
+
+    if (record.totalUsage !== undefined) {
+      const discrepancy = Math.abs(periodSum - record.totalUsage);
+      if (discrepancy > 0.01) {
+        this.addWarning(
+          'period_sum_mismatch',
+          'warning',
+          `峰谷平用量之和 (${periodSum.toFixed(2)}kWh) 与总用量 (${record.totalUsage}kWh) 相差 ${discrepancy.toFixed(2)}kWh`,
+          'totalUsage',
+          record.totalUsage
+        );
+      }
+    }
+  }
+
+  checkBillMismatch(calculatedBill: number, providedBill: number): void {
+    const discrepancy = Math.abs(calculatedBill - providedBill);
+    if (discrepancy > 0.01) {
+      this.addWarning(
+        'bill_mismatch',
+        'warning',
+        `计算总电费 (¥${calculatedBill.toFixed(2)}) 与账单总电费 (¥${providedBill.toFixed(2)}) 相差 ¥${discrepancy.toFixed(2)}，请核实数据`,
+        'totalBill',
+        providedBill
+      );
+    }
+  }
+
+  checkUnknownPeriodType(tiers: { periodType: PeriodType; tierName: string }[]): void {
+    for (const tier of tiers) {
+      if (tier.periodType === 'none') {
+        this.addWarning(
+          'unknown_period_type',
+          'warning',
+          `峰谷电价表中的档位 "${tier.tierName}" 未设置时段类型`,
+          'tier.periodType',
+          tier.periodType
+        );
+      }
+    }
+  }
+
   getWarnings(): CalculationWarning[] {
     return [...this.warnings];
   }
@@ -163,6 +262,23 @@ export class ReverseCalculationEngine {
       this.warningDetector.checkNegativeUsage(usageRecord);
     }
 
+    if (tariff.type === 'tou') {
+      return this.calculateTOU(tariff, usageRecord);
+    } else {
+      return this.calculateStep(tariff, usageRecord);
+    }
+  }
+
+  private calculateStep(
+    tariff: TariffTable,
+    usageRecord: UsageRecord
+  ): {
+    tierResults: TierCalculation[];
+    calculatedTotal: number;
+    discrepancy: number;
+    totalCalculatedKwh: number;
+    warnings: CalculationWarning[];
+  } {
     const sortedTiers = [...tariff.tiers].sort((a, b) => a.minKwh - b.minKwh);
 
     const tierResults: TierCalculation[] = [];
@@ -181,17 +297,18 @@ export class ReverseCalculationEngine {
         const billedKwh = remainingBill / tier.pricePerKwh;
         const billedAmount = billedKwh * tier.pricePerKwh;
 
-        const maxKwhDisplay = tier.maxKwh === null ? '∞' : tier.maxKwh;
         const formula = `该档电费 = 剩余电费 ${remainingBill.toFixed(2)}元 ÷ 电价 ${tier.pricePerKwh}元/kWh = ${billedKwh.toFixed(4)}kWh × ${tier.pricePerKwh}元/kWh = ${billedAmount.toFixed(2)}元`;
 
         tierResults.push({
           tierId: tier.tierId,
           tierName: tier.tierName,
+          periodType: tier.periodType,
           pricePerKwh: tier.pricePerKwh,
           billedKwh: Number(billedKwh.toFixed(4)),
           billedAmount: Number(billedAmount.toFixed(2)),
           formula,
           tierRange: formatTierRange(tier.minKwh, tier.maxKwh),
+          calculationMode: 'reverse',
         });
 
         totalCalculatedKwh += billedKwh;
@@ -209,11 +326,13 @@ export class ReverseCalculationEngine {
         tierResults.push({
           tierId: tier.tierId,
           tierName: tier.tierName,
+          periodType: tier.periodType,
           pricePerKwh: tier.pricePerKwh,
           billedKwh: Number(billedKwh.toFixed(4)),
           billedAmount: Number(billedAmount.toFixed(2)),
           formula,
           tierRange: formatTierRange(tier.minKwh, tier.maxKwh),
+          calculationMode: 'reverse',
         });
 
         totalCalculatedKwh += billedKwh;
@@ -237,6 +356,80 @@ export class ReverseCalculationEngine {
     }
 
     this.warningDetector.checkTotalMismatch(totalCalculatedKwh, usageRecord.totalUsage);
+
+    const discrepancy = Number((usageRecord.totalBill - calculatedTotal).toFixed(2));
+
+    return {
+      tierResults,
+      calculatedTotal: Number(calculatedTotal.toFixed(2)),
+      discrepancy,
+      totalCalculatedKwh: Number(totalCalculatedKwh.toFixed(4)),
+      warnings: this.warningDetector.getWarnings(),
+    };
+  }
+
+  private calculateTOU(
+    tariff: TariffTable,
+    usageRecord: UsageRecord
+  ): {
+    tierResults: TierCalculation[];
+    calculatedTotal: number;
+    discrepancy: number;
+    totalCalculatedKwh: number;
+    warnings: CalculationWarning[];
+  } {
+    this.warningDetector.checkMissingPeriodUsage(usageRecord, tariff.tiers);
+    this.warningDetector.checkUnknownPeriodType(tariff.tiers);
+    this.warningDetector.checkPeriodSumMismatch(usageRecord);
+
+    const tierResults: TierCalculation[] = [];
+    let totalCalculatedKwh = 0;
+    let calculatedTotal = 0;
+
+    const hasErrors = this.warningDetector.getWarnings().some(w => w.severity === 'error');
+
+    if (hasErrors) {
+      const discrepancy = Number((usageRecord.totalBill - calculatedTotal).toFixed(2));
+      return {
+        tierResults: [],
+        calculatedTotal: 0,
+        discrepancy,
+        totalCalculatedKwh: 0,
+        warnings: this.warningDetector.getWarnings(),
+      };
+    }
+
+    for (const tier of tariff.tiers) {
+      const periodUsage = getPeriodUsage(usageRecord, tier.periodType);
+
+      if (periodUsage === undefined || periodUsage === null) {
+        continue;
+      }
+
+      const billedKwh = periodUsage;
+      const billedAmount = billedKwh * tier.pricePerKwh;
+
+      const periodLabel = getPeriodLabel(tier.periodType);
+      const fieldName = getPeriodFieldName(tier.periodType);
+      const formula = `${periodLabel}电费 = ${fieldName} ${billedKwh.toFixed(2)}kWh × 电价 ${tier.pricePerKwh}元/kWh = ${billedAmount.toFixed(2)}元`;
+
+      tierResults.push({
+        tierId: tier.tierId,
+        tierName: tier.tierName,
+        periodType: tier.periodType,
+        pricePerKwh: tier.pricePerKwh,
+        billedKwh: Number(billedKwh.toFixed(4)),
+        billedAmount: Number(billedAmount.toFixed(2)),
+        formula,
+        tierRange: formatTierRange(tier.minKwh, tier.maxKwh),
+        calculationMode: 'forward',
+      });
+
+      totalCalculatedKwh += billedKwh;
+      calculatedTotal += billedAmount;
+    }
+
+    this.warningDetector.checkBillMismatch(calculatedTotal, usageRecord.totalBill);
 
     const discrepancy = Number((usageRecord.totalBill - calculatedTotal).toFixed(2));
 
@@ -282,6 +475,7 @@ export class ReverseCalculationEngine {
       label: '电价表配置',
       value: {
         name: tariff.name,
+        type: tariff.type,
         effectiveFrom: tariff.effectiveFrom,
         effectiveTo: tariff.effectiveTo,
         isExpired: tariff.isExpired,
@@ -291,17 +485,24 @@ export class ReverseCalculationEngine {
         id: generateId(),
         type: 'tariff' as const,
         label: `${tier.tierName} (${formatTierRange(tier.minKwh, tier.maxKwh)})`,
-        value: { pricePerKwh: tier.pricePerKwh },
+        value: {
+          pricePerKwh: tier.pricePerKwh,
+          periodType: tier.periodType,
+        },
         sourceRef: `tariffs.json:${tariff.id}:${tier.tierId}`,
         children: [],
       })),
     };
 
+    const modeLabel = tariff.type === 'tou' ? '正向核算（峰谷电价）' : '逆向核算（阶梯电价）';
     const tierCalcNodes: TraceNode = {
       id: generateId(),
       type: 'tier_calc',
-      label: '档位计算过程',
-      value: { tierCount: tierResults.length },
+      label: `档位计算过程 (${modeLabel})`,
+      value: {
+        tierCount: tierResults.length,
+        calculationMode: tariff.type === 'tou' ? 'forward' : 'reverse',
+      },
       sourceRef: '',
       children: tierResults.map(result => ({
         id: generateId(),
@@ -311,6 +512,8 @@ export class ReverseCalculationEngine {
           billedKwh: result.billedKwh,
           billedAmount: result.billedAmount,
           pricePerKwh: result.pricePerKwh,
+          periodType: result.periodType,
+          calculationMode: result.calculationMode,
         },
         formula: result.formula,
         sourceRef: result.tierId,
@@ -343,8 +546,10 @@ export class ReverseCalculationEngine {
     return {
       id: rootId,
       type: 'result',
-      label: '逆向核算结果',
+      label: '核算结果',
       value: {
+        tariffType: tariff.type,
+        calculationMode: tariff.type === 'tou' ? 'forward' : 'reverse',
         totalBill: usageRecord.totalBill,
         calculatedTotal: tierResults.reduce((sum, t) => sum + t.billedAmount, 0),
         totalCalculatedKwh: tierResults.reduce((sum, t) => sum + t.billedKwh, 0),

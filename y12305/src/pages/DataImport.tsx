@@ -112,12 +112,35 @@ interface TariffCardProps {
   onDelete: () => void;
 }
 
+function getPeriodBadge(periodType: string) {
+  switch (periodType) {
+    case 'peak':
+      return <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-100 text-orange-700">峰</span>;
+    case 'valley':
+      return <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">谷</span>;
+    case 'flat':
+      return <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">平</span>;
+    default:
+      return null;
+  }
+}
+
 function TariffCard({ tariff, onDelete }: TariffCardProps) {
+  const typeLabel = tariff.type === 'tou' ? '峰谷电价' : '阶梯电价';
+  const typeColor = tariff.type === 'tou' 
+    ? 'bg-orange-100 text-orange-700 border-orange-200' 
+    : 'bg-blue-100 text-blue-700 border-blue-200';
+
   return (
     <div className={`card card-hover p-5 ${tariff.isExpired ? 'opacity-75' : ''}`}>
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h4 className="font-semibold text-slate-800">{tariff.name}</h4>
+          <h4 className="font-semibold text-slate-800 flex items-center gap-2">
+            {tariff.name}
+            <span className={`text-[10px] px-1.5 py-0.5 rounded border ${typeColor}`}>
+              {typeLabel}
+            </span>
+          </h4>
           <div className="flex items-center gap-2 mt-1">
             {tariff.isExpired ? (
               <span className="badge-warning">已过期</span>
@@ -146,7 +169,10 @@ function TariffCard({ tariff, onDelete }: TariffCardProps) {
             key={tier.tierId}
             className="flex items-center justify-between text-sm py-1.5 border-b border-slate-100 last:border-0"
           >
-            <span className="text-slate-600">{tier.tierName}</span>
+            <span className="text-slate-600 flex items-center gap-1.5">
+              {getPeriodBadge(tier.periodType)}
+              {tier.tierName}
+            </span>
             <span className="font-mono text-slate-800">
               {tier.pricePerKwh.toFixed(2)} 元/kWh
             </span>
@@ -170,18 +196,26 @@ interface AddTariffFormProps {
 
 function AddTariffForm({ onSuccess, onCancel }: AddTariffFormProps) {
   const [name, setName] = useState('');
+  const [type, setType] = useState<'step' | 'tou'>('step');
   const [effectiveFrom, setEffectiveFrom] = useState('');
   const [effectiveTo, setEffectiveTo] = useState('');
-  const [tiers, setTiers] = useState<TariffTier[]>([
-    { tierId: 't1', tierName: '第一档', minKwh: 0, maxKwh: 200, pricePerKwh: 0.56 },
-    { tierId: 't2', tierName: '第二档', minKwh: 200, maxKwh: 400, pricePerKwh: 0.61 },
-    { tierId: 't3', tierName: '第三档', minKwh: 400, maxKwh: null, pricePerKwh: 0.86 },
+  const [stepTiers] = useState<TariffTier[]>([
+    { tierId: 't1', tierName: '第一档', minKwh: 0, maxKwh: 200, pricePerKwh: 0.56, periodType: 'none' },
+    { tierId: 't2', tierName: '第二档', minKwh: 200, maxKwh: 400, pricePerKwh: 0.61, periodType: 'none' },
+    { tierId: 't3', tierName: '第三档', minKwh: 400, maxKwh: null, pricePerKwh: 0.86, periodType: 'none' },
+  ]);
+  const [touTiers] = useState<TariffTier[]>([
+    { tierId: 't1', tierName: '谷时', minKwh: 0, maxKwh: null, pricePerKwh: 0.38, periodType: 'valley' },
+    { tierId: 't2', tierName: '平时', minKwh: 0, maxKwh: null, pricePerKwh: 0.68, periodType: 'flat' },
+    { tierId: 't3', tierName: '峰时', minKwh: 0, maxKwh: null, pricePerKwh: 0.98, periodType: 'peak' },
   ]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const tiers = type === 'step' ? stepTiers : touTiers;
+
   const handleSubmit = async () => {
-    if (!name || !effectiveFrom || !effectiveTo) {
+    if (!name || !type || !effectiveFrom || !effectiveTo) {
       setError('请填写完整信息');
       return;
     }
@@ -192,6 +226,7 @@ function AddTariffForm({ onSuccess, onCancel }: AddTariffFormProps) {
     try {
       await api.tariffs.create({
         name,
+        type,
         effectiveFrom,
         effectiveTo,
         tiers,
@@ -212,7 +247,7 @@ function AddTariffForm({ onSuccess, onCancel }: AddTariffFormProps) {
           {error}
         </div>
       )}
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-4 gap-4 mb-4">
         <div>
           <label className="label">名称</label>
           <input
@@ -222,6 +257,17 @@ function AddTariffForm({ onSuccess, onCancel }: AddTariffFormProps) {
             onChange={(e) => setName(e.target.value)}
             placeholder="如：居民阶梯电价-2025版"
           />
+        </div>
+        <div>
+          <label className="label">电价类型</label>
+          <select
+            className="input"
+            value={type}
+            onChange={(e) => setType(e.target.value as 'step' | 'tou')}
+          >
+            <option value="step">阶梯电价</option>
+            <option value="tou">峰谷电价</option>
+          </select>
         </div>
         <div>
           <label className="label">生效日期</label>
@@ -240,6 +286,24 @@ function AddTariffForm({ onSuccess, onCancel }: AddTariffFormProps) {
             value={effectiveTo}
             onChange={(e) => setEffectiveTo(e.target.value)}
           />
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="label">档位配置 ({type === 'step' ? '阶梯模式' : '峰谷模式'})</label>
+        <div className="grid grid-cols-3 gap-3">
+          {tiers.map((tier, idx) => (
+            <div key={tier.tierId} className="bg-white rounded-md p-3 border border-slate-200">
+              <div className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+                {getPeriodBadge(tier.periodType)}
+                {tier.tierName}
+              </div>
+              <div className="text-xs text-slate-500 space-y-1">
+                <div>电量范围: {tier.minKwh} - {tier.maxKwh ?? '∞'}</div>
+                <div>电价: {tier.pricePerKwh} 元/kWh</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

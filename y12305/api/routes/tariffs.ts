@@ -47,14 +47,19 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   try {
-    const { name, effectiveFrom, effectiveTo, tiers } = req.body;
+    const { name, type, effectiveFrom, effectiveTo, tiers } = req.body;
 
-    if (!name || !effectiveFrom || !effectiveTo || !tiers) {
+    if (!name || !type || !effectiveFrom || !effectiveTo || !tiers) {
       res.status(400).json({ error: '缺少必填字段' });
       return;
     }
 
-    const validation = tariffService.validateTiers(tiers);
+    if (type !== 'step' && type !== 'tou') {
+      res.status(400).json({ error: '电价表类型必须是 step 或 tou' });
+      return;
+    }
+
+    const validation = tariffService.validateTiers(tiers, type);
     if (!validation.valid) {
       res.status(400).json({ error: '档位验证失败', details: validation.errors });
       return;
@@ -62,6 +67,7 @@ router.post('/', (req, res) => {
 
     const newTariff = tariffService.create({
       name,
+      type,
       effectiveFrom,
       effectiveTo,
       tiers,
@@ -75,10 +81,21 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   try {
-    const { tiers } = req.body;
+    const { tiers, type } = req.body;
+
+    if (type && type !== 'step' && type !== 'tou') {
+      res.status(400).json({ error: '电价表类型必须是 step 或 tou' });
+      return;
+    }
 
     if (tiers) {
-      const validation = tariffService.validateTiers(tiers);
+      const existing = tariffService.getById(req.params.id);
+      if (!existing) {
+        res.status(404).json({ error: '未找到电价表' });
+        return;
+      }
+      const validationType = type || existing.type;
+      const validation = tariffService.validateTiers(tiers, validationType);
       if (!validation.valid) {
         res.status(400).json({ error: '档位验证失败', details: validation.errors });
         return;

@@ -46,5 +46,41 @@
     "customerNote": "4月账单，峰时段出现负读数，疑似抄表错误",
     "sourceFile": "用电账单_202404.xlsx",
     "importedAt": "2024-04-08T16:45:00.000Z"
+  },
+  {
+    "id": "usage-005",
+    "recordDate": "2024-06-20",
+    "totalBill": 472.00,
+    "peakUsage": 300,
+    "valleyUsage": 200,
+    "flatUsage": 150,
+    "totalUsage": 650,
+    "customerNote": "商业用户6月账单，峰谷平正常，计算值与账单一致",
+    "sourceFile": "商业账单_202406.xlsx",
+    "importedAt": "2024-06-21T11:00:00.000Z"
+  },
+  {
+    "id": "usage-006",
+    "recordDate": "2024-05-15",
+    "totalBill": 350.00,
+    "peakUsage": 250,
+    "valleyUsage": 180,
+    "flatUsage": 120,
+    "totalUsage": 540,
+    "customerNote": "商业用户5月账单，总电费与计算值不符，需核实",
+    "sourceFile": "商业账单_202405.xlsx",
+    "importedAt": "2024-05-16T09:30:00.000Z"
+  },
+  {
+    "id": "usage-007",
+    "recordDate": "2024-07-01",
+    "totalBill": 280.00,
+    "peakUsage": 200,
+    "valleyUsage": null,
+    "flatUsage": 100,
+    "totalUsage": 350,
+    "customerNote": "商业用户7月账单，谷时段数据缺失",
+    "sourceFile": "商业账单_202407.xlsx",
+    "importedAt": "2024-07-02T14:20:00.000Z"
   }
 ]

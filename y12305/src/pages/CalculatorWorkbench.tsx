@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../store';
 import { WarningList } from '../components/WarningBadge';
-import { Calculator, ChevronDown, ChevronUp, Zap, DollarSign, Gauge, GitBranch, ArrowRight, FileText } from 'lucide-react';
+import { Calculator, ChevronDown, ChevronUp, Zap, DollarSign, Gauge, GitBranch, ArrowRight, FileText, Clock, Sun, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { TierCalculation } from '../../shared/types';
+import type { TierCalculation, PeriodType } from '../../shared/types';
 
 export function CalculatorWorkbench() {
   const tariffs = useAppStore((state) => state.tariffs);
@@ -164,13 +164,24 @@ export function CalculatorWorkbench() {
             </button>
           </div>
 
-          {currentVersion && (
+          {currentVersion && (() => {
+            const currentTariff = tariffs.find(t => t.id === currentVersion.tariffTableId);
+            const tariffTypeLabel = currentTariff?.type === 'tou' ? '峰谷电价' : '阶梯电价';
+            const calculationMode = currentTariff?.type === 'tou' ? '正向计算' : '逆向求解';
+            return (
             <div className="card p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-slate-800 flex items-center gap-2">
                   <GitBranch className="w-5 h-5 text-brand" />
                   核算结果
                   <span className="badge-info font-normal">{currentVersion.name}</span>
+                  <span className={`text-xs font-normal px-2 py-0.5 rounded ${
+                    currentTariff?.type === 'tou'
+                      ? 'bg-orange-50 text-orange-600 border border-orange-200'
+                      : 'bg-blue-50 text-blue-600 border border-blue-200'
+                  }`}>
+                    {tariffTypeLabel} · {calculationMode}
+                  </span>
                 </h3>
                 <Link
                   to={`/trace/${currentVersion.id}`}
@@ -237,7 +248,8 @@ export function CalculatorWorkbench() {
                 </div>
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
 
         <div className="space-y-6">
@@ -270,6 +282,18 @@ export function CalculatorWorkbench() {
                 <div className="font-medium text-red-800">样例4: 用量为负</div>
                 <p>2024-04-05 账单，峰时段出现-15度异常值</p>
               </div>
+              <div className="p-3 bg-orange-50 rounded-md border-l-4 border-orange-500">
+                <div className="font-medium text-orange-800">样例5: 商业峰谷正常</div>
+                <p>2024-06-20 商业账单，峰谷平三段正向计算，无异常</p>
+              </div>
+              <div className="p-3 bg-rose-50 rounded-md border-l-4 border-rose-500">
+                <div className="font-medium text-rose-800">样例6: 商业电费不符</div>
+                <p>2024-05-15 商业账单，计算总电费与账单不符，需核实</p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-md border-l-4 border-purple-500">
+                <div className="font-medium text-purple-800">样例7: 谷时段数据缺失</div>
+                <p>2024-07-01 商业账单，谷时段用量缺失，无法核算</p>
+              </div>
             </div>
           </div>
 
@@ -294,6 +318,29 @@ interface TierResultRowProps {
   onToggle: () => void;
 }
 
+function getPeriodIcon(periodType: PeriodType) {
+  switch (periodType) {
+    case 'peak':
+      return <Sun className="w-3.5 h-3.5" />;
+    case 'valley':
+      return <Moon className="w-3.5 h-3.5" />;
+    case 'flat':
+      return <Clock className="w-3.5 h-3.5" />;
+    default:
+      return null;
+  }
+}
+
+function getPeriodLabel(periodType: PeriodType): string {
+  const labels: Record<PeriodType, string> = {
+    peak: '峰时段',
+    valley: '谷时段',
+    flat: '平时段',
+    none: '',
+  };
+  return labels[periodType];
+}
+
 function TierResultRow({ tier, index, isExpanded, onToggle }: TierResultRowProps) {
   const colors = [
     'bg-emerald-100 text-emerald-700',
@@ -302,7 +349,17 @@ function TierResultRow({ tier, index, isExpanded, onToggle }: TierResultRowProps
     'bg-red-100 text-red-700',
   ];
 
+  const periodColors: Record<PeriodType, string> = {
+    peak: 'bg-orange-100 text-orange-700',
+    valley: 'bg-indigo-100 text-indigo-700',
+    flat: 'bg-slate-100 text-slate-700',
+    none: '',
+  };
+
   const colorClass = colors[index % colors.length];
+  const periodColor = periodColors[tier.periodType];
+  const periodLabel = getPeriodLabel(tier.periodType);
+  const periodIcon = getPeriodIcon(tier.periodType);
 
   return (
     <div className="border border-slate-200 rounded-lg overflow-hidden">
@@ -315,7 +372,22 @@ function TierResultRow({ tier, index, isExpanded, onToggle }: TierResultRowProps
             {index + 1}
           </span>
           <div>
-            <div className="font-medium text-slate-800">{tier.tierName}</div>
+            <div className="font-medium text-slate-800 flex items-center gap-2">
+              {tier.tierName}
+              {periodLabel && (
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${periodColor}`}>
+                  {periodIcon}
+                  {periodLabel}
+                </span>
+              )}
+              <span className={`text-xs font-normal px-2 py-0.5 rounded ${
+                tier.calculationMode === 'forward' 
+                  ? 'bg-teal-50 text-teal-600 border border-teal-200'
+                  : 'bg-purple-50 text-purple-600 border border-purple-200'
+              }`}>
+                {tier.calculationMode === 'forward' ? '正向计算' : '逆向求解'}
+              </span>
+            </div>
             <div className="text-xs text-slate-500">{tier.tierRange} · {tier.pricePerKwh}元/kWh</div>
           </div>
         </div>
