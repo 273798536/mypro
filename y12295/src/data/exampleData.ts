@@ -48,6 +48,7 @@ function generateCluster(
     points.push({
       id: `${fileName}#L${startRowIndex + i}`,
       vector,
+      cleanedVector: [...vector],
       embedding: [0, 0, 0],
       trueLabel: label,
       group,
@@ -102,6 +103,7 @@ function generateOverlapExample(): DataPoint[] {
     points.push({
       id: `${fileName}#L${rowIdx}`,
       vector,
+      cleanedVector: [...vector],
       embedding: [0, 0, 0],
       trueLabel,
       group: '边界样本',
@@ -160,6 +162,7 @@ function generateOcclusionExample(): DataPoint[] {
     points.push({
       id: `${fileName}#L${rowIdx}`,
       vector,
+      cleanedVector: [...vector],
       embedding: [0, 0, 0],
       trueLabel,
       group: isOccluded ? '遮挡样本' : '正常样本',
@@ -186,6 +189,7 @@ function generateOcclusionExample(): DataPoint[] {
     points.push({
       id: `${fileName}#L${rowIdx}`,
       vector,
+      cleanedVector: [...vector],
       embedding: [0, 0, 0],
       trueLabel: '类别A',
       group: '离群点',
@@ -248,6 +252,7 @@ function generateInstabilityExample(): DataPoint[] {
     points.push({
       id: `${fileName}#L${rowIdx}`,
       vector: noiseVector,
+      cleanedVector: [...noiseVector],
       embedding: [0, 0, 0],
       trueLabel,
       group: '高维噪声',

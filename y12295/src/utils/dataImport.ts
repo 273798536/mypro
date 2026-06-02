@@ -59,22 +59,29 @@ export function convertToDataPoints(
   rawData: Record<string, unknown>[],
   config: ImportConfig
 ): DataPoint[] {
-  const vectors: number[][] = [];
+  const rawVectors: number[][] = [];
+  const cleanedVectors: number[][] = [];
   const validIndices: number[] = [];
 
   rawData.forEach((row, index) => {
-    const vector = config.vectorFields.map(field => {
-      const val = parseFloat(String(row[field]));
-      return isNaN(val) ? 0 : val;
+    const rawVector = config.vectorFields.map(field =>
+      parseFloat(String(row[field]))
+    );
+
+    const cleanedVector = rawVector.map(v => {
+      if (Number.isNaN(v)) return 0;
+      if (!Number.isFinite(v)) return v > 0 ? Number.MAX_VALUE : -Number.MAX_VALUE;
+      return v;
     });
 
-    if (vector.every(v => !isNaN(v))) {
-      vectors.push(vector);
+    if (rawVector.length > 0) {
+      rawVectors.push(rawVector);
+      cleanedVectors.push(cleanedVector);
       validIndices.push(index);
     }
   });
 
-  const embeddings = reduceTo3D(vectors);
+  const embeddings = reduceTo3D(cleanedVectors);
   const fieldMapping = buildFieldMapping(config);
   const fileName = config.fileName || 'unknown';
 
@@ -93,7 +100,8 @@ export function convertToDataPoints(
 
     return {
       id: `${fileName}#L${rawIndex + 1}`,
-      vector: vectors[embIndex],
+      vector: rawVectors[embIndex],
+      cleanedVector: cleanedVectors[embIndex],
       embedding: embeddings[embIndex],
       trueLabel: String(row[config.labelField] || '未知'),
       predictedLabel: config.predictedLabelField

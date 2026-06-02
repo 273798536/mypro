@@ -10,6 +10,7 @@ export interface DataPointSource {
 export interface DataPoint {
   id: string;
   vector: number[];
+  cleanedVector: number[];
   embedding: Embedding3D;
   trueLabel: string;
   predictedLabel?: string;

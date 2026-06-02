@@ -133,9 +133,8 @@ export function analyzeDataQuality(points: DataPoint[]): DataQualityReport {
   const hasUnevenGroups = groupCounts.length > 1 && maxCount / minCount > 3;
 
   const vectors = points
-    .filter(p => p.vector && p.vector.length > 0)
-    .filter(p => p.vector.every(v => !Number.isNaN(v) && Number.isFinite(v)))
-    .map(p => p.vector);
+    .filter(p => p.cleanedVector && p.cleanedVector.length > 0)
+    .map(p => p.cleanedVector);
 
   const stabilityScore = calculateStabilityScore(vectors);
 
