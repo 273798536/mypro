@@ -4,15 +4,15 @@ import ExceptionList from '../components/features/ExceptionList';
 import FilterPanel from '../components/features/FilterPanel';
 import { useExceptionStore, exceptionEngine } from '../engines/ExceptionEngine';
 import { useQueueStore } from '../store/useQueueStore';
-import { useFilterStore } from '../engines/FilterSyncEngine';
+import { useFilterStore, filterSyncEngine } from '../engines/FilterSyncEngine';
 import { ExceptionStatus } from '../types';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const Exceptions: React.FC = () => {
-  const { loadData, getFilteredData, isLoading } = useQueueStore();
+  const { loadData, isLoading, serviceRecords, visitors, appointments, windows: queueWindows } = useQueueStore();
   const { exceptions, setExceptions, updateExceptionStatus, batchUpdateStatus } = useExceptionStore();
-  const { dateRange, keyword, setKeyword } = useFilterStore();
+  const { dateRange, keyword, setKeyword, windowIds, businessTypes, status } = useFilterStore();
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
 
@@ -20,10 +20,13 @@ const Exceptions: React.FC = () => {
     loadData();
   }, [loadData]);
 
-  const filteredData = useMemo(() => getFilteredData(), [getFilteredData]);
+  const filteredData = useMemo(() => {
+    void dateRange; void keyword; void windowIds; void businessTypes; void status;
+    return filterSyncEngine.getFilteredRecords(serviceRecords, visitors, appointments, queueWindows);
+  }, [serviceRecords, visitors, appointments, queueWindows, dateRange, keyword, windowIds, businessTypes, status]);
 
   useEffect(() => {
-    if (filteredData.records.length > 0) {
+    if (filteredData.records.length > 0 && exceptions.length === 0) {
       const detectedExceptions = exceptionEngine.processAllExceptions(
         filteredData.records,
         filteredData.appointments,
@@ -31,7 +34,7 @@ const Exceptions: React.FC = () => {
       );
       setExceptions(detectedExceptions);
     }
-  }, [filteredData, setExceptions]);
+  }, [filteredData, setExceptions, exceptions.length]);
 
   const filteredExceptions = useMemo(() => {
     return exceptions.filter((ex) => {

@@ -20,22 +20,20 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const Dashboard: React.FC = () => {
-  const { loadData, getStatistics, getFilteredData, windows, isLoading } = useQueueStore();
+  const { loadData, windows, isLoading, serviceRecords, visitors, appointments } = useQueueStore();
   const { exceptions } = useExceptionStore();
-  const { dateRange } = useFilterStore();
+  const { dateRange, keyword, windowIds, businessTypes, status } = useFilterStore();
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  useEffect(() => {
-    const unsubscribe = filterSyncEngine.subscribe(() => {
-    });
-    return unsubscribe;
-  }, []);
-
-  const stats = useMemo(() => getStatistics(), [getStatistics]);
-  const filteredData = useMemo(() => getFilteredData(), [getFilteredData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stats = useMemo(() => useQueueStore.getState().getStatistics(), [serviceRecords, visitors, appointments, windows]);
+  const filteredData = useMemo(() => {
+    void dateRange; void keyword; void windowIds; void businessTypes; void status;
+    return filterSyncEngine.getFilteredRecords(serviceRecords, visitors, appointments, windows);
+  }, [serviceRecords, visitors, appointments, windows, dateRange, keyword, windowIds, businessTypes, status]);
 
   const pendingExceptions = exceptions.filter((e) => e.status === 'pending');
 

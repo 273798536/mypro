@@ -7,19 +7,22 @@ import WaitDistributionChart from '../components/charts/WaitDistributionChart';
 import StatCard from '../components/ui/StatCard';
 import FilterPanel from '../components/features/FilterPanel';
 import { useQueueStore } from '../store/useQueueStore';
-import { useFilterStore } from '../engines/FilterSyncEngine';
+import { useFilterStore, filterSyncEngine } from '../engines/FilterSyncEngine';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const Distribution: React.FC = () => {
-  const { loadData, getFilteredData, isLoading } = useQueueStore();
-  const { dateRange } = useFilterStore();
+  const { loadData, isLoading, serviceRecords, visitors, appointments, windows } = useQueueStore();
+  const { dateRange, keyword, windowIds, businessTypes, status } = useFilterStore();
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const filteredData = useMemo(() => getFilteredData(), [getFilteredData]);
+  const filteredData = useMemo(() => {
+    void dateRange; void keyword; void windowIds; void businessTypes; void status;
+    return filterSyncEngine.getFilteredRecords(serviceRecords, visitors, appointments, windows);
+  }, [serviceRecords, visitors, appointments, windows, dateRange, keyword, windowIds, businessTypes, status]);
 
   const waitTimes = useMemo(
     () => filteredData.records.map((r) => r.waitDuration).filter((t) => t >= 0),

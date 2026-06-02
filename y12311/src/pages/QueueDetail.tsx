@@ -3,14 +3,14 @@ import { Download, ListFilter, History } from 'lucide-react';
 import FilterPanel from '../components/features/FilterPanel';
 import QueueTable from '../components/features/QueueTable';
 import { useQueueStore } from '../store/useQueueStore';
-import { useFilterStore } from '../engines/FilterSyncEngine';
+import { useFilterStore, filterSyncEngine } from '../engines/FilterSyncEngine';
 import { useSupplementStore, supplementEngine } from '../engines/SupplementEngine';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 
 const QueueDetail: React.FC = () => {
-  const { loadData, getFilteredData, isLoading, setHighlightedSupplementId } = useQueueStore();
-  const { dateRange, keyword } = useFilterStore();
+  const { loadData, isLoading, setHighlightedSupplementId, serviceRecords, visitors, appointments, windows } = useQueueStore();
+  const { dateRange, keyword, windowIds, businessTypes, status } = useFilterStore();
   const { supplements } = useSupplementStore();
   const [showSupplementHistory, setShowSupplementHistory] = useState(false);
 
@@ -18,7 +18,11 @@ const QueueDetail: React.FC = () => {
     loadData();
   }, [loadData]);
 
-  const filteredData = useMemo(() => getFilteredData(), [getFilteredData]);
+  const filteredData = useMemo(() => {
+    void serviceRecords; void visitors; void appointments; void windows;
+    void dateRange; void keyword; void windowIds; void businessTypes; void status;
+    return filterSyncEngine.getFilteredRecords(serviceRecords, visitors, appointments, windows);
+  }, [serviceRecords, visitors, appointments, windows, dateRange, keyword, windowIds, businessTypes, status]);
 
   const recentSupplements = useMemo(() => {
     return [...supplements]
