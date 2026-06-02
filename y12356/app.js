@@ -735,7 +735,8 @@ class RCFittingSystem {
         var tauDevPct = theoreticalTau > 0 ? (Math.abs(measuredTau - theoreticalTau) / theoreticalTau * 100).toFixed(1) + '%' : '-';
         var tauDevColor = theoreticalTau > 0 && Math.abs(measuredTau - theoreticalTau) / theoreticalTau > 0.2 ? '#ef4444' : '#10b981';
 
-        return '<div class="report-section"><h4>\uD83D\uDCCB \u5B9E\u9A8C\u5206\u6790\u6458\u8981</h4><div class="report-summary">' +
+        return '<h1>\u7535\u8DEFRC\u5145\u653E\u7535\u62DF\u5408\u5206\u6790\u62A5\u544A</h1>' +
+            '<div class="report-section"><h4>\uD83D\uDCCB \u5B9E\u9A8C\u5206\u6790\u6458\u8981</h4><div class="report-summary">' +
             '<p><strong>\u62A5\u544A\u7F16\u53F7\uFF1A</strong>' + this.reportId + '</p>' +
             '<p><strong>\u5206\u6790\u65F6\u95F4\uFF1A</strong>' + new Date().toLocaleString() + '</p>' +
             '<p><strong>\u6570\u636E\u70B9\u6570\uFF1A</strong>' + this.dataPoints.length + ' \u4E2A</p>' +
@@ -760,79 +761,98 @@ class RCFittingSystem {
     }
 
     downloadReport() {
-        var plainText = this.generatePlainTextReport();
+        var self = this;
         var fileName = 'RC\u5206\u6790\u62A5\u544A-' + this.reportId + '.pdf';
 
-        try {
-            if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
-                throw new Error('jsPDF \u672A\u52A0\u8F7D');
-            }
+        if (typeof window.html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+            self.fallbackTextDownload(fileName);
+            return;
+        }
+
+        var btn = document.getElementById('report-download');
+        var origText = btn.textContent;
+        btn.textContent = '\u751F\u6210\u4E2D...';
+        btn.disabled = true;
+
+        var temp = document.createElement('div');
+        temp.id = 'pdf-render-container';
+        temp.style.cssText = 'position:fixed;left:0;top:0;z-index:-1;opacity:0.01;pointer-events:none;width:794px;background:#fff;color:#222;padding:48px 56px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;font-size:13px;line-height:1.7;';
+
+        var printCSS = '<style>' +
+            '.pdf-report{color:#222;font-size:13px;line-height:1.7}' +
+            '.pdf-report h1{font-size:22px;font-weight:700;color:#1a1a2e;margin:0 0 24px;padding-bottom:12px;border-bottom:3px solid #2563eb}' +
+            '.pdf-report h4{font-size:15px;font-weight:600;color:#1e293b;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid #3b82f6}' +
+            '.pdf-report h5{font-size:14px;font-weight:600;color:#dc2626;margin:0 0 8px}' +
+            '.pdf-report .report-section{margin-bottom:24px}' +
+            '.pdf-report .report-summary{background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 18px;margin:10px 0 16px;border-radius:0 6px 6px 0}' +
+            '.pdf-report .report-summary p{margin:4px 0;color:#1e293b}' +
+            '.pdf-report .report-summary strong{color:#0f172a}' +
+            '.pdf-report .anomaly-explanation{background:#fef2f2;border-left:4px solid #ef4444;padding:14px 18px;margin:10px 0 16px;border-radius:0 6px 6px 0}' +
+            '.pdf-report .anomaly-explanation h5{color:#dc2626;margin:0 0 8px;font-size:14px}' +
+            '.pdf-report .anomaly-explanation p{margin:4px 0;color:#7f1d1d}' +
+            '.pdf-report .table-wrapper{background:#fff;border-radius:6px;overflow:hidden;margin:8px 0 16px}' +
+            '.pdf-report .data-table{width:100%;border-collapse:collapse;font-size:12px}' +
+            '.pdf-report .data-table th{background:#f1f5f9;color:#475569;font-weight:600;padding:8px 10px;text-align:left;border-bottom:1px solid #e2e8f0}' +
+            '.pdf-report .data-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;color:#334155}' +
+            '</style>';
+
+        var reportHTML = this.generateReport();
+        temp.innerHTML = printCSS + '<div class="pdf-report">' + reportHTML + '</div>';
+        document.body.appendChild(temp);
+
+        window.html2canvas(temp, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            width: 794,
+            windowWidth: 794
+        }).then(function(canvas) {
+            document.body.removeChild(temp);
+            btn.textContent = origText;
+            btn.disabled = false;
 
             var jsPDF = window.jspdf.jsPDF;
-            var doc = new jsPDF({ unit: 'pt', format: 'a4' });
-            var pageWidth = doc.internal.pageSize.getWidth();
-            var margin = 50;
-            var x = margin;
-            var y = margin;
-            var lineHeight = 16;
-            var maxWidth = pageWidth - margin * 2;
+            var doc = new jsPDF('p', 'pt', 'a4');
+            var pageW = 595.28;
+            var pageH = 841.89;
+            var margin = 20;
+            var imgW = pageW - margin * 2;
+            var imgH = canvas.height * imgW / canvas.width;
+            var imgData = canvas.toDataURL('image/jpeg', 0.92);
 
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text('RC CHARGE-DISCHARGE FITTING ANALYSIS REPORT', x, y);
-            y += lineHeight + 10;
+            var remainH = imgH;
+            var posY = margin;
 
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'normal');
-            var lines = plainText.split('\n');
+            doc.addImage(imgData, 'JPEG', margin, posY, imgW, imgH);
+            remainH -= (pageH - margin * 2);
 
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-
-                if (line.indexOf('\u2550\u2550') === 0 || line.indexOf('\u2500\u2500') === 0) continue;
-
-                if (y > 780) {
-                    doc.addPage();
-                    y = margin;
-                }
-
-                if (line.indexOf('\uD83D\uDCCB') === 0 || line.indexOf('\uD83D\uDCE6') === 0 ||
-                    line.indexOf('\uD83D\uDCCA') === 0 || line.indexOf('\uD83D\uDEA8') === 0 ||
-                    line.indexOf('\uD83D\uDCDD') === 0 || line.indexOf('\uD83D\uDD17') === 0 ||
-                    line.indexOf('\uD83D\uDCA1') === 0) {
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(13);
-                    doc.text(line, x, y);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(11);
-                    y += lineHeight + 4;
-                } else if (line.trim() === '') {
-                    y += lineHeight * 0.5;
-                } else {
-                    var wrapped = doc.splitTextToSize(line, maxWidth);
-                    for (var j = 0; j < wrapped.length; j++) {
-                        if (y > 780) {
-                            doc.addPage();
-                            y = margin;
-                        }
-                        doc.text(wrapped[j], x, y);
-                        y += lineHeight;
-                    }
-                }
+            while (remainH > 0) {
+                posY = posY - (pageH - margin * 2);
+                doc.addPage();
+                doc.addImage(imgData, 'JPEG', margin, posY, imgW, imgH);
+                remainH -= (pageH - margin * 2);
             }
 
             doc.save(fileName);
-        } catch (err) {
-            console.warn('PDF \u751F\u6210\u5931\u8D25\uFF0C\u964D\u7EA7\u4E3A\u6587\u672C\u4E0B\u8F7D:', err.message);
-            var blob = new Blob([plainText], { type: 'text/plain;charset=utf-8' });
-            var url = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.download = fileName.replace('.pdf', '.txt');
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
-            alert('PDF\u751F\u6210\u5931\u8D25\uFF0C\u5DF2\u81EA\u52A8\u4E0B\u8F7D\u6587\u672C\u7248\u62A5\u544A');
-        }
+        }).catch(function(err) {
+            if (temp.parentNode) document.body.removeChild(temp);
+            btn.textContent = origText;
+            btn.disabled = false;
+            console.warn('PDF\u751F\u6210\u5931\u8D25:', err);
+            self.fallbackTextDownload(fileName);
+        });
+    }
+
+    fallbackTextDownload(fileName) {
+        var text = this.generatePlainTextReport();
+        var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.download = fileName.replace('.pdf', '.txt');
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        alert('PDF\u751F\u6210\u5931\u8D25\uFF0C\u5DF2\u81EA\u52A8\u4E0B\u8F7D\u6587\u672C\u7248\u62A5\u544A');
     }
 
     copyReportText() {
