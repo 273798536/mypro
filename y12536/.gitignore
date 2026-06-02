@@ -1,0 +1,10 @@
+node_modules
+dist
+*.log
+data/raw
+data/processed
+reports/*.html
+reports/*.json
+!reports/**/
+.env
+.DS_Store
