@@ -1,0 +1,7 @@
+[
+  {"timestamp": 21.0, "omega": 95.5, "alpha": -2.3, "torque": 45.2},
+  {"timestamp": 21.2, "omega": 93.0, "alpha": -2.5, "torque": 42.8},
+  {"timestamp": 21.4, "omega": 90.2, "alpha": -2.8, "torque": 40.1},
+  {"timestamp": 21.6, "omega": 87.5, "alpha": -2.7, "torque": 38.5},
+  {"timestamp": 21.8, "omega": 85.1, "alpha": -2.4, "torque": 36.9}
+]
