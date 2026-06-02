@@ -24,20 +24,13 @@ import {
   Minus,
   Diamond,
   Megaphone,
+  Fingerprint,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
+import type { HistoricalTrendItem } from '../store/useStore';
 import { DataCard } from '../components/DataCard';
 import { cn } from '../lib/utils';
-
-interface ChurnTrendItem {
-  month: string;
-  churnRate: number;
-  hasActivity?: boolean;
-  hasVersionUpdate?: boolean;
-  activityName?: string;
-  version?: string;
-}
 
 const STATUS_COLORS: Record<string, string> = {
   active: '#3B82F6',
@@ -57,14 +50,16 @@ const Overview: React.FC = () => {
   const navigate = useNavigate();
   const {
     members,
-    activities,
     jumpReviews,
     predictions,
+    dataHash,
     getCurrentBatch,
+    getHistoricalTrends,
     dataSourceValidated,
   } = useStore();
 
   const currentBatch = getCurrentBatch();
+  const historicalTrends = getHistoricalTrends();
 
   const statusStats = useMemo(() => {
     const total = members.length;
@@ -91,39 +86,9 @@ const Overview: React.FC = () => {
     });
   }, [members, predictions]);
 
-  const churnTrendData = useMemo((): ChurnTrendItem[] => {
-    const months = ['2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04', '2026-05'];
-    const missingMonths = new Set(currentBatch?.missingMonths || []);
-
-    return months.map((month) => {
-      const monthActivities = activities.filter((a) => {
-        const aStart = new Date(a.startDate);
-        const aEnd = new Date(a.endDate);
-        const [year, m] = month.split('-').map(Number);
-        const monthStart = new Date(year, m - 1, 1);
-        const monthEnd = new Date(year, m, 0);
-        return aStart <= monthEnd && aEnd >= monthStart;
-      });
-
-      const activity = monthActivities.find(
-        (a) => a.type === 'promotion' || a.type === 'campaign'
-      );
-      const versionUpdate = monthActivities.find((a) => a.type === 'version_update');
-
-      const baseRate = 8 + Math.random() * 7;
-      const hasMissing = missingMonths.has(month);
-      const rate = hasMissing ? null : Math.round(baseRate * 100) / 100;
-
-      return {
-        month,
-        churnRate: rate ?? 0,
-        hasActivity: !!activity,
-        hasVersionUpdate: !!versionUpdate,
-        activityName: activity?.name,
-        version: versionUpdate?.version,
-      };
-    });
-  }, [activities, currentBatch]);
+  const churnTrendData = useMemo((): HistoricalTrendItem[] => {
+    return historicalTrends;
+  }, [historicalTrends]);
 
   const pendingReviews = useMemo(
     () => jumpReviews.filter((r) => r.isApproved === null).length,
@@ -152,14 +117,27 @@ const Overview: React.FC = () => {
   const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
     if (active && payload && payload.length) {
       const data = churnTrendData.find((d) => d.month === label);
-      if (!data || data.churnRate === 0) return null;
+      if (!data) return null;
 
       return (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-3">
-          <p className="text-sm font-medium text-gray-800">{label}</p>
-          <p className="text-sm text-gray-600 mt-1">
-            流失率：<span className="font-semibold text-red-600">{data.churnRate.toFixed(2)}%</span>
+          <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
+            {label}
+            {data.isMissing && (
+              <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                样本缺月
+              </span>
+            )}
           </p>
+          {data.isMissing ? (
+            <p className="text-sm text-amber-600 mt-1">
+              该月数据缺失，已使用线性插值补全
+            </p>
+          ) : (
+            <p className="text-sm text-gray-600 mt-1">
+              流失率：<span className="font-semibold text-red-600">{data.churnRate.toFixed(2)}%</span>
+            </p>
+          )}
           {data.hasActivity && data.activityName && (
             <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
               <Megaphone size={12} />
@@ -199,11 +177,14 @@ const Overview: React.FC = () => {
   };
 
   const renderVersionMarkers = () => {
+    const nonMissingData = churnTrendData.filter(d => !d.isMissing && d.churnRate > 0);
+    const maxRate = Math.max(...nonMissingData.map(d => d.churnRate), 10);
+    
     const versionData = churnTrendData
-      .filter((d) => d.hasVersionUpdate)
+      .filter((d) => d.hasVersionUpdate && !d.isMissing)
       .map((d) => ({
         x: d.month,
-        y: d.churnRate + 1,
+        y: d.churnRate + maxRate * 0.08,
         z: 100,
         version: d.version,
       }));
@@ -255,6 +236,10 @@ const Overview: React.FC = () => {
               </div>
               <p className="text-sm text-emerald-600 mt-0.5">
                 批次号：{currentBatch?.id || '-'} · {currentBatch?.name || ''}
+              </p>
+              <p className="text-xs text-emerald-500 mt-0.5 flex items-center gap-1">
+                <Fingerprint size={12} />
+                数据指纹：{dataHash || '-'}
               </p>
             </div>
           </div>
@@ -353,7 +338,23 @@ const Overview: React.FC = () => {
                 fillOpacity={1}
                 fill="url(#colorChurn)"
                 connectNulls
-                dot={{ fill: '#EF4444', r: 4 }}
+                dot={(props: any) => {
+                  const { cx, cy, payload } = props;
+                  if (payload?.isMissing) {
+                    return (
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={6}
+                        fill="#FFF"
+                        stroke="#F59E0B"
+                        strokeWidth={2}
+                        strokeDasharray="3 3"
+                      />
+                    );
+                  }
+                  return <circle cx={cx} cy={cy} r={4} fill="#EF4444" />;
+                }}
                 activeDot={{ r: 6, fill: '#EF4444' }}
               />
               {renderVersionMarkers()}

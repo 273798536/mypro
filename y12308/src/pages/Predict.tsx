@@ -64,7 +64,7 @@ const INTERVENTION_TAGS = [
 ];
 
 const Predict: React.FC = () => {
-  const { predictions, suggestions, members, getMemberById } = useStore();
+  const { predictions, suggestions, members, getMemberById, getHistoricalTrends, getCurrentBatch } = useStore();
 
   const [displayMode, setDisplayMode] = useState<'absolute' | 'percentage'>('absolute');
   const [expandedSuggestion, setExpandedSuggestion] = useState<string | null>(null);
@@ -73,18 +73,37 @@ const Predict: React.FC = () => {
   const [intervenedMembers, setIntervenedMembers] = useState<Set<string>>(new Set());
 
   const totalMembers = members.length;
+  const historicalTrends = getHistoricalTrends();
+  const currentBatch = getCurrentBatch();
 
   const predictionData = useMemo(() => {
     const horizon3 = predictions.find((p) => p.horizonMonths === 3);
-    if (!horizon3) return [];
+    if (!horizon3 || historicalTrends.length === 0) return [];
 
-    const allMonths = ['2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08'];
-    const historyCount = 3;
+    const historyMonths = historicalTrends
+      .filter(t => !t.isMissing)
+      .map(t => t.month);
+    
+    const futureMonths: string[] = [];
+    if (historyMonths.length > 0) {
+      const lastMonth = historyMonths[historyMonths.length - 1];
+      const [year, month] = lastMonth.split('-').map(Number);
+      for (let i = 1; i <= 3; i++) {
+        const m = month + i;
+        const y = year + Math.floor((m - 1) / 12);
+        const actualM = ((m - 1) % 12) + 1;
+        futureMonths.push(`${y}-${String(actualM).padStart(2, '0')}`);
+      }
+    }
+    
+    const allMonths = [...historyMonths, ...futureMonths];
+    const historyCount = historyMonths.length;
 
     type ChartDataItem = {
       month: string;
       isPrediction: boolean;
-      [key: string]: string | boolean | number | null;
+      isMissing?: boolean;
+      [key: string]: string | boolean | number | null | undefined;
     };
 
     const result: ChartDataItem[] = [];
@@ -98,41 +117,49 @@ const Predict: React.FC = () => {
 
     allMonths.forEach((month, idx) => {
       const isPrediction = idx >= historyCount;
-      const item: ChartDataItem = { month, isPrediction };
+      const monthTrend = historicalTrends.find(t => t.month === month);
+      const item: ChartDataItem = { 
+        month, 
+        isPrediction,
+        isMissing: monthTrend?.isMissing || false,
+      };
 
-      if (!isPrediction) {
+      if (!isPrediction && monthTrend) {
+        const totalInMonth = Object.values(monthTrend.statusDistribution).reduce((a, b) => a + b, 0);
         statuses.forEach((status) => {
-          const variance = 0.02 + Math.random() * 0.03;
-          const baseDist = horizon3.initialDistribution[status] || 0;
-          const variation = (Math.random() - 0.5) * variance;
-          const ratio = Math.max(0, Math.min(1, baseDist + variation * (idx - 1)));
-          const value = displayMode === 'absolute' ? Math.round(ratio * totalMembers) : ratio * 100;
+          const count = monthTrend.statusDistribution[status] || 0;
+          const ratio = totalInMonth > 0 ? count / totalInMonth : 0;
+          const value = displayMode === 'absolute' ? count : ratio * 100;
           item[`${status}_history`] = value;
           item[status] = null;
         });
-      } else {
+      } else if (isPrediction) {
         const predIdx = idx - historyCount;
         const pred = horizon3.predictions[predIdx];
-        statuses.forEach((status) => {
-          const dist = pred.distribution[status] || 0;
-          const value = displayMode === 'absolute' ? Math.round(dist * totalMembers) : dist * 100;
-          item[status] = value;
-          item[`${status}_history`] = null;
-          item[`${status}_lower`] =
-            displayMode === 'absolute'
-              ? Math.round(pred.confidenceInterval.lower[status] * totalMembers)
-              : pred.confidenceInterval.lower[status] * 100;
-          item[`${status}_upper`] =
-            displayMode === 'absolute'
-              ? Math.round(pred.confidenceInterval.upper[status] * totalMembers)
-              : pred.confidenceInterval.upper[status] * 100;
-        });
+        if (pred) {
+          statuses.forEach((status) => {
+            const dist = pred.distribution[status] || 0;
+            const value = displayMode === 'absolute' ? Math.round(dist * totalMembers) : dist * 100;
+            item[status] = value;
+            item[`${status}_history`] = null;
+            item[`${status}_lower`] =
+              displayMode === 'absolute'
+                ? Math.round(pred.confidenceInterval.lower[status] * totalMembers)
+                : pred.confidenceInterval.lower[status] * 100;
+            item[`${status}_upper`] =
+              displayMode === 'absolute'
+                ? Math.round(pred.confidenceInterval.upper[status] * totalMembers)
+                : pred.confidenceInterval.upper[status] * 100;
+          });
+        }
       }
-      result.push(item);
+      if (!isPrediction || (isPrediction && horizon3.predictions[idx - historyCount])) {
+        result.push(item);
+      }
     });
 
     return result;
-  }, [predictions, displayMode, totalMembers]);
+  }, [predictions, displayMode, totalMembers, historicalTrends]);
 
   const highRiskMembers = useMemo(() => {
     return members
@@ -180,33 +207,53 @@ const Predict: React.FC = () => {
 
   const simulationData = useMemo(() => {
     const horizon3 = predictions.find((p) => p.horizonMonths === 3);
-    if (!horizon3 || !currentSuggestion) return [];
+    if (!horizon3 || !currentSuggestion || historicalTrends.length === 0) return [];
 
-    const months = ['2026-05', '2026-06', '2026-07', '2026-08'];
-    const originalChurnRate = horizon3.initialDistribution[MemberStatus.churned] || 0.15;
+    const nonMissingTrends = historicalTrends.filter(t => !t.isMissing);
+    const lastHistoricalMonth = nonMissingTrends.length > 0 
+      ? nonMissingTrends[nonMissingTrends.length - 1]
+      : null;
+    
+    const months: string[] = [];
+    if (lastHistoricalMonth) {
+      months.push(lastHistoricalMonth.month);
+    }
+    horizon3.predictions.forEach((pred, idx) => {
+      const [year, month] = lastHistoricalMonth!.month.split('-').map(Number);
+      const m = month + idx + 1;
+      const y = year + Math.floor((m - 1) / 12);
+      const actualM = ((m - 1) % 12) + 1;
+      months.push(`${y}-${String(actualM).padStart(2, '0')}`);
+    });
+
     const effectiveness = currentSuggestion.expectedChurnReduction;
     const coverage = interventionCoverage / 100;
-
-    const adjustedChurnRate = originalChurnRate * (1 - coverage * effectiveness);
+    const adjustmentFactor = 1 - coverage * effectiveness;
 
     const result = months.map((month, idx) => {
-      if (idx === 0) {
-        return {
-          month,
-          original: Math.round(originalChurnRate * 100 * 100) / 100,
-          adjusted: Math.round(originalChurnRate * 100 * 100) / 100,
-        };
+      let originalRate: number;
+      
+      if (idx === 0 && lastHistoricalMonth) {
+        const totalInMonth = Object.values(lastHistoricalMonth.statusDistribution).reduce((a, b) => a + b, 0);
+        const churnedCount = lastHistoricalMonth.statusDistribution[MemberStatus.churned] || 0;
+        originalRate = totalInMonth > 0 ? (churnedCount / totalInMonth) * 100 : 0;
+      } else {
+        const predIdx = idx - 1;
+        const pred = horizon3.predictions[predIdx];
+        originalRate = pred ? pred.distribution[MemberStatus.churned] * 100 : 0;
       }
-      const monthFactor = 1 + idx * 0.1;
+
+      const adjustedRate = idx === 0 ? originalRate : originalRate * adjustmentFactor;
+
       return {
         month,
-        original: Math.round(originalChurnRate * monthFactor * 100 * 100) / 100,
-        adjusted: Math.round(adjustedChurnRate * monthFactor * 100 * 100) / 100,
+        original: Math.round(originalRate * 100) / 100,
+        adjusted: Math.round(adjustedRate * 100) / 100,
       };
     });
 
     return result;
-  }, [predictions, currentSuggestion, interventionCoverage]);
+  }, [predictions, currentSuggestion, interventionCoverage, historicalTrends]);
 
   const simulationMetrics = useMemo(() => {
     if (!currentSuggestion || simulationData.length < 2) return null;

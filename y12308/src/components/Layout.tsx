@@ -7,6 +7,7 @@ import {
   CheckCircle,
   AlertTriangle,
   Calendar,
+  Fingerprint,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from './Sidebar';
@@ -15,7 +16,7 @@ import useStore from '@/store/useStore';
 const Layout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { batches, currentBatchId, dataSourceValidated, setCurrentBatch } = useStore();
+  const { batches, currentBatchId, dataSourceValidated, dataHash, setCurrentBatch } = useStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBatchDropdownOpen, setIsBatchDropdownOpen] = useState(false);
 
@@ -73,6 +74,12 @@ const Layout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2" title={`数据指纹：${dataHash || '-'}`}>
+                <Fingerprint size={14} className="text-muted" />
+                <span className="text-xs text-muted font-mono hidden md:inline">
+                  {dataHash ? dataHash.substring(0, 8) + '...' : '-'}
+                </span>
+              </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted hidden sm:inline">
                   同源校验

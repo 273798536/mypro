@@ -41,7 +41,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '../store/useStore';
+import { useStore, HistoricalTrendItem } from '../store/useStore';
 import { StatusBadge } from '../components/StatusBadge';
 import { MemberStatus, StatusJumpReview } from '../types';
 import { cn } from '../lib/utils';
@@ -93,13 +93,16 @@ const Report: React.FC = () => {
     transitionMatrix,
     currentReport,
     currentBatchId,
+    dataHash,
     generateReport,
     getCurrentBatch,
     validateDataSource,
     reviewJump,
+    getHistoricalTrends,
   } = useStore();
 
   const currentBatch = getCurrentBatch();
+  const historicalTrends = getHistoricalTrends();
 
   const [reportTitle, setReportTitle] = useState(
     currentBatch ? `[${currentBatch.name}] 会员流失分析报告` : '会员流失分析报告'
@@ -138,33 +141,45 @@ const Report: React.FC = () => {
     }));
   }, [members]);
 
-  const churnTrendData = useMemo(() => {
+  const churnTrendData = useMemo((): HistoricalTrendItem[] => {
+    return historicalTrends;
+  }, [historicalTrends]);
+
+  const predictionChurnTrendData = useMemo(() => {
     const prediction = predictions.find((p) => p.horizonMonths === 3);
-    if (!prediction) return [];
+    if (!prediction || historicalTrends.length === 0) return [];
 
-    const data: Array<{ month: string; churnRate: number }> = [];
-    const months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
+    const nonMissingTrends = historicalTrends.filter(t => !t.isMissing);
+    const lastMonth = nonMissingTrends.length > 0 
+      ? nonMissingTrends[nonMissingTrends.length - 1].month 
+      : null;
+    
+    if (!lastMonth) return [];
 
-    months.forEach((month, idx) => {
-      const baseRate = 8 + Math.random() * 4;
+    const data: Array<{ month: string; churnRate: number; isPrediction: boolean }> = [];
+
+    nonMissingTrends.forEach((trend) => {
       data.push({
-        month,
-        churnRate: Math.round(baseRate * 100) / 100,
+        month: trend.month,
+        churnRate: trend.churnRate,
+        isPrediction: false,
       });
     });
 
     prediction.predictions.forEach((p, idx) => {
-      const monthNum = 6 + idx + 1;
-      const year = monthNum > 12 ? 2027 : 2026;
-      const month = monthNum > 12 ? monthNum - 12 : monthNum;
+      const [year, month] = lastMonth.split('-').map(Number);
+      const m = month + idx + 1;
+      const y = year + Math.floor((m - 1) / 12);
+      const actualM = ((m - 1) % 12) + 1;
       data.push({
-        month: `${year}-${String(month).padStart(2, '0')}`,
+        month: `${y}-${String(actualM).padStart(2, '0')}`,
         churnRate: Math.round(p.distribution[MemberStatus.churned] * 100 * 100) / 100,
+        isPrediction: true,
       });
     });
 
     return data;
-  }, [predictions]);
+  }, [predictions, historicalTrends]);
 
   const keyConclusions = useMemo(() => {
     const totalMembers = members.length;
@@ -173,14 +188,32 @@ const Report: React.FC = () => {
     const highRiskCount = members.filter((m) => m.churnProbability > 0.6).length;
     const churnRate = ((churnedCount / totalMembers) * 100).toFixed(1);
 
+    const nonMissingTrends = historicalTrends.filter(t => !t.isMissing);
+    const lastTrend = nonMissingTrends.length > 0 ? nonMissingTrends[nonMissingTrends.length - 1] : null;
+    const prevTrend = nonMissingTrends.length > 1 ? nonMissingTrends[nonMissingTrends.length - 2] : null;
+    
+    let monthComparison = '';
+    if (lastTrend && prevTrend) {
+      const diff = lastTrend.churnRate - prevTrend.churnRate;
+      const direction = diff > 0 ? '上升' : diff < 0 ? '下降' : '持平';
+      const absDiff = Math.abs(diff).toFixed(1);
+      monthComparison = `，较上月${direction} ${absDiff} 个百分点`;
+    }
+
+    const lastPrediction = predictionChurnTrendData.length > 0 
+      ? predictionChurnTrendData[predictionChurnTrendData.length - 1]?.churnRate 
+      : null;
+
     return [
-      `当前批次共 ${totalMembers} 名会员，整体流失率为 ${churnRate}%，较上月下降 0.8 个百分点`,
+      `当前批次共 ${totalMembers} 名会员，整体流失率为 ${churnRate}%${monthComparison}`,
       `高危会员 ${atRiskCount} 人，其中 ${highRiskCount} 人未来3个月流失概率超过 60%，需重点关注`,
       `活跃→流失异常跳转 ${unapprovedReviews.length} 条，其中 ${jumpReviews.filter((r) => r.isApproved === false).length} 条已驳回，建议尽快复核`,
-      `预测未来3个月流失率将维持在 ${churnTrendData[churnTrendData.length - 1]?.churnRate || 9}% 左右，建议提前启动召回活动`,
+      lastPrediction 
+        ? `预测未来3个月流失率将维持在 ${lastPrediction}% 左右，建议提前启动召回活动`
+        : `预测未来3个月流失率将维持在 ${churnRate}% 左右，建议提前启动召回活动`,
       `沉默会员向流失转化率较高（约 ${transitionMatrix?.cells.find((c) => c.fromStatus === MemberStatus.silent && c.toStatus === MemberStatus.churned)?.probability.toFixed(1) || 15}%），建议优化沉默会员唤醒策略`,
     ];
-  }, [members, unapprovedReviews, jumpReviews, transitionMatrix, churnTrendData]);
+  }, [members, unapprovedReviews, jumpReviews, transitionMatrix, churnTrendData, historicalTrends, predictionChurnTrendData]);
 
   const topTransitions = useMemo(() => {
     if (!transitionMatrix) return [];
@@ -375,6 +408,7 @@ const Report: React.FC = () => {
                 <div class="meta">
                   <p>生成时间：${new Date().toLocaleString('zh-CN')}</p>
                   <p>数据批次：${currentBatch?.name} (${currentBatchId})</p>
+                  <p>数据指纹：${dataHash || '-'}</p>
                   <p>生成人：系统管理员</p>
                   <p>会员总数：${members.length} 人</p>
                 </div>
@@ -542,6 +576,8 @@ const Report: React.FC = () => {
       '批次ID': currentBatchId,
       '批次名称': currentBatch?.name,
       '数据区间': `${currentBatch?.startDate} 至 ${currentBatch?.endDate}`,
+      '数据指纹': dataHash || '-',
+      '同源校验状态': validateDataSource() ? '通过' : '未通过',
       '导出时间': new Date().toISOString(),
       '导出人': '系统管理员',
       '会员总数': members.length,
@@ -550,6 +586,20 @@ const Report: React.FC = () => {
       '活动数': activities.length,
     };
     zip.file('元数据.json', JSON.stringify(metadata, null, 2));
+
+    const dataValidationInfo = {
+      '校验说明': '本文件包含数据同源校验信息，用于确保图表、明细、下载文件来自同一批数据',
+      '批次ID': currentBatchId,
+      '数据指纹': dataHash || '-',
+      '校验时间': new Date().toISOString(),
+      '校验项目': {
+        '转移矩阵批次一致性': transitionMatrix?.batchId === currentBatchId,
+        '预测数据批次一致性': predictions.every(p => p.batchId === currentBatchId),
+        '历史趋势数据完整性': historicalTrends.length > 0,
+        '数据哈希校验': validateDataSource(),
+      },
+    };
+    zip.file('数据同源校验说明.json', JSON.stringify(dataValidationInfo, null, 2));
 
     const content = zip.generateAsync({ type: 'blob' });
     content.then(function (blob) {
@@ -597,13 +647,37 @@ const Report: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <div className="bg-blue-100 rounded-full p-2">
             <FileText className="text-blue-600" size={24} />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">报告导出</h1>
             <p className="text-sm text-gray-500">生成分析报告并下载数据</p>
+          </div>
+        </div>
+
+        <div className={cn(
+          'mb-6 p-4 rounded-xl border flex items-center gap-3',
+          validateDataSource()
+            ? 'bg-green-50 border-green-200'
+            : 'bg-red-50 border-red-200'
+        )}>
+          {validateDataSource() ? (
+            <CheckCircle className="text-green-600" size={20} />
+          ) : (
+            <AlertCircle className="text-red-600" size={20} />
+          )}
+          <div className="flex-1">
+            <p className={cn(
+              'text-sm font-medium',
+              validateDataSource() ? 'text-green-800' : 'text-red-800'
+            )}>
+              {validateDataSource() ? '数据同源校验通过' : '数据同源校验异常'}
+            </p>
+            <p className="text-xs text-gray-600 font-mono mt-1">
+              数据指纹：{dataHash || '-'}
+            </p>
           </div>
         </div>
 
@@ -875,7 +949,7 @@ const Report: React.FC = () => {
                   </h2>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={churnTrendData}>
+                      <LineChart data={predictionChurnTrendData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                         <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                         <YAxis
@@ -883,9 +957,15 @@ const Report: React.FC = () => {
                           tick={{ fontSize: 12 }}
                           domain={[0, 'auto']}
                         />
-                        <Tooltip formatter={(value) => [`${value}%`, '流失率']} />
+                        <Tooltip 
+                          formatter={(value) => [`${value}%`, '流失率']}
+                          labelFormatter={(label) => {
+                            const item = predictionChurnTrendData.find(d => d.month === label);
+                            return item?.isPrediction ? `月份：${label}（预测）` : `月份：${label}（历史）`;
+                          }}
+                        />
                         <ReferenceLine
-                          x={churnTrendData[5]?.month}
+                          x={predictionChurnTrendData.find(d => d.isPrediction)?.month}
                           stroke="#EF4444"
                           strokeDasharray="5 5"
                           label={{ value: '预测开始', fill: '#EF4444', fontSize: 12 }}
@@ -895,14 +975,30 @@ const Report: React.FC = () => {
                           dataKey="churnRate"
                           stroke="#EF4444"
                           strokeWidth={2}
-                          dot={{ fill: '#EF4444', r: 4 }}
+                          dot={(props: any) => {
+                            const { cx, cy, payload } = props;
+                            if (payload?.isPrediction) {
+                              return (
+                                <circle
+                                  cx={cx}
+                                  cy={cy}
+                                  r={5}
+                                  fill="#FFF"
+                                  stroke="#EF4444"
+                                  strokeWidth={2}
+                                  strokeDasharray="3 3"
+                                />
+                              );
+                            }
+                            return <circle cx={cx} cy={cy} r={4} fill="#EF4444" />;
+                          }}
                           activeDot={{ r: 6 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
                   <p className="text-center text-sm text-gray-500 mt-3">
-                    虚线左侧为历史数据，右侧为预测数据
+                    实线圆点为历史数据，虚线空心点为预测数据，空心虚线圈为样本缺月（已线性插值）
                   </p>
                 </div>
 
