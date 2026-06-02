@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>品牌社媒传播网络分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        #canvas-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        .panel { backdrop-filter: blur(10px); background: rgba(30, 41, 59, 0.85); }
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+        .node-highlight { animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+        }
+        .issue-badge { animation: blink 2s infinite; }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white">
+    <div id="canvas-container"></div>
+    
+    <!-- 顶部工具栏 -->
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10 panel rounded-2xl px-6 py-3 flex items-center gap-4">
+        <h1 class="text-lg font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+            品牌社媒传播网络
+        </h1>
+        <div class="h-6 w-px bg-slate-600"></div>
+        <select id="timeWindowFilter" class="bg-slate-700 rounded-lg px-3 py-1.5 text-sm border border-slate-600 focus:border-cyan-500 outline-none">
+            <option value="all">全部时间窗口</option>
+        </select>
+        <select id="platformFilter" class="bg-slate-700 rounded-lg px-3 py-1.5 text-sm border border-slate-600 focus:border-cyan-500 outline-none">
+            <option value="all">全部平台</option>
+            <option value="抖音">抖音</option>
+            <option value="小红书">小红书</option>
+            <option value="微博">微博</option>
+            <option value="B站">B站</option>
+        </select>
+        <select id="runSelector" class="bg-slate-700 rounded-lg px-3 py-1.5 text-sm border border-slate-600 focus:border-cyan-500 outline-none">
+            <option value="run1">第一次运行</option>
+            <option value="run2">第二次运行</option>
+            <option value="compare">并排对比</option>
+        </select>
+        <div class="h-6 w-px bg-slate-600"></div>
+        <button id="screenshotBtn" class="bg-cyan-600 hover:bg-cyan-500 px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            截图
+        </button>
+        <button id="resetViewBtn" class="bg-slate-600 hover:bg-slate-500 px-4 py-1.5 rounded-lg text-sm font-medium transition">
+            重置视角
+        </button>
+    </div>
+
+    <!-- 左侧图例与问题面板 -->
+    <div class="absolute top-20 left-4 z-10 w-72 space-y-4">
+        <!-- 图例 -->
+        <div class="panel rounded-2xl p-4">
+            <h3 class="text-sm font-semibold mb-3 text-slate-300">图例</h3>
+            <div class="space-y-2 text-xs">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-cyan-400"></div>
+                    <span>抖音达人</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <span>小红书达人</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <span>微博达人</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-pink-400"></div>
+                    <span>B站达人</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                    <span>话题节点</span>
+                </div>
+                <div class="flex items-center gap-2 mt-3">
+                    <div class="w-8 h-0.5 bg-gradient-to-r from-green-400 to-green-600"></div>
+                    <span>话题边（强关联）</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-0.5 bg-gradient-to-r from-orange-400 to-orange-600 opacity-50"></div>
+                    <span>话题边（弱关联）</span>
+                </div>
+                <div class="flex items-center gap-2 mt-3">
+                    <div class="w-3 h-8 bg-blue-500/30 border border-blue-400"></div>
+                    <span>时间窗口层</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 问题检测面板 -->
+        <div class="panel rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-slate-300">问题检测</h3>
+                <span id="issueCount" class="bg-red-500 text-xs px-2 py-0.5 rounded-full issue-badge">5</span>
+            </div>
+            <div id="issueList" class="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
+            </div>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="panel rounded-2xl p-4">
+            <h3 class="text-sm font-semibold mb-3 text-slate-300">当前视图统计</h3>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-slate-700/50 rounded-lg p-2">
+                    <div class="text-slate-400">达人节点</div>
+                    <div id="statNodes" class="text-lg font-bold text-cyan-400">0</div>
+                </div>
+                <div class="bg-slate-700/50 rounded-lg p-2">
+                    <div class="text-slate-400">话题边</div>
+                    <div id="statEdges" class="text-lg font-bold text-green-400">0</div>
+                </div>
+                <div class="bg-slate-700/50 rounded-lg p-2">
+                    <div class="text-slate-400">时间窗口</div>
+                    <div id="statWindows" class="text-lg font-bold text-blue-400">0</div>
+                </div>
+                <div class="bg-slate-700/50 rounded-lg p-2">
+                    <div class="text-slate-400">总曝光</div>
+                    <div id="statExposure" class="text-lg font-bold text-purple-400">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧明细面板 -->
+    <div id="detailPanel" class="absolute top-20 right-4 z-10 w-96 panel rounded-2xl p-5 hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h3 id="detailTitle" class="text-lg font-bold">节点明细</h3>
+            <button id="closeDetail" class="text-slate-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div id="detailContent" class="space-y-4 max-h-96 overflow-y-auto scrollbar-thin">
+        </div>
+    </div>
+
+    <!-- 底部手动修正面板 -->
+    <div class="absolute bottom-4 left-4 right-4 z-10 panel rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-slate-300">手动修正控制台</h3>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">当前选中：</span>
+                <span id="currentSelection" class="text-xs bg-slate-700 px-2 py-1 rounded">无</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex-1 flex items-center gap-2">
+                <label class="text-xs text-slate-400 whitespace-nowrap">修正平台标签：</label>
+                <select id="correctPlatform" class="bg-slate-700 rounded-lg px-3 py-1.5 text-sm border border-slate-600 focus:border-cyan-500 outline-none">
+                    <option value="">选择平台...</option>
+                    <option value="抖音">抖音</option>
+                    <option value="小红书">小红书</option>
+                    <option value="微博">微博</option>
+                    <option value="B站">B站</option>
+                </select>
+            </div>
+            <div class="flex-1 flex items-center gap-2">
+                <label class="text-xs text-slate-400 whitespace-nowrap">修正话题关联：</label>
+                <select id="correctTopic" class="bg-slate-700 rounded-lg px-3 py-1.5 text-sm border border-slate-600 focus:border-cyan-500 outline-none">
+                    <option value="">选择话题...</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <label class="text-xs text-slate-400 whitespace-nowrap">补录曝光：</label>
+                <input id="supplementExposure" type="number" placeholder="曝光量" class="bg-slate-700 rounded-lg px-3 py-1.5 text-sm border border-slate-600 focus:border-cyan-500 outline-none w-28">
+            </div>
+            <button id="applyCorrection" class="bg-amber-600 hover:bg-amber-500 px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                应用修正
+            </button>
+            <button id="compareBtn" class="bg-purple-600 hover:bg-purple-500 px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                新旧对比
+            </button>
+        </div>
+        <div id="correctionLog" class="mt-3 text-xs text-slate-400 max-h-20 overflow-y-auto scrollbar-thin">
+            <div class="text-slate-500">修正记录将显示在这里...</div>
+        </div>
+    </div>
+
+    <!-- 对比弹窗 -->
+    <div id="compareModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70"></div>
+        <div class="absolute inset-8 panel rounded-2xl p-6 overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold">新旧结果并排对比</h3>
+                <button id="closeCompare" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 grid grid-cols-2 gap-4 overflow-hidden">
+                <div class="bg-slate-800 rounded-xl p-4 overflow-y-auto scrollbar-thin">
+                    <h4 class="text-sm font-semibold mb-3 text-red-400">修正前（旧结果）</h4>
+                    <div id="oldResult" class="space-y-2 text-xs"></div>
+                </div>
+                <div class="bg-slate-800 rounded-xl p-4 overflow-y-auto scrollbar-thin">
+                    <h4 class="text-sm font-semibold mb-3 text-green-400">修正后（新结果）</h4>
+                    <div id="newResult" class="space-y-2 text-xs"></div>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end gap-3">
+                <button id="confirmCompare" class="bg-green-600 hover:bg-green-500 px-6 py-2 rounded-lg text-sm font-medium transition">
+                    确认并保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作提示 -->
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 z-10 panel rounded-xl px-4 py-2 text-xs text-slate-400">
+        鼠标左键旋转 | 右键平移 | 滚轮缩放 | 点击节点/连线查看明细 | 点击问题项自动定位高亮
+    </div>
+
+    <script>
+    // ==================== 数据模型 ====================
+    const DataModel = {
+        timeWindows: [
+            { id: 'tw1', name: '618预热期', startDate: '2026-05-20', endDate: '2026-05-31', color: 0x3b82f6, z: -30 },
+            { id: 'tw2', name: '618爆发期', startDate: '2026-06-01', endDate: '2026-06-18', color: 0x8b5cf6, z: 0 },
+            { id: 'tw3', name: '618返场期', startDate: '2026-06-19', endDate: '2026-06-30', color: 0x06b6d4, z: 30 }
+        ],
+        
+        topics: [
+            { id: 't1', name: '夏日穿搭', color: 0xa855f7 },
+            { id: 't2', name: '新品开箱', color: 0xa855f7 },
+            { id: 't3', name: '好物分享', color: 0xa855f7 },
+            { id: 't4', name: '护肤心得', color: 0xa855f7 },
+            { id: 't5', name: '彩妆教程', color: 0xa855f7 }
+        ],
+
+        influencers: [
+            { id: 'i1', name: '小美酱', platform: '抖音', followers: 1250000, engagement: 8.5, truePlatform: '抖音', timeWindow: 'tw1', issues: [] },
+            { id: 'i2', name: '小美酱', platform: '小红书', followers: 890000, engagement: 12.3, truePlatform: '小红书', timeWindow: 'tw1', issues: ['duplicate_name'] },
+            { id: 'i3', name: '穿搭达人Lily', platform: '小红书', followers: 2100000, engagement: 6.8, truePlatform: '小红书', timeWindow: 'tw1', issues: [] },
+            { id: 'i4', name: '科技宅男', platform: 'B站', followers: 3200000, engagement: 15.2, truePlatform: 'B站', timeWindow: 'tw1', issues: [] },
+            { id: 'i5', name: '护肤专家Amy', platform: '微博', followers: 5600000, engagement: 4.2, truePlatform: '微博', timeWindow: 'tw2', issues: [] },
+            { id: 'i6', name: '彩妆师Kevin', platform: '抖音', followers: 4500000, engagement: 9.1, truePlatform: '抖音', timeWindow: 'tw2', issues: [] },
+            { id: 'i7', name: '健身教练小王', platform: 'B站', followers: 1800000, engagement: 11.5, truePlatform: 'B站', timeWindow: 'tw2', issues: ['wrong_topic'] },
+            { id: 'i8', name: '美食博主老李', platform: '抖音', followers: 2800000, engagement: 7.8, truePlatform: '抖音', timeWindow: 'tw2', issues: [] },
+            { id: 'i9', name: '旅行家张小姐', platform: '小红书', followers: 1950000, engagement: 10.2, truePlatform: '小红书', timeWindow: 'tw3', issues: ['missing_exposure'] },
+            { id: 'i10', name: '数码测评君', platform: 'B站', followers: 4100000, engagement: 13.7, truePlatform: 'B站', timeWindow: 'tw3', issues: [] },
+            { id: 'i11', name: '宝妈日常', platform: '微博', followers: 1500000, engagement: 5.5, truePlatform: '微博', timeWindow: 'tw3', issues: [] },
+            { id: 'i12', name: '潮牌主理人', platform: '抖音', followers: 3800000, engagement: 8.9, truePlatform: '抖音', timeWindow: 'tw3', issues: [] }
+        ],
+
+        edges: [
+            { id: 'e1', from: 'i1', to: 't1', weight: 0.85, timeWindow: 'tw1', exposure: 4500000, issues: [] },
+            { id: 'e2', from: 'i2', to: 't1', weight: 0.72, timeWindow: 'tw1', exposure: 3200000, issues: ['duplicate_name'] },
+            { id: 'e3', from: 'i3', to: 't3', weight: 0.91, timeWindow: 'tw1', exposure: 6800000, issues: [] },
+            { id: 'e4', from: 'i4', to: 't2', weight: 0.78, timeWindow: 'tw1', exposure: 5100000, issues: [] },
+            { id: 'e5', from: 'i5', to: 't4', weight: 0.88, timeWindow: 'tw2', exposure: 8200000, issues: [] },
+            { id: 'e6', from: 'i6', to: 't5', weight: 0.94, timeWindow: 'tw2', exposure: 9500000, issues: [] },
+            { id: 'e7', from: 'i7', to: 't5', weight: 0.45, timeWindow: 'tw2', exposure: 2100000, issues: ['wrong_topic'] },
+            { id: 'e8', from: 'i8', to: 't3', weight: 0.82, timeWindow: 'tw2', exposure: 7200000, issues: [] },
+            { id: 'e9', from: 'i9', to: 't3', weight: 0.76, timeWindow: 'tw3', exposure: 0, issues: ['missing_exposure'] },
+            { id: 'e10', from: 'i10', to: 't2', weight: 0.92, timeWindow: 'tw3', exposure: 8800000, issues: [] },
+            { id: 'e11', from: 'i11', to: 't4', weight: 0.68, timeWindow: 'tw3', exposure: 4100000, issues: [] },
+            { id: 'e12', from: 'i12', to: 't1', weight: 0.87, timeWindow: 'tw3', exposure: 7600000, issues: [] },
+            { id: 'e13', from: 'i1', to: 'i3', weight: 0.55, timeWindow: 'tw1', exposure: 1800000, issues: [], isCooperation: true },
+            { id: 'e14', from: 'i5', to: 'i6', weight: 0.62, timeWindow: 'tw2', exposure: 2500000, issues: [], isCooperation: true },
+            { id: 'e15', from: 'i9', to: 'i12', weight: 0.48, timeWindow: 'tw3', exposure: 1500000, issues: [], isCooperation: true }
+        ],
+
+        exposureRecords: [
+            { id: 'er1', influencerId: 'i9', timeWindowId: 'tw3', views: 0, isSupplementary: false, shouldBe: 5800000 }
+        ],
+
+        issues: [
+            { id: 'issue1', type: 'duplicate_name', severity: 'high', title: '达人重名', description: '发现2个名为"小美酱"的达人，分属不同平台', relatedNodes: ['i1', 'i2'], relatedEdges: ['e1', 'e2'] },
+            { id: 'issue2', type: 'wrong_topic', severity: 'medium', title: '话题错连', description: '健身教练小王与"彩妆教程"话题关联度异常低(0.45)', relatedNodes: ['i7'], relatedEdges: ['e7'] },
+            { id: 'issue3', type: 'missing_exposure', severity: 'high', title: '曝光补录', description: '旅行家张小姐在返场期曝光数据缺失', relatedNodes: ['i9'], relatedEdges: ['e9'] },
+            { id: 'issue4', type: 'data_consistency', severity: 'low', title: '数据一致性校验', description: '同一批节点二次运行结果对比中', relatedNodes: [], relatedEdges: [] },
+            { id: 'issue5', type: 'platform_mismatch', severity: 'medium', title: '平台标签待确认', description: '系统检测到跨平台重名，建议人工核验', relatedNodes: ['i1', 'i2'], relatedEdges: [] }
+        ]
+    };
+
+    // 深拷贝用于对比
+    let originalData = JSON.parse(JSON.stringify(DataModel));
+    let currentData = JSON.parse(JSON.stringify(DataModel));
+    let selectedObject = null;
+    let highlightedObjects = [];
+
+    // ==================== Three.js 场景初始化 ====================
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f172a);
+    scene.fog = new THREE.Fog(0x0f172a, 50, 200);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(40, 50, 80);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    // 光照
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    mainLight.position.set(50, 100, 50);
+    mainLight.castShadow = true;
+    scene.add(mainLight);
+
+    const fillLight = new THREE.DirectionalLight(0x6366f1, 0.3);
+    fillLight.position.set(-50, 50, -50);
+    scene.add(fillLight);
+
+    // 轨道控制
+    let isMouseDown = false;
+    let mouseDownX = 0, mouseDownY = 0;
+    let cameraTheta = Math.PI / 4;
+    let cameraPhi = Math.PI / 3;
+    let cameraRadius = 100;
+    let cameraTarget = new THREE.Vector3(0, 0, 0);
+
+    function updateCameraPosition() {
+        camera.position.x = cameraTarget.x + cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+        camera.position.y = cameraTarget.y + cameraRadius * Math.cos(cameraPhi);
+        camera.position.z = cameraTarget.z + cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+        camera.lookAt(cameraTarget);
+    }
+
+    updateCameraPosition();
+
+    // 鼠标控制
+    renderer.domElement.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        mouseDownX = e.clientX;
+        mouseDownY = e.clientY;
+    });
+
+    renderer.domElement.addEventListener('mouseup', () => {
+        isMouseDown = false;
+    });
+
+    renderer.domElement.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        const deltaX = e.clientX - mouseDownX;
+        const deltaY = e.clientY - mouseDownY;
+        
+        if (e.button === 0) {
+            cameraTheta -= deltaX * 0.005;
+            cameraPhi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraPhi + deltaY * 0.005));
+        } else if (e.button === 2) {
+            const right = new THREE.Vector3();
+            const up = new THREE.Vector3(0, 1, 0);
+            camera.getWorldDirection(right);
+            right.cross(up).normalize();
+            cameraTarget.addScaledVector(right, -deltaX * 0.1);
+            cameraTarget.y += deltaY * 0.1;
+        }
+        
+        updateCameraPosition();
+        mouseDownX = e.clientX;
+        mouseDownY = e.clientY;
+    });
+
+    renderer.domElement.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        cameraRadius = Math.max(30, Math.min(200, cameraRadius + e.deltaY * 0.1));
+        updateCameraPosition();
+    });
+
+    renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // ==================== 3D对象创建 ====================
+    const nodeMeshes = [];
+    const edgeMeshes = [];
+    const windowMeshes = [];
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const platformColors = {
+        '抖音': 0x22d3ee,
+        '小红书': 0xf87171,
+        '微博': 0xfacc15,
+        'B站': 0xf472b6
+    };
+
+    function createTimeWindowPlane(windowData) {
+        const geometry = new THREE.PlaneGeometry(80, 60, 1, 1);
+        const material = new THREE.MeshBasicMaterial({
+            color: windowData.color,
+            transparent: true,
+            opacity: 0.15,
+            side: THREE.DoubleSide
+        });
+        const plane = new THREE.Mesh(geometry, material);
+        plane.rotation.x = -Math.PI / 2;
+        plane.position.set(0, -5, windowData.z);
+        plane.userData = { type: 'timeWindow', data: windowData };
+        
+        const edgeGeometry = new THREE.EdgesGeometry(geometry);
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: windowData.color, transparent: true, opacity: 0.5 });
+        const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+        edges.rotation.x = -Math.PI / 2;
+        edges.position.copy(plane.position);
+        
+        const labelCanvas = document.createElement('canvas');
+        labelCanvas.width = 256;
+        labelCanvas.height = 64;
+        const ctx = labelCanvas.getContext('2d');
+        ctx.fillStyle = '#' + windowData.color.toString(16).padStart(6, '0');
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(windowData.name, 128, 40);
+        
+        const labelTexture = new THREE.CanvasTexture(labelCanvas);
+        const labelMaterial = new THREE.SpriteMaterial({ map: labelTexture, transparent: true });
+        const label = new THREE.Sprite(labelMaterial);
+        label.position.set(0, 5, windowData.z - 30);
+        label.scale.set(20, 5, 1);
+        
+        return { plane, edges, label, data: windowData };
+    }
+
+    function createInfluencerNode(influencer, index, total) {
+        const tw = currentData.timeWindows.find(t => t.id === influencer.timeWindow);
+        const angle = (index / total) * Math.PI * 2;
+        const radius = 15 + Math.random() * 10;
+        const x = Math.cos(angle) * radius;
+        const z = tw.z + Math.sin(angle) * 10;
+        const y = influencer.engagement * 0.5 + Math.random() * 2;
+        
+        const size = Math.sqrt(influencer.followers) / 300;
+        const geometry = new THREE.IcosahedronGeometry(size, 1);
+        const material = new THREE.MeshPhongMaterial({
+            color: platformColors[influencer.platform] || 0x888888,
+            emissive: platformColors[influencer.platform] || 0x888888,
+            emissiveIntensity: 0.2,
+            shininess: 100
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, z);
+        mesh.castShadow = true;
+        mesh.userData = { type: 'influencer', data: influencer, originalPosition: mesh.position.clone() };
+        
+        if (influencer.issues.length > 0) {
+            const ringGeometry = new THREE.TorusGeometry(size * 1.5, 0.1, 8, 32);
+            const ringMaterial = new THREE.MeshBasicMaterial({
+                color: 0xef4444,
+                transparent: true,
+                opacity: 0.8
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.PI / 2;
+            mesh.add(ring);
+            mesh.userData.issueRing = ring;
+        }
+        
+        const labelCanvas = document.createElement('canvas');
+        labelCanvas.width = 256;
+        labelCanvas.height = 64;
+        const ctx = labelCanvas.getContext('2d');
+        ctx.clearRect(0, 0, 256, 64);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(influencer.name, 128, 30);
+        ctx.font = '14px sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(influencer.platform, 128, 52);
+        
+        const labelTexture = new THREE.CanvasTexture(labelCanvas);
+        const labelMaterial = new THREE.SpriteMaterial({ map: labelTexture, transparent: true });
+        const label = new THREE.Sprite(labelMaterial);
+        label.position.set(0, size + 1.5, 0);
+        label.scale.set(6, 1.5, 1);
+        mesh.add(label);
+        
+        return mesh;
+    }
+
+    function createTopicNode(topic, timeWindow, index, total) {
+        const tw = currentData.timeWindows.find(t => t.id === timeWindow);
+        const angle = (index / total) * Math.PI * 2 + Math.PI / total;
+        const x = Math.cos(angle) * 30;
+        const z = tw.z + Math.sin(angle) * 20;
+        const y = 8 + Math.random() * 4;
+        
+        const geometry = new THREE.OctahedronGeometry(1.5, 0);
+        const material = new THREE.MeshPhongMaterial({
+            color: topic.color,
+            emissive: topic.color,
+            emissiveIntensity: 0.3,
+            transparent: true,
+            opacity: 0.9
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, z);
+        mesh.userData = { type: 'topic', data: topic, timeWindow };
+        
+        const labelCanvas = document.createElement('canvas');
+        labelCanvas.width = 256;
+        labelCanvas.height = 64;
+        const ctx = labelCanvas.getContext('2d');
+        ctx.fillStyle = '#a855f7';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('#' + topic.name, 128, 40);
+        
+        const labelTexture = new THREE.CanvasTexture(labelCanvas);
+        const labelMaterial = new THREE.SpriteMaterial({ map: labelTexture, transparent: true });
+        const label = new THREE.Sprite(labelMaterial);
+        label.position.set(0, 2.5, 0);
+        label.scale.set(8, 2, 1);
+        mesh.add(label);
+        
+        return mesh;
+    }
+
+    function createEdge(edgeData, fromPos, toPos) {
+        const points = [];
+        const midY = Math.max(fromPos.y, toPos.y) + 3;
+        const midPoint = new THREE.Vector3(
+            (fromPos.x + toPos.x) / 2,
+            midY,
+            (fromPos.z + toPos.z) / 2
+        );
+        
+        for (let i = 0; i <= 20; i++) {
+            const t = i / 20;
+            const x = THREE.MathUtils.lerp(fromPos.x, toPos.x, t);
+            const z = THREE.MathUtils.lerp(fromPos.z, toPos.z, t);
+            const y = t < 0.5 
+                ? THREE.MathUtils.lerp(fromPos.y, midY, t * 2)
+                : THREE.MathUtils.lerp(midY, toPos.y, (t - 0.5) * 2);
+            points.push(new THREE.Vector3(x, y, z));
+        }
+        
+        const curve = new THREE.CatmullRomCurve3(points);
+        const tubeGeometry = new THREE.TubeGeometry(curve, 20, 0.08 + edgeData.weight * 0.15, 8, false);
+        const color = edgeData.weight > 0.7 ? 0x22c55e : 0xf97316;
+        const material = new THREE.MeshBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: edgeData.isCooperation ? 0.6 : edgeData.weight * 0.8
+        });
+        const mesh = new THREE.Mesh(tubeGeometry, material);
+        mesh.userData = { type: 'edge', data: edgeData, fromPos, toPos, curve };
+        
+        return mesh;
+    }
+
+    // ==================== 场景构建 ====================
+    let influencerMeshes = [];
+    let topicMeshes = [];
+    let allMeshes = [];
+
+    function buildScene() {
+        nodeMeshes.forEach(m => scene.remove(m));
+        edgeMeshes.forEach(m => scene.remove(m));
+        windowMeshes.forEach(m => { scene.remove(m.plane); scene.remove(m.edges); scene.remove(m.label); });
+        nodeMeshes.length = 0;
+        edgeMeshes.length = 0;
+        windowMeshes.length = 0;
+        influencerMeshes = [];
+        topicMeshes = [];
+        allMeshes = [];
+
+        const twFilter = document.getElementById('timeWindowFilter').value;
+        const pfFilter = document.getElementById('platformFilter').value;
+        const runMode = document.getElementById('runSelector').value;
+
+        const dataSource = runMode === 'run2' ? currentData : originalData;
+
+        const visibleWindows = twFilter === 'all' 
+            ? dataSource.timeWindows 
+            : dataSource.timeWindows.filter(tw => tw.id === twFilter);
+
+        visibleWindows.forEach(tw => {
+            const windowObj = createTimeWindowPlane(tw);
+            scene.add(windowObj.plane);
+            scene.add(windowObj.edges);
+            scene.add(windowObj.label);
+            windowMeshes.push(windowObj);
+        });
+
+        const visibleInfluencers = dataSource.influencers.filter(i => {
+            const twMatch = twFilter === 'all' || i.timeWindow === twFilter;
+            const pfMatch = pfFilter === 'all' || i.platform === pfFilter;
+            return twMatch && pfMatch;
+        });
+
+        const visibleTopics = dataSource.topics.filter(t => {
+            return dataSource.edges.some(e => 
+                e.to === t.id && 
+                (twFilter === 'all' || e.timeWindow === twFilter)
+            );
+        });
+
+        visibleWindows.forEach(tw => {
+            const twTopics = visibleTopics.filter(t => 
+                dataSource.edges.some(e => e.to === t.id && e.timeWindow === tw.id)
+            );
+            twTopics.forEach((topic, idx) => {
+                const mesh = createTopicNode(topic, tw.id, idx, twTopics.length);
+                scene.add(mesh);
+                nodeMeshes.push(mesh);
+                topicMeshes.push(mesh);
+                allMeshes.push(mesh);
+            });
+        });
+
+        visibleInfluencers.forEach((inf, idx) => {
+            const mesh = createInfluencerNode(inf, idx, visibleInfluencers.length);
+            scene.add(mesh);
+            nodeMeshes.push(mesh);
+            influencerMeshes.push(mesh);
+            allMeshes.push(mesh);
+        });
+
+        const nodeMap = {};
+        nodeMeshes.forEach(m => {
+            if (m.userData.type === 'influencer') nodeMap[m.userData.data.id] = m.position;
+            if (m.userData.type === 'topic') nodeMap[m.userData.data.id] = m.position;
+        });
+
+        const visibleEdges = dataSource.edges.filter(e => {
+            const twMatch = twFilter === 'all' || e.timeWindow === twFilter;
+            const fromMatch = nodeMap[e.from];
+            const toMatch = nodeMap[e.to];
+            return twMatch && fromMatch && toMatch;
+        });
+
+        visibleEdges.forEach(edge => {
+            const mesh = createEdge(edge, nodeMap[edge.from], nodeMap[edge.to]);
+            scene.add(mesh);
+            edgeMeshes.push(mesh);
+            allMeshes.push(mesh);
+        });
+
+        updateStats();
+        updateIssueList();
+        populateTopicSelect();
+    }
+
+    // ==================== 交互功能 ====================
+    function onClick(event) {
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(allMeshes, true);
+        
+        if (intersects.length > 0) {
+            let obj = intersects[0].object;
+            while (obj.parent && !obj.userData.type) {
+                obj = obj.parent;
+            }
+            if (obj.userData.type) {
+                selectObject(obj);
+            }
+        }
+    }
+
+    renderer.domElement.addEventListener('click', onClick);
+
+    function selectObject(obj) {
+        clearHighlight();
+        selectedObject = obj;
+        
+        const scale = obj.userData.type === 'edge' ? 1.5 : 1.3;
+        obj.scale.multiplyScalar(scale);
+        highlightedObjects.push({ obj, scale });
+        
+        showDetailPanel(obj);
+        document.getElementById('currentSelection').textContent = 
+            obj.userData.type === 'influencer' ? obj.userData.data.name :
+            obj.userData.type === 'topic' ? '#' + obj.userData.data.name :
+            obj.userData.type === 'edge' ? '连线' : '未知';
+    }
+
+    function clearHighlight() {
+        highlightedObjects.forEach(item => {
+            item.obj.scale.divideScalar(item.scale);
+        });
+        highlightedObjects = [];
+        selectedObject = null;
+    }
+
+    function showDetailPanel(obj) {
+        const panel = document.getElementById('detailPanel');
+        const title = document.getElementById('detailTitle');
+        const content = document.getElementById('detailContent');
+        
+        panel.classList.remove('hidden');
+        
+        if (obj.userData.type === 'influencer') {
+            const data = obj.userData.data;
+            title.textContent = data.name;
+            content.innerHTML = `
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs text-slate-400">基本信息</span>
+                        <span class="text-xs px-2 py-0.5 rounded" style="background: ${'#' + platformColors[data.platform].toString(16).padStart(6, '0')}30; color: ${'#' + platformColors[data.platform].toString(16).padStart(6, '0')}">
+                            ${data.platform}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <div class="text-slate-400 text-xs">粉丝数</div>
+                            <div class="font-bold text-lg">${(data.followers / 10000).toFixed(0)}万</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">互动率</div>
+                            <div class="font-bold text-lg">${data.engagement}%</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">时间窗口</div>
+                            <div class="font-medium">${currentData.timeWindows.find(t => t.id === data.timeWindow)?.name}</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">节点ID</div>
+                            <div class="font-mono text-xs">${data.id}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                ${data.issues.length > 0 ? `
+                <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span class="text-red-400 font-semibold text-sm">检测到问题</span>
+                    </div>
+                    <div class="space-y-1 text-xs">
+                        ${data.issues.map(i => `<div class="text-red-300">• ${getIssueText(i)}</div>`).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 mb-3">关联话题边</div>
+                    <div class="space-y-2 text-xs">
+                        ${currentData.edges.filter(e => e.from === data.id).map(e => {
+                            const topic = currentData.topics.find(t => t.id === e.to);
+                            return topic ? `
+                            <div class="flex items-center justify-between bg-slate-600/50 rounded-lg px-3 py-2">
+                                <span>#${topic.name}</span>
+                                <span class="text-slate-400">权重 ${e.weight.toFixed(2)}</span>
+                            </div>
+                            ` : '';
+                        }).join('')}
+                    </div>
+                </div>
+                
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 mb-3">曝光数据</div>
+                    <div class="space-y-2 text-xs">
+                        ${currentData.edges.filter(e => e.from === data.id).map(e => `
+                            <div class="flex items-center justify-between bg-slate-600/50 rounded-lg px-3 py-2">
+                                <span>${currentData.timeWindows.find(t => t.id === e.timeWindow)?.name}</span>
+                                <span class="${e.exposure === 0 ? 'text-red-400' : 'text-green-400'} font-medium">
+                                    ${e.exposure === 0 ? '待补录' : (e.exposure / 10000).toFixed(0) + '万'}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (obj.userData.type === 'topic') {
+            const data = obj.userData.data;
+            title.textContent = '#' + data.name;
+            const relatedEdges = currentData.edges.filter(e => e.to === data.id);
+            content.innerHTML = `
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 mb-3">话题基本信息</div>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <div class="text-slate-400 text-xs">关联达人</div>
+                            <div class="font-bold text-lg">${relatedEdges.length}</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">总曝光</div>
+                            <div class="font-bold text-lg">${(relatedEdges.reduce((sum, e) => sum + e.exposure, 0) / 10000).toFixed(0)}万</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 mb-3">参与达人</div>
+                    <div class="space-y-2 text-xs">
+                        ${relatedEdges.map(e => {
+                            const inf = currentData.influencers.find(i => i.id === e.from);
+                            return inf ? `
+                            <div class="flex items-center justify-between bg-slate-600/50 rounded-lg px-3 py-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full" style="background: ${'#' + platformColors[inf.platform].toString(16).padStart(6, '0')}"></div>
+                                    <span>${inf.name}</span>
+                                </div>
+                                <span class="text-slate-400">${inf.platform}</span>
+                            </div>
+                            ` : '';
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (obj.userData.type === 'edge') {
+            const data = obj.userData.data;
+            const fromInf = currentData.influencers.find(i => i.id === data.from);
+            const toTopic = currentData.topics.find(t => t.id === data.to);
+            title.textContent = '话题边详情';
+            content.innerHTML = `
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 mb-3">关联关系</div>
+                    <div class="flex items-center justify-center gap-3 py-3">
+                        <div class="bg-slate-600 rounded-lg px-4 py-2 text-center">
+                            <div class="font-bold">${fromInf?.name || data.from}</div>
+                            <div class="text-xs text-slate-400">达人</div>
+                        </div>
+                        <div class="text-green-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </div>
+                        <div class="bg-purple-600/30 rounded-lg px-4 py-2 text-center">
+                            <div class="font-bold">#${toTopic?.name || data.to}</div>
+                            <div class="text-xs text-slate-400">话题</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-700/50 rounded-xl p-4">
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <div class="text-slate-400 text-xs">关联权重</div>
+                            <div class="font-bold text-lg ${data.weight > 0.7 ? 'text-green-400' : 'text-orange-400'}">${data.weight.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">曝光量</div>
+                            <div class="font-bold text-lg ${data.exposure === 0 ? 'text-red-400' : 'text-purple-400'}">
+                                ${data.exposure === 0 ? '待补录' : (data.exposure / 10000).toFixed(0) + '万'}
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">时间窗口</div>
+                            <div class="font-medium">${currentData.timeWindows.find(t => t.id === data.timeWindow)?.name}</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-xs">边ID</div>
+                            <div class="font-mono text-xs">${data.id}</div>
+                        </div>
+                    </div>
+                </div>
+                ${data.issues.length > 0 ? `
+                <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span class="text-red-400 font-semibold text-sm">检测到问题</span>
+                    </div>
+                    <div class="space-y-1 text-xs">
+                        ${data.issues.map(i => `<div class="text-red-300">• ${getIssueText(i)}</div>`).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+        }
+    }
+
+    function getIssueText(type) {
+        const texts = {
+            'duplicate_name': '达人重名，需确认平台归属',
+            'wrong_topic': '话题错连，关联度异常',
+            'missing_exposure': '曝光数据缺失，需补录',
+            'platform_mismatch': '平台标签待确认'
+        };
+        return texts[type] || type;
+    }
+
+    // ==================== 问题定位与高亮 ====================
+    function locateIssue(issueId) {
+        const issue = currentData.issues.find(i => i.id === issueId);
+        if (!issue) return;
+        
+        clearHighlight();
+        
+        issue.relatedNodes.forEach(nodeId => {
+            const mesh = nodeMeshes.find(m => m.userData.data?.id === nodeId);
+            if (mesh) {
+                mesh.scale.multiplyScalar(1.5);
+                highlightedObjects.push({ obj: mesh, scale: 1.5 });
+                
+                const targetPos = mesh.position.clone();
+                cameraTarget.copy(targetPos);
+                cameraRadius = 40;
+                updateCameraPosition();
+            }
+        });
+        
+        issue.relatedEdges.forEach(edgeId => {
+            const mesh = edgeMeshes.find(m => m.userData.data?.id === edgeId);
+            if (mesh) {
+                mesh.material.color.setHex(0xfbbf24);
+                mesh.material.opacity = 1;
+                highlightedObjects.push({ obj: mesh, scale: 1, isEdge: true });
+            }
+        });
+        
+        const panel = document.getElementById('detailPanel');
+        if (issue.relatedNodes.length > 0) {
+            const nodeMesh = nodeMeshes.find(m => m.userData.data?.id === issue.relatedNodes[0]);
+            if (nodeMesh) showDetailPanel(nodeMesh);
+        }
+    }
+
+    // ==================== UI 功能 ====================
+    function updateStats() {
+        document.getElementById('statNodes').textContent = influencerMeshes.length;
+        document.getElementById('statEdges').textContent = edgeMeshes.length;
+        document.getElementById('statWindows').textContent = windowMeshes.length;
+        const totalExposure = edgeMeshes.reduce((sum, m) => sum + (m.userData.data?.exposure || 0), 0);
+        document.getElementById('statExposure').textContent = (totalExposure / 10000).toFixed(0) + '万';
+    }
+
+    function updateIssueList() {
+        const container = document.getElementById('issueList');
+        document.getElementById('issueCount').textContent = currentData.issues.length;
+        
+        container.innerHTML = currentData.issues.map(issue => `
+            <div class="bg-slate-700/50 rounded-lg p-3 cursor-pointer hover:bg-slate-600/50 transition issue-item" data-issue="${issue.id}">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full ${
+                            issue.severity === 'high' ? 'bg-red-500' :
+                            issue.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                        }"></span>
+                        <span class="text-sm font-medium">${issue.title}</span>
+                    </div>
+                    <button class="text-cyan-400 hover:text-cyan-300 text-xs locate-btn" data-issue="${issue.id}">
+                        定位 →
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400 mt-1 ml-4">${issue.description}</p>
+            </div>
+        `).join('');
+        
+        container.querySelectorAll('.locate-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                locateIssue(btn.dataset.issue);
+            });
+        });
+        
+        container.querySelectorAll('.issue-item').forEach(item => {
+            item.addEventListener('click', () => locateIssue(item.dataset.issue));
+        });
+    }
+
+    function populateTopicSelect() {
+        const select = document.getElementById('correctTopic');
+        select.innerHTML = '<option value="">选择话题...</option>' + 
+            currentData.topics.map(t => `<option value="${t.id}">#${t.name}</option>`).join('');
+    }
+
+    function populateTimeWindowFilter() {
+        const select = document.getElementById('timeWindowFilter');
+        select.innerHTML = '<option value="all">全部时间窗口</option>' +
+            currentData.timeWindows.map(tw => `<option value="${tw.id}">${tw.name}</option>`).join('');
+    }
+
+    // ==================== 手动修正功能 ====================
+    function applyCorrection() {
+        if (!selectedObject || selectedObject.userData.type !== 'influencer') {
+            alert('请先在3D视图中选择一个达人节点');
+            return;
+        }
+        
+        const influencer = selectedObject.userData.data;
+        const newPlatform = document.getElementById('correctPlatform').value;
+        const newTopic = document.getElementById('correctTopic').value;
+        const supplement = parseInt(document.getElementById('supplementExposure').value) || 0;
+        
+        const corrections = [];
+        
+        if (newPlatform && newPlatform !== influencer.platform) {
+            corrections.push(`平台标签: ${influencer.platform} → ${newPlatform}`);
+            influencer.platform = newPlatform;
+            const idx = influencer.issues.indexOf('platform_mismatch');
+            if (idx > -1) influencer.issues.splice(idx, 1);
+            if (influencer.issues.length === 0 && selectedObject.userData.issueRing) {
+                selectedObject.remove(selectedObject.userData.issueRing);
+            }
+        }
+        
+        if (newTopic) {
+            const existingEdge = currentData.edges.find(e => e.from === influencer.id && e.to === newTopic);
+            if (!existingEdge) {
+                const topic = currentData.topics.find(t => t.id === newTopic);
+                corrections.push(`新增话题关联: #${topic.name}`);
+                currentData.edges.push({
+                    id: 'e' + Date.now(),
+                    from: influencer.id,
+                    to: newTopic,
+                    weight: 0.8,
+                    timeWindow: influencer.timeWindow,
+                    exposure: supplement || 1000000,
+                    issues: []
+                });
+            }
+        }
+        
+        if (supplement > 0) {
+            const expEdge = currentData.edges.find(e => e.from === influencer.id && e.issues.includes('missing_exposure'));
+            if (expEdge) {
+                corrections.push(`补录曝光: ${supplement.toLocaleString()}`);
+                expEdge.exposure = supplement;
+                const idx = expEdge.issues.indexOf('missing_exposure');
+                if (idx > -1) expEdge.issues.splice(idx, 1);
+                const expIdx = influencer.issues.indexOf('missing_exposure');
+                if (expIdx > -1) influencer.issues.splice(expIdx, 1);
+            }
+        }
+        
+        if (corrections.length > 0) {
+            const log = document.getElementById('correctionLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML = `<div class="text-green-400">[${timestamp}] ${influencer.name}: ${corrections.join(' | ')}</div>` + log.innerHTML;
+            
+            buildScene();
+            showDetailPanel(selectedObject);
+        }
+        
+        document.getElementById('correctPlatform').value = '';
+        document.getElementById('correctTopic').value = '';
+        document.getElementById('supplementExposure').value = '';
+    }
+
+    function showComparison() {
+        const modal = document.getElementById('compareModal');
+        const oldContainer = document.getElementById('oldResult');
+        const newContainer = document.getElementById('newResult');
+        
+        modal.classList.remove('hidden');
+        
+        const oldInfluencers = originalData.influencers.slice(0, 6);
+        const newInfluencers = currentData.influencers.slice(0, 6);
+        
+        oldContainer.innerHTML = oldInfluencers.map(inf => `
+            <div class="bg-slate-700/50 rounded-lg p-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">${inf.name}</span>
+                    <span class="text-xs px-2 py-0.5 rounded" style="background: ${'#' + platformColors[inf.platform].toString(16).padStart(6, '0')}30; color: ${'#' + platformColors[inf.platform].toString(16).padStart(6, '0')}">
+                        ${inf.platform}
+                    </span>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">
+                    粉丝: ${(inf.followers / 10000).toFixed(0)}万 | 互动: ${inf.engagement}%
+                </div>
+                ${inf.issues.length > 0 ? `<div class="text-xs text-red-400 mt-1">⚠️ ${inf.issues.map(i => getIssueText(i)).join(', ')}</div>` : ''}
+            </div>
+        `).join('');
+        
+        newContainer.innerHTML = newInfluencers.map(inf => `
+            <div class="bg-slate-700/50 rounded-lg p-3 ${originalData.influencers.find(o => o.id === inf.id)?.platform !== inf.platform ? 'ring-2 ring-green-500' : ''}">
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">${inf.name}</span>
+                    <span class="text-xs px-2 py-0.5 rounded" style="background: ${'#' + platformColors[inf.platform].toString(16).padStart(6, '0')}30; color: ${'#' + platformColors[inf.platform].toString(16).padStart(6, '0')}">
+                        ${inf.platform}
+                    </span>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">
+                    粉丝: ${(inf.followers / 10000).toFixed(0)}万 | 互动: ${inf.engagement}%
+                </div>
+                ${inf.issues.length > 0 ? `<div class="text-xs text-red-400 mt-1">⚠️ ${inf.issues.map(i => getIssueText(i)).join(', ')}</div>` : ''}
+            </div>
+        `).join('');
+        
+        const oldIssues = originalData.issues.length;
+        const newIssues = currentData.issues.length;
+        const diff = oldIssues - newIssues;
+        
+        oldContainer.innerHTML = `
+            <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-3">
+                <div class="text-red-400 font-semibold">问题总数: ${oldIssues}</div>
+            </div>
+        ` + oldContainer.innerHTML;
+        
+        newContainer.innerHTML = `
+            <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-3">
+                <div class="text-green-400 font-semibold">问题总数: ${newIssues} ${diff > 0 ? `<span class="text-xs">(${diff}个已修复)</span>` : ''}</div>
+            </div>
+        ` + newContainer.innerHTML;
+    }
+
+    // ==================== 动画与渲染 ====================
+    let time = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+        time += 0.01;
+        
+        nodeMeshes.forEach((mesh, idx) => {
+            if (mesh.userData.type === 'influencer') {
+                mesh.rotation.y += 0.005;
+                mesh.position.y = mesh.userData.originalPosition.y + Math.sin(time + idx * 0.5) * 0.3;
+            } else if (mesh.userData.type === 'topic') {
+                mesh.rotation.y += 0.01;
+                mesh.rotation.x = Math.sin(time * 0.5 + idx) * 0.2;
+            }
+            if (mesh.userData.issueRing) {
+                mesh.userData.issueRing.rotation.z += 0.02;
+            }
+        });
+        
+        renderer.render(scene, camera);
+    }
+
+    // ==================== 事件绑定 ====================
+    document.getElementById('closeDetail').addEventListener('click', () => {
+        document.getElementById('detailPanel').classList.add('hidden');
+        clearHighlight();
+        document.getElementById('currentSelection').textContent = '无';
+    });
+
+    document.getElementById('resetViewBtn').addEventListener('click', () => {
+        cameraTheta = Math.PI / 4;
+        cameraPhi = Math.PI / 3;
+        cameraRadius = 100;
+        cameraTarget.set(0, 0, 0);
+        updateCameraPosition();
+    });
+
+    document.getElementById('screenshotBtn').addEventListener('click', () => {
+        renderer.render(scene, camera);
+        const dataURL = renderer.domElement.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `传播网络_${new Date().toISOString().slice(0, 10)}.png`;
+        link.href = dataURL;
+        link.click();
+    });
+
+    document.getElementById('timeWindowFilter').addEventListener('change', buildScene);
+    document.getElementById('platformFilter').addEventListener('change', buildScene);
+    document.getElementById('runSelector').addEventListener('change', buildScene);
+
+    document.getElementById('applyCorrection').addEventListener('click', applyCorrection);
+    document.getElementById('compareBtn').addEventListener('click', showComparison);
+    
+    document.getElementById('closeCompare').addEventListener('click', () => {
+        document.getElementById('compareModal').classList.add('hidden');
+    });
+    
+    document.getElementById('confirmCompare').addEventListener('click', () => {
+        originalData = JSON.parse(JSON.stringify(currentData));
+        buildScene();
+        document.getElementById('compareModal').classList.add('hidden');
+        alert('已保存修正结果，originalData已更新为当前版本');
+    });
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ==================== 初始化 ====================
+    populateTimeWindowFilter();
+    buildScene();
+    animate();
+
+    console.log('品牌社媒传播网络分析系统已启动');
+    console.log('数据一致性校验: 同一批节点已载入两次，可通过顶部"运行选择器"切换对比');
+    </script>
+</body>
+</html>
