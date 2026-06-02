@@ -1,0 +1,308 @@
+{
+  "sku": "SKU-CLEAN-001",
+  "export_paths": {},
+  "pipeline_states": [
+    {
+      "stage": "import_start",
+      "timestamp": "2026-06-02T12:16:11.673967",
+      "input_hash": "7a4b5bb434f104f3",
+      "data": {
+        "sales_file": "./test_data/sales_history_clean.xlsx",
+        "supply_file": "./test_data/supply_cycle_clean.xlsx",
+        "inventory_file": "./test_data/inventory_status_clean.xlsx",
+        "sku": "SKU-CLEAN-001"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:16:11.673923"
+      }
+    },
+    {
+      "stage": "sales_imported",
+      "timestamp": "2026-06-02T12:16:11.758197",
+      "input_hash": "b6053f431d8eaca3",
+      "data": {
+        "n_days": 180,
+        "total_qty": 5429
+      },
+      "metadata": {
+        "date_range": [
+          "2025-01-01T00:00:00",
+          "2025-06-29T00:00:00"
+        ]
+      }
+    },
+    {
+      "stage": "supply_imported",
+      "timestamp": "2026-06-02T12:16:11.761740",
+      "input_hash": "6b68852faff49438",
+      "data": {
+        "lead_time_mean": 13.86,
+        "lead_time_std": 3.8066000685168717,
+        "reliability": 0.92
+      },
+      "metadata": {
+        "has_historical": true
+      }
+    },
+    {
+      "stage": "inventory_imported",
+      "timestamp": "2026-06-02T12:16:11.766839",
+      "input_hash": "07ff78137f72acca",
+      "data": {
+        "current_stock": 450.0,
+        "safety_stock": 50.0,
+        "reorder_point": 300.0,
+        "pending_orders": 0
+      },
+      "metadata": {
+        "has_negative_stock": false
+      }
+    },
+    {
+      "stage": "import_complete",
+      "timestamp": "2026-06-02T12:16:11.766856",
+      "input_hash": "e9cd4b748cf24d7f",
+      "data": {
+        "success": true,
+        "n_issues": 0
+      },
+      "metadata": {
+        "issues_summary": {
+          "CRITICAL": 0,
+          "HIGH": 0,
+          "MEDIUM": 0,
+          "LOW": 0
+        }
+      }
+    },
+    {
+      "stage": "data_check_start",
+      "timestamp": "2026-06-02T12:16:11.766911",
+      "input_hash": "b00deb2eb88eea01",
+      "data": {
+        "sku": "SKU-CLEAN-001",
+        "stage": "quality_check"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:16:11.766899"
+      }
+    },
+    {
+      "stage": "data_check_complete",
+      "timestamp": "2026-06-02T12:16:11.767685",
+      "input_hash": "a0f0fd3f3549113e",
+      "data": {
+        "total_issues": 1,
+        "quality_summary": {
+          "MEDIUM": 1,
+          "INCONSISTENT": 1
+        }
+      },
+      "metadata": {
+        "issues_by_severity": {
+          "CRITICAL": 0,
+          "HIGH": 0,
+          "MEDIUM": 1,
+          "LOW": 0
+        }
+      }
+    },
+    {
+      "stage": "demand_forecast_start",
+      "timestamp": "2026-06-02T12:16:11.767716",
+      "input_hash": "8f741e9a56bd437e",
+      "data": {
+        "sku": "SKU-CLEAN-001",
+        "n_history_points": 180
+      },
+      "metadata": {
+        "distribution_preference": "auto"
+      }
+    },
+    {
+      "stage": "demand_forecast_complete",
+      "timestamp": "2026-06-02T12:16:11.879126",
+      "input_hash": "ce4680e5bf10e5d6",
+      "data": {
+        "distribution": "poisson",
+        "parameters": {
+          "mu": 30.16111111111111
+        },
+        "daily_mean": 30.16111111111111,
+        "daily_std": 5.491913246866806,
+        "ks_statistic": 0.06111111111111111,
+        "p_value": 0.891202537654354
+      },
+      "metadata": {
+        "quantiles_available": [
+          0.05,
+          0.25,
+          0.5,
+          0.75,
+          0.95,
+          0.99
+        ]
+      }
+    },
+    {
+      "stage": "simulation_start",
+      "timestamp": "2026-06-02T12:16:11.879191",
+      "input_hash": "8c7c9b74ae8074ef",
+      "data": {
+        "sku": "SKU-CLEAN-001",
+        "n_simulations": 1000,
+        "horizon_days": 90,
+        "lead_time_distribution": "gamma"
+      },
+      "metadata": {
+        "random_seed": 42
+      }
+    },
+    {
+      "stage": "simulation_progress_1000",
+      "timestamp": "2026-06-02T12:16:13.635861",
+      "input_hash": "8e4454330b58e705",
+      "data": {
+        "completed": 1000,
+        "total": 1000
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:16:13.635830"
+      }
+    },
+    {
+      "stage": "simulation_complete",
+      "timestamp": "2026-06-02T12:16:13.647128",
+      "input_hash": "d778209bf60ca01b",
+      "data": {
+        "n_trajectories": 1000,
+        "avg_stockout_rate": 0.3299888888888889,
+        "avg_negative_rate": 0.32864444444444446
+      },
+      "metadata": {
+        "extreme_trajectories": {
+          "min_inventory": -1573.0,
+          "max_inventory": 664.0,
+          "max_delayed_orders": 3
+        }
+      }
+    },
+    {
+      "stage": "classification_start",
+      "timestamp": "2026-06-02T12:16:13.733702",
+      "input_hash": "823d90f235dc9a26",
+      "data": {
+        "sku": "SKU-CLEAN-001",
+        "stage": "result_classification"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:16:13.733646"
+      }
+    },
+    {
+      "stage": "classification_complete",
+      "timestamp": "2026-06-02T12:16:13.733739",
+      "input_hash": "32ed479ba83540c1",
+      "data": {
+        "overall_level": "RED",
+        "n_direct_usable": 12,
+        "n_needs_confirmation": 3,
+        "n_cannot_calculate": 0
+      },
+      "metadata": {
+        "risk_metrics_summary": {
+          "stockout_probability": 1.0,
+          "service_level": 0.0,
+          "fill_rate": 0.6924907113848507
+        }
+      }
+    },
+    {
+      "stage": "replenishment_advice_start",
+      "timestamp": "2026-06-02T12:16:13.733773",
+      "input_hash": "0bbcb8a6ac6e36e3",
+      "data": {
+        "sku": "SKU-CLEAN-001",
+        "stage": "advice_generation"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:16:13.733764"
+      }
+    },
+    {
+      "stage": "replenishment_advice_complete",
+      "timestamp": "2026-06-02T12:16:13.733813",
+      "input_hash": "f2c34fc8c034baeb",
+      "data": {
+        "action": "增加安全库存并补货",
+        "urgency": "YELLOW",
+        "order_quantity": 500.0,
+        "order_date": "2026-06-02T12:16:13.733791",
+        "expected_service_level": 0.8
+      },
+      "metadata": {
+        "alternatives_count": 2,
+        "current_coverage_days": 14.919874746730521,
+        "pending_orders_total": 0,
+        "delayed_orders_total": 0
+      }
+    }
+  ],
+  "risk_metrics": {
+    "stockout_probability": 1.0,
+    "service_level": 0.0,
+    "fill_rate": 0.6924907113848507,
+    "negative_inventory_probability": 1.0,
+    "delayed_order_probability": 0.668,
+    "total_cost": 1050438.4417342467
+  },
+  "classification": {
+    "overall_level": "RED",
+    "direct_usable": [
+      "需求分布类型: poisson",
+      "日需求均值: 30.16 件",
+      "平均提前期: 13.9 天",
+      "缺货概率: 100.0%",
+      "预期服务水平: 0.0%",
+      "订单满足率: 69.2%",
+      "平均库存水平: 77 件",
+      "预期总缺货天数: 29.7 天",
+      "预期缺货数量: 6178 件",
+      "预期库存持有成本: ¥241.17",
+      "预期缺货成本: ¥1,050,197.27",
+      "预期总成本: ¥1,050,438.44"
+    ],
+    "needs_confirmation": [
+      {
+        "item": "负库存与缺货一致性",
+        "current_value": "负库存概率=100.0%, 缺货概率=100.0%",
+        "concern": "负库存概率接近缺货概率，可能存在延迟到货未被正确追踪的情况",
+        "suggested_action": "检查在途订单录入是否完整，确认延迟到货流程是否规范",
+        "risk_level": "MEDIUM"
+      },
+      {
+        "item": "延迟到货风险",
+        "current_value": "66.8%",
+        "concern": "模拟中出现延迟到货的概率较高",
+        "suggested_action": "与供应商确认交付承诺，考虑设置更保守的提前期参数",
+        "risk_level": "MEDIUM"
+      },
+      {
+        "item": "服务水平达标情况",
+        "current_value": "预期服务水平=0.0%, 目标=95.0%",
+        "concern": "预期服务水平低于目标值",
+        "suggested_action": "考虑增加安全库存、调整订货点或缩短提前期",
+        "risk_level": "HIGH"
+      }
+    ],
+    "cannot_calculate": []
+  },
+  "replenishment_advice": {
+    "action": "增加安全库存并补货",
+    "suggested_order_quantity": 500.0,
+    "suggested_order_date": "2026-06-02T12:16:13.733791",
+    "urgency": "YELLOW",
+    "rationale": "服务水平缺口较大（目标 95.0%，实际 0.0%），建议增加安全库存至 192 件",
+    "expected_service_level": 0.8
+  }
+}

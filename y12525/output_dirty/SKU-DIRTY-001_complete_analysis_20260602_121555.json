@@ -1,0 +1,352 @@
+{
+  "sku": "SKU-DIRTY-001",
+  "export_paths": {},
+  "pipeline_states": [
+    {
+      "stage": "import_start",
+      "timestamp": "2026-06-02T12:15:53.096595",
+      "input_hash": "6bf430184a5dbdd2",
+      "data": {
+        "sales_file": "./test_data/sales_history_dirty.xlsx",
+        "supply_file": "./test_data/supply_cycle_dirty.xlsx",
+        "inventory_file": "./test_data/inventory_status_dirty.xlsx",
+        "sku": "SKU-DIRTY-001"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:15:53.096549"
+      }
+    },
+    {
+      "stage": "sales_imported",
+      "timestamp": "2026-06-02T12:15:53.180269",
+      "input_hash": "4d34dc840be71cb8",
+      "data": {
+        "n_days": 180,
+        "total_qty": 10089.052392873744
+      },
+      "metadata": {
+        "date_range": [
+          "2025-01-01T00:00:00",
+          "2025-06-29T00:00:00"
+        ]
+      }
+    },
+    {
+      "stage": "supply_imported",
+      "timestamp": "2026-06-02T12:15:53.183965",
+      "input_hash": "0a09b6c861fa5f17",
+      "data": {
+        "lead_time_mean": 9.428571428571429,
+        "lead_time_std": 9.280355596635292,
+        "reliability": 0.75
+      },
+      "metadata": {
+        "has_historical": true
+      }
+    },
+    {
+      "stage": "inventory_imported",
+      "timestamp": "2026-06-02T12:15:53.188852",
+      "input_hash": "7aee3869e91475f4",
+      "data": {
+        "current_stock": -50.0,
+        "safety_stock": 80.0,
+        "reorder_point": 150.0,
+        "pending_orders": 1
+      },
+      "metadata": {
+        "has_negative_stock": true
+      }
+    },
+    {
+      "stage": "import_complete",
+      "timestamp": "2026-06-02T12:15:53.188883",
+      "input_hash": "f4c5b526d6a744c6",
+      "data": {
+        "success": true,
+        "n_issues": 7
+      },
+      "metadata": {
+        "issues_summary": {
+          "CRITICAL": 0,
+          "HIGH": 6,
+          "MEDIUM": 1,
+          "LOW": 0
+        }
+      }
+    },
+    {
+      "stage": "data_check_start",
+      "timestamp": "2026-06-02T12:15:53.189055",
+      "input_hash": "811444cb2c0d7b58",
+      "data": {
+        "sku": "SKU-DIRTY-001",
+        "stage": "quality_check"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:15:53.188984"
+      }
+    },
+    {
+      "stage": "data_check_complete",
+      "timestamp": "2026-06-02T12:15:53.190002",
+      "input_hash": "9bdddcaec18c6579",
+      "data": {
+        "total_issues": 22,
+        "quality_summary": {
+          "HIGH": 5,
+          "EXTREME_VALUE": 3,
+          "NEGATIVE_VALUE": 4,
+          "MEDIUM": 9,
+          "OUTLIER": 6,
+          "CRITICAL": 1,
+          "INCONSISTENT": 2
+        }
+      },
+      "metadata": {
+        "issues_by_severity": {
+          "CRITICAL": 1,
+          "HIGH": 11,
+          "MEDIUM": 10,
+          "LOW": 0
+        }
+      }
+    },
+    {
+      "stage": "demand_forecast_start",
+      "timestamp": "2026-06-02T12:15:53.190053",
+      "input_hash": "11c50e44b5d12036",
+      "data": {
+        "sku": "SKU-DIRTY-001",
+        "n_history_points": 180
+      },
+      "metadata": {
+        "distribution_preference": "auto"
+      }
+    },
+    {
+      "stage": "demand_forecast_complete",
+      "timestamp": "2026-06-02T12:15:53.287011",
+      "input_hash": "50cf690d8cdc9793",
+      "data": {
+        "distribution": "lognormal",
+        "parameters": {
+          "s": 0.44404819147775465,
+          "loc": 0,
+          "scale": 49.457349715345316
+        },
+        "daily_mean": 54.581777107340166,
+        "daily_std": 25.482254738009626,
+        "ks_statistic": 0.1005586592178771,
+        "p_value": 0.32655511365020806
+      },
+      "metadata": {
+        "quantiles_available": [
+          0.05,
+          0.25,
+          0.5,
+          0.75,
+          0.95,
+          0.99
+        ]
+      }
+    },
+    {
+      "stage": "simulation_start",
+      "timestamp": "2026-06-02T12:15:53.287084",
+      "input_hash": "4fcd6b7d9e3b3578",
+      "data": {
+        "sku": "SKU-DIRTY-001",
+        "n_simulations": 1000,
+        "horizon_days": 90,
+        "lead_time_distribution": "gamma"
+      },
+      "metadata": {
+        "random_seed": 42
+      }
+    },
+    {
+      "stage": "simulation_progress_1000",
+      "timestamp": "2026-06-02T12:15:55.660542",
+      "input_hash": "8e4454330b58e705",
+      "data": {
+        "completed": 1000,
+        "total": 1000
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:15:55.660498"
+      }
+    },
+    {
+      "stage": "simulation_complete",
+      "timestamp": "2026-06-02T12:15:55.672547",
+      "input_hash": "83669a48ce30a3f2",
+      "data": {
+        "n_trajectories": 1000,
+        "avg_stockout_rate": 0.938288888888889,
+        "avg_negative_rate": 0.9379444444444446
+      },
+      "metadata": {
+        "extreme_trajectories": {
+          "min_inventory": -4502.0,
+          "max_inventory": 419.0,
+          "max_delayed_orders": 4
+        }
+      }
+    },
+    {
+      "stage": "classification_start",
+      "timestamp": "2026-06-02T12:15:55.761651",
+      "input_hash": "f7bbad33966fa54e",
+      "data": {
+        "sku": "SKU-DIRTY-001",
+        "stage": "result_classification"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:15:55.761597"
+      }
+    },
+    {
+      "stage": "classification_complete",
+      "timestamp": "2026-06-02T12:15:55.761707",
+      "input_hash": "6d47b7dd07bae9b2",
+      "data": {
+        "overall_level": "RED",
+        "n_direct_usable": 12,
+        "n_needs_confirmation": 7,
+        "n_cannot_calculate": 1
+      },
+      "metadata": {
+        "risk_metrics_summary": {
+          "stockout_probability": 1.0,
+          "service_level": 0.0,
+          "fill_rate": 0.07055228694185914
+        }
+      }
+    },
+    {
+      "stage": "replenishment_advice_start",
+      "timestamp": "2026-06-02T12:15:55.761755",
+      "input_hash": "2e59234bc45261a1",
+      "data": {
+        "sku": "SKU-DIRTY-001",
+        "stage": "advice_generation"
+      },
+      "metadata": {
+        "timestamp": "2026-06-02T12:15:55.761745"
+      }
+    },
+    {
+      "stage": "replenishment_advice_complete",
+      "timestamp": "2026-06-02T12:15:55.761797",
+      "input_hash": "fe065cb18c2934ce",
+      "data": {
+        "action": "立即补货",
+        "urgency": "RED",
+        "order_quantity": 469.51136889687865,
+        "order_date": "2026-06-02T12:15:55.761775",
+        "expected_service_level": 0.8
+      },
+      "metadata": {
+        "alternatives_count": 2,
+        "current_coverage_days": -0.9160566520520269,
+        "pending_orders_total": 300.0,
+        "delayed_orders_total": 0
+      }
+    }
+  ],
+  "risk_metrics": {
+    "stockout_probability": 1.0,
+    "service_level": 0.0,
+    "fill_rate": 0.07055228694185914,
+    "negative_inventory_probability": 1.0,
+    "delayed_order_probability": 0.825,
+    "total_cost": 25297385.40013349
+  },
+  "classification": {
+    "overall_level": "RED",
+    "direct_usable": [
+      "需求分布类型: lognormal",
+      "日需求均值: 54.58 件",
+      "平均提前期: 9.4 天",
+      "缺货概率: 100.0%",
+      "预期服务水平: 0.0%",
+      "订单满足率: 7.1%",
+      "平均库存水平: -1159 件",
+      "预期总缺货天数: 84.4 天",
+      "预期缺货数量: 104990 件",
+      "预期库存持有成本: ¥-5,166.76",
+      "预期缺货成本: ¥25,302,552.16",
+      "预期总成本: ¥25,297,385.40"
+    ],
+    "needs_confirmation": [
+      {
+        "item": "提前期波动",
+        "current_value": "均值=9.4天, 标准差=9.3天 (CV=0.98)",
+        "concern": "提前期波动过大，供应不稳定",
+        "suggested_action": "与供应商沟通改善交期稳定性，或考虑备选供应商，增加安全库存缓冲",
+        "risk_level": "HIGH"
+      },
+      {
+        "item": "供应商可靠度",
+        "current_value": "75.0%",
+        "concern": "供应商按时交付率低于80%",
+        "suggested_action": "评估供应商绩效，考虑开发备选供应商，或建立安全库存应对交付风险",
+        "risk_level": "HIGH"
+      },
+      {
+        "item": "负库存与缺货一致性",
+        "current_value": "负库存概率=100.0%, 缺货概率=100.0%",
+        "concern": "负库存概率接近缺货概率，可能存在延迟到货未被正确追踪的情况",
+        "suggested_action": "检查在途订单录入是否完整，确认延迟到货流程是否规范",
+        "risk_level": "MEDIUM"
+      },
+      {
+        "item": "延迟到货风险",
+        "current_value": "82.5%",
+        "concern": "模拟中出现延迟到货的概率较高",
+        "suggested_action": "与供应商确认交付承诺，考虑设置更保守的提前期参数",
+        "risk_level": "MEDIUM"
+      },
+      {
+        "item": "服务水平达标情况",
+        "current_value": "预期服务水平=0.0%, 目标=95.0%",
+        "concern": "预期服务水平低于目标值",
+        "suggested_action": "考虑增加安全库存、调整订货点或缩短提前期",
+        "risk_level": "HIGH"
+      },
+      {
+        "item": "极端需求值",
+        "current_value": "历史销售中存在极端值",
+        "concern": "极端需求值可能扭曲需求分布拟合，影响模拟结果",
+        "suggested_action": "确认极端值是否为真实需求（如大订单、促销），如是异常值建议剔除；如是特殊事件建议建立单独模型",
+        "risk_level": "MEDIUM"
+      },
+      {
+        "item": "期初负库存",
+        "current_value": "当前库存为负数",
+        "concern": "期初负库存表示已经处于缺货状态，模拟结果需结合实际延迟到货情况解读",
+        "suggested_action": "立即核查延迟到货订单，确认实际库存状态",
+        "risk_level": "HIGH"
+      }
+    ],
+    "cannot_calculate": [
+      {
+        "type": "NEGATIVE_VALUE",
+        "severity": "CRITICAL",
+        "location": "库存状态[SKU-DIRTY-001]",
+        "description": "库存为负，可覆盖 -0.9 天需求",
+        "suggested_fix": "请立即核查延迟到货情况，库存为负意味着已经缺货",
+        "impact": "导致分析结果完全不可信，必须修复"
+      }
+    ]
+  },
+  "replenishment_advice": {
+    "action": "立即补货",
+    "suggested_order_quantity": 469.51136889687865,
+    "suggested_order_date": "2026-06-02T12:15:55.761775",
+    "urgency": "RED",
+    "rationale": "当前库存仅可覆盖 -0.9 天需求（平均提前期 9.4 天），需立即补货",
+    "expected_service_level": 0.8
+  }
+}
