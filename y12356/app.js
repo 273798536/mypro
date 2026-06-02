@@ -174,8 +174,8 @@ class RCFittingSystem {
         var realC = 0.001;
         var realTau = realR * realC;
         var V0 = 5;
-        var realSampleS = 0.001;
-        var numPoints = 30;
+        var realSampleS = 0.1;
+        var numPoints = 25;
 
         var declaredTimeUnit = 'ms';
         var declaredC = null;
@@ -196,20 +196,20 @@ class RCFittingSystem {
             voltageSequence: rawPoints.map(function(p) { return p.v; }),
             boundR: realR,
             boundC: declaredC,
-            boundSampleInterval: 1,
+            boundSampleInterval: 100,
             declaredTimeUnit: declaredTimeUnit,
             actualTimeUnit: 's',
-            rcSnapshot: 'R=' + realR + '\u03A9, C=' + (declaredC !== null ? declaredC + 'F' : '\u672A\u586B') + ', \u91C7\u6837=1ms'
+            rcSnapshot: 'R=' + realR + '\u03A9, C=' + (declaredC !== null ? declaredC + 'F' : '\u672A\u586B') + ', \u91C7\u6837=100ms'
         };
 
         this.parameters.R = realR;
         this.parameters.C = declaredC !== null ? declaredC : 0;
-        this.parameters.sampleInterval = 1;
+        this.parameters.sampleInterval = 100;
         this.parameters.timeUnit = declaredTimeUnit;
 
         document.getElementById('input-r').value = realR;
         document.getElementById('input-c').value = declaredC !== null ? declaredC : '';
-        document.getElementById('input-sample').value = 1;
+        document.getElementById('input-sample').value = 100;
         document.getElementById('time-unit-selector').value = declaredTimeUnit;
 
         this.dataPoints = [];
@@ -329,15 +329,11 @@ class RCFittingSystem {
         }
 
         if (this.fitParams) {
-            var lastPoints = this.dataPoints.slice(-10);
-            var voltages = lastPoints.map(function(p) { return p.voltage; });
-            var maxV = Math.max.apply(null, voltages);
-            var minV = Math.min.apply(null, voltages);
-            var saturationLevel = maxV > 0 ? (maxV - minV) / maxV : 0;
-            if (saturationLevel < 0.02 && maxV < this.fitParams.V0 * 0.95) {
+            var maxVoltage = Math.max.apply(null, this.dataPoints.map(function(p) { return p.voltage; }));
+            if (maxVoltage < this.fitParams.V0 * 0.95) {
                 seq++;
                 this.addAnomaly(seq, 'warning', '\u66F2\u7EBF\u672A\u5B8C\u5168\u9971\u548C',
-                    '\u6570\u636E\u672B\u7AEF\u7535\u538B\u53D8\u5316\u4EC5' + (saturationLevel * 100).toFixed(2) + '%\uFF0C\u672A\u8FBE\u7A33\u6001\uFF0C\u53EF\u80FD\u91C7\u6837\u65F6\u95F4\u4E0D\u591F');
+                    '\u6570\u636E\u6700\u9AD8\u7535\u538B' + maxVoltage.toFixed(2) + 'V \u4EC5\u8FBE\u7A33\u6001\u503C\u7684' + (maxVoltage / this.fitParams.V0 * 100).toFixed(1) + '%\uFF0C\u91C7\u6837\u65F6\u95F4\u53EF\u80FD\u4E0D\u591F');
                 this.addConflictLog('\u9971\u548C\u4E0D\u8DB3',
                     '\u66F2\u7EBF\u672A\u9971\u548C\uFF0C\u5B9E\u6D4B\u03C4 \u53EF\u80FD\u4E0D\u51C6\uFF0C\u5DF2\u7559\u75D5');
             }
