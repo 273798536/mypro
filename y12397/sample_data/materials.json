@@ -1,0 +1,136 @@
+[
+    {
+        "material_id": "MAT001",
+        "title": "清晨阳光钢琴曲",
+        "duration": 180.5,
+        "source_tags": ["温馨", "舒缓", "治愈"],
+        "manual_tags": ["温暖", "平静", "温馨"],
+        "merged_tags": ["温馨", "舒缓"],
+        "file_hash": "a1b2c3d4e5f6",
+        "source_file": "piano_morning.mp3",
+        "import_time": "2026-05-15 10:30:00",
+        "merge_history": [
+            {
+                "merge_time": "2026-05-20T14:30:00",
+                "previous_merged_tags": [],
+                "new_merged_tags": ["温馨", "舒缓"],
+                "similarities_used": [
+                    {"tag_a": "温馨", "tag_b": "温暖", "score": 0.85},
+                    {"tag_a": "舒缓", "tag_b": "平静", "score": 0.75}
+                ]
+            }
+        ]
+    },
+    {
+        "material_id": "MAT002",
+        "title": "战斗号角",
+        "duration": 120.0,
+        "source_tags": ["激昂", "热血", "紧张"],
+        "manual_tags": ["振奋", "澎湃"],
+        "merged_tags": [],
+        "file_hash": "x9y8z7w6v5u4",
+        "source_file": "battle_horn.mp3",
+        "import_time": "2026-05-16 14:20:00",
+        "merge_history": []
+    },
+    {
+        "material_id": "MAT003",
+        "title": "神秘森林",
+        "duration": 240.0,
+        "source_tags": ["神秘", "诡异", "空灵"],
+        "manual_tags": ["梦幻", "迷幻", "神秘"],
+        "merged_tags": ["神秘"],
+        "file_hash": "m3n4o5p6q7r8",
+        "source_file": "mystic_forest.mp3",
+        "import_time": "2026-05-17 09:15:00",
+        "merge_history": [
+            {
+                "merge_time": "2026-05-22T11:00:00",
+                "previous_merged_tags": [],
+                "new_merged_tags": ["神秘"],
+                "similarities_used": [
+                    {"tag_a": "神秘", "tag_b": "诡异", "score": 0.8},
+                    {"tag_a": "空灵", "tag_b": "梦幻", "score": 0.8}
+                ]
+            }
+        ]
+    },
+    {
+        "material_id": "MAT004",
+        "title": "清晨阳光钢琴曲",
+        "duration": 180.5,
+        "source_tags": ["温馨", "舒缓"],
+        "manual_tags": [],
+        "merged_tags": ["温馨", "舒缓"],
+        "file_hash": "a1b2c3d4e5f6",
+        "source_file": "piano_morning_copy.mp3",
+        "import_time": "2026-05-18 16:45:00",
+        "merge_history": []
+    },
+    {
+        "material_id": "MAT005",
+        "title": "欢快嘉年华",
+        "duration": 90.0,
+        "source_tags": ["欢快", "愉悦"],
+        "manual_tags": ["开心", "轻松"],
+        "merged_tags": ["欢快", "轻松"],
+        "file_hash": "f5g6h7i8j9k0",
+        "source_file": "carnival.mp3",
+        "import_time": "2026-05-19 08:00:00",
+        "merge_history": [
+            {
+                "merge_time": "2026-05-23T15:20:00",
+                "previous_merged_tags": [],
+                "new_merged_tags": ["欢快", "轻松"],
+                "similarities_used": [
+                    {"tag_a": "欢快", "tag_b": "愉悦", "score": 0.9}
+                ]
+            }
+        ]
+    },
+    {
+        "material_id": "MAT006",
+        "title": "悲伤离别",
+        "duration": 150.0,
+        "source_tags": ["悲伤", "伤感"],
+        "manual_tags": ["难过", "忧郁"],
+        "merged_tags": ["悲伤", "压抑"],
+        "file_hash": "s2d3f4g5h6j7",
+        "source_file": "sad_farewell.mp3",
+        "import_time": "2026-05-20 11:30:00",
+        "merge_history": [
+            {
+                "merge_time": "2026-05-24T09:00:00",
+                "previous_merged_tags": [],
+                "new_merged_tags": ["悲伤", "压抑"],
+                "similarities_used": [
+                    {"tag_a": "悲伤", "tag_b": "伤感", "score": 0.9}
+                ]
+            }
+        ]
+    },
+    {
+        "material_id": "MAT007",
+        "title": "悬疑追击",
+        "duration": 200.0,
+        "source_tags": ["紧张", "刺激"],
+        "manual_tags": ["悬疑", "惊悚"],
+        "merged_tags": [],
+        "file_hash": "k8l9m0n1b2v3",
+        "source_file": "suspense_chase.mp3",
+        "import_time": "2026-05-21 13:45:00",
+        "merge_history": []
+    },
+    {
+        "material_id": "MAT008",
+        "title": "活泼小精灵",
+        "duration": 85.0,
+        "source_tags": ["活泼", "轻快"],
+        "manual_tags": ["灵动", "欢快"],
+        "merged_tags": ["活泼", "欢快"],
+        "file_hash": "c4v5b6n7m8k9",
+        "source_file": "playful_spirit.mp3",
+        "import_time": "2026-05-22 10:15:00",
+        "merge_history": []
+    }
+]

@@ -1,0 +1,47 @@
+[
+    {
+        "report_id": "RPT001",
+        "material_id": "MAT001",
+        "auditor_tags": ["温馨", "温暖", "治愈", "平静"],
+        "auditor_comments": "这首钢琴曲整体感觉很温馨，但'舒缓'这个标签不太准确，其实节奏有起伏，应该是'温暖'更合适。源标签和人工标签都有道理，需要统一。",
+        "audit_time": "2026-05-26 10:00:00",
+        "auditor": "张审计",
+        "merge_suggestions": ["温馨", "治愈"]
+    },
+    {
+        "report_id": "RPT002",
+        "material_id": "MAT003",
+        "auditor_tags": ["神秘", "诡异", "空灵", "梦幻"],
+        "auditor_comments": "归并后的标签只保留了'神秘'，丢失了太多细节。这首曲子有明显的空灵梦幻感，建议归并时保留更多维度。",
+        "audit_time": "2026-05-26 11:30:00",
+        "auditor": "李审计",
+        "merge_suggestions": ["神秘", "空灵"]
+    },
+    {
+        "report_id": "RPT003",
+        "material_id": "MAT005",
+        "auditor_tags": ["欢快", "愉悦", "轻松", "活泼"],
+        "auditor_comments": "归并结果'欢快'和'轻松'基本准确，但可以考虑加入'活泼'，因为曲子确实很有活力。",
+        "audit_time": "2026-05-26 14:00:00",
+        "auditor": "王审计",
+        "merge_suggestions": ["欢快", "轻松", "活泼"]
+    },
+    {
+        "report_id": "RPT004",
+        "material_id": "MAT006",
+        "auditor_tags": ["悲伤", "伤感", "难过", "忧郁"],
+        "auditor_comments": "归并结果有问题，'压抑'这个标签不准确，这首曲子是悲伤但不压抑。源标签和人工标签都是悲伤相关的，归并时错误地引入了'压抑'。",
+        "audit_time": "2026-05-26 15:30:00",
+        "auditor": "张审计",
+        "merge_suggestions": ["悲伤", "伤感"]
+    },
+    {
+        "report_id": "RPT005",
+        "material_id": "MAT002",
+        "auditor_tags": ["激昂", "振奋", "热血", "澎湃"],
+        "auditor_comments": "尚未归并，建议归并为'激昂'和'热血'两个核心标签。",
+        "audit_time": "2026-05-26 16:00:00",
+        "auditor": "李审计",
+        "merge_suggestions": ["激昂", "热血"]
+    }
+]

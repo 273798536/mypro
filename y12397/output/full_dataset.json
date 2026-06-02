@@ -1,0 +1,1805 @@
+{
+  "export_time": "2026-06-02T14:56:04.593375",
+  "materials": [
+    {
+      "material_id": "MAT001",
+      "title": "清晨阳光钢琴曲",
+      "duration": 180.5,
+      "source_tags": [
+        "温馨",
+        "舒缓",
+        "治愈"
+      ],
+      "manual_tags": [
+        "温暖",
+        "平静",
+        "温馨"
+      ],
+      "merged_tags": [
+        "温馨",
+        "舒缓"
+      ],
+      "file_hash": "a1b2c3d4e5f6",
+      "source_file": "piano_morning.mp3",
+      "import_time": "2026-05-15T10:30:00",
+      "merge_history": [
+        {
+          "merge_time": "2026-05-20T14:30:00",
+          "previous_merged_tags": [],
+          "new_merged_tags": [
+            "温馨",
+            "舒缓"
+          ],
+          "similarities_used": [
+            {
+              "tag_a": "温馨",
+              "tag_b": "温暖",
+              "score": 0.85
+            },
+            {
+              "tag_a": "舒缓",
+              "tag_b": "平静",
+              "score": 0.75
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "material_id": "MAT002",
+      "title": "战斗号角",
+      "duration": 120.0,
+      "source_tags": [
+        "激昂",
+        "热血",
+        "紧张"
+      ],
+      "manual_tags": [
+        "振奋",
+        "澎湃"
+      ],
+      "merged_tags": [],
+      "file_hash": "x9y8z7w6v5u4",
+      "source_file": "battle_horn.mp3",
+      "import_time": "2026-05-16T14:20:00",
+      "merge_history": []
+    },
+    {
+      "material_id": "MAT003",
+      "title": "神秘森林",
+      "duration": 240.0,
+      "source_tags": [
+        "神秘",
+        "诡异",
+        "空灵"
+      ],
+      "manual_tags": [
+        "梦幻",
+        "迷幻",
+        "神秘"
+      ],
+      "merged_tags": [
+        "神秘"
+      ],
+      "file_hash": "m3n4o5p6q7r8",
+      "source_file": "mystic_forest.mp3",
+      "import_time": "2026-05-17T09:15:00",
+      "merge_history": [
+        {
+          "merge_time": "2026-05-22T11:00:00",
+          "previous_merged_tags": [],
+          "new_merged_tags": [
+            "神秘"
+          ],
+          "similarities_used": [
+            {
+              "tag_a": "神秘",
+              "tag_b": "诡异",
+              "score": 0.8
+            },
+            {
+              "tag_a": "空灵",
+              "tag_b": "梦幻",
+              "score": 0.8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "material_id": "MAT004",
+      "title": "清晨阳光钢琴曲",
+      "duration": 180.5,
+      "source_tags": [
+        "温馨",
+        "舒缓"
+      ],
+      "manual_tags": [],
+      "merged_tags": [
+        "温馨",
+        "舒缓"
+      ],
+      "file_hash": "a1b2c3d4e5f6",
+      "source_file": "piano_morning_copy.mp3",
+      "import_time": "2026-05-18T16:45:00",
+      "merge_history": []
+    },
+    {
+      "material_id": "MAT005",
+      "title": "欢快嘉年华",
+      "duration": 90.0,
+      "source_tags": [
+        "欢快",
+        "愉悦"
+      ],
+      "manual_tags": [
+        "开心",
+        "轻松"
+      ],
+      "merged_tags": [
+        "欢快",
+        "轻松"
+      ],
+      "file_hash": "f5g6h7i8j9k0",
+      "source_file": "carnival.mp3",
+      "import_time": "2026-05-19T08:00:00",
+      "merge_history": [
+        {
+          "merge_time": "2026-05-23T15:20:00",
+          "previous_merged_tags": [],
+          "new_merged_tags": [
+            "欢快",
+            "轻松"
+          ],
+          "similarities_used": [
+            {
+              "tag_a": "欢快",
+              "tag_b": "愉悦",
+              "score": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "material_id": "MAT006",
+      "title": "悲伤离别",
+      "duration": 150.0,
+      "source_tags": [
+        "悲伤",
+        "伤感"
+      ],
+      "manual_tags": [
+        "难过",
+        "忧郁"
+      ],
+      "merged_tags": [
+        "悲伤",
+        "压抑"
+      ],
+      "file_hash": "s2d3f4g5h6j7",
+      "source_file": "sad_farewell.mp3",
+      "import_time": "2026-05-20T11:30:00",
+      "merge_history": [
+        {
+          "merge_time": "2026-05-24T09:00:00",
+          "previous_merged_tags": [],
+          "new_merged_tags": [
+            "悲伤",
+            "压抑"
+          ],
+          "similarities_used": [
+            {
+              "tag_a": "悲伤",
+              "tag_b": "伤感",
+              "score": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "material_id": "MAT007",
+      "title": "悬疑追击",
+      "duration": 200.0,
+      "source_tags": [
+        "紧张",
+        "刺激"
+      ],
+      "manual_tags": [
+        "悬疑",
+        "惊悚"
+      ],
+      "merged_tags": [],
+      "file_hash": "k8l9m0n1b2v3",
+      "source_file": "suspense_chase.mp3",
+      "import_time": "2026-05-21T13:45:00",
+      "merge_history": []
+    },
+    {
+      "material_id": "MAT008",
+      "title": "活泼小精灵",
+      "duration": 85.0,
+      "source_tags": [
+        "活泼",
+        "轻快"
+      ],
+      "manual_tags": [
+        "灵动",
+        "欢快"
+      ],
+      "merged_tags": [
+        "活泼",
+        "欢快"
+      ],
+      "file_hash": "c4v5b6n7m8k9",
+      "source_file": "playful_spirit.mp3",
+      "import_time": "2026-05-22T10:15:00",
+      "merge_history": []
+    }
+  ],
+  "usages": [
+    {
+      "usage_id": "USE001",
+      "project_name": "纪录片《城市清晨》",
+      "scene_desc": "日出时分城市苏醒的空镜头",
+      "required_mood": [
+        "温馨",
+        "舒缓"
+      ],
+      "assigned_material_ids": [
+        "MAT001"
+      ],
+      "usage_context": "纪录片片头曲，配合缓慢的城市镜头",
+      "assigned_time": "2026-05-25T09:00:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE002",
+      "project_name": "游戏《勇者冒险》",
+      "scene_desc": "最终Boss战斗场景",
+      "required_mood": [
+        "激昂",
+        "紧张"
+      ],
+      "assigned_material_ids": [
+        "MAT002"
+      ],
+      "usage_context": "战斗配乐，需要高能量",
+      "assigned_time": "2026-05-25T10:30:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE003",
+      "project_name": "电影《迷雾森林》",
+      "scene_desc": "主角误入神秘森林深处",
+      "required_mood": [
+        "神秘",
+        "紧张"
+      ],
+      "assigned_material_ids": [
+        "MAT003"
+      ],
+      "usage_context": "氛围配乐，营造神秘感",
+      "assigned_time": "2026-05-25T11:00:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE004",
+      "project_name": "综艺节目《欢乐时刻》",
+      "scene_desc": "嘉宾完成挑战后的欢庆场景",
+      "required_mood": [
+        "欢快",
+        "温馨"
+      ],
+      "assigned_material_ids": [
+        "MAT005"
+      ],
+      "usage_context": "喜庆背景音乐",
+      "assigned_time": "2026-05-25T14:00:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE005",
+      "project_name": "电视剧《生离死别》",
+      "scene_desc": "主角与亲人最后告别",
+      "required_mood": [
+        "悲伤"
+      ],
+      "assigned_material_ids": [
+        "MAT006"
+      ],
+      "usage_context": "情感戏配乐",
+      "assigned_time": "2026-05-25T15:30:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE006",
+      "project_name": "悬疑片《真相追击》",
+      "scene_desc": "侦探追踪嫌疑人的雨夜戏",
+      "required_mood": [
+        "紧张",
+        "神秘"
+      ],
+      "assigned_material_ids": [
+        "MAT007"
+      ],
+      "usage_context": "追击戏配乐",
+      "assigned_time": "2026-05-25T16:00:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE007",
+      "project_name": "动画《奇幻冒险》",
+      "scene_desc": "小精灵在森林中嬉戏",
+      "required_mood": [
+        "欢快",
+        "温馨"
+      ],
+      "assigned_material_ids": [
+        "MAT008",
+        "MAT999"
+      ],
+      "usage_context": "轻松活泼的场景",
+      "assigned_time": "2026-05-25T17:00:00",
+      "auditor_notes": ""
+    },
+    {
+      "usage_id": "USE008",
+      "project_name": "广告《夏日清凉》",
+      "scene_desc": "年轻人在海边享受假期",
+      "required_mood": [
+        "欢快"
+      ],
+      "assigned_material_ids": [
+        "MAT006"
+      ],
+      "usage_context": "30秒广告配乐",
+      "assigned_time": "2026-05-26T09:00:00",
+      "auditor_notes": ""
+    }
+  ],
+  "reports": [
+    {
+      "report_id": "RPT001",
+      "material_id": "MAT001",
+      "auditor_tags": [
+        "温馨",
+        "温暖",
+        "治愈",
+        "平静"
+      ],
+      "auditor_comments": "这首钢琴曲整体感觉很温馨，但'舒缓'这个标签不太准确，其实节奏有起伏，应该是'温暖'更合适。源标签和人工标签都有道理，需要统一。",
+      "audit_time": "2026-05-26T10:00:00",
+      "auditor": "张审计",
+      "merge_suggestions": [
+        "温馨",
+        "治愈"
+      ]
+    },
+    {
+      "report_id": "RPT002",
+      "material_id": "MAT003",
+      "auditor_tags": [
+        "神秘",
+        "诡异",
+        "空灵",
+        "梦幻"
+      ],
+      "auditor_comments": "归并后的标签只保留了'神秘'，丢失了太多细节。这首曲子有明显的空灵梦幻感，建议归并时保留更多维度。",
+      "audit_time": "2026-05-26T11:30:00",
+      "auditor": "李审计",
+      "merge_suggestions": [
+        "神秘",
+        "空灵"
+      ]
+    },
+    {
+      "report_id": "RPT003",
+      "material_id": "MAT005",
+      "auditor_tags": [
+        "欢快",
+        "愉悦",
+        "轻松",
+        "活泼"
+      ],
+      "auditor_comments": "归并结果'欢快'和'轻松'基本准确，但可以考虑加入'活泼'，因为曲子确实很有活力。",
+      "audit_time": "2026-05-26T14:00:00",
+      "auditor": "王审计",
+      "merge_suggestions": [
+        "欢快",
+        "轻松",
+        "活泼"
+      ]
+    },
+    {
+      "report_id": "RPT004",
+      "material_id": "MAT006",
+      "auditor_tags": [
+        "悲伤",
+        "伤感",
+        "难过",
+        "忧郁"
+      ],
+      "auditor_comments": "归并结果有问题，'压抑'这个标签不准确，这首曲子是悲伤但不压抑。源标签和人工标签都是悲伤相关的，归并时错误地引入了'压抑'。",
+      "audit_time": "2026-05-26T15:30:00",
+      "auditor": "张审计",
+      "merge_suggestions": [
+        "悲伤",
+        "伤感"
+      ]
+    },
+    {
+      "report_id": "RPT005",
+      "material_id": "MAT002",
+      "auditor_tags": [
+        "激昂",
+        "振奋",
+        "热血",
+        "澎湃"
+      ],
+      "auditor_comments": "尚未归并，建议归并为'激昂'和'热血'两个核心标签。",
+      "audit_time": "2026-05-26T16:00:00",
+      "auditor": "李审计",
+      "merge_suggestions": [
+        "激昂",
+        "热血"
+      ]
+    }
+  ],
+  "tag_similarities": [
+    {
+      "tag_a": "伤感",
+      "tag_b": "忧郁",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "伤感",
+      "tag_b": "悲伤",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "伤感",
+      "tag_b": "难过",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "刺激",
+      "tag_b": "悬疑",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "刺激",
+      "tag_b": "紧张",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "平静",
+      "tag_b": "舒缓",
+      "similarity_score": 0.75,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "平静",
+      "tag_b": "轻松",
+      "similarity_score": 0.75,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "开心",
+      "tag_b": "愉悦",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "开心",
+      "tag_b": "欢快",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "忧郁",
+      "tag_b": "悲伤",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "忧郁",
+      "tag_b": "难过",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "悬疑",
+      "tag_b": "紧张",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "悲伤",
+      "tag_b": "难过",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "愉悦",
+      "tag_b": "欢快",
+      "similarity_score": 0.9,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "振奋",
+      "tag_b": "澎湃",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "振奋",
+      "tag_b": "激昂",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "振奋",
+      "tag_b": "热血",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "梦幻",
+      "tag_b": "神秘",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "梦幻",
+      "tag_b": "空灵",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "梦幻",
+      "tag_b": "诡异",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "治愈",
+      "tag_b": "温暖",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "治愈",
+      "tag_b": "温馨",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "治愈",
+      "tag_b": "舒缓",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "活泼",
+      "tag_b": "灵动",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "活泼",
+      "tag_b": "轻快",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "温暖",
+      "tag_b": "温馨",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "温暖",
+      "tag_b": "舒缓",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "温馨",
+      "tag_b": "舒缓",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "澎湃",
+      "tag_b": "激昂",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "澎湃",
+      "tag_b": "热血",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "激昂",
+      "tag_b": "热血",
+      "similarity_score": 0.85,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "灵动",
+      "tag_b": "轻快",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "神秘",
+      "tag_b": "空灵",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "神秘",
+      "tag_b": "诡异",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "空灵",
+      "tag_b": "诡异",
+      "similarity_score": 0.8,
+      "merge_rule_id": null,
+      "manual_override": false
+    },
+    {
+      "tag_a": "舒缓",
+      "tag_b": "轻松",
+      "similarity_score": 0.75,
+      "merge_rule_id": null,
+      "manual_override": false
+    }
+  ],
+  "merge_feedbacks": [],
+  "issues": [
+    {
+      "issue_id": "issue_d686221b",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[清晨阳光钢琴曲]源标签与人工标签冲突",
+      "description": "素材ID=MAT001 的源标签与人工标注存在不一致。源标签独有: ['治愈', '舒缓'], 人工标签独有: ['平静', '温暖']",
+      "related_materials": [
+        "MAT001"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT001",
+        "material_title": "清晨阳光钢琴曲",
+        "source_tags": [
+          "温馨",
+          "舒缓",
+          "治愈"
+        ],
+        "manual_tags": [
+          "温暖",
+          "平静",
+          "温馨"
+        ],
+        "conflict_source_only": [
+          "治愈",
+          "舒缓"
+        ],
+        "conflict_manual_only": [
+          "平静",
+          "温暖"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484794",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_b8c7825c",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[清晨阳光钢琴曲]审计标签与源标签冲突",
+      "description": "素材ID=MAT001, 报告ID=RPT001。审计标签: ['平静', '治愈', '温暖', '温馨'], 源标签: ['温馨', '舒缓', '治愈']。审计独有: ['平静', '温暖'], 源标签独有: ['舒缓']",
+      "related_materials": [
+        "MAT001"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT001"
+      ],
+      "evidence": {
+        "material_id": "MAT001",
+        "report_id": "RPT001",
+        "auditor": "张审计",
+        "auditor_tags": [
+          "平静",
+          "治愈",
+          "温暖",
+          "温馨"
+        ],
+        "source_tags": [
+          "温馨",
+          "舒缓",
+          "治愈"
+        ],
+        "audit_only": [
+          "平静",
+          "温暖"
+        ],
+        "source_only": [
+          "舒缓"
+        ],
+        "auditor_comments": "这首钢琴曲整体感觉很温馨，但'舒缓'这个标签不太准确，其实节奏有起伏，应该是'温暖'更合适。源标签和人工标签都有道理，需要统一。"
+      },
+      "suggestions": [
+        "请审计员[张审计]与素材管理员核对标签差异",
+        "确认哪一方的标签理解有误，不擅自修改口径",
+        "将核对结果记录到审计备注中"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484834",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_971d218b",
+      "issue_type": "tag_conflict",
+      "severity": "critical",
+      "title": "素材[清晨阳光钢琴曲]归并标签与审计标签冲突",
+      "description": "素材ID=MAT001, 报告ID=RPT001。归并后标签: ['温馨', '舒缓'], 审计标签: ['平静', '治愈', '温暖', '温馨']。归并独有: ['舒缓'], 审计独有: ['平静', '治愈', '温暖']。这可能导致后续用途错配！",
+      "related_materials": [
+        "MAT001"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT001"
+      ],
+      "evidence": {
+        "material_id": "MAT001",
+        "report_id": "RPT001",
+        "merged_tags": [
+          "温馨",
+          "舒缓"
+        ],
+        "auditor_tags": [
+          "平静",
+          "治愈",
+          "温暖",
+          "温馨"
+        ],
+        "merge_only": [
+          "舒缓"
+        ],
+        "audit_only": [
+          "平静",
+          "治愈",
+          "温暖"
+        ],
+        "merge_history": [
+          {
+            "merge_time": "2026-05-20T14:30:00",
+            "previous_merged_tags": [],
+            "new_merged_tags": [
+              "温馨",
+              "舒缓"
+            ],
+            "similarities_used": [
+              {
+                "tag_a": "温馨",
+                "tag_b": "温暖",
+                "score": 0.85
+              },
+              {
+                "tag_a": "舒缓",
+                "tag_b": "平静",
+                "score": 0.75
+              }
+            ]
+          }
+        ]
+      },
+      "suggestions": [
+        "这是高风险冲突，立即暂停该素材的后续使用",
+        "审核标签归并规则是否正确应用",
+        "检查归并历史记录，确认何时出现偏差",
+        "涉及用途错配风险，同步通知项目组"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484852",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_f4a48478",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[战斗号角]源标签与人工标签冲突",
+      "description": "素材ID=MAT002 的源标签与人工标注存在不一致。源标签独有: ['激昂', '热血', '紧张'], 人工标签独有: ['振奋', '澎湃']",
+      "related_materials": [
+        "MAT002"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT002",
+        "material_title": "战斗号角",
+        "source_tags": [
+          "激昂",
+          "热血",
+          "紧张"
+        ],
+        "manual_tags": [
+          "振奋",
+          "澎湃"
+        ],
+        "conflict_source_only": [
+          "激昂",
+          "热血",
+          "紧张"
+        ],
+        "conflict_manual_only": [
+          "振奋",
+          "澎湃"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484875",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_165bcc67",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[战斗号角]审计标签与源标签冲突",
+      "description": "素材ID=MAT002, 报告ID=RPT005。审计标签: ['振奋', '澎湃', '激昂', '热血'], 源标签: ['激昂', '热血', '紧张']。审计独有: ['振奋', '澎湃'], 源标签独有: ['紧张']",
+      "related_materials": [
+        "MAT002"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT005"
+      ],
+      "evidence": {
+        "material_id": "MAT002",
+        "report_id": "RPT005",
+        "auditor": "李审计",
+        "auditor_tags": [
+          "振奋",
+          "澎湃",
+          "激昂",
+          "热血"
+        ],
+        "source_tags": [
+          "激昂",
+          "热血",
+          "紧张"
+        ],
+        "audit_only": [
+          "振奋",
+          "澎湃"
+        ],
+        "source_only": [
+          "紧张"
+        ],
+        "auditor_comments": "尚未归并，建议归并为'激昂'和'热血'两个核心标签。"
+      },
+      "suggestions": [
+        "请审计员[李审计]与素材管理员核对标签差异",
+        "确认哪一方的标签理解有误，不擅自修改口径",
+        "将核对结果记录到审计备注中"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484892",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_1aa51b3a",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[神秘森林]源标签与人工标签冲突",
+      "description": "素材ID=MAT003 的源标签与人工标注存在不一致。源标签独有: ['空灵', '诡异'], 人工标签独有: ['梦幻', '迷幻']",
+      "related_materials": [
+        "MAT003"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT003",
+        "material_title": "神秘森林",
+        "source_tags": [
+          "神秘",
+          "诡异",
+          "空灵"
+        ],
+        "manual_tags": [
+          "梦幻",
+          "迷幻",
+          "神秘"
+        ],
+        "conflict_source_only": [
+          "空灵",
+          "诡异"
+        ],
+        "conflict_manual_only": [
+          "梦幻",
+          "迷幻"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484909",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_d9066bd9",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[神秘森林]审计标签与源标签冲突",
+      "description": "素材ID=MAT003, 报告ID=RPT002。审计标签: ['梦幻', '神秘', '空灵', '诡异'], 源标签: ['神秘', '诡异', '空灵']。审计独有: ['梦幻'], 源标签独有: []",
+      "related_materials": [
+        "MAT003"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT002"
+      ],
+      "evidence": {
+        "material_id": "MAT003",
+        "report_id": "RPT002",
+        "auditor": "李审计",
+        "auditor_tags": [
+          "梦幻",
+          "神秘",
+          "空灵",
+          "诡异"
+        ],
+        "source_tags": [
+          "神秘",
+          "诡异",
+          "空灵"
+        ],
+        "audit_only": [
+          "梦幻"
+        ],
+        "source_only": [],
+        "auditor_comments": "归并后的标签只保留了'神秘'，丢失了太多细节。这首曲子有明显的空灵梦幻感，建议归并时保留更多维度。"
+      },
+      "suggestions": [
+        "请审计员[李审计]与素材管理员核对标签差异",
+        "确认哪一方的标签理解有误，不擅自修改口径",
+        "将核对结果记录到审计备注中"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484925",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_1d52fab4",
+      "issue_type": "tag_conflict",
+      "severity": "critical",
+      "title": "素材[神秘森林]归并标签与审计标签冲突",
+      "description": "素材ID=MAT003, 报告ID=RPT002。归并后标签: ['神秘'], 审计标签: ['梦幻', '神秘', '空灵', '诡异']。归并独有: [], 审计独有: ['梦幻', '空灵', '诡异']。这可能导致后续用途错配！",
+      "related_materials": [
+        "MAT003"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT002"
+      ],
+      "evidence": {
+        "material_id": "MAT003",
+        "report_id": "RPT002",
+        "merged_tags": [
+          "神秘"
+        ],
+        "auditor_tags": [
+          "梦幻",
+          "神秘",
+          "空灵",
+          "诡异"
+        ],
+        "merge_only": [],
+        "audit_only": [
+          "梦幻",
+          "空灵",
+          "诡异"
+        ],
+        "merge_history": [
+          {
+            "merge_time": "2026-05-22T11:00:00",
+            "previous_merged_tags": [],
+            "new_merged_tags": [
+              "神秘"
+            ],
+            "similarities_used": [
+              {
+                "tag_a": "神秘",
+                "tag_b": "诡异",
+                "score": 0.8
+              },
+              {
+                "tag_a": "空灵",
+                "tag_b": "梦幻",
+                "score": 0.8
+              }
+            ]
+          }
+        ]
+      },
+      "suggestions": [
+        "这是高风险冲突，立即暂停该素材的后续使用",
+        "审核标签归并规则是否正确应用",
+        "检查归并历史记录，确认何时出现偏差",
+        "涉及用途错配风险，同步通知项目组"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484939",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_8fb739be",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[欢快嘉年华]源标签与人工标签冲突",
+      "description": "素材ID=MAT005 的源标签与人工标注存在不一致。源标签独有: ['愉悦', '欢快'], 人工标签独有: ['开心', '轻松']",
+      "related_materials": [
+        "MAT005"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT005",
+        "material_title": "欢快嘉年华",
+        "source_tags": [
+          "欢快",
+          "愉悦"
+        ],
+        "manual_tags": [
+          "开心",
+          "轻松"
+        ],
+        "conflict_source_only": [
+          "愉悦",
+          "欢快"
+        ],
+        "conflict_manual_only": [
+          "开心",
+          "轻松"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484956",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_1c549a8f",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[欢快嘉年华]审计标签与源标签冲突",
+      "description": "素材ID=MAT005, 报告ID=RPT003。审计标签: ['愉悦', '欢快', '活泼', '轻松'], 源标签: ['欢快', '愉悦']。审计独有: ['活泼', '轻松'], 源标签独有: []",
+      "related_materials": [
+        "MAT005"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT003"
+      ],
+      "evidence": {
+        "material_id": "MAT005",
+        "report_id": "RPT003",
+        "auditor": "王审计",
+        "auditor_tags": [
+          "愉悦",
+          "欢快",
+          "活泼",
+          "轻松"
+        ],
+        "source_tags": [
+          "欢快",
+          "愉悦"
+        ],
+        "audit_only": [
+          "活泼",
+          "轻松"
+        ],
+        "source_only": [],
+        "auditor_comments": "归并结果'欢快'和'轻松'基本准确，但可以考虑加入'活泼'，因为曲子确实很有活力。"
+      },
+      "suggestions": [
+        "请审计员[王审计]与素材管理员核对标签差异",
+        "确认哪一方的标签理解有误，不擅自修改口径",
+        "将核对结果记录到审计备注中"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484972",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_78feed5a",
+      "issue_type": "tag_conflict",
+      "severity": "critical",
+      "title": "素材[欢快嘉年华]归并标签与审计标签冲突",
+      "description": "素材ID=MAT005, 报告ID=RPT003。归并后标签: ['欢快', '轻松'], 审计标签: ['愉悦', '欢快', '活泼', '轻松']。归并独有: [], 审计独有: ['愉悦', '活泼']。这可能导致后续用途错配！",
+      "related_materials": [
+        "MAT005"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT003"
+      ],
+      "evidence": {
+        "material_id": "MAT005",
+        "report_id": "RPT003",
+        "merged_tags": [
+          "欢快",
+          "轻松"
+        ],
+        "auditor_tags": [
+          "愉悦",
+          "欢快",
+          "活泼",
+          "轻松"
+        ],
+        "merge_only": [],
+        "audit_only": [
+          "愉悦",
+          "活泼"
+        ],
+        "merge_history": [
+          {
+            "merge_time": "2026-05-23T15:20:00",
+            "previous_merged_tags": [],
+            "new_merged_tags": [
+              "欢快",
+              "轻松"
+            ],
+            "similarities_used": [
+              {
+                "tag_a": "欢快",
+                "tag_b": "愉悦",
+                "score": 0.9
+              }
+            ]
+          }
+        ]
+      },
+      "suggestions": [
+        "这是高风险冲突，立即暂停该素材的后续使用",
+        "审核标签归并规则是否正确应用",
+        "检查归并历史记录，确认何时出现偏差",
+        "涉及用途错配风险，同步通知项目组"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484985",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_390baa9e",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[悲伤离别]源标签与人工标签冲突",
+      "description": "素材ID=MAT006 的源标签与人工标注存在不一致。源标签独有: ['伤感', '悲伤'], 人工标签独有: ['忧郁', '难过']",
+      "related_materials": [
+        "MAT006"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT006",
+        "material_title": "悲伤离别",
+        "source_tags": [
+          "悲伤",
+          "伤感"
+        ],
+        "manual_tags": [
+          "难过",
+          "忧郁"
+        ],
+        "conflict_source_only": [
+          "伤感",
+          "悲伤"
+        ],
+        "conflict_manual_only": [
+          "忧郁",
+          "难过"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.484998",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_8ab9df8f",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[悲伤离别]审计标签与源标签冲突",
+      "description": "素材ID=MAT006, 报告ID=RPT004。审计标签: ['伤感', '忧郁', '悲伤', '难过'], 源标签: ['悲伤', '伤感']。审计独有: ['忧郁', '难过'], 源标签独有: []",
+      "related_materials": [
+        "MAT006"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT004"
+      ],
+      "evidence": {
+        "material_id": "MAT006",
+        "report_id": "RPT004",
+        "auditor": "张审计",
+        "auditor_tags": [
+          "伤感",
+          "忧郁",
+          "悲伤",
+          "难过"
+        ],
+        "source_tags": [
+          "悲伤",
+          "伤感"
+        ],
+        "audit_only": [
+          "忧郁",
+          "难过"
+        ],
+        "source_only": [],
+        "auditor_comments": "归并结果有问题，'压抑'这个标签不准确，这首曲子是悲伤但不压抑。源标签和人工标签都是悲伤相关的，归并时错误地引入了'压抑'。"
+      },
+      "suggestions": [
+        "请审计员[张审计]与素材管理员核对标签差异",
+        "确认哪一方的标签理解有误，不擅自修改口径",
+        "将核对结果记录到审计备注中"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485012",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_bcfdff33",
+      "issue_type": "tag_conflict",
+      "severity": "critical",
+      "title": "素材[悲伤离别]归并标签与审计标签冲突",
+      "description": "素材ID=MAT006, 报告ID=RPT004。归并后标签: ['压抑', '悲伤'], 审计标签: ['伤感', '忧郁', '悲伤', '难过']。归并独有: ['压抑'], 审计独有: ['伤感', '忧郁', '难过']。这可能导致后续用途错配！",
+      "related_materials": [
+        "MAT006"
+      ],
+      "related_usages": [],
+      "related_reports": [
+        "RPT004"
+      ],
+      "evidence": {
+        "material_id": "MAT006",
+        "report_id": "RPT004",
+        "merged_tags": [
+          "压抑",
+          "悲伤"
+        ],
+        "auditor_tags": [
+          "伤感",
+          "忧郁",
+          "悲伤",
+          "难过"
+        ],
+        "merge_only": [
+          "压抑"
+        ],
+        "audit_only": [
+          "伤感",
+          "忧郁",
+          "难过"
+        ],
+        "merge_history": [
+          {
+            "merge_time": "2026-05-24T09:00:00",
+            "previous_merged_tags": [],
+            "new_merged_tags": [
+              "悲伤",
+              "压抑"
+            ],
+            "similarities_used": [
+              {
+                "tag_a": "悲伤",
+                "tag_b": "伤感",
+                "score": 0.9
+              }
+            ]
+          }
+        ]
+      },
+      "suggestions": [
+        "这是高风险冲突，立即暂停该素材的后续使用",
+        "审核标签归并规则是否正确应用",
+        "检查归并历史记录，确认何时出现偏差",
+        "涉及用途错配风险，同步通知项目组"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485027",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_52ef8cb5",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[悬疑追击]源标签与人工标签冲突",
+      "description": "素材ID=MAT007 的源标签与人工标注存在不一致。源标签独有: ['刺激', '紧张'], 人工标签独有: ['悬疑', '惊悚']",
+      "related_materials": [
+        "MAT007"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT007",
+        "material_title": "悬疑追击",
+        "source_tags": [
+          "紧张",
+          "刺激"
+        ],
+        "manual_tags": [
+          "悬疑",
+          "惊悚"
+        ],
+        "conflict_source_only": [
+          "刺激",
+          "紧张"
+        ],
+        "conflict_manual_only": [
+          "悬疑",
+          "惊悚"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485041",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_c30ded0a",
+      "issue_type": "tag_conflict",
+      "severity": "warning",
+      "title": "素材[活泼小精灵]源标签与人工标签冲突",
+      "description": "素材ID=MAT008 的源标签与人工标注存在不一致。源标签独有: ['活泼', '轻快'], 人工标签独有: ['欢快', '灵动']",
+      "related_materials": [
+        "MAT008"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "material_id": "MAT008",
+        "material_title": "活泼小精灵",
+        "source_tags": [
+          "活泼",
+          "轻快"
+        ],
+        "manual_tags": [
+          "灵动",
+          "欢快"
+        ],
+        "conflict_source_only": [
+          "活泼",
+          "轻快"
+        ],
+        "conflict_manual_only": [
+          "欢快",
+          "灵动"
+        ]
+      },
+      "suggestions": [
+        "建议业务同事核对源标签和人工标签的差异",
+        "若源标签错误，联系素材提供方修正；若人工标签错误，调整人工标注",
+        "达成一致后更新标签归并规则"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485056",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_07e3d0cf",
+      "issue_type": "material_duplicate",
+      "severity": "warning",
+      "title": "发现2个重复音频素材",
+      "description": "文件哈希=a1b2c3d4e5f6 对应 2 个素材记录: [('MAT001', '清晨阳光钢琴曲'), ('MAT004', '清晨阳光钢琴曲')]。可能导致标签维护不同步、归并结果不一致。",
+      "related_materials": [
+        "MAT001",
+        "MAT004"
+      ],
+      "related_usages": [],
+      "related_reports": [],
+      "evidence": {
+        "file_hash": "a1b2c3d4e5f6",
+        "duplicate_count": 2,
+        "materials": [
+          {
+            "material_id": "MAT001",
+            "title": "清晨阳光钢琴曲",
+            "source_tags": [
+              "温馨",
+              "舒缓",
+              "治愈"
+            ],
+            "manual_tags": [
+              "温暖",
+              "平静",
+              "温馨"
+            ],
+            "merged_tags": [
+              "温馨",
+              "舒缓"
+            ],
+            "source_file": "piano_morning.mp3"
+          },
+          {
+            "material_id": "MAT004",
+            "title": "清晨阳光钢琴曲",
+            "source_tags": [
+              "温馨",
+              "舒缓"
+            ],
+            "manual_tags": [],
+            "merged_tags": [
+              "温馨",
+              "舒缓"
+            ],
+            "source_file": "piano_morning_copy.mp3"
+          }
+        ]
+      },
+      "suggestions": [
+        "确认这2条记录是否为同一音频文件",
+        "如为重复录入，保留最完整的一条，其余标记为重复",
+        "如为不同文件但哈希碰撞，联系技术人员排查",
+        "重复素材的标签需保持一致，避免后续归并混乱"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485088",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_7089bf7a",
+      "issue_type": "usage_mismatch",
+      "severity": "warning",
+      "title": "素材[神秘森林]情绪不匹配项目[电影《迷雾森林》]",
+      "description": "用途ID=USE003, 场景='主角误入神秘森林深处'。项目要求情绪=['神秘', '紧张'], 素材标签=['神秘']。已匹配: ['神秘→神秘'], 未匹配: ['紧张']。",
+      "related_materials": [
+        "MAT003"
+      ],
+      "related_usages": [
+        "USE003"
+      ],
+      "related_reports": [],
+      "evidence": {
+        "usage_id": "USE003",
+        "material_id": "MAT003",
+        "project_name": "电影《迷雾森林》",
+        "scene_desc": "主角误入神秘森林深处",
+        "usage_context": "氛围配乐，营造神秘感",
+        "required_mood": [
+          "神秘",
+          "紧张"
+        ],
+        "material_tags": {
+          "source": [
+            "神秘",
+            "诡异",
+            "空灵"
+          ],
+          "manual": [
+            "梦幻",
+            "迷幻",
+            "神秘"
+          ],
+          "merged": [
+            "神秘"
+          ]
+        },
+        "matched": [
+          "神秘→神秘"
+        ],
+        "unmatched": [
+          "紧张"
+        ],
+        "auditor_notes": ""
+      },
+      "suggestions": [
+        "核对场景'主角误入神秘森林深处'的情绪要求是否准确",
+        "检查素材[神秘森林]的标签是否完整准确",
+        "如为归并导致的标签丢失，追溯归并历史并修正归并规则",
+        "确需使用该素材时，由业务同事确认并在审计备注中说明理由"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485355",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_fe1d8dc5",
+      "issue_type": "usage_mismatch",
+      "severity": "warning",
+      "title": "素材[欢快嘉年华]情绪不匹配项目[综艺节目《欢乐时刻》]",
+      "description": "用途ID=USE004, 场景='嘉宾完成挑战后的欢庆场景'。项目要求情绪=['欢快', '温馨'], 素材标签=['欢快', '轻松']。已匹配: ['欢快→欢快'], 未匹配: ['温馨']。",
+      "related_materials": [
+        "MAT005"
+      ],
+      "related_usages": [
+        "USE004"
+      ],
+      "related_reports": [],
+      "evidence": {
+        "usage_id": "USE004",
+        "material_id": "MAT005",
+        "project_name": "综艺节目《欢乐时刻》",
+        "scene_desc": "嘉宾完成挑战后的欢庆场景",
+        "usage_context": "喜庆背景音乐",
+        "required_mood": [
+          "欢快",
+          "温馨"
+        ],
+        "material_tags": {
+          "source": [
+            "欢快",
+            "愉悦"
+          ],
+          "manual": [
+            "开心",
+            "轻松"
+          ],
+          "merged": [
+            "欢快",
+            "轻松"
+          ]
+        },
+        "matched": [
+          "欢快→欢快"
+        ],
+        "unmatched": [
+          "温馨"
+        ],
+        "auditor_notes": ""
+      },
+      "suggestions": [
+        "核对场景'嘉宾完成挑战后的欢庆场景'的情绪要求是否准确",
+        "检查素材[欢快嘉年华]的标签是否完整准确",
+        "如为归并导致的标签丢失，追溯归并历史并修正归并规则",
+        "确需使用该素材时，由业务同事确认并在审计备注中说明理由"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485381",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_345e9b93",
+      "issue_type": "usage_mismatch",
+      "severity": "warning",
+      "title": "素材[悬疑追击]情绪不匹配项目[悬疑片《真相追击》]",
+      "description": "用途ID=USE006, 场景='侦探追踪嫌疑人的雨夜戏'。项目要求情绪=['紧张', '神秘'], 素材标签=['惊悚', '刺激', '紧张', '悬疑']。已匹配: ['紧张→紧张'], 未匹配: ['神秘']。",
+      "related_materials": [
+        "MAT007"
+      ],
+      "related_usages": [
+        "USE006"
+      ],
+      "related_reports": [],
+      "evidence": {
+        "usage_id": "USE006",
+        "material_id": "MAT007",
+        "project_name": "悬疑片《真相追击》",
+        "scene_desc": "侦探追踪嫌疑人的雨夜戏",
+        "usage_context": "追击戏配乐",
+        "required_mood": [
+          "紧张",
+          "神秘"
+        ],
+        "material_tags": {
+          "source": [
+            "紧张",
+            "刺激"
+          ],
+          "manual": [
+            "悬疑",
+            "惊悚"
+          ],
+          "merged": []
+        },
+        "matched": [
+          "紧张→紧张"
+        ],
+        "unmatched": [
+          "神秘"
+        ],
+        "auditor_notes": ""
+      },
+      "suggestions": [
+        "核对场景'侦探追踪嫌疑人的雨夜戏'的情绪要求是否准确",
+        "检查素材[悬疑追击]的标签是否完整准确",
+        "如为归并导致的标签丢失，追溯归并历史并修正归并规则",
+        "确需使用该素材时，由业务同事确认并在审计备注中说明理由"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485404",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_49fcee49",
+      "issue_type": "usage_mismatch",
+      "severity": "warning",
+      "title": "素材[活泼小精灵]情绪不匹配项目[动画《奇幻冒险》]",
+      "description": "用途ID=USE007, 场景='小精灵在森林中嬉戏'。项目要求情绪=['欢快', '温馨'], 素材标签=['活泼', '欢快']。已匹配: ['欢快→欢快'], 未匹配: ['温馨']。",
+      "related_materials": [
+        "MAT008"
+      ],
+      "related_usages": [
+        "USE007"
+      ],
+      "related_reports": [],
+      "evidence": {
+        "usage_id": "USE007",
+        "material_id": "MAT008",
+        "project_name": "动画《奇幻冒险》",
+        "scene_desc": "小精灵在森林中嬉戏",
+        "usage_context": "轻松活泼的场景",
+        "required_mood": [
+          "欢快",
+          "温馨"
+        ],
+        "material_tags": {
+          "source": [
+            "活泼",
+            "轻快"
+          ],
+          "manual": [
+            "灵动",
+            "欢快"
+          ],
+          "merged": [
+            "活泼",
+            "欢快"
+          ]
+        },
+        "matched": [
+          "欢快→欢快"
+        ],
+        "unmatched": [
+          "温馨"
+        ],
+        "auditor_notes": ""
+      },
+      "suggestions": [
+        "核对场景'小精灵在森林中嬉戏'的情绪要求是否准确",
+        "检查素材[活泼小精灵]的标签是否完整准确",
+        "如为归并导致的标签丢失，追溯归并历史并修正归并规则",
+        "确需使用该素材时，由业务同事确认并在审计备注中说明理由"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485422",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_5d92a447",
+      "issue_type": "usage_mismatch",
+      "severity": "critical",
+      "title": "项目[动画《奇幻冒险》]引用不存在的素材",
+      "description": "用途ID=USE007, 场景='小精灵在森林中嬉戏'。分配的素材ID=MAT999 在素材库中不存在。",
+      "related_materials": [
+        "MAT999"
+      ],
+      "related_usages": [
+        "USE007"
+      ],
+      "related_reports": [],
+      "evidence": {
+        "usage_id": "USE007",
+        "project_name": "动画《奇幻冒险》",
+        "scene_desc": "小精灵在森林中嬉戏",
+        "missing_material_id": "MAT999",
+        "assigned_material_ids": [
+          "MAT008",
+          "MAT999"
+        ]
+      },
+      "suggestions": [
+        "检查素材ID是否录入错误",
+        "确认素材是否已被删除但未同步更新项目分配",
+        "如为新增素材尚未导入，先完成素材导入流程"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485435",
+      "resolved": false
+    },
+    {
+      "issue_id": "issue_ccf40aef",
+      "issue_type": "usage_mismatch",
+      "severity": "warning",
+      "title": "素材[悲伤离别]情绪不匹配项目[广告《夏日清凉》]",
+      "description": "用途ID=USE008, 场景='年轻人在海边享受假期'。项目要求情绪=['欢快'], 素材标签=['悲伤', '压抑']。已匹配: [], 未匹配: ['欢快']。",
+      "related_materials": [
+        "MAT006"
+      ],
+      "related_usages": [
+        "USE008"
+      ],
+      "related_reports": [],
+      "evidence": {
+        "usage_id": "USE008",
+        "material_id": "MAT006",
+        "project_name": "广告《夏日清凉》",
+        "scene_desc": "年轻人在海边享受假期",
+        "usage_context": "30秒广告配乐",
+        "required_mood": [
+          "欢快"
+        ],
+        "material_tags": {
+          "source": [
+            "悲伤",
+            "伤感"
+          ],
+          "manual": [
+            "难过",
+            "忧郁"
+          ],
+          "merged": [
+            "悲伤",
+            "压抑"
+          ]
+        },
+        "matched": [],
+        "unmatched": [
+          "欢快"
+        ],
+        "auditor_notes": ""
+      },
+      "suggestions": [
+        "核对场景'年轻人在海边享受假期'的情绪要求是否准确",
+        "检查素材[悲伤离别]的标签是否完整准确",
+        "如为归并导致的标签丢失，追溯归并历史并修正归并规则",
+        "确需使用该素材时，由业务同事确认并在审计备注中说明理由"
+      ],
+      "discovered_at": "2026-06-02T14:56:04.485451",
+      "resolved": false
+    }
+  ]
+}

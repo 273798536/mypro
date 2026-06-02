@@ -1,0 +1,82 @@
+[
+    {
+        "usage_id": "USE001",
+        "project_name": "纪录片《城市清晨》",
+        "scene_desc": "日出时分城市苏醒的空镜头",
+        "required_mood": ["温馨", "舒缓"],
+        "assigned_material_ids": ["MAT001"],
+        "usage_context": "纪录片片头曲，配合缓慢的城市镜头",
+        "assigned_time": "2026-05-25 09:00:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE002",
+        "project_name": "游戏《勇者冒险》",
+        "scene_desc": "最终Boss战斗场景",
+        "required_mood": ["激昂", "紧张"],
+        "assigned_material_ids": ["MAT002"],
+        "usage_context": "战斗配乐，需要高能量",
+        "assigned_time": "2026-05-25 10:30:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE003",
+        "project_name": "电影《迷雾森林》",
+        "scene_desc": "主角误入神秘森林深处",
+        "required_mood": ["神秘", "紧张"],
+        "assigned_material_ids": ["MAT003"],
+        "usage_context": "氛围配乐，营造神秘感",
+        "assigned_time": "2026-05-25 11:00:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE004",
+        "project_name": "综艺节目《欢乐时刻》",
+        "scene_desc": "嘉宾完成挑战后的欢庆场景",
+        "required_mood": ["欢快", "温馨"],
+        "assigned_material_ids": ["MAT005"],
+        "usage_context": "喜庆背景音乐",
+        "assigned_time": "2026-05-25 14:00:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE005",
+        "project_name": "电视剧《生离死别》",
+        "scene_desc": "主角与亲人最后告别",
+        "required_mood": ["悲伤"],
+        "assigned_material_ids": ["MAT006"],
+        "usage_context": "情感戏配乐",
+        "assigned_time": "2026-05-25 15:30:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE006",
+        "project_name": "悬疑片《真相追击》",
+        "scene_desc": "侦探追踪嫌疑人的雨夜戏",
+        "required_mood": ["紧张", "神秘"],
+        "assigned_material_ids": ["MAT007"],
+        "usage_context": "追击戏配乐",
+        "assigned_time": "2026-05-25 16:00:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE007",
+        "project_name": "动画《奇幻冒险》",
+        "scene_desc": "小精灵在森林中嬉戏",
+        "required_mood": ["欢快", "温馨"],
+        "assigned_material_ids": ["MAT008", "MAT999"],
+        "usage_context": "轻松活泼的场景",
+        "assigned_time": "2026-05-25 17:00:00",
+        "auditor_notes": ""
+    },
+    {
+        "usage_id": "USE008",
+        "project_name": "广告《夏日清凉》",
+        "scene_desc": "年轻人在海边享受假期",
+        "required_mood": ["欢快"],
+        "assigned_material_ids": ["MAT006"],
+        "usage_context": "30秒广告配乐",
+        "assigned_time": "2026-05-26 09:00:00",
+        "auditor_notes": ""
+    }
+]
