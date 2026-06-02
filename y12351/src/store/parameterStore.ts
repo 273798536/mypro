@@ -13,9 +13,8 @@ import {
   mockInterfaceResults,
   mockAnomalies,
   mockVersionHistories,
-  calculateInterfaceResult,
+  computeResults,
   detectAnomalies,
-  calculateInterfaceNames,
   generateId,
 } from '../services/mockData';
 
@@ -32,21 +31,39 @@ interface ParameterState {
   addParameter: (data: Partial<ScanParameter>) => string;
   updateParameter: (id: string, data: Partial<ScanParameter>) => void;
   deleteParameter: (id: string) => void;
-  
+
   calculateResults: (parameterId: string) => Promise<void>;
   runAnomalyDetection: (parameterId: string) => void;
-  
+
   correctTissueType: (parameterId: string, newType: TissueType, reason?: string) => void;
   updateArtifactLabel: (parameterId: string, newLabel: ArtifactType, reason?: string) => void;
-  
+
   resolveAnomaly: (anomalyId: string, handlerNote?: string) => void;
   confirmAnomaly: (anomalyId: string) => void;
-  
+
   getParameterResults: (parameterId: string) => InterfaceResult[];
   getParameterAnomalies: (parameterId: string) => Anomaly[];
   getParameterHistories: (parameterId: string) => VersionHistory[];
-  
+
   resetToMockData: () => void;
+}
+
+function buildImpact(
+  oldResults: InterfaceResult[],
+  newResults: InterfaceResult[]
+): VersionHistory['impactAnalysis'] {
+  const oldAvg = oldResults.reduce((s, r) => s + (r.resultData.qualityScore || 0), 0) / (oldResults.length || 1);
+  const newAvg = newResults.reduce((s, r) => s + (r.resultData.qualityScore || 0), 0) / (newResults.length || 1);
+  const oldRec = oldResults.some((r) => r.resultData.recommended);
+  const newRec = newResults.some((r) => r.resultData.recommended);
+  const oldArt = oldResults.reduce((s, r) => s + (r.resultData.artifactProbability || 0), 0) / (oldResults.length || 1);
+  const newArt = newResults.reduce((s, r) => s + (r.resultData.artifactProbability || 0), 0) / (newResults.length || 1);
+
+  return {
+    artifactInterpretationChange: Math.abs(oldArt - newArt) > 0.01,
+    qualityScoreChange: Math.round(newAvg - oldAvg),
+    recommendationChange: oldRec !== newRec,
+  };
 }
 
 export const useParameterStore = create<ParameterState>()(
@@ -121,11 +138,7 @@ export const useParameterStore = create<ParameterState>()(
           return;
         }
 
-        const results: InterfaceResult[] = [];
-        for (const name of calculateInterfaceNames) {
-          const result = await calculateInterfaceResult(param, name);
-          results.push(result);
-        }
+        const results = computeResults(param);
 
         set((state) => {
           const filtered = state.interfaceResults.filter((r) => r.parameterId !== parameterId);
@@ -163,64 +176,76 @@ export const useParameterStore = create<ParameterState>()(
         const param = get().parameters.find((p) => p.id === parameterId);
         if (!param) return;
 
+        const oldResults = get().getParameterResults(parameterId);
         const oldType = param.tissueType;
-        const histories = get().getParameterHistories(parameterId);
-        const newVersion = histories.length + 1;
 
+        const updatedParam: ScanParameter = { ...param, tissueType: newType, updatedAt: new Date().toISOString() };
+        const newResults = computeResults(updatedParam);
+        const impact = buildImpact(oldResults, newResults);
+
+        const histories = get().getParameterHistories(parameterId);
         const history: VersionHistory = {
           id: generateId(),
           parameterId,
-          version: newVersion,
+          version: histories.length + 1,
           beforeData: { tissueType: oldType },
           afterData: { tissueType: newType },
           modifiedBy: '医学物理讲师',
           changeReason: reason,
-          impactAnalysis: {
-            artifactInterpretationChange: true,
-            qualityScoreChange: Math.round((Math.random() - 0.3) * 10),
-            recommendationChange: Math.random() > 0.5,
-          },
+          impactAnalysis: impact,
           createdAt: new Date().toISOString(),
         };
 
         set((state) => ({
           parameters: state.parameters.map((p) =>
-            p.id === parameterId ? { ...p, tissueType: newType, updatedAt: new Date().toISOString() } : p
+            p.id === parameterId ? updatedParam : p
           ),
+          interfaceResults: [
+            ...state.interfaceResults.filter((r) => r.parameterId !== parameterId),
+            ...newResults,
+          ],
           versionHistories: [...state.versionHistories, history],
         }));
+
+        get().runAnomalyDetection(parameterId);
       },
 
       updateArtifactLabel: (parameterId, newLabel, reason) => {
         const param = get().parameters.find((p) => p.id === parameterId);
         if (!param) return;
 
+        const oldResults = get().getParameterResults(parameterId);
         const oldLabel = param.artifactLabel;
-        const histories = get().getParameterHistories(parameterId);
-        const newVersion = histories.length + 1;
 
+        const updatedParam: ScanParameter = { ...param, artifactLabel: newLabel, updatedAt: new Date().toISOString() };
+        const newResults = computeResults(updatedParam);
+        const impact = buildImpact(oldResults, newResults);
+
+        const histories = get().getParameterHistories(parameterId);
         const history: VersionHistory = {
           id: generateId(),
           parameterId,
-          version: newVersion,
+          version: histories.length + 1,
           beforeData: { artifactLabel: oldLabel },
           afterData: { artifactLabel: newLabel },
           modifiedBy: '医学物理讲师',
           changeReason: reason,
-          impactAnalysis: {
-            artifactInterpretationChange: true,
-            qualityScoreChange: Math.round((Math.random() - 0.5) * 10),
-            recommendationChange: Math.random() > 0.6,
-          },
+          impactAnalysis: impact,
           createdAt: new Date().toISOString(),
         };
 
         set((state) => ({
           parameters: state.parameters.map((p) =>
-            p.id === parameterId ? { ...p, artifactLabel: newLabel, updatedAt: new Date().toISOString() } : p
+            p.id === parameterId ? updatedParam : p
           ),
+          interfaceResults: [
+            ...state.interfaceResults.filter((r) => r.parameterId !== parameterId),
+            ...newResults,
+          ],
           versionHistories: [...state.versionHistories, history],
         }));
+
+        get().runAnomalyDetection(parameterId);
       },
 
       resolveAnomaly: (anomalyId, handlerNote) => {
