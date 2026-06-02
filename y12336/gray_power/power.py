@@ -63,6 +63,31 @@ def _norm_ppf(p: float) -> float:
         )
 
 
+def _norm_cdf(x: float) -> float:
+    if x < -8.0:
+        return 0.0
+    if x > 8.0:
+        return 1.0
+    p = 0.2316419
+    b1 = 0.319381530
+    b2 = -0.356563782
+    b3 = 1.781477937
+    b4 = -1.821255978
+    b5 = 1.330274429
+    abs_x = abs(x)
+    t = 1.0 / (1.0 + p * abs_x)
+    z = (
+        1.0
+        / math.sqrt(2 * math.pi)
+        * math.exp(-abs_x * abs_x / 2.0)
+    )
+    phi = z * t * (b1 + t * (b2 + t * (b3 + t * (b4 + t * b5))))
+    if x >= 0:
+        return 1.0 - phi
+    else:
+        return phi
+
+
 class PowerAnalyzer:
     def __init__(
         self,
@@ -134,7 +159,11 @@ class PowerAnalyzer:
                 },
                 output=d,
                 unit="Cohen's d (无量纲)",
-                note="效应量 Cohen's d，衡量差异大小",
+                note=(
+                    f"效应量 Cohen's d。d>0 表示实验组优于对照组，"
+                    f"d<0 表示实验组劣于对照组。|d|越大差异越大。"
+                    f"小效应≈±0.2，中效应≈±0.5，大效应≈±0.8。"
+                ),
             )
         )
         return d, steps
@@ -152,7 +181,10 @@ class PowerAnalyzer:
                 inputs={"alpha": self.alpha, "1-alpha/2": 1 - self.alpha / 2},
                 output=z_alpha,
                 unit="z值",
-                note=f"显著性水平 alpha={self.alpha} 对应的双侧 z 临界值",
+                note=(
+                    f"显著性水平 alpha={self.alpha} 对应的双侧 z 临界值。"
+                    f"双侧检验下 H0 拒绝域为 |Z| > z_alpha/2"
+                ),
             )
         )
         steps.append(
@@ -165,22 +197,24 @@ class PowerAnalyzer:
                 note=f"目标功效 {self.desired_power} 对应的 z 值",
             )
         )
+        d_abs = abs(effect_size)
         if effect_size == 0:
             n_per_group = 999999
         else:
-            n_per_group = math.ceil(2 * ((z_alpha + z_beta) / effect_size) ** 2)
+            n_per_group = math.ceil(2 * ((z_alpha + z_beta) / d_abs) ** 2)
         steps.append(
             IntermediateStep(
                 step_name="required_n_per_group",
-                formula="ceil(2 * ((z_alpha + z_beta) / d)^2)",
+                formula="ceil(2 * ((z_alpha + z_beta) / |d|)^2)",
                 inputs={
                     "z_alpha": z_alpha,
                     "z_beta": z_beta,
                     "d": effect_size,
+                    "|d|": d_abs if effect_size != 0 else 0,
                 },
                 output=n_per_group,
                 unit="观测数/组",
-                note="每组所需最小样本量（双侧检验）",
+                note="每组所需最小样本量（双侧检验，d取绝对值）",
             )
         )
         return n_per_group, steps
@@ -189,27 +223,34 @@ class PowerAnalyzer:
         self, metric: MetricData, effect_size: float
     ) -> tuple[float, list[IntermediateStep]]:
         steps = []
-        z_alpha = _norm_ppf(1 - self.alpha / 2)
+        z_alpha2 = _norm_ppf(1 - self.alpha / 2)
         n_min = min(metric.control_n, metric.treatment_n)
         if effect_size == 0 or n_min == 0:
-            power = 0.0
+            power = self.alpha
         else:
             ncp = effect_size * math.sqrt(n_min / 2)
-            power = 1 - _norm_ppf(z_alpha - ncp)
+            power_right_tail = 1 - _norm_cdf(z_alpha2 - ncp)
+            power_left_tail = _norm_cdf(-z_alpha2 - ncp)
+            power = power_right_tail + power_left_tail
             power = max(0.0, min(1.0, power))
+        ncp_val = effect_size * math.sqrt(max(1, n_min) / 2) if n_min > 0 else 0
         steps.append(
             IntermediateStep(
                 step_name="achieved_power",
-                formula="1 - Phi(z_alpha - d*sqrt(n_min/2))",
+                formula="1 - Phi(z_alpha/2 - ncp) + Phi(-z_alpha/2 - ncp)",
                 inputs={
-                    "z_alpha": z_alpha,
+                    "z_alpha/2": z_alpha2,
                     "d": effect_size,
                     "n_min": n_min,
-                    "ncp (非中心参数)": effect_size * math.sqrt(max(1, n_min) / 2) if n_min > 0 else 0,
+                    "ncp (非中心参数)": ncp_val,
+                    "d * sqrt(n_min/2)": ncp_val,
                 },
                 output=power,
                 unit="概率 [0,1]",
-                note=f"在当前样本量下实际达到的功效",
+                note=(
+                    f"双侧检验功效 = 右侧(拒绝H0|d>0) + 左侧(拒绝H0|d<0)。"
+                    f"效应量 d={effect_size:.4f}，非中心参数 ncp={ncp_val:.4f}"
+                ),
             )
         )
         return power, steps
@@ -252,7 +293,11 @@ class PowerAnalyzer:
                 },
                 output=[ci_lower, ci_upper],
                 unit=metric.unit,
-                note=f"{(1-self.alpha)*100:.0f}% 置信区间",
+                note=(
+                    f"{(1-self.alpha)*100:.0f}% 置信区间。"
+                    f"若上下限同号且不包含 0，则在 alpha={self.alpha} 下显著。"
+                    f"区间包含 0 则不显著。"
+                ),
             )
         )
         return ci_lower, ci_upper, steps
