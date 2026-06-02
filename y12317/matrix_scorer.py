@@ -268,16 +268,16 @@ class MatrixConsistencyScorer:
                 )
                 continue
 
-            n = js.comparison_matrix.shape[0]
+            rows, cols = js.comparison_matrix.shape
             expected = len(self.criteria)
-            if n != expected:
+            if rows != expected or cols != expected:
                 self.diagnoses.append(DiagnosisMessage(
                     level=DiagnosisLevel.ERROR,
                     code="MATRIX_DIM_MISMATCH",
                     source_type="评委打分",
                     source_id=js.judge_id,
-                    detail=f"评委 {js.judge_name} 的判断矩阵维度为 {n}x{n}，期望 {expected}x{expected}",
-                    suggestion=f"请检查评委 {js.judge_name} 的打分表，确认是否遗漏或多余准则列/行",
+                    detail=f"评委 {js.judge_name} 的判断矩阵维度为 {rows}x{cols}，期望 {expected}x{expected}（方阵）",
+                    suggestion=f"请检查评委 {js.judge_name} 的打分表，确认是否遗漏或多余准则列/行，判断矩阵必须是方阵",
                 ))
                 self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
                     judge_id=js.judge_id,
@@ -286,7 +286,27 @@ class MatrixConsistencyScorer:
                     raw_sum=0.0,
                     is_normalized=False,
                     included_in_consensus=False,
-                    excluded_reason=f"矩阵维度不匹配: 期望{expected}x{expected}，实际{n}x{n}",
+                    excluded_reason=f"矩阵维度不匹配: 期望{expected}x{expected}，实际{rows}x{cols}",
+                )
+                continue
+
+            if rows != cols:
+                self.diagnoses.append(DiagnosisMessage(
+                    level=DiagnosisLevel.ERROR,
+                    code="MATRIX_NOT_SQUARE",
+                    source_type="评委打分",
+                    source_id=js.judge_id,
+                    detail=f"评委 {js.judge_name} 的判断矩阵维度为 {rows}x{cols}，不是方阵，无法进行特征值分析",
+                    suggestion=f"请检查评委 {js.judge_name} 的打分表，判断矩阵行列数必须相同",
+                ))
+                self.judge_metadata[js.judge_id] = JudgeWeightMetadata(
+                    judge_id=js.judge_id,
+                    judge_name=js.judge_name,
+                    source=WeightSource.EXCLUDED_DIM,
+                    raw_sum=0.0,
+                    is_normalized=False,
+                    included_in_consensus=False,
+                    excluded_reason=f"矩阵非方阵: {rows}x{cols}",
                 )
                 continue
 

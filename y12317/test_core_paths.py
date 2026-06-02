@@ -474,6 +474,133 @@ def test_scenario_7_ranking():
     return all([has_rankings, has_contribution, has_explanation, rank1_correct])
 
 
+def test_scenario_8_non_square_matrix():
+    """测试场景8：非方阵矩阵（4x3）不崩溃"""
+    print("\n" + "=" * 80)
+    print("测试场景8：非方阵矩阵（4行3列）不崩溃")
+    print("=" * 80)
+
+    criteria = ["技术实力", "交付能力", "报价合理性", "服务响应"]
+
+    judges = [
+        JudgeScore(
+            judge_id="J001",
+            judge_name="张主任",
+            comparison_matrix=np.array([
+                [1.0, 3.0, 5.0],
+                [1/3, 1.0, 3.0],
+                [1/5, 1/3, 1.0],
+                [1/7, 1/5, 1/2],
+            ]),
+            direct_weights=None,
+            raw_scores=None,
+            missing_criteria=[],
+        ),
+    ]
+
+    suppliers = [
+        SupplierMaterial(
+            supplier_id="S001",
+            supplier_name="甲科技",
+            criteria_scores={"技术实力": 90.0, "交付能力": 85.0, "报价合理性": 80.0, "服务响应": 85.0},
+        ),
+    ]
+
+    scorer = MatrixConsistencyScorer(criteria=criteria, cr_threshold=0.1, extreme_z_threshold=2.0)
+    scorer.load_judge_scores(judges)
+    scorer.load_supplier_materials(suppliers)
+    scorer.load_inspection_reports([])
+
+    try:
+        result = scorer.run()
+        crash = False
+    except Exception as e:
+        print(f"  ❌ 崩溃: {e}")
+        crash = True
+
+    if not crash:
+        # 验证：检测到MATRIX_DIM_MISMATCH（4行3列，期望4x4）
+        has_dim_mismatch = any("MATRIX_DIM_MISMATCH" in d for d in result["diagnoses"])
+        print(f"✅ 未崩溃，检测到维度不匹配: {has_dim_mismatch}")
+
+        # 验证：诊断信息中正确显示4x3
+        correct_dim = any("4x3" in d for d in result["diagnoses"])
+        print(f"✅ 诊断信息正确显示实际维度4x3: {correct_dim}")
+
+        # 验证：元数据中排除原因记录正确
+        j001_meta = result["judge_metadata"].get("J001", {})
+        is_excluded = not j001_meta.get("included_in_consensus", True)
+        print(f"✅ 评委被正确排除: {is_excluded}")
+
+        return all([has_dim_mismatch, correct_dim, is_excluded])
+
+    return False
+
+
+def test_scenario_9_row_ok_col_short():
+    """测试场景9：行数正确但列数不足（4x2）"""
+    print("\n" + "=" * 80)
+    print("测试场景9：行数正确但列数不足（4行2列）")
+    print("=" * 80)
+
+    criteria = ["技术实力", "交付能力", "报价合理性", "服务响应"]
+
+    judges = [
+        JudgeScore(
+            judge_id="J001",
+            judge_name="张主任",
+            comparison_matrix=np.array([
+                [1.0, 2.0],
+                [1/2, 1.0],
+                [1/3, 1/2],
+                [1/5, 1/3],
+            ]),
+            direct_weights=None,
+            raw_scores=None,
+            missing_criteria=[],
+        ),
+    ]
+
+    suppliers = [
+        SupplierMaterial(
+            supplier_id="S001",
+            supplier_name="甲科技",
+            criteria_scores={"技术实力": 90.0, "交付能力": 85.0, "报价合理性": 80.0, "服务响应": 85.0},
+        ),
+    ]
+
+    scorer = MatrixConsistencyScorer(criteria=criteria, cr_threshold=0.1, extreme_z_threshold=2.0)
+    scorer.load_judge_scores(judges)
+    scorer.load_supplier_materials(suppliers)
+    scorer.load_inspection_reports([])
+
+    try:
+        result = scorer.run()
+        crash = False
+    except Exception as e:
+        print(f"  ❌ 崩溃: {e}")
+        crash = True
+
+    if not crash:
+        # 验证：检测到维度不匹配
+        has_dim_mismatch = any("MATRIX_DIM_MISMATCH" in d for d in result["diagnoses"])
+        print(f"✅ 未崩溃，检测到维度不匹配: {has_dim_mismatch}")
+
+        # 验证：诊断信息中正确显示4x2
+        correct_dim = any("4x2" in d for d in result["diagnoses"])
+        print(f"✅ 诊断信息正确显示实际维度4x2: {correct_dim}")
+
+        # 验证：元数据排除原因包含正确的维度信息
+        j001_meta = result["judge_metadata"].get("J001", {})
+        excluded_reason = j001_meta.get("excluded_reason", "")
+        reason_correct = "4x2" in excluded_reason
+        print(f"✅ 排除原因包含正确的维度4x2: {reason_correct}")
+
+        return all([has_dim_mismatch, correct_dim, reason_correct])
+
+    return False
+
+
 def main():
     print("\n" + "=" * 80)
     print("矩阵一致性评分器 - 核心路径验证测试")
@@ -488,6 +615,8 @@ def main():
     test_results.append(("场景5：材料打架", test_scenario_5_score_conflict()))
     test_results.append(("场景6：极端评委检测", test_scenario_6_extreme_judge()))
     test_results.append(("场景7：排名与解释", test_scenario_7_ranking()))
+    test_results.append(("场景8：非方阵矩阵不崩溃", test_scenario_8_non_square_matrix()))
+    test_results.append(("场景9：行数正确但列数不足的矩阵", test_scenario_9_row_ok_col_short()))
 
     print("\n" + "=" * 80)
     print("测试结果汇总")
