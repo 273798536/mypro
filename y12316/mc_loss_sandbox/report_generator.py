@@ -269,8 +269,11 @@ class ReportGenerator:
                     "late_arrival": deductible.is_late_arrival if deductible else None,
                 },
                 "charts": {
-                    "loss_histogram": f"charts/loss_histogram_{pt}.png" if dist else None,
-                    "var_chart": "charts/var_analysis.png",
+                    "loss_histogram": "charts/loss_histogram.png",
+                    "loss_cdf": "charts/loss_cdf.png",
+                    "risk_metrics": "charts/risk_metrics.png",
+                    "sensitivity_analysis": "charts/sensitivity_analysis.png",
+                    "policy_distribution": "charts/policy_distribution.png",
                 },
             }
             relationships.append(rel)
