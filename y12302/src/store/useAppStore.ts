@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AppState, AppActions, OrganModel, DoseGrid, DoctorNote, DetectionIssue, ScreenshotRecord, OperationLog, VersionComparison } from '../types';
+import type { AppState, AppActions, OrganModel, DoseGrid, DoctorNote, DetectionIssue, ScreenshotRecord, OperationLog } from '../types';
 import { mockOrgans, mockDoses, mockNotes, mockIssues, mockScreenshots, mockLogs } from '../data/mockData';
 
 type AppStore = AppState & AppActions;

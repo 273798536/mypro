@@ -1,4 +1,4 @@
-import { Camera, View, RotateCcw, Eye } from 'lucide-react';
+import { Camera, View, RotateCcw } from 'lucide-react';
 
 interface ViewPresetsProps {
   onReset?: () => void;

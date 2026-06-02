@@ -20,7 +20,7 @@ const tabs: { id: ActiveTab; label: string; icon: typeof Box }[] = [
 ];
 
 export function Header() {
-  const { activeTab, setActiveTab, issues, screenshots } = useAppStore();
+  const { activeTab, setActiveTab, issues } = useAppStore();
   const unresolvedIssues = issues.filter((i) => !i.resolved).length;
 
   return (

@@ -8,7 +8,6 @@ import {
   Link2,
   Clock,
   User,
-  Calendar,
   ArrowRight,
   Download,
   ChevronRight,
@@ -445,7 +444,7 @@ export function Review() {
             <h3 className="font-semibold text-white">操作日志</h3>
           </div>
           <div className="p-4 space-y-3 overflow-auto max-h-[550px]">
-            {logs.map((log, index) => (
+            {logs.map((log) => (
               <div
                 key={log.id}
                 className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg"

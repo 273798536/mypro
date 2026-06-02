@@ -7,7 +7,6 @@ import {
   importFiles,
   isSupportedFile,
   isOrganFile,
-  isDoseFile,
   inferVersionFromFilename,
   inferSourceFromFilename,
   getNextOrganColor,

@@ -3,11 +3,11 @@ import { OrganList } from '../components/workspace/OrganList';
 import { DoseControls } from '../components/workspace/DoseControls';
 import { ViewPresets } from '../components/workspace/ViewPresets';
 import { SelectionPanel } from '../components/workspace/SelectionPanel';
-import { Camera, Camera as CameraIcon, Split } from 'lucide-react';
+import { Camera as CameraIcon, Split } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
 export function Workspace() {
-  const { addScreenshot, organs, doses, selectedOrganId, selectedDoseId } = useAppStore();
+  const { addScreenshot, organs, doses } = useAppStore();
 
   const handleScreenshot = () => {
     const selectedOrgans = organs.filter((o) => o.visible);

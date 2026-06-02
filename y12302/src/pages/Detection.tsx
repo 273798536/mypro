@@ -3,7 +3,6 @@ import {
   AlertTriangle, 
   Play, 
   CheckCircle, 
-  XCircle, 
   Move, 
   Radiation, 
   GitCompareArrows,
