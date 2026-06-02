@@ -48,6 +48,8 @@ import { cn } from '../lib/utils';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 const STATUS_TITLES: Record<string, string> = {
   active: '活跃',
@@ -347,150 +349,79 @@ const Report: React.FC = () => {
 
   const downloadPDF = async () => {
     if (!validateAndPrepareExport()) return;
-
-    setDownloadProgress({
-      type: 'pdf',
-      step: 1,
-      total: 5,
-      label: '正在渲染报告页面 1/5...',
-    });
-
-    const steps = [
-      '正在渲染报告页面 1/5...',
-      '正在生成图表快照 2/5...',
-      '正在排版页面内容 3/5...',
-      '正在生成PDF文件 4/5...',
-      '正在下载文件 5/5...',
-    ];
-
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 400));
-      setDownloadProgress((prev) => ({ ...prev, step: i + 1, label: steps[i] }));
+    if (!currentReport) {
+      alert('请先生成报告后再下载 PDF');
+      return;
     }
 
-    const printContent = reportRef.current;
-    if (printContent) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'visible';
+    const reportElement = reportRef.current;
+    if (!reportElement) {
+      alert('报告内容未就绪，请稍后重试');
+      return;
+    }
 
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>${reportTitle}</title>
-            <style>
-              * { margin: 0; padding: 0; box-sizing: border-box; }
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; }
-              .report-container { max-width: 800px; margin: 0 auto; }
-              .cover { text-align: center; padding: 60px 40px; border-bottom: 2px solid #e5e7eb; margin-bottom: 30px; }
-              .cover h1 { font-size: 28px; color: #111827; margin-bottom: 20px; }
-              .cover .meta { color: #6b7280; font-size: 14px; line-height: 2; }
-              .section { margin-bottom: 30px; page-break-inside: avoid; }
-              .section h2 { font-size: 18px; color: #111827; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
-              .conclusions { background: #f9fafb; padding: 20px; border-radius: 8px; }
-              .conclusions li { margin-bottom: 10px; color: #374151; line-height: 1.6; }
-              .chart-container { height: 300px; margin: 20px 0; }
-              table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-              th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; font-size: 13px; }
-              th { background: #f9fafb; font-weight: 600; }
-              @media print {
-                body { padding: 0; }
-                .page-break { page-break-after: always; }
-              }
-            </style>
-          </head>
-          <body>
-            <div class="report-container">
-              <div class="cover">
-                <h1>${reportTitle}</h1>
-                <div class="meta">
-                  <p>生成时间：${new Date().toLocaleString('zh-CN')}</p>
-                  <p>数据批次：${currentBatch?.name} (${currentBatchId})</p>
-                  <p>数据指纹：${dataHash || '-'}</p>
-                  <p>生成人：系统管理员</p>
-                  <p>会员总数：${members.length} 人</p>
-                </div>
-              </div>
-              <div class="section">
-                <h2>报告摘要</h2>
-                <p style="color: #374151; line-height: 1.8;">${reportSummary || '报告生成中...'}</p>
-              </div>
-              <div class="section page-break">
-                <h2>核心结论</h2>
-                <div class="conclusions">
-                  <ol>
-                    ${keyConclusions.map((c) => `<li>${c}</li>`).join('')}
-                  </ol>
-                </div>
-              </div>
-              <div class="section">
-                <h2>会员状态分布</h2>
-                <table>
-                  <tr><th>状态</th><th>人数</th><th>占比</th></tr>
-                  ${statusDistributionData
-                    .map(
-                      (d) => `
-                    <tr>
-                      <td>${d.name}</td>
-                      <td>${d.value}</td>
-                      <td>${((d.value / members.length) * 100).toFixed(1)}%</td>
-                    </tr>
-                  `
-                    )
-                    .join('')}
-                </table>
-              </div>
-              <div class="section page-break">
-                <h2>关键转移概率</h2>
-                <table>
-                  <tr><th>从状态</th><th>到状态</th><th>转移概率</th><th>人数</th></tr>
-                  ${topTransitions
-                    .map(
-                      (t) => `
-                    <tr>
-                      <td>${STATUS_TITLES[t.fromStatus]}</td>
-                      <td>${STATUS_TITLES[t.toStatus]}</td>
-                      <td>${(t.probability * 100).toFixed(1)}%</td>
-                      <td>${t.count}人</td>
-                    </tr>
-                  `
-                    )
-                    .join('')}
-                </table>
-              </div>
-              <div class="section">
-                <h2>干预建议</h2>
-                ${interventionSuggestions
-                  .map(
-                    (s, i) => `
-                  <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #3b82f6;">
-                    <h3 style="font-size: 15px; margin-bottom: 5px;">${i + 1}. ${s.title}</h3>
-                    <p style="font-size: 13px; color: #6b7280; margin-bottom: 5px;">目标人群：${s.target}</p>
-                    <p style="font-size: 13px; color: #374151;">${s.description}</p>
-                  </div>
-                `
-                  )
-                  .join('')}
-              </div>
-            </div>
-          </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-          printWindow.print();
-        }, 500);
+    try {
+      setDownloadProgress({
+        type: 'pdf',
+        step: 1,
+        total: 4,
+        label: '正在捕获页面内容 1/4...',
+      });
+
+      const originalTransform = reportElement.style.transform;
+      const originalOrigin = reportElement.style.transformOrigin;
+      reportElement.style.transform = 'scale(1)';
+      reportElement.style.transformOrigin = 'top left';
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      setDownloadProgress((prev) => ({ ...prev, step: 2, label: '正在生成图表快照 2/4...' }));
+
+      const canvas = await html2canvas(reportElement, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      reportElement.style.transform = originalTransform;
+      reportElement.style.transformOrigin = originalOrigin;
+
+      setDownloadProgress((prev) => ({ ...prev, step: 3, label: '正在生成PDF文件 3/4...' }));
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
       }
 
-      document.body.style.overflow = originalOverflow;
-    }
+      setDownloadProgress((prev) => ({ ...prev, step: 4, label: '正在下载文件 4/4...' }));
 
-    setTimeout(() => {
+      const fileName = generateFileName('pdf');
+      pdf.save(fileName);
+
+      setTimeout(() => {
+        setDownloadProgress({ type: null, step: 0, total: 0, label: '' });
+      }, 800);
+
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('PDF 生成失败：' + (error instanceof Error ? error.message : '未知错误'));
       setDownloadProgress({ type: null, step: 0, total: 0, label: '' });
-    }, 500);
+    }
   };
 
   const downloadZIP = async () => {
