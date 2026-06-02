@@ -21,7 +21,11 @@ export function ExportModal({ isOpen, onClose, canvasRef }: ExportModalProps) {
     try {
       let screenshotUrl = '';
       if (canvasRef.current) {
-        screenshotUrl = canvasRef.current.toDataURL('image/png');
+        try {
+          screenshotUrl = canvasRef.current.toDataURL('image/png');
+        } catch (e) {
+          console.error('Screenshot capture failed:', e);
+        }
       }
 
       const record = generateExportRecord(

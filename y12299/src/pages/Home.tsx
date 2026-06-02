@@ -46,7 +46,7 @@ export function Home() {
 
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 relative">
-          <Scene3D className="w-full h-full" />
+          <Scene3D className="w-full h-full" canvasRef={canvasRef} />
           <DataGapNotice />
           <Legend />
         </div>

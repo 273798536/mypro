@@ -1,25 +1,22 @@
-import { useEffect, useRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { useEffect, useRef, useMemo, useCallback } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
-import * as THREE from 'three';
 import { CarModel } from './CarModel';
 import { StreamLines } from './StreamLines';
 import { RiskMarkers } from './RiskMarkers';
 import { useAppStore } from '../../store/useAppStore';
-import { WindParams } from '../../types';
+import { WindParams, StreamLine, RiskPoint } from '../../types';
+import { generateStreamLines } from '../../utils/streamGenerator';
+import { detectAllRisks } from '../../utils/riskDetector';
 
 interface SceneContentProps {
-  windParams: WindParams;
+  streamLines: StreamLine[];
+  riskPoints: RiskPoint[];
+  showRiskLabels: boolean;
 }
 
-function SceneContent({ windParams }: SceneContentProps) {
-  const { streamLines, riskPoints, showRiskLabels, updateStreamLines } = useAppStore();
-
-  useEffect(() => {
-    updateStreamLines();
-  }, [windParams, updateStreamLines]);
-
+function SceneContent({ streamLines, riskPoints, showRiskLabels }: SceneContentProps) {
   return (
     <>
       <ambientLight intensity={0.3} />
@@ -61,20 +58,55 @@ function SceneContent({ windParams }: SceneContentProps) {
 interface Scene3DProps {
   windParams?: WindParams;
   className?: string;
+  canvasRef?: React.RefObject<HTMLCanvasElement | null>;
 }
 
-export function Scene3D({ windParams, className }: Scene3DProps) {
-  const { currentWindParams } = useAppStore();
-  const params = windParams || currentWindParams;
+export function Scene3D({ windParams, className, canvasRef }: Scene3DProps) {
+  const { currentWindParams, showRiskLabels, updateStreamLines } = useAppStore();
+  const storeStreamLines = useAppStore((s) => s.streamLines);
+  const storeRiskPoints = useAppStore((s) => s.riskPoints);
+
+  const isExternalParams = !!windParams;
+
+  const externalData = useMemo(() => {
+    if (!windParams) return { streamLines: [], riskPoints: [] };
+    const sl = generateStreamLines(windParams);
+    const rp = detectAllRisks(sl, windParams);
+    return { streamLines: sl, riskPoints: rp };
+  }, [windParams]);
+
+  useEffect(() => {
+    if (!isExternalParams) {
+      updateStreamLines();
+    }
+  }, [isExternalParams, updateStreamLines]);
+
+  const streamLines = isExternalParams ? externalData.streamLines : storeStreamLines;
+  const riskPoints = isExternalParams ? externalData.riskPoints : storeRiskPoints;
+
+  const handleCanvasCreated = useCallback(
+    (state: { gl: { domElement: HTMLCanvasElement } }) => {
+      if (canvasRef) {
+        (canvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current =
+          state.gl.domElement;
+      }
+    },
+    [canvasRef]
+  );
 
   return (
     <Canvas
       camera={{ position: [5, 3, 5], fov: 50 }}
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
       className={className}
       style={{ background: '#0a0a14' }}
+      onCreated={handleCanvasCreated}
     >
-      <SceneContent windParams={params} />
+      <SceneContent
+        streamLines={streamLines}
+        riskPoints={riskPoints}
+        showRiskLabels={showRiskLabels}
+      />
     </Canvas>
   );
 }
