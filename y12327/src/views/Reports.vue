@@ -29,7 +29,7 @@ function exportReport(reportId: string) {
   const report = store.allocationReports.find(r => r.id === reportId)
   if (!report) return
 
-  exportAllocationReport(report, store.channels, store.conversions, {
+  exportAllocationReport(report, store.channels, store.conversions, store.biddingRecords, {
     includeModificationTraces: includeModificationTraces.value,
     includeSupplementaryMarks: includeSupplementaryMarks.value,
     includeRawData: includeRawData.value

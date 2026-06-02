@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx'
-import type { BudgetAllocationReport, BudgetAllocationDetail, ModificationTrace, ChannelData, ConversionData } from '@/types'
+import type { BudgetAllocationReport, BudgetAllocationDetail, ModificationTrace, ChannelData, ConversionData, BiddingRecord } from '@/types'
 import { formatCurrencyWithUnit } from './currency'
 import dayjs from 'dayjs'
 
@@ -13,6 +13,7 @@ export function exportAllocationReport(
   report: BudgetAllocationReport,
   channels: ChannelData[],
   conversions: ConversionData[],
+  biddingRecords: BiddingRecord[],
   options: ExportOptions = {}
 ) {
   const {
@@ -38,7 +39,7 @@ export function exportAllocationReport(
   }
 
   if (includeSupplementaryMarks) {
-    const supplementaryData = generateSupplementaryMarkSheet(report, conversions)
+    const supplementaryData = generateSupplementaryMarkSheet(report, conversions, biddingRecords)
     if (supplementaryData.length > 0) {
       const suppWs = XLSX.utils.json_to_sheet(supplementaryData)
       XLSX.utils.book_append_sheet(wb, suppWs, '补录记录影响')
@@ -154,28 +155,59 @@ function generateModificationTraceSheet(traces: ModificationTrace[]) {
   }))
 }
 
-function generateSupplementaryMarkSheet(report: BudgetAllocationReport, conversions: ConversionData[]) {
-  const supplementaryConversions = conversions.filter(c => c.isSupplementary)
+function generateSupplementaryMarkSheet(report: BudgetAllocationReport, conversions: ConversionData[], biddingRecords: BiddingRecord[]) {
+  const rows: Record<string, any>[] = []
+  let index = 1
 
-  return supplementaryConversions.map((conv, index) => {
+  const supplementaryConversions = conversions.filter(c => c.isSupplementary)
+  supplementaryConversions.forEach(conv => {
     const affectedDetails = report.details.filter(d =>
       conv.affectedRecordIds.includes(d.id)
     )
 
-    return {
-      '序号': index + 1,
+    rows.push({
+      '序号': index++,
+      '补录类型': '转化数据',
       '补录记录ID': conv.id,
+      '渠道名称': report.details.find(d => d.channelId === conv.channelId)?.channelName || '-',
       '转化日期': conv.conversionDate,
       '归因日期': conv.attributionDate,
       '转化数量': conv.conversionCount,
       '转化价值': formatCurrencyWithUnit(conv.conversionValue, conv.currencyUnit),
+      '出价金额': '-',
       '延迟天数': conv.delayDays,
       '补录时间': conv.supplementaryAt ? dayjs(conv.supplementaryAt).format('YYYY-MM-DD HH:mm:ss') : '',
       '备注': conv.remark || '',
       '影响分配明细': affectedDetails.map(d => d.channelName).join('、'),
       '影响明细数量': affectedDetails.length
-    }
+    })
   })
+
+  const supplementaryBiddings = biddingRecords.filter(b => b.isSupplementary)
+  supplementaryBiddings.forEach(record => {
+    const affectedDetails = report.details.filter(d =>
+      record.affectedAllocationIds.includes(d.id)
+    )
+
+    rows.push({
+      '序号': index++,
+      '补录类型': '出价记录',
+      '补录记录ID': record.id,
+      '渠道名称': report.details.find(d => d.channelId === record.channelId)?.channelName || '-',
+      '转化日期': '-',
+      '归因日期': '-',
+      '转化数量': '-',
+      '转化价值': '-',
+      '出价金额': formatCurrencyWithUnit(record.bidAmount, record.currencyUnit),
+      '延迟天数': '-',
+      '补录时间': record.supplementaryAt ? dayjs(record.supplementaryAt).format('YYYY-MM-DD HH:mm:ss') : '',
+      '备注': record.remark || '',
+      '影响分配明细': affectedDetails.map(d => d.channelName).join('、'),
+      '影响明细数量': affectedDetails.length
+    })
+  })
+
+  return rows
 }
 
 function generateChannelSheet(channels: ChannelData[]) {

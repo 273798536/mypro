@@ -71,7 +71,7 @@ function saveModification() {
 
 function exportReport() {
   if (!store.currentReport) return
-  exportAllocationReport(store.currentReport, store.channels, store.conversions, {
+  exportAllocationReport(store.currentReport, store.channels, store.conversions, store.biddingRecords, {
     includeModificationTraces: true,
     includeSupplementaryMarks: true,
     includeRawData: true
