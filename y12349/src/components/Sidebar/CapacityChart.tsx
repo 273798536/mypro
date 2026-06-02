@@ -1,4 +1,4 @@
-import { useMemo, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useMemo, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import {
   LineChart,
   Line,
